@@ -1,18 +1,18 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for linux/drivers/scsi
-#
-# 30 May 2000, Christoph Hellwig <hch@infradead.org>
-# Rewritten to use lists instead of if-statements.
-#
-# 20 Sep 2000, Torben Mathiasen <tmm@image.dk>
-# Changed link order to reflect new scsi initialization.
-#
-# *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!
-# The link order must be, SCSI Core, SCSI HBA drivers, and
-# lastly SCSI peripheral drivers (disk/tape/cdrom/etc.) to
-# satisfy certain initialization assumptions in the SCSI layer.
-# *!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 CFLAGS_aha152x.o =   -DAHA152X_STAT -DAUTOCONF
@@ -24,10 +24,10 @@ obj-$(CONFIG_SCSI_COMMON)	+= scsi_common.o
 
 obj-$(CONFIG_RAID_ATTRS)	+= raid_class.o
 
-# --- NOTE ORDERING HERE ---
-# For kernel non-modular link, transport attributes need to
-# be initialised before drivers
-# --------------------------
+
+
+
+
 obj-$(CONFIG_SCSI_SPI_ATTRS)	+= scsi_transport_spi.o
 obj-$(CONFIG_SCSI_FC_ATTRS) 	+= scsi_transport_fc.o
 obj-$(CONFIG_SCSI_ISCSI_ATTRS)	+= scsi_transport_iscsi.o
@@ -152,7 +152,7 @@ obj-$(CONFIG_SCSI_ENCLOSURE)	+= ses.o
 
 obj-$(CONFIG_SCSI_HISI_SAS) += hisi_sas/
 
-# This goes last, so that "real" scsi devices probe earlier
+
 obj-$(CONFIG_SCSI_DEBUG)	+= scsi_debug.o
 scsi_mod-y			+= scsi.o hosts.o scsi_ioctl.o \
 				   scsicam.o scsi_error.o scsi_lib.o
@@ -181,7 +181,7 @@ ncr53c8xx-flags-$(CONFIG_SCSI_ZALON) \
 CFLAGS_ncr53c8xx.o	:= $(ncr53c8xx-flags-y) $(ncr53c8xx-flags-m)
 zalon7xx-objs	:= zalon.o ncr53c8xx.o
 
-# Files generated that shall be removed upon make clean
+
 clean-files :=	53c700_d.h 53c700_u.h
 
 $(obj)/53c700.o: $(obj)/53c700_d.h
@@ -196,8 +196,8 @@ $(obj)/scsi_devinfo_tbl.c: include/scsi/scsi_devinfo.h FORCE
 
 targets +=  scsi_devinfo_tbl.c
 
-# If you want to play with the firmware, uncomment
-# GENERATE_FIRMWARE := 1
+
+
 
 ifdef GENERATE_FIRMWARE
 

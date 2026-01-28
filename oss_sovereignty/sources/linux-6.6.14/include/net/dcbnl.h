@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * Author: Lucy Liu <lucy.liu@intel.com>
- */
+
+
 
 #ifndef __NET_DCBNL_H__
 #define __NET_DCBNL_H__
@@ -57,12 +53,9 @@ int dcbnl_ieee_notify(struct net_device *dev, int event, int cmd,
 int dcbnl_cee_notify(struct net_device *dev, int event, int cmd,
 		     u32 seq, u32 pid);
 
-/*
- * Ops struct for the netlink callbacks.  Used by DCB-enabled drivers through
- * the netdevice struct.
- */
+
 struct dcbnl_rtnl_ops {
-	/* IEEE 802.1Qaz std */
+	
 	int (*ieee_getets) (struct net_device *, struct ieee_ets *);
 	int (*ieee_setets) (struct net_device *, struct ieee_ets *);
 	int (*ieee_getmaxrate) (struct net_device *, struct ieee_maxrate *);
@@ -78,7 +71,7 @@ struct dcbnl_rtnl_ops {
 	int (*ieee_peer_getets) (struct net_device *, struct ieee_ets *);
 	int (*ieee_peer_getpfc) (struct net_device *, struct ieee_pfc *);
 
-	/* CEE std */
+	
 	u8   (*getstate)(struct net_device *);
 	u8   (*setstate)(struct net_device *, u8);
 	void (*getpermhwaddr)(struct net_device *, u8 *);
@@ -107,30 +100,30 @@ struct dcbnl_rtnl_ops {
 	u8   (*getfeatcfg)(struct net_device *, int, u8 *);
 	u8   (*setfeatcfg)(struct net_device *, int, u8);
 
-	/* DCBX configuration */
+	
 	u8   (*getdcbx)(struct net_device *);
 	u8   (*setdcbx)(struct net_device *, u8);
 
-	/* peer apps */
+	
 	int (*peer_getappinfo)(struct net_device *, struct dcb_peer_app_info *,
 			       u16 *);
 	int (*peer_getapptable)(struct net_device *, struct dcb_app *);
 
-	/* CEE peer */
+	
 	int (*cee_peer_getpg) (struct net_device *, struct cee_pg *);
 	int (*cee_peer_getpfc) (struct net_device *, struct cee_pfc *);
 
-	/* buffer settings */
+	
 	int (*dcbnl_getbuffer)(struct net_device *, struct dcbnl_buffer *);
 	int (*dcbnl_setbuffer)(struct net_device *, struct dcbnl_buffer *);
 
-	/* apptrust */
+	
 	int (*dcbnl_setapptrust)(struct net_device *, u8 *, int);
 	int (*dcbnl_getapptrust)(struct net_device *, u8 *, int *);
 
-	/* rewrite */
+	
 	int (*dcbnl_setrewr)(struct net_device *dev, struct dcb_app *app);
 	int (*dcbnl_delrewr)(struct net_device *dev, struct dcb_app *app);
 };
 
-#endif /* __NET_DCBNL_H__ */
+#endif 

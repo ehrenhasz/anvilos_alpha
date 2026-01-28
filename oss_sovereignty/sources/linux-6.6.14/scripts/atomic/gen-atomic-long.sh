@@ -12,11 +12,11 @@ gen_args_cast()
 {
 	local int="$1"; shift
 	local atomic="$1"; shift
-	while [ "$#" -gt 0 ]; do
+	while [ "$
 		local cast="$(gen_cast "$1" "${int}" "${atomic}")"
 		local arg="$(gen_param_name "$1")"
 		printf "${cast}${arg}"
-		[ "$#" -gt 1 ] && printf ", "
+		[ "$
 		shift;
 	done
 }

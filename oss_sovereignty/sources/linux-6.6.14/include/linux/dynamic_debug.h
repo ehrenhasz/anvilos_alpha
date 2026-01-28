@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _DYNAMIC_DEBUG_H
 #define _DYNAMIC_DEBUG_H
 
@@ -8,16 +8,9 @@
 
 #include <linux/build_bug.h>
 
-/*
- * An instance of this structure is created in a special
- * ELF section at every dynamic debug callsite.  At runtime,
- * the special section is treated as an array of these.
- */
+
 struct _ddebug {
-	/*
-	 * These fields are used to drive the user interface
-	 * for selecting and displaying debug callsites.
-	 */
+	
 	const char *modname;
 	const char *function;
 	const char *filename;
@@ -26,13 +19,9 @@ struct _ddebug {
 #define CLS_BITS 6
 	unsigned int class_id:CLS_BITS;
 #define _DPRINTK_CLASS_DFLT		((1 << CLS_BITS) - 1)
-	/*
-	 * The flags field controls the behaviour at the callsite.
-	 * The bits here are changed dynamically when the user
-	 * writes commands to <debugfs>/dynamic_debug/control
-	 */
+	
 #define _DPRINTK_FLAGS_NONE	0
-#define _DPRINTK_FLAGS_PRINT	(1<<0) /* printk() a message using the format */
+#define _DPRINTK_FLAGS_PRINT	(1<<0) 
 #define _DPRINTK_FLAGS_INCL_MODNAME	(1<<1)
 #define _DPRINTK_FLAGS_INCL_FUNCNAME	(1<<2)
 #define _DPRINTK_FLAGS_INCL_LINENO	(1<<3)
@@ -60,45 +49,26 @@ struct _ddebug {
 
 enum class_map_type {
 	DD_CLASS_TYPE_DISJOINT_BITS,
-	/**
-	 * DD_CLASS_TYPE_DISJOINT_BITS: classes are independent, one per bit.
-	 * expecting hex input. Built for drm.debug, basis for other types.
-	 */
+	
 	DD_CLASS_TYPE_LEVEL_NUM,
-	/**
-	 * DD_CLASS_TYPE_LEVEL_NUM: input is numeric level, 0-N.
-	 * N turns on just bits N-1 .. 0, so N=0 turns all bits off.
-	 */
+	
 	DD_CLASS_TYPE_DISJOINT_NAMES,
-	/**
-	 * DD_CLASS_TYPE_DISJOINT_NAMES: input is a CSV of [+-]CLASS_NAMES,
-	 * classes are independent, like _DISJOINT_BITS.
-	 */
+	
 	DD_CLASS_TYPE_LEVEL_NAMES,
-	/**
-	 * DD_CLASS_TYPE_LEVEL_NAMES: input is a CSV of [+-]CLASS_NAMES,
-	 * intended for names like: INFO,DEBUG,TRACE, with a module prefix
-	 * avoid EMERG,ALERT,CRIT,ERR,WARNING: they're not debug
-	 */
+	
 };
 
 struct ddebug_class_map {
 	struct list_head link;
 	struct module *mod;
-	const char *mod_name;	/* needed for builtins */
+	const char *mod_name;	
 	const char **class_names;
 	const int length;
-	const int base;		/* index of 1st .class_id, allows split/shared space */
+	const int base;		
 	enum class_map_type map_type;
 };
 
-/**
- * DECLARE_DYNDBG_CLASSMAP - declare classnames known by a module
- * @_var:   a struct ddebug_class_map, passed to module_param_cb
- * @_type:  enum class_map_type, chooses bits/verbose, numeric/symbolic
- * @_base:  offset of 1st class-name. splits .class_id space
- * @classes: class-names used to control class'd prdbgs
- */
+
 #define DECLARE_DYNDBG_CLASSMAP(_var, _maptype, _base, ...)		\
 	static const char *_var##_classnames[] = { __VA_ARGS__ };	\
 	static struct ddebug_class_map __aligned(8) __used		\
@@ -113,7 +83,7 @@ struct ddebug_class_map {
 #define NUM_TYPE_ARGS(eltype, ...)				\
         (sizeof((eltype[]){__VA_ARGS__}) / sizeof(eltype))
 
-/* encapsulate linker provided built-in (or module) dyndbg data */
+
 struct _ddebug_info {
 	struct _ddebug *descs;
 	struct ddebug_class_map *classes;
@@ -130,10 +100,7 @@ struct ddebug_class_param {
 	const struct ddebug_class_map *map;
 };
 
-/*
- * pr_debug() and friends are globally enabled or modules have selectively
- * enabled them.
- */
+
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
 
@@ -193,7 +160,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 	static_branch_unlikely(&descriptor.key.dd_key_false)
 #endif
 
-#else /* !CONFIG_JUMP_LABEL */
+#else 
 
 #define _DPRINTK_KEY_INIT
 
@@ -205,19 +172,9 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 	unlikely(descriptor.flags & _DPRINTK_FLAGS_PRINT)
 #endif
 
-#endif /* CONFIG_JUMP_LABEL */
+#endif 
 
-/*
- * Factory macros: ($prefix)dynamic_func_call($suffix)
- *
- * Lower layer (with __ prefix) gets the callsite metadata, and wraps
- * the func inside a debug-branch/static-key construct.  Upper layer
- * (with _ prefix) does the UNIQUE_ID once, so that lower can ref the
- * name/label multiple times, and tie the elements together.
- * Multiple flavors:
- * (|_cls):	adds in _DPRINT_CLASS_DFLT as needed
- * (|_no_desc):	former gets callsite descriptor as 1st arg (for prdbgs)
- */
+
 #define __dynamic_func_call_cls(id, cls, fmt, func, ...) do {	\
 	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(id, cls, fmt);	\
 	if (DYNAMIC_DEBUG_BRANCH(id))				\
@@ -236,24 +193,13 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 	__dynamic_func_call_cls_no_desc(id, _DPRINTK_CLASS_DFLT,	\
 					fmt, func, ##__VA_ARGS__)
 
-/*
- * "Factory macro" for generating a call to func, guarded by a
- * DYNAMIC_DEBUG_BRANCH. The dynamic debug descriptor will be
- * initialized using the fmt argument. The function will be called with
- * the address of the descriptor as first argument, followed by all
- * the varargs. Note that fmt is repeated in invocations of this
- * macro.
- */
+
 #define _dynamic_func_call_cls(cls, fmt, func, ...)			\
 	__dynamic_func_call_cls(__UNIQUE_ID(ddebug), cls, fmt, func, ##__VA_ARGS__)
 #define _dynamic_func_call(fmt, func, ...)				\
 	_dynamic_func_call_cls(_DPRINTK_CLASS_DFLT, fmt, func, ##__VA_ARGS__)
 
-/*
- * A variant that does the same, except that the descriptor is not
- * passed as the first argument to the function; it is only called
- * with precisely the macro's varargs.
- */
+
 #define _dynamic_func_call_cls_no_desc(cls, fmt, func, ...)		\
 	__dynamic_func_call_cls_no_desc(__UNIQUE_ID(ddebug), cls, fmt,	\
 					func, ##__VA_ARGS__)
@@ -288,14 +234,14 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 				   KERN_DEBUG, prefix_str, prefix_type,	\
 				   rowsize, groupsize, buf, len, ascii)
 
-/* for test only, generally expect drm.debug style macro wrappers */
+
 #define __pr_debug_cls(cls, fmt, ...) do {			\
 	BUILD_BUG_ON_MSG(!__builtin_constant_p(cls),		\
 			 "expecting constant class int/enum");	\
 	dynamic_pr_debug_cls(cls, fmt, ##__VA_ARGS__);		\
 	} while (0)
 
-#else /* !(CONFIG_DYNAMIC_DEBUG || (CONFIG_DYNAMIC_DEBUG_CORE && DYNAMIC_DEBUG_MODULE)) */
+#else 
 
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -315,7 +261,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
 				rowsize, groupsize, buf, len, ascii);	\
 	} while (0)
 
-#endif /* CONFIG_DYNAMIC_DEBUG || (CONFIG_DYNAMIC_DEBUG_CORE && DYNAMIC_DEBUG_MODULE) */
+#endif 
 
 
 #ifdef CONFIG_DYNAMIC_DEBUG_CORE
@@ -332,10 +278,10 @@ static inline int ddebug_dyndbg_module_param_cb(char *param, char *val,
 						const char *modname)
 {
 	if (!strcmp(param, "dyndbg")) {
-		/* avoid pr_warn(), which wants pr_fmt() fully defined */
+		
 		printk(KERN_WARNING "dyndbg param is supported only in "
 			"CONFIG_DYNAMIC_DEBUG builds\n");
-		return 0; /* allow and ignore */
+		return 0; 
 	}
 	return -EINVAL;
 }
@@ -351,4 +297,4 @@ static inline int param_get_dyndbg_classes(char *buffer, const struct kernel_par
 
 extern const struct kernel_param_ops param_ops_dyndbg_classes;
 
-#endif /* _DYNAMIC_DEBUG_H */
+#endif 

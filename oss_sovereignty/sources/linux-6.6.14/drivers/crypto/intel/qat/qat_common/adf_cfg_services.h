@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Intel Corporation */
+
+
 #ifndef _ADF_CFG_SERVICES_H_
 #define _ADF_CFG_SERVICES_H_
 

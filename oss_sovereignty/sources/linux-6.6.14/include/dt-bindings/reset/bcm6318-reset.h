@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_RESET_BCM6318_H
 #define __DT_BINDINGS_RESET_BCM6318_H
@@ -17,4 +17,4 @@
 #define BCM6318_RST_PHYMIPS	11
 #define BCM6318_RST_HOSTMIPS	12
 
-#endif /* __DT_BINDINGS_RESET_BCM6318_H */
+#endif 

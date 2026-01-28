@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2021 Hisilicon Limited.
+
+
 
 #ifndef __HCLGE_PTP_H
 #define __HCLGE_PTP_H
@@ -63,7 +63,7 @@ struct hclge_ptp {
 	void __iomem *io_base;
 	struct ptp_clock_info info;
 	struct hwtstamp_config ts_cfg;
-	spinlock_t lock;	/* protects ptp registers */
+	spinlock_t lock;	
 	u32 ptp_cfg;
 	u32 last_tx_seqid;
 	struct hclge_ptp_cycle cycle;

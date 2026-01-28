@@ -48,7 +48,7 @@ setup_macvlan_ns(){
 	sleep 1
 }
 cleanup_macvlan_ns(){
-	while (( $# >= 2 )); do
+	while (( $
 		ns_name="$1"
 		ns_dev="$2"
 		ip -netns "${ns_name}" link del dev "${ns_dev}"

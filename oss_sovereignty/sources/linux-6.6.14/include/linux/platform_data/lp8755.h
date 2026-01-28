@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * LP8755 High Performance Power Management Unit Driver:System Interface Driver
- *
- *			Copyright (C) 2012 Texas Instruments
- *
- * Author: Daniel(Geon Si) Jeong <daniel.jeong@ti.com>
- *             G.Shark Jeong <gshark.jeong@gmail.com>
- */
+
+
 
 #ifndef _LP8755_H
 #define _LP8755_H
@@ -14,14 +7,7 @@
 #include <linux/regulator/consumer.h>
 
 #define LP8755_NAME "lp8755-regulator"
-/*
- *PWR FAULT : power fault detected
- *OCP : over current protect activated
- *OVP : over voltage protect activated
- *TEMP_WARN : thermal warning
- *TEMP_SHDN : thermal shutdonw detected
- *I_LOAD : current measured
- */
+
 #define LP8755_EVENT_PWR_FAULT REGULATOR_EVENT_FAIL
 #define LP8755_EVENT_OCP REGULATOR_EVENT_OVER_CURRENT
 #define LP8755_EVENT_OVP 0x10000
@@ -39,9 +25,7 @@ enum lp8755_bucks {
 	LP8755_BUCK_MAX,
 };
 
-/**
- * multiphase configuration options
- */
+
 enum lp8755_mphase_config {
 	MPHASE_CONF0,
 	MPHASE_CONF1,
@@ -55,11 +39,7 @@ enum lp8755_mphase_config {
 	MPHASE_CONF_MAX
 };
 
-/**
- * struct lp8755_platform_data
- * @mphase_type : Multiphase Switcher Configurations.
- * @buck_data   : buck0~6 init voltage in uV
- */
+
 struct lp8755_platform_data {
 	int mphase;
 	struct regulator_init_data *buck_data[LP8755_BUCK_MAX];

@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (c) 2018  Vincent Pelletier
- */
-/*
- */
+
+
+
 #ifndef __CCID_H
 #define __CCID_H
 
@@ -36,4 +33,4 @@ struct ccid_descriptor {
 	__u8  bMaxCCIDBusySlots;
 } __attribute__ ((packed));
 
-#endif /* __CCID_H */
+#endif 

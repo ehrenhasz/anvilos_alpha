@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/cryptouser.h>
 #include <net/netlink.h>
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef _LAN966X_SERDES_REGS_H_
 #define _LAN966X_SERDES_REGS_H_
@@ -14,7 +14,7 @@ enum lan966x_target {
 
 #define __REG(...)    __VA_ARGS__
 
-/*      HSIO:SD:SD_CFG */
+
 #define HSIO_SD_CFG(g)            __REG(TARGET_HSIO, 0, 1, 8, g, 3, 32, 0, 0, 1, 4)
 
 #define HSIO_SD_CFG_PHY_RESET                    BIT(27)
@@ -107,7 +107,7 @@ enum lan966x_target {
 #define HSIO_SD_CFG_LANE_LOOPBK_EN_GET(x)\
 	FIELD_GET(HSIO_SD_CFG_LANE_LOOPBK_EN, x)
 
-/*      HSIO:SD:MPLL_CFG */
+
 #define HSIO_MPLL_CFG(g)          __REG(TARGET_HSIO, 0, 1, 8, g, 3, 32, 8, 0, 1, 4)
 
 #define HSIO_MPLL_CFG_REF_SSP_EN                 BIT(18)
@@ -134,7 +134,7 @@ enum lan966x_target {
 #define HSIO_MPLL_CFG_MPLL_MULTIPLIER_GET(x)\
 	FIELD_GET(HSIO_MPLL_CFG_MPLL_MULTIPLIER, x)
 
-/*      HSIO:SD:SD_STAT */
+
 #define HSIO_SD_STAT(g)           __REG(TARGET_HSIO, 0, 1, 8, g, 3, 32, 12, 0, 1, 4)
 
 #define HSIO_SD_STAT_MPLL_STATE                  BIT(6)
@@ -161,7 +161,7 @@ enum lan966x_target {
 #define HSIO_SD_STAT_RX_PLL_STATE_GET(x)\
 	FIELD_GET(HSIO_SD_STAT_RX_PLL_STATE, x)
 
-/*      HSIO:HW_CFGSTAT:HW_CFG */
+
 #define HSIO_HW_CFG               __REG(TARGET_HSIO, 0, 1, 104, 0, 1, 52, 0, 0, 1, 4)
 
 #define HSIO_HW_CFG_RGMII_1_CFG                  BIT(15)
@@ -206,7 +206,7 @@ enum lan966x_target {
 #define HSIO_HW_CFG_QSGMII_ENA_GET(x)\
 	FIELD_GET(HSIO_HW_CFG_QSGMII_ENA, x)
 
-/*      HSIO:HW_CFGSTAT:RGMII_CFG */
+
 #define HSIO_RGMII_CFG(r)         __REG(TARGET_HSIO, 0, 1, 104, 0, 1, 52, 20, r, 2, 4)
 
 #define HSIO_RGMII_CFG_TX_CLK_CFG                GENMASK(4, 2)
@@ -227,7 +227,7 @@ enum lan966x_target {
 #define HSIO_RGMII_CFG_RGMII_RX_RST_GET(x)\
 	FIELD_GET(HSIO_RGMII_CFG_RGMII_RX_RST, x)
 
-/*      HSIO:HW_CFGSTAT:DLL_CFG */
+
 #define HSIO_DLL_CFG(r)           __REG(TARGET_HSIO, 0, 1, 104, 0, 1, 52, 36, r, 4, 4)
 
 #define HSIO_DLL_CFG_DELAY_ENA                   BIT(2)
@@ -248,4 +248,4 @@ enum lan966x_target {
 #define HSIO_DLL_CFG_DLL_RST_GET(x)\
 	FIELD_GET(HSIO_DLL_CFG_DLL_RST, x)
 
-#endif /* _LAN966X_HSIO_REGS_H_ */
+#endif 

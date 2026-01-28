@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #ifndef _AEGIS_NEON_H
 #define _AEGIS_NEON_H

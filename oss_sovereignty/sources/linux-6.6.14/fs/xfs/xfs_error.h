@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef	__XFS_ERROR_H__
 #define	__XFS_ERROR_H__
 
@@ -35,7 +32,7 @@ extern void xfs_inode_verifier_error(struct xfs_inode *ip, int error,
 #define XFS_ERRLEVEL_LOW	1
 #define XFS_ERRLEVEL_HIGH	5
 
-/* Dump 128 bytes of any corrupt buffer */
+
 #define XFS_CORRUPTION_DUMP_LEN		(128)
 
 #ifdef DEBUG
@@ -71,12 +68,9 @@ extern int xfs_errortag_clearall(struct xfs_mount *mp);
 #define xfs_errortag_set(mp, tag, val)		(ENOSYS)
 #define xfs_errortag_add(mp, tag)		(ENOSYS)
 #define xfs_errortag_clearall(mp)		(ENOSYS)
-#endif /* DEBUG */
+#endif 
 
-/*
- * XFS panic tags -- allow a call to xfs_alert_tag() be turned into
- *			a panic by setting fs.xfs.panic_mask in a sysctl.
- */
+
 #define		XFS_NO_PTAG			0u
 #define		XFS_PTAG_IFLUSH			(1u << 0)
 #define		XFS_PTAG_LOGRES			(1u << 1)
@@ -110,4 +104,4 @@ extern int xfs_errortag_clearall(struct xfs_mount *mp);
 	{ XFS_PTAG_FSBLOCK_ZERO,	"fsb_zero" }, \
 	{ XFS_PTAG_VERIFIER_ERROR,	"verifier" }
 
-#endif	/* __XFS_ERROR_H__ */
+#endif	

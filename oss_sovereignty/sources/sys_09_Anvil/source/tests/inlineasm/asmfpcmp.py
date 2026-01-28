@@ -1,4 +1,4 @@
-@micropython.asm_thumb  # test vcmp, vmrs
+@micropython.asm_thumb  
 def f(r0, r1):
     vmov(s0, r0)
     vcvt_f32_s32(s0, s0)

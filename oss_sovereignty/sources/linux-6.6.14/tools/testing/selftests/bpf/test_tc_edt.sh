@@ -20,7 +20,7 @@ cleanup()
 	ip netns del ${NS_DST}
 }
 trap cleanup EXIT
-set -e  # exit on error
+set -e  
 ip netns add "${NS_SRC}"
 ip netns add "${NS_DST}"
 ip link add veth_src type veth peer name veth_dst

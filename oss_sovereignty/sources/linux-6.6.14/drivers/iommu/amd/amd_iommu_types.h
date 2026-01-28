@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007-2010 Advanced Micro Devices, Inc.
- * Author: Joerg Roedel <jroedel@suse.de>
- *         Leo Duran <leo.duran@amd.com>
- */
+
+
 
 #ifndef _ASM_X86_AMD_IOMMU_TYPES_H
 #define _ASM_X86_AMD_IOMMU_TYPES_H
@@ -17,24 +13,20 @@
 #include <linux/irqreturn.h>
 #include <linux/io-pgtable.h>
 
-/*
- * Maximum number of IOMMUs supported
- */
+
 #define MAX_IOMMUS	32
 
-/*
- * some size calculation constants
- */
+
 #define DEV_TABLE_ENTRY_SIZE		32
 #define ALIAS_TABLE_ENTRY_SIZE		2
 #define RLOOKUP_TABLE_ENTRY_SIZE	(sizeof(void *))
 
-/* Capability offsets used by the driver */
+
 #define MMIO_CAP_HDR_OFFSET	0x00
 #define MMIO_RANGE_OFFSET	0x0c
 #define MMIO_MISC_OFFSET	0x10
 
-/* Masks, shifts and macros to parse the device range capability */
+
 #define MMIO_RANGE_LD_MASK	0xff000000
 #define MMIO_RANGE_FD_MASK	0x00ff0000
 #define MMIO_RANGE_BUS_MASK	0x0000ff00
@@ -46,11 +38,11 @@
 #define MMIO_GET_BUS(x) (((x) & MMIO_RANGE_BUS_MASK) >> MMIO_RANGE_BUS_SHIFT)
 #define MMIO_MSI_NUM(x)	((x) & 0x1f)
 
-/* Flag masks for the AMD IOMMU exclusion range */
+
 #define MMIO_EXCL_ENABLE_MASK 0x01ULL
 #define MMIO_EXCL_ALLOW_MASK  0x02ULL
 
-/* Used offsets into the MMIO space */
+
 #define MMIO_DEV_TABLE_OFFSET   0x0000
 #define MMIO_CMD_BUF_OFFSET     0x0008
 #define MMIO_EVT_BUF_OFFSET     0x0010
@@ -83,7 +75,7 @@
 
 
 
-/* Extended Feature Bits */
+
 #define FEATURE_PREFETCH	BIT_ULL(0)
 #define FEATURE_PPR		BIT_ULL(1)
 #define FEATURE_X2APIC		BIT_ULL(2)
@@ -106,20 +98,16 @@
 #define FEATURE_GLXVAL_SHIFT	14
 #define FEATURE_GLXVAL_MASK	(0x03ULL << FEATURE_GLXVAL_SHIFT)
 
-/* Extended Feature 2 Bits */
+
 #define FEATURE_SNPAVICSUP_SHIFT	5
 #define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
 #define FEATURE_SNPAVICSUP_GAM(x) \
 	((x & FEATURE_SNPAVICSUP_MASK) >> FEATURE_SNPAVICSUP_SHIFT == 0x1)
 
-/* Note:
- * The current driver only support 16-bit PASID.
- * Currently, hardware only implement upto 16-bit PASID
- * even though the spec says it could have upto 20 bits.
- */
+
 #define PASID_MASK		0x0000ffff
 
-/* MMIO status bits */
+
 #define MMIO_STATUS_EVT_OVERFLOW_MASK		BIT(0)
 #define MMIO_STATUS_EVT_INT_MASK		BIT(1)
 #define MMIO_STATUS_COM_WAIT_INT_MASK		BIT(2)
@@ -131,7 +119,7 @@
 #define MMIO_STATUS_GALOG_OVERFLOW_MASK		BIT(9)
 #define MMIO_STATUS_GALOG_INT_MASK		BIT(10)
 
-/* event logging constants */
+
 #define EVENT_ENTRY_SIZE	0x10
 #define EVENT_TYPE_SHIFT	28
 #define EVENT_TYPE_MASK		0xf
@@ -155,7 +143,7 @@
 #define EVENT_FLAG_RW		0x020
 #define EVENT_FLAG_I		0x008
 
-/* feature control bits */
+
 #define CONTROL_IOMMU_EN	0
 #define CONTROL_HT_TUN_EN	1
 #define CONTROL_EVT_LOG_EN	2
@@ -189,7 +177,7 @@
 #define CTRL_INV_TO_10S		5
 #define CTRL_INV_TO_100S	6
 
-/* command specific defines */
+
 #define CMD_COMPL_WAIT          0x01
 #define CMD_INV_DEV_ENTRY       0x02
 #define CMD_INV_IOMMU_PAGES	0x03
@@ -209,7 +197,7 @@
 
 #define CMD_INV_IOMMU_ALL_PAGES_ADDRESS	0x7fffffffffffffffULL
 
-/* macros and definitions for device table entries */
+
 #define DEV_ENTRY_VALID         0x00
 #define DEV_ENTRY_TRANSLATION   0x01
 #define DEV_ENTRY_PPR           0x34
@@ -230,18 +218,18 @@
 
 #define MAX_DEV_TABLE_ENTRIES	0xffff
 
-/* constants to configure the command buffer */
+
 #define CMD_BUFFER_SIZE    8192
 #define CMD_BUFFER_UNINITIALIZED 1
 #define CMD_BUFFER_ENTRIES 512
 #define MMIO_CMD_SIZE_SHIFT 56
 #define MMIO_CMD_SIZE_512 (0x9ULL << MMIO_CMD_SIZE_SHIFT)
 
-/* constants for event buffer handling */
-#define EVT_BUFFER_SIZE		8192 /* 512 entries */
+
+#define EVT_BUFFER_SIZE		8192 
 #define EVT_LEN_MASK		(0x9ULL << 56)
 
-/* Constants for PPR Log handling */
+
 #define PPR_LOG_ENTRIES		512
 #define PPR_LOG_SIZE_SHIFT	56
 #define PPR_LOG_SIZE_512	(0x9ULL << PPR_LOG_SIZE_SHIFT)
@@ -258,7 +246,7 @@
 
 #define PPR_REQ_FAULT		0x01
 
-/* Constants for GA Log handling */
+
 #define GA_LOG_ENTRIES		512
 #define GA_LOG_SIZE_SHIFT	56
 #define GA_LOG_SIZE_512		(0x8ULL << GA_LOG_SIZE_SHIFT)
@@ -274,28 +262,18 @@
 #define IOMMU_IN_ADDR_BIT_SIZE  52
 #define IOMMU_OUT_ADDR_BIT_SIZE 52
 
-/*
- * This bitmap is used to advertise the page sizes our hardware support
- * to the IOMMU core, which will then use this information to split
- * physically contiguous memory regions it is mapping into page sizes
- * that we support.
- *
- * 512GB Pages are not supported due to a hardware bug
- */
+
 #define AMD_IOMMU_PGSIZES	((~0xFFFUL) & ~(2ULL << 38))
-/* 4K, 2MB, 1G page sizes are supported */
+
 #define AMD_IOMMU_PGSIZES_V2	(PAGE_SIZE | (1ULL << 21) | (1ULL << 30))
 
-/* Bit value definition for dte irq remapping fields*/
+
 #define DTE_IRQ_PHYS_ADDR_MASK		GENMASK_ULL(51, 6)
 #define DTE_IRQ_REMAP_INTCTL_MASK	(0x3ULL << 60)
 #define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
 #define DTE_IRQ_REMAP_ENABLE    1ULL
 
-/*
- * AMD IOMMU hardware only support 512 IRTEs despite
- * the architectural limitation of 2048 entries.
- */
+
 #define DTE_INTTAB_ALIGNMENT    128
 #define DTE_INTTABLEN_VALUE     9ULL
 #define DTE_INTTABLEN           (DTE_INTTABLEN_VALUE << 1)
@@ -330,58 +308,37 @@
 				(~((1ULL << (12 + ((lvl) * 9))) - 1)))
 #define PM_ALIGNED(lvl, addr)	((PM_MAP_MASK(lvl) & (addr)) == (addr))
 
-/*
- * Returns the page table level to use for a given page size
- * Pagesize is expected to be a power-of-two
- */
+
 #define PAGE_SIZE_LEVEL(pagesize) \
 		((__ffs(pagesize) - 12) / 9)
-/*
- * Returns the number of ptes to use for a given page size
- * Pagesize is expected to be a power-of-two
- */
+
 #define PAGE_SIZE_PTE_COUNT(pagesize) \
 		(1ULL << ((__ffs(pagesize) - 12) % 9))
 
-/*
- * Aligns a given io-virtual address to a given page size
- * Pagesize is expected to be a power-of-two
- */
+
 #define PAGE_SIZE_ALIGN(address, pagesize) \
 		((address) & ~((pagesize) - 1))
-/*
- * Creates an IOMMU PTE for an address and a given pagesize
- * The PTE has no permission bits set
- * Pagesize is expected to be a power-of-two larger than 4096
- */
+
 #define PAGE_SIZE_PTE(address, pagesize)		\
 		(((address) | ((pagesize) - 1)) &	\
 		 (~(pagesize >> 1)) & PM_ADDR_MASK)
 
-/*
- * Takes a PTE value with mode=0x07 and returns the page size it maps
- */
+
 #define PTE_PAGE_SIZE(pte) \
 	(1ULL << (1 + ffz(((pte) | 0xfffULL))))
 
-/*
- * Takes a page-table level and returns the default page-size for this level
- */
+
 #define PTE_LEVEL_PAGE_SIZE(level)			\
 	(1ULL << (12 + (9 * (level))))
 
-/*
- * Bit value definition for I/O PTE fields
- */
+
 #define IOMMU_PTE_PR	BIT_ULL(0)
 #define IOMMU_PTE_U	BIT_ULL(59)
 #define IOMMU_PTE_FC	BIT_ULL(60)
 #define IOMMU_PTE_IR	BIT_ULL(61)
 #define IOMMU_PTE_IW	BIT_ULL(62)
 
-/*
- * Bit value definition for DTE fields
- */
+
 #define DTE_FLAG_V	BIT_ULL(0)
 #define DTE_FLAG_TV	BIT_ULL(1)
 #define DTE_FLAG_GIOV	BIT_ULL(54)
@@ -422,34 +379,32 @@
 
 #define IOMMU_UNITY_MAP_FLAG_EXCL_RANGE	(1 << 2)
 
-/* IOMMU capabilities */
+
 #define IOMMU_CAP_IOTLB   24
 #define IOMMU_CAP_NPCACHE 26
 #define IOMMU_CAP_EFR     27
 
-/* IOMMU IVINFO */
+
 #define IOMMU_IVINFO_OFFSET     36
 #define IOMMU_IVINFO_EFRSUP     BIT(0)
 #define IOMMU_IVINFO_DMA_REMAP  BIT(1)
 
-/* IOMMU Feature Reporting Field (for IVHD type 10h */
+
 #define IOMMU_FEAT_GASUP_SHIFT	6
 
-/* IOMMU Extended Feature Register (EFR) */
+
 #define IOMMU_EFR_XTSUP_SHIFT	2
 #define IOMMU_EFR_GASUP_SHIFT	7
 #define IOMMU_EFR_MSICAPMMIOSUP_SHIFT	46
 
 #define MAX_DOMAIN_ID 65536
 
-/* Protection domain flags */
-#define PD_DMA_OPS_MASK		BIT(0) /* domain used for dma_ops */
-#define PD_DEFAULT_MASK		BIT(1) /* domain is a default dma_ops
-					      domain for an IOMMU */
-#define PD_PASSTHROUGH_MASK	BIT(2) /* domain has no page
-					      translation */
-#define PD_IOMMUV2_MASK		BIT(3) /* domain has gcr3 table */
-#define PD_GIOV_MASK		BIT(4) /* domain enable GIOV support */
+
+#define PD_DMA_OPS_MASK		BIT(0) 
+#define PD_DEFAULT_MASK		BIT(1) 
+#define PD_PASSTHROUGH_MASK	BIT(2) 
+#define PD_IOMMUV2_MASK		BIT(3) 
+#define PD_GIOV_MASK		BIT(4) 
 
 extern bool amd_iommu_dump;
 #define DUMP_printk(format, arg...)				\
@@ -458,9 +413,9 @@ extern bool amd_iommu_dump;
 			pr_info("AMD-Vi: " format, ## arg);	\
 	} while(0);
 
-/* global flag if IOMMUs cache non-present entries */
+
 extern bool amd_iommu_np_cache;
-/* Only true if all IOMMUs support device IOTLBs */
+
 extern bool amd_iommu_iotlb_sup;
 
 struct irq_remap_table {
@@ -469,15 +424,15 @@ struct irq_remap_table {
 	u32 *table;
 };
 
-/* Interrupt remapping feature used? */
+
 extern bool amd_iommu_irq_remap;
 
 extern const struct iommu_ops amd_iommu_ops;
 
-/* IVRS indicates that pre-boot remapping was enabled */
+
 extern bool amdr_ivrs_remap_support;
 
-/* kmem_cache to get tables with 128 byte alignement */
+
 extern struct kmem_cache *amd_iommu_irq_cache;
 
 #define PCI_SBDF_TO_SEGID(sbdf)		(((sbdf) >> 16) & 0xffff)
@@ -485,36 +440,31 @@ extern struct kmem_cache *amd_iommu_irq_cache;
 #define PCI_SEG_DEVID_TO_SBDF(seg, devid)	((((u32)(seg) & 0xffff) << 16) | \
 						 ((devid) & 0xffff))
 
-/* Make iterating over all pci segment easier */
+
 #define for_each_pci_segment(pci_seg) \
 	list_for_each_entry((pci_seg), &amd_iommu_pci_seg_list, list)
 #define for_each_pci_segment_safe(pci_seg, next) \
 	list_for_each_entry_safe((pci_seg), (next), &amd_iommu_pci_seg_list, list)
-/*
- * Make iterating over all IOMMUs easier
- */
+
 #define for_each_iommu(iommu) \
 	list_for_each_entry((iommu), &amd_iommu_list, list)
 #define for_each_iommu_safe(iommu, next) \
 	list_for_each_entry_safe((iommu), (next), &amd_iommu_list, list)
 
-#define APERTURE_RANGE_SHIFT	27	/* 128 MB */
+#define APERTURE_RANGE_SHIFT	27	
 #define APERTURE_RANGE_SIZE	(1ULL << APERTURE_RANGE_SHIFT)
 #define APERTURE_RANGE_PAGES	(APERTURE_RANGE_SIZE >> PAGE_SHIFT)
-#define APERTURE_MAX_RANGES	32	/* allows 4GB of DMA address space */
+#define APERTURE_MAX_RANGES	32	
 #define APERTURE_RANGE_INDEX(a)	((a) >> APERTURE_RANGE_SHIFT)
 #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
 
-/*
- * This struct is used to pass information about
- * incoming PPR faults around.
- */
+
 struct amd_iommu_fault {
-	u64 address;    /* IO virtual address of the fault*/
-	u32 pasid;      /* Address space identifier */
-	u32 sbdf;	/* Originating PCI device id */
-	u16 tag;        /* PPR tag */
-	u16 flags;      /* Fault flags */
+	u64 address;    
+	u32 pasid;      
+	u32 sbdf;	
+	u16 tag;        
+	u16 flags;      
 
 };
 
@@ -544,216 +494,172 @@ struct amd_io_pgtable {
 	struct io_pgtable	iop;
 	int			mode;
 	u64			*root;
-	atomic64_t		pt_root;	/* pgtable root and pgtable mode */
-	u64			*pgd;		/* v2 pgtable pgd pointer */
+	atomic64_t		pt_root;	
+	u64			*pgd;		
 };
 
-/*
- * This structure contains generic data for  IOMMU protection domains
- * independent of their use.
- */
+
 struct protection_domain {
-	struct list_head dev_list; /* List of all devices in this domain */
-	struct iommu_domain domain; /* generic domain handle used by
-				       iommu core code */
+	struct list_head dev_list; 
+	struct iommu_domain domain; 
 	struct amd_io_pgtable iop;
-	spinlock_t lock;	/* mostly used to lock the page table*/
-	u16 id;			/* the domain id written to the device table */
-	int glx;		/* Number of levels for GCR3 table */
-	int nid;		/* Node ID */
-	u64 *gcr3_tbl;		/* Guest CR3 table */
-	unsigned long flags;	/* flags to find out type of domain */
-	unsigned dev_cnt;	/* devices assigned to this domain */
-	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
+	spinlock_t lock;	
+	u16 id;			
+	int glx;		
+	int nid;		
+	u64 *gcr3_tbl;		
+	unsigned long flags;	
+	unsigned dev_cnt;	
+	unsigned dev_iommu[MAX_IOMMUS]; 
 };
 
-/*
- * This structure contains information about one PCI segment in the system.
- */
+
 struct amd_iommu_pci_seg {
-	/* List with all PCI segments in the system */
+	
 	struct list_head list;
 
-	/* List of all available dev_data structures */
+	
 	struct llist_head dev_data_list;
 
-	/* PCI segment number */
+	
 	u16 id;
 
-	/* Largest PCI device id we expect translation requests for */
+	
 	u16 last_bdf;
 
-	/* Size of the device table */
+	
 	u32 dev_table_size;
 
-	/* Size of the alias table */
+	
 	u32 alias_table_size;
 
-	/* Size of the rlookup table */
+	
 	u32 rlookup_table_size;
 
-	/*
-	 * device table virtual address
-	 *
-	 * Pointer to the per PCI segment device table.
-	 * It is indexed by the PCI device id or the HT unit id and contains
-	 * information about the domain the device belongs to as well as the
-	 * page table root pointer.
-	 */
+	
 	struct dev_table_entry *dev_table;
 
-	/*
-	 * The rlookup iommu table is used to find the IOMMU which is
-	 * responsible for a specific device. It is indexed by the PCI
-	 * device id.
-	 */
+	
 	struct amd_iommu **rlookup_table;
 
-	/*
-	 * This table is used to find the irq remapping table for a given
-	 * device id quickly.
-	 */
+	
 	struct irq_remap_table **irq_lookup_table;
 
-	/*
-	 * Pointer to a device table which the content of old device table
-	 * will be copied to. It's only be used in kdump kernel.
-	 */
+	
 	struct dev_table_entry *old_dev_tbl_cpy;
 
-	/*
-	 * The alias table is a driver specific data structure which contains the
-	 * mappings of the PCI device ids to the actual requestor ids on the IOMMU.
-	 * More than one device can share the same requestor id.
-	 */
+	
 	u16 *alias_table;
 
-	/*
-	 * A list of required unity mappings we find in ACPI. It is not locked
-	 * because as runtime it is only read. It is created at ACPI table
-	 * parsing time.
-	 */
+	
 	struct list_head unity_map;
 };
 
-/*
- * Structure where we save information about one hardware AMD IOMMU in the
- * system.
- */
+
 struct amd_iommu {
 	struct list_head list;
 
-	/* Index within the IOMMU array */
+	
 	int index;
 
-	/* locks the accesses to the hardware */
+	
 	raw_spinlock_t lock;
 
-	/* Pointer to PCI device of this IOMMU */
+	
 	struct pci_dev *dev;
 
-	/* Cache pdev to root device for resume quirks */
+	
 	struct pci_dev *root_pdev;
 
-	/* physical address of MMIO space */
+	
 	u64 mmio_phys;
 
-	/* physical end address of MMIO space */
+	
 	u64 mmio_phys_end;
 
-	/* virtual address of MMIO space */
+	
 	u8 __iomem *mmio_base;
 
-	/* capabilities of that IOMMU read from ACPI */
+	
 	u32 cap;
 
-	/* flags read from acpi table */
+	
 	u8 acpi_flags;
 
-	/* Extended features */
+	
 	u64 features;
 
-	/* Extended features 2 */
+	
 	u64 features2;
 
-	/* IOMMUv2 */
+	
 	bool is_iommu_v2;
 
-	/* PCI device id of the IOMMU device */
+	
 	u16 devid;
 
-	/*
-	 * Capability pointer. There could be more than one IOMMU per PCI
-	 * device function if there are more than one AMD IOMMU capability
-	 * pointers.
-	 */
+	
 	u16 cap_ptr;
 
-	/* pci domain of this IOMMU */
+	
 	struct amd_iommu_pci_seg *pci_seg;
 
-	/* start of exclusion range of that IOMMU */
+	
 	u64 exclusion_start;
-	/* length of exclusion range of that IOMMU */
+	
 	u64 exclusion_length;
 
-	/* command buffer virtual address */
+	
 	u8 *cmd_buf;
 	u32 cmd_buf_head;
 	u32 cmd_buf_tail;
 
-	/* event buffer virtual address */
+	
 	u8 *evt_buf;
 
-	/* Name for event log interrupt */
+	
 	unsigned char evt_irq_name[16];
 
-	/* Base of the PPR log, if present */
+	
 	u8 *ppr_log;
 
-	/* Name for PPR log interrupt */
+	
 	unsigned char ppr_irq_name[16];
 
-	/* Base of the GA log, if present */
+	
 	u8 *ga_log;
 
-	/* Name for GA log interrupt */
+	
 	unsigned char ga_irq_name[16];
 
-	/* Tail of the GA log, if present */
+	
 	u8 *ga_log_tail;
 
-	/* true if interrupts for this IOMMU are already enabled */
+	
 	bool int_enabled;
 
-	/* if one, we need to send a completion wait command */
+	
 	bool need_sync;
 
-	/* true if disable irte caching */
+	
 	bool irtcachedis_enabled;
 
-	/* Handle for IOMMU core code */
+	
 	struct iommu_device iommu;
 
-	/*
-	 * We can't rely on the BIOS to restore all values on reinit, so we
-	 * need to stash them
-	 */
+	
 
-	/* The iommu BAR */
+	
 	u32 stored_addr_lo;
 	u32 stored_addr_hi;
 
-	/*
-	 * Each iommu has 6 l1s, each of which is documented as having 0x12
-	 * registers
-	 */
+	
 	u32 stored_l1[6][0x12];
 
-	/* The l2 indirect registers */
+	
 	u32 stored_l2[0x83];
 
-	/* The maximum PC banks and counters/bank (PCSup=1) */
+	
 	u8 max_banks;
 	u8 max_counters;
 #ifdef CONFIG_IRQ_REMAP
@@ -767,7 +673,7 @@ struct amd_iommu {
 	atomic64_t cmd_sem_val;
 
 #ifdef CONFIG_AMD_IOMMU_DEBUGFS
-	/* DebugFS Info */
+	
 	struct dentry *debugfs;
 #endif
 };
@@ -799,105 +705,84 @@ struct devid_map {
 	bool cmd_line;
 };
 
-/*
- * This struct contains device specific data for the IOMMU
- */
+
 struct iommu_dev_data {
-	/*Protect against attach/detach races */
+	
 	spinlock_t lock;
 
-	struct list_head list;		  /* For domain->dev_list */
-	struct llist_node dev_data_list;  /* For global dev_data_list */
-	struct protection_domain *domain; /* Domain the device is bound to */
+	struct list_head list;		  
+	struct llist_node dev_data_list;  
+	struct protection_domain *domain; 
 	struct device *dev;
-	u16 devid;			  /* PCI Device ID */
-	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
+	u16 devid;			  
+	bool iommu_v2;			  
 	struct {
 		bool enabled;
 		int qdep;
-	} ats;				  /* ATS state */
-	bool pri_tlp;			  /* PASID TLB required for
-					     PPR completions */
-	bool use_vapic;			  /* Enable device to use vapic mode */
+	} ats;				  
+	bool pri_tlp;			  
+	bool use_vapic;			  
 	bool defer_attach;
 
-	struct ratelimit_state rs;        /* Ratelimit IOPF messages */
+	struct ratelimit_state rs;        
 };
 
-/* Map HPET and IOAPIC ids to the devid used by the IOMMU */
+
 extern struct list_head ioapic_map;
 extern struct list_head hpet_map;
 extern struct list_head acpihid_map;
 
-/*
- * List with all PCI segments in the system. This list is not locked because
- * it is only written at driver initialization time
- */
+
 extern struct list_head amd_iommu_pci_seg_list;
 
-/*
- * List with all IOMMUs in the system. This list is not locked because it is
- * only written and read at driver initialization or suspend time
- */
+
 extern struct list_head amd_iommu_list;
 
-/*
- * Array with pointers to each IOMMU struct
- * The indices are referenced in the protection domains
- */
+
 extern struct amd_iommu *amd_iommus[MAX_IOMMUS];
 
-/*
- * Structure defining one entry in the device table
- */
+
 struct dev_table_entry {
 	u64 data[4];
 };
 
-/*
- * One entry for unity mappings parsed out of the ACPI table.
- */
+
 struct unity_map_entry {
 	struct list_head list;
 
-	/* starting device id this entry is used for (including) */
+	
 	u16 devid_start;
-	/* end device id this entry is used for (including) */
+	
 	u16 devid_end;
 
-	/* start address to unity map (including) */
+	
 	u64 address_start;
-	/* end address to unity map (including) */
+	
 	u64 address_end;
 
-	/* required protection */
+	
 	int prot;
 };
 
-/*
- * Data structures for device handling
- */
 
-/* size of the dma_ops aperture as power of 2 */
+
+
 extern unsigned amd_iommu_aperture_order;
 
-/* allocation bitmap for domain ids */
+
 extern unsigned long *amd_iommu_pd_alloc_bitmap;
 
-/* Smallest max PASID supported by any IOMMU in the system */
+
 extern u32 amd_iommu_max_pasid;
 
 extern bool amd_iommu_v2_present;
 
 extern bool amd_iommu_force_isolation;
 
-/* Max levels of glxval supported */
+
 extern int amd_iommu_max_glx_val;
 
-/*
- * This function flushes all internal caches of
- * the IOMMU used by this driver.
- */
+
 void iommu_flush_all_caches(struct amd_iommu *iommu);
 
 static inline int get_ioapic_devid(int id)
@@ -927,10 +812,7 @@ static inline int get_hpet_devid(int id)
 enum amd_iommu_intr_mode_type {
 	AMD_IOMMU_GUEST_IR_LEGACY,
 
-	/* This mode is not visible to users. It is used when
-	 * we cannot fully enable vAPIC and fallback to only support
-	 * legacy interrupt remapping via 128-bit IRTE.
-	 */
+	
 	AMD_IOMMU_GUEST_IR_LEGACY_GA,
 	AMD_IOMMU_GUEST_IR_VAPIC,
 };
@@ -961,29 +843,29 @@ union irte {
 union irte_ga_lo {
 	u64 val;
 
-	/* For int remapping */
+	
 	struct {
 		u64 valid	: 1,
 		    no_fault	: 1,
-		    /* ------ */
+		    
 		    int_type	: 3,
 		    rq_eoi	: 1,
 		    dm		: 1,
-		    /* ------ */
+		    
 		    guest_mode	: 1,
 		    destination	: 24,
 		    ga_tag	: 32;
 	} fields_remap;
 
-	/* For guest vAPIC */
+	
 	struct {
 		u64 valid	: 1,
 		    no_fault	: 1,
-		    /* ------ */
+		    
 		    ga_log_intr	: 1,
 		    rsvd1	: 3,
 		    is_run	: 1,
-		    /* ------ */
+		    
 		    guest_mode	: 1,
 		    destination	: 24,
 		    ga_tag	: 32;
@@ -1012,8 +894,8 @@ struct irte_ga {
 };
 
 struct irq_2_irte {
-	u16 devid; /* Device ID for IRTE table */
-	u16 index; /* Index into IRTE table*/
+	u16 devid; 
+	u16 index; 
 };
 
 struct amd_ir_data {
@@ -1021,12 +903,9 @@ struct amd_ir_data {
 	struct amd_iommu *iommu;
 	struct irq_2_irte irq_2_irte;
 	struct msi_msg msi_entry;
-	void *entry;    /* Pointer to union irte or struct irte_ga */
+	void *entry;    
 
-	/**
-	 * Store information for activate/de-activate
-	 * Guest virtual APIC mode during runtime.
-	 */
+	
 	struct irq_cfg *cfg;
 	int ga_vector;
 	u64 ga_root_ptr;
@@ -1049,4 +928,4 @@ extern struct amd_irte_ops irte_32_ops;
 extern struct amd_irte_ops irte_128_ops;
 #endif
 
-#endif /* _ASM_X86_AMD_IOMMU_TYPES_H */
+#endif 

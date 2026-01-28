@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/linkage.h>
 
 #define AX	 0
@@ -37,7 +37,7 @@ SYM_FUNC_START(perf_regs_load)
 	movq %rdi, DI(%rdi)
 	movq %rbp, BP(%rdi)
 
-	leaq 8(%rsp), %rax /* exclude this call.  */
+	leaq 8(%rsp), %rax 
 	movq %rax, SP(%rdi)
 
 	movq 0(%rsp), %rax
@@ -74,7 +74,7 @@ SYM_FUNC_START(perf_regs_load)
 	movl %eax, DI(%edi)
 	movl %ebp, BP(%edi)
 
-	leal 4(%esp), %eax /* exclude this call.  */
+	leal 4(%esp), %eax 
 	movl %eax, SP(%edi)
 
 	movl 0(%esp), %eax
@@ -91,9 +91,5 @@ SYM_FUNC_START(perf_regs_load)
 SYM_FUNC_END(perf_regs_load)
 #endif
 
-/*
- * We need to provide note.GNU-stack section, saying that we want
- * NOT executable stack. Otherwise the final linking will assume that
- * the ELF stack should not be restricted at all and set it RWX.
- */
+
 .section .note.GNU-stack,"",@progbits

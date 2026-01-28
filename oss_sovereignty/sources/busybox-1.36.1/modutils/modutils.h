@@ -1,10 +1,4 @@
-/*
- * Common modutils related functions for busybox
- *
- * Copyright (C) 2008 by Timo Teras <timo.teras@iki.fi>
- *
- * Licensed under GPLv2 or later, see file LICENSE in this source tree.
- */
+
 
 #ifndef MODUTILS_H
 #define MODUTILS_H 1
@@ -13,8 +7,7 @@
 
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
 
-/* linux/include/linux/module.h has 64, but this is also used
- * internally for the maximum alias name length, which can be quite long */
+
 #define MODULE_NAME_LEN 256
 #define MODULE_HASH_SIZE 256
 
@@ -25,8 +18,8 @@ typedef struct module_entry {
 	IF_MODPROBE(
 		llist_t *realnames;
 		unsigned flags;
-		const char *probed_name; /* verbatim as seen on cmdline */
-		char *options; /* options from config files */
+		const char *probed_name; 
+		char *options; 
 	)
 	IF_DEPMOD(
 		llist_t *aliases;
@@ -56,17 +49,17 @@ char *parse_cmdline_module_options(char **argv, int quote_spaces) FAST_FUNC;
 # define parse_cmdline_module_options(argv, quote_spaces) ""
 #endif
 
-/* insmod for 2.4 and modprobe's options (insmod 2.6 has no options at all): */
+
 #define INSMOD_OPTS \
 	"vqs" \
 	IF_FEATURE_2_4_MODULES("Lfkx" IF_FEATURE_INSMOD_LOAD_MAP("m"))
-#define INSMOD_ARGS /* (was meant to support -o NAME) , NULL */
+#define INSMOD_ARGS 
 
 enum {
 	INSMOD_OPT_VERBOSE      = (1 << 0),
 	INSMOD_OPT_SILENT       = (1 << 1),
 	INSMOD_OPT_SYSLOG       = (1 << 2),
-	//INSMOD_OPT_OUTPUTNAME = (1 << x) - not supported yet
+	
 	INSMOD_OPT_LOCK         = (1 << 3) * ENABLE_FEATURE_2_4_MODULES,
 	INSMOD_OPT_FORCE        = (1 << 4) * ENABLE_FEATURE_2_4_MODULES,
 	INSMOD_OPT_KERNELD      = (1 << 5) * ENABLE_FEATURE_2_4_MODULES,
@@ -85,18 +78,11 @@ void* FAST_FUNC try_to_mmap_module(const char *filename, size_t *image_size_p);
 # define try_to_mmap_module(filename, image_size) NULL
 #endif
 
-/* Return:
- * 0 on success,
- * -errno on open/read error,
- * errno on init_module() error
- */
+
 int FAST_FUNC bb_init_module(const char *module, const char *options);
-/* Return:
- * 0 on success,
- * errno on init_module() error
- */
+
 int FAST_FUNC bb_delete_module(const char *module, unsigned int flags);
-/* Translates error return to a string */
+
 const char *moderror(int err) FAST_FUNC;
 
 #if ENABLE_FEATURE_2_4_MODULES

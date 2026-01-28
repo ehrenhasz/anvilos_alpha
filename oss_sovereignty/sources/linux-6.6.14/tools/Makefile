@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-# Some of the tools (perf) use same make variables
-# as in kernel build.
+
+
+
 export srctree=
 export objtree=
 
@@ -84,8 +84,8 @@ nolibc: FORCE
 nolibc_%: FORCE
 	$(call descend,include/nolibc,$(patsubst nolibc_%,%,$@))
 
-# The perf build does not follow the descend function setup,
-# invoking it via it's own make rule.
+
+
 PERF_O   = $(if $(O),$(O)/tools/perf,)
 
 perf: FORCE

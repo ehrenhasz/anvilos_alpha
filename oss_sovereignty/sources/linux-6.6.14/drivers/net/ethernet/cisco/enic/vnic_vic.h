@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2010 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef _VNIC_VIC_H_
 #define _VNIC_VIC_H_
 
-/* Note: All integer fields in NETWORK byte order */
 
-/* Note: String field lengths include null char */
+
+
 
 #define VIC_PROVINFO_CISCO_OUI		{ 0x00, 0x00, 0x0c }
 #define VIC_PROVINFO_GENERIC_TYPE		0x4
@@ -36,10 +36,10 @@ enum vic_generic_prov_os_type {
 };
 
 struct vic_provinfo {
-	u8 oui[3];		/* OUI of data provider */
-	u8 type;		/* provider-specific type */
-	u32 length;		/* length of data below */
-	u32 num_tlvs;		/* number of tlvs */
+	u8 oui[3];		
+	u8 type;		
+	u32 length;		
+	u32 num_tlvs;		
 	struct vic_provinfo_tlv {
 		u16 type;
 		u16 length;
@@ -65,4 +65,4 @@ int vic_provinfo_add_tlv(struct vic_provinfo *vp, u16 type, u16 length,
 	const void *value);
 size_t vic_provinfo_size(struct vic_provinfo *vp);
 
-#endif	/* _VNIC_VIC_H_ */
+#endif	

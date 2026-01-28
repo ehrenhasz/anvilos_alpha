@@ -86,13 +86,13 @@ TRACE_EVENT(hyperv_send_ipi_one,
 		      __entry->cpu, __entry->vector)
 	);
 
-#endif /* CONFIG_HYPERV */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH asm/trace/
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hyperv
-#endif /* _TRACE_HYPERV_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

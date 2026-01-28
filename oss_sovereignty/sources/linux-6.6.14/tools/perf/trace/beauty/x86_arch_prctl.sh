@@ -1,13 +1,13 @@
-[ $# -eq 1 ] && x86_header_dir=$1 || x86_header_dir=tools/arch/x86/include/uapi/asm/
+[ $
 prctl_arch_header=${x86_header_dir}/prctl.h
 print_range () {
 	idx=$1
 	prefix=$2
 	first_entry=$3
-	printf "#define x86_arch_prctl_codes_%d_offset %s\n" $idx $first_entry
+	printf "
 	printf "static const char *x86_arch_prctl_codes_%d[] = {\n" $idx
-	regex=`printf '^[[:space:]]*#[[:space:]]*define[[:space:]]+ARCH_([[:alnum:]_]+)[[:space:]]+(%s[[:xdigit:]]+).*' ${prefix}`
-	fmt="\t[%#x - ${first_entry}]= \"%s\",\n"
+	regex=`printf '^[[:space:]]*
+	fmt="\t[%
 	grep -E -q $regex ${prctl_arch_header} && \
 	(grep -E $regex ${prctl_arch_header} | \
 		sed -r "s/$regex/\2 \1/g"	| \

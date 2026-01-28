@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 obj-$(CONFIG_TYPEC_MUX_FSA4480)		+= fsa4480.o
 obj-$(CONFIG_TYPEC_MUX_GPIO_SBU)	+= gpio-sbu-mux.o

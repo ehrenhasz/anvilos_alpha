@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * LP8727 Micro/Mini USB IC with integrated charger
- *
- *			Copyright (C) 2011 Texas Instruments
- *			Copyright (C) 2011 National Semiconductor
- */
+
+
 
 #ifndef _LP8727_H
 #define _LP8727_H
@@ -32,26 +27,13 @@ enum lp8727_ichg {
 	LP8727_ICHG_1000mA,
 };
 
-/**
- * struct lp8727_chg_param
- * @eoc_level : end of charge level setting
- * @ichg      : charging current
- */
+
 struct lp8727_chg_param {
 	enum lp8727_eoc_level eoc_level;
 	enum lp8727_ichg ichg;
 };
 
-/**
- * struct lp8727_platform_data
- * @get_batt_present  : check battery status - exists or not
- * @get_batt_level    : get battery voltage (mV)
- * @get_batt_capacity : get battery capacity (%)
- * @get_batt_temp     : get battery temperature
- * @ac                : charging parameters for AC type charger
- * @usb               : charging parameters for USB type charger
- * @debounce_msec     : interrupt debounce time
- */
+
 struct lp8727_platform_data {
 	u8 (*get_batt_present)(void);
 	u16 (*get_batt_level)(void);

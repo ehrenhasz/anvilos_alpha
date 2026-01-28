@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2007-2010 Freescale Semiconductor, Inc. All rights reserved.
- *
- * Author:
- *   Zhang Wei <wei.zhang@freescale.com>, Jul 2007
- *   Ebony Zhu <ebony.zhu@freescale.com>, May 2007
- */
+
+
 #ifndef __DMA_FSLDMA_H
 #define __DMA_FSLDMA_H
 
@@ -13,9 +7,7 @@
 #include <linux/dmapool.h>
 #include <linux/dmaengine.h>
 
-/* Define data structures needed by Freescale
- * MPC8540 and MPC8349 DMA controller.
- */
+
 #define FSL_DMA_MR_CS		0x00000001
 #define FSL_DMA_MR_CC		0x00000002
 #define FSL_DMA_MR_CA		0x00000008
@@ -35,14 +27,10 @@
 #define FSL_DMA_MR_DAHTS_MASK	0x00030000
 #define FSL_DMA_MR_BWC_MASK	0x0f000000
 
-/*
- * Bandwidth/pause control determines how many bytes a given
- * channel is allowed to transfer before the DMA engine pauses
- * the current channel and switches to the next channel
- */
+
 #define FSL_DMA_MR_BWC         0x0A000000
 
-/* Special MR definition for MPC8349 */
+
 #define FSL_DMA_MR_EOTIE	0x00000080
 #define FSL_DMA_MR_PRC_RM	0x00000800
 
@@ -105,28 +93,28 @@ struct fsl_desc_sw {
 } __attribute__((aligned(32)));
 
 struct fsldma_chan_regs {
-	u32 mr;		/* 0x00 - Mode Register */
-	u32 sr;		/* 0x04 - Status Register */
-	u64 cdar;	/* 0x08 - Current descriptor address register */
-	u64 sar;	/* 0x10 - Source Address Register */
-	u64 dar;	/* 0x18 - Destination Address Register */
-	u32 bcr;	/* 0x20 - Byte Count Register */
-	u64 ndar;	/* 0x24 - Next Descriptor Address Register */
+	u32 mr;		
+	u32 sr;		
+	u64 cdar;	
+	u64 sar;	
+	u64 dar;	
+	u32 bcr;	
+	u64 ndar;	
 };
 
 struct fsldma_chan;
 #define FSL_DMA_MAX_CHANS_PER_DEVICE 8
 
 struct fsldma_device {
-	void __iomem *regs;	/* DGSR register base */
+	void __iomem *regs;	
 	struct device *dev;
 	struct dma_device common;
 	struct fsldma_chan *chan[FSL_DMA_MAX_CHANS_PER_DEVICE];
-	u32 feature;		/* The same as DMA channels */
-	int irq;		/* Channel IRQ */
+	u32 feature;		
+	int irq;		
 };
 
-/* Define macros for fsldma_chan->feature property */
+
 #define FSL_DMA_LITTLE_ENDIAN	0x00000000
 #define FSL_DMA_BIG_ENDIAN	0x00000001
 
@@ -149,32 +137,23 @@ enum fsldma_pm_state {
 #endif
 
 struct fsldma_chan {
-	char name[8];			/* Channel name */
+	char name[8];			
 	struct fsldma_chan_regs __iomem *regs;
-	spinlock_t desc_lock;		/* Descriptor operation lock */
-	/*
-	 * Descriptors which are queued to run, but have not yet been
-	 * submitted to the hardware for execution
-	 */
+	spinlock_t desc_lock;		
+	
 	struct list_head ld_pending;
-	/*
-	 * Descriptors which are currently being executed by the hardware
-	 */
+	
 	struct list_head ld_running;
-	/*
-	 * Descriptors which have finished execution by the hardware. These
-	 * descriptors have already had their cleanup actions run. They are
-	 * waiting for the ACK bit to be set by the async_tx API.
-	 */
-	struct list_head ld_completed;	/* Link descriptors queue */
-	struct dma_chan common;		/* DMA common channel */
-	struct dma_pool *desc_pool;	/* Descriptors pool */
-	struct device *dev;		/* Channel device */
-	int irq;			/* Channel IRQ */
-	int id;				/* Raw id of this channel */
+	
+	struct list_head ld_completed;	
+	struct dma_chan common;		
+	struct dma_pool *desc_pool;	
+	struct device *dev;		
+	int irq;			
+	int id;				
 	struct tasklet_struct tasklet;
 	u32 feature;
-	bool idle;			/* DMA controller is idle */
+	bool idle;			
 #ifdef CONFIG_PM
 	struct fsldma_chan_regs_save regs_save;
 	enum fsldma_pm_state pm_state;
@@ -262,4 +241,4 @@ static void fsl_iowrite64be(u64 val, u64 __iomem *addr)
 			(__force v##width)cpu_to_be##width(c) :		\
 			(__force v##width)cpu_to_le##width(c))
 
-#endif	/* __DMA_FSLDMA_H */
+#endif	

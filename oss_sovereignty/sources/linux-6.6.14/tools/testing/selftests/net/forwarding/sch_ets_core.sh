@@ -40,7 +40,7 @@ ets_change_qdisc_priomap()
 	local op=$(if [[ -n $QDISC_DEV ]]; then echo change; else echo add; fi)
 	tc qdisc $op dev $dev $PARENT handle 10: ets			       \
 		$(if ((nstrict)); then echo strict $nstrict; fi)	       \
-		$(if ((${#quanta[@]})); then echo quanta ${quanta[@]}; fi)     \
+		$(if ((${
 		priomap $priomap
 	QDISC_DEV=$dev
 }
@@ -53,7 +53,7 @@ ets_change_qdisc_classifier()
 	local op=$(if [[ -n $QDISC_DEV ]]; then echo change; else echo add; fi)
 	tc qdisc $op dev $dev $PARENT handle 10: ets			       \
 		$(if ((nstrict)); then echo strict $nstrict; fi)	       \
-		$(if ((${#quanta[@]})); then echo quanta ${quanta[@]}; fi)
+		$(if ((${
 	if [[ $op == add ]]; then
 		local prio=0
 		local band

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+
 #ifndef __NFIT_TEST_H__
 #define __NFIT_TEST_H__
 #include <linux/acpi.h>
@@ -32,7 +30,7 @@ enum err_inj_options {
 	ND_ARS_ERR_INJ_OPT_NOTIFY = 0,
 };
 
-/* nfit commands */
+
 enum nfit_cmd_num {
 	NFIT_CMD_TRANSLATE_SPA = 5,
 	NFIT_CMD_ARS_INJECT_SET = 7,
@@ -175,14 +173,14 @@ struct nd_intel_fw_start {
 	__u32 context;
 } __packed;
 
-/* this one has the output first because the variable input data size */
+
 struct nd_intel_fw_send_data {
 	__u32 context;
 	__u32 offset;
 	__u32 length;
 	__u8 data[];
-/* this field is not declared due ot variable data from input */
-/*	__u32 status; */
+
+
 } __packed;
 
 struct nd_intel_fw_finish_update {

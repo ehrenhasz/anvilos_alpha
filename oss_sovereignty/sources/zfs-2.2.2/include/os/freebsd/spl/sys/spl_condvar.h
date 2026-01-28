@@ -1,32 +1,4 @@
-/*
- * SPDX-License-Identifier: BSD-2-Clause
- *
- * Copyright (c) 2000 Jake Burkholder <jake@freebsd.org>.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+
 
 #ifndef	_SPL_SYS_CONDVAR_H_
 #define	_SPL_SYS_CONDVAR_H_
@@ -39,12 +11,7 @@ struct thread;
 
 TAILQ_HEAD(cv_waitq, thread);
 
-/*
- * Condition variable.  The waiters count is protected by the mutex that
- * protects the condition; that is, the mutex that is passed to cv_wait*()
- * and is held across calls to cv_signal() and cv_broadcast().  It is an
- * optimization to avoid looking up the sleep queue if there are no waiters.
- */
+
 struct cv {
 	const char	*cv_description;
 	int		cv_waiters;
@@ -77,5 +44,5 @@ void	cv_broadcastpri(struct cv *cvp, int pri);
 
 #define	cv_wmesg(cvp)		((cvp)->cv_description)
 
-#endif	/* !LOCORE */
-#endif	/* _SYS_CONDVAR_H_ */
+#endif	
+#endif	

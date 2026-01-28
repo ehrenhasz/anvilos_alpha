@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 CFLAGS_core.o				:= -I$(src)
 icc-core-objs				:= core.o bulk.o debugfs-client.o

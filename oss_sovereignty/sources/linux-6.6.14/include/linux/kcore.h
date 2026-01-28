@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * /proc/kcore definitions
- */
+
+
 #ifndef _LINUX_KCORE_H
 #define _LINUX_KCORE_H
 
@@ -28,9 +26,9 @@ struct vmcore {
 };
 
 struct vmcoredd_node {
-	struct list_head list;	/* List of dumps */
-	void *buf;		/* Buffer containing device's dump */
-	unsigned int size;	/* Size of the buffer */
+	struct list_head list;	
+	void *buf;		
+	unsigned int size;	
 };
 
 #ifdef CONFIG_PROC_KCORE
@@ -44,4 +42,4 @@ void kclist_add(struct kcore_list *new, void *addr, size_t size, int type)
 }
 #endif
 
-#endif /* _LINUX_KCORE_H */
+#endif 

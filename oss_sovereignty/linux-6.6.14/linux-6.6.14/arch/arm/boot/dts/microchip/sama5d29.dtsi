@@ -1,4 +1,0 @@
-#include "sama5d2.dtsi"
-&macb0 {
-	compatible = "atmel,sama5d29-gem";
-};

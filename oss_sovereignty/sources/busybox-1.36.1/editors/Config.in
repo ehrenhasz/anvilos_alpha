@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Editors"
 
@@ -111,12 +111,12 @@ config FEATURE_VI_COLON
 	provide an "ex" mode.
 
 config FEATURE_VI_COLON_EXPAND
-	bool "Expand \"%\" and \"#\" in colon commands"
+	bool "Expand \"%\" and \"
 	default y
 	depends on FEATURE_VI_COLON
 	help
 	Expand the special characters \"%\" (current filename)
-	and \"#\" (alternate filename) in colon commands.
+	and \"
 
 config FEATURE_VI_YANKMARK
 	bool "Enable yank/put commands and mark cmds"
@@ -134,7 +134,7 @@ config FEATURE_VI_SEARCH
 
 config FEATURE_VI_REGEX_SEARCH
 	bool "Enable regex in search and replace"
-	default n   # Uses GNU regex, which may be unavailable. FIXME
+	default n   
 	depends on FEATURE_VI_SEARCH
 	help
 	Use extended regex search.

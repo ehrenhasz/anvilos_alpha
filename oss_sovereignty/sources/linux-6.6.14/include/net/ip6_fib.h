@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Linux INET6 implementation 
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>	
- */
+
+
 
 #ifndef _IP6_FIB_H
 #define _IP6_FIB_H
@@ -47,7 +42,7 @@ struct fib6_config {
 	int		fc_ifindex;
 	u32		fc_flags;
 	u32		fc_protocol;
-	u16		fc_type;        /* only 8 bits are used */
+	u16		fc_type;        
 	u16		fc_delete_all_nh : 1,
 			fc_ignore_dev_down:1,
 			__unused : 14;
@@ -79,7 +74,7 @@ struct fib6_node {
 #endif
 	struct fib6_info __rcu	*leaf;
 
-	__u16			fn_bit;		/* bit key */
+	__u16			fn_bit;		
 	__u16			fn_flags;
 	int			fn_sernum;
 	struct fib6_info __rcu	*rr_ptr;
@@ -122,10 +117,7 @@ static inline void fib6_routes_require_src_dec(struct net *net)
 #define FIB6_SUBTREE(fn)	(rcu_dereference_protected((fn)->subtree, 1))
 #endif
 
-/*
- *	routing information
- *
- */
+
 
 struct rt6key {
 	struct in6_addr	addr;
@@ -166,11 +158,7 @@ struct fib6_info {
 	struct fib6_info __rcu		*fib6_next;
 	struct fib6_node __rcu		*fib6_node;
 
-	/* Multipath routes:
-	 * siblings is a list of fib6_info that have the same metric/weight,
-	 * destination, but not the same gateway. nsiblings is just a cache
-	 * to speed up lookup.
-	 */
+	
 	union {
 		struct list_head	fib6_siblings;
 		struct list_head	nh_list;
@@ -217,7 +205,7 @@ struct rt6_info {
 	struct inet6_dev		*rt6i_idev;
 	u32				rt6i_flags;
 
-	/* more non-fragment space at head required */
+	
 	unsigned short			rt6i_nfheader_len;
 };
 
@@ -267,11 +255,7 @@ static inline bool fib6_check_expired(const struct fib6_info *f6i)
 	return false;
 }
 
-/* Function to safely get fn->fn_sernum for passed in rt
- * and store result in passed in cookie.
- * Return true if we can get cookie safely
- * Return false if not
- */
+
 static inline bool fib6_get_cookie_safe(const struct fib6_info *f6i,
 					u32 *cookie)
 {
@@ -282,7 +266,7 @@ static inline bool fib6_get_cookie_safe(const struct fib6_info *f6i,
 
 	if (fn) {
 		*cookie = READ_ONCE(fn->fn_sernum);
-		/* pairs with smp_wmb() in __fib6_update_sernum_upto_root() */
+		
 		smp_rmb();
 		status = true;
 	}
@@ -311,9 +295,7 @@ static inline u32 rt6_get_cookie(const struct rt6_info *rt)
 
 static inline void ip6_rt_put(struct rt6_info *rt)
 {
-	/* dst_release() accepts a NULL parameter.
-	 * We rely on dst being first structure in struct rt6_info
-	 */
+	
 	BUILD_BUG_ON(offsetof(struct rt6_info, dst) != 0);
 	dst_release(&rt->dst);
 }
@@ -360,24 +342,21 @@ struct fib6_walker {
 };
 
 struct rt6_statistics {
-	__u32		fib_nodes;		/* all fib6 nodes */
-	__u32		fib_route_nodes;	/* intermediate nodes */
-	__u32		fib_rt_entries;		/* rt entries in fib table */
-	__u32		fib_rt_cache;		/* cached rt entries in exception table */
-	__u32		fib_discarded_routes;	/* total number of routes delete */
+	__u32		fib_nodes;		
+	__u32		fib_route_nodes;	
+	__u32		fib_rt_entries;		
+	__u32		fib_rt_cache;		
+	__u32		fib_discarded_routes;	
 
-	/* The following stat is not protected by any lock */
-	atomic_t	fib_rt_alloc;		/* total number of routes alloced */
+	
+	atomic_t	fib_rt_alloc;		
 };
 
 #define RTN_TL_ROOT	0x0001
-#define RTN_ROOT	0x0002		/* tree root node		*/
-#define RTN_RTINFO	0x0004		/* node with valid routing info	*/
+#define RTN_ROOT	0x0002		
+#define RTN_RTINFO	0x0004		
 
-/*
- *	priority levels (or metrics)
- *
- */
+
 
 
 struct fib6_table {
@@ -413,14 +392,12 @@ typedef struct rt6_info *(*pol_lookup_t)(struct net *,
 					 const struct sk_buff *, int);
 
 struct fib6_entry_notifier_info {
-	struct fib_notifier_info info; /* must be first */
+	struct fib_notifier_info info; 
 	struct fib6_info *rt;
 	unsigned int nsiblings;
 };
 
-/*
- *	exported functions
- */
+
 
 struct fib6_table *fib6_get_table(struct net *net, u32 id);
 struct fib6_table *fib6_new_table(struct net *net, u32 id);
@@ -428,13 +405,11 @@ struct dst_entry *fib6_rule_lookup(struct net *net, struct flowi6 *fl6,
 				   const struct sk_buff *skb,
 				   int flags, pol_lookup_t lookup);
 
-/* called with rcu lock held; can return error pointer
- * caller needs to select path
- */
+
 int fib6_lookup(struct net *net, int oif, struct flowi6 *fl6,
 		struct fib6_result *res, int flags);
 
-/* called with rcu lock held; caller needs to select path */
+
 int fib6_table_lookup(struct net *net, struct fib6_table *table,
 		      int oif, struct flowi6 *fl6, struct fib6_result *res,
 		      int strict);

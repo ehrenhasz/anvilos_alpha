@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_BLOCK_RSV_H
 #define BTRFS_BLOCK_RSV_H
@@ -7,9 +7,7 @@ struct btrfs_trans_handle;
 struct btrfs_root;
 enum btrfs_reserve_flush_enum;
 
-/*
- * Types of block reserves
- */
+
 enum btrfs_rsv_type {
 	BTRFS_BLOCK_RSV_GLOBAL,
 	BTRFS_BLOCK_RSV_DELALLOC,
@@ -28,25 +26,10 @@ struct btrfs_block_rsv {
 	spinlock_t lock;
 	bool full;
 	bool failfast;
-	/* Block reserve type, one of BTRFS_BLOCK_RSV_* */
+	
 	enum btrfs_rsv_type type:8;
 
-	/*
-	 * Qgroup equivalent for @size @reserved
-	 *
-	 * Unlike normal @size/@reserved for inode rsv, qgroup doesn't care
-	 * about things like csum size nor how many tree blocks it will need to
-	 * reserve.
-	 *
-	 * Qgroup cares more about net change of the extent usage.
-	 *
-	 * So for one newly inserted file extent, in worst case it will cause
-	 * leaf split and level increase, nodesize for each file extent is
-	 * already too much.
-	 *
-	 * In short, qgroup_size/reserved is the upper limit of possible needed
-	 * qgroup metadata reservation.
-	 */
+	
 	u64 qgroup_rsv_size;
 	u64 qgroup_rsv_reserved;
 };
@@ -92,13 +75,10 @@ static inline void btrfs_unuse_block_rsv(struct btrfs_fs_info *fs_info,
 	btrfs_block_rsv_release(fs_info, block_rsv, 0, NULL);
 }
 
-/*
- * Fast path to check if the reserve is full, may be carefully used outside of
- * locks.
- */
+
 static inline bool btrfs_block_rsv_full(const struct btrfs_block_rsv *rsv)
 {
 	return data_race(rsv->full);
 }
 
-#endif /* BTRFS_BLOCK_RSV_H */
+#endif 

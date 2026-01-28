@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the IEEE 802.1d ethernet bridging layer.
-#
+
+
+
+
 
 obj-$(CONFIG_BRIDGE) += bridge.o
 

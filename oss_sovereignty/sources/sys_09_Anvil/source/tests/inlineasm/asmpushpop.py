@@ -8,9 +8,9 @@ def f(r0, r1, r2):
 def g():
     b(START)
     label(SUBROUTINE)
-    push({lr})  # push return address
+    push({lr})  
     mov(r0, 7)
-    pop({pc})  # return
+    pop({pc})  
     label(START)
     bl(SUBROUTINE)
 print(f(0, 1, 2))

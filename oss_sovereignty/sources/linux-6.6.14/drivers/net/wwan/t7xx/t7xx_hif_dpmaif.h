@@ -1,19 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
 
 #ifndef __T7XX_HIF_DPMAIF_H__
 #define __T7XX_HIF_DPMAIF_H__
@@ -32,7 +17,7 @@
 #include "t7xx_pci.h"
 #include "t7xx_state_monitor.h"
 
-/* SKB control buffer */
+
 struct t7xx_skb_cb {
 	u8	netif_idx;
 	u8	txq_number;
@@ -46,7 +31,7 @@ enum dpmaif_rdwr {
 	DPMAIF_WRITE,
 };
 
-/* Structure of DL BAT */
+
 struct dpmaif_cur_rx_skb_info {
 	bool			msg_pit_received;
 	struct sk_buff		*cur_skb;
@@ -90,7 +75,7 @@ struct dpmaif_bat_request {
 	unsigned int		pkt_buf_sz;
 	unsigned long		*bat_bitmap;
 	atomic_t		refcnt;
-	spinlock_t		mask_lock; /* Protects BAT mask */
+	spinlock_t		mask_lock; 
 	enum bat_type		type;
 };
 
@@ -134,7 +119,7 @@ struct dpmaif_tx_queue {
 	wait_queue_head_t	req_wq;
 	struct workqueue_struct	*worker;
 	struct work_struct	dpmaif_tx_work;
-	spinlock_t		tx_lock; /* Protects txq DRB */
+	spinlock_t		tx_lock; 
 	atomic_t		tx_processing;
 
 	struct dpmaif_ctrl	*dpmaif_ctrl;
@@ -199,4 +184,4 @@ unsigned int t7xx_ring_buf_get_next_wr_idx(unsigned int buf_len, unsigned int bu
 unsigned int t7xx_ring_buf_rd_wr_count(unsigned int total_cnt, unsigned int rd_idx,
 				       unsigned int wr_idx, enum dpmaif_rdwr);
 
-#endif /* __T7XX_HIF_DPMAIF_H__ */
+#endif 

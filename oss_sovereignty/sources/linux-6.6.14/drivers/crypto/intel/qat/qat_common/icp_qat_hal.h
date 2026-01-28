@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+
 #ifndef __ICP_QAT_HAL_H
 #define __ICP_QAT_HAL_H
 #include "icp_qat_fw_loader_handle.h"
@@ -119,7 +119,7 @@ enum fcu_sts {
 #define ICP_QAT_CAP_OFFSET (ICP_QAT_AE_OFFSET + 0x10000)
 #define LOCAL_TO_XFER_REG_OFFSET 0x800
 #define ICP_QAT_EP_OFFSET 0x3a000
-#define ICP_QAT_EP_OFFSET_4XXX   0x200000 /* HI MMIO CSRs */
+#define ICP_QAT_EP_OFFSET_4XXX   0x200000 
 #define ICP_QAT_AE_OFFSET_4XXX   0x600000
 #define ICP_QAT_CAP_OFFSET_4XXX  0x640000
 #define SET_CAP_CSR(handle, csr, val) \

@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_SYNTHETIC_EVENTS_H
 #define __PERF_SYNTHETIC_EVENTS_H
 
 #include <stdbool.h>
-#include <sys/types.h> // pid_t
+#include <sys/types.h> 
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <perf/cpumap.h>
@@ -33,7 +33,7 @@ enum perf_record_synth {
 	PERF_SYNTH_MMAP		= 1 << 1,
 	PERF_SYNTH_CGROUP	= 1 << 2,
 
-	/* last element */
+	
 	PERF_SYNTH_MAX		= 1 << 3,
 };
 #define PERF_SYNTH_ALL  (PERF_SYNTH_MAX - 1)
@@ -90,7 +90,7 @@ int machine__synthesize_threads(struct machine *machine, struct target *target,
 int perf_event__synthesize_auxtrace_info(struct auxtrace_record *itr, struct perf_tool *tool,
 					 struct perf_session *session, perf_event__handler_t process);
 
-#else // HAVE_AUXTRACE_SUPPORT
+#else 
 
 #include <errno.h>
 
@@ -102,12 +102,12 @@ perf_event__synthesize_auxtrace_info(struct auxtrace_record *itr __maybe_unused,
 {
 	return -EINVAL;
 }
-#endif // HAVE_AUXTRACE_SUPPORT
+#endif 
 
 #ifdef HAVE_LIBBPF_SUPPORT
 int perf_event__synthesize_bpf_events(struct perf_session *session, perf_event__handler_t process,
 				      struct machine *machine, struct record_opts *opts);
-#else // HAVE_LIBBPF_SUPPORT
+#else 
 static inline int perf_event__synthesize_bpf_events(struct perf_session *session __maybe_unused,
 						    perf_event__handler_t process __maybe_unused,
 						    struct machine *machine __maybe_unused,
@@ -115,11 +115,11 @@ static inline int perf_event__synthesize_bpf_events(struct perf_session *session
 {
 	return 0;
 }
-#endif // HAVE_LIBBPF_SUPPORT
+#endif 
 
 int perf_event__synthesize_for_pipe(struct perf_tool *tool,
 				    struct perf_session *session,
 				    struct perf_data *data,
 				    perf_event__handler_t process);
 
-#endif // __PERF_SYNTHETIC_EVENTS_H
+#endif 

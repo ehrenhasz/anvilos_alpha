@@ -1,9 +1,0 @@
-#ifndef __ASM_SPARSEMEM_H
-#define __ASM_SPARSEMEM_H
-#define MAX_PHYSMEM_BITS	CONFIG_ARM64_PA_BITS
-#ifdef CONFIG_ARM64_64K_PAGES
-#define SECTION_SIZE_BITS 29
-#else
-#define SECTION_SIZE_BITS 27
-#endif  
-#endif

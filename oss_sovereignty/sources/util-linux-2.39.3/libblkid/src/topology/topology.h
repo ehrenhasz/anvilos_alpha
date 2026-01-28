@@ -10,9 +10,7 @@ extern int blkid_topology_set_physical_sector_size(blkid_probe pr, unsigned long
 extern int blkid_topology_set_dax(blkid_probe pr, unsigned long val);
 extern int blkid_topology_set_diskseq(blkid_probe pr, uint64_t val);
 
-/*
- * topology probers
- */
+
 #ifdef __linux__
 extern const struct blkid_idinfo ioctl_tp_idinfo;
 extern const struct blkid_idinfo md_tp_idinfo;
@@ -22,5 +20,5 @@ extern const struct blkid_idinfo dm_tp_idinfo;
 extern const struct blkid_idinfo lvm_tp_idinfo;
 #endif
 
-#endif /* BLKID_TOPOLOGY_H */
+#endif 
 

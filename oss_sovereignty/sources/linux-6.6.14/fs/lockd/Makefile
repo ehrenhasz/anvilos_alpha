@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the linux lock manager stuff
-#
 
-ccflags-y += -I$(src)			# needed for trace events
+
+
+
+
+ccflags-y += -I$(src)			
 
 obj-$(CONFIG_LOCKD) += lockd.o
 

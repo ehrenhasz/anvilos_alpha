@@ -1,6 +1,0 @@
-#include "imx8qxp.dtsi"
-#include "imx8x-colibri.dtsi"
-/ {
-	model = "Toradex Colibri iMX8QXP Module";
-	compatible = "toradex,colibri-imx8x", "fsl,imx8qxp";
-};

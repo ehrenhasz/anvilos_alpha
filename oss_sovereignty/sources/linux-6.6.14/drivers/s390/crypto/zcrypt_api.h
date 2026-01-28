@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  Copyright IBM Corp. 2001, 2019
- *  Author(s): Robert Burroughs
- *	       Eric Rossman (edrossma@us.ibm.com)
- *	       Cornelia Huck <cornelia.huck@de.ibm.com>
- *
- *  Hotplug & misc device support: Jochen Roehrig (roehrig@de.ibm.com)
- *  Major cleanup & driver split: Martin Schwidefsky <schwidefsky@de.ibm.com>
- *				  Ralph Wuerthner <rwuerthn@de.ibm.com>
- *  MSGTYPE restruct:		  Holger Dengler <hd@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef _ZCRYPT_API_H_
 #define _ZCRYPT_API_H_
@@ -19,9 +9,7 @@
 #include <asm/zcrypt.h>
 #include "ap_bus.h"
 
-/**
- * Supported device types
- */
+
 #define ZCRYPT_CEX2C		5
 #define ZCRYPT_CEX2A		6
 #define ZCRYPT_CEX3C		7
@@ -31,16 +19,10 @@
 #define ZCRYPT_CEX6	       12
 #define ZCRYPT_CEX7	       13
 
-/**
- * Large random numbers are pulled in 4096 byte chunks from the crypto cards
- * and stored in a page. Be careful when increasing this buffer due to size
- * limitations for AP requests.
- */
+
 #define ZCRYPT_RNG_BUFFER_SIZE	4096
 
-/*
- * Identifier for Crypto Request Performance Index
- */
+
 enum crypto_ops {
 	MEX_1K,
 	MEX_2K,
@@ -55,14 +37,14 @@ enum crypto_ops {
 
 struct zcrypt_queue;
 
-/* struct to hold tracking information for a userspace request/response */
+
 struct zcrypt_track {
-	int again_counter;		/* retry attempts counter */
-	int last_qid;			/* last qid used */
-	int last_rc;			/* last return code */
+	int again_counter;		
+	int last_qid;			
+	int last_rc;			
 };
 
-/* defines related to message tracking */
+
 #define TRACK_AGAIN_MAX 10
 #define TRACK_AGAIN_CARD_WEIGHT_PENALTY  1000
 #define TRACK_AGAIN_QUEUE_WEIGHT_PENALTY 10000
@@ -78,46 +60,46 @@ struct zcrypt_ops {
 	long (*send_ep11_cprb)(bool userspace, struct zcrypt_queue *, struct ep11_urb *,
 			       struct ap_message *);
 	long (*rng)(struct zcrypt_queue *, char *, struct ap_message *);
-	struct list_head list;		/* zcrypt ops list. */
+	struct list_head list;		
 	struct module *owner;
 	int variant;
 	char name[128];
 };
 
 struct zcrypt_card {
-	struct list_head list;		/* Device list. */
-	struct list_head zqueues;	/* List of zcrypt queues */
-	struct kref refcount;		/* device refcounting */
-	struct ap_card *card;		/* The "real" ap card device. */
-	int online;			/* User online/offline */
+	struct list_head list;		
+	struct list_head zqueues;	
+	struct kref refcount;		
+	struct ap_card *card;		
+	int online;			
 
-	int user_space_type;		/* User space device id. */
-	char *type_string;		/* User space device name. */
-	int min_mod_size;		/* Min number of bits. */
-	int max_mod_size;		/* Max number of bits. */
+	int user_space_type;		
+	char *type_string;		
+	int min_mod_size;		
+	int max_mod_size;		
 	int max_exp_bit_length;
-	const int *speed_rating;	/* Speed idx of crypto ops. */
-	atomic_t load;			/* Utilization of the crypto device */
+	const int *speed_rating;	
+	atomic_t load;			
 
-	int request_count;		/* # current requests. */
+	int request_count;		
 };
 
 struct zcrypt_queue {
-	struct list_head list;		/* Device list. */
-	struct kref refcount;		/* device refcounting */
+	struct list_head list;		
+	struct kref refcount;		
 	struct zcrypt_card *zcard;
-	struct zcrypt_ops *ops;		/* Crypto operations. */
-	struct ap_queue *queue;		/* The "real" ap queue device. */
-	int online;			/* User online/offline */
+	struct zcrypt_ops *ops;		
+	struct ap_queue *queue;		
+	int online;			
 
-	atomic_t load;			/* Utilization of the crypto device */
+	atomic_t load;			
 
-	int request_count;		/* # current requests. */
+	int request_count;		
 
-	struct ap_message reply;	/* Per-device reply structure. */
+	struct ap_message reply;	
 };
 
-/* transport layer rescanning */
+
 extern atomic_t zcrypt_rescan_req;
 
 extern spinlock_t zcrypt_list_lock;
@@ -182,4 +164,4 @@ static inline unsigned long z_copy_to_user(bool userspace,
 	return 0;
 }
 
-#endif /* _ZCRYPT_API_H_ */
+#endif 

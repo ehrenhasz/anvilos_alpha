@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _CCU_MUX_H_
 #define _CCU_MUX_H_
 
@@ -154,13 +154,13 @@ struct ccu_mux_nb {
 	struct ccu_common	*common;
 	struct ccu_mux_internal	*cm;
 
-	u32	delay_us;	/* How many us to wait after reparenting */
-	u8	bypass_index;	/* Which parent to temporarily use */
-	u8	original_index;	/* This is set by the notifier callback */
+	u32	delay_us;	
+	u8	bypass_index;	
+	u8	original_index;	
 };
 
 #define to_ccu_mux_nb(_nb) container_of(_nb, struct ccu_mux_nb, clk_nb)
 
 int ccu_mux_notifier_register(struct clk *clk, struct ccu_mux_nb *mux_nb);
 
-#endif /* _CCU_MUX_H_ */
+#endif 

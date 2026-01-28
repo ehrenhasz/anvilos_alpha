@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM smc
@@ -114,7 +114,7 @@ TRACE_EVENT(smcr_link_down,
 		      __entry->location)
 );
 
-#endif /* _TRACE_SMC_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,26 +1,12 @@
-/*	$OpenBSD: ssherr.h,v 1.8 2020/01/25 23:13:09 djm Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+
+
 
 #ifndef _SSHERR_H
 #define _SSHERR_H
 
-/* XXX are these too granular? not granular enough? I can't decide - djm */
 
-/* Error codes */
+
+
 #define SSH_ERR_SUCCESS				0
 #define SSH_ERR_INTERNAL_ERROR			-1
 #define SSH_ERR_ALLOC_FAIL			-2
@@ -35,7 +21,7 @@
 #define SSH_ERR_KEY_BITS_MISMATCH		-11
 #define SSH_ERR_EC_CURVE_INVALID		-12
 #define SSH_ERR_KEY_TYPE_MISMATCH		-13
-#define SSH_ERR_KEY_TYPE_UNKNOWN		-14 /* XXX UNSUPPORTED? */
+#define SSH_ERR_KEY_TYPE_UNKNOWN		-14 
 #define SSH_ERR_EC_CURVE_MISMATCH		-15
 #define SSH_ERR_EXPECTED_CERT			-16
 #define SSH_ERR_KEY_LACKS_CERTBLOB		-17
@@ -83,7 +69,7 @@
 #define SSH_ERR_FEATURE_UNSUPPORTED		-59
 #define SSH_ERR_DEVICE_NOT_FOUND		-60
 
-/* Translate a numeric error code to a human-readable error string */
+
 const char *ssh_err(int n);
 
-#endif /* _SSHERR_H */
+#endif 

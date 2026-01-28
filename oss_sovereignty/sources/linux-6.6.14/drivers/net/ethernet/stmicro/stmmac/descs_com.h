@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  Header File to describe Normal/enhanced descriptor functions used for RING
-  and CHAINED modes.
-
-  Copyright(C) 2011  STMicroelectronics Ltd
-
-  It defines all the functions used to handle the normal/enhanced
-  descriptors in case of the DMA is configured to work in chained or
-  in ring mode.
 
 
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
 
 #ifndef __DESC_COM_H__
 #define __DESC_COM_H__
 
-/* Specific functions used for Ring mode */
 
-/* Enhanced descriptors */
+
+
 static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end,
 					   int bfsize)
 {
@@ -50,7 +38,7 @@ static inline void enh_set_tx_desc_len_on_ring(struct dma_desc *p, int len)
 		p->des1 |= cpu_to_le32((len & ETDES1_BUFFER1_SIZE_MASK));
 }
 
-/* Normal descriptors */
+
 static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
 {
 	if (bfsize >= BUF_SIZE_2KiB) {
@@ -85,9 +73,9 @@ static inline void norm_set_tx_desc_len_on_ring(struct dma_desc *p, int len)
 		p->des1 |= cpu_to_le32((len & TDES1_BUFFER1_SIZE_MASK));
 }
 
-/* Specific functions used for Chain mode */
 
-/* Enhanced descriptors */
+
+
 static inline void ehn_desc_rx_set_on_chain(struct dma_desc *p)
 {
 	p->des1 |= cpu_to_le32(ERDES1_SECOND_ADDRESS_CHAINED);
@@ -103,7 +91,7 @@ static inline void enh_set_tx_desc_len_on_chain(struct dma_desc *p, int len)
 	p->des1 |= cpu_to_le32(len & ETDES1_BUFFER1_SIZE_MASK);
 }
 
-/* Normal descriptors */
+
 static inline void ndesc_rx_set_on_chain(struct dma_desc *p, int end)
 {
 	p->des1 |= cpu_to_le32(RDES1_SECOND_ADDRESS_CHAINED);
@@ -118,4 +106,4 @@ static inline void norm_set_tx_desc_len_on_chain(struct dma_desc *p, int len)
 {
 	p->des1 |= cpu_to_le32(len & TDES1_BUFFER1_SIZE_MASK);
 }
-#endif /* __DESC_COM_H__ */
+#endif 

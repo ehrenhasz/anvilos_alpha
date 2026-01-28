@@ -23,7 +23,7 @@ zed_log_msg()
 }
 zed_log_err()
 {
-    zed_log_msg "error: ${0##*/}:""${ZEVENT_EID:+" eid=${ZEVENT_EID}:"}" "$@"
+    zed_log_msg "error: ${0
 }
 zed_lock()
 {
@@ -93,7 +93,7 @@ zed_notify_email()
     [ -n "${subject}" ] || return 1
     if [ ! -r "${pathname}" ]; then
         zed_log_err \
-                "${ZED_EMAIL_PROG##*/} cannot read \"${pathname}\""
+                "${ZED_EMAIL_PROG
         return 1
     fi
     ZED_EMAIL_OPTS_PARSED="$(echo "${ZED_EMAIL_OPTS}" \
@@ -108,7 +108,7 @@ zed_notify_email()
     eval ${ZED_EMAIL_PROG} ${ZED_EMAIL_OPTS_PARSED} >/dev/null 2>&1
     rv=$?
     if [ "${rv}" -ne 0 ]; then
-        zed_log_err "${ZED_EMAIL_PROG##*/} exit=${rv}"
+        zed_log_err "${ZED_EMAIL_PROG
         return 1
     fi
     return 0

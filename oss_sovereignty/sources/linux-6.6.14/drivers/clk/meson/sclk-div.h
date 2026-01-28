@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+
 
 #ifndef __MESON_SCLK_DIV_H
 #define __MESON_SCLK_DIV_H
@@ -19,4 +16,4 @@ struct meson_sclk_div_data {
 
 extern const struct clk_ops meson_sclk_div_ops;
 
-#endif /* __MESON_SCLK_DIV_H */
+#endif 

@@ -1,21 +1,16 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright (C) 2017 Google, Inc.
- *
- * Authors:
- * Sean Paul <seanpaul@chromium.org>
- */
+
+
 
 #ifndef _DRM_HDCP_H_
 #define _DRM_HDCP_H_
 
 #include <linux/types.h>
 
-/* Period of hdcp checks (to ensure we're still authenticated) */
+
 #define DRM_HDCP_CHECK_PERIOD_MS		(128 * 16)
 #define DRM_HDCP2_CHECK_PERIOD_MS		500
 
-/* Shared lengths/masks between HDMI/DVI/DisplayPort */
+
 #define DRM_HDCP_AN_LEN				8
 #define DRM_HDCP_BSTATUS_LEN			2
 #define DRM_HDCP_KSV_LEN			5
@@ -26,13 +21,13 @@
 #define DRM_HDCP_MAX_CASCADE_EXCEEDED(x)	(x & BIT(3))
 #define DRM_HDCP_MAX_DEVICE_EXCEEDED(x)		(x & BIT(7))
 
-/* Slave address for the HDCP registers in the receiver */
+
 #define DRM_HDCP_DDC_ADDR			0x3A
 
-/* Value to use at the end of the SHA-1 bytestream used for repeaters */
+
 #define DRM_HDCP_SHA1_TERMINATOR		0x80
 
-/* HDCP register offsets for HDMI/DVI devices */
+
 #define DRM_HDCP_DDC_BKSV			0x00
 #define DRM_HDCP_DDC_RI_PRIME			0x08
 #define DRM_HDCP_DDC_AKSV			0x10
@@ -48,16 +43,12 @@
 #define DRM_HDCP_1_4_VRL_LENGTH_SIZE		3
 #define DRM_HDCP_1_4_DCP_SIG_SIZE		40
 
-/* Protocol message definition for HDCP2.2 specification */
-/*
- * Protected content streams are classified into 2 types:
- * - Type0: Can be transmitted with HDCP 1.4+
- * - Type1: Can be transmitted with HDCP 2.2+
- */
+
+
 #define HDCP_STREAM_TYPE0			0x00
 #define HDCP_STREAM_TYPE1			0x01
 
-/* HDCP2.2 Msg IDs */
+
 #define HDCP_2_2_NULL_MSG			1
 #define HDCP_2_2_AKE_INIT			2
 #define HDCP_2_2_AKE_SEND_CERT			3
@@ -99,12 +90,8 @@
 						 HDCP_2_2_MAX_DEVICE_COUNT)
 #define HDCP_2_2_MPRIME_LEN			32
 
-/* Following Macros take a byte at a time for bit(s) masking */
-/*
- * TODO: HDCP_2_2_MAX_CONTENT_STREAMS_CNT is based upon actual
- * H/W MST streams capacity.
- * This required to be moved out to platform specific header.
- */
+
+
 #define HDCP_2_2_MAX_CONTENT_STREAMS_CNT	4
 #define HDCP_2_2_TXCAP_MASK_LEN			2
 #define HDCP_2_2_RXCAPS_LEN			3
@@ -112,10 +99,10 @@
 #define HDCP_2_2_DP_HDCP_CAPABLE(x)		((x) & BIT(1))
 #define HDCP_2_2_RXINFO_LEN			2
 
-/* HDCP1.x compliant device in downstream */
+
 #define HDCP_2_2_HDCP1_DEVICE_CONNECTED(x)	((x) & BIT(0))
 
-/* HDCP2.0 Compliant repeater in downstream */
+
 #define HDCP_2_2_HDCP_2_0_REP_CONNECTED(x)	((x) & BIT(1))
 #define HDCP_2_2_MAX_CASCADE_EXCEEDED(x)	((x) & BIT(2))
 #define HDCP_2_2_MAX_DEVS_EXCEEDED(x)		((x) & BIT(3))
@@ -135,19 +122,16 @@ struct hdcp2_streamid_type {
 	u8	stream_type;
 } __packed;
 
-/*
- * The TxCaps field specified in the HDCP HDMI, DP specs
- * This field is big endian as specified in the errata.
- */
+
 struct hdcp2_tx_caps {
-	/* Transmitter must set this to 0x2 */
+	
 	u8	version;
 
-	/* Reserved for HDCP and DP Spec. Read as Zero */
+	
 	u8	tx_cap_mask[HDCP_2_2_TXCAP_MASK_LEN];
 } __packed;
 
-/* Main structures for HDCP2.2 protocol communication */
+
 struct hdcp2_ake_init {
 	u8			msg_id;
 	u8			r_tx[HDCP_2_2_RTX_LEN];
@@ -222,7 +206,7 @@ struct hdcp2_rep_stream_ready {
 	u8	m_prime[HDCP_2_2_MPRIME_LEN];
 } __packed;
 
-/* HDCP2.2 TIMEOUTs in mSec */
+
 #define HDCP_2_2_CERT_TIMEOUT_MS		100
 #define HDCP_2_2_DP_CERT_READ_TIMEOUT_MS	110
 #define HDCP_2_2_HPRIME_NO_PAIRED_TIMEOUT_MS	1000
@@ -235,7 +219,7 @@ struct hdcp2_rep_stream_ready {
 #define HDCP_2_2_RECVID_LIST_TIMEOUT_MS		3000
 #define HDCP_2_2_STREAM_READY_TIMEOUT_MS	100
 
-/* HDMI HDCP2.2 Register Offsets */
+
 #define HDCP_2_2_HDMI_REG_VER_OFFSET		0x50
 #define HDCP_2_2_HDMI_REG_WR_MSG_OFFSET		0x60
 #define HDCP_2_2_HDMI_REG_RXSTATUS_OFFSET	0x70
@@ -247,16 +231,13 @@ struct hdcp2_rep_stream_ready {
 #define HDCP_2_2_SEQ_NUM_MAX			0xFFFFFF
 #define	HDCP_2_2_DELAY_BEFORE_ENCRYPTION_EN	200
 
-/* Below macros take a byte at a time and mask the bit(s) */
+
 #define HDCP_2_2_HDMI_RXSTATUS_LEN		2
 #define HDCP_2_2_HDMI_RXSTATUS_MSG_SZ_HI(x)	((x) & 0x3)
 #define HDCP_2_2_HDMI_RXSTATUS_READY(x)		((x) & BIT(2))
 #define HDCP_2_2_HDMI_RXSTATUS_REAUTH_REQ(x)	((x) & BIT(3))
 
-/*
- * Helper functions to convert 24bit big endian hdcp sequence number to
- * host format and back
- */
+
 static inline
 u32 drm_hdcp_be24_to_cpu(const u8 seq_num[HDCP_2_2_SEQ_NUM_LEN])
 {
@@ -291,7 +272,7 @@ struct hdcp_srm_header {
 	u8 srm_gen_no;
 } __packed;
 
-/* Content Type classification for HDCP2.2 vs others */
+
 #define DRM_MODE_HDCP_CONTENT_TYPE0		0
 #define DRM_MODE_HDCP_CONTENT_TYPE1		1
 

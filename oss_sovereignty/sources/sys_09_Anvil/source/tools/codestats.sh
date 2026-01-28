@@ -25,7 +25,7 @@ cat > $pystoneavg << EOF
 import pystone
 samples = [pystone.pystones(300000)[1] for i in range(5)]
 samples.sort()
-stones = sum(samples[1:-1]) / (len(samples) - 2) # exclude smallest and largest
+stones = sum(samples[1:-1]) / (len(samples) - 2) 
 print("stones %g" % stones)
 EOF
 function get_size() {
@@ -58,7 +58,7 @@ function get_size3() {
 if [ -r $output ]; then
     last_rev=$(tail -n1 $output | $AWK '{print $1}')
 else
-    echo "# hash size_unix size_stm32 size_barearm size_minimal size_cc3200 pystones" > $output
+    echo "
     last_rev="v1.0"
 fi
 hashes=$(git log --format=format:"%H" --reverse ${last_rev}..master)
@@ -68,7 +68,7 @@ for hash in $hashes; do
         echo "aborting"
         exit 1
     fi
-    if grep -q '#if defined(MP_CLOCKS_PER_SEC) && (MP_CLOCKS_PER_SEC == 1000000) // POSIX' unix/modtime.c; then
+    if grep -q '
         echo apply patch
         git apply - << EOF
 diff --git a/unix/modtime.c b/unix/modtime.c
@@ -76,12 +76,12 @@ index 77d2945..dae0644 100644
 --- a/unix/modtime.c
 +++ b/unix/modtime.c
 @@ -55,10 +55,8 @@ void msec_sleep_tv(struct timeval *tv) {
--#if defined(MP_CLOCKS_PER_SEC) && (MP_CLOCKS_PER_SEC == 1000000) // POSIX
--#define CLOCK_DIV 1000.0
--#elif defined(MP_CLOCKS_PER_SEC) && (MP_CLOCKS_PER_SEC == 1000) // WIN32
--#define CLOCK_DIV 1.0
-+#if defined(MP_CLOCKS_PER_SEC)
-+#define CLOCK_DIV (MP_CLOCKS_PER_SEC / 1000.0F)
+-
+-
+-
+-
++
++
 EOF
     fi
     $RM $bin_unix

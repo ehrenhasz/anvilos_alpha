@@ -1,13 +1,13 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for some libs needed in the kernel.
-#
+
+
+
+
 
 ccflags-remove-$(CONFIG_FUNCTION_TRACER) += $(CC_FLAGS_FTRACE)
 
-# These files are disabled because they produce lots of non-interesting and/or
-# flaky coverage that is not a function of syscall inputs. For example,
-# rbtree can be global and individual rotations don't correlate with inputs.
+
+
+
 KCOV_INSTRUMENT_string.o := n
 KCOV_INSTRUMENT_rbtree.o := n
 KCOV_INSTRUMENT_list_debug.o := n
@@ -15,12 +15,12 @@ KCOV_INSTRUMENT_debugobjects.o := n
 KCOV_INSTRUMENT_dynamic_debug.o := n
 KCOV_INSTRUMENT_fault-inject.o := n
 
-# string.o implements standard library functions like memset/memcpy etc.
-# Use -ffreestanding to ensure that the compiler does not try to "optimize"
-# them into calls to themselves.
+
+
+
 CFLAGS_string.o := -ffreestanding
 
-# Early boot use of cmdline, don't instrument it
+
 ifdef CONFIG_AMD_MEM_ENCRYPT
 KASAN_SANITIZE_string.o := n
 
@@ -86,7 +86,7 @@ obj-$(CONFIG_TEST_SCANF) += test_scanf.o
 
 obj-$(CONFIG_TEST_BITMAP) += test_bitmap.o
 ifeq ($(CONFIG_CC_IS_CLANG)$(CONFIG_KASAN),yy)
-# FIXME: Clang breaks test_bitmap_const_eval when KASAN and GCOV are enabled
+
 GCOV_PROFILE_test_bitmap.o := n
 endif
 
@@ -107,24 +107,24 @@ obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
 obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
 CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
 obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
-#
-# CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
-# off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-# get appended last to CFLAGS and thus override those previous compiler options.
-#
+
+
+
+
+
 FPU_CFLAGS := -msse -msse2
 ifdef CONFIG_CC_IS_GCC
-# Stack alignment mismatch, proceed with caution.
-# GCC < 7.1 cannot compile code using `double` and -mpreferred-stack-boundary=3
-# (8B stack alignment).
-# See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53383
-#
-# The "-msse" in the first argument is there so that the
-# -mpreferred-stack-boundary=3 build error:
-#
-#  -mpreferred-stack-boundary=3 is not between 4 and 12
-#
-# can be triggered. Otherwise gcc doesn't complain.
+
+
+
+
+
+
+
+
+
+
+
 FPU_CFLAGS += -mhard-float
 FPU_CFLAGS += $(call cc-option,-msse -mpreferred-stack-boundary=3,-mpreferred-stack-boundary=4)
 endif
@@ -134,8 +134,8 @@ CFLAGS_test_fpu.o += $(FPU_CFLAGS)
 
 obj-$(CONFIG_TEST_LIVEPATCH) += livepatch/
 
-# Some KUnit files (hooks.o) need to be built-in even when KUnit is a module,
-# so we can't just use obj-$(CONFIG_KUNIT).
+
+
 ifdef CONFIG_KUNIT
 obj-y += kunit/
 endif
@@ -238,7 +238,7 @@ lib-$(CONFIG_GENERIC_BUG) += bug.o
 obj-$(CONFIG_HAVE_ARCH_TRACEHOOK) += syscall.o
 
 obj-$(CONFIG_DYNAMIC_DEBUG_CORE) += dynamic_debug.o
-#ensure exported functions have prototypes
+
 CFLAGS_dynamic_debug.o := -DDYNAMIC_DEBUG_MODULE
 
 obj-$(CONFIG_SYMBOLIC_ERRNAME) += errname.o
@@ -278,14 +278,14 @@ obj-$(CONFIG_IRQ_POLL) += irq_poll.o
 
 obj-$(CONFIG_POLYNOMIAL) += polynomial.o
 
-# stackdepot.c should not be instrumented or call instrumented functions.
-# Prevent the compiler from calling builtins like memcmp() or bcmp() from this
-# file.
+
+
+
 CFLAGS_stackdepot.o += -fno-builtin
 obj-$(CONFIG_STACKDEPOT) += stackdepot.o
 KASAN_SANITIZE_stackdepot.o := n
-# In particular, instrumenting stackdepot.c with KMSAN will result in infinite
-# recursion.
+
+
 KMSAN_SANITIZE_stackdepot.o := n
 KCOV_INSTRUMENT_stackdepot.o := n
 
@@ -338,9 +338,9 @@ quiet_cmd_crc64 = GEN     $@
 $(obj)/crc64table.h: $(obj)/gen_crc64table
 	$(call cmd,crc64)
 
-#
-# Build a fast OID lookip registry from include/linux/oid_registry.h
-#
+
+
+
 obj-$(CONFIG_OID_REGISTRY) += oid_registry.o
 
 $(obj)/oid_registry.o: $(obj)/oid_registry_data.c
@@ -368,7 +368,7 @@ obj-$(CONFIG_PARMAN) += parman.o
 
 obj-y += group_cpus.o
 
-# GCC library routines
+
 obj-$(CONFIG_GENERIC_LIB_ASHLDI3) += ashldi3.o
 obj-$(CONFIG_GENERIC_LIB_ASHRDI3) += ashrdi3.o
 obj-$(CONFIG_GENERIC_LIB_LSHRDI3) += lshrdi3.o
@@ -377,10 +377,10 @@ obj-$(CONFIG_GENERIC_LIB_CMPDI2) += cmpdi2.o
 obj-$(CONFIG_GENERIC_LIB_UCMPDI2) += ucmpdi2.o
 obj-$(CONFIG_OBJAGG) += objagg.o
 
-# pldmfw library
+
 obj-$(CONFIG_PLDMFW) += pldmfw/
 
-# KUnit tests
+
 CFLAGS_bitfield_kunit.o := $(DISABLE_STRUCTLEAK_PLUGIN)
 obj-$(CONFIG_BITFIELD_KUNIT) += bitfield_kunit.o
 obj-$(CONFIG_CHECKSUM_KUNIT) += checksum_kunit.o
@@ -405,7 +405,7 @@ obj-$(CONFIG_SIPHASH_KUNIT_TEST) += siphash_kunit.o
 
 obj-$(CONFIG_GENERIC_LIB_DEVMEM_IS_ALLOWED) += devmem_is_allowed.o
 
-# FORTIFY_SOURCE compile-time behavior tests
+
 TEST_FORTIFY_SRCS = $(wildcard $(srctree)/$(src)/test_fortify/*-*.c)
 TEST_FORTIFY_LOGS = $(patsubst $(srctree)/$(src)/%.c, %.log, $(TEST_FORTIFY_SRCS))
 TEST_FORTIFY_LOG = test_fortify.log
@@ -434,7 +434,7 @@ clean-files += $(TEST_FORTIFY_LOG)
 $(obj)/$(TEST_FORTIFY_LOG): $(addprefix $(obj)/, $(TEST_FORTIFY_LOGS)) FORCE
 	$(call if_changed,gen_fortify_log)
 
-# Fake dependency to trigger the fortify tests.
+
 ifeq ($(CONFIG_FORTIFY_SOURCE),y)
 $(obj)/string.o: $(obj)/$(TEST_FORTIFY_LOG)
 endif

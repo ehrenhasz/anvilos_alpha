@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car Gen2 Clock Pulse Generator
- *
- * Copyright (C) 2016 Cogent Embedded Inc.
- */
+
+
 
 #ifndef __CLK_RENESAS_RCAR_GEN2_CPG_H__
 #define __CLK_RENESAS_RCAR_GEN2_CPG_H__
@@ -27,7 +23,7 @@ struct rcar_gen2_cpg_pll_config {
 	u8 extal_div;
 	u8 pll1_mult;
 	u8 pll3_mult;
-	u8 pll0_mult;		/* leave as zero if PLL0CR exists */
+	u8 pll0_mult;		
 };
 
 struct clk *rcar_gen2_cpg_clk_register(struct device *dev,

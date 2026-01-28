@@ -29,7 +29,7 @@ mirror_test()
 	local expect=$1; shift
 	if is_ipv6 $dip; then
 		local proto=-6
-		local type="icmp6 type=128" # Echo request.
+		local type="icmp6 type=128" 
 	else
 		local proto=
 		local type="icmp echoreq"

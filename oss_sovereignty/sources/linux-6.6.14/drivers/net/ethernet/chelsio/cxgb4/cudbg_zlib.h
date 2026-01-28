@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2018 Chelsio Communications.  All rights reserved.
- */
+
+
 
 #ifndef __CUDBG_ZLIB_H__
 #define __CUDBG_ZLIB_H__
@@ -28,4 +26,4 @@ static inline int cudbg_get_workspace_size(void)
 int cudbg_compress_buff(struct cudbg_init *pdbg_init,
 			struct cudbg_buffer *pin_buff,
 			struct cudbg_buffer *pout_buff);
-#endif /* __CUDBG_ZLIB_H__ */
+#endif 

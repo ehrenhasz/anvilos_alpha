@@ -1,17 +1,11 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_PIDFD_UTILS
 #define UTIL_LINUX_PIDFD_UTILS
 
 #ifdef HAVE_SYS_SYSCALL_H
 # include <sys/syscall.h>
 
-/*
- * If the kernel headers are too old to provide the syscall numbers, let's
- * define them ourselves. This can be helpful while cross-compiling.
- */
+
 #ifndef __NR_pidfd_send_signal
 #define __NR_pidfd_send_signal 424
 #define SYS_pidfd_send_signal __NR_pidfd_send_signal
@@ -44,6 +38,6 @@ static inline int pidfd_open(pid_t pid, unsigned int flags)
 
 #  define UL_HAVE_PIDFD 1
 
-# endif	/* SYS_pidfd_send_signal */
-#endif /* HAVE_SYS_SYSCALL_H */
-#endif /* UTIL_LINUX_PIDFD_UTILS */
+# endif	
+#endif 
+#endif 

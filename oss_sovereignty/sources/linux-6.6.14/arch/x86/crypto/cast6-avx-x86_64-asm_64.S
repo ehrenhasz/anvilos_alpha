@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Cast6 Cipher 8-way parallel algorithm (AVX/x86_64)
- *
- * Copyright (C) 2012 Johannes Goetzfried
- *     <Johannes.Goetzfried@informatik.stud.uni-erlangen.de>
- *
- * Copyright © 2012-2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -19,19 +12,17 @@
 .extern cast_s3
 .extern cast_s4
 
-/* structure of crypto context */
+
 #define km	0
 #define kr	(12*4*4)
 
-/* s-boxes */
+
 #define s1	cast_s1
 #define s2	cast_s2
 #define s3	cast_s3
 #define s4	cast_s4
 
-/**********************************************************************
-  8-way AVX cast6
- **********************************************************************/
+
 #define CTX %r15
 
 #define RA1 %xmm0
@@ -98,7 +89,7 @@
 	leaq		s4(%rip),      RID1;     \
 	op3		(RID1,RID2,4), dst ## d;
 
-#define dummy(d) /* do nothing */
+#define dummy(d) 
 
 #define shr_next(reg) \
 	shrq $16,	reg;
@@ -183,7 +174,7 @@
 
 #define preload_rkr(n, do_mask, mask) \
 	vbroadcastss	.L16_mask(%rip),          RKR;      \
-	/* add 16-bit rotation to key rotations (mod 32) */ \
+	 \
 	vpxor		(kr+n*16)(CTX),           RKR, RKR; \
 	do_mask(mask);
 
@@ -250,12 +241,7 @@
 
 .align 8
 SYM_FUNC_START_LOCAL(__cast6_enc_blk8)
-	/* input:
-	 *	%rdi: ctx
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: blocks
-	 * output:
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: encrypted blocks
-	 */
+	
 
 	pushq %r15;
 	pushq %rbx;
@@ -298,12 +284,7 @@ SYM_FUNC_END(__cast6_enc_blk8)
 
 .align 8
 SYM_FUNC_START_LOCAL(__cast6_dec_blk8)
-	/* input:
-	 *	%rdi: ctx
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: encrypted blocks
-	 * output:
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: decrypted blocks
-	 */
+	
 
 	pushq %r15;
 	pushq %rbx;
@@ -344,11 +325,7 @@ SYM_FUNC_START_LOCAL(__cast6_dec_blk8)
 SYM_FUNC_END(__cast6_dec_blk8)
 
 SYM_FUNC_START(cast6_ecb_enc_8way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 	pushq %r15;
 
@@ -367,11 +344,7 @@ SYM_FUNC_START(cast6_ecb_enc_8way)
 SYM_FUNC_END(cast6_ecb_enc_8way)
 
 SYM_FUNC_START(cast6_ecb_dec_8way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 	pushq %r15;
 
@@ -390,11 +363,7 @@ SYM_FUNC_START(cast6_ecb_dec_8way)
 SYM_FUNC_END(cast6_ecb_dec_8way)
 
 SYM_FUNC_START(cast6_cbc_dec_8way)
-	/* input:
-	 *	%rdi: ctx
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 	pushq %r12;
 	pushq %r15;

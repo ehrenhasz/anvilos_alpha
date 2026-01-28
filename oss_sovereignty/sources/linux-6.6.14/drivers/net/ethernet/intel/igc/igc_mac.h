@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c)  2018 Intel Corporation */
+
+
 
 #ifndef _IGC_MAC_H_
 #define _IGC_MAC_H_
@@ -8,7 +8,7 @@
 #include "igc_phy.h"
 #include "igc_defines.h"
 
-/* forward declaration */
+
 s32 igc_disable_pcie_master(struct igc_hw *hw);
 s32 igc_check_for_copper_link(struct igc_hw *hw);
 s32 igc_config_fc_after_link_up(struct igc_hw *hw);

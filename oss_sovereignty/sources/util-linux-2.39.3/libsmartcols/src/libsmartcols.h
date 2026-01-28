@@ -1,12 +1,4 @@
-/*
- * Prints table or tree.
- *
- * Copyright (C) 2014 Ondrej Oprala <ooprala@redhat.com>
- * Copyright (C) 2014 Karel Zak <kzak@redhat.com>
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
+
 #ifndef _LIBSMARTCOLS_H
 #define _LIBSMARTCOLS_H
 
@@ -18,92 +10,58 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 
-/**
- * LIBSMARTCOLS_VERSION:
- *
- * Library version string
- */
+
 #define LIBSMARTCOLS_VERSION   "2.39.3"
 
-/**
- * libscols_iter:
- *
- * Generic iterator
- */
+
 struct libscols_iter;
 
-/**
- * libscols_symbols:
- *
- * Symbol groups for printing tree hierarchies
- */
+
 struct libscols_symbols;
 
-/**
- * libscols_cell:
- *
- * A cell - the smallest library object
- */
+
 struct libscols_cell;
 
-/**
- * libscols_line:
- *
- * A line - an array of cells
- */
+
 struct libscols_line;
 
-/**
- * libscols_table:
- *
- * A table - The most abstract object, encapsulating lines, columns, symbols and cells
- */
+
 struct libscols_table;
 
-/**
- * libscols_column:
- *
- * A column - defines the number of columns and column names
- */
+
 struct libscols_column;
 
-/* iter.c */
+
 enum {
 
 	SCOLS_ITER_FORWARD = 0,
 	SCOLS_ITER_BACKWARD
 };
 
-/*
- * Column flags
- */
+
 enum {
-	SCOLS_FL_TRUNC       = (1 << 0),   /* truncate fields data if necessary */
-	SCOLS_FL_TREE        = (1 << 1),   /* use tree "ascii art" */
-	SCOLS_FL_RIGHT	     = (1 << 2),   /* align to the right */
-	SCOLS_FL_STRICTWIDTH = (1 << 3),   /* don't reduce width if column is empty */
-	SCOLS_FL_NOEXTREMES  = (1 << 4),   /* ignore extreme fields when count column width*/
-	SCOLS_FL_HIDDEN	     = (1 << 5),   /* maintain data, but don't print */
-	SCOLS_FL_WRAP	     = (1 << 6)    /* wrap long lines to multi-line cells */
+	SCOLS_FL_TRUNC       = (1 << 0),   
+	SCOLS_FL_TREE        = (1 << 1),   
+	SCOLS_FL_RIGHT	     = (1 << 2),   
+	SCOLS_FL_STRICTWIDTH = (1 << 3),   
+	SCOLS_FL_NOEXTREMES  = (1 << 4),   
+	SCOLS_FL_HIDDEN	     = (1 << 5),   
+	SCOLS_FL_WRAP	     = (1 << 6)    
 };
 
-/*
- * Column JSON types
- */
+
 enum {
-	SCOLS_JSON_STRING    = 0,	/* default */
+	SCOLS_JSON_STRING    = 0,	
 	SCOLS_JSON_NUMBER    = 1,
 	SCOLS_JSON_BOOLEAN   = 2,
-	SCOLS_JSON_ARRAY_STRING = 3,        /* e.g. for multi-line (SCOLS_FL_WRAP) cells */
+	SCOLS_JSON_ARRAY_STRING = 3,        
 	SCOLS_JSON_ARRAY_NUMBER	= 4,
 	SCOLS_JSON_BOOLEAN_OPTIONAL = 5,
 };
 
-/*
- * Cell flags, see scols_cell_set_flags() before use
- */
+
 enum {
-	/* alignment evaluated in order: right,center,left */
+	
 	SCOLS_CELL_FL_LEFT    = 0,
 	SCOLS_CELL_FL_CENTER  = (1 << 0),
 	SCOLS_CELL_FL_RIGHT   = (1 << 1)
@@ -114,14 +72,14 @@ extern void scols_free_iter(struct libscols_iter *itr);
 extern void scols_reset_iter(struct libscols_iter *itr, int direction);
 extern int scols_iter_get_direction(const struct libscols_iter *itr);
 
-/* init.c */
+
 extern void scols_init_debug(int mask);
 
-/* version.c */
+
 extern int scols_parse_version_string(const char *ver_string);
 extern int scols_get_library_version(const char **ver_string);
 
-/* symbols.c */
+
 extern struct libscols_symbols *scols_new_symbols(void);
 extern void scols_ref_symbols(struct libscols_symbols *sy);
 extern void scols_unref_symbols(struct libscols_symbols *sy);
@@ -140,7 +98,7 @@ extern int scols_symbols_set_group_middle_member(struct libscols_symbols *sy, co
 extern int scols_symbols_set_group_last_child(struct libscols_symbols *sy, const char *str);
 extern int scols_symbols_set_group_middle_child(struct libscols_symbols *sy, const char *str);
 
-/* cell.c */
+
 extern int scols_reset_cell(struct libscols_cell *ce);
 extern int scols_cell_copy_content(struct libscols_cell *dest,
 				   const struct libscols_cell *src);
@@ -159,7 +117,7 @@ extern int scols_cell_set_userdata(struct libscols_cell *ce, void *data);
 
 extern int scols_cmpstr_cells(struct libscols_cell *a,
 			      struct libscols_cell *b, void *data);
-/* column.c */
+
 extern int scols_column_is_tree(const struct libscols_column *cl);
 extern int scols_column_is_trunc(const struct libscols_column *cl);
 extern int scols_column_is_right(const struct libscols_column *cl);
@@ -211,7 +169,7 @@ extern int scols_column_set_wrapfunc(struct libscols_column *cl,
 extern char *scols_wrapnl_nextchunk(const struct libscols_column *cl, char *data, void *userdata);
 extern size_t scols_wrapnl_chunksize(const struct libscols_column *cl, const char *data, void *userdata);
 
-/* line.c */
+
 extern struct libscols_line *scols_new_line(void);
 extern void scols_ref_line(struct libscols_line *ln);
 extern void scols_unref_line(struct libscols_line *ln);
@@ -240,7 +198,7 @@ extern const char *scols_line_get_column_data(struct libscols_line *ln, struct l
 extern int scols_line_refer_column_data(struct libscols_line *ln, struct libscols_column *cl, char *data);
 extern struct libscols_line *scols_copy_line(const struct libscols_line *ln);
 
-/* table */
+
 extern int scols_table_colors_wanted(const struct libscols_table *tb);
 extern int scols_table_set_name(struct libscols_table *tb, const char *name);
 extern const char *scols_table_get_name(const struct libscols_table *tb);
@@ -310,9 +268,7 @@ extern int scols_table_reduce_termwidth(struct libscols_table *tb, size_t reduce
 
 extern int scols_sort_table(struct libscols_table *tb, struct libscols_column *cl);
 extern int scols_sort_table_by_tree(struct libscols_table *tb);
-/*
- *
- */
+
 enum {
 	SCOLS_TERMFORCE_AUTO = 0,
 	SCOLS_TERMFORCE_NEVER,
@@ -326,7 +282,7 @@ extern int scols_table_set_termheight(struct libscols_table *tb, size_t height);
 extern size_t scols_table_get_termheight(const struct libscols_table *tb);
 
 
-/* table_print.c */
+
 extern int scols_print_table(struct libscols_table *tb);
 extern int scols_print_table_to_string(struct libscols_table *tb, char **data);
 
@@ -338,7 +294,7 @@ extern int scols_table_print_range_to_string(	struct libscols_table *tb,
 						struct libscols_line *end,
 						char **data);
 
-/* grouping.c */
+
 int scols_line_link_group(struct libscols_line *ln, struct libscols_line *member, int id);
 int scols_table_group_lines(struct libscols_table *tb, struct libscols_line *ln,
                             struct libscols_line *member, int id);
@@ -346,4 +302,4 @@ int scols_table_group_lines(struct libscols_table *tb, struct libscols_line *ln,
 }
 #endif
 
-#endif /* _LIBSMARTCOLS_H */
+#endif 

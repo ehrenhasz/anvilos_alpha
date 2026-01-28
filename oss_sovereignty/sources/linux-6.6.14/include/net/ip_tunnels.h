@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_IP_TUNNELS_H
 #define __NET_IP_TUNNELS_H 1
 
@@ -24,13 +24,13 @@
 #include <net/ip6_route.h>
 #endif
 
-/* Keep error state on tunnel for 30 sec */
+
 #define IPTUNNEL_ERR_TIMEO	(30*HZ)
 
-/* Used to memset ip_tunnel padding. */
+
 #define IP_TUNNEL_KEY_SIZE	offsetofend(struct ip_tunnel_key, tp_dst)
 
-/* Used to memset ipv4 address padding. */
+
 #define IP_TUNNEL_KEY_IPV4_PAD	offsetofend(struct ip_tunnel_key, u.ipv4.dst)
 #define IP_TUNNEL_KEY_IPV4_PAD_LEN				\
 	(sizeof_field(struct ip_tunnel_key, u) -		\
@@ -49,9 +49,9 @@ struct ip_tunnel_key {
 		} ipv6;
 	} u;
 	__be16			tun_flags;
-	u8			tos;		/* TOS for IPv4, TC for IPv6 */
-	u8			ttl;		/* TTL for IPv4, HL for IPv6 */
-	__be32			label;		/* Flow Label for IPv6 */
+	u8			tos;		
+	u8			ttl;		
+	__be32			label;		
 	u32			nhid;
 	__be16			tp_src;
 	__be16			tp_dst;
@@ -65,12 +65,12 @@ struct ip_tunnel_encap {
 	__be16			dport;
 };
 
-/* Flags for ip_tunnel_info mode. */
-#define IP_TUNNEL_INFO_TX	0x01	/* represents tx tunnel parameters */
-#define IP_TUNNEL_INFO_IPV6	0x02	/* key contains IPv6 addresses */
-#define IP_TUNNEL_INFO_BRIDGE	0x04	/* represents a bridged tunnel id */
 
-/* Maximum tunnel options length. */
+#define IP_TUNNEL_INFO_TX	0x01	
+#define IP_TUNNEL_INFO_IPV6	0x02	
+#define IP_TUNNEL_INFO_BRIDGE	0x04	
+
+
 #define IP_TUNNEL_OPTS_MAX					\
 	GENMASK((sizeof_field(struct ip_tunnel_info,		\
 			      options_len) * BITS_PER_BYTE) - 1, 0)
@@ -91,7 +91,7 @@ struct ip_tunnel_info {
 	u8			mode;
 };
 
-/* 6rd prefix/relay information */
+
 #ifdef CONFIG_IPV6_SIT_6RD
 struct ip_tunnel_6rd_parm {
 	struct in6_addr		prefix;
@@ -117,38 +117,37 @@ struct ip_tunnel {
 	struct net_device	*dev;
 	netdevice_tracker	dev_tracker;
 
-	struct net		*net;	/* netns for packet i/o */
+	struct net		*net;	
 
-	unsigned long	err_time;	/* Time when the last ICMP error
-					 * arrived */
-	int		err_count;	/* Number of arrived ICMP errors */
+	unsigned long	err_time;	
+	int		err_count;	
 
-	/* These four fields used only by GRE */
-	u32		i_seqno;	/* The last seen seqno	*/
-	atomic_t	o_seqno;	/* The last output seqno */
-	int		tun_hlen;	/* Precalculated header length */
+	
+	u32		i_seqno;	
+	atomic_t	o_seqno;	
+	int		tun_hlen;	
 
-	/* These four fields used only by ERSPAN */
-	u32		index;		/* ERSPAN type II index */
-	u8		erspan_ver;	/* ERSPAN version */
-	u8		dir;		/* ERSPAN direction */
-	u16		hwid;		/* ERSPAN hardware ID */
+	
+	u32		index;		
+	u8		erspan_ver;	
+	u8		dir;		
+	u16		hwid;		
 
 	struct dst_cache dst_cache;
 
 	struct ip_tunnel_parm parms;
 
 	int		mlink;
-	int		encap_hlen;	/* Encap header length (FOU,GUE) */
-	int		hlen;		/* tun_hlen + encap_hlen */
+	int		encap_hlen;	
+	int		hlen;		
 	struct ip_tunnel_encap encap;
 
-	/* for SIT */
+	
 #ifdef CONFIG_IPV6_SIT_6RD
 	struct ip_tunnel_6rd_parm ip6rd;
 #endif
-	struct ip_tunnel_prl_entry __rcu *prl;	/* potential router list */
-	unsigned int		prl_count;	/* # of entries in PRL */
+	struct ip_tunnel_prl_entry __rcu *prl;	
+	unsigned int		prl_count;	
 	unsigned int		ip_tnl_net_id;
 	struct gro_cells	gro_cells;
 	__u32			fwmark;
@@ -195,14 +194,11 @@ static inline void ip_tunnel_key_init(struct ip_tunnel_key *key,
 	key->label = label;
 	key->tun_flags = tun_flags;
 
-	/* For the tunnel types on the top of IPsec, the tp_src and tp_dst of
-	 * the upper tunnel are used.
-	 * E.g: GRE over IPSEC, the tp_src and tp_port are zero.
-	 */
+	
 	key->tp_src = tp_src;
 	key->tp_dst = tp_dst;
 
-	/* Clear struct padding. */
+	
 	if (sizeof(*key) != IP_TUNNEL_KEY_SIZE)
 		memset((unsigned char *)key + IP_TUNNEL_KEY_SIZE,
 		       0, sizeof(*key) - IP_TUNNEL_KEY_SIZE);
@@ -237,7 +233,7 @@ static inline __be64 key32_to_tunnel_id(__be32 key)
 #endif
 }
 
-/* Returns the least-significant 32 bits of a __be64. */
+
 static inline __be32 tunnel_id_to_key32(__be64 tun_id)
 {
 #ifdef __BIG_ENDIAN
@@ -261,7 +257,7 @@ static inline void ip_tunnel_init_flow(struct flowi4 *fl4,
 
 	if (oif) {
 		fl4->flowi4_l3mdev = l3mdev_master_upper_ifindex_by_index_rcu(net, oif);
-		/* Legacy VRF/l3mdev use case */
+		
 		fl4->flowi4_oif = fl4->flowi4_l3mdev ? 0 : oif;
 	}
 
@@ -402,7 +398,7 @@ static inline int ip_tunnel_encap(struct sk_buff *skb,
 	return ret;
 }
 
-/* Extract dsfield from inner protocol */
+
 static inline u8 ip_tunnel_get_dsfield(const struct iphdr *iph,
 				       const struct sk_buff *skb)
 {
@@ -429,7 +425,7 @@ static inline u8 ip_tunnel_get_ttl(const struct iphdr *iph,
 		return 0;
 }
 
-/* Propogate ECN bits out */
+
 static inline u8 ip_tunnel_ecn_encap(u8 tos, const struct iphdr *iph,
 				     const struct sk_buff *skb)
 {
@@ -518,7 +514,7 @@ static inline struct ip_tunnel_info *lwt_tun_info(struct lwtunnel_state *lwtstat
 
 DECLARE_STATIC_KEY_FALSE(ip_tunnel_metadata_cnt);
 
-/* Returns > 0 if metadata should be collected */
+
 static inline int ip_tunnel_collect_metadata(void)
 {
 	return static_branch_unlikely(&ip_tunnel_metadata_cnt);
@@ -529,7 +525,7 @@ void __init ip_tunnel_core_init(void);
 void ip_tunnel_need_metadata(void);
 void ip_tunnel_unneed_metadata(void);
 
-#else /* CONFIG_INET */
+#else 
 
 static inline struct ip_tunnel_info *lwt_tun_info(struct lwtunnel_state *lwtstate)
 {
@@ -556,6 +552,6 @@ static inline void ip_tunnel_info_opts_set(struct ip_tunnel_info *info,
 	info->options_len = 0;
 }
 
-#endif /* CONFIG_INET */
+#endif 
 
-#endif /* __NET_IP_TUNNELS_H */
+#endif 

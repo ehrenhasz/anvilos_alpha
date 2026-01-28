@@ -18,8 +18,8 @@ def foo():
     return hit
 hit = 123
 print(foo())
-print(hit)  # shouldn't be changed by foo
+print(hit)  
 print("any", any((hit := i) % 5 == 3 and (hit % 2) == 0 for i in range(10)))
-print(hit)  # should be changed by above
+print(hit)  
 print([((m := k + 1), k * m) for k in range(4)])
 print(m)

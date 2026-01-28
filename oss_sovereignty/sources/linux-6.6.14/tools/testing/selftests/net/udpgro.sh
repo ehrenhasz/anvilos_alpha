@@ -29,7 +29,7 @@ cfg_veth() {
 run_one() {
 	local -r all="$@"
 	local -r tx_args=${all%rx*}
-	local -r rx_args=${all#*rx}
+	local -r rx_args=${all
 	cfg_veth
 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -C 1000 -R 10 ${rx_args} && \
 		echo "ok" || \
@@ -49,7 +49,7 @@ run_one_nat() {
 	local addr1 addr2 pid family="" ipt_cmd=ip6tables
 	local -r all="$@"
 	local -r tx_args=${all%rx*}
-	local -r rx_args=${all#*rx}
+	local -r rx_args=${all
 	if [[ ${tx_args} = *-4* ]]; then
 		ipt_cmd=iptables
 		family=-4
@@ -77,7 +77,7 @@ run_one_nat() {
 run_one_2sock() {
 	local -r all="$@"
 	local -r tx_args=${all%rx*}
-	local -r rx_args=${all#*rx}
+	local -r rx_args=${all
 	cfg_veth
 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -C 1000 -R 10 ${rx_args} -p 12345 &
 	ip netns exec "${PEER_NS}" ./udpgso_bench_rx -C 2000 -R 10 ${rx_args} && \
@@ -146,7 +146,7 @@ if [ ! -f ${BPF_FILE} ]; then
 	echo "Missing ${BPF_FILE}. Build bpf selftest first"
 	exit -1
 fi
-if [[ $# -eq 0 ]]; then
+if [[ $
 	run_all
 elif [[ $1 == "__subprocess" ]]; then
 	shift

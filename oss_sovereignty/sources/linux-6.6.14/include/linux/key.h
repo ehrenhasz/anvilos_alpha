@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Authentication token and access key management
- *
- * Copyright (C) 2004, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * See Documentation/security/keys/core.rst for information on keys/keyrings.
- */
+
+
 
 #ifndef _LINUX_KEY_H
 #define _LINUX_KEY_H
@@ -24,10 +18,10 @@
 #ifdef __KERNEL__
 #include <linux/uidgid.h>
 
-/* key handle serial number */
+
 typedef int32_t key_serial_t;
 
-/* key handle permissions mask */
+
 typedef uint32_t key_perm_t;
 
 struct key;
@@ -37,15 +31,15 @@ struct net;
 
 #undef KEY_DEBUGGING
 
-#define KEY_POS_VIEW	0x01000000	/* possessor can view a key's attributes */
-#define KEY_POS_READ	0x02000000	/* possessor can read key payload / view keyring */
-#define KEY_POS_WRITE	0x04000000	/* possessor can update key payload / add link to keyring */
-#define KEY_POS_SEARCH	0x08000000	/* possessor can find a key in search / search a keyring */
-#define KEY_POS_LINK	0x10000000	/* possessor can create a link to a key/keyring */
-#define KEY_POS_SETATTR	0x20000000	/* possessor can set key attributes */
+#define KEY_POS_VIEW	0x01000000	
+#define KEY_POS_READ	0x02000000	
+#define KEY_POS_WRITE	0x04000000	
+#define KEY_POS_SEARCH	0x08000000	
+#define KEY_POS_LINK	0x10000000	
+#define KEY_POS_SETATTR	0x20000000	
 #define KEY_POS_ALL	0x3f000000
 
-#define KEY_USR_VIEW	0x00010000	/* user permissions... */
+#define KEY_USR_VIEW	0x00010000	
 #define KEY_USR_READ	0x00020000
 #define KEY_USR_WRITE	0x00040000
 #define KEY_USR_SEARCH	0x00080000
@@ -53,7 +47,7 @@ struct net;
 #define KEY_USR_SETATTR	0x00200000
 #define KEY_USR_ALL	0x003f0000
 
-#define KEY_GRP_VIEW	0x00000100	/* group permissions... */
+#define KEY_GRP_VIEW	0x00000100	
 #define KEY_GRP_READ	0x00000200
 #define KEY_GRP_WRITE	0x00000400
 #define KEY_GRP_SEARCH	0x00000800
@@ -61,7 +55,7 @@ struct net;
 #define KEY_GRP_SETATTR	0x00002000
 #define KEY_GRP_ALL	0x00003f00
 
-#define KEY_OTH_VIEW	0x00000001	/* third party permissions... */
+#define KEY_OTH_VIEW	0x00000001	
 #define KEY_OTH_READ	0x00000002
 #define KEY_OTH_WRITE	0x00000004
 #define KEY_OTH_SEARCH	0x00000008
@@ -71,21 +65,19 @@ struct net;
 
 #define KEY_PERM_UNDEF	0xffffffff
 
-/*
- * The permissions required on a key that we're looking up.
- */
+
 enum key_need_perm {
-	KEY_NEED_UNSPECIFIED,	/* Needed permission unspecified */
-	KEY_NEED_VIEW,		/* Require permission to view attributes */
-	KEY_NEED_READ,		/* Require permission to read content */
-	KEY_NEED_WRITE,		/* Require permission to update / modify */
-	KEY_NEED_SEARCH,	/* Require permission to search (keyring) or find (key) */
-	KEY_NEED_LINK,		/* Require permission to link */
-	KEY_NEED_SETATTR,	/* Require permission to change attributes */
-	KEY_NEED_UNLINK,	/* Require permission to unlink key */
-	KEY_SYSADMIN_OVERRIDE,	/* Special: override by CAP_SYS_ADMIN */
-	KEY_AUTHTOKEN_OVERRIDE,	/* Special: override by possession of auth token */
-	KEY_DEFER_PERM_CHECK,	/* Special: permission check is deferred */
+	KEY_NEED_UNSPECIFIED,	
+	KEY_NEED_VIEW,		
+	KEY_NEED_READ,		
+	KEY_NEED_WRITE,		
+	KEY_NEED_SEARCH,	
+	KEY_NEED_LINK,		
+	KEY_NEED_SETATTR,	
+	KEY_NEED_UNLINK,	
+	KEY_SYSADMIN_OVERRIDE,	
+	KEY_AUTHTOKEN_OVERRIDE,	
+	KEY_DEFER_PERM_CHECK,	
 };
 
 enum key_lookup_flag {
@@ -108,26 +100,26 @@ struct keyring_name;
 struct key_tag {
 	struct rcu_head		rcu;
 	refcount_t		usage;
-	bool			removed;	/* T when subject removed */
+	bool			removed;	
 };
 
 struct keyring_index_key {
-	/* [!] If this structure is altered, the union in struct key must change too! */
-	unsigned long		hash;			/* Hash value */
+	
+	unsigned long		hash;			
 	union {
 		struct {
-#ifdef __LITTLE_ENDIAN /* Put desc_len at the LSB of x */
+#ifdef __LITTLE_ENDIAN 
 			u16	desc_len;
-			char	desc[sizeof(long) - 2];	/* First few chars of description */
+			char	desc[sizeof(long) - 2];	
 #else
-			char	desc[sizeof(long) - 2];	/* First few chars of description */
+			char	desc[sizeof(long) - 2];	
 			u16	desc_len;
 #endif
 		};
 		unsigned long x;
 	};
 	struct key_type		*type;
-	struct key_tag		*domain_tag;	/* Domain of operation */
+	struct key_tag		*domain_tag;	
 	const char		*description;
 };
 
@@ -136,20 +128,8 @@ union key_payload {
 	void			*data[4];
 };
 
-/*****************************************************************************/
-/*
- * key reference with possession attribute handling
- *
- * NOTE! key_ref_t is a typedef'd pointer to a type that is not actually
- * defined. This is because we abuse the bottom bit of the reference to carry a
- * flag to indicate whether the calling process possesses that key in one of
- * its keyrings.
- *
- * the key_ref_t has been made a separate type so that the compiler can reject
- * attempts to dereference it without proper conversion.
- *
- * the three functions are used to assemble and disassemble references
- */
+
+
 typedef struct __key_reference_with_attributes *key_ref_t;
 
 static inline key_ref_t make_key_ref(const struct key *key,
@@ -181,102 +161,76 @@ struct key_restriction {
 
 enum key_state {
 	KEY_IS_UNINSTANTIATED,
-	KEY_IS_POSITIVE,		/* Positively instantiated */
+	KEY_IS_POSITIVE,		
 };
 
-/*****************************************************************************/
-/*
- * authentication token / access credential / keyring
- * - types of key include:
- *   - keyrings
- *   - disk encryption IDs
- *   - Kerberos TGTs and tickets
- */
+
+
 struct key {
-	refcount_t		usage;		/* number of references */
-	key_serial_t		serial;		/* key serial number */
+	refcount_t		usage;		
+	key_serial_t		serial;		
 	union {
 		struct list_head graveyard_link;
 		struct rb_node	serial_node;
 	};
 #ifdef CONFIG_KEY_NOTIFICATIONS
-	struct watch_list	*watchers;	/* Entities watching this key for changes */
+	struct watch_list	*watchers;	
 #endif
-	struct rw_semaphore	sem;		/* change vs change sem */
-	struct key_user		*user;		/* owner of this key */
-	void			*security;	/* security data for this key */
+	struct rw_semaphore	sem;		
+	struct key_user		*user;		
+	void			*security;	
 	union {
-		time64_t	expiry;		/* time at which key expires (or 0) */
-		time64_t	revoked_at;	/* time at which key was revoked */
+		time64_t	expiry;		
+		time64_t	revoked_at;	
 	};
-	time64_t		last_used_at;	/* last time used for LRU keyring discard */
+	time64_t		last_used_at;	
 	kuid_t			uid;
 	kgid_t			gid;
-	key_perm_t		perm;		/* access permissions */
-	unsigned short		quotalen;	/* length added to quota */
-	unsigned short		datalen;	/* payload data length
-						 * - may not match RCU dereferenced payload
-						 * - payload should contain own length
-						 */
-	short			state;		/* Key state (+) or rejection error (-) */
+	key_perm_t		perm;		
+	unsigned short		quotalen;	
+	unsigned short		datalen;	
+	short			state;		
 
 #ifdef KEY_DEBUGGING
 	unsigned		magic;
 #define KEY_DEBUG_MAGIC		0x18273645u
 #endif
 
-	unsigned long		flags;		/* status flags (change with bitops) */
-#define KEY_FLAG_DEAD		0	/* set if key type has been deleted */
-#define KEY_FLAG_REVOKED	1	/* set if key had been revoked */
-#define KEY_FLAG_IN_QUOTA	2	/* set if key consumes quota */
-#define KEY_FLAG_USER_CONSTRUCT	3	/* set if key is being constructed in userspace */
-#define KEY_FLAG_ROOT_CAN_CLEAR	4	/* set if key can be cleared by root without permission */
-#define KEY_FLAG_INVALIDATED	5	/* set if key has been invalidated */
-#define KEY_FLAG_BUILTIN	6	/* set if key is built in to the kernel */
-#define KEY_FLAG_ROOT_CAN_INVAL	7	/* set if key can be invalidated by root without permission */
-#define KEY_FLAG_KEEP		8	/* set if key should not be removed */
-#define KEY_FLAG_UID_KEYRING	9	/* set if key is a user or user session keyring */
+	unsigned long		flags;		
+#define KEY_FLAG_DEAD		0	
+#define KEY_FLAG_REVOKED	1	
+#define KEY_FLAG_IN_QUOTA	2	
+#define KEY_FLAG_USER_CONSTRUCT	3	
+#define KEY_FLAG_ROOT_CAN_CLEAR	4	
+#define KEY_FLAG_INVALIDATED	5	
+#define KEY_FLAG_BUILTIN	6	
+#define KEY_FLAG_ROOT_CAN_INVAL	7	
+#define KEY_FLAG_KEEP		8	
+#define KEY_FLAG_UID_KEYRING	9	
 
-	/* the key type and key description string
-	 * - the desc is used to match a key against search criteria
-	 * - it should be a printable string
-	 * - eg: for krb5 AFS, this might be "afs@REDHAT.COM"
-	 */
+	
 	union {
 		struct keyring_index_key index_key;
 		struct {
 			unsigned long	hash;
 			unsigned long	len_desc;
-			struct key_type	*type;		/* type of key */
-			struct key_tag	*domain_tag;	/* Domain of operation */
+			struct key_type	*type;		
+			struct key_tag	*domain_tag;	
 			char		*description;
 		};
 	};
 
-	/* key data
-	 * - this is used to hold the data actually used in cryptography or
-	 *   whatever
-	 */
+	
 	union {
 		union key_payload payload;
 		struct {
-			/* Keyring bits */
+			
 			struct list_head name_link;
 			struct assoc_array keys;
 		};
 	};
 
-	/* This is set on a keyring to restrict the addition of a link to a key
-	 * to it.  If this structure isn't provided then it is assumed that the
-	 * keyring is open to any addition.  It is ignored for non-keyring
-	 * keys. Only set this value using keyring_restrict(), keyring_alloc(),
-	 * or key_alloc().
-	 *
-	 * This is intended for use with rings of trusted keys whereby addition
-	 * to the keyring needs to be controlled.  KEY_ALLOC_BYPASS_RESTRICTION
-	 * overrides this, allowing the kernel to add extra keys without
-	 * restriction.
-	 */
+	
 	struct key_restriction *restrict_link;
 };
 
@@ -289,13 +243,13 @@ extern struct key *key_alloc(struct key_type *type,
 			     struct key_restriction *restrict_link);
 
 
-#define KEY_ALLOC_IN_QUOTA		0x0000	/* add to quota, reject if would overrun */
-#define KEY_ALLOC_QUOTA_OVERRUN		0x0001	/* add to quota, permit even if overrun */
-#define KEY_ALLOC_NOT_IN_QUOTA		0x0002	/* not in quota */
-#define KEY_ALLOC_BUILT_IN		0x0004	/* Key is built into kernel */
-#define KEY_ALLOC_BYPASS_RESTRICTION	0x0008	/* Override the check on restricted keyrings */
-#define KEY_ALLOC_UID_KEYRING		0x0010	/* allocating a user or user session keyring */
-#define KEY_ALLOC_SET_KEEP		0x0020	/* Set the KEEP flag on the key/keyring */
+#define KEY_ALLOC_IN_QUOTA		0x0000	
+#define KEY_ALLOC_QUOTA_OVERRUN		0x0001	
+#define KEY_ALLOC_NOT_IN_QUOTA		0x0002	
+#define KEY_ALLOC_BUILT_IN		0x0004	
+#define KEY_ALLOC_BYPASS_RESTRICTION	0x0008	
+#define KEY_ALLOC_UID_KEYRING		0x0010	
+#define KEY_ALLOC_SET_KEEP		0x0020	
 
 extern void key_revoke(struct key *key);
 extern void key_invalidate(struct key *key);
@@ -335,14 +289,7 @@ extern struct key *request_key_with_auxdata(struct key_type *type,
 					    size_t callout_len,
 					    void *aux);
 
-/**
- * request_key - Request a key and wait for construction
- * @type: Type of key.
- * @description: The searchable description of the key.
- * @callout_info: The data to pass to the instantiation upcall (or NULL).
- *
- * As for request_key_tag(), but with the default global domain tag.
- */
+
 static inline struct key *request_key(struct key_type *type,
 				      const char *description,
 				      const char *callout_info)
@@ -351,36 +298,14 @@ static inline struct key *request_key(struct key_type *type,
 }
 
 #ifdef CONFIG_NET
-/**
- * request_key_net - Request a key for a net namespace and wait for construction
- * @type: Type of key.
- * @description: The searchable description of the key.
- * @net: The network namespace that is the key's domain of operation.
- * @callout_info: The data to pass to the instantiation upcall (or NULL).
- *
- * As for request_key() except that it does not add the returned key to a
- * keyring if found, new keys are always allocated in the user's quota, the
- * callout_info must be a NUL-terminated string and no auxiliary data can be
- * passed.  Only keys that operate the specified network namespace are used.
- *
- * Furthermore, it then works as wait_for_key_construction() to wait for the
- * completion of keys undergoing construction with a non-interruptible wait.
- */
+
 #define request_key_net(type, description, net, callout_info) \
 	request_key_tag(type, description, net->key_domain, callout_info)
 
-/**
- * request_key_net_rcu - Request a key for a net namespace under RCU conditions
- * @type: Type of key.
- * @description: The searchable description of the key.
- * @net: The network namespace that is the key's domain of operation.
- *
- * As for request_key_rcu() except that only keys that operate the specified
- * network namespace are used.
- */
+
 #define request_key_net_rcu(type, description, net) \
 	request_key_rcu(type, description, net->key_domain)
-#endif /* CONFIG_NET */
+#endif 
 
 extern int wait_for_key_construction(struct key *key, bool intr);
 
@@ -457,17 +382,11 @@ extern void key_free_user_ns(struct user_namespace *);
 
 static inline short key_read_state(const struct key *key)
 {
-	/* Barrier versus mark_key_instantiated(). */
+	
 	return smp_load_acquire(&key->state);
 }
 
-/**
- * key_is_positive - Determine if a key has been positively instantiated
- * @key: The key to check.
- *
- * Return true if the specified key has been positively instantiated, false
- * otherwise.
- */
+
 static inline bool key_is_positive(const struct key *key)
 {
 	return key_read_state(key) == KEY_IS_POSITIVE;
@@ -490,15 +409,13 @@ do {									\
 	rcu_assign_pointer((KEY)->payload.rcu_data0, (PAYLOAD));	\
 } while (0)
 
-/*
- * the userspace interface
- */
+
 extern int install_thread_keyring_to_cred(struct cred *cred);
 extern void key_fsuid_changed(struct cred *new_cred);
 extern void key_fsgid_changed(struct cred *new_cred);
 extern void key_init(void);
 
-#else /* CONFIG_KEYS */
+#else 
 
 #define key_validate(k)			0
 #define key_serial(k)			0
@@ -516,6 +433,6 @@ extern void key_init(void);
 #define key_free_user_ns(ns)		do { } while(0)
 #define key_remove_domain(d)		do { } while(0)
 
-#endif /* CONFIG_KEYS */
-#endif /* __KERNEL__ */
-#endif /* _LINUX_KEY_H */
+#endif 
+#endif 
+#endif 

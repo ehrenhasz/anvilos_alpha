@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for inet_sock
- *
- * Authors:	Many, reorganised here by
- * 		Arnaldo Carvalho de Melo <acme@mandriva.com>
- */
+
+
 #ifndef _INET_SOCK_H
 #define _INET_SOCK_H
 
@@ -25,17 +16,7 @@
 #include <net/tcp_states.h>
 #include <net/l3mdev.h>
 
-/** struct ip_options - IP Options
- *
- * @faddr - Saved first hop address
- * @nexthop - Saved nexthop address in LSRR and SSRR
- * @is_strictroute - Strict source route
- * @srr_is_hit - Packet destination addr was our one
- * @is_changed - IP checksum more not valid
- * @rr_needaddr - Need to record addr of outgoing dev
- * @ts_needtime - Need to record timestamp
- * @ts_needaddr - Need to record addr of outgoing dev
- */
+
 struct ip_options {
 	__be32		faddr;
 	__be32		nexthop;
@@ -166,7 +147,7 @@ struct inet_cork {
 	__be32			addr;
 	struct ip_options	*opt;
 	unsigned int		fragsize;
-	int			length; /* Total length of all frames */
+	int			length; 
 	struct dst_entry	*dst;
 	u8			tx_flags;
 	__u8			ttl;
@@ -186,33 +167,14 @@ struct ip_mc_socklist;
 struct ipv6_pinfo;
 struct rtable;
 
-/** struct inet_sock - representation of INET sockets
- *
- * @sk - ancestor class
- * @pinet6 - pointer to IPv6 control block
- * @inet_daddr - Foreign IPv4 addr
- * @inet_rcv_saddr - Bound local IPv4 addr
- * @inet_dport - Destination port
- * @inet_num - Local port
- * @inet_flags - various atomic flags
- * @inet_saddr - Sending source
- * @uc_ttl - Unicast TTL
- * @inet_sport - Source port
- * @inet_id - ID counter for DF pkts
- * @tos - TOS
- * @mc_ttl - Multicasting TTL
- * @uc_index - Unicast outgoing device index
- * @mc_index - Multicast device index
- * @mc_list - Group array
- * @cork - info to build ip hdr on each ip frag while socket is corked
- */
+
 struct inet_sock {
-	/* sk and pinet6 has to be the first two members of inet_sock */
+	
 	struct sock		sk;
 #if IS_ENABLED(CONFIG_IPV6)
 	struct ipv6_pinfo	*pinet6;
 #endif
-	/* Socket demultiplex comparisons on incoming packets. */
+	
 #define inet_daddr		sk.__sk_common.skc_daddr
 #define inet_rcv_saddr		sk.__sk_common.skc_rcv_saddr
 #define inet_dport		sk.__sk_common.skc_dport
@@ -243,8 +205,8 @@ struct inet_sock {
 	struct inet_cork_full	cork;
 };
 
-#define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
-#define IPCORK_ALLFRAG	2	/* always fragment (for ipv6 for now) */
+#define IPCORK_OPT	1	
+#define IPCORK_ALLFRAG	2	
 
 enum {
 	INET_FLAGS_PKTINFO	= 0,
@@ -270,7 +232,7 @@ enum {
 	INET_FLAGS_DEFER_CONNECT = 19,
 };
 
-/* cmsg flags for inet */
+
 #define IP_CMSG_PKTINFO		BIT(INET_FLAGS_PKTINFO)
 #define IP_CMSG_TTL		BIT(INET_FLAGS_TTL)
 #define IP_CMSG_TOS		BIT(INET_FLAGS_TOS)
@@ -306,13 +268,7 @@ static inline bool sk_is_inet(struct sock *sk)
 	return sk->sk_family == AF_INET || sk->sk_family == AF_INET6;
 }
 
-/**
- * sk_to_full_sk - Access to a full socket
- * @sk: pointer to a socket
- *
- * SYNACK messages might be attached to request sockets.
- * Some places want to reach the listener in this case.
- */
+
 static inline struct sock *sk_to_full_sk(struct sock *sk)
 {
 #ifdef CONFIG_INET
@@ -322,7 +278,7 @@ static inline struct sock *sk_to_full_sk(struct sock *sk)
 	return sk;
 }
 
-/* sk_to_full_sk() variant with a const argument */
+
 static inline const struct sock *sk_const_to_full_sk(const struct sock *sk)
 {
 #ifdef CONFIG_INET
@@ -349,27 +305,14 @@ static inline void __inet_sk_copy_descendant(struct sock *sk_to,
 
 int inet_sk_rebuild_header(struct sock *sk);
 
-/**
- * inet_sk_state_load - read sk->sk_state for lockless contexts
- * @sk: socket pointer
- *
- * Paired with inet_sk_state_store(). Used in places we don't hold socket lock:
- * tcp_diag_get_info(), tcp_get_info(), tcp_poll(), get_tcp4_sock() ...
- */
+
 static inline int inet_sk_state_load(const struct sock *sk)
 {
-	/* state change might impact lockless readers. */
+	
 	return smp_load_acquire(&sk->sk_state);
 }
 
-/**
- * inet_sk_state_store - update sk->sk_state
- * @sk: socket pointer
- * @newstate: new state
- *
- * Paired with inet_sk_state_load(). Should be used in contexts where
- * state change might impact lockless readers.
- */
+
 void inet_sk_state_store(struct sock *sk, int newstate);
 
 void inet_sk_set_state(struct sock *sk, int state);
@@ -436,4 +379,4 @@ static inline bool inet_addr_valid_or_nonlocal(struct net *net,
 		addr_type == RTN_BROADCAST;
 }
 
-#endif	/* _INET_SOCK_H */
+#endif	

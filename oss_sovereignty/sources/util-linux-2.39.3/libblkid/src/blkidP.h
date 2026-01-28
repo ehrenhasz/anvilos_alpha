@@ -1,20 +1,10 @@
-/*
- * blkidP.h - Internal interfaces for libblkid
- *
- * Copyright (C) 2001 Andreas Dilger
- * Copyright (C) 2003 Theodore Ts'o
- *
- * %Begin-Header%
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- * %End-Header%
- */
+
 
 #ifndef _BLKID_BLKIDP_H
 #define _BLKID_BLKIDP_H
 
-/* Always confirm that /dev/disk-by symlinks match with LABEL/UUID on device */
-/* #define CONFIG_BLKID_VERIFY_UDEV 1 */
+
+
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -28,7 +18,7 @@
 #endif
 
 #include "c.h"
-#include "bitops.h"	/* $(top_srcdir)/include/ */
+#include "bitops.h"	
 #include "blkdev.h"
 
 #include "debug.h"
@@ -36,218 +26,187 @@
 #include "list.h"
 #include "encode.h"
 
-/*
- * This describes the attributes of a specific device.
- * We can traverse all of the tags by bid_tags (linking to the tag bit_names).
- * The bid_label and bid_uuid fields are shortcuts to the LABEL and UUID tag
- * values, if they exist.
- */
+
 struct blkid_struct_dev
 {
-	struct list_head	bid_devs;	/* All devices in the cache */
-	struct list_head	bid_tags;	/* All tags for this device */
-	blkid_cache		bid_cache;	/* Dev belongs to this cache */
-	char			*bid_name;	/* Device real path (as used in cache) */
-	char			*bid_xname;	/* Device path as used by application (maybe symlink..) */
-	char			*bid_type;	/* Preferred device TYPE */
-	int			bid_pri;	/* Device priority */
-	dev_t			bid_devno;	/* Device major/minor number */
-	time_t			bid_time;	/* Last update time of device */
-	suseconds_t		bid_utime;	/* Last update time (microseconds) */
-	unsigned int		bid_flags;	/* Device status bitflags */
-	char			*bid_label;	/* Shortcut to device LABEL */
-	char			*bid_uuid;	/* Shortcut to binary UUID */
+	struct list_head	bid_devs;	
+	struct list_head	bid_tags;	
+	blkid_cache		bid_cache;	
+	char			*bid_name;	
+	char			*bid_xname;	
+	char			*bid_type;	
+	int			bid_pri;	
+	dev_t			bid_devno;	
+	time_t			bid_time;	
+	suseconds_t		bid_utime;	
+	unsigned int		bid_flags;	
+	char			*bid_label;	
+	char			*bid_uuid;	
 };
 
-#define BLKID_BID_FL_VERIFIED	0x0001	/* Device data validated from disk */
-#define BLKID_BID_FL_INVALID	0x0004	/* Device is invalid */
-#define BLKID_BID_FL_REMOVABLE	0x0008	/* Device added by blkid_probe_all_removable() */
+#define BLKID_BID_FL_VERIFIED	0x0001	
+#define BLKID_BID_FL_INVALID	0x0004	
+#define BLKID_BID_FL_REMOVABLE	0x0008	
 
-/*
- * Each tag defines a NAME=value pair for a particular device.  The tags
- * are linked via bit_names for a single device, so that traversing the
- * names list will get you a list of all tags associated with a device.
- * They are also linked via bit_values for all devices, so one can easily
- * search all tags with a given NAME for a specific value.
- */
+
 struct blkid_struct_tag
 {
-	struct list_head	bit_tags;	/* All tags for this device */
-	struct list_head	bit_names;	/* All tags with given NAME */
-	char			*bit_name;	/* NAME of tag (shared) */
-	char			*bit_val;	/* value of tag */
-	blkid_dev		bit_dev;	/* pointer to device */
+	struct list_head	bit_tags;	
+	struct list_head	bit_names;	
+	char			*bit_name;	
+	char			*bit_val;	
+	blkid_dev		bit_dev;	
 };
 typedef struct blkid_struct_tag *blkid_tag;
 
-/*
- * Chain IDs
- */
-enum {
-	BLKID_CHAIN_SUBLKS,	/* FS/RAID superblocks (enabled by default) */
-	BLKID_CHAIN_TOPLGY,	/* Block device topology */
-	BLKID_CHAIN_PARTS,	/* Partition tables */
 
-	BLKID_NCHAINS		/* number of chains */
+enum {
+	BLKID_CHAIN_SUBLKS,	
+	BLKID_CHAIN_TOPLGY,	
+	BLKID_CHAIN_PARTS,	
+
+	BLKID_NCHAINS		
 };
 
 struct blkid_chain {
-	const struct blkid_chaindrv *driver;	/* chain driver */
+	const struct blkid_chaindrv *driver;	
 
-	int		enabled;	/* boolean */
-	int		flags;		/* BLKID_<chain>_* */
-	int		binary;		/* boolean */
-	int		idx;		/* index of the current prober (or -1) */
-	unsigned long	*fltr;		/* filter or NULL */
-	void		*data;		/* private chain data or NULL */
+	int		enabled;	
+	int		flags;		
+	int		binary;		
+	int		idx;		
+	unsigned long	*fltr;		
+	void		*data;		
 };
 
-/*
- * Chain driver
- */
+
 struct blkid_chaindrv {
-	const size_t	id;		/* BLKID_CHAIN_* */
-	const char	*name;		/* name of chain (for debug purpose) */
-	const int	dflt_flags;	/* default chain flags */
-	const int	dflt_enabled;	/* default enabled boolean */
-	int		has_fltr;	/* boolean */
+	const size_t	id;		
+	const char	*name;		
+	const int	dflt_flags;	
+	const int	dflt_enabled;	
+	int		has_fltr;	
 
-	const struct blkid_idinfo **idinfos; /* description of probing functions */
-	const size_t	nidinfos;	/* number of idinfos */
+	const struct blkid_idinfo **idinfos; 
+	const size_t	nidinfos;	
 
-	/* driver operations */
+	
 	int		(*probe)(blkid_probe, struct blkid_chain *);
 	int		(*safeprobe)(blkid_probe, struct blkid_chain *);
 	void		(*free_data)(blkid_probe, void *);
 };
 
-/* chains */
+
 extern const struct blkid_chaindrv superblocks_drv;
 extern const struct blkid_chaindrv topology_drv;
 extern const struct blkid_chaindrv partitions_drv;
 
-/*
- * Low-level probe result
- */
+
 struct blkid_prval
 {
-	const char	*name;		/* value name */
-	unsigned char	*data;		/* value data */
-	size_t		len;		/* length of value data */
+	const char	*name;		
+	unsigned char	*data;		
+	size_t		len;		
 
-	struct blkid_chain	*chain;		/* owner */
-	struct list_head	prvals;		/* list of results */
+	struct blkid_chain	*chain;		
+	struct list_head	prvals;		
 };
 
-/*
- * Filesystem / Raid magic strings
- */
+
 struct blkid_idmag
 {
-	const char	*magic;		/* magic string */
-	unsigned int	len;		/* length of magic */
+	const char	*magic;		
+	unsigned int	len;		
 
-	const char	*hoff;		/* hint which contains byte offset to kboff */
-	long		kboff;		/* kilobyte offset of superblock */
-	unsigned int	sboff;		/* byte offset within superblock */
+	const char	*hoff;		
+	long		kboff;		
+	unsigned int	sboff;		
 
-	int		is_zoned;	/* indicate magic location is calculated based on zone position  */
-	long		zonenum;	/* zone number which has superblock */
-	long		kboff_inzone;	/* kilobyte offset of superblock in a zone */
+	int		is_zoned;	
+	long		zonenum;	
+	long		kboff_inzone;	
 };
 
-/*
- * Filesystem / Raid description
- */
+
 struct blkid_idinfo
 {
-	const char	*name;		/* fs, raid or partition table name */
-	int		usage;		/* BLKID_USAGE_* flag */
-	int		flags;		/* BLKID_IDINFO_* flags */
-	int		minsz;		/* minimal device size */
+	const char	*name;		
+	int		usage;		
+	int		flags;		
+	int		minsz;		
 
-					/* probe function */
+					
 	int		(*probefunc)(blkid_probe pr, const struct blkid_idmag *mag);
 
-	struct blkid_idmag	magics[];	/* NULL or array with magic strings */
+	struct blkid_idmag	magics[];	
 };
 
 #define BLKID_NONE_MAGIC	{{ NULL }}
 
-/*
- * tolerant FS - can share the same device with more filesystems (e.g. typical
- * on CD-ROMs). We need this flag to detect ambivalent results (e.g. valid fat
- * and valid linux swap on the same device).
- */
+
 #define BLKID_IDINFO_TOLERANT	(1 << 1)
 
 struct blkid_bufinfo {
 	unsigned char		*data;
 	uint64_t		off;
 	uint64_t		len;
-	struct list_head	bufs;	/* list of buffers */
+	struct list_head	bufs;	
 };
 
-/*
- * Probing hint
- */
+
 struct blkid_hint {
 	char			*name;
 	uint64_t		value;
 	struct list_head	hints;
 };
 
-/*
- * Low-level probing control struct
- */
+
 struct blkid_struct_probe
 {
-	int			fd;		/* device file descriptor */
-	uint64_t		off;		/* begin of data on the device */
-	uint64_t		size;		/* end of data on the device */
+	int			fd;		
+	uint64_t		off;		
+	uint64_t		size;		
 
-	dev_t			devno;		/* device number (st.st_rdev) */
-	dev_t			disk_devno;	/* devno of the whole-disk or 0 */
-	unsigned int		blkssz;		/* sector size (BLKSSZGET ioctl) */
-	mode_t			mode;		/* struct stat.sb_mode */
-	uint64_t		zone_size;	/* zone size (BLKGETZONESZ ioctl) */
+	dev_t			devno;		
+	dev_t			disk_devno;	
+	unsigned int		blkssz;		
+	mode_t			mode;		
+	uint64_t		zone_size;	
 
-	int			flags;		/* private library flags */
-	int			prob_flags;	/* always zeroized by blkid_do_*() */
+	int			flags;		
+	int			prob_flags;	
 
-	uint64_t		wipe_off;	/* begin of the wiped area */
-	uint64_t		wipe_size;	/* size of the wiped area */
-	struct blkid_chain	*wipe_chain;	/* superblock, partition, ... */
+	uint64_t		wipe_off;	
+	uint64_t		wipe_size;	
+	struct blkid_chain	*wipe_chain;	
 
-	struct list_head	buffers;	/* list of buffers */
+	struct list_head	buffers;	
 	struct list_head	hints;
 
-	struct blkid_chain	chains[BLKID_NCHAINS];	/* array of chains */
-	struct blkid_chain	*cur_chain;		/* current chain */
+	struct blkid_chain	chains[BLKID_NCHAINS];	
+	struct blkid_chain	*cur_chain;		
 
-	struct list_head	values;		/* results */
+	struct list_head	values;		
 
-	struct blkid_struct_probe *parent;	/* for clones */
-	struct blkid_struct_probe *disk_probe;	/* whole-disk probing */
+	struct blkid_struct_probe *parent;	
+	struct blkid_struct_probe *disk_probe;	
 };
 
-/* private flags library flags */
-#define BLKID_FL_PRIVATE_FD	(1 << 1)	/* see blkid_new_probe_from_filename() */
-#define BLKID_FL_TINY_DEV	(1 << 2)	/* <= 1.47MiB (floppy or so) */
-#define BLKID_FL_CDROM_DEV	(1 << 3)	/* is a CD/DVD drive */
-#define BLKID_FL_NOSCAN_DEV	(1 << 4)	/* do not scan this device */
-#define BLKID_FL_MODIF_BUFF	(1 << 5)	/* cached buffers has been modified */
-#define BLKID_FL_OPAL_LOCKED	(1 << 6)	/* OPAL device is locked (I/O errors) */
 
-/* private per-probing flags */
-#define BLKID_PROBE_FL_IGNORE_PT (1 << 1)	/* ignore partition table */
+#define BLKID_FL_PRIVATE_FD	(1 << 1)	
+#define BLKID_FL_TINY_DEV	(1 << 2)	
+#define BLKID_FL_CDROM_DEV	(1 << 3)	
+#define BLKID_FL_NOSCAN_DEV	(1 << 4)	
+#define BLKID_FL_MODIF_BUFF	(1 << 5)	
+#define BLKID_FL_OPAL_LOCKED	(1 << 6)	
+
+
+#define BLKID_PROBE_FL_IGNORE_PT (1 << 1)	
 
 extern blkid_probe blkid_clone_probe(blkid_probe parent);
 extern blkid_probe blkid_probe_get_wholedisk_probe(blkid_probe pr);
 
-/*
- * Evaluation methods (for blkid_eval_* API)
- */
+
 enum {
 	BLKID_EVAL_UDEV = 0,
 	BLKID_EVAL_SCAN,
@@ -255,63 +214,48 @@ enum {
 	__BLKID_EVAL_LAST
 };
 
-/*
- * Library config options
- */
+
 struct blkid_config {
-	int eval[__BLKID_EVAL_LAST];	/* array with EVALUATION=<udev,cache> options */
-	int nevals;			/* number of elems in eval array */
-	int uevent;			/* SEND_UEVENT=<yes|not> option */
-	char *cachefile;		/* CACHE_FILE=<path> option */
+	int eval[__BLKID_EVAL_LAST];	
+	int nevals;			
+	int uevent;			
+	char *cachefile;		
 };
 
 extern struct blkid_config *blkid_read_config(const char *filename)
 			__ul_attribute__((warn_unused_result));
 extern void blkid_free_config(struct blkid_config *conf);
 
-/*
- * Minimum number of seconds between device probes, even when reading
- * from the cache.  This is to avoid re-probing all devices which were
- * just probed by another program that does not share the cache.
- */
+
 #define BLKID_PROBE_MIN		2
 
-/*
- * Time in seconds an entry remains verified in the in-memory cache
- * before being reverified (in case of long-running processes that
- * keep a cache in memory and continue to use it for a long time).
- */
+
 #define BLKID_PROBE_INTERVAL	200
 
-/* This describes an entire blkid cache file and probed devices.
- * We can traverse all of the found devices via bic_list.
- * We can traverse all of the tag types by bic_tags, which hold empty tags
- * for each tag type.  Those tags can be used as list_heads for iterating
- * through all devices with a specific tag type (e.g. LABEL).
- */
+
 struct blkid_struct_cache
 {
-	struct list_head	bic_devs;	/* List head of all devices */
-	struct list_head	bic_tags;	/* List head of all tag types */
-	time_t			bic_time;	/* Last probe time */
-	time_t			bic_ftime;	/* Mod time of the cachefile */
-	unsigned int		bic_flags;	/* Status flags of the cache */
-	char			*bic_filename;	/* filename of cache */
-	blkid_probe		probe;		/* low-level probing stuff */
+	struct list_head	bic_devs;	
+	struct list_head	bic_tags;	
+	time_t			bic_time;	
+	time_t			bic_ftime;	
+	unsigned int		bic_flags;	
+	char			*bic_filename;	
+	blkid_probe		probe;		
 };
 
-#define BLKID_BIC_FL_PROBED	0x0002	/* We probed /proc/partition devices */
-#define BLKID_BIC_FL_CHANGED	0x0004	/* Cache has changed from disk */
+#define BLKID_BIC_FL_PROBED	0x0002	
+#define BLKID_BIC_FL_CHANGED	0x0004	
 
-/* config file */
+
 #define BLKID_CONFIG_FILE	"/etc/blkid.conf"
 
-/* cache file on systemds with /run */
+
 #define BLKID_RUNTIME_TOPDIR	"/run"
 #define BLKID_RUNTIME_DIR	BLKID_RUNTIME_TOPDIR "/blkid"
 #define BLKID_CACHE_FILE	BLKID_RUNTIME_DIR "/blkid.tab"
 
-/* old systems */
+
 #define BLKID_CACHE_FILE_OLD	"/etc/blkid.tab"
 
 #define BLKID_ERR_IO	 5
@@ -322,9 +266,7 @@ struct blkid_struct_cache
 #define BLKID_ERR_PARAM	22
 #define BLKID_ERR_BIG	27
 
-/*
- * Priority settings for different types of devices
- */
+
 #define BLKID_PRI_UBI	50
 #define BLKID_PRI_DM	40
 #define BLKID_PRI_EVMS	30
@@ -345,7 +287,7 @@ struct blkid_struct_cache
 #define BLKID_DEBUG_SAVE	(1 << 11)
 #define BLKID_DEBUG_TAG		(1 << 12)
 #define BLKID_DEBUG_BUFFER	(1 << 13)
-#define BLKID_DEBUG_ALL		0xFFFF		/* (1 << 16) aka FFFF is expected by API */
+#define BLKID_DEBUG_ALL		0xFFFF		
 
 UL_DEBUG_DECLARE_MASK(libblkid);
 #define DBG(m, x)	__UL_DBG(libblkid, BLKID_DEBUG_, m, x)
@@ -357,7 +299,7 @@ UL_DEBUG_DECLARE_MASK(libblkid);
 extern void blkid_debug_dump_dev(blkid_dev dev);
 
 
-/* devno.c */
+
 struct dir_list {
 	char	*name;
 	struct dir_list *next;
@@ -367,24 +309,22 @@ extern void blkid__scan_dir(char *, dev_t, struct dir_list **, char **)
 extern int blkid_driver_has_major(const char *drvname, int drvmaj)
 			__attribute__((warn_unused_result));
 
-/* read.c */
+
 extern void blkid_read_cache(blkid_cache cache)
 			__attribute__((nonnull));
 
-/* save.c */
+
 extern int blkid_flush_cache(blkid_cache cache)
 			__attribute__((nonnull));
 
-/* cache */
+
 extern char *blkid_safe_getenv(const char *arg)
 			__attribute__((nonnull))
 			__attribute__((warn_unused_result));
 
 extern char *blkid_get_cache_filename(struct blkid_config *conf)
 			__attribute__((warn_unused_result));
-/*
- * Functions to create and find a specific tag type: tag.c
- */
+
 extern void blkid_free_tag(blkid_tag tag);
 extern blkid_tag blkid_find_tag_dev(blkid_dev dev, const char *type)
 			__attribute__((nonnull))
@@ -394,14 +334,12 @@ extern int blkid_set_tag(blkid_dev dev, const char *name,
 			 const char *value, const int vlength)
 			__attribute__((nonnull(1,2)));
 
-/*
- * Functions to create and find a specific tag type: dev.c
- */
+
 extern blkid_dev blkid_new_dev(void)
 			__attribute__((warn_unused_result));
 extern void blkid_free_dev(blkid_dev dev);
 
-/* probe.c */
+
 extern int blkid_probe_is_tiny(blkid_probe pr)
 			__attribute__((nonnull))
 			__attribute__((warn_unused_result));
@@ -433,7 +371,7 @@ extern int blkid_probe_get_idmag(blkid_probe pr, const struct blkid_idinfo *id,
 			uint64_t *offset, const struct blkid_idmag **res)
 			__attribute__((nonnull(1)));
 
-/* returns superblock according to 'struct blkid_idmag' */
+
 extern unsigned char *blkid_probe_get_sb_buffer(blkid_probe pr, const struct blkid_idmag *mag, size_t size);
 #define blkid_probe_get_sb(_pr, _mag, type) \
 			((type *) blkid_probe_get_sb_buffer((_pr), _mag, sizeof(type)))
@@ -547,7 +485,7 @@ extern int blkid_probe_get_hint(blkid_probe pr, const char *name, uint64_t *valu
 extern int blkid_probe_get_partitions_flags(blkid_probe pr)
 			__attribute__((nonnull));
 
-/* filter bitmap macros */
+
 #define blkid_bmp_wordsize		(8 * sizeof(unsigned long))
 #define blkid_bmp_idx_bit(item)		(1UL << ((item) % blkid_bmp_wordsize))
 #define blkid_bmp_idx_byte(item)	((item) / blkid_bmp_wordsize)
@@ -567,4 +505,4 @@ extern int blkid_probe_get_partitions_flags(blkid_probe pr)
 #define blkid_bmp_nbytes(max_items) \
 		(blkid_bmp_nwords(max_items) * sizeof(unsigned long))
 
-#endif /* _BLKID_BLKIDP_H */
+#endif 

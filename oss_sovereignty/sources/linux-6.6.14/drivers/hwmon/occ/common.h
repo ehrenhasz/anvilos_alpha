@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright IBM Corp 2019 */
+
+
 
 #ifndef OCC_COMMON_H
 #define OCC_COMMON_H
@@ -12,10 +12,7 @@ struct device;
 
 #define OCC_RESP_DATA_BYTES		4089
 
-/*
- * Same response format for all OCC versions.
- * Allocate the largest possible response.
- */
+
 struct occ_response {
 	u8 seq_no;
 	u8 cmd_type;
@@ -64,13 +61,10 @@ struct occ_poll_response {
 struct occ_sensor {
 	u8 num_sensors;
 	u8 version;
-	void *data;	/* pointer to sensor data start within response */
+	void *data;	
 };
 
-/*
- * OCC only provides one sensor data block of each type, but any number of
- * sensors within that block.
- */
+
 struct occ_sensors {
 	struct occ_sensor temp;
 	struct occ_sensor freq;
@@ -79,10 +73,7 @@ struct occ_sensors {
 	struct occ_sensor extended;
 };
 
-/*
- * Use our own attribute struct so we can dynamically allocate space for the
- * name.
- */
+
 struct occ_attribute {
 	char name[32];
 	struct sensor_device_attribute_2 sensor;
@@ -94,13 +85,13 @@ struct occ {
 	struct occ_response resp;
 	struct occ_sensors sensors;
 
-	int powr_sample_time_us;	/* average power sample time */
-	u8 poll_cmd_data;		/* to perform OCC poll command */
+	int powr_sample_time_us;	
+	u8 poll_cmd_data;		
 	int (*send_cmd)(struct occ *occ, u8 *cmd, size_t len, void *resp,
 			size_t resp_len);
 
 	unsigned long next_update;
-	struct mutex lock;		/* lock OCC access */
+	struct mutex lock;		
 
 	struct device *hwmon;
 	struct occ_attribute *attrs;
@@ -108,15 +99,12 @@ struct occ {
 	const struct attribute_group *groups[2];
 
 	bool active;
-	int error;                      /* final transfer error after retry */
-	int last_error;			/* latest transfer error */
-	unsigned int error_count;       /* number of xfr errors observed */
-	unsigned long last_safe;        /* time OCC entered "safe" state */
+	int error;                      
+	int last_error;			
+	unsigned int error_count;       
+	unsigned long last_safe;        
 
-	/*
-	 * Store the previous state data for comparison in order to notify
-	 * sysfs readers of state changes.
-	 */
+	
 	int prev_error;
 	u8 prev_stat;
 	u8 prev_ext_stat;
@@ -133,4 +121,4 @@ void occ_shutdown_sysfs(struct occ *occ);
 void occ_sysfs_poll_done(struct occ *occ);
 int occ_update_response(struct occ *occ);
 
-#endif /* OCC_COMMON_H */
+#endif 

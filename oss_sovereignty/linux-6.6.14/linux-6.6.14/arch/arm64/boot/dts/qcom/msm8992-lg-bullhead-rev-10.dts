@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "msm8992-lg-bullhead.dtsi"
-/ {
-	model = "LG Nexus 5X rev 1.0";
-	qcom,board-id = <0xa64 0>;
-};

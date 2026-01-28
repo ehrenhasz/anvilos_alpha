@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 LIBBPF_INCLUDE = $(srctree)/tools/lib
 

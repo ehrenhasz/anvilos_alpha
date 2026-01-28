@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+
+
 
 #ifndef QCOM_PHY_QMP_PCS_PCIE_V6_20_H_
 #define QCOM_PHY_QMP_PCS_PCIE_V6_20_H_
 
-/* Only for QMP V6_20 PHY - PCIE have different offsets than V5 */
+
 #define QPHY_PCIE_V6_20_PCS_POWER_STATE_CONFIG2		0x00c
 #define QPHY_PCIE_V6_20_PCS_TX_RX_CONFIG		0x018
 #define QPHY_PCIE_V6_20_PCS_ENDPOINT_REFCLK_DRIVE	0x01c

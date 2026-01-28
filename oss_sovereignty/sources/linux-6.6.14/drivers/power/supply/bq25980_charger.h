@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/ */
+
+
 
 #ifndef BQ25980_CHARGER_H
 #define BQ25980_CHARGER_H
@@ -175,4 +175,4 @@
 #define BQ25980_WATCHDOG_MIN	0
 #define BQ25980_NUM_WD_VAL	4
 
-#endif /* BQ25980_CHARGER_H */
+#endif 

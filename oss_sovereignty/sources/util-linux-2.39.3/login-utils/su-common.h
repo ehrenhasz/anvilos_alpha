@@ -8,4 +8,4 @@ enum {
 
 extern int su_main(int argc, char **argv, int mode);
 
-#endif /* UTIL_LINUX_SU_COMMON */
+#endif 

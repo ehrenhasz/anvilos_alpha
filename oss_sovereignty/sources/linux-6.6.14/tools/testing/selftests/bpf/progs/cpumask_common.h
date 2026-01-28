@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+
 
 #ifndef _CPUMASK_COMMON_H
 #define _CPUMASK_COMMON_H
@@ -118,4 +118,4 @@ static inline int cpumask_map_insert(struct bpf_cpumask *mask)
 	return 0;
 }
 
-#endif /* _CPUMASK_COMMON_H */
+#endif 

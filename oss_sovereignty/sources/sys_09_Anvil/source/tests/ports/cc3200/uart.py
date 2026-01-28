@@ -59,7 +59,7 @@ print(uart1.readinto(buf) == 2)
 print(buf)
 uart0 = UART(baudrate=1000000, pins=uart_pins[0][0])
 uart0.write(b"1234567890")
-time.sleep_ms(2)  # because of the fifo interrupt levels
+time.sleep_ms(2)  
 print(uart1.any() == 10)
 print(uart1.readline() == b"1234567890")
 print(uart1.any() == 0)

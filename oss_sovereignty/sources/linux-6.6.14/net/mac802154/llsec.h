@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Fraunhofer ITWM
- *
- * Written by:
- * Phoebe Buckheister <phoebe.buckheister@itwm.fraunhofer.de>
- */
+
+
 
 #ifndef MAC802154_LLSEC_H
 #define MAC802154_LLSEC_H
@@ -19,7 +14,7 @@
 struct mac802154_llsec_key {
 	struct ieee802154_llsec_key key;
 
-	/* one tfm for each authsize (4/8/16) */
+	
 	struct crypto_aead *tfm[3];
 	struct crypto_sync_skcipher *tfm0;
 
@@ -38,7 +33,7 @@ struct mac802154_llsec_device {
 	struct hlist_node bucket_s;
 	struct hlist_node bucket_hw;
 
-	/* protects dev.frame_counter and the elements of dev.keys */
+	
 	spinlock_t lock;
 
 	struct rcu_head rcu;
@@ -57,7 +52,7 @@ struct mac802154_llsec {
 	DECLARE_HASHTABLE(devices_short, 6);
 	DECLARE_HASHTABLE(devices_hw, 6);
 
-	/* protects params, all other fields are fine with RCU */
+	
 	rwlock_t lock;
 };
 
@@ -96,4 +91,4 @@ int mac802154_llsec_seclevel_del(struct mac802154_llsec *sec,
 int mac802154_llsec_encrypt(struct mac802154_llsec *sec, struct sk_buff *skb);
 int mac802154_llsec_decrypt(struct mac802154_llsec *sec, struct sk_buff *skb);
 
-#endif /* MAC802154_LLSEC_H */
+#endif 

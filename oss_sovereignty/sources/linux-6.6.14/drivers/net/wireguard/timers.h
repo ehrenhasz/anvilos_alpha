@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+
 
 #ifndef _WG_TIMERS_H
 #define _WG_TIMERS_H
@@ -28,4 +26,4 @@ static inline bool wg_birthdate_has_expired(u64 birthday_nanoseconds,
 		<= (s64)ktime_get_coarse_boottime_ns();
 }
 
-#endif /* _WG_TIMERS_H */
+#endif 

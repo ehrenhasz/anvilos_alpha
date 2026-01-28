@@ -1,31 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Driver for Realtek RTS5139 USB card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Roger Tseng <rogerable@realtek.com>
- */
+
+
 
 #ifndef __RTSX_USB_H
 #define __RTSX_USB_H
 
 #include <linux/usb.h>
 
-/* related module names */
+
 #define RTSX_USB_SD_CARD	0
 #define RTSX_USB_MS_CARD	1
 
-/* endpoint numbers */
+
 #define EP_BULK_OUT		1
 #define EP_BULK_IN		2
 #define EP_INTR_IN		3
 
-/* USB vendor requests */
+
 #define RTSX_USB_REQ_REG_OP	0x00
 #define RTSX_USB_REQ_POLL	0x02
 
-/* miscellaneous parameters */
+
 #define MIN_DIV_N		60
 #define MAX_DIV_N		120
 
@@ -36,7 +30,7 @@
 #define LQFP48			1
 #define CHECK_PKG(ucr, pkg)	((ucr)->package == (pkg))
 
-/* data structures */
+
 struct rtsx_ucr {
 	u16			vendor_id;
 	u16			product_id;
@@ -59,10 +53,10 @@ struct rtsx_ucr {
 	struct mutex		dev_mutex;
 };
 
-/* buffer size */
+
 #define IOBUF_SIZE		1024
 
-/* prototypes of exported functions */
+
 extern int rtsx_usb_get_card_status(struct rtsx_ucr *ucr, u16 *status);
 
 extern int rtsx_usb_read_register(struct rtsx_ucr *ucr, u16 addr, u8 *data);
@@ -88,14 +82,14 @@ extern int rtsx_usb_switch_clock(struct rtsx_ucr *ucr, unsigned int card_clock,
 		u8 ssc_depth, bool initial_mode, bool double_clk, bool vpclk);
 extern int rtsx_usb_card_exclusive_check(struct rtsx_ucr *ucr, int card);
 
-/* card status */
+
 #define SD_CD		0x01
 #define MS_CD		0x02
 #define XD_CD		0x04
 #define CD_MASK		(SD_CD | MS_CD | XD_CD)
 #define SD_WP		0x08
 
-/* reader command field offset & parameters */
+
 #define READ_REG_CMD		0
 #define WRITE_REG_CMD		1
 #define CHECK_REG_CMD		2
@@ -140,7 +134,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 	ucr->cmd_buf[PACKET_TYPE] = BATCH_CMD;
 }
 
-/* internal register address */
+
 #define FPDCTL				0xFC00
 #define SSC_DIV_N_0			0xFC07
 #define SSC_CTL1			0xFC09
@@ -276,7 +270,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define PPBUF_BASE1			0xF800
 #define PPBUF_BASE2			0xFA00
 
-/* internal register value macros */
+
 #define POWER_OFF			0x03
 #define PARTIAL_POWER_ON		0x02
 #define POWER_ON			0x00
@@ -288,7 +282,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define DV3318_AUTO_PWR_OFF		0x10
 #define FORCE_LDO_POWERB		0x60
 
-/* LDO_POWER_CFG */
+
 #define TUNE_SD18_MASK			0x1C
 #define TUNE_SD18_1V7			0x00
 #define TUNE_SD18_1V8			(0x01 << 2)
@@ -299,7 +293,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define TUNE_SD18_2V9			(0x06 << 2)
 #define TUNE_SD18_3V3			(0x07 << 2)
 
-/* CLK_DIV */
+
 #define CLK_CHANGE			0x80
 #define CLK_DIV_1			0x00
 #define CLK_DIV_2			0x01
@@ -315,7 +309,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 
 #define EXTEND_DMA1_ASYNC_SIGNAL	0x02
 
-/* CFG_MODE*/
+
 #define XTAL_FREE			0x80
 #define CLK_MODE_MASK			0x03
 #define CLK_MODE_12M_XTAL		0x00
@@ -323,7 +317,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define CLK_MODE_24M_OSC		0x02
 #define CLK_MODE_48M_OSC		0x03
 
-/* CFG_MODE_1*/
+
 #define RTS5179				0x02
 
 #define NYET_EN				0x01
@@ -348,13 +342,13 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define CARD_SHARE_MASK			0x03
 
 
-/* SD30_DRIVE_SEL */
+
 #define DRIVER_TYPE_A			0x05
 #define DRIVER_TYPE_B			0x03
 #define DRIVER_TYPE_C			0x02
 #define DRIVER_TYPE_D			0x01
 
-/* SD_BUS_STAT */
+
 #define	SD_CLK_TOGGLE_EN		0x80
 #define	SD_CLK_FORCE_STOP	        0x40
 #define	SD_DAT3_STATUS		        0x10
@@ -363,7 +357,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	SD_DAT0_STATUS		        0x02
 #define	SD_CMD_STATUS			0x01
 
-/* SD_PAD_CTL */
+
 #define	SD_IO_USING_1V8		        0x80
 #define	SD_IO_USING_3V3		        0x7F
 #define	TYPE_A_DRIVING		        0x00
@@ -371,15 +365,15 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	TYPE_C_DRIVING			0x02
 #define	TYPE_D_DRIVING		        0x03
 
-/* CARD_CLK_EN */
+
 #define SD_CLK_EN			0x04
 #define MS_CLK_EN			0x08
 
-/* CARD_SELECT */
+
 #define SD_MOD_SEL			2
 #define MS_MOD_SEL			3
 
-/* CARD_SHARE_MODE */
+
 #define	CARD_SHARE_LQFP48		0x04
 #define	CARD_SHARE_QFN24		0x00
 #define CARD_SHARE_LQFP_SEL		0x04
@@ -388,7 +382,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	CARD_SHARE_MS			0x02
 #define CARD_SHARE_MASK			0x03
 
-/* SSC_CTL1 */
+
 #define SSC_RSTB			0x80
 #define SSC_8X_EN			0x40
 #define SSC_FIX_FRAC			0x20
@@ -397,18 +391,18 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define SSC_SEL_4M			0x10
 #define SSC_SEL_8M			0x18
 
-/* SSC_CTL2 */
+
 #define SSC_DEPTH_MASK			0x03
 #define SSC_DEPTH_DISALBE		0x00
 #define SSC_DEPTH_2M			0x01
 #define SSC_DEPTH_1M			0x02
 #define SSC_DEPTH_512K			0x03
 
-/* SD_VPCLK0_CTL */
+
 #define PHASE_CHANGE			0x80
 #define PHASE_NOT_RESET			0x40
 
-/* SD_TRANSFER */
+
 #define	SD_TRANSFER_START		0x80
 #define	SD_TRANSFER_END			0x40
 #define SD_STAT_IDLE			0x20
@@ -426,7 +420,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	SD_TM_AUTO_READ_2		0x0E
 #define	SD_TM_AUTO_TUNING		0x0F
 
-/* SD_CFG1 */
+
 #define SD_CLK_DIVIDE_0			0x00
 #define	SD_CLK_DIVIDE_256		0xC0
 #define	SD_CLK_DIVIDE_128		0x80
@@ -439,7 +433,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	SD_DDR_MODE			0x04
 #define	SD_30_MODE			0x08
 
-/* SD_CFG2 */
+
 #define	SD_CALCULATE_CRC7		0x00
 #define	SD_NO_CALCULATE_CRC7		0x80
 #define	SD_CHECK_CRC16			0x00
@@ -462,7 +456,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	SD_RSP_TYPE_R6			0x01
 #define	SD_RSP_TYPE_R7			0x01
 
-/* SD_STAT1 */
+
 #define	SD_CRC7_ERR			0x80
 #define	SD_CRC16_ERR			0x40
 #define	SD_CRC_WRITE_ERR		0x20
@@ -470,24 +464,24 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	GET_CRC_TIME_OUT		0x02
 #define	SD_TUNING_COMPARE_ERR		0x01
 
-/* SD_DATA_STATE */
+
 #define SD_DATA_IDLE			0x80
 
-/* CARD_DATA_SOURCE */
+
 #define PINGPONG_BUFFER			0x01
 #define RING_BUFFER			0x00
 
-/* CARD_OE */
+
 #define SD_OUTPUT_EN			0x04
 #define MS_OUTPUT_EN			0x08
 
-/* CARD_STOP */
+
 #define SD_STOP				0x04
 #define MS_STOP				0x08
 #define SD_CLR_ERR			0x40
 #define MS_CLR_ERR			0x80
 
-/* CARD_CLK_SOURCE */
+
 #define CRC_FIX_CLK			(0x00 << 0)
 #define CRC_VAR_CLK0			(0x01 << 0)
 #define CRC_VAR_CLK1			(0x02 << 0)
@@ -498,7 +492,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define SAMPLE_VAR_CLK0			(0x01 << 4)
 #define SAMPLE_VAR_CLK1			(0x02 << 4)
 
-/* SD_SAMPLE_POINT_CTL */
+
 #define	DDR_FIX_RX_DAT			0x00
 #define	DDR_VAR_RX_DAT			0x80
 #define	DDR_FIX_RX_DAT_EDGE		0x00
@@ -511,7 +505,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	SD20_RX_14_DELAY		0x08
 #define SD20_RX_SEL_MASK		0x08
 
-/* SD_PUSH_POINT_CTL */
+
 #define	DDR_FIX_TX_CMD_DAT		0x00
 #define	DDR_VAR_TX_CMD_DAT		0x80
 #define	DDR_FIX_TX_DAT_14_TSU		0x00
@@ -523,7 +517,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define SD20_TX_SEL_MASK		0x10
 #define	DDR_VAR_SDCLK_POL_SWAP		0x01
 
-/* MS_CFG */
+
 #define	SAMPLE_TIME_RISING		0x00
 #define	SAMPLE_TIME_FALLING		0x80
 #define	PUSH_TIME_DEFAULT		0x00
@@ -539,7 +533,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	MS_TOGGLE_TIMEOUT_DISEN		0x01
 #define MS_NO_CHECK_INT			0x02
 
-/* MS_TRANS_CFG */
+
 #define	WAIT_INT			0x80
 #define	NO_WAIT_INT			0x00
 #define	NO_AUTO_READ_INT_REG		0x00
@@ -551,7 +545,7 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define	MS_INT_ERR			0x02
 #define	MS_INT_CED			0x01
 
-/* MS_TRANSFER */
+
 #define	MS_TRANSFER_START		0x80
 #define	MS_TRANSFER_END			0x40
 #define	MS_TRANSFER_ERR			0x20
@@ -567,13 +561,13 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define MS_TM_MULTI_READ		0x02
 #define MS_TM_MULTI_WRITE		0x03
 
-/* MC_FIFO_CTL */
+
 #define FIFO_FLUSH			0x01
 
-/* MC_DMA_RST */
+
 #define DMA_RESET  0x01
 
-/* MC_DMA_CTL */
+
 #define DMA_TC_EQ_0			0x80
 #define DMA_DIR_TO_CARD			0x00
 #define DMA_DIR_FROM_CARD		0x02
@@ -584,12 +578,12 @@ static inline void rtsx_usb_init_cmd(struct rtsx_ucr *ucr)
 #define DMA_1024			(3 << 2)
 #define DMA_PACK_SIZE_MASK		0x0C
 
-/* CARD_INT_PEND */
+
 #define XD_INT				0x10
 #define MS_INT				0x08
 #define SD_INT				0x04
 
-/* LED operations*/
+
 static inline int rtsx_usb_turn_on_led(struct rtsx_ucr *ucr)
 {
 	return  rtsx_usb_ep0_write_register(ucr, CARD_GPIO, 0x03, 0x02);
@@ -600,7 +594,7 @@ static inline int rtsx_usb_turn_off_led(struct rtsx_ucr *ucr)
 	return rtsx_usb_ep0_write_register(ucr, CARD_GPIO, 0x03, 0x03);
 }
 
-/* HW error clearing */
+
 static inline void rtsx_usb_clear_fsm_err(struct rtsx_ucr *ucr)
 {
 	rtsx_usb_ep0_write_register(ucr, SFSM_ED, 0xf8, 0xf8);
@@ -612,4 +606,4 @@ static inline void rtsx_usb_clear_dma_err(struct rtsx_ucr *ucr)
 			FIFO_FLUSH, FIFO_FLUSH);
 	rtsx_usb_ep0_write_register(ucr, MC_DMA_RST, DMA_RESET, DMA_RESET);
 }
-#endif /* __RTS51139_H */
+#endif 

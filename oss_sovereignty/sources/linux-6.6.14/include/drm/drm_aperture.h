@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+
 
 #ifndef _DRM_APERTURE_H_
 #define _DRM_APERTURE_H_
@@ -18,16 +18,7 @@ int drm_aperture_remove_conflicting_framebuffers(resource_size_t base, resource_
 int drm_aperture_remove_conflicting_pci_framebuffers(struct pci_dev *pdev,
 						     const struct drm_driver *req_driver);
 
-/**
- * drm_aperture_remove_framebuffers - remove all existing framebuffers
- * @req_driver: requesting DRM driver
- *
- * This function removes all graphics device drivers. Use this function on systems
- * that can have their framebuffer located anywhere in memory.
- *
- * Returns:
- * 0 on success, or a negative errno code otherwise
- */
+
 static inline int
 drm_aperture_remove_framebuffers(const struct drm_driver *req_driver)
 {

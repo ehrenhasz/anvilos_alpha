@@ -447,14 +447,14 @@ rate_test()
 	for r_obj in $leafs
 	do
 		rate_attr_tx_rate_check $r_obj tx_share $rate \
-			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_share
+			$DEBUGFS_DIR/ports/${r_obj
 		rate=$(($rate+10))
 	done
 	rate=100
 	for r_obj in $leafs
 	do
 		rate_attr_tx_rate_check $r_obj tx_max $rate \
-			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_max
+			$DEBUGFS_DIR/ports/${r_obj
 		rate=$(($rate+100))
 	done
 	local node1_name='group1'
@@ -466,10 +466,10 @@ rate_test()
 	check_err $? "Expected 1 rate node in output but got $num_nodes"
 	local node_tx_share=10
 	rate_attr_tx_rate_check $node1 tx_share $node_tx_share \
-		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_share
+		$DEBUGFS_DIR/rate_nodes/${node1
 	local node_tx_max=100
 	rate_attr_tx_rate_check $node1 tx_max $node_tx_max \
-		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_max
+		$DEBUGFS_DIR/rate_nodes/${node1
 	rate_node_del "$node1"
 	check_err $? "Failed to delete node $node1"
 	local num_nodes=`rate_nodes_get $DL_HANDLE | wc -w`
@@ -480,7 +480,7 @@ rate_test()
 	rate_node_add "$node1"
 	check_err $? "Failed to add node $node1"
 	rate_attr_parent_check $r_obj $node1_name \
-		$DEBUGFS_DIR/ports/${r_obj##*/}/rate_parent
+		$DEBUGFS_DIR/ports/${r_obj
 	local node2_name='group2'
 	local node2="$DL_HANDLE/$node2_name"
 	rate_node_add "$node2"

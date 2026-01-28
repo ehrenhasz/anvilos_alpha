@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Synopsys DesignWare PCIe host controller driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		https://www.samsung.com
- *
- * Author: Jingoo Han <jg1.han@samsung.com>
- */
+
+
 
 #ifndef _PCIE_DESIGNWARE_H
 #define _PCIE_DESIGNWARE_H
@@ -25,7 +18,7 @@
 #include <linux/pci-epc.h>
 #include <linux/pci-epf.h>
 
-/* DWC PCIe IP-core versions (native support since v4.70a) */
+
 #define DW_PCIE_VER_365A		0x3336352a
 #define DW_PCIE_VER_460A		0x3436302a
 #define DW_PCIE_VER_470A		0x3437302a
@@ -49,7 +42,7 @@
 	(__dw_pcie_ver_cmp(_pci, _ver, ==) && \
 	 __dw_pcie_ver_cmp(_pci, TYPE_ ## _type, >=))
 
-/* DWC PCIe controller capabilities */
+
 #define DW_PCIE_CAP_REQ_RES		0
 #define DW_PCIE_CAP_IATU_UNROLL		1
 #define DW_PCIE_CAP_CDM_CHECK		2
@@ -60,16 +53,16 @@
 #define dw_pcie_cap_set(_pci, _cap) \
 	set_bit(DW_PCIE_CAP_ ## _cap, &(_pci)->caps)
 
-/* Parameters for the waiting for link up routine */
+
 #define LINK_WAIT_MAX_RETRIES		10
 #define LINK_WAIT_USLEEP_MIN		90000
 #define LINK_WAIT_USLEEP_MAX		100000
 
-/* Parameters for the waiting for iATU enabled routine */
+
 #define LINK_WAIT_MAX_IATU_RETRIES	5
 #define LINK_WAIT_IATU			9
 
-/* Synopsys-specific PCIe configuration registers */
+
 #define PCIE_PORT_AFR			0x70C
 #define PORT_AFR_N_FTS_MASK		GENMASK(15, 8)
 #define PORT_AFR_N_FTS(n)		FIELD_PREP(PORT_AFR_N_FTS_MASK, n)
@@ -127,13 +120,7 @@
 #define PCIE_VERSION_NUMBER		0x8F8
 #define PCIE_VERSION_TYPE		0x8FC
 
-/*
- * iATU inbound and outbound windows CSRs. Before the IP-core v4.80a each
- * iATU region CSRs had been indirectly accessible by means of the dedicated
- * viewport selector. The iATU/eDMA CSRs space was re-designed in DWC PCIe
- * v4.80a in a way so the viewport was unrolled into the directly accessible
- * iATU/eDMA CSRs space.
- */
+
 #define PCIE_ATU_VIEWPORT		0x900
 #define PCIE_ATU_REGION_DIR_IB		BIT(31)
 #define PCIE_ATU_REGION_DIR_OB		0
@@ -169,12 +156,7 @@
 #define PCIE_MSIX_DOORBELL		0x948
 #define PCIE_MSIX_DOORBELL_PF_SHIFT	24
 
-/*
- * eDMA CSRs. DW PCIe IP-core v4.70a and older had the eDMA registers accessible
- * over the Port Logic registers space. Afterwards the unrolled mapping was
- * introduced so eDMA and iATU could be accessed via a dedicated registers
- * space.
- */
+
 #define PCIE_DMA_VIEWPORT_BASE		0x970
 #define PCIE_DMA_UNROLL_BASE		0x80000
 #define PCIE_DMA_CTRL			0x008
@@ -190,10 +172,7 @@
 
 #define PCIE_PL_CHK_REG_ERR_ADDR			0xB28
 
-/*
- * iATU Unroll-specific register definitions
- * From 4.80 core version the address translation will be made by unroll
- */
+
 #define PCIE_ATU_UNR_REGION_CTRL1	0x00
 #define PCIE_ATU_UNR_REGION_CTRL2	0x04
 #define PCIE_ATU_UNR_LOWER_BASE		0x08
@@ -203,9 +182,7 @@
 #define PCIE_ATU_UNR_UPPER_TARGET	0x18
 #define PCIE_ATU_UNR_UPPER_LIMIT	0x20
 
-/*
- * RAS-DES register definitions
- */
+
 #define PCIE_RAS_DES_EVENT_COUNTER_CONTROL	0x8
 #define EVENT_COUNTER_ALL_CLEAR		0x3
 #define EVENT_COUNTER_ENABLE_ALL	0x7
@@ -222,12 +199,7 @@
 
 #define PCIE_RAS_DES_EVENT_COUNTER_DATA		0xc
 
-/*
- * The default address offset between dbi_base and atu_base. Root controller
- * drivers are not required to initialize atu_base if the offset matches this
- * default; the driver core automatically derives atu_base from dbi_base using
- * this offset, if atu_base not set.
- */
+
 #define DEFAULT_DBI_ATU_OFFSET (0x3 << 20)
 #define DEFAULT_DBI_DMA_OFFSET PCIE_DMA_UNROLL_BASE
 
@@ -237,11 +209,11 @@
 #define MSI_REG_CTRL_BLOCK_SIZE		12
 #define MSI_DEF_NUM_VECTORS		32
 
-/* Maximum number of inbound/outbound iATUs */
+
 #define MAX_IATU_IN			256
 #define MAX_IATU_OUT			256
 
-/* Default eDMA LLP memory size */
+
 #define DMA_LLP_MEM_SIZE		PAGE_SIZE
 
 struct dw_pcie;
@@ -289,7 +261,7 @@ enum dw_pcie_core_rst {
 };
 
 enum dw_pcie_ltssm {
-	/* Need to align with PCIE_PORT_DEBUG0 bits 0:5 */
+	
 	DW_PCIE_LTSSM_DETECT_QUIET = 0x0,
 	DW_PCIE_LTSSM_DETECT_ACT = 0x1,
 	DW_PCIE_LTSSM_L0 = 0x11,
@@ -333,21 +305,15 @@ struct dw_pcie_ep_ops {
 	int	(*raise_irq)(struct dw_pcie_ep *ep, u8 func_no,
 			     enum pci_epc_irq_type type, u16 interrupt_num);
 	const struct pci_epc_features* (*get_features)(struct dw_pcie_ep *ep);
-	/*
-	 * Provide a method to implement the different func config space
-	 * access for different platform, if different func have different
-	 * offset, return the offset of func. if use write a register way
-	 * return a 0, and implement code in callback function of platform
-	 * driver.
-	 */
+	
 	unsigned int (*func_conf_select)(struct dw_pcie_ep *ep, u8 func_no);
 };
 
 struct dw_pcie_ep_func {
 	struct list_head	list;
 	u8			func_no;
-	u8			msi_cap;	/* MSI capability offset */
-	u8			msix_cap;	/* MSI-X capability offset */
+	u8			msi_cap;	
+	u8			msix_cap;	
 };
 
 struct dw_pcie_ep {
@@ -642,4 +608,4 @@ dw_pcie_ep_get_func_from_ep(struct dw_pcie_ep *ep, u8 func_no)
 	return NULL;
 }
 #endif
-#endif /* _PCIE_DESIGNWARE_H */
+#endif 

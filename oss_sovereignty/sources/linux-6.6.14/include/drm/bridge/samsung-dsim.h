@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2022 Amarula Solutions(India)
- * Author: Jagan Teki <jagan@amarulasolutions.com>
- */
+
+
 
 #ifndef __SAMSUNG_DSIM__
 #define __SAMSUNG_DSIM__
@@ -106,7 +103,7 @@ struct samsung_dsim {
 	struct drm_property *brightness;
 	struct completion completed;
 
-	spinlock_t transfer_lock; /* protects transfer_list */
+	spinlock_t transfer_lock; 
 	struct list_head transfer_list;
 
 	const struct samsung_dsim_driver_data *driver_data;
@@ -119,4 +116,4 @@ extern int samsung_dsim_probe(struct platform_device *pdev);
 extern int samsung_dsim_remove(struct platform_device *pdev);
 extern const struct dev_pm_ops samsung_dsim_pm_ops;
 
-#endif /* __SAMSUNG_DSIM__ */
+#endif 

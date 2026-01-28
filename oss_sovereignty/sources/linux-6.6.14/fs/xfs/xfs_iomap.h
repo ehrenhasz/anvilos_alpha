@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2003-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_IOMAP_H__
 #define __XFS_IOMAP_H__
 
@@ -55,4 +52,4 @@ extern const struct iomap_ops xfs_seek_iomap_ops;
 extern const struct iomap_ops xfs_xattr_iomap_ops;
 extern const struct iomap_ops xfs_dax_write_iomap_ops;
 
-#endif /* __XFS_IOMAP_H__*/
+#endif 

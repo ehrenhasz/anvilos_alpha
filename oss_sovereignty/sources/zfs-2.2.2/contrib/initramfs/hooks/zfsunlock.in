@@ -1,4 +1,4 @@
-#!/bin/sh
+
 
 if [ "$1" = "prereqs" ]; then
 	echo "dropbear"

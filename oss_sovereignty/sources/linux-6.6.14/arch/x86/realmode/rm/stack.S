@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Common heap and stack allocations
- */
+
+
 
 #include <linux/linkage.h>
 

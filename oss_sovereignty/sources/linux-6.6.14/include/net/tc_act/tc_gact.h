@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_GACT_H
 #define __NET_TC_GACT_H
 
@@ -74,4 +74,4 @@ static inline bool is_tcf_gact_pipe(const struct tc_action *a)
 	return __is_tcf_gact_act(a, TC_ACT_PIPE, false);
 }
 
-#endif /* __NET_TC_GACT_H */
+#endif 

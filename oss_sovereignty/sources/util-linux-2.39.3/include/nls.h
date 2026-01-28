@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_NLS_H
 #define UTIL_LINUX_NLS_H
 
@@ -13,7 +10,7 @@
 # include <locale.h>
 #else
 # undef setlocale
-# define setlocale(Category, Locale) /* empty */
+# define setlocale(Category, Locale) 
 struct lconv
 {
 	char *decimal_point;
@@ -25,11 +22,7 @@ struct lconv
 
 #ifdef ENABLE_NLS
 # include <libintl.h>
-/*
- * For NLS support in the public shared libraries we have to specify text
- * domain name to be independent on the main program. For this purpose define
- * UL_TEXTDOMAIN_EXPLICIT before you include nls.h to your shared library code.
- */
+
 # ifdef UL_TEXTDOMAIN_EXPLICIT
 #  define _(Text) dgettext (UL_TEXTDOMAIN_EXPLICIT, Text)
 # else
@@ -43,13 +36,13 @@ struct lconv
 # define P_(Singular, Plural, n) ngettext (Singular, Plural, n)
 #else
 # undef bindtextdomain
-# define bindtextdomain(Domain, Directory) /* empty */
+# define bindtextdomain(Domain, Directory) 
 # undef textdomain
-# define textdomain(Domain) /* empty */
+# define textdomain(Domain) 
 # define _(Text) (Text)
 # define N_(Text) (Text)
 # define P_(Singular, Plural, n) ((n) == 1 ? (Singular) : (Plural))
-#endif /* ENABLE_NLS */
+#endif 
 
 #ifdef HAVE_LANGINFO_H
 # include <langinfo.h>
@@ -122,7 +115,7 @@ enum {
 	NOEXPR
 };
 
-#endif /* !HAVE_LANGINFO_H */
+#endif 
 
 #ifndef HAVE_LANGINFO_ALTMON
 # define ALTMON_1 MON_1
@@ -137,7 +130,7 @@ enum {
 # define ALTMON_10 MON_10
 # define ALTMON_11 MON_11
 # define ALTMON_12 MON_12
-#endif /* !HAVE_LANGINFO_ALTMON */
+#endif 
 
 #ifndef HAVE_LANGINFO_NL_ABALTMON
 # define _NL_ABALTMON_1 ABMON_1
@@ -152,6 +145,6 @@ enum {
 # define _NL_ABALTMON_10 ABMON_10
 # define _NL_ABALTMON_11 ABMON_11
 # define _NL_ABALTMON_12 ABMON_12
-#endif /* !HAVE_LANGINFO_NL_ABALTMON */
+#endif 
 
-#endif /* UTIL_LINUX_NLS_H */
+#endif 

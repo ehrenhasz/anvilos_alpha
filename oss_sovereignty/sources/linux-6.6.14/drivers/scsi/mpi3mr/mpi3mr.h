@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+
 
 #ifndef MPI3MR_H_INCLUDED
 #define MPI3MR_H_INCLUDED
@@ -49,7 +43,7 @@
 #include "mpi/mpi30_pci.h"
 #include "mpi3mr_debug.h"
 
-/* Global list and lock for storing multiple adapters managed by the driver */
+
 extern spinlock_t mrioc_list_lock;
 extern struct list_head mrioc_list;
 extern int prot_mask;
@@ -68,22 +62,22 @@ extern atomic64_t event_counter;
 
 #define MPI3MR_DEFAULT_MAX_IO_SIZE	(1 * 1024 * 1024)
 
-/* Definitions for internal SGL and Chain SGL buffers */
+
 #define MPI3MR_PAGE_SIZE_4K		4096
 #define MPI3MR_DEFAULT_SGL_ENTRIES	256
 #define MPI3MR_MAX_SGL_ENTRIES		2048
 
-/* Definitions for MAX values for shost */
+
 #define MPI3MR_MAX_CMDS_LUN	128
 #define MPI3MR_MAX_CDB_LENGTH	32
 
-/* Admin queue management definitions */
+
 #define MPI3MR_ADMIN_REQ_Q_SIZE		(2 * MPI3MR_PAGE_SIZE_4K)
 #define MPI3MR_ADMIN_REPLY_Q_SIZE	(4 * MPI3MR_PAGE_SIZE_4K)
 #define MPI3MR_ADMIN_REQ_FRAME_SZ	128
 #define MPI3MR_ADMIN_REPLY_FRAME_SZ	16
 
-/* Operational queue management definitions */
+
 #define MPI3MR_OP_REQ_Q_QD		512
 #define MPI3MR_OP_REP_Q_QD		1024
 #define MPI3MR_OP_REP_Q_QD4K		4096
@@ -91,7 +85,7 @@ extern atomic64_t event_counter;
 #define MPI3MR_OP_REP_Q_SEG_SIZE	4096
 #define MPI3MR_MAX_SEG_LIST_SIZE	4096
 
-/* Reserved Host Tag definitions */
+
 #define MPI3MR_HOSTTAG_INVALID		0xFFFF
 #define MPI3MR_HOSTTAG_INITCMDS		1
 #define MPI3MR_HOSTTAG_BSG_CMDS		2
@@ -112,10 +106,10 @@ extern atomic64_t event_counter;
 #define MPI3MR_HOSTTAG_EVTACKCMD_MAX	(MPI3MR_HOSTTAG_EVTACKCMD_MIN + \
 					MPI3MR_NUM_EVTACKCMD - 1)
 
-/* Reduced resource count definition for crash kernel */
+
 #define MPI3MR_HOST_IOS_KDUMP		128
 
-/* command/controller interaction timeout definitions in seconds */
+
 #define MPI3MR_INTADMCMD_TIMEOUT		60
 #define MPI3MR_PORTENABLE_TIMEOUT		300
 #define MPI3MR_PORTENABLE_POLL_INTERVAL		5
@@ -129,37 +123,37 @@ extern atomic64_t event_counter;
 #define MPI3MR_RESET_ACK_TIMEOUT		30
 #define MPI3MR_MUR_TIMEOUT			120
 
-#define MPI3MR_WATCHDOG_INTERVAL		1000 /* in milli seconds */
+#define MPI3MR_WATCHDOG_INTERVAL		1000 
 
-#define MPI3MR_DEFAULT_CFG_PAGE_SZ		1024 /* in bytes */
+#define MPI3MR_DEFAULT_CFG_PAGE_SZ		1024 
 
 #define MPI3MR_RESET_TOPOLOGY_SETTLE_TIME	10
 
 #define MPI3MR_SCMD_TIMEOUT    (60 * HZ)
 #define MPI3MR_EH_SCMD_TIMEOUT (60 * HZ)
 
-/* Internal admin command state definitions*/
+
 #define MPI3MR_CMD_NOTUSED	0x8000
 #define MPI3MR_CMD_COMPLETE	0x0001
 #define MPI3MR_CMD_PENDING	0x0002
 #define MPI3MR_CMD_REPLY_VALID	0x0004
 #define MPI3MR_CMD_RESET	0x0008
 
-/* Definitions for Event replies and sense buffer allocated per controller */
+
 #define MPI3MR_NUM_EVT_REPLIES	64
 #define MPI3MR_SENSE_BUF_SZ	256
 #define MPI3MR_SENSEBUF_FACTOR	3
 #define MPI3MR_CHAINBUF_FACTOR	3
 #define MPI3MR_CHAINBUFDIX_FACTOR	2
 
-/* Invalid target device handle */
+
 #define MPI3MR_INVALID_DEV_HANDLE	0xFFFF
 
-/* Controller Reset related definitions */
+
 #define MPI3MR_HOSTDIAG_UNLOCK_RETRY_COUNT	5
 #define MPI3MR_MAX_RESET_RETRY_COUNT		3
 
-/* ResponseCode definitions */
+
 #define MPI3MR_RI_MASK_RESPCODE		(0x000000FF)
 #define MPI3MR_RSP_IO_QUEUED_ON_IOC \
 			MPI3_SCSITASKMGMT_RSPCODE_IO_QUEUED_ON_IOC
@@ -167,18 +161,18 @@ extern atomic64_t event_counter;
 #define MPI3MR_DEFAULT_MDTS	(128 * 1024)
 #define MPI3MR_DEFAULT_PGSZEXP         (12)
 
-/* Command retry count definitions */
+
 #define MPI3MR_DEV_RMHS_RETRY_COUNT 3
 #define MPI3MR_PEL_RETRY_COUNT 3
 
-/* Default target device queue depth */
+
 #define MPI3MR_DEFAULT_SDEV_QD	32
 
-/* Definitions for Threaded IRQ poll*/
+
 #define MPI3MR_IRQ_POLL_SLEEP			2
 #define MPI3MR_IRQ_POLL_TRIGGER_IOCOUNT		8
 
-/* Definitions for the controller security status*/
+
 #define MPI3MR_CTLR_SECURITY_STATUS_MASK	0x0C
 #define MPI3MR_CTLR_SECURE_DBG_STATUS_MASK	0x02
 
@@ -187,39 +181,24 @@ extern atomic64_t event_counter;
 #define MPI3MR_HARD_SECURE_DEVICE		0x08
 #define MPI3MR_TAMPERED_DEVICE			0x0C
 
-/* SGE Flag definition */
+
 #define MPI3MR_SGEFLAGS_SYSTEM_SIMPLE_END_OF_LIST \
 	(MPI3_SGE_FLAGS_ELEMENT_TYPE_SIMPLE | MPI3_SGE_FLAGS_DLAS_SYSTEM | \
 	MPI3_SGE_FLAGS_END_OF_LIST)
 
-/* MSI Index from Reply Queue Index */
+
 #define REPLY_QUEUE_IDX_TO_MSIX_IDX(qidx, offset)	(qidx + offset)
 
-/*
- * Maximum data transfer size definitions for management
- * application commands
- */
+
 #define MPI3MR_MAX_APP_XFER_SIZE	(1 * 1024 * 1024)
 #define MPI3MR_MAX_APP_XFER_SEGMENTS	512
-/*
- * 2048 sectors are for data buffers and additional 512 sectors for
- * other buffers
- */
+
 #define MPI3MR_MAX_APP_XFER_SECTORS	(2048 + 512)
 
 #define MPI3MR_WRITE_SAME_MAX_LEN_256_BLKS 256
 #define MPI3MR_WRITE_SAME_MAX_LEN_2048_BLKS 2048
 
-/**
- * struct mpi3mr_nvme_pt_sge -  Structure to store SGEs for NVMe
- * Encapsulated commands.
- *
- * @base_addr: Physical address
- * @length: SGE length
- * @rsvd: Reserved
- * @rsvd1: Reserved
- * @sgl_type: sgl type
- */
+
 struct mpi3mr_nvme_pt_sge {
 	u64 base_addr;
 	u32 length;
@@ -228,18 +207,7 @@ struct mpi3mr_nvme_pt_sge {
 	u8 sgl_type;
 };
 
-/**
- * struct mpi3mr_buf_map -  local structure to
- * track kernel and user buffers associated with an BSG
- * structure.
- *
- * @bsg_buf: BSG buffer virtual address
- * @bsg_buf_len:  BSG buffer length
- * @kern_buf: Kernel buffer virtual address
- * @kern_buf_len: Kernel buffer length
- * @kern_buf_dma: Kernel buffer DMA address
- * @data_dir: Data direction.
- */
+
 struct mpi3mr_buf_map {
 	void *bsg_buf;
 	u32 bsg_buf_len;
@@ -249,7 +217,7 @@ struct mpi3mr_buf_map {
 	u8 data_dir;
 };
 
-/* IOC State definitions */
+
 enum mpi3mr_iocstate {
 	MRIOC_STATE_READY = 1,
 	MRIOC_STATE_RESET,
@@ -259,7 +227,7 @@ enum mpi3mr_iocstate {
 	MRIOC_STATE_UNRECOVERABLE,
 };
 
-/* Reset reason code definitions*/
+
 enum mpi3mr_reset_reason {
 	MPI3MR_RESET_FROM_BRINGUP = 1,
 	MPI3MR_RESET_FROM_FAULT_WATCH = 2,
@@ -290,17 +258,13 @@ enum mpi3mr_reset_reason {
 	MPI3MR_RESET_FROM_SAS_TRANSPORT_TIMEOUT = 30,
 };
 
-/* Queue type definitions */
+
 enum queue_type {
 	MPI3MR_DEFAULT_QUEUE = 0,
 	MPI3MR_POLL_QUEUE,
 };
 
-/**
- * struct mpi3mr_compimg_ver - replica of component image
- * version defined in mpi30_image.h in host endianness
- *
- */
+
 struct mpi3mr_compimg_ver {
 	u16 build_num;
 	u16 cust_id;
@@ -310,11 +274,7 @@ struct mpi3mr_compimg_ver {
 	u8 gen_major;
 };
 
-/**
- * struct mpi3mr_ioc_facs - replica of component image version
- * defined in mpi30_ioc.h in host endianness
- *
- */
+
 struct mpi3mr_ioc_facts {
 	u32 ioc_capabilities;
 	struct mpi3mr_compimg_ver fw_ver;
@@ -358,33 +318,13 @@ struct mpi3mr_ioc_facts {
 
 };
 
-/**
- * struct segments - memory descriptor structure to store
- * virtual and dma addresses for operational queue segments.
- *
- * @segment: virtual address
- * @segment_dma: dma address
- */
+
 struct segments {
 	void *segment;
 	dma_addr_t segment_dma;
 };
 
-/**
- * struct op_req_qinfo -  Operational Request Queue Information
- *
- * @ci: consumer index
- * @pi: producer index
- * @num_request: Maximum number of entries in the queue
- * @qid: Queue Id starting from 1
- * @reply_qid: Associated reply queue Id
- * @num_segments: Number of discontiguous memory segments
- * @segment_qd: Depth of each segments
- * @q_lock: Concurrent queue access lock
- * @q_segments: Segment descriptor pointer
- * @q_segment_list: Segment list base virtual address
- * @q_segment_list_dma: Segment list base DMA address
- */
+
 struct op_req_qinfo {
 	u16 ci;
 	u16 pi;
@@ -399,23 +339,7 @@ struct op_req_qinfo {
 	dma_addr_t q_segment_list_dma;
 };
 
-/**
- * struct op_reply_qinfo -  Operational Reply Queue Information
- *
- * @ci: consumer index
- * @qid: Queue Id starting from 1
- * @num_replies: Maximum number of entries in the queue
- * @num_segments: Number of discontiguous memory segments
- * @segment_qd: Depth of each segments
- * @q_segments: Segment descriptor pointer
- * @q_segment_list: Segment list base virtual address
- * @q_segment_list_dma: Segment list base DMA address
- * @ephase: Expected phased identifier for the reply queue
- * @pend_ios: Number of IOs pending in HW for this queue
- * @enable_irq_poll: Flag to indicate polling is enabled
- * @in_use: Queue is handled by poll/ISR
- * @qtype: Type of queue (types defined in enum queue_type)
- */
+
 struct op_reply_qinfo {
 	u16 ci;
 	u16 qid;
@@ -432,15 +356,7 @@ struct op_reply_qinfo {
 	enum queue_type qtype;
 };
 
-/**
- * struct mpi3mr_intr_info -  Interrupt cookie information
- *
- * @mrioc: Adapter instance reference
- * @os_irq: irq number
- * @msix_index: MSIx index
- * @op_reply_q: Associated operational reply queue
- * @name: Dev name for the irq claiming device
- */
+
 struct mpi3mr_intr_info {
 	struct mpi3mr_ioc *mrioc;
 	int os_irq;
@@ -449,19 +365,7 @@ struct mpi3mr_intr_info {
 	char name[MPI3MR_NAME_LENGTH];
 };
 
-/**
- * struct mpi3mr_throttle_group_info - Throttle group info
- *
- * @io_divert: Flag indicates io divert is on or off for the TG
- * @need_qd_reduction: Flag to indicate QD reduction is needed
- * @qd_reduction: Queue Depth reduction in units of 10%
- * @fw_qd: QueueDepth value reported by the firmware
- * @modified_qd: Modified QueueDepth value due to throttling
- * @id: Throttle Group ID.
- * @high: High limit to turn on throttling in 512 byte blocks
- * @low: Low limit to turn off throttling in 512 byte blocks
- * @pend_large_data_sz: Counter to track pending large data
- */
+
 struct mpi3mr_throttle_group_info {
 	u8 io_divert;
 	u8 need_qd_reduction;
@@ -474,33 +378,17 @@ struct mpi3mr_throttle_group_info {
 	atomic_t pend_large_data_sz;
 };
 
-/* HBA port flags */
+
 #define MPI3MR_HBA_PORT_FLAG_DIRTY	0x01
 
-/**
- * struct mpi3mr_hba_port - HBA's port information
- * @port_id: Port number
- * @flags: HBA port flags
- */
+
 struct mpi3mr_hba_port {
 	struct list_head list;
 	u8 port_id;
 	u8 flags;
 };
 
-/**
- * struct mpi3mr_sas_port - Internal SAS port information
- * @port_list: List of ports belonging to a SAS node
- * @num_phys: Number of phys associated with port
- * @marked_responding: used while refresing the sas ports
- * @lowest_phy: lowest phy ID of current sas port
- * @phy_mask: phy_mask of current sas port
- * @hba_port: HBA port entry
- * @remote_identify: Attached device identification
- * @rphy: SAS transport layer rphy object
- * @port: SAS transport layer port object
- * @phy_list: mpi3mr_sas_phy objects belonging to this port
- */
+
 struct mpi3mr_sas_port {
 	struct list_head port_list;
 	u8 num_phys;
@@ -514,18 +402,7 @@ struct mpi3mr_sas_port {
 	struct list_head phy_list;
 };
 
-/**
- * struct mpi3mr_sas_phy - Internal SAS Phy information
- * @port_siblings: List of phys belonging to a port
- * @identify: Phy identification
- * @remote_identify: Attached device identification
- * @phy: SAS transport layer Phy object
- * @phy_id: Unique phy id within a port
- * @handle: Firmware device handle for this phy
- * @attached_handle: Firmware device handle for attached device
- * @phy_belongs_to_port: Flag to indicate phy belongs to port
-   @hba_port: HBA port entry
- */
+
 struct mpi3mr_sas_phy {
 	struct list_head port_siblings;
 	struct sas_identify identify;
@@ -538,23 +415,7 @@ struct mpi3mr_sas_phy {
 	struct mpi3mr_hba_port *hba_port;
 };
 
-/**
- * struct mpi3mr_sas_node - SAS host/expander information
- * @list: List of sas nodes in a controller
- * @parent_dev: Parent device class
- * @num_phys: Number phys belonging to sas_node
- * @sas_address: SAS address of sas_node
- * @handle: Firmware device handle for this sas_host/expander
- * @sas_address_parent: SAS address of parent expander or host
- * @enclosure_handle: Firmware handle of enclosure of this node
- * @device_info: Capabilities of this sas_host/expander
- * @non_responding: used to refresh the expander devices during reset
- * @host_node: Flag to indicate this is a host_node
- * @hba_port: HBA port entry
- * @phy: A list of phys that make up this sas_host/expander
- * @sas_port_list: List of internal ports of this node
- * @rphy: sas_rphy object of this expander node
- */
+
 struct mpi3mr_sas_node {
 	struct list_head list;
 	struct device *parent_dev;
@@ -572,30 +433,13 @@ struct mpi3mr_sas_node {
 	struct sas_rphy *rphy;
 };
 
-/**
- * struct mpi3mr_enclosure_node - enclosure information
- * @list: List of enclosures
- * @pg0: Enclosure page 0;
- */
+
 struct mpi3mr_enclosure_node {
 	struct list_head list;
 	struct mpi3_enclosure_page0 pg0;
 };
 
-/**
- * struct tgt_dev_sas_sata - SAS/SATA device specific
- * information cached from firmware given data
- *
- * @sas_address: World wide unique SAS address
- * @sas_address_parent: Sas address of parent expander or host
- * @dev_info: Device information bits
- * @phy_id: Phy identifier provided in device page 0
- * @attached_phy_id: Attached phy identifier provided in device page 0
- * @sas_transport_attached: Is this device exposed to transport
- * @pend_sas_rphy_add: Flag to check device is in process of add
- * @hba_port: HBA port entry
- * @rphy: SAS transport layer rphy object
- */
+
 struct tgt_dev_sas_sata {
 	u64 sas_address;
 	u64 sas_address_parent;
@@ -608,17 +452,7 @@ struct tgt_dev_sas_sata {
 	struct sas_rphy *rphy;
 };
 
-/**
- * struct tgt_dev_pcie - PCIe device specific information cached
- * from firmware given data
- *
- * @mdts: Maximum data transfer size
- * @capb: Device capabilities
- * @pgsz: Device page size
- * @abort_to: Timeout for abort TM
- * @reset_to: Timeout for Target/LUN reset TM
- * @dev_info: Device information bits
- */
+
 struct tgt_dev_pcie {
 	u32 mdts;
 	u16 capb;
@@ -628,17 +462,7 @@ struct tgt_dev_pcie {
 	u16 dev_info;
 };
 
-/**
- * struct tgt_dev_vd - virtual device specific information
- * cached from firmware given data
- *
- * @state: State of the VD
- * @tg_qd_reduction: Queue Depth reduction in units of 10%
- * @tg_id: VDs throttle group ID
- * @high: High limit to turn on throttling in 512 byte blocks
- * @low: Low limit to turn off throttling in 512 byte blocks
- * @tg: Pointer to throttle group info
- */
+
 struct tgt_dev_vd {
 	u8 state;
 	u8 tg_qd_reduction;
@@ -649,9 +473,7 @@ struct tgt_dev_vd {
 };
 
 
-/**
- * union _form_spec_inf - union of device specific information
- */
+
 union _form_spec_inf {
 	struct tgt_dev_sas_sata sas_sata_inf;
 	struct tgt_dev_pcie pcie_inf;
@@ -664,31 +486,7 @@ enum mpi3mr_dev_state {
 	MPI3MR_DEV_DELETED = 3,
 };
 
-/**
- * struct mpi3mr_tgt_dev - target device data structure
- *
- * @list: List pointer
- * @starget: Scsi_target pointer
- * @dev_handle: FW device handle
- * @parent_handle: FW parent device handle
- * @slot: Slot number
- * @encl_handle: FW enclosure handle
- * @perst_id: FW assigned Persistent ID
- * @devpg0_flag: Device Page0 flag
- * @dev_type: SAS/SATA/PCIE device type
- * @is_hidden: Should be exposed to upper layers or not
- * @host_exposed: Already exposed to host or not
- * @io_unit_port: IO Unit port ID
- * @non_stl: Is this device not to be attached with SAS TL
- * @io_throttle_enabled: I/O throttling needed or not
- * @wslen: Write same max length
- * @q_depth: Device specific Queue Depth
- * @wwid: World wide ID
- * @enclosure_logical_id: Enclosure logical identifier
- * @dev_spec: Device type specific information
- * @ref_count: Reference count
- * @state: device state
- */
+
 struct mpi3mr_tgt_dev {
 	struct list_head list;
 	struct scsi_target *starget;
@@ -713,60 +511,26 @@ struct mpi3mr_tgt_dev {
 	enum mpi3mr_dev_state state;
 };
 
-/**
- * mpi3mr_tgtdev_get - k reference incrementor
- * @s: Target device reference
- *
- * Increment target device reference count.
- */
+
 static inline void mpi3mr_tgtdev_get(struct mpi3mr_tgt_dev *s)
 {
 	kref_get(&s->ref_count);
 }
 
-/**
- * mpi3mr_free_tgtdev - target device memory dealloctor
- * @r: k reference pointer of the target device
- *
- * Free target device memory when no reference.
- */
+
 static inline void mpi3mr_free_tgtdev(struct kref *r)
 {
 	kfree(container_of(r, struct mpi3mr_tgt_dev, ref_count));
 }
 
-/**
- * mpi3mr_tgtdev_put - k reference decrementor
- * @s: Target device reference
- *
- * Decrement target device reference count.
- */
+
 static inline void mpi3mr_tgtdev_put(struct mpi3mr_tgt_dev *s)
 {
 	kref_put(&s->ref_count, mpi3mr_free_tgtdev);
 }
 
 
-/**
- * struct mpi3mr_stgt_priv_data - SCSI target private structure
- *
- * @starget: Scsi_target pointer
- * @dev_handle: FW device handle
- * @perst_id: FW assigned Persistent ID
- * @num_luns: Number of Logical Units
- * @block_io: I/O blocked to the device or not
- * @dev_removed: Device removed in the Firmware
- * @dev_removedelay: Device is waiting to be removed in FW
- * @dev_type: Device type
- * @dev_nvme_dif: Device is NVMe DIF enabled
- * @wslen: Write same max length
- * @io_throttle_enabled: I/O throttling needed or not
- * @io_divert: Flag indicates io divert is on or off for the dev
- * @throttle_group: Pointer to throttle group info
- * @tgt_dev: Internal target device pointer
- * @pend_count: Counter to track pending I/Os during error
- *		handling
- */
+
 struct mpi3mr_stgt_priv_data {
 	struct scsi_target *starget;
 	u16 dev_handle;
@@ -785,16 +549,7 @@ struct mpi3mr_stgt_priv_data {
 	u32 pend_count;
 };
 
-/**
- * struct mpi3mr_stgt_priv_data - SCSI device private structure
- *
- * @tgt_priv_data: Scsi_target private data pointer
- * @lun_id: LUN ID of the device
- * @ncq_prio_enable: NCQ priority enable for SATA device
- * @pend_count: Counter to track pending I/Os during error
- *		handling
- * @wslen: Write same max length
- */
+
 struct mpi3mr_sdev_priv_data {
 	struct mpi3mr_stgt_priv_data *tgt_priv_data;
 	u32 lun_id;
@@ -803,24 +558,7 @@ struct mpi3mr_sdev_priv_data {
 	u16 wslen;
 };
 
-/**
- * struct mpi3mr_drv_cmd - Internal command tracker
- *
- * @mutex: Command mutex
- * @done: Completeor for wakeup
- * @reply: Firmware reply for internal commands
- * @sensebuf: Sensebuf for SCSI IO commands
- * @iou_rc: IO Unit control reason code
- * @state: Command State
- * @dev_handle: Firmware handle for device specific commands
- * @ioc_status: IOC status from the firmware
- * @ioc_loginfo:IOC log info from the firmware
- * @is_waiting: Is the command issued in block mode
- * @is_sense: Is Sense data present
- * @retry_count: Retry count for retriable commands
- * @host_tag: Host tag used by the command
- * @callback: Callback for non blocking commands
- */
+
 struct mpi3mr_drv_cmd {
 	struct mutex mutex;
 	struct completion done;
@@ -840,15 +578,7 @@ struct mpi3mr_drv_cmd {
 	    struct mpi3mr_drv_cmd *drv_cmd);
 };
 
-/**
- * struct dma_memory_desc - memory descriptor structure to store
- * virtual address, dma address and size for any generic dma
- * memory allocations in the driver.
- *
- * @size: buffer size
- * @addr: virtual address
- * @dma_addr: dma address
- */
+
 struct dma_memory_desc {
 	u32 size;
 	void *addr;
@@ -856,30 +586,13 @@ struct dma_memory_desc {
 };
 
 
-/**
- * struct chain_element - memory descriptor structure to store
- * virtual and dma addresses for chain elements.
- *
- * @addr: virtual address
- * @dma_addr: dma address
- */
+
 struct chain_element {
 	void *addr;
 	dma_addr_t dma_addr;
 };
 
-/**
- * struct scmd_priv - SCSI command private data
- *
- * @host_tag: Host tag specific to operational queue
- * @in_lld_scope: Command in LLD scope or not
- * @meta_sg_valid: DIX command with meta data SGL or not
- * @scmd: SCSI Command pointer
- * @req_q_idx: Operational request queue index
- * @chain_idx: Chain frame index
- * @meta_chain_idx: Chain frame index of meta data SGL
- * @mpi3mr_scsiio_req: MPI SCSI IO request
- */
+
 struct scmd_priv {
 	u16 host_tag;
 	u8 in_lld_scope;
@@ -891,158 +604,7 @@ struct scmd_priv {
 	u8 mpi3mr_scsiio_req[MPI3MR_ADMIN_REQ_FRAME_SZ];
 };
 
-/**
- * struct mpi3mr_ioc - Adapter anchor structure stored in shost
- * private data
- *
- * @list: List pointer
- * @pdev: PCI device pointer
- * @shost: Scsi_Host pointer
- * @id: Controller ID
- * @cpu_count: Number of online CPUs
- * @irqpoll_sleep: usleep unit used in threaded isr irqpoll
- * @name: Controller ASCII name
- * @driver_name: Driver ASCII name
- * @sysif_regs: System interface registers virtual address
- * @sysif_regs_phys: System interface registers physical address
- * @bars: PCI BARS
- * @dma_mask: DMA mask
- * @msix_count: Number of MSIX vectors used
- * @intr_enabled: Is interrupts enabled
- * @num_admin_req: Number of admin requests
- * @admin_req_q_sz: Admin request queue size
- * @admin_req_pi: Admin request queue producer index
- * @admin_req_ci: Admin request queue consumer index
- * @admin_req_base: Admin request queue base virtual address
- * @admin_req_dma: Admin request queue base dma address
- * @admin_req_lock: Admin queue access lock
- * @num_admin_replies: Number of admin replies
- * @admin_reply_q_sz: Admin reply queue size
- * @admin_reply_ci: Admin reply queue consumer index
- * @admin_reply_ephase:Admin reply queue expected phase
- * @admin_reply_base: Admin reply queue base virtual address
- * @admin_reply_dma: Admin reply queue base dma address
- * @admin_reply_q_in_use: Queue is handled by poll/ISR
- * @ready_timeout: Controller ready timeout
- * @intr_info: Interrupt cookie pointer
- * @intr_info_count: Number of interrupt cookies
- * @is_intr_info_set: Flag to indicate intr info is setup
- * @num_queues: Number of operational queues
- * @num_op_req_q: Number of operational request queues
- * @req_qinfo: Operational request queue info pointer
- * @num_op_reply_q: Number of operational reply queues
- * @op_reply_qinfo: Operational reply queue info pointer
- * @init_cmds: Command tracker for initialization commands
- * @cfg_cmds: Command tracker for configuration requests
- * @facts: Cached IOC facts data
- * @op_reply_desc_sz: Operational reply descriptor size
- * @num_reply_bufs: Number of reply buffers allocated
- * @reply_buf_pool: Reply buffer pool
- * @reply_buf: Reply buffer base virtual address
- * @reply_buf_dma: Reply buffer DMA address
- * @reply_buf_dma_max_address: Reply DMA address max limit
- * @reply_free_qsz: Reply free queue size
- * @reply_free_q_pool: Reply free queue pool
- * @reply_free_q: Reply free queue base virtual address
- * @reply_free_q_dma: Reply free queue base DMA address
- * @reply_free_queue_lock: Reply free queue lock
- * @reply_free_queue_host_index: Reply free queue host index
- * @num_sense_bufs: Number of sense buffers
- * @sense_buf_pool: Sense buffer pool
- * @sense_buf: Sense buffer base virtual address
- * @sense_buf_dma: Sense buffer base DMA address
- * @sense_buf_q_sz: Sense buffer queue size
- * @sense_buf_q_pool: Sense buffer queue pool
- * @sense_buf_q: Sense buffer queue virtual address
- * @sense_buf_q_dma: Sense buffer queue DMA address
- * @sbq_lock: Sense buffer queue lock
- * @sbq_host_index: Sense buffer queuehost index
- * @event_masks: Event mask bitmap
- * @fwevt_worker_name: Firmware event worker thread name
- * @fwevt_worker_thread: Firmware event worker thread
- * @fwevt_lock: Firmware event lock
- * @fwevt_list: Firmware event list
- * @watchdog_work_q_name: Fault watchdog worker thread name
- * @watchdog_work_q: Fault watchdog worker thread
- * @watchdog_work: Fault watchdog work
- * @watchdog_lock: Fault watchdog lock
- * @is_driver_loading: Is driver still loading
- * @scan_started: Async scan started
- * @scan_failed: Asycn scan failed
- * @stop_drv_processing: Stop all command processing
- * @device_refresh_on: Don't process the events until devices are refreshed
- * @max_host_ios: Maximum host I/O count
- * @max_sgl_entries: Max SGL entries per I/O
- * @chain_buf_count: Chain buffer count
- * @chain_buf_pool: Chain buffer pool
- * @chain_sgl_list: Chain SGL list
- * @chain_bitmap: Chain buffer allocator bitmap
- * @chain_buf_lock: Chain buffer list lock
- * @bsg_cmds: Command tracker for BSG command
- * @host_tm_cmds: Command tracker for task management commands
- * @dev_rmhs_cmds: Command tracker for device removal commands
- * @evtack_cmds: Command tracker for event ack commands
- * @devrem_bitmap: Device removal bitmap
- * @dev_handle_bitmap_bits: Number of bits in device handle bitmap
- * @removepend_bitmap: Remove pending bitmap
- * @delayed_rmhs_list: Delayed device removal list
- * @evtack_cmds_bitmap: Event Ack bitmap
- * @delayed_evtack_cmds_list: Delayed event acknowledgment list
- * @ts_update_counter: Timestamp update counter
- * @reset_in_progress: Reset in progress flag
- * @unrecoverable: Controller unrecoverable flag
- * @prev_reset_result: Result of previous reset
- * @reset_mutex: Controller reset mutex
- * @reset_waitq: Controller reset  wait queue
- * @prepare_for_reset: Prepare for reset event received
- * @prepare_for_reset_timeout_counter: Prepare for reset timeout
- * @prp_list_virt: NVMe encapsulated PRP list virtual base
- * @prp_list_dma: NVMe encapsulated PRP list DMA
- * @prp_sz: NVME encapsulated PRP list size
- * @diagsave_timeout: Diagnostic information save timeout
- * @logging_level: Controller debug logging level
- * @flush_io_count: I/O count to flush after reset
- * @current_event: Firmware event currently in process
- * @driver_info: Driver, Kernel, OS information to firmware
- * @change_count: Topology change count
- * @pel_enabled: Persistent Event Log(PEL) enabled or not
- * @pel_abort_requested: PEL abort is requested or not
- * @pel_class: PEL Class identifier
- * @pel_locale: PEL Locale identifier
- * @pel_cmds: Command tracker for PEL wait command
- * @pel_abort_cmd: Command tracker for PEL abort command
- * @pel_newest_seqnum: Newest PEL sequenece number
- * @pel_seqnum_virt: PEL sequence number virtual address
- * @pel_seqnum_dma: PEL sequence number DMA address
- * @pel_seqnum_sz: PEL sequenece number size
- * @op_reply_q_offset: Operational reply queue offset with MSIx
- * @default_qcount: Total Default queues
- * @active_poll_qcount: Currently active poll queue count
- * @requested_poll_qcount: User requested poll queue count
- * @bsg_dev: BSG device structure
- * @bsg_queue: Request queue for BSG device
- * @stop_bsgs: Stop BSG request flag
- * @logdata_buf: Circular buffer to store log data entries
- * @logdata_buf_idx: Index of entry in buffer to store
- * @logdata_entry_sz: log data entry size
- * @pend_large_data_sz: Counter to track pending large data
- * @io_throttle_data_length: I/O size to track in 512b blocks
- * @io_throttle_high: I/O size to start throttle in 512b blocks
- * @io_throttle_low: I/O size to stop throttle in 512b blocks
- * @num_io_throttle_group: Maximum number of throttle groups
- * @throttle_groups: Pointer to throttle group info structures
- * @cfg_page: Default memory for configuration pages
- * @cfg_page_dma: Configuration page DMA address
- * @cfg_page_sz: Default configuration page memory size
- * @sas_transport_enabled: SAS transport enabled or not
- * @scsi_device_channel: Channel ID for SCSI devices
- * @transport_cmds: Command tracker for SAS transport commands
- * @sas_hba: SAS node for the controller
- * @sas_expander_list: SAS node list of expanders
- * @sas_node_lock: Lock to protect SAS node list
- * @hba_port_table_list: List of HBA Ports
- * @enclosure_list: List of Enclosure objects
- */
+
 struct mpi3mr_ioc {
 	struct list_head list;
 	struct pci_dev *pdev;
@@ -1229,22 +791,7 @@ struct mpi3mr_ioc {
 	struct list_head enclosure_list;
 };
 
-/**
- * struct mpi3mr_fwevt - Firmware event structure.
- *
- * @list: list head
- * @work: Work structure
- * @mrioc: Adapter instance reference
- * @event_id: MPI3 firmware event ID
- * @send_ack: Event acknowledgment required or not
- * @process_evt: Bottomhalf processing required or not
- * @evt_ctx: Event context to send in Ack
- * @event_data_size: size of the event data in bytes
- * @pending_at_sml: waiting for device add/remove API to complete
- * @discard: discard this event
- * @ref_count: kref count
- * @event_data: Actual MPI3 event data
- */
+
 struct mpi3mr_fwevt {
 	struct list_head list;
 	struct work_struct work;
@@ -1261,25 +808,14 @@ struct mpi3mr_fwevt {
 };
 
 
-/**
- * struct delayed_dev_rmhs_node - Delayed device removal node
- *
- * @list: list head
- * @handle: Device handle
- * @iou_rc: IO Unit Control Reason Code
- */
+
 struct delayed_dev_rmhs_node {
 	struct list_head list;
 	u16 handle;
 	u8 iou_rc;
 };
 
-/**
- * struct delayed_evt_ack_node - Delayed event ack node
- * @list: list head
- * @event: MPI3 event ID
- * @event_ctx: event context
- */
+
 struct delayed_evt_ack_node {
 	struct list_head list;
 	u8 event;
@@ -1417,4 +953,4 @@ void mpi3mr_free_enclosure_list(struct mpi3mr_ioc *mrioc);
 int mpi3mr_process_admin_reply_q(struct mpi3mr_ioc *mrioc);
 void mpi3mr_expander_node_remove(struct mpi3mr_ioc *mrioc,
 	struct mpi3mr_sas_node *sas_expander);
-#endif /*MPI3MR_H_INCLUDED*/
+#endif 

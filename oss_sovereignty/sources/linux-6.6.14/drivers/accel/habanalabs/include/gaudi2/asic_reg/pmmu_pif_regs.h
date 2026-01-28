@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_PMMU_PIF_REGS_H_
 #define ASIC_REG_PMMU_PIF_REGS_H_
 
-/*
- *****************************************
- *   PMMU_PIF
- *   (Prototype: PIF)
- *****************************************
- */
+
 
 #define mmPMMU_PIF_WR_CORE_CREDITS_THRESHOLD 0x4D03000
 
@@ -132,4 +119,4 @@
 
 #define mmPMMU_PIF_TPC_DBG_ADDR_MASK 0x4D03324
 
-#endif /* ASIC_REG_PMMU_PIF_REGS_H_ */
+#endif 

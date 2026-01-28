@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * include/media/drv-intf/si476x.h -- Common definitions for si476x driver
- *
- * Copyright (C) 2012 Innovative Converged Devices(ICD)
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+
 
 #ifndef SI476X_H
 #define SI476X_H
@@ -25,4 +18,4 @@ enum si476x_ctrl_id {
 	V4L2_CID_SI476X_INTERCHIP_LINK	= (V4L2_CID_USER_SI476X_BASE + 6),
 };
 
-#endif /* SI476X_H*/
+#endif 

@@ -5,7 +5,7 @@ ALL_TESTS="
 "
 NUM_NETIFS=4
 source lib.sh
-: ${HIT_TIMEOUT:=2000} # ms
+: ${HIT_TIMEOUT:=2000} 
 h1_create()
 {
 	simple_if_init $h1 192.0.2.1/28

@@ -1,14 +1,4 @@
-/* $Id: capiutil.h,v 1.5.6.2 2001/09/23 22:24:33 kai Exp $
- *
- * CAPI 2.0 defines & types
- *
- * From CAPI 2.0 Development Kit AVM 1995 (msg.c)
- * Rewritten for Linux 1996 by Carsten Paeth <calle@calle.de>
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- *
- */
+
 
 #ifndef __CAPIUTIL_H__
 #define __CAPIUTIL_H__
@@ -28,7 +18,7 @@
 #define CAPIMSG_CONTROLLER(m)	(m[8] & 0x7f)
 #define CAPIMSG_CONTROL(m)	CAPIMSG_U32(m, 8)
 #define CAPIMSG_NCCI(m)		CAPIMSG_CONTROL(m)
-#define CAPIMSG_DATALEN(m)	CAPIMSG_U16(m,16) /* DATA_B3_REQ */
+#define CAPIMSG_DATALEN(m)	CAPIMSG_U16(m,16) 
 
 static inline void capimsg_setu8(void *m, int off, __u8 val)
 {
@@ -57,4 +47,4 @@ static inline void capimsg_setu32(void *m, int off, __u32 val)
 #define	CAPIMSG_SETCONTROL(m, contr)	capimsg_setu32(m, 8, contr)
 #define	CAPIMSG_SETDATALEN(m, len)	capimsg_setu16(m, 16, len)
 
-#endif				/* __CAPIUTIL_H__ */
+#endif				

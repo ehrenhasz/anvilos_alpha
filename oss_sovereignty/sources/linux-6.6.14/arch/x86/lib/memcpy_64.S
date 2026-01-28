@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2002 Andi Kleen */
+
+
 
 #include <linux/linkage.h>
 #include <linux/cfi_types.h>
@@ -10,26 +10,7 @@
 
 .section .noinstr.text, "ax"
 
-/*
- * memcpy - Copy a memory block.
- *
- * Input:
- *  rdi destination
- *  rsi source
- *  rdx count
- *
- * Output:
- * rax original destination
- *
- * The FSRM alternative should be done inline (avoiding the call and
- * the disgusting return handling), but that would require some help
- * from the compiler for better calling conventions.
- *
- * The 'rep movsb' itself is small enough to replace the call, but the
- * two register moves blow up the code. And one of them is "needed"
- * only for the return value that is the same as the source input,
- * which the compiler could/should do much better anyway.
- */
+
 SYM_TYPED_FUNC_START(__memcpy)
 	ALTERNATIVE "jmp memcpy_orig", "", X86_FEATURE_FSRM
 
@@ -49,19 +30,14 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 	cmpq $0x20, %rdx
 	jb .Lhandle_tail
 
-	/*
-	 * We check whether memory false dependence could occur,
-	 * then jump to corresponding copy mode.
-	 */
+	
 	cmp  %dil, %sil
 	jl .Lcopy_backward
 	subq $0x20, %rdx
 .Lcopy_forward_loop:
 	subq $0x20,	%rdx
 
-	/*
-	 * Move in blocks of 4x8 bytes:
-	 */
+	
 	movq 0*8(%rsi),	%r8
 	movq 1*8(%rsi),	%r9
 	movq 2*8(%rsi),	%r10
@@ -78,16 +54,11 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 	jmp  .Lhandle_tail
 
 .Lcopy_backward:
-	/*
-	 * Calculate copy position to tail.
-	 */
+	
 	addq %rdx,	%rsi
 	addq %rdx,	%rdi
 	subq $0x20,	%rdx
-	/*
-	 * At most 3 ALU operations in one cycle,
-	 * so append NOPS in the same 16 bytes trunk.
-	 */
+	
 	.p2align 4
 .Lcopy_backward_loop:
 	subq $0x20,	%rdx
@@ -103,9 +74,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 	leaq -4*8(%rdi),	%rdi
 	jae  .Lcopy_backward_loop
 
-	/*
-	 * Calculate copy position to head.
-	 */
+	
 	addl $0x20,	%edx
 	subq %rdx,	%rsi
 	subq %rdx,	%rdi
@@ -113,9 +82,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 	cmpl $16,	%edx
 	jb   .Lless_16bytes
 
-	/*
-	 * Move data from 16 bytes to 31 bytes.
-	 */
+	
 	movq 0*8(%rsi), %r8
 	movq 1*8(%rsi),	%r9
 	movq -2*8(%rsi, %rdx),	%r10
@@ -129,9 +96,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 .Lless_16bytes:
 	cmpl $8,	%edx
 	jb   .Lless_8bytes
-	/*
-	 * Move data from 8 bytes to 15 bytes.
-	 */
+	
 	movq 0*8(%rsi),	%r8
 	movq -1*8(%rsi, %rdx),	%r9
 	movq %r8,	0*8(%rdi)
@@ -142,9 +107,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 	cmpl $4,	%edx
 	jb   .Lless_3bytes
 
-	/*
-	 * Move data from 4 bytes to 7 bytes.
-	 */
+	
 	movl (%rsi), %ecx
 	movl -4(%rsi, %rdx), %r8d
 	movl %ecx, (%rdi)
@@ -154,9 +117,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
 .Lless_3bytes:
 	subl $1, %edx
 	jb .Lend
-	/*
-	 * Move data from 1 bytes to 3 bytes.
-	 */
+	
 	movzbl (%rsi), %ecx
 	jz .Lstore_1byte
 	movzbq 1(%rsi), %r8

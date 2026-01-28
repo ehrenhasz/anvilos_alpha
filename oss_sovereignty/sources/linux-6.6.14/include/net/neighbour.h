@@ -1,21 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NET_NEIGHBOUR_H
 #define _NET_NEIGHBOUR_H
 
 #include <linux/neighbour.h>
 
-/*
- *	Generic neighbour manipulation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *	Alexey Kuznetsov	<kuznet@ms2.inr.ac.ru>
- *
- * 	Changes:
- *
- *	Harald Welte:		<laforge@gnumonks.org>
- *		- Add neighbour cache statistics like rtstat
- */
+
 
 #include <linux/atomic.h>
 #include <linux/refcount.h>
@@ -30,9 +19,7 @@
 #include <linux/workqueue.h>
 #include <net/rtnetlink.h>
 
-/*
- * NUD stands for "neighbor unreachability detection"
- */
+
 
 #define NUD_IN_TIMER	(NUD_INCOMPLETE|NUD_REACHABLE|NUD_DELAY|NUD_PROBE)
 #define NUD_VALID	(NUD_PERMANENT|NUD_NOARP|NUD_REACHABLE|NUD_PROBE|NUD_STALE|NUD_DELAY)
@@ -56,11 +43,11 @@ enum {
 	NEIGH_VAR_PROXY_DELAY,
 	NEIGH_VAR_LOCKTIME,
 #define NEIGH_VAR_DATA_MAX (NEIGH_VAR_LOCKTIME + 1)
-	/* Following are used as a second way to access one of the above */
-	NEIGH_VAR_QUEUE_LEN, /* same data as NEIGH_VAR_QUEUE_LEN_BYTES */
-	NEIGH_VAR_RETRANS_TIME_MS, /* same data as NEIGH_VAR_RETRANS_TIME */
-	NEIGH_VAR_BASE_REACHABLE_TIME_MS, /* same data as NEIGH_VAR_BASE_REACHABLE_TIME */
-	/* Following are used by "default" only */
+	
+	NEIGH_VAR_QUEUE_LEN, 
+	NEIGH_VAR_RETRANS_TIME_MS, 
+	NEIGH_VAR_BASE_REACHABLE_TIME_MS, 
+	
 	NEIGH_VAR_GC_INTERVAL,
 	NEIGH_VAR_GC_THRESH1,
 	NEIGH_VAR_GC_THRESH2,
@@ -96,9 +83,7 @@ static inline void neigh_var_set(struct neigh_parms *p, int index, int val)
 
 #define NEIGH_VAR(p, attr) ((p)->data[NEIGH_VAR_ ## attr])
 
-/* In ndo_neigh_setup, NEIGH_VAR_INIT should be used.
- * In other cases, NEIGH_VAR_SET should be used.
- */
+
 #define NEIGH_VAR_INIT(p, attr, val) (NEIGH_VAR(p, attr) = val)
 #define NEIGH_VAR_SET(p, attr, val) neigh_var_set(p, NEIGH_VAR_ ## attr, val)
 
@@ -113,23 +98,23 @@ static inline void neigh_parms_data_state_cleanall(struct neigh_parms *p)
 }
 
 struct neigh_statistics {
-	unsigned long allocs;		/* number of allocated neighs */
-	unsigned long destroys;		/* number of destroyed neighs */
-	unsigned long hash_grows;	/* number of hash resizes */
+	unsigned long allocs;		
+	unsigned long destroys;		
+	unsigned long hash_grows;	
 
-	unsigned long res_failed;	/* number of failed resolutions */
+	unsigned long res_failed;	
 
-	unsigned long lookups;		/* number of lookups */
-	unsigned long hits;		/* number of hits (among lookups) */
+	unsigned long lookups;		
+	unsigned long hits;		
 
-	unsigned long rcv_probes_mcast;	/* number of received mcast ipv6 */
-	unsigned long rcv_probes_ucast; /* number of received ucast ipv6 */
+	unsigned long rcv_probes_mcast;	
+	unsigned long rcv_probes_ucast; 
 
-	unsigned long periodic_gc_runs;	/* number of periodic GC runs */
-	unsigned long forced_gc_runs;	/* number of forced GC runs */
+	unsigned long periodic_gc_runs;	
+	unsigned long forced_gc_runs;	
 
-	unsigned long unres_discards;	/* number of unresolved drops */
-	unsigned long table_fulls;      /* times even gc couldn't help */
+	unsigned long unres_discards;	
+	unsigned long table_fulls;      
 };
 
 #define NEIGH_CACHE_STAT_INC(tbl, field) this_cpu_inc((tbl)->stats->field)
@@ -183,9 +168,7 @@ struct pneigh_entry {
 	u32			key[];
 };
 
-/*
- *	neighbour table manipulation
- */
+
 
 #define NEIGH_NUM_HASH_RND	4
 
@@ -241,7 +224,7 @@ enum {
 	NEIGH_ND_TABLE = 1,
 	NEIGH_DN_TABLE = 2,
 	NEIGH_NR_TABLES,
-	NEIGH_LINK_TABLE = NEIGH_NR_TABLES /* Pseudo table for neigh_xmit */
+	NEIGH_LINK_TABLE = NEIGH_NR_TABLES 
 };
 
 static inline int neigh_parms_family(struct neigh_parms *p)
@@ -257,7 +240,7 @@ static inline void *neighbour_priv(const struct neighbour *n)
 	return (char *)n + n->tbl->entry_size;
 }
 
-/* flags for neigh_update() */
+
 #define NEIGH_UPDATE_F_OVERRIDE			BIT(0)
 #define NEIGH_UPDATE_F_WEAK_OVERRIDE		BIT(1)
 #define NEIGH_UPDATE_F_OVERRIDE_ISROUTER	BIT(2)
@@ -267,7 +250,7 @@ static inline void *neighbour_priv(const struct neighbour *n)
 #define NEIGH_UPDATE_F_ISROUTER			BIT(6)
 #define NEIGH_UPDATE_F_ADMIN			BIT(7)
 
-/* In-kernel representation for NDA_FLAGS_EXT flags: */
+
 #define NTF_OLD_MASK		0xff
 #define NTF_EXT_SHIFT		8
 #define NTF_EXT_MASK		(NTF_EXT_MANAGED)
@@ -326,7 +309,7 @@ static inline void neigh_confirm(struct neighbour *n)
 	if (n) {
 		unsigned long now = jiffies;
 
-		/* avoid dirtying neighbour */
+		
 		if (READ_ONCE(n->confirmed) != now)
 			WRITE_ONCE(n->confirmed, now);
 	}
@@ -435,9 +418,7 @@ static inline struct neigh_parms *neigh_parms_clone(struct neigh_parms *parms)
 	return parms;
 }
 
-/*
- *	Neighbour references
- */
+
 
 static inline void neigh_release(struct neighbour *neigh)
 {
@@ -498,12 +479,9 @@ static inline int neigh_hh_output(const struct hh_cache *hh, struct sk_buff *skb
 		if (likely(hh_len <= HH_DATA_MOD)) {
 			hh_alen = HH_DATA_MOD;
 
-			/* skb_push() would proceed silently if we have room for
-			 * the unaligned size but not for the aligned size:
-			 * check headroom explicitly.
-			 */
+			
 			if (likely(skb_headroom(skb) >= HH_DATA_MOD)) {
-				/* this is inlined by gcc */
+				
 				memcpy(skb->data - HH_DATA_MOD, hh->hh_data,
 				       HH_DATA_MOD);
 			}
@@ -531,9 +509,7 @@ static inline int neigh_output(struct neighbour *n, struct sk_buff *skb,
 {
 	const struct hh_cache *hh = &n->hh;
 
-	/* n->nud_state and hh->hh_len could be changed under us.
-	 * neigh_hh_output() is taking care of the race later.
-	 */
+	
 	if (!skip_cache &&
 	    (READ_ONCE(n->nud_state) & NUD_CONNECTED) &&
 	    READ_ONCE(hh->hh_len))

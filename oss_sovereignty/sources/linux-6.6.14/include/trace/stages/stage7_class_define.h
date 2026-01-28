@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* Stage 7 definitions for creating trace events */
+
+
 
 #undef __entry
 #define __entry REC
@@ -25,10 +25,7 @@
 #undef __print_hex_dump
 #undef __get_buf
 
-/*
- * The below is not executed in the kernel. It is only what is
- * displayed in the print format for userspace to parse.
- */
+
 #undef __print_ns_to_secs
 #define __print_ns_to_secs(val) (val) / 1000000000UL
 

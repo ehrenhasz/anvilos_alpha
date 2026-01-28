@@ -36,7 +36,7 @@ def test(peer_addr, tls=False, handshake=False):
             dp(er)
             print("send:", er.errno in (errno.EAGAIN, errno.EINPROGRESS))
         s.close()
-    else:  # fake it...
+    else:  
         print("connect:", True)
         if tls:
             print("wrap:", True)
@@ -45,15 +45,15 @@ def test(peer_addr, tls=False, handshake=False):
         s = do_connect(peer_addr, tls, handshake)
         try:
             ret = s.write(b"1234")
-            print("write:", ret in (4, None))  # SSL may accept 4 into buffer
+            print("write:", ret in (4, None))  
         except OSError as er:
             dp(er)
-            print("write:", False)  # should not raise
-        except ValueError as er:  # CPython
+            print("write:", False)  
+        except ValueError as er:  
             dp(er)
             print("write:", er.args[0] == "Write on closed or unwrapped SSL socket.")
         s.close()
-    else:  # fake it...
+    else:  
         print("connect:", True)
         if tls:
             print("wrap:", True)
@@ -66,7 +66,7 @@ def test(peer_addr, tls=False, handshake=False):
             dp(er)
             print("recv:", er.errno == errno.EAGAIN)
         s.close()
-    else:  # fake it...
+    else:  
         print("connect:", True)
         if tls:
             print("wrap:", True)
@@ -78,12 +78,12 @@ def test(peer_addr, tls=False, handshake=False):
             print("read:", ret is None)
         except OSError as er:
             dp(er)
-            print("read:", False)  # should not raise
-        except ValueError as er:  # CPython
+            print("read:", False)  
+        except ValueError as er:  
             dp(er)
             print("read:", er.args[0] == "Read on closed or unwrapped SSL socket.")
         s.close()
-    else:  # fake it...
+    else:  
         print("connect:", True)
         if tls:
             print("wrap:", True)

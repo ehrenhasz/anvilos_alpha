@@ -17,7 +17,7 @@ run_test() {
     ip netns exec server_ns ./gro "${ARGS[@]}" "--rx" "--iface" "server" \
       1>>log.txt &
     server_pid=$!
-    sleep 0.5  # to allow for socket init
+    sleep 0.5  
     ip netns exec client_ns ./gro "${ARGS[@]}" "--iface" "client" \
       1>>log.txt
     wait "${server_pid}"
@@ -40,7 +40,7 @@ run_all_tests() {
       fi;
     done;
   done
-  if [[ ${#failed_tests[@]} -ne 0 ]]; then
+  if [[ ${
     echo "failed tests: ${failed_tests[*]}. \
     Please see log.txt for more logs"
     exit 1

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Internal definitions for network filesystem support
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #include <linux/netfs.h>
 #include <linux/fscache.h>
@@ -15,24 +11,16 @@
 
 #define pr_fmt(fmt) "netfs: " fmt
 
-/*
- * buffered_read.c
- */
+
 void netfs_rreq_unlock_folios(struct netfs_io_request *rreq);
 
-/*
- * io.c
- */
+
 int netfs_begin_read(struct netfs_io_request *rreq, bool sync);
 
-/*
- * main.c
- */
+
 extern unsigned int netfs_debug;
 
-/*
- * objects.c
- */
+
 struct netfs_io_request *netfs_alloc_request(struct address_space *mapping,
 					     struct file *file,
 					     loff_t start, size_t len,
@@ -49,9 +37,7 @@ static inline void netfs_see_request(struct netfs_io_request *rreq,
 	trace_netfs_rreq_ref(rreq->debug_id, refcount_read(&rreq->ref), what);
 }
 
-/*
- * stats.c
- */
+
 #ifdef CONFIG_NETFS_STATS
 extern atomic_t netfs_n_rh_readahead;
 extern atomic_t netfs_n_rh_readpage;
@@ -88,9 +74,7 @@ static inline void netfs_stat_d(atomic_t *stat)
 #define netfs_stat_d(x) do {} while(0)
 #endif
 
-/*
- * Miscellaneous functions.
- */
+
 static inline bool netfs_is_cache_enabled(struct netfs_inode *ctx)
 {
 #if IS_ENABLED(CONFIG_FSCACHE)
@@ -103,10 +87,8 @@ static inline bool netfs_is_cache_enabled(struct netfs_inode *ctx)
 #endif
 }
 
-/*****************************************************************************/
-/*
- * debug tracing
- */
+
+
 #define dbgprintk(FMT, ...) \
 	printk("[%-6.6s] "FMT"\n", current->comm, ##__VA_ARGS__)
 

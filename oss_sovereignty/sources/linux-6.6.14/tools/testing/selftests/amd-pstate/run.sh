@@ -117,28 +117,28 @@ parse_arguments()
 	while getopts ho:c:t:p:l:i:m: arg
 	do
 		case $arg in
-			h) # --help
+			h) 
 				help
 				;;
-			c) # --func_type (Function to perform: basic, tbench, gitsource (default: all))
+			c) 
 				FUNC=$OPTARG
 				;;
-			o) # --output-file (Output file to store dumps)
+			o) 
 				OUTFILE=$OPTARG
 				;;
-			t) # --tbench-time-limit
+			t) 
 				TIME_LIMIT=$OPTARG
 				;;
-			p) # --tbench-process-number
+			p) 
 				PROCESS_NUM=$OPTARG
 				;;
-			l) # --tbench/gitsource-loop-times
+			l) 
 				LOOP_TIMES=$OPTARG
 				;;
-			i) # --amd-tracer-interval
+			i) 
 				TRACER_INTERVAL=$OPTARG
 				;;
-			m) # --comparative-test
+			m) 
 				COMPARATIVE_TEST=$OPTARG
 				;;
 			*)
@@ -173,34 +173,34 @@ command_tbench()
 prerequisite()
 {
 	if ! echo "$ARCH" | grep -q x86; then
-		echo "$0 # Skipped: Test can only run on x86 architectures."
+		echo "$0 
 		exit $ksft_skip
 	fi
 	if ! echo "$VENDOR" | grep -iq amd; then
-		echo "$0 # Skipped: Test can only run on AMD CPU."
-		echo "$0 # Current cpu vendor is $VENDOR."
+		echo "$0 
+		echo "$0 
 		exit $ksft_skip
 	fi
 	scaling_driver=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_driver)
 	if [ "$COMPARATIVE_TEST" = "" ]; then
 		if [ "$scaling_driver" != "$CURRENT_TEST" ]; then
-			echo "$0 # Skipped: Test can only run on $CURRENT_TEST driver or run comparative test."
-			echo "$0 # Please set X86_AMD_PSTATE enabled or run comparative test."
-			echo "$0 # Current cpufreq scaling driver is $scaling_driver."
+			echo "$0 
+			echo "$0 
+			echo "$0 
 			exit $ksft_skip
 		fi
 	else
 		case "$FUNC" in
 			"tbench" | "gitsource")
 				if [ "$scaling_driver" != "$COMPARATIVE_TEST" ]; then
-					echo "$0 # Skipped: Comparison test can only run on $COMPARISON_TEST driver."
-					echo "$0 # Current cpufreq scaling driver is $scaling_driver."
+					echo "$0 
+					echo "$0 
 					exit $ksft_skip
 				fi
 				;;
 			*)
-				echo "$0 # Skipped: Comparison test are only for tbench or gitsource."
-				echo "$0 # Current comparative test is for $FUNC."
+				echo "$0 
+				echo "$0 
 				exit $ksft_skip
 				;;
 		esac

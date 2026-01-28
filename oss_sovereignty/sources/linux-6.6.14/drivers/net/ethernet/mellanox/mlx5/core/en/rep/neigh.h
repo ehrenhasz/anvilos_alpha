@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_REP_NEIGH__
 #define __MLX5_EN_REP_NEIGH__
@@ -23,13 +23,13 @@ void mlx5e_rep_neigh_entry_release(struct mlx5e_neigh_hash_entry *nhe);
 
 void mlx5e_rep_queue_neigh_stats_work(struct mlx5e_priv *priv);
 
-#else /* CONFIG_MLX5_CLS_ACT */
+#else 
 
 static inline int
 mlx5e_rep_neigh_init(struct mlx5e_rep_priv *rpriv) { return 0; }
 static inline void
 mlx5e_rep_neigh_cleanup(struct mlx5e_rep_priv *rpriv) {}
 
-#endif /* CONFIG_MLX5_CLS_ACT */
+#endif 
 
-#endif /* __MLX5_EN_REP_NEIGH__ */
+#endif 

@@ -37,7 +37,7 @@ test_no_aggr()
 			results="$results $cpu:$num"
 			continue
 		fi
-		cyc=${results##* $cpu:}
+		cyc=${results
 		cyc=${cyc%% *}
 		if [ -z "$cyc" ]; then
 			continue

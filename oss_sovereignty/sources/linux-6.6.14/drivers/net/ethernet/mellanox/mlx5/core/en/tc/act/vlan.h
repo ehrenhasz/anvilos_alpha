@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_EN_TC_ACT_VLAN_H__
 #define __MLX5_EN_TC_ACT_VLAN_H__
@@ -26,4 +26,4 @@ mlx5e_tc_act_vlan_add_rewrite_action(struct mlx5e_priv *priv, int namespace,
 				     struct mlx5e_tc_flow_parse_attr *parse_attr,
 				     u32 *action, struct netlink_ext_ack *extack);
 
-#endif /* __MLX5_EN_TC_ACT_VLAN_H__ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_RMWcc
 #define _ASM_X86_RMWcc
 
@@ -8,7 +8,7 @@
 
 #ifndef __GCC_ASM_FLAG_OUTPUTS__
 
-/* Use asm goto */
+
 
 #define __GEN_RMWcc(fullop, _var, cc, clobbers, ...)			\
 ({									\
@@ -22,9 +22,9 @@ cc_label:	c = true;						\
 	c;								\
 })
 
-#else /* defined(__GCC_ASM_FLAG_OUTPUTS__) */
+#else 
 
-/* Use flags output or a set instruction */
+
 
 #define __GEN_RMWcc(fullop, _var, cc, clobbers, ...)			\
 ({									\
@@ -35,7 +35,7 @@ cc_label:	c = true;						\
 	c;								\
 })
 
-#endif /* defined(__GCC_ASM_FLAG_OUTPUTS__) */
+#endif 
 
 #define GEN_UNARY_RMWcc_4(op, var, cc, arg0)				\
 	__GEN_RMWcc(op " " arg0, var, cc, __CLOBBERS_MEM())
@@ -62,4 +62,4 @@ cc_label:	c = true;						\
 	__GEN_RMWcc(op " %[val], %[var]\n\t" suffix, var, cc,		\
 		    __CLOBBERS_MEM(clobbers), [val] vcon (_val))
 
-#endif /* _ASM_X86_RMWcc */
+#endif 

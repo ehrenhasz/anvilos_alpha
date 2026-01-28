@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __JVMTI_AGENT_H__
 #define __JVMTI_AGENT_H__
 
@@ -13,7 +13,7 @@ extern "C" {
 typedef struct {
 	unsigned long	pc;
 	int		line_number;
-	int		discrim; /* discriminator -- 0 for now */
+	int		discrim; 
 	jmethodID	methodID;
 } jvmti_line_info_t;
 
@@ -31,4 +31,4 @@ int   jvmti_write_debug_info(void *agent, uint64_t code, int nr_lines,
 }
 
 #endif
-#endif /* __JVMTI_H__ */
+#endif 

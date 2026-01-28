@@ -9,8 +9,8 @@ automake --version | awk '{print $NF; exit}' | (
 		find "$root" -name Makefile.am "$@" | while read -r dir; do
 			dir="${dir%/Makefile.am}"
 			grep -q '%[CD]%' "$dir/Makefile.am" || continue
-			reldir="${dir#"$root"}"
-			reldir="${reldir#/}"
+			reldir="${dir
+			reldir="${reldir
 			canon_reldir="$(printf '%s' "$reldir" | tr -C 'a-zA-Z0-9@_' '_')"
 			reldir_slash="$reldir/"
 			canon_reldir_slash="${canon_reldir}_"
@@ -34,7 +34,7 @@ automake --version | awk '{print $NF; exit}' | (
 	IFS="
 "
 	for root in $roots; do
-		root="${root#./}"
+		root="${root
 		process_root "$root"
 	done
 	set -f

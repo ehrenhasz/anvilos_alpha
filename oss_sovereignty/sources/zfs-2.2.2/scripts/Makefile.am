@@ -37,7 +37,7 @@ SHELLCHECKSCRIPTS += $(dist_scripts_SCRIPTS) $(dist_noinst_SCRIPTS)
 
 define SCRIPTS_EXTRA_ENVIRONMENT
 
-# Only required for in-tree use
+
 export INTREE="yes"
 export GDB="libtool --mode=execute gdb"
 export LDMOD=/sbin/insmod

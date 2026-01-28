@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Definitions for Marvell PPv2 network controller for Armada 375 SoC.
- *
- * Copyright (C) 2014 Marvell
- *
- * Marcin Wojtas <mw@semihalf.com>
- */
+
+
 #ifndef _MVPP2_H_
 #define _MVPP2_H_
 
@@ -20,9 +14,7 @@
 #include <linux/bpf.h>
 #include <net/xdp.h>
 
-/* The PacketOffset field is measured in units of 32 bytes and is 3 bits wide,
- * so the maximum offset is 7 * 32 = 224
- */
+
 #define MVPP2_SKB_HEADROOM	min(max(XDP_PACKET_HEADROOM, NET_SKB_PAD), 224)
 
 #define MVPP2_XDP_PASS		0
@@ -30,7 +22,7 @@
 #define MVPP2_XDP_TX		BIT(1)
 #define MVPP2_XDP_REDIR		BIT(2)
 
-/* Fifo Registers */
+
 #define MVPP2_RX_DATA_FIFO_SIZE_REG(port)	(0x00 + 4 * (port))
 #define MVPP2_RX_ATTR_FIFO_SIZE_REG(port)	(0x20 + 4 * (port))
 #define MVPP2_RX_MIN_PKT_SIZE_REG		0x60
@@ -38,7 +30,7 @@
 #define MVPP22_TX_FIFO_THRESH_REG(port)		(0x8840 + 4 * (port))
 #define MVPP22_TX_FIFO_SIZE_REG(port)		(0x8860 + 4 * (port))
 
-/* RX DMA Top Registers */
+
 #define MVPP2_RX_CTRL_REG(port)			(0x140 + 4 * (port))
 #define     MVPP2_RX_LOW_LATENCY_PKT_SIZE(s)	(((s) & 0xfff) << 16)
 #define     MVPP2_RX_USE_PSEUDO_FOR_CSUM_MASK	BIT(31)
@@ -57,14 +49,14 @@
 #define     MVPP2_RXQ_PACKET_OFFSET_MASK	0x70000000
 #define     MVPP2_RXQ_DISABLE_MASK		BIT(31)
 
-/* Top Registers */
+
 #define MVPP2_MH_REG(port)			(0x5040 + 4 * (port))
 #define MVPP2_DSA_EXTENDED			BIT(5)
 #define MVPP2_VER_ID_REG			0x50b0
 #define MVPP2_VER_PP22				0x10
 #define MVPP2_VER_PP23				0x11
 
-/* Parser Registers */
+
 #define MVPP2_PRS_INIT_LOOKUP_REG		0x1000
 #define     MVPP2_PRS_PORT_LU_MAX		0xf
 #define     MVPP2_PRS_PORT_LU_MASK(port)	(0xff << ((port) * 4))
@@ -86,7 +78,7 @@
 #define MVPP2_PRS_TCAM_HIT_CNT_REG		0x1244
 #define     MVPP2_PRS_TCAM_HIT_CNT_MASK		GENMASK(15, 0)
 
-/* RSS Registers */
+
 #define MVPP22_RSS_INDEX			0x1500
 #define     MVPP22_RSS_INDEX_TABLE_ENTRY(idx)	(idx)
 #define     MVPP22_RSS_INDEX_TABLE(idx)		((idx) << 8)
@@ -96,7 +88,7 @@
 #define MVPP22_RSS_TABLE_ENTRY			0x1508
 #define MVPP22_RSS_WIDTH			0x150c
 
-/* Classifier Registers */
+
 #define MVPP2_CLS_MODE_REG			0x1800
 #define     MVPP2_CLS_MODE_ACTIVE_MASK		BIT(0)
 #define MVPP2_CLS_PORT_WAY_REG			0x1810
@@ -135,7 +127,7 @@
 #define MVPP2_CLS_SWFWD_PCTRL_REG		0x19d0
 #define     MVPP2_CLS_SWFWD_PCTRL_MASK(port)	(1 << (port))
 
-/* Classifier C2 engine Registers */
+
 #define MVPP22_CLS_C2_TCAM_IDX			0x1b00
 #define MVPP22_CLS_C2_TCAM_DATA0		0x1b10
 #define MVPP22_CLS_C2_TCAM_DATA1		0x1b14
@@ -168,7 +160,7 @@
 #define MVPP22_CLS_C2_TCAM_CTRL			0x1b90
 #define     MVPP22_CLS_C2_TCAM_BYPASS_FIFO	BIT(0)
 
-/* Descriptor Manager Top Registers */
+
 #define MVPP2_RXQ_NUM_REG			0x2040
 #define MVPP2_RXQ_DESC_ADDR_REG			0x2044
 #define     MVPP22_DESC_ADDR_OFFS		8
@@ -220,13 +212,13 @@
 #define     MVPP2_AGGR_TXQ_PENDING_MASK		0x3fff
 #define MVPP2_AGGR_TXQ_INDEX_REG(cpu)		(0x21c0 + 4 * (cpu))
 
-/* MBUS bridge registers */
+
 #define MVPP2_WIN_BASE(w)			(0x4000 + ((w) << 2))
 #define MVPP2_WIN_SIZE(w)			(0x4020 + ((w) << 2))
 #define MVPP2_WIN_REMAP(w)			(0x4040 + ((w) << 2))
 #define MVPP2_BASE_ADDR_ENABLE			0x4060
 
-/* AXI Bridge Registers */
+
 #define MVPP22_AXI_BM_WR_ATTR_REG		0x4100
 #define MVPP22_AXI_BM_RD_ATTR_REG		0x4104
 #define MVPP22_AXI_AGGRQ_DESCR_RD_ATTR_REG	0x4110
@@ -240,7 +232,7 @@
 #define MVPP22_AXI_WR_NORMAL_CODE_REG		0x4160
 #define MVPP22_AXI_WR_SNOOP_CODE_REG		0x4164
 
-/* Values for AXI Bridge registers */
+
 #define MVPP22_AXI_ATTR_CACHE_OFFS		0
 #define MVPP22_AXI_ATTR_DOMAIN_OFFS		12
 
@@ -254,7 +246,7 @@
 #define MVPP22_AXI_CODE_DOMAIN_OUTER_DOM	2
 #define MVPP22_AXI_CODE_DOMAIN_SYSTEM		3
 
-/* Interrupt Cause and Mask registers */
+
 #define MVPP2_ISR_TX_THRESHOLD_REG(port)	(0x5140 + 4 * (port))
 #define     MVPP2_MAX_ISR_TX_THRESHOLD		0xfffff0
 
@@ -298,7 +290,7 @@
 #define MVPP2_ISR_RX_ERR_CAUSE_REG(port)	(0x5520 + 4 * (port))
 #define     MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK	0x00ff
 
-/* Buffer Manager registers */
+
 #define MVPP2_BM_POOL_BASE_REG(pool)		(0x6000 + ((pool) * 4))
 #define     MVPP2_BM_POOL_BASE_ADDR_MASK	0xfffff80
 #define MVPP2_BM_POOL_SIZE_REG(pool)		(0x6040 + ((pool) * 4))
@@ -352,7 +344,7 @@
 #define     MVPP22_BM_ADDR_HIGH_VIRT_RLS_MASK	0xff00
 #define     MVPP22_BM_ADDR_HIGH_VIRT_RLS_SHIFT	8
 
-/* Packet Processor per-port counters */
+
 #define MVPP2_OVERRUN_ETH_DROP			0x7000
 #define MVPP2_CLS_ETH_DROP			0x7020
 
@@ -360,7 +352,7 @@
 #define     MVPP22_BM_POOL_BASE_ADDR_HIGH_MASK	0xff
 #define     MVPP23_BM_8POOL_MODE		BIT(8)
 
-/* Hit counters registers */
+
 #define MVPP2_CTRS_IDX				0x7040
 #define     MVPP22_CTRS_TX_CTR(port, txq)	((txq) | ((port) << 3) | BIT(7))
 #define MVPP2_TX_DESC_ENQ_CTR			0x7100
@@ -379,7 +371,7 @@
 #define MVPP2_CLS_DEC_TBL_HIT_CTR		0x7700
 #define MVPP2_CLS_FLOW_TBL_HIT_CTR		0x7704
 
-/* TX Scheduler registers */
+
 #define MVPP2_TXP_SCHED_PORT_INDEX_REG		0x8000
 #define MVPP2_TXP_SCHED_Q_CMD_REG		0x8004
 #define     MVPP2_TXP_SCHED_ENQ_MASK		0xff
@@ -404,12 +396,12 @@
 #define MVPP2_TXQ_SCHED_TOKEN_CNTR_REG(q)	(0x8080 + ((q) << 2))
 #define     MVPP2_TXQ_TOKEN_CNTR_MAX		0xffffffff
 
-/* TX general registers */
+
 #define MVPP2_TX_SNOOP_REG			0x8800
 #define MVPP2_TX_PORT_FLUSH_REG			0x8810
 #define     MVPP2_TX_PORT_FLUSH_MASK(port)	(1 << (port))
 
-/* LMS registers */
+
 #define MVPP2_SRC_ADDR_MIDDLE			0x24
 #define MVPP2_SRC_ADDR_HIGH			0x28
 #define MVPP2_PHY_AN_CFG0_REG			0x34
@@ -417,7 +409,7 @@
 #define MVPP2_MNG_EXTENDED_GLOBAL_CTRL_REG	0x305c
 #define     MVPP2_EXT_GLOBAL_CTRL_DEFAULT	0x27
 
-/* Per-port registers */
+
 #define MVPP2_GMAC_CTRL_0_REG			0x0
 #define     MVPP2_GMAC_PORT_EN_MASK		BIT(0)
 #define     MVPP2_GMAC_PORT_TYPE_MASK		BIT(1)
@@ -482,9 +474,7 @@
 #define     MVPP22_GMAC_INT_SUM_MASK_LINK_STAT	BIT(1)
 #define	    MVPP22_GMAC_INT_SUM_MASK_PTP	BIT(2)
 
-/* Per-port XGMAC registers. PPv2.2 and PPv2.3, only for GOP port 0,
- * relative to port->base.
- */
+
 #define MVPP22_XLG_CTRL0_REG			0x100
 #define     MVPP22_XLG_CTRL0_PORT_EN		BIT(0)
 #define     MVPP22_XLG_CTRL0_MAC_RESET_DIS	BIT(1)
@@ -519,11 +509,11 @@
 #define     MVPP22_XLG_CTRL4_MACMODSELECT_GMAC	BIT(12)
 #define     MVPP22_XLG_CTRL4_EN_IDLE_CHECK	BIT(14)
 
-/* SMI registers. PPv2.2 and PPv2.3, relative to priv->iface_base. */
+
 #define MVPP22_SMI_MISC_CFG_REG			0x1204
 #define     MVPP22_SMI_POLLING_EN		BIT(10)
 
-/* TAI registers, PPv2.2 only, relative to priv->iface_base */
+
 #define MVPP22_TAI_INT_CAUSE			0x1400
 #define MVPP22_TAI_INT_MASK			0x1404
 #define MVPP22_TAI_CR0				0x1408
@@ -591,11 +581,11 @@
 
 #define MVPP2_CAUSE_TXQ_SENT_DESC_ALL_MASK	0xff
 
-/* Descriptor ring Macros */
+
 #define MVPP2_QUEUE_NEXT_DESC(q, index) \
 	(((index) < (q)->last_desc) ? ((index) + 1) : 0)
 
-/* XPCS registers.PPv2.2 and PPv2.3 */
+
 #define MVPP22_MPCS_BASE(port)			(0x7000 + (port) * 0x1000)
 #define MVPP22_MPCS_CTRL			0x14
 #define     MVPP22_MPCS_CTRL_FWD_ERR_CONN	BIT(10)
@@ -606,7 +596,7 @@
 #define     MVPP22_MPCS_CLK_RESET_DIV_RATIO(n)	((n) << 4)
 #define     MVPP22_MPCS_CLK_RESET_DIV_SET	BIT(11)
 
-/* FCA registers. PPv2.2 and PPv2.3 */
+
 #define MVPP22_FCA_BASE(port)			(0x7600 + (port) * 0x1000)
 #define MVPP22_FCA_REG_SIZE			16
 #define MVPP22_FCA_REG_MASK			0xFFFF
@@ -615,14 +605,14 @@
 #define MVPP22_PERIODIC_COUNTER_LSB_REG		(0x110)
 #define MVPP22_PERIODIC_COUNTER_MSB_REG		(0x114)
 
-/* XPCS registers. PPv2.2 and PPv2.3 */
+
 #define MVPP22_XPCS_BASE(port)			(0x7400 + (port) * 0x1000)
 #define MVPP22_XPCS_CFG0			0x0
 #define     MVPP22_XPCS_CFG0_RESET_DIS		BIT(0)
 #define     MVPP22_XPCS_CFG0_PCS_MODE(n)	((n) << 3)
 #define     MVPP22_XPCS_CFG0_ACTIVE_LANE(n)	((n) << 5)
 
-/* PTP registers. PPv2.2 only */
+
 #define MVPP22_PTP_BASE(port)			(0x7800 + (port * 0x1000))
 #define MVPP22_PTP_INT_CAUSE			0x00
 #define     MVPP22_PTP_INT_CAUSE_QUEUE1		BIT(6)
@@ -662,7 +652,7 @@
 #define MVPP22_PTP_NTP_OFF_LOW			0x74
 #define MVPP22_PTP_TX_PIPE_STATUS_DELAY		0x78
 
-/* System controller registers. Accessed through a regmap. */
+
 #define GENCONF_SOFT_RESET1				0x1108
 #define     GENCONF_SOFT_RESET1_GOP			BIT(6)
 #define GENCONF_PORT_CTRL0				0x1110
@@ -677,83 +667,73 @@
 #define     GENCONF_CTRL0_PORT3_RGMII_MII		BIT(1)
 #define     GENCONF_CTRL0_PORT3_RGMII			BIT(2)
 
-/* Various constants */
 
-/* Coalescing */
+
+
 #define MVPP2_TXDONE_COAL_PKTS_THRESH	64
 #define MVPP2_TXDONE_HRTIMER_PERIOD_NS	1000000UL
 #define MVPP2_TXDONE_COAL_USEC		1000
 #define MVPP2_RX_COAL_PKTS		32
 #define MVPP2_RX_COAL_USEC		64
 
-/* The two bytes Marvell header. Either contains a special value used
- * by Marvell switches when a specific hardware mode is enabled (not
- * supported by this driver) or is filled automatically by zeroes on
- * the RX side. Those two bytes being at the front of the Ethernet
- * header, they allow to have the IP header aligned on a 4 bytes
- * boundary automatically: the hardware skips those two bytes on its
- * own.
- */
+
 #define MVPP2_MH_SIZE			2
 #define MVPP2_ETH_TYPE_LEN		2
 #define MVPP2_PPPOE_HDR_SIZE		8
 #define MVPP2_VLAN_TAG_LEN		4
 #define MVPP2_VLAN_TAG_EDSA_LEN		8
 
-/* Lbtd 802.3 type */
+
 #define MVPP2_IP_LBDT_TYPE		0xfffa
 
 #define MVPP2_TX_CSUM_MAX_SIZE		9800
 
-/* Timeout constants */
+
 #define MVPP2_TX_DISABLE_TIMEOUT_MSEC	1000
 #define MVPP2_TX_PENDING_TIMEOUT_MSEC	1000
 
 #define MVPP2_TX_MTU_MAX		0x7ffff
 
-/* Maximum number of T-CONTs of PON port */
+
 #define MVPP2_MAX_TCONT			16
 
-/* Maximum number of supported ports */
+
 #define MVPP2_MAX_PORTS			4
 
-/* Loopback port index */
+
 #define MVPP2_LOOPBACK_PORT_INDEX	3
 
-/* Maximum number of TXQs used by single port */
+
 #define MVPP2_MAX_TXQ			8
 
-/* MVPP2_MAX_TSO_SEGS is the maximum number of fragments to allow in the GSO
- * skb. As we need a maxium of two descriptors per fragments (1 header, 1 data),
- * multiply this value by two to count the maximum number of skb descs needed.
- */
+
 #define MVPP2_MAX_TSO_SEGS		300
 #define MVPP2_MAX_SKB_DESCS		(MVPP2_MAX_TSO_SEGS * 2 + MAX_SKB_FRAGS)
 
-/* Max number of RXQs per port */
+
 #define MVPP2_PORT_MAX_RXQ		32
 
-/* Max number of Rx descriptors */
+
 #define MVPP2_MAX_RXD_MAX		2048
 #define MVPP2_MAX_RXD_DFLT		1024
 
-/* Max number of Tx descriptors */
+
 #define MVPP2_MAX_TXD_MAX		2048
 #define MVPP2_MAX_TXD_DFLT		1024
 
-/* Amount of Tx descriptors that can be reserved at once by CPU */
+
 #define MVPP2_CPU_DESC_CHUNK		64
 
-/* Max number of Tx descriptors in each aggregated queue */
+
 #define MVPP2_AGGR_TXQ_SIZE		256
 
-/* Descriptor aligned size */
+
 #define MVPP2_DESC_ALIGNED_SIZE		32
 
-/* Descriptor alignment mask */
+
 #define MVPP2_TX_DESC_ALIGN		(MVPP2_DESC_ALIGNED_SIZE - 1)
 
-/* RX FIFO constants */
+
 #define MVPP2_RX_FIFO_PORT_DATA_SIZE_44KB	0xb000
 #define MVPP2_RX_FIFO_PORT_DATA_SIZE_32KB	0x8000
 #define MVPP2_RX_FIFO_PORT_DATA_SIZE_8KB	0x2000
@@ -762,27 +742,27 @@
 #define MVPP2_RX_FIFO_PORT_ATTR_SIZE_4KB	0x40
 #define MVPP2_RX_FIFO_PORT_MIN_PKT		0x80
 
-/* TX FIFO constants */
+
 #define MVPP22_TX_FIFO_DATA_SIZE_18KB		18
 #define MVPP22_TX_FIFO_DATA_SIZE_10KB		10
 #define MVPP22_TX_FIFO_DATA_SIZE_1KB		1
-#define MVPP2_TX_FIFO_THRESHOLD_MIN		256 /* Bytes */
+#define MVPP2_TX_FIFO_THRESHOLD_MIN		256 
 #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
 
-/* RX FIFO threshold in 1KB granularity */
+
 #define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
 #define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
 #define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
 
-/* RX Flow Control Registers */
+
 #define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
 #define     MVPP2_RX_FC_EN		BIT(24)
 #define     MVPP2_RX_FC_TRSH_OFFS	16
 #define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
 #define     MVPP2_RX_FC_TRSH_UNIT	256
 
-/* MSS Flow control */
+
 #define MSS_FC_COM_REG			0
 #define FLOW_CONTROL_ENABLE_BIT		BIT(0)
 #define FLOW_CONTROL_UPDATE_COMMAND_BIT	BIT(31)
@@ -830,7 +810,7 @@
 #define MSS_THRESHOLD_START	1024
 #define MSS_FC_MAX_TIMEOUT	5000
 
-/* RX buffer constants */
+
 #define MVPP2_SKB_SHINFO_SIZE \
 	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
 
@@ -852,21 +832,21 @@
 #define MVPP2_N_PRS_FLOWS		52
 #define MVPP2_N_RFS_ENTRIES_PER_FLOW	4
 
-/* There are 7 supported high-level flows */
+
 #define MVPP2_N_RFS_RULES		(MVPP2_N_RFS_ENTRIES_PER_FLOW * 7)
 
-/* RSS constants */
+
 #define MVPP22_N_RSS_TABLES		8
 #define MVPP22_RSS_TABLE_ENTRIES	32
 
-/* IPv6 max L3 address size */
+
 #define MVPP2_MAX_L3_ADDR_SIZE		16
 
-/* Port flags */
+
 #define MVPP2_F_LOOPBACK		BIT(0)
 #define MVPP2_F_DT_COMPAT		BIT(1)
 
-/* Marvell tag types */
+
 enum mvpp2_tag_type {
 	MVPP2_TAG_TYPE_NONE = 0,
 	MVPP2_TAG_TYPE_MH   = 1,
@@ -876,30 +856,28 @@ enum mvpp2_tag_type {
 	MVPP2_TAG_TYPE_LAST = 5
 };
 
-/* L2 cast enum */
+
 enum mvpp2_prs_l2_cast {
 	MVPP2_PRS_L2_UNI_CAST,
 	MVPP2_PRS_L2_MULTI_CAST,
 };
 
-/* L3 cast enum */
+
 enum mvpp2_prs_l3_cast {
 	MVPP2_PRS_L3_UNI_CAST,
 	MVPP2_PRS_L3_MULTI_CAST,
 	MVPP2_PRS_L3_BROAD_CAST
 };
 
-/* PTP descriptor constants. The low bits of the descriptor are stored
- * separately from the high bits.
- */
+
 #define MVPP22_PTP_DESC_MASK_LOW	0xfff
 
-/* PTPAction */
+
 enum mvpp22_ptp_action {
 	MVPP22_PTP_ACTION_NONE = 0,
 	MVPP22_PTP_ACTION_FORWARD = 1,
 	MVPP22_PTP_ACTION_CAPTURE = 3,
-	/* The following have not been verified */
+	
 	MVPP22_PTP_ACTION_ADDTIME = 4,
 	MVPP22_PTP_ACTION_ADDCORRECTEDTIME = 5,
 	MVPP22_PTP_ACTION_CAPTUREADDTIME = 6,
@@ -909,7 +887,7 @@ enum mvpp22_ptp_action {
 	MVPP22_PTP_ACTION_CAPTUREINGRESSTIME = 10,
 };
 
-/* PTPPacketFormat */
+
 enum mvpp22_ptp_packet_format {
 	MVPP22_PTP_PKT_FMT_PTPV2 = 0,
 	MVPP22_PTP_PKT_FMT_PTPV1 = 1,
@@ -926,7 +904,7 @@ enum mvpp22_ptp_packet_format {
 #define MVPP22_PTP_TIMESTAMPENTRYID(x)	(((x) & 31) << 12)
 #define MVPP22_PTP_TIMESTAMPQUEUESELECT	BIT(18)
 
-/* BM constants */
+
 #define MVPP2_BM_JUMBO_BUF_NUM		2048
 #define MVPP2_BM_LONG_BUF_NUM		2048
 #define MVPP2_BM_SHORT_BUF_NUM		2048
@@ -934,17 +912,14 @@ enum mvpp22_ptp_packet_format {
 #define MVPP2_BM_POOL_PTR_ALIGN		128
 #define MVPP2_BM_MAX_POOLS		8
 
-/* BM cookie (32 bits) definition */
+
 #define MVPP2_BM_COOKIE_POOL_OFFS	8
 #define MVPP2_BM_COOKIE_CPU_OFFS	24
 
-#define MVPP2_BM_SHORT_FRAME_SIZE	736	/* frame size 128 */
-#define MVPP2_BM_LONG_FRAME_SIZE	2240	/* frame size 1664 */
-#define MVPP2_BM_JUMBO_FRAME_SIZE	10432	/* frame size 9856 */
-/* BM short pool packet size
- * These value assure that for SWF the total number
- * of bytes allocated for each buffer will be 512
- */
+#define MVPP2_BM_SHORT_FRAME_SIZE	736	
+#define MVPP2_BM_LONG_FRAME_SIZE	2240	
+#define MVPP2_BM_JUMBO_FRAME_SIZE	10432	
+
 #define MVPP2_BM_SHORT_PKT_SIZE	MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_SHORT_FRAME_SIZE)
 #define MVPP2_BM_LONG_PKT_SIZE	MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_LONG_FRAME_SIZE)
 #define MVPP2_BM_JUMBO_PKT_SIZE	MVPP2_RX_MAX_PKT_SIZE(MVPP2_BM_JUMBO_FRAME_SIZE)
@@ -955,7 +930,7 @@ enum mvpp22_ptp_packet_format {
 #define MVPP2_MAX_THREADS		9
 #define MVPP2_MAX_QVECS			MVPP2_MAX_THREADS
 
-/* GMAC MIB Counters register definitions */
+
 #define MVPP21_MIB_COUNTERS_OFFSET		0x1000
 #define MVPP21_MIB_COUNTERS_PORT_SZ		0x400
 #define MVPP22_MIB_COUNTERS_OFFSET		0x0
@@ -993,7 +968,7 @@ enum mvpp22_ptp_packet_format {
 
 #define MVPP2_DESC_DMA_MASK	DMA_BIT_MASK(40)
 
-/* Buffer header info bits */
+
 #define MVPP2_B_HDR_INFO_MC_ID_MASK	0xfff
 #define MVPP2_B_HDR_INFO_MC_ID(info)	((info) & MVPP2_B_HDR_INFO_MC_ID_MASK)
 #define MVPP2_B_HDR_INFO_LAST_OFFS	12
@@ -1003,7 +978,7 @@ enum mvpp22_ptp_packet_format {
 
 struct mvpp2_tai;
 
-/* Definitions */
+
 struct mvpp2_dbgfs_entries;
 
 struct mvpp2_rss_table {
@@ -1015,7 +990,7 @@ struct mvpp2_buff_hdr {
 	__le32 next_dma_addr;
 	__le16 byte_count;
 	__le16 info;
-	__le16 reserved1;	/* bm_qset (for future use, BM) */
+	__le16 reserved1;	
 	u8 next_phys_addr_high;
 	u8 next_dma_addr_high;
 	__le16 reserved2;
@@ -1024,89 +999,82 @@ struct mvpp2_buff_hdr {
 	__le16 reserved5;
 };
 
-/* Shared Packet Processor resources */
+
 struct mvpp2 {
-	/* Shared registers' base addresses */
+	
 	void __iomem *lms_base;
 	void __iomem *iface_base;
 	void __iomem *cm3_base;
 
-	/* On PPv2.2 and PPv2.3, each "software thread" can access the base
-	 * register through a separate address space, each 64 KB apart
-	 * from each other. Typically, such address spaces will be
-	 * used per CPU.
-	 */
+	
 	void __iomem *swth_base[MVPP2_MAX_THREADS];
 
-	/* On PPv2.2 and PPv2.3, some port control registers are located into
-	 * the system controller space. These registers are accessible
-	 * through a regmap.
-	 */
+	
 	struct regmap *sysctrl_base;
 
-	/* Common clocks */
+	
 	struct clk *pp_clk;
 	struct clk *gop_clk;
 	struct clk *mg_clk;
 	struct clk *mg_core_clk;
 	struct clk *axi_clk;
 
-	/* List of pointers to port structures */
+	
 	int port_count;
 	struct mvpp2_port *port_list[MVPP2_MAX_PORTS];
-	/* Map of enabled ports */
+	
 	unsigned long port_map;
 
 	struct mvpp2_tai *tai;
 
-	/* Number of Tx threads used */
+	
 	unsigned int nthreads;
-	/* Map of threads needing locking */
+	
 	unsigned long lock_map;
 
-	/* Aggregated TXQs */
+	
 	struct mvpp2_tx_queue *aggr_txqs;
 
-	/* Are we using page_pool with per-cpu pools? */
+	
 	int percpu_pools;
 
-	/* BM pools */
+	
 	struct mvpp2_bm_pool *bm_pools;
 
-	/* PRS shadow table */
+	
 	struct mvpp2_prs_shadow *prs_shadow;
-	/* PRS auxiliary table for double vlan entries control */
+	
 	bool *prs_double_vlans;
 
-	/* Tclk value */
+	
 	u32 tclk;
 
-	/* HW version */
+	
 	enum { MVPP21, MVPP22, MVPP23 } hw_version;
 
-	/* Maximum number of RXQs per port */
+	
 	unsigned int max_port_rxqs;
 
-	/* Workqueue to gather hardware statistics */
+	
 	char queue_name[30];
 	struct workqueue_struct *stats_queue;
 
-	/* Debugfs root entry */
+	
 	struct dentry *dbgfs_dir;
 
-	/* Debugfs entries private data */
+	
 	struct mvpp2_dbgfs_entries *dbgfs_entries;
 
-	/* RSS Indirection tables */
+	
 	struct mvpp2_rss_table *rss_tables[MVPP22_N_RSS_TABLES];
 
-	/* page_pool allocator */
+	
 	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
 
-	/* Global TX Flow Control config */
+	
 	bool global_tx_fc;
 
-	/* Spinlocks for CM3 shared memory configuration */
+	
 	spinlock_t mss_spinlock;
 };
 
@@ -1116,7 +1084,7 @@ struct mvpp2_pcpu_stats {
 	u64	rx_bytes;
 	u64	tx_packets;
 	u64	tx_bytes;
-	/* XDP */
+	
 	u64	xdp_redirect;
 	u64	xdp_pass;
 	u64	xdp_drop;
@@ -1126,7 +1094,7 @@ struct mvpp2_pcpu_stats {
 	u64	xdp_tx_err;
 };
 
-/* Per-CPU port control */
+
 struct mvpp2_port_pcpu {
 	struct hrtimer tx_done_timer;
 	struct net_device *dev;
@@ -1146,26 +1114,24 @@ struct mvpp2_queue_vector {
 	struct cpumask *mask;
 };
 
-/* Internal represention of a Flow Steering rule */
+
 struct mvpp2_rfs_rule {
-	/* Rule location inside the flow*/
+	
 	int loc;
 
-	/* Flow type, such as TCP_V4_FLOW, IP6_FLOW, etc. */
+	
 	int flow_type;
 
-	/* Index of the C2 TCAM entry handling this rule */
+	
 	int c2_index;
 
-	/* Header fields that needs to be extracted to match this flow */
+	
 	u16 hek_fields;
 
-	/* CLS engine : only c2 is supported for now. */
+	
 	u8 engine;
 
-	/* TCAM key and mask for C2-based steering. These fields should be
-	 * encapsulated in a union should we add more engines.
-	 */
+	
 	u64 c2_tcam;
 	u64 c2_tcam_mask;
 
@@ -1185,19 +1151,17 @@ struct mvpp2_hwtstamp_queue {
 struct mvpp2_port {
 	u8 id;
 
-	/* Index of the port from the "group of ports" complex point
-	 * of view. This is specific to PPv2.2.
-	 */
+	
 	int gop_id;
 
 	int port_irq;
 
 	struct mvpp2 *priv;
 
-	/* Firmware node associated to the port */
+	
 	struct fwnode_handle *fwnode;
 
-	/* Per-port registers' base address */
+	
 	void __iomem *base;
 	void __iomem *stats_base;
 
@@ -1211,16 +1175,14 @@ struct mvpp2_port {
 
 	int pkt_size;
 
-	/* Per-CPU port control */
+	
 	struct mvpp2_port_pcpu __percpu *pcpu;
 
-	/* Protect the BM refills and the Tx paths when a thread is used on more
-	 * than a single CPU.
-	 */
+	
 	spinlock_t bm_lock[MVPP2_MAX_THREADS];
 	spinlock_t tx_lock[MVPP2_MAX_THREADS];
 
-	/* Flags */
+	
 	unsigned long flags;
 
 	u16 tx_ring_size;
@@ -1230,7 +1192,7 @@ struct mvpp2_port {
 
 	unsigned long state;
 
-	/* Per-port work and its lock to gather hardware statistics */
+	
 	struct mutex gather_stats_lock;
 	struct delayed_work stats_work;
 
@@ -1246,7 +1208,7 @@ struct mvpp2_port {
 	struct mvpp2_bm_pool *pool_long;
 	struct mvpp2_bm_pool *pool_short;
 
-	/* Index of first port's physical RXQ */
+	
 	u8 first_rxq;
 
 	struct mvpp2_queue_vector qvecs[MVPP2_MAX_QVECS];
@@ -1255,13 +1217,11 @@ struct mvpp2_port {
 
 	u32 tx_time_coal;
 
-	/* List of steering rules active on that port */
+	
 	struct mvpp2_ethtool_fs *rfs_rules[MVPP2_N_RFS_ENTRIES_PER_FLOW];
 	int n_rfs_rules;
 
-	/* Each port has its own view of the rss contexts, so that it can number
-	 * them from 0
-	 */
+	
 	int rss_ctx[MVPP22_N_RSS_TABLES];
 
 	bool hwtstamp;
@@ -1269,14 +1229,11 @@ struct mvpp2_port {
 	enum hwtstamp_tx_types tx_hwtstamp_type;
 	struct mvpp2_hwtstamp_queue tx_hwtstamp_queue[2];
 
-	/* Firmware TX flow control */
+	
 	bool tx_fc;
 };
 
-/* The mvpp2_tx_desc and mvpp2_rx_desc structures describe the
- * layout of the transmit and reception DMA descriptors, and their
- * layout is therefore defined by the hardware design
- */
+
 
 #define MVPP2_TXD_L3_OFF_SHIFT		0
 #define MVPP2_TXD_IP_HLEN_SHIFT		8
@@ -1305,35 +1262,35 @@ struct mvpp2_port {
 #define MVPP2_RXD_L3_IP6		BIT(30)
 #define MVPP2_RXD_BUF_HDR		BIT(31)
 
-/* HW TX descriptor for PPv2.1 */
+
 struct mvpp21_tx_desc {
-	__le32 command;		/* Options used by HW for packet transmitting.*/
-	u8  packet_offset;	/* the offset from the buffer beginning	*/
-	u8  phys_txq;		/* destination queue ID			*/
-	__le16 data_size;	/* data size of transmitted packet in bytes */
-	__le32 buf_dma_addr;	/* physical addr of transmitted buffer	*/
-	__le32 buf_cookie;	/* cookie for access to TX buffer in tx path */
-	__le32 reserved1[3];	/* hw_cmd (for future use, BM, PON, PNC) */
-	__le32 reserved2;	/* reserved (for future use)		*/
+	__le32 command;		
+	u8  packet_offset;	
+	u8  phys_txq;		
+	__le16 data_size;	
+	__le32 buf_dma_addr;	
+	__le32 buf_cookie;	
+	__le32 reserved1[3];	
+	__le32 reserved2;	
 };
 
-/* HW RX descriptor for PPv2.1 */
+
 struct mvpp21_rx_desc {
-	__le32 status;		/* info about received packet		*/
-	__le16 reserved1;	/* parser_info (for future use, PnC)	*/
-	__le16 data_size;	/* size of received packet in bytes	*/
-	__le32 buf_dma_addr;	/* physical address of the buffer	*/
-	__le32 buf_cookie;	/* cookie for access to RX buffer in rx path */
-	__le16 reserved2;	/* gem_port_id (for future use, PON)	*/
-	__le16 reserved3;	/* csum_l4 (for future use, PnC)	*/
-	u8  reserved4;		/* bm_qset (for future use, BM)		*/
+	__le32 status;		
+	__le16 reserved1;	
+	__le16 data_size;	
+	__le32 buf_dma_addr;	
+	__le32 buf_cookie;	
+	__le16 reserved2;	
+	__le16 reserved3;	
+	u8  reserved4;		
 	u8  reserved5;
-	__le16 reserved6;	/* classify_info (for future use, PnC)	*/
-	__le32 reserved7;	/* flow_id (for future use, PnC) */
+	__le16 reserved6;	
+	__le32 reserved7;	
 	__le32 reserved8;
 };
 
-/* HW TX descriptor for PPv2.2 and PPv2.3 */
+
 struct mvpp22_tx_desc {
 	__le32 command;
 	u8  packet_offset;
@@ -1345,7 +1302,7 @@ struct mvpp22_tx_desc {
 	__le64 buf_cookie_misc;
 };
 
-/* HW RX descriptor for PPv2.2 and PPv2.3 */
+
 struct mvpp22_rx_desc {
 	__le32 status;
 	__le16 reserved1;
@@ -1356,9 +1313,7 @@ struct mvpp22_rx_desc {
 	__le64 buf_cookie_misc;
 };
 
-/* Opaque type used by the driver to manipulate the HW TX and RX
- * descriptors
- */
+
 struct mvpp2_tx_desc {
 	union {
 		struct mvpp21_tx_desc pp21;
@@ -1382,137 +1337,135 @@ enum mvpp2_tx_buf_type {
 struct mvpp2_txq_pcpu_buf {
 	enum mvpp2_tx_buf_type type;
 
-	/* Transmitted SKB */
+	
 	union {
 		struct xdp_frame *xdpf;
 		struct sk_buff *skb;
 	};
 
-	/* Physical address of transmitted buffer */
+	
 	dma_addr_t dma;
 
-	/* Size transmitted */
+	
 	size_t size;
 };
 
-/* Per-CPU Tx queue control */
+
 struct mvpp2_txq_pcpu {
 	unsigned int thread;
 
-	/* Number of Tx DMA descriptors in the descriptor ring */
+	
 	int size;
 
-	/* Number of currently used Tx DMA descriptor in the
-	 * descriptor ring
-	 */
+	
 	int count;
 
 	int wake_threshold;
 	int stop_threshold;
 
-	/* Number of Tx DMA descriptors reserved for each CPU */
+	
 	int reserved_num;
 
-	/* Infos about transmitted buffers */
+	
 	struct mvpp2_txq_pcpu_buf *buffs;
 
-	/* Index of last TX DMA descriptor that was inserted */
+	
 	int txq_put_index;
 
-	/* Index of the TX DMA descriptor to be cleaned up */
+	
 	int txq_get_index;
 
-	/* DMA buffer for TSO headers */
+	
 	char *tso_headers;
 	dma_addr_t tso_headers_dma;
 };
 
 struct mvpp2_tx_queue {
-	/* Physical number of this Tx queue */
+	
 	u8 id;
 
-	/* Logical number of this Tx queue */
+	
 	u8 log_id;
 
-	/* Number of Tx DMA descriptors in the descriptor ring */
+	
 	int size;
 
-	/* Number of currently used Tx DMA descriptor in the descriptor ring */
+	
 	int count;
 
-	/* Per-CPU control of physical Tx queues */
+	
 	struct mvpp2_txq_pcpu __percpu *pcpu;
 
 	u32 done_pkts_coal;
 
-	/* Virtual address of thex Tx DMA descriptors array */
+	
 	struct mvpp2_tx_desc *descs;
 
-	/* DMA address of the Tx DMA descriptors array */
+	
 	dma_addr_t descs_dma;
 
-	/* Index of the last Tx DMA descriptor */
+	
 	int last_desc;
 
-	/* Index of the next Tx DMA descriptor to process */
+	
 	int next_desc_to_proc;
 };
 
 struct mvpp2_rx_queue {
-	/* RX queue number, in the range 0-31 for physical RXQs */
+	
 	u8 id;
 
-	/* Num of rx descriptors in the rx descriptor ring */
+	
 	int size;
 
 	u32 pkts_coal;
 	u32 time_coal;
 
-	/* Virtual address of the RX DMA descriptors array */
+	
 	struct mvpp2_rx_desc *descs;
 
-	/* DMA address of the RX DMA descriptors array */
+	
 	dma_addr_t descs_dma;
 
-	/* Index of the last RX DMA descriptor */
+	
 	int last_desc;
 
-	/* Index of the next RX DMA descriptor to process */
+	
 	int next_desc_to_proc;
 
-	/* ID of port to which physical RXQ is mapped */
+	
 	int port;
 
-	/* Port's logic RXQ number to which physical RXQ is mapped */
+	
 	int logic_rxq;
 
-	/* XDP memory accounting */
+	
 	struct xdp_rxq_info xdp_rxq_short;
 	struct xdp_rxq_info xdp_rxq_long;
 };
 
 struct mvpp2_bm_pool {
-	/* Pool number in the range 0-7 */
+	
 	int id;
 
-	/* Buffer Pointers Pool External (BPPE) size */
+	
 	int size;
-	/* BPPE size in bytes */
+	
 	int size_bytes;
-	/* Number of buffers for this pool */
+	
 	int buf_num;
-	/* Pool buffer size */
+	
 	int buf_size;
-	/* Packet size */
+	
 	int pkt_size;
 	int frag_size;
 
-	/* BPPE virtual base address */
+	
 	u32 *virt_addr;
-	/* BPPE DMA base address */
+	
 	dma_addr_t dma_addr;
 
-	/* Ports using BM pool */
+	
 	u32 port_map;
 };
 

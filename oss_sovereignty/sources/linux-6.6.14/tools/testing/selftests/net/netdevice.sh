@@ -45,7 +45,7 @@ kci_net_setup()
 }
 kci_netdev_ethtool_test()
 {
-	if [ $# -le 2 ];then
+	if [ $
 		echo "SKIP: $netdev: ethtool: invalid number of arguments"
 		return 1
 	fi

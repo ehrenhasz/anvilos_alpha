@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM intel_ifs
 
@@ -35,7 +35,7 @@ TRACE_EVENT(ifs_status,
 		__entry->status)
 );
 
-#endif /* _TRACE_IFS_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

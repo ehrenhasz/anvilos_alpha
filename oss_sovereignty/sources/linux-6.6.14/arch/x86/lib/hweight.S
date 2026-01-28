@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/linkage.h>
 #include <asm/export.h>
 
 #include <asm/asm.h>
 
-/*
- * unsigned int __sw_hweight32(unsigned int w)
- * %rdi: w
- */
+
 SYM_FUNC_START(__sw_hweight32)
 
 #ifdef CONFIG_X86_64
@@ -66,8 +63,8 @@ SYM_FUNC_START(__sw_hweight64)
 	popq    %rdx
 	popq    %rdi
 	RET
-#else /* CONFIG_X86_32 */
-	/* We're getting an u64 arg in (%eax,%edx): unsigned long hweight64(__u64 w) */
+#else 
+	
 	pushl   %ecx
 
 	call    __sw_hweight32

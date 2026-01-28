@@ -1,32 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- *	verify_cpu.S - Code for cpu long mode and SSE verification. This
- *	code has been borrowed from boot/setup.S and was introduced by
- * 	Andi Kleen.
- *
- *	Copyright (c) 2007  Andi Kleen (ak@suse.de)
- *	Copyright (c) 2007  Eric Biederman (ebiederm@xmission.com)
- *	Copyright (c) 2007  Vivek Goyal (vgoyal@in.ibm.com)
- *	Copyright (c) 2010  Kees Cook (kees.cook@canonical.com)
- *
- *	This is a common code for verification whether CPU supports
- * 	long mode and SSE or not. It is not called directly instead this
- *	file is included at various places and compiled in that context.
- *	This file is expected to run in 32bit code.  Currently:
- *
- *	arch/x86/boot/compressed/head_64.S: Boot cpu verification
- *	arch/x86/kernel/trampoline_64.S: secondary processor verification
- *	arch/x86/kernel/head_32.S: processor startup
- *
- *	verify_cpu, returns the status of longmode and SSE in register %eax.
- *		0: Success    1: Failure
- *
- *	On Intel, the XD_DISABLE flag will be cleared as a side-effect.
- *
- * 	The caller needs to check for the error code and take the action
- * 	appropriately. Either display a message or halt.
- */
+
+
 
 #include <asm/cpufeatures.h>
 #include <asm/msr-index.h>

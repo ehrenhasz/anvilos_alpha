@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Spreadtrum pll clock driver
-//
-// Copyright (C) 2015~2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+
+
+
+
+
+
 
 #ifndef _SPRD_PLL_H_
 #define _SPRD_PLL_H_
@@ -36,18 +36,7 @@ enum {
 	PLL_FACT_MAX
 };
 
-/*
- * struct sprd_pll - definition of adjustable pll clock
- *
- * @reg:	registers used to set the configuration of pll clock,
- *		reg[0] shows how many registers this pll clock uses.
- * @itable:	pll ibias table, itable[0] means how many items this
- *		table includes
- * @udelay	delay time after setting rate
- * @factors	used to calculate the pll clock rate
- * @fvco:	fvco threshold rate
- * @fflag:	fvco flag
- */
+
 struct sprd_pll {
 	u32 regs_num;
 	const u64 *itable;
@@ -124,4 +113,4 @@ static inline struct sprd_pll *hw_to_sprd_pll(struct clk_hw *hw)
 
 extern const struct clk_ops sprd_pll_ops;
 
-#endif /* _SPRD_PLL_H_ */
+#endif 

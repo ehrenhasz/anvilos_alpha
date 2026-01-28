@@ -1,5 +1,0 @@
-#ifndef __LIBBPF_VERSION_H
-#define __LIBBPF_VERSION_H
-#define LIBBPF_MAJOR_VERSION 1
-#define LIBBPF_MINOR_VERSION 3
-#endif  

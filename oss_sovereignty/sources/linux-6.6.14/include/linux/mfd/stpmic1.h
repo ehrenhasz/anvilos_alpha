@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Philippe Peurichard <philippe.peurichard@st.com>,
- * Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
- */
+
+
 
 #ifndef __LINUX_MFD_STPMIC1_H
 #define __LINUX_MFD_STPMIC1_H
@@ -147,38 +143,27 @@
 
 #define LDO_BYPASS_MASK			BIT(7)
 
-/* Main PMIC Control Register
- * MAIN_CR
- * Address : 0x10
- */
+
 #define OCP_OFF_DBG			BIT(4)
 #define PWRCTRL_POLARITY_HIGH		BIT(3)
 #define PWRCTRL_ENABLE			BIT(2)
 #define RESTART_REQUEST_ENABLE		BIT(1)
 #define SOFTWARE_SWITCH_OFF		BIT(0)
 
-/* Main PMIC PADS Control Register
- * PADS_PULL_CR
- * Address : 0x11
- */
+
 #define WAKEUP_DETECTOR_DISABLED	BIT(4)
 #define PWRCTRL_PD_ACTIVE		BIT(3)
 #define PWRCTRL_PU_ACTIVE		BIT(2)
 #define WAKEUP_PD_ACTIVE		BIT(1)
 #define PONKEY_PU_INACTIVE		BIT(0)
 
-/* Main PMIC VINLOW Control Register
- * VBUS_DET_VIN_CRC DMSC
- * Address : 0x15
- */
+
 #define SWIN_DETECTOR_ENABLED		BIT(7)
 #define SWOUT_DETECTOR_ENABLED		BIT(6)
 #define VINLOW_ENABLED			BIT(0)
 #define VINLOW_CTRL_REG_MASK		GENMASK(7, 0)
 
-/* USB Control Register
- * Address : 0x40
- */
+
 #define BOOST_OVP_DISABLED		BIT(7)
 #define VBUS_OTG_DETECTION_DISABLED	BIT(6)
 #define SW_OUT_DISCHARGE		BIT(5)
@@ -188,20 +173,13 @@
 #define USBSW_OTG_SWITCH_ENABLED	BIT(1)
 #define BOOST_ENABLED			BIT(0)
 
-/* PKEY_TURNOFF_CR
- * Address : 0x16
- */
+
 #define PONKEY_PWR_OFF			BIT(7)
 #define PONKEY_CC_FLAG_CLEAR		BIT(6)
 #define PONKEY_TURNOFF_TIMER_MASK	GENMASK(3, 0)
 #define PONKEY_TURNOFF_MASK		GENMASK(7, 0)
 
-/*
- * struct stpmic1 - stpmic1 master device for sub-drivers
- * @dev: master device of the chip (can be used to access platform data)
- * @irq: main IRQ number
- * @regmap_irq_chip_data: irq chip data
- */
+
 struct stpmic1 {
 	struct device *dev;
 	struct regmap *regmap;
@@ -209,4 +187,4 @@ struct stpmic1 {
 	struct regmap_irq_chip_data *irq_data;
 };
 
-#endif /*  __LINUX_MFD_STPMIC1_H */
+#endif 

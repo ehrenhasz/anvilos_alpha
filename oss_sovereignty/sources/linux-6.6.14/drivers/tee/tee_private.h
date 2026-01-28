@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015-2016, Linaro Limited
- */
+
+
 #ifndef TEE_PRIVATE_H
 #define TEE_PRIVATE_H
 
@@ -15,21 +13,7 @@
 #define TEE_DEVICE_FLAG_REGISTERED	0x1
 #define TEE_MAX_DEV_NAME_LEN		32
 
-/**
- * struct tee_device - TEE Device representation
- * @name:	name of device
- * @desc:	description of device
- * @id:		unique id of device
- * @flags:	represented by TEE_DEVICE_FLAG_REGISTERED above
- * @dev:	embedded basic device structure
- * @cdev:	embedded cdev
- * @num_users:	number of active users of this device
- * @c_no_user:	completion used when unregistering the device
- * @mutex:	mutex protecting @num_users and @idr
- * @idr:	register of user space shared memory objects allocated or
- *		registered on this device
- * @pool:	shared memory pool
- */
+
 struct tee_device {
 	char name[TEE_MAX_DEV_NAME_LEN];
 	const struct tee_desc *desc;
@@ -41,7 +25,7 @@ struct tee_device {
 
 	size_t num_users;
 	struct completion c_no_users;
-	struct mutex mutex;	/* protects num_users and idr */
+	struct mutex mutex;	
 
 	struct idr idr;
 	struct tee_shm_pool *pool;
@@ -59,4 +43,4 @@ struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);
 struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
 					  unsigned long addr, size_t length);
 
-#endif /*TEE_PRIVATE_H*/
+#endif 

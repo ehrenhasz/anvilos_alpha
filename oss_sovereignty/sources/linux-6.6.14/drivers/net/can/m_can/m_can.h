@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* CAN bus driver for Bosch M_CAN controller
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+
 
 #ifndef _CAN_M_CAN_H_
 #define _CAN_M_CAN_H_
@@ -29,7 +27,7 @@
 #include <linux/slab.h>
 #include <linux/uaccess.h>
 
-/* m_can lec values */
+
 enum m_can_lec_type {
 	LEC_NO_ERROR = 0,
 	LEC_STUFF_ERROR,
@@ -52,7 +50,7 @@ enum m_can_mram_cfg {
 	MRAM_CFG_NUM,
 };
 
-/* address offset and element number for each FIFO/Buffer in the Message RAM */
+
 struct mram_cfg {
 	u16 off;
 	u8  num;
@@ -60,7 +58,7 @@ struct mram_cfg {
 
 struct m_can_classdev;
 struct m_can_ops {
-	/* Device specific call backs */
+	
 	int (*clear_interrupts)(struct m_can_classdev *cdev);
 	u32 (*read_reg)(struct m_can_classdev *cdev, int reg);
 	int (*write_reg)(struct m_can_classdev *cdev, int reg, int val);
@@ -107,4 +105,4 @@ int m_can_check_mram_cfg(struct m_can_classdev *cdev, u32 mram_max_size);
 
 int m_can_class_suspend(struct device *dev);
 int m_can_class_resume(struct device *dev);
-#endif	/* _CAN_M_H_ */
+#endif	

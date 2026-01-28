@@ -21,10 +21,10 @@ check_test_requirements()
 }
 load_driver()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		modprobe $DRIVER > /dev/null 2>&1
 	else
-		if [ $# -eq 2 ]; then
+		if [ $
 			modprobe $DRIVER spm_addr_dev0=$1 spm_addr_dev1=$2
 				> /dev/null 2>&1
 		else
@@ -51,20 +51,20 @@ usage()
 	echo
 	echo "Example usage:"
 	echo
-	echo "# Shows help message"
+	echo "
 	echo "./${TEST_NAME}.sh"
 	echo
-	echo "# Smoke testing"
+	echo "
 	echo "./${TEST_NAME}.sh smoke"
 	echo
-	echo "# Smoke testing with SPM enabled"
+	echo "
 	echo "./${TEST_NAME}.sh smoke <spm_addr_dev0> <spm_addr_dev1>"
 	echo
 	exit 0
 }
 function run_test()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		usage
 	else
 		if [ "$1" = "smoke" ]; then

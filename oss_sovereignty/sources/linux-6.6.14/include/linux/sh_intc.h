@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SH_INTC_H
 #define __SH_INTC_H
 
@@ -10,10 +10,8 @@
 #define INTC_NR_IRQS	1024
 #endif
 
-/*
- * Convert back and forth between INTEVT and IRQ values.
- */
-#ifdef CONFIG_CPU_HAS_INTEVT	/* Avoid IRQ0 (invalid for platform devices) */
+
+#ifdef CONFIG_CPU_HAS_INTEVT	
 #define evt2irq(evt)		((evt) >> 5)
 #define irq2evt(irq)		((irq) << 5)
 #else
@@ -150,4 +148,4 @@ static inline int register_intc_userimask(unsigned long addr)
 }
 #endif
 
-#endif /* __SH_INTC_H */
+#endif 

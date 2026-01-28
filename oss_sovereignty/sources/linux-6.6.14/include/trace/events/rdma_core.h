@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Trace point definitions for core RDMA functions.
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rdma_core
@@ -16,9 +10,7 @@
 #include <linux/tracepoint.h>
 #include <rdma/ib_verbs.h>
 
-/*
- * enum ib_poll_context, from include/rdma/ib_verbs.h
- */
+
 #define IB_POLL_CTX_LIST			\
 	ib_poll_ctx(DIRECT)			\
 	ib_poll_ctx(SOFTIRQ)			\
@@ -42,9 +34,7 @@ IB_POLL_CTX_LIST
 #define rdma_show_ib_poll_ctx(x) \
 		__print_symbolic(x, IB_POLL_CTX_LIST)
 
-/**
- ** Completion Queue events
- **/
+
 
 TRACE_EVENT(cq_schedule,
 	TP_PROTO(
@@ -266,13 +256,9 @@ TRACE_EVENT(cq_free,
 	TP_printk("cq.id=%u", __entry->cq_id)
 );
 
-/**
- ** Memory Region events
- **/
 
-/*
- * enum ib_mr_type, from include/rdma/ib_verbs.h
- */
+
+
 #define IB_MR_TYPE_LIST				\
 	ib_mr_type_item(MEM_REG)		\
 	ib_mr_type_item(SG_GAPS)		\
@@ -389,6 +375,6 @@ TRACE_EVENT(mr_dereg,
 	TP_printk("mr.id=%u", __entry->id)
 );
 
-#endif /* _TRACE_RDMA_CORE_H */
+#endif 
 
 #include <trace/define_trace.h>

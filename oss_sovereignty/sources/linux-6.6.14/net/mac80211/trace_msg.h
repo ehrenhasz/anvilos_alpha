@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Portions of this file
- * Copyright (C) 2019 Intel Corporation
- */
+
+
 
 #ifdef CONFIG_MAC80211_MESSAGE_TRACING
 
@@ -46,7 +43,7 @@ DEFINE_EVENT(mac80211_msg_event, mac80211_err,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf)
 );
-#endif /* !__MAC80211_MSG_DRIVER_TRACE || TRACE_HEADER_MULTI_READ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_POWER_QCOM_RPMHPD_H
 #define _DT_BINDINGS_POWER_QCOM_RPMHPD_H
 
-/* Generic RPMH Power Domain Indexes */
+
 #define RPMHPD_CX               0
 #define RPMHPD_CX_AO		1
 #define RPMHPD_EBI		2

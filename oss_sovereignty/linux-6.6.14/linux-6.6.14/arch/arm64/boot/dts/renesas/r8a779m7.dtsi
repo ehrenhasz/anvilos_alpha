@@ -1,4 +1,0 @@
-#include "r8a77995.dtsi"
-/ {
-	compatible = "renesas,r8a779m7", "renesas,r8a77995";
-};

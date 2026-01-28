@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/net/ethernet/rocker/rocker_tlv.h - Rocker switch device driver
- * Copyright (c) 2014-2016 Jiri Pirko <jiri@mellanox.com>
- * Copyright (c) 2014 Scott Feldman <sfeldma@gmail.com>
- */
+
+
 
 #ifndef _ROCKER_TLV_H
 #define _ROCKER_TLV_H
@@ -18,13 +14,7 @@
 	(((len) + ROCKER_TLV_ALIGNTO - 1) & ~(ROCKER_TLV_ALIGNTO - 1))
 #define ROCKER_TLV_HDRLEN ROCKER_TLV_ALIGN(sizeof(struct rocker_tlv))
 
-/*  <------- ROCKER_TLV_HDRLEN -------> <--- ROCKER_TLV_ALIGN(payload) --->
- * +-----------------------------+- - -+- - - - - - - - - - - - - - -+- - -+
- * |             Header          | Pad |           Payload           | Pad |
- * |      (struct rocker_tlv)    | ing |                             | ing |
- * +-----------------------------+- - -+- - - - - - - - - - - - - - -+- - -+
- *  <--------------------------- tlv->len -------------------------->
- */
+
 
 static inline struct rocker_tlv *rocker_tlv_next(const struct rocker_tlv *tlv,
 						 int *remaining)
@@ -138,7 +128,7 @@ int rocker_tlv_put(struct rocker_desc_info *desc_info,
 static inline int
 rocker_tlv_put_u8(struct rocker_desc_info *desc_info, int attrtype, u8 value)
 {
-	u8 tmp = value; /* work around GCC PR81715 */
+	u8 tmp = value; 
 
 	return rocker_tlv_put(desc_info, attrtype, sizeof(u8), &tmp);
 }

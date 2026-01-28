@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_ARM_XEN_PAGE_H
 #define _ASM_ARM_XEN_PAGE_H
 
@@ -14,12 +14,12 @@
 
 #define phys_to_machine_mapping_valid(pfn) (1)
 
-/* Xen machine address */
+
 typedef struct xmaddr {
 	phys_addr_t maddr;
 } xmaddr_t;
 
-/* Xen pseudo-physical address */
+
 typedef struct xpaddr {
 	phys_addr_t paddr;
 } xpaddr_t;
@@ -29,21 +29,12 @@ typedef struct xpaddr {
 
 #define INVALID_P2M_ENTRY      (~0UL)
 
-/*
- * The pseudo-physical frame (pfn) used in all the helpers is always based
- * on Xen page granularity (i.e 4KB).
- *
- * A Linux page may be split across multiple non-contiguous Xen page so we
- * have to keep track with frame based on 4KB page granularity.
- *
- * PV drivers should never make a direct usage of those helpers (particularly
- * pfn_to_gfn and gfn_to_pfn).
- */
+
 
 unsigned long __pfn_to_mfn(unsigned long pfn);
 extern struct rb_root phys_to_mach;
 
-/* Pseudo-physical <-> Guest conversion */
+
 static inline unsigned long pfn_to_gfn(unsigned long pfn)
 {
 	return pfn;
@@ -54,7 +45,7 @@ static inline unsigned long gfn_to_pfn(unsigned long gfn)
 	return gfn;
 }
 
-/* Pseudo-physical <-> BUS conversion */
+
 static inline unsigned long pfn_to_bfn(unsigned long pfn)
 {
 	unsigned long mfn;
@@ -75,7 +66,7 @@ static inline unsigned long bfn_to_pfn(unsigned long bfn)
 
 #define bfn_to_local_pfn(bfn)	bfn_to_pfn(bfn)
 
-/* VIRT <-> GUEST conversion */
+
 #define virt_to_gfn(v)                                                         \
 	({                                                                     \
 		WARN_ON_ONCE(!virt_addr_valid(v));                              \
@@ -86,7 +77,7 @@ static inline unsigned long bfn_to_pfn(unsigned long bfn)
 #define percpu_to_gfn(v)	\
 	(pfn_to_gfn(per_cpu_ptr_to_phys(v) >> XEN_PAGE_SHIFT))
 
-/* Only used in PV code. But ARM guests are always HVM. */
+
 static inline xmaddr_t arbitrary_virt_to_machine(void *vaddr)
 {
 	BUG();
@@ -113,4 +104,4 @@ bool xen_arch_need_swiotlb(struct device *dev,
 			   phys_addr_t phys,
 			   dma_addr_t dev_addr);
 
-#endif /* _ASM_ARM_XEN_PAGE_H */
+#endif 

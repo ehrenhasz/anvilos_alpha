@@ -1558,7 +1558,7 @@ check_nexthop_buckets_balance()
 {
 	local nharg=$1; shift
 	local ret
-	while (($# > 0)); do
+	while (($
 		local selector=$1; shift
 		local condition=$1; shift
 		local count
@@ -1698,7 +1698,7 @@ basic_res()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $ALL_TESTS)
         -4          IPv4 tests only

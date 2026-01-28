@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Chelsio T1 driver
-#
+
+
+
+
 
 obj-$(CONFIG_CHELSIO_T1) += cxgb.o
 

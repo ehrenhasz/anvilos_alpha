@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __OF_IOMMU_H
 #define __OF_IOMMU_H
 
@@ -29,6 +29,6 @@ static inline void of_iommu_get_resv_regions(struct device *dev,
 {
 }
 
-#endif	/* CONFIG_OF_IOMMU */
+#endif	
 
-#endif /* __OF_IOMMU_H */
+#endif 

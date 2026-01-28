@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_KASAN_H
 #define _LINUX_KASAN_H
 
@@ -32,10 +32,10 @@ typedef unsigned int __bitwise kasan_vmalloc_flags_t;
 
 #include <linux/pgtable.h>
 
-/* Software KASAN implementations use shadow memory. */
+
 
 #ifdef CONFIG_KASAN_SW_TAGS
-/* This matches KASAN_TAG_INVALID. */
+
 #define KASAN_SHADOW_INIT 0xFE
 #else
 #define KASAN_SHADOW_INIT 0
@@ -65,13 +65,13 @@ static inline void *kasan_mem_to_shadow(const void *addr)
 int kasan_add_zero_shadow(void *start, unsigned long size);
 void kasan_remove_zero_shadow(void *start, unsigned long size);
 
-/* Enable reporting bugs after kasan_disable_current() */
+
 extern void kasan_enable_current(void);
 
-/* Disable reporting bugs for current task */
+
 extern void kasan_disable_current(void);
 
-#else /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#else 
 
 static inline int kasan_add_zero_shadow(void *start, unsigned long size)
 {
@@ -84,13 +84,13 @@ static inline void kasan_remove_zero_shadow(void *start,
 static inline void kasan_enable_current(void) {}
 static inline void kasan_disable_current(void) {}
 
-#endif /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#endif 
 
 #ifdef CONFIG_KASAN_HW_TAGS
 
-#else /* CONFIG_KASAN_HW_TAGS */
+#else 
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif 
 
 static inline bool kasan_has_integrated_init(void)
 {
@@ -219,10 +219,7 @@ static __always_inline void * __must_check kasan_krealloc(const void *object,
 	return (void *)object;
 }
 
-/*
- * Unlike kasan_check_read/write(), kasan_check_byte() is performed even for
- * the hardware tag-based mode that doesn't rely on compiler instrumentation.
- */
+
 bool __kasan_check_byte(const void *addr, unsigned long ip);
 static __always_inline bool kasan_check_byte(const void *addr)
 {
@@ -231,7 +228,7 @@ static __always_inline bool kasan_check_byte(const void *addr)
 	return true;
 }
 
-#else /* CONFIG_KASAN */
+#else 
 
 static inline void kasan_unpoison_range(const void *address, size_t size) {}
 static inline void kasan_poison_pages(struct page *page, unsigned int order,
@@ -281,7 +278,7 @@ static inline bool kasan_check_byte(const void *address)
 	return true;
 }
 
-#endif /* CONFIG_KASAN */
+#endif 
 
 #if defined(CONFIG_KASAN) && defined(CONFIG_KASAN_STACK)
 void kasan_unpoison_task_stack(struct task_struct *task);
@@ -306,20 +303,20 @@ void kasan_cache_shutdown(struct kmem_cache *cache);
 void kasan_record_aux_stack(void *ptr);
 void kasan_record_aux_stack_noalloc(void *ptr);
 
-#else /* CONFIG_KASAN_GENERIC */
+#else 
 
-/* Tag-based KASAN modes do not use per-object metadata. */
+
 static inline size_t kasan_metadata_size(struct kmem_cache *cache,
 						bool in_object)
 {
 	return 0;
 }
-/* And thus nothing prevents cache merging. */
+
 static inline slab_flags_t kasan_never_merge(void)
 {
 	return 0;
 }
-/* And no cache-related metadata initialization is required. */
+
 static inline void kasan_cache_create(struct kmem_cache *cache,
 				      unsigned int *size,
 				      slab_flags_t *flags) {}
@@ -329,7 +326,7 @@ static inline void kasan_cache_shutdown(struct kmem_cache *cache) {}
 static inline void kasan_record_aux_stack(void *ptr) {}
 static inline void kasan_record_aux_stack_noalloc(void *ptr) {}
 
-#endif /* CONFIG_KASAN_GENERIC */
+#endif 
 
 #if defined(CONFIG_KASAN_SW_TAGS) || defined(CONFIG_KASAN_HW_TAGS)
 
@@ -338,30 +335,24 @@ static inline void *kasan_reset_tag(const void *addr)
 	return (void *)arch_kasan_reset_tag(addr);
 }
 
-/**
- * kasan_report - print a report about a bad memory access detected by KASAN
- * @addr: address of the bad access
- * @size: size of the bad access
- * @is_write: whether the bad access is a write or a read
- * @ip: instruction pointer for the accessibility check or the bad access itself
- */
+
 bool kasan_report(const void *addr, size_t size,
 		bool is_write, unsigned long ip);
 
-#else /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS */
+#else 
 
 static inline void *kasan_reset_tag(const void *addr)
 {
 	return (void *)addr;
 }
 
-#endif /* CONFIG_KASAN_SW_TAGS || CONFIG_KASAN_HW_TAGS*/
+#endif 
 
 #ifdef CONFIG_KASAN_HW_TAGS
 
 void kasan_report_async(void);
 
-#endif /* CONFIG_KASAN_HW_TAGS */
+#endif 
 
 #ifdef CONFIG_KASAN_SW_TAGS
 void __init kasan_init_sw_tags(void);
@@ -387,7 +378,7 @@ void kasan_release_vmalloc(unsigned long start, unsigned long end,
 			   unsigned long free_region_start,
 			   unsigned long free_region_end);
 
-#else /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#else 
 
 static inline void kasan_populate_early_vm_area_shadow(void *start,
 						       unsigned long size)
@@ -402,7 +393,7 @@ static inline void kasan_release_vmalloc(unsigned long start,
 					 unsigned long free_region_start,
 					 unsigned long free_region_end) { }
 
-#endif /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#endif 
 
 void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
 			       kasan_vmalloc_flags_t flags);
@@ -423,7 +414,7 @@ static __always_inline void kasan_poison_vmalloc(const void *start,
 		__kasan_poison_vmalloc(start, size);
 }
 
-#else /* CONFIG_KASAN_VMALLOC */
+#else 
 
 static inline void kasan_populate_early_vm_area_shadow(void *start,
 						       unsigned long size) { }
@@ -446,30 +437,26 @@ static inline void *kasan_unpoison_vmalloc(const void *start,
 static inline void kasan_poison_vmalloc(const void *start, unsigned long size)
 { }
 
-#endif /* CONFIG_KASAN_VMALLOC */
+#endif 
 
 #if (defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)) && \
 		!defined(CONFIG_KASAN_VMALLOC)
 
-/*
- * These functions allocate and free shadow memory for kernel modules.
- * They are only required when KASAN_VMALLOC is not supported, as otherwise
- * shadow memory is allocated by the generic vmalloc handlers.
- */
+
 int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask);
 void kasan_free_module_shadow(const struct vm_struct *vm);
 
-#else /* (CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS) && !CONFIG_KASAN_VMALLOC */
+#else 
 
 static inline int kasan_alloc_module_shadow(void *addr, size_t size, gfp_t gfp_mask) { return 0; }
 static inline void kasan_free_module_shadow(const struct vm_struct *vm) {}
 
-#endif /* (CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS) && !CONFIG_KASAN_VMALLOC */
+#endif 
 
 #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
 void kasan_non_canonical_hook(unsigned long addr);
-#else /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#else 
 static inline void kasan_non_canonical_hook(unsigned long addr) { }
-#endif /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#endif 
 
-#endif /* LINUX_KASAN_H */
+#endif 

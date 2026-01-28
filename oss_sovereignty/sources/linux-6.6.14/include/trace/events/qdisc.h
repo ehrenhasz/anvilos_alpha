@@ -29,7 +29,7 @@ TRACE_EVENT(qdisc_dequeue,
 		__field(	unsigned long,		txq_state)
 	),
 
-	/* skb==NULL indicate packets dequeued was 0, even when packets==1 */
+	
 	TP_fast_assign(
 		__entry->qdisc		= qdisc;
 		__entry->txq		= txq;
@@ -147,7 +147,7 @@ TRACE_EVENT(qdisc_create,
 		  TC_H_MAJ(__entry->parent) >> 16, TC_H_MIN(__entry->parent))
 );
 
-#endif /* _TRACE_QDISC_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

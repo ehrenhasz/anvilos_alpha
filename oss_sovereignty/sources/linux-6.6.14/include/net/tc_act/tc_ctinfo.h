@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_CTINFO_H
 #define __NET_TC_CTINFO_H
 
@@ -30,4 +30,4 @@ enum {
 
 #define to_ctinfo(a) ((struct tcf_ctinfo *)a)
 
-#endif /* __NET_TC_CTINFO_H */
+#endif 

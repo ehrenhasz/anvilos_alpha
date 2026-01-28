@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * STMicroelectronics TPM Linux driver for TPM ST33ZP24
- * Copyright (C) 2009 - 2016  STMicroelectronics
- */
+
+
 
 #ifndef __LOCAL_ST33ZP24_H__
 #define __LOCAL_ST33ZP24_H__
@@ -38,4 +35,4 @@ int st33zp24_pm_resume(struct device *dev);
 int st33zp24_probe(void *phy_id, const struct st33zp24_phy_ops *ops,
 		   struct device *dev, int irq);
 void st33zp24_remove(struct tpm_chip *chip);
-#endif /* __LOCAL_ST33ZP24_H__ */
+#endif 

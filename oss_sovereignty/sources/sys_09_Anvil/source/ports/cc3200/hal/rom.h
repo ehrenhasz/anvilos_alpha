@@ -1,56 +1,56 @@
-//*****************************************************************************
-//
-//  rom.h
-//
-//  Macros to facilitate calling functions in the ROM.
-//
-//  Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
-//
-//
-//  Redistribution and use in source and binary forms, with or without
-//  modification, are permitted provided that the following conditions
-//  are met:
-//
-//    Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//    Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the
-//    distribution.
-//
-//    Neither the name of Texas Instruments Incorporated nor the names of
-//    its contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-//*****************************************************************************
 
-//*****************************************************************************
-//
-// THIS IS AN AUTO-GENERATED FILE.  DO NOT EDIT BY HAND.
-//
-//*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef __ROM_H__
 #define __ROM_H__
 
-//*****************************************************************************
-//
-// Pointers to the main API tables.
-//
-//*****************************************************************************
+
+
+
+
+
 #define ROM_APITABLE            ((unsigned long *)0x0000040C)
 #define ROM_VERSION             (ROM_APITABLE[0])
 #define ROM_UARTTABLE           ((unsigned long *)(ROM_APITABLE[1]))
@@ -76,11 +76,11 @@
 #define ROM_SDHOSTTABLE         ((unsigned long *)(ROM_APITABLE[21]))
 #define ROM_ADCTABLE            ((unsigned long *)(ROM_APITABLE[22]))
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the Interrupt API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_IntEnable                                                         \
         ((void (*)(unsigned long ulInterrupt))ROM_INTERRUPTTABLE[0])
@@ -144,11 +144,11 @@
         ((void (*)(unsigned long ulVtableBase))ROM_INTERRUPTTABLE[14])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the Timer API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_TimerEnable                                                       \
         ((void (*)(unsigned long ulBase,                                      \
@@ -263,11 +263,11 @@
                    unsigned long ulIntFlags))ROM_TIMERTABLE[20])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the UART API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_UARTParityModeSet                                                 \
         ((void (*)(unsigned long ulBase,                                      \
@@ -438,11 +438,11 @@
         ((unsigned long (*)(unsigned long ulBase))ROM_UARTTABLE[35])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the uDMA API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_uDMAChannelTransferSet                                            \
         ((void (*)(unsigned long ulChannelStructIndex,                        \
@@ -551,11 +551,11 @@
         ((void (*)(unsigned long ulIntChannel))ROM_UDMATABLE[23])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the Watchdog API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_WatchdogIntClear                                                  \
         ((void (*)(unsigned long ulBase))ROM_WATCHDOGTABLE[0])
@@ -616,11 +616,11 @@
         ((void (*)(unsigned long ulBase))ROM_WATCHDOGTABLE[14])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the I2C API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_I2CIntRegister                                                    \
         ((void (*)(uint32_t ui32Base,                                         \
@@ -866,11 +866,11 @@
                    bool bFast))ROM_I2CTABLE[52])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the SPI API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_SPIEnable                                                         \
         ((void (*)(unsigned long ulBase))ROM_SPITABLE[0])
@@ -995,11 +995,11 @@
                    unsigned long ulFlags))ROM_SPITABLE[23])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the CAM API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_CameraReset                                                       \
         ((void (*)(unsigned long ulBase))ROM_CAMERATABLE[0])
@@ -1079,11 +1079,11 @@
                    unsigned char ucSize))ROM_CAMERATABLE[15])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the FLASH API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_FlashDisable                                                      \
         ((void (*)(void))ROM_FLASHTABLE[0])
@@ -1145,11 +1145,11 @@
         ((tFlashProtection (*)(unsigned long ulAddress))ROM_FLASHTABLE[13])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the Pin API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_PinModeSet                                                        \
         ((void (*)(unsigned long ulPin,                                       \
@@ -1227,11 +1227,11 @@
                   unsigned long ulPinMode))ROM_PINTABLE[14])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the SYSTICK API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_SysTickEnable                                                     \
         ((void (*)(void))ROM_SYSTICKTABLE[0])
@@ -1269,21 +1269,21 @@
         ((unsigned long (*)(void))ROM_SYSTICKTABLE[8])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the UTILS API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_UtilsDelay                                                        \
         ((void (*)(unsigned long ulCount))ROM_UTILSTABLE[0])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the I2S API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_I2SEnable                                                         \
         ((void (*)(unsigned long ulBase,                                      \
@@ -1388,11 +1388,11 @@
         ((void (*)(unsigned long ulBase))ROM_I2STABLE[19])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the GPIO API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_GPIODirModeSet                                                    \
         ((void (*)(unsigned long ulPort,                                      \
@@ -1464,11 +1464,11 @@
                    unsigned char ucVal))ROM_GPIOTABLE[13])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the AES API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_AESConfigSet                                                      \
         ((void (*)(uint32_t ui32Base,                                         \
@@ -1599,11 +1599,11 @@
                    uint32_t ui32Flags))ROM_AESTABLE[22])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the DES API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_DESConfigSet                                                      \
         ((void (*)(uint32_t ui32Base,                                         \
@@ -1695,11 +1695,11 @@
                    uint32_t ui32Length))ROM_DESTABLE[16])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the SHAMD5 API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_SHAMD5ConfigSet                                                   \
         ((void (*)(uint32_t ui32Base,                                         \
@@ -1793,11 +1793,11 @@
                    uint8_t *pui8Dest))ROM_SHAMD5TABLE[17])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the CRC API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_CRCConfigSet                                                      \
         ((void (*)(uint32_t ui32Base,                                         \
@@ -1825,11 +1825,11 @@
                    uint32_t ui32Seed))ROM_CRCTABLE[4])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the SDHOST API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_SDHostCmdReset                                                    \
         ((void (*)(unsigned long ulBase))ROM_SDHOSTTABLE[0])
@@ -1918,11 +1918,11 @@
                    unsigned long ulCardClk))ROM_SDHOSTTABLE[17])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the PRCM API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_PRCMMCUReset                                                      \
         ((void (*)(tBoolean bIncludeSubsystem))ROM_PRCMTABLE[1])
@@ -2100,11 +2100,11 @@
                    unsigned long ulRestorePC))ROM_PRCMTABLE[41])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the HWSPINLOCK API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_HwSpinLockAcquire                                                 \
         ((void (*)(uint32_t ui32LockID))ROM_HWSPINLOCKTABLE[0])
@@ -2124,11 +2124,11 @@
                        bool bCurrentStatus))ROM_HWSPINLOCKTABLE[3])
 #endif
 
-//*****************************************************************************
-//
-// Macros for calling ROM functions in the ADC API.
-//
-//*****************************************************************************
+
+
+
+
+
 #if defined(TARGET_IS_CC3200)
 #define ROM_ADCEnable                                                         \
         ((void (*)(unsigned long ulBase))ROM_ADCTABLE[0])
@@ -2234,4 +2234,4 @@
                             unsigned long ulChannel))ROM_ADCTABLE[20])
 #endif
 
-#endif // __ROM_H__
+#endif 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Renesas Ethernet Switch device driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+
 
 #ifndef __RSWITCH_H__
 #define __RSWITCH_H__
@@ -37,12 +34,12 @@
 
 #define RSWITCH_TOP_OFFSET	0x00008000
 #define RSWITCH_COMA_OFFSET	0x00009000
-#define RSWITCH_ETHA_OFFSET	0x0000a000	/* with RMAC */
-#define RSWITCH_ETHA_SIZE	0x00002000	/* with RMAC */
+#define RSWITCH_ETHA_OFFSET	0x0000a000	
+#define RSWITCH_ETHA_SIZE	0x00002000	
 #define RSWITCH_GWCA0_OFFSET	0x00010000
 #define RSWITCH_GWCA1_OFFSET	0x00012000
 
-/* TODO: hardcoded ETHA/GWCA settings for now */
+
 #define GWCA_IRQ_RESOURCE_NAME	"gwca0_rxtx%d"
 #define GWCA_IRQ_NAME		"rswitch: gwca0_rxtx%d"
 #define GWCA_NUM_IRQS		8
@@ -706,7 +703,7 @@ enum rswitch_reg {
 	GWSCR1		= GWRO + 0x1900,
 };
 
-/* ETHA/RMAC */
+
 enum rswitch_etha_mode {
 	EAMC_OPC_RESET,
 	EAMC_OPC_DISABLE,
@@ -734,10 +731,10 @@ enum rswitch_etha_mode {
 #define MPSM_PRD_SHIFT		16
 #define MPSM_PRD_MASK		GENMASK(31, MPSM_PRD_SHIFT)
 
-/* Completion flags */
-#define MMIS1_PAACS             BIT(2) /* Address */
-#define MMIS1_PWACS             BIT(1) /* Write */
-#define MMIS1_PRACS             BIT(0) /* Read */
+
+#define MMIS1_PAACS             BIT(2) 
+#define MMIS1_PWACS             BIT(1) 
+#define MMIS1_PRACS             BIT(0) 
 #define MMIS1_CLEAR_FLAGS       0xf
 
 #define MPIC_PSMCS_SHIFT	16
@@ -750,7 +747,7 @@ enum rswitch_etha_mode {
 
 #define MLVC_PLV		BIT(16)
 
-/* GWCA */
+
 enum rswitch_gwca_mode {
 	GWMC_OPC_RESET,
 	GWMC_OPC_DISABLE,
@@ -783,7 +780,7 @@ enum rswitch_gwca_mode {
 #define GWDIE(i)		(GWDIE0 + (i) * 0x10)
 #define GWDID(i)		(GWDID0 + (i) * 0x10)
 
-/* COMA */
+
 #define RRC_RR			BIT(0)
 #define RRC_RR_CLR		0
 #define	RCEC_ACE_DEFAULT	(BIT(0) | BIT(AGENT_INDEX_GWCA))
@@ -795,7 +792,7 @@ enum rswitch_gwca_mode {
 
 #define CABPPFLC_INIT_VALUE	0x00800080
 
-/* MFWD */
+
 #define FWPC0_LTHTA		BIT(0)
 #define FWPC0_IP4UE		BIT(3)
 #define FWPC0_IP4TE		BIT(4)
@@ -821,36 +818,36 @@ enum rswitch_gwca_mode {
 
 #define FWPBFCSDC(j, i)         (FWPBFCSDC00 + (i) * 0x10 + (j) * 0x04)
 
-/* TOP */
+
 #define TPEMIMC7(queue)		(TPEMIMC70 + (queue) * 4)
 
-/* Descriptors */
+
 enum RX_DS_CC_BIT {
-	RX_DS	= 0x0fff, /* Data size */
-	RX_TR	= 0x1000, /* Truncation indication */
-	RX_EI	= 0x2000, /* Error indication */
-	RX_PS	= 0xc000, /* Padding selection */
+	RX_DS	= 0x0fff, 
+	RX_TR	= 0x1000, 
+	RX_EI	= 0x2000, 
+	RX_PS	= 0xc000, 
 };
 
 enum TX_DS_TAGL_BIT {
-	TX_DS	= 0x0fff, /* Data size */
-	TX_TAGL	= 0xf000, /* Frame tag LSBs */
+	TX_DS	= 0x0fff, 
+	TX_TAGL	= 0xf000, 
 };
 
 enum DIE_DT {
-	/* Frame data */
+	
 	DT_FSINGLE	= 0x80,
 	DT_FSTART	= 0x90,
 	DT_FMID		= 0xa0,
 	DT_FEND		= 0xb0,
 
-	/* Chain control */
+	
 	DT_LEMPTY	= 0xc0,
 	DT_EEMPTY	= 0xd0,
 	DT_LINKFIX	= 0x00,
 	DT_LINK		= 0xe0,
 	DT_EOS		= 0xf0,
-	/* HW/SW arbitration */
+	
 	DT_FEMPTY	= 0x40,
 	DT_FEMPTY_IS	= 0x10,
 	DT_FEMPTY_IC	= 0x20,
@@ -860,34 +857,34 @@ enum DIE_DT {
 	DT_FEMPTY_END	= 0x70,
 
 	DT_MASK		= 0xf0,
-	DIE		= 0x08,	/* Descriptor Interrupt Enable */
+	DIE		= 0x08,	
 };
 
-/* Both transmission and reception */
+
 #define INFO1_FMT		BIT(2)
 #define INFO1_TXC		BIT(3)
 
-/* For transmission */
+
 #define INFO1_TSUN(val)		((u64)(val) << 8ULL)
 #define INFO1_IPV(prio)		((u64)(prio) << 28ULL)
 #define INFO1_CSD0(index)	((u64)(index) << 32ULL)
 #define INFO1_CSD1(index)	((u64)(index) << 40ULL)
 #define INFO1_DV(port_vector)	((u64)(port_vector) << 48ULL)
 
-/* For reception */
+
 #define INFO1_SPN(port)		((u64)(port) << 36ULL)
 
-/* For timestamp descriptor in dptrl (Byte 4 to 7) */
+
 #define TS_DESC_TSUN(dptrl)	((dptrl) & GENMASK(7, 0))
 #define TS_DESC_SPN(dptrl)	(((dptrl) & GENMASK(10, 8)) >> 8)
 #define TS_DESC_DPN(dptrl)	(((dptrl) & GENMASK(17, 16)) >> 16)
 #define TS_DESC_TN(dptrl)	((dptrl) & BIT(24))
 
 struct rswitch_desc {
-	__le16 info_ds;	/* Descriptor size */
-	u8 die_dt;	/* Descriptor interrupt enable and type */
-	__u8  dptrh;	/* Descriptor pointer MSB */
-	__le32 dptrl;	/* Descriptor pointer LSW */
+	__le16 info_ds;	
+	u8 die_dt;	
+	__u8  dptrh;	
+	__le32 dptrl;	
 } __packed;
 
 struct rswitch_ts_desc {
@@ -920,15 +917,11 @@ struct rswitch_etha {
 	int link;
 	int speed;
 
-	/* This hardware could not be initialized twice so that marked
-	 * this flag to avoid multiple initialization.
-	 */
+	
 	bool operated;
 };
 
-/* The datasheet said descriptor "chain" and/or "queue". For consistency of
- * name, this driver calls "queue".
- */
+
 struct rswitch_gwca_queue {
 	union {
 		struct rswitch_ext_desc *tx_ring;
@@ -936,17 +929,17 @@ struct rswitch_gwca_queue {
 		struct rswitch_ts_desc *ts_ring;
 	};
 
-	/* Common */
+	
 	dma_addr_t ring_dma;
 	int ring_size;
 	int cur;
 	int dirty;
 
-	/* For [rt]_ring */
+	
 	int index;
 	bool dir_tx;
 	struct sk_buff **skbs;
-	struct net_device *ndev;	/* queue to ndev for irq */
+	struct net_device *ndev;	
 };
 
 struct rswitch_gwca_ts_info {
@@ -1012,11 +1005,11 @@ struct rswitch_private {
 	struct rswitch_etha etha[RSWITCH_NUM_PORTS];
 	struct rswitch_mfwd mfwd;
 
-	spinlock_t lock;	/* lock interrupt registers' control */
+	spinlock_t lock;	
 	struct clk *clk;
 
 	bool etha_no_runtime_change;
 	bool gwca_halt;
 };
 
-#endif	/* #ifndef __RSWITCH_H__ */
+#endif	

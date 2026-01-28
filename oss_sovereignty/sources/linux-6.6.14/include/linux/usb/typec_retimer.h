@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __USB_TYPEC_RETIMER
 #define __USB_TYPEC_RETIMER
@@ -42,4 +42,4 @@ void typec_retimer_unregister(struct typec_retimer *retimer);
 
 void *typec_retimer_get_drvdata(struct typec_retimer *retimer);
 
-#endif /* __USB_TYPEC_RETIMER */
+#endif 

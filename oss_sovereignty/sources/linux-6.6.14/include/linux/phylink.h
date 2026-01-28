@@ -18,20 +18,11 @@ enum {
 	MLO_PAUSE_TXRX_MASK = MLO_PAUSE_TX | MLO_PAUSE_RX,
 	MLO_PAUSE_AN = BIT(2),
 
-	MLO_AN_PHY = 0,	/* Conventional PHY */
-	MLO_AN_FIXED,	/* Fixed-link mode */
-	MLO_AN_INBAND,	/* In-band protocol */
+	MLO_AN_PHY = 0,	
+	MLO_AN_FIXED,	
+	MLO_AN_INBAND,	
 
-	/* PCS "negotiation" mode.
-	 *  PHYLINK_PCS_NEG_NONE - protocol has no inband capability
-	 *  PHYLINK_PCS_NEG_OUTBAND - some out of band or fixed link setting
-	 *  PHYLINK_PCS_NEG_INBAND_DISABLED - inband mode disabled, e.g.
-	 *				      1000base-X with autoneg off
-	 *  PHYLINK_PCS_NEG_INBAND_ENABLED - inband mode enabled
-	 * Additionally, this can be tested using bitmasks:
-	 *  PHYLINK_PCS_NEG_INBAND - inband mode selected
-	 *  PHYLINK_PCS_NEG_ENABLED - negotiation mode enabled
-	 */
+	
 	PHYLINK_PCS_NEG_NONE = 0,
 	PHYLINK_PCS_NEG_ENABLED = BIT(4),
 	PHYLINK_PCS_NEG_OUTBAND = BIT(5),
@@ -40,35 +31,7 @@ enum {
 	PHYLINK_PCS_NEG_INBAND_ENABLED = PHYLINK_PCS_NEG_INBAND |
 					 PHYLINK_PCS_NEG_ENABLED,
 
-	/* MAC_SYM_PAUSE and MAC_ASYM_PAUSE are used when configuring our
-	 * autonegotiation advertisement. They correspond to the PAUSE and
-	 * ASM_DIR bits defined by 802.3, respectively.
-	 *
-	 * The following table lists the values of tx_pause and rx_pause which
-	 * might be requested in mac_link_up. The exact values depend on either
-	 * the results of autonegotation (if MLO_PAUSE_AN is set) or user
-	 * configuration (if MLO_PAUSE_AN is not set).
-	 *
-	 * MAC_SYM_PAUSE MAC_ASYM_PAUSE MLO_PAUSE_AN tx_pause/rx_pause
-	 * ============= ============== ============ ==================
-	 *             0              0            0 0/0
-	 *             0              0            1 0/0
-	 *             0              1            0 0/0, 0/1, 1/0, 1/1
-	 *             0              1            1 0/0,      1/0
-	 *             1              0            0 0/0,           1/1
-	 *             1              0            1 0/0,           1/1
-	 *             1              1            0 0/0, 0/1, 1/0, 1/1
-	 *             1              1            1 0/0, 0/1,      1/1
-	 *
-	 * If you set MAC_ASYM_PAUSE, the user may request any combination of
-	 * tx_pause and rx_pause. You do not have to support these
-	 * combinations.
-	 *
-	 * However, you should support combinations of tx_pause and rx_pause
-	 * which might be the result of autonegotation. For example, don't set
-	 * MAC_SYM_PAUSE unless your device can support tx_pause and rx_pause
-	 * at the same time.
-	 */
+	
 	MAC_SYM_PAUSE	= BIT(0),
 	MAC_ASYM_PAUSE	= BIT(1),
 	MAC_10HD	= BIT(2),
@@ -98,25 +61,7 @@ static inline bool phylink_autoneg_inband(unsigned int mode)
 	return mode == MLO_AN_INBAND;
 }
 
-/**
- * phylink_pcs_neg_mode() - helper to determine PCS inband mode
- * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
- * @interface: interface mode to be used
- * @advertising: adertisement ethtool link mode mask
- *
- * Determines the negotiation mode to be used by the PCS, and returns
- * one of:
- *
- * - %PHYLINK_PCS_NEG_NONE: interface mode does not support inband
- * - %PHYLINK_PCS_NEG_OUTBAND: an out of band mode (e.g. reading the PHY)
- *   will be used.
- * - %PHYLINK_PCS_NEG_INBAND_DISABLED: inband mode selected but autoneg
- *   disabled
- * - %PHYLINK_PCS_NEG_INBAND_ENABLED: inband mode selected and autoneg enabled
- *
- * Note: this is for cases where the PCS itself is involved in negotiation
- * (e.g. Clause 37, SGMII and similar) not Clause 73.
- */
+
 static inline unsigned int phylink_pcs_neg_mode(unsigned int mode,
 						phy_interface_t interface,
 						const unsigned long *advertising)
@@ -128,11 +73,7 @@ static inline unsigned int phylink_pcs_neg_mode(unsigned int mode,
 	case PHY_INTERFACE_MODE_QSGMII:
 	case PHY_INTERFACE_MODE_QUSGMII:
 	case PHY_INTERFACE_MODE_USXGMII:
-		/* These protocols are designed for use with a PHY which
-		 * communicates its negotiation result back to the MAC via
-		 * inband communication. Note: there exist PHYs that run
-		 * with SGMII but do not send the inband data.
-		 */
+		
 		if (!phylink_autoneg_inband(mode))
 			neg_mode = PHYLINK_PCS_NEG_OUTBAND;
 		else
@@ -141,12 +82,7 @@ static inline unsigned int phylink_pcs_neg_mode(unsigned int mode,
 
 	case PHY_INTERFACE_MODE_1000BASEX:
 	case PHY_INTERFACE_MODE_2500BASEX:
-		/* 1000base-X is designed for use media-side for Fibre
-		 * connections, and thus the Autoneg bit needs to be
-		 * taken into account. We also do this for 2500base-X
-		 * as well, but drivers may not support this, so may
-		 * need to override this.
-		 */
+		
 		if (!phylink_autoneg_inband(mode))
 			neg_mode = PHYLINK_PCS_NEG_OUTBAND;
 		else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
@@ -164,22 +100,7 @@ static inline unsigned int phylink_pcs_neg_mode(unsigned int mode,
 	return neg_mode;
 }
 
-/**
- * struct phylink_link_state - link state structure
- * @advertising: ethtool bitmask containing advertised link modes
- * @lp_advertising: ethtool bitmask containing link partner advertised link
- *   modes
- * @interface: link &typedef phy_interface_t mode
- * @speed: link speed, one of the SPEED_* constants.
- * @duplex: link duplex mode, one of DUPLEX_* constants.
- * @pause: link pause state, described by MLO_PAUSE_* constants.
- * @rate_matching: rate matching being performed, one of the RATE_MATCH_*
- *   constants. If rate matching is taking place, then the speed/duplex of
- *   the medium link mode (@speed and @duplex) and the speed/duplex of the phy
- *   interface mode (@interface) are different.
- * @link: true if the link is up.
- * @an_complete: true if autonegotiation has completed.
- */
+
 struct phylink_link_state {
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(advertising);
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(lp_advertising);
@@ -197,20 +118,7 @@ enum phylink_op_type {
 	PHYLINK_DEV,
 };
 
-/**
- * struct phylink_config - PHYLINK configuration structure
- * @dev: a pointer to a struct device associated with the MAC
- * @type: operation type of PHYLINK instance
- * @poll_fixed_state: if true, starts link_poll,
- *		      if MAC link is at %MLO_AN_FIXED mode.
- * @mac_managed_pm: if true, indicate the MAC driver is responsible for PHY PM.
- * @ovr_an_inband: if true, override PCS to MLO_AN_INBAND
- * @get_fixed_state: callback to execute to determine the fixed link state,
- *		     if MAC link is at %MLO_AN_FIXED mode.
- * @supported_interfaces: bitmap describing which PHY_INTERFACE_MODE_xxx
- *                        are supported by the MAC/PCS.
- * @mac_capabilities: MAC pause/speed/duplex capabilities.
- */
+
 struct phylink_config {
 	struct device *dev;
 	enum phylink_op_type type;
@@ -225,18 +133,7 @@ struct phylink_config {
 
 void phylink_limit_mac_speed(struct phylink_config *config, u32 max_speed);
 
-/**
- * struct phylink_mac_ops - MAC operations structure.
- * @validate: Validate and update the link configuration.
- * @mac_select_pcs: Select a PCS for the interface mode.
- * @mac_prepare: prepare for a major reconfiguration of the interface.
- * @mac_config: configure the MAC for the selected mode and state.
- * @mac_finish: finish a major reconfiguration of the interface.
- * @mac_link_down: take the link down.
- * @mac_link_up: allow the link to come up.
- *
- * The individual methods are described more fully below.
- */
+
 struct phylink_mac_ops {
 	void (*validate)(struct phylink_config *config,
 			 unsigned long *supported,
@@ -257,217 +154,31 @@ struct phylink_mac_ops {
 			    bool tx_pause, bool rx_pause);
 };
 
-#if 0 /* For kernel-doc purposes only. */
-/**
- * validate - Validate and update the link configuration
- * @config: a pointer to a &struct phylink_config.
- * @supported: ethtool bitmask for supported link modes.
- * @state: a pointer to a &struct phylink_link_state.
- *
- * Clear bits in the @supported and @state->advertising masks that
- * are not supportable by the MAC.
- *
- * Note that the PHY may be able to transform from one connection
- * technology to another, so, eg, don't clear 1000BaseX just
- * because the MAC is unable to BaseX mode. This is more about
- * clearing unsupported speeds and duplex settings. The port modes
- * should not be cleared; phylink_set_port_modes() will help with this.
- *
- * When @config->supported_interfaces has been set, phylink will iterate
- * over the supported interfaces to determine the full capability of the
- * MAC. The validation function must not print errors if @state->interface
- * is set to an unexpected value.
- *
- * When @config->supported_interfaces is empty, phylink will call this
- * function with @state->interface set to %PHY_INTERFACE_MODE_NA, and
- * expects the MAC driver to return all supported link modes.
- *
- * If the @state->interface mode is not supported, then the @supported
- * mask must be cleared.
- *
- * This member is optional; if not set, the generic validator will be
- * used making use of @config->mac_capabilities and
- * @config->supported_interfaces to determine which link modes are
- * supported.
- */
+#if 0 
+
 void validate(struct phylink_config *config, unsigned long *supported,
 	      struct phylink_link_state *state);
-/**
- * mac_select_pcs: Select a PCS for the interface mode.
- * @config: a pointer to a &struct phylink_config.
- * @interface: PHY interface mode for PCS
- *
- * Return the &struct phylink_pcs for the specified interface mode, or
- * NULL if none is required, or an error pointer on error.
- *
- * This must not modify any state. It is used to query which PCS should
- * be used. Phylink will use this during validation to ensure that the
- * configuration is valid, and when setting a configuration to internally
- * set the PCS that will be used.
- */
+
 struct phylink_pcs *mac_select_pcs(struct phylink_config *config,
 				   phy_interface_t interface);
 
-/**
- * mac_prepare() - prepare to change the PHY interface mode
- * @config: a pointer to a &struct phylink_config.
- * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
- * @iface: interface mode to switch to
- *
- * phylink will call this method at the beginning of a full initialisation
- * of the link, which includes changing the interface mode or at initial
- * startup time. It may be called for the current mode. The MAC driver
- * should perform whatever actions are required, e.g. disabling the
- * Serdes PHY.
- *
- * This will be the first call in the sequence:
- * - mac_prepare()
- * - mac_config()
- * - pcs_config()
- * - possible pcs_an_restart()
- * - mac_finish()
- *
- * Returns zero on success, or negative errno on failure which will be
- * reported to the kernel log.
- */
+
 int mac_prepare(struct phylink_config *config, unsigned int mode,
 		phy_interface_t iface);
 
-/**
- * mac_config() - configure the MAC for the selected mode and state
- * @config: a pointer to a &struct phylink_config.
- * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
- * @state: a pointer to a &struct phylink_link_state.
- *
- * Note - not all members of @state are valid.  In particular,
- * @state->lp_advertising, @state->link, @state->an_complete are never
- * guaranteed to be correct, and so any mac_config() implementation must
- * never reference these fields.
- *
- * This will only be called to reconfigure the MAC for a "major" change in
- * e.g. interface mode. It will not be called for changes in speed, duplex
- * or pause modes or to change the in-band advertisement.
- *
- * In all negotiation modes, as defined by @mode, @state->pause indicates the
- * pause settings which should be applied as follows. If %MLO_PAUSE_AN is not
- * set, %MLO_PAUSE_TX and %MLO_PAUSE_RX indicate whether the MAC should send
- * pause frames and/or act on received pause frames respectively. Otherwise,
- * the results of in-band negotiation/status from the MAC PCS should be used
- * to control the MAC pause mode settings.
- *
- * The action performed depends on the currently selected mode:
- *
- * %MLO_AN_FIXED, %MLO_AN_PHY:
- *   Configure for non-inband negotiation mode, where the link settings
- *   are completely communicated via mac_link_up().  The physical link
- *   protocol from the MAC is specified by @state->interface.
- *
- *   @state->advertising may be used, but is not required.
- *
- *   Older drivers (prior to the mac_link_up() change) may use @state->speed,
- *   @state->duplex and @state->pause to configure the MAC, but this is
- *   deprecated; such drivers should be converted to use mac_link_up().
- *
- *   Other members of @state must be ignored.
- *
- *   Valid state members: interface, advertising.
- *   Deprecated state members: speed, duplex, pause.
- *
- * %MLO_AN_INBAND:
- *   place the link in an inband negotiation mode (such as 802.3z
- *   1000base-X or Cisco SGMII mode depending on the @state->interface
- *   mode). In both cases, link state management (whether the link
- *   is up or not) is performed by the MAC, and reported via the
- *   pcs_get_state() callback. Changes in link state must be made
- *   by calling phylink_mac_change().
- *
- *   Interface mode specific details are mentioned below.
- *
- *   If in 802.3z mode, the link speed is fixed, dependent on the
- *   @state->interface. Duplex and pause modes are negotiated via
- *   the in-band configuration word. Advertised pause modes are set
- *   according to the @state->an_enabled and @state->advertising
- *   flags. Beware of MACs which only support full duplex at gigabit
- *   and higher speeds.
- *
- *   If in Cisco SGMII mode, the link speed and duplex mode are passed
- *   in the serial bitstream 16-bit configuration word, and the MAC
- *   should be configured to read these bits and acknowledge the
- *   configuration word. Nothing is advertised by the MAC. The MAC is
- *   responsible for reading the configuration word and configuring
- *   itself accordingly.
- *
- *   Valid state members: interface, an_enabled, pause, advertising.
- *
- * Implementations are expected to update the MAC to reflect the
- * requested settings - i.o.w., if nothing has changed between two
- * calls, no action is expected.  If only flow control settings have
- * changed, flow control should be updated *without* taking the link
- * down.  This "update" behaviour is critical to avoid bouncing the
- * link up status.
- */
+
 void mac_config(struct phylink_config *config, unsigned int mode,
 		const struct phylink_link_state *state);
 
-/**
- * mac_finish() - finish a to change the PHY interface mode
- * @config: a pointer to a &struct phylink_config.
- * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
- * @iface: interface mode to switch to
- *
- * phylink will call this if it called mac_prepare() to allow the MAC to
- * complete any necessary steps after the MAC and PCS have been configured
- * for the @mode and @iface. E.g. a MAC driver may wish to re-enable the
- * Serdes PHY here if it was previously disabled by mac_prepare().
- *
- * Returns zero on success, or negative errno on failure which will be
- * reported to the kernel log.
- */
+
 int mac_finish(struct phylink_config *config, unsigned int mode,
 		phy_interface_t iface);
 
-/**
- * mac_link_down() - take the link down
- * @config: a pointer to a &struct phylink_config.
- * @mode: link autonegotiation mode
- * @interface: link &typedef phy_interface_t mode
- *
- * If @mode is not an in-band negotiation mode (as defined by
- * phylink_autoneg_inband()), force the link down and disable any
- * Energy Efficient Ethernet MAC configuration. Interface type
- * selection must be done in mac_config().
- */
+
 void mac_link_down(struct phylink_config *config, unsigned int mode,
 		   phy_interface_t interface);
 
-/**
- * mac_link_up() - allow the link to come up
- * @config: a pointer to a &struct phylink_config.
- * @phy: any attached phy
- * @mode: link autonegotiation mode
- * @interface: link &typedef phy_interface_t mode
- * @speed: link speed
- * @duplex: link duplex
- * @tx_pause: link transmit pause enablement status
- * @rx_pause: link receive pause enablement status
- *
- * Configure the MAC for an established link.
- *
- * @speed, @duplex, @tx_pause and @rx_pause indicate the finalised link
- * settings, and should be used to configure the MAC block appropriately
- * where these settings are not automatically conveyed from the PCS block,
- * or if in-band negotiation (as defined by phylink_autoneg_inband(@mode))
- * is disabled.
- *
- * Note that when 802.3z in-band negotiation is in use, it is possible
- * that the user wishes to override the pause settings, and this should
- * be allowed when considering the implementation of this method.
- *
- * If in-band negotiation mode is disabled, allow the link to come up. If
- * @phy is non-%NULL, configure Energy Efficient Ethernet by calling
- * phy_init_eee() and perform appropriate MAC configuration for EEE.
- * Interface type selection must be done in mac_config().
- */
+
 void mac_link_up(struct phylink_config *config, struct phy_device *phy,
 		 unsigned int mode, phy_interface_t interface,
 		 int speed, int duplex, bool tx_pause, bool rx_pause);
@@ -475,19 +186,7 @@ void mac_link_up(struct phylink_config *config, struct phy_device *phy,
 
 struct phylink_pcs_ops;
 
-/**
- * struct phylink_pcs - PHYLINK PCS instance
- * @ops: a pointer to the &struct phylink_pcs_ops structure
- * @phylink: pointer to &struct phylink_config
- * @neg_mode: provide PCS neg mode via "mode" argument
- * @poll: poll the PCS for link changes
- *
- * This structure is designed to be embedded within the PCS private data,
- * and will be passed between phylink and the PCS.
- *
- * The @phylink member is private to phylink and must not be touched by
- * the PCS driver.
- */
+
 struct phylink_pcs {
 	const struct phylink_pcs_ops *ops;
 	struct phylink *phylink;
@@ -495,19 +194,7 @@ struct phylink_pcs {
 	bool poll;
 };
 
-/**
- * struct phylink_pcs_ops - MAC PCS operations structure.
- * @pcs_validate: validate the link configuration.
- * @pcs_enable: enable the PCS.
- * @pcs_disable: disable the PCS.
- * @pcs_pre_config: pre-mac_config method (for errata)
- * @pcs_post_config: post-mac_config method (for arrata)
- * @pcs_get_state: read the current MAC PCS link state from the hardware.
- * @pcs_config: configure the MAC PCS for the selected mode and state.
- * @pcs_an_restart: restart 802.3z BaseX autonegotiation.
- * @pcs_link_up: program the PCS for the resolved link configuration
- *               (where necessary).
- */
+
 struct phylink_pcs_ops {
 	int (*pcs_validate)(struct phylink_pcs *pcs, unsigned long *supported,
 			    const struct phylink_link_state *state);
@@ -528,110 +215,30 @@ struct phylink_pcs_ops {
 			    phy_interface_t interface, int speed, int duplex);
 };
 
-#if 0 /* For kernel-doc purposes only. */
-/**
- * pcs_validate() - validate the link configuration.
- * @pcs: a pointer to a &struct phylink_pcs.
- * @supported: ethtool bitmask for supported link modes.
- * @state: a const pointer to a &struct phylink_link_state.
- *
- * Validate the interface mode, and advertising's autoneg bit, removing any
- * media ethtool link modes that would not be supportable from the supported
- * mask. Phylink will propagate the changes to the advertising mask. See the
- * &struct phylink_mac_ops validate() method.
- *
- * Returns -EINVAL if the interface mode/autoneg mode is not supported.
- * Returns non-zero positive if the link state can be supported.
- */
+#if 0 
+
 int pcs_validate(struct phylink_pcs *pcs, unsigned long *supported,
 		 const struct phylink_link_state *state);
 
-/**
- * pcs_enable() - enable the PCS.
- * @pcs: a pointer to a &struct phylink_pcs.
- */
+
 int pcs_enable(struct phylink_pcs *pcs);
 
-/**
- * pcs_disable() - disable the PCS.
- * @pcs: a pointer to a &struct phylink_pcs.
- */
+
 void pcs_disable(struct phylink_pcs *pcs);
 
-/**
- * pcs_get_state() - Read the current inband link state from the hardware
- * @pcs: a pointer to a &struct phylink_pcs.
- * @state: a pointer to a &struct phylink_link_state.
- *
- * Read the current inband link state from the MAC PCS, reporting the
- * current speed in @state->speed, duplex mode in @state->duplex, pause
- * mode in @state->pause using the %MLO_PAUSE_RX and %MLO_PAUSE_TX bits,
- * negotiation completion state in @state->an_complete, and link up state
- * in @state->link. If possible, @state->lp_advertising should also be
- * populated.
- *
- * When present, this overrides pcs_get_state() in &struct
- * phylink_pcs_ops.
- */
+
 void pcs_get_state(struct phylink_pcs *pcs,
 		   struct phylink_link_state *state);
 
-/**
- * pcs_config() - Configure the PCS mode and advertisement
- * @pcs: a pointer to a &struct phylink_pcs.
- * @neg_mode: link negotiation mode (see below)
- * @interface: interface mode to be used
- * @advertising: adertisement ethtool link mode mask
- * @permit_pause_to_mac: permit forwarding pause resolution to MAC
- *
- * Configure the PCS for the operating mode, the interface mode, and set
- * the advertisement mask. @permit_pause_to_mac indicates whether the
- * hardware may forward the pause mode resolution to the MAC.
- *
- * When operating in %MLO_AN_INBAND, inband should always be enabled,
- * otherwise inband should be disabled.
- *
- * For SGMII, there is no advertisement from the MAC side, the PCS should
- * be programmed to acknowledge the inband word from the PHY.
- *
- * For 1000BASE-X, the advertisement should be programmed into the PCS.
- *
- * For most 10GBASE-R, there is no advertisement.
- *
- * The %neg_mode argument should be tested via the phylink_mode_*() family of
- * functions, or for PCS that set pcs->neg_mode true, should be tested
- * against the PHYLINK_PCS_NEG_* definitions.
- */
+
 int pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 	       phy_interface_t interface, const unsigned long *advertising,
 	       bool permit_pause_to_mac);
 
-/**
- * pcs_an_restart() - restart 802.3z BaseX autonegotiation
- * @pcs: a pointer to a &struct phylink_pcs.
- *
- * When PCS ops are present, this overrides mac_an_restart() in &struct
- * phylink_mac_ops.
- */
+
 void pcs_an_restart(struct phylink_pcs *pcs);
 
-/**
- * pcs_link_up() - program the PCS for the resolved link configuration
- * @pcs: a pointer to a &struct phylink_pcs.
- * @neg_mode: link negotiation mode (see below)
- * @interface: link &typedef phy_interface_t mode
- * @speed: link speed
- * @duplex: link duplex
- *
- * This call will be made just before mac_link_up() to inform the PCS of
- * the resolved link parameters. For example, a PCS operating in SGMII
- * mode without in-band AN needs to be manually configured for the link
- * and duplex setting. Otherwise, this should be a no-op.
- *
- * The %mode argument should be tested via the phylink_mode_*() family of
- * functions, or for PCS that set pcs->neg_mode true, should be tested
- * against the PHYLINK_PCS_NEG_* definitions.
- */
+
 void pcs_link_up(struct phylink_pcs *pcs, unsigned int neg_mode,
 		 phy_interface_t interface, int speed, int duplex);
 #endif
@@ -701,13 +308,7 @@ int phylink_speed_up(struct phylink *pl);
 
 void phylink_set_port_modes(unsigned long *bits);
 
-/**
- * phylink_get_link_timer_ns - return the PCS link timer value
- * @interface: link &typedef phy_interface_t mode
- *
- * Return the PCS link timer setting in nanoseconds for the PHY @interface
- * mode, or -EINVAL if not appropriate.
- */
+
 static inline int phylink_get_link_timer_ns(phy_interface_t interface)
 {
 	switch (interface) {

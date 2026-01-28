@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2005 Voltaire Inc.  All rights reserved.
- * Copyright (c) 2005 Intel Corporation.  All rights reserved.
- */
+
+
 
 #ifndef IB_ADDR_H
 #define IB_ADDR_H
@@ -22,17 +19,7 @@
 #include <rdma/ib_pack.h>
 #include <net/net_namespace.h>
 
-/**
- * struct rdma_dev_addr - Contains resolved RDMA hardware addresses
- * @src_dev_addr:	Source MAC address.
- * @dst_dev_addr:	Destination MAC address.
- * @broadcast:		Broadcast address of the device.
- * @dev_type:		The interface hardware type of the device.
- * @bound_dev_if:	An optional device interface index.
- * @transport:		The transport type used.
- * @net:		Network namespace containing the bound_dev_if net_dev.
- * @sgid_attr:		GID attribute to use for identified SGID
- */
+
 struct rdma_dev_addr {
 	unsigned char src_dev_addr[MAX_ADDR_LEN];
 	unsigned char dst_dev_addr[MAX_ADDR_LEN];
@@ -46,32 +33,11 @@ struct rdma_dev_addr {
 	int hoplimit;
 };
 
-/**
- * rdma_translate_ip - Translate a local IP address to an RDMA hardware
- *   address.
- *
- * The dev_addr->net field must be initialized.
- */
+
 int rdma_translate_ip(const struct sockaddr *addr,
 		      struct rdma_dev_addr *dev_addr);
 
-/**
- * rdma_resolve_ip - Resolve source and destination IP addresses to
- *   RDMA hardware addresses.
- * @src_addr: An optional source address to use in the resolution.  If a
- *   source address is not provided, a usable address will be returned via
- *   the callback.
- * @dst_addr: The destination address to resolve.
- * @addr: A reference to a data location that will receive the resolved
- *   addresses.  The data location must remain valid until the callback has
- *   been invoked. The net field of the addr struct must be valid.
- * @timeout_ms: Amount of time to wait for the address resolution to complete.
- * @callback: Call invoked once address resolution has completed, timed out,
- *   or been canceled.  A status of 0 indicates success.
- * @resolve_by_gid_attr:	Resolve the ip based on the GID attribute from
- *				rdma_dev_addr.
- * @context: User-specified context associated with the call.
- */
+
 int rdma_resolve_ip(struct sockaddr *src_addr, const struct sockaddr *dst_addr,
 		    struct rdma_dev_addr *addr, unsigned long timeout_ms,
 		    void (*callback)(int status, struct sockaddr *src_addr,
@@ -129,7 +95,7 @@ static inline int rdma_ip2gid(struct sockaddr *addr, union ib_gid *gid)
 	return 0;
 }
 
-/* Important - sockaddr should be a union of sockaddr_in and sockaddr_in6 */
+
 static inline void rdma_gid2ip(struct sockaddr *out, const union ib_gid *gid)
 {
 	if (ipv6_addr_v4mapped((struct in6_addr *)gid)) {
@@ -145,11 +111,7 @@ static inline void rdma_gid2ip(struct sockaddr *out, const union ib_gid *gid)
 	}
 }
 
-/*
- * rdma_get/set_sgid/dgid() APIs are applicable to IB, and iWarp.
- * They are not applicable to RoCE.
- * RoCE GIDs are derived from the IP addresses.
- */
+
 static inline void rdma_addr_get_sgid(struct rdma_dev_addr *dev_addr, union ib_gid *gid)
 {
 	memcpy(gid, dev_addr->src_dev_addr + rdma_addr_gid_offset(dev_addr),
@@ -173,9 +135,7 @@ static inline void rdma_addr_set_dgid(struct rdma_dev_addr *dev_addr, union ib_g
 
 static inline enum ib_mtu iboe_get_mtu(int mtu)
 {
-	/*
-	 * Reduce IB headers from effective IBoE MTU.
-	 */
+	
 	mtu = mtu - (IB_GRH_BYTES + IB_UDP_BYTES + IB_BTH_BYTES +
 		     IB_EXT_XRC_BYTES + IB_EXT_ATOMICETH_BYTES +
 		     IB_ICRC_BYTES);
@@ -244,4 +204,4 @@ static inline struct net_device *rdma_vlan_dev_real_dev(const struct net_device 
 	return is_vlan_dev(dev) ? vlan_dev_real_dev(dev) : NULL;
 }
 
-#endif /* IB_ADDR_H */
+#endif 

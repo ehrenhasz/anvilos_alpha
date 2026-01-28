@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
+
+
 #ifndef _MM_SHUFFLE_H
 #define _MM_SHUFFLE_H
 #include <linux/jump_label.h>
@@ -50,4 +50,4 @@ static inline bool is_shuffle_order(int order)
 	return false;
 }
 #endif
-#endif /* _MM_SHUFFLE_H */
+#endif 

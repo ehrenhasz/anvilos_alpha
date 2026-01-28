@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * Minimal errno definitions for NOLIBC
- * Copyright (C) 2017-2022 Willy Tarreau <w@1wt.eu>
- */
+
+
 
 #ifndef _NOLIBC_ERRNO_H
 #define _NOLIBC_ERRNO_H
@@ -17,12 +14,10 @@ int errno __attribute__((weak));
 #endif
 
 
-/* errno codes all ensure that they will not conflict with a valid pointer
- * because they all correspond to the highest addressable memory page.
- */
+
 #define MAX_ERRNO 4095
 
-/* make sure to include all global symbols */
+
 #include "nolibc.h"
 
-#endif /* _NOLIBC_ERRNO_H */
+#endif 

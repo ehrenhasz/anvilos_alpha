@@ -1,5 +1,5 @@
 YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
+NC='\033[0m' 
 declare -a FILES
 FILES=(
   "include/uapi/linux/const.h"
@@ -126,16 +126,16 @@ for i in "${SYNC_CHECK_FILES[@]}"
 do
   check "$i" '-I "^.*\/\*.*__ignore_sync_check__.*\*\/.*$"'
 done
-check arch/x86/lib/memcpy_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memcpy_\(erms\|orig\))" -I"^#include <linux/cfi_types.h>"'
-check arch/x86/lib/memset_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memset_\(erms\|orig\))"'
-check arch/x86/include/asm/amd-ibs.h  '-I "^#include [<\"]\(asm/\)*msr-index.h"'
-check arch/arm64/include/asm/cputype.h '-I "^#include [<\"]\(asm/\)*sysreg.h"'
-check include/uapi/asm-generic/mman.h '-I "^#include <\(uapi/\)*asm-generic/mman-common\(-tools\)*.h>"'
-check include/uapi/linux/mman.h       '-I "^#include <\(uapi/\)*asm/mman.h>"'
-check include/linux/build_bug.h       '-I "^#\(ifndef\|endif\)\( \/\/\)* static_assert$"'
+check arch/x86/lib/memcpy_64.S        '-I "^EXPORT_SYMBOL" -I "^
+check arch/x86/lib/memset_64.S        '-I "^EXPORT_SYMBOL" -I "^
+check arch/x86/include/asm/amd-ibs.h  '-I "^
+check arch/arm64/include/asm/cputype.h '-I "^
+check include/uapi/asm-generic/mman.h '-I "^
+check include/uapi/linux/mman.h       '-I "^
+check include/linux/build_bug.h       '-I "^
 check include/linux/ctype.h	      '-I "isdigit("'
-check lib/ctype.c		      '-I "^EXPORT_SYMBOL" -I "^#include <linux/export.h>" -B'
-check lib/list_sort.c		      '-I "^#include <linux/bug.h>"'
+check lib/ctype.c		      '-I "^EXPORT_SYMBOL" -I "^
+check lib/list_sort.c		      '-I "^
 check_2 tools/perf/arch/x86/entry/syscalls/syscall_64.tbl arch/x86/entry/syscalls/syscall_64.tbl
 check_2 tools/perf/arch/powerpc/entry/syscalls/syscall.tbl arch/powerpc/kernel/syscalls/syscall.tbl
 check_2 tools/perf/arch/s390/entry/syscalls/syscall.tbl arch/s390/kernel/syscalls/syscall.tbl
@@ -147,7 +147,7 @@ done
 check_2 tools/perf/util/hashmap.h tools/lib/bpf/hashmap.h
 check_2 tools/perf/util/hashmap.c tools/lib/bpf/hashmap.c
 cd tools/perf || exit
-if [ ${#FAILURES[@]} -gt 0 ]
+if [ ${
 then
   echo -e "${YELLOW}Warning${NC}: Kernel ABI header differences:"
   for i in "${FAILURES[@]}"

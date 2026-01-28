@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Crypto engine API
- *
- * Copyright (c) 2016 Baolin Wang <baolin.wang@linaro.org>
- */
+
+
 #ifndef _CRYPTO_ENGINE_H
 #define _CRYPTO_ENGINE_H
 
@@ -17,10 +13,7 @@
 struct crypto_engine;
 struct device;
 
-/*
- * struct crypto_engine_op - crypto hardware engine operations
- * @do_one_request: do encryption for current request
- */
+
 struct crypto_engine_op {
 	int (*do_one_request)(struct crypto_engine *engine,
 			      void *areq);
@@ -104,4 +97,4 @@ int crypto_engine_register_skciphers(struct skcipher_engine_alg *algs,
 void crypto_engine_unregister_skciphers(struct skcipher_engine_alg *algs,
 					int count);
 
-#endif /* _CRYPTO_ENGINE_H */
+#endif 

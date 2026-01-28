@@ -12,19 +12,19 @@ def set_output_encoding(enc=None):
         enc = locale.getpreferredencoding()
     def get_text_writer(fo, **kwargs):
         kw = dict(kwargs)
-        kw.setdefault('errors', 'backslashreplace') # use \uXXXX style
+        kw.setdefault('errors', 'backslashreplace') 
         kw.setdefault('closefd', False)
         if sys.version_info[0] < 3:
             writer = io.open(fo.fileno(), mode='w', newline='', **kw)
-            write = writer.write    # save the original write() function
+            write = writer.write    
             enc = locale.getpreferredencoding()
             def convwrite(s):
                 if isinstance(s, bytes):
-                    write(s.decode(enc))    # convert to unistr
+                    write(s.decode(enc))    
                 else:
                     write(s)
                 try:
-                    writer.flush()  # needed on Windows
+                    writer.flush()  
                 except IOError:
                     pass
             writer.write = convwrite

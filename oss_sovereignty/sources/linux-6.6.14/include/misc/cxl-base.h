@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2014 IBM Corp.
- */
+
+
 
 #ifndef _MISC_CXL_BASE_H
 #define _MISC_CXL_BASE_H
@@ -36,13 +34,13 @@ struct cxl_afu *cxl_afu_get(struct cxl_afu *afu);
 void cxl_afu_put(struct cxl_afu *afu);
 void cxl_slbia(struct mm_struct *mm);
 
-#else /* CONFIG_CXL_BASE */
+#else 
 
 static inline bool cxl_ctx_in_use(void) { return false; }
 static inline struct cxl_afu *cxl_afu_get(struct cxl_afu *afu) { return NULL; }
 static inline void cxl_afu_put(struct cxl_afu *afu) {}
 static inline void cxl_slbia(struct mm_struct *mm) {}
 
-#endif /* CONFIG_CXL_BASE */
+#endif 
 
 #endif

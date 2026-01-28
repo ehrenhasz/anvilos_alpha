@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_HMMU0_STLB_REGS_H_
 #define ASIC_REG_DCORE0_HMMU0_STLB_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_HMMU0_STLB
- *   (Prototype: STLB)
- *****************************************
- */
+
 
 #define mmDCORE0_HMMU0_STLB_BUSY 0x4081000
 
@@ -138,4 +125,4 @@
 
 #define mmDCORE0_HMMU0_STLB_ASID_SCR_POLY_MAT_H3_18 0x408114C
 
-#endif /* ASIC_REG_DCORE0_HMMU0_STLB_REGS_H_ */
+#endif 

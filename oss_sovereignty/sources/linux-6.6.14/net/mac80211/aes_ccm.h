@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2003-2004, Instant802 Networks, Inc.
- * Copyright 2006, Devicescape Software, Inc.
- */
+
+
 
 #ifndef AES_CCM_H
 #define AES_CCM_H
@@ -42,4 +39,4 @@ static inline void ieee80211_aes_key_free(struct crypto_aead *tfm)
 	return aead_key_free(tfm);
 }
 
-#endif /* AES_CCM_H */
+#endif 

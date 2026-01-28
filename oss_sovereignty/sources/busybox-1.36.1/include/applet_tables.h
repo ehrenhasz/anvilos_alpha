@@ -1,4 +1,4 @@
-/* This is a generated file, don't edit */
+
 
 #define NUM_APPLETS 401
 #define KNOWN_APPNAME_OFFSETS 8

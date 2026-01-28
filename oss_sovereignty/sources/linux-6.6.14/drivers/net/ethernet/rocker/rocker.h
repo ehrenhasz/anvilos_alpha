@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/net/ethernet/rocker/rocker.h - Rocker switch device driver
- * Copyright (c) 2014-2016 Jiri Pirko <jiri@mellanox.com>
- * Copyright (c) 2014 Scott Feldman <sfeldma@gmail.com>
- */
+
+
 
 #ifndef _ROCKER_H
 #define _ROCKER_H
@@ -18,7 +14,7 @@
 #include "rocker_hw.h"
 
 struct rocker_desc_info {
-	char *data; /* mapped */
+	char *data; 
 	size_t data_size;
 	size_t tlv_size;
 	struct rocker_desc *desc;
@@ -29,7 +25,7 @@ struct rocker_dma_ring_info {
 	size_t size;
 	u32 head;
 	u32 tail;
-	struct rocker_desc *desc; /* mapped */
+	struct rocker_desc *desc; 
 	dma_addr_t mapaddr;
 	struct rocker_desc_info *desc_info;
 	unsigned int type;
@@ -63,7 +59,7 @@ struct rocker {
 	struct {
 		u64 id;
 	} hw;
-	spinlock_t cmd_ring_lock;		/* for cmd ring accesses */
+	spinlock_t cmd_ring_lock;		
 	struct rocker_dma_ring_info cmd_ring;
 	struct rocker_dma_ring_info event_ring;
 	struct notifier_block fib_nb;

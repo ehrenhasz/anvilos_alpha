@@ -1,4 +1,4 @@
-if [ $# -ne 3 ]; then
+if [ $
   echo 'usage: ftrace-bisect full-file test-file  non-test-file'
   exit
 fi

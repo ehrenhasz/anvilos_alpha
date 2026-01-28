@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * GPIO driver for AMD
- *
- * Copyright (c) 2014,2015 Ken Xue <Ken.Xue@amd.com>
- *		Jeff Wu <Jeff.Wu@amd.com>
- */
+
+
 
 #ifndef _PINCTRL_AMD_H
 #define _PINCTRL_AMD_H
@@ -108,7 +103,7 @@ struct amd_gpio {
 	int			irq;
 };
 
-/*  KERNCZ configuration*/
+
 static const struct pinctrl_pin_desc kerncz_pins[] = {
 	PINCTRL_PIN(0, "GPIO_0"),
 	PINCTRL_PIN(1, "GPIO_1"),

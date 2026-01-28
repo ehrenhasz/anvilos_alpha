@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2023 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+
+
 
 #ifndef __SDW_IRQ_H
 #define __SDW_IRQ_H
@@ -18,7 +15,7 @@ void sdw_irq_delete(struct sdw_bus *bus);
 void sdw_irq_create_mapping(struct sdw_slave *slave);
 void sdw_irq_dispose_mapping(struct sdw_slave *slave);
 
-#else /* CONFIG_IRQ_DOMAIN */
+#else 
 
 static inline int sdw_irq_create(struct sdw_bus *bus,
 				 struct fwnode_handle *fwnode)
@@ -38,6 +35,6 @@ static inline void sdw_irq_dispose_mapping(struct sdw_slave *slave)
 {
 }
 
-#endif /* CONFIG_IRQ_DOMAIN */
+#endif 
 
-#endif /* __SDW_IRQ_H */
+#endif 

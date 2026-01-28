@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_BINDINGS_Q6_AUDIO_PORTS_H__
 #define __DT_BINDINGS_Q6_AUDIO_PORTS_H__
 
-/* LPASS Audio virtual ports IDs */
+
 #define HDMI_RX		1
 #define SLIMBUS_0_RX    2
 #define SLIMBUS_0_TX    3
@@ -201,23 +201,23 @@
 #define LPASS_CLK_ID_RX_CORE_MCLK	59
 #define LPASS_CLK_ID_RX_CORE_NPL_MCLK	60
 #define LPASS_CLK_ID_VA_CORE_2X_MCLK	61
-/* Clock ID for MCLK for WSA2 core */
+
 #define LPASS_CLK_ID_WSA2_CORE_MCLK	62
-/* Clock ID for NPL MCLK for WSA2 core */
+
 #define LPASS_CLK_ID_WSA2_CORE_2X_MCLK	63
-/* Clock ID for RX Core TX MCLK */
+
 #define LPASS_CLK_ID_RX_CORE_TX_MCLK	64
-/* Clock ID for RX CORE TX 2X MCLK */
+
 #define LPASS_CLK_ID_RX_CORE_TX_2X_MCLK	65
-/* Clock ID for WSA core TX MCLK */
+
 #define LPASS_CLK_ID_WSA_CORE_TX_MCLK	66
-/* Clock ID for WSA core TX 2X MCLK */
+
 #define LPASS_CLK_ID_WSA_CORE_TX_2X_MCLK	67
-/* Clock ID for WSA2 core TX MCLK */
+
 #define LPASS_CLK_ID_WSA2_CORE_TX_MCLK	68
-/* Clock ID for WSA2 core TX 2X MCLK */
+
 #define LPASS_CLK_ID_WSA2_CORE_TX_2X_MCLK	69
-/* Clock ID for RX CORE MCLK2 2X  MCLK */
+
 #define LPASS_CLK_ID_RX_CORE_MCLK2_2X_MCLK	70
 
 #define LPASS_HW_AVTIMER_VOTE		101
@@ -231,4 +231,4 @@
 #define LPASS_CLK_ATTRIBUTE_COUPLE_DIVIDEND	0x2
 #define LPASS_CLK_ATTRIBUTE_COUPLE_DIVISOR	0x3
 
-#endif /* __DT_BINDINGS_Q6_AUDIO_PORTS_H__ */
+#endif 

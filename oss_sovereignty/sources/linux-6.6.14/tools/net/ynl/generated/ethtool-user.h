@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/ethtool.yaml */
-/* YNL-GEN user header */
-/* YNL-ARG --user-header linux/ethtool_netlink.h --exclude-op stats-get */
+
+
+
+
+
 
 #ifndef _LINUX_ETHTOOL_GEN_H
 #define _LINUX_ETHTOOL_GEN_H
@@ -16,12 +16,12 @@ struct ynl_sock;
 
 extern const struct ynl_family ynl_ethtool_family;
 
-/* Enums */
+
 const char *ethtool_op_str(int op);
 const char *ethtool_udp_tunnel_type_str(int value);
 const char *ethtool_stringset_str(enum ethtool_stringset value);
 
-/* Common nested types */
+
 struct ethtool_header {
 	struct {
 		__u32 dev_index:1;
@@ -125,7 +125,7 @@ struct ethtool_tunnel_udp_entry {
 		__u32 type:1;
 	} _present;
 
-	__u16 port /* big-endian */;
+	__u16 port ;
 	__u32 type;
 };
 
@@ -207,8 +207,8 @@ struct ethtool_tunnel_udp {
 	struct ethtool_tunnel_udp_table table;
 };
 
-/* ============== ETHTOOL_MSG_STRSET_GET ============== */
-/* ETHTOOL_MSG_STRSET_GET - do */
+
+
 struct ethtool_strset_get_req {
 	struct {
 		__u32 header:1;
@@ -279,13 +279,11 @@ struct ethtool_strset_get_rsp {
 
 void ethtool_strset_get_rsp_free(struct ethtool_strset_get_rsp *rsp);
 
-/*
- * Get string set from the kernel.
- */
+
 struct ethtool_strset_get_rsp *
 ethtool_strset_get(struct ynl_sock *ys, struct ethtool_strset_get_req *req);
 
-/* ETHTOOL_MSG_STRSET_GET - dump */
+
 struct ethtool_strset_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -356,8 +354,8 @@ struct ethtool_strset_get_list *
 ethtool_strset_get_dump(struct ynl_sock *ys,
 			struct ethtool_strset_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_LINKINFO_GET ============== */
-/* ETHTOOL_MSG_LINKINFO_GET - do */
+
+
 struct ethtool_linkinfo_get_req {
 	struct {
 		__u32 header:1;
@@ -420,13 +418,11 @@ struct ethtool_linkinfo_get_rsp {
 
 void ethtool_linkinfo_get_rsp_free(struct ethtool_linkinfo_get_rsp *rsp);
 
-/*
- * Get link info.
- */
+
 struct ethtool_linkinfo_get_rsp *
 ethtool_linkinfo_get(struct ynl_sock *ys, struct ethtool_linkinfo_get_req *req);
 
-/* ETHTOOL_MSG_LINKINFO_GET - dump */
+
 struct ethtool_linkinfo_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -481,7 +477,7 @@ struct ethtool_linkinfo_get_list *
 ethtool_linkinfo_get_dump(struct ynl_sock *ys,
 			  struct ethtool_linkinfo_get_req_dump *req);
 
-/* ETHTOOL_MSG_LINKINFO_GET - notify */
+
 struct ethtool_linkinfo_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -492,8 +488,8 @@ struct ethtool_linkinfo_get_ntf {
 
 void ethtool_linkinfo_get_ntf_free(struct ethtool_linkinfo_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_LINKINFO_SET ============== */
-/* ETHTOOL_MSG_LINKINFO_SET - do */
+
+
 struct ethtool_linkinfo_set_req {
 	struct {
 		__u32 header:1;
@@ -581,14 +577,12 @@ ethtool_linkinfo_set_req_set_transceiver(struct ethtool_linkinfo_set_req *req,
 	req->transceiver = transceiver;
 }
 
-/*
- * Set link info.
- */
+
 int ethtool_linkinfo_set(struct ynl_sock *ys,
 			 struct ethtool_linkinfo_set_req *req);
 
-/* ============== ETHTOOL_MSG_LINKMODES_GET ============== */
-/* ETHTOOL_MSG_LINKMODES_GET - do */
+
+
 struct ethtool_linkmodes_get_req {
 	struct {
 		__u32 header:1;
@@ -659,14 +653,12 @@ struct ethtool_linkmodes_get_rsp {
 
 void ethtool_linkmodes_get_rsp_free(struct ethtool_linkmodes_get_rsp *rsp);
 
-/*
- * Get link modes.
- */
+
 struct ethtool_linkmodes_get_rsp *
 ethtool_linkmodes_get(struct ynl_sock *ys,
 		      struct ethtool_linkmodes_get_req *req);
 
-/* ETHTOOL_MSG_LINKMODES_GET - dump */
+
 struct ethtool_linkmodes_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -721,7 +713,7 @@ struct ethtool_linkmodes_get_list *
 ethtool_linkmodes_get_dump(struct ynl_sock *ys,
 			   struct ethtool_linkmodes_get_req_dump *req);
 
-/* ETHTOOL_MSG_LINKMODES_GET - notify */
+
 struct ethtool_linkmodes_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -732,8 +724,8 @@ struct ethtool_linkmodes_get_ntf {
 
 void ethtool_linkmodes_get_ntf_free(struct ethtool_linkmodes_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_LINKMODES_SET ============== */
-/* ETHTOOL_MSG_LINKMODES_SET - do */
+
+
 struct ethtool_linkmodes_set_req {
 	struct {
 		__u32 header:1;
@@ -889,14 +881,12 @@ ethtool_linkmodes_set_req_set_rate_matching(struct ethtool_linkmodes_set_req *re
 	req->rate_matching = rate_matching;
 }
 
-/*
- * Set link modes.
- */
+
 int ethtool_linkmodes_set(struct ynl_sock *ys,
 			  struct ethtool_linkmodes_set_req *req);
 
-/* ============== ETHTOOL_MSG_LINKSTATE_GET ============== */
-/* ETHTOOL_MSG_LINKSTATE_GET - do */
+
+
 struct ethtool_linkstate_get_req {
 	struct {
 		__u32 header:1;
@@ -961,14 +951,12 @@ struct ethtool_linkstate_get_rsp {
 
 void ethtool_linkstate_get_rsp_free(struct ethtool_linkstate_get_rsp *rsp);
 
-/*
- * Get link state.
- */
+
 struct ethtool_linkstate_get_rsp *
 ethtool_linkstate_get(struct ynl_sock *ys,
 		      struct ethtool_linkstate_get_req *req);
 
-/* ETHTOOL_MSG_LINKSTATE_GET - dump */
+
 struct ethtool_linkstate_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -1023,8 +1011,8 @@ struct ethtool_linkstate_get_list *
 ethtool_linkstate_get_dump(struct ynl_sock *ys,
 			   struct ethtool_linkstate_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_DEBUG_GET ============== */
-/* ETHTOOL_MSG_DEBUG_GET - do */
+
+
 struct ethtool_debug_get_req {
 	struct {
 		__u32 header:1;
@@ -1078,13 +1066,11 @@ struct ethtool_debug_get_rsp {
 
 void ethtool_debug_get_rsp_free(struct ethtool_debug_get_rsp *rsp);
 
-/*
- * Get debug message mask.
- */
+
 struct ethtool_debug_get_rsp *
 ethtool_debug_get(struct ynl_sock *ys, struct ethtool_debug_get_req *req);
 
-/* ETHTOOL_MSG_DEBUG_GET - dump */
+
 struct ethtool_debug_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -1138,7 +1124,7 @@ struct ethtool_debug_get_list *
 ethtool_debug_get_dump(struct ynl_sock *ys,
 		       struct ethtool_debug_get_req_dump *req);
 
-/* ETHTOOL_MSG_DEBUG_GET - notify */
+
 struct ethtool_debug_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1149,8 +1135,8 @@ struct ethtool_debug_get_ntf {
 
 void ethtool_debug_get_ntf_free(struct ethtool_debug_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_DEBUG_SET ============== */
-/* ETHTOOL_MSG_DEBUG_SET - do */
+
+
 struct ethtool_debug_set_req {
 	struct {
 		__u32 header:1;
@@ -1217,13 +1203,11 @@ __ethtool_debug_set_req_set_msgmask_bits_bit(struct ethtool_debug_set_req *req,
 	req->msgmask.bits.n_bit = n_bit;
 }
 
-/*
- * Set debug message mask.
- */
+
 int ethtool_debug_set(struct ynl_sock *ys, struct ethtool_debug_set_req *req);
 
-/* ============== ETHTOOL_MSG_WOL_GET ============== */
-/* ETHTOOL_MSG_WOL_GET - do */
+
+
 struct ethtool_wol_get_req {
 	struct {
 		__u32 header:1;
@@ -1279,13 +1263,11 @@ struct ethtool_wol_get_rsp {
 
 void ethtool_wol_get_rsp_free(struct ethtool_wol_get_rsp *rsp);
 
-/*
- * Get WOL params.
- */
+
 struct ethtool_wol_get_rsp *
 ethtool_wol_get(struct ynl_sock *ys, struct ethtool_wol_get_req *req);
 
-/* ETHTOOL_MSG_WOL_GET - dump */
+
 struct ethtool_wol_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -1338,7 +1320,7 @@ void ethtool_wol_get_list_free(struct ethtool_wol_get_list *rsp);
 struct ethtool_wol_get_list *
 ethtool_wol_get_dump(struct ynl_sock *ys, struct ethtool_wol_get_req_dump *req);
 
-/* ETHTOOL_MSG_WOL_GET - notify */
+
 struct ethtool_wol_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1349,8 +1331,8 @@ struct ethtool_wol_get_ntf {
 
 void ethtool_wol_get_ntf_free(struct ethtool_wol_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_WOL_SET ============== */
-/* ETHTOOL_MSG_WOL_SET - do */
+
+
 struct ethtool_wol_set_req {
 	struct {
 		__u32 header:1;
@@ -1427,13 +1409,11 @@ ethtool_wol_set_req_set_sopass(struct ethtool_wol_set_req *req,
 	memcpy(req->sopass, sopass, req->_present.sopass_len);
 }
 
-/*
- * Set WOL params.
- */
+
 int ethtool_wol_set(struct ynl_sock *ys, struct ethtool_wol_set_req *req);
 
-/* ============== ETHTOOL_MSG_FEATURES_GET ============== */
-/* ETHTOOL_MSG_FEATURES_GET - do */
+
+
 struct ethtool_features_get_req {
 	struct {
 		__u32 header:1;
@@ -1494,13 +1474,11 @@ struct ethtool_features_get_rsp {
 
 void ethtool_features_get_rsp_free(struct ethtool_features_get_rsp *rsp);
 
-/*
- * Get features.
- */
+
 struct ethtool_features_get_rsp *
 ethtool_features_get(struct ynl_sock *ys, struct ethtool_features_get_req *req);
 
-/* ETHTOOL_MSG_FEATURES_GET - dump */
+
 struct ethtool_features_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -1555,7 +1533,7 @@ struct ethtool_features_get_list *
 ethtool_features_get_dump(struct ynl_sock *ys,
 			  struct ethtool_features_get_req_dump *req);
 
-/* ETHTOOL_MSG_FEATURES_GET - notify */
+
 struct ethtool_features_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1566,8 +1544,8 @@ struct ethtool_features_get_ntf {
 
 void ethtool_features_get_ntf_free(struct ethtool_features_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_FEATURES_SET ============== */
-/* ETHTOOL_MSG_FEATURES_SET - do */
+
+
 struct ethtool_features_set_req {
 	struct {
 		__u32 header:1;
@@ -1728,14 +1706,12 @@ struct ethtool_features_set_rsp {
 
 void ethtool_features_set_rsp_free(struct ethtool_features_set_rsp *rsp);
 
-/*
- * Set features.
- */
+
 struct ethtool_features_set_rsp *
 ethtool_features_set(struct ynl_sock *ys, struct ethtool_features_set_req *req);
 
-/* ============== ETHTOOL_MSG_PRIVFLAGS_GET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_GET - do */
+
+
 struct ethtool_privflags_get_req {
 	struct {
 		__u32 header:1;
@@ -1790,14 +1766,12 @@ struct ethtool_privflags_get_rsp {
 
 void ethtool_privflags_get_rsp_free(struct ethtool_privflags_get_rsp *rsp);
 
-/*
- * Get device private flags.
- */
+
 struct ethtool_privflags_get_rsp *
 ethtool_privflags_get(struct ynl_sock *ys,
 		      struct ethtool_privflags_get_req *req);
 
-/* ETHTOOL_MSG_PRIVFLAGS_GET - dump */
+
 struct ethtool_privflags_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -1852,7 +1826,7 @@ struct ethtool_privflags_get_list *
 ethtool_privflags_get_dump(struct ynl_sock *ys,
 			   struct ethtool_privflags_get_req_dump *req);
 
-/* ETHTOOL_MSG_PRIVFLAGS_GET - notify */
+
 struct ethtool_privflags_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -1863,8 +1837,8 @@ struct ethtool_privflags_get_ntf {
 
 void ethtool_privflags_get_ntf_free(struct ethtool_privflags_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_PRIVFLAGS_SET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_SET - do */
+
+
 struct ethtool_privflags_set_req {
 	struct {
 		__u32 header:1;
@@ -1932,14 +1906,12 @@ __ethtool_privflags_set_req_set_flags_bits_bit(struct ethtool_privflags_set_req 
 	req->flags.bits.n_bit = n_bit;
 }
 
-/*
- * Set device private flags.
- */
+
 int ethtool_privflags_set(struct ynl_sock *ys,
 			  struct ethtool_privflags_set_req *req);
 
-/* ============== ETHTOOL_MSG_RINGS_GET ============== */
-/* ETHTOOL_MSG_RINGS_GET - do */
+
+
 struct ethtool_rings_get_req {
 	struct {
 		__u32 header:1;
@@ -2021,13 +1993,11 @@ struct ethtool_rings_get_rsp {
 
 void ethtool_rings_get_rsp_free(struct ethtool_rings_get_rsp *rsp);
 
-/*
- * Get ring params.
- */
+
 struct ethtool_rings_get_rsp *
 ethtool_rings_get(struct ynl_sock *ys, struct ethtool_rings_get_req *req);
 
-/* ETHTOOL_MSG_RINGS_GET - dump */
+
 struct ethtool_rings_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -2081,7 +2051,7 @@ struct ethtool_rings_get_list *
 ethtool_rings_get_dump(struct ynl_sock *ys,
 		       struct ethtool_rings_get_req_dump *req);
 
-/* ETHTOOL_MSG_RINGS_GET - notify */
+
 struct ethtool_rings_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2092,8 +2062,8 @@ struct ethtool_rings_get_ntf {
 
 void ethtool_rings_get_ntf_free(struct ethtool_rings_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_RINGS_SET ============== */
-/* ETHTOOL_MSG_RINGS_SET - do */
+
+
 struct ethtool_rings_set_req {
 	struct {
 		__u32 header:1;
@@ -2268,13 +2238,11 @@ ethtool_rings_set_req_set_tx_push_buf_len_max(struct ethtool_rings_set_req *req,
 	req->tx_push_buf_len_max = tx_push_buf_len_max;
 }
 
-/*
- * Set ring params.
- */
+
 int ethtool_rings_set(struct ynl_sock *ys, struct ethtool_rings_set_req *req);
 
-/* ============== ETHTOOL_MSG_CHANNELS_GET ============== */
-/* ETHTOOL_MSG_CHANNELS_GET - do */
+
+
 struct ethtool_channels_get_req {
 	struct {
 		__u32 header:1;
@@ -2343,13 +2311,11 @@ struct ethtool_channels_get_rsp {
 
 void ethtool_channels_get_rsp_free(struct ethtool_channels_get_rsp *rsp);
 
-/*
- * Get channel params.
- */
+
 struct ethtool_channels_get_rsp *
 ethtool_channels_get(struct ynl_sock *ys, struct ethtool_channels_get_req *req);
 
-/* ETHTOOL_MSG_CHANNELS_GET - dump */
+
 struct ethtool_channels_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -2404,7 +2370,7 @@ struct ethtool_channels_get_list *
 ethtool_channels_get_dump(struct ynl_sock *ys,
 			  struct ethtool_channels_get_req_dump *req);
 
-/* ETHTOOL_MSG_CHANNELS_GET - notify */
+
 struct ethtool_channels_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2415,8 +2381,8 @@ struct ethtool_channels_get_ntf {
 
 void ethtool_channels_get_ntf_free(struct ethtool_channels_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_CHANNELS_SET ============== */
-/* ETHTOOL_MSG_CHANNELS_SET - do */
+
+
 struct ethtool_channels_set_req {
 	struct {
 		__u32 header:1;
@@ -2531,14 +2497,12 @@ ethtool_channels_set_req_set_combined_count(struct ethtool_channels_set_req *req
 	req->combined_count = combined_count;
 }
 
-/*
- * Set channel params.
- */
+
 int ethtool_channels_set(struct ynl_sock *ys,
 			 struct ethtool_channels_set_req *req);
 
-/* ============== ETHTOOL_MSG_COALESCE_GET ============== */
-/* ETHTOOL_MSG_COALESCE_GET - do */
+
+
 struct ethtool_coalesce_get_req {
 	struct {
 		__u32 header:1;
@@ -2645,13 +2609,11 @@ struct ethtool_coalesce_get_rsp {
 
 void ethtool_coalesce_get_rsp_free(struct ethtool_coalesce_get_rsp *rsp);
 
-/*
- * Get coalesce params.
- */
+
 struct ethtool_coalesce_get_rsp *
 ethtool_coalesce_get(struct ynl_sock *ys, struct ethtool_coalesce_get_req *req);
 
-/* ETHTOOL_MSG_COALESCE_GET - dump */
+
 struct ethtool_coalesce_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -2706,7 +2668,7 @@ struct ethtool_coalesce_get_list *
 ethtool_coalesce_get_dump(struct ynl_sock *ys,
 			  struct ethtool_coalesce_get_req_dump *req);
 
-/* ETHTOOL_MSG_COALESCE_GET - notify */
+
 struct ethtool_coalesce_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -2717,8 +2679,8 @@ struct ethtool_coalesce_get_ntf {
 
 void ethtool_coalesce_get_ntf_free(struct ethtool_coalesce_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_COALESCE_SET ============== */
-/* ETHTOOL_MSG_COALESCE_SET - do */
+
+
 struct ethtool_coalesce_set_req {
 	struct {
 		__u32 header:1;
@@ -3004,14 +2966,12 @@ ethtool_coalesce_set_req_set_tx_aggr_time_usecs(struct ethtool_coalesce_set_req 
 	req->tx_aggr_time_usecs = tx_aggr_time_usecs;
 }
 
-/*
- * Set coalesce params.
- */
+
 int ethtool_coalesce_set(struct ynl_sock *ys,
 			 struct ethtool_coalesce_set_req *req);
 
-/* ============== ETHTOOL_MSG_PAUSE_GET ============== */
-/* ETHTOOL_MSG_PAUSE_GET - do */
+
+
 struct ethtool_pause_get_req {
 	struct {
 		__u32 header:1;
@@ -3073,13 +3033,11 @@ struct ethtool_pause_get_rsp {
 
 void ethtool_pause_get_rsp_free(struct ethtool_pause_get_rsp *rsp);
 
-/*
- * Get pause params.
- */
+
 struct ethtool_pause_get_rsp *
 ethtool_pause_get(struct ynl_sock *ys, struct ethtool_pause_get_req *req);
 
-/* ETHTOOL_MSG_PAUSE_GET - dump */
+
 struct ethtool_pause_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -3133,7 +3091,7 @@ struct ethtool_pause_get_list *
 ethtool_pause_get_dump(struct ynl_sock *ys,
 		       struct ethtool_pause_get_req_dump *req);
 
-/* ETHTOOL_MSG_PAUSE_GET - notify */
+
 struct ethtool_pause_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3144,8 +3102,8 @@ struct ethtool_pause_get_ntf {
 
 void ethtool_pause_get_ntf_free(struct ethtool_pause_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_PAUSE_SET ============== */
-/* ETHTOOL_MSG_PAUSE_SET - do */
+
+
 struct ethtool_pause_set_req {
 	struct {
 		__u32 header:1;
@@ -3239,13 +3197,11 @@ ethtool_pause_set_req_set_stats_src(struct ethtool_pause_set_req *req,
 	req->stats_src = stats_src;
 }
 
-/*
- * Set pause params.
- */
+
 int ethtool_pause_set(struct ynl_sock *ys, struct ethtool_pause_set_req *req);
 
-/* ============== ETHTOOL_MSG_EEE_GET ============== */
-/* ETHTOOL_MSG_EEE_GET - do */
+
+
 struct ethtool_eee_get_req {
 	struct {
 		__u32 header:1;
@@ -3309,13 +3265,11 @@ struct ethtool_eee_get_rsp {
 
 void ethtool_eee_get_rsp_free(struct ethtool_eee_get_rsp *rsp);
 
-/*
- * Get eee params.
- */
+
 struct ethtool_eee_get_rsp *
 ethtool_eee_get(struct ynl_sock *ys, struct ethtool_eee_get_req *req);
 
-/* ETHTOOL_MSG_EEE_GET - dump */
+
 struct ethtool_eee_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -3368,7 +3322,7 @@ void ethtool_eee_get_list_free(struct ethtool_eee_get_list *rsp);
 struct ethtool_eee_get_list *
 ethtool_eee_get_dump(struct ynl_sock *ys, struct ethtool_eee_get_req_dump *req);
 
-/* ETHTOOL_MSG_EEE_GET - notify */
+
 struct ethtool_eee_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3379,8 +3333,8 @@ struct ethtool_eee_get_ntf {
 
 void ethtool_eee_get_ntf_free(struct ethtool_eee_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_EEE_SET ============== */
-/* ETHTOOL_MSG_EEE_SET - do */
+
+
 struct ethtool_eee_set_req {
 	struct {
 		__u32 header:1;
@@ -3506,13 +3460,11 @@ ethtool_eee_set_req_set_tx_lpi_timer(struct ethtool_eee_set_req *req,
 	req->tx_lpi_timer = tx_lpi_timer;
 }
 
-/*
- * Set eee params.
- */
+
 int ethtool_eee_set(struct ynl_sock *ys, struct ethtool_eee_set_req *req);
 
-/* ============== ETHTOOL_MSG_TSINFO_GET ============== */
-/* ETHTOOL_MSG_TSINFO_GET - do */
+
+
 struct ethtool_tsinfo_get_req {
 	struct {
 		__u32 header:1;
@@ -3572,13 +3524,11 @@ struct ethtool_tsinfo_get_rsp {
 
 void ethtool_tsinfo_get_rsp_free(struct ethtool_tsinfo_get_rsp *rsp);
 
-/*
- * Get tsinfo params.
- */
+
 struct ethtool_tsinfo_get_rsp *
 ethtool_tsinfo_get(struct ynl_sock *ys, struct ethtool_tsinfo_get_req *req);
 
-/* ETHTOOL_MSG_TSINFO_GET - dump */
+
 struct ethtool_tsinfo_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -3632,8 +3582,8 @@ struct ethtool_tsinfo_get_list *
 ethtool_tsinfo_get_dump(struct ynl_sock *ys,
 			struct ethtool_tsinfo_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_CABLE_TEST_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_ACT - do */
+
+
 struct ethtool_cable_test_act_req {
 	struct {
 		__u32 header:1;
@@ -3676,14 +3626,12 @@ ethtool_cable_test_act_req_set_header_flags(struct ethtool_cable_test_act_req *r
 	req->header.flags = flags;
 }
 
-/*
- * Cable test.
- */
+
 int ethtool_cable_test_act(struct ynl_sock *ys,
 			   struct ethtool_cable_test_act_req *req);
 
-/* ============== ETHTOOL_MSG_CABLE_TEST_TDR_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_TDR_ACT - do */
+
+
 struct ethtool_cable_test_tdr_act_req {
 	struct {
 		__u32 header:1;
@@ -3727,14 +3675,12 @@ ethtool_cable_test_tdr_act_req_set_header_flags(struct ethtool_cable_test_tdr_ac
 	req->header.flags = flags;
 }
 
-/*
- * Cable test TDR.
- */
+
 int ethtool_cable_test_tdr_act(struct ynl_sock *ys,
 			       struct ethtool_cable_test_tdr_act_req *req);
 
-/* ============== ETHTOOL_MSG_TUNNEL_INFO_GET ============== */
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - do */
+
+
 struct ethtool_tunnel_info_get_req {
 	struct {
 		__u32 header:1;
@@ -3789,14 +3735,12 @@ struct ethtool_tunnel_info_get_rsp {
 
 void ethtool_tunnel_info_get_rsp_free(struct ethtool_tunnel_info_get_rsp *rsp);
 
-/*
- * Get tsinfo params.
- */
+
 struct ethtool_tunnel_info_get_rsp *
 ethtool_tunnel_info_get(struct ynl_sock *ys,
 			struct ethtool_tunnel_info_get_req *req);
 
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - dump */
+
 struct ethtool_tunnel_info_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -3852,8 +3796,8 @@ struct ethtool_tunnel_info_get_list *
 ethtool_tunnel_info_get_dump(struct ynl_sock *ys,
 			     struct ethtool_tunnel_info_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_FEC_GET ============== */
-/* ETHTOOL_MSG_FEC_GET - do */
+
+
 struct ethtool_fec_get_req {
 	struct {
 		__u32 header:1;
@@ -3913,13 +3857,11 @@ struct ethtool_fec_get_rsp {
 
 void ethtool_fec_get_rsp_free(struct ethtool_fec_get_rsp *rsp);
 
-/*
- * Get FEC params.
- */
+
 struct ethtool_fec_get_rsp *
 ethtool_fec_get(struct ynl_sock *ys, struct ethtool_fec_get_req *req);
 
-/* ETHTOOL_MSG_FEC_GET - dump */
+
 struct ethtool_fec_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -3972,7 +3914,7 @@ void ethtool_fec_get_list_free(struct ethtool_fec_get_list *rsp);
 struct ethtool_fec_get_list *
 ethtool_fec_get_dump(struct ynl_sock *ys, struct ethtool_fec_get_req_dump *req);
 
-/* ETHTOOL_MSG_FEC_GET - notify */
+
 struct ethtool_fec_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -3983,8 +3925,8 @@ struct ethtool_fec_get_ntf {
 
 void ethtool_fec_get_ntf_free(struct ethtool_fec_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_FEC_SET ============== */
-/* ETHTOOL_MSG_FEC_SET - do */
+
+
 struct ethtool_fec_set_req {
 	struct {
 		__u32 header:1;
@@ -4095,13 +4037,11 @@ ethtool_fec_set_req_set_stats_corr_bits(struct ethtool_fec_set_req *req,
 	memcpy(req->stats.corr_bits, corr_bits, req->stats._present.corr_bits_len);
 }
 
-/*
- * Set FEC params.
- */
+
 int ethtool_fec_set(struct ynl_sock *ys, struct ethtool_fec_set_req *req);
 
-/* ============== ETHTOOL_MSG_MODULE_EEPROM_GET ============== */
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - do */
+
+
 struct ethtool_module_eeprom_get_req {
 	struct {
 		__u32 header:1;
@@ -4168,14 +4108,12 @@ struct ethtool_module_eeprom_get_rsp {
 void
 ethtool_module_eeprom_get_rsp_free(struct ethtool_module_eeprom_get_rsp *rsp);
 
-/*
- * Get module EEPROM params.
- */
+
 struct ethtool_module_eeprom_get_rsp *
 ethtool_module_eeprom_get(struct ynl_sock *ys,
 			  struct ethtool_module_eeprom_get_req *req);
 
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - dump */
+
 struct ethtool_module_eeprom_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -4231,8 +4169,8 @@ struct ethtool_module_eeprom_get_list *
 ethtool_module_eeprom_get_dump(struct ynl_sock *ys,
 			       struct ethtool_module_eeprom_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_PHC_VCLOCKS_GET ============== */
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - do */
+
+
 struct ethtool_phc_vclocks_get_req {
 	struct {
 		__u32 header:1;
@@ -4287,14 +4225,12 @@ struct ethtool_phc_vclocks_get_rsp {
 
 void ethtool_phc_vclocks_get_rsp_free(struct ethtool_phc_vclocks_get_rsp *rsp);
 
-/*
- * Get PHC VCLOCKs.
- */
+
 struct ethtool_phc_vclocks_get_rsp *
 ethtool_phc_vclocks_get(struct ynl_sock *ys,
 			struct ethtool_phc_vclocks_get_req *req);
 
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - dump */
+
 struct ethtool_phc_vclocks_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -4350,8 +4286,8 @@ struct ethtool_phc_vclocks_get_list *
 ethtool_phc_vclocks_get_dump(struct ynl_sock *ys,
 			     struct ethtool_phc_vclocks_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_MODULE_GET ============== */
-/* ETHTOOL_MSG_MODULE_GET - do */
+
+
 struct ethtool_module_get_req {
 	struct {
 		__u32 header:1;
@@ -4407,13 +4343,11 @@ struct ethtool_module_get_rsp {
 
 void ethtool_module_get_rsp_free(struct ethtool_module_get_rsp *rsp);
 
-/*
- * Get module params.
- */
+
 struct ethtool_module_get_rsp *
 ethtool_module_get(struct ynl_sock *ys, struct ethtool_module_get_req *req);
 
-/* ETHTOOL_MSG_MODULE_GET - dump */
+
 struct ethtool_module_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -4467,7 +4401,7 @@ struct ethtool_module_get_list *
 ethtool_module_get_dump(struct ynl_sock *ys,
 			struct ethtool_module_get_req_dump *req);
 
-/* ETHTOOL_MSG_MODULE_GET - notify */
+
 struct ethtool_module_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -4478,8 +4412,8 @@ struct ethtool_module_get_ntf {
 
 void ethtool_module_get_ntf_free(struct ethtool_module_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_MODULE_SET ============== */
-/* ETHTOOL_MSG_MODULE_SET - do */
+
+
 struct ethtool_module_set_req {
 	struct {
 		__u32 header:1;
@@ -4539,13 +4473,11 @@ ethtool_module_set_req_set_power_mode(struct ethtool_module_set_req *req,
 	req->power_mode = power_mode;
 }
 
-/*
- * Set module params.
- */
+
 int ethtool_module_set(struct ynl_sock *ys, struct ethtool_module_set_req *req);
 
-/* ============== ETHTOOL_MSG_PSE_GET ============== */
-/* ETHTOOL_MSG_PSE_GET - do */
+
+
 struct ethtool_pse_get_req {
 	struct {
 		__u32 header:1;
@@ -4603,13 +4535,11 @@ struct ethtool_pse_get_rsp {
 
 void ethtool_pse_get_rsp_free(struct ethtool_pse_get_rsp *rsp);
 
-/*
- * Get Power Sourcing Equipment params.
- */
+
 struct ethtool_pse_get_rsp *
 ethtool_pse_get(struct ynl_sock *ys, struct ethtool_pse_get_req *req);
 
-/* ETHTOOL_MSG_PSE_GET - dump */
+
 struct ethtool_pse_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -4662,8 +4592,8 @@ void ethtool_pse_get_list_free(struct ethtool_pse_get_list *rsp);
 struct ethtool_pse_get_list *
 ethtool_pse_get_dump(struct ynl_sock *ys, struct ethtool_pse_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_PSE_SET ============== */
-/* ETHTOOL_MSG_PSE_SET - do */
+
+
 struct ethtool_pse_set_req {
 	struct {
 		__u32 header:1;
@@ -4732,13 +4662,11 @@ ethtool_pse_set_req_set_pw_d_status(struct ethtool_pse_set_req *req,
 	req->pw_d_status = pw_d_status;
 }
 
-/*
- * Set Power Sourcing Equipment params.
- */
+
 int ethtool_pse_set(struct ynl_sock *ys, struct ethtool_pse_set_req *req);
 
-/* ============== ETHTOOL_MSG_RSS_GET ============== */
-/* ETHTOOL_MSG_RSS_GET - do */
+
+
 struct ethtool_rss_get_req {
 	struct {
 		__u32 header:1;
@@ -4798,13 +4726,11 @@ struct ethtool_rss_get_rsp {
 
 void ethtool_rss_get_rsp_free(struct ethtool_rss_get_rsp *rsp);
 
-/*
- * Get RSS params.
- */
+
 struct ethtool_rss_get_rsp *
 ethtool_rss_get(struct ynl_sock *ys, struct ethtool_rss_get_req *req);
 
-/* ETHTOOL_MSG_RSS_GET - dump */
+
 struct ethtool_rss_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -4857,8 +4783,8 @@ void ethtool_rss_get_list_free(struct ethtool_rss_get_list *rsp);
 struct ethtool_rss_get_list *
 ethtool_rss_get_dump(struct ynl_sock *ys, struct ethtool_rss_get_req_dump *req);
 
-/* ============== ETHTOOL_MSG_PLCA_GET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_GET_CFG - do */
+
+
 struct ethtool_plca_get_cfg_req {
 	struct {
 		__u32 header:1;
@@ -4927,13 +4853,11 @@ struct ethtool_plca_get_cfg_rsp {
 
 void ethtool_plca_get_cfg_rsp_free(struct ethtool_plca_get_cfg_rsp *rsp);
 
-/*
- * Get PLCA params.
- */
+
 struct ethtool_plca_get_cfg_rsp *
 ethtool_plca_get_cfg(struct ynl_sock *ys, struct ethtool_plca_get_cfg_req *req);
 
-/* ETHTOOL_MSG_PLCA_GET_CFG - dump */
+
 struct ethtool_plca_get_cfg_req_dump {
 	struct {
 		__u32 header:1;
@@ -4988,7 +4912,7 @@ struct ethtool_plca_get_cfg_list *
 ethtool_plca_get_cfg_dump(struct ynl_sock *ys,
 			  struct ethtool_plca_get_cfg_req_dump *req);
 
-/* ETHTOOL_MSG_PLCA_GET_CFG - notify */
+
 struct ethtool_plca_get_cfg_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -4999,8 +4923,8 @@ struct ethtool_plca_get_cfg_ntf {
 
 void ethtool_plca_get_cfg_ntf_free(struct ethtool_plca_get_cfg_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_PLCA_SET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_SET_CFG - do */
+
+
 struct ethtool_plca_set_cfg_req {
 	struct {
 		__u32 header:1;
@@ -5115,14 +5039,12 @@ ethtool_plca_set_cfg_req_set_burst_tmr(struct ethtool_plca_set_cfg_req *req,
 	req->burst_tmr = burst_tmr;
 }
 
-/*
- * Set PLCA params.
- */
+
 int ethtool_plca_set_cfg(struct ynl_sock *ys,
 			 struct ethtool_plca_set_cfg_req *req);
 
-/* ============== ETHTOOL_MSG_PLCA_GET_STATUS ============== */
-/* ETHTOOL_MSG_PLCA_GET_STATUS - do */
+
+
 struct ethtool_plca_get_status_req {
 	struct {
 		__u32 header:1;
@@ -5191,14 +5113,12 @@ struct ethtool_plca_get_status_rsp {
 
 void ethtool_plca_get_status_rsp_free(struct ethtool_plca_get_status_rsp *rsp);
 
-/*
- * Get PLCA status params.
- */
+
 struct ethtool_plca_get_status_rsp *
 ethtool_plca_get_status(struct ynl_sock *ys,
 			struct ethtool_plca_get_status_req *req);
 
-/* ETHTOOL_MSG_PLCA_GET_STATUS - dump */
+
 struct ethtool_plca_get_status_req_dump {
 	struct {
 		__u32 header:1;
@@ -5254,8 +5174,8 @@ struct ethtool_plca_get_status_list *
 ethtool_plca_get_status_dump(struct ynl_sock *ys,
 			     struct ethtool_plca_get_status_req_dump *req);
 
-/* ============== ETHTOOL_MSG_MM_GET ============== */
-/* ETHTOOL_MSG_MM_GET - do */
+
+
 struct ethtool_mm_get_req {
 	struct {
 		__u32 header:1;
@@ -5325,13 +5245,11 @@ struct ethtool_mm_get_rsp {
 
 void ethtool_mm_get_rsp_free(struct ethtool_mm_get_rsp *rsp);
 
-/*
- * Get MAC Merge configuration and state
- */
+
 struct ethtool_mm_get_rsp *
 ethtool_mm_get(struct ynl_sock *ys, struct ethtool_mm_get_req *req);
 
-/* ETHTOOL_MSG_MM_GET - dump */
+
 struct ethtool_mm_get_req_dump {
 	struct {
 		__u32 header:1;
@@ -5384,7 +5302,7 @@ void ethtool_mm_get_list_free(struct ethtool_mm_get_list *rsp);
 struct ethtool_mm_get_list *
 ethtool_mm_get_dump(struct ynl_sock *ys, struct ethtool_mm_get_req_dump *req);
 
-/* ETHTOOL_MSG_MM_GET - notify */
+
 struct ethtool_mm_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -5395,8 +5313,8 @@ struct ethtool_mm_get_ntf {
 
 void ethtool_mm_get_ntf_free(struct ethtool_mm_get_ntf *rsp);
 
-/* ============== ETHTOOL_MSG_MM_SET ============== */
-/* ETHTOOL_MSG_MM_SET - do */
+
+
 struct ethtool_mm_set_req {
 	struct {
 		__u32 header:1;
@@ -5483,12 +5401,10 @@ ethtool_mm_set_req_set_tx_min_frag_size(struct ethtool_mm_set_req *req,
 	req->tx_min_frag_size = tx_min_frag_size;
 }
 
-/*
- * Set MAC Merge configuration
- */
+
 int ethtool_mm_set(struct ynl_sock *ys, struct ethtool_mm_set_req *req);
 
-/* ETHTOOL_MSG_CABLE_TEST_NTF - event */
+
 struct ethtool_cable_test_ntf_rsp {
 	struct {
 		__u32 header:1;
@@ -5509,7 +5425,7 @@ struct ethtool_cable_test_ntf {
 
 void ethtool_cable_test_ntf_free(struct ethtool_cable_test_ntf *rsp);
 
-/* ETHTOOL_MSG_CABLE_TEST_TDR_NTF - event */
+
 struct ethtool_cable_test_tdr_ntf_rsp {
 	struct {
 		__u32 header:1;
@@ -5532,4 +5448,4 @@ struct ethtool_cable_test_tdr_ntf {
 
 void ethtool_cable_test_tdr_ntf_free(struct ethtool_cable_test_tdr_ntf *rsp);
 
-#endif /* _LINUX_ETHTOOL_GEN_H */
+#endif 

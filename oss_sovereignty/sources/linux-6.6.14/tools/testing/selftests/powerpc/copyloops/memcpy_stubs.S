@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <asm/ppc_asm.h>
 
 FUNC_START(memcpy)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _ASM_X86_PRCTL_H
 #define _ASM_X86_PRCTL_H
 
@@ -28,4 +28,4 @@
 #define ARCH_GET_MAX_TAG_BITS		0x4003
 #define ARCH_FORCE_TAGGED_SVA		0x4004
 
-#endif /* _ASM_X86_PRCTL_H */
+#endif 

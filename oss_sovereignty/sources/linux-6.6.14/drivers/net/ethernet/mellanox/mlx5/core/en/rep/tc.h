@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_REP_TC_H__
 #define __MLX5_EN_REP_TC_H__
@@ -39,7 +39,7 @@ int mlx5e_rep_setup_tc(struct net_device *dev, enum tc_setup_type type,
 void mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
 			  struct sk_buff *skb);
 
-#else /* CONFIG_MLX5_CLS_ACT */
+#else 
 
 struct mlx5e_rep_priv;
 static inline int
@@ -68,6 +68,6 @@ static inline void
 mlx5e_rep_tc_receive(struct mlx5_cqe64 *cqe, struct mlx5e_rq *rq,
 		     struct sk_buff *skb) { napi_gro_receive(rq->cq.napi, skb); }
 
-#endif /* CONFIG_MLX5_CLS_ACT */
+#endif 
 
-#endif /* __MLX5_EN_REP_TC_H__ */
+#endif 

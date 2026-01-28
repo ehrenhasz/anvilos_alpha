@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2007 - 2018 Intel Corporation. */
+
+
 
 #ifndef _E1000_MAC_H_
 #define _E1000_MAC_H_
@@ -11,9 +11,7 @@
 #include "e1000_defines.h"
 #include "e1000_i210.h"
 
-/* Functions that should not be called directly from drivers but can be used
- * by other files in this 'shared code'
- */
+
 s32  igb_blink_led(struct e1000_hw *hw);
 s32  igb_check_for_copper_link(struct e1000_hw *hw);
 s32  igb_cleanup_led(struct e1000_hw *hw);

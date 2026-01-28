@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Universal TUN/TAP device driver.
- *  Copyright (C) 1999-2000 Maxim Krasnyansky <max_mk@yahoo.com>
- */
+
+
 #ifndef __IF_TUN_H
 #define __IF_TUN_H
 
@@ -68,5 +65,5 @@ static inline struct xdp_frame *tun_ptr_to_xdp(void *ptr)
 static inline void tun_ptr_free(void *ptr)
 {
 }
-#endif /* CONFIG_TUN */
-#endif /* __IF_TUN_H */
+#endif 
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * rseq-x86.h
- *
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- */
+
+
 
 #ifndef RSEQ_H
 #error "Never use <rseq-x86.h> directly; include <rseq.h> instead."
@@ -11,22 +7,12 @@
 
 #include <stdint.h>
 
-/*
- * RSEQ_SIG is used with the following reserved undefined instructions, which
- * trap in user-space:
- *
- * x86-32:    0f b9 3d 53 30 05 53      ud1    0x53053053,%edi
- * x86-64:    0f b9 3d 53 30 05 53      ud1    0x53053053(%rip),%edi
- */
+
 #define RSEQ_SIG	0x53053053
 
-/*
- * Due to a compiler optimization bug in gcc-8 with asm goto and TLS asm input
- * operands, we cannot use "m" input operands, and rather pass the __rseq_abi
- * address through a "r" input operand.
- */
 
-/* Offset of cpu_id, rseq_cs, and mm_cid fields in struct rseq. */
+
+
 #define RSEQ_CPU_ID_OFFSET	4
 #define RSEQ_CS_OFFSET		8
 #define RSEQ_MM_CID_OFFSET	24
@@ -72,14 +58,7 @@ do {									\
 	__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip,		\
 				(post_commit_ip - start_ip), abort_ip)
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"	\
 		".quad " __rseq_str(start_ip) ", " __rseq_str(exit_ip) "\n\t" \
@@ -98,7 +77,7 @@ do {									\
 
 #define RSEQ_ASM_DEFINE_ABORT(label, teardown, abort_label)		\
 		".pushsection __rseq_failure, \"ax\"\n\t"		\
-		/* Disassembler-friendly signature: ud1 <sig>(%rip),%edi. */ \
+		 \
 		".byte 0x0f, 0xb9, 0x3d\n\t"				\
 		".long " __rseq_str(RSEQ_SIG) "\n\t"			\
 		__rseq_str(label) ":\n\t"				\
@@ -139,10 +118,7 @@ do {									\
 	RSEQ_WRITE_ONCE(*p, v);						\
 } while (0)
 
-/*
- * Use eax as scratch register and take memory operands as input to
- * lessen register pressure. Especially needed when compiling in O0.
- */
+
 #define __RSEQ_ASM_DEFINE_TABLE(label, version, flags,			\
 				start_ip, post_commit_offset, abort_ip)	\
 		".pushsection __rseq_cs, \"aw\"\n\t"			\
@@ -159,14 +135,7 @@ do {									\
 	__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip,		\
 				(post_commit_ip - start_ip), abort_ip)
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)			\
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t"	\
 		".long " __rseq_str(start_ip) ", 0x0, " __rseq_str(exit_ip) ", 0x0\n\t" \
@@ -184,7 +153,7 @@ do {									\
 
 #define RSEQ_ASM_DEFINE_ABORT(label, teardown, abort_label)		\
 		".pushsection __rseq_failure, \"ax\"\n\t"		\
-		/* Disassembler-friendly signature: ud1 <sig>,%edi. */	\
+			\
 		".byte 0x0f, 0xb9, 0x3d\n\t"				\
 		".long " __rseq_str(RSEQ_SIG) "\n\t"			\
 		__rseq_str(label) ":\n\t"				\
@@ -201,7 +170,7 @@ do {									\
 
 #endif
 
-/* Per-cpu-id indexing. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -213,7 +182,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -225,7 +194,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

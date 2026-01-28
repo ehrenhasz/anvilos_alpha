@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __LAN966X_MAIN_H__
 #define __LAN966X_MAIN_H__
@@ -41,14 +41,14 @@
 #define UNAWARE_PVID			0
 #define HOST_PVID			4095
 
-/* Reserved amount for (SRC, PRIO) at index 8*SRC + PRIO */
+
 #define QSYS_Q_RSRV			95
 
 #define NUM_PHYS_PORTS			8
 #define CPU_PORT			8
 #define NUM_PRIO_QUEUES			8
 
-/* Reserved PGIDs */
+
 #define PGID_CPU			(PGID_AGGR - 6)
 #define PGID_UC				(PGID_AGGR - 5)
 #define PGID_BC				(PGID_AGGR - 4)
@@ -56,7 +56,7 @@
 #define PGID_MCIPV4			(PGID_AGGR - 2)
 #define PGID_MCIPV6			(PGID_AGGR - 1)
 
-/* Non-reserved PGIDs, used for general purpose */
+
 #define PGID_GP_START			(CPU_PORT + 1)
 #define PGID_GP_END			PGID_CPU
 
@@ -90,20 +90,20 @@
 #define FDMA_INJ_CHANNEL		0
 #define FDMA_DCB_MAX			512
 
-#define SE_IDX_QUEUE			0  /* 0-79 : Queue scheduler elements */
-#define SE_IDX_PORT			80 /* 80-89 : Port schedular elements */
+#define SE_IDX_QUEUE			0  
+#define SE_IDX_PORT			80 
 
-#define LAN966X_VCAP_CID_IS1_L0 VCAP_CID_INGRESS_L0 /* IS1 lookup 0 */
-#define LAN966X_VCAP_CID_IS1_L1 VCAP_CID_INGRESS_L1 /* IS1 lookup 1 */
-#define LAN966X_VCAP_CID_IS1_L2 VCAP_CID_INGRESS_L2 /* IS1 lookup 2 */
-#define LAN966X_VCAP_CID_IS1_MAX (VCAP_CID_INGRESS_L3 - 1) /* IS1 Max */
+#define LAN966X_VCAP_CID_IS1_L0 VCAP_CID_INGRESS_L0 
+#define LAN966X_VCAP_CID_IS1_L1 VCAP_CID_INGRESS_L1 
+#define LAN966X_VCAP_CID_IS1_L2 VCAP_CID_INGRESS_L2 
+#define LAN966X_VCAP_CID_IS1_MAX (VCAP_CID_INGRESS_L3 - 1) 
 
-#define LAN966X_VCAP_CID_IS2_L0 VCAP_CID_INGRESS_STAGE2_L0 /* IS2 lookup 0 */
-#define LAN966X_VCAP_CID_IS2_L1 VCAP_CID_INGRESS_STAGE2_L1 /* IS2 lookup 1 */
-#define LAN966X_VCAP_CID_IS2_MAX (VCAP_CID_INGRESS_STAGE2_L2 - 1) /* IS2 Max */
+#define LAN966X_VCAP_CID_IS2_L0 VCAP_CID_INGRESS_STAGE2_L0 
+#define LAN966X_VCAP_CID_IS2_L1 VCAP_CID_INGRESS_STAGE2_L1 
+#define LAN966X_VCAP_CID_IS2_MAX (VCAP_CID_INGRESS_STAGE2_L2 - 1) 
 
-#define LAN966X_VCAP_CID_ES0_L0 VCAP_CID_EGRESS_L0 /* ES0 lookup 0 */
-#define LAN966X_VCAP_CID_ES0_MAX (VCAP_CID_EGRESS_L1 - 1) /* ES0 Max */
+#define LAN966X_VCAP_CID_ES0_L0 VCAP_CID_EGRESS_L0 
+#define LAN966X_VCAP_CID_ES0_MAX (VCAP_CID_EGRESS_L1 - 1) 
 
 #define LAN966X_PORT_QOS_PCP_COUNT	8
 #define LAN966X_PORT_QOS_DEI_COUNT	8
@@ -112,21 +112,16 @@
 
 #define LAN966X_PORT_QOS_DSCP_COUNT	64
 
-/* Port PCP rewrite mode */
+
 #define LAN966X_PORT_REW_TAG_CTRL_CLASSIFIED	0
 #define LAN966X_PORT_REW_TAG_CTRL_MAPPED	2
 
-/* Port DSCP rewrite mode */
+
 #define LAN966X_PORT_REW_DSCP_FRAME		0
 #define LAN966X_PORT_REW_DSCP_ANALIZER		1
 #define LAN966X_PORT_QOS_REWR_DSCP_ALL		3
 
-/* MAC table entry types.
- * ENTRYTYPE_NORMAL is subject to aging.
- * ENTRYTYPE_LOCKED is not subject to aging.
- * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
- * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
- */
+
 enum macaccess_entry_type {
 	ENTRYTYPE_NORMAL = 0,
 	ENTRYTYPE_LOCKED,
@@ -134,13 +129,7 @@ enum macaccess_entry_type {
 	ENTRYTYPE_MACV6,
 };
 
-/* FDMA return action codes for checking if the frame is valid
- * FDMA_PASS, frame is valid and can be used
- * FDMA_ERROR, something went wrong, stop getting more frames
- * FDMA_DROP, frame is dropped, but continue to get more frames
- * FDMA_TX, frame is given to TX, but continue to get more frames
- * FDMA_REDIRECT, frame is given to TX, but continue to get more frames
- */
+
 enum lan966x_fdma_action {
 	FDMA_PASS = 0,
 	FDMA_ERROR,
@@ -149,7 +138,7 @@ enum lan966x_fdma_action {
 	FDMA_REDIRECT,
 };
 
-/* Controls how PORT_MASK is applied */
+
 enum LAN966X_PORT_MASK_MODE {
 	LAN966X_PMM_NO_ACTION,
 	LAN966X_PMM_REPLACE,
@@ -219,37 +208,28 @@ struct lan966x_tx_dcb {
 struct lan966x_rx {
 	struct lan966x *lan966x;
 
-	/* Pointer to the array of hardware dcbs. */
+	
 	struct lan966x_rx_dcb *dcbs;
 
-	/* Pointer to the last address in the dcbs. */
+	
 	struct lan966x_rx_dcb *last_entry;
 
-	/* For each DB, there is a page */
+	
 	struct page *page[FDMA_DCB_MAX][FDMA_RX_DCB_MAX_DBS];
 
-	/* Represents the db_index, it can have a value between 0 and
-	 * FDMA_RX_DCB_MAX_DBS, once it reaches the value of FDMA_RX_DCB_MAX_DBS
-	 * it means that the DCB can be reused.
-	 */
+	
 	int db_index;
 
-	/* Represents the index in the dcbs. It has a value between 0 and
-	 * FDMA_DCB_MAX
-	 */
+	
 	int dcb_index;
 
-	/* Represents the dma address to the dcbs array */
+	
 	dma_addr_t dma;
 
-	/* Represents the page order that is used to allocate the pages for the
-	 * RX buffers. This value is calculated based on max MTU of the devices.
-	 */
+	
 	u8 page_order;
 
-	/* Represents the max size frame that it can receive to the CPU. This
-	 * includes the IFH + VLAN tags + frame + skb_shared_info
-	 */
+	
 	u32 max_mtu;
 
 	u8 channel_id;
@@ -275,14 +255,14 @@ struct lan966x_tx_dcb_buf {
 struct lan966x_tx {
 	struct lan966x *lan966x;
 
-	/* Pointer to the dcb list */
+	
 	struct lan966x_tx_dcb *dcbs;
 	u16 last_in_use;
 
-	/* Represents the DMA address to the first entry of the dcb entries. */
+	
 	dma_addr_t dma;
 
-	/* Array of dcbs that are given to the HW */
+	
 	struct lan966x_tx_dcb_buf *dcbs_buf;
 
 	u8 channel_id;
@@ -326,67 +306,67 @@ struct lan966x {
 
 	u8 base_mac[ETH_ALEN];
 
-	spinlock_t tx_lock; /* lock for frame transmition */
+	spinlock_t tx_lock; 
 
 	struct net_device *bridge;
 	u16 bridge_mask;
 	u16 bridge_fwd_mask;
 
 	struct list_head mac_entries;
-	spinlock_t mac_lock; /* lock for mac_entries list */
+	spinlock_t mac_lock; 
 
 	u16 vlan_mask[VLAN_N_VID];
 	DECLARE_BITMAP(cpu_vlan_mask, VLAN_N_VID);
 
-	/* stats */
+	
 	const struct lan966x_stat_layout *stats_layout;
 	u32 num_stats;
 
-	/* workqueue for reading stats */
+	
 	struct mutex stats_lock;
 	u64 *stats;
 	struct delayed_work stats_work;
 	struct workqueue_struct *stats_queue;
 
-	/* interrupts */
+	
 	int xtr_irq;
 	int ana_irq;
 	int ptp_irq;
 	int fdma_irq;
 	int ptp_ext_irq;
 
-	/* worqueue for fdb */
+	
 	struct workqueue_struct *fdb_work;
 	struct list_head fdb_entries;
 
-	/* mdb */
+	
 	struct list_head mdb_entries;
 	struct list_head pgid_entries;
 
-	/* ptp */
+	
 	bool ptp;
 	struct lan966x_phc phc[LAN966X_PHC_COUNT];
-	spinlock_t ptp_clock_lock; /* lock for phc */
-	spinlock_t ptp_ts_id_lock; /* lock for ts_id */
-	struct mutex ptp_lock; /* lock for ptp interface state */
+	spinlock_t ptp_clock_lock; 
+	spinlock_t ptp_ts_id_lock; 
+	struct mutex ptp_lock; 
 	u16 ptp_skbs;
 
-	/* fdma */
+	
 	bool fdma;
 	struct net_device *fdma_ndev;
 	struct lan966x_rx rx;
 	struct lan966x_tx tx;
 	struct napi_struct napi;
 
-	/* Mirror */
+	
 	struct lan966x_port *mirror_monitor;
 	u32 mirror_mask[2];
 	u32 mirror_count;
 
-	/* vcap */
+	
 	struct vcap_control *vcap_ctrl;
 
-	/* debugfs */
+	
 	struct dentry *debugfs_root;
 };
 
@@ -789,4 +769,4 @@ static inline void lan_rmw(u32 val, u32 mask, struct lan966x *lan966x,
 			      gcnt, gwidth, raddr, rinst, rcnt, rwidth));
 }
 
-#endif /* __LAN966X_MAIN_H__ */
+#endif 

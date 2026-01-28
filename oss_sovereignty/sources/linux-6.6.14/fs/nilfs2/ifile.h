@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * NILFS inode file
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Amagai Yoshiji.
- * Revised by Ryusuke Konishi.
- *
- */
+
+
 
 #ifndef _NILFS_IFILE_H
 #define _NILFS_IFILE_H
@@ -42,4 +34,4 @@ int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
 		     size_t inode_size, struct nilfs_inode *raw_inode,
 		     struct inode **inodep);
 
-#endif	/* _NILFS_IFILE_H */
+#endif	

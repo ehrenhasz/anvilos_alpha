@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Freescale QUICC Engine HDLC Device Driver
- *
- * Copyright 2014 Freescale Semiconductor Inc.
- */
+
+
 
 #ifndef _UCC_HDLC_H_
 #define _UCC_HDLC_H_
@@ -16,7 +13,7 @@
 #include <soc/fsl/qe/ucc.h>
 #include <soc/fsl/qe/ucc_fast.h>
 
-/* UCC HDLC event register */
+
 #define UCCE_HDLC_RX_EVENTS	\
 (UCC_HDLC_UCCE_RXF | UCC_HDLC_UCCE_RXB | UCC_HDLC_UCCE_BSY)
 #define UCCE_HDLC_TX_EVENTS	(UCC_HDLC_UCCE_TXB | UCC_HDLC_UCCE_TXE)
@@ -69,7 +66,7 @@ struct ucc_hdlc_private {
 	struct device *dev;
 	struct net_device *ndev;
 	struct napi_struct napi;
-	struct ucc_fast __iomem *uf_regs;	/* UCC Fast registers */
+	struct ucc_fast __iomem *uf_regs;	
 	struct ucc_hdlc_param __iomem *ucc_pram;
 	u16 tsa;
 	bool hdlc_busy;
@@ -104,7 +101,7 @@ struct ucc_hdlc_private {
 	unsigned short parity;
 	unsigned short hmask;
 	u32 clocking;
-	spinlock_t lock;	/* lock for Tx BD and Tx buffer */
+	spinlock_t lock;	
 #ifdef CONFIG_PM
 	struct ucc_hdlc_param *ucc_pram_bak;
 	u32 gumr;

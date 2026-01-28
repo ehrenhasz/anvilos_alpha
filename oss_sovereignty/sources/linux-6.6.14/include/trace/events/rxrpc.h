@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* AF_RXRPC tracepoints
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rxrpc
 
@@ -13,11 +9,9 @@
 #include <linux/tracepoint.h>
 #include <linux/errqueue.h>
 
-/*
- * Declare tracing information enums and their string mappings for display.
- */
+
 #define rxrpc_abort_reasons \
-	/* AFS errors */						\
+							\
 	EM(afs_abort_general_error,		"afs-error")		\
 	EM(afs_abort_interrupted,		"afs-intr")		\
 	EM(afs_abort_oom,			"afs-oom")		\
@@ -25,12 +19,12 @@
 	EM(afs_abort_probeuuid_negative,	"afs-probeuuid-neg")	\
 	EM(afs_abort_send_data_error,		"afs-send-data")	\
 	EM(afs_abort_unmarshal_error,		"afs-unmarshal")	\
-	/* rxperf errors */						\
+							\
 	EM(rxperf_abort_general_error,		"rxperf-error")		\
 	EM(rxperf_abort_oom,			"rxperf-oom")		\
 	EM(rxperf_abort_op_not_supported,	"rxperf-op-notsupp")	\
 	EM(rxperf_abort_unmarshal_error,	"rxperf-unmarshal")	\
-	/* RxKAD security errors */					\
+						\
 	EM(rxkad_abort_1_short_check,		"rxkad1-short-check")	\
 	EM(rxkad_abort_1_short_data,		"rxkad1-short-data")	\
 	EM(rxkad_abort_1_short_encdata,		"rxkad1-short-encdata")	\
@@ -68,7 +62,7 @@
 	EM(rxkad_abort_resp_tkt_sname,		"rxkad-resp-tk-sname")	\
 	EM(rxkad_abort_resp_unknown_tkt,	"rxkad-resp-unknown-tkt") \
 	EM(rxkad_abort_resp_version,		"rxkad-resp-version")	\
-	/* rxrpc errors */						\
+							\
 	EM(rxrpc_abort_call_improper_term,	"call-improper-term")	\
 	EM(rxrpc_abort_call_reset,		"call-reset")		\
 	EM(rxrpc_abort_call_sendmsg,		"call-sendmsg")		\
@@ -459,7 +453,7 @@
 	EM(rxrpc_reqack_retrans,		"RETRANS   ")	\
 	EM(rxrpc_reqack_slow_start,		"SLOW-START")	\
 	E_(rxrpc_reqack_small_txwin,		"SMALL-TXWN")
-/* ---- Must update size of stat_why_req_ack[] if more are added! */
+
 
 #define rxrpc_txbuf_traces \
 	EM(rxrpc_txbuf_alloc_ack,		"ALLOC ACK  ")	\
@@ -478,9 +472,7 @@
 	EM(rxrpc_txbuf_see_send_more,		"SEE SEND+  ")	\
 	E_(rxrpc_txbuf_see_unacked,		"SEE UNACKED")
 
-/*
- * Generate enums for tracing information.
- */
+
 #ifndef __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
 #define __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
 
@@ -512,11 +504,9 @@ enum rxrpc_tx_point		{ rxrpc_tx_points } __mode(byte);
 enum rxrpc_txbuf_trace		{ rxrpc_txbuf_traces } __mode(byte);
 enum rxrpc_txqueue_trace	{ rxrpc_txqueue_traces } __mode(byte);
 
-#endif /* end __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY */
+#endif 
 
-/*
- * Export enum symbols via userspace.
- */
+
 #undef EM
 #undef E_
 
@@ -547,10 +537,7 @@ rxrpc_tx_points;
 rxrpc_txbuf_traces;
 rxrpc_txqueue_traces;
 
-/*
- * Now redefine the EM() and E_() macros to map the enums to the strings that
- * will be printed in the output.
- */
+
 #undef EM
 #undef E_
 #define EM(a, b)	{ a, b },
@@ -1971,8 +1958,8 @@ TRACE_EVENT(rxrpc_sack,
 #undef EM
 #undef E_
 
-#endif /* RXRPC_TRACE_ONLY_DEFINE_ENUMS */
-#endif /* _TRACE_RXRPC_H */
+#endif 
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

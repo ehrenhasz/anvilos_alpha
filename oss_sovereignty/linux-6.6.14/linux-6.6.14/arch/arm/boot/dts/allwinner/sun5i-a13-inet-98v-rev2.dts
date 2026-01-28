@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "sun5i-a13.dtsi"
-#include "sun5i-reference-design-tablet.dtsi"
-/ {
-	model = "INet-98V Rev 02";
-	compatible = "primux,inet98v-rev2", "allwinner,sun5i-a13";
-};

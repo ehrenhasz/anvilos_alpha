@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * PTP hardware clock driver for the IDT ClockMatrix(TM) family of timing and
- * synchronization devices.
- *
- * Copyright (C) 2019 Integrated Device Technology, Inc., a Renesas Company.
- */
+
+
 #ifndef PTP_IDTCLOCKMATRIX_H
 #define PTP_IDTCLOCKMATRIX_H
 
@@ -59,9 +54,7 @@
 #define PHASE_PULL_IN_MAX_PPB		(144000)
 #define PHASE_PULL_IN_MIN_THRESHOLD_NS	(2)
 
-/*
- * Return register address based on passed in firmware version
- */
+
 #define IDTCM_FW_REG(FW, VER, REG)	(((FW) < (VER)) ? (REG) : (REG##_##VER))
 enum fw_version {
 	V_DEFAULT = 0,
@@ -69,7 +62,7 @@ enum fw_version {
 	V520 = 2,
 };
 
-/* PTP PLL Mode */
+
 enum ptp_pll_mode {
 	PTP_PLL_MODE_MIN = 0,
 	PTP_PLL_MODE_WRITE_FREQUENCY = PTP_PLL_MODE_MIN,
@@ -103,7 +96,7 @@ struct idtcm_channel {
 	s32			current_freq_scaled_ppm;
 	bool			phase_pull_in;
 	u32			dco_delay;
-	/* last input trigger for extts */
+	
 	u8			refn;
 	u8			pll;
 	u8			tod;
@@ -116,17 +109,17 @@ struct idtcm {
 	u8			tod_mask;
 	char			version[16];
 	enum fw_version		fw_ver;
-	/* Polls for external time stamps */
+	
 	u8			extts_mask;
 	bool			extts_single_shot;
 	struct delayed_work	extts_work;
-	/* Remember the ptp channel to report extts */
+	
 	struct idtcm_channel	*event_channel[MAX_TOD];
-	/* Mutex to protect operations from being interrupted */
+	
 	struct mutex		*lock;
 	struct device		*mfd;
 	struct regmap		*regmap;
-	/* Overhead calculation for adjtime */
+	
 	u8			calculate_overhead_flag;
 	s64			tod_write_overhead_ns;
 	ktime_t			start_time;
@@ -139,4 +132,4 @@ struct idtcm_fwrc {
 	u8 reserved;
 } __packed;
 
-#endif /* PTP_IDTCLOCKMATRIX_H */
+#endif 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 netfilter-objs := core.o nf_log.o nf_queue.o nf_sockopt.o utils.o
 
 nf_conntrack-y	:= nf_conntrack_core.o nf_conntrack_standalone.o nf_conntrack_expect.o nf_conntrack_helper.o \
@@ -31,15 +31,15 @@ obj-$(CONFIG_NETFILTER_NETLINK_LOG) += nfnetlink_log.o
 obj-$(CONFIG_NETFILTER_NETLINK_OSF) += nfnetlink_osf.o
 obj-$(CONFIG_NETFILTER_NETLINK_HOOK) += nfnetlink_hook.o
 
-# connection tracking
+
 obj-$(CONFIG_NF_CONNTRACK) += nf_conntrack.o
 
-# netlink interface for nf_conntrack
+
 obj-$(CONFIG_NF_CT_NETLINK) += nf_conntrack_netlink.o
 obj-$(CONFIG_NF_CT_NETLINK_TIMEOUT) += nfnetlink_cttimeout.o
 obj-$(CONFIG_NF_CT_NETLINK_HELPER) += nfnetlink_cthelper.o
 
-# connection tracking helpers
+
 nf_conntrack_h323-objs := nf_conntrack_h323_main.o nf_conntrack_h323_asn1.o
 
 obj-$(CONFIG_NF_CONNTRACK_AMANDA) += nf_conntrack_amanda.o
@@ -69,22 +69,22 @@ else ifeq ($(CONFIG_NF_NAT),y)
 nf_nat-$(CONFIG_DEBUG_INFO_BTF) += nf_nat_bpf.o
 endif
 
-# NAT helpers
+
 obj-$(CONFIG_NF_NAT_AMANDA) += nf_nat_amanda.o
 obj-$(CONFIG_NF_NAT_FTP) += nf_nat_ftp.o
 obj-$(CONFIG_NF_NAT_IRC) += nf_nat_irc.o
 obj-$(CONFIG_NF_NAT_SIP) += nf_nat_sip.o
 obj-$(CONFIG_NF_NAT_TFTP) += nf_nat_tftp.o
 
-# SYNPROXY
+
 obj-$(CONFIG_NETFILTER_SYNPROXY) += nf_synproxy_core.o
 
 obj-$(CONFIG_NETFILTER_CONNCOUNT) += nf_conncount.o
 
-# generic packet duplication from netdev family
+
 obj-$(CONFIG_NF_DUP_NETDEV)	+= nf_dup_netdev.o
 
-# nf_tables
+
 nf_tables-objs := nf_tables_core.o nf_tables_api.o nft_chain_filter.o \
 		  nf_tables_trace.o nft_immediate.o nft_cmp.o nft_range.o \
 		  nft_bitwise.o nft_byteorder.o nft_payload.o nft_lookup.o \
@@ -135,11 +135,11 @@ obj-$(CONFIG_NFT_SYNPROXY)	+= nft_synproxy.o
 
 obj-$(CONFIG_NFT_NAT)		+= nft_chain_nat.o
 
-# nf_tables netdev
+
 obj-$(CONFIG_NFT_DUP_NETDEV)	+= nft_dup_netdev.o
 obj-$(CONFIG_NFT_FWD_NETDEV)	+= nft_fwd_netdev.o
 
-# flow table infrastructure
+
 obj-$(CONFIG_NF_FLOW_TABLE)	+= nf_flow_table.o
 nf_flow_table-objs		:= nf_flow_table_core.o nf_flow_table_ip.o \
 				   nf_flow_table_offload.o
@@ -147,16 +147,16 @@ nf_flow_table-$(CONFIG_NF_FLOW_TABLE_PROCFS) += nf_flow_table_procfs.o
 
 obj-$(CONFIG_NF_FLOW_TABLE_INET) += nf_flow_table_inet.o
 
-# generic X tables
+
 obj-$(CONFIG_NETFILTER_XTABLES) += x_tables.o xt_tcpudp.o
 
-# combos
+
 obj-$(CONFIG_NETFILTER_XT_MARK) += xt_mark.o
 obj-$(CONFIG_NETFILTER_XT_CONNMARK) += xt_connmark.o
 obj-$(CONFIG_NETFILTER_XT_SET) += xt_set.o
 obj-$(CONFIG_NETFILTER_XT_NAT) += xt_nat.o
 
-# targets
+
 obj-$(CONFIG_NETFILTER_XT_TARGET_AUDIT) += xt_AUDIT.o
 obj-$(CONFIG_NETFILTER_XT_TARGET_CHECKSUM) += xt_CHECKSUM.o
 obj-$(CONFIG_NETFILTER_XT_TARGET_CLASSIFY) += xt_CLASSIFY.o
@@ -181,7 +181,7 @@ obj-$(CONFIG_NETFILTER_XT_TARGET_TEE) += xt_TEE.o
 obj-$(CONFIG_NETFILTER_XT_TARGET_TRACE) += xt_TRACE.o
 obj-$(CONFIG_NETFILTER_XT_TARGET_IDLETIMER) += xt_IDLETIMER.o
 
-# matches
+
 obj-$(CONFIG_NETFILTER_XT_MATCH_ADDRTYPE) += xt_addrtype.o
 obj-$(CONFIG_NETFILTER_XT_MATCH_BPF) += xt_bpf.o
 obj-$(CONFIG_NETFILTER_XT_MATCH_CLUSTER) += xt_cluster.o
@@ -227,11 +227,11 @@ obj-$(CONFIG_NETFILTER_XT_MATCH_TCPMSS) += xt_tcpmss.o
 obj-$(CONFIG_NETFILTER_XT_MATCH_TIME) += xt_time.o
 obj-$(CONFIG_NETFILTER_XT_MATCH_U32) += xt_u32.o
 
-# ipset
+
 obj-$(CONFIG_IP_SET) += ipset/
 
-# IPVS
+
 obj-$(CONFIG_IP_VS) += ipvs/
 
-# lwtunnel
+
 obj-$(CONFIG_LWTUNNEL) += nf_hooks_lwtunnel.o

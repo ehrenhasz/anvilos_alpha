@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Microsoft Corporation.
- *
- * Authors:
- *   Beau Belgrave <beaub@linux.microsoft.com>
- */
+
+
 
 #ifndef _LINUX_USER_EVENTS_H
 #define _LINUX_USER_EVENTS_H
@@ -20,7 +15,7 @@ struct user_event_mm {
 	struct list_head	mms_link;
 	struct list_head	enablers;
 	struct mm_struct	*mm;
-	/* Used for one-shot lists, protected by event_mutex */
+	
 	struct user_event_mm	*next;
 	refcount_t		refcnt;
 	refcount_t		tasks;
@@ -79,6 +74,6 @@ static inline void user_events_execve(struct task_struct *t)
 static inline void user_events_exit(struct task_struct *t)
 {
 }
-#endif /* CONFIG_USER_EVENTS */
+#endif 
 
-#endif /* _LINUX_USER_EVENTS_H */
+#endif 

@@ -1,18 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021, Intel Corporation. */
+
+
 
 #ifndef _IAVF_ADV_RSS_H_
 #define _IAVF_ADV_RSS_H_
 
 struct iavf_adapter;
 
-/* State of advanced RSS configuration */
+
 enum iavf_adv_rss_state_t {
-	IAVF_ADV_RSS_ADD_REQUEST,	/* User requests to add RSS */
-	IAVF_ADV_RSS_ADD_PENDING,	/* RSS pending add by the PF */
-	IAVF_ADV_RSS_DEL_REQUEST,	/* Driver requests to delete RSS */
-	IAVF_ADV_RSS_DEL_PENDING,	/* RSS pending delete by the PF */
-	IAVF_ADV_RSS_ACTIVE,		/* RSS configuration is active */
+	IAVF_ADV_RSS_ADD_REQUEST,	
+	IAVF_ADV_RSS_ADD_PENDING,	
+	IAVF_ADV_RSS_DEL_REQUEST,	
+	IAVF_ADV_RSS_DEL_PENDING,	
+	IAVF_ADV_RSS_ACTIVE,		
 };
 
 enum iavf_adv_rss_flow_seg_hdr {
@@ -34,12 +34,12 @@ enum iavf_adv_rss_flow_seg_hdr {
 	 IAVF_ADV_RSS_FLOW_SEG_HDR_SCTP)
 
 enum iavf_adv_rss_flow_field {
-	/* L3 */
+	
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_IPV4_SA,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_IPV4_DA,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_IPV6_SA,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_IPV6_DA,
-	/* L4 */
+	
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_TCP_SRC_PORT,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_TCP_DST_PORT,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_UDP_SRC_PORT,
@@ -47,7 +47,7 @@ enum iavf_adv_rss_flow_field {
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_SCTP_SRC_PORT,
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_SCTP_DST_PORT,
 
-	/* The total number of enums must not exceed 64 */
+	
 	IAVF_ADV_RSS_FLOW_FIELD_IDX_MAX
 };
 
@@ -73,7 +73,7 @@ enum iavf_adv_rss_flow_field {
 #define IAVF_ADV_RSS_HASH_FLD_SCTP_DST_PORT	\
 	BIT_ULL(IAVF_ADV_RSS_FLOW_FIELD_IDX_SCTP_DST_PORT)
 
-/* bookkeeping of advanced RSS configuration */
+
 struct iavf_adv_rss {
 	enum iavf_adv_rss_state_t state;
 	struct list_head list;
@@ -92,4 +92,4 @@ iavf_find_adv_rss_cfg_by_hdrs(struct iavf_adapter *adapter, u32 packet_hdrs);
 void
 iavf_print_adv_rss_cfg(struct iavf_adapter *adapter, struct iavf_adv_rss *rss,
 		       const char *action, const char *result);
-#endif /* _IAVF_ADV_RSS_H_ */
+#endif 

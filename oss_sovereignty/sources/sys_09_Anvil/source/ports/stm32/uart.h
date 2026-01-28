@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_STM32_UART_H
 #define MICROPY_INCLUDED_STM32_UART_H
 
@@ -51,10 +27,10 @@ typedef enum {
 #define CHAR_WIDTH_8BIT (0)
 #define CHAR_WIDTH_9BIT (1)
 
-// OR-ed IRQ flags which are allowed to be used by the user
+
 #define MP_UART_ALLOWED_FLAGS UART_FLAG_IDLE
 
-// OR-ed IRQ flags which should not be touched by the user
+
 #define MP_UART_RESERVED_FLAGS UART_FLAG_RXNE
 
 typedef struct _machine_uart_obj_t {
@@ -63,18 +39,18 @@ typedef struct _machine_uart_obj_t {
     pyb_uart_t uart_id : 8;
     bool is_static : 1;
     bool is_enabled : 1;
-    bool attached_to_repl;              // whether the UART is attached to REPL
-    byte char_width;                    // 0 for 7,8 bit chars, 1 for 9 bit chars
-    uint16_t char_mask;                 // 0x7f for 7 bit, 0xff for 8 bit, 0x1ff for 9 bit
-    uint16_t timeout;                   // timeout waiting for first char
-    uint16_t timeout_char;              // timeout waiting between chars
-    uint16_t read_buf_len;              // len in chars; buf can hold len-1 chars
-    volatile uint16_t read_buf_head;    // indexes first empty slot
-    uint16_t read_buf_tail;             // indexes first full slot (not full if equals head)
-    byte *read_buf;                     // byte or uint16_t, depending on char size
-    uint16_t mp_irq_trigger;            // user IRQ trigger mask
-    uint16_t mp_irq_flags;              // user IRQ active IRQ flags
-    mp_irq_obj_t *mp_irq_obj;           // user IRQ object
+    bool attached_to_repl;              
+    byte char_width;                    
+    uint16_t char_mask;                 
+    uint16_t timeout;                   
+    uint16_t timeout_char;              
+    uint16_t read_buf_len;              
+    volatile uint16_t read_buf_head;    
+    uint16_t read_buf_tail;             
+    byte *read_buf;                     
+    uint16_t mp_irq_trigger;            
+    uint16_t mp_irq_flags;              
+    mp_irq_obj_t *mp_irq_obj;           
 } machine_uart_obj_t;
 
 extern const mp_irq_methods_t uart_irq_methods;
@@ -111,4 +87,4 @@ static inline bool uart_tx_avail(machine_uart_obj_t *self) {
     #endif
 }
 
-#endif // MICROPY_INCLUDED_STM32_UART_H
+#endif 

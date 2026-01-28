@@ -1,5 +1,0 @@
-#ifndef _ASMPARISC_SHMPARAM_H
-#define _ASMPARISC_SHMPARAM_H
-#define SHMLBA	   PAGE_SIZE	 
-#define SHM_COLOUR 0x00400000	 
-#endif  

@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_PX30_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_PX30_H
 
-/* core clocks */
+
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_CPLL		3
@@ -12,7 +12,7 @@
 #define APLL_BOOST_L		6
 #define ARMCLK			7
 
-/* sclk gates (special clocks) */
+
 #define USB480M			14
 #define SCLK_PDM		15
 #define SCLK_I2S0_TX		16
@@ -88,11 +88,11 @@
 #define SCLK_SDMMC_DIV		86
 #define SCLK_SDMMC_DIV50	87
 
-/* dclk gates */
+
 #define DCLK_VOPB		150
 #define DCLK_VOPL		151
 
-/* aclk gates */
+
 #define ACLK_GPU		170
 #define ACLK_BUS_PRE		171
 #define ACLK_CRYPTO		172
@@ -112,7 +112,7 @@
 #define ACLK_BUS_SRC		188
 #define ACLK_PERI_SRC		189
 
-/* hclk gates */
+
 #define HCLK_BUS_PRE		240
 #define HCLK_CRYPTO		241
 #define HCLK_VI_PRE		242
@@ -139,7 +139,7 @@
 #define HCLK_I2S1		263
 #define HCLK_I2S2		264
 
-/* pclk gates */
+
 #define PCLK_BUS_PRE		320
 #define PCLK_DDR		321
 #define PCLK_VO_PRE		322
@@ -177,7 +177,7 @@
 
 #define CLK_NR_CLKS		(PCLK_OTP_PHY + 1)
 
-/* pmu-clocks indices */
+
 
 #define PLL_GPLL		1
 
@@ -197,7 +197,7 @@
 
 #define CLKPMU_NR_CLKS		(PCLK_UART0_PMU + 1)
 
-/* soft-reset indices */
+
 #define SRST_CORE0_PO		0
 #define SRST_CORE1_PO		1
 #define SRST_CORE2_PO		2

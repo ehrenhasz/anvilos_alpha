@@ -1,21 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MIPI CSI-2 Data Types
- *
- * Copyright (C) 2022 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+
 
 #ifndef _MEDIA_MIPI_CSI2_H
 #define _MEDIA_MIPI_CSI2_H
 
-/* Short packet data types */
+
 #define MIPI_CSI2_DT_FS			0x00
 #define MIPI_CSI2_DT_FE			0x01
 #define MIPI_CSI2_DT_LS			0x02
 #define MIPI_CSI2_DT_LE			0x03
-#define MIPI_CSI2_DT_GENERIC_SHORT(n)	(0x08 + (n))	/* 0..7 */
+#define MIPI_CSI2_DT_GENERIC_SHORT(n)	(0x08 + (n))	
 
-/* Long packet data types */
+
 #define MIPI_CSI2_DT_NULL		0x10
 #define MIPI_CSI2_DT_BLANKING		0x11
 #define MIPI_CSI2_DT_EMBEDDED_8B	0x12
@@ -41,6 +37,6 @@
 #define MIPI_CSI2_DT_RAW14		0x2d
 #define MIPI_CSI2_DT_RAW16		0x2e
 #define MIPI_CSI2_DT_RAW20		0x2f
-#define MIPI_CSI2_DT_USER_DEFINED(n)	(0x30 + (n))	/* 0..7 */
+#define MIPI_CSI2_DT_USER_DEFINED(n)	(0x30 + (n))	
 
-#endif /* _MEDIA_MIPI_CSI2_H */
+#endif 

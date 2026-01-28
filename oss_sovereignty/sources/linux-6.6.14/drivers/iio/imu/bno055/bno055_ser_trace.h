@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #if !defined(__BNO055_SERDEV_TRACE_H__) || defined(TRACE_HEADER_MULTI_READ)
 #define __BNO055_SERDEV_TRACE_H__
@@ -93,12 +93,12 @@ TRACE_EVENT(recv,
 	    )
 );
 
-#endif /* __BNO055_SERDEV_TRACE_H__ || TRACE_HEADER_MULTI_READ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE bno055_ser_trace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

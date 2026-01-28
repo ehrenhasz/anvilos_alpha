@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_STREAM_H
 #define __PERF_STREAM_H
 
@@ -38,4 +38,4 @@ void evsel_streams__match(struct evsel_streams *es_base,
 void evsel_streams__report(struct evsel_streams *es_base,
 			   struct evsel_streams *es_pair);
 
-#endif /* __PERF_STREAM_H */
+#endif 

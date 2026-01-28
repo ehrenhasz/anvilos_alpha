@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Qualcomm Atheros, Inc
- *
- * Based on net/sched/sch_fq_codel.c
- */
+
+
 #ifndef __NET_SCHED_FQ_IMPL_H
 #define __NET_SCHED_FQ_IMPL_H
 
 #include <net/fq.h>
 
-/* functions that are embedded into includer */
+
 
 
 static void
@@ -116,7 +112,7 @@ begin:
 
 	skb = dequeue_func(fq, tin, flow);
 	if (!skb) {
-		/* force a pass through old_flows to prevent starvation */
+		
 		if ((head == &tin->new_flows) &&
 		    !list_empty(&tin->old_flows)) {
 			list_move_tail(&flow->flowchain, &tin->old_flows);
@@ -356,7 +352,7 @@ static int fq_init(struct fq *fq, int flows_cnt)
 	fq->flows_cnt = max_t(u32, flows_cnt, 1);
 	fq->quantum = 300;
 	fq->limit = 8192;
-	fq->memory_limit = 16 << 20; /* 16 MBytes */
+	fq->memory_limit = 16 << 20; 
 
 	fq->flows = kvcalloc(fq->flows_cnt, sizeof(fq->flows[0]), GFP_KERNEL);
 	if (!fq->flows)

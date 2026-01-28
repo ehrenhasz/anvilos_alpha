@@ -10,9 +10,9 @@ except AttributeError:
 gc.disable()
 _NUM_TASKS = 10000
 _TIMEOUT_MS = 10000
-n = 0  # How many times the task successfully ran.
-t = None  # Start time of test, assigned here to preallocate entry in globals dict.
-thread_run = True  # If the thread should continue running.
+n = 0  
+t = None  
+thread_run = True  
 def task(x):
     global n
     n += 1

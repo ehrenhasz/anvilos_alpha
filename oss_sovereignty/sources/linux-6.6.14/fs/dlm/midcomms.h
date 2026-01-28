@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+
 
 #ifndef __MIDCOMMS_DOT_H__
 #define __MIDCOMMS_DOT_H__
@@ -39,5 +31,5 @@ int dlm_midcomms_rawmsg_send(struct midcomms_node *node, void *buf,
 			     int buflen);
 struct kmem_cache *dlm_midcomms_cache_create(void);
 
-#endif				/* __MIDCOMMS_DOT_H__ */
+#endif				
 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the Linux NET/ROM layer.
-#
+
+
+
+
 
 obj-$(CONFIG_NETROM) += netrom.o
 

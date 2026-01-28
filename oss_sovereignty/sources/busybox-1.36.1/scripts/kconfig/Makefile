@@ -1,6 +1,6 @@
-# ===========================================================================
-# Kernel configuration targets
-# These targets are used from top-level makefile
+
+
+
 
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
@@ -17,19 +17,19 @@ menuconfig: $(obj)/mconf
 config: $(obj)/conf
 	$< Config.in
 
-# Mtime granularity problem.
-# It was observed that these commands:
-# make allnoconfig; sed -i -e '/CONFIG_TRUE/s/.*/CONFIG_TRUE=y/' .config; make
-# sometimes produce busybox with "true" applet still disabled.
-# This is caused by .config updated by sed having mtime which is still
-# equal to (not bigger than) include/autoconf.h's mtime,
-# and thus 2nd make does not regenerate include/autoconf.h.
-# Waiting for 1 second after non-interactive "make XXXXconfig"
-# prevents this from happening.
-#
-# We'd like to detect whether filesystem we are on has coarse mtimes,
-# but can't do it yet, bbox ls hasn't got --full-time.
-#MTIME_IS_COARSE:=@ls --full-time -ld | grep -F .000 >/dev/null
+
+
+
+
+
+
+
+
+
+
+
+
+
 MTIME_IS_COARSE:=@true
 
 oldconfig: $(obj)/conf
@@ -90,7 +90,7 @@ endif
 	$(Q)$< -D configs/$@ Config.in
 	$(MTIME_IS_COARSE) && sleep 1
 
-# Help text used by make help
+
 help:
 	@echo  '  config	  - Update current config utilising a line-oriented program'
 	@echo  '  menuconfig	  - Update current config utilising a menu based program'
@@ -103,16 +103,16 @@ help:
 	@echo  '  allyesconfig	  - New config where all options are accepted with yes'
 	@echo  '  allnoconfig	  - New config where all options are answered with no'
 
-# ===========================================================================
-# Shared Makefile for the various kconfig executables:
-# conf:	  Used for defconfig, oldconfig and related targets
-# mconf:  Used for the mconfig target.
-#         Utilizes the lxdialog package
-# qconf:  Used for the xconfig target
-#         Based on QT which needs to be installed to compile it
-# gconf:  Used for the gconfig target
-#         Based on GTK which needs to be installed to compile it
-# object files used by all kconfig flavours
+
+
+
+
+
+
+
+
+
+
 
 hostprogs-y	:= conf mconf qconf gconf kxgettext
 conf-objs	:= conf.o  zconf.tab.o
@@ -140,10 +140,10 @@ clean-files	:= lkc_defs.h qconf.moc .tmp_qtcheck \
 		   .tmp_gtkcheck zconf.tab.c lex.zconf.c zconf.hash.c
 subdir- += lxdialog
 
-# Add environment specific flags
+
 HOST_EXTRACFLAGS += $(shell $(CONFIG_SHELL) $(srctree)/$(src)/check.sh $(HOSTCC) $(HOSTCFLAGS))
 
-# generated files seem to need this to find local include files
+
 HOSTCFLAGS_lex.zconf.o	:= -I$(src)
 HOSTCFLAGS_zconf.tab.o	:= -I$(src)
 
@@ -160,7 +160,7 @@ ifeq ($(qconf-target),1)
 $(obj)/.tmp_qtcheck: $(src)/Makefile
 -include $(obj)/.tmp_qtcheck
 
-# QT needs some extra effort...
+
 $(obj)/.tmp_qtcheck:
 	@set -e; echo "  CHECK   qt"; dir=""; pkg=""; \
 	pkg-config --exists qt 2> /dev/null && pkg=qt; \
@@ -208,7 +208,7 @@ $(obj)/gconf.o: $(obj)/.tmp_gtkcheck
 ifeq ($(gconf-target),1)
 -include $(obj)/.tmp_gtkcheck
 
-# GTK needs some extra effort, too...
+
 $(obj)/.tmp_gtkcheck:
 	@if `pkg-config --exists gtk+-2.0 gmodule-2.0 libglade-2.0`; then		\
 		if `pkg-config --atleast-version=2.0.0 gtk+-2.0`; then			\
@@ -241,14 +241,14 @@ $(obj)/%.moc: $(src)/%.h
 	$(KC_QT_MOC) -i $< -o $@
 
 $(obj)/lkc_defs.h: $(src)/lkc_proto.h
-	sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
+	sed < $< > $@ 's/P(\([^,]*\),.*/
 
 
-###
-# The following requires flex/bison/gperf
-# By default we use the _shipped versions, uncomment the following line if
-# you are modifying the flex/bison src.
-# LKC_GENPARSER := 1
+
+
+
+
+
 
 ifdef LKC_GENPARSER
 

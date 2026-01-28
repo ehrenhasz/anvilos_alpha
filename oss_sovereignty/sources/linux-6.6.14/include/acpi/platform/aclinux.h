@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: aclinux.h - OS specific defines, etc. for Linux
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+
 
 #ifndef __ACLINUX_H__
 #define __ACLINUX_H__
 
 #ifdef __KERNEL__
 
-/* ACPICA external files should not include ACPICA headers directly. */
+
 
 #if !defined(BUILDING_ACPICA) && !defined(_LINUX_ACPI_H)
 #error "Please don't include <acpi/acpi.h> directly, include <linux/acpi.h> instead."
@@ -20,7 +14,7 @@
 
 #endif
 
-/* Common (in-kernel/user-space) ACPICA configuration */
+
 
 #define ACPI_USE_SYSTEM_CLIBRARY
 #define ACPI_USE_DO_WHILE_0
@@ -31,7 +25,7 @@
 #define ACPI_USE_SYSTEM_INTTYPES
 #define ACPI_USE_GPE_POLLING
 
-/* Kernel specific ACPICA configuration */
+
 
 #ifdef CONFIG_PCI
 #define ACPI_PCI_CONFIGURED
@@ -66,28 +60,28 @@
 
 #define ACPI_INIT_FUNCTION __init
 
-/* Use a specific bugging default separate from ACPICA */
+
 
 #undef ACPI_DEBUG_DEFAULT
 #define ACPI_DEBUG_DEFAULT          (ACPI_LV_INFO | ACPI_LV_REPAIR)
 
 #ifndef CONFIG_ACPI
 
-/* External globals for __KERNEL__, stubs is needed */
+
 
 #define ACPI_GLOBAL(t,a)
 #define ACPI_INIT_GLOBAL(t,a,b)
 
-/* Generating stubs for configurable ACPICA macros */
+
 
 #define ACPI_NO_MEM_ALLOCATIONS
 
-/* Generating stubs for configurable ACPICA functions */
+
 
 #define ACPI_NO_ERROR_MESSAGES
 #undef ACPI_DEBUG_OUTPUT
 
-/* External interface for __KERNEL__, stub is needed */
+
 
 #define ACPI_EXTERNAL_RETURN_STATUS(prototype) \
 	static ACPI_INLINE prototype {return(AE_NOT_CONFIGURED);}
@@ -100,9 +94,9 @@
 #define ACPI_EXTERNAL_RETURN_PTR(prototype) \
 	static ACPI_INLINE prototype {return(NULL);}
 
-#endif				/* CONFIG_ACPI */
+#endif				
 
-/* Host-dependent types and defines for in-kernel ACPICA */
+
 
 #define ACPI_MACHINE_WIDTH          BITS_PER_LONG
 #define ACPI_USE_NATIVE_MATH64
@@ -119,17 +113,15 @@
 #define ACPI_TO_INTEGER(p)                  ((uintptr_t)(p))
 #define ACPI_OFFSET(d, f)                   offsetof(d, f)
 
-/* Use native linux version of acpi_os_allocate_zeroed */
+
 
 #define USE_NATIVE_ALLOCATE_ZEROED
 
-/* Use logical addresses for accessing GPE registers in system memory */
+
 
 #define ACPI_GPE_USE_LOGICAL_ADDRESSES
 
-/*
- * Overrides for in-kernel ACPICA
- */
+
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_initialize
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_terminate
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_allocate
@@ -143,17 +135,13 @@
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_acquire_raw_lock
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_release_raw_lock
 
-/*
- * OSL interfaces used by debugger/disassembler
- */
+
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_readable
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_writable
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_initialize_debugger
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_terminate_debugger
 
-/*
- * OSL interfaces used by utilities
- */
+
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_redirect_output
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_table_by_name
 #define ACPI_USE_ALTERNATE_PROTOTYPE_acpi_os_get_table_by_index
@@ -170,12 +158,10 @@
 #define ACPI_MSG_BIOS_ERROR     KERN_ERR "ACPI BIOS Error (bug): "
 #define ACPI_MSG_BIOS_WARNING   KERN_WARNING "ACPI BIOS Warning (bug): "
 
-/*
- * Linux wants to use designated initializers for function pointer structs.
- */
+
 #define ACPI_STRUCT_INIT(field, value)	.field = value
 
-#else				/* !__KERNEL__ */
+#else				
 
 #define ACPI_USE_STANDARD_HEADERS
 
@@ -187,7 +173,7 @@
 #define ACPI_OFFSET(d, f)   offsetof(d, f)
 #endif
 
-/* Define/disable kernel-specific declarators */
+
 
 #ifndef __init
 #define __init
@@ -196,7 +182,7 @@
 #define __iomem
 #endif
 
-/* Host-dependent types and defines for user-space ACPICA */
+
 
 #define ACPI_FLUSH_CPU_CACHE()
 #define ACPI_CAST_PTHREAD_T(pthread) ((acpi_thread_id) (pthread))
@@ -220,6 +206,6 @@
 #define __cdecl
 #endif
 
-#endif				/* __KERNEL__ */
+#endif				
 
-#endif				/* __ACLINUX_H__ */
+#endif				

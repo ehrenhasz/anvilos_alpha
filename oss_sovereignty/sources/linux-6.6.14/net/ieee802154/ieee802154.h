@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007, 2008, 2009 Siemens AG
- */
+
+
 #ifndef IEEE_802154_LOCAL_H
 #define IEEE_802154_LOCAL_H
 
@@ -33,7 +31,7 @@ int ieee802154_nl_reply(struct sk_buff *msg, struct genl_info *info);
 
 extern struct genl_family nl802154_family;
 
-/* genetlink ops/groups */
+
 int ieee802154_list_phy(struct sk_buff *skb, struct genl_info *info);
 int ieee802154_dump_phy(struct sk_buff *skb, struct netlink_callback *cb);
 int ieee802154_add_iface(struct sk_buff *skb, struct genl_info *info);

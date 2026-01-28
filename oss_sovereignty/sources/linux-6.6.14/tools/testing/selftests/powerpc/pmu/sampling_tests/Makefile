@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 CFLAGS += -m64
 
 TEST_GEN_PROGS := mmcr0_exceptionbits_test mmcr0_cc56run_test mmcr0_pmccext_test \

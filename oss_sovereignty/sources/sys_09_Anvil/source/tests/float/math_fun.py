@@ -13,7 +13,7 @@ test_values_small = [
     0.5,
     1.23456,
     10.0,
-]  # so we don't overflow 32-bit precision
+]  
 unit_range_test_values = [-1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0]
 functions = [
     ("sqrt", sqrt, test_values),

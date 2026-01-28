@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * 25-Jul-1998 Major changes to allow for ip chain table
- *
- * 3-Jan-2000 Named tables to allow packet selection for different uses.
- */
 
-/*
- * 	Format of an IP firewall descriptor
- *
- * 	src, dst, src_mask, dst_mask are always stored in network byte order.
- * 	flags are stored in host byte order (of course).
- * 	Port numbers are stored in HOST byte order.
- */
+
+
+
 #ifndef _IPTABLES_H
 #define _IPTABLES_H
 
@@ -29,7 +19,7 @@ int ipt_register_table(struct net *net, const struct xt_table *table,
 void ipt_unregister_table_pre_exit(struct net *net, const char *name);
 void ipt_unregister_table_exit(struct net *net, const char *name);
 
-/* Standard entry. */
+
 struct ipt_standard {
 	struct ipt_entry entry;
 	struct xt_standard_target target;
@@ -80,12 +70,12 @@ struct compat_ipt_entry {
 	unsigned char elems[];
 };
 
-/* Helper functions */
+
 static inline struct xt_entry_target *
 compat_ipt_get_target(struct compat_ipt_entry *e)
 {
 	return (void *)e + e->target_offset;
 }
 
-#endif /* CONFIG_COMPAT */
-#endif /* _IPTABLES_H */
+#endif 
+#endif 

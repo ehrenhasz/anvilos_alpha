@@ -12,7 +12,7 @@ if [ ! -r $TRIGGER ] ; then
 	exit $KSELFTEST_SKIP_TEST
 fi
 test=$(basename $0 .sh)
-line=$(grep -E '^#?'"$test"'\b' tests.txt)
+line=$(grep -E '^
 if [ -z "$line" ]; then
 	echo "Skipped: missing test '$test' in tests.txt"
 	exit $KSELFTEST_SKIP_TEST
@@ -27,7 +27,7 @@ if echo "$line" | grep -q ' ' ; then
 else
 	expect=""
 fi
-if echo "$test" | grep -q '^#' ; then
+if echo "$test" | grep -q '^
 	test=$(echo "$test" | cut -c2-)
 	if [ -z "$expect" ]; then
 		expect="crashes entire system"

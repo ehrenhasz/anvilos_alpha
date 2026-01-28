@@ -66,21 +66,21 @@ die() {
 	echo "FAIL: $*"
 	exit 1
 }
-ipt_zero_rule() { # (command)
+ipt_zero_rule() { 
 	[ -n "$1" ] || return 0
 	ip netns exec "$ns2" "$1" -t raw -vS | grep -q -- "-m rpfilter -c 0 0"
 }
-ipt_zero_reverse_rule() { # (command)
+ipt_zero_reverse_rule() { 
 	[ -n "$1" ] || return 0
 	ip netns exec "$ns2" "$1" -t raw -vS | \
 		grep -q -- "-m rpfilter --invert -c 0 0"
 }
-nft_zero_rule() { # (family)
+nft_zero_rule() { 
 	[ -n "$nft" ] || return 0
 	ip netns exec "$ns2" "$nft" list chain inet t c | \
 		grep -q "$1 saddr .* counter packets 0 bytes 0"
 }
-netns_ping() { # (netns, args...)
+netns_ping() { 
 	local netns="$1"
 	shift
 	ip netns exec "$netns" ping -q -c 1 -W 1 "$@" >/dev/null

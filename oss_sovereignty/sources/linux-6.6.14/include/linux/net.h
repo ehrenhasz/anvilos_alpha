@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NET		An implementation of the SOCKET network access protocol.
- *		This is the master header file for the Linux NET layer,
- *		or, in plain English: the networking handling part of the
- *		kernel.
- *
- * Version:	@(#)net.h	1.0.3	05/25/93
- *
- * Authors:	Orest Zborowski, <obz@Kodak.COM>
- *		Ross Biro
- *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
- */
+
+
 #ifndef _LINUX_NET_H
 #define _LINUX_NET_H
 
 #include <linux/stringify.h>
 #include <linux/random.h>
 #include <linux/wait.h>
-#include <linux/fcntl.h>	/* For O_CLOEXEC and O_NONBLOCK */
+#include <linux/fcntl.h>	
 #include <linux/rcupdate.h>
 #include <linux/once.h>
 #include <linux/fs.h>
@@ -32,10 +21,7 @@ struct inode;
 struct file;
 struct net;
 
-/* Historically, SOCKWQ_ASYNC_NOSPACE & SOCKWQ_ASYNC_WAITDATA were located
- * in sock->flags, but moved into sk->sk_wq->flags to be RCU protected.
- * Eventually all flags will be in sk->sk_wq->flags.
- */
+
 #define SOCKWQ_ASYNC_NOSPACE	0
 #define SOCKWQ_ASYNC_WAITDATA	1
 #define SOCK_NOSPACE		2
@@ -46,21 +32,7 @@ struct net;
 #define SOCK_PASSPIDFD		7
 
 #ifndef ARCH_HAS_SOCKET_TYPES
-/**
- * enum sock_type - Socket types
- * @SOCK_STREAM: stream (connection) socket
- * @SOCK_DGRAM: datagram (conn.less) socket
- * @SOCK_RAW: raw socket
- * @SOCK_RDM: reliably-delivered message
- * @SOCK_SEQPACKET: sequential packet socket
- * @SOCK_DCCP: Datagram Congestion Control Protocol socket
- * @SOCK_PACKET: linux specific way of getting packets at the dev level.
- *		  For writing rarp and other similar things on the user level.
- *
- * When adding some new socket type please
- * grep ARCH_HAS_SOCKET_TYPE include/asm-* /socket.h, at least MIPS
- * overrides this enum for binary compat reasons.
- */
+
 enum sock_type {
 	SOCK_STREAM	= 1,
 	SOCK_DGRAM	= 2,
@@ -72,24 +44,18 @@ enum sock_type {
 };
 
 #define SOCK_MAX (SOCK_PACKET + 1)
-/* Mask which covers at least up to SOCK_MASK-1.  The
- * remaining bits are used as flags. */
+
 #define SOCK_TYPE_MASK 0xf
 
-/* Flags for socket, socketpair, accept4 */
+
 #define SOCK_CLOEXEC	O_CLOEXEC
 #ifndef SOCK_NONBLOCK
 #define SOCK_NONBLOCK	O_NONBLOCK
 #endif
 
-#endif /* ARCH_HAS_SOCKET_TYPES */
+#endif 
 
-/**
- * enum sock_shutdown_cmd - Shutdown types
- * @SHUT_RD: shutdown receptions
- * @SHUT_WR: shutdown transmissions
- * @SHUT_RDWR: shutdown receptions/transmissions
- */
+
 enum sock_shutdown_cmd {
 	SHUT_RD,
 	SHUT_WR,
@@ -97,23 +63,14 @@ enum sock_shutdown_cmd {
 };
 
 struct socket_wq {
-	/* Note: wait MUST be first field of socket_wq */
+	
 	wait_queue_head_t	wait;
 	struct fasync_struct	*fasync_list;
-	unsigned long		flags; /* %SOCKWQ_ASYNC_NOSPACE, etc */
+	unsigned long		flags; 
 	struct rcu_head		rcu;
 } ____cacheline_aligned_in_smp;
 
-/**
- *  struct socket - general BSD socket
- *  @state: socket state (%SS_CONNECTED, etc)
- *  @type: socket type (%SOCK_STREAM, etc)
- *  @flags: socket flags (%SOCK_NOSPACE, etc)
- *  @ops: protocol specific socket operations
- *  @file: File back pointer for gc
- *  @sk: internal networking protocol agnostic socket representation
- *  @wq: wait queue for several uses
- */
+
 struct socket {
 	socket_state		state;
 
@@ -123,20 +80,12 @@ struct socket {
 
 	struct file		*file;
 	struct sock		*sk;
-	const struct proto_ops	*ops; /* Might change with IPV6_ADDRFORM or MPTCP. */
+	const struct proto_ops	*ops; 
 
 	struct socket_wq	wq;
 };
 
-/*
- * "descriptor" for what we're up to with a read.
- * This allows us to use the same read code yet
- * have multiple different users of the data that
- * we read from a file.
- *
- * The simplest case just copies the data to user
- * mode.
- */
+
 typedef struct {
 	size_t written;
 	size_t count;
@@ -195,14 +144,7 @@ struct proto_ops {
 	void		(*show_fdinfo)(struct seq_file *m, struct socket *sock);
 	int		(*sendmsg)   (struct socket *sock, struct msghdr *m,
 				      size_t total_len);
-	/* Notes for implementing recvmsg:
-	 * ===============================
-	 * msg->msg_namelen should get updated by the recvmsg handlers
-	 * iff msg_name != NULL. It is by default 0 to prevent
-	 * returning uninitialized memory to user space.  The recvfrom
-	 * handlers can assume that msg.msg_name is either NULL or has
-	 * a minimum size of sizeof(struct sockaddr_storage).
-	 */
+	
 	int		(*recvmsg)   (struct socket *sock, struct msghdr *m,
 				      size_t total_len, int flags);
 	int		(*mmap)	     (struct file *file, struct socket *sock,
@@ -213,12 +155,10 @@ struct proto_ops {
 	int		(*set_peek_off)(struct sock *sk, int val);
 	int		(*peek_len)(struct socket *sock);
 
-	/* The following functions are called internally by kernel with
-	 * sock lock already held.
-	 */
+	
 	int		(*read_sock)(struct sock *sk, read_descriptor_t *desc,
 				     sk_read_actor_t recv_actor);
-	/* This is different from read_sock(), it reads an entire skb at a time. */
+	
 	int		(*read_skb)(struct sock *sk, skb_read_actor_t recv_actor);
 	int		(*sendmsg_locked)(struct sock *sk, struct msghdr *msg,
 					  size_t size);
@@ -308,16 +248,7 @@ do {									\
 #define net_get_random_once(buf, nbytes)			\
 	get_random_once((buf), (nbytes))
 
-/*
- * E.g. XFS meta- & log-data is in slab pages, or bcache meta
- * data pages, or other high order pages allocated by
- * __get_free_pages() without __GFP_COMP, which have a page_count
- * of 0 and/or have PageSlab() set. We cannot use send_page for
- * those, as that does get_page(); put_page(); and would cause
- * either a VM_BUG directly, or __page_cache_release a page that
- * would actually still be referenced by someone, leading to some
- * obscure delayed Oops somewhere else.
- */
+
 static inline bool sendpage_ok(struct page *page)
 {
 	return !PageSlab(page) && page_count(page) >= 1;
@@ -339,7 +270,7 @@ int kernel_getsockname(struct socket *sock, struct sockaddr *addr);
 int kernel_getpeername(struct socket *sock, struct sockaddr *addr);
 int kernel_sock_shutdown(struct socket *sock, enum sock_shutdown_cmd how);
 
-/* Routine returns the IP overhead imposed by a (caller-protected) socket. */
+
 u32 kernel_sock_ip_overhead(struct sock *sk);
 
 #define MODULE_ALIAS_NETPROTO(proto) \
@@ -355,4 +286,4 @@ u32 kernel_sock_ip_overhead(struct sock *sk);
 #define MODULE_ALIAS_NET_PF_PROTO_NAME(pf, proto, name) \
 	MODULE_ALIAS("net-pf-" __stringify(pf) "-proto-" __stringify(proto) \
 		     name)
-#endif	/* _LINUX_NET_H */
+#endif	

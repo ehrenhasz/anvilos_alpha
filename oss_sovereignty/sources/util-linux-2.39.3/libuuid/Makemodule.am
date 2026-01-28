@@ -7,4 +7,4 @@ pkgconfig_DATA += libuuid/uuid.pc
 PATHFILES      += libuuid/uuid.pc
 EXTRA_DIST     += libuuid/COPYING
 
-endif # BUILD_LIBUUID
+endif 

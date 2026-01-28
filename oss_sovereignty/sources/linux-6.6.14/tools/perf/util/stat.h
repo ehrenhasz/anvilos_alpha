@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_STATS_H
 #define __PERF_STATS_H
 
@@ -19,27 +19,27 @@ struct stats {
 	u64 max, min;
 };
 
-/* hold aggregated event info */
+
 struct perf_stat_aggr {
-	/* aggregated values */
+	
 	struct perf_counts_values	counts;
-	/* number of entries (CPUs) aggregated */
+	
 	int				nr;
-	/* whether any entry has failed to read/process event */
+	
 	bool				failed;
-	/* to mark this data is processed already */
+	
 	bool				used;
 };
 
-/* per-evsel event stats */
+
 struct perf_stat_evsel {
-	/* used for repeated runs */
+	
 	struct stats		 res_stats;
-	/* number of allocated 'aggr' */
+	
 	int			 nr_aggr;
-	/* aggregated event values */
+	
 	struct perf_stat_aggr	*aggr;
-	/* used for group read */
+	
 	u64			*group_data;
 };
 
@@ -158,7 +158,7 @@ typedef void (*print_metric_t)(struct perf_stat_config *config,
 			       const char *fmt, double val);
 typedef void (*new_line_t)(struct perf_stat_config *config, void *ctx);
 
-/* Used to print the display name of the Default metricgroup for now. */
+
 typedef void (*print_metricgroup_header_t)(struct perf_stat_config *config,
 					   void *ctx, const char *metricgroup_name);
 

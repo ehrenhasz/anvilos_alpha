@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 ifneq ($(CONFIG_UNICODE),)
 obj-y			+= unicode.o
@@ -10,10 +10,10 @@ unicode-y := utf8-norm.o utf8-core.o
 
 $(obj)/utf8-data.o: $(obj)/utf8data.c
 
-# In the normal build, the checked-in utf8data.c is just shipped.
-#
-# To generate utf8data.c from UCD, put *.txt files in this directory
-# and pass REGENERATE_UTF8DATA=1 from the command line.
+
+
+
+
 ifdef REGENERATE_UTF8DATA
 
 quiet_cmd_utf8data = GEN     $@

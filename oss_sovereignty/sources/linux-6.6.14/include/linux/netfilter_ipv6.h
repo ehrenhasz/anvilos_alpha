@@ -1,16 +1,11 @@
-/* IPv6-specific defines for netfilter. 
- * (C)1998 Rusty Russell -- This code is GPL.
- * (C)1999 David Jeffery
- *   this header was blatantly ripped from netfilter_ipv4.h
- *   it's amazing what adding a bunch of 6s can do =8^)
- */
+
 #ifndef __LINUX_IP6_NETFILTER_H
 #define __LINUX_IP6_NETFILTER_H
 
 #include <uapi/linux/netfilter_ipv6.h>
 #include <net/tcp.h>
 
-/* Check for an extension */
+
 static inline int
 nf_ip6_ext_hdr(u8 nexthdr)
 {	return (nexthdr == IPPROTO_HOPOPTS) ||
@@ -22,9 +17,7 @@ nf_ip6_ext_hdr(u8 nexthdr)
 	       (nexthdr == IPPROTO_DSTOPTS);
 }
 
-/* Extra routing may needed on local out, as the QUEUE target never returns
- * control to the table.
- */
+
 struct ip6_rt_info {
 	struct in6_addr daddr;
 	struct in6_addr saddr;
@@ -34,10 +27,7 @@ struct ip6_rt_info {
 struct nf_queue_entry;
 struct nf_bridge_frag_data;
 
-/*
- * Hook functions for ipv6 to allow xt_* modules to be built-in even
- * if IPv6 is a module.
- */
+
 struct nf_ipv6_ops {
 #if IS_MODULE(CONFIG_IPV6)
 	int (*chk_addr)(struct net *net, const struct in6_addr *addr,
@@ -202,10 +192,10 @@ int nf_ip6_check_hbh_len(struct sk_buff *skb, u32 *plen);
 int ipv6_netfilter_init(void);
 void ipv6_netfilter_fini(void);
 
-#else /* CONFIG_NETFILTER */
+#else 
 static inline int ipv6_netfilter_init(void) { return 0; }
 static inline void ipv6_netfilter_fini(void) { return; }
 static inline const struct nf_ipv6_ops *nf_get_ipv6_ops(void) { return NULL; }
-#endif /* CONFIG_NETFILTER */
+#endif 
 
-#endif /*__LINUX_IP6_NETFILTER_H*/
+#endif 

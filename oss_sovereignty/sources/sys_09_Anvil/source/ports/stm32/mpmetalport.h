@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023 Arduino SA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * libmetal stm32 port.
- */
+
 #ifndef MICROPY_INCLUDED_STM32_MPMETALPORT_H
 #define MICROPY_INCLUDED_STM32_MPMETALPORT_H
 
@@ -40,15 +14,15 @@
 #define METAL_HSEM_REMOTE_ID        0
 #define METAL_HSEM_MASTER_ID        1
 
-// Set to 1 to enable log output.
+
 #define METAL_LOG_HANDLER_ENABLE    0
 
 #define metal_cpu_yield()
 
-// Shared memory config
+
 #define METAL_SHM_NAME              "OPENAMP_SHM"
-// Note 1K must be reserved at the start of the openamp
-// shared memory region, for the shared resource table.
+
+
 #define METAL_RSC_ADDR              ((void *)_openamp_shm_region_start)
 #define METAL_RSC_SIZE              (1024)
 
@@ -73,4 +47,4 @@ static inline void metal_generic_default_poll(void) {
     MICROPY_EVENT_POLL_HOOK
 }
 
-#endif // MICROPY_INCLUDED_STM32_METAL_PORT_H
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005, Devicescape Software, Inc.
- * Copyright (c) 2006 Jiri Benc <jbenc@suse.cz>
- * Copyright (C) 2022 Intel Corporation
- */
+
+
 
 #ifndef IEEE80211_RATE_H
 #define IEEE80211_RATE_H
@@ -87,14 +82,13 @@ static inline void rate_control_add_debugfs(struct ieee80211_local *local)
 
 void ieee80211_check_rate_mask(struct ieee80211_link_data *link);
 
-/* Get a reference to the rate control algorithm. If `name' is NULL, get the
- * first available algorithm. */
+
 int ieee80211_init_rate_ctrl_alg(struct ieee80211_local *local,
 				 const char *name);
 void rate_control_deinitialize(struct ieee80211_local *local);
 
 
-/* Rate control algorithms */
+
 #ifdef CONFIG_MAC80211_RC_MINSTREL
 int rc80211_minstrel_init(void);
 void rc80211_minstrel_exit(void);
@@ -109,4 +103,4 @@ static inline void rc80211_minstrel_exit(void)
 #endif
 
 
-#endif /* IEEE80211_RATE_H */
+#endif 

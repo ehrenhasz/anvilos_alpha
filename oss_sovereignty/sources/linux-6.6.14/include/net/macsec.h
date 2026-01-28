@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * MACsec netdev header, used for h/w accelerated implementations.
- *
- * Copyright (c) 2015 Sabrina Dubroca <sd@queasysnail.net>
- */
+
+
 #ifndef _NET_MACSEC_H_
 #define _NET_MACSEC_H_
 
@@ -15,18 +11,18 @@
 #define MACSEC_DEFAULT_PN_LEN 4
 #define MACSEC_XPN_PN_LEN 8
 
-#define MACSEC_NUM_AN 4 /* 2 bits for the association number */
+#define MACSEC_NUM_AN 4 
 
 #define MACSEC_SCI_LEN 8
 #define MACSEC_PORT_ES (htons(0x0001))
 
 #define MACSEC_TCI_VERSION 0x80
-#define MACSEC_TCI_ES      0x40 /* end station */
-#define MACSEC_TCI_SC      0x20 /* SCI present */
-#define MACSEC_TCI_SCB     0x10 /* epon */
-#define MACSEC_TCI_E       0x08 /* encryption */
-#define MACSEC_TCI_C       0x04 /* changed text */
-#define MACSEC_AN_MASK     0x03 /* association number */
+#define MACSEC_TCI_ES      0x40 
+#define MACSEC_TCI_SC      0x20 
+#define MACSEC_TCI_SCB     0x10 
+#define MACSEC_TCI_E       0x08 
+#define MACSEC_TCI_C       0x04 
+#define MACSEC_AN_MASK     0x03 
 #define MACSEC_TCI_CONFID  (MACSEC_TCI_E | MACSEC_TCI_C)
 
 #define MACSEC_DEFAULT_ICV_LEN 16
@@ -59,12 +55,7 @@ typedef union pn {
 	u64 full64;
 } pn_t;
 
-/**
- * struct macsec_key - SA key
- * @id: user-provided key identifier
- * @tfm: crypto struct, key storage
- * @salt: salt used to generate IV in XPN cipher suites
- */
+
 struct macsec_key {
 	u8 id[MACSEC_KEYID_LEN];
 	struct crypto_aead *tfm;
@@ -115,15 +106,7 @@ struct macsec_dev_stats {
 	__u64 InPktsOverrun;
 };
 
-/**
- * struct macsec_rx_sa - receive secure association
- * @active:
- * @next_pn: packet number expected for the next packet
- * @lock: protects next_pn manipulations
- * @key: key structure
- * @ssci: short secure channel identifier
- * @stats: per-SA stats
- */
+
 struct macsec_rx_sa {
 	struct macsec_key key;
 	ssci_t ssci;
@@ -149,13 +132,7 @@ struct pcpu_tx_sc_stats {
 	struct u64_stats_sync syncp;
 };
 
-/**
- * struct macsec_rx_sc - receive secure channel
- * @sci: secure channel identifier for this SC
- * @active: channel is active
- * @sa: array of secure associations
- * @stats: per-SC stats
- */
+
 struct macsec_rx_sc {
 	struct macsec_rx_sc __rcu *next;
 	sci_t sci;
@@ -166,15 +143,7 @@ struct macsec_rx_sc {
 	struct rcu_head rcu_head;
 };
 
-/**
- * struct macsec_tx_sa - transmit secure association
- * @active:
- * @next_pn: packet number to use for the next packet
- * @lock: protects next_pn manipulations
- * @key: key structure
- * @ssci: short secure channel identifier
- * @stats: per-SA stats
- */
+
 struct macsec_tx_sa {
 	struct macsec_key key;
 	ssci_t ssci;
@@ -189,18 +158,7 @@ struct macsec_tx_sa {
 	struct rcu_head rcu;
 };
 
-/**
- * struct macsec_tx_sc - transmit secure channel
- * @active:
- * @encoding_sa: association number of the SA currently in use
- * @encrypt: encrypt packets on transmit, or authenticate only
- * @send_sci: always include the SCI in the SecTAG
- * @end_station:
- * @scb: single copy broadcast flag
- * @sa: array of secure associations
- * @stats: stats for this TXSC
- * @md_dst: MACsec offload metadata dst
- */
+
 struct macsec_tx_sc {
 	bool active;
 	u8 encoding_sa;
@@ -213,22 +171,7 @@ struct macsec_tx_sc {
 	struct metadata_dst *md_dst;
 };
 
-/**
- * struct macsec_secy - MACsec Security Entity
- * @netdev: netdevice for this SecY
- * @n_rx_sc: number of receive secure channels configured on this SecY
- * @sci: secure channel identifier used for tx
- * @key_len: length of keys used by the cipher suite
- * @icv_len: length of ICV used by the cipher suite
- * @validate_frames: validation mode
- * @xpn: enable XPN for this SecY
- * @operational: MAC_Operational flag
- * @protect_frames: enable protection for this SecY
- * @replay_protect: enable packet number checks on receive
- * @replay_window: size of the replay window
- * @tx_sc: transmit secure channel
- * @rx_sc: linked list of receive secure channels
- */
+
 struct macsec_secy {
 	struct net_device *netdev;
 	unsigned int n_rx_sc;
@@ -245,9 +188,7 @@ struct macsec_secy {
 	struct macsec_rx_sc __rcu *rx_sc;
 };
 
-/**
- * struct macsec_context - MACsec context for hardware offloading
- */
+
 struct macsec_context {
 	union {
 		struct net_device *netdev;
@@ -275,29 +216,27 @@ struct macsec_context {
 	} stats;
 };
 
-/**
- * struct macsec_ops - MACsec offloading operations
- */
+
 struct macsec_ops {
-	/* Device wide */
+	
 	int (*mdo_dev_open)(struct macsec_context *ctx);
 	int (*mdo_dev_stop)(struct macsec_context *ctx);
-	/* SecY */
+	
 	int (*mdo_add_secy)(struct macsec_context *ctx);
 	int (*mdo_upd_secy)(struct macsec_context *ctx);
 	int (*mdo_del_secy)(struct macsec_context *ctx);
-	/* Security channels */
+	
 	int (*mdo_add_rxsc)(struct macsec_context *ctx);
 	int (*mdo_upd_rxsc)(struct macsec_context *ctx);
 	int (*mdo_del_rxsc)(struct macsec_context *ctx);
-	/* Security associations */
+	
 	int (*mdo_add_rxsa)(struct macsec_context *ctx);
 	int (*mdo_upd_rxsa)(struct macsec_context *ctx);
 	int (*mdo_del_rxsa)(struct macsec_context *ctx);
 	int (*mdo_add_txsa)(struct macsec_context *ctx);
 	int (*mdo_upd_txsa)(struct macsec_context *ctx);
 	int (*mdo_del_txsa)(struct macsec_context *ctx);
-	/* Statistics */
+	
 	int (*mdo_get_dev_stats)(struct macsec_context *ctx);
 	int (*mdo_get_tx_sc_stats)(struct macsec_context *ctx);
 	int (*mdo_get_tx_sa_stats)(struct macsec_context *ctx);
@@ -325,4 +264,4 @@ static inline void *macsec_netdev_priv(const struct net_device *dev)
 	return netdev_priv(dev);
 }
 
-#endif /* _NET_MACSEC_H_ */
+#endif 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Google Corporation
- */
+
+
 
 #define MSFT_FEATURE_MASK_BREDR_RSSI_MONITOR		BIT(0)
 #define MSFT_FEATURE_MASK_LE_CONN_RSSI_MONITOR		BIT(1)

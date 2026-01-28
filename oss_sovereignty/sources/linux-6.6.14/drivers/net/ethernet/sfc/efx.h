@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+
 
 #ifndef EFX_EFX_H
 #define EFX_EFX_H
@@ -18,7 +14,7 @@
 int efx_net_open(struct net_device *net_dev);
 int efx_net_stop(struct net_device *net_dev);
 
-/* TX */
+
 void efx_init_tx_queue_core_txq(struct efx_tx_queue *tx_queue);
 netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
 				struct net_device *net_dev);
@@ -32,7 +28,7 @@ static inline netdev_tx_t efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct 
 void efx_xmit_done_single(struct efx_tx_queue *tx_queue);
 extern unsigned int efx_piobuf_size;
 
-/* RX */
+
 void __efx_rx_packet(struct efx_channel *channel);
 void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
 		   unsigned int n_frags, unsigned int len, u16 flags);
@@ -52,19 +48,14 @@ static inline bool efx_rx_buf_hash_valid(struct efx_nic *efx, const u8 *prefix)
 	return true;
 }
 
-/* Maximum number of TCP segments we support for soft-TSO */
+
 #define EFX_TSO_MAX_SEGS	100
 
-/* The smallest [rt]xq_entries that the driver supports.  RX minimum
- * is a bit arbitrary.  For TX, we must have space for at least 2
- * TSO skbs.
- */
+
 #define EFX_RXQ_MIN_ENT		128U
 #define EFX_TXQ_MIN_ENT(efx)	(2 * efx_tx_max_skb_descs(efx))
 
-/* All EF10 architecture NICs steal one bit of the DMAQ size for various
- * other purposes when counting TxQ entries, so we halve the queue size.
- */
+
 #define EFX_TXQ_MAX_ENT(efx)	(EFX_WORKAROUND_EF10(efx) ? \
 				 EFX_MAX_DMAQ_SIZE / 2 : EFX_MAX_DMAQ_SIZE)
 
@@ -73,33 +64,9 @@ static inline bool efx_rss_enabled(struct efx_nic *efx)
 	return efx->rss_spread > 1;
 }
 
-/* Filters */
 
-/**
- * efx_filter_insert_filter - add or replace a filter
- * @efx: NIC in which to insert the filter
- * @spec: Specification for the filter
- * @replace_equal: Flag for whether the specified filter may replace an
- *	existing filter with equal priority
- *
- * On success, return the filter ID.
- * On failure, return a negative error code.
- *
- * If existing filters have equal match values to the new filter spec,
- * then the new filter might replace them or the function might fail,
- * as follows.
- *
- * 1. If the existing filters have lower priority, or @replace_equal
- *    is set and they have equal priority, replace them.
- *
- * 2. If the existing filters have higher priority, return -%EPERM.
- *
- * 3. If !efx_filter_is_mc_recipient(@spec), or the NIC does not
- *    support delivery to multiple recipients, return -%EEXIST.
- *
- * This implies that filters for multiple multicast recipients must
- * all be inserted with the same priority and @replace_equal = %false.
- */
+
+
 static inline s32 efx_filter_insert_filter(struct efx_nic *efx,
 					   struct efx_filter_spec *spec,
 					   bool replace_equal)
@@ -107,15 +74,7 @@ static inline s32 efx_filter_insert_filter(struct efx_nic *efx,
 	return efx->type->filter_insert(efx, spec, replace_equal);
 }
 
-/**
- * efx_filter_remove_id_safe - remove a filter by ID, carefully
- * @efx: NIC from which to remove the filter
- * @priority: Priority of filter, as passed to @efx_filter_insert_filter
- * @filter_id: ID of filter, as returned by @efx_filter_insert_filter
- *
- * This function will range-check @filter_id, so it is safe to call
- * with a value passed from userland.
- */
+
 static inline int efx_filter_remove_id_safe(struct efx_nic *efx,
 					    enum efx_filter_priority priority,
 					    u32 filter_id)
@@ -123,16 +82,7 @@ static inline int efx_filter_remove_id_safe(struct efx_nic *efx,
 	return efx->type->filter_remove_safe(efx, priority, filter_id);
 }
 
-/**
- * efx_filter_get_filter_safe - retrieve a filter by ID, carefully
- * @efx: NIC from which to remove the filter
- * @priority: Priority of filter, as passed to @efx_filter_insert_filter
- * @filter_id: ID of filter, as returned by @efx_filter_insert_filter
- * @spec: Buffer in which to store filter specification
- *
- * This function will range-check @filter_id, so it is safe to call
- * with a value passed from userland.
- */
+
 static inline int
 efx_filter_get_filter_safe(struct efx_nic *efx,
 			   enum efx_filter_priority priority,
@@ -157,16 +107,16 @@ static inline s32 efx_filter_get_rx_ids(struct efx_nic *efx,
 	return efx->type->filter_get_rx_ids(efx, priority, buf, size);
 }
 
-/* RSS contexts */
+
 static inline bool efx_rss_active(struct efx_rss_context *ctx)
 {
 	return ctx->context_id != EFX_MCDI_RSS_CONTEXT_INVALID;
 }
 
-/* Ethtool support */
+
 extern const struct ethtool_ops efx_ethtool_ops;
 
-/* Global */
+
 unsigned int efx_usecs_to_ticks(struct efx_nic *efx, unsigned int usecs);
 unsigned int efx_ticks_to_usecs(struct efx_nic *efx, unsigned int ticks);
 int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
@@ -175,10 +125,10 @@ int efx_init_irq_moderation(struct efx_nic *efx, unsigned int tx_usecs,
 void efx_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
 			    unsigned int *rx_usecs, bool *rx_adaptive);
 
-/* Update the generic software stats in the passed stats array */
+
 void efx_update_sw_stats(struct efx_nic *efx, u64 *stats);
 
-/* MTD */
+
 #ifdef CONFIG_SFC_MTD
 int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
 		size_t n_parts, size_t sizeof_part);
@@ -205,13 +155,10 @@ static inline void efx_device_detach_sync(struct efx_nic *efx)
 {
 	struct net_device *dev = efx->net_dev;
 
-	/* We must stop reps (which use our TX) before we stop ourselves. */
+	
 	efx_detach_reps(efx);
 
-	/* Lock/freeze all TX queues so that we can be sure the
-	 * TX scheduler is stopped when we're done and before
-	 * netif_device_present() becomes false.
-	 */
+	
 	netif_tx_lock_bh(dev);
 	netif_device_detach(dev);
 	netif_tx_unlock_bh(dev);
@@ -238,4 +185,4 @@ static inline bool efx_rwsem_assert_write_locked(struct rw_semaphore *sem)
 int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
 		       bool flush);
 
-#endif /* EFX_EFX_H */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Analog Devices ADAU1373 Audio Codec drive
- *
- * Copyright 2011 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+
 
 #ifndef __SOUND_ADAU1373_H__
 #define __SOUND_ADAU1373_H__

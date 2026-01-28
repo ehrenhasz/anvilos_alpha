@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NAND Flash Controller Device Driver
- * Copyright (c) 2009 - 2010, Intel Corporation and its suppliers.
- */
+
+
 
 #ifndef __DENALI_H__
 #define __DENALI_H__
@@ -68,7 +65,7 @@
 #define     TWHR2_AND_WE_2_RE__TWHR2			GENMASK(13, 8)
 
 #define TCWAW_AND_ADDR_2_DATA			0x110
-/* The width of ADDR_2_DATA is 6 bit for old IP, 7 bit for new IP */
+
 #define     TCWAW_AND_ADDR_2_DATA__ADDR_2_DATA		GENMASK(6, 0)
 #define     TCWAW_AND_ADDR_2_DATA__TCWAW		GENMASK(13, 8)
 
@@ -207,10 +204,10 @@
 
 #define INTR_STATUS(bank)			(0x410 + (bank) * 0x50)
 #define INTR_EN(bank)				(0x420 + (bank) * 0x50)
-/* bit[1:0] is used differently depending on IP version */
-#define     INTR__ECC_UNCOR_ERR				BIT(0)	/* new IP */
-#define     INTR__ECC_TRANSACTION_DONE			BIT(0)	/* old IP */
-#define     INTR__ECC_ERR				BIT(1)	/* old IP */
+
+#define     INTR__ECC_UNCOR_ERR				BIT(0)	
+#define     INTR__ECC_TRANSACTION_DONE			BIT(0)	
+#define     INTR__ECC_ERR				BIT(1)	
 #define     INTR__DMA_CMD_COMP				BIT(2)
 #define     INTR__TIME_OUT				BIT(3)
 #define     INTR__PROGRAM_FAIL				BIT(4)
@@ -291,19 +288,7 @@
 #define     CHNL_ACTIVE__CHANNEL2			BIT(2)
 #define     CHNL_ACTIVE__CHANNEL3			BIT(3)
 
-/**
- * struct denali_chip_sel - per-CS data of Denali NAND
- *
- * @bank:                  bank id of the controller this CS is connected to
- * @hwhr2_and_we_2_re:     value of timing register HWHR2_AND_WE_2_RE
- * @tcwaw_and_addr_2_data: value of timing register TCWAW_AND_ADDR_2_DATA
- * @re_2_we:               value of timing register RE_2_WE
- * @acc_clks:              value of timing register ACC_CLKS
- * @rdwr_en_lo_cnt:        value of timing register RDWR_EN_LO_CNT
- * @rdwr_en_hi_cnt:        value of timing register RDWR_EN_HI_CNT
- * @cs_setup_cnt:          value of timing register CS_SETUP_CNT
- * @re_2_re:               value of timing register RE_2_RE
- */
+
 struct denali_chip_sel {
 	int bank;
 	u32 hwhr2_and_we_2_re;
@@ -316,14 +301,7 @@ struct denali_chip_sel {
 	u32 re_2_re;
 };
 
-/**
- * struct denali_chip - per-chip data of Denali NAND
- *
- * @chip:  base NAND chip structure
- * @node:  node to be used to associate this chip with the controller
- * @nsels: the number of CS lines of this chip
- * @sels:  the array of per-cs data
- */
+
 struct denali_chip {
 	struct nand_chip chip;
 	struct list_head node;
@@ -331,33 +309,7 @@ struct denali_chip {
 	struct denali_chip_sel sels[];
 };
 
-/**
- * struct denali_controller - Denali NAND controller data
- *
- * @controller:     base NAND controller structure
- * @dev:            device
- * @chips:          the list of chips attached to this controller
- * @clk_rate:       frequency of core clock
- * @clk_x_rate:     frequency of bus interface clock
- * @reg:            base of Register Interface
- * @host:           base of Host Data/Command interface
- * @complete:       completion used to wait for interrupts
- * @irq:            interrupt number
- * @irq_mask:       interrupt bits the controller is waiting for
- * @irq_status:     interrupt bits of events that have happened
- * @irq_lock:       lock to protect @irq_mask and @irq_status
- * @dma_avail:      set if DMA engine is available
- * @devs_per_cs:    number of devices connected in parallel
- * @oob_skip_bytes: number of bytes in OOB skipped by the ECC engine
- * @active_bank:    active bank id
- * @nbanks:         the number of banks supported by this controller
- * @revision:       IP revision
- * @caps:           controller capabilities that cannot be detected run-time
- * @ecc_caps:       ECC engine capabilities
- * @host_read:      callback for read access of Host Data/Command Interface
- * @host_write:     callback for write access of Host Data/Command Interface
- * @setup_dma:      callback for setup of the Data DMA
- */
+
 struct denali_controller {
 	struct nand_controller controller;
 	struct device *dev;
@@ -395,4 +347,4 @@ int denali_chip_init(struct denali_controller *denali,
 int denali_init(struct denali_controller *denali);
 void denali_remove(struct denali_controller *denali);
 
-#endif /* __DENALI_H__ */
+#endif 

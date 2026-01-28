@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SDHCI_PCI_H
 #define __SDHCI_PCI_H
 
-/*
- * PCI device IDs, sub IDs
- */
+
 
 #define PCI_DEVICE_ID_O2_SDS0		0x8420
 #define PCI_DEVICE_ID_O2_SDS1		0x8421
@@ -82,16 +80,12 @@
 #define PCI_DEVICE_ID_GLI_9763E		0xe763
 #define PCI_DEVICE_ID_GLI_9767		0x9767
 
-/*
- * PCI device class and mask
- */
+
 
 #define SYSTEM_SDHCI			(PCI_CLASS_SYSTEM_SDHCI << 8)
 #define PCI_CLASS_MASK			0xFFFF00
 
-/*
- * Macros for PCI device-description
- */
+
 
 #define _PCI_VEND(vend) PCI_VENDOR_ID_##vend
 #define _PCI_DEV(vend, dev) PCI_DEVICE_ID_##vend##_##dev
@@ -117,15 +111,13 @@
 	.driver_data = (kernel_ulong_t)&(sdhci_##cfg) \
 }
 
-/*
- * PCI registers
- */
+
 
 #define PCI_SDHCI_IFPIO			0x00
 #define PCI_SDHCI_IFDMA			0x01
 #define PCI_SDHCI_IFVENDOR		0x02
 
-#define PCI_SLOT_INFO			0x40	/* 8 bits */
+#define PCI_SLOT_INFO			0x40	
 #define  PCI_SLOT_INFO_SLOTS(x)		((x >> 4) & 7)
 #define  PCI_SLOT_INFO_FIRST_BAR_MASK	0x07
 
@@ -180,8 +172,8 @@ struct sdhci_pci_chip {
 	bool			rpm_retune;
 	const struct sdhci_pci_fixes *fixes;
 
-	int			num_slots;	/* Slots on controller */
-	struct sdhci_pci_slot	*slots[MAX_SLOTS]; /* Pointers to host slots */
+	int			num_slots;	
+	struct sdhci_pci_slot	*slots[MAX_SLOTS]; 
 };
 
 static inline void *sdhci_pci_priv(struct sdhci_pci_slot *slot)
@@ -202,4 +194,4 @@ extern const struct sdhci_pci_fixes sdhci_gl9755;
 extern const struct sdhci_pci_fixes sdhci_gl9763e;
 extern const struct sdhci_pci_fixes sdhci_gl9767;
 
-#endif /* __SDHCI_PCI_H */
+#endif 

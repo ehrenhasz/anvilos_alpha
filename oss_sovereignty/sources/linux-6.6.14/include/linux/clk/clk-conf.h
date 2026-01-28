@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2014 Samsung Electronics Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+
 
 #ifndef __CLK_CONF_H
 #define __CLK_CONF_H
@@ -21,4 +18,4 @@ static inline int of_clk_set_defaults(struct device_node *node,
 }
 #endif
 
-#endif /* __CLK_CONF_H */
+#endif 

@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef I18N_H
 #define I18N_H
-/* Internationalization declarations */
+
 
 enum msg_index_t {
 	MSG_FIRST_INDEX,
@@ -24,7 +24,7 @@ enum msg_index_t {
 	MSG_ON,
 	MSG_NO_WINDOW,
 
-	/* These must be ordered the same as enum cursor_track */
+	
 	MSG_CURSOR_MSGS_START,
 	MSG_CURSORING_OFF = MSG_CURSOR_MSGS_START,
 	MSG_CURSORING_ON,
@@ -45,7 +45,7 @@ enum msg_index_t {
 	MSG_IS_UNASSIGNED,
 	MSG_HELP_INFO,
 
-	/* These must be ordered the same as enum edge */
+	
 	MSG_EDGE_MSGS_START,
 	MSG_EDGE_TOP  = MSG_EDGE_MSGS_START,
 	MSG_EDGE_BOTTOM,
@@ -54,15 +54,15 @@ enum msg_index_t {
 
 	MSG_NUMBER,
 	MSG_SPACE,
-	MSG_START, /* A little confusing, given our convention. */
-	MSG_END, /* A little confusing, given our convention. */
+	MSG_START, 
+	MSG_END, 
 	MSG_CTRL,
 
-/* A message containing the single word "or". */
+
 	MSG_DISJUNCTION,
 	MSG_ANNOUNCEMENTS_END = MSG_DISJUNCTION,
 
-/* Messages with format specifiers. */
+
 	MSG_FORMATTED_START,
 	MSG_POS_INFO = MSG_FORMATTED_START,
 	MSG_CHAR_INFO,
@@ -75,7 +75,7 @@ enum msg_index_t {
 	MSG_KEYDESC,
 	MSG_FORMATTED_END = MSG_KEYDESC,
 
-	/* Control keys. */
+	
 	MSG_CTL_START,
 	MSG_CTL_SHIFT = MSG_CTL_START,
 	MSG_CTL_ALTGR,
@@ -88,7 +88,7 @@ enum msg_index_t {
 	MSG_CTL_CAPSSHIFT,
 	MSG_CTL_END = MSG_CTL_CAPSSHIFT,
 
-	/* Colors. */
+	
 	MSG_COLORS_START,
 	MSG_COLOR_BLACK = MSG_COLORS_START,
 	MSG_COLOR_BLUE,
@@ -228,7 +228,7 @@ enum msg_index_t {
 	MSG_FUNCNAME_WORD_SAY_PREVIOUS,
 	MSG_FUNCNAMES_END = MSG_FUNCNAME_WORD_SAY_PREVIOUS,
 
-	/* all valid indices must be above this */
+	
 	MSG_LAST_INDEX
 };
 

@@ -25,7 +25,7 @@ def mnt_run_test(tss, argv):
 			break
 	if ((rc < 0) and (i == ())):
 		return usage(tss)
-	return not not rc #because !!rc is too mainstream for python
+	return not not rc 
 def parser_errcb(tb, fname, line):
 	print("{:s}:{:d}: parse error".format(fname, line))
 	return 1

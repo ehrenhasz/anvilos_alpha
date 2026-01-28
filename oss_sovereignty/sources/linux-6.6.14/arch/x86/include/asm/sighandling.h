@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_SIGHANDLING_H
 #define _ASM_X86_SIGHANDLING_H
 
@@ -24,4 +24,4 @@ int ia32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);
 int x64_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);
 int x32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);
 
-#endif /* _ASM_X86_SIGHANDLING_H */
+#endif 

@@ -1,91 +1,14 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * hcd.h - DesignWare HS OTG Controller host-mode declarations
- *
- * Copyright (C) 2004-2013 Synopsys, Inc.
- */
+
+
 
 #ifndef __DWC2_HCD_H__
 #define __DWC2_HCD_H__
 
-/*
- * This file contains the structures, constants, and interfaces for the
- * Host Contoller Driver (HCD)
- *
- * The Host Controller Driver (HCD) is responsible for translating requests
- * from the USB Driver into the appropriate actions on the DWC_otg controller.
- * It isolates the USBD from the specifics of the controller by providing an
- * API to the USBD.
- */
+
 
 struct dwc2_qh;
 
-/**
- * struct dwc2_host_chan - Software host channel descriptor
- *
- * @hc_num:             Host channel number, used for register address lookup
- * @dev_addr:           Address of the device
- * @ep_num:             Endpoint of the device
- * @ep_is_in:           Endpoint direction
- * @speed:              Device speed. One of the following values:
- *                       - USB_SPEED_LOW
- *                       - USB_SPEED_FULL
- *                       - USB_SPEED_HIGH
- * @ep_type:            Endpoint type. One of the following values:
- *                       - USB_ENDPOINT_XFER_CONTROL: 0
- *                       - USB_ENDPOINT_XFER_ISOC:    1
- *                       - USB_ENDPOINT_XFER_BULK:    2
- *                       - USB_ENDPOINT_XFER_INTR:    3
- * @max_packet:         Max packet size in bytes
- * @data_pid_start:     PID for initial transaction.
- *                       0: DATA0
- *                       1: DATA2
- *                       2: DATA1
- *                       3: MDATA (non-Control EP),
- *                          SETUP (Control EP)
- * @multi_count:        Number of additional periodic transactions per
- *                      (micro)frame
- * @xfer_buf:           Pointer to current transfer buffer position
- * @xfer_dma:           DMA address of xfer_buf
- * @align_buf:          In Buffer DMA mode this will be used if xfer_buf is not
- *                      DWORD aligned
- * @xfer_len:           Total number of bytes to transfer
- * @xfer_count:         Number of bytes transferred so far
- * @start_pkt_count:    Packet count at start of transfer
- * @xfer_started:       True if the transfer has been started
- * @do_ping:            True if a PING request should be issued on this channel
- * @error_state:        True if the error count for this transaction is non-zero
- * @halt_on_queue:      True if this channel should be halted the next time a
- *                      request is queued for the channel. This is necessary in
- *                      slave mode if no request queue space is available when
- *                      an attempt is made to halt the channel.
- * @halt_pending:       True if the host channel has been halted, but the core
- *                      is not finished flushing queued requests
- * @do_split:           Enable split for the channel
- * @complete_split:     Enable complete split
- * @hub_addr:           Address of high speed hub for the split
- * @hub_port:           Port of the low/full speed device for the split
- * @xact_pos:           Split transaction position. One of the following values:
- *                       - DWC2_HCSPLT_XACTPOS_MID
- *                       - DWC2_HCSPLT_XACTPOS_BEGIN
- *                       - DWC2_HCSPLT_XACTPOS_END
- *                       - DWC2_HCSPLT_XACTPOS_ALL
- * @requests:           Number of requests issued for this channel since it was
- *                      assigned to the current transfer (not counting PINGs)
- * @schinfo:            Scheduling micro-frame bitmap
- * @ntd:                Number of transfer descriptors for the transfer
- * @halt_status:        Reason for halting the host channel
- * @hcint:               Contents of the HCINT register when the interrupt came
- * @qh:                 QH for the transfer being processed by this channel
- * @hc_list_entry:      For linking to list of host channels
- * @desc_list_addr:     Current QH's descriptor list DMA address
- * @desc_list_sz:       Current QH's descriptor list size
- * @split_order_list_entry: List entry for keeping track of the order of splits
- *
- * This structure represents the state of a single host channel when acting in
- * host mode. It contains the data items needed to transfer packets to an
- * endpoint via a host channel.
- */
+
 struct dwc2_host_chan {
 	u8 hc_num;
 
@@ -173,14 +96,14 @@ struct dwc2_hcd_urb {
 	struct dwc2_hcd_iso_packet_desc iso_descs[];
 };
 
-/* Phases for control transfers */
+
 enum dwc2_control_phase {
 	DWC2_CONTROL_SETUP,
 	DWC2_CONTROL_DATA,
 	DWC2_CONTROL_STATUS,
 };
 
-/* Transaction types */
+
 enum dwc2_transaction_type {
 	DWC2_TRANSACTION_NONE,
 	DWC2_TRANSACTION_PERIODIC,
@@ -188,126 +111,25 @@ enum dwc2_transaction_type {
 	DWC2_TRANSACTION_ALL,
 };
 
-/* The number of elements per LS bitmap (per port on multi_tt) */
+
 #define DWC2_ELEMENTS_PER_LS_BITMAP	DIV_ROUND_UP(DWC2_LS_SCHEDULE_SLICES, \
 						     BITS_PER_LONG)
 
-/**
- * struct dwc2_tt - dwc2 data associated with a usb_tt
- *
- * @refcount:           Number of Queue Heads (QHs) holding a reference.
- * @usb_tt:             Pointer back to the official usb_tt.
- * @periodic_bitmaps:   Bitmap for which parts of the 1ms frame are accounted
- *                      for already.  Each is DWC2_ELEMENTS_PER_LS_BITMAP
- *			elements (so sizeof(long) times that in bytes).
- *
- * This structure is stored in the hcpriv of the official usb_tt.
- */
+
 struct dwc2_tt {
 	int refcount;
 	struct usb_tt *usb_tt;
 	unsigned long periodic_bitmaps[];
 };
 
-/**
- * struct dwc2_hs_transfer_time - Info about a transfer on the high speed bus.
- *
- * @start_schedule_us:  The start time on the main bus schedule.  Note that
- *                         the main bus schedule is tightly packed and this
- *			   time should be interpreted as tightly packed (so
- *			   uFrame 0 starts at 0 us, uFrame 1 starts at 100 us
- *			   instead of 125 us).
- * @duration_us:           How long this transfer goes.
- */
+
 
 struct dwc2_hs_transfer_time {
 	u32 start_schedule_us;
 	u16 duration_us;
 };
 
-/**
- * struct dwc2_qh - Software queue head structure
- *
- * @hsotg:              The HCD state structure for the DWC OTG controller
- * @ep_type:            Endpoint type. One of the following values:
- *                       - USB_ENDPOINT_XFER_CONTROL
- *                       - USB_ENDPOINT_XFER_BULK
- *                       - USB_ENDPOINT_XFER_INT
- *                       - USB_ENDPOINT_XFER_ISOC
- * @ep_is_in:           Endpoint direction
- * @maxp:               Value from wMaxPacketSize field of Endpoint Descriptor
- * @maxp_mult:          Multiplier for maxp
- * @dev_speed:          Device speed. One of the following values:
- *                       - USB_SPEED_LOW
- *                       - USB_SPEED_FULL
- *                       - USB_SPEED_HIGH
- * @data_toggle:        Determines the PID of the next data packet for
- *                      non-controltransfers. Ignored for control transfers.
- *                      One of the following values:
- *                       - DWC2_HC_PID_DATA0
- *                       - DWC2_HC_PID_DATA1
- * @ping_state:         Ping state
- * @do_split:           Full/low speed endpoint on high-speed hub requires split
- * @td_first:           Index of first activated isochronous transfer descriptor
- * @td_last:            Index of last activated isochronous transfer descriptor
- * @host_us:            Bandwidth in microseconds per transfer as seen by host
- * @device_us:          Bandwidth in microseconds per transfer as seen by device
- * @host_interval:      Interval between transfers as seen by the host.  If
- *                      the host is high speed and the device is low speed this
- *                      will be 8 times device interval.
- * @device_interval:    Interval between transfers as seen by the device.
- *                      interval.
- * @next_active_frame:  (Micro)frame _before_ we next need to put something on
- *                      the bus.  We'll move the qh to active here.  If the
- *                      host is in high speed mode this will be a uframe.  If
- *                      the host is in low speed mode this will be a full frame.
- * @start_active_frame: If we are partway through a split transfer, this will be
- *			what next_active_frame was when we started.  Otherwise
- *			it should always be the same as next_active_frame.
- * @num_hs_transfers:   Number of transfers in hs_transfers.
- *                      Normally this is 1 but can be more than one for splits.
- *                      Always >= 1 unless the host is in low/full speed mode.
- * @hs_transfers:       Transfers that are scheduled as seen by the high speed
- *                      bus.  Not used if host is in low or full speed mode (but
- *                      note that it IS USED if the device is low or full speed
- *                      as long as the HOST is in high speed mode).
- * @ls_start_schedule_slice: Start time (in slices) on the low speed bus
- *                           schedule that's being used by this device.  This
- *			     will be on the periodic_bitmap in a
- *                           "struct dwc2_tt".  Not used if this device is high
- *                           speed.  Note that this is in "schedule slice" which
- *                           is tightly packed.
- * @ntd:                Actual number of transfer descriptors in a list
- * @dw_align_buf:       Used instead of original buffer if its physical address
- *                      is not dword-aligned
- * @dw_align_buf_dma:   DMA address for dw_align_buf
- * @qtd_list:           List of QTDs for this QH
- * @channel:            Host channel currently processing transfers for this QH
- * @qh_list_entry:      Entry for QH in either the periodic or non-periodic
- *                      schedule
- * @desc_list:          List of transfer descriptors
- * @desc_list_dma:      Physical address of desc_list
- * @desc_list_sz:       Size of descriptors list
- * @n_bytes:            Xfer Bytes array. Each element corresponds to a transfer
- *                      descriptor and indicates original XferSize value for the
- *                      descriptor
- * @unreserve_timer:    Timer for releasing periodic reservation.
- * @wait_timer:         Timer used to wait before re-queuing.
- * @dwc_tt:            Pointer to our tt info (or NULL if no tt).
- * @ttport:             Port number within our tt.
- * @tt_buffer_dirty     True if clear_tt_buffer_complete is pending
- * @unreserve_pending:  True if we planned to unreserve but haven't yet.
- * @schedule_low_speed: True if we have a low/full speed component (either the
- *			host is in low/full speed mode or do_split).
- * @want_wait:          We should wait before re-queuing; only matters for non-
- *                      periodic transfers and is ignored for periodic ones.
- * @wait_timer_cancel:  Set to true to cancel the wait_timer.
- *
- * @tt_buffer_dirty:	True if EP's TT buffer is not clean.
- * A Queue Head (QH) holds the static characteristics of an endpoint and
- * maintains a list of transfers (QTDs) for that endpoint. A QH structure may
- * be entered in either the non-periodic or periodic schedule.
- */
+
 struct dwc2_qh {
 	struct dwc2_hsotg *hsotg;
 	u8 ep_type;
@@ -350,55 +172,7 @@ struct dwc2_qh {
 	unsigned wait_timer_cancel:1;
 };
 
-/**
- * struct dwc2_qtd - Software queue transfer descriptor (QTD)
- *
- * @control_phase:      Current phase for control transfers (Setup, Data, or
- *                      Status)
- * @in_process:         Indicates if this QTD is currently processed by HW
- * @data_toggle:        Determines the PID of the next data packet for the
- *                      data phase of control transfers. Ignored for other
- *                      transfer types. One of the following values:
- *                       - DWC2_HC_PID_DATA0
- *                       - DWC2_HC_PID_DATA1
- * @complete_split:     Keeps track of the current split type for FS/LS
- *                      endpoints on a HS Hub
- * @isoc_split_pos:     Position of the ISOC split in full/low speed
- * @isoc_frame_index:   Index of the next frame descriptor for an isochronous
- *                      transfer. A frame descriptor describes the buffer
- *                      position and length of the data to be transferred in the
- *                      next scheduled (micro)frame of an isochronous transfer.
- *                      It also holds status for that transaction. The frame
- *                      index starts at 0.
- * @isoc_split_offset:  Position of the ISOC split in the buffer for the
- *                      current frame
- * @ssplit_out_xfer_count: How many bytes transferred during SSPLIT OUT
- * @error_count:        Holds the number of bus errors that have occurred for
- *                      a transaction within this transfer
- * @n_desc:             Number of DMA descriptors for this QTD
- * @isoc_frame_index_last: Last activated frame (packet) index, used in
- *                      descriptor DMA mode only
- * @num_naks:           Number of NAKs received on this QTD.
- * @urb:                URB for this transfer
- * @qh:                 Queue head for this QTD
- * @qtd_list_entry:     For linking to the QH's list of QTDs
- * @isoc_td_first:	Index of first activated isochronous transfer
- *			descriptor in Descriptor DMA mode
- * @isoc_td_last:	Index of last activated isochronous transfer
- *			descriptor in Descriptor DMA mode
- *
- * A Queue Transfer Descriptor (QTD) holds the state of a bulk, control,
- * interrupt, or isochronous transfer. A single QTD is created for each URB
- * (of one of these types) submitted to the HCD. The transfer associated with
- * a QTD may require one or multiple transactions.
- *
- * A QTD is linked to a Queue Head, which is entered in either the
- * non-periodic or periodic schedule for execution. When a QTD is chosen for
- * execution, some or all of its transactions may be executed. After
- * execution, the state of the QTD is updated. The QTD may be retired if all
- * its transactions are complete or if an error occurred. Otherwise, it
- * remains in the schedule so more transactions can be executed later.
- */
+
 struct dwc2_qtd {
 	enum dwc2_control_phase control_phase;
 	u8 in_process;
@@ -428,19 +202,13 @@ struct hc_xfer_info {
 
 u32 dwc2_calc_frame_interval(struct dwc2_hsotg *hsotg);
 
-/* Gets the struct usb_hcd that contains a struct dwc2_hsotg */
+
 static inline struct usb_hcd *dwc2_hsotg_to_hcd(struct dwc2_hsotg *hsotg)
 {
 	return (struct usb_hcd *)hsotg->priv;
 }
 
-/*
- * Inline used to disable one channel interrupt. Channel interrupts are
- * disabled when the channel is halted or released by the interrupt handler.
- * There is no need to handle further interrupts of that type until the
- * channel is re-assigned. In fact, subsequent handling may cause crashes
- * because the channel structures are cleaned up when the channel is released.
- */
+
 static inline void disable_hc_int(struct dwc2_hsotg *hsotg, int chnum, u32 intr)
 {
 	u32 mask = dwc2_readl(hsotg, HCINTMSK(chnum));
@@ -455,10 +223,7 @@ void dwc2_hc_halt(struct dwc2_hsotg *hsotg, struct dwc2_host_chan *chan,
 void dwc2_hc_start_transfer_ddma(struct dwc2_hsotg *hsotg,
 				 struct dwc2_host_chan *chan);
 
-/*
- * Reads HPRT0 in preparation to modify. It keeps the WC bits 0 so that if they
- * are read as 1, they won't clear when written back.
- */
+
 static inline u32 dwc2_read_hprt0(struct dwc2_hsotg *hsotg)
 {
 	u32 hprt0 = dwc2_readl(hsotg, HPRT0);
@@ -525,14 +290,14 @@ static inline u8 dwc2_hcd_is_pipe_out(struct dwc2_hcd_pipe_info *pipe)
 int dwc2_hcd_init(struct dwc2_hsotg *hsotg);
 void dwc2_hcd_remove(struct dwc2_hsotg *hsotg);
 
-/* Transaction Execution Functions */
+
 enum dwc2_transaction_type dwc2_hcd_select_transactions(
 						struct dwc2_hsotg *hsotg);
 void dwc2_hcd_queue_transactions(struct dwc2_hsotg *hsotg,
 				 enum dwc2_transaction_type tr_type);
 
-/* Schedule Queue Functions */
-/* Implemented in hcd_queue.c */
+
+
 struct dwc2_qh *dwc2_hcd_qh_create(struct dwc2_hsotg *hsotg,
 				   struct dwc2_hcd_urb *urb,
 					  gfp_t mem_flags);
@@ -546,7 +311,7 @@ void dwc2_hcd_qtd_init(struct dwc2_qtd *qtd, struct dwc2_hcd_urb *urb);
 int dwc2_hcd_qtd_add(struct dwc2_hsotg *hsotg, struct dwc2_qtd *qtd,
 		     struct dwc2_qh *qh);
 
-/* Unlinks and frees a QTD */
+
 static inline void dwc2_hcd_qtd_unlink_and_free(struct dwc2_hsotg *hsotg,
 						struct dwc2_qtd *qtd,
 						struct dwc2_qh *qh)
@@ -555,7 +320,7 @@ static inline void dwc2_hcd_qtd_unlink_and_free(struct dwc2_hsotg *hsotg,
 	kfree(qtd);
 }
 
-/* Descriptor DMA support functions */
+
 void dwc2_hcd_start_xfer_ddma(struct dwc2_hsotg *hsotg,
 			      struct dwc2_qh *qh);
 void dwc2_hcd_complete_xfer_ddma(struct dwc2_hsotg *hsotg,
@@ -566,7 +331,7 @@ int dwc2_hcd_qh_init_ddma(struct dwc2_hsotg *hsotg, struct dwc2_qh *qh,
 			  gfp_t mem_flags);
 void dwc2_hcd_qh_free_ddma(struct dwc2_hsotg *hsotg, struct dwc2_qh *qh);
 
-/* Check if QH is non-periodic */
+
 #define dwc2_qh_is_non_per(_qh_ptr_) \
 	((_qh_ptr_)->ep_type == USB_ENDPOINT_XFER_BULK || \
 	 (_qh_ptr_)->ep_type == USB_ENDPOINT_XFER_CONTROL)
@@ -576,7 +341,7 @@ static inline bool dbg_hc(struct dwc2_host_chan *hc) { return true; }
 static inline bool dbg_qh(struct dwc2_qh *qh) { return true; }
 static inline bool dbg_urb(struct urb *urb) { return true; }
 static inline bool dbg_perio(void) { return true; }
-#else /* !CONFIG_USB_DWC2_DEBUG_PERIODIC */
+#else 
 static inline bool dbg_hc(struct dwc2_host_chan *hc)
 {
 	return hc->ep_type == USB_ENDPOINT_XFER_BULK ||
@@ -598,11 +363,7 @@ static inline bool dbg_urb(struct urb *urb)
 static inline bool dbg_perio(void) { return false; }
 #endif
 
-/*
- * Returns true if frame1 index is greater than frame2 index. The comparison
- * is done modulo FRLISTEN_64_SIZE. This accounts for the rollover of the
- * frame number when the max index frame number is reached.
- */
+
 static inline bool dwc2_frame_idx_num_gt(u16 fr_idx1, u16 fr_idx2)
 {
 	u16 diff = fr_idx1 - fr_idx2;
@@ -611,31 +372,20 @@ static inline bool dwc2_frame_idx_num_gt(u16 fr_idx1, u16 fr_idx2)
 	return diff && !sign;
 }
 
-/*
- * Returns true if frame1 is less than or equal to frame2. The comparison is
- * done modulo HFNUM_MAX_FRNUM. This accounts for the rollover of the
- * frame number when the max frame number is reached.
- */
+
 static inline int dwc2_frame_num_le(u16 frame1, u16 frame2)
 {
 	return ((frame2 - frame1) & HFNUM_MAX_FRNUM) <= (HFNUM_MAX_FRNUM >> 1);
 }
 
-/*
- * Returns true if frame1 is greater than frame2. The comparison is done
- * modulo HFNUM_MAX_FRNUM. This accounts for the rollover of the frame
- * number when the max frame number is reached.
- */
+
 static inline int dwc2_frame_num_gt(u16 frame1, u16 frame2)
 {
 	return (frame1 != frame2) &&
 	       ((frame1 - frame2) & HFNUM_MAX_FRNUM) < (HFNUM_MAX_FRNUM >> 1);
 }
 
-/*
- * Increments frame by the amount specified by inc. The addition is done
- * modulo HFNUM_MAX_FRNUM. Returns the incremented value.
- */
+
 static inline u16 dwc2_frame_num_inc(u16 frame, u16 inc)
 {
 	return (frame + inc) & HFNUM_MAX_FRNUM;
@@ -656,10 +406,7 @@ static inline u16 dwc2_micro_frame_num(u16 frame)
 	return frame & 0x7;
 }
 
-/*
- * Returns the Core Interrupt Status register contents, ANDed with the Core
- * Interrupt Mask register contents
- */
+
 static inline u32 dwc2_read_core_intr(struct dwc2_hsotg *hsotg)
 {
 	return dwc2_readl(hsotg, GINTSTS) &
@@ -730,50 +477,27 @@ void dwc2_hcd_save_data_toggle(struct dwc2_hsotg *hsotg,
 			       struct dwc2_host_chan *chan, int chnum,
 				      struct dwc2_qtd *qtd);
 
-/* HCD Core API */
 
-/**
- * dwc2_handle_hcd_intr() - Called on every hardware interrupt
- *
- * @hsotg: The DWC2 HCD
- *
- * Returns IRQ_HANDLED if interrupt is handled
- * Return IRQ_NONE if interrupt is not handled
- */
+
+
 irqreturn_t dwc2_handle_hcd_intr(struct dwc2_hsotg *hsotg);
 
-/**
- * dwc2_hcd_stop() - Halts the DWC_otg host mode operation
- *
- * @hsotg: The DWC2 HCD
- */
+
 void dwc2_hcd_stop(struct dwc2_hsotg *hsotg);
 
-/**
- * dwc2_hcd_is_b_host() - Returns 1 if core currently is acting as B host,
- * and 0 otherwise
- *
- * @hsotg: The DWC2 HCD
- */
+
 int dwc2_hcd_is_b_host(struct dwc2_hsotg *hsotg);
 
-/**
- * dwc2_hcd_dump_state() - Dumps hsotg state
- *
- * @hsotg: The DWC2 HCD
- *
- * NOTE: This function will be removed once the peripheral controller code
- * is integrated and the driver is stable
- */
+
 void dwc2_hcd_dump_state(struct dwc2_hsotg *hsotg);
 
-/* URB interface */
 
-/* Transfer flags */
+
+
 #define URB_GIVEBACK_ASAP	0x1
 #define URB_SEND_ZERO_PACKET	0x2
 
-/* Host driver callbacks */
+
 struct dwc2_tt *dwc2_host_get_tt_info(struct dwc2_hsotg *hsotg,
 				      void *context, gfp_t mem_flags,
 				      int *ttport);
@@ -784,4 +508,4 @@ int dwc2_host_get_speed(struct dwc2_hsotg *hsotg, void *context);
 void dwc2_host_complete(struct dwc2_hsotg *hsotg, struct dwc2_qtd *qtd,
 			int status);
 
-#endif /* __DWC2_HCD_H__ */
+#endif 

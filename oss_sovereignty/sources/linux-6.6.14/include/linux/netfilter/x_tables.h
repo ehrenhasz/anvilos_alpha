@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _X_TABLES_H
 #define _X_TABLES_H
 
@@ -8,25 +8,11 @@
 #include <linux/netfilter.h>
 #include <uapi/linux/netfilter/x_tables.h>
 
-/* Test a struct->invflags and a boolean for inequality */
+
 #define NF_INVF(ptr, flag, boolean)					\
 	((boolean) ^ !!((ptr)->invflags & (flag)))
 
-/**
- * struct xt_action_param - parameters for matches/targets
- *
- * @match:	the match extension
- * @target:	the target extension
- * @matchinfo:	per-match data
- * @targetinfo:	per-target data
- * @state:	pointer to hook state this packet came from
- * @fragoff:	packet is a fragment, this is the data offset
- * @thoff:	position of transport header relative to skb->data
- *
- * Fields written to by extensions:
- *
- * @hotdrop:	drop packet if we had inspection problems
- */
+
 struct xt_action_param {
 	union {
 		const struct xt_match *match;
@@ -76,19 +62,7 @@ static inline u_int8_t xt_family(const struct xt_action_param *par)
 	return par->state->pf;
 }
 
-/**
- * struct xt_mtchk_param - parameters for match extensions'
- * checkentry functions
- *
- * @net:	network namespace through which the check was invoked
- * @table:	table the rule is tried to be inserted into
- * @entryinfo:	the family-specific rule data
- * 		(struct ipt_ip, ip6t_ip, arpt_arp or (note) ebt_entry)
- * @match:	struct xt_match through which this function was invoked
- * @matchinfo:	per-match data
- * @hook_mask:	via which hooks the new rule is reachable
- * Other fields as above.
- */
+
 struct xt_mtchk_param {
 	struct net *net;
 	const char *table;
@@ -100,10 +74,7 @@ struct xt_mtchk_param {
 	bool nft_compat;
 };
 
-/**
- * struct xt_mdtor_param - match destructor parameters
- * Fields as above.
- */
+
 struct xt_mtdtor_param {
 	struct net *net;
 	const struct xt_match *match;
@@ -111,15 +82,7 @@ struct xt_mtdtor_param {
 	u_int8_t family;
 };
 
-/**
- * struct xt_tgchk_param - parameters for target extensions'
- * checkentry functions
- *
- * @entryinfo:	the family-specific rule data
- * 		(struct ipt_entry, ip6t_entry, arpt_entry, ebt_entry)
- *
- * Other fields see above.
- */
+
 struct xt_tgchk_param {
 	struct net *net;
 	const char *table;
@@ -131,7 +94,7 @@ struct xt_tgchk_param {
 	bool nft_compat;
 };
 
-/* Target destructor parameters */
+
 struct xt_tgdtor_param {
 	struct net *net;
 	const struct xt_target *target;
@@ -145,25 +108,22 @@ struct xt_match {
 	const char name[XT_EXTENSION_MAXNAMELEN];
 	u_int8_t revision;
 
-	/* Return true or false: return FALSE and set *hotdrop = 1 to
-           force immediate packet drop. */
-	/* Arguments changed since 2.6.9, as this must now handle
-	   non-linear skb, using skb_header_pointer and
-	   skb_ip_make_writable. */
+	
+	
 	bool (*match)(const struct sk_buff *skb,
 		      struct xt_action_param *);
 
-	/* Called when user tries to insert an entry of this type. */
+	
 	int (*checkentry)(const struct xt_mtchk_param *);
 
-	/* Called when entry of this type deleted. */
+	
 	void (*destroy)(const struct xt_mtdtor_param *);
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
-	/* Called when userspace align differs from kernel space one */
+	
 	void (*compat_from_user)(void *dst, const void *src);
 	int (*compat_to_user)(void __user *dst, const void *src);
 #endif
-	/* Set this to THIS_MODULE if you are a module, otherwise NULL */
+	
 	struct module *me;
 
 	const char *table;
@@ -178,33 +138,29 @@ struct xt_match {
 	unsigned short family;
 };
 
-/* Registration hooks for targets. */
+
 struct xt_target {
 	struct list_head list;
 
 	const char name[XT_EXTENSION_MAXNAMELEN];
 	u_int8_t revision;
 
-	/* Returns verdict. Argument order changed since 2.6.9, as this
-	   must now handle non-linear skbs, using skb_copy_bits and
-	   skb_ip_make_writable. */
+	
 	unsigned int (*target)(struct sk_buff *skb,
 			       const struct xt_action_param *);
 
-	/* Called when user tries to insert an entry of this type:
-           hook_mask is a bitmask of hooks from which it can be
-           called. */
-	/* Should return 0 on success or an error code otherwise (-Exxxx). */
+	
+	
 	int (*checkentry)(const struct xt_tgchk_param *);
 
-	/* Called when entry of this type deleted. */
+	
 	void (*destroy)(const struct xt_tgdtor_param *);
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
-	/* Called when userspace align differs from kernel space one */
+	
 	void (*compat_from_user)(void *dst, const void *src);
 	int (*compat_to_user)(void __user *dst, const void *src);
 #endif
-	/* Set this to THIS_MODULE if you are a module, otherwise NULL */
+	
 	struct module *me;
 
 	const char *table;
@@ -219,48 +175,45 @@ struct xt_target {
 	unsigned short family;
 };
 
-/* Furniture shopping... */
+
 struct xt_table {
 	struct list_head list;
 
-	/* What hooks you will enter on */
+	
 	unsigned int valid_hooks;
 
-	/* Man behind the curtain... */
+	
 	struct xt_table_info *private;
 
-	/* hook ops that register the table with the netfilter core */
+	
 	struct nf_hook_ops *ops;
 
-	/* Set this to THIS_MODULE if you are a module, otherwise NULL */
+	
 	struct module *me;
 
-	u_int8_t af;		/* address/protocol family */
-	int priority;		/* hook order */
+	u_int8_t af;		
+	int priority;		
 
-	/* A unique name... */
+	
 	const char name[XT_TABLE_MAXNAMELEN];
 };
 
 #include <linux/netfilter_ipv4.h>
 
-/* The table itself */
+
 struct xt_table_info {
-	/* Size per table */
+	
 	unsigned int size;
-	/* Number of entries: FIXME. --RR */
+	
 	unsigned int number;
-	/* Initial number of entries. Needed for module usage count */
+	
 	unsigned int initial_entries;
 
-	/* Entry points and underflows */
+	
 	unsigned int hook_entry[NF_INET_NUMHOOKS];
 	unsigned int underflow[NF_INET_NUMHOOKS];
 
-	/*
-	 * Number of user chains. Since tables cannot have loops, at most
-	 * @stacksize jumps (number of user chains) can possibly be made.
-	 */
+	
 	unsigned int stacksize;
 	void ***jumpstack;
 
@@ -335,71 +288,36 @@ void xt_proto_fini(struct net *net, u_int8_t af);
 struct xt_table_info *xt_alloc_table_info(unsigned int size);
 void xt_free_table_info(struct xt_table_info *info);
 
-/**
- * xt_recseq - recursive seqcount for netfilter use
- *
- * Packet processing changes the seqcount only if no recursion happened
- * get_counters() can use read_seqcount_begin()/read_seqcount_retry(),
- * because we use the normal seqcount convention :
- * Low order bit set to 1 if a writer is active.
- */
+
 DECLARE_PER_CPU(seqcount_t, xt_recseq);
 
-/* xt_tee_enabled - true if x_tables needs to handle reentrancy
- *
- * Enabled if current ip(6)tables ruleset has at least one -j TEE rule.
- */
+
 extern struct static_key xt_tee_enabled;
 
-/**
- * xt_write_recseq_begin - start of a write section
- *
- * Begin packet processing : all readers must wait the end
- * 1) Must be called with preemption disabled
- * 2) softirqs must be disabled too (or we should use this_cpu_add())
- * Returns :
- *  1 if no recursion on this cpu
- *  0 if recursion detected
- */
+
 static inline unsigned int xt_write_recseq_begin(void)
 {
 	unsigned int addend;
 
-	/*
-	 * Low order bit of sequence is set if we already
-	 * called xt_write_recseq_begin().
-	 */
+	
 	addend = (__this_cpu_read(xt_recseq.sequence) + 1) & 1;
 
-	/*
-	 * This is kind of a write_seqcount_begin(), but addend is 0 or 1
-	 * We dont check addend value to avoid a test and conditional jump,
-	 * since addend is most likely 1
-	 */
+	
 	__this_cpu_add(xt_recseq.sequence, addend);
 	smp_mb();
 
 	return addend;
 }
 
-/**
- * xt_write_recseq_end - end of a write section
- * @addend: return value from previous xt_write_recseq_begin()
- *
- * End packet processing : all readers can proceed
- * 1) Must be called with preemption disabled
- * 2) softirqs must be disabled too (or we should use this_cpu_add())
- */
+
 static inline void xt_write_recseq_end(unsigned int addend)
 {
-	/* this is kind of a write_seqcount_end(), but addend is 0 or 1 */
+	
 	smp_wmb();
 	__this_cpu_add(xt_recseq.sequence, addend);
 }
 
-/*
- * This helper is performance critical and must be inlined
- */
+
 static inline unsigned long ifname_compare_aligned(const char *_a,
 						   const char *_b,
 						   const char *_mask)
@@ -487,12 +405,10 @@ struct compat_xt_entry_target {
 	unsigned char data[];
 };
 
-/* FIXME: this works only on 32 bit tasks
- * need to change whole approach in order to calculate align as function of
- * current task alignment */
+
 
 struct compat_xt_counters {
-	compat_u64 pcnt, bcnt;			/* Packet and byte counters */
+	compat_u64 pcnt, bcnt;			
 };
 
 struct compat_xt_counters_info {
@@ -533,5 +449,5 @@ int xt_compat_check_entry_offsets(const void *base, const char *elems,
 				  unsigned int target_offset,
 				  unsigned int next_offset);
 
-#endif /* CONFIG_NETFILTER_XTABLES_COMPAT */
-#endif /* _X_TABLES_H */
+#endif 
+#endif 

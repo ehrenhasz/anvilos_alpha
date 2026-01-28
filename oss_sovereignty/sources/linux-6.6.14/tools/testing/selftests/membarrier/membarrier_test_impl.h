@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #define _GNU_SOURCE
 #include <linux/membarrier.h>
 #include <syscall.h>
@@ -309,10 +309,7 @@ static int test_membarrier_success(void)
 		if (status)
 			return status;
 	}
-	/*
-	 * It is valid to send a global membarrier from a non-registered
-	 * process.
-	 */
+	
 	status = test_membarrier_global_expedited_success();
 	if (status)
 		return status;
@@ -332,10 +329,7 @@ static int test_membarrier_query(void)
 	ret = sys_membarrier(MEMBARRIER_CMD_QUERY, flags);
 	if (ret < 0) {
 		if (errno == ENOSYS) {
-			/*
-			 * It is valid to build a kernel with
-			 * CONFIG_MEMBARRIER=n. However, this skips the tests.
-			 */
+			
 			ksft_exit_skip(
 				"sys membarrier (CONFIG_MEMBARRIER) is disabled.\n");
 		}

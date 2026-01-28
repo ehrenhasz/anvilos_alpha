@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * RZ/G2L Clock Pulse Generator
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- *
- */
+
+
 
 #ifndef __RENESAS_RZG2L_CPG_H__
 #define __RENESAS_RZG2L_CPG_H__
@@ -45,7 +40,7 @@
 
 #define CPG_SDHI_CLK_SWITCH_STATUS_TIMEOUT_US	200
 
-/* n = 0/1/2 for PLL1/4/6 */
+
 #define CPG_SAMPLL_CLK1(n)	(0x04 + (16 * n))
 #define CPG_SAMPLL_CLK2(n)	(0x08 + (16 * n))
 
@@ -74,14 +69,7 @@
 
 #define EXTAL_FREQ_IN_MEGA_HZ	(24)
 
-/**
- * Definitions of CPG Core Clocks
- *
- * These include:
- *   - Clock outputs exported to DT
- *   - External input clocks
- *   - Internal CPG clocks
- */
+
 struct cpg_core_clk {
 	const char *name;
 	unsigned int id;
@@ -98,27 +86,27 @@ struct cpg_core_clk {
 };
 
 enum clk_types {
-	/* Generic */
-	CLK_TYPE_IN,		/* External Clock Input */
-	CLK_TYPE_FF,		/* Fixed Factor Clock */
+	
+	CLK_TYPE_IN,		
+	CLK_TYPE_FF,		
 	CLK_TYPE_SAM_PLL,
 
-	/* Clock with divider */
+	
 	CLK_TYPE_DIV,
 
-	/* Clock with clock source selector */
+	
 	CLK_TYPE_MUX,
 
-	/* Clock with SD clock source selector */
+	
 	CLK_TYPE_SD_MUX,
 
-	/* Clock for SIPLL5 */
+	
 	CLK_TYPE_SIPLL5,
 
-	/* Clock for PLL5_4 clock source selector */
+	
 	CLK_TYPE_PLL5_4_MUX,
 
-	/* Clock for DSI divider */
+	
 	CLK_TYPE_DSI_DIV,
 
 };
@@ -164,16 +152,7 @@ enum clk_types {
 #define DEF_DSI_DIV(_name, _id, _parent, _flag) \
 	DEF_TYPE(_name, _id, CLK_TYPE_DSI_DIV, .parent = _parent, .flag = _flag)
 
-/**
- * struct rzg2l_mod_clk - Module Clocks definitions
- *
- * @name: handle between common and hardware-specific interfaces
- * @id: clock index in array containing all Core and Module Clocks
- * @parent: id of parent clock
- * @off: register offset
- * @bit: ON/MON bit
- * @is_coupled: flag to indicate coupled clock
- */
+
 struct rzg2l_mod_clk {
 	const char *name;
 	unsigned int id;
@@ -199,13 +178,7 @@ struct rzg2l_mod_clk {
 #define DEF_COUPLED(_name, _id, _parent, _off, _bit)	\
 	DEF_MOD_BASE(_name, _id, _parent, _off, _bit, true)
 
-/**
- * struct rzg2l_reset - Reset definitions
- *
- * @off: register offset
- * @bit: reset bit
- * @monbit: monitor bit in CPG_RST_MON register, -1 if none
- */
+
 struct rzg2l_reset {
 	u16 off;
 	u8 bit;
@@ -221,47 +194,28 @@ struct rzg2l_reset {
 #define DEF_RST(_id, _off, _bit)	\
 	DEF_RST_MON(_id, _off, _bit, -1)
 
-/**
- * struct rzg2l_cpg_info - SoC-specific CPG Description
- *
- * @core_clks: Array of Core Clock definitions
- * @num_core_clks: Number of entries in core_clks[]
- * @last_dt_core_clk: ID of the last Core Clock exported to DT
- * @num_total_core_clks: Total number of Core Clocks (exported + internal)
- *
- * @mod_clks: Array of Module Clock definitions
- * @num_mod_clks: Number of entries in mod_clks[]
- * @num_hw_mod_clks: Number of Module Clocks supported by the hardware
- *
- * @resets: Array of Module Reset definitions
- * @num_resets: Number of entries in resets[]
- *
- * @crit_mod_clks: Array with Module Clock IDs of critical clocks that
- *                 should not be disabled without a knowledgeable driver
- * @num_crit_mod_clks: Number of entries in crit_mod_clks[]
- * @has_clk_mon_regs: Flag indicating whether the SoC has CLK_MON registers
- */
+
 struct rzg2l_cpg_info {
-	/* Core Clocks */
+	
 	const struct cpg_core_clk *core_clks;
 	unsigned int num_core_clks;
 	unsigned int last_dt_core_clk;
 	unsigned int num_total_core_clks;
 
-	/* Module Clocks */
+	
 	const struct rzg2l_mod_clk *mod_clks;
 	unsigned int num_mod_clks;
 	unsigned int num_hw_mod_clks;
 
-	/* No PM Module Clocks */
+	
 	const unsigned int *no_pm_mod_clks;
 	unsigned int num_no_pm_mod_clks;
 
-	/* Resets */
+	
 	const struct rzg2l_reset *resets;
 	unsigned int num_resets;
 
-	/* Critical Module Clocks that should not be disabled */
+	
 	const unsigned int *crit_mod_clks;
 	unsigned int num_crit_mod_clks;
 

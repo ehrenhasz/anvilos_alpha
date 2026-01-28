@@ -1,40 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Media Bus API header
- *
- * Copyright (C) 2009, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+
 
 #ifndef __LINUX_MEDIA_BUS_FORMAT_H
 #define __LINUX_MEDIA_BUS_FORMAT_H
 
-/*
- * These bus formats uniquely identify data formats on the data bus. Format 0
- * is reserved, MEDIA_BUS_FMT_FIXED shall be used by host-client pairs, where
- * the data format is fixed. Additionally, "2X8" means that one pixel is
- * transferred in two 8-bit samples, "BE" or "LE" specify in which order those
- * samples are transferred over the bus: "LE" means that the least significant
- * bits are transferred first, "BE" means that the most significant bits are
- * transferred first, and "PADHI" and "PADLO" define which bits - low or high,
- * in the incomplete high byte, are filled with padding bits.
- *
- * The bus formats are grouped by type, bus_width, bits per component, samples
- * per pixel and order of subsamples. Numerical values are sorted using generic
- * numerical sort order (8 thus comes before 10).
- *
- * As their value can't change when a new bus format is inserted in the
- * enumeration, the bus formats are explicitly given a numerical value. The next
- * free values for each category are listed below, update them when inserting
- * new pixel codes.
- */
+
 
 #define MEDIA_BUS_FMT_FIXED			0x0001
 
-/* RGB - next is	0x1025 */
+
 #define MEDIA_BUS_FMT_RGB444_1X12		0x1016
 #define MEDIA_BUS_FMT_RGB444_2X8_PADHI_BE	0x1001
 #define MEDIA_BUS_FMT_RGB444_2X8_PADHI_LE	0x1002
@@ -72,7 +46,7 @@
 #define MEDIA_BUS_FMT_RGB121212_1X36		0x1019
 #define MEDIA_BUS_FMT_RGB161616_1X48		0x101a
 
-/* YUV (including grey) - next is	0x202f */
+
 #define MEDIA_BUS_FMT_Y8_1X8			0x2001
 #define MEDIA_BUS_FMT_UV8_1X8			0x2015
 #define MEDIA_BUS_FMT_UYVY8_1_5X8		0x2002
@@ -120,7 +94,7 @@
 #define MEDIA_BUS_FMT_YUV16_1X48		0x202a
 #define MEDIA_BUS_FMT_UYYVYY16_0_5X48		0x202b
 
-/* Bayer - next is	0x3021 */
+
 #define MEDIA_BUS_FMT_SBGGR8_1X8		0x3001
 #define MEDIA_BUS_FMT_SGBRG8_1X8		0x3013
 #define MEDIA_BUS_FMT_SGRBG8_1X8		0x3002
@@ -154,23 +128,18 @@
 #define MEDIA_BUS_FMT_SGRBG16_1X16		0x301f
 #define MEDIA_BUS_FMT_SRGGB16_1X16		0x3020
 
-/* JPEG compressed formats - next is	0x4002 */
+
 #define MEDIA_BUS_FMT_JPEG_1X8			0x4001
 
-/* Vendor specific formats - next is	0x5002 */
 
-/* S5C73M3 sensor specific interleaved UYVY and JPEG */
+
+
 #define MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8		0x5001
 
-/* HSV - next is	0x6002 */
+
 #define MEDIA_BUS_FMT_AHSV8888_1X32		0x6001
 
-/*
- * This format should be used when the same driver handles
- * both sides of the link and the bus format is a fixed
- * metadata format that is not configurable from userspace.
- * Width and height will be set to 0 for this format.
- */
+
 #define MEDIA_BUS_FMT_METADATA_FIXED		0x7001
 
-#endif /* __LINUX_MEDIA_BUS_FORMAT_H */
+#endif 

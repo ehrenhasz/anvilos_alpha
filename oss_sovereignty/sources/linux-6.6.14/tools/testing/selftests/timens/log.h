@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __SELFTEST_TIMENS_LOG_H__
 #define __SELFTEST_TIMENS_LOG_H__

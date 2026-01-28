@@ -1,8 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
 
-/* \file cc_pm.h
- */
+
+
+
 
 #ifndef __CC_POWER_MGR_H__
 #define __CC_POWER_MGR_H__
@@ -29,4 +28,4 @@ static inline void cc_pm_put_suspend(struct device *dev) {}
 
 #endif
 
-#endif /*__POWER_MGR_H__*/
+#endif 

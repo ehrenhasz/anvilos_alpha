@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_UNWIND_LIBDW_H
 #define __PERF_UNWIND_LIBDW_H
 
@@ -24,4 +24,4 @@ struct unwind_info {
 	struct unwind_entry	entries[];
 };
 
-#endif /* __PERF_UNWIND_LIBDW_H */
+#endif 

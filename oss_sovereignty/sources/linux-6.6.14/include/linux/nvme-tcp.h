@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NVMe over Fabrics TCP protocol header.
- * Copyright (c) 2018 Lightbits Labs. All rights reserved.
- */
+
+
 
 #ifndef _LINUX_NVME_TCP_H
 #define _LINUX_NVME_TCP_H
@@ -52,15 +49,7 @@ enum nvme_tcp_pdu_flags {
 	NVME_TCP_F_DATA_SUCCESS		= (1 << 3),
 };
 
-/**
- * struct nvme_tcp_hdr - nvme tcp pdu common header
- *
- * @type:          pdu type
- * @flags:         pdu specific flags
- * @hlen:          pdu header length
- * @pdo:           pdu data offset
- * @plen:          pdu wire byte length
- */
+
 struct nvme_tcp_hdr {
 	__u8	type;
 	__u8	flags;
@@ -69,15 +58,7 @@ struct nvme_tcp_hdr {
 	__le32	plen;
 };
 
-/**
- * struct nvme_tcp_icreq_pdu - nvme tcp initialize connection request pdu
- *
- * @hdr:           pdu generic header
- * @pfv:           pdu version format
- * @hpda:          host pdu data alignment (dwords, 0's based)
- * @digest:        digest types enabled
- * @maxr2t:        maximum r2ts per request supported
- */
+
 struct nvme_tcp_icreq_pdu {
 	struct nvme_tcp_hdr	hdr;
 	__le16			pfv;
@@ -87,15 +68,7 @@ struct nvme_tcp_icreq_pdu {
 	__u8			rsvd2[112];
 };
 
-/**
- * struct nvme_tcp_icresp_pdu - nvme tcp initialize connection response pdu
- *
- * @hdr:           pdu common header
- * @pfv:           pdu version format
- * @cpda:          controller pdu data alignment (dowrds, 0's based)
- * @digest:        digest types enabled
- * @maxdata:       maximum data capsules per r2t supported
- */
+
 struct nvme_tcp_icresp_pdu {
 	struct nvme_tcp_hdr	hdr;
 	__le16			pfv;
@@ -105,13 +78,7 @@ struct nvme_tcp_icresp_pdu {
 	__u8			rsvd[112];
 };
 
-/**
- * struct nvme_tcp_term_pdu - nvme tcp terminate connection pdu
- *
- * @hdr:           pdu common header
- * @fes:           fatal error status
- * @fei:           fatal error information
- */
+
 struct nvme_tcp_term_pdu {
 	struct nvme_tcp_hdr	hdr;
 	__le16			fes;
@@ -120,38 +87,19 @@ struct nvme_tcp_term_pdu {
 	__u8			rsvd[10];
 };
 
-/**
- * struct nvme_tcp_cmd_pdu - nvme tcp command capsule pdu
- *
- * @hdr:           pdu common header
- * @cmd:           nvme command
- */
+
 struct nvme_tcp_cmd_pdu {
 	struct nvme_tcp_hdr	hdr;
 	struct nvme_command	cmd;
 };
 
-/**
- * struct nvme_tcp_rsp_pdu - nvme tcp response capsule pdu
- *
- * @hdr:           pdu common header
- * @hdr:           nvme-tcp generic header
- * @cqe:           nvme completion queue entry
- */
+
 struct nvme_tcp_rsp_pdu {
 	struct nvme_tcp_hdr	hdr;
 	struct nvme_completion	cqe;
 };
 
-/**
- * struct nvme_tcp_r2t_pdu - nvme tcp ready-to-transfer pdu
- *
- * @hdr:           pdu common header
- * @command_id:    nvme command identifier which this relates to
- * @ttag:          transfer tag (controller generated)
- * @r2t_offset:    offset from the start of the command data
- * @r2t_length:    length the host is allowed to send
- */
+
 struct nvme_tcp_r2t_pdu {
 	struct nvme_tcp_hdr	hdr;
 	__u16			command_id;
@@ -161,15 +109,7 @@ struct nvme_tcp_r2t_pdu {
 	__u8			rsvd[4];
 };
 
-/**
- * struct nvme_tcp_data_pdu - nvme tcp data pdu
- *
- * @hdr:           pdu common header
- * @command_id:    nvme command identifier which this relates to
- * @ttag:          transfer tag (controller generated)
- * @data_offset:   offset from the start of the command data
- * @data_length:   length of the data stream
- */
+
 struct nvme_tcp_data_pdu {
 	struct nvme_tcp_hdr	hdr;
 	__u16			command_id;
@@ -188,4 +128,4 @@ union nvme_tcp_pdu {
 	struct nvme_tcp_data_pdu	data;
 };
 
-#endif /* _LINUX_NVME_TCP_H */
+#endif 

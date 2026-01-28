@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * DA9150 MFD Driver - Core Data
- *
- * Copyright (c) 2014 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+
 
 #ifndef __DA9150_CORE_H
 #define __DA9150_CORE_H
@@ -15,11 +9,11 @@
 #include <linux/interrupt.h>
 #include <linux/regmap.h>
 
-/* I2C address paging */
+
 #define DA9150_REG_PAGE_SHIFT	8
 #define DA9150_REG_PAGE_MASK	0xFF
 
-/* IRQs */
+
 #define DA9150_NUM_IRQ_REGS	4
 #define DA9150_IRQ_VBUS		0
 #define DA9150_IRQ_CHG		1
@@ -43,13 +37,13 @@
 #define DA9150_IRQ_GPADC	19
 #define DA9150_IRQ_WKUP		20
 
-/* I2C sub-device address */
+
 #define DA9150_QIF_I2C_ADDR_LSB		0x5
 
 struct da9150_fg_pdata {
-	u32 update_interval;	/* msecs */
-	u8 warn_soc_lvl;	/* % value */
-	u8 crit_soc_lvl;	/* % value */
+	u32 update_interval;	
+	u8 warn_soc_lvl;	
+	u8 crit_soc_lvl;	
 };
 
 struct da9150_pdata {
@@ -67,7 +61,7 @@ struct da9150 {
 	int irq_base;
 };
 
-/* Device I/O - Query Interface for FG and standard register access */
+
 void da9150_read_qif(struct da9150 *da9150, u8 addr, int count, u8 *buf);
 void da9150_write_qif(struct da9150 *da9150, u8 addr, int count, const u8 *buf);
 
@@ -78,4 +72,4 @@ void da9150_set_bits(struct da9150 *da9150, u16 reg, u8 mask, u8 val);
 void da9150_bulk_read(struct da9150 *da9150, u16 reg, int count, u8 *buf);
 void da9150_bulk_write(struct da9150 *da9150, u16 reg, int count, const u8 *buf);
 
-#endif /* __DA9150_CORE_H */
+#endif 

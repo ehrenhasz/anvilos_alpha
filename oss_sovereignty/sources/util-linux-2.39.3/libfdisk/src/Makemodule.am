@@ -1,5 +1,5 @@
 
-# libfdisk.h is generated, so it's stored in builddir!
+
 fdiskincdir = $(includedir)/libfdisk
 nodist_fdiskinc_HEADERS = libfdisk/src/libfdisk.h
 
@@ -98,7 +98,7 @@ test_fdisk_script_LDADD = $(libfdisk_tests_ldadd)
 if FUZZING_ENGINE
 check_PROGRAMS += test_fdisk_script_fuzz
 
-# https://google.github.io/oss-fuzz/getting-started/new-project-guide/#Requirements
+
 nodist_EXTRA_test_fdisk_script_fuzz_SOURCES = dummy.cxx
 
 test_fdisk_script_fuzz_SOURCES = libfdisk/src/script.c
@@ -117,10 +117,10 @@ test_fdisk_item_CFLAGS = $(libfdisk_tests_cflags)
 test_fdisk_item_LDFLAGS = $(libfdisk_tests_ldflags)
 test_fdisk_item_LDADD = $(libfdisk_tests_ldadd)
 
-endif # BUILD_LIBFDISK_TESTS
+endif 
 
 
-# move lib from $(usrlib_execdir) to $(libdir) if needed
+
 install-exec-hook-libfdisk:
 	if test "$(usrlib_execdir)" != "$(libdir)" -a -f "$(DESTDIR)$(usrlib_execdir)/libfdisk.so"; then \
 		$(MKDIR_P) $(DESTDIR)$(libdir); \

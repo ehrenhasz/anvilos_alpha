@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2000,2002-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_BMAP_BTREE_H__
 #define __XFS_BMAP_BTREE_H__
 
@@ -12,9 +9,7 @@ struct xfs_mount;
 struct xfs_inode;
 struct xfs_trans;
 
-/*
- * Btree block header size depends on a superblock flag.
- */
+
 #define XFS_BMBT_BLOCK_LEN(mp) \
 	(xfs_has_crc(((mp))) ? \
 		XFS_BTREE_LBLOCK_CRC_LEN : XFS_BTREE_LBLOCK_LEN)
@@ -57,10 +52,7 @@ struct xfs_trans;
 		 (maxrecs) * sizeof(xfs_bmdr_key_t) + \
 		 ((index) - 1) * sizeof(xfs_bmdr_ptr_t)))
 
-/*
- * These are to be used when we know the size of the block and
- * we don't have a cursor.
- */
+
 #define XFS_BMAP_BROOT_PTR_ADDR(mp, bb, i, sz) \
 	XFS_BMBT_PTR_ADDR(mp, bb, i, xfs_bmbt_maxrecs(mp, sz, 0))
 
@@ -76,14 +68,10 @@ struct xfs_trans;
 #define XFS_BMAP_BMDR_SPACE(bb) \
 	(XFS_BMDR_SPACE_CALC(be16_to_cpu((bb)->bb_numrecs)))
 
-/*
- * Maximum number of bmap btree levels.
- */
+
 #define XFS_BM_MAXLEVELS(mp,w)		((mp)->m_bm_maxlevels[(w)])
 
-/*
- * Prototypes for xfs_bmap.c to call.
- */
+
 extern void xfs_bmdr_to_bmbt(struct xfs_inode *, xfs_bmdr_block_t *, int,
 			struct xfs_btree_block *, int);
 
@@ -115,4 +103,4 @@ unsigned int xfs_bmbt_maxlevels_ondisk(void);
 int __init xfs_bmbt_init_cur_cache(void);
 void xfs_bmbt_destroy_cur_cache(void);
 
-#endif	/* __XFS_BMAP_BTREE_H__ */
+#endif	

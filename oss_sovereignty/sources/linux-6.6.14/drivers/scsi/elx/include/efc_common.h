@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+
 
 #ifndef __EFC_COMMON_H__
 #define __EFC_COMMON_H__
@@ -34,4 +31,4 @@ struct efc_dma {
 #define efc_log_debug(efc, fmt, args...) \
 		dev_dbg(&((efc)->pci)->dev, fmt, ##args)
 
-#endif /* __EFC_COMMON_H__ */
+#endif 

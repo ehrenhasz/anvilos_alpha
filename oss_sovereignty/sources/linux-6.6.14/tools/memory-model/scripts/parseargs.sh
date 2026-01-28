@@ -49,11 +49,11 @@ checkarg () {
 		usage
 	fi
 }
-while test $# -gt 0
+while test $
 do
 	case "$1" in
 	--destdir)
-		checkarg --destdir "(path to directory)" "$#" "$2" '.\+' '^--'
+		checkarg --destdir "(path to directory)" "$
 		LKMM_DESTDIR="$2"
 		mkdir $LKMM_DESTDIR > /dev/null 2>&1
 		if ! test -e "$LKMM_DESTDIR"
@@ -71,12 +71,12 @@ do
 		shift
 		;;
 	--herdopts|--herdopt)
-		checkarg --destdir "(herd7 options)" "$#" "$2" '.*' '^--'
+		checkarg --destdir "(herd7 options)" "$
 		LKMM_HERD_OPTIONS="$2"
 		shift
 		;;
 	--hw)
-		checkarg --hw "(.map file architecture name)" "$#" "$2" '^[A-Za-z0-9_-]\+' '^--'
+		checkarg --hw "(.map file architecture name)" "$
 		LKMM_HW_MAP_FILE="$2"
 		shift
 		;;
@@ -91,17 +91,17 @@ do
 		LKMM_JOBS="`echo $njobs | sed -e 's/^\([0-9]\+\).*$/\1/'`"
 		;;
 	--jobs|--job|-j)
-		checkarg --jobs "(number)" "$#" "$2" '^[1-9][0-9]*$' '^--'
+		checkarg --jobs "(number)" "$
 		LKMM_JOBS="$2"
 		shift
 		;;
 	--procs|--proc)
-		checkarg --procs "(number)" "$#" "$2" '^[0-9]\+$' '^--'
+		checkarg --procs "(number)" "$
 		LKMM_PROCS="$2"
 		shift
 		;;
 	--timeout)
-		checkarg --timeout "(timeout spec)" "$#" "$2" '^\([0-9]\+[smhd]\?\|\)$' '^--'
+		checkarg --timeout "(timeout spec)" "$
 		LKMM_TIMEOUT="$2"
 		shift
 		;;

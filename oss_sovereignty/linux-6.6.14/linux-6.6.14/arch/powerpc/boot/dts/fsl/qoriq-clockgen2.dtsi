@@ -1,5 +1,0 @@
-clockgen: global-utilities@e1000 {
-	compatible = "fsl,qoriq-clockgen-2.0";
-	reg = <0xe1000 0x1000>;
-	#clock-cells = <2>;
-};

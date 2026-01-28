@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022 HiSilicon Limited. */
+
+
 #ifndef QM_COMMON_H
 #define QM_COMMON_H
 

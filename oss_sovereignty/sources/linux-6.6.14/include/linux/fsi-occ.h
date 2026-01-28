@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef LINUX_FSI_OCC_H
 #define LINUX_FSI_OCC_H
@@ -24,4 +24,4 @@ struct device;
 int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
 		   void *response, size_t *resp_len);
 
-#endif /* LINUX_FSI_OCC_H */
+#endif 

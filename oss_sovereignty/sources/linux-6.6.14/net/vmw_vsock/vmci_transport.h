@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2013 VMware, Inc. All rights reserved.
- */
+
+
 
 #ifndef _VMCI_TRANSPORT_H_
 #define _VMCI_TRANSPORT_H_
@@ -14,13 +10,13 @@
 #include <net/vsock_addr.h>
 #include <net/af_vsock.h>
 
-/* If the packet format changes in a release then this should change too. */
+
 #define VMCI_TRANSPORT_PACKET_VERSION 1
 
-/* The resource ID on which control packets are sent. */
+
 #define VMCI_TRANSPORT_PACKET_RID 1
 
-/* The resource ID on which control packets are sent to the hypervisor. */
+
 #define VMCI_TRANSPORT_HYPERVISOR_PACKET_RID 15
 
 #define VSOCK_PROTO_INVALID        0
@@ -51,12 +47,7 @@ struct vmci_transport_waiting_info {
 	u64 offset;
 };
 
-/* Control packet type for STREAM sockets.  DGRAMs have no control packets nor
- * special packet header for data packets, they are just raw VMCI DGRAM
- * messages.  For STREAMs, control packets are sent over the control channel
- * while data is written and read directly from queue pairs with no packet
- * format.
- */
+
 struct vmci_transport_packet {
 	struct vmci_datagram dg;
 	u8 version;
@@ -99,11 +90,11 @@ union vmci_transport_notify {
 	struct vmci_transport_notify_pkt_q_state pkt_q_state;
 };
 
-/* Our transport-specific data. */
+
 struct vmci_transport {
-	/* For DGRAMs. */
+	
 	struct vmci_handle dg_handle;
-	/* For STREAMs. */
+	
 	struct vmci_handle qp_handle;
 	struct vmci_qp *qpair;
 	u64 produce_size;
@@ -113,7 +104,7 @@ struct vmci_transport {
 	const struct vmci_transport_notify_ops *notify_ops;
 	struct list_head elem;
 	struct sock *sk;
-	spinlock_t lock; /* protects sk. */
+	spinlock_t lock; 
 };
 
 int vmci_transport_send_wrote_bh(struct sockaddr_vm *dst,

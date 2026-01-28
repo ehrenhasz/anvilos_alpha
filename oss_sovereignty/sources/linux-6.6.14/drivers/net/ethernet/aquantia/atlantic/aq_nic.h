@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_nic.h: Declaration of common code for NIC. */
+
+
+
 
 #ifndef AQ_NIC_H
 #define AQ_NIC_H
@@ -41,9 +37,9 @@ struct aq_fc_info {
 struct aq_nic_cfg_s {
 	const struct aq_hw_caps_s *aq_hw_caps;
 	u64 features;
-	u32 rxds;		/* rx ring size, descriptors # */
-	u32 txds;		/* tx ring size, descriptors # */
-	u32 vecs;		/* allocated rx/tx vectors */
+	u32 rxds;		
+	u32 txds;		
+	u32 vecs;		
 	u32 link_irq_vec;
 	u32 irq_type;
 	u32 itr;
@@ -120,7 +116,7 @@ struct aq_hw_rx_fltrs_s {
 	u16                   active_filters;
 	struct aq_hw_rx_fl2   fl2;
 	struct aq_hw_rx_fl3l4 fl3l4;
-	/* filter ether type */
+	
 	u8 fet_reserved_count;
 };
 
@@ -147,20 +143,20 @@ struct aq_nic_s {
 		u32 count;
 		u8 ar[AQ_HW_MULTICAST_ADDRESS_MAX][ETH_ALEN];
 	} mc_list;
-	/* Bitmask of currently assigned vlans from linux */
+	
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
 
 	struct pci_dev *pdev;
 	unsigned int msix_entry_mask;
 	u32 irqvecs;
-	/* mutex to serialize FW interface access operations */
+	
 	struct mutex fwreq_mutex;
 #if IS_ENABLED(CONFIG_MACSEC)
 	struct aq_macsec_cfg *macsec_cfg;
-	/* mutex to protect data in macsec_cfg */
+	
 	struct mutex macsec_mutex;
 #endif
-	/* PTP support */
+	
 	struct aq_ptp_s *aq_ptp;
 	struct aq_hw_rx_fltrs_s aq_hw_rx_fltrs;
 };
@@ -218,4 +214,4 @@ int aq_nic_setup_tc_max_rate(struct aq_nic_s *self, const unsigned int tc,
 			     const u32 max_rate);
 int aq_nic_setup_tc_min_rate(struct aq_nic_s *self, const unsigned int tc,
 			     const u32 min_rate);
-#endif /* AQ_NIC_H */
+#endif 

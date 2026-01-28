@@ -17,7 +17,7 @@ freebsd_task:
     - make -j${NPROC}
   test_script:
     - src/vim --version
-      # run tests as user "cirrus" instead of root
+      
     - pw useradd cirrus -m
     - chown -R cirrus:cirrus .
     - sudo -u cirrus make test

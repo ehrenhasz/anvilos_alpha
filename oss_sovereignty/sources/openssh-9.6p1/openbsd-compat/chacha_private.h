@@ -1,19 +1,15 @@
-/* OPENBSD ORIGINAL: lib/libc/crypt/chacha_private.h */
 
-/*
-chacha-merged.c version 20080118
-D. J. Bernstein
-Public domain.
-*/
 
-/* $OpenBSD: chacha_private.h,v 1.3 2022/02/28 21:56:29 dtucker Exp $ */
+
+
+
 
 typedef unsigned char u8;
 typedef unsigned int u32;
 
 typedef struct
 {
-  u32 input[16]; /* could be compressed */
+  u32 input[16]; 
 } chacha_ctx;
 
 #define U8C(v) (v##U)
@@ -62,10 +58,10 @@ chacha_keysetup(chacha_ctx *x,const u8 *k,u32 kbits)
   x->input[5] = U8TO32_LITTLE(k + 4);
   x->input[6] = U8TO32_LITTLE(k + 8);
   x->input[7] = U8TO32_LITTLE(k + 12);
-  if (kbits == 256) { /* recommended */
+  if (kbits == 256) { 
     k += 16;
     constants = sigma;
-  } else { /* kbits == 128 */
+  } else { 
     constants = tau;
   }
   x->input[8] = U8TO32_LITTLE(k + 0);
@@ -187,7 +183,7 @@ chacha_encrypt_bytes(chacha_ctx *x,const u8 *m,u8 *c,u32 bytes)
     j12 = PLUSONE(j12);
     if (!j12) {
       j13 = PLUSONE(j13);
-      /* stopping at 2^70 bytes per nonce is user's responsibility */
+      
     }
 
     U32TO8_LITTLE(c + 0,x0);

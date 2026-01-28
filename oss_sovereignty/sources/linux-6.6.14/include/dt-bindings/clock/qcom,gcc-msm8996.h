@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8996_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8996_H
@@ -345,7 +343,7 @@
 #define GCC_MSS_RESTART						105
 
 
-/* Indexes for GDSCs */
+
 #define AGGRE0_NOC_GDSC			0
 #define HLOS1_VOTE_AGGRE0_NOC_GDSC	1
 #define HLOS1_VOTE_LPASS_ADSP_GDSC	2

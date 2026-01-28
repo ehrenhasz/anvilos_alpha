@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 MediaTek Inc.
- */
+
+
 
 #ifndef _UFS_MEDIATEK_H
 #define _UFS_MEDIATEK_H
@@ -10,13 +8,11 @@
 #include <linux/pm_qos.h>
 #include <linux/soc/mediatek/mtk_sip_svc.h>
 
-/*
- * MCQ define and struct
- */
+
 #define UFSHCD_MAX_Q_NR 8
 #define MTK_MCQ_INVALID_IRQ	0xFFFF
 
-/* REG_UFS_MMIO_OPT_CTRL_0 160h */
+
 #define EHS_EN                  BIT(0)
 #define PFM_IMPV                BIT(1)
 #define MCQ_MULTI_INTR_EN       BIT(2)
@@ -25,9 +21,7 @@
 
 #define MCQ_INTR_EN_MSK         (MCQ_MULTI_INTR_EN | MCQ_CMB_INTR_EN)
 
-/*
- * Vendor specific UFSHCI Registers
- */
+
 #define REG_UFS_XOUFS_CTRL          0x140
 #define REG_UFS_REFCLK_CTRL         0x144
 #define REG_UFS_MMIO_OPT_CTRL_0     0x160
@@ -49,11 +43,7 @@
 
 #define REG_UFS_MCQ_STRIDE          0x30
 
-/*
- * Ref-clk control
- *
- * Values for register REG_UFS_REFCLK_CTRL
- */
+
 #define REFCLK_RELEASE              0x0
 #define REFCLK_REQUEST              BIT(0)
 #define REFCLK_ACK                  BIT(1)
@@ -61,16 +51,12 @@
 #define REFCLK_REQ_TIMEOUT_US       3000
 #define REFCLK_DEFAULT_WAIT_US      32
 
-/*
- * Other attributes
- */
+
 #define VS_DEBUGCLOCKENABLE         0xD0A1
 #define VS_SAVEPOWERCONTROL         0xD0A6
 #define VS_UNIPROPOWERDOWNCONTROL   0xD0A8
 
-/*
- * Vendor specific link state
- */
+
 enum {
 	VS_LINK_DISABLED            = 0,
 	VS_LINK_DOWN                = 1,
@@ -80,9 +66,7 @@ enum {
 	VS_LINK_CFG                 = 5,
 };
 
-/*
- * Vendor specific host controller state
- */
+
 enum {
 	VS_HCE_RESET                = 0,
 	VS_HCE_BASE                 = 1,
@@ -100,9 +84,7 @@ enum {
 	VS_HIB_EXIT                 = 13,
 };
 
-/*
- * SiP commands
- */
+
 #define MTK_SIP_UFS_CONTROL               MTK_SIP_SMC_CMD(0x276)
 #define UFS_MTK_SIP_VA09_PWR_CTRL         BIT(0)
 #define UFS_MTK_SIP_DEVICE_RESET          BIT(1)
@@ -112,25 +94,19 @@ enum {
 #define UFS_MTK_SIP_GET_VCC_NUM           BIT(6)
 #define UFS_MTK_SIP_DEVICE_PWR_CTRL       BIT(7)
 
-/*
- * VS_DEBUGCLOCKENABLE
- */
+
 enum {
 	TX_SYMBOL_CLK_REQ_FORCE = 5,
 };
 
-/*
- * VS_SAVEPOWERCONTROL
- */
+
 enum {
 	RX_SYMBOL_CLK_GATE_EN   = 0,
 	SYS_CLK_GATE_EN         = 2,
 	TX_CLK_GATE_EN          = 3,
 };
 
-/*
- * Host capability
- */
+
 enum ufs_mtk_host_caps {
 	UFS_MTK_CAP_BOOST_CRYPT_ENGINE         = 1 << 0,
 	UFS_MTK_CAP_VA09_PWR_CTRL              = 1 << 1,
@@ -148,9 +124,9 @@ struct ufs_mtk_crypt_cfg {
 };
 
 struct ufs_mtk_clk {
-	struct ufs_clk_info *ufs_sel_clki; /* Mux */
-	struct ufs_clk_info *ufs_sel_max_clki; /* Max src */
-	struct ufs_clk_info *ufs_sel_min_clki; /* Min src */
+	struct ufs_clk_info *ufs_sel_clki; 
+	struct ufs_clk_info *ufs_sel_max_clki; 
+	struct ufs_clk_info *ufs_sel_min_clki; 
 };
 
 struct ufs_mtk_hw_ver {
@@ -190,9 +166,7 @@ struct ufs_mtk_host {
 	struct ufs_mtk_mcq_intr_info mcq_intr_info[UFSHCD_MAX_Q_NR];
 };
 
-/*
- * Multi-VCC by Numbering
- */
+
 enum ufs_mtk_vcc_num {
 	UFS_VCC_NONE = 0,
 	UFS_VCC_1,
@@ -200,17 +174,13 @@ enum ufs_mtk_vcc_num {
 	UFS_VCC_MAX
 };
 
-/*
- * Host Power Control options
- */
+
 enum {
 	HOST_PWR_HCI = 0,
 	HOST_PWR_MPHY
 };
 
-/*
- * SMC call wrapper function
- */
+
 struct ufs_mtk_smc_arg {
 	unsigned long cmd;
 	struct arm_smccc_res *res;
@@ -232,9 +202,7 @@ static void _ufs_mtk_smc(struct ufs_mtk_smc_arg s)
 #define ufs_mtk_smc(...) \
 	_ufs_mtk_smc((struct ufs_mtk_smc_arg) {__VA_ARGS__})
 
-/*
- * SMC call interface
- */
+
 #define ufs_mtk_va09_pwr_ctrl(res, on) \
 	ufs_mtk_smc(UFS_MTK_SIP_VA09_PWR_CTRL, &(res), on)
 
@@ -256,4 +224,4 @@ static void _ufs_mtk_smc(struct ufs_mtk_smc_arg s)
 #define ufs_mtk_device_pwr_ctrl(on, ufs_ver, res) \
 	ufs_mtk_smc(UFS_MTK_SIP_DEVICE_PWR_CTRL, &(res), on, ufs_ver)
 
-#endif /* !_UFS_MEDIATEK_H */
+#endif 

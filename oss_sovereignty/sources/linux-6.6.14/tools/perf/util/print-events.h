@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_PRINT_EVENTS_H
 #define __PERF_PRINT_EVENTS_H
 
@@ -29,7 +29,7 @@ struct print_callbacks {
 	bool (*skip_duplicate_pmus)(void *print_state);
 };
 
-/** Print all events, the default when no options are specified. */
+
 void print_events(const struct print_callbacks *print_cb, void *print_state);
 int print_hwcache_events(const struct print_callbacks *print_cb, void *print_state);
 void print_sdt_events(const struct print_callbacks *print_cb, void *print_state);
@@ -40,4 +40,4 @@ void print_tool_events(const struct print_callbacks *print_cb, void *print_state
 void print_tracepoint_events(const struct print_callbacks *print_cb, void *print_state);
 bool is_event_supported(u8 type, u64 config);
 
-#endif /* __PERF_PRINT_EVENTS_H */
+#endif 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for caching in a mounted filesystem
-#
+
+
+
+
 
 cachefiles-y := \
 	cache.o \

@@ -13,7 +13,7 @@ function usage()
     echo "   -p picture_type [jpeg|gif|png|postscript|...]"
     exit 1
 }
-if [ $# -eq 0 ];then
+if [ $
 	echo "No benchmark results file provided"
 	echo
 	usage
@@ -52,8 +52,8 @@ echo "set title \"$global_title\""	>> $dir/plot_script.gpl
 echo "set xlabel \"sleep/load time\""	>> $dir/plot_script.gpl
 echo "set ylabel \"Performance (%)\""	>> $dir/plot_script.gpl
 for((plot=0;plot<$plots;plot++));do
-    cat ${file[$plot]} |grep -v "^#" |awk '{if ($2 != $3) printf("Error in measure %d:Load time %s does not equal sleep time %s, plot will not be correct\n", $1, $2, $3); ERR=1}'
-    cat ${file[$plot]} |grep -v "^#" |awk '{printf "%lu %.1f\n",$2/1000, $6}' >$dir/data_$plot
+    cat ${file[$plot]} |grep -v "^
+    cat ${file[$plot]} |grep -v "^
     if [ $plot -eq 0 ];then
 	echo -n "plot " >> $dir/plot_script.gpl
     fi

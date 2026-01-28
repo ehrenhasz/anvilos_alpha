@@ -7,7 +7,7 @@ __my_reassemble_comp_words_by_ref()
 		words_=("${COMP_WORDS[@]}")
 		return
 	fi
-	for ((i=0, j=0; i < ${#COMP_WORDS[@]}; i++, j++)); do
+	for ((i=0, j=0; i < ${
 		first=t
 		while
 			[ $i -gt 0 ] &&
@@ -22,7 +22,7 @@ __my_reassemble_comp_words_by_ref()
 			if [ $i = $COMP_CWORD ]; then
 				cword_=$j
 			fi
-			if (($i < ${#COMP_WORDS[@]} - 1)); then
+			if (($i < ${
 				((i++))
 			else
 				return
@@ -49,7 +49,7 @@ __perf_get_comp_words_by_ref()
 	fi
 	__my_reassemble_comp_words_by_ref "$exclude"
 	cur_=${words_[cword_]}
-	while [ $# -gt 0 ]; do
+	while [ $
 		case "$1" in
 		cur)
 			cur=$cur_
@@ -76,10 +76,10 @@ fi
 __perf__ltrim_colon_completions()
 {
 	if [[ "$1" == *:* && "$COMP_WORDBREAKS" == *:* ]]; then
-		local colon_word=${1%"${1##*:}"}
-		local i=${#COMPREPLY[*]}
+		local colon_word=${1%"${1
+		local i=${
 		while [[ $((--i)) -ge 0 ]]; do
-			COMPREPLY[$i]=${COMPREPLY[$i]#"$colon_word"}
+			COMPREPLY[$i]=${COMPREPLY[$i]
 		done
 	fi
 }
@@ -136,7 +136,7 @@ __perf_main ()
 		if [[ `uname -m` != aarch64 ]]; then
 			cpu_evts=$(ls /sys/bus/event_source/devices/cpu/events)
 		fi
-		if [[ "$cur1" == */* && ${cur1#*/} =~ ^[A-Z] ]]; then
+		if [[ "$cur1" == */* && ${cur1
 			OLD_IFS="$IFS"
 			IFS=" "
 			arr=($raw_evts)
@@ -144,7 +144,7 @@ __perf_main ()
 			for s in ${arr[@]}
 			do
 				if [[ "$s" == *cpu/* ]]; then
-					tmp=${s#*cpu/}
+					tmp=${s
 					result=$result" ""cpu/"${tmp^^}
 				else
 					result=$result" "$s
@@ -186,7 +186,7 @@ if [[ -n ${ZSH_VERSION-} ]]; then
 			--*=*|*.) ;;
 			*) c="$c " ;;
 			esac
-			array[${#array[@]}+1]="$c"
+			array[${
 		done
 		compset -P '*[=:]'
 		compadd -Q -S '' -a -- array && _ret=0
@@ -198,14 +198,14 @@ if [[ -n ${ZSH_VERSION-} ]]; then
 		local c IFS=$' \t\n'
 		local -a array
 		if [[ "$cur_" == *:* ]]; then
-			local colon_word=${cur_%"${cur_##*:}"}
+			local colon_word=${cur_%"${cur_
 		fi
 		for c in ${=1}; do
 			case $c in
 			--*=*|*.) ;;
 			*) c="$c " ;;
 			esac
-			array[$#array+1]=${c#"$colon_word"}
+			array[$
 		done
 		compset -P '*[=:]'
 		compadd -Q -S '' -a -- array && _ret=0

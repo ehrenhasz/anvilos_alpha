@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    Dell Airplane Mode Switch driver
-    Copyright (C) 2014-2015  Pali Rohár <pali@kernel.org>
 
-*/
+
 
 #ifndef _DELL_RBTN_H_
 #define _DELL_RBTN_H_

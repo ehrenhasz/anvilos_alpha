@@ -1,4 +1,0 @@
-#include "sdm660.dtsi"
-&adreno_gpu {
-	compatible = "qcom,adreno-509.0", "qcom,adreno";
-};

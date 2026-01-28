@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# AMD Passthru DMA driver
-#
+
+
+
+
 
 obj-$(CONFIG_AMD_PTDMA) += ptdma.o
 

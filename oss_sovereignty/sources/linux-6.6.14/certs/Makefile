@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the linux kernel signature checking certificates.
-#
+
+
+
+
 
 obj-$(CONFIG_SYSTEM_TRUSTED_KEYRING) += system_keyring.o system_certificates.o
 obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist.o blacklist_hashes.o
@@ -33,13 +33,13 @@ $(obj)/x509_certificate_list: $(CONFIG_SYSTEM_TRUSTED_KEYS) $(obj)/extract-cert 
 
 targets += x509_certificate_list
 
-# If module signing is requested, say by allyesconfig, but a key has not been
-# supplied, then one will need to be generated to make sure the build does not
-# fail and that the kernel may be used afterwards.
-#
-# We do it this way rather than having a boolean option for enabling an
-# external private key, because 'make randconfig' might enable such a
-# boolean option and we unfortunately can't make it depend on !RANDCONFIG.
+
+
+
+
+
+
+
 ifeq ($(CONFIG_MODULE_SIG_KEY),certs/signing_key.pem)
 
 keytype-$(CONFIG_MODULE_SIG_KEY_TYPE_ECDSA) := -newkey ec -pkeyopt ec_paramgen_curve:secp384r1
@@ -57,11 +57,11 @@ targets += signing_key.pem
 quiet_cmd_copy_x509_config = COPY    $@
       cmd_copy_x509_config = cat $(srctree)/$(src)/default_x509.genkey > $@
 
-# You can provide your own config file. If not present, copy the default one.
+
 $(obj)/x509.genkey:
 	$(call cmd,copy_x509_config)
 
-endif # CONFIG_MODULE_SIG_KEY
+endif 
 
 $(obj)/system_certificates.o: $(obj)/signing_key.x509
 

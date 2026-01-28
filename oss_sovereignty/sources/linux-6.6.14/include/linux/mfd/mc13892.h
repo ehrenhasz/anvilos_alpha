@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2010 Yong Shen <yong.shen@linaro.org>
- */
+
+
 
 #ifndef __LINUX_MFD_MC13892_H
 #define __LINUX_MFD_MC13892_H

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2010-2015,2019 The Linux Foundation. All rights reserved.
- */
+
+
 #ifndef __QCOM_SCM_INT_H
 #define __QCOM_SCM_INT_H
 
@@ -39,11 +38,7 @@ enum qcom_scm_arg_types {
 #define QCOM_SCM_ARGS(...) QCOM_SCM_ARGS_IMPL(__VA_ARGS__, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
 
-/**
- * struct qcom_scm_desc
- * @arginfo:	Metadata describing the arguments in args[]
- * @args:	The array of arguments for the secure syscall
- */
+
 struct qcom_scm_desc {
 	u32 svc;
 	u32 cmd;
@@ -52,10 +47,7 @@ struct qcom_scm_desc {
 	u32 owner;
 };
 
-/**
- * struct qcom_scm_res
- * @result:	The values returned by the secure syscall
- */
+
 struct qcom_scm_res {
 	u64 result[MAX_QCOM_SCM_RETS];
 };
@@ -116,7 +108,7 @@ extern int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
 #define QCOM_SCM_OCMEM_LOCK_CMD		0x01
 #define QCOM_SCM_OCMEM_UNLOCK_CMD	0x02
 
-#define QCOM_SCM_SVC_ES			0x10	/* Enterprise Security */
+#define QCOM_SCM_SVC_ES			0x10	
 #define QCOM_SCM_ES_INVALIDATE_ICE_KEY	0x03
 #define QCOM_SCM_ES_CONFIG_SET_ICE_KEY	0x04
 
@@ -136,7 +128,7 @@ extern int scm_legacy_call(struct device *dev, const struct qcom_scm_desc *desc,
 #define QCOM_SCM_WAITQ_RESUME			0x02
 #define QCOM_SCM_WAITQ_GET_WQ_CTX		0x03
 
-/* common error codes */
+
 #define QCOM_SCM_V2_EBUSY	-12
 #define QCOM_SCM_ENOMEM		-5
 #define QCOM_SCM_EOPNOTSUPP	-4

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Renesas RPC-IF core driver
- *
- * Copyright (C) 2018~2019 Renesas Solutions Corp.
- * Copyright (C) 2019 Macronix International Co., Ltd.
- * Copyright (C) 2019-2020 Cogent Embedded, Inc.
- */
+
+
 
 #ifndef __RENESAS_RPC_IF_H
 #define __RENESAS_RPC_IF_H
@@ -76,4 +70,4 @@ void rpcif_prepare(struct device *dev, const struct rpcif_op *op, u64 *offs,
 int rpcif_manual_xfer(struct device *dev);
 ssize_t rpcif_dirmap_read(struct device *dev, u64 offs, size_t len, void *buf);
 
-#endif // __RENESAS_RPC_IF_H
+#endif 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *	include/linux/bfs_fs.h - BFS data structures on disk.
- *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
- */
+
+
 
 #ifndef _LINUX_BFS_FS_H
 #define _LINUX_BFS_FS_H
@@ -16,11 +13,11 @@
 #define BFS_ROOT_INO		2
 #define BFS_INODES_PER_BLOCK	8
 
-/* SVR4 vnode type values (bfs_inode->i_vtype) */
+
 #define BFS_VDIR 2L
 #define BFS_VREG 1L
 
-/* BFS inode layout on disk */
+
 struct bfs_inode {
 	__le16 i_ino;
 	__u16 i_unused;
@@ -47,7 +44,7 @@ struct bfs_dirent {
 	char name[BFS_NAMELEN];
 };
 
-/* BFS superblock layout on disk */
+
 struct bfs_super_block {
 	__le32 s_magic;
 	__le32 s_start;
@@ -79,4 +76,4 @@ struct bfs_super_block {
 	((le32_to_cpu(bfs_sb->s_from) != -1) && (le32_to_cpu(bfs_sb->s_to) != -1) && !(sb->s_flags & SB_RDONLY))
 
 
-#endif	/* _LINUX_BFS_FS_H */
+#endif	

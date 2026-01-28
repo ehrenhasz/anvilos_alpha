@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * sun8i-ce.h - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6 SoC
- *
- * Copyright (C) 2016-2019 Corentin LABBE <clabbe.montjoie@gmail.com>
- */
+
+
 #include <crypto/aes.h>
 #include <crypto/des.h>
 #include <crypto/engine.h>
@@ -19,7 +14,7 @@
 #include <crypto/sha1.h>
 #include <crypto/sha2.h>
 
-/* CE Registers */
+
 #define CE_TDQ	0x00
 #define CE_CTR	0x04
 #define CE_ICR	0x08
@@ -33,14 +28,14 @@
 #define CE_CDAR	0x28
 #define CE_TPR	0x2C
 
-/* Used in struct ce_task */
-/* ce_task common */
+
+
 #define CE_ENCRYPTION		0
 #define CE_DECRYPTION		BIT(8)
 
 #define CE_COMM_INT		BIT(31)
 
-/* ce_task symmetric */
+
 #define CE_AES_128BITS 0
 #define CE_AES_192BITS 1
 #define CE_AES_256BITS 2
@@ -62,7 +57,7 @@
 #define CE_ALG_TRNG_V2		0x1c
 #define CE_ALG_PRNG_V2		0x1d
 
-/* Used in ce_variant */
+
 #define CE_ID_NOTSUPP		0xFF
 
 #define CE_ID_CIPHER_AES	0
@@ -82,7 +77,7 @@
 #define CE_ID_OP_CBC	1
 #define CE_ID_OP_MAX	2
 
-/* Used in CE registers */
+
 #define CE_ERR_ALGO_NOTSUP	BIT(0)
 #define CE_ERR_DATALEN		BIT(1)
 #define CE_ERR_KEYSRAM		BIT(2)
@@ -109,38 +104,14 @@
 
 #define MAXFLOW 4
 
-/*
- * struct ce_clock - Describe clocks used by sun8i-ce
- * @name:	Name of clock needed by this variant
- * @freq:	Frequency to set for each clock
- * @max_freq:	Maximum frequency for each clock (generally given by datasheet)
- */
+
 struct ce_clock {
 	const char *name;
 	unsigned long freq;
 	unsigned long max_freq;
 };
 
-/*
- * struct ce_variant - Describe CE capability for each variant hardware
- * @alg_cipher:	list of supported ciphers. for each CE_ID_ this will give the
- *              coresponding CE_ALG_XXX value
- * @alg_hash:	list of supported hashes. for each CE_ID_ this will give the
- *              corresponding CE_ALG_XXX value
- * @op_mode:	list of supported block modes
- * @cipher_t_dlen_in_bytes:	Does the request size for cipher is in
- *				bytes or words
- * @hash_t_dlen_in_bytes:	Does the request size for hash is in
- *				bits or words
- * @prng_t_dlen_in_bytes:	Does the request size for PRNG is in
- *				bytes or words
- * @trng_t_dlen_in_bytes:	Does the request size for TRNG is in
- *				bytes or words
- * @ce_clks:	list of clocks needed by this variant
- * @esr:	The type of error register
- * @prng:	The CE_ALG_XXX value for the PRNG
- * @trng:	The CE_ALG_XXX value for the TRNG
- */
+
 struct ce_variant {
 	char alg_cipher[CE_ID_CIPHER_MAX];
 	char alg_hash[CE_ID_HASH_MAX];
@@ -160,10 +131,7 @@ struct sginfo {
 	__le32 len;
 } __packed;
 
-/*
- * struct ce_task - CE Task descriptor
- * The structure of this descriptor could be found in the datasheet
- */
+
 struct ce_task {
 	__le32 t_id;
 	__le32 t_common_ctl;
@@ -179,17 +147,7 @@ struct ce_task {
 	__le32 reserved[3];
 } __packed __aligned(8);
 
-/*
- * struct sun8i_ce_flow - Information used by each flow
- * @engine:	ptr to the crypto_engine for this flow
- * @complete:	completion for the current task on this flow
- * @status:	set to 1 by interrupt if task is done
- * @t_phy:	Physical address of task
- * @tl:		pointer to the current ce_task for this flow
- * @backup_iv:		buffer which contain the next IV to store
- * @bounce_iv:		buffer which contain the IV
- * @stat_req:	number of request done by this flow
- */
+
 struct sun8i_ce_flow {
 	struct crypto_engine *engine;
 	struct completion complete;
@@ -204,20 +162,7 @@ struct sun8i_ce_flow {
 #endif
 };
 
-/*
- * struct sun8i_ce_dev - main container for all this driver information
- * @base:	base address of CE
- * @ceclks:	clocks used by CE
- * @reset:	pointer to reset controller
- * @dev:	the platform device
- * @mlock:	Control access to device registers
- * @rnglock:	Control access to the RNG (dedicated channel 3)
- * @chanlist:	array of all flow
- * @flow:	flow to use in next request
- * @variant:	pointer to variant specific data
- * @dbgfs_dir:	Debugfs dentry for statistic directory
- * @dbgfs_stats: Debugfs dentry for statistic counters
- */
+
 struct sun8i_ce_dev {
 	void __iomem *base;
 	struct clk *ceclks[CE_MAX_CLOCKS];
@@ -241,17 +186,7 @@ struct sun8i_ce_dev {
 #endif
 };
 
-/*
- * struct sun8i_cipher_req_ctx - context for a skcipher request
- * @op_dir:		direction (encrypt vs decrypt) for this request
- * @flow:		the flow to use for this request
- * @ivlen:		size of bounce_iv
- * @nr_sgs:		The number of source SG (as given by dma_map_sg())
- * @nr_sgd:		The number of destination SG (as given by dma_map_sg())
- * @addr_iv:		The IV addr returned by dma_map_single, need to unmap later
- * @addr_key:		The key addr returned by dma_map_single, need to unmap later
- * @fallback_req:	request struct for invoking the fallback skcipher TFM
- */
+
 struct sun8i_cipher_req_ctx {
 	u32 op_dir;
 	int flow;
@@ -260,16 +195,10 @@ struct sun8i_cipher_req_ctx {
 	int nr_sgd;
 	dma_addr_t addr_iv;
 	dma_addr_t addr_key;
-	struct skcipher_request fallback_req;   // keep at the end
+	struct skcipher_request fallback_req;   
 };
 
-/*
- * struct sun8i_cipher_tfm_ctx - context for a skcipher TFM
- * @key:		pointer to key data
- * @keylen:		len of the key
- * @ce:			pointer to the private data of driver handling this TFM
- * @fallback_tfm:	pointer to the fallback TFM
- */
+
 struct sun8i_cipher_tfm_ctx {
 	u32 *key;
 	u32 keylen;
@@ -277,48 +206,25 @@ struct sun8i_cipher_tfm_ctx {
 	struct crypto_skcipher *fallback_tfm;
 };
 
-/*
- * struct sun8i_ce_hash_tfm_ctx - context for an ahash TFM
- * @ce:			pointer to the private data of driver handling this TFM
- * @fallback_tfm:	pointer to the fallback TFM
- */
+
 struct sun8i_ce_hash_tfm_ctx {
 	struct sun8i_ce_dev *ce;
 	struct crypto_ahash *fallback_tfm;
 };
 
-/*
- * struct sun8i_ce_hash_reqctx - context for an ahash request
- * @fallback_req:	pre-allocated fallback request
- * @flow:	the flow to use for this request
- */
+
 struct sun8i_ce_hash_reqctx {
 	struct ahash_request fallback_req;
 	int flow;
 };
 
-/*
- * struct sun8i_ce_prng_ctx - context for PRNG TFM
- * @seed:	The seed to use
- * @slen:	The size of the seed
- */
+
 struct sun8i_ce_rng_tfm_ctx {
 	void *seed;
 	unsigned int slen;
 };
 
-/*
- * struct sun8i_ce_alg_template - crypto_alg template
- * @type:		the CRYPTO_ALG_TYPE for this template
- * @ce_algo_id:		the CE_ID for this template
- * @ce_blockmode:	the type of block operation CE_ID
- * @ce:			pointer to the sun8i_ce_dev structure associated with
- *			this template
- * @alg:		one of sub struct must be used
- * @stat_req:		number of request done on this template
- * @stat_fb:		number of request which has fallbacked
- * @stat_bytes:		total data size done by this template
- */
+
 struct sun8i_ce_alg_template {
 	u32 type;
 	u32 ce_algo_id;

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 OBJECT_FILES_NON_STANDARD := y
 CFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO)
 
@@ -14,7 +14,7 @@ $(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE
 
 targets += $(devicetable-offsets-file) devicetable-offsets.s
 
-# dependencies on generated files need to be listed explicitly
+
 
 $(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o: $(obj)/elfconfig.h
 $(obj)/file2alias.o: $(obj)/$(devicetable-offsets-file)

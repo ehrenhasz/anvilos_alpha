@@ -1,38 +1,4 @@
-/*
- * net/tipc/msg.h: Include file for TIPC message header routines
- *
- * Copyright (c) 2000-2007, 2014-2017 Ericsson AB
- * Copyright (c) 2005-2008, 2010-2011, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 #ifndef _TIPC_MSG_H
 #define _TIPC_MSG_H
@@ -40,27 +6,15 @@
 #include <linux/tipc.h>
 #include "core.h"
 
-/*
- * Constants and routines used to read and write TIPC payload message headers
- *
- * Note: Some items are also used with TIPC internal message headers
- */
+
 #define TIPC_VERSION              2
 struct plist;
 
-/*
- * Payload message users are defined in TIPC's public API:
- * - TIPC_LOW_IMPORTANCE
- * - TIPC_MEDIUM_IMPORTANCE
- * - TIPC_HIGH_IMPORTANCE
- * - TIPC_CRITICAL_IMPORTANCE
- */
+
 #define TIPC_SYSTEM_IMPORTANCE	4
 
 
-/*
- * Payload message types
- */
+
 #define TIPC_CONN_MSG           0
 #define TIPC_MCAST_MSG          1
 #define TIPC_NAMED_MSG          2
@@ -70,9 +24,7 @@ struct plist;
 #define TIPC_GRP_MCAST_MSG      6
 #define TIPC_GRP_UCAST_MSG      7
 
-/*
- * Internal message users
- */
+
 #define  BCAST_PROTOCOL       5
 #define  MSG_BUNDLER          6
 #define  LINK_PROTOCOL        7
@@ -83,20 +35,18 @@ struct plist;
 #define  MSG_FRAGMENTER       12
 #define  LINK_CONFIG          13
 #define  MSG_CRYPTO           14
-#define  SOCK_WAKEUP          14       /* pseudo user */
-#define  TOP_SRV              15       /* pseudo user */
+#define  SOCK_WAKEUP          14       
+#define  TOP_SRV              15       
 
-/*
- * Message header sizes
- */
-#define SHORT_H_SIZE              24	/* In-cluster basic payload message */
-#define BASIC_H_SIZE              32	/* Basic payload message */
-#define NAMED_H_SIZE              40	/* Named payload message */
-#define MCAST_H_SIZE              44	/* Multicast payload message */
-#define GROUP_H_SIZE              44	/* Group payload message */
-#define INT_H_SIZE                40	/* Internal messages */
-#define MIN_H_SIZE                24	/* Smallest legal TIPC header size */
-#define MAX_H_SIZE                60	/* Largest possible TIPC header size */
+
+#define SHORT_H_SIZE              24	
+#define BASIC_H_SIZE              32	
+#define NAMED_H_SIZE              40	
+#define MCAST_H_SIZE              44	
+#define GROUP_H_SIZE              44	
+#define INT_H_SIZE                40	
+#define MIN_H_SIZE                24	
+#define MAX_H_SIZE                60	
 
 #define MAX_MSG_SIZE (MAX_H_SIZE + TIPC_MAX_USER_MSG_SIZE)
 #define TIPC_MEDIA_INFO_OFFSET	5
@@ -149,40 +99,13 @@ struct tipc_msg {
 	__be32 hdr[15];
 };
 
-/* struct tipc_gap_ack - TIPC Gap ACK block
- * @ack: seqno of the last consecutive packet in link deferdq
- * @gap: number of gap packets since the last ack
- *
- * E.g:
- *       link deferdq: 1 2 3 4      10 11      13 14 15       20
- * --> Gap ACK blocks:      <4, 5>,   <11, 1>,      <15, 4>, <20, 0>
- */
+
 struct tipc_gap_ack {
 	__be16 ack;
 	__be16 gap;
 };
 
-/* struct tipc_gap_ack_blks
- * @len: actual length of the record
- * @ugack_cnt: number of Gap ACK blocks for unicast (following the broadcast
- *             ones)
- * @start_index: starting index for "valid" broadcast Gap ACK blocks
- * @bgack_cnt: number of Gap ACK blocks for broadcast in the record
- * @gacks: array of Gap ACK blocks
- *
- *  31                       16 15                        0
- * +-------------+-------------+-------------+-------------+
- * |  bgack_cnt  |  ugack_cnt  |            len            |
- * +-------------+-------------+-------------+-------------+  -
- * |            gap            |            ack            |   |
- * +-------------+-------------+-------------+-------------+    > bc gacks
- * :                           :                           :   |
- * +-------------+-------------+-------------+-------------+  -
- * |            gap            |            ack            |   |
- * +-------------+-------------+-------------+-------------+    > uc gacks
- * :                           :                           :   |
- * +-------------+-------------+-------------+-------------+  -
- */
+
 struct tipc_gap_ack_blks {
 	__be16 len;
 	union {
@@ -226,9 +149,7 @@ static inline void msg_set_bits(struct tipc_msg *m, u32 w,
 	m->hdr[w] |= htonl(val);
 }
 
-/*
- * Word 0
- */
+
 static inline u32 msg_version(struct tipc_msg *m)
 {
 	return msg_bits(m, 0, 29, 7);
@@ -374,9 +295,7 @@ static inline struct tipc_msg *msg_inner_hdr(struct tipc_msg *m)
 	return (struct tipc_msg *)msg_data(m);
 }
 
-/*
- * Word 1
- */
+
 static inline u32 msg_type(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 29, 0x7);
@@ -492,9 +411,7 @@ static inline void msg_set_bcast_ack(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 1, 0, 0xffff, n);
 }
 
-/* Note: reusing bits in word 1 for ACTIVATE_MSG only, to re-synch
- * link peer session number
- */
+
 static inline bool msg_dest_session_valid(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 16, 0x1);
@@ -515,9 +432,7 @@ static inline void msg_set_dest_session(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 1, 0, 0xffff, n);
 }
 
-/*
- * Word 2
- */
+
 static inline u16 msg_ack(struct tipc_msg *m)
 {
 	return msg_bits(m, 2, 16, 0xffff);
@@ -538,9 +453,7 @@ static inline void msg_set_seqno(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 2, 0, 0xffff, n);
 }
 
-/*
- * Words 3-10
- */
+
 static inline u32 msg_importance(struct tipc_msg *m)
 {
 	int usr = msg_user(m);
@@ -683,54 +596,38 @@ static inline void msg_set_nameupper(struct tipc_msg *m, u32 n)
 	msg_set_word(m, 10, n);
 }
 
-/*
- * Constants and routines used to read and write TIPC internal message headers
- */
 
-/*
- *  Connection management protocol message types
- */
+
+
 #define CONN_PROBE        0
 #define CONN_PROBE_REPLY  1
 #define CONN_ACK          2
 
-/*
- * Name distributor message types
- */
+
 #define PUBLICATION       0
 #define WITHDRAWAL        1
 
-/*
- * Segmentation message types
- */
+
 #define FIRST_FRAGMENT		0
 #define FRAGMENT		1
 #define LAST_FRAGMENT		2
 
-/*
- * Link management protocol message types
- */
+
 #define STATE_MSG		0
 #define RESET_MSG		1
 #define ACTIVATE_MSG		2
 
-/*
- * Changeover tunnel message types
- */
+
 #define SYNCH_MSG		0
 #define FAILOVER_MSG		1
 
-/*
- * Config protocol message types
- */
+
 #define DSC_REQ_MSG		0
 #define DSC_RESP_MSG		1
 #define DSC_TRIAL_MSG		2
 #define DSC_TRIAL_FAIL_MSG	3
 
-/*
- * Group protocol message types
- */
+
 #define GRP_JOIN_MSG         0
 #define GRP_LEAVE_MSG        1
 #define GRP_ADV_MSG          2
@@ -738,12 +635,10 @@ static inline void msg_set_nameupper(struct tipc_msg *m, u32 n)
 #define GRP_RECLAIM_MSG      4
 #define GRP_REMIT_MSG        5
 
-/* Crypto message types */
+
 #define KEY_DISTR_MSG		0
 
-/*
- * Word 1
- */
+
 static inline u32 msg_seq_gap(struct tipc_msg *m)
 {
 	return msg_bits(m, 1, 16, 0x1fff);
@@ -774,9 +669,7 @@ static inline void msg_set_node_capabilities(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 1, 15, 0x1fff, n);
 }
 
-/*
- * Word 2
- */
+
 static inline u32 msg_dest_domain(struct tipc_msg *m)
 {
 	return msg_word(m, 2);
@@ -802,9 +695,7 @@ static inline void msg_set_bcgap_to(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 2, 0, 0xffff, n);
 }
 
-/*
- * Word 4
- */
+
 static inline u32 msg_last_bcast(struct tipc_msg *m)
 {
 	return msg_bits(m, 4, 16, 0xffff);
@@ -867,9 +758,7 @@ static inline u32 msg_link_selector(struct tipc_msg *m)
 	return msg_bits(m, 4, 0, 1);
 }
 
-/*
- * Word 5
- */
+
 static inline u16 msg_session(struct tipc_msg *m)
 {
 	return msg_bits(m, 5, 16, 0xffff);
@@ -972,9 +861,7 @@ static inline void msg_set_bc_gap(struct tipc_msg *m, u32 n)
 	msg_set_bits(m, 8, 0, 0x3ff, n);
 }
 
-/*
- * Word 9
- */
+
 static inline u16 msg_msgcnt(struct tipc_msg *m)
 {
 	return msg_bits(m, 9, 16, 0xffff);
@@ -1065,8 +952,7 @@ static inline void msg_set_grp_remitted(struct tipc_msg *m, u16 n)
 	msg_set_bits(m, 9, 16, 0xffff, n);
 }
 
-/* Word 10
- */
+
 static inline u16 msg_grp_evt(struct tipc_msg *m)
 {
 	return msg_bits(m, 10, 0, 0x3);
@@ -1118,8 +1004,7 @@ static inline bool msg_is_reset(struct tipc_msg *hdr)
 	return (msg_user(hdr) == LINK_PROTOCOL) && (msg_type(hdr) == RESET_MSG);
 }
 
-/* Word 13
- */
+
 static inline void msg_set_peer_net_hash(struct tipc_msg *m, u32 n)
 {
 	msg_set_word(m, 13, n);
@@ -1130,8 +1015,7 @@ static inline u32 msg_peer_net_hash(struct tipc_msg *m)
 	return msg_word(m, 13);
 }
 
-/* Word 14
- */
+
 static inline u32 msg_sugg_node_addr(struct tipc_msg *m)
 {
 	return msg_word(m, 14);
@@ -1191,10 +1075,7 @@ static inline int buf_roundup_len(struct sk_buff *skb)
 	return (skb->len / 1024 + 1) * 1024;
 }
 
-/* tipc_skb_peek(): peek and reserve first buffer in list
- * @list: list to be peeked in
- * Returns pointer to first buffer in list, if any
- */
+
 static inline struct sk_buff *tipc_skb_peek(struct sk_buff_head *list,
 					    spinlock_t *lock)
 {
@@ -1208,14 +1089,7 @@ static inline struct sk_buff *tipc_skb_peek(struct sk_buff_head *list,
 	return skb;
 }
 
-/* tipc_skb_peek_port(): find a destination port, ignoring all destinations
- *                       up to and including 'filter'.
- * Note: ignoring previously tried destinations minimizes the risk of
- *       contention on the socket lock
- * @list: list to be peeked in
- * @filter: last destination to be ignored from search
- * Returns a destination port number, of applicable.
- */
+
 static inline u32 tipc_skb_peek_port(struct sk_buff_head *list, u32 filter)
 {
 	struct sk_buff *skb;
@@ -1236,10 +1110,7 @@ static inline u32 tipc_skb_peek_port(struct sk_buff_head *list, u32 filter)
 	return dport;
 }
 
-/* tipc_skb_dequeue(): unlink first buffer with dest 'dport' from list
- * @list: list to be unlinked from
- * @dport: selection criteria for buffer to unlink
- */
+
 static inline struct sk_buff *tipc_skb_dequeue(struct sk_buff_head *list,
 					       u32 dport)
 {
@@ -1257,10 +1128,7 @@ static inline struct sk_buff *tipc_skb_dequeue(struct sk_buff_head *list,
 	return skb;
 }
 
-/* tipc_skb_queue_splice_tail - append an skb list to lock protected list
- * @list: the new list to append. Not lock protected
- * @head: target list. Lock protected.
- */
+
 static inline void tipc_skb_queue_splice_tail(struct sk_buff_head *list,
 					      struct sk_buff_head *head)
 {
@@ -1269,10 +1137,7 @@ static inline void tipc_skb_queue_splice_tail(struct sk_buff_head *list,
 	spin_unlock_bh(&head->lock);
 }
 
-/* tipc_skb_queue_splice_tail_init - merge two lock protected skb lists
- * @list: the new list to add. Lock protected. Will be reinitialized
- * @head: target list. Lock protected.
- */
+
 static inline void tipc_skb_queue_splice_tail_init(struct sk_buff_head *list,
 						   struct sk_buff_head *head)
 {
@@ -1286,15 +1151,7 @@ static inline void tipc_skb_queue_splice_tail_init(struct sk_buff_head *list,
 	tipc_skb_queue_splice_tail(&tmp, head);
 }
 
-/* __tipc_skb_dequeue() - dequeue the head skb according to expected seqno
- * @list: list to be dequeued from
- * @seqno: seqno of the expected msg
- *
- * returns skb dequeued from the list if its seqno is less than or equal to
- * the expected one, otherwise the skb is still hold
- *
- * Note: must be used with appropriate locks held only
- */
+
 static inline struct sk_buff *__tipc_skb_dequeue(struct sk_buff_head *list,
 						 u16 seqno)
 {

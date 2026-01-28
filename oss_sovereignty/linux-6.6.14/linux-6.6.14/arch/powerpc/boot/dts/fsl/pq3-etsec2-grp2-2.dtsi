@@ -1,8 +1,0 @@
-&enet2_grp2 {
-	queue-group@b6000 {
-		#address-cells = <1>;
-		#size-cells = <1>;
-		reg = <0xb6000 0x1000>;
-		interrupts = <25 2 0 0 26 2 0 0 27 2 0 0>;
-	};
-};

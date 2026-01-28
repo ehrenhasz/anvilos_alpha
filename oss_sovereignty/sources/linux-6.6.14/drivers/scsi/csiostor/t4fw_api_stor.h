@@ -1,44 +1,10 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2009-2010 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef _T4FW_API_STOR_H_
 #define _T4FW_API_STOR_H_
 
 
-/******************************************************************************
- *   R E T U R N   V A L U E S
- ********************************/
+
 
 enum fw_fcoe_link_sub_op {
 	FCOE_LINK_DOWN	= 0x0,
@@ -57,13 +23,13 @@ enum fw_ofld_prot {
 };
 
 enum rport_type_fcoe {
-	FLOGI_VFPORT	= 0x1,		/* 0xfffffe */
-	FDISC_VFPORT	= 0x2,		/* 0xfffffe */
-	NS_VNPORT	= 0x3,		/* 0xfffffc */
-	REG_FC4_VNPORT	= 0x4,		/* any FC4 type VN_PORT */
-	REG_VNPORT	= 0x5,		/* 0xfffxxx - non FC4 port in switch */
-	FDMI_VNPORT	= 0x6,		/* 0xfffffa */
-	FAB_CTLR_VNPORT	= 0x7,		/* 0xfffffd */
+	FLOGI_VFPORT	= 0x1,		
+	FDISC_VFPORT	= 0x2,		
+	NS_VNPORT	= 0x3,		
+	REG_FC4_VNPORT	= 0x4,		
+	REG_VNPORT	= 0x5,		
+	FDMI_VNPORT	= 0x6,		
+	FAB_CTLR_VNPORT	= 0x7,		
 };
 
 enum event_cause_fcoe {
@@ -536,4 +502,4 @@ struct fw_fcoe_fcf_cmd {
 #define FW_FCOE_FCF_CMD_LOGIN_GET(x)	(((x) >> 4) & 0x1)
 #define FW_FCOE_FCF_CMD_PORTID_GET(x)	(((x) >> 0) & 0xf)
 
-#endif /* _T4FW_API_STOR_H_ */
+#endif 

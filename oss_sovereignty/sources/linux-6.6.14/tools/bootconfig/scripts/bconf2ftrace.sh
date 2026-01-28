@@ -5,7 +5,7 @@ usage() {
 	echo "    --init:  Initialize ftrace before applying (imply --apply)"
 	exit 1
 }
-[ $# -eq 0 ] && usage
+[ $
 BCONF=
 DEBUG=
 APPLY=
@@ -31,9 +31,9 @@ if [ x"$APPLY" != x ]; then
 		exec sudo $0 $DEBUG $APPLY $BCONF
 	fi
 fi
-run_cmd() { # command
+run_cmd() { 
 	echo "$*"
-	if [ x"$APPLY" != x ]; then # apply command
+	if [ x"$APPLY" != x ]; then 
 		eval $*
 	fi
 }
@@ -59,24 +59,24 @@ fi
 . `dirname $0`/xbc.sh
 set -e
 xbc_init $BCONF
-set_value_of() { # key file
+set_value_of() { 
 	if xbc_has_key $1; then
 		val=`xbc_get_val $1 1`
 		run_cmd "echo '$val' >> $2"
 	fi
 }
-set_array_of() { # key file
+set_array_of() { 
 	if xbc_has_key $1; then
 		xbc_get_val $1 | while read line; do
 			run_cmd "echo '$line' >> $2"
 		done
 	fi
 }
-compose_synth() { # event_name branch
+compose_synth() { 
 	echo -n "$1 "
 	xbc_get_val $2 | while read field; do echo -n "$field; "; done
 }
-print_hist_array() { # prefix key
+print_hist_array() { 
 	__sep="="
 	if xbc_has_key ${1}.${2}; then
 		echo -n ":$2"
@@ -85,7 +85,7 @@ print_hist_array() { # prefix key
 		done
 	fi
 }
-print_hist_action_array() { # prefix key
+print_hist_action_array() { 
 	__sep="("
 	echo -n ".$2"
 	xbc_get_val ${1}.${2} | while read field; do
@@ -93,7 +93,7 @@ print_hist_action_array() { # prefix key
 	done
 	echo -n ")"
 }
-print_hist_one_action() { # prefix handler param
+print_hist_one_action() { 
 	echo -n ":${2}("`xbc_get_val ${1}.${3}`")"
 	if xbc_has_key "${1}.trace"; then
 		print_hist_action_array ${1} "trace"
@@ -103,7 +103,7 @@ print_hist_one_action() { # prefix handler param
 		echo -n ".snapshot()"
 	fi
 }
-print_hist_actions() { # prefix handler param
+print_hist_actions() { 
 	for __hdr in `xbc_subkeys ${1}.${2} 1 ".[0-9]"`; do
 		print_hist_one_action ${1}.${2}.$__hdr ${2} ${3}
 	done
@@ -111,10 +111,10 @@ print_hist_actions() { # prefix handler param
 		print_hist_one_action ${1}.${2} ${2} ${3}
 	fi
 }
-print_hist_var() { # prefix varname
+print_hist_var() { 
 	echo -n ":${2}="`xbc_get_val ${1}.var.${2} | tr -d [:space:]`
 }
-print_one_histogram() { # prefix
+print_one_histogram() { 
 	echo -n "hist"
 	print_hist_array $1 "keys"
 	print_hist_array $1 "values"
@@ -142,10 +142,10 @@ print_one_histogram() { # prefix
 		echo -n " if "`xbc_get_val ${1}.filter`
 	fi
 }
-setup_one_histogram() { # prefix trigger-file
+setup_one_histogram() { 
 	run_cmd "echo '`print_one_histogram ${1}`' >> ${2}"
 }
-setup_histograms() { # prefix trigger-file
+setup_histograms() { 
 	for __hist in `xbc_subkeys ${1} 1 ".[0-9]"`; do
 		setup_one_histogram ${1}.$__hist ${2}
 	done
@@ -153,7 +153,7 @@ setup_histograms() { # prefix trigger-file
 		setup_one_histogram ${1} ${2}
 	fi
 }
-setup_event() { # prefix group event [instance]
+setup_event() { 
 	branch=$1.$2.$3
 	if [ "$4" ]; then
 		eventdir="$TRACEFS/instances/$4/events/$2/$3"
@@ -181,11 +181,11 @@ setup_event() { # prefix group event [instance]
 		run_cmd "echo 1 > ${eventdir}/enable"
 	fi
 }
-setup_events() { # prefix("ftrace" or "ftrace.instance.INSTANCE") [instance]
+setup_events() { 
 	prefix="${1}.event"
 	if xbc_has_branch ${1}.event; then
 		for grpev in `xbc_subkeys ${1}.event 2`; do
-			setup_event $prefix ${grpev%.*} ${grpev#*.} $2
+			setup_event $prefix ${grpev%.*} ${grpev
 		done
 	fi
 	if xbc_has_branch ${1}.event.enable; then
@@ -196,7 +196,7 @@ setup_events() { # prefix("ftrace" or "ftrace.instance.INSTANCE") [instance]
 		fi
 	fi
 }
-size2kb() { # size[KB|MB]
+size2kb() { 
 	case $1 in
 	*KB)
 		echo ${1%KB};;
@@ -206,7 +206,7 @@ size2kb() { # size[KB|MB]
 		expr $1 / 1024 ;;
 	esac
 }
-setup_instance() { # [instance]
+setup_instance() { 
 	if [ "$1" ]; then
 		instance="ftrace.instance.${1}"
 		instancedir=$TRACEFS/instances/$1
@@ -245,7 +245,7 @@ set_array_of kernel.fgraph_notraces $TRACEFS/set_graph_notrace
 if ! xbc_has_branch "ftrace" ; then
 	exit 0
 fi
-setup_instance # root instance
+setup_instance 
 if xbc_has_branch "ftrace.instance"; then
 	for i in `xbc_subkeys "ftrace.instance" 1`; do
 		run_cmd "mkdir -p $TRACEFS/instances/$i"

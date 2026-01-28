@@ -1,9 +1,0 @@
-#include "sc7180-trogdor-coachz-r3.dts"
-#include "sc7180-trogdor-lte-sku.dtsi"
-/ {
-	model = "Google CoachZ (rev3+) with LTE";
-	compatible = "google,coachz-sku0", "qcom,sc7180";
-};
-&cros_ec_proximity {
-	label = "proximity-wifi-lte";
-};

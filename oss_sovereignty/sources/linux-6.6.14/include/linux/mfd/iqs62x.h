@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Azoteq IQS620A/621/622/624/625 Multi-Function Sensors
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
+
+
 
 #ifndef __LINUX_MFD_IQS62X_H
 #define __LINUX_MFD_IQS62X_H
@@ -57,7 +53,7 @@ enum iqs62x_event_reg {
 };
 
 enum iqs62x_event_flag {
-	/* keys */
+	
 	IQS62X_EVENT_PROX_CH0_T,
 	IQS62X_EVENT_PROX_CH0_P,
 	IQS62X_EVENT_PROX_CH1_T,
@@ -75,13 +71,13 @@ enum iqs62x_event_flag {
 	IQS62X_EVENT_WHEEL_UP,
 	IQS62X_EVENT_WHEEL_DN,
 
-	/* switches */
+	
 	IQS62X_EVENT_HALL_N_T,
 	IQS62X_EVENT_HALL_N_P,
 	IQS62X_EVENT_HALL_S_T,
 	IQS62X_EVENT_HALL_S_P,
 
-	/* everything else */
+	
 	IQS62X_EVENT_SYS_RESET,
 	IQS62X_EVENT_SYS_ATI,
 };
@@ -140,4 +136,4 @@ struct iqs62x_core {
 
 extern const struct iqs62x_event_desc iqs62x_events[IQS62X_NUM_EVENTS];
 
-#endif /* __LINUX_MFD_IQS62X_H */
+#endif 

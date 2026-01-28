@@ -194,13 +194,13 @@ test_csv_output()
 {
 	echo "Testing perf lock contention CSV output"
 	perf lock contention -i ${perfdata} -E 1 -x , --output ${result}
-	header=$(grep "# output:" ${result} | tr -d -c , | wc -c)
+	header=$(grep "
 	if [ "${header}" != "5" ]; then
 		echo "[Fail] Recorded result does not have enough output columns: ${header} != 5"
 		err=1
 		exit
 	fi
-	output=$(grep -v "^#" ${result} | tr -d -c , | wc -c)
+	output=$(grep -v "^
 	if [ "${header}" != "${output}" ]; then
 		echo "[Fail] Recorded result does not match the number of commas: ${header} != ${output}"
 		err=1
@@ -211,7 +211,7 @@ test_csv_output()
 		return
 	fi
 	perf lock con -a -b -E 1 -x , --output ${result} -- perf bench sched messaging > /dev/null 2>&1
-	output=$(grep -v "^#" ${result} | tr -d -c , | wc -c)
+	output=$(grep -v "^
 	if [ "${header}" != "${output}" ]; then
 		echo "[Fail] BPF result does not match the number of commas: ${header} != ${output}"
 		err=1

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_TC_CT_H__
 #define __MLX5_EN_TC_CT_H__
@@ -65,7 +65,7 @@ struct mlx5_ct_attr {
 				 misc_parameters_2.metadata_reg_c_4),\
 }
 
-/* 8 LSB of metadata C5 are reserved for packet color */
+
 #define fteid_to_reg_ct {\
 	.mfield = MLX5_ACTION_IN_FIELD_METADATA_REG_C_5,\
 	.moffset = 8,\
@@ -128,7 +128,7 @@ bool
 mlx5e_tc_ct_restore_flow(struct mlx5_tc_ct_priv *ct_priv,
 			 struct sk_buff *skb, u8 zone_restore_id);
 
-#else /* CONFIG_MLX5_TC_CT */
+#else 
 
 static inline struct mlx5_tc_ct_priv *
 mlx5_tc_ct_init(struct mlx5e_priv *priv, struct mlx5_fs_chains *chains,
@@ -202,5 +202,5 @@ mlx5e_tc_ct_restore_flow(struct mlx5_tc_ct_priv *ct_priv,
 	return false;
 }
 
-#endif /* !IS_ENABLED(CONFIG_MLX5_TC_CT) */
-#endif /* __MLX5_EN_TC_CT_H__ */
+#endif 
+#endif 

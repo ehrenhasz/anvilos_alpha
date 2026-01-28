@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Daire McNamara,<daire.mcnamara@microchip.com>
- * Copyright (C) 2020-2022 Microchip Technology Inc.  All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_
 #define _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_
@@ -45,7 +42,7 @@
 #define CLK_RTCREF	33
 #define CLK_MSSPLL	34
 
-/* Clock Conditioning Circuitry Clock IDs */
+
 
 #define CLK_CCC_PLL0		0
 #define CLK_CCC_PLL1		1
@@ -68,4 +65,4 @@
 #define CLK_CCC_DLL1_OUT0	14
 #define CLK_CCC_DLL1_OUT1	15
 
-#endif	/* _DT_BINDINGS_CLK_MICROCHIP_MPFS_H_ */
+#endif	

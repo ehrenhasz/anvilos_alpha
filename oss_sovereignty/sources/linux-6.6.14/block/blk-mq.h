@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef INT_BLK_MQ_H
 #define INT_BLK_MQ_H
 
@@ -12,9 +12,7 @@ struct blk_mq_ctxs {
 	struct blk_mq_ctx __percpu	*queue_ctx;
 };
 
-/**
- * struct blk_mq_ctx - State for a software queue facing the submitting CPUs
- */
+
 struct blk_mq_ctx {
 	struct {
 		spinlock_t		lock;
@@ -52,9 +50,7 @@ struct request *blk_mq_dequeue_from_ctx(struct blk_mq_hw_ctx *hctx,
 					struct blk_mq_ctx *start);
 void blk_mq_put_rq_ref(struct request *rq);
 
-/*
- * Internal helpers for allocating/freeing the request map
- */
+
 void blk_mq_free_rqs(struct blk_mq_tag_set *set, struct blk_mq_tags *tags,
 		     unsigned int hctx_idx);
 void blk_mq_free_rq_map(struct blk_mq_tags *tags);
@@ -64,17 +60,10 @@ void blk_mq_free_map_and_rqs(struct blk_mq_tag_set *set,
 			     struct blk_mq_tags *tags,
 			     unsigned int hctx_idx);
 
-/*
- * CPU -> queue mappings
- */
+
 extern int blk_mq_hw_queue_to_node(struct blk_mq_queue_map *qmap, unsigned int);
 
-/*
- * blk_mq_map_queue_type() - map (hctx_type,cpu) to hardware queue
- * @q: request queue
- * @type: the hctx type index
- * @cpu: CPU
- */
+
 static inline struct blk_mq_hw_ctx *blk_mq_map_queue_type(struct request_queue *q,
 							  enum hctx_type type,
 							  unsigned int cpu)
@@ -86,9 +75,7 @@ static inline enum hctx_type blk_mq_get_hctx_type(blk_opf_t opf)
 {
 	enum hctx_type type = HCTX_TYPE_DEFAULT;
 
-	/*
-	 * The caller ensure that if REQ_POLLED, poll must be enabled.
-	 */
+	
 	if (opf & REQ_POLLED)
 		type = HCTX_TYPE_POLL;
 	else if ((opf & REQ_OP_MASK) == REQ_OP_READ)
@@ -96,12 +83,7 @@ static inline enum hctx_type blk_mq_get_hctx_type(blk_opf_t opf)
 	return type;
 }
 
-/*
- * blk_mq_map_queue() - map (cmd_flags,type) to hardware queue
- * @q: request queue
- * @opf: operation type (REQ_OP_*) and flags (e.g. REQ_POLLED).
- * @ctx: software queue cpu ctx
- */
+
 static inline struct blk_mq_hw_ctx *blk_mq_map_queue(struct request_queue *q,
 						     blk_opf_t opf,
 						     struct blk_mq_ctx *ctx)
@@ -109,9 +91,7 @@ static inline struct blk_mq_hw_ctx *blk_mq_map_queue(struct request_queue *q,
 	return ctx->hctxs[blk_mq_get_hctx_type(opf)];
 }
 
-/*
- * sysfs helpers
- */
+
 extern void blk_mq_sysfs_init(struct request_queue *q);
 extern void blk_mq_sysfs_deinit(struct request_queue *q);
 int blk_mq_sysfs_register(struct gendisk *disk);
@@ -132,30 +112,25 @@ static inline struct blk_mq_ctx *__blk_mq_get_ctx(struct request_queue *q,
 	return per_cpu_ptr(q->queue_ctx, cpu);
 }
 
-/*
- * This assumes per-cpu software queueing queues. They could be per-node
- * as well, for instance. For now this is hardcoded as-is. Note that we don't
- * care about preemption, since we know the ctx's are persistent. This does
- * mean that we can't rely on ctx always matching the currently running CPU.
- */
+
 static inline struct blk_mq_ctx *blk_mq_get_ctx(struct request_queue *q)
 {
 	return __blk_mq_get_ctx(q, raw_smp_processor_id());
 }
 
 struct blk_mq_alloc_data {
-	/* input parameter */
+	
 	struct request_queue *q;
 	blk_mq_req_flags_t flags;
 	unsigned int shallow_depth;
 	blk_opf_t cmd_flags;
 	req_flags_t rq_flags;
 
-	/* allocate multiple requests/tags in one go */
+	
 	unsigned int nr_tags;
 	struct request **cached_rq;
 
-	/* input & output parameter */
+	
 	struct blk_mq_ctx *ctx;
 	struct blk_mq_hw_ctx *hctx;
 };
@@ -342,38 +317,19 @@ static inline void blk_mq_clear_mq_map(struct blk_mq_queue_map *qmap)
 		qmap->mq_map[cpu] = 0;
 }
 
-/*
- * blk_mq_plug() - Get caller context plug
- * @bio : the bio being submitted by the caller context
- *
- * Plugging, by design, may delay the insertion of BIOs into the elevator in
- * order to increase BIO merging opportunities. This however can cause BIO
- * insertion order to change from the order in which submit_bio() is being
- * executed in the case of multiple contexts concurrently issuing BIOs to a
- * device, even if these context are synchronized to tightly control BIO issuing
- * order. While this is not a problem with regular block devices, this ordering
- * change can cause write BIO failures with zoned block devices as these
- * require sequential write patterns to zones. Prevent this from happening by
- * ignoring the plug state of a BIO issuing context if it is for a zoned block
- * device and the BIO to plug is a write operation.
- *
- * Return current->plug if the bio can be plugged and NULL otherwise
- */
+
 static inline struct blk_plug *blk_mq_plug( struct bio *bio)
 {
-	/* Zoned block device write operation case: do not plug the BIO */
+	
 	if (IS_ENABLED(CONFIG_BLK_DEV_ZONED) &&
 	    bdev_op_is_zoned_write(bio->bi_bdev, bio_op(bio)))
 		return NULL;
 
-	/*
-	 * For regular block devices or read operations, use the context plug
-	 * which may be NULL if blk_start_plug() was not executed.
-	 */
+	
 	return current->plug;
 }
 
-/* Free all requests on the list */
+
 static inline void blk_mq_free_requests(struct list_head *list)
 {
 	while (!list_empty(list)) {
@@ -384,10 +340,7 @@ static inline void blk_mq_free_requests(struct list_head *list)
 	}
 }
 
-/*
- * For shared tag users, we track the number of currently active users
- * and attempt to provide a fair share of the tag depth for each of them.
- */
+
 static inline bool hctx_may_queue(struct blk_mq_hw_ctx *hctx,
 				  struct sbitmap_queue *bt)
 {
@@ -396,9 +349,7 @@ static inline bool hctx_may_queue(struct blk_mq_hw_ctx *hctx,
 	if (!hctx || !(hctx->flags & BLK_MQ_F_TAG_QUEUE_SHARED))
 		return true;
 
-	/*
-	 * Don't try dividing an ant
-	 */
+	
 	if (bt->sb.depth == 1)
 		return true;
 
@@ -416,14 +367,12 @@ static inline bool hctx_may_queue(struct blk_mq_hw_ctx *hctx,
 	if (!users)
 		return true;
 
-	/*
-	 * Allow at least some tags
-	 */
+	
 	depth = max((bt->sb.depth + users - 1) / users, 4U);
 	return __blk_mq_active_requests(hctx) < depth;
 }
 
-/* run the code block in @dispatch_ops with rcu/srcu read lock held */
+
 #define __blk_mq_run_dispatch_ops(q, check_sleep, dispatch_ops)	\
 do {								\
 	if ((q)->tag_set->flags & BLK_MQ_F_BLOCKING) {		\

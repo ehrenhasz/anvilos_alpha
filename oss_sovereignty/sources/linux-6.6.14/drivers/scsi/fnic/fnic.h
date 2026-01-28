@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+
 #ifndef _FNIC_H_
 #define _FNIC_H_
 
@@ -32,26 +29,21 @@
 #define DFX                     DRV_NAME "%d: "
 
 #define DESC_CLEAN_LOW_WATERMARK 8
-#define FNIC_UCSM_DFLT_THROTTLE_CNT_BLD	16 /* UCSM default throttle count */
-#define FNIC_MIN_IO_REQ			256 /* Min IO throttle count */
-#define FNIC_MAX_IO_REQ		1024 /* scsi_cmnd tag map entries */
-#define FNIC_DFLT_IO_REQ        256 /* Default scsi_cmnd tag map entries */
-#define	FNIC_IO_LOCKS		64 /* IO locks: power of 2 */
+#define FNIC_UCSM_DFLT_THROTTLE_CNT_BLD	16 
+#define FNIC_MIN_IO_REQ			256 
+#define FNIC_MAX_IO_REQ		1024 
+#define FNIC_DFLT_IO_REQ        256 
+#define	FNIC_IO_LOCKS		64 
 #define FNIC_DFLT_QUEUE_DEPTH	256
-#define	FNIC_STATS_RATE_LIMIT	4 /* limit rate at which stats are pulled up */
+#define	FNIC_STATS_RATE_LIMIT	4 
 
-/*
- * Tag bits used for special requests.
- */
-#define FNIC_TAG_ABORT		BIT(30)		/* tag bit indicating abort */
-#define FNIC_TAG_DEV_RST	BIT(29)		/* indicates device reset */
-#define FNIC_TAG_MASK		(BIT(24) - 1)	/* mask for lookup */
+
+#define FNIC_TAG_ABORT		BIT(30)		
+#define FNIC_TAG_DEV_RST	BIT(29)		
+#define FNIC_TAG_MASK		(BIT(24) - 1)	
 #define FNIC_NO_TAG             -1
 
-/*
- * Command flags to identify the type of command and for other future
- * use.
- */
+
 #define FNIC_NO_FLAGS                   0
 #define FNIC_IO_INITIALIZED             BIT(0)
 #define FNIC_IO_ISSUED                  BIT(1)
@@ -65,7 +57,7 @@
 #define FNIC_IO_ABT_TERM_DONE           BIT(9)
 #define FNIC_IO_ABT_TERM_REQ_NULL       BIT(10)
 #define FNIC_IO_ABT_TERM_TIMED_OUT      BIT(11)
-#define FNIC_DEVICE_RESET               BIT(12)  /* Device reset request */
+#define FNIC_DEVICE_RESET               BIT(12)  
 #define FNIC_DEV_RST_ISSUED             BIT(13)
 #define FNIC_DEV_RST_TIMED_OUT          BIT(14)
 #define FNIC_DEV_RST_ABTS_ISSUED        BIT(15)
@@ -76,10 +68,7 @@
 #define FNIC_DEV_RST_TERM_DONE          BIT(20)
 #define FNIC_DEV_RST_ABTS_PENDING       BIT(21)
 
-/*
- * fnic private data per SCSI command.
- * These fields are locked by the hashed io_req_lock.
- */
+
 struct fnic_cmd_priv {
 	struct fnic_io_req *io_req;
 	enum fnic_ioreq_state state;
@@ -100,21 +89,19 @@ static inline u64 fnic_flags_and_state(struct scsi_cmnd *cmd)
 	return ((u64)fcmd->flags << 32) | fcmd->state;
 }
 
-#define FCPIO_INVALID_CODE 0x100 /* hdr_status value unused by firmware */
+#define FCPIO_INVALID_CODE 0x100 
 
-#define FNIC_LUN_RESET_TIMEOUT	     10000	/* mSec */
-#define FNIC_HOST_RESET_TIMEOUT	     10000	/* mSec */
-#define FNIC_RMDEVICE_TIMEOUT        1000       /* mSec */
-#define FNIC_HOST_RESET_SETTLE_TIME  30         /* Sec */
-#define FNIC_ABT_TERM_DELAY_TIMEOUT  500        /* mSec */
+#define FNIC_LUN_RESET_TIMEOUT	     10000	
+#define FNIC_HOST_RESET_TIMEOUT	     10000	
+#define FNIC_RMDEVICE_TIMEOUT        1000       
+#define FNIC_HOST_RESET_SETTLE_TIME  30         
+#define FNIC_ABT_TERM_DELAY_TIMEOUT  500        
 
 #define FNIC_MAX_FCP_TARGET     256
 
-/**
- * state_flags to identify host state along along with fnic's state
- **/
-#define __FNIC_FLAGS_FWRESET		BIT(0) /* fwreset in progress */
-#define __FNIC_FLAGS_BLOCK_IO		BIT(1) /* IOs are blocked */
+
+#define __FNIC_FLAGS_FWRESET		BIT(0) 
+#define __FNIC_FLAGS_BLOCK_IO		BIT(1) 
 
 #define FNIC_FLAGS_NONE			(0)
 #define FNIC_FLAGS_FWRESET		(__FNIC_FLAGS_FWRESET | \
@@ -214,20 +201,20 @@ struct fnic_event {
 	enum fnic_evt event;
 };
 
-/* Per-instance private data structure */
+
 struct fnic {
 	struct fc_lport *lport;
-	struct fcoe_ctlr ctlr;		/* FIP FCoE controller structure */
+	struct fcoe_ctlr ctlr;		
 	struct vnic_dev_bar bar0;
 
 	struct fnic_msix_entry msix[FNIC_MSIX_INTR_MAX];
 
 	struct vnic_stats *stats;
-	unsigned long stats_time;	/* time of stats update */
-	unsigned long stats_reset_time; /* time of stats reset */
+	unsigned long stats_time;	
+	unsigned long stats_reset_time; 
 	struct vnic_nic_cfg *nic_cfg;
 	char name[IFNAMSIZ];
-	struct timer_list notify_timer; /* used for MSI interrupts */
+	struct timer_list notify_timer; 
 
 	unsigned int fnic_max_tag_id;
 	unsigned int err_intr_offset;
@@ -237,7 +224,7 @@ struct fnic {
 	unsigned int cq_count;
 
 	struct mutex sgreset_mutex;
-	spinlock_t sgreset_lock; /* lock for sgreset */
+	spinlock_t sgreset_lock; 
 	struct scsi_cmnd *sgreset_sc;
 	struct dentry *fnic_stats_debugfs_host;
 	struct dentry *fnic_stats_debugfs_file;
@@ -246,24 +233,24 @@ struct fnic {
 	atomic64_t io_cmpl_skip;
 	struct fnic_stats fnic_stats;
 
-	u32 vlan_hw_insert:1;	        /* let hw insert the tag */
-	u32 in_remove:1;                /* fnic device in removal */
-	u32 stop_rx_link_events:1;      /* stop proc. rx frames, link events */
-	u32 link_events:1;              /* set when we get any link event*/
+	u32 vlan_hw_insert:1;	        
+	u32 in_remove:1;                
+	u32 stop_rx_link_events:1;      
+	u32 link_events:1;              
 
-	struct completion *remove_wait; /* device remove thread blocks */
+	struct completion *remove_wait; 
 
-	atomic_t in_flight;		/* io counter */
+	atomic_t in_flight;		
 	bool internal_reset_inprogress;
-	u32 _reserved;			/* fill hole */
-	unsigned long state_flags;	/* protected by host lock */
+	u32 _reserved;			
+	unsigned long state_flags;	
 	enum fnic_state state;
 	spinlock_t fnic_lock;
 
-	u16 vlan_id;	                /* VLAN tag including priority */
+	u16 vlan_id;	                
 	u8 data_src_addr[ETH_ALEN];
-	u64 fcp_input_bytes;		/* internal statistic */
-	u64 fcp_output_bytes;		/* internal statistic */
+	u64 fcp_input_bytes;		
+	u64 fcp_output_bytes;		
 	u32 link_down_cnt;
 	int link_status;
 
@@ -282,14 +269,14 @@ struct fnic {
 	struct fnic_host_tag *tags;
 	mempool_t *io_req_pool;
 	mempool_t *io_sgl_pool[FNIC_SGL_NUM_CACHES];
-	spinlock_t io_req_lock[FNIC_IO_LOCKS];	/* locks for scsi cmnds */
+	spinlock_t io_req_lock[FNIC_IO_LOCKS];	
 
 	struct work_struct link_work;
 	struct work_struct frame_work;
 	struct sk_buff_head frame_queue;
 	struct sk_buff_head tx_queue;
 
-	/*** FIP related data members  -- start ***/
+	
 	void (*set_vlan)(struct fnic *, u16 vlan);
 	struct work_struct      fip_frame_work;
 	struct sk_buff_head     fip_frame_queue;
@@ -299,23 +286,23 @@ struct fnic {
 
 	struct work_struct      event_work;
 	struct list_head        evlist;
-	/*** FIP related data members  -- end ***/
+	
 
-	/* copy work queue cache line section */
+	
 	____cacheline_aligned struct vnic_wq_copy wq_copy[FNIC_WQ_COPY_MAX];
-	/* completion queue cache line section */
+	
 	____cacheline_aligned struct vnic_cq cq[FNIC_CQ_MAX];
 
 	spinlock_t wq_copy_lock[FNIC_WQ_COPY_MAX];
 
-	/* work queue cache line section */
+	
 	____cacheline_aligned struct vnic_wq wq[FNIC_WQ_MAX];
 	spinlock_t wq_lock[FNIC_WQ_MAX];
 
-	/* receive queue cache line section */
+	
 	____cacheline_aligned struct vnic_rq rq[FNIC_RQ_MAX];
 
-	/* interrupt resource cache line section */
+	
 	____cacheline_aligned struct vnic_intr intr[FNIC_MSIX_INTR_MAX];
 };
 
@@ -383,4 +370,4 @@ fnic_chk_state_flags_locked(struct fnic *fnic, unsigned long st_flags)
 }
 void __fnic_set_state_flags(struct fnic *, unsigned long, unsigned long);
 void fnic_dump_fchost_stats(struct Scsi_Host *, struct fc_host_statistics *);
-#endif /* _FNIC_H_ */
+#endif 

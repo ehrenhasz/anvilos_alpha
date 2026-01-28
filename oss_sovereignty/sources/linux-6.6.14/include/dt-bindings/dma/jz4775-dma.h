@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This header provides macros for JZ4775 DMA bindings.
- *
- * Copyright (c) 2020 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_DMA_JZ4775_DMA_H__
 #define __DT_BINDINGS_DMA_JZ4775_DMA_H__
 
-/*
- * Request type numbers for the JZ4775 DMA controller (written to the DRTn
- * register for the channel).
- */
+
 #define JZ4775_DMA_I2S0_TX	0x6
 #define JZ4775_DMA_I2S0_RX	0x7
 #define JZ4775_DMA_AUTO		0x8
@@ -41,4 +34,4 @@
 #define JZ4775_DMA_SMB2_TX	0x28
 #define JZ4775_DMA_SMB2_RX	0x29
 
-#endif /* __DT_BINDINGS_DMA_JZ4775_DMA_H__ */
+#endif 

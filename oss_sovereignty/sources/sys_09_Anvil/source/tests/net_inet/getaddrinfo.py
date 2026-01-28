@@ -12,7 +12,7 @@ def test_bogus():
     except OSError as e:
         print("getaddrinfo raised")
     except Exception as e:
-        print("getaddrinfo raised")  # CPython raises UnicodeError!?
+        print("getaddrinfo raised")  
 def test_ip_addr():
     try:
         res = socket.getaddrinfo("10.10.10.10", 80)

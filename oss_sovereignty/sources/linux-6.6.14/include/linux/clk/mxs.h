@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+
 
 #ifndef __LINUX_CLK_MXS_H
 #define __LINUX_CLK_MXS_H

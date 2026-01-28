@@ -1,7 +1,7 @@
-set -e		# exit on errors
-set -o pipefail	# exit if pipe writer fails
-set -u		# disallow usage of unset variables
-set -C		# disallow redirection file overwriting
+set -e		
+set -o pipefail	
+set -u		
+set -C		
 SCRIPT_INVOCATION_SHORT_NAME=$(basename ${0})
 trap 'echo "${SCRIPT_INVOCATION_SHORT_NAME}: exit on error"; exit 1' ERR
 usage() {
@@ -33,7 +33,7 @@ KNOWN_REPEATS[unshare.1.adoc]='1000 0 1'
 remove_repeats()
 {
 	set +u
-	for KN in ${KNOWN_REPEATS[${I##*/}]}; do
+	for KN in ${KNOWN_REPEATS[${I
 		if [ "${KN}" = "${REPEATS[$1]}" ]; then
 			if $VERBOSE; then
 				echo "info: ${I} removing repeat: ${REPEATS[$1]}"
@@ -47,18 +47,18 @@ cd $(git rev-parse --show-toplevel)
 for I in $(
 	find . -type f -name '*[[:alpha:]].[1-8].adoc' |grep -v "autom4te.cache\|\.libs/\|\.git"
 ); do
-	ADOC_FILE=${I##*/}
+	ADOC_FILE=${I
 	ADOC_LIST[${ADOC_FILE%%.[0-9]}]=1
 	REPEATS=( $(cat ${I} |
 		col -b |
 		sed  -e 's/\/\/\/\///g; s/\.\.\.\.//g;' |
 		awk 'BEGIN { p="" } { if (0 < length($0)) { if (p == $0) { print } } p = $0 }') )
-	if [ 0 -lt "${#REPEATS[@]}" ]; then
-		ITER=${#REPEATS[@]}+1
+	if [ 0 -lt "${
+		ITER=${
 		while ((ITER--)); do
 			remove_repeats ${ITER}
 		done
-		if [ 0 -lt "${#REPEATS[@]}" ]; then
+		if [ 0 -lt "${
 			echo "warning: ${I} has repeating words: ${REPEATS[@]}"
 			echo "=================================================="
 			((++COUNT_REPEATS))

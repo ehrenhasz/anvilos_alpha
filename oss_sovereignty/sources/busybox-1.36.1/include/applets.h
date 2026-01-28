@@ -1,27 +1,8 @@
-/* DO NOT EDIT. This file is generated from applets.src.h */
-/* vi: set sw=4 ts=4: */
-/*
- * applets.h - a listing of all busybox applets.
- *
- * If you write a new applet, you need to add an entry to this list to make
- * busybox aware of it.
- */
 
-/*
-name  - applet name as it is typed on command line
-help  - applet name, converted to C (ether-wake: help = ether_wake)
-main  - corresponding <applet>_main to call (bzcat: main = bunzip2)
-l     - location to install link to: [/usr]/[s]bin
-s     - suid type:
-        BB_SUID_REQUIRE: will complain if busybox isn't suid
-        and is run by non-root (applet_main() will not be called at all)
-        BB_SUID_DROP: will drop suid prior to applet_main()
-        BB_SUID_MAYBE: neither of the above
-        (every instance of BB_SUID_REQUIRE and BB_SUID_MAYBE
-        needs to be justified in comment)
-        NB: please update FEATURE_SUID help text whenever you add/remove
-        BB_SUID_REQUIRE or BB_SUID_MAYBE applet.
-*/
+
+
+
+
 
 #if defined(PROTOTYPES)
 # define APPLET(name,l,s)                    int name##_main(int argc, char **argv) MAIN_EXTERNALLY_VISIBLE;
@@ -73,7 +54,7 @@ s     - suid type:
 # define APPLET_SCRIPTED(name,main,l,s,help) SCRIPT name
 
 #else
-  static struct bb_applet applets[] = { /*    name, main, location, need_suid */
+  static struct bb_applet applets[] = { 
 # define APPLET(name,l,s)                    { #name, #name, l, s },
 # define APPLET_ODDNAME(name,main,l,s,help)  { #name, #main, l, s },
 # define APPLET_NOEXEC(name,main,l,s,help)   { #name, #main, l, s, 1 },
@@ -264,14 +245,14 @@ IF_MKPASSWD(APPLET_NOEXEC(mkpasswd, cryptpw, BB_DIR_USR_BIN, BB_SUID_DROP, crypt
 IF_DELUSER( APPLET_NOEXEC(deluser,  deluser, BB_DIR_USR_SBIN, BB_SUID_DROP, deluser))
 IF_DELGROUP(APPLET_NOEXEC(delgroup, deluser, BB_DIR_USR_SBIN, BB_SUID_DROP, delgroup))
 IF_GETTY(APPLET(getty, BB_DIR_SBIN, BB_SUID_DROP))
-/* Needs to be run by root or be suid root - needs to change uid and gid: */
+
 IF_LOGIN(APPLET(login, BB_DIR_BIN, BB_SUID_REQUIRE))
-/* Needs to be run by root or be suid root - needs to change /etc/{passwd,shadow}: */
+
 IF_PASSWD(APPLET(passwd, BB_DIR_USR_BIN, BB_SUID_REQUIRE))
-/* Needs to be run by root or be suid root - needs to change uid and gid: */
+
 IF_SU(APPLET(su, BB_DIR_BIN, BB_SUID_REQUIRE))
 IF_SULOGIN(APPLET_NOEXEC(sulogin, sulogin, BB_DIR_SBIN, BB_SUID_DROP, sulogin))
-/* Needs to be run by root or be suid root - needs to change uid and gid: */
+
 IF_VLOCK(APPLET(vlock, BB_DIR_USR_BIN, BB_SUID_REQUIRE))
 IF_MAKEMIME(APPLET(makemime, BB_DIR_BIN, BB_SUID_DROP))
 IF_POPMAILDIR(APPLET(popmaildir, BB_DIR_USR_SBIN, BB_SUID_DROP))

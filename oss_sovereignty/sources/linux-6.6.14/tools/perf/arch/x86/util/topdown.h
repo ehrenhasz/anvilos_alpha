@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TOPDOWN_H
 #define _TOPDOWN_H 1
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __UM_ASM_SYSCALL_H
 #define __UM_ASM_SYSCALL_H
 
@@ -18,4 +18,4 @@ static inline int syscall_get_arch(struct task_struct *task)
 #endif
 }
 
-#endif /* __UM_ASM_SYSCALL_H */
+#endif 

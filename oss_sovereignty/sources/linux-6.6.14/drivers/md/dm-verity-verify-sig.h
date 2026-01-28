@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2019 Microsoft Corporation.
- *
- * Author:  Jaskaran Singh Khurana <jaskarankhurana@linux.microsoft.com>
- *
- */
+
+
 #ifndef DM_VERITY_SIG_VERIFICATION_H
 #define DM_VERITY_SIG_VERIFICATION_H
 
@@ -56,5 +51,5 @@ static inline void verity_verify_sig_opts_cleanup(struct dm_verity_sig_opts *sig
 {
 }
 
-#endif /* CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG */
-#endif /* DM_VERITY_SIG_VERIFICATION_H */
+#endif 
+#endif 

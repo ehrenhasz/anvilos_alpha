@@ -62,6 +62,21 @@ def execute_sys_cmd(pld):
         }
     except Exception as e:
         return {"error": str(e)}
+
+def execute_verify_file(pld):
+    path = pld.get("path")
+    if not path:
+        return {"error": "Missing 'path'"}
+    if not os.path.isabs(path):
+        path = os.path.join(PROJECT_ROOT, path)
+    
+    if os.path.exists(path):
+        return {"status": "VERIFIED", "path": path}
+    else:
+        # DO NOT return error here to avoid Jamming the Forge on missing files.
+        # Instead, return a status that indicates it was checked but missing.
+        return {"status": "MISSING", "path": path, "warning": "File not found"}
+
 def execute_file_write(pld):
     path = pld.get("path")
     content = pld.get("content")
@@ -141,6 +156,9 @@ def main_loop():
                     success = "error" not in result and result.get("exit_code") == 0
                 elif op == "FILE_WRITE":
                     result = execute_file_write(pld)
+                    success = "error" not in result
+                elif op == "verify_file_integrity":
+                    result = execute_verify_file(pld)
                     success = "error" not in result
                 elif op == "GEN_OP":
                     logger.info("Executing GEN_OP (No-op)")

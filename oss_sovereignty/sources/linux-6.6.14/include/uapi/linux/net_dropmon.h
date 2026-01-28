@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __NET_DROPMON_H
 #define __NET_DROPMON_H
 
@@ -45,7 +45,7 @@ struct net_dm_user_msg {
 };
 
 
-/* These are the netlink message types for this protocol */
+
 
 enum {
 	NET_DM_CMD_UNSPEC = 0,
@@ -63,63 +63,56 @@ enum {
 
 #define NET_DM_CMD_MAX (_NET_DM_CMD_MAX - 1)
 
-/*
- * Our group identifiers
- */
+
 #define NET_DM_GRP_ALERT 1
 
 enum net_dm_attr {
 	NET_DM_ATTR_UNSPEC,
 
-	NET_DM_ATTR_ALERT_MODE,			/* u8 */
-	NET_DM_ATTR_PC,				/* u64 */
-	NET_DM_ATTR_SYMBOL,			/* string */
-	NET_DM_ATTR_IN_PORT,			/* nested */
-	NET_DM_ATTR_TIMESTAMP,			/* u64 */
-	NET_DM_ATTR_PROTO,			/* u16 */
-	NET_DM_ATTR_PAYLOAD,			/* binary */
+	NET_DM_ATTR_ALERT_MODE,			
+	NET_DM_ATTR_PC,				
+	NET_DM_ATTR_SYMBOL,			
+	NET_DM_ATTR_IN_PORT,			
+	NET_DM_ATTR_TIMESTAMP,			
+	NET_DM_ATTR_PROTO,			
+	NET_DM_ATTR_PAYLOAD,			
 	NET_DM_ATTR_PAD,
-	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
-	NET_DM_ATTR_ORIG_LEN,			/* u32 */
-	NET_DM_ATTR_QUEUE_LEN,			/* u32 */
-	NET_DM_ATTR_STATS,			/* nested */
-	NET_DM_ATTR_HW_STATS,			/* nested */
-	NET_DM_ATTR_ORIGIN,			/* u16 */
-	NET_DM_ATTR_HW_TRAP_GROUP_NAME,		/* string */
-	NET_DM_ATTR_HW_TRAP_NAME,		/* string */
-	NET_DM_ATTR_HW_ENTRIES,			/* nested */
-	NET_DM_ATTR_HW_ENTRY,			/* nested */
-	NET_DM_ATTR_HW_TRAP_COUNT,		/* u32 */
-	NET_DM_ATTR_SW_DROPS,			/* flag */
-	NET_DM_ATTR_HW_DROPS,			/* flag */
-	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
-	NET_DM_ATTR_REASON,			/* string */
+	NET_DM_ATTR_TRUNC_LEN,			
+	NET_DM_ATTR_ORIG_LEN,			
+	NET_DM_ATTR_QUEUE_LEN,			
+	NET_DM_ATTR_STATS,			
+	NET_DM_ATTR_HW_STATS,			
+	NET_DM_ATTR_ORIGIN,			
+	NET_DM_ATTR_HW_TRAP_GROUP_NAME,		
+	NET_DM_ATTR_HW_TRAP_NAME,		
+	NET_DM_ATTR_HW_ENTRIES,			
+	NET_DM_ATTR_HW_ENTRY,			
+	NET_DM_ATTR_HW_TRAP_COUNT,		
+	NET_DM_ATTR_SW_DROPS,			
+	NET_DM_ATTR_HW_DROPS,			
+	NET_DM_ATTR_FLOW_ACTION_COOKIE,		
+	NET_DM_ATTR_REASON,			
 
 	__NET_DM_ATTR_MAX,
 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
 };
 
-/**
- * enum net_dm_alert_mode - Alert mode.
- * @NET_DM_ALERT_MODE_SUMMARY: A summary of recent drops is sent to user space.
- * @NET_DM_ALERT_MODE_PACKET: Each dropped packet is sent to user space along
- *                            with metadata.
- */
+
 enum net_dm_alert_mode {
 	NET_DM_ALERT_MODE_SUMMARY,
 	NET_DM_ALERT_MODE_PACKET,
 };
 
 enum {
-	NET_DM_ATTR_PORT_NETDEV_IFINDEX,	/* u32 */
-	NET_DM_ATTR_PORT_NETDEV_NAME,		/* string */
+	NET_DM_ATTR_PORT_NETDEV_IFINDEX,	
+	NET_DM_ATTR_PORT_NETDEV_NAME,		
 
 	__NET_DM_ATTR_PORT_MAX,
 	NET_DM_ATTR_PORT_MAX = __NET_DM_ATTR_PORT_MAX - 1
 };
 
 enum {
-	NET_DM_ATTR_STATS_DROPPED,		/* u64 */
+	NET_DM_ATTR_STATS_DROPPED,		
 
 	__NET_DM_ATTR_STATS_MAX,
 	NET_DM_ATTR_STATS_MAX = __NET_DM_ATTR_STATS_MAX - 1

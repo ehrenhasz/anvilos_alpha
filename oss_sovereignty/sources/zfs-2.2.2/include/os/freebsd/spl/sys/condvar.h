@@ -1,31 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * Copyright (c) 2013 iXsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * $FreeBSD$
- */
+
 
 #ifndef _OPENSOLARIS_SYS_CONDVAR_H_
 #define	_OPENSOLARIS_SYS_CONDVAR_H_
@@ -38,30 +11,7 @@
 #include <sys/time.h>
 #include <sys/errno.h>
 
-/*
- * cv_timedwait() is similar to cv_wait() except that it additionally expects
- * a timeout value specified in ticks.  When woken by cv_signal() or
- * cv_broadcast() it returns 1, otherwise when the timeout is reached -1 is
- * returned.
- *
- * cv_timedwait_sig() behaves the same as cv_timedwait() but blocks
- * interruptibly and can be woken by a signal (EINTR, ERESTART).  When
- * this occurs 0 is returned.
- *
- * cv_timedwait_io() and cv_timedwait_sig_io() are variants of cv_timedwait()
- * and cv_timedwait_sig() which should be used when waiting for outstanding
- * IO to complete.  They are responsible for updating the iowait accounting
- * when this is supported by the platform.
- *
- * cv_timedwait_hires() and cv_timedwait_sig_hires() are high resolution
- * versions of cv_timedwait() and cv_timedwait_sig().  They expect the timeout
- * to be specified as a hrtime_t allowing for timeouts of less than a tick.
- *
- * N.B. The return values differ slightly from the illumos implementation
- * which returns the time remaining, instead of 1, when woken.  They both
- * return -1 on timeout. Consumers which need to know the time remaining
- * are responsible for tracking it themselves.
- */
+
 
 static __inline sbintime_t
 zfs_nstosbt(int64_t _ns)
@@ -75,7 +25,7 @@ zfs_nstosbt(int64_t _ns)
 		sb = (_ns / 1000000000) * SBT_1S;
 		_ns = _ns % 1000000000;
 	}
-	/* 9223372037 = ceil(2^63 / 1000000000) */
+	
 	sb += ((_ns * 9223372037ull) + 0x7fffffff) >> 31;
 	return (sb);
 }
@@ -209,4 +159,4 @@ cv_timedwait_sig_hires(kcondvar_t *cvp, kmutex_t *mp, hrtime_t tim,
 	}
 }
 
-#endif	/* _OPENSOLARIS_SYS_CONDVAR_H_ */
+#endif	

@@ -52,9 +52,9 @@ def readfiles():
                 x.rstrip() for x in list(filter(None, re.split(SPLIT, text)))
             ]
             code = "".join(
-                re.sub(r"\s*# fmt: skip", "", x)
+                re.sub(r"\s*
                 for x in code.splitlines(keepends=True)
-                if not re.match(r"\s*# fmt: (on|off)\s*", x)
+                if not re.match(r"\s*
             )
             output = Output(test, class_, desc, cause, workaround, code, "", "", "")
             files.append(output)

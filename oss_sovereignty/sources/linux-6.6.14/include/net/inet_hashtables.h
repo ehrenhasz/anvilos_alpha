@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- * Authors:	Lotsa people, from code originally in tcp
- */
+
+
 
 #ifndef _INET_HASHTABLES_H
 #define _INET_HASHTABLES_H
@@ -32,45 +26,12 @@
 #include <linux/refcount.h>
 #include <asm/byteorder.h>
 
-/* This is for all connections with a full identity, no wildcards.
- * The 'e' prefix stands for Establish, but we really put all sockets
- * but LISTEN ones.
- */
+
 struct inet_ehash_bucket {
 	struct hlist_nulls_head chain;
 };
 
-/* There are a few simple rules, which allow for local port reuse by
- * an application.  In essence:
- *
- *	1) Sockets bound to different interfaces may share a local port.
- *	   Failing that, goto test 2.
- *	2) If all sockets have sk->sk_reuse set, and none of them are in
- *	   TCP_LISTEN state, the port may be shared.
- *	   Failing that, goto test 3.
- *	3) If all sockets are bound to a specific inet_sk(sk)->rcv_saddr local
- *	   address, and none of them are the same, the port may be
- *	   shared.
- *	   Failing this, the port cannot be shared.
- *
- * The interesting point, is test #2.  This is what an FTP server does
- * all day.  To optimize this case we use a specific flag bit defined
- * below.  As we add sockets to a bind bucket list, we perform a
- * check of: (newsk->sk_reuse && (newsk->sk_state != TCP_LISTEN))
- * As long as all sockets added to a bind bucket pass this test,
- * the flag bit will be set.
- * The resulting situation is that tcp_v[46]_verify_bind() can just check
- * for this flag bit, if it is set and the socket trying to bind has
- * sk->sk_reuse set, we don't even have to walk the owners list at all,
- * we return that it is ok to bind this socket to the requested local port.
- *
- * Sounds like a lot of work, but it is worth it.  In a more naive
- * implementation (ie. current FreeBSD etc.) the entire list of ports
- * must be walked for each data port opened by an ftp server.  Needless
- * to say, this does not scale at all.  With a couple thousand FTP
- * users logged onto your box, isn't it nice to know that new data
- * ports are created in O(1) time?  I thought so. ;-)	-DaveM
- */
+
 #define FASTREUSEPORT_ANY	1
 #define FASTREUSEPORT_STRICT	2
 
@@ -104,13 +65,11 @@ struct inet_bind2_bucket {
 #endif
 		__be32			rcv_saddr;
 	};
-	/* Node in the bhash2 inet_bind_hashbucket chain */
+	
 	struct hlist_node	node;
-	/* List of sockets hashed to this bucket */
+	
 	struct hlist_head	owners;
-	/* bhash has twsk in owners, but bhash2 has twsk in
-	 * deathrow not to add a member in struct sock_common.
-	 */
+	
 	struct hlist_head	deathrow;
 };
 
@@ -132,47 +91,33 @@ struct inet_bind_hashbucket {
 	struct hlist_head	chain;
 };
 
-/* Sockets can be hashed in established or listening table.
- * We must use different 'nulls' end-of-chain value for all hash buckets :
- * A socket might transition from ESTABLISH to LISTEN state without
- * RCU grace period. A lookup in ehash table needs to handle this case.
- */
+
 #define LISTENING_NULLS_BASE (1U << 29)
 struct inet_listen_hashbucket {
 	spinlock_t		lock;
 	struct hlist_nulls_head	nulls_head;
 };
 
-/* This is for listening sockets, thus all sockets which possess wildcards. */
-#define INET_LHTABLE_SIZE	32	/* Yes, really, this is all you need. */
+
+#define INET_LHTABLE_SIZE	32	
 
 struct inet_hashinfo {
-	/* This is for sockets with full identity only.  Sockets here will
-	 * always be without wildcards and will have the following invariant:
-	 *
-	 *          TCP_ESTABLISHED <= sk->sk_state < TCP_CLOSE
-	 *
-	 */
+	
 	struct inet_ehash_bucket	*ehash;
 	spinlock_t			*ehash_locks;
 	unsigned int			ehash_mask;
 	unsigned int			ehash_locks_mask;
 
-	/* Ok, let's try this, I give up, we do need a local binding
-	 * TCP hash as well as the others for fast bind/connect.
-	 */
+	
 	struct kmem_cache		*bind_bucket_cachep;
-	/* This bind table is hashed by local port */
+	
 	struct inet_bind_hashbucket	*bhash;
 	struct kmem_cache		*bind2_bucket_cachep;
-	/* This bind table is hashed by local port and sk->sk_rcv_saddr (ipv4)
-	 * or sk->sk_v6_rcv_saddr (ipv6). This 2nd bind table is used
-	 * primarily for expediting bind conflict resolution.
-	 */
+	
 	struct inet_bind_hashbucket	*bhash2;
 	unsigned int			bhash_size;
 
-	/* The 2nd listener table hashed by local port and address */
+	
 	unsigned int			lhash2_mask;
 	struct inet_listen_hashbucket	*lhash2;
 
@@ -281,17 +226,14 @@ inet_bhashfn_portaddr(const struct inet_hashinfo *hinfo, const struct sock *sk,
 struct inet_bind_hashbucket *
 inet_bhash2_addr_any_hashbucket(const struct sock *sk, const struct net *net, int port);
 
-/* This should be called whenever a socket's sk_rcv_saddr (ipv4) or
- * sk_v6_rcv_saddr (ipv6) changes after it has been binded. The socket's
- * rcv_saddr field should already have been updated when this is called.
- */
+
 int inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family);
 void inet_bhash2_reset_saddr(struct sock *sk);
 
 void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
 		    struct inet_bind2_bucket *tb2, unsigned short port);
 
-/* Caller must disable local BH processing. */
+
 int __inet_inherit_port(const struct sock *sk, struct sock *child);
 
 void inet_put_port(struct sock *sk);
@@ -327,19 +269,12 @@ static inline struct sock *inet_lookup_listener(struct net *net,
 				      daddr, ntohs(dport), dif, sdif);
 }
 
-/* Socket demux engine toys. */
-/* What happens here is ugly; there's a pair of adjacent fields in
-   struct inet_sock; __be16 dport followed by __u16 num.  We want to
-   search by pair, so we combine the keys into a single 32bit value
-   and compare with 32bit value read from &...->dport.  Let's at least
-   make sure that it's not mixed with anything else...
-   On 64bit targets we combine comparisons with pair of adjacent __be32
-   fields in the same way.
-*/
+
+
 #ifdef __BIG_ENDIAN
 #define INET_COMBINED_PORTS(__sport, __dport) \
 	((__force __portpair)(((__force __u32)(__be16)(__sport) << 16) | (__u32)(__dport)))
-#else /* __LITTLE_ENDIAN */
+#else 
 #define INET_COMBINED_PORTS(__sport, __dport) \
 	((__force __portpair)(((__u32)(__dport) << 16) | (__force __u32)(__be16)(__sport)))
 #endif
@@ -349,12 +284,12 @@ static inline struct sock *inet_lookup_listener(struct net *net,
 	const __addrpair __name = (__force __addrpair) ( \
 				   (((__force __u64)(__be32)(__saddr)) << 32) | \
 				   ((__force __u64)(__be32)(__daddr)))
-#else /* __LITTLE_ENDIAN */
+#else 
 #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
 	const __addrpair __name = (__force __addrpair) ( \
 				   (((__force __u64)(__be32)(__daddr)) << 32) | \
 				   ((__force __u64)(__be32)(__saddr)))
-#endif /* __BIG_ENDIAN */
+#endif 
 
 static inline bool inet_match(struct net *net, const struct sock *sk,
 			      const __addrpair cookie, const __portpair ports,
@@ -365,14 +300,12 @@ static inline bool inet_match(struct net *net, const struct sock *sk,
 	    sk->sk_addrpair != cookie)
 	        return false;
 
-	/* READ_ONCE() paired with WRITE_ONCE() in sock_bindtoindex_locked() */
+	
 	return inet_sk_bound_dev_eq(net, READ_ONCE(sk->sk_bound_dev_if), dif,
 				    sdif);
 }
 
-/* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
- * not check it for lookups anymore, thanks Alexey. -DaveM
- */
+
 struct sock *__inet_lookup_established(struct net *net,
 				       struct inet_hashinfo *hashinfo,
 				       const __be32 saddr, const __be16 sport,
@@ -481,9 +414,7 @@ struct sock *inet_steal_sock(struct net *net, struct sk_buff *skb, int doff,
 	if (!reuse_sk)
 		return sk;
 
-	/* We've chosen a new reuseport sock which is never refcounted. This
-	 * implies that sk also isn't refcounted.
-	 */
+	
 	WARN_ON_ONCE(*refcounted);
 
 	return reuse_sk;
@@ -516,7 +447,7 @@ static inline struct sock *__inet_lookup_skb(struct inet_hashinfo *hashinfo,
 
 static inline void sk_daddr_set(struct sock *sk, __be32 addr)
 {
-	sk->sk_daddr = addr; /* alias of inet_daddr */
+	sk->sk_daddr = addr; 
 #if IS_ENABLED(CONFIG_IPV6)
 	ipv6_addr_set_v4mapped(addr, &sk->sk_v6_daddr);
 #endif
@@ -524,7 +455,7 @@ static inline void sk_daddr_set(struct sock *sk, __be32 addr)
 
 static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
 {
-	sk->sk_rcv_saddr = addr; /* alias of inet_rcv_saddr */
+	sk->sk_rcv_saddr = addr; 
 #if IS_ENABLED(CONFIG_IPV6)
 	ipv6_addr_set_v4mapped(addr, &sk->sk_v6_rcv_saddr);
 #endif
@@ -538,4 +469,4 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
 
 int inet_hash_connect(struct inet_timewait_death_row *death_row,
 		      struct sock *sk);
-#endif /* _INET_HASHTABLES_H */
+#endif 

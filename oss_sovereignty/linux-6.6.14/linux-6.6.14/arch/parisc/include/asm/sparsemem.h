@@ -1,5 +1,0 @@
-#ifndef ASM_PARISC_SPARSEMEM_H
-#define ASM_PARISC_SPARSEMEM_H
-#define MAX_PHYSMEM_BITS	39	 
-#define SECTION_SIZE_BITS	27	 
-#endif

@@ -21,6 +21,6 @@ class C:
     def f(self):
         return "A.f"
 class D:
-    g = C() # g is a value and is not callable
+    g = C() 
 print(callable(D().g))
 print(D().g.f())

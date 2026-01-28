@@ -7,13 +7,13 @@ from Util import *
 process_names = {}
 thread_thislock = {}
 thread_blocktime = {}
-lock_waits = {}  # long-lived stats on (tid,lock) blockage elapsed time
-process_names = {}  # long-lived pid-to-execname mapping
+lock_waits = {}  
+process_names = {}  
 def syscalls__sys_enter_futex(event, ctxt, cpu, s, ns, tid, comm, callchain,
                               nr, uaddr, op, val, utime, uaddr2, val3):
     cmd = op & FUTEX_CMD_MASK
     if cmd != FUTEX_WAIT:
-        return  # we don't care about originators of WAKE events
+        return  
     process_names[tid] = comm
     thread_thislock[tid] = uaddr
     thread_blocktime[tid] = nsecs(s, ns)

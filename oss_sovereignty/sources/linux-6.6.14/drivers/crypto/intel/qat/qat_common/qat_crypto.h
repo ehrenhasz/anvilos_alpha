@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+
 #ifndef _QAT_CRYPTO_INSTANCE_H_
 #define _QAT_CRYPTO_INSTANCE_H_
 

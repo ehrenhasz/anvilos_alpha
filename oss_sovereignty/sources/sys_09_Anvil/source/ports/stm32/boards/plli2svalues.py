@@ -64,7 +64,7 @@ def generate_c_table(plli2s_table, hse, pllm):
     print("// This table is used in machine_i2s.c")
     print(f"// HSE_VALUE = {hse}")
     print(f"// MICROPY_HW_CLK_PLLM = {pllm} \n")
-    print("#define PLLI2S_TABLE \\")
+    print("
     print("{ \\")
     for plli2s in plli2s_table:
         print(
@@ -116,8 +116,8 @@ def main():
         if argv[0].startswith("hse:"):
             (hse,) = search_header(
                 argv[0][len("hse:") :],
-                r'#include "(boards/[A-Za-z0-9_./]+)"',
-                r"#define +(HSE_VALUE) +\((\(uint32_t\))?([0-9]+)\)",
+                r'
+                r"
                 "HSE_VALUE",
                 [None],
             )
@@ -127,8 +127,8 @@ def main():
         if argv[0].startswith("pllm:"):
             (pllm,) = search_header(
                 argv[0][len("pllm:") :],
-                r'#include "(boards/[A-Za-z0-9_./]+)"',
-                r"#define +(MICROPY_HW_CLK_PLLM) +\((\(uint32_t\))?([0-9]+)\)",
+                r'
+                r"
                 "MICROPY_HW_CLK_PLLM",
                 [None],
             )

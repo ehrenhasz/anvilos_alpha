@@ -1,14 +1,14 @@
 RUN_BENCH="sudo ./bench -w3 -d10 -a"
 function header()
 {
-	local len=${#1}
+	local len=${
 	printf "\n%s\n" "$1"
 	for i in $(seq 1 $len); do printf '='; done
 	printf '\n'
 }
 function subtitle()
 {
-	local len=${#1}
+	local len=${
 	printf "\t%s\n" "$1"
 }
 function hits()

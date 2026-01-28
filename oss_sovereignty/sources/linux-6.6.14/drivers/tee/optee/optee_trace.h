@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * optee trace points
- *
- * Copyright (C) 2021 Synaptics Incorporated
- * Author: Jisheng Zhang <jszhang@kernel.org>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM optee
@@ -56,12 +51,12 @@ TRACE_EVENT(optee_invoke_fn_end,
 		  __entry->rets[0], __entry->rets[1], __entry->rets[2],
 		  __entry->rets[3])
 );
-#endif /* _TRACE_OPTEE_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE optee_trace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

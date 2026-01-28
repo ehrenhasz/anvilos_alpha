@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NUMA memory policies for Linux.
- * Copyright 2003,2004 Andi Kleen SuSE Labs
- */
+
+
 #ifndef _LINUX_MEMPOLICY_H
 #define _LINUX_MEMPOLICY_H 1
 
@@ -19,45 +16,21 @@ struct mm_struct;
 
 #ifdef CONFIG_NUMA
 
-/*
- * Describe a memory policy.
- *
- * A mempolicy can be either associated with a process or with a VMA.
- * For VMA related allocations the VMA policy is preferred, otherwise
- * the process policy is used. Interrupts ignore the memory policy
- * of the current process.
- *
- * Locking policy for interleave:
- * In process context there is no locking because only the process accesses
- * its own state. All vma manipulation is somewhat protected by a down_read on
- * mmap_lock.
- *
- * Freeing policy:
- * Mempolicy objects are reference counted.  A mempolicy will be freed when
- * mpol_put() decrements the reference count to zero.
- *
- * Duplicating policy objects:
- * mpol_dup() allocates a new mempolicy and copies the specified mempolicy
- * to the new storage.  The reference count of the new object is initialized
- * to 1, representing the caller of mpol_dup().
- */
+
 struct mempolicy {
 	atomic_t refcnt;
-	unsigned short mode; 	/* See MPOL_* above */
-	unsigned short flags;	/* See set_mempolicy() MPOL_F_* above */
-	nodemask_t nodes;	/* interleave/bind/perfer */
-	int home_node;		/* Home node to use for MPOL_BIND and MPOL_PREFERRED_MANY */
+	unsigned short mode; 	
+	unsigned short flags;	
+	nodemask_t nodes;	
+	int home_node;		
 
 	union {
-		nodemask_t cpuset_mems_allowed;	/* relative to these nodes */
-		nodemask_t user_nodemask;	/* nodemask passed by user */
+		nodemask_t cpuset_mems_allowed;	
+		nodemask_t user_nodemask;	
 	} w;
 };
 
-/*
- * Support for managing mempolicy data objects (clone, copy, destroy)
- * The default fast path of a NULL MPOL_DEFAULT policy is always inlined.
- */
+
 
 extern void __mpol_put(struct mempolicy *pol);
 static inline void mpol_put(struct mempolicy *pol)
@@ -66,10 +39,7 @@ static inline void mpol_put(struct mempolicy *pol)
 		__mpol_put(pol);
 }
 
-/*
- * Does mempolicy pol need explicit unref after use?
- * Currently only needed for shared policies.
- */
+
 static inline int mpol_needs_cond_ref(struct mempolicy *pol)
 {
 	return (pol && (pol->flags & MPOL_F_SHARED));
@@ -105,13 +75,7 @@ static inline bool mpol_equal(struct mempolicy *a, struct mempolicy *b)
 	return __mpol_equal(a, b);
 }
 
-/*
- * Tree of shared policies for a shared memory region.
- * Maintain the policies in a pseudo mm that contains vmas. The vmas
- * carry the policy. As a special twist the pseudo mm is indexed in pages, not
- * bytes, so that we can work with shared memory segments bigger than
- * unsigned long.
- */
+
 
 struct sp_node {
 	struct rb_node nd;
@@ -171,7 +135,7 @@ extern int mpol_parse_str(char *str, struct mempolicy **mpol);
 
 extern void mpol_to_str(char *buffer, int maxlen, struct mempolicy *pol);
 
-/* Check if a vma is migratable */
+
 extern bool vma_migratable(struct vm_area_struct *vma);
 
 extern int mpol_misplaced(struct page *, struct vm_area_struct *, unsigned long);
@@ -274,14 +238,14 @@ static inline void check_highest_zone(int k)
 #ifdef CONFIG_TMPFS
 static inline int mpol_parse_str(char *str, struct mempolicy **mpol)
 {
-	return 1;	/* error */
+	return 1;	
 }
 #endif
 
 static inline int mpol_misplaced(struct page *page, struct vm_area_struct *vma,
 				 unsigned long address)
 {
-	return -1; /* no node preference */
+	return -1; 
 }
 
 static inline void mpol_put_task_policy(struct task_struct *task)
@@ -293,5 +257,5 @@ static inline bool mpol_is_preferred_many(struct mempolicy *pol)
 	return  false;
 }
 
-#endif /* CONFIG_NUMA */
+#endif 
 #endif

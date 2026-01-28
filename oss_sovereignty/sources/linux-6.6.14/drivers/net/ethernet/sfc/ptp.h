@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- * Copyright 2019-2020 Xilinx Inc.
- */
+
+
 
 #ifndef EFX_PTP_H
 #define EFX_PTP_H
@@ -43,4 +38,4 @@ void efx_ptp_stop_datapath(struct efx_nic *efx);
 bool efx_ptp_use_mac_tx_timestamps(struct efx_nic *efx);
 ktime_t efx_ptp_nic_to_kernel_time(struct efx_tx_queue *tx_queue);
 
-#endif /* EFX_PTP_H */
+#endif 

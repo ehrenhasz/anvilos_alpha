@@ -1,28 +1,6 @@
-/* $OpenBSD: kex.h,v 1.121 2023/12/18 14:45:49 djm Exp $ */
 
-/*
- * Copyright (c) 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
+
 #ifndef KEX_H
 #define KEX_H
 
@@ -35,18 +13,18 @@
 # include <openssl/ecdsa.h>
 # ifdef OPENSSL_HAS_ECC
 #  include <openssl/ec.h>
-# else /* OPENSSL_HAS_ECC */
+# else 
 #  define EC_KEY	void
 #  define EC_GROUP	void
 #  define EC_POINT	void
-# endif /* OPENSSL_HAS_ECC */
-#else /* WITH_OPENSSL */
+# endif 
+#else 
 # define DH		void
 # define BIGNUM		void
 # define EC_KEY		void
 # define EC_GROUP	void
 # define EC_POINT	void
-#endif /* WITH_OPENSSL */
+#endif 
 
 #define KEX_COOKIE_LEN	16
 
@@ -65,7 +43,7 @@
 #define	KEX_SNTRUP761X25519_SHA512	"sntrup761x25519-sha512@openssh.com"
 
 #define COMP_NONE	0
-/* pre-auth compression (COMP_ZLIB) is only supported in the client */
+
 #define COMP_ZLIB	1
 #define COMP_DELAYED	2
 
@@ -105,12 +83,12 @@ enum kex_exchange {
 	KEX_MAX
 };
 
-/* kex->flags */
+
 #define KEX_INIT_SENT			0x0001
 #define KEX_INITIAL			0x0002
 #define KEX_HAS_PUBKEY_HOSTBOUND	0x0004
-#define KEX_RSA_SHA2_256_SUPPORTED 	0x0008 /* only set in server for now */
-#define KEX_RSA_SHA2_512_SUPPORTED 	0x0010 /* only set in server for now */
+#define KEX_RSA_SHA2_256_SUPPORTED 	0x0008 
+#define KEX_RSA_SHA2_512_SUPPORTED 	0x0010 
 #define KEX_HAS_PING		 	0x0020
 #define KEX_HAS_EXT_INFO_IN_AUTH 	0x0040
 
@@ -172,14 +150,14 @@ struct kex {
 	int	(*sign)(struct ssh *, struct sshkey *, struct sshkey *,
 	    u_char **, size_t *, const u_char *, size_t, const char *);
 	int	(*kex[KEX_MAX])(struct ssh *);
-	/* kex specific state */
-	DH	*dh;			/* DH */
-	u_int	min, max, nbits;	/* GEX */
-	EC_KEY	*ec_client_key;		/* ECDH */
-	const EC_GROUP *ec_group;	/* ECDH */
-	u_char c25519_client_key[CURVE25519_SIZE]; /* 25519 + KEM */
-	u_char c25519_client_pubkey[CURVE25519_SIZE]; /* 25519 */
-	u_char sntrup761_client_key[crypto_kem_sntrup761_SECRETKEYBYTES]; /* KEM */
+	
+	DH	*dh;			
+	u_int	min, max, nbits;	
+	EC_KEY	*ec_client_key;		
+	const EC_GROUP *ec_group;	
+	u_char c25519_client_key[CURVE25519_SIZE]; 
+	u_char c25519_client_pubkey[CURVE25519_SIZE]; 
+	u_char sntrup761_client_key[crypto_kem_sntrup761_SECRETKEYBYTES]; 
 	struct sshbuf *client_pub;
 };
 

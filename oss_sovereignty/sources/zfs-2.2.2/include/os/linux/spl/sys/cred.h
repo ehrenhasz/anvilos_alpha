@@ -1,25 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 
 #ifndef _SPL_CRED_H
 #define	_SPL_CRED_H
@@ -37,7 +16,7 @@ extern struct task_struct init_task;
 #define	kcred		((cred_t *)(init_task.cred))
 #define	CRED()		((cred_t *)current_cred())
 
-/* Linux 4.9 API change, GROUP_AT was removed */
+
 #ifndef GROUP_AT
 #define	GROUP_AT(gi, i)	((gi)->gid[i])
 #endif
@@ -50,7 +29,7 @@ extern struct task_struct init_task;
 
 extern zidmap_t *zfs_get_init_idmap(void);
 
-/* Check if the user ns is the initial one */
+
 static inline boolean_t
 zfs_is_init_userns(struct user_namespace *user_ns)
 {
@@ -138,4 +117,4 @@ extern gid_t crgetgid(const cred_t *cr);
 extern int crgetngroups(const cred_t *cr);
 extern gid_t *crgetgroups(const cred_t *cr);
 extern int groupmember(gid_t gid, const cred_t *cr);
-#endif  /* _SPL_CRED_H */
+#endif  

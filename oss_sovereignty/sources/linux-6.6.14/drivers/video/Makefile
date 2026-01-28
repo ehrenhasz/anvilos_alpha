@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 obj-$(CONFIG_APERTURE_HELPERS)    += aperture.o
 obj-$(CONFIG_STI_CORE)            += sticore.o

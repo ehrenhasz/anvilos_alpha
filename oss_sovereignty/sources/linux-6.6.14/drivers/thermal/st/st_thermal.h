@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ST Thermal Sensor Driver for STi series of SoCs
- * Author: Ajit Pal Singh <ajitpal.singh@st.com>
- *
- * Copyright (C) 2003-2014 STMicroelectronics (R&D) Limited
- */
+
+
 
 #ifndef __STI_THERMAL_SYSCFG_H
 #define __STI_THERMAL_SYSCFG_H
@@ -15,7 +10,7 @@
 #include <linux/thermal.h>
 
 enum st_thermal_regfield_ids {
-	INT_THRESH_HI = 0, /* Top two regfield IDs are mutually exclusive */
+	INT_THRESH_HI = 0, 
 	TEMP_PWR = 0,
 	DCORRECT,
 	OVERFLOW,
@@ -25,7 +20,7 @@ enum st_thermal_regfield_ids {
 	MAX_REGFIELDS
 };
 
-/* Thermal sensor power states */
+
 enum st_thermal_power_state {
 	POWER_OFF = 0,
 	POWER_ON
@@ -33,16 +28,7 @@ enum st_thermal_power_state {
 
 struct st_thermal_sensor;
 
-/**
- * Description of private thermal sensor ops.
- *
- * @power_ctrl:		Function for powering on/off a sensor. Clock to the
- *			sensor is also controlled from this function.
- * @alloc_regfields: 	Allocate regmap register fields, specific to a sensor.
- * @do_memmap_regmap: 	Memory map the thermal register space and init regmap
- *			instance or find regmap instance.
- * @register_irq: 	Register an interrupt handler for a sensor.
- */
+
 struct st_thermal_sensor_ops {
 	int (*power_ctrl)(struct st_thermal_sensor *, enum st_thermal_power_state);
 	int (*alloc_regfields)(struct st_thermal_sensor *);
@@ -51,21 +37,7 @@ struct st_thermal_sensor_ops {
 	int (*enable_irq)(struct st_thermal_sensor *);
 };
 
-/**
- * Description of thermal driver compatible data.
- *
- * @reg_fields:		Pointer to the regfields array for a sensor.
- * @sys_compat:		Pointer to the syscon node compatible string.
- * @ops: 		Pointer to private thermal ops for a sensor.
- * @calibration_val: 	Default calibration value to be written to the DCORRECT
- *			register field for a sensor.
- * @temp_adjust_val: 	Value to be added/subtracted from the data read from
- *			the sensor. If value needs to be added please provide a
- *			positive value and if it is to be subtracted please
- * 			provide a negative value.
- * @crit_temp: 		The temperature beyond which the SoC should be shutdown
- * 			to prevent damage.
- */
+
 struct st_thermal_compat_data {
 	char *sys_compat;
 	const struct reg_field *reg_fields;
@@ -97,4 +69,4 @@ extern int st_thermal_register(struct platform_device *pdev,
 extern void st_thermal_unregister(struct platform_device *pdev);
 extern const struct dev_pm_ops st_thermal_pm_ops;
 
-#endif /* __STI_RESET_SYSCFG_H */
+#endif 

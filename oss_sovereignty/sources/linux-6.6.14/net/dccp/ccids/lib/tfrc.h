@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _TFRC_H_
 #define _TFRC_H_
-/*
- *  Copyright (c) 2007   The University of Aberdeen, Scotland, UK
- *  Copyright (c) 2005-6 The University of Waikato, Hamilton, New Zealand.
- *  Copyright (c) 2005-6 Ian McDonald <ian.mcdonald@jandi.co.nz>
- *  Copyright (c) 2005   Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *  Copyright (c) 2003   Nils-Erik Mattsson, Joacim Haggmark, Magnus Erixzon
- */
+
 #include <linux/types.h>
 #include <linux/math64.h>
 #include "../../dccp.h"
 
-/* internal includes that this library exports: */
+
 #include "loss_interval.h"
 #include "packet_history.h"
 
@@ -23,7 +17,7 @@ extern bool tfrc_debug;
 #define tfrc_pr_debug(format, a...)
 #endif
 
-/* integer-arithmetic divisions of type (a * 1000000)/b */
+
 static inline u64 scaled_div(u64 a, u64 b)
 {
 	BUG_ON(b == 0);
@@ -42,10 +36,7 @@ static inline u32 scaled_div32(u64 a, u64 b)
 	return result;
 }
 
-/**
- * tfrc_ewma  -  Exponentially weighted moving average
- * @weight: Weight to be used as damping factor, in units of 1/10
- */
+
 static inline u32 tfrc_ewma(const u32 avg, const u32 newval, const u8 weight)
 {
 	return avg ? (weight * avg + (10 - weight) * newval) / 10 : newval;
@@ -70,4 +61,4 @@ void tfrc_lib_exit(void);
 #define tfrc_lib_init() (0)
 #define tfrc_lib_exit()
 #endif
-#endif /* _TFRC_H_ */
+#endif 

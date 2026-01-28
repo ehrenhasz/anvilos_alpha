@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- */
+
+
 
 #ifndef __LINUX_IMX6Q_IOMUXC_GPR_H
 #define __LINUX_IMX6Q_IOMUXC_GPR_H
@@ -392,11 +390,11 @@
 #define IMX6Q_GPR13_SATA_MPLL_CLK_EN		BIT(1)
 #define IMX6Q_GPR13_SATA_TX_EDGE_RATE		BIT(0)
 
-/* For imx6sl iomux gpr register field define */
+
 #define IMX6SL_GPR1_FEC_CLOCK_MUX1_SEL_MASK    (0x3 << 17)
 #define IMX6SL_GPR1_FEC_CLOCK_MUX2_SEL_MASK    (0x1 << 14)
 
-/* For imx6sx iomux gpr register field define */
+
 #define IMX6SX_GPR1_VDEC_SW_RST_MASK			(0x1 << 20)
 #define IMX6SX_GPR1_VDEC_SW_RST_RESET			(0x1 << 20)
 #define IMX6SX_GPR1_VDEC_SW_RST_RELEASE			(0x0 << 20)
@@ -450,7 +448,7 @@
 #define IMX6SX_GPR12_PCIE_RX_EQ_MASK			(0x7 << 0)
 #define IMX6SX_GPR12_PCIE_RX_EQ_2			(0x2 << 0)
 
-/* For imx6ul iomux gpr register field define */
+
 #define IMX6UL_GPR1_ENET2_TX_CLK_DIR		BIT(18)
 #define IMX6UL_GPR1_ENET1_TX_CLK_DIR		BIT(17)
 #define IMX6UL_GPR1_ENET2_CLK_SEL		BIT(14)
@@ -466,7 +464,7 @@
 #define MCLK_DIR(x) (x == 1 ? IMX6UL_GPR1_SAI1_MCLK_DIR : x == 2 ? \
 		     IMX6UL_GPR1_SAI2_MCLK_DIR : IMX6UL_GPR1_SAI3_MCLK_DIR)
 
-/* For imx6sll iomux gpr register field define */
+
 #define IMX6SLL_GPR5_AFCG_X_BYPASS_MASK		(0x1f << 11)
 
-#endif /* __LINUX_IMX6Q_IOMUXC_GPR_H */
+#endif 

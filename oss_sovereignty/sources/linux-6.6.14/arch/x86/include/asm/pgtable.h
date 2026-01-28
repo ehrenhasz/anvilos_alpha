@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_PGTABLE_H
 #define _ASM_X86_PGTABLE_H
 
@@ -6,9 +6,7 @@
 #include <asm/page.h>
 #include <asm/pgtable_types.h>
 
-/*
- * Macro to mark a page protection value as UC-
- */
+
 #define pgprot_noncached(prot)						\
 	((boot_cpu_data.x86 > 3)					\
 	 ? (__pgprot(pgprot_val(prot) |					\
@@ -34,9 +32,7 @@ void ptdump_walk_pgd_level_debugfs(struct seq_file *m, struct mm_struct *mm,
 void ptdump_walk_pgd_level_checkwx(void);
 void ptdump_walk_user_pgd_level_checkwx(void);
 
-/*
- * Macros to add or remove encryption attribute
- */
+
 #define pgprot_encrypted(prot)	__pgprot(cc_mkenc(pgprot_val(prot)))
 #define pgprot_decrypted(prot)	__pgprot(cc_mkdec(pgprot_val(prot)))
 
@@ -48,10 +44,7 @@ void ptdump_walk_user_pgd_level_checkwx(void);
 #define debug_checkwx_user()	do { } while (0)
 #endif
 
-/*
- * ZERO_PAGE is a global shared page that is always zero: used
- * for zero-mapped memory areas etc..
- */
+
 extern unsigned long empty_zero_page[PAGE_SIZE / sizeof(unsigned long)]
 	__visible;
 #define ZERO_PAGE(vaddr) ((void)(vaddr),virt_to_page(empty_zero_page))
@@ -65,7 +58,7 @@ extern pmdval_t early_pmd_flags;
 
 #ifdef CONFIG_PARAVIRT_XXL
 #include <asm/paravirt.h>
-#else  /* !CONFIG_PARAVIRT_XXL */
+#else  
 #define set_pte(ptep, pte)		native_set_pte(ptep, pte)
 
 #define set_pte_atomic(ptep, pte)					\
@@ -119,12 +112,9 @@ extern pmdval_t early_pmd_flags;
 #define __pte(x)	native_make_pte(x)
 
 #define arch_end_context_switch(prev)	do {} while(0)
-#endif	/* CONFIG_PARAVIRT_XXL */
+#endif	
 
-/*
- * The following only work if pte_present() is true.
- * Undefined behaviour if not..
- */
+
 static inline bool pte_dirty(pte_t pte)
 {
 	return pte_flags(pte) & _PAGE_DIRTY_BITS;
@@ -171,20 +161,14 @@ static inline int pud_young(pud_t pud)
 
 static inline int pte_write(pte_t pte)
 {
-	/*
-	 * Shadow stack pages are logically writable, but do not have
-	 * _PAGE_RW.  Check for them separately from _PAGE_RW itself.
-	 */
+	
 	return (pte_flags(pte) & _PAGE_RW) || pte_shstk(pte);
 }
 
 #define pmd_write pmd_write
 static inline int pmd_write(pmd_t pmd)
 {
-	/*
-	 * Shadow stack pages are logically writable, but do not have
-	 * _PAGE_RW.  Check for them separately from _PAGE_RW itself.
-	 */
+	
 	return (pmd_flags(pmd) & _PAGE_RW) || pmd_shstk(pmd);
 }
 
@@ -214,7 +198,7 @@ static inline int pte_special(pte_t pte)
 	return pte_flags(pte) & _PAGE_SPECIAL;
 }
 
-/* Entries that were set to PROT_NONE are inverted */
+
 
 static inline u64 protnone_mask(u64 val);
 
@@ -254,7 +238,7 @@ static inline unsigned long pgd_pfn(pgd_t pgd)
 #define p4d_leaf	p4d_large
 static inline int p4d_large(p4d_t p4d)
 {
-	/* No 512 GiB pages yet */
+	
 	return 0;
 }
 
@@ -267,7 +251,7 @@ static inline int pmd_large(pmd_t pte)
 }
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-/* NOTE: when predicate huge page, consider also pmd_devmap, or use pmd_large */
+
 static inline int pmd_trans_huge(pmd_t pmd)
 {
 	return (pmd_val(pmd) & (_PAGE_PSE|_PAGE_DEVMAP)) == _PAGE_PSE;
@@ -309,7 +293,7 @@ static inline int pgd_devmap(pgd_t pgd)
 	return 0;
 }
 #endif
-#endif /* CONFIG_TRANSPARENT_HUGEPAGE */
+#endif 
 
 static inline pte_t pte_set_flags(pte_t pte, pteval_t set)
 {
@@ -325,17 +309,7 @@ static inline pte_t pte_clear_flags(pte_t pte, pteval_t clear)
 	return native_make_pte(v & ~clear);
 }
 
-/*
- * Write protection operations can result in Dirty=1,Write=0 PTEs. But in the
- * case of X86_FEATURE_USER_SHSTK, these PTEs denote shadow stack memory. So
- * when creating dirty, write-protected memory, a software bit is used:
- * _PAGE_BIT_SAVED_DIRTY. The following functions take a PTE and transition the
- * Dirty bit to SavedDirty, and vice-vesra.
- *
- * This shifting is only done if needed. In the case of shifting
- * Dirty->SavedDirty, the condition is if the PTE is Write=0. In the case of
- * shifting SavedDirty->Dirty, the condition is Write=1.
- */
+
 static inline pgprotval_t mksaveddirty_shift(pgprotval_t v)
 {
 	pgprotval_t cond = (~v >> _PAGE_BIT_RW) & 1;
@@ -376,11 +350,7 @@ static inline pte_t pte_wrprotect(pte_t pte)
 {
 	pte = pte_clear_flags(pte, _PAGE_RW);
 
-	/*
-	 * Blindly clearing _PAGE_RW might accidentally create
-	 * a shadow stack PTE (Write=0,Dirty=1). Move the hardware
-	 * dirty value to the software bit, if present.
-	 */
+	
 	return pte_mksaveddirty(pte);
 }
 
@@ -390,16 +360,7 @@ static inline int pte_uffd_wp(pte_t pte)
 	bool wp = pte_flags(pte) & _PAGE_UFFD_WP;
 
 #ifdef CONFIG_DEBUG_VM
-	/*
-	 * Having write bit for wr-protect-marked present ptes is fatal,
-	 * because it means the uffd-wp bit will be ignored and write will
-	 * just go through.
-	 *
-	 * Use any chance of pgtable walking to verify this (e.g., when
-	 * page swapped out or being migrated for all purposes). It means
-	 * something is already wrong.  Tell the admin even before the
-	 * process crashes. We also nail it with wrong pgtable setup.
-	 */
+	
 	WARN_ON_ONCE(wp && pte_write(pte));
 #endif
 
@@ -415,7 +376,7 @@ static inline pte_t pte_clear_uffd_wp(pte_t pte)
 {
 	return pte_clear_flags(pte, _PAGE_UFFD_WP);
 }
-#endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
+#endif 
 
 static inline pte_t pte_mkclean(pte_t pte)
 {
@@ -504,7 +465,7 @@ static inline pmd_t pmd_clear_flags(pmd_t pmd, pmdval_t clear)
 	return native_make_pmd(v & ~clear);
 }
 
-/* See comments above mksaveddirty_shift() */
+
 static inline pmd_t pmd_mksaveddirty(pmd_t pmd)
 {
 	pmdval_t v = native_pmd_val(pmd);
@@ -513,7 +474,7 @@ static inline pmd_t pmd_mksaveddirty(pmd_t pmd)
 	return native_make_pmd(v);
 }
 
-/* See comments above mksaveddirty_shift() */
+
 static inline pmd_t pmd_clear_saveddirty(pmd_t pmd)
 {
 	pmdval_t v = native_pmd_val(pmd);
@@ -526,11 +487,7 @@ static inline pmd_t pmd_wrprotect(pmd_t pmd)
 {
 	pmd = pmd_clear_flags(pmd, _PAGE_RW);
 
-	/*
-	 * Blindly clearing _PAGE_RW might accidentally create
-	 * a shadow stack PMD (RW=0, Dirty=1). Move the hardware
-	 * dirty value to the software bit.
-	 */
+	
 	return pmd_mksaveddirty(pmd);
 }
 
@@ -549,7 +506,7 @@ static inline pmd_t pmd_clear_uffd_wp(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_UFFD_WP);
 }
-#endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
+#endif 
 
 static inline pmd_t pmd_mkold(pmd_t pmd)
 {
@@ -612,7 +569,7 @@ static inline pud_t pud_clear_flags(pud_t pud, pudval_t clear)
 	return native_make_pud(v & ~clear);
 }
 
-/* See comments above mksaveddirty_shift() */
+
 static inline pud_t pud_mksaveddirty(pud_t pud)
 {
 	pudval_t v = native_pud_val(pud);
@@ -621,7 +578,7 @@ static inline pud_t pud_mksaveddirty(pud_t pud)
 	return native_make_pud(v);
 }
 
-/* See comments above mksaveddirty_shift() */
+
 static inline pud_t pud_clear_saveddirty(pud_t pud)
 {
 	pudval_t v = native_pud_val(pud);
@@ -644,11 +601,7 @@ static inline pud_t pud_wrprotect(pud_t pud)
 {
 	pud = pud_clear_flags(pud, _PAGE_RW);
 
-	/*
-	 * Blindly clearing _PAGE_RW might accidentally create
-	 * a shadow stack PUD (RW=0, Dirty=1). Move the hardware
-	 * dirty value to the software bit.
-	 */
+	
 	return pud_mksaveddirty(pud);
 }
 
@@ -727,12 +680,9 @@ static inline pud_t pud_clear_soft_dirty(pud_t pud)
 	return pud_clear_flags(pud, _PAGE_SOFT_DIRTY);
 }
 
-#endif /* CONFIG_HAVE_ARCH_SOFT_DIRTY */
+#endif 
 
-/*
- * Mask out unsupported bits in a present pgprot.  Non-present pgprots
- * can use those bits for other purposes, so leave them be.
- */
+
 static inline pgprotval_t massage_pgprot(pgprot_t pgprot)
 {
 	pgprotval_t protval = pgprot_val(pgprot);
@@ -747,7 +697,7 @@ static inline pgprotval_t check_pgprot(pgprot_t pgprot)
 {
 	pgprotval_t massaged_val = massage_pgprot(pgprot);
 
-	/* mmdebug.h can not be included here because of dependencies */
+	
 #ifdef CONFIG_DEBUG_VM
 	WARN_ONCE(pgprot_val(pgprot) != massaged_val,
 		  "attempted to set unsupported pgprot: %016llx "
@@ -797,26 +747,14 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 	pteval_t val = pte_val(pte), oldval = val;
 	pte_t pte_result;
 
-	/*
-	 * Chop off the NX bit (if present), and add the NX portion of
-	 * the newprot (if present):
-	 */
+	
 	val &= _PAGE_CHG_MASK;
 	val |= check_pgprot(newprot) & ~_PAGE_CHG_MASK;
 	val = flip_protnone_guard(oldval, val, PTE_PFN_MASK);
 
 	pte_result = __pte(val);
 
-	/*
-	 * To avoid creating Write=0,Dirty=1 PTEs, pte_modify() needs to avoid:
-	 *  1. Marking Write=0 PTEs Dirty=1
-	 *  2. Marking Dirty=1 PTEs Write=0
-	 *
-	 * The first case cannot happen because the _PAGE_CHG_MASK will filter
-	 * out any Dirty bit passed in newprot. Handle the second case by
-	 * going through the mksaveddirty exercise. Only do this if the old
-	 * value was Write=1 to avoid doing this on Shadow Stack PTEs.
-	 */
+	
 	if (oldval & _PAGE_RW)
 		pte_result = pte_mksaveddirty(pte_result);
 	else
@@ -836,16 +774,7 @@ static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 
 	pmd_result = __pmd(val);
 
-	/*
-	 * To avoid creating Write=0,Dirty=1 PMDs, pte_modify() needs to avoid:
-	 *  1. Marking Write=0 PMDs Dirty=1
-	 *  2. Marking Dirty=1 PMDs Write=0
-	 *
-	 * The first case cannot happen because the _PAGE_CHG_MASK will filter
-	 * out any Dirty bit passed in newprot. Handle the second case by
-	 * going through the mksaveddirty exercise. Only do this if the old
-	 * value was Write=1 to avoid doing this on Shadow Stack PTEs.
-	 */
+	
 	if (oldval & _PAGE_RW)
 		pmd_result = pmd_mksaveddirty(pmd_result);
 	else
@@ -854,10 +783,7 @@ static inline pmd_t pmd_modify(pmd_t pmd, pgprot_t newprot)
 	return pmd_result;
 }
 
-/*
- * mprotect needs to preserve PAT and encryption bits when updating
- * vm_page_prot
- */
+
 #define pgprot_modify pgprot_modify
 static inline pgprot_t pgprot_modify(pgprot_t oldprot, pgprot_t newprot)
 {
@@ -877,20 +803,11 @@ static inline int is_new_memtype_allowed(u64 paddr, unsigned long size,
 					 enum page_cache_mode pcm,
 					 enum page_cache_mode new_pcm)
 {
-	/*
-	 * PAT type is always WB for untracked ranges, so no need to check.
-	 */
+	
 	if (x86_platform.is_untracked_pat_range(paddr, paddr + size))
 		return 1;
 
-	/*
-	 * Certain new memtypes are not allowed with certain
-	 * requested memtype:
-	 * - request is uncached, return cannot be write-back
-	 * - request is write-combine, return cannot be write-back
-	 * - request is write-through, return cannot be write-back
-	 * - request is write-through, return cannot be write-combine
-	 */
+	
 	if ((pcm == _PAGE_CACHE_MODE_UC_MINUS &&
 	     new_pcm == _PAGE_CACHE_MODE_WB) ||
 	    (pcm == _PAGE_CACHE_MODE_WC &&
@@ -911,25 +828,21 @@ pte_t *populate_extra_pte(unsigned long vaddr);
 #ifdef CONFIG_PAGE_TABLE_ISOLATION
 pgd_t __pti_set_user_pgtbl(pgd_t *pgdp, pgd_t pgd);
 
-/*
- * Take a PGD location (pgdp) and a pgd value that needs to be set there.
- * Populates the user and returns the resulting PGD that must be set in
- * the kernel copy of the page tables.
- */
+
 static inline pgd_t pti_set_user_pgtbl(pgd_t *pgdp, pgd_t pgd)
 {
 	if (!static_cpu_has(X86_FEATURE_PTI))
 		return pgd;
 	return __pti_set_user_pgtbl(pgdp, pgd);
 }
-#else   /* CONFIG_PAGE_TABLE_ISOLATION */
+#else   
 static inline pgd_t pti_set_user_pgtbl(pgd_t *pgdp, pgd_t pgd)
 {
 	return pgd;
 }
-#endif  /* CONFIG_PAGE_TABLE_ISOLATION */
+#endif  
 
-#endif	/* __ASSEMBLY__ */
+#endif	
 
 
 #ifdef CONFIG_X86_32
@@ -990,20 +903,12 @@ static inline bool pte_accessible(struct mm_struct *mm, pte_t a)
 
 static inline int pmd_present(pmd_t pmd)
 {
-	/*
-	 * Checking for _PAGE_PSE is needed too because
-	 * split_huge_page will temporarily clear the present bit (but
-	 * the _PAGE_PSE flag will remain set at all times while the
-	 * _PAGE_PRESENT bit is clear).
-	 */
+	
 	return pmd_flags(pmd) & (_PAGE_PRESENT | _PAGE_PROTNONE | _PAGE_PSE);
 }
 
 #ifdef CONFIG_NUMA_BALANCING
-/*
- * These work without NUMA balancing but the kernel does not care. See the
- * comment in include/linux/pgtable.h
- */
+
 static inline int pte_protnone(pte_t pte)
 {
 	return (pte_flags(pte) & (_PAGE_PROTNONE | _PAGE_PRESENT))
@@ -1015,12 +920,11 @@ static inline int pmd_protnone(pmd_t pmd)
 	return (pmd_flags(pmd) & (_PAGE_PROTNONE | _PAGE_PRESENT))
 		== _PAGE_PROTNONE;
 }
-#endif /* CONFIG_NUMA_BALANCING */
+#endif 
 
 static inline int pmd_none(pmd_t pmd)
 {
-	/* Only check low word on 32-bit platforms, since it might be
-	   out of sync with upper half. */
+	
 	unsigned long val = native_pmd_val(pmd);
 	return (val & ~_PAGE_KNL_ERRATUM_MASK) == 0;
 }
@@ -1030,19 +934,10 @@ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
 	return (unsigned long)__va(pmd_val(pmd) & pmd_pfn_mask(pmd));
 }
 
-/*
- * Currently stuck as a macro due to indirect forward reference to
- * linux/mmzone.h's __section_mem_map_addr() definition:
- */
+
 #define pmd_page(pmd)	pfn_to_page(pmd_pfn(pmd))
 
-/*
- * Conversion functions: convert a page and protection to a page entry,
- * and a page entry and page directory to the page they refer to.
- *
- * (Currently stuck as a macro because of indirect forward reference
- * to linux/mm.h:page_to_nid())
- */
+
 #define mk_pte(page, pgprot)						  \
 ({									  \
 	pgprot_t __pgprot = pgprot;					  \
@@ -1079,10 +974,7 @@ static inline pmd_t *pud_pgtable(pud_t pud)
 	return (pmd_t *)__va(pud_val(pud) & pud_pfn_mask(pud));
 }
 
-/*
- * Currently stuck as a macro due to indirect forward reference to
- * linux/mmzone.h's __section_mem_map_addr() definition:
- */
+
 #define pud_page(pud)	pfn_to_page(pud_pfn(pud))
 
 #define pud_leaf	pud_large
@@ -1102,7 +994,7 @@ static inline int pud_large(pud_t pud)
 {
 	return 0;
 }
-#endif	/* CONFIG_PGTABLE_LEVELS > 2 */
+#endif	
 
 #if CONFIG_PGTABLE_LEVELS > 3
 static inline int p4d_none(p4d_t p4d)
@@ -1120,10 +1012,7 @@ static inline pud_t *p4d_pgtable(p4d_t p4d)
 	return (pud_t *)__va(p4d_val(p4d) & p4d_pfn_mask(p4d));
 }
 
-/*
- * Currently stuck as a macro due to indirect forward reference to
- * linux/mmzone.h's __section_mem_map_addr() definition:
- */
+
 #define p4d_page(p4d)	pfn_to_page(p4d_pfn(p4d))
 
 static inline int p4d_bad(p4d_t p4d)
@@ -1135,7 +1024,7 @@ static inline int p4d_bad(p4d_t p4d)
 
 	return (p4d_flags(p4d) & ~ignore_flags) != 0;
 }
-#endif  /* CONFIG_PGTABLE_LEVELS > 3 */
+#endif  
 
 static inline unsigned long p4d_index(unsigned long address)
 {
@@ -1155,13 +1044,10 @@ static inline unsigned long pgd_page_vaddr(pgd_t pgd)
 	return (unsigned long)__va((unsigned long)pgd_val(pgd) & PTE_PFN_MASK);
 }
 
-/*
- * Currently stuck as a macro due to indirect forward reference to
- * linux/mmzone.h's __section_mem_map_addr() definition:
- */
+
 #define pgd_page(pgd)	pfn_to_page(pgd_pfn(pgd))
 
-/* to find an entry in a page-table-directory. */
+
 static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
 {
 	if (!pgtable_l5_enabled())
@@ -1186,17 +1072,12 @@ static inline int pgd_none(pgd_t pgd)
 {
 	if (!pgtable_l5_enabled())
 		return 0;
-	/*
-	 * There is no need to do a workaround for the KNL stray
-	 * A/D bit erratum here.  PGDs only point to page tables
-	 * except on 32-bit non-PAE which is not supported on
-	 * KNL.
-	 */
+	
 	return !native_pgd_val(pgd);
 }
-#endif	/* CONFIG_PGTABLE_LEVELS > 4 */
+#endif	
 
-#endif	/* __ASSEMBLY__ */
+#endif	
 
 #define KERNEL_PGD_BOUNDARY	pgd_index(PAGE_OFFSET)
 #define KERNEL_PGD_PTRS		(PTRS_PER_PGD - KERNEL_PGD_BOUNDARY)
@@ -1215,12 +1096,12 @@ unsigned long init_memory_mapping(unsigned long start,
 extern pgd_t trampoline_pgd_entry;
 #endif
 
-/* local pte updates need not use xchg for locking */
+
 static inline pte_t native_local_ptep_get_and_clear(pte_t *ptep)
 {
 	pte_t res = *ptep;
 
-	/* Pure native function needs no input for mm, addr */
+	
 	native_pte_clear(NULL, 0, ptep);
 	return res;
 }
@@ -1255,13 +1136,7 @@ static inline void set_pud_at(struct mm_struct *mm, unsigned long addr,
 	native_set_pud(pudp, pud);
 }
 
-/*
- * We only update the dirty/accessed state if we set
- * the dirty bit by hand in the kernel, since the hardware
- * will do the accessed bit for us, and we don't want to
- * race with other CPU's that might be updating the dirty
- * bit at the same time.
- */
+
 struct vm_area_struct;
 
 #define  __HAVE_ARCH_PTEP_SET_ACCESS_FLAGS
@@ -1293,10 +1168,7 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
 {
 	pte_t pte;
 	if (full) {
-		/*
-		 * Full address destruction in progress; paravirt does not
-		 * care about updates and native needs no locking
-		 */
+		
 		pte = native_local_ptep_get_and_clear(ptep);
 		page_table_check_pte_clear(mm, pte);
 	} else {
@@ -1309,11 +1181,7 @@ static inline pte_t ptep_get_and_clear_full(struct mm_struct *mm,
 static inline void ptep_set_wrprotect(struct mm_struct *mm,
 				      unsigned long addr, pte_t *ptep)
 {
-	/*
-	 * Avoid accidentally creating shadow stack PTEs
-	 * (Write=0,Dirty=1).  Use cmpxchg() to prevent races with
-	 * the hardware setting Dirty=1.
-	 */
+	
 	pte_t old_pte, new_pte;
 
 	old_pte = READ_ONCE(*ptep);
@@ -1371,11 +1239,7 @@ static inline pud_t pudp_huge_get_and_clear(struct mm_struct *mm,
 static inline void pmdp_set_wrprotect(struct mm_struct *mm,
 				      unsigned long addr, pmd_t *pmdp)
 {
-	/*
-	 * Avoid accidentally creating shadow stack PTEs
-	 * (Write=0,Dirty=1).  Use cmpxchg() to prevent races with
-	 * the hardware setting Dirty=1.
-	 */
+	
 	pmd_t old_pmd, new_pmd;
 
 	old_pmd = READ_ONCE(*pmdp);
@@ -1404,13 +1268,7 @@ static inline pmd_t pmdp_establish(struct vm_area_struct *vma,
 extern pmd_t pmdp_invalidate_ad(struct vm_area_struct *vma,
 				unsigned long address, pmd_t *pmdp);
 
-/*
- * Page table pages are page-aligned.  The lower half of the top
- * level is used for userspace and the top half for the kernel.
- *
- * Returns true for parts of the PGD that map userspace and
- * false for the parts that map the kernel.
- */
+
 static inline bool pgdp_maps_userspace(void *__ptr)
 {
 	unsigned long ptr = (unsigned long)__ptr;
@@ -1422,18 +1280,10 @@ static inline bool pgdp_maps_userspace(void *__ptr)
 static inline int pgd_large(pgd_t pgd) { return 0; }
 
 #ifdef CONFIG_PAGE_TABLE_ISOLATION
-/*
- * All top-level PAGE_TABLE_ISOLATION page tables are order-1 pages
- * (8k-aligned and 8k in size).  The kernel one is at the beginning 4k and
- * the user one is in the last 4k.  To switch between them, you
- * just need to flip the 12th bit in their addresses.
- */
+
 #define PTI_PGTABLE_SWITCH_BIT	PAGE_SHIFT
 
-/*
- * This generates better code than the inline assembly in
- * __set_bit().
- */
+
 static inline void *ptr_set_bit(void *ptr, int bit)
 {
 	unsigned long __ptr = (unsigned long)ptr;
@@ -1468,25 +1318,16 @@ static inline p4d_t *user_to_kernel_p4dp(p4d_t *p4dp)
 {
 	return ptr_clear_bit(p4dp, PTI_PGTABLE_SWITCH_BIT);
 }
-#endif /* CONFIG_PAGE_TABLE_ISOLATION */
+#endif 
 
-/*
- * clone_pgd_range(pgd_t *dst, pgd_t *src, int count);
- *
- *  dst - pointer to pgd range anywhere on a pgd page
- *  src - ""
- *  count - the number of pgds to copy.
- *
- * dst and src can be on the same page, but the range must not overlap,
- * and must not cross a page boundary.
- */
+
 static inline void clone_pgd_range(pgd_t *dst, pgd_t *src, int count)
 {
 	memcpy(dst, src, count * sizeof(pgd_t));
 #ifdef CONFIG_PAGE_TABLE_ISOLATION
 	if (!static_cpu_has(X86_FEATURE_PTI))
 		return;
-	/* Clone the user space pgd as well */
+	
 	memcpy(kernel_to_user_pgdp(dst), kernel_to_user_pgdp(src),
 	       count * sizeof(pgd_t));
 #endif
@@ -1506,10 +1347,7 @@ static inline unsigned long page_level_mask(enum pg_level level)
 	return ~(page_level_size(level) - 1);
 }
 
-/*
- * The x86 doesn't have any external MMU info: the kernel page
- * tables contain all the necessary information.
- */
+
 static inline void update_mmu_cache(struct vm_area_struct *vma,
 		unsigned long addr, pte_t *ptep)
 {
@@ -1606,12 +1444,12 @@ static inline pmd_t pmd_swp_clear_uffd_wp(pmd_t pmd)
 {
 	return pmd_clear_flags(pmd, _PAGE_SWP_UFFD_WP);
 }
-#endif /* CONFIG_HAVE_ARCH_USERFAULTFD_WP */
+#endif 
 
 static inline u16 pte_flags_pkey(unsigned long pte_flags)
 {
 #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
-	/* ifdef to avoid doing 59-bit shift on 32-bit values */
+	
 	return (pte_flags & _PAGE_PKEY_MASK) >> _PAGE_BIT_PKEY_BIT0;
 #else
 	return 0;
@@ -1630,20 +1468,12 @@ static inline bool __pkru_allows_pkey(u16 pkey, bool write)
 	return true;
 }
 
-/*
- * 'pteval' can come from a PTE, PMD or PUD.  We only check
- * _PAGE_PRESENT, _PAGE_USER, and _PAGE_RW in here which are the
- * same value on all 3 types.
- */
+
 static inline bool __pte_access_permitted(unsigned long pteval, bool write)
 {
 	unsigned long need_pte_bits = _PAGE_PRESENT|_PAGE_USER;
 
-	/*
-	 * Write=0,Dirty=1 PTEs are shadow stack, which the kernel
-	 * shouldn't generally allow access to, but since they
-	 * are already Write=0, the below logic covers both cases.
-	 */
+	
 	if (write)
 		need_pte_bits |= _PAGE_RW;
 
@@ -1716,6 +1546,6 @@ static inline bool pud_user_accessible_page(pud_t pud)
 }
 #endif
 
-#endif	/* __ASSEMBLY__ */
+#endif	
 
-#endif /* _ASM_X86_PGTABLE_H */
+#endif 

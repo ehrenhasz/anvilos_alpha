@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * include/linux/cpu.h - generic cpu definition
- *
- * This is mainly for topological representation. We define the 
- * basic 'struct cpu' here, which can be embedded in per-arch 
- * definitions of processors.
- *
- * Basic handling of the devices is done in drivers/base/cpu.c
- *
- * CPUs are exported via sysfs in the devices/system/cpu
- * directory. 
- */
+
+
 #ifndef _LINUX_CPU_H_
 #define _LINUX_CPU_H_
 
@@ -25,8 +14,8 @@ struct device_node;
 struct attribute_group;
 
 struct cpu {
-	int node_id;		/* The node which contains the CPU */
-	int hotpluggable;	/* creates sysfs control file if hotpluggable */
+	int node_id;		
+	int hotpluggable;	
 	struct device dev;
 };
 
@@ -88,16 +77,13 @@ extern ssize_t arch_cpu_probe(const char *, size_t);
 extern ssize_t arch_cpu_release(const char *, size_t);
 #endif
 
-/*
- * These states are not related to the core CPU hotplug mechanism. They are
- * used by various (sub)architectures to track internal state
- */
-#define CPU_ONLINE		0x0002 /* CPU is up */
-#define CPU_UP_PREPARE		0x0003 /* CPU coming up */
-#define CPU_DEAD		0x0007 /* CPU dead */
-#define CPU_DEAD_FROZEN		0x0008 /* CPU timed out on unplug */
-#define CPU_POST_DEAD		0x0009 /* CPU successfully unplugged */
-#define CPU_BROKEN		0x000B /* CPU did not die properly */
+
+#define CPU_ONLINE		0x0002 
+#define CPU_UP_PREPARE		0x0003 
+#define CPU_DEAD		0x0007 
+#define CPU_DEAD_FROZEN		0x0008 
+#define CPU_POST_DEAD		0x0009 
+#define CPU_BROKEN		0x000B 
 
 #ifdef CONFIG_SMP
 extern bool cpuhp_tasks_frozen;
@@ -109,7 +95,7 @@ extern void cpu_maps_update_done(void);
 int bringup_hibernate_cpu(unsigned int sleep_cpu);
 void bringup_nonboot_cpus(unsigned int setup_max_cpus);
 
-#else	/* CONFIG_SMP */
+#else	
 #define cpuhp_tasks_frozen	0
 
 static inline void cpu_maps_update_begin(void)
@@ -122,7 +108,7 @@ static inline void cpu_maps_update_done(void)
 
 static inline int add_cpu(unsigned int cpu) { return 0;}
 
-#endif /* CONFIG_SMP */
+#endif 
 extern struct bus_type cpu_subsys;
 
 extern int lockdep_is_cpus_held(void);
@@ -141,7 +127,7 @@ int remove_cpu(unsigned int cpu);
 int cpu_device_down(struct device *dev);
 extern void smp_shutdown_nonboot_cpus(unsigned int primary_cpu);
 
-#else /* CONFIG_HOTPLUG_CPU */
+#else 
 
 static inline void cpus_write_lock(void) { }
 static inline void cpus_write_unlock(void) { }
@@ -153,7 +139,7 @@ static inline void cpu_hotplug_disable(void) { }
 static inline void cpu_hotplug_enable(void) { }
 static inline int remove_cpu(unsigned int cpu) { return -EPERM; }
 static inline void smp_shutdown_nonboot_cpus(unsigned int primary_cpu) { }
-#endif	/* !CONFIG_HOTPLUG_CPU */
+#endif	
 
 #ifdef CONFIG_PM_SLEEP_SMP
 extern int freeze_secondary_cpus(int primary);
@@ -173,11 +159,11 @@ static inline void suspend_enable_secondary_cpus(void)
 	return thaw_secondary_cpus();
 }
 
-#else /* !CONFIG_PM_SLEEP_SMP */
+#else 
 static inline void thaw_secondary_cpus(void) {}
 static inline int suspend_disable_secondary_cpus(void) { return 0; }
 static inline void suspend_enable_secondary_cpus(void) { }
-#endif /* !CONFIG_PM_SLEEP_SMP */
+#endif 
 
 void __noreturn cpu_startup_entry(enum cpuhp_state state);
 
@@ -208,9 +194,9 @@ static inline void play_idle(unsigned long duration_us)
 void cpuhp_report_idle_dead(void);
 #else
 static inline void cpuhp_report_idle_dead(void) { }
-#endif /* #ifdef CONFIG_HOTPLUG_CPU */
+#endif 
 
 extern bool cpu_mitigations_off(void);
 extern bool cpu_mitigations_auto_nosmt(void);
 
-#endif /* _LINUX_CPU_H_ */
+#endif 

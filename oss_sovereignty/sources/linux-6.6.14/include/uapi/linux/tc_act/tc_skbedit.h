@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * Author: Alexander Duyck <alexander.h.duyck@intel.com>
- */
+
+
 
 #ifndef __LINUX_TC_SKBEDIT_H
 #define __LINUX_TC_SKBEDIT_H

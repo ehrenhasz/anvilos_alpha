@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright (C) 2018 Renesas Electronics Corp.
- * Copyright (C) 2018 Cogent Embedded, Inc.
- */
+
 #ifndef __DT_BINDINGS_POWER_R8A77980_SYSC_H__
 #define __DT_BINDINGS_POWER_R8A77980_SYSC_H__
 
-/*
- * These power domain indices match the numbers of the interrupt bits
- * representing the power areas in the various Interrupt Registers
- * (e.g. SYSCISR, Interrupt Status Register)
- */
+
 
 #define R8A77980_PD_A2SC2		0
 #define R8A77980_PD_A2SC3		1
@@ -37,7 +29,7 @@
 #define R8A77980_PD_A2SC0		30
 #define R8A77980_PD_A2SC1		31
 
-/* Always-on power area */
+
 #define R8A77980_PD_ALWAYS_ON		32
 
-#endif /* __DT_BINDINGS_POWER_R8A77980_SYSC_H__ */
+#endif 

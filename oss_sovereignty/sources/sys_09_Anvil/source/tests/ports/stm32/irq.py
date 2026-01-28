@@ -2,7 +2,7 @@ import pyb
 def test_irq():
     i1 = pyb.disable_irq()
     print(i1)
-    pyb.enable_irq()  # by default should enable IRQ
+    pyb.enable_irq()  
     pyb.delay(10)
     i1 = pyb.disable_irq()
     i2 = pyb.disable_irq()

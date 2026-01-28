@@ -43,7 +43,7 @@ class MimxrtPin(boardgen.Pin):
             self._afs.append((af_idx, input_reg, input_daisy, instance, fn, af))
         elif af_name == "ADC":
             adc_regex = r"ADC(?P<instance>\d*)_IN(?P<channel>\d*)"
-            lpadc_regex = r"ADC(?P<instance>\d*)_CH(?P<channel>\d*)"  # LPADC for MIMXRT11xx chips
+            lpadc_regex = r"ADC(?P<instance>\d*)_CH(?P<channel>\d*)"  
             matches = re.finditer(adc_regex, af, re.MULTILINE)
             for match in matches:
                 self._adc_fns.append(
@@ -143,15 +143,15 @@ class MimxrtPinGenerator(boardgen.PinGenerator):
                 ):
                     if fn == match_fn:
                         module_instances[instance].append(
-                            "#define {:s}_{:s} pin_{:s}, {:d}".format(
+                            "
                                 pin.name(), af, pin.name(), i
                             )
                         )
             for k, v in module_instances.items():
                 print("// {:s}".format(k), file=out_header)
-                print("#define {:s}_AVAIL (1)".format(k), file=out_header)
+                print("
                 if match_fn == "FLEXPWM":
-                    print("#define {:s} {:s}".format(k, k[-4:]), file=out_header)
+                    print("
                 for i in v:
                     print(i, file=out_header)
     def print_header(self, out_header):

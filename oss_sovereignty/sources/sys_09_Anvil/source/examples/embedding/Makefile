@@ -1,10 +1,10 @@
-# This file is part of the MicroPython project, http://micropython.org/
-# The MIT License (MIT)
-# Copyright (c) 2022-2023 Damien P. George
-#
-# This is a very simple makefile that demonstrates how to build the embed port.
-# All it needs to do is build all *.c files in the micropython_embed directory.
-# This makefile would be replaced with your custom build system.
+
+
+
+
+
+
+
 
 EMBED_DIR = micropython_embed
 PROG = embed

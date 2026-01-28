@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+
 
 #ifndef __PINCTRL_BCM63XX_H__
 #define __PINCTRL_BCM63XX_H__
@@ -42,4 +39,4 @@ int bcm63xx_pinctrl_probe(struct platform_device *pdev,
 			  const struct bcm63xx_pinctrl_soc *soc,
 			  void *driver_data);
 
-#endif /* __PINCTRL_BCM63XX_H__ */
+#endif 

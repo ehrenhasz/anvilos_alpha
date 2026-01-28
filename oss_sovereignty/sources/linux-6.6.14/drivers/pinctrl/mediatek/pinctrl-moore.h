@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2017-2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+
 #ifndef __PINCTRL_MOORE_H
 #define __PINCTRL_MOORE_H
 
@@ -48,4 +43,4 @@
 int mtk_moore_pinctrl_probe(struct platform_device *pdev,
 			    const struct mtk_pin_soc *soc);
 
-#endif /* __PINCTRL_MOORE_H */
+#endif 

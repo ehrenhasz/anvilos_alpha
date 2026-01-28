@@ -1,17 +1,14 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2019 Netronome Systems, Inc. */
+
+
 
 #ifndef _NFP_NET_SRIOV_H_
 #define _NFP_NET_SRIOV_H_
 
-/* SRIOV VF configuration.
- * The configuration memory begins with a mailbox region for communication with
- * the firmware followed by individual VF entries.
- */
+
 #define NFP_NET_VF_CFG_SZ		16
 #define NFP_NET_VF_CFG_MB_SZ		16
 
-/* VF config mailbox */
+
 #define NFP_NET_VF_CFG_MB				0x0
 #define NFP_NET_VF_CFG_MB_CAP				0x0
 #define   NFP_NET_VF_CFG_MB_CAP_MAC			  (0x1 << 0)
@@ -32,10 +29,7 @@
 #define   NFP_NET_VF_CFG_MB_UPD_RATE			  (0x1 << 6)
 #define NFP_NET_VF_CFG_MB_VF_NUM			0x7
 
-/* VF config entry
- * MAC_LO is set that the MAC address can be read in a single 6 byte read
- * by the NFP
- */
+
 #define NFP_NET_VF_CFG_MAC				0x0
 #define   NFP_NET_VF_CFG_MAC_HI				  0x0
 #define   NFP_NET_VF_CFG_MAC_LO				  0x6
@@ -68,4 +62,4 @@ int nfp_app_set_vf_link_state(struct net_device *netdev, int vf,
 int nfp_app_get_vf_config(struct net_device *netdev, int vf,
 			  struct ifla_vf_info *ivi);
 
-#endif /* _NFP_NET_SRIOV_H_ */
+#endif 

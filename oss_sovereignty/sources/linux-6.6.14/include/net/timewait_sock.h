@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NET		Generic infrastructure for Network protocols.
- *
- * Authors:	Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+
 #ifndef _TIMEWAIT_SOCK_H
 #define _TIMEWAIT_SOCK_H
 
@@ -33,4 +29,4 @@ static inline void twsk_destructor(struct sock *sk)
 		sk->sk_prot->twsk_prot->twsk_destructor(sk);
 }
 
-#endif /* _TIMEWAIT_SOCK_H */
+#endif 

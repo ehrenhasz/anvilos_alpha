@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for the defined trigger signal
- * types on CoreSight CTI.
- */
+
+
 
 #ifndef _DT_BINDINGS_ARM_CORESIGHT_CTI_DT_H
 #define _DT_BINDINGS_ARM_CORESIGHT_CTI_DT_H
@@ -34,4 +31,4 @@
 #define ELA_DBGREQ	24
 #define CTI_TRIG_MAX	25
 
-#endif /*_DT_BINDINGS_ARM_CORESIGHT_CTI_DT_H */
+#endif 

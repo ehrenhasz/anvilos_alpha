@@ -1,12 +1,6 @@
-/* infutil.h -- types and macros common to blocks and codes
- * Copyright (C) 1995-1998 Mark Adler
- * For conditions of distribution and use, see copyright notice in zlib.h 
- */
 
-/* WARNING: this file should *not* be used by applications. It is
-   part of the implementation of the compression library and is
-   subject to change. Applications should only use zlib.h.
- */
+
+
 
 #ifndef _INFUTIL_H
 #define _INFUTIL_H
@@ -17,7 +11,7 @@
 #include <asm/page.h>
 #endif
 
-/* memory allocation for inflation */
+
 
 struct inflate_workspace {
 	struct inflate_state inflate_state;
@@ -30,7 +24,7 @@ struct inflate_workspace {
 };
 
 #ifdef CONFIG_ZLIB_DFLTCC
-/* dfltcc_state must be doubleword aligned for DFLTCC call */
+
 static_assert(offsetof(struct inflate_workspace, dfltcc_state) % 8 == 0);
 #endif
 

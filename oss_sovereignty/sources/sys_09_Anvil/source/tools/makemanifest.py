@@ -28,8 +28,8 @@ def mkdir(filename):
         os.makedirs(path)
 def generate_frozen_str_content(modules):
     output = [
-        b"#include <stdint.h>\n",
-        b"#define MP_FROZEN_STR_NAMES \\\n",
+        b"
+        b"
     ]
     for _, target_path in modules:
         print("STR", target_path)
@@ -44,7 +44,7 @@ def generate_frozen_str_content(modules):
     for full_path, _ in modules:
         with open(full_path, "rb") as f:
             data = f.read()
-            data = bytearray(data)  # so Python2 extracts each byte as an integer
+            data = bytearray(data)  
             esc_dict = {ord("\n"): b"\\n", ord("\r"): b"\\r", ord('"'): b'\\"', ord("\\"): b"\\\\"}
             output.append(b'"')
             break_str = False
@@ -160,7 +160,7 @@ def main():
             sys.exit(1)
     else:
         output_mpy = (
-            b'#include "py/emitglue.h"\n'
+            b'
             b"extern const qstr_pool_t mp_qstr_const_pool;\n"
             b"const qstr_pool_t mp_qstr_frozen_const_pool = {\n"
             b"    (qstr_pool_t*)&mp_qstr_const_pool, MP_QSTRnumber_of, 0, 0\n"

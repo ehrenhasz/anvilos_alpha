@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/*
- * Copyright(c) 2018 Intel Corporation.
- *
- */
+
+
 
 #ifndef TID_RDMA_DEFS_H
 #define TID_RDMA_DEFS_H
@@ -70,9 +67,7 @@ struct tid_rdma_ack {
 	__be32 verbs_qp;
 };
 
-/*
- * TID RDMA Opcodes
- */
+
 #define IB_OPCODE_TID_RDMA 0xe0
 enum {
 	IB_OPCODE_WRITE_REQ       = 0x0,
@@ -96,13 +91,8 @@ enum {
 
 #define TID_OP(x) IB_OPCODE_TID_RDMA_##x
 
-/*
- * Define TID RDMA specific WR opcodes. The ib_wr_opcode
- * enum already provides some reserved values for use by
- * low level drivers. Two of those are used but renamed
- * to be more descriptive.
- */
+
 #define IB_WR_TID_RDMA_WRITE IB_WR_RESERVED1
 #define IB_WR_TID_RDMA_READ  IB_WR_RESERVED2
 
-#endif /* TID_RDMA_DEFS_H */
+#endif 

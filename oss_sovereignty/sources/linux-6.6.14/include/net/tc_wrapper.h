@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_WRAPPER_H
 #define __NET_TC_WRAPPER_H
 
@@ -14,7 +14,7 @@
 
 extern struct static_key_false tc_skip_wrapper;
 
-/* TC Actions */
+
 #ifdef CONFIG_NET_CLS_ACT
 
 #define TC_INDIRECT_ACTION_DECLARE(fname)                              \
@@ -134,9 +134,9 @@ skip:
 	return a->ops->act(skb, a, res);
 }
 
-#endif /* CONFIG_NET_CLS_ACT */
+#endif 
 
-/* TC Filters */
+
 #ifdef CONFIG_NET_CLS
 
 #define TC_INDIRECT_FILTER_DECLARE(fname)                               \
@@ -201,7 +201,7 @@ skip:
 	return tp->classify(skb, tp, res);
 }
 
-#endif /* CONFIG_NET_CLS */
+#endif 
 
 static inline void tc_wrapper_init(void)
 {
@@ -233,4 +233,4 @@ static inline void tc_wrapper_init(void)
 
 #endif
 
-#endif /* __NET_TC_WRAPPER_H */
+#endif 

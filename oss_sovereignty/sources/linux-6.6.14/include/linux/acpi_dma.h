@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ACPI helpers for DMA request / controller
- *
- * Based on of_dma.h
- *
- * Copyright (C) 2013, Intel Corporation
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+
 
 #ifndef __LINUX_ACPI_DMA_H
 #define __LINUX_ACPI_DMA_H
@@ -16,28 +9,14 @@
 #include <linux/err.h>
 #include <linux/dmaengine.h>
 
-/**
- * struct acpi_dma_spec - slave device DMA resources
- * @chan_id:	channel unique id
- * @slave_id:	request line unique id
- * @dev:	struct device of the DMA controller to be used in the filter
- *		function
- */
+
 struct acpi_dma_spec {
 	int		chan_id;
 	int		slave_id;
 	struct device	*dev;
 };
 
-/**
- * struct acpi_dma - representation of the registered DMAC
- * @dma_controllers:	linked list node
- * @dev:		struct device of this controller
- * @acpi_dma_xlate:	callback function to find a suitable channel
- * @data:		private data used by a callback function
- * @base_request_line:	first supported request line (CSRT)
- * @end_request_line:	last supported request line (CSRT)
- */
+
 struct acpi_dma {
 	struct list_head	dma_controllers;
 	struct device		*dev;
@@ -48,7 +27,7 @@ struct acpi_dma {
 	unsigned short		end_request_line;
 };
 
-/* Used with acpi_dma_simple_xlate() */
+
 struct acpi_dma_filter_info {
 	dma_cap_mask_t	dma_cap;
 	dma_filter_fn	filter_fn;
@@ -115,4 +94,4 @@ static inline struct dma_chan *acpi_dma_request_slave_chan_by_name(
 
 #define acpi_dma_request_slave_channel	acpi_dma_request_slave_chan_by_index
 
-#endif /* __LINUX_ACPI_DMA_H */
+#endif 

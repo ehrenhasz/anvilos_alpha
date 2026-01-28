@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #if !defined(_TRACE_KVMMMU_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_KVMMMU_H
 
@@ -61,9 +61,7 @@ TRACE_DEFINE_ENUM(RET_PF_INVALID);
 TRACE_DEFINE_ENUM(RET_PF_FIXED);
 TRACE_DEFINE_ENUM(RET_PF_SPURIOUS);
 
-/*
- * A pagetable walk has started
- */
+
 TRACE_EVENT(
 	kvm_mmu_pagetable_walk,
 	TP_PROTO(u64 addr, u32 pferr),
@@ -84,7 +82,7 @@ TRACE_EVENT(
 );
 
 
-/* We just walked a paging element */
+
 TRACE_EVENT(
 	kvm_mmu_paging_element,
 	TP_PROTO(u64 pte, int level),
@@ -121,7 +119,7 @@ DECLARE_EVENT_CLASS(kvm_mmu_set_bit_class,
 	TP_printk("gpa %llx", __entry->gpa)
 );
 
-/* We set a pte accessed bit */
+
 DEFINE_EVENT(kvm_mmu_set_bit_class, kvm_mmu_set_accessed_bit,
 
 	TP_PROTO(unsigned long table_gfn, unsigned index, unsigned size),
@@ -129,7 +127,7 @@ DEFINE_EVENT(kvm_mmu_set_bit_class, kvm_mmu_set_accessed_bit,
 	TP_ARGS(table_gfn, index, size)
 );
 
-/* We set a pte dirty bit */
+
 DEFINE_EVENT(kvm_mmu_set_bit_class, kvm_mmu_set_dirty_bit,
 
 	TP_PROTO(unsigned long table_gfn, unsigned index, unsigned size),
@@ -340,7 +338,7 @@ TRACE_EVENT(
 		__field(u64, spte)
 		__field(u64, sptep)
 		__field(u8, level)
-		/* These depend on page entry type, so compute them now.  */
+		
 		__field(bool, r)
 		__field(bool, x)
 		__field(signed char, u)
@@ -397,9 +395,9 @@ TRACE_EVENT(
 		__field(u64, gfn)
 		__field(u64, old_spte)
 		__field(u64, new_spte)
-		/* Level cannot be larger than 5 on x86, so it fits in a u8. */
+		
 		__field(u8, level)
-		/* as_id can only be 0 or 1 x86, so it fits in a u8. */
+		
 		__field(u8, as_id)
 	),
 
@@ -440,12 +438,12 @@ TRACE_EVENT(
 		  __entry->gfn, __entry->spte, __entry->level, __entry->errno)
 );
 
-#endif /* _TRACE_KVMMMU_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH mmu
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE mmutrace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

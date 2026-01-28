@@ -53,4 +53,4 @@ time1 = rtc.now()
 time.sleep_ms(1000)
 time2 = rtc.now()
 print(time2[5] - time1[5] == 1)
-print(time2[6] - time1[6] < 5000)  # microseconds
+print(time2[6] - time1[6] < 5000)  

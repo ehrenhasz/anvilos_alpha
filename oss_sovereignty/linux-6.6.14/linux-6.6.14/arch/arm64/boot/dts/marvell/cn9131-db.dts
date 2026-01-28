@@ -1,7 +1,0 @@
-#include "cn9131-db.dtsi"
-/ {
-	model = "Marvell Armada CN9131-DB setup A";
-};
-&cp0_spi1 {
-	status = "okay";
-};

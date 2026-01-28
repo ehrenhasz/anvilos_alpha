@@ -447,13 +447,13 @@ function get_test_data()
 function get_test_count()
 {
 	TEST_DATA=$(get_test_data $1)
-	LAST_TWO=${TEST_DATA#*:*}
+	LAST_TWO=${TEST_DATA
 	echo ${LAST_TWO%:*}
 }
 function get_test_enabled()
 {
 	TEST_DATA=$(get_test_data $1)
-	echo ${TEST_DATA#*:*:}
+	echo ${TEST_DATA
 }
 function run_all_tests()
 {
@@ -468,17 +468,17 @@ function run_all_tests()
 }
 function watch_log()
 {
-	if [ $# -ne 3 ]; then
+	if [ $
 		clear
 	fi
 	date
-	echo "Running test: $2 - run #$1"
+	echo "Running test: $2 - run 
 }
 function watch_case()
 {
 	i=0
 	while [ 1 ]; do
-		if [ $# -eq 1 ]; then
+		if [ $
 			test_num $1
 			watch_log $i ${TEST_NAME}_test_$1
 			${TEST_NAME}_test_$1
@@ -492,7 +492,7 @@ function watch_case()
 function test_case()
 {
 	NUM_TESTS=$DEFAULT_NUM_TESTS
-	if [ $# -eq 2 ]; then
+	if [ $
 		NUM_TESTS=$2
 	fi
 	i=0
@@ -506,7 +506,7 @@ function test_case()
 }
 function parse_args()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		run_all_tests
 	else
 		if [[ "$1" = "all" ]]; then

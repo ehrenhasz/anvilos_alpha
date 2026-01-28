@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2016 NXP
- * Copyright 2020 NXP
- */
+
+
 #ifndef _FSL_DPNI_CMD_H
 #define _FSL_DPNI_CMD_H
 
 #include "dpni.h"
 
-/* DPNI Version */
+
 #define DPNI_VER_MAJOR				7
 #define DPNI_VER_MINOR				0
 #define DPNI_CMD_BASE_VERSION			1
@@ -102,7 +99,7 @@
 #define DPNI_CMDID_SET_SINGLE_STEP_CFG			DPNI_CMD(0x279)
 #define DPNI_CMDID_GET_SINGLE_STEP_CFG			DPNI_CMD_V2(0x27a)
 
-/* Macros for accessing command fields smaller than 1byte */
+
 #define DPNI_MASK(field)	\
 	GENMASK(DPNI_##field##_SHIFT + DPNI_##field##_SIZE - 1, \
 		DPNI_##field##_SHIFT)
@@ -133,7 +130,7 @@ struct dpni_cmd_set_pools {
 	__le16 buffer_size[DPNI_MAX_DPBP];
 };
 
-/* The enable indication is always the least significant bit */
+
 #define DPNI_ENABLE_SHIFT		0
 #define DPNI_ENABLE_SIZE		1
 
@@ -142,12 +139,12 @@ struct dpni_rsp_is_enabled {
 };
 
 struct dpni_rsp_get_irq {
-	/* response word 0 */
+	
 	__le32 irq_val;
 	__le32 pad;
-	/* response word 1 */
+	
 	__le64 irq_addr;
-	/* response word 2 */
+	
 	__le32 irq_num;
 	__le32 type;
 };
@@ -196,20 +193,20 @@ struct dpni_cmd_clear_irq_status {
 };
 
 struct dpni_rsp_get_attr {
-	/* response word 0 */
+	
 	__le32 options;
 	u8 num_queues;
 	u8 num_tcs;
 	u8 mac_filter_entries;
 	u8 pad0;
-	/* response word 1 */
+	
 	u8 vlan_filter_entries;
 	u8 pad1;
 	u8 qos_entries;
 	u8 pad2;
 	__le16 fs_entries;
 	__le16 pad3;
-	/* response word 2 */
+	
 	u8 qos_key_size;
 	u8 fs_key_size;
 	__le16 wriop_version;
@@ -222,14 +219,11 @@ struct dpni_rsp_get_attr {
 
 struct dpni_cmd_set_errors_behavior {
 	__le32 errors;
-	/* from least significant bit: error_action:4, set_frame_annotation:1 */
+	
 	u8 flags;
 };
 
-/* There are 3 separate commands for configuring Rx, Tx and Tx confirmation
- * buffer layouts, but they all share the same parameters.
- * If one of the functions changes, below structure needs to be split.
- */
+
 
 #define DPNI_PASS_TS_SHIFT		0
 #define DPNI_PASS_TS_SIZE		1
@@ -243,12 +237,12 @@ struct dpni_cmd_get_buffer_layout {
 };
 
 struct dpni_rsp_get_buffer_layout {
-	/* response word 0 */
+	
 	u8 pad0[6];
-	/* from LSB: pass_timestamp:1, parser_result:1, frame_status:1 */
+	
 	u8 flags;
 	u8 pad1;
-	/* response word 1 */
+	
 	__le16 private_data_size;
 	__le16 data_align;
 	__le16 head_room;
@@ -256,14 +250,14 @@ struct dpni_rsp_get_buffer_layout {
 };
 
 struct dpni_cmd_set_buffer_layout {
-	/* cmd word 0 */
+	
 	u8 qtype;
 	u8 pad0[3];
 	__le16 options;
-	/* from LSB: pass_timestamp:1, parser_result:1, frame_status:1 */
+	
 	u8 flags;
 	u8 pad1;
-	/* cmd word 1 */
+	
 	__le16 private_data_size;
 	__le16 data_align;
 	__le16 head_room;
@@ -307,12 +301,12 @@ struct dpni_rsp_get_statistics {
 };
 
 struct dpni_cmd_link_cfg {
-	/* cmd word 0 */
+	
 	__le64 pad0;
-	/* cmd word 1 */
+	
 	__le32 rate;
 	__le32 pad1;
-	/* cmd word 2 */
+	
 	__le64 options;
 };
 
@@ -320,15 +314,15 @@ struct dpni_cmd_link_cfg {
 #define DPNI_LINK_STATE_SIZE		1
 
 struct dpni_rsp_get_link_state {
-	/* response word 0 */
+	
 	__le32 pad0;
-	/* from LSB: up:1 */
+	
 	u8 flags;
 	u8 pad1[3];
-	/* response word 1 */
+	
 	__le32 rate;
 	__le32 pad2;
-	/* response word 2 */
+	
 	__le64 options;
 };
 
@@ -387,7 +381,7 @@ struct dpni_cmd_remove_mac_addr {
 #define DPNI_MULTICAST_FILTERS_SIZE	1
 
 struct dpni_cmd_clear_mac_filters {
-	/* from LSB: unicast:1, multicast:1 */
+	
 	u8 flags;
 };
 
@@ -397,22 +391,20 @@ struct dpni_cmd_clear_mac_filters {
 #define DPNI_MISS_ACTION_SIZE		4
 
 struct dpni_cmd_set_rx_tc_dist {
-	/* cmd word 0 */
+	
 	__le16 dist_size;
 	u8 tc_id;
-	/* from LSB: dist_mode:4, miss_action:4 */
+	
 	u8 flags;
 	__le16 pad0;
 	__le16 default_flow_id;
-	/* cmd word 1..5 */
+	
 	__le64 pad1[5];
-	/* cmd word 6 */
+	
 	__le64 key_cfg_iova;
 };
 
-/* dpni_set_rx_tc_dist extension (structure of the DMA-able memory at
- * key_cfg_iova)
- */
+
 struct dpni_mask_cfg {
 	u8 mask;
 	u8 offset;
@@ -424,30 +416,30 @@ struct dpni_mask_cfg {
 #define DPNI_EXTRACT_TYPE_SIZE		4
 
 struct dpni_dist_extract {
-	/* word 0 */
+	
 	u8 prot;
-	/* EFH type stored in the 4 least significant bits */
+	
 	u8 efh_type;
 	u8 size;
 	u8 offset;
 	__le32 field;
-	/* word 1 */
+	
 	u8 hdr_index;
 	u8 constant;
 	u8 num_of_repeats;
 	u8 num_of_byte_masks;
-	/* Extraction type is stored in the 4 LSBs */
+	
 	u8 extract_type;
 	u8 pad[3];
-	/* word 2 */
+	
 	struct dpni_mask_cfg masks[4];
 };
 
 struct dpni_ext_set_rx_tc_dist {
-	/* extension word 0 */
+	
 	u8 num_extracts;
 	u8 pad[7];
-	/* words 1..25 */
+	
 	struct dpni_dist_extract extracts[DPKG_MAX_NUM_OF_EXTRACTS];
 };
 
@@ -465,50 +457,50 @@ struct dpni_cmd_get_queue {
 #define DPNI_HOLD_ACTIVE_SIZE		1
 
 struct dpni_rsp_get_queue {
-	/* response word 0 */
+	
 	__le64 pad0;
-	/* response word 1 */
+	
 	__le32 dest_id;
 	__le16 pad1;
 	u8 dest_prio;
-	/* From LSB: dest_type:4, pad:2, flc_stash_ctrl:1, hold_active:1 */
+	
 	u8 flags;
-	/* response word 2 */
+	
 	__le64 flc;
-	/* response word 3 */
+	
 	__le64 user_context;
-	/* response word 4 */
+	
 	__le32 fqid;
 	__le16 qdbin;
 };
 
 struct dpni_cmd_set_queue {
-	/* cmd word 0 */
+	
 	u8 qtype;
 	u8 tc;
 	u8 index;
 	u8 options;
 	__le32 pad0;
-	/* cmd word 1 */
+	
 	__le32 dest_id;
 	__le16 pad1;
 	u8 dest_prio;
 	u8 flags;
-	/* cmd word 2 */
+	
 	__le64 flc;
-	/* cmd word 3 */
+	
 	__le64 user_context;
 };
 
 struct dpni_cmd_set_taildrop {
-	/* cmd word 0 */
+	
 	u8 congestion_point;
 	u8 qtype;
 	u8 tc;
 	u8 index;
 	__le32 pad0;
-	/* cmd word 1 */
-	/* Only least significant bit is relevant */
+	
+	
 	u8 enable;
 	u8 pad1;
 	u8 units;
@@ -524,10 +516,10 @@ struct dpni_cmd_get_taildrop {
 };
 
 struct dpni_rsp_get_taildrop {
-	/* cmd word 0 */
+	
 	__le64 pad0;
-	/* cmd word 1 */
-	/* only least significant bit is relevant */
+	
+	
 	u8 enable;
 	u8 pad1;
 	u8 units;
@@ -562,29 +554,29 @@ struct dpni_cmd_set_rx_hash_dist {
 };
 
 struct dpni_cmd_add_fs_entry {
-	/* cmd word 0 */
+	
 	__le16 options;
 	u8 tc_id;
 	u8 key_size;
 	__le16 index;
 	__le16 flow_id;
-	/* cmd word 1 */
+	
 	__le64 key_iova;
-	/* cmd word 2 */
+	
 	__le64 mask_iova;
-	/* cmd word 3 */
+	
 	__le64 flc;
 };
 
 struct dpni_cmd_remove_fs_entry {
-	/* cmd word 0 */
+	
 	__le16 pad0;
 	u8 tc_id;
 	u8 key_size;
 	__le32 pad1;
-	/* cmd word 1 */
+	
 	__le64 key_iova;
-	/* cmd word 2 */
+	
 	__le64 mask_iova;
 };
 
@@ -594,7 +586,7 @@ struct dpni_cmd_remove_fs_entry {
 struct dpni_cmd_set_qos_table {
 	__le32 pad;
 	u8 default_tc;
-	/* only the LSB */
+	
 	u8 discard_on_miss;
 	__le16 pad1[21];
 	__le64 key_cfg_iova;
@@ -624,21 +616,21 @@ struct dpni_cmd_remove_qos_entry {
 #define DPNI_CONG_UNITS_SIZE		2
 
 struct dpni_cmd_set_congestion_notification {
-	/* cmd word 0 */
+	
 	u8 qtype;
 	u8 tc;
 	u8 pad[6];
-	/* cmd word 1 */
+	
 	__le32 dest_id;
 	__le16 notification_mode;
 	u8 dest_priority;
-	/* from LSB: dest_type: 4 units:2 */
+	
 	u8 type_units;
-	/* cmd word 2 */
+	
 	__le64 message_iova;
-	/* cmd word 3 */
+	
 	__le64 message_ctx;
-	/* cmd word 4 */
+	
 	__le32 threshold_entry;
 	__le32 threshold_exit;
 };
@@ -652,7 +644,7 @@ struct dpni_cmd_set_tx_shaping {
 	__le32 pad;
 	__le32 tx_cr_rate_limit;
 	__le32 tx_er_rate_limit;
-	/* from LSB: coupled:1 */
+	
 	u8 coupled;
 };
 
@@ -678,7 +670,7 @@ struct dpni_rsp_single_step_cfg {
 };
 
 struct dpni_cmd_enable_vlan_filter {
-	/* only the LSB */
+	
 	u8 en;
 };
 
@@ -690,4 +682,4 @@ struct dpni_cmd_vlan_id {
 	__le16 vlan_id;
 };
 
-#endif /* _FSL_DPNI_CMD_H */
+#endif 

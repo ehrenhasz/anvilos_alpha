@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland
- */
+
+
 
 #ifndef CFSRVL_H_
 #define CFSRVL_H_
@@ -59,4 +56,4 @@ static inline void cfsrvl_put(struct cflayer *layr)
 
 	s->put(layr->up);
 }
-#endif				/* CFSRVL_H_ */
+#endif				

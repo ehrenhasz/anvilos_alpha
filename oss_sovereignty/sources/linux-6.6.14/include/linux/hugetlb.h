@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_HUGETLB_H
 #define _LINUX_HUGETLB_H
 
@@ -34,23 +34,19 @@ void free_huge_folio(struct folio *folio);
 #include <linux/shm.h>
 #include <asm/tlbflush.h>
 
-/*
- * For HugeTLB page, there are more metadata to save in the struct page. But
- * the head struct page cannot meet our needs, so we have to abuse other tail
- * struct page to store the metadata.
- */
+
 #define __NR_USED_SUBPAGE 3
 
 struct hugepage_subpool {
 	spinlock_t lock;
 	long count;
-	long max_hpages;	/* Maximum huge pages or -1 if no maximum. */
-	long used_hpages;	/* Used count against maximum, includes */
-				/* both allocated and reserved pages. */
+	long max_hpages;	
+	long used_hpages;	
+				
 	struct hstate *hstate;
-	long min_hpages;	/* Minimum huge pages or -1 if no minimum. */
-	long rsv_hpages;	/* Pages reserved against global pool to */
-				/* satisfy minimum size. */
+	long min_hpages;	
+	long rsv_hpages;	
+				
 };
 
 struct resv_map {
@@ -62,46 +58,20 @@ struct resv_map {
 	long region_cache_count;
 	struct rw_semaphore rw_sema;
 #ifdef CONFIG_CGROUP_HUGETLB
-	/*
-	 * On private mappings, the counter to uncharge reservations is stored
-	 * here. If these fields are 0, then either the mapping is shared, or
-	 * cgroup accounting is disabled for this resv_map.
-	 */
+	
 	struct page_counter *reservation_counter;
 	unsigned long pages_per_hpage;
 	struct cgroup_subsys_state *css;
 #endif
 };
 
-/*
- * Region tracking -- allows tracking of reservations and instantiated pages
- *                    across the pages in a mapping.
- *
- * The region data structures are embedded into a resv_map and protected
- * by a resv_map's lock.  The set of regions within the resv_map represent
- * reservations for huge pages, or huge pages that have already been
- * instantiated within the map.  The from and to elements are huge page
- * indices into the associated mapping.  from indicates the starting index
- * of the region.  to represents the first index past the end of  the region.
- *
- * For example, a file region structure with from == 0 and to == 4 represents
- * four huge pages in a mapping.  It is important to note that the to element
- * represents the first element past the end of the region. This is used in
- * arithmetic as 4(to) - 0(from) = 4 huge pages in the region.
- *
- * Interval notation of the form [from, to) will be used to indicate that
- * the endpoint from is inclusive and to is exclusive.
- */
+
 struct file_region {
 	struct list_head link;
 	long from;
 	long to;
 #ifdef CONFIG_CGROUP_HUGETLB
-	/*
-	 * On shared mappings, each reserved region appears as a struct
-	 * file_region in resv_map. These fields hold the info needed to
-	 * uncharge each reservation.
-	 */
+	
 	struct page_counter *reservation_counter;
 	struct cgroup_subsys_state *css;
 #endif
@@ -156,7 +126,7 @@ int hugetlb_mfill_atomic_pte(pte_t *dst_pte,
 			     unsigned long src_addr,
 			     uffd_flags_t flags,
 			     struct folio **foliop);
-#endif /* CONFIG_USERFAULTFD */
+#endif 
 bool hugetlb_reserve_pages(struct inode *inode, long from, long to,
 						struct vm_area_struct *vma,
 						vm_flags_t vm_flags);
@@ -180,14 +150,10 @@ struct address_space *hugetlb_page_mapping_lock_write(struct page *hpage);
 extern int sysctl_hugetlb_shm_group;
 extern struct list_head huge_boot_pages;
 
-/* arch callbacks */
+
 
 #ifndef CONFIG_HIGHPTE
-/*
- * pte_offset_huge() and pte_alloc_huge() are helpers for those architectures
- * which may go down to the lowest PTE level in their huge_pte_offset() and
- * huge_pte_alloc(): to avoid reliance on pte_offset_map() without pte_unmap().
- */
+
 static inline pte_t *pte_offset_huge(pmd_t *pmd, unsigned long address)
 {
 	return pte_offset_kernel(pmd, address);
@@ -201,43 +167,7 @@ static inline pte_t *pte_alloc_huge(struct mm_struct *mm, pmd_t *pmd,
 
 pte_t *huge_pte_alloc(struct mm_struct *mm, struct vm_area_struct *vma,
 			unsigned long addr, unsigned long sz);
-/*
- * huge_pte_offset(): Walk the hugetlb pgtable until the last level PTE.
- * Returns the pte_t* if found, or NULL if the address is not mapped.
- *
- * IMPORTANT: we should normally not directly call this function, instead
- * this is only a common interface to implement arch-specific
- * walker. Please use hugetlb_walk() instead, because that will attempt to
- * verify the locking for you.
- *
- * Since this function will walk all the pgtable pages (including not only
- * high-level pgtable page, but also PUD entry that can be unshared
- * concurrently for VM_SHARED), the caller of this function should be
- * responsible of its thread safety.  One can follow this rule:
- *
- *  (1) For private mappings: pmd unsharing is not possible, so holding the
- *      mmap_lock for either read or write is sufficient. Most callers
- *      already hold the mmap_lock, so normally, no special action is
- *      required.
- *
- *  (2) For shared mappings: pmd unsharing is possible (so the PUD-ranged
- *      pgtable page can go away from under us!  It can be done by a pmd
- *      unshare with a follow up munmap() on the other process), then we
- *      need either:
- *
- *     (2.1) hugetlb vma lock read or write held, to make sure pmd unshare
- *           won't happen upon the range (it also makes sure the pte_t we
- *           read is the right and stable one), or,
- *
- *     (2.2) hugetlb mapping i_mmap_rwsem lock held read or write, to make
- *           sure even if unshare happened the racy unmap() will wait until
- *           i_mmap_rwsem is released.
- *
- * Option (2.1) is the safest, which guarantees pte stability from pmd
- * sharing pov, until the vma lock released.  Option (2.2) doesn't protect
- * a concurrent pmd unshare, but it makes sure the pgtable page is safe to
- * access.
- */
+
 pte_t *huge_pte_offset(struct mm_struct *mm,
 		       unsigned long addr, unsigned long sz);
 unsigned long hugetlb_mask_last_page(struct hstate *h);
@@ -282,7 +212,7 @@ long hugetlb_change_protection(struct vm_area_struct *vma,
 bool is_hugetlb_entry_migration(pte_t pte);
 void hugetlb_unshare_all_pmds(struct vm_area_struct *vma);
 
-#else /* !CONFIG_HUGETLB_PAGE */
+#else 
 
 static inline void hugetlb_dup_vma_private(struct vm_area_struct *vma)
 {
@@ -332,7 +262,7 @@ static inline struct page *hugetlb_follow_page_mask(
     struct vm_area_struct *vma, unsigned long address, unsigned int flags,
     unsigned int *page_mask)
 {
-	BUILD_BUG(); /* should never be compiled in if !CONFIG_HUGETLB_PAGE*/
+	BUILD_BUG(); 
 }
 
 static inline int copy_hugetlb_page_range(struct mm_struct *dst,
@@ -432,7 +362,7 @@ static inline int hugetlb_mfill_atomic_pte(pte_t *dst_pte,
 	BUG();
 	return 0;
 }
-#endif /* CONFIG_USERFAULTFD */
+#endif 
 
 static inline pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr,
 					unsigned long sz)
@@ -491,11 +421,8 @@ static inline vm_fault_t hugetlb_fault(struct mm_struct *mm,
 
 static inline void hugetlb_unshare_all_pmds(struct vm_area_struct *vma) { }
 
-#endif /* !CONFIG_HUGETLB_PAGE */
-/*
- * hugepages at page global directory. If arch support
- * hugepages at pgd level, they need to define this.
- */
+#endif 
+
 #ifndef pgd_huge
 #define pgd_huge(x)	0
 #endif
@@ -514,22 +441,16 @@ static inline int pgd_write(pgd_t pgd)
 #define HUGETLB_ANON_FILE "anon_hugepage"
 
 enum {
-	/*
-	 * The file will be used as an shm file so shmfs accounting rules
-	 * apply
-	 */
+	
 	HUGETLB_SHMFS_INODE     = 1,
-	/*
-	 * The file is being created on the internal vfs mount and shmfs
-	 * accounting rules do not apply
-	 */
+	
 	HUGETLB_ANONHUGE_INODE  = 2,
 };
 
 #ifdef CONFIG_HUGETLBFS
 struct hugetlbfs_sb_info {
-	long	max_inodes;   /* inodes allowed */
-	long	free_inodes;  /* inodes free */
+	long	max_inodes;   
+	long	free_inodes;  
 	spinlock_t	stat_lock;
 	struct hstate *hstate;
 	struct hugepage_subpool *spool;
@@ -571,7 +492,7 @@ static inline struct hstate *hstate_inode(struct inode *i)
 {
 	return HUGETLBFS_SB(i->i_sb)->hstate;
 }
-#else /* !CONFIG_HUGETLBFS */
+#else 
 
 #define is_file_hugepages(file)			false
 static inline struct file *
@@ -585,49 +506,20 @@ static inline struct hstate *hstate_inode(struct inode *i)
 {
 	return NULL;
 }
-#endif /* !CONFIG_HUGETLBFS */
+#endif 
 
 #ifdef HAVE_ARCH_HUGETLB_UNMAPPED_AREA
 unsigned long hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
 					unsigned long len, unsigned long pgoff,
 					unsigned long flags);
-#endif /* HAVE_ARCH_HUGETLB_UNMAPPED_AREA */
+#endif 
 
 unsigned long
 generic_hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
 				  unsigned long len, unsigned long pgoff,
 				  unsigned long flags);
 
-/*
- * huegtlb page specific state flags.  These flags are located in page.private
- * of the hugetlb head page.  Functions created via the below macros should be
- * used to manipulate these flags.
- *
- * HPG_restore_reserve - Set when a hugetlb page consumes a reservation at
- *	allocation time.  Cleared when page is fully instantiated.  Free
- *	routine checks flag to restore a reservation on error paths.
- *	Synchronization:  Examined or modified by code that knows it has
- *	the only reference to page.  i.e. After allocation but before use
- *	or when the page is being freed.
- * HPG_migratable  - Set after a newly allocated page is added to the page
- *	cache and/or page tables.  Indicates the page is a candidate for
- *	migration.
- *	Synchronization:  Initially set after new page allocation with no
- *	locking.  When examined and modified during migration processing
- *	(isolate, migrate, putback) the hugetlb_lock is held.
- * HPG_temporary - Set on a page that is temporarily allocated from the buddy
- *	allocator.  Typically used for migration target pages when no pages
- *	are available in the pool.  The hugetlb free page path will
- *	immediately free pages with this flag set to the buddy allocator.
- *	Synchronization: Can be set after huge page allocation from buddy when
- *	code knows it has only reference.  All other examinations and
- *	modifications require hugetlb_lock.
- * HPG_freed - Set when page is on the free lists.
- *	Synchronization: hugetlb_lock held for examination and modification.
- * HPG_vmemmap_optimized - Set when the vmemmap pages of the page are freed.
- * HPG_raw_hwp_unreliable - Set when the hugetlb page has a hwpoison sub-page
- *     that is not tracked by raw_hwp_page list.
- */
+
 enum hugetlb_page_flags {
 	HPG_restore_reserve = 0,
 	HPG_migratable,
@@ -638,10 +530,7 @@ enum hugetlb_page_flags {
 	__NR_HPAGEFLAGS,
 };
 
-/*
- * Macros to create test, set and clear function definitions for
- * hugetlb specific page flags.
- */
+
 #ifdef CONFIG_HUGETLB_PAGE
 #define TESTHPAGEFLAG(uname, flname)				\
 static __always_inline						\
@@ -697,9 +586,7 @@ static inline void ClearHPage##uname(struct page *page)		\
 	SETHPAGEFLAG(uname, flname)				\
 	CLEARHPAGEFLAG(uname, flname)				\
 
-/*
- * Create functions associated with hugetlb page flags
- */
+
 HPAGEFLAG(RestoreReserve, restore_reserve)
 HPAGEFLAG(Migratable, migratable)
 HPAGEFLAG(Temporary, temporary)
@@ -710,7 +597,7 @@ HPAGEFLAG(RawHwpUnreliable, raw_hwp_unreliable)
 #ifdef CONFIG_HUGETLB_PAGE
 
 #define HSTATE_NAME_LEN 32
-/* Defines one hugetlb page size */
+
 struct hstate {
 	struct mutex resize_lock;
 	int next_nid_to_alloc;
@@ -731,7 +618,7 @@ struct hstate {
 	unsigned int free_huge_pages_node[MAX_NUMNODES];
 	unsigned int surplus_huge_pages_node[MAX_NUMNODES];
 #ifdef CONFIG_CGROUP_HUGETLB
-	/* cgroup control files */
+	
 	struct cftype cgroup_files_dfl[8];
 	struct cftype cgroup_files_legacy[10];
 #endif
@@ -755,7 +642,7 @@ int hugetlb_add_to_page_cache(struct folio *folio, struct address_space *mapping
 void restore_reserve_on_error(struct hstate *h, struct vm_area_struct *vma,
 				unsigned long address, struct folio *folio);
 
-/* arch callback */
+
 int __init __alloc_bootmem_huge_page(struct hstate *h, int nid);
 int __init alloc_bootmem_huge_page(struct hstate *h, int nid);
 bool __init hugetlb_node_alloc_supported(void);
@@ -920,21 +807,7 @@ static inline bool hugepage_migration_supported(struct hstate *h)
 	return arch_hugetlb_migration_supported(h);
 }
 
-/*
- * Movability check is different as compared to migration check.
- * It determines whether or not a huge page should be placed on
- * movable zone or not. Movability of any huge page should be
- * required only if huge page size is supported for migration.
- * There won't be any reason for the huge page to be movable if
- * it is not migratable to start with. Also the size of the huge
- * page should be large enough to be placed under a movable zone
- * and still feasible enough to be migratable. Just the presence
- * in movable zone does not make the migration feasible.
- *
- * So even though large huge page sizes like the gigantic ones
- * are migratable they should not be movable because its not
- * feasible to migrate them from movable zone.
- */
+
 static inline bool hugepage_movable_supported(struct hstate *h)
 {
 	if (!hugepage_migration_supported(h))
@@ -945,7 +818,7 @@ static inline bool hugepage_movable_supported(struct hstate *h)
 	return true;
 }
 
-/* Movability of hugepages depends on migration support. */
+
 static inline gfp_t htlb_alloc_mask(struct hstate *h)
 {
 	if (hugepage_movable_supported(h))
@@ -958,7 +831,7 @@ static inline gfp_t htlb_modify_alloc_mask(struct hstate *h, gfp_t gfp_mask)
 {
 	gfp_t modified_mask = htlb_alloc_mask(h);
 
-	/* Some callers might want to enforce node */
+	
 	modified_mask |= (gfp_mask & __GFP_THISNODE);
 
 	modified_mask |= (gfp_mask & __GFP_NOWARN);
@@ -976,11 +849,7 @@ static inline spinlock_t *huge_pte_lockptr(struct hstate *h,
 }
 
 #ifndef hugepages_supported
-/*
- * Some platform decide whether they support huge pages at boot
- * time. Some of them, such as powerpc, set HPAGE_SHIFT to 0
- * when there is no such support
- */
+
 #define hugepages_supported() (HPAGE_SHIFT != 0)
 #endif
 
@@ -1027,12 +896,10 @@ void hugetlb_register_node(struct node *node);
 void hugetlb_unregister_node(struct node *node);
 #endif
 
-/*
- * Check if a given raw @page in a hugepage is HWPOISON.
- */
+
 bool is_raw_hwpoison_page_in_hugepage(struct page *page);
 
-#else	/* CONFIG_HUGETLB_PAGE */
+#else	
 struct hstate {};
 
 static inline struct hugepage_subpool *hugetlb_folio_subpool(struct folio *folio)
@@ -1218,7 +1085,7 @@ static inline void hugetlb_register_node(struct node *node)
 static inline void hugetlb_unregister_node(struct node *node)
 {
 }
-#endif	/* CONFIG_HUGETLB_PAGE */
+#endif	
 
 static inline spinlock_t *huge_pte_lock(struct hstate *h,
 					struct mm_struct *mm, pte_t *pte)
@@ -1253,10 +1120,7 @@ static inline bool hugetlb_pmd_shared(pte_t *pte)
 bool want_pmd_share(struct vm_area_struct *vma, unsigned long addr);
 
 #ifndef __HAVE_ARCH_FLUSH_HUGETLB_TLB_RANGE
-/*
- * ARCHes with special requirements for evicting HUGETLB backing TLB entries can
- * implement this.
- */
+
 #define flush_hugetlb_tlb_range(vma, addr, end)	flush_tlb_range(vma, addr, end)
 #endif
 
@@ -1267,10 +1131,7 @@ static inline bool __vma_shareable_lock(struct vm_area_struct *vma)
 
 bool __vma_private_lock(struct vm_area_struct *vma);
 
-/*
- * Safe version of huge_pte_offset() to check the locks.  See comments
- * above huge_pte_offset().
- */
+
 static inline pte_t *
 hugetlb_walk(struct vm_area_struct *vma, unsigned long addr, unsigned long sz)
 {
@@ -1278,13 +1139,7 @@ hugetlb_walk(struct vm_area_struct *vma, unsigned long addr, unsigned long sz)
 	defined(CONFIG_ARCH_WANT_HUGE_PMD_SHARE) && defined(CONFIG_LOCKDEP)
 	struct hugetlb_vma_lock *vma_lock = vma->vm_private_data;
 
-	/*
-	 * If pmd sharing possible, locking needed to safely walk the
-	 * hugetlb pgtables.  More information can be found at the comment
-	 * above huge_pte_offset() in the same file.
-	 *
-	 * NOTE: lockdep_is_held() is only defined with CONFIG_LOCKDEP.
-	 */
+	
 	if (__vma_shareable_lock(vma))
 		WARN_ON_ONCE(!lockdep_is_held(&vma_lock->rw_sema) &&
 			     !lockdep_is_held(
@@ -1293,4 +1148,4 @@ hugetlb_walk(struct vm_area_struct *vma, unsigned long addr, unsigned long sz)
 	return huge_pte_offset(vma->vm_mm, addr, sz);
 }
 
-#endif /* _LINUX_HUGETLB_H */
+#endif 

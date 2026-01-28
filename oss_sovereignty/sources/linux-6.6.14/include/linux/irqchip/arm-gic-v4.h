@@ -1,21 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016,2017 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+
 
 #ifndef __LINUX_IRQCHIP_ARM_GIC_V4_H
 #define __LINUX_IRQCHIP_ARM_GIC_V4_H
 
 struct its_vpe;
 
-/*
- * Maximum number of ITTs when GITS_TYPER.VMOVP == 0, using the
- * ITSList mechanism to perform inter-ITS synchronization.
- */
+
 #define GICv4_ITS_LIST_MAX		16
 
-/* Embedded in kvm.arch */
+
 struct its_vm {
 	struct fwnode_handle	*fwnode;
 	struct irq_domain	*domain;
@@ -28,28 +22,28 @@ struct its_vm {
 	u32			vlpi_count[GICv4_ITS_LIST_MAX];
 };
 
-/* Embedded in kvm_vcpu.arch */
+
 struct its_vpe {
 	struct page 		*vpt_page;
 	struct its_vm		*its_vm;
-	/* per-vPE VLPI tracking */
+	
 	atomic_t		vlpi_count;
-	/* Doorbell interrupt */
+	
 	int			irq;
 	irq_hw_number_t		vpe_db_lpi;
-	/* VPE resident */
+	
 	bool			resident;
-	/* VPT parse complete */
+	
 	bool			ready;
 	union {
-		/* GICv4.0 implementations */
+		
 		struct {
-			/* VPE proxy mapping */
+			
 			int	vpe_proxy_event;
-			/* Implementation Defined Area Invalid */
+			
 			bool	idai;
 		};
-		/* GICv4.1 implementations */
+		
 		struct {
 			struct fwnode_handle	*fwnode;
 			struct irq_domain	*sgi_domain;
@@ -62,35 +56,17 @@ struct its_vpe {
 		};
 	};
 
-	/*
-	 * Ensures mutual exclusion between affinity setting of the
-	 * vPE and vLPI operations using vpe->col_idx.
-	 */
+	
 	raw_spinlock_t		vpe_lock;
-	/*
-	 * This collection ID is used to indirect the target
-	 * redistributor for this VPE. The ID itself isn't involved in
-	 * programming of the ITS.
-	 */
+	
 	u16			col_idx;
-	/* Unique (system-wide) VPE identifier */
+	
 	u16			vpe_id;
-	/* Pending VLPIs on schedule out? */
+	
 	bool			pending_last;
 };
 
-/*
- * struct its_vlpi_map: structure describing the mapping of a
- * VLPI. Only to be interpreted in the context of a physical interrupt
- * it complements.  To be used as the vcpu_info passed to
- * irq_set_vcpu_affinity().
- *
- * @vm:		Pointer to the GICv4 notion of a VM
- * @vpe:	Pointer to the GICv4 notion of a virtual CPU (VPE)
- * @vintid:	Virtual LPI number
- * @properties:	Priority and enable bits (as written in the prop table)
- * @db_enabled:	Is the VPE doorbell to be generated?
- */
+
 struct its_vlpi_map {
 	struct its_vm		*vm;
 	struct its_vpe		*vpe;

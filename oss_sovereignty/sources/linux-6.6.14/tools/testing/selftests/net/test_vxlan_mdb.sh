@@ -651,7 +651,7 @@ dump_common()
 	for i in $(seq 1 $max_vxlan_devs); do
 		num_entries=$(bridge -n $ns1 mdb show dev vx-test${i} | grep "permanent" | wc -l)
 		[[ $num_entries -eq $((max_grps * max_remotes)) ]]
-		log_test $? 0 "Large scale dump - VXLAN device #$i"
+		log_test $? 0 "Large scale dump - VXLAN device 
 	done
 	rm -rf $batch_file
 }
@@ -1628,7 +1628,7 @@ mdb_torture_ipv6_ipv6()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $TESTS)
         -c          Control path tests only

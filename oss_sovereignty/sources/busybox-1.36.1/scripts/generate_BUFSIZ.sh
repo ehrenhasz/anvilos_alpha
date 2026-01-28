@@ -16,7 +16,7 @@ generate_std_and_exit() {
 	{
 	echo "enum { COMMON_BUFSIZE = 1024 };"
 	echo "extern char bb_common_bufsiz1[];"
-	echo "#define setup_common_bufsiz() ((void)0)"
+	echo "
 	} | regenerate "$common_bufsiz_h"
 	echo "std" >"$common_bufsiz_h.method"
 	$exitcmd
@@ -26,7 +26,7 @@ generate_big_and_exit() {
 	{
 	echo "enum { COMMON_BUFSIZE = $1 };"
 	echo "extern char bb_common_bufsiz1[];"
-	echo "#define setup_common_bufsiz() ((void)0)"
+	echo "
 	} | regenerate "$common_bufsiz_h"
 	echo "$2" >"$common_bufsiz_h.method"
 	$exitcmd
@@ -50,10 +50,10 @@ if $postcompile; then
 	$debug && echo "END:0x$END $((0x$END))"
 	END=$((0x$END))
 	{
-	echo "#include <sys/user.h>"
-	echo "#if defined(PAGE_SIZE) && PAGE_SIZE > 0"
+	echo "
+	echo "
 	echo "char page_size[PAGE_SIZE];"
-	echo "#endif"
+	echo "
 	} >page_size_$$.c
 	$CC -c "page_size_$$.c" || exit 1
 	PAGE_SIZE=`$NM --size-sort "page_size_$$.o" | cut -d' ' -f1`

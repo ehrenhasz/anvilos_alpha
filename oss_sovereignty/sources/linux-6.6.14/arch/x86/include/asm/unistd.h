@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_UNISTD_H
 #define _ASM_X86_UNISTD_H 1
 
@@ -58,4 +58,4 @@
 # define __ARCH_WANT_SYS_CLONE
 # define __ARCH_WANT_SYS_CLONE3
 
-#endif /* _ASM_X86_UNISTD_H */
+#endif 

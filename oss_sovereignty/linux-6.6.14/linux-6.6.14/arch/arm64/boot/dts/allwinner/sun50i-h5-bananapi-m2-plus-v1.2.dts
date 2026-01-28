@@ -1,8 +1,0 @@
-/dts-v1/;
-#include "sun50i-h5.dtsi"
-#include "sun50i-h5-cpu-opp.dtsi"
-#include <arm/allwinner/sunxi-bananapi-m2-plus-v1.2.dtsi>
-/ {
-	model = "Banana Pi BPI-M2-Plus v1.2 H5";
-	compatible = "bananapi,bpi-m2-plus-v1.2", "allwinner,sun50i-h5";
-};

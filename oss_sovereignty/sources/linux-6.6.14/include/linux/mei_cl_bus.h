@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2013-2016, Intel Corporation. All rights reserved.
- */
+
+
 #ifndef _LINUX_MEI_CL_BUS_H
 #define _LINUX_MEI_CL_BUS_H
 
@@ -15,30 +13,7 @@ struct scatterlist;
 
 typedef void (*mei_cldev_cb_t)(struct mei_cl_device *cldev);
 
-/**
- * struct mei_cl_device - MEI device handle
- * An mei_cl_device pointer is returned from mei_add_device()
- * and links MEI bus clients to their actual ME host client pointer.
- * Drivers for MEI devices will get an mei_cl_device pointer
- * when being probed and shall use it for doing ME bus I/O.
- *
- * @bus_list: device on the bus list
- * @bus: parent mei device
- * @dev: linux driver model device pointer
- * @me_cl: me client
- * @cl: mei client
- * @name: device name
- * @rx_work: async work to execute Rx event callback
- * @rx_cb: Drivers register this callback to get asynchronous ME
- *	Rx buffer pending notifications.
- * @notif_work: async work to execute FW notif event callback
- * @notif_cb: Drivers register this callback to get asynchronous ME
- *	FW notification pending notifications.
- *
- * @do_match: wheather device can be matched with a driver
- * @is_added: device is already scanned
- * @priv_data: client private data
- */
+
 struct mei_cl_device {
 	struct list_head bus_list;
 	struct mei_device *bus;
@@ -79,14 +54,7 @@ int __mei_cldev_driver_register(struct mei_cl_driver *cldrv,
 
 void mei_cldev_driver_unregister(struct mei_cl_driver *cldrv);
 
-/**
- * module_mei_cl_driver - Helper macro for registering mei cl driver
- *
- * @__mei_cldrv: mei_cl_driver structure
- *
- *  Helper macro for mei cl drivers which do not do anything special in module
- *  init/exit, for eliminating a boilerplate code.
- */
+
 #define module_mei_cl_driver(__mei_cldrv) \
 	module_driver(__mei_cldrv, \
 		      mei_cldev_driver_register,\
@@ -126,4 +94,4 @@ ssize_t mei_cldev_send_gsc_command(struct mei_cl_device *cldev,
 void *mei_cldev_dma_map(struct mei_cl_device *cldev, u8 buffer_id, size_t size);
 int mei_cldev_dma_unmap(struct mei_cl_device *cldev);
 
-#endif /* _LINUX_MEI_CL_BUS_H */
+#endif 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * localalloc.h
- *
- * Function prototypes
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
+
+
 
 #ifndef OCFS2_LOCALALLOC_H
 #define OCFS2_LOCALALLOC_H
@@ -49,4 +43,4 @@ void ocfs2_local_alloc_seen_free_bits(struct ocfs2_super *osb,
 				      unsigned int num_clusters);
 void ocfs2_la_enable_worker(struct work_struct *work);
 
-#endif /* OCFS2_LOCALALLOC_H */
+#endif 

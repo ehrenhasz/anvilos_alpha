@@ -1540,7 +1540,7 @@ class GraphAttributes():
 		self.scale = scale
 		self.subrange = subrange
 		self.region_attributes = region_attributes
-		self.dp = dp	# data decimal places
+		self.dp = dp	
 		self.Update()
 	def XToPixel(self, x):
 		return int(round((x - self.subrange.x.lo) * self.scale.x, self.pdp.x))
@@ -1575,7 +1575,7 @@ class GraphAttributes():
 	def Update(self):
 		x = self.ToPDP(self.dp.x, self.scale.x)
 		y = self.ToPDP(self.dp.y, self.scale.y)
-		self.pdp = XY(x, y) # pixel decimal places
+		self.pdp = XY(x, y) 
 class SwitchGraphSplitter(QSplitter):
 	def __init__(self, parent=None):
 		super(SwitchGraphSplitter, self).__init__(parent)
@@ -2754,7 +2754,7 @@ class ReportDialogBase(QDialog):
 				vars.where_clause = " WHERE " + vars.where_clause + " "
 		self.accept()
 	def ShowMessage(self, msg):
-		self.status.setText("<font color=#FF0000>" + msg)
+		self.status.setText("<font color=
 	def ClearMessage(self):
 		self.status.setText("")
 class SelectedBranchDialog(ReportDialogBase):
@@ -3311,15 +3311,15 @@ p.c2 {
 }
 }
 </style>
-<p class=c1><a href=#reports>1. Reports</a></p>
-<p class=c2><a href=#callgraph>1.1 Context-Sensitive Call Graph</a></p>
-<p class=c2><a href=#calltree>1.2 Call Tree</a></p>
-<p class=c2><a href=#allbranches>1.3 All branches</a></p>
-<p class=c2><a href=#selectedbranches>1.4 Selected branches</a></p>
-<p class=c2><a href=#topcallsbyelapsedtime>1.5 Top calls by elapsed time</a></p>
-<p class=c1><a href=#charts>2. Charts</a></p>
-<p class=c2><a href=#timechartbycpu>2.1 Time chart by CPU</a></p>
-<p class=c1><a href=#tables>3. Tables</a></p>
+<p class=c1><a href=
+<p class=c2><a href=
+<p class=c2><a href=
+<p class=c2><a href=
+<p class=c2><a href=
+<p class=c2><a href=
+<p class=c1><a href=
+<p class=c2><a href=
+<p class=c1><a href=
 <h1 id=reports>1. Reports</h1>
 <h2 id=callgraph>1.1 Context-Sensitive Call Graph</h2>
 The result is a GUI window with a tree representing a context-sensitive
@@ -3363,7 +3363,7 @@ Not all data is fetched immediately. More records can be fetched using the Fetch
 <h3>Disassembly</h3>
 Open a branch to display disassembly. This only works if:
 <ol>
-<li>The disassembler is available. Currently, only Intel XED is supported - see <a href=#xed>Intel XED Setup</a></li>
+<li>The disassembler is available. Currently, only Intel XED is supported - see <a href=
 <li>The object code is available. Currently, only the perf build ID cache is searched for object code.
 The default directory ~/.debug can be overridden by setting environment variable PERF_BUILDID_DIR.
 One exception is kcore where the DSO long name is used (refer dsos_view on the Tables menu),
@@ -3390,7 +3390,7 @@ Ctrl-F displays a Find bar which finds substrings by either an exact match or a 
 Refer to Python documentation for the regular expression syntax.
 All columns are searched, but only currently fetched rows are searched.
 <h2 id=selectedbranches>1.4 Selected branches</h2>
-This is the same as the <a href=#allbranches>All branches</a> report but with the data reduced
+This is the same as the <a href=
 by various selection criteria. A dialog box displays available criteria which are AND'ed together.
 <h3>1.4.1 Time ranges</h3>
 The time ranges hint text shows the total time range. Relative time ranges can also be entered in

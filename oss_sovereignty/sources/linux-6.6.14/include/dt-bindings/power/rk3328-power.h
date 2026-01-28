@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_BINDINGS_POWER_RK3328_POWER_H__
 #define __DT_BINDINGS_POWER_RK3328_POWER_H__
 
-/**
- * RK3328 idle id Summary.
- */
+
 #define RK3328_PD_CORE		0
 #define RK3328_PD_GPU		1
 #define RK3328_PD_BUS		2

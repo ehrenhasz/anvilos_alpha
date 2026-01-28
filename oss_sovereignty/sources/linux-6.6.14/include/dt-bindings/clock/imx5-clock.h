@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Lucas Stach, Pengutronix <l.stach@pengutronix.de>
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_IMX5_H
 #define __DT_BINDINGS_CLOCK_IMX5_H
@@ -213,4 +211,4 @@
 #define IMX5_CLK_SCC2_IPG_GATE		205
 #define IMX5_CLK_END			206
 
-#endif /* __DT_BINDINGS_CLOCK_IMX5_H */
+#endif 

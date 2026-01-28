@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5E_KTLS_H__
 #define __MLX5E_KTLS_H__
@@ -153,4 +153,4 @@ static inline int mlx5e_ktls_get_stats(struct mlx5e_priv *priv, u64 *data)
 }
 #endif
 
-#endif /* __MLX5E_TLS_H__ */
+#endif 

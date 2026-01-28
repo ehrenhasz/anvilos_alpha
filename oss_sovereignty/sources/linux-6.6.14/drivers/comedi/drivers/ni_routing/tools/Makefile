@@ -1,11 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0
-# this make file is simply to help autogenerate these files:
-# 	ni_route_values.h
-#	ni_device_routes.h
-# in order to do this, we are also generating a python representation (using
-# ctypesgen) of ../../../../../include/uapi/linux/comedi.h.
-# This allows us to sort NI signal/terminal names numerically to use a binary
-# search through the device_routes tables to find valid routes.
+
+
+
+
+
+
+
+
 
 ALL:
 	@echo Typical targets:
@@ -39,9 +39,9 @@ comedi_h.py: $(INC_UAPI)/linux/comedi.h
 convert_c_to_py: all_cfiles.c linux/comedi.h
 	gcc -g -I. convert_c_to_py.c -o convert_c_to_py -std=c99
 
-# Create a local 'linux/comedi.h' for use when compiling 'convert_c_to_py.c'
-# with the '-I.' option.  (Cannot specify '-I../../../../../include/uapi'
-# because that interferes with inclusion of other system headers.)
+
+
+
 linux/comedi.h: $(INC_UAPI)/linux/comedi.h
 	mkdir -p linux
 	ln -snf ../$< $@
@@ -63,7 +63,7 @@ ROUTE_VALUES_SRC=$(wildcard ../ni_route_values/*.c)
 DEVICE_ROUTES_SRC=$(wildcard ../ni_device_routes/*.c)
 all_cfiles.c : $(DEVICE_ROUTES_SRC) $(ROUTE_VALUES_SRC)
 	@for i in $(DEVICE_ROUTES_SRC) $(ROUTE_VALUES_SRC); do \
-		echo "#include \"$$i\"" >> all_cfiles.c; \
+		echo "
 	done
 
 clean-partial :
@@ -73,15 +73,15 @@ clean-partial :
 clean : clean-partial
 	$(RM) -rf c/ csv/ linux/
 
-# Note:  One could also use ctypeslib in order to generate these files.  The
-# caveat is that ctypeslib does not do a great job at handling macro functions.
-# The make rules are as follows:
-# comedi.h.xml : $(INC_UAPI)/linux/comedi.h
-# 	# note that we have to use PWD here to avoid h2xml finding a system
-# 	# installed version of the comedilib/comedi.h file
-# 	h2xml ${PWD}/$(INC_UAPI)/linux/comedi.h -c D__user="" -o comedi.h.xml
-#
-# comedi_h.py : comedi.h.xml
-# 	xml2py ./comedi.h.xml -o comedi_h.py
-# clean :
-# 	rm -f comedi.h.xml comedi_h.py comedi_h.pyc
+
+
+
+
+
+
+
+
+
+
+
+

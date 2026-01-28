@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TARGET_CORE_FABRIC_H
 #define TARGET_CORE_FABRIC_H
 
@@ -8,31 +8,12 @@
 
 struct target_core_fabric_ops {
 	struct module *module;
-	/*
-	 * XXX: Special case for iscsi/iSCSI...
-	 * If non-null, fabric_alias is used for matching target/$fabric
-	 * ConfigFS paths. If null, fabric_name is used for this (see below).
-	 */
+	
 	const char *fabric_alias;
-	/*
-	 * fabric_name is used for matching target/$fabric ConfigFS paths
-	 * without a fabric_alias (see above). It's also used for the ALUA state
-	 * path and is stored on disk with PR state.
-	 */
+	
 	const char *fabric_name;
 	size_t node_acl_size;
-	/*
-	 * Limits number of scatterlist entries per SCF_SCSI_DATA_CDB payload.
-	 * Setting this value tells target-core to enforce this limit, and
-	 * report as INQUIRY EVPD=b0 MAXIMUM TRANSFER LENGTH.
-	 *
-	 * target-core will currently reset se_cmd->data_length to this
-	 * maximum size, and set UNDERFLOW residual count if length exceeds
-	 * this limit.
-	 *
-	 * XXX: Not all initiator hosts honor this block-limit EVPD
-	 * XXX: Currently assumes single PAGE_SIZE per scatterlist entry
-	 */
+	
 	u32 max_data_sg_nents;
 	char *(*tpg_get_wwn)(struct se_portal_group *);
 	u16 (*tpg_get_tag)(struct se_portal_group *);
@@ -41,36 +22,17 @@ struct target_core_fabric_ops {
 	int (*tpg_check_demo_mode_cache)(struct se_portal_group *);
 	int (*tpg_check_demo_mode_write_protect)(struct se_portal_group *);
 	int (*tpg_check_prod_mode_write_protect)(struct se_portal_group *);
-	/*
-	 * Optionally used by fabrics to allow demo-mode login, but not
-	 * expose any TPG LUNs, and return 'not connected' in standard
-	 * inquiry response
-	 */
+	
 	int (*tpg_check_demo_mode_login_only)(struct se_portal_group *);
-	/*
-	 * Optionally used as a configfs tunable to determine when
-	 * target-core should signal the PROTECT=1 feature bit for
-	 * backends that don't support T10-PI, so that either fabric
-	 * HW offload or target-core emulation performs the associated
-	 * WRITE_STRIP and READ_INSERT operations.
-	 */
+	
 	int (*tpg_check_prot_fabric_only)(struct se_portal_group *);
 	u32 (*tpg_get_inst_index)(struct se_portal_group *);
-	/*
-	 * Optional to release struct se_cmd and fabric dependent allocated
-	 * I/O descriptor after command execution has finished.
-	 *
-	 * Returning 1 will signal a descriptor has been released.
-	 * Returning 0 will signal a descriptor has not been released.
-	 */
+	
 	int (*check_stop_free)(struct se_cmd *);
 	void (*release_cmd)(struct se_cmd *);
 	void (*close_session)(struct se_session *);
 	u32 (*sess_get_index)(struct se_session *);
-	/*
-	 * Used only for SCSI fabrics that contain multi-value TransportIDs
-	 * (like iSCSI).  All other SCSI fabrics should set this to NULL.
-	 */
+	
 	u32 (*sess_get_initiator_sid)(struct se_session *,
 				      unsigned char *, u32);
 	int (*write_pending)(struct se_cmd *);
@@ -80,9 +42,7 @@ struct target_core_fabric_ops {
 	int (*queue_status)(struct se_cmd *);
 	void (*queue_tm_rsp)(struct se_cmd *);
 	void (*aborted_task)(struct se_cmd *);
-	/*
-	 * fabric module calls for target_core_fabric_configfs.c
-	 */
+	
 	struct se_wwn *(*fabric_make_wwn)(struct target_fabric_configfs *,
 				struct config_group *, const char *);
 	void (*fabric_drop_wwn)(struct se_wwn *);
@@ -112,11 +72,7 @@ struct target_core_fabric_ops {
 	struct configfs_attribute **tfc_tpg_nacl_auth_attrs;
 	struct configfs_attribute **tfc_tpg_nacl_param_attrs;
 
-	/*
-	 * Set this member variable to true if the SCSI transport protocol
-	 * (e.g. iSCSI) requires that the Data-Out buffer is transferred in
-	 * its entirety before a command is aborted.
-	 */
+	
 	bool write_pending_must_be_called;
 };
 
@@ -222,15 +178,7 @@ int	target_alloc_sgl(struct scatterlist **sgl, unsigned int *nents,
 		u32 length, bool zero_page, bool chainable);
 void	target_free_sgl(struct scatterlist *sgl, int nents);
 
-/*
- * The LIO target core uses DMA_TO_DEVICE to mean that data is going
- * to the target (eg handling a WRITE) and DMA_FROM_DEVICE to mean
- * that data is coming from the target (eg handling a READ).  However,
- * this is just the opposite of what we have to tell the DMA mapping
- * layer -- eg when handling a READ, the HBA will have to DMA the data
- * out of memory so it can send it to the initiator, which means we
- * need to use DMA_TO_DEVICE when we map the data.
- */
+
 static inline enum dma_data_direction
 target_reverse_dma_direction(struct se_cmd *se_cmd)
 {
@@ -248,4 +196,4 @@ target_reverse_dma_direction(struct se_cmd *se_cmd)
 	}
 }
 
-#endif /* TARGET_CORE_FABRICH */
+#endif 

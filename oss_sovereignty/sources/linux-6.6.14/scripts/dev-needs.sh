@@ -33,7 +33,7 @@ EOF
 }
 function dev_to_detail() {
 	local i=0
-	while [ $i -lt ${#OUT_LIST[@]} ]
+	while [ $i -lt ${
 	do
 		local C=${OUT_LIST[i]}
 		local S=${OUT_LIST[i+1]}
@@ -47,7 +47,7 @@ function dev_to_detail() {
 }
 function already_seen() {
 	local i=0
-	while [ $i -lt ${#OUT_LIST[@]} ]
+	while [ $i -lt ${
 	do
 		if [ "$1" = "${OUT_LIST[$i]}" ]
 		then
@@ -158,7 +158,7 @@ alias detail=detail_device
 ALLOW_NO_DRIVER=0
 ALLOW_DEVLINKS=1
 ALLOW_PARENTS=1
-while [ $# -gt 0 ]
+while [ $
 do
 	ARG=$1
 	case $ARG in
@@ -202,7 +202,7 @@ done
 function detail_chosen() {
 	detail $1 $2
 }
-if [ $# -eq 0 ]
+if [ $
 then
 	help
 	exit 1
@@ -210,7 +210,7 @@ fi
 CONSUMERS=($@)
 OUT_LIST=()
 i=0
-while [ $i -lt ${#CONSUMERS[@]} ]
+while [ $i -lt ${
 do
 	CONSUMER=$(realpath ${CONSUMERS[$i]})
 	i=$(($i+1))

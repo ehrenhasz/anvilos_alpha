@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __HID_ROCCAT_COMMON_H
 #define __HID_ROCCAT_COMMON_H
 
-/*
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
 
-/*
- */
+
+
 
 #include <linux/usb.h>
 #include <linux/types.h>
@@ -19,7 +16,7 @@ enum roccat_common2_commands {
 struct roccat_common2_control {
 	uint8_t command;
 	uint8_t value;
-	uint8_t request; /* always 0 on requesting write check */
+	uint8_t request; 
 } __packed;
 
 int roccat_common2_receive(struct usb_device *usb_dev, uint report_id,

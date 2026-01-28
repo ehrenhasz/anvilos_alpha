@@ -10,4 +10,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_RTC_CFG_H_ */
+#endif 

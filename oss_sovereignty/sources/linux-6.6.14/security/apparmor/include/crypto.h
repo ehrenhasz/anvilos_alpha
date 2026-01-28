@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor policy loading interface function definitions.
- *
- * Copyright 2013 Canonical Ltd.
- */
+
+
 
 #ifndef __APPARMOR_CRYPTO_H
 #define __APPARMOR_CRYPTO_H
@@ -34,4 +28,4 @@ static inline unsigned int aa_hash_size(void)
 }
 #endif
 
-#endif /* __APPARMOR_CRYPTO_H */
+#endif 

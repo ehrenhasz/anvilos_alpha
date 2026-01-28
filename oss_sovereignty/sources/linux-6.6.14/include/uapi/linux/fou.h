@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/fou.yaml */
-/* YNL-GEN uapi header */
+
+
+
+
 
 #ifndef _UAPI_LINUX_FOU_H
 #define _UAPI_LINUX_FOU_H
@@ -43,4 +43,4 @@ enum {
 };
 #define FOU_CMD_MAX (__FOU_CMD_MAX - 1)
 
-#endif /* _UAPI_LINUX_FOU_H */
+#endif 

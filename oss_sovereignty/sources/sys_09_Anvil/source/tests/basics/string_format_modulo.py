@@ -37,9 +37,9 @@ print("%10s" % 'abc')
 print("%-10s" % 'abc')
 print('%c' % False)
 print('%c' % True)
-print('%s' % {})      # dict treated as the single (positional) arg to %
-print('%s' % ({},))   # dict is the first (and only) arg in the positional arg tuple
-print('foo' % {})     # no error, dict treated as an empty map of named args
+print('%s' % {})      
+print('%s' % ({},))   
+print('foo' % {})     
 try:
     print("%*s" % 5)
 except TypeError:
@@ -49,9 +49,9 @@ try:
 except TypeError:
     print("TypeError")
 print("%(foo)s" % {"foo": "bar", "baz": False})
-print("%s %(foo)s %(foo)s" % {"foo": 1})  # dict consumed positionally, then used as map - ok
+print("%s %(foo)s %(foo)s" % {"foo": 1})  
 try:
-    print("%(foo)s %s %(foo)s" % {"foo": 1})  # used as map, then positionally - not enough args
+    print("%(foo)s %s %(foo)s" % {"foo": 1})  
 except TypeError:
     print("TypeError")
 try:

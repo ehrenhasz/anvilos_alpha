@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AFE440X Heart Rate Monitors and Low-Cost Pulse Oximeters
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+
 
 #ifndef _AFE440X_H
 #define _AFE440X_H
 
-/* AFE440X registers */
+
 #define AFE440X_CONTROL0		0x00
 #define AFE440X_LED2STC			0x01
 #define AFE440X_LED2ENDC		0x02
@@ -54,18 +49,18 @@
 #define AFE440X_PDNCYCLESTC		0x32
 #define AFE440X_PDNCYCLEENDC		0x33
 
-/* CONTROL0 register fields */
+
 #define AFE440X_CONTROL0_REG_READ	BIT(0)
 #define AFE440X_CONTROL0_TM_COUNT_RST	BIT(1)
 #define AFE440X_CONTROL0_SW_RESET	BIT(3)
 
-/* CONTROL1 register fields */
+
 #define AFE440X_CONTROL1_TIMEREN	BIT(8)
 
-/* TIAGAIN register fields */
+
 #define AFE440X_TIAGAIN_ENSEPGAIN	BIT(15)
 
-/* CONTROL2 register fields */
+
 #define AFE440X_CONTROL2_PDN_AFE	BIT(0)
 #define AFE440X_CONTROL2_PDN_RX		BIT(1)
 #define AFE440X_CONTROL2_DYNAMIC4	BIT(3)
@@ -73,10 +68,10 @@
 #define AFE440X_CONTROL2_DYNAMIC2	BIT(14)
 #define AFE440X_CONTROL2_DYNAMIC1	BIT(20)
 
-/* CONTROL3 register fields */
+
 #define AFE440X_CONTROL3_CLKDIV		GENMASK(2, 0)
 
-/* CONTROL0 values */
+
 #define AFE440X_CONTROL0_WRITE		0x0
 #define AFE440X_CONTROL0_READ		0x1
 
@@ -152,4 +147,4 @@ struct afe440x_attr {
 		.table_size = ARRAY_SIZE(_table),		\
 	}
 
-#endif /* _AFE440X_H */
+#endif 

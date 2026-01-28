@@ -1,25 +1,20 @@
-/*
- * lfs1 utility functions
- *
- * Copyright (c) 2017, Arm Limited. All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- */
+
 #ifndef LFS1_UTIL_H
 #define LFS1_UTIL_H
 
-// Users can override lfs1_util.h with their own configuration by defining
-// LFS1_CONFIG as a header file to include (-DLFS1_CONFIG=lfs1_config.h).
-//
-// If LFS1_CONFIG is used, none of the default utils will be emitted and must be
-// provided by the config file. To start I would suggest copying lfs1_util.h and
-// modifying as needed.
+
+
+
+
+
+
 #ifdef LFS1_CONFIG
 #define LFS1_STRINGIZE(x) LFS1_STRINGIZE2(x)
 #define LFS1_STRINGIZE2(x) #x
 #include LFS1_STRINGIZE(LFS1_CONFIG)
 #else
 
-// System includes
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -40,11 +35,11 @@ extern "C"
 #endif
 
 
-// Macros, may be replaced by system specific wrappers. Arguments to these
-// macros must not have side-effects as the macros can be removed for a smaller
-// code footprint
 
-// Logging functions
+
+
+
+
 #ifndef LFS1_NO_DEBUG
 #define LFS1_DEBUG(fmt, ...) \
     printf("lfs1 debug:%d: " fmt "\n", __LINE__, __VA_ARGS__)
@@ -66,7 +61,7 @@ extern "C"
 #define LFS1_ERROR(fmt, ...)
 #endif
 
-// Runtime assertions
+
 #ifndef LFS1_NO_ASSERT
 #define LFS1_ASSERT(test) assert(test)
 #else
@@ -74,11 +69,11 @@ extern "C"
 #endif
 
 
-// Builtin functions, these may be replaced by more efficient
-// toolchain-specific implementations. LFS1_NO_INTRINSICS falls back to a more
-// expensive basic C implementation for debugging purposes
 
-// Min/max functions for unsigned 32-bit numbers
+
+
+
+
 static inline uint32_t lfs1_max(uint32_t a, uint32_t b) {
     return (a > b) ? a : b;
 }
@@ -87,7 +82,7 @@ static inline uint32_t lfs1_min(uint32_t a, uint32_t b) {
     return (a < b) ? a : b;
 }
 
-// Find the next smallest power of 2 less than or equal to a
+
 static inline uint32_t lfs1_npw2(uint32_t a) {
 #if !defined(LFS1_NO_INTRINSICS) && (defined(__GNUC__) || defined(__CC_ARM))
     return 32 - __builtin_clz(a-1);
@@ -103,8 +98,8 @@ static inline uint32_t lfs1_npw2(uint32_t a) {
 #endif
 }
 
-// Count the number of trailing binary zeros in a
-// lfs1_ctz(0) may be undefined
+
+
 static inline uint32_t lfs1_ctz(uint32_t a) {
 #if !defined(LFS1_NO_INTRINSICS) && defined(__GNUC__)
     return __builtin_ctz(a);
@@ -113,7 +108,7 @@ static inline uint32_t lfs1_ctz(uint32_t a) {
 #endif
 }
 
-// Count the number of binary ones in a
+
 static inline uint32_t lfs1_popc(uint32_t a) {
 #if !defined(LFS1_NO_INTRINSICS) && (defined(__GNUC__) || defined(__CC_ARM))
     return __builtin_popcount(a);
@@ -124,13 +119,13 @@ static inline uint32_t lfs1_popc(uint32_t a) {
 #endif
 }
 
-// Find the sequence comparison of a and b, this is the distance
-// between a and b ignoring overflow
+
+
 static inline int lfs1_scmp(uint32_t a, uint32_t b) {
     return (int)(unsigned)(a - b);
 }
 
-// Convert from 32-bit little-endian to native order
+
 static inline uint32_t lfs1_fromle32(uint32_t a) {
 #if !defined(LFS1_NO_INTRINSICS) && ( \
     (defined(  BYTE_ORDER  ) &&   BYTE_ORDER   ==   ORDER_LITTLE_ENDIAN  ) || \
@@ -150,15 +145,15 @@ static inline uint32_t lfs1_fromle32(uint32_t a) {
 #endif
 }
 
-// Convert to 32-bit little-endian from native order
+
 static inline uint32_t lfs1_tole32(uint32_t a) {
     return lfs1_fromle32(a);
 }
 
-// Calculate CRC-32 with polynomial = 0x04c11db7
+
 void lfs1_crc(uint32_t *crc, const void *buffer, size_t size);
 
-// Allocate memory, only used if buffers are not provided to littlefs
+
 static inline void *lfs1_malloc(size_t size) {
 #ifndef LFS1_NO_MALLOC
     return malloc(size);
@@ -168,7 +163,7 @@ static inline void *lfs1_malloc(size_t size) {
 #endif
 }
 
-// Deallocate memory, only used if buffers are not provided to littlefs
+
 static inline void lfs1_free(void *p) {
 #ifndef LFS1_NO_MALLOC
     free(p);
@@ -179,7 +174,7 @@ static inline void lfs1_free(void *p) {
 
 
 #ifdef __cplusplus
-} /* extern "C" */
+} 
 #endif
 
 #endif

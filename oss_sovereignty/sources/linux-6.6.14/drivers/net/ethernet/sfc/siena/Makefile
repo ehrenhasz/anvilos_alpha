@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 sfc-siena-y		+= farch.o siena.o \
 			   efx.o efx_common.o efx_channels.o nic.o \
 			   tx.o tx_common.o rx.o rx_common.o \

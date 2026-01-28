@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 STMicroelectronics - All Rights Reserved
- *
- * Author: Lee Jones <lee.jones@linaro.org>
- */
+
+
 
 #ifndef __LINUX_CLK_SPEAR_H
 #define __LINUX_CLK_SPEAR_H

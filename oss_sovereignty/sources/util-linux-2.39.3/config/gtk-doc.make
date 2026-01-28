@@ -1,19 +1,19 @@
-#
-# WARNING: this is not gtk-doc.make file from gtk-doc project. This
-#          file has been modified to match with util-linux requirements:
-#
-#          * install files to $datadir
-#          * don't maintain generated files in git repository
-#          * don't distribute the final html files
-#          * don't require --enable-gtk-doc for "make dist"
-#          * support out-of-tree build ($srcdir != $builddir)
-#
-# -- kzak, Nov 2009
-#
 
-####################################
-# Everything below here is generic #
-####################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if GTK_DOC_USE_LIBTOOL
 GTKDOC_CC = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -25,11 +25,11 @@ GTKDOC_LD = $(CC) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS)
 GTKDOC_RUN =
 endif
 
-# We set GPATH here; this gives us semantics for GNU make
-# which are more like other make's VPATH, when it comes to
-# whether a source that is a target of one rule is then
-# searched for in VPATH/GPATH.
-#
+
+
+
+
+
 GPATH = $(srcdir)
 
 TARGET_DIR=$(docdir)/$(DOC_MODULE)
@@ -41,7 +41,7 @@ EXTRA_DIST = 				\
 	$(HTML_IMAGES)			\
 	$(DOC_MAIN_SGML_FILE)		\
 	$(DOC_MODULE)-sections.txt
-#	$(DOC_MODULE)-overrides.txt
+
 
 DOC_STAMPS=scan-build.stamp sgml-build.stamp html-build.stamp \
 	   $(srcdir)/setup.stamp $(srcdir)/sgml.stamp \
@@ -53,7 +53,7 @@ SCANOBJ_FILES = 		 \
 	$(DOC_MODULE).interfaces \
 	$(DOC_MODULE).prerequisites \
 	$(DOC_MODULE).signals    \
-        $(DOC_MODULE).types            # util-linux: we don't use types
+        $(DOC_MODULE).types            
 
 REPORT_FILES = \
 	$(DOC_MODULE)-undocumented.txt \
@@ -72,7 +72,7 @@ docs: html-build.stamp
 
 $(REPORT_FILES): sgml-build.stamp
 
-#### setup ####
+
 
 setup-build.stamp:
 	-@if test "$(abs_srcdir)" != "$(abs_builddir)" ; then \
@@ -92,7 +92,7 @@ setup.stamp: setup-build.stamp
 	@true
 
 
-#### scan ####
+
 
 scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB) $(srcdir)/$(DOC_MODULE)-*.txt $(content_files)
 
@@ -122,23 +122,23 @@ scan-build.stamp: $(HFILE_GLOB) $(CFILE_GLOB) $(srcdir)/$(DOC_MODULE)-*.txt $(co
 $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt: scan-build.stamp
 	@true
 
-#### templates ####
-#
-#tmpl-build.stamp: $(DOC_MODULE)-decl.txt $(SCANOBJ_FILES) $(srcdir)/$(DOC_MODULE)-sections.txt $(DOC_MODULE)-overrides.txt
-#	@echo 'gtk-doc: Rebuilding template files'
-#	test -z $(builddir)/tmpl || $(MKDIR_P) $(builddir)/tmpl
-#	gtkdoc-mktmpl --module=$(DOC_MODULE) \
-#	              $(MKTMPL_OPTIONS)
-#	touch tmpl-build.stamp
-#
-#tmpl.stamp: tmpl-build.stamp
-#	@true
-#
-#tmpl/*.sgml:
-#	@true
-#
 
-#### xml ####
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 sgml-build.stamp: setup.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-decl.txt  $(DOC_MODULE)-sections.txt $(expand_content_files)
 	$(AM_V_GEN)gtkdoc-mkdb --module=$(DOC_MODULE) \
@@ -154,7 +154,7 @@ sgml-build.stamp: setup.stamp $(HFILE_GLOB) $(CFILE_GLOB) $(DOC_MODULE)-decl.txt
 sgml.stamp: sgml-build.stamp
 	@true
 
-#### html ####
+
 
 html-build.stamp: sgml.stamp $(srcdir)/$(DOC_MAIN_SGML_FILE) $(content_files)
 	@rm -rf $(builddir)/html
@@ -174,7 +174,7 @@ html-build.stamp: sgml.stamp $(srcdir)/$(DOC_MAIN_SGML_FILE) $(content_files)
 	               $(FIXXREF_OPTIONS)
 	@touch html-build.stamp
 
-##############
+
 
 clean-local:
 	rm -f *~ *.bak
@@ -220,9 +220,9 @@ uninstall-local:
 	fi; \
 	rm -rf $${installdir}
 
-#
-# Require gtk-doc when making dist
-#
+
+
+
 if ENABLE_GTK_DOC
 dist-check-gtkdoc:
 else
@@ -231,17 +231,17 @@ dist-check-gtkdoc:
 	@false
 endif
 
-#dist-hook: dist-check-gtkdoc dist-hook-local sgml.stamp html-build.stamp
-#	mkdir $(distdir)/tmpl
-#	mkdir $(distdir)/xml
-#	mkdir $(distdir)/html
-#	-cp $(srcdir)/tmpl/*.sgml $(distdir)/tmpl
-#	-cp $(srcdir)/xml/*.xml $(distdir)/xml
-#	cp $(srcdir)/html/* $(distdir)/html
-#	-cp $(srcdir)/$(DOC_MODULE).types $(distdir)/
-#	-cp $(srcdir)/$(DOC_MODULE)-sections.txt $(distdir)/
-#	cd $(distdir) && rm -f $(DISTCLEANFILES)
-#	! which gtkdoc-rebase >/dev/null 2>&1 || \
-#	  gtkdoc-rebase --online --relative --html-dir=$(distdir)/html
-#
-#.PHONY : dist-hook-local docs
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+
 
 #ifndef __SOC_TEGRA_FUSE_H__
 #define __SOC_TEGRA_FUSE_H__
@@ -121,6 +119,6 @@ static inline int tegra194_miscreg_mask_serror(void)
 
 struct device *tegra_soc_device_register(void);
 
-#endif /* __ASSEMBLY__ */
+#endif 
 
-#endif /* __SOC_TEGRA_FUSE_H__ */
+#endif 

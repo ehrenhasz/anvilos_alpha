@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+
 
 #ifndef __PHY_MTK_H__
 #define __PHY_MTK_H__
@@ -36,7 +32,7 @@ static inline void mtk_phy_update_bits(void __iomem *reg, u32 mask, u32 val)
 	writel(tmp, reg);
 }
 
-/* field @mask shall be constant and continuous */
+
 #define mtk_phy_update_field(reg, mask, val) \
 ({ \
 	BUILD_BUG_ON_MSG(!__builtin_constant_p(mask), "mask is not constant"); \

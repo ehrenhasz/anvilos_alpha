@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _SELFTESTS_POWERPC_INSTRUCTIONS_H
 #define _SELFTESTS_POWERPC_INSTRUCTIONS_H
 
 #include <stdio.h>
 #include <stdlib.h>
 
-/* This defines the "copy" instruction from Power ISA 3.0 Book II, section 4.4. */
+
 #define __COPY(RA, RB, L) \
 	(0x7c00060c | (RA) << (31-15) | (RB) << (31-20) | (L) << (31-10))
 #define COPY(RA, RB, L) \
@@ -29,7 +29,7 @@ static inline void copy_first(void *i)
 		    );
 }
 
-/* This defines the "paste" instruction from Power ISA 3.0 Book II, section 4.4. */
+
 #define __PASTE(RA, RB, L, RC) \
 	(0x7c00070c | (RA) << (31-15) | (RB) << (31-20) | (L) << (31-10) | (RC) << (31-31))
 #define PASTE(RA, RB, L, RC) \
@@ -66,7 +66,7 @@ static inline int paste_last(void *i)
 #define PPC_INST_PASTE                 __PASTE(0, 0, 0, 0)
 #define PPC_INST_PASTE_LAST            __PASTE(0, 0, 1, 1)
 
-/* This defines the prefixed load/store instructions */
+
 #ifdef __ASSEMBLY__
 #  define stringify_in_c(...)	__VA_ARGS__
 #else
@@ -113,7 +113,7 @@ static inline int paste_last(void *i)
 						       __PPC_RA(a) |			\
 						       ((d) & 0xffff);\n)
 
-/* Prefixed Integer Load/Store instructions */
+
 #define PLBZ(t, a, r, d)		PREFIX_MLS(PPC_INST_LBZ, t, a, r, d)
 #define PLHZ(t, a, r, d)		PREFIX_MLS(PPC_INST_LHZ, t, a, r, d)
 #define PLHA(t, a, r, d)		PREFIX_MLS(PPC_INST_LHA, t, a, r, d)
@@ -127,13 +127,13 @@ static inline int paste_last(void *i)
 #define PSTD(s, a, r, d)		PREFIX_8LS(0xf4000000, s, a, r, d)
 #define PSTQ(s, a, r, d)		PREFIX_8LS(0xf0000000, s, a, r, d)
 
-/* Prefixed Floating-Point Load/Store Instructions */
+
 #define PLFS(frt, a, r, d)		PREFIX_MLS(PPC_INST_LFS, frt, a, r, d)
 #define PLFD(frt, a, r, d)		PREFIX_MLS(PPC_INST_LFD, frt, a, r, d)
 #define PSTFS(frs, a, r, d)		PREFIX_MLS(PPC_INST_STFS, frs, a, r, d)
 #define PSTFD(frs, a, r, d)		PREFIX_MLS(PPC_INST_STFD, frs, a, r, d)
 
-/* Prefixed VSX Load/Store Instructions */
+
 #define PLXSD(vrt, a, r, d)		PREFIX_8LS(0xa8000000, vrt, a, r, d)
 #define PLXSSP(vrt, a, r, d)		PREFIX_8LS(0xac000000, vrt, a, r, d)
 #define PLXV0(s, a, r, d)		PREFIX_8LS(0xc8000000, s, a, r, d)
@@ -143,4 +143,4 @@ static inline int paste_last(void *i)
 #define PSTXV0(s, a, r, d)		PREFIX_8LS(0xd8000000, s, a, r, d)
 #define PSTXV1(s, a, r, d)		PREFIX_8LS(0xdc000000, s, a, r, d)
 
-#endif /* _SELFTESTS_POWERPC_INSTRUCTIONS_H */
+#endif 

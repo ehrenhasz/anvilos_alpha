@@ -15,7 +15,7 @@ def th(n, lo, hi):
 lock = _thread.allocate_lock()
 n_thread = 4
 n_finished = 0
-n_repeat = 4  # use 40 for more stressful test (uses more heap)
+n_repeat = 4  
 for i in range(n_thread):
     _thread.start_new_thread(th, (n_repeat, i * 256 // n_thread, (i + 1) * 256 // n_thread))
 while n_finished < n_thread:

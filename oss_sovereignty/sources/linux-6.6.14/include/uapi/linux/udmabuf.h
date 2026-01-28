@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_LINUX_UDMABUF_H
 #define _UAPI_LINUX_UDMABUF_H
 
@@ -30,4 +30,4 @@ struct udmabuf_create_list {
 #define UDMABUF_CREATE       _IOW('u', 0x42, struct udmabuf_create)
 #define UDMABUF_CREATE_LIST  _IOW('u', 0x43, struct udmabuf_create_list)
 
-#endif /* _UAPI_LINUX_UDMABUF_H */
+#endif 

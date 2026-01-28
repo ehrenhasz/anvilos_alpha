@@ -1,5 +1,5 @@
-# This mimics the top-level Makefile. We do it explicitly here so that this
-# Makefile can operate with or without the kbuild infrastructure.
+
+
 ifneq ($(LLVM),)
 ifneq ($(filter %/,$(LLVM)),)
 LLVM_PREFIX := $(LLVM)
@@ -25,15 +25,15 @@ ifeq ($(CLANG_TARGET_FLAGS),)
 $(error Specify CROSS_COMPILE or add '--target=' option to lib.mk)
 else
 CLANG_FLAGS     += --target=$(CLANG_TARGET_FLAGS)
-endif # CLANG_TARGET_FLAGS
+endif 
 else
 CLANG_FLAGS     += --target=$(notdir $(CROSS_COMPILE:%-=%))
-endif # CROSS_COMPILE
+endif 
 
 CC := $(LLVM_PREFIX)clang$(LLVM_SUFFIX) $(CLANG_FLAGS) -fintegrated-as
 else
 CC := $(CROSS_COMPILE)gcc
-endif # LLVM
+endif 
 
 ifeq (0,$(MAKELEVEL))
     ifeq ($(OUTPUT),)
@@ -48,12 +48,12 @@ ifeq ($(KHDR_INCLUDES),)
 KHDR_INCLUDES := -isystem $(top_srcdir)/usr/include
 endif
 
-# The following are built by lib.mk common compile rules.
-# TEST_CUSTOM_PROGS should be used by tests that require
-# custom build rule and prevent common build rule use.
-# TEST_PROGS are for test shell scripts.
-# TEST_CUSTOM_PROGS and TEST_PROGS will be run by common run_tests
-# and install targets. Common clean doesn't touch them.
+
+
+
+
+
+
 TEST_GEN_PROGS := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS))
 TEST_GEN_PROGS_EXTENDED := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS_EXTENDED))
 TEST_GEN_FILES := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_FILES))
@@ -113,7 +113,7 @@ emit_tests:
 		echo "$(COLLECTION):$$BASENAME_TEST";	\
 	done
 
-# define if isn't already. It is undefined in make O= case.
+
 ifeq ($(RM),)
 RM := rm -f
 endif
@@ -125,22 +125,22 @@ endef
 clean:
 	$(CLEAN)
 
-# Enables to extend CFLAGS and LDFLAGS from command line, e.g.
-# make USERCFLAGS=-Werror USERLDFLAGS=-static
+
+
 CFLAGS += $(USERCFLAGS)
 LDFLAGS += $(USERLDFLAGS)
 
-# When make O= with kselftest target from main level
-# the following aren't defined.
-#
+
+
+
 ifdef building_out_of_srctree
 LINK.c = $(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 COMPILE.S = $(CC) $(ASFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 LINK.S = $(CC) $(ASFLAGS) $(CPPFLAGS) $(LDFLAGS) $(TARGET_ARCH)
 endif
 
-# Selftest makefiles can override those targets by setting
-# OVERRIDE_TARGETS = 1.
+
+
 ifeq ($(OVERRIDE_TARGETS),)
 LOCAL_HDRS += $(selfdir)/kselftest_harness.h $(selfdir)/kselftest.h
 $(OUTPUT)/%:%.c $(LOCAL_HDRS)

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2022 Linaro. All rights reserved.
- * Author: Caleb Connolly <caleb.connolly@linaro.org>
- */
+
+
 
 #ifndef __QCOM_SPMI_PMIC_H__
 #define __QCOM_SPMI_PMIC_H__
@@ -69,4 +67,4 @@ struct qcom_spmi_pmic {
 
 const struct qcom_spmi_pmic *qcom_pmic_get(struct device *dev);
 
-#endif /* __QCOM_SPMI_PMIC_H__ */
+#endif 

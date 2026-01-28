@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Functions to access LP873X power management chip.
- *
- * Copyright (C) 2016 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+
 
 #ifndef __LINUX_MFD_LP873X_H
 #define __LINUX_MFD_LP873X_H
@@ -12,10 +8,10 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 
-/* LP873x chip id list */
+
 #define LP873X			0x00
 
-/* All register addresses */
+
 #define LP873X_REG_DEV_REV		0X00
 #define LP873X_REG_OTP_REV		0X01
 #define LP873X_REG_BUCK0_CTRL_1		0X02
@@ -58,7 +54,7 @@
 
 #define LP873X_REG_MAX			LP873X_REG_I_LOAD_1
 
-/* Register field definitions */
+
 #define LP873X_DEV_REV_DEV_ID			0xC0
 #define LP873X_DEV_REV_ALL_LAYER		0x30
 #define LP873X_DEV_REV_METAL_LAYER		0x0F
@@ -227,34 +223,26 @@
 
 #define LP873X_MAX_REG_ID		LP873X_LDO_1
 
-/* Number of step-down converters available */
+
 #define LP873X_NUM_BUCK		2
-/* Number of LDO voltage regulators available */
+
 #define LP873X_NUM_LDO		2
-/* Number of total regulators available */
+
 #define LP873X_NUM_REGULATOR		(LP873X_NUM_BUCK + LP873X_NUM_LDO)
 
 enum lp873x_regulator_id {
-	/* BUCK's */
+	
 	LP873X_BUCK_0,
 	LP873X_BUCK_1,
-	/* LDOs */
+	
 	LP873X_LDO_0,
 	LP873X_LDO_1,
 };
 
-/**
- * struct lp873x - state holder for the lp873x driver
- * @dev: struct device pointer for MFD device
- * @rev: revision of the lp873x
- * @lock: lock guarding the data structure
- * @regmap: register map of the lp873x PMIC
- *
- * Device data may be used to access the LP873X chip
- */
+
 struct lp873x {
 	struct device *dev;
 	u8 rev;
 	struct regmap *regmap;
 };
-#endif /* __LINUX_MFD_LP873X_H */
+#endif 

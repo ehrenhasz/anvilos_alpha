@@ -1,19 +1,19 @@
-# Select the board to build for: if not given on the command line,
-# then default to WIPY
+
+
 BOARD ?= WIPY
 ifeq ($(wildcard boards/$(BOARD)/.),)
 $(error Invalid BOARD specified)
 endif
 
-# Make 'release' the default build type
+
 BTYPE ?= release
-# Make the 'application' by default ('bootloader' can be built explicitly)
+
 BTARGET ?= application
 
-# Port for flashing firmware
+
 PORT ?= /dev/ttyUSB1
 
-# If the build directory is not given, make it reflect the board name.
+
 BUILD ?= build/$(BOARD)/$(BTYPE)
 
 include ../../py/mkenv.mk
@@ -26,7 +26,7 @@ CFLAGS += -Wall -Wpointer-arith -Werror -std=gnu99 -nostdlib $(CFLAGS_CORTEX_M4)
 CFLAGS += -g -ffunction-sections -fdata-sections -fno-common -fsigned-char -mno-unaligned-access
 CFLAGS += -Iboards/$(BOARD)
 
-# Workaround gcc 12.1 bug.
+
 CFLAGS += -Wno-array-bounds
 
 LDFLAGS += -Wl,-nostdlib -Wl,--gc-sections -Wl,-Map=$@.map
@@ -35,13 +35,13 @@ FLASH_SIZE_WIPY = 2M
 FLASH_SIZE_LAUNCHXL = 1M
 
 ifeq ($(BTARGET), application)
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# MicroPython feature configurations
+
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 
-# include MicroPython make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 include application.mk
@@ -53,7 +53,7 @@ $(error Invalid BTARGET specified)
 endif
 endif
 
-# always include MicroPython make rules
+
 include $(TOP)/py/mkrules.mk
 
 erase:
@@ -64,8 +64,8 @@ deploy:
 	    write_file bootmgr/build/$(BOARD)/$(BTYPE)/bootloader.bin /sys/mcuimg.bin \
 	    write_file build/$(BOARD)/$(BTYPE)/mcuimg.bin /sys/factimg.bin
 
-# Files *.ucf and *ucf.signed.bin come from CC3200SDK-SERVICEPACK
-# package from http://www.ti.com/tool/cc3200sdk
+
+
 servicepack:
 	cc3200tool -p $(PORT) \
 	write_file --file-size=0x20000 --signature ota_1.0.1.6-2.7.0.0.ucf.signed.bin \

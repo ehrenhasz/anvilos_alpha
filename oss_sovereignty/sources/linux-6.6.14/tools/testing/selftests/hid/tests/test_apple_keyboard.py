@@ -8,117 +8,117 @@ class KbdData(object):
     pass
 class AppleKeyboard(ArrayKeyboard):
     report_descriptor = [
-        0x05, 0x01,         # Usage Page (Generic Desktop)
-        0x09, 0x06,         # Usage (Keyboard)
-        0xa1, 0x01,         # Collection (Application)
-        0x85, 0x01,         # .Report ID (1)
-        0x05, 0x07,         # .Usage Page (Keyboard)
-        0x19, 0xe0,         # .Usage Minimum (224)
-        0x29, 0xe7,         # .Usage Maximum (231)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x25, 0x01,         # .Logical Maximum (1)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x08,         # .Report Count (8)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x75, 0x08,         # .Report Size (8)
-        0x95, 0x01,         # .Report Count (1)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x05,         # .Report Count (5)
-        0x05, 0x08,         # .Usage Page (LEDs)
-        0x19, 0x01,         # .Usage Minimum (1)
-        0x29, 0x05,         # .Usage Maximum (5)
-        0x91, 0x02,         # .Output (Data,Var,Abs)
-        0x75, 0x03,         # .Report Size (3)
-        0x95, 0x01,         # .Report Count (1)
-        0x91, 0x01,         # .Output (Cnst,Arr,Abs)
-        0x75, 0x08,         # .Report Size (8)
-        0x95, 0x06,         # .Report Count (6)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x26, 0xff, 0x00,   # .Logical Maximum (255)
-        0x05, 0x07,         # .Usage Page (Keyboard)
-        0x19, 0x00,         # .Usage Minimum (0)
-        0x2a, 0xff, 0x00,   # .Usage Maximum (255)
-        0x81, 0x00,         # .Input (Data,Arr,Abs)
-        0xc0,               # End Collection
-        0x05, 0x0c,         # Usage Page (Consumer Devices)
-        0x09, 0x01,         # Usage (Consumer Control)
-        0xa1, 0x01,         # Collection (Application)
-        0x85, 0x47,         # .Report ID (71)
-        0x05, 0x01,         # .Usage Page (Generic Desktop)
-        0x09, 0x06,         # .Usage (Keyboard)
-        0xa1, 0x02,         # .Collection (Logical)
-        0x05, 0x06,         # ..Usage Page (Generic Device Controls)
-        0x09, 0x20,         # ..Usage (Battery Strength)
-        0x15, 0x00,         # ..Logical Minimum (0)
-        0x26, 0xff, 0x00,   # ..Logical Maximum (255)
-        0x75, 0x08,         # ..Report Size (8)
-        0x95, 0x01,         # ..Report Count (1)
-        0x81, 0x02,         # ..Input (Data,Var,Abs)
-        0xc0,               # .End Collection
-        0xc0,               # End Collection
-        0x05, 0x0c,         # Usage Page (Consumer Devices)
-        0x09, 0x01,         # Usage (Consumer Control)
-        0xa1, 0x01,         # Collection (Application)
-        0x85, 0x11,         # .Report ID (17)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x25, 0x01,         # .Logical Maximum (1)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x03,         # .Report Count (3)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x01,         # .Report Count (1)
-        0x05, 0x0c,         # .Usage Page (Consumer Devices)
-        0x09, 0xb8,         # .Usage (Eject)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x06, 0xff, 0x00,   # .Usage Page (Vendor Usage Page 0xff)
-        0x09, 0x03,         # .Usage (Vendor Usage 0x03)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x03,         # .Report Count (3)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x05, 0x0c,         # .Usage Page (Consumer Devices)
-        0x85, 0x12,         # .Report ID (18)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x25, 0x01,         # .Logical Maximum (1)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x01,         # .Report Count (1)
-        0x09, 0xcd,         # .Usage (Play/Pause)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x09, 0xb3,         # .Usage (Fast Forward)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x09, 0xb4,         # .Usage (Rewind)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x09, 0xb5,         # .Usage (Scan Next Track)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x09, 0xb6,         # .Usage (Scan Previous Track)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x85, 0x13,         # .Report ID (19)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x25, 0x01,         # .Logical Maximum (1)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x01,         # .Report Count (1)
-        0x06, 0x01, 0xff,   # .Usage Page (Vendor Usage Page 0xff01)
-        0x09, 0x0a,         # .Usage (Vendor Usage 0x0a)
-        0x81, 0x02,         # .Input (Data,Var,Abs)
-        0x06, 0x01, 0xff,   # .Usage Page (Vendor Usage Page 0xff01)
-        0x09, 0x0c,         # .Usage (Vendor Usage 0x0c)
-        0x81, 0x22,         # .Input (Data,Var,Abs,NoPref)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x06,         # .Report Count (6)
-        0x81, 0x01,         # .Input (Cnst,Arr,Abs)
-        0x85, 0x09,         # .Report ID (9)
-        0x09, 0x0b,         # .Usage (Vendor Usage 0x0b)
-        0x75, 0x08,         # .Report Size (8)
-        0x95, 0x01,         # .Report Count (1)
-        0xb1, 0x02,         # .Feature (Data,Var,Abs)
-        0x75, 0x08,         # .Report Size (8)
-        0x95, 0x02,         # .Report Count (2)
-        0xb1, 0x01,         # .Feature (Cnst,Arr,Abs)
-        0xc0,               # End Collection
+        0x05, 0x01,         
+        0x09, 0x06,         
+        0xa1, 0x01,         
+        0x85, 0x01,         
+        0x05, 0x07,         
+        0x19, 0xe0,         
+        0x29, 0xe7,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x08,         
+        0x81, 0x02,         
+        0x75, 0x08,         
+        0x95, 0x01,         
+        0x81, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x05,         
+        0x05, 0x08,         
+        0x19, 0x01,         
+        0x29, 0x05,         
+        0x91, 0x02,         
+        0x75, 0x03,         
+        0x95, 0x01,         
+        0x91, 0x01,         
+        0x75, 0x08,         
+        0x95, 0x06,         
+        0x15, 0x00,         
+        0x26, 0xff, 0x00,   
+        0x05, 0x07,         
+        0x19, 0x00,         
+        0x2a, 0xff, 0x00,   
+        0x81, 0x00,         
+        0xc0,               
+        0x05, 0x0c,         
+        0x09, 0x01,         
+        0xa1, 0x01,         
+        0x85, 0x47,         
+        0x05, 0x01,         
+        0x09, 0x06,         
+        0xa1, 0x02,         
+        0x05, 0x06,         
+        0x09, 0x20,         
+        0x15, 0x00,         
+        0x26, 0xff, 0x00,   
+        0x75, 0x08,         
+        0x95, 0x01,         
+        0x81, 0x02,         
+        0xc0,               
+        0xc0,               
+        0x05, 0x0c,         
+        0x09, 0x01,         
+        0xa1, 0x01,         
+        0x85, 0x11,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x03,         
+        0x81, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x01,         
+        0x05, 0x0c,         
+        0x09, 0xb8,         
+        0x81, 0x02,         
+        0x06, 0xff, 0x00,   
+        0x09, 0x03,         
+        0x81, 0x02,         
+        0x75, 0x01,         
+        0x95, 0x03,         
+        0x81, 0x01,         
+        0x05, 0x0c,         
+        0x85, 0x12,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x01,         
+        0x09, 0xcd,         
+        0x81, 0x02,         
+        0x09, 0xb3,         
+        0x81, 0x02,         
+        0x09, 0xb4,         
+        0x81, 0x02,         
+        0x09, 0xb5,         
+        0x81, 0x02,         
+        0x09, 0xb6,         
+        0x81, 0x02,         
+        0x81, 0x01,         
+        0x81, 0x01,         
+        0x81, 0x01,         
+        0x85, 0x13,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x01,         
+        0x06, 0x01, 0xff,   
+        0x09, 0x0a,         
+        0x81, 0x02,         
+        0x06, 0x01, 0xff,   
+        0x09, 0x0c,         
+        0x81, 0x22,         
+        0x75, 0x01,         
+        0x95, 0x06,         
+        0x81, 0x01,         
+        0x85, 0x09,         
+        0x09, 0x0b,         
+        0x75, 0x08,         
+        0x95, 0x01,         
+        0xb1, 0x02,         
+        0x75, 0x08,         
+        0x95, 0x02,         
+        0xb1, 0x01,         
+        0xc0,               
     ]
     def __init__(
         self,

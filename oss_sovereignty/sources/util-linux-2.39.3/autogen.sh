@@ -66,7 +66,7 @@ if ! ($LIBTOOLIZE --version) < /dev/null > /dev/null 2>&1; then
 else
 	ltver=$($LIBTOOLIZE --version | awk '/^[g]*libtoolize/ { print $4 }')
 	ltver=${ltver:-"none"}
-	test ${ltver##2.} = "$ltver" &&
+	test ${ltver
 		error_mesg "You must have libtool version >= 2.x.x, but you have $ltver."
 fi
 (automake --version) < /dev/null > /dev/null 2>&1 ||

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ulpi.h -- ULPI defines and function prorotypes
- *
- * Copyright (C) 2010 Nokia Corporation
- */
+
+
 
 #ifndef __LINUX_USB_ULPI_H
 #define __LINUX_USB_ULPI_H
@@ -11,11 +7,9 @@
 #include <linux/usb/otg.h>
 #include <linux/ulpi/regs.h>
 
-/*-------------------------------------------------------------------------*/
 
-/*
- * ULPI Flags
- */
+
+
 #define ULPI_OTG_ID_PULLUP		(1 << 0)
 #define ULPI_OTG_DP_PULLDOWN_DIS	(1 << 1)
 #define ULPI_OTG_DM_PULLDOWN_DIS	(1 << 2)
@@ -46,7 +40,7 @@
 #define ULPI_FC_RST			(1 << 25)
 #define ULPI_FC_SUSPM			(1 << 26)
 
-/*-------------------------------------------------------------------------*/
+
 
 #if IS_ENABLED(CONFIG_USB_ULPI)
 struct usb_phy *otg_ulpi_create(struct usb_phy_io_ops *ops,
@@ -71,8 +65,8 @@ static inline struct usb_phy *devm_otg_ulpi_create(struct device *dev,
 #endif
 
 #ifdef CONFIG_USB_ULPI_VIEWPORT
-/* access ops for controllers with a viewport register */
+
 extern struct usb_phy_io_ops ulpi_viewport_access_ops;
 #endif
 
-#endif /* __LINUX_USB_ULPI_H */
+#endif 

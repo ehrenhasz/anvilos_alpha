@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020-2021 SiFive, Inc.
- * Copyright (C) 2020-2021 Zong Li
- */
+
+
 
 #ifndef __SIFIVE_CLK_FU740_PRCI_H
 #define __SIFIVE_CLK_FU740_PRCI_H
@@ -13,7 +10,7 @@
 
 #include "sifive-prci.h"
 
-/* PRCI integration data for each WRPLL instance */
+
 
 static struct __prci_wrpll_data sifive_fu740_prci_corepll_data = {
 	.cfg0_offs = PRCI_COREPLLCFG0_OFFSET,
@@ -51,7 +48,7 @@ static struct __prci_wrpll_data sifive_fu740_prci_cltxpll_data = {
 	.cfg1_offs = PRCI_CLTXPLLCFG1_OFFSET,
 };
 
-/* Linux clock framework integration */
+
 
 static const struct clk_ops sifive_fu740_prci_wrpll_clk_ops = {
 	.set_rate = sifive_prci_wrpll_set_rate,
@@ -80,7 +77,7 @@ static const struct clk_ops sifive_fu740_prci_pcie_aux_clk_ops = {
 	.is_enabled = sifive_prci_pcie_aux_clock_is_enabled,
 };
 
-/* List of clock controls provided by the PRCI */
+
 static struct __prci_clock __prci_init_clocks_fu740[] = {
 	[FU740_PRCI_CLK_COREPLL] = {
 		.name = "corepll",
@@ -140,4 +137,4 @@ static const struct prci_clk_desc prci_clk_fu740 = {
 	.num_clks = ARRAY_SIZE(__prci_init_clocks_fu740),
 };
 
-#endif /* __SIFIVE_CLK_FU740_PRCI_H */
+#endif 

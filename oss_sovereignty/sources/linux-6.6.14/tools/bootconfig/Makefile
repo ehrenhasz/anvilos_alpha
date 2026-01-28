@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for bootconfig command
+
+
 include ../scripts/Makefile.include
 
 bindir ?= /usr/bin

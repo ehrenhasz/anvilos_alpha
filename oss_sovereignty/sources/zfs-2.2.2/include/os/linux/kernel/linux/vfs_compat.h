@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
 
-/*
- * Copyright (C) 2011 Lawrence Livermore National Security, LLC.
- * Copyright (C) 2015 Jörg Thalheim.
- */
+
+
 
 #ifndef _ZFS_VFS_H
 #define	_ZFS_VFS_H
@@ -32,11 +10,7 @@
 #include <linux/backing-dev.h>
 #include <linux/compat.h>
 
-/*
- * 2.6.34 - 3.19, bdi_setup_and_register() takes 3 arguments.
- * 4.0 - 4.11, bdi_setup_and_register() takes 2 arguments.
- * 4.12 - x.y, super_setup_bdi_name() new interface.
- */
+
 #if defined(HAVE_SUPER_SETUP_BDI_NAME)
 extern atomic_long_t zfs_bdi_seq;
 
@@ -108,10 +82,7 @@ zpl_bdi_destroy(struct super_block *sb)
 #error "Unsupported kernel"
 #endif
 
-/*
- * 4.14 adds SB_* flag definitions, define them to MS_* equivalents
- * if not set.
- */
+
 #ifndef	SB_RDONLY
 #define	SB_RDONLY	MS_RDONLY
 #endif
@@ -136,15 +107,10 @@ zpl_bdi_destroy(struct super_block *sb)
 #define	SB_NOATIME	MS_NOATIME
 #endif
 
-/*
- * 3.5 API change,
- * The clear_inode() function replaces end_writeback() and introduces an
- * ordering change regarding when the inode_sync_wait() occurs.  See the
- * configure check in config/kernel-clear-inode.m4 for full details.
- */
+
 #if defined(HAVE_EVICT_INODE) && !defined(HAVE_CLEAR_INODE)
 #define	clear_inode(ip)		end_writeback(ip)
-#endif /* HAVE_EVICT_INODE && !HAVE_CLEAR_INODE */
+#endif 
 
 #if defined(SEEK_HOLE) && defined(SEEK_DATA) && !defined(HAVE_LSEEK_EXECUTE)
 static inline loff_t
@@ -169,18 +135,10 @@ lseek_execute(
 
 	return (offset);
 }
-#endif /* SEEK_HOLE && SEEK_DATA && !HAVE_LSEEK_EXECUTE */
+#endif 
 
 #if defined(CONFIG_FS_POSIX_ACL)
-/*
- * These functions safely approximates the behavior of posix_acl_release()
- * which cannot be used because it calls the GPL-only symbol kfree_rcu().
- * The in-kernel version, which can access the RCU, frees the ACLs after
- * the grace period expires.  Because we're unsure how long that grace
- * period may be this implementation conservatively delays for 60 seconds.
- * This is several orders of magnitude larger than expected grace period.
- * At 60 seconds the kernel will also begin issuing RCU stall warnings.
- */
+
 
 #include <linux/posix_acl.h>
 
@@ -202,7 +160,7 @@ zpl_posix_acl_release(struct posix_acl *acl)
 		zpl_posix_acl_release_impl(acl);
 #endif
 }
-#endif /* HAVE_POSIX_ACL_RELEASE */
+#endif 
 
 #ifdef HAVE_SET_CACHED_ACL_USABLE
 #define	zpl_set_cached_acl(ip, ty, n)		set_cached_acl(ip, ty, n)
@@ -239,60 +197,42 @@ zpl_forget_cached_acl(struct inode *ip, int type)
 {
 	zpl_set_cached_acl(ip, type, (struct posix_acl *)ACL_NOT_CACHED);
 }
-#endif /* HAVE_SET_CACHED_ACL_USABLE */
+#endif 
 
-/*
- * 3.1 API change,
- * posix_acl_chmod() was added as the preferred interface.
- *
- * 3.14 API change,
- * posix_acl_chmod() was changed to __posix_acl_chmod()
- */
+
 #ifndef HAVE___POSIX_ACL_CHMOD
 #ifdef HAVE_POSIX_ACL_CHMOD
 #define	__posix_acl_chmod(acl, gfp, mode)	posix_acl_chmod(acl, gfp, mode)
 #define	__posix_acl_create(acl, gfp, mode)	posix_acl_create(acl, gfp, mode)
 #else
 #error "Unsupported kernel"
-#endif /* HAVE_POSIX_ACL_CHMOD */
-#endif /* HAVE___POSIX_ACL_CHMOD */
+#endif 
+#endif 
 
-/*
- * 4.8 API change,
- * posix_acl_valid() now must be passed a namespace, the namespace from
- * from super block associated with the given inode is used for this purpose.
- */
+
 #ifdef HAVE_POSIX_ACL_VALID_WITH_NS
 #define	zpl_posix_acl_valid(ip, acl)  posix_acl_valid(ip->i_sb->s_user_ns, acl)
 #else
 #define	zpl_posix_acl_valid(ip, acl)  posix_acl_valid(acl)
 #endif
 
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif 
 
-/*
- * 3.19 API change
- * struct access f->f_dentry->d_inode was replaced by accessor function
- * file_inode(f)
- */
+
 #ifndef HAVE_FILE_INODE
 static inline struct inode *file_inode(const struct file *f)
 {
 	return (f->f_dentry->d_inode);
 }
-#endif /* HAVE_FILE_INODE */
+#endif 
 
-/*
- * 4.1 API change
- * struct access file->f_path.dentry was replaced by accessor function
- * file_dentry(f)
- */
+
 #ifndef HAVE_FILE_DENTRY
 static inline struct dentry *file_dentry(const struct file *f)
 {
 	return (f->f_path.dentry);
 }
-#endif /* HAVE_FILE_DENTRY */
+#endif 
 
 static inline uid_t zfs_uid_read_impl(struct inode *ip)
 {
@@ -324,22 +264,18 @@ static inline void zfs_gid_write(struct inode *ip, gid_t gid)
 	ip->i_gid = make_kgid(kcred->user_ns, gid);
 }
 
-/*
- * 3.15 API change
- */
+
 #ifndef RENAME_NOREPLACE
-#define	RENAME_NOREPLACE	(1 << 0) /* Don't overwrite target */
+#define	RENAME_NOREPLACE	(1 << 0) 
 #endif
 #ifndef RENAME_EXCHANGE
-#define	RENAME_EXCHANGE		(1 << 1) /* Exchange source and dest */
+#define	RENAME_EXCHANGE		(1 << 1) 
 #endif
 #ifndef RENAME_WHITEOUT
-#define	RENAME_WHITEOUT		(1 << 2) /* Whiteout source */
+#define	RENAME_WHITEOUT		(1 << 2) 
 #endif
 
-/*
- * 4.9 API change
- */
+
 #if !(defined(HAVE_SETATTR_PREPARE_NO_USERNS) || \
     defined(HAVE_SETATTR_PREPARE_USERNS) || \
     defined(HAVE_SETATTR_PREPARE_IDMAP))
@@ -350,13 +286,7 @@ setattr_prepare(struct dentry *dentry, struct iattr *ia)
 }
 #endif
 
-/*
- * 4.11 API change
- * These macros are defined by kernel 4.11.  We define them so that the same
- * code builds under kernels < 4.11 and >= 4.11.  The macros are set to 0 so
- * that it will create obvious failures if they are accidentally used when built
- * against a kernel >= 4.11.
- */
+
 
 #ifndef STATX_BASIC_STATS
 #define	STATX_BASIC_STATS	0
@@ -366,10 +296,7 @@ setattr_prepare(struct dentry *dentry, struct iattr *ia)
 #define	AT_STATX_SYNC_AS_STAT	0
 #endif
 
-/*
- * 4.11 API change
- * 4.11 takes struct path *, < 4.11 takes vfsmount *
- */
+
 
 #ifdef HAVE_VFSMOUNT_IOPS_GETATTR
 #define	ZPL_GETATTR_WRAPPER(func)					\
@@ -410,10 +337,7 @@ func(struct mnt_idmap *user_ns, const struct path *path,	\
 #error
 #endif
 
-/*
- * 4.9 API change
- * Preferred interface to get the current FS time.
- */
+
 #if !defined(HAVE_CURRENT_TIME)
 static inline struct timespec
 current_time(struct inode *ip)
@@ -422,10 +346,7 @@ current_time(struct inode *ip)
 }
 #endif
 
-/*
- * 4.16 API change
- * Added iversion interface for managing inode version field.
- */
+
 #ifdef HAVE_INODE_SET_IVERSION
 #include <linux/iversion.h>
 #else
@@ -436,9 +357,7 @@ inode_set_iversion(struct inode *ip, u64 val)
 }
 #endif
 
-/*
- * Returns true when called in the context of a 32-bit system call.
- */
+
 static inline int
 zpl_is_32bit_api(void)
 {
@@ -453,18 +372,7 @@ zpl_is_32bit_api(void)
 #endif
 }
 
-/*
- * 5.12 API change
- * To support id-mapped mounts, generic_fillattr() was modified to
- * accept a new struct user_namespace* as its first arg.
- *
- * 6.3 API change
- * generic_fillattr() first arg is changed to struct mnt_idmap *
- *
- * 6.6 API change
- * generic_fillattr() gets new second arg request_mask, a u32 type
- *
- */
+
 #ifdef HAVE_GENERIC_FILLATTR_IDMAP
 #define	zpl_generic_fillattr(idmap, ip, sp)	\
     generic_fillattr(idmap, ip, sp)
@@ -478,4 +386,4 @@ zpl_is_32bit_api(void)
 #define	zpl_generic_fillattr(user_ns, ip, sp)	generic_fillattr(ip, sp)
 #endif
 
-#endif /* _ZFS_VFS_H */
+#endif 

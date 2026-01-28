@@ -1,5 +1,5 @@
 def f():
-    x = 1 # closed over by g
+    x = 1 
     def g():
         yield x
         yield x + 1
@@ -7,7 +7,7 @@ def f():
 for i in f():
     print(i)
 def f():
-    x = 1 # closed over by g
+    x = 1 
     def g():
         return x + 1
     yield g()

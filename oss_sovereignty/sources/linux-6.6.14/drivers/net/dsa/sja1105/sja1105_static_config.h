@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright 2016-2018 NXP
- * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+
 #ifndef _SJA1105_STATIC_CONFIG_H
 #define _SJA1105_STATIC_CONFIG_H
 
@@ -53,7 +51,7 @@
 #define SJA1105PQRS_SIZE_CBS_ENTRY			20
 #define SJA1110_SIZE_PCP_REMAPPING_ENTRY		4
 
-/* UM10944.pdf Page 11, Table 2. Configuration Blocks */
+
 enum {
 	BLKID_SCHEDULE					= 0x00,
 	BLKID_SCHEDULE_ENTRY_POINTS			= 0x01,
@@ -101,7 +99,7 @@ enum sja1105_blk_idx {
 	BLK_IDX_XMII_PARAMS,
 	BLK_IDX_PCP_REMAPPING,
 	BLK_IDX_MAX,
-	/* Fake block indices that are only valid for dynamic access */
+	
 	BLK_IDX_MGMT_ROUTE,
 	BLK_IDX_MAX_DYN,
 	BLK_IDX_INVAL = -1,
@@ -208,13 +206,13 @@ struct sja1105_general_params_entry {
 	u64 tpid;
 	u64 ignore2stf;
 	u64 tpid2;
-	/* P/Q/R/S only */
+	
 	u64 queue_ts;
 	u64 egrmirrvid;
 	u64 egrmirrpcp;
 	u64 egrmirrdei;
 	u64 replay_port;
-	/* SJA1110 only */
+	
 	u64 tte_en;
 	u64 tdmaconfigidx;
 	u64 header_type;
@@ -238,7 +236,7 @@ struct sja1105_vlan_lookup_entry {
 	u64 vlan_bc;
 	u64 tag_port;
 	u64 vlanid;
-	u64 type_entry; /* SJA1110 only */
+	u64 type_entry; 
 };
 
 struct sja1105_l2_lookup_entry {
@@ -247,7 +245,7 @@ struct sja1105_l2_lookup_entry {
 	u64 destports;
 	u64 enfport;
 	u64 index;
-	/* P/Q/R/S only */
+	
 	u64 mask_iotag;
 	u64 mask_vlanid;
 	u64 mask_macaddr;
@@ -256,11 +254,9 @@ struct sja1105_l2_lookup_entry {
 	u64 srcport;
 	u64 lockeds;
 	union {
-		/* LOCKEDS=1: Static FDB entries */
+		
 		struct {
-			/* TSREG is deprecated in SJA1110, TRAP is supported only
-			 * in SJA1110.
-			 */
+			
 			u64 trap;
 			u64 tsreg;
 			u64 mirrvlan;
@@ -268,7 +264,7 @@ struct sja1105_l2_lookup_entry {
 			u64 mirr;
 			u64 retag;
 		};
-		/* LOCKEDS=0: Dynamically learned FDB entries */
+		
 		struct {
 			u64 touched;
 			u64 age;
@@ -277,25 +273,25 @@ struct sja1105_l2_lookup_entry {
 };
 
 struct sja1105_l2_lookup_params_entry {
-	u64 maxaddrp[SJA1105_MAX_NUM_PORTS]; /* P/Q/R/S only */
-	u64 start_dynspc;    /* P/Q/R/S only */
-	u64 drpnolearn;      /* P/Q/R/S only */
-	u64 use_static;      /* P/Q/R/S only */
-	u64 owr_dyn;         /* P/Q/R/S only */
-	u64 learn_once;      /* P/Q/R/S only */
-	u64 maxage;          /* Shared */
-	u64 dyn_tbsz;        /* E/T only */
-	u64 poly;            /* E/T only */
-	u64 shared_learn;    /* Shared */
-	u64 no_enf_hostprt;  /* Shared */
-	u64 no_mgmt_learn;   /* Shared */
+	u64 maxaddrp[SJA1105_MAX_NUM_PORTS]; 
+	u64 start_dynspc;    
+	u64 drpnolearn;      
+	u64 use_static;      
+	u64 owr_dyn;         
+	u64 learn_once;      
+	u64 maxage;          
+	u64 dyn_tbsz;        
+	u64 poly;            
+	u64 shared_learn;    
+	u64 no_enf_hostprt;  
+	u64 no_mgmt_learn;   
 };
 
 struct sja1105_l2_forwarding_entry {
 	u64 bc_domain;
 	u64 reach_port;
 	u64 fl_domain;
-	/* This is actually max(SJA1105_NUM_TC, SJA1105_MAX_NUM_PORTS) */
+	
 	u64 vlan_pmap[SJA1105_MAX_NUM_PORTS];
 	bool type_egrpcp2outputq;
 };
@@ -352,8 +348,8 @@ struct sja1105_retagging_entry {
 };
 
 struct sja1105_cbs_entry {
-	u64 port; /* Not used for SJA1110 */
-	u64 prio; /* Not used for SJA1110 */
+	u64 port; 
+	u64 prio; 
 	u64 credit_hi;
 	u64 credit_lo;
 	u64 send_slope;
@@ -363,12 +359,7 @@ struct sja1105_cbs_entry {
 struct sja1105_xmii_params_entry {
 	u64 phy_mac[SJA1105_MAX_NUM_PORTS];
 	u64 xmii_mode[SJA1105_MAX_NUM_PORTS];
-	/* The SJA1110 insists being a snowflake, and requires SGMII,
-	 * 2500base-x and internal MII ports connected to the 100base-TX PHY to
-	 * set this bit. We set it unconditionally from the high-level logic,
-	 * and only sja1110_xmii_params_entry_packing writes it to the static
-	 * config. I have no better name for it than "special".
-	 */
+	
 	u64 special[SJA1105_MAX_NUM_PORTS];
 };
 
@@ -385,7 +376,7 @@ struct sja1105_vl_lookup_entry {
 	u64 format;
 	u64 port;
 	union {
-		/* SJA1105_VL_FORMAT_PSFP */
+		
 		struct {
 			u64 destports;
 			u64 iscritical;
@@ -393,14 +384,14 @@ struct sja1105_vl_lookup_entry {
 			u64 vlanid;
 			u64 vlanprior;
 		};
-		/* SJA1105_VL_FORMAT_ARINC664 */
+		
 		struct {
 			u64 egrmirr;
 			u64 ingrmirr;
 			u64 vlid;
 		};
 	};
-	/* Not part of hardware structure */
+	
 	unsigned long flow_cookie;
 };
 
@@ -499,7 +490,7 @@ void sja1105_unpack(const void *buf, u64 *val, int start, int end, size_t len);
 void sja1105_packing(void *buf, u64 *val, int start, int end,
 		     size_t len, enum packing_op op);
 
-/* Common implementations for the static and dynamic configs */
+
 size_t sja1105pqrs_general_params_entry_packing(void *buf, void *entry_ptr,
 						enum packing_op op);
 size_t sja1110_general_params_entry_packing(void *buf, void *entry_ptr,

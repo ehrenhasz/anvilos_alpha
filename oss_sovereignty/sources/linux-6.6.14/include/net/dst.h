@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * net/dst.h	Protocol independent destination cache definitions.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- */
+
+
 
 #ifndef _NET_DST_H
 #define _NET_DST_H
@@ -45,28 +40,18 @@ struct dst_entry {
 #define DST_XFRM_QUEUE		0x0040
 #define DST_METADATA		0x0080
 
-	/* A non-zero value of dst->obsolete forces by-hand validation
-	 * of the route entry.  Positive values are set by the generic
-	 * dst layer to indicate that the entry has been forcefully
-	 * destroyed.
-	 *
-	 * Negative values are used by the implementation layer code to
-	 * force invocation of the dst_ops->check() method.
-	 */
+	
 	short			obsolete;
 #define DST_OBSOLETE_NONE	0
 #define DST_OBSOLETE_DEAD	2
 #define DST_OBSOLETE_FORCE_CHK	-1
 #define DST_OBSOLETE_KILL	-2
-	unsigned short		header_len;	/* more space at head required */
-	unsigned short		trailer_len;	/* space to reserve at tail */
+	unsigned short		header_len;	
+	unsigned short		trailer_len;	
 
-	/*
-	 * __rcuref wants to be on a different cache line from
-	 * input/output/ops or performance tanks badly
-	 */
+	
 #ifdef CONFIG_64BIT
-	rcuref_t		__rcuref;	/* 64-bit offset 64 */
+	rcuref_t		__rcuref;	
 #endif
 	int			__use;
 	unsigned long		lastuse;
@@ -76,17 +61,11 @@ struct dst_entry {
 	__u32			tclassid;
 #ifndef CONFIG_64BIT
 	struct lwtunnel_state   *lwtstate;
-	rcuref_t		__rcuref;	/* 32-bit offset 64 */
+	rcuref_t		__rcuref;	
 #endif
 	netdevice_tracker	dev_tracker;
 
-	/*
-	 * Used by rtable and rt6_info. Moves lwtstate into the next cache
-	 * line on 64bit so that lwtstate does not cause false sharing with
-	 * __rcuref under contention of __rcuref. This also puts the
-	 * frequently accessed members of rtable and rt6_info out of the
-	 * __rcuref cache line.
-	 */
+	
 	struct list_head	rt_uncached;
 	struct uncached_list	*rt_uncached_list;
 #ifdef CONFIG_64BIT
@@ -97,7 +76,7 @@ struct dst_entry {
 struct dst_metrics {
 	u32		metrics[RTAX_MAX];
 	refcount_t	refcnt;
-} __aligned(4);		/* Low pointer bits contain DST_METRICS_FLAGS */
+} __aligned(4);		
 extern const struct dst_metrics dst_default_metrics;
 
 u32 *dst_cow_metrics_generic(struct dst_entry *dst, unsigned long old);
@@ -134,9 +113,7 @@ static inline u32 *dst_metrics_write_ptr(struct dst_entry *dst)
 	return __DST_METRICS_PTR(p);
 }
 
-/* This may only be invoked before the entry has reached global
- * visibility.
- */
+
 static inline void dst_init_metrics(struct dst_entry *dst,
 				    const u32 *src_metrics,
 				    bool read_only)
@@ -197,7 +174,7 @@ static inline void dst_metric_set(struct dst_entry *dst, int metric, u32 val)
 		p[metric-1] = val;
 }
 
-/* Kernel-internal feature bits that are unallocated in user space. */
+
 #define DST_FEATURE_ECN_CA	(1U << 31)
 
 #define DST_FEATURE_MASK	(DST_FEATURE_ECN_CA)
@@ -216,7 +193,7 @@ static inline u32 dst_mtu(const struct dst_entry *dst)
 	return INDIRECT_CALL_INET(dst->ops->mtu, ip6_mtu, ipv4_mtu, dst);
 }
 
-/* RTT metrics are stored in milliseconds for user ABI, but used as jiffies */
+
 static inline unsigned long dst_metric_rtt(const struct dst_entry *dst, int metric)
 {
 	return msecs_to_jiffies(dst_metric(dst, metric));
@@ -237,10 +214,7 @@ dst_metric_locked(const struct dst_entry *dst, int metric)
 
 static inline void dst_hold(struct dst_entry *dst)
 {
-	/*
-	 * If your kernel compilation stops here, please check
-	 * the placement of __rcuref in struct dst_entry
-	 */
+	
 	BUILD_BUG_ON(offsetof(struct dst_entry, __rcuref) & 63);
 	WARN_ON(!rcuref_get(&dst->__rcuref));
 }
@@ -270,12 +244,7 @@ static inline void refdst_drop(unsigned long refdst)
 		dst_release((struct dst_entry *)(refdst & SKB_DST_PTRMASK));
 }
 
-/**
- * skb_dst_drop - drops skb dst
- * @skb: buffer
- *
- * Drops dst reference count if a reference was taken.
- */
+
 static inline void skb_dst_drop(struct sk_buff *skb)
 {
 	if (skb->_skb_refdst) {
@@ -297,25 +266,13 @@ static inline void skb_dst_copy(struct sk_buff *nskb, const struct sk_buff *oskb
 	__skb_dst_copy(nskb, oskb->_skb_refdst);
 }
 
-/**
- * dst_hold_safe - Take a reference on a dst if possible
- * @dst: pointer to dst entry
- *
- * This helper returns false if it could not safely
- * take a reference on a dst.
- */
+
 static inline bool dst_hold_safe(struct dst_entry *dst)
 {
 	return rcuref_get(&dst->__rcuref);
 }
 
-/**
- * skb_dst_force - makes sure skb dst is refcounted
- * @skb: buffer
- *
- * If dst is not yet refcounted and not destroyed, grab a ref on it.
- * Returns true if dst is refcounted.
- */
+
 static inline bool skb_dst_force(struct sk_buff *skb)
 {
 	if (skb_dst_is_noref(skb)) {
@@ -333,40 +290,19 @@ static inline bool skb_dst_force(struct sk_buff *skb)
 }
 
 
-/**
- *	__skb_tunnel_rx - prepare skb for rx reinsert
- *	@skb: buffer
- *	@dev: tunnel device
- *	@net: netns for packet i/o
- *
- *	After decapsulation, packet is going to re-enter (netif_rx()) our stack,
- *	so make some cleanups. (no accounting done)
- */
+
 static inline void __skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
 				   struct net *net)
 {
 	skb->dev = dev;
 
-	/*
-	 * Clear hash so that we can recalulate the hash for the
-	 * encapsulated packet, unless we have already determine the hash
-	 * over the L4 4-tuple.
-	 */
+	
 	skb_clear_hash_if_not_l4(skb);
 	skb_set_queue_mapping(skb, 0);
 	skb_scrub_packet(skb, !net_eq(net, dev_net(dev)));
 }
 
-/**
- *	skb_tunnel_rx - prepare skb for rx reinsert
- *	@skb: buffer
- *	@dev: tunnel device
- *	@net: netns for packet i/o
- *
- *	After decapsulation, packet is going to re-enter (netif_rx()) our stack,
- *	so make some cleanups, and perform accounting.
- *	Note: this accounting is not SMP safe.
- */
+
 static inline void skb_tunnel_rx(struct sk_buff *skb, struct net_device *dev,
 				 struct net *net)
 {
@@ -452,7 +388,7 @@ INDIRECT_CALLABLE_DECLARE(int ip6_output(struct net *, struct sock *,
 					 struct sk_buff *));
 INDIRECT_CALLABLE_DECLARE(int ip_output(struct net *, struct sock *,
 					 struct sk_buff *));
-/* Output packet to network from transport.  */
+
 static inline int dst_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
 	return INDIRECT_CALL_INET(skb_dst(skb)->output,
@@ -462,7 +398,7 @@ static inline int dst_output(struct net *net, struct sock *sk, struct sk_buff *s
 
 INDIRECT_CALLABLE_DECLARE(int ip6_input(struct sk_buff *));
 INDIRECT_CALLABLE_DECLARE(int ip_local_deliver(struct sk_buff *));
-/* Input packet from network to transport.  */
+
 static inline int dst_input(struct sk_buff *skb)
 {
 	return INDIRECT_CALL_INET(skb_dst(skb)->input,
@@ -481,7 +417,7 @@ static inline struct dst_entry *dst_check(struct dst_entry *dst, u32 cookie)
 	return dst;
 }
 
-/* Flags for xfrm_lookup flags argument. */
+
 enum {
 	XFRM_LOOKUP_ICMP = 1 << 0,
 	XFRM_LOOKUP_QUEUE = 1 << 1,
@@ -536,7 +472,7 @@ struct dst_entry *xfrm_lookup_route(struct net *net, struct dst_entry *dst_orig,
 				    const struct flowi *fl, const struct sock *sk,
 				    int flags);
 
-/* skb attached with this dst needs transformation if dst->xfrm is valid */
+
 static inline struct xfrm_state *dst_xfrm(const struct dst_entry *dst)
 {
 	return dst->xfrm;
@@ -551,7 +487,7 @@ static inline void skb_dst_update_pmtu(struct sk_buff *skb, u32 mtu)
 		dst->ops->update_pmtu(dst, NULL, skb, mtu, true);
 }
 
-/* update dst pmtu but not do neighbor confirm */
+
 static inline void skb_dst_update_pmtu_no_confirm(struct sk_buff *skb, u32 mtu)
 {
 	struct dst_entry *dst = skb_dst(skb);
@@ -571,4 +507,4 @@ struct neighbour *dst_blackhole_neigh_lookup(const struct dst_entry *dst,
 					     const void *daddr);
 unsigned int dst_blackhole_mtu(const struct dst_entry *dst);
 
-#endif /* _NET_DST_H */
+#endif 

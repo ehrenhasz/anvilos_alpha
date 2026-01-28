@@ -1,33 +1,26 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
 
-/* BFA common services */
+
+
+
+
 
 #ifndef __BFA_CS_H__
 #define __BFA_CS_H__
 
 #include "cna.h"
 
-/* BFA state machine interfaces */
 
-/* For converting from state machine function to state encoding. */
+
+
 #define BFA_SM_TABLE(n, s, e, t)				\
 struct s;							\
 enum e;								\
 typedef void (*t)(struct s *, enum e);				\
 								\
 struct n ## _sm_table_s {					\
-	t		sm;	/* state machine function */	\
-	int		state;	/* state machine encoding */	\
-	char		*name;	/* state name for display */	\
+	t		sm;		\
+	int		state;		\
+	char		*name;		\
 };								\
 								\
 static inline int						\
@@ -56,14 +49,10 @@ BFA_SM_TABLE(rx,	bna_rx,		bna_rx_event,	bna_fsm_rx_t)
 
 #define BFA_SM(_sm)	(_sm)
 
-/* State machine with entry actions. */
+
 typedef void (*bfa_fsm_t)(void *fsm, int event);
 
-/* oc - object class eg. bfa_ioc
- * st - state, eg. reset
- * otype - object type, eg. struct bfa_ioc
- * etype - object type, eg. enum ioc_event
- */
+
 #define bfa_fsm_state_decl(oc, st, otype, etype)			\
 	static void oc ## _sm_ ## st(otype * fsm, etype event);		\
 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
@@ -75,7 +64,7 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
 
 #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
 #define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
-/* Generic wait counter. */
+
 
 typedef void (*bfa_wc_resume_t) (void *cbarg);
 
@@ -99,7 +88,7 @@ bfa_wc_down(struct bfa_wc *wc)
 		wc->wc_resume(wc->wc_cbarg);
 }
 
-/* Initialize a waiting counter. */
+
 static inline void
 bfa_wc_init(struct bfa_wc *wc, bfa_wc_resume_t wc_resume, void *wc_cbarg)
 {
@@ -109,11 +98,11 @@ bfa_wc_init(struct bfa_wc *wc, bfa_wc_resume_t wc_resume, void *wc_cbarg)
 	bfa_wc_up(wc);
 }
 
-/* Wait for counter to reach zero */
+
 static inline void
 bfa_wc_wait(struct bfa_wc *wc)
 {
 	bfa_wc_down(wc);
 }
 
-#endif /* __BFA_CS_H__ */
+#endif 

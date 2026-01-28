@@ -25,9 +25,9 @@ testing()
 {
   NAME="$1"
   [ -n "$1" ] || NAME="$2"
-  if [ $# -ne 5 ]
+  if [ $
   then
-    echo "Test $NAME has wrong number of arguments: $# (must be 5)" >&2
+    echo "Test $NAME has wrong number of arguments: $
     exit 1
   fi
   [ -z "$DEBUG" ] || set -x
@@ -57,13 +57,13 @@ testing()
 }
 mkchroot()
 {
-  [ $# -lt 2 ] && return
+  [ $
   $ECHO -n .
   dest=$1
   shift
   for i in "$@"
   do
-    i=$(which $i) # no-op for /bin/prog
+    i=$(which $i) 
     [ -f "$dest/$i" ] && continue
     if [ -e "$i" ]
     then

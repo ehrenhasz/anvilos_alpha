@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * connection tracking event cache.
- */
+
+
 
 #ifndef _NF_CONNTRACK_ECACHE_H
 #define _NF_CONNTRACK_ECACHE_H
@@ -14,16 +12,16 @@
 #include <net/netfilter/nf_conntrack_extend.h>
 
 enum nf_ct_ecache_state {
-	NFCT_ECACHE_DESTROY_FAIL,	/* tried but failed to send destroy event */
-	NFCT_ECACHE_DESTROY_SENT,	/* sent destroy event after failure */
+	NFCT_ECACHE_DESTROY_FAIL,	
+	NFCT_ECACHE_DESTROY_SENT,	
 };
 
 struct nf_conntrack_ecache {
-	unsigned long cache;		/* bitops want long */
-	u16 ctmask;			/* bitmask of ct events to be delivered */
-	u16 expmask;			/* bitmask of expect events to be delivered */
-	u32 missed;			/* missed events */
-	u32 portid;			/* netlink portid of destroyer */
+	unsigned long cache;		
+	u16 ctmask;			
+	u16 expmask;			
+	u32 missed;			
+	u32 portid;			
 };
 
 static inline struct nf_conntrack_ecache *
@@ -47,7 +45,7 @@ static inline bool nf_ct_ecache_exist(const struct nf_conn *ct)
 
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 
-/* This structure is passed to event handler */
+
 struct nf_ct_event {
 	struct nf_conn *ct;
 	u32 portid;
@@ -149,7 +147,7 @@ static inline bool nf_conntrack_ecache_dwork_pending(const struct net *net)
 {
 	return net->ct.ecache_dwork_pending;
 }
-#else /* CONFIG_NF_CONNTRACK_EVENTS */
+#else 
 
 static inline void nf_ct_expect_event_report(enum ip_conntrack_expect_events e,
 					     struct nf_conntrack_expect *exp,
@@ -171,5 +169,5 @@ static inline void nf_conntrack_ecache_pernet_fini(struct net *net)
 {
 }
 static inline bool nf_conntrack_ecache_dwork_pending(const struct net *net) { return false; }
-#endif /* CONFIG_NF_CONNTRACK_EVENTS */
-#endif /*_NF_CONNTRACK_ECACHE_H*/
+#endif 
+#endif 

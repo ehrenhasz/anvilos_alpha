@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- */
+
+
 
 #ifndef _NET_IPV6_H
 #define _NET_IPV6_H
@@ -27,81 +22,38 @@ struct ip_tunnel_info;
 
 #define IPV6_MAXPLEN		65535
 
-/*
- *	NextHeader field of IPv6 header
- */
 
-#define NEXTHDR_HOP		0	/* Hop-by-hop option header. */
-#define NEXTHDR_IPV4		4	/* IPv4 in IPv6 */
-#define NEXTHDR_TCP		6	/* TCP segment. */
-#define NEXTHDR_UDP		17	/* UDP message. */
-#define NEXTHDR_IPV6		41	/* IPv6 in IPv6 */
-#define NEXTHDR_ROUTING		43	/* Routing header. */
-#define NEXTHDR_FRAGMENT	44	/* Fragmentation/reassembly header. */
-#define NEXTHDR_GRE		47	/* GRE header. */
-#define NEXTHDR_ESP		50	/* Encapsulating security payload. */
-#define NEXTHDR_AUTH		51	/* Authentication header. */
-#define NEXTHDR_ICMP		58	/* ICMP for IPv6. */
-#define NEXTHDR_NONE		59	/* No next header */
-#define NEXTHDR_DEST		60	/* Destination options header. */
-#define NEXTHDR_SCTP		132	/* SCTP message. */
-#define NEXTHDR_MOBILITY	135	/* Mobility header. */
+
+#define NEXTHDR_HOP		0	
+#define NEXTHDR_IPV4		4	
+#define NEXTHDR_TCP		6	
+#define NEXTHDR_UDP		17	
+#define NEXTHDR_IPV6		41	
+#define NEXTHDR_ROUTING		43	
+#define NEXTHDR_FRAGMENT	44	
+#define NEXTHDR_GRE		47	
+#define NEXTHDR_ESP		50	
+#define NEXTHDR_AUTH		51	
+#define NEXTHDR_ICMP		58	
+#define NEXTHDR_NONE		59	
+#define NEXTHDR_DEST		60	
+#define NEXTHDR_SCTP		132	
+#define NEXTHDR_MOBILITY	135	
 
 #define NEXTHDR_MAX		255
 
 #define IPV6_DEFAULT_HOPLIMIT   64
 #define IPV6_DEFAULT_MCASTHOPS	1
 
-/* Limits on Hop-by-Hop and Destination options.
- *
- * Per RFC8200 there is no limit on the maximum number or lengths of options in
- * Hop-by-Hop or Destination options other then the packet must fit in an MTU.
- * We allow configurable limits in order to mitigate potential denial of
- * service attacks.
- *
- * There are three limits that may be set:
- *   - Limit the number of options in a Hop-by-Hop or Destination options
- *     extension header
- *   - Limit the byte length of a Hop-by-Hop or Destination options extension
- *     header
- *   - Disallow unknown options
- *
- * The limits are expressed in corresponding sysctls:
- *
- * ipv6.sysctl.max_dst_opts_cnt
- * ipv6.sysctl.max_hbh_opts_cnt
- * ipv6.sysctl.max_dst_opts_len
- * ipv6.sysctl.max_hbh_opts_len
- *
- * max_*_opts_cnt is the number of TLVs that are allowed for Destination
- * options or Hop-by-Hop options. If the number is less than zero then unknown
- * TLVs are disallowed and the number of known options that are allowed is the
- * absolute value. Setting the value to INT_MAX indicates no limit.
- *
- * max_*_opts_len is the length limit in bytes of a Destination or
- * Hop-by-Hop options extension header. Setting the value to INT_MAX
- * indicates no length limit.
- *
- * If a limit is exceeded when processing an extension header the packet is
- * silently discarded.
- */
 
-/* Default limits for Hop-by-Hop and Destination options */
+
+
 #define IP6_DEFAULT_MAX_DST_OPTS_CNT	 8
 #define IP6_DEFAULT_MAX_HBH_OPTS_CNT	 8
-#define IP6_DEFAULT_MAX_DST_OPTS_LEN	 INT_MAX /* No limit */
-#define IP6_DEFAULT_MAX_HBH_OPTS_LEN	 INT_MAX /* No limit */
+#define IP6_DEFAULT_MAX_DST_OPTS_LEN	 INT_MAX 
+#define IP6_DEFAULT_MAX_HBH_OPTS_LEN	 INT_MAX 
 
-/*
- *	Addr type
- *	
- *	type	-	unicast | multicast
- *	scope	-	local	| site	    | global
- *	v4	-	compat
- *	v4mapped
- *	any
- *	loopback
- */
+
 
 #define IPV6_ADDR_ANY		0x0000U
 
@@ -118,11 +70,9 @@ struct ip_tunnel_info;
 
 #define IPV6_ADDR_MAPPED	0x1000U
 
-/*
- *	Addr scopes
- */
+
 #define IPV6_ADDR_MC_SCOPE(a)	\
-	((a)->s6_addr[1] & 0x0f)	/* nonstandard */
+	((a)->s6_addr[1] & 0x0f)	
 #define __IPV6_ADDR_SCOPE_INVALID	-1
 #define IPV6_ADDR_SCOPE_NODELOCAL	0x01
 #define IPV6_ADDR_SCOPE_LINKLOCAL	0x02
@@ -130,9 +80,7 @@ struct ip_tunnel_info;
 #define IPV6_ADDR_SCOPE_ORGLOCAL	0x08
 #define IPV6_ADDR_SCOPE_GLOBAL		0x0e
 
-/*
- *	Addr flags
- */
+
 #define IPV6_ADDR_MC_FLAG_TRANSIENT(a)	\
 	((a)->s6_addr[1] & 0x10)
 #define IPV6_ADDR_MC_FLAG_PREFIX(a)	\
@@ -140,9 +88,7 @@ struct ip_tunnel_info;
 #define IPV6_ADDR_MC_FLAG_RENDEZVOUS(a)	\
 	((a)->s6_addr[1] & 0x40)
 
-/*
- *	fragmentation header
- */
+
 
 struct frag_hdr {
 	__u8	nexthdr;
@@ -151,14 +97,12 @@ struct frag_hdr {
 	__be32	identification;
 };
 
-/*
- * Jumbo payload option, as described in RFC 2675 2.
- */
+
 struct hop_jumbo_hdr {
 	u8	nexthdr;
 	u8	hdrlen;
-	u8	tlv_type;	/* IPV6_TLV_JUMBO, 0xC2 */
-	u8	tlv_len;	/* 4 */
+	u8	tlv_type;	
+	u8	tlv_len;	
 	__be32	jumbo_payload_len;
 };
 
@@ -213,7 +157,7 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb,
 
 #include <net/sock.h>
 
-/* sysctls */
+
 extern int sysctl_mld_max_msf;
 extern int sysctl_mld_qrv;
 
@@ -225,7 +169,7 @@ extern int sysctl_mld_qrv;
 	mod##SNMP_INC_STATS64((net)->mib.statname##_statistics, (field));\
 })
 
-/* per device counters are atomic_long_t */
+
 #define _DEVINCATOMIC(net, statname, mod, idev, field)			\
 ({									\
 	struct inet6_dev *_idev = (idev);				\
@@ -234,7 +178,7 @@ extern int sysctl_mld_qrv;
 	mod##SNMP_INC_STATS((net)->mib.statname##_statistics, (field));\
 })
 
-/* per device and per net counters are atomic_long_t */
+
 #define _DEVINC_ATOMIC_ATOMIC(net, statname, idev, field)		\
 ({									\
 	struct inet6_dev *_idev = (idev);				\
@@ -259,7 +203,7 @@ extern int sysctl_mld_qrv;
 	mod##SNMP_UPD_PO_STATS((net)->mib.statname##_statistics, field, (val));\
 })
 
-/* MIBs */
+
 
 #define IP6_INC_STATS(net, idev,field)		\
 		_DEVINC(net, ipv6, , idev, field)
@@ -293,30 +237,27 @@ struct ip6_ra_chain {
 extern struct ip6_ra_chain	*ip6_ra_chain;
 extern rwlock_t ip6_ra_lock;
 
-/*
-   This structure is prepared by protocol, when parsing
-   ancillary data and passed to IPv6.
- */
+
 
 struct ipv6_txoptions {
 	refcount_t		refcnt;
-	/* Length of this structure */
+	
 	int			tot_len;
 
-	/* length of extension headers   */
+	
 
-	__u16			opt_flen;	/* after fragment hdr */
-	__u16			opt_nflen;	/* before fragment hdr */
+	__u16			opt_flen;	
+	__u16			opt_nflen;	
 
 	struct ipv6_opt_hdr	*hopopt;
 	struct ipv6_opt_hdr	*dst0opt;
-	struct ipv6_rt_hdr	*srcrt;	/* Routing Header */
+	struct ipv6_rt_hdr	*srcrt;	
 	struct ipv6_opt_hdr	*dst1opt;
 	struct rcu_head		rcu;
-	/* Option buffer, as read by IPV6_PKTOPTIONS, starts here. */
+	
 };
 
-/* flowlabel_reflect sysctl values */
+
 enum flowlabel_reflect {
 	FLOWLABEL_REFLECT_ESTABLISHED		= 1,
 	FLOWLABEL_REFLECT_TCP_RESET		= 2,
@@ -468,11 +409,7 @@ bool ipv6_opt_accepted(const struct sock *sk, const struct sk_buff *skb,
 struct ipv6_txoptions *ipv6_update_options(struct sock *sk,
 					   struct ipv6_txoptions *opt);
 
-/* This helper is specialized for BIG TCP needs.
- * It assumes the hop_jumbo_hdr will immediately follow the IPV6 header.
- * It assumes headers are already in skb->head.
- * Returns 0, or IPPROTO_TCP if a BIG TCP packet is there.
- */
+
 static inline int ipv6_has_hopopt_jumbo(const struct sk_buff *skb)
 {
 	const struct hop_jumbo_hdr *jhdr;
@@ -501,10 +438,7 @@ static inline int ipv6_has_hopopt_jumbo(const struct sk_buff *skb)
 	return jhdr->nexthdr;
 }
 
-/* Return 0 if HBH header is successfully removed
- * Or if HBH removal is unnecessary (packet is not big TCP)
- * Return error to indicate dropping the packet
- */
+
 static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
 {
 	const int hophdr_len = sizeof(struct hop_jumbo_hdr);
@@ -517,9 +451,7 @@ static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
 	if (skb_cow_head(skb, 0))
 		return -1;
 
-	/* Remove the HBH header.
-	 * Layout: [Ethernet header][IPv6 header][HBH][L4 Header]
-	 */
+	
 	memmove(skb_mac_header(skb) + hophdr_len, skb_mac_header(skb),
 		skb_network_header(skb) - skb_mac_header(skb) +
 		sizeof(struct ipv6hdr));
@@ -536,16 +468,14 @@ static inline int ipv6_hopopt_jumbo_remove(struct sk_buff *skb)
 
 static inline bool ipv6_accept_ra(struct inet6_dev *idev)
 {
-	/* If forwarding is enabled, RA are not accepted unless the special
-	 * hybrid mode (accept_ra=2) is enabled.
-	 */
+	
 	return idev->cnf.forwarding ? idev->cnf.accept_ra == 2 :
 	    idev->cnf.accept_ra;
 }
 
-#define IPV6_FRAG_HIGH_THRESH	(4 * 1024*1024)	/* 4194304 */
-#define IPV6_FRAG_LOW_THRESH	(3 * 1024*1024)	/* 3145728 */
-#define IPV6_FRAG_TIMEOUT	(60 * HZ)	/* 60 seconds */
+#define IPV6_FRAG_HIGH_THRESH	(4 * 1024*1024)	
+#define IPV6_FRAG_LOW_THRESH	(3 * 1024*1024)	
+#define IPV6_FRAG_TIMEOUT	(60 * HZ)	
 
 int __ipv6_addr_type(const struct in6_addr *addr);
 static inline int ipv6_addr_type(const struct in6_addr *addr)
@@ -608,7 +538,7 @@ static inline void ipv6_addr_prefix(struct in6_addr *pfx,
 				    const struct in6_addr *addr,
 				    int plen)
 {
-	/* caller must guarantee 0 <= plen <= 128 */
+	
 	int o = plen >> 3,
 	    b = plen & 0x7;
 
@@ -622,7 +552,7 @@ static inline void ipv6_addr_prefix_copy(struct in6_addr *addr,
 					 const struct in6_addr *pfx,
 					 int plen)
 {
-	/* caller must guarantee 0 <= plen <= 128 */
+	
 	int o = plen >> 3,
 	    b = plen & 0x7;
 
@@ -710,12 +640,12 @@ static inline bool ipv6_prefix_equal(const struct in6_addr *addr1,
 	const __be32 *a2 = addr2->s6_addr32;
 	unsigned int pdw, pbi;
 
-	/* check complete u32 in prefix */
+	
 	pdw = prefixlen >> 5;
 	if (pdw && memcmp(a1, a2, pdw << 2))
 		return false;
 
-	/* check incomplete u32 in prefix */
+	
 	pbi = prefixlen & 0x1f;
 	if (pbi && ((a1[pdw] ^ a2[pdw]) & htonl((0xffffffff) << (32 - pbi))))
 		return false;
@@ -749,7 +679,7 @@ static inline u32 ipv6_addr_hash(const struct in6_addr *a)
 #endif
 }
 
-/* more secured version of ipv6_addr_hash() */
+
 static inline u32 __ipv6_addr_jhash(const struct in6_addr *a, const u32 initval)
 {
 	return jhash2((__force const u32 *)a->s6_addr32,
@@ -768,10 +698,7 @@ static inline bool ipv6_addr_loopback(const struct in6_addr *a)
 #endif
 }
 
-/*
- * Note that we must __force cast these to unsigned long to make sparse happy,
- * since all of the endian-annotated types are fixed size regardless of arch.
- */
+
 static inline bool ipv6_addr_v4mapped(const struct in6_addr *a)
 {
 	return (
@@ -810,10 +737,7 @@ static inline u32 ipv6_portaddr_hash(const struct net *net,
 	return hash ^ port;
 }
 
-/*
- * Check for a RFC 4843 ORCHID address
- * (Overlay Routable Cryptographic Hash Identifiers)
- */
+
 static inline bool ipv6_addr_orchid(const struct in6_addr *a)
 {
 	return (a->s6_addr32[0] & htonl(0xfffffff0)) == htonl(0x20010010);
@@ -833,10 +757,7 @@ static inline void ipv6_addr_set_v4mapped(const __be32 addr,
 			addr);
 }
 
-/*
- * find the first different bit between two addresses
- * length of address must be a multiple of 32bits
- */
+
 static inline int __ipv6_addr_diff32(const void *token1, const void *token2, int addrlen)
 {
 	const __be32 *a1 = token1, *a2 = token2;
@@ -850,22 +771,7 @@ static inline int __ipv6_addr_diff32(const void *token1, const void *token2, int
 			return i * 32 + 31 - __fls(ntohl(xb));
 	}
 
-	/*
-	 *	we should *never* get to this point since that
-	 *	would mean the addrs are equal
-	 *
-	 *	However, we do get to it 8) And exacly, when
-	 *	addresses are equal 8)
-	 *
-	 *	ip route add 1111::/128 via ...
-	 *	ip route add 1111::/64 via ...
-	 *	and we are here.
-	 *
-	 *	Ideally, this function should stop comparison
-	 *	at prefix length. It does not, but it is still OK,
-	 *	if returned value is greater than prefix length.
-	 *					--ANK (980803)
-	 */
+	
 	return addrlen << 5;
 }
 
@@ -922,10 +828,7 @@ static inline int ip6_sk_dst_hoplimit(struct ipv6_pinfo *np, struct flowi6 *fl6,
 	return hlimit;
 }
 
-/* copy IPv6 saddr & daddr to flow_keys, possibly using 64bit load/store
- * Equivalent to :	flow->v6addrs.src = iph->saddr;
- *			flow->v6addrs.dst = iph->daddr;
- */
+
 static inline void iph_to_flow_copy_v6addrs(struct flow_keys *flow,
 					    const struct ipv6hdr *iph)
 {
@@ -946,7 +849,7 @@ static inline bool ipv6_can_nonlocal_bind(struct net *net,
 		test_bit(INET_FLAGS_TRANSPARENT, &inet->inet_flags);
 }
 
-/* Sysctl settings for net ipv6.auto_flowlabels */
+
 #define IP6_AUTO_FLOW_LABEL_OFF		0
 #define IP6_AUTO_FLOW_LABEL_OPTOUT	1
 #define IP6_AUTO_FLOW_LABEL_OPTIN	2
@@ -962,9 +865,7 @@ static inline __be32 ip6_make_flowlabel(struct net *net, struct sk_buff *skb,
 {
 	u32 hash;
 
-	/* @flowlabel may include more than a flow label, eg, the traffic class.
-	 * Here we want only the flow label value.
-	 */
+	
 	flowlabel &= IPV6_FLOWLABEL_MASK;
 
 	if (flowlabel ||
@@ -975,10 +876,7 @@ static inline __be32 ip6_make_flowlabel(struct net *net, struct sk_buff *skb,
 
 	hash = skb_get_hash_flowi6(skb, fl6);
 
-	/* Since this is being sent on the wire obfuscate hash a bit
-	 * to minimize possbility that any useful information to an
-	 * attacker is leaked. Only lower 20 bits are relevant.
-	 */
+	
 	hash = rol32(hash, 16);
 
 	flowlabel = (__force __be32)hash & IPV6_FLOWLABEL_MASK;
@@ -1034,9 +932,7 @@ static inline u32 ip6_multipath_hash_fields(const struct net *net)
 }
 #endif
 
-/*
- *	Header manipulation
- */
+
 static inline void ip6_flow_hdr(struct ipv6hdr *hdr, unsigned int tclass,
 				__be32 flowlabel)
 {
@@ -1073,13 +969,9 @@ static inline __be32 flowi6_get_flowlabel(const struct flowi6 *fl6)
 	return fl6->flowlabel & IPV6_FLOWLABEL_MASK;
 }
 
-/*
- *	Prototypes exported by ipv6
- */
 
-/*
- *	rcv function (called from netdevice level)
- */
+
+
 
 int ipv6_rcv(struct sk_buff *skb, struct net_device *dev,
 	     struct packet_type *pt, struct net_device *orig_dev);
@@ -1088,9 +980,7 @@ void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
 
 int ip6_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
 
-/*
- *	upper-layer output functions
- */
+
 int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 	     __u32 mark, struct ipv6_txoptions *opt, int tclass, u32 priority);
 
@@ -1142,9 +1032,7 @@ struct dst_entry *ip6_dst_lookup_tunnel(struct sk_buff *skb,
 struct dst_entry *ip6_blackhole_route(struct net *net,
 				      struct dst_entry *orig_dst);
 
-/*
- *	skb processing functions
- */
+
 
 int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
 int ip6_forward(struct sk_buff *skb);
@@ -1156,9 +1044,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
 int __ip6_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
 int ip6_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
 
-/*
- *	Extension header (options) processing
- */
+
 
 void ipv6_push_nfrag_opts(struct sk_buff *skb, struct ipv6_txoptions *opt,
 			  u8 *proto, struct in6_addr **daddr_p,
@@ -1177,7 +1063,7 @@ enum {
 	IP6_FH_F_SKIP_RH	= (1 << 2),
 };
 
-/* find specified header and get offset to it */
+
 int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target,
 		  unsigned short *fragoff, int *fragflg);
 
@@ -1187,9 +1073,7 @@ struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
 				const struct ipv6_txoptions *opt,
 				struct in6_addr *orig);
 
-/*
- *	socket options (ipv6_sockglue.c)
- */
+
 DECLARE_STATIC_KEY_FALSE(ip6_min_hopcount);
 
 int do_ipv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
@@ -1235,9 +1119,7 @@ int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
 int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		  int flags);
 
-/*
- * reassembly.c
- */
+
 extern const struct proto_ops inet6_stream_ops;
 extern const struct proto_ops inet6_dgram_ops;
 extern const struct proto_ops inet6_sockraw_ops;
@@ -1313,7 +1195,7 @@ static inline int __ip6_sock_set_addr_preferences(struct sock *sk, int val)
 	unsigned int pref = 0;
 	unsigned int prefmask = ~0;
 
-	/* check PUBLIC/TMP/PUBTMP_DEFAULT conflicts */
+	
 	switch (val & (IPV6_PREFER_SRC_PUBLIC |
 		       IPV6_PREFER_SRC_TMP |
 		       IPV6_PREFER_SRC_PUBTMP_DEFAULT)) {
@@ -1337,7 +1219,7 @@ static inline int __ip6_sock_set_addr_preferences(struct sock *sk, int val)
 		return -EINVAL;
 	}
 
-	/* check HOME/COA conflicts */
+	
 	switch (val & (IPV6_PREFER_SRC_HOME | IPV6_PREFER_SRC_COA)) {
 	case IPV6_PREFER_SRC_HOME:
 		prefmask &= ~IPV6_PREFER_SRC_COA;
@@ -1351,7 +1233,7 @@ static inline int __ip6_sock_set_addr_preferences(struct sock *sk, int val)
 		return -EINVAL;
 	}
 
-	/* check CGA/NONCGA conflicts */
+	
 	switch (val & (IPV6_PREFER_SRC_CGA|IPV6_PREFER_SRC_NONCGA)) {
 	case IPV6_PREFER_SRC_CGA:
 	case IPV6_PREFER_SRC_NONCGA:
@@ -1382,4 +1264,4 @@ static inline void ip6_sock_set_recvpktinfo(struct sock *sk)
 	release_sock(sk);
 }
 
-#endif /* _NET_IPV6_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copied from the kernel sources to tools/perf/:
- */
+
+
 
 #ifndef __TOOLS_LINUX_ASM_GENERIC_UNALIGNED_H
 #define __TOOLS_LINUX_ASM_GENERIC_UNALIGNED_H
@@ -19,5 +17,5 @@
 #define get_unaligned(ptr)	__get_unaligned_t(typeof(*(ptr)), (ptr))
 #define put_unaligned(val, ptr) __put_unaligned_t(typeof(*(ptr)), (val), (ptr))
 
-#endif /* __TOOLS_LINUX_ASM_GENERIC_UNALIGNED_H */
+#endif 
 

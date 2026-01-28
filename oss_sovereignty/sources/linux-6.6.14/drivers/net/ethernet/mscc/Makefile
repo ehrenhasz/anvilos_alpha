@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: (GPL-2.0 OR MIT)
+
 obj-$(CONFIG_MSCC_OCELOT_SWITCH_LIB) += mscc_ocelot_switch_lib.o
 mscc_ocelot_switch_lib-y := \
 	ocelot.o \

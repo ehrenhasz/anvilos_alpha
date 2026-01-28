@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx6ull-tqma6ull2.dtsi"
-#include "mba6ulx.dtsi"
-/ {
-	model = "TQ-Systems TQMa6ULL2 SoM on MBa6ULx board";
-	compatible = "tq,imx6ull-tqma6ull2-mba6ulx", "tq,imx6ull-tqma6ull2", "fsl,imx6ull";
-};

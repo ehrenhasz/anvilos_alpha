@@ -11,4 +11,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_IIC_MASTER_CFG_H_ */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *	LED driver for TI lp3952 controller
- *
- *	Copyright (C) 2016, DAQRI, LLC.
- *	Author: Tony Makkiel <tony.makkiel@daqri.com>
- */
+
+
 
 #ifndef LEDS_LP3952_H_
 #define LEDS_LP3952_H_
@@ -35,7 +30,7 @@
 #define LP3952_ACTIVE_MODE                  BIT(6)
 #define LP3952_LED_MASK_ALL                 0x3f
 
-/* Transition Time in ms */
+
 enum lp3952_tt {
 	TT0,
 	TT55,
@@ -47,7 +42,7 @@ enum lp3952_tt {
 	TT3539
 };
 
-/* Command Execution Time in ms */
+
 enum lp3952_cet {
 	CET197,
 	CET393,
@@ -66,7 +61,7 @@ enum lp3952_cet {
 	CET3146
 };
 
-/* Max Current in % */
+
 enum lp3952_colour_I_log_0 {
 	I0,
 	I7,
@@ -118,4 +113,4 @@ struct lp3952_led_array {
 	struct lp3952_ctrl_hdl leds[LP3952_LED_ALL];
 };
 
-#endif /* LEDS_LP3952_H_ */
+#endif 

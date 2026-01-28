@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3066A_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3066A_H
 
 #include <dt-bindings/clock/rk3188-cru-common.h>
 
-/* soft-reset indices */
+
 #define SRST_SRST1		0
 #define SRST_SRST2		1
 

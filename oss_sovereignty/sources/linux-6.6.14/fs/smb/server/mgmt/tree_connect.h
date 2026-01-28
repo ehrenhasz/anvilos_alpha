@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __TREE_CONNECT_MANAGEMENT_H__
 #define __TREE_CONNECT_MANAGEMENT_H__
@@ -62,4 +60,4 @@ struct ksmbd_tree_connect *ksmbd_tree_conn_lookup(struct ksmbd_session *sess,
 
 int ksmbd_tree_conn_session_logoff(struct ksmbd_session *sess);
 
-#endif /* __TREE_CONNECT_MANAGEMENT_H__ */
+#endif 

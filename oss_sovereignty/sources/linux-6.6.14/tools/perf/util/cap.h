@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_CAP_H
 #define __PERF_CAP_H
 
@@ -22,9 +22,9 @@ static inline bool perf_cap__capable(int cap __maybe_unused)
 	return geteuid() == 0;
 }
 
-#endif /* HAVE_LIBCAP_SUPPORT */
+#endif 
 
-/* For older systems */
+
 #ifndef CAP_SYSLOG
 #define CAP_SYSLOG	34
 #endif
@@ -33,4 +33,4 @@ static inline bool perf_cap__capable(int cap __maybe_unused)
 #define CAP_PERFMON	38
 #endif
 
-#endif /* __PERF_CAP_H */
+#endif 

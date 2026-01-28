@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  CLPS711X system register bits definitions
- *
- *  Copyright (C) 2013 Alexander Shiyan <shc_work@mail.ru>
- */
+
+
 
 #ifndef _LINUX_MFD_SYSCON_CLPS711X_H_
 #define _LINUX_MFD_SYSCON_CLPS711X_H_

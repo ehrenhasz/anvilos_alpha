@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * int340x_thermal_zone.h
- * Copyright (c) 2015, Intel Corporation.
- */
+
+
 
 #ifndef __INT340X_THERMAL_ZONE_H__
 #define __INT340X_THERMAL_ZONE_H__

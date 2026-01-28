@@ -1,17 +1,4 @@
-/*
- * SPDX-License-Identifier: LGPL-2.1-or-later
- *
- * First set of functions in this file are part of systemd, and were
- * copied to util-linux at August 2013.
- *
- * Copyright 2010 Lennart Poettering
- * Copyright (C) 2014 Karel Zak <kzak@redhat.com>
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 2.1 of the License, or (at your option)
- * any later version.
- */
+
 #ifndef UTIL_LINUX_TIME_UTIL_H
 #define UTIL_LINUX_TIME_UTIL_H
 
@@ -42,14 +29,14 @@ typedef uint64_t nsec_t;
 #define USEC_PER_YEAR	(31557600ULL*USEC_PER_SEC)
 #define NSEC_PER_YEAR	(31557600ULL*NSEC_PER_SEC)
 
-#define FORMAT_TIMESTAMP_MAX ((4*4+1)+11+9+4+1)	/* weekdays can be unicode */
+#define FORMAT_TIMESTAMP_MAX ((4*4+1)+11+9+4+1)	
 #define FORMAT_TIMESTAMP_RELATIVE_MAX 256
 #define FORMAT_TIMESPAN_MAX 64
 
 int parse_timestamp(const char *t, usec_t *usec);
 int get_gmtoff(const struct tm *tp);
 
-/* flags and masks for strxxx_iso() functions */
+
 enum {
 	ISO_DATE		= (1 << 0),
 	ISO_TIME		= (1 << 1),
@@ -102,4 +89,4 @@ static inline struct timeval usec_to_timeval(usec_t t)
 	return r;
 }
 
-#endif /* UTIL_LINUX_TIME_UTIL_H */
+#endif 

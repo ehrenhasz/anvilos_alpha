@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT8188_H
 #define _DT_BINDINGS_CLK_MT8188_H
 
-/* TOPCKGEN */
+
 #define CLK_TOP_AXI				0
 #define CLK_TOP_SPM				1
 #define CLK_TOP_SCP				2
@@ -215,7 +212,7 @@
 #define CLK_TOP_SSUSB_PHY_P3_REF		204
 #define CLK_TOP_NR_CLK				205
 
-/* INFRACFG_AO */
+
 #define CLK_INFRA_AO_PMIC_TMR			0
 #define CLK_INFRA_AO_PMIC_AP			1
 #define CLK_INFRA_AO_PMIC_MD			2
@@ -296,7 +293,7 @@
 #define CLK_INFRA_AO_RG_AES_MSDCFDE_CK_0P	77
 #define CLK_INFRA_AO_NR_CLK			78
 
-/* APMIXEDSYS */
+
 #define CLK_APMIXED_ETHPLL			0
 #define CLK_APMIXED_MSDCPLL			1
 #define CLK_APMIXED_TVDPLL1			2
@@ -315,11 +312,11 @@
 #define CLK_APMIXED_PLL_SSUSB26M_EN		15
 #define CLK_APMIXED_NR_CLK			16
 
-/* AUDIODSP */
+
 #define CLK_AUDIODSP_AUDIO26M			0
 #define CLK_AUDIODSP_NR_CLK			1
 
-/* PERICFG_AO */
+
 #define CLK_PERI_AO_ETHERNET			0
 #define CLK_PERI_AO_ETHERNET_BUS		1
 #define CLK_PERI_AO_FLASHIF_BUS			2
@@ -335,27 +332,27 @@
 #define CLK_PERI_AO_PCIE_P0_FMEM		12
 #define CLK_PERI_AO_NR_CLK			13
 
-/* IMP_IIC_WRAP_C */
+
 #define CLK_IMP_IIC_WRAP_C_AP_CLOCK_I2C0	0
 #define CLK_IMP_IIC_WRAP_C_AP_CLOCK_I2C2	1
 #define CLK_IMP_IIC_WRAP_C_AP_CLOCK_I2C3	2
 #define CLK_IMP_IIC_WRAP_C_NR_CLK		3
 
-/* IMP_IIC_WRAP_W */
+
 #define CLK_IMP_IIC_WRAP_W_AP_CLOCK_I2C1	0
 #define CLK_IMP_IIC_WRAP_W_AP_CLOCK_I2C4	1
 #define CLK_IMP_IIC_WRAP_W_NR_CLK		2
 
-/* IMP_IIC_WRAP_EN */
+
 #define CLK_IMP_IIC_WRAP_EN_AP_CLOCK_I2C5	0
 #define CLK_IMP_IIC_WRAP_EN_AP_CLOCK_I2C6	1
 #define CLK_IMP_IIC_WRAP_EN_NR_CLK		2
 
-/* MFGCFG */
+
 #define CLK_MFGCFG_BG3D				0
 #define CLK_MFGCFG_NR_CLK			1
 
-/* VPPSYS0 */
+
 #define CLK_VPP0_MDP_FG				0
 #define CLK_VPP0_STITCH				1
 #define CLK_VPP0_PADDING			2
@@ -403,14 +400,14 @@
 #define CLK_VPP0_WARP1_ASYNC			44
 #define CLK_VPP0_NR_CLK				45
 
-/* WPESYS */
+
 #define CLK_WPE_TOP_WPE_VPP0			0
 #define CLK_WPE_TOP_SMI_LARB7			1
 #define CLK_WPE_TOP_WPESYS_EVENT_TX		2
 #define CLK_WPE_TOP_SMI_LARB7_PCLK_EN		3
 #define CLK_WPE_TOP_NR_CLK			4
 
-/* WPESYS_VPP0 */
+
 #define CLK_WPE_VPP0_VECI			0
 #define CLK_WPE_VPP0_VEC2I			1
 #define CLK_WPE_VPP0_VEC3I			2
@@ -436,7 +433,7 @@
 #define CLK_WPE_VPP0_TOP			22
 #define CLK_WPE_VPP0_NR_CLK			23
 
-/* VPPSYS1 */
+
 #define CLK_VPP1_SVPP1_MDP_OVL			0
 #define CLK_VPP1_SVPP1_MDP_TCC			1
 #define CLK_VPP1_SVPP1_MDP_WROT			2
@@ -491,7 +488,7 @@
 #define CLK_VPP1_VPP_SPLIT_26M			51
 #define CLK_VPP1_NR_CLK				52
 
-/* IMGSYS */
+
 #define CLK_IMGSYS_MAIN_LARB9			0
 #define CLK_IMGSYS_MAIN_TRAW0			1
 #define CLK_IMGSYS_MAIN_TRAW1			2
@@ -504,22 +501,22 @@
 #define CLK_IMGSYS_MAIN_GALS			9
 #define CLK_IMGSYS_MAIN_NR_CLK			10
 
-/* IMGSYS1_DIP_TOP */
+
 #define CLK_IMGSYS1_DIP_TOP_LARB10		0
 #define CLK_IMGSYS1_DIP_TOP_DIP_TOP		1
 #define CLK_IMGSYS1_DIP_TOP_NR_CLK		2
 
-/* IMGSYS1_DIP_NR */
+
 #define CLK_IMGSYS1_DIP_NR_LARB15		0
 #define CLK_IMGSYS1_DIP_NR_DIP_NR		1
 #define CLK_IMGSYS1_DIP_NR_NR_CLK		2
 
-/* IMGSYS_WPE1 */
+
 #define CLK_IMGSYS_WPE1_LARB11			0
 #define CLK_IMGSYS_WPE1				1
 #define CLK_IMGSYS_WPE1_NR_CLK			2
 
-/* IPESYS */
+
 #define CLK_IPE_DPE				0
 #define CLK_IPE_FDVT				1
 #define CLK_IPE_ME				2
@@ -527,17 +524,17 @@
 #define CLK_IPE_SMI_LARB12			4
 #define CLK_IPE_NR_CLK				5
 
-/* IMGSYS_WPE2 */
+
 #define CLK_IMGSYS_WPE2_LARB11			0
 #define CLK_IMGSYS_WPE2				1
 #define CLK_IMGSYS_WPE2_NR_CLK			2
 
-/* IMGSYS_WPE3 */
+
 #define CLK_IMGSYS_WPE3_LARB11			0
 #define CLK_IMGSYS_WPE3				1
 #define CLK_IMGSYS_WPE3_NR_CLK			2
 
-/* CAMSYS */
+
 #define CLK_CAM_MAIN_LARB13			0
 #define CLK_CAM_MAIN_LARB14			1
 #define CLK_CAM_MAIN_CAM			2
@@ -565,37 +562,37 @@
 #define CLK_CAM_MAIN_CAM2SYS_GALS		24
 #define CLK_CAM_MAIN_NR_CLK			25
 
-/* CAMSYS_RAWA */
+
 #define CLK_CAM_RAWA_LARBX			0
 #define CLK_CAM_RAWA_CAM			1
 #define CLK_CAM_RAWA_CAMTG			2
 #define CLK_CAM_RAWA_NR_CLK			3
 
-/* CAMSYS_YUVA */
+
 #define CLK_CAM_YUVA_LARBX			0
 #define CLK_CAM_YUVA_CAM			1
 #define CLK_CAM_YUVA_CAMTG			2
 #define CLK_CAM_YUVA_NR_CLK			3
 
-/* CAMSYS_RAWB */
+
 #define CLK_CAM_RAWB_LARBX			0
 #define CLK_CAM_RAWB_CAM			1
 #define CLK_CAM_RAWB_CAMTG			2
 #define CLK_CAM_RAWB_NR_CLK			3
 
-/* CAMSYS_YUVB */
+
 #define CLK_CAM_YUVB_LARBX			0
 #define CLK_CAM_YUVB_CAM			1
 #define CLK_CAM_YUVB_CAMTG			2
 #define CLK_CAM_YUVB_NR_CLK			3
 
-/* CCUSYS */
+
 #define CLK_CCU_LARB27				0
 #define CLK_CCU_AHB				1
 #define CLK_CCU_CCU0				2
 #define CLK_CCU_NR_CLK				3
 
-/* VDECSYS_SOC */
+
 #define CLK_VDEC1_SOC_LARB1			0
 #define CLK_VDEC1_SOC_LAT			1
 #define CLK_VDEC1_SOC_LAT_ACTIVE			2
@@ -605,7 +602,7 @@
 #define CLK_VDEC1_SOC_VDEC_ENG			6
 #define CLK_VDEC1_NR_CLK				7
 
-/* VDECSYS */
+
 #define CLK_VDEC2_LARB1				0
 #define CLK_VDEC2_LAT				1
 #define CLK_VDEC2_VDEC				2
@@ -613,7 +610,7 @@
 #define CLK_VDEC2_VDEC_ENG			4
 #define CLK_VDEC2_NR_CLK				5
 
-/* VENCSYS */
+
 #define CLK_VENC1_LARB			0
 #define CLK_VENC1_VENC			1
 #define CLK_VENC1_JPGENC			2
@@ -623,7 +620,7 @@
 #define CLK_VENC1_GALS_SRAM			6
 #define CLK_VENC1_NR_CLK				7
 
-/* VDOSYS0 */
+
 #define CLK_VDO0_DISP_OVL0			0
 #define CLK_VDO0_FAKE_ENG0			1
 #define CLK_VDO0_DISP_CCORR0			2
@@ -659,7 +656,7 @@
 #define CLK_VDO0_DP_INTF0_DP_INTF		32
 #define CLK_VDO0_NR_CLK				33
 
-/* VDOSYS1 */
+
 #define CLK_VDO1_SMI_LARB2			0
 #define CLK_VDO1_SMI_LARB3			1
 #define CLK_VDO1_GALS				2
@@ -723,4 +720,4 @@
 #define CLK_VDO1_26M_SLOW			60
 #define CLK_VDO1_NR_CLK				61
 
-#endif /* _DT_BINDINGS_CLK_MT8188_H */
+#endif 

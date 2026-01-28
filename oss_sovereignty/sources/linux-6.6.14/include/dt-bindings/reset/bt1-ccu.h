@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
- *
- * Baikal-T1 CCU reset indices
- */
+
+
 #ifndef __DT_BINDINGS_RESET_BT1_CCU_H
 #define __DT_BINDINGS_RESET_BT1_CCU_H
 
@@ -31,4 +27,4 @@
 #define CCU_SYS_PCIE_NSTICKY_RST	9
 #define CCU_SYS_PCIE_HOT_RST		10
 
-#endif /* __DT_BINDINGS_RESET_BT1_CCU_H */
+#endif 

@@ -1,8 +1,8 @@
-/*	$FreeBSD$  */
-/*	from:	NetBSD: setjmp.S,v 1.1 1998/01/27 15:13:12 sakamoto Exp $  */
-/*	from:	OpenBSD: setjmp.S,v 1.2 1996/12/28 06:22:18 rahnds Exp 	*/
-/* kernel version of this file, does not have signal goop */
-/* int setjmp(jmp_buf env) */
+
+
+
+
+
 
 #define	_ASM
 #include <asm/types.h>
@@ -11,9 +11,9 @@
 #if !defined(PPC64_ELF_ABI_v2) && !defined(PPC64_ELF_ABI_v1)
 #if defined(_CALL_ELF) && _CALL_ELF == 2
 #define	PPC64_ELF_ABI_v2
-#endif /* _CALL_ELF */
-#endif /* PPC64_ELF_ABI_ */
-#endif /* __powerpc64__ */
+#endif 
+#endif 
+#endif 
 
 #ifdef __powerpc64__
 #define LD_REG	ld
@@ -23,7 +23,7 @@
 #define	LD_REG	lwz
 #define	ST_REG	stw
 #define	REGWIDTH 4
-#endif /* __powerpc64__ */
+#endif 
 
 #define JMP_r1	1*REGWIDTH
 #define JMP_r2	2*REGWIDTH
@@ -59,7 +59,7 @@
 	.weak name; \
 name:
 
-#else /* PPC64_ELF_ABI_v1 */
+#else 
 
 #define	XGLUE(a,b) a##b
 #define	GLUE(a,b) XGLUE(a,b)
@@ -76,9 +76,9 @@ name: \
 	.type GLUE(.,name),@function; \
 GLUE(.,name):
 
-#endif /* PPC64_ELF_ABI_v2 */
+#endif 
 
-#else /* 32-bit */
+#else 
 
 #define	ENTRY(name) \
 	.text; \
@@ -87,12 +87,12 @@ GLUE(.,name):
 	.type name,@function; \
 name:
 
-#endif /* __powerpc64__ */
+#endif 
 
 
 ENTRY(setjmp)
 	ST_REG 31, JMP_r31(3)
-	/* r1, r2, r14-r30 */
+	
 	ST_REG 1,  JMP_r1 (3)
 	ST_REG 2,  JMP_r2 (3)
 	ST_REG 14, JMP_r14(3)
@@ -112,7 +112,7 @@ ENTRY(setjmp)
 	ST_REG 28, JMP_r28(3)
 	ST_REG 29, JMP_r29(3)
 	ST_REG 30, JMP_r30(3)
-	/* cr, lr, ctr, xer */
+	
 	mfcr 0
 	ST_REG 0, JMP_cr(3)
 	mflr 0
@@ -121,13 +121,13 @@ ENTRY(setjmp)
 	ST_REG 0, JMP_ctr(3)
 	mfxer 0
 	ST_REG 0, JMP_xer(3)
-	/* f14-f31, fpscr */
+	
 	li 3, 0
 	blr
 
 ENTRY(longjmp)
 	LD_REG 31, JMP_r31(3)
-	/* r1, r2, r14-r30 */
+	
 	LD_REG 1,  JMP_r1 (3)
 	LD_REG 2,  JMP_r2 (3)
 	LD_REG 14, JMP_r14(3)
@@ -147,7 +147,7 @@ ENTRY(longjmp)
 	LD_REG 28, JMP_r28(3)
 	LD_REG 29, JMP_r29(3)
 	LD_REG 30, JMP_r30(3)
-	/* cr, lr, ctr, xer */
+	
 	LD_REG 0, JMP_cr(3)
 	mtcr 0
 	LD_REG 0, JMP_lr(3)
@@ -156,7 +156,7 @@ ENTRY(longjmp)
 	mtctr 0
 	LD_REG 0, JMP_xer(3)
 	mtxer 0
-	/* f14-f31, fpscr */
+	
 	mr 3, 4
 	blr
 

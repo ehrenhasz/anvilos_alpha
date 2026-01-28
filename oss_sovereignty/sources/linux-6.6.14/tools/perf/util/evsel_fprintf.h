@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __PERF_EVSEL_FPRINTF_H
 #define __PERF_EVSEL_FPRINTF_H 1
 
@@ -47,4 +47,4 @@ typedef int (*attr__fprintf_f)(FILE *, const char *, const char *, void *);
 
 int perf_event_attr__fprintf(FILE *fp, struct perf_event_attr *attr,
 			     attr__fprintf_f attr__fprintf, void *priv);
-#endif // __PERF_EVSEL_H
+#endif 

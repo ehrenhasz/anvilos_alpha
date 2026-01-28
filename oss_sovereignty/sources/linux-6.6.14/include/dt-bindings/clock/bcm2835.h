@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
+
+
 
 #define BCM2835_PLLA			0
 #define BCM2835_PLLB			1

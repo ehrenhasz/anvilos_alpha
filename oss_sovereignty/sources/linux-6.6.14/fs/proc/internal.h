@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Internal procfs definitions
- *
- * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #include <linux/proc_fs.h>
 #include <linux/proc_ns.h>
@@ -17,25 +13,13 @@
 struct ctl_table_header;
 struct mempolicy;
 
-/*
- * This is not completely implemented yet. The idea is to
- * create an in-memory tree (like the actual /proc filesystem
- * tree) of these proc_dir_entries, so that we can dynamically
- * add new files to /proc.
- *
- * parent/subdir are used for the directory structure (every /proc file has a
- * parent, but "subdir" is empty for all non-directory entries).
- * subdir_node is used to build the rb tree "subdir" of the parent.
- */
+
 struct proc_dir_entry {
-	/*
-	 * number of callers into module in progress;
-	 * negative -> it's going away RSN
-	 */
+	
 	atomic_t in_use;
 	refcount_t refcnt;
-	struct list_head pde_openers;	/* who did ->open, but not ->release */
-	/* protects ->pde_openers and all struct pde_opener instances */
+	struct list_head pde_openers;	
+	
 	spinlock_t pde_unload_lock;
 	struct completion *pde_unload_completion;
 	const struct inode_operations *proc_iops;
@@ -107,9 +91,7 @@ struct proc_inode {
 	struct inode vfs_inode;
 } __randomize_layout;
 
-/*
- * General functions
- */
+
 static inline struct proc_inode *PROC_I(const struct inode *inode)
 {
 	return container_of(inode, struct proc_inode, vfs_inode);
@@ -134,17 +116,13 @@ void task_dump_owner(struct task_struct *task, umode_t mode,
 		     kuid_t *ruid, kgid_t *rgid);
 
 unsigned name_to_int(const struct qstr *qstr);
-/*
- * Offset of the first process in the /proc root directory..
- */
+
 #define FIRST_PROCESS_ENTRY 256
 
-/* Worst case buffer size needed for holding an integer. */
+
 #define PROC_NUMBUF 13
 
-/*
- * array.c
- */
+
 extern const struct file_operations proc_tid_children_operations;
 
 extern void proc_task_name(struct seq_file *m, struct task_struct *p,
@@ -158,9 +136,7 @@ extern int proc_pid_status(struct seq_file *, struct pid_namespace *,
 extern int proc_pid_statm(struct seq_file *, struct pid_namespace *,
 			  struct pid *, struct task_struct *);
 
-/*
- * base.c
- */
+
 extern const struct dentry_operations pid_dentry_operations;
 extern int pid_getattr(struct mnt_idmap *, const struct path *,
 		       struct kstat *, u32, unsigned int);
@@ -174,15 +150,13 @@ extern int proc_pid_readdir(struct file *, struct dir_context *);
 struct dentry *proc_pid_lookup(struct dentry *, unsigned int);
 extern loff_t mem_lseek(struct file *, loff_t, int);
 
-/* Lookups */
+
 typedef struct dentry *instantiate_t(struct dentry *,
 				     struct task_struct *, const void *);
 bool proc_fill_cache(struct file *, struct dir_context *, const char *, unsigned int,
 			   instantiate_t, struct task_struct *, const void *);
 
-/*
- * generic.c
- */
+
 struct proc_dir_entry *proc_create_reg(const char *name, umode_t mode,
 		struct proc_dir_entry **parent, void *data);
 struct proc_dir_entry *proc_register(struct proc_dir_entry *dir,
@@ -204,9 +178,7 @@ static inline bool is_empty_pde(const struct proc_dir_entry *pde)
 }
 extern ssize_t proc_simple_write(struct file *, const char __user *, size_t, loff_t *);
 
-/*
- * inode.c
- */
+
 struct pde_opener {
 	struct list_head lh;
 	struct file *file;
@@ -223,15 +195,11 @@ void set_proc_pid_nlink(void);
 extern struct inode *proc_get_inode(struct super_block *, struct proc_dir_entry *);
 extern void proc_entry_rundown(struct proc_dir_entry *);
 
-/*
- * proc_namespaces.c
- */
+
 extern const struct inode_operations proc_ns_dir_inode_operations;
 extern const struct file_operations proc_ns_dir_operations;
 
-/*
- * proc_net.c
- */
+
 extern const struct file_operations proc_net_operations;
 extern const struct inode_operations proc_net_inode_operations;
 
@@ -241,20 +209,14 @@ extern int proc_net_init(void);
 static inline int proc_net_init(void) { return 0; }
 #endif
 
-/*
- * proc_self.c
- */
+
 extern int proc_setup_self(struct super_block *);
 
-/*
- * proc_thread_self.c
- */
+
 extern int proc_setup_thread_self(struct super_block *);
 extern void proc_thread_self_init(void);
 
-/*
- * proc_sysctl.c
- */
+
 #ifdef CONFIG_PROC_SYSCTL
 extern int proc_sys_init(void);
 extern void proc_sys_evict_inode(struct inode *inode,
@@ -265,25 +227,19 @@ static inline void proc_sys_evict_inode(struct  inode *inode,
 					struct ctl_table_header *head) { }
 #endif
 
-/*
- * proc_tty.c
- */
+
 #ifdef CONFIG_TTY
 extern void proc_tty_init(void);
 #else
 static inline void proc_tty_init(void) {}
 #endif
 
-/*
- * root.c
- */
+
 extern struct proc_dir_entry proc_root;
 
 extern void proc_self_init(void);
 
-/*
- * task_[no]mmu.c
- */
+
 struct mem_size_stats;
 struct proc_maps_private {
 	struct inode *inode;
@@ -313,6 +269,6 @@ extern void task_mem(struct seq_file *, struct mm_struct *);
 extern const struct dentry_operations proc_net_dentry_ops;
 static inline void pde_force_lookup(struct proc_dir_entry *pde)
 {
-	/* /proc/net/ entries can be changed under us by setns(CLONE_NEWNET) */
+	
 	pde->proc_dops = &proc_net_dentry_ops;
 }

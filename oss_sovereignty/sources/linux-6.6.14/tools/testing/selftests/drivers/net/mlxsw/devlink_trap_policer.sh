@@ -134,7 +134,7 @@ __rate_test()
 	devlink trap group set $DEVLINK_DEV group l3_drops policer $id
 	log_info "=== Tx rate: Highest, Policer rate: 1000 pps ==="
 	start_traffic $h1 192.0.2.1 198.51.100.100 $rp1_mac
-	sleep 5 # Take measurements when rate is stable
+	sleep 5 
 	rate=$(trap_rate_get)
 	pct=$((100 * (rate - 1000) / 1000))
 	((-10 <= pct && pct <= 10))
@@ -147,7 +147,7 @@ __rate_test()
 	stop_traffic
 	log_info "=== Tx rate: 1000 pps, Policer rate: 1000 pps ==="
 	start_traffic $h1 192.0.2.1 198.51.100.100 $rp1_mac -d 1msec
-	sleep 5 # Take measurements when rate is stable
+	sleep 5 
 	drop_rate=$(policer_drop_rate_get $id)
 	(( drop_rate == 0 ))
 	check_err $? "Expected zero policer drop rate, got a drop rate of $drop_rate pps"

@@ -1,43 +1,31 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* SCTP kernel implementation
- * (C) Copyright Red Hat Inc. 2017
- *
- * These are definitions used by the stream schedulers, defined in RFC
- * draft ndata (https://tools.ietf.org/html/draft-ietf-tsvwg-sctp-ndata-11)
- *
- * Please send any bug reports or fixes you make to the
- * email addresses:
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
- */
+
+
 
 #ifndef __sctp_stream_sched_h__
 #define __sctp_stream_sched_h__
 
 struct sctp_sched_ops {
-	/* Property handling for a given stream */
+	
 	int (*set)(struct sctp_stream *stream, __u16 sid, __u16 value,
 		   gfp_t gfp);
 	int (*get)(struct sctp_stream *stream, __u16 sid, __u16 *value);
 
-	/* Init the specific scheduler */
+	
 	int (*init)(struct sctp_stream *stream);
-	/* Init a stream */
+	
 	int (*init_sid)(struct sctp_stream *stream, __u16 sid, gfp_t gfp);
-	/* free a stream */
+	
 	void (*free_sid)(struct sctp_stream *stream, __u16 sid);
 
-	/* Enqueue a chunk */
+	
 	void (*enqueue)(struct sctp_outq *q, struct sctp_datamsg *msg);
-	/* Dequeue a chunk */
+	
 	struct sctp_chunk *(*dequeue)(struct sctp_outq *q);
-	/* Called only if the chunk fit the packet */
+	
 	void (*dequeue_done)(struct sctp_outq *q, struct sctp_chunk *chunk);
-	/* Sched all chunks already enqueued */
+	
 	void (*sched_all)(struct sctp_stream *steam);
-	/* Unched all chunks already enqueued */
+	
 	void (*unsched_all)(struct sctp_stream *steam);
 };
 
@@ -61,4 +49,4 @@ void sctp_sched_ops_rr_init(void);
 void sctp_sched_ops_fc_init(void);
 void sctp_sched_ops_wfq_init(void);
 
-#endif /* __sctp_stream_sched_h__ */
+#endif 

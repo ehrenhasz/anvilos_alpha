@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MAC80211_DEBUGFS_H
 #define __MAC80211_DEBUGFS_H
 
@@ -14,4 +14,4 @@ static inline void debugfs_hw_add(struct ieee80211_local *local)
 }
 #endif
 
-#endif /* __MAC80211_DEBUGFS_H */
+#endif 

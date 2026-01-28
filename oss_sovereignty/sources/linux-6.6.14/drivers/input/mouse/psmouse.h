@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _PSMOUSE_H
 #define _PSMOUSE_H
 
@@ -11,7 +11,7 @@
 #define PSMOUSE_CMD_GETINFO	0x03e9
 #define PSMOUSE_CMD_SETSTREAM	0x00ea
 #define PSMOUSE_CMD_SETPOLL	0x00f0
-#define PSMOUSE_CMD_POLL	0x00eb	/* caller sets number of bytes to receive */
+#define PSMOUSE_CMD_POLL	0x00eb	
 #define PSMOUSE_CMD_RESET_WRAP	0x00ec
 #define PSMOUSE_CMD_GETID	0x02f2
 #define PSMOUSE_CMD_SETRATE	0x10f3
@@ -33,7 +33,7 @@ enum psmouse_state {
 	PSMOUSE_ACTIVATED,
 };
 
-/* psmouse protocol handler return codes */
+
 typedef enum {
 	PSMOUSE_BAD_DATA,
 	PSMOUSE_GOOD_DATA,
@@ -69,7 +69,7 @@ enum psmouse_type {
 	PSMOUSE_BYD,
 	PSMOUSE_SYNAPTICS_SMBUS,
 	PSMOUSE_ELANTECH_SMBUS,
-	PSMOUSE_AUTO		/* This one should always be last */
+	PSMOUSE_AUTO		
 };
 
 struct psmouse;
@@ -77,9 +77,9 @@ struct psmouse;
 struct psmouse_protocol {
 	enum psmouse_type type;
 	bool maxproto;
-	bool ignore_parity; /* Protocol should ignore parity errors from KBC */
-	bool try_passthru; /* Try protocol also on passthrough ports */
-	bool smbus_companion; /* "Protocol" is a stub, device is on SMBus */
+	bool ignore_parity; 
+	bool try_passthru; 
+	bool smbus_companion; 
 	const char *name;
 	const char *alias;
 	int (*detect)(struct psmouse *, bool);
@@ -113,7 +113,7 @@ struct psmouse {
 	unsigned int resolution;
 	unsigned int resetafter;
 	unsigned int resync_time;
-	bool smartscroll;	/* Logitech only */
+	bool smartscroll;	
 
 	psmouse_ret_t (*protocol_handler)(struct psmouse *psmouse);
 	void (*set_rate)(struct psmouse *psmouse, unsigned int rate);
@@ -231,7 +231,7 @@ int psmouse_smbus_init(struct psmouse *psmouse,
 		       bool leave_breadcrumbs);
 void psmouse_smbus_cleanup(struct psmouse *psmouse);
 
-#else /* !CONFIG_MOUSE_PS2_SMBUS */
+#else 
 
 static inline int psmouse_smbus_module_init(void)
 {
@@ -246,6 +246,6 @@ static inline void psmouse_smbus_cleanup(struct psmouse *psmouse)
 {
 }
 
-#endif /* CONFIG_MOUSE_PS2_SMBUS */
+#endif 
 
-#endif /* _PSMOUSE_H */
+#endif 

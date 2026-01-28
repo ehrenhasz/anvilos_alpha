@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- *
- */
+
+
 #ifndef _DT_BINDINGS_GCE_MT8188_H
 #define _DT_BINDINGS_GCE_MT8188_H
 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Yong Liang <yong.liang@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT2712
 #define _DT_BINDINGS_RESET_CONTROLLER_MT2712
@@ -19,4 +16,4 @@
 
 #define MT2712_TOPRGU_SW_RST_NUM				11
 
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT2712 */
+#endif  

@@ -1,21 +1,11 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2014-2016 Broadcom Corporation
- * Copyright (c) 2016-2018 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef BNXT_H
 #define BNXT_H
 
 #define DRV_MODULE_NAME		"bnxt_en"
 
-/* DO NOT CHANGE DRV_VER_* defines
- * FIXME: Delete them
- */
+
 #define DRV_VER_MAJ	1
 #define DRV_VER_MIN	10
 #define DRV_VER_UPD	2
@@ -549,7 +539,7 @@ struct nqe_cn {
 #define BNXT_MIN_ROCE_CP_RINGS	2
 #define BNXT_MIN_ROCE_STAT_CTXS	1
 
-/* 64-bit doorbell */
+
 #define DBR_INDEX_MASK					0x0000000000ffffffULL
 #define DBR_XID_MASK					0x000fffff00000000ULL
 #define DBR_XID_SFT					32
@@ -573,9 +563,7 @@ struct nqe_cn {
 
 #define INVALID_HW_RING_ID	((u16)-1)
 
-/* The hardware supports certain page sizes.  Use the supported page sizes
- * to allocate the rings.
- */
+
 #if (PAGE_SHIFT < 12)
 #define BNXT_PAGE_SHIFT	12
 #elif (PAGE_SHIFT <= 13)
@@ -588,7 +576,7 @@ struct nqe_cn {
 
 #define BNXT_PAGE_SIZE	(1 << BNXT_PAGE_SHIFT)
 
-/* The RXBD length is 16-bit so we can only support page sizes < 64K */
+
 #if (PAGE_SHIFT > 15)
 #define BNXT_RX_PAGE_SHIFT 15
 #else
@@ -599,13 +587,7 @@ struct nqe_cn {
 
 #define BNXT_MAX_MTU		9500
 
-/* First RX buffer page in XDP multi-buf mode
- *
- * +-------------------------------------------------------------------------+
- * | XDP_PACKET_HEADROOM | bp->rx_buf_use_size              | skb_shared_info|
- * | (bp->rx_dma_offset) |                                  |                |
- * +-------------------------------------------------------------------------+
- */
+
 #define BNXT_MAX_PAGE_MODE_MTU_SBUF \
 	((unsigned int)PAGE_SIZE - VLAN_ETH_HLEN - NET_IP_ALIGN -	\
 	 XDP_PACKET_HEADROOM)
@@ -656,9 +638,7 @@ struct nqe_cn {
 #define BNXT_MAX_RX_JUM_DESC_CNT	(RX_DESC_CNT * MAX_RX_AGG_PAGES - 1)
 #define BNXT_MAX_TX_DESC_CNT		(TX_DESC_CNT * MAX_TX_PAGES - 1)
 
-/* Minimum TX BDs for a TX packet with MAX_SKB_FRAGS + 1.  We need one extra
- * BD because the first TX BD is always a long BD.
- */
+
 #define BNXT_MIN_TX_DESC_CNT		(MAX_SKB_FRAGS + 2)
 
 #define RX_RING(x)	(((x) & ~(RX_DESC_CNT - 1)) >> (BNXT_PAGE_SHIFT - 4))
@@ -767,10 +747,10 @@ struct bnxt_ring_mem_info {
 struct bnxt_ring_struct {
 	struct bnxt_ring_mem_info	ring_mem;
 
-	u16			fw_ring_id; /* Ring id filled by Chimp FW */
+	u16			fw_ring_id; 
 	union {
 		u16		grp_idx;
-		u16		map_idx; /* Used by cmpl rings */
+		u16		map_idx; 
 	};
 	u32			handle;
 	u8			queue_id;
@@ -817,7 +797,7 @@ struct bnxt_tx_ring_info {
 	u32			dev_state;
 
 	struct bnxt_ring_struct	tx_ring_struct;
-	/* Synchronize simultaneous xdp_xmit on same ring */
+	
 	spinlock_t		xdp_tx_lock;
 };
 
@@ -862,7 +842,7 @@ struct bnxt_coal {
 	u16			coal_ticks_irq;
 	u16			coal_bufs;
 	u16			coal_bufs_irq;
-			/* RING_IDLE enabled when coal ticks < idle_thresh  */
+			
 	u16			idle_thresh;
 	u8			bufs_per_record;
 	u8			budget;
@@ -893,7 +873,7 @@ struct bnxt_tpa_info {
 #define BNXT_TPA_OUTER_L3_OFF(hdr_info)	\
 	((hdr_info) & 0x1ff)
 
-	u16			cfa_code; /* cfa_code in TPA start compl */
+	u16			cfa_code; 
 	u8			agg_count;
 	struct rx_agg_cmp	*agg_arr;
 };
@@ -1062,13 +1042,13 @@ struct bnxt_ring_grp_info {
 };
 
 struct bnxt_vnic_info {
-	u16		fw_vnic_id; /* returned by Chimp during alloc */
+	u16		fw_vnic_id; 
 #define BNXT_MAX_CTX_PER_VNIC	8
 	u16		fw_rss_cos_lb_ctx[BNXT_MAX_CTX_PER_VNIC];
 	u16		fw_l2_ctx_id;
 #define BNXT_MAX_UC_ADDRS	4
 	__le64		fw_l2_filter_id[BNXT_MAX_UC_ADDRS];
-				/* index 0 always dev_addr */
+				
 	u16		uc_filter_count;
 	u8		*uc_list;
 
@@ -1134,10 +1114,8 @@ struct bnxt_hw_resc {
 #if defined(CONFIG_BNXT_SRIOV)
 struct bnxt_vf_info {
 	u16	fw_fid;
-	u8	mac_addr[ETH_ALEN];	/* PF assigned MAC Address */
-	u8	vf_mac_addr[ETH_ALEN];	/* VF assigned MAC address, only
-					 * stored by PF.
-					 */
+	u8	mac_addr[ETH_ALEN];	
+	u8	vf_mac_addr[ETH_ALEN];	
 	u16	vlan;
 	u16	func_qcfg_flags;
 	u32	flags;
@@ -1250,7 +1228,7 @@ struct bnxt_link_info {
 #define BNXT_LINK_SPEED_200GB	PORT_PHY_QCFG_RESP_LINK_SPEED_200GB
 	u16			support_speeds;
 	u16			support_pam4_speeds;
-	u16			auto_link_speeds;	/* fw adv setting */
+	u16			auto_link_speeds;	
 #define BNXT_LINK_SPEED_MSK_100MB PORT_PHY_QCFG_RESP_SUPPORT_SPEEDS_100MB
 #define BNXT_LINK_SPEED_MSK_1GB PORT_PHY_QCFG_RESP_SUPPORT_SPEEDS_1GB
 #define BNXT_LINK_SPEED_MSK_2GB PORT_PHY_QCFG_RESP_SUPPORT_SPEEDS_2GB
@@ -1294,7 +1272,7 @@ struct bnxt_link_info {
 	(PORT_PHY_QCFG_RESP_FEC_CFG_FEC_RS272_1XN_ENABLED |	\
 	 PORT_PHY_QCFG_RESP_FEC_CFG_FEC_RS272_IEEE_ENABLED)
 
-	/* copy of requested setting from ethtool cmd */
+	
 	u8			autoneg;
 #define BNXT_AUTONEG_SPEED		1
 #define BNXT_AUTONEG_FLOW_CTRL		2
@@ -1304,16 +1282,14 @@ struct bnxt_link_info {
 	u8			req_duplex;
 	u8			req_flow_ctrl;
 	u16			req_link_speed;
-	u16			advertising;	/* user adv setting */
+	u16			advertising;	
 	u16			advertising_pam4;
 	bool			force_link_chng;
 
 	bool			phy_retry;
 	unsigned long		phy_retry_expires;
 
-	/* a copy of phy_qcfg output used to report link
-	 * info to VF
-	 */
+	
 	struct hwrm_port_phy_qcfg_output phy_qcfg_resp;
 };
 
@@ -1428,29 +1404,27 @@ struct bnxt_flower_indr_block_cb_priv {
 struct bnxt_tc_info {
 	bool				enabled;
 
-	/* hash table to store TC offloaded flows */
+	
 	struct rhashtable		flow_table;
 	struct rhashtable_params	flow_ht_params;
 
-	/* hash table to store L2 keys of TC flows */
+	
 	struct rhashtable		l2_table;
 	struct rhashtable_params	l2_ht_params;
-	/* hash table to store L2 keys for TC tunnel decap */
+	
 	struct rhashtable		decap_l2_table;
 	struct rhashtable_params	decap_l2_ht_params;
-	/* hash table to store tunnel decap entries */
+	
 	struct rhashtable		decap_table;
 	struct rhashtable_params	decap_ht_params;
-	/* hash table to store tunnel encap entries */
+	
 	struct rhashtable		encap_table;
 	struct rhashtable_params	encap_ht_params;
 
-	/* lock to atomically add/del an l2 node when a flow is
-	 * added or deleted.
-	 */
+	
 	struct mutex			lock;
 
-	/* Fields used for batching stats query */
+	
 	struct rhashtable_iter		iter;
 #define BNXT_FLOW_STATS_BATCH_MAX	10
 	struct bnxt_tc_stats_batch {
@@ -1458,7 +1432,7 @@ struct bnxt_tc_info {
 		struct bnxt_tc_flow_stats hw_stats;
 	} stats_batch[BNXT_FLOW_STATS_BATCH_MAX];
 
-	/* Stat counter mask (width) */
+	
 	u64				bytes_mask;
 	u64				packets_mask;
 };
@@ -1607,7 +1581,7 @@ struct bnxt_fw_health {
 	u32 echo_req_data1;
 	u32 echo_req_data2;
 	struct devlink_health_reporter	*fw_reporter;
-	/* Protects severity and remedy */
+	
 	struct mutex lock;
 	enum bnxt_health_severity severity;
 	enum bnxt_health_remedy remedy;
@@ -1806,7 +1780,7 @@ struct bnxt {
 #ifdef CONFIG_INET
 	#define BNXT_FLAG_GRO		0x8
 #else
-	/* Cannot support hardware GRO if CONFIG_INET is not set */
+	
 	#define BNXT_FLAG_GRO		0x0
 #endif
 	#define BNXT_FLAG_TPA		(BNXT_FLAG_LRO | BNXT_FLAG_GRO)
@@ -1866,11 +1840,11 @@ struct bnxt {
 	 (bp)->chip_num == CHIP_NUM_57504 ||	\
 	 (bp)->chip_num == CHIP_NUM_57502)
 
-/* Chip class phase 5 */
+
 #define BNXT_CHIP_P5(bp)			\
 	(BNXT_CHIP_P5_THOR(bp) || BNXT_CHIP_SR2(bp))
 
-/* Chip class phase 4.x */
+
 #define BNXT_CHIP_P4(bp)			\
 	(BNXT_CHIP_NUM_57X1X((bp)->chip_num) ||	\
 	 BNXT_CHIP_NUM_5745X((bp)->chip_num) ||	\
@@ -1901,7 +1875,7 @@ struct bnxt {
 	u16			max_tpa_v2;
 	u16			max_tpa;
 	u32			rx_buf_size;
-	u32			rx_buf_use_size;	/* useable size */
+	u32			rx_buf_use_size;	
 	u16			rx_offset;
 	u16			rx_dma_offset;
 	enum dma_data_direction	rx_dir;
@@ -1932,7 +1906,7 @@ struct bnxt {
 	int			cp_nr_pages;
 	int			cp_nr_rings;
 
-	/* grp_info indexed by completion ring index */
+	
 	struct bnxt_ring_grp_info	*grp_info;
 	struct bnxt_vnic_info	*vnic_info;
 	int			nr_vnics;
@@ -1943,7 +1917,7 @@ struct bnxt {
 
 	u16			max_mtu;
 	u8			max_tc;
-	u8			max_lltc;	/* lossless TCs */
+	u8			max_lltc;	
 	struct bnxt_queue_info	q_info[BNXT_MAX_QUEUE];
 	u8			tc_to_qidx[BNXT_MAX_QUEUE];
 	u8			q_ids[BNXT_MAX_QUEUE];
@@ -1970,7 +1944,7 @@ struct bnxt {
 #define BNXT_STATE_RECOVER		12
 #define BNXT_STATE_FW_NON_FATAL_COND	13
 #define BNXT_STATE_FW_ACTIVATE_RESET	14
-#define BNXT_STATE_HALF_OPEN		15	/* For offline ethtool tests */
+#define BNXT_STATE_HALF_OPEN		15	
 
 #define BNXT_NO_FW_ACCESS(bp)					\
 	(test_bit(BNXT_STATE_FW_FATAL_COND, &(bp)->state) ||	\
@@ -1986,7 +1960,7 @@ struct bnxt {
 	u8			dcbx_cap;
 	u8			default_pri;
 	u8			max_dscp_value;
-#endif /* CONFIG_BNXT_DCB */
+#endif 
 
 	u32			msg_enable;
 
@@ -2047,7 +2021,7 @@ struct bnxt {
 	u16			hwrm_max_ext_req_len;
 	unsigned int		hwrm_cmd_timeout;
 	unsigned int		hwrm_cmd_max_timeout;
-	struct mutex		hwrm_cmd_lock;	/* serialize hwrm messages */
+	struct mutex		hwrm_cmd_lock;	
 	struct hwrm_ver_get_output	ver_resp;
 #define FW_VER_STR_LEN		32
 #define BC_HWRM_STR_LEN		21
@@ -2127,7 +2101,7 @@ struct bnxt {
 #endif
 
 #if BITS_PER_LONG == 32
-	/* ensure atomic 64-bit doorbell writes on 32-bit systems. */
+	
 	spinlock_t		db_lock;
 #endif
 	int			db_size;
@@ -2136,21 +2110,19 @@ struct bnxt {
 #define BNXT_NTP_FLTR_HASH_SIZE	512
 #define BNXT_NTP_FLTR_HASH_MASK	(BNXT_NTP_FLTR_HASH_SIZE - 1)
 	struct hlist_head	ntp_fltr_hash_tbl[BNXT_NTP_FLTR_HASH_SIZE];
-	spinlock_t		ntp_fltr_lock;	/* for hash table add, del */
+	spinlock_t		ntp_fltr_lock;	
 
 	unsigned long		*ntp_fltr_bmap;
 	int			ntp_fltr_count;
 
-	/* To protect link related settings during link changes and
-	 * ethtool settings changes.
-	 */
+	
 	struct mutex		link_lock;
 	struct bnxt_link_info	link_info;
 	struct ethtool_eee	eee;
 	u32			lpi_tmr_lo;
 	u32			lpi_tmr_hi;
 
-	/* copied from flags and flags2 in hwrm_port_phy_qcaps_output */
+	
 	u32			phy_flags;
 #define BNXT_PHY_FL_EEE_CAP		PORT_PHY_QCAPS_RESP_FLAGS_EEE_SUPPORTED
 #define BNXT_PHY_FL_EXT_LPBK		PORT_PHY_QCAPS_RESP_FLAGS_EXTERNAL_LPBK_SUPPORTED
@@ -2181,12 +2153,12 @@ struct bnxt {
 	struct bnxt_ptp_cfg	*ptp_cfg;
 	u8			ptp_all_rx_tstamp;
 
-	/* devlink interface and vf-rep structs */
+	
 	struct devlink		*dl;
 	struct devlink_port	dl_port;
 	enum devlink_eswitch_mode eswitch_mode;
-	struct bnxt_vf_rep	**vf_reps; /* array of vf-rep ptrs */
-	u16			*cfa_code_map; /* cfa_code -> vf_idx map */
+	struct bnxt_vf_rep	**vf_reps; 
+	u16			*cfa_code_map; 
 	u8			dsn[8];
 	struct bnxt_tc_info	*tc_info;
 	struct list_head	tc_indr_block_list;
@@ -2286,7 +2258,7 @@ static inline void bnxt_writeq_relaxed(struct bnxt *bp, u64 val,
 #endif
 }
 
-/* For TX and RX ring doorbells with no ordering guarantee*/
+
 static inline void bnxt_db_write_relaxed(struct bnxt *bp,
 					 struct bnxt_db_info *db, u32 idx)
 {
@@ -2301,7 +2273,7 @@ static inline void bnxt_db_write_relaxed(struct bnxt *bp,
 	}
 }
 
-/* For TX and RX ring doorbells */
+
 static inline void bnxt_db_write(struct bnxt *bp, struct bnxt_db_info *db,
 				 u32 idx)
 {
@@ -2316,7 +2288,7 @@ static inline void bnxt_db_write(struct bnxt *bp, struct bnxt_db_info *db,
 	}
 }
 
-/* Must hold rtnl_lock */
+
 static inline bool bnxt_sriov_cfg(struct bnxt *bp)
 {
 #if defined(CONFIG_BNXT_SRIOV)

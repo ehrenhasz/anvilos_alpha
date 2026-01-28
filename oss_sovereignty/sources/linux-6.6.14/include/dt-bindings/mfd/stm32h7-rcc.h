@@ -1,11 +1,9 @@
-/*
- * This header provides constants for the STM32H7 RCC IP
- */
+
 
 #ifndef _DT_BINDINGS_MFD_STM32H7_RCC_H
 #define _DT_BINDINGS_MFD_STM32H7_RCC_H
 
-/* AHB3 */
+
 #define STM32H7_RCC_AHB3_MDMA		0
 #define STM32H7_RCC_AHB3_DMA2D		4
 #define STM32H7_RCC_AHB3_JPGDEC		5
@@ -16,7 +14,7 @@
 
 #define STM32H7_AHB3_RESET(bit) (STM32H7_RCC_AHB3_##bit + (0x7C * 8))
 
-/* AHB1 */
+
 #define STM32H7_RCC_AHB1_DMA1		0
 #define STM32H7_RCC_AHB1_DMA2		1
 #define STM32H7_RCC_AHB1_ADC12		5
@@ -27,7 +25,7 @@
 
 #define STM32H7_AHB1_RESET(bit) (STM32H7_RCC_AHB1_##bit + (0x80 * 8))
 
-/* AHB2 */
+
 #define STM32H7_RCC_AHB2_CAMITF		0
 #define STM32H7_RCC_AHB2_CRYPT		4
 #define STM32H7_RCC_AHB2_HASH		5
@@ -36,7 +34,7 @@
 
 #define STM32H7_AHB2_RESET(bit) (STM32H7_RCC_AHB2_##bit + (0x84 * 8))
 
-/* AHB4 */
+
 #define STM32H7_RCC_AHB4_GPIOA		0
 #define STM32H7_RCC_AHB4_GPIOB		1
 #define STM32H7_RCC_AHB4_GPIOC		2
@@ -55,13 +53,13 @@
 
 #define STM32H7_AHB4_RESET(bit) (STM32H7_RCC_AHB4_##bit + (0x88 * 8))
 
-/* APB3 */
+
 #define STM32H7_RCC_APB3_LTDC		3
 #define STM32H7_RCC_APB3_DSI		4
 
 #define STM32H7_APB3_RESET(bit) (STM32H7_RCC_APB3_##bit + (0x8C * 8))
 
-/* APB1L */
+
 #define STM32H7_RCC_APB1L_TIM2		0
 #define STM32H7_RCC_APB1L_TIM3		1
 #define STM32H7_RCC_APB1L_TIM4		2
@@ -89,7 +87,7 @@
 
 #define STM32H7_APB1L_RESET(bit) (STM32H7_RCC_APB1L_##bit + (0x90 * 8))
 
-/* APB1H */
+
 #define STM32H7_RCC_APB1H_CRS		1
 #define STM32H7_RCC_APB1H_SWP		2
 #define STM32H7_RCC_APB1H_OPAMP		4
@@ -98,7 +96,7 @@
 
 #define STM32H7_APB1H_RESET(bit) (STM32H7_RCC_APB1H_##bit + (0x94 * 8))
 
-/* APB2 */
+
 #define STM32H7_RCC_APB2_TIM1		0
 #define STM32H7_RCC_APB2_TIM8		1
 #define STM32H7_RCC_APB2_USART1		4
@@ -117,7 +115,7 @@
 
 #define STM32H7_APB2_RESET(bit) (STM32H7_RCC_APB2_##bit + (0x98 * 8))
 
-/* APB4 */
+
 #define STM32H7_RCC_APB4_SYSCFG		1
 #define STM32H7_RCC_APB4_LPUART1	3
 #define STM32H7_RCC_APB4_SPI6		5
@@ -133,4 +131,4 @@
 
 #define STM32H7_APB4_RESET(bit) (STM32H7_RCC_APB4_##bit + (0x9C * 8))
 
-#endif /* _DT_BINDINGS_MFD_STM32H7_RCC_H */
+#endif 

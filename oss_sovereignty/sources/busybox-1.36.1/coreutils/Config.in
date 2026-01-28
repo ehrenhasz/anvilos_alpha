@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Coreutils"
 
@@ -162,7 +162,7 @@ config FEATURE_DATE_ISOFMT
 
 config FEATURE_DATE_NANO
 	bool "Support %[num]N nanosecond format specifier"
-	default n # stat's nanosecond field is a bit non-portable
+	default n 
 	depends on DATE
 	help
 	Support %[num]N format specifier. Adds ~250 bytes of code.
@@ -297,7 +297,7 @@ config ECHO
 	help
 	echo prints a specified string to stdout.
 
-# this entry also appears in shell/Config.in, next to the echo builtin
+
 config FEATURE_FANCY_ECHO
 	bool "Enable -n and -e options"
 	default y
@@ -666,7 +666,7 @@ config FEATURE_SORT_BIG
 
 config FEATURE_SORT_OPTIMIZE_MEMORY
 	bool "Use less memory (but might be slower)"
-	default n   # defaults to N since we are size-paranoid tribe
+	default n   
 	depends on SORT
 	help
 	Attempt to use less memory (by storing only one copy

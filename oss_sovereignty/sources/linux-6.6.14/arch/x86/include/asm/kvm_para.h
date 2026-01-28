@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_KVM_PARA_H
 #define _ASM_X86_KVM_PARA_H
 
@@ -16,20 +16,12 @@ static inline bool kvm_check_and_clear_guest_paused(void)
 {
 	return false;
 }
-#endif /* CONFIG_KVM_GUEST */
+#endif 
 
 #define KVM_HYPERCALL \
         ALTERNATIVE("vmcall", "vmmcall", X86_FEATURE_VMMCALL)
 
-/* For KVM hypercalls, a three-byte sequence of either the vmcall or the vmmcall
- * instruction.  The hypervisor may replace it with something else but only the
- * instructions are guaranteed to be supported.
- *
- * Up to four arguments may be passed in rbx, rcx, rdx, and rsi respectively.
- * The hypercall number should be placed in rax and the return value will be
- * placed in rax.  No other registers will be clobbered unless explicitly
- * noted by the particular hypercall.
- */
+
 
 static inline long kvm_hypercall0(unsigned int nr)
 {
@@ -140,13 +132,13 @@ static __always_inline bool kvm_handle_async_pf(struct pt_regs *regs, u32 token)
 
 #ifdef CONFIG_PARAVIRT_SPINLOCKS
 void __init kvm_spinlock_init(void);
-#else /* !CONFIG_PARAVIRT_SPINLOCKS */
+#else 
 static inline void kvm_spinlock_init(void)
 {
 }
-#endif /* CONFIG_PARAVIRT_SPINLOCKS */
+#endif 
 
-#else /* CONFIG_KVM_GUEST */
+#else 
 #define kvm_async_pf_task_wait_schedule(T) do {} while(0)
 #define kvm_async_pf_task_wake(T) do {} while(0)
 
@@ -176,4 +168,4 @@ static __always_inline bool kvm_handle_async_pf(struct pt_regs *regs, u32 token)
 }
 #endif
 
-#endif /* _ASM_X86_KVM_PARA_H */
+#endif 

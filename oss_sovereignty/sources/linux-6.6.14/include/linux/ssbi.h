@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2010 Google, Inc.
- * Copyright (c) 2011, Code Aurora Forum. All rights reserved.
- * Author: Dima Zavin <dima@android.com>
- */
+
+
 
 #ifndef _LINUX_SSBI_H
 #define _LINUX_SSBI_H

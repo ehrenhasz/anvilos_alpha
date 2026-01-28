@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * connection tracking helpers.
- *
- * 16 Dec 2003: Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
- *	- generalize L3 protocol dependent part.
- *
- * Derived from include/linux/netfiter_ipv4/ip_conntrack_helper.h
- */
+
+
 
 #ifndef _NF_CONNTRACK_HELPER_H
 #define _NF_CONNTRACK_HELPER_H
@@ -30,18 +23,17 @@ enum nf_ct_helper_flags {
 #define NF_CT_HELPER_NAME_LEN	16
 
 struct nf_conntrack_helper {
-	struct hlist_node hnode;	/* Internal use. */
+	struct hlist_node hnode;	
 
-	char name[NF_CT_HELPER_NAME_LEN]; /* name of the module */
+	char name[NF_CT_HELPER_NAME_LEN]; 
 	refcount_t refcnt;
-	struct module *me;		/* pointer to self */
+	struct module *me;		
 	const struct nf_conntrack_expect_policy *expect_policy;
 
-	/* Tuple of things we will help (compared against server response) */
+	
 	struct nf_conntrack_tuple tuple;
 
-	/* Function to call when data passes; return verdict, or -1 to
-           invalidate. */
+	
 	int (*help)(struct sk_buff *skb,
 		    unsigned int protoff,
 		    struct nf_conn *ct,
@@ -55,28 +47,28 @@ struct nf_conntrack_helper {
 
 	unsigned int flags;
 
-	/* For user-space helpers: */
+	
 	unsigned int queue_num;
-	/* length of userspace private data stored in nf_conn_help->data */
+	
 	u16 data_len;
-	/* name of NAT helper module */
+	
 	char nat_mod_name[NF_CT_HELPER_NAME_LEN];
 };
 
-/* Must be kept in sync with the classes defined by helpers */
+
 #define NF_CT_MAX_EXPECT_CLASSES	4
 
-/* nf_conn feature for connections that have a helper */
+
 struct nf_conn_help {
-	/* Helper. if any */
+	
 	struct nf_conntrack_helper __rcu *helper;
 
 	struct hlist_head expectations;
 
-	/* Current number of expected connections */
+	
 	u8 expecting[NF_CT_MAX_EXPECT_CLASSES];
 
-	/* private helper information. */
+	
 	char data[32] __aligned(8);
 };
 
@@ -165,8 +157,8 @@ extern unsigned int nf_ct_helper_hsize;
 
 struct nf_conntrack_nat_helper {
 	struct list_head list;
-	char mod_name[NF_CT_HELPER_NAME_LEN];	/* module name */
-	struct module *module;			/* pointer to self */
+	char mod_name[NF_CT_HELPER_NAME_LEN];	
+	struct module *module;			
 };
 
 #define NF_CT_NAT_HELPER_INIT(name) \
@@ -180,4 +172,4 @@ void nf_nat_helper_unregister(struct nf_conntrack_nat_helper *nat);
 int nf_nat_helper_try_module_get(const char *name, u16 l3num,
 				 u8 protonum);
 void nf_nat_helper_put(struct nf_conntrack_helper *helper);
-#endif /*_NF_CONNTRACK_HELPER_H*/
+#endif 

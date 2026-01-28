@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/fs/nfs/nfs4_fs.h
- *
- * Copyright (C) 2005 Trond Myklebust
- *
- * NFSv4-specific filesystem definitions and declarations
- */
+
+
 
 #ifndef __LINUX_FS_NFS_NFS4_FS_H
 #define __LINUX_FS_NFS_NFS4_FS_H
@@ -85,9 +79,9 @@ struct nfs_seqid_counter {
 	int owner_id;
 	int flags;
 	u32 counter;
-	spinlock_t lock;		/* Protects the list */
-	struct list_head list;		/* Defines sequence of RPC calls */
-	struct rpc_wait_queue	wait;	/* RPC call delay queue */
+	spinlock_t lock;		
+	struct list_head list;		
+	struct rpc_wait_queue	wait;	
 };
 
 struct nfs_seqid {
@@ -102,18 +96,14 @@ static inline void nfs_confirm_seqid(struct nfs_seqid_counter *seqid, int status
 		seqid->flags |= NFS_SEQID_CONFIRMED;
 }
 
-/*
- * NFS4 state_owners and lock_owners are simply labels for ordered
- * sequences of RPC calls. Their sole purpose is to provide once-only
- * semantics by allowing the server to identify replayed requests.
- */
+
 struct nfs4_state_owner {
 	struct nfs_server    *so_server;
 	struct list_head     so_lru;
 	unsigned long        so_expires;
 	struct rb_node	     so_server_node;
 
-	const struct cred    *so_cred;	 /* Associated cred */
+	const struct cred    *so_cred;	 
 
 	spinlock_t	     so_lock;
 	atomic_t	     so_count;
@@ -133,21 +123,11 @@ enum {
 #define NFS_LOCK_RECLAIM	1
 #define NFS_LOCK_EXPIRED	2
 
-/*
- * struct nfs4_state maintains the client-side state for a given
- * (state_owner,inode) tuple (OPEN) or state_owner (LOCK).
- *
- * OPEN:
- * In order to know when to OPEN_DOWNGRADE or CLOSE the state on the server,
- * we need to know how many files are open for reading or writing on a
- * given inode. This information too is stored here.
- *
- * LOCK: one nfs4_state (LOCK) to hold the lock stateid nfs4_state(OPEN)
- */
+
 
 struct nfs4_lock_state {
-	struct list_head	ls_locks;	/* Other lock stateids */
-	struct nfs4_state *	ls_state;	/* Pointer to open state */
+	struct list_head	ls_locks;	
+	struct nfs4_state *	ls_state;	
 #define NFS_LOCK_INITIALIZED 0
 #define NFS_LOCK_LOST        1
 #define NFS_LOCK_UNLOCKING   2
@@ -158,45 +138,45 @@ struct nfs4_lock_state {
 	fl_owner_t		ls_owner;
 };
 
-/* bits for nfs4_state->flags */
+
 enum {
 	LK_STATE_IN_USE,
-	NFS_DELEGATED_STATE,		/* Current stateid is delegation */
-	NFS_OPEN_STATE,			/* OPEN stateid is set */
-	NFS_O_RDONLY_STATE,		/* OPEN stateid has read-only state */
-	NFS_O_WRONLY_STATE,		/* OPEN stateid has write-only state */
-	NFS_O_RDWR_STATE,		/* OPEN stateid has read/write state */
-	NFS_STATE_RECLAIM_REBOOT,	/* OPEN stateid server rebooted */
-	NFS_STATE_RECLAIM_NOGRACE,	/* OPEN stateid needs to recover state */
-	NFS_STATE_POSIX_LOCKS,		/* Posix locks are supported */
-	NFS_STATE_RECOVERY_FAILED,	/* OPEN stateid state recovery failed */
-	NFS_STATE_MAY_NOTIFY_LOCK,	/* server may CB_NOTIFY_LOCK */
-	NFS_STATE_CHANGE_WAIT,		/* A state changing operation is outstanding */
-	NFS_CLNT_DST_SSC_COPY_STATE,    /* dst server open state on client*/
-	NFS_CLNT_SRC_SSC_COPY_STATE,    /* src server open state on client*/
-	NFS_SRV_SSC_COPY_STATE,		/* ssc state on the dst server */
+	NFS_DELEGATED_STATE,		
+	NFS_OPEN_STATE,			
+	NFS_O_RDONLY_STATE,		
+	NFS_O_WRONLY_STATE,		
+	NFS_O_RDWR_STATE,		
+	NFS_STATE_RECLAIM_REBOOT,	
+	NFS_STATE_RECLAIM_NOGRACE,	
+	NFS_STATE_POSIX_LOCKS,		
+	NFS_STATE_RECOVERY_FAILED,	
+	NFS_STATE_MAY_NOTIFY_LOCK,	
+	NFS_STATE_CHANGE_WAIT,		
+	NFS_CLNT_DST_SSC_COPY_STATE,    
+	NFS_CLNT_SRC_SSC_COPY_STATE,    
+	NFS_SRV_SSC_COPY_STATE,		
 };
 
 struct nfs4_state {
-	struct list_head open_states;	/* List of states for the same state_owner */
-	struct list_head inode_states;	/* List of states for the same inode */
-	struct list_head lock_states;	/* List of subservient lock stateids */
+	struct list_head open_states;	
+	struct list_head inode_states;	
+	struct list_head lock_states;	
 
-	struct nfs4_state_owner *owner;	/* Pointer to the open owner */
-	struct inode *inode;		/* Pointer to the inode */
+	struct nfs4_state_owner *owner;	
+	struct inode *inode;		
 
-	unsigned long flags;		/* Do we hold any locks? */
-	spinlock_t state_lock;		/* Protects the lock_states list */
+	unsigned long flags;		
+	spinlock_t state_lock;		
 
-	seqlock_t seqlock;		/* Protects the stateid/open_stateid */
-	nfs4_stateid stateid;		/* Current stateid: may be delegation */
-	nfs4_stateid open_stateid;	/* OPEN stateid */
+	seqlock_t seqlock;		
+	nfs4_stateid stateid;		
+	nfs4_stateid open_stateid;	
 
-	/* The following 3 fields are protected by owner->so_lock */
-	unsigned int n_rdonly;		/* Number of read-only references */
-	unsigned int n_wronly;		/* Number of write-only references */
-	unsigned int n_rdwr;		/* Number of read/write references */
-	fmode_t state;			/* State on the server (R,W, or RW) */
+	
+	unsigned int n_rdonly;		
+	unsigned int n_wronly;		
+	unsigned int n_rdwr;		
+	fmode_t state;			
 	refcount_t count;
 
 	wait_queue_head_t waitq;
@@ -270,14 +250,14 @@ struct nfs4_mig_recovery_ops {
 
 extern const struct dentry_operations nfs4_dentry_operations;
 
-/* dir.c */
+
 int nfs_atomic_open(struct inode *, struct dentry *, struct file *,
 		    unsigned, umode_t);
 
-/* fs_context.c */
+
 extern struct file_system_type nfs4_fs_type;
 
-/* nfs4namespace.c */
+
 struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
 					 const struct qstr *);
 int nfs4_submount(struct fs_context *, struct nfs_server *);
@@ -285,7 +265,7 @@ int nfs4_replace_transport(struct nfs_server *server,
 				const struct nfs4_fs_locations *locations);
 size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr_storage *ss,
 			     size_t salen, struct net *net, int port);
-/* nfs4proc.c */
+
 extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
 extern int nfs4_async_handle_error(struct rpc_task *task,
 				   struct nfs_server *server,
@@ -369,12 +349,7 @@ _nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_mode,
 
 	if (sp4_mode == NFS_SP4_MACH_CRED_CLEANUP ||
 	    sp4_mode == NFS_SP4_MACH_CRED_PNFS_CLEANUP) {
-		/* Using machine creds for cleanup operations
-		 * is only relevent if the client credentials
-		 * might expire. So don't bother for
-		 * RPC_AUTH_UNIX.  If file was only exported to
-		 * sec=sys, the PUTFH would fail anyway.
-		 */
+		
 		if ((*clntp)->cl_auth->au_flavor == RPC_AUTH_UNIX)
 			return false;
 	}
@@ -391,12 +366,7 @@ _nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_mode,
 	return false;
 }
 
-/*
- * Function responsible for determining if an rpc_message should use the
- * machine cred under SP4_MACH_CRED and if so switching the credential and
- * authflavor (using the nfs_client's rpc_clnt which will be krb5i/p).
- * Should be called before rpc_call_sync/rpc_call_async.
- */
+
 static inline void
 nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_mode,
 		   struct rpc_clnt **clntp, struct rpc_message *msg)
@@ -404,11 +374,7 @@ nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_mode,
 	_nfs4_state_protect(clp, sp4_mode, clntp, msg);
 }
 
-/*
- * Special wrapper to nfs4_state_protect for write.
- * If WRITE can use machine cred but COMMIT cannot, make sure all writes
- * that use machine cred use NFS_FILE_SYNC.
- */
+
 static inline void
 nfs4_state_protect_write(struct nfs_client *clp, struct rpc_clnt **clntp,
 			 struct rpc_message *msg, struct nfs_pgio_header *hdr)
@@ -417,7 +383,7 @@ nfs4_state_protect_write(struct nfs_client *clp, struct rpc_clnt **clntp,
 	    !test_bit(NFS_SP4_MACH_CRED_COMMIT, &clp->cl_sp4_flags))
 		hdr->args.stable = NFS_FILE_SYNC;
 }
-#else /* CONFIG_NFS_v4_1 */
+#else 
 static inline bool
 is_ds_only_client(struct nfs_client *clp)
 {
@@ -441,7 +407,7 @@ nfs4_state_protect_write(struct nfs_client *clp, struct rpc_clnt **clntp,
 			 struct rpc_message *msg, struct nfs_pgio_header *hdr)
 {
 }
-#endif /* CONFIG_NFS_V4_1 */
+#endif 
 
 extern const struct nfs4_minor_version_ops *nfs_v4_minor_ops[];
 
@@ -459,14 +425,14 @@ void nfs4_free_client(struct nfs_client *);
 
 struct nfs_client *nfs4_alloc_client(const struct nfs_client_initdata *);
 
-/* nfs4renewd.c */
+
 extern void nfs4_schedule_state_renewal(struct nfs_client *);
 extern void nfs4_kill_renewd(struct nfs_client *);
 extern void nfs4_renew_state(struct work_struct *);
 extern void nfs4_set_lease_period(struct nfs_client *clp, unsigned long lease);
 
 
-/* nfs4state.c */
+
 extern const nfs4_stateid current_stateid;
 
 const struct cred *nfs4_get_clid_cred(struct nfs_client *clp);
@@ -487,7 +453,7 @@ bool nfs4_check_serverowner_major_id(struct nfs41_server_owner *o1,
 static inline void nfs4_schedule_session_recovery(struct nfs4_session *session, int err)
 {
 }
-#endif /* CONFIG_NFS_V4_1 */
+#endif 
 
 extern struct nfs4_state_owner *nfs4_get_state_owner(struct nfs_server *, const struct cred *, gfp_t);
 extern void nfs4_put_state_owner(struct nfs4_state_owner *);
@@ -538,7 +504,7 @@ extern int nfs4_proc_commit(struct file *dst, __u64 offset, __u32 count, struct 
 extern const nfs4_stateid zero_stateid;
 extern const nfs4_stateid invalid_stateid;
 
-/* nfs4super.c */
+
 struct nfs_mount_info;
 extern struct nfs_subversion nfs_v4;
 extern bool nfs4_disable_idmapping;
@@ -553,7 +519,7 @@ extern char nfs4_client_id_uniquifier[NFS4_CLIENT_ID_UNIQ_LEN];
 extern int nfs4_try_get_tree(struct fs_context *);
 extern int nfs4_get_referral_tree(struct fs_context *);
 
-/* nfs4sysctl.c */
+
 #ifdef CONFIG_SYSCTL
 int nfs4_register_sysctl(void);
 void nfs4_unregister_sysctl(void);
@@ -568,7 +534,7 @@ static inline void nfs4_unregister_sysctl(void)
 }
 #endif
 
-/* nfs4xdr.c */
+
 extern const struct rpc_procinfo nfs4_procedures[];
 
 #ifdef CONFIG_NFS_V4_2
@@ -579,7 +545,7 @@ extern const u32 nfs42_maxlistxattrs_overhead;
 
 struct nfs4_mount_data;
 
-/* callback_xdr.c */
+
 extern const struct svc_version nfs4_callback_version1;
 extern const struct svc_version nfs4_callback_version4;
 
@@ -641,7 +607,7 @@ static inline bool nfs4_state_match_open_stateid_other(const struct nfs4_state *
 		nfs4_stateid_match_other(&state->open_stateid, stateid);
 }
 
-/* nfs42xattr.c */
+
 #ifdef CONFIG_NFS_V4_2
 extern int __init nfs4_xattr_cache_init(void);
 extern void nfs4_xattr_cache_exit(void);
@@ -660,9 +626,9 @@ extern void nfs4_xattr_cache_zap(struct inode *inode);
 static inline void nfs4_xattr_cache_zap(struct inode *inode)
 {
 }
-#endif /* CONFIG_NFS_V4_2 */
+#endif 
 
-#else /* CONFIG_NFS_V4 */
+#else 
 
 #define nfs4_close_state(a, b) do { } while (0)
 #define nfs4_close_sync(a, b) do { } while (0)
@@ -670,5 +636,5 @@ static inline void nfs4_xattr_cache_zap(struct inode *inode)
 #define nfs4_state_protect_write(a, b, c, d) do { } while (0)
 
 
-#endif /* CONFIG_NFS_V4 */
-#endif /* __LINUX_FS_NFS_NFS4_FS.H */
+#endif 
+#endif 

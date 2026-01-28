@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * KVM L1 hypervisor optimizations on Hyper-V for SVM.
- */
+
+
 
 #ifndef __ARCH_X86_KVM_SVM_ONHYPERV_H__
 #define __ARCH_X86_KVM_SVM_ONHYPERV_H__
@@ -111,6 +109,6 @@ static inline void svm_hv_update_vp_id(struct vmcb *vmcb,
 		struct kvm_vcpu *vcpu)
 {
 }
-#endif /* CONFIG_HYPERV */
+#endif 
 
-#endif /* __ARCH_X86_KVM_SVM_ONHYPERV_H__ */
+#endif 

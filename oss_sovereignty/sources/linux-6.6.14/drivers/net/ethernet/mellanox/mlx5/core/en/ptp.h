@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_PTP_H__
 #define __MLX5_EN_PTP_H__
@@ -48,7 +48,7 @@ enum {
 };
 
 struct mlx5e_ptp {
-	/* data path */
+	
 	struct mlx5e_ptpsq         ptpsq[MLX5E_MAX_NUM_TC];
 	struct mlx5e_rq            rq;
 	struct napi_struct         napi;
@@ -58,10 +58,10 @@ struct mlx5e_ptp {
 	u8                         num_tc;
 	u8                         lag_port;
 
-	/* data path - accessed per napi poll */
+	
 	struct mlx5e_ch_stats     *stats;
 
-	/* control */
+	
 	struct mlx5e_priv         *priv;
 	struct mlx5_core_dev      *mdev;
 	struct hwtstamp_config    *tstamp;
@@ -144,4 +144,4 @@ void mlx5e_skb_cb_hwtstamp_handler(struct sk_buff *skb, int hwtstamp_type,
 				   struct mlx5e_ptp_cq_stats *cq_stats);
 
 void mlx5e_skb_cb_hwtstamp_init(struct sk_buff *skb);
-#endif /* __MLX5_EN_PTP_H__ */
+#endif 

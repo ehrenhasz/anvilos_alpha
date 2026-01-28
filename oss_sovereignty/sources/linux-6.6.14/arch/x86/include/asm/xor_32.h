@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _ASM_X86_XOR_32_H
 #define _ASM_X86_XOR_32_H
 
-/*
- * Optimized RAID-5 checksumming functions for MMX.
- */
 
-/*
- * High-speed RAID5 checksumming functions utilizing MMX instructions.
- * Copyright (C) 1998 Ingo Molnar.
- */
+
+
 
 #define LD(x, y)	"       movq   8*("#x")(%1), %%mm"#y"   ;\n"
 #define ST(x, y)	"       movq %%mm"#y",   8*("#x")(%1)   ;\n"
@@ -182,12 +177,7 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 
 	kernel_fpu_begin();
 
-	/* Make sure GCC forgets anything it knows about p4 or p5,
-	   such that it won't pass to the asm volatile below a
-	   register that is shared with any other variable.  That's
-	   because we modify p4 and p5 there, but we can't mark them
-	   as read/write, otherwise we'd overflow the 10-asm-operands
-	   limit of GCC < 3.1.  */
+	
 	asm("" : "+r" (p4), "+r" (p5));
 
 	asm volatile(
@@ -238,9 +228,7 @@ xor_pII_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	: "r" (p4), "r" (p5)
 	: "memory");
 
-	/* p4 and p5 were modified, and now the variables are dead.
-	   Clobber them just to be sure nobody does something stupid
-	   like assuming they have some legal value.  */
+	
 	asm("" : "=r" (p4), "=r" (p5));
 
 	kernel_fpu_end();
@@ -439,12 +427,7 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 
 	kernel_fpu_begin();
 
-	/* Make sure GCC forgets anything it knows about p4 or p5,
-	   such that it won't pass to the asm volatile below a
-	   register that is shared with any other variable.  That's
-	   because we modify p4 and p5 there, but we can't mark them
-	   as read/write, otherwise we'd overflow the 10-asm-operands
-	   limit of GCC < 3.1.  */
+	
 	asm("" : "+r" (p4), "+r" (p5));
 
 	asm volatile(
@@ -511,9 +494,7 @@ xor_p5_mmx_5(unsigned long bytes, unsigned long * __restrict p1,
 	: "r" (p4), "r" (p5)
 	: "memory");
 
-	/* p4 and p5 were modified, and now the variables are dead.
-	   Clobber them just to be sure nobody does something stupid
-	   like assuming they have some legal value.  */
+	
 	asm("" : "=r" (p4), "=r" (p5));
 
 	kernel_fpu_end();
@@ -543,15 +524,13 @@ static struct xor_block_template xor_block_pIII_sse = {
 	.do_5 = xor_sse_5,
 };
 
-/* Also try the AVX routines */
+
 #include <asm/xor_avx.h>
 
-/* Also try the generic routines.  */
+
 #include <asm-generic/xor.h>
 
-/* We force the use of the SSE xor block because it can write around L2.
-   We may also be able to load into the L1 only depending on how the cpu
-   deals with a load to a line that is being prefetched.  */
+
 #undef XOR_TRY_TEMPLATES
 #define XOR_TRY_TEMPLATES				\
 do {							\
@@ -570,4 +549,4 @@ do {							\
 	}						\
 } while (0)
 
-#endif /* _ASM_X86_XOR_32_H */
+#endif 

@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-# Copyright(c) 2013 - 2018 Intel Corporation.
 
-#
-# Makefile for the Intel(R) Ethernet Connection XL710 (i40e.ko) driver
-#
+
+
+
+
+
 
 ccflags-y += -I$(src)
 subdir-ccflags-y += -I$(src)

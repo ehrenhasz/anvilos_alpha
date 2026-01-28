@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_UNALIGNED_PACKED_STRUCT_H
 #define _LINUX_UNALIGNED_PACKED_STRUCT_H
 
@@ -44,4 +44,4 @@ static inline void __put_unaligned_cpu64(u64 val, void *p)
 	ptr->x = val;
 }
 
-#endif /* _LINUX_UNALIGNED_PACKED_STRUCT_H */
+#endif 

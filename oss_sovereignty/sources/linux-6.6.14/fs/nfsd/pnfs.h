@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _FS_NFSD_PNFS_H
 #define _FS_NFSD_PNFS_H 1
 
@@ -65,7 +65,7 @@ __be32 nfsd4_return_client_layouts(struct svc_rqst *rqstp,
 int nfsd4_set_deviceid(struct nfsd4_deviceid *id, const struct svc_fh *fhp,
 		u32 device_generation);
 struct nfsd4_deviceid_map *nfsd4_find_devid_map(int idx);
-#endif /* CONFIG_NFSD_V4 */
+#endif 
 
 #ifdef CONFIG_NFSD_PNFS
 void nfsd4_setup_layout_type(struct svc_export *exp);
@@ -96,5 +96,5 @@ static inline int nfsd4_init_pnfs(void)
 {
 	return 0;
 }
-#endif /* CONFIG_NFSD_PNFS */
-#endif /* _FS_NFSD_PNFS_H */
+#endif 
+#endif 

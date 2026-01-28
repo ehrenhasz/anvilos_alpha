@@ -1,30 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * __get_user functions.
- *
- * (C) Copyright 1998 Linus Torvalds
- * (C) Copyright 2005 Andi Kleen
- * (C) Copyright 2008 Glauber Costa
- *
- * These functions have a non-standard call interface
- * to make them more efficient, especially as they
- * return an error value in addition to the "real"
- * return value.
- */
 
-/*
- * __get_user_X
- *
- * Inputs:	%[r|e]ax contains the address.
- *
- * Outputs:	%[r|e]ax is error code (0 or -EFAULT)
- *		%[r|e]dx contains zero-extended value
- *		%ecx contains the high half for 32-bit __get_user_8
- *
- *
- * These functions should not modify any other registers,
- * as they get called from within inline assembly.
- */
+
+
+
 
 #include <linux/linkage.h>
 #include <asm/page_types.h>
@@ -45,7 +22,7 @@
 .else
 	cmp $TASK_SIZE_MAX-\size+1, %eax
 	jae .Lbad_get_user
-	sbb %edx, %edx		/* array_index_mask_nospec() */
+	sbb %edx, %edx		
 	and %edx, %eax
 .endif
 .endm
@@ -96,7 +73,7 @@ SYM_FUNC_START(__get_user_8)
 SYM_FUNC_END(__get_user_8)
 EXPORT_SYMBOL(__get_user_8)
 
-/* .. and the same for __get_user, just without the range checks */
+
 SYM_FUNC_START(__get_user_nocheck_1)
 	ASM_STAC
 	ASM_BARRIER_NOSPEC
@@ -162,7 +139,7 @@ bad_get_user_8:
 SYM_CODE_END(__get_user_8_handle_exception)
 #endif
 
-/* get_user */
+
 	_ASM_EXTABLE(1b, __get_user_handle_exception)
 	_ASM_EXTABLE(2b, __get_user_handle_exception)
 	_ASM_EXTABLE(3b, __get_user_handle_exception)
@@ -173,7 +150,7 @@ SYM_CODE_END(__get_user_8_handle_exception)
 	_ASM_EXTABLE(5b, __get_user_8_handle_exception)
 #endif
 
-/* __get_user */
+
 	_ASM_EXTABLE(6b, __get_user_handle_exception)
 	_ASM_EXTABLE(7b, __get_user_handle_exception)
 	_ASM_EXTABLE(8b, __get_user_handle_exception)

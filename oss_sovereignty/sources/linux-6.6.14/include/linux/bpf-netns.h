@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BPF_NETNS_H
 #define _BPF_NETNS_H
 
@@ -19,7 +19,7 @@ to_netns_bpf_attach_type(enum bpf_attach_type attach_type)
 	}
 }
 
-/* Protects updates to netns_bpf */
+
 extern struct mutex netns_bpf_mutex;
 
 union bpf_attr;
@@ -59,4 +59,4 @@ static inline int netns_bpf_link_create(const union bpf_attr *attr,
 }
 #endif
 
-#endif /* _BPF_NETNS_H */
+#endif 

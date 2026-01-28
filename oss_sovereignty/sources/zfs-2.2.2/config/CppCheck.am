@@ -1,6 +1,6 @@
-#
-# cppcheck for userspace – nodist_*_SOURCES are kernel code and cppcheck goes crazy on them.
-#
+
+
+
 
 PHONY += cppcheck
 

@@ -1,31 +1,7 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
-// This file contains pin definitions that are specific to the stm32 port.
-// This file should only ever be #included by pin.h and not directly.
+
+
+
 
 enum {
     PORT_A,
@@ -41,7 +17,7 @@ enum {
     PORT_K,
 };
 
-// Must have matching entries in SUPPORTED_FN in boards/make-pins.py
+
 enum {
     AF_FN_TIM,
     AF_FN_I2C,
@@ -105,9 +81,9 @@ enum {
     AF_PIN_TYPE_CAN_RX,
 };
 
-// The HAL uses a slightly different naming than we chose, so we provide
-// some #defines to massage things. Also I2S and SPI share the same
-// peripheral.
+
+
+
 
 #define GPIO_AF5_I2S1   GPIO_AF5_SPI1
 #define GPIO_AF5_I2S2   GPIO_AF5_SPI2
@@ -122,7 +98,7 @@ enum {
 #define I2S3  SPI3
 
 #if defined(STM32G4) || defined(STM32H7)
-// Make G4/H7 FDCAN more like CAN
+
 #define CAN1 FDCAN1
 #define CAN2 FDCAN2
 #define GPIO_AF9_CAN1 GPIO_AF9_FDCAN1

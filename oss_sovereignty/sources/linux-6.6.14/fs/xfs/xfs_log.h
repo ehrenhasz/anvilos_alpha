@@ -1,32 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef	__XFS_LOG_H__
 #define __XFS_LOG_H__
 
 struct xfs_cil_ctx;
 
 struct xfs_log_vec {
-	struct list_head	lv_list;	/* CIL lv chain ptrs */
-	uint32_t		lv_order_id;	/* chain ordering info */
-	int			lv_niovecs;	/* number of iovecs in lv */
-	struct xfs_log_iovec	*lv_iovecp;	/* iovec array */
-	struct xfs_log_item	*lv_item;	/* owner */
-	char			*lv_buf;	/* formatted buffer */
-	int			lv_bytes;	/* accounted space in buffer */
-	int			lv_buf_len;	/* aligned size of buffer */
-	int			lv_size;	/* size of allocated lv */
+	struct list_head	lv_list;	
+	uint32_t		lv_order_id;	
+	int			lv_niovecs;	
+	struct xfs_log_iovec	*lv_iovecp;	
+	struct xfs_log_item	*lv_item;	
+	char			*lv_buf;	
+	int			lv_bytes;	
+	int			lv_buf_len;	
+	int			lv_size;	
 };
 
 #define XFS_LOG_VEC_ORDERED	(-1)
 
-/*
- * Calculate the log iovec length for a given user buffer length. Intended to be
- * used by ->iop_size implementations when sizing buffers of arbitrary
- * alignments.
- */
+
 static inline int
 xlog_calc_iovec_len(int len)
 {
@@ -43,13 +36,7 @@ xlog_finish_iovec(struct xfs_log_vec *lv, struct xfs_log_iovec *vec,
 	struct xlog_op_header	*oph = vec->i_addr;
 	int			len;
 
-	/*
-	 * Always round up the length to the correct alignment so callers don't
-	 * need to know anything about this log vec layout requirement. This
-	 * means we have to zero the area the data to be written does not cover.
-	 * This is complicated by fact the payload region is offset into the
-	 * logvec region by the opheader that tracks the payload.
-	 */
+	
 	len = xlog_calc_iovec_len(data_len);
 	if (len - data_len != 0) {
 		char	*buf = vec->i_addr + sizeof(struct xlog_op_header);
@@ -57,10 +44,7 @@ xlog_finish_iovec(struct xfs_log_vec *lv, struct xfs_log_iovec *vec,
 		memset(buf + data_len, 0, len - data_len);
 	}
 
-	/*
-	 * The opheader tracks aligned payload length, whilst the logvec tracks
-	 * the overall region length.
-	 */
+	
 	oph->oh_len = cpu_to_be32(len);
 
 	len += sizeof(struct xlog_op_header);
@@ -68,13 +52,11 @@ xlog_finish_iovec(struct xfs_log_vec *lv, struct xfs_log_iovec *vec,
 	lv->lv_bytes += len;
 	vec->i_len = len;
 
-	/* Catch buffer overruns */
+	
 	ASSERT((void *)lv->lv_buf + lv->lv_bytes <= (void *)lv + lv->lv_size);
 }
 
-/*
- * Copy the amount of data requested by the caller into a new log iovec.
- */
+
 static inline void *
 xlog_copy_iovec(struct xfs_log_vec *lv, struct xfs_log_iovec **vecp,
 		uint type, void *data, int len)
@@ -94,10 +76,7 @@ xlog_copy_from_iovec(struct xfs_log_vec *lv, struct xfs_log_iovec **vecp,
 	return xlog_copy_iovec(lv, vecp, src->i_type, src->i_addr, src->i_len);
 }
 
-/*
- * By comparing each component, we don't have to worry about extra
- * endian issues in treating two 32 bit numbers as one 64 bit number
- */
+
 static inline xfs_lsn_t	_lsn_cmp(xfs_lsn_t lsn1, xfs_lsn_t lsn2)
 {
 	if (CYCLE_LSN(lsn1) != CYCLE_LSN(lsn2))
@@ -111,14 +90,10 @@ static inline xfs_lsn_t	_lsn_cmp(xfs_lsn_t lsn1, xfs_lsn_t lsn2)
 
 #define	XFS_LSN_CMP(x,y) _lsn_cmp(x,y)
 
-/*
- * Flags to xfs_log_force()
- *
- *	XFS_LOG_SYNC:	Synchronous force in-core log to disk
- */
+
 #define XFS_LOG_SYNC		0x1
 
-/* Log manager interfaces */
+
 struct xfs_mount;
 struct xlog_in_core;
 struct xlog_ticket;
@@ -163,4 +138,4 @@ void xlog_use_incompat_feat(struct xlog *log);
 void xlog_drop_incompat_feat(struct xlog *log);
 int xfs_attr_use_log_assist(struct xfs_mount *mp);
 
-#endif	/* __XFS_LOG_H__ */
+#endif	

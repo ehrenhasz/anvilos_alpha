@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM objagg
@@ -222,7 +222,7 @@ TRACE_EVENT(objagg_obj_root_destroy,
 		  __entry->objagg, __entry->obj)
 );
 
-#endif /* __TRACE_OBJAGG_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

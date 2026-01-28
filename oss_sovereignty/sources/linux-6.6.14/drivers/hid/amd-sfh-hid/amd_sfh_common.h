@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMD MP2 common macros and structures
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
- */
+
+
 #ifndef AMD_SFH_COMMON_H
 #define AMD_SFH_COMMON_H
 
@@ -45,7 +38,7 @@ struct amd_mp2_dev {
 	const struct amd_sfh1_1_ops *sfh1_1_ops;
 	struct amd_mp2_ops *mp2_ops;
 	struct amd_input_data in_data;
-	/* mp2 active control status */
+	
 	u32 mp2_acs;
 };
 

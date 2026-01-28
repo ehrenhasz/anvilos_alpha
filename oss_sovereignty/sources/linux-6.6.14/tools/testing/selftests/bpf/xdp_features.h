@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* test commands */
+
+
 enum test_commands {
-	CMD_STOP,		/* CMD */
-	CMD_START,		/* CMD */
-	CMD_ECHO,		/* CMD */
-	CMD_ACK,		/* CMD + data */
-	CMD_GET_XDP_CAP,	/* CMD */
-	CMD_GET_STATS,		/* CMD */
+	CMD_STOP,		
+	CMD_START,		
+	CMD_ECHO,		
+	CMD_ACK,		
+	CMD_GET_XDP_CAP,	
+	CMD_GET_STATS,		
 };
 
 #define DUT_CTRL_PORT	12345

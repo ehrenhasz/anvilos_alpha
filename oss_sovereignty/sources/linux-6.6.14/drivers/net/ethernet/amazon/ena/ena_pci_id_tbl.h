@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+
 
 #ifndef ENA_PCI_ID_TBL_H_
 #define ENA_PCI_ID_TBL_H_
@@ -42,4 +40,4 @@ static const struct pci_device_id ena_pci_tbl[] = {
 	{ }
 };
 
-#endif /* ENA_PCI_ID_TBL_H_ */
+#endif 

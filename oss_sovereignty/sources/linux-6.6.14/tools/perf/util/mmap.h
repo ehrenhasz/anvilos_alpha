@@ -21,11 +21,7 @@ struct mmap_cpu_mask {
 #define MMAP_CPU_MASK_BYTES(m) \
 	(BITS_TO_LONGS(((struct mmap_cpu_mask *)m)->nbits) * sizeof(unsigned long))
 
-/**
- * struct mmap - perf's ring buffer mmap details
- *
- * @refcnt - e.g. code using PERF_EVENT_IOC_SET_OUTPUT to share this
- */
+
 struct mmap {
 	struct perf_mmap	core;
 	struct auxtrace_mmap auxtrace_mmap;
@@ -65,4 +61,4 @@ void mmap_cpu_mask__scnprintf(struct mmap_cpu_mask *mask, const char *tag);
 int mmap_cpu_mask__duplicate(struct mmap_cpu_mask *original,
 				struct mmap_cpu_mask *clone);
 
-#endif /*__PERF_MMAP_H */
+#endif 

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016 HiSilicon Technologies Co., Ltd.
- */
+
+
 
 #ifndef __DTS_HISTB_CLOCK_H
 #define __DTS_HISTB_CLOCK_H
 
-/* clocks provided by core CRG */
+
 #define HISTB_OSC_CLK			0
 #define HISTB_APB_CLK			1
 #define HISTB_AHB_CLK			2
@@ -59,7 +57,7 @@
 #define HISTB_USB3_PIPE_CLK1		49
 #define HISTB_USB3_SUSPEND_CLK1		50
 
-/* clocks provided by mcu CRG */
+
 #define HISTB_MCE_CLK			1
 #define HISTB_IR_CLK			2
 #define HISTB_TIMER01_CLK		3
@@ -67,4 +65,4 @@
 #define HISTB_UART0_CLK			5
 #define HISTB_LSADC_CLK			6
 
-#endif	/* __DTS_HISTB_CLOCK_H */
+#endif	

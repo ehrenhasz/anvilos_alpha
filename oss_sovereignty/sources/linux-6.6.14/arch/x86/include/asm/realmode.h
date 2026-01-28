@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ARCH_X86_REALMODE_H
 #define _ARCH_X86_REALMODE_H
 
-/*
- * Flag bit definitions for use with the flags field of the trampoline header
- * in the CONFIG_X86_64 variant.
- */
+
 #define TH_FLAGS_SME_ACTIVE_BIT		0
 #define TH_FLAGS_SME_ACTIVE		BIT(TH_FLAGS_SME_ACTIVE_BIT)
 
@@ -14,11 +11,11 @@
 #include <linux/types.h>
 #include <asm/io.h>
 
-/* This must match data at realmode/rm/header.S */
+
 struct real_mode_header {
 	u32	text_start;
 	u32	ro_end;
-	/* SMP trampoline */
+	
 	u32	trampoline_start;
 	u32	trampoline_header;
 #ifdef CONFIG_AMD_MEM_ENCRYPT
@@ -28,19 +25,19 @@ struct real_mode_header {
 	u32	trampoline_start64;
 	u32	trampoline_pgd;
 #endif
-	/* ACPI S3 wakeup */
+	
 #ifdef CONFIG_ACPI_SLEEP
 	u32	wakeup_start;
 	u32	wakeup_header;
 #endif
-	/* APM/BIOS reboot */
+	
 	u32	machine_real_restart_asm;
 #ifdef CONFIG_X86_64
 	u32	machine_real_restart_seg;
 #endif
 };
 
-/* This must match data at realmode/rm/trampoline_{32,64}.S */
+
 struct trampoline_header {
 #ifdef CONFIG_X86_32
 	u32 start;
@@ -81,7 +78,7 @@ extern unsigned char secondary_startup_64_no_verify[];
 static inline size_t real_mode_size_needed(void)
 {
 	if (real_mode_header)
-		return 0;	/* already allocated. */
+		return 0;	
 
 	return ALIGN(real_mode_blob_end - real_mode_blob, PAGE_SIZE);
 }
@@ -95,6 +92,6 @@ void reserve_real_mode(void);
 void load_trampoline_pgtable(void);
 void init_real_mode(void);
 
-#endif /* __ASSEMBLY__ */
+#endif 
 
-#endif /* _ARCH_X86_REALMODE_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cfg80211
 
@@ -234,9 +234,7 @@
 		}						\
 	} while (0)
 
-/*************************************************************
- *			rdev->ops traces		     *
- *************************************************************/
+
 
 TRACE_EVENT(rdev_suspend,
 	TP_PROTO(struct wiphy *wiphy, struct cfg80211_wowlan *wow),
@@ -1658,7 +1656,7 @@ TRACE_EVENT(rdev_testmode_dump,
 	),
 	TP_printk(WIPHY_PR_FMT, WIPHY_PR_ARG)
 );
-#endif /* CONFIG_NL80211_TESTMODE */
+#endif 
 
 TRACE_EVENT(rdev_set_bitrate_mask,
 	TP_PROTO(struct wiphy *wiphy, struct net_device *netdev,
@@ -2336,7 +2334,7 @@ TRACE_EVENT(rdev_channel_switch,
 		       params->counter_offsets_beacon,
 		       params->n_counter_offsets_beacon * sizeof(u16));
 
-		/* probe response offsets are optional */
+		
 		if (params->n_counter_offsets_presp)
 			memcpy(__get_dynamic_array(pres_ofs),
 			       params->counter_offsets_presp,
@@ -2873,9 +2871,7 @@ DEFINE_EVENT(wiphy_wdev_link_evt, rdev_del_intf_link,
 	TP_ARGS(wiphy, wdev, link_id)
 );
 
-/*************************************************************
- *	     cfg80211 exported functions traces		     *
- *************************************************************/
+
 
 TRACE_EVENT(cfg80211_return_bool,
 	TP_PROTO(bool ret),
@@ -3981,7 +3977,7 @@ TRACE_EVENT(cfg80211_links_removed,
 		  __entry->link_mask)
 );
 
-#endif /* !__RDEV_OPS_TRACE || TRACE_HEADER_MULTI_READ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

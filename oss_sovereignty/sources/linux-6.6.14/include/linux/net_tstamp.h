@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _LINUX_NET_TIMESTAMPING_H_
 #define _LINUX_NET_TIMESTAMPING_H_
@@ -10,23 +10,7 @@ enum hwtstamp_source {
 	HWTSTAMP_SOURCE_PHYLIB,
 };
 
-/**
- * struct kernel_hwtstamp_config - Kernel copy of struct hwtstamp_config
- *
- * @flags: see struct hwtstamp_config
- * @tx_type: see struct hwtstamp_config
- * @rx_filter: see struct hwtstamp_config
- * @ifr: pointer to ifreq structure from the original ioctl request, to pass to
- *	a legacy implementation of a lower driver
- * @copied_to_user: request was passed to a legacy implementation which already
- *	copied the ioctl request back to user space
- * @source: indication whether timestamps should come from the netdev or from
- *	an attached phylib PHY
- *
- * Prefer using this structure for in-kernel processing of hardware
- * timestamping configuration, over the inextensible struct hwtstamp_config
- * exposed to the %SIOCGHWTSTAMP and %SIOCSHWTSTAMP ioctl UAPI.
- */
+
 struct kernel_hwtstamp_config {
 	int flags;
 	int tx_type;
@@ -60,4 +44,4 @@ static inline bool kernel_hwtstamp_config_changed(const struct kernel_hwtstamp_c
 	       a->rx_filter != b->rx_filter;
 }
 
-#endif /* _LINUX_NET_TIMESTAMPING_H_ */
+#endif 

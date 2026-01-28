@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wmfw.h - Wolfson firmware format information
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+
 
 #ifndef __WMFW_H
 #define __WMFW_H
@@ -23,13 +17,13 @@
 #define WMFW_CTL_FLAG_WRITEABLE   0x0002
 #define WMFW_CTL_FLAG_READABLE    0x0001
 
-#define WMFW_CTL_TYPE_BYTES       0x0004 /* byte control */
+#define WMFW_CTL_TYPE_BYTES       0x0004 
 
-/* Non-ALSA coefficient types start at 0x1000 */
-#define WMFW_CTL_TYPE_ACKED       0x1000 /* acked control */
-#define WMFW_CTL_TYPE_HOSTEVENT   0x1001 /* event control */
-#define WMFW_CTL_TYPE_HOST_BUFFER 0x1002 /* host buffer pointer */
-#define WMFW_CTL_TYPE_FWEVENT     0x1004 /* firmware event control */
+
+#define WMFW_CTL_TYPE_ACKED       0x1000 
+#define WMFW_CTL_TYPE_HOSTEVENT   0x1001 
+#define WMFW_CTL_TYPE_HOST_BUFFER 0x1002 
+#define WMFW_CTL_TYPE_FWEVENT     0x1004 
 
 struct wmfw_header {
 	char magic[4];

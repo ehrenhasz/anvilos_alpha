@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_FB_OMAP2_DSS_INIT) += omapdss-boot-init.o
 obj-$(CONFIG_FB_OMAP2_DSS) += omapdss.o
-# Core DSS files
+
 omapdss-y := core.o dss.o dss_features.o dispc.o dispc_coefs.o display.o \
 	output.o dss-of.o pll.o video-pll.o
-# DSS compat layer files
+
 omapdss-y += manager.o manager-sysfs.o overlay.o overlay-sysfs.o apply.o \
 	dispc-compat.o display-sysfs.o
 omapdss-$(CONFIG_FB_OMAP2_DSS_DPI) += dpi.o

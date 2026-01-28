@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  linux/net/sunrpc/gss_rpc_upcall.h
- *
- *  Copyright (C) 2012 Simo Sorce <simo@redhat.com>
- */
+
+
 
 #ifndef _GSS_RPC_UPCALL_H
 #define _GSS_RPC_UPCALL_H
@@ -33,4 +29,4 @@ void init_gssp_clnt(struct sunrpc_net *);
 int set_gssp_clnt(struct net *);
 void clear_gssp_clnt(struct sunrpc_net *);
 
-#endif /* _GSS_RPC_UPCALL_H */
+#endif 

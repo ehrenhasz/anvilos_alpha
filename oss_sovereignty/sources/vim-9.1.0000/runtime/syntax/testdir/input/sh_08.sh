@@ -11,7 +11,7 @@ echo "$Variable1" ; echo "$Variable2" ; echo "$Variable3"
 [ -t 0 ] && echo "\n`date`" && unset VariableA
 Variable1=${VariableA:-This is a Text in $HOME}
 Variable2=${VariableA:=This is a Text in $HOME}
-Variable3=${VariableA:+This is a Text in $HOME}       #! :+ is bash-only, error here expected
+Variable3=${VariableA:+This is a Text in $HOME}       
 Variable1=${VariableA:-This is a Text in $HOME too}
 Variable2=${VariableA:=This is a Text in $HOME too}
 Variable3=${VariableA:+This is a Text in $HOME too}
@@ -45,7 +45,7 @@ Variable4=${Variable4:?This is an Error Message from `date`}
 : ${Variable4:?This is an Error Message}
 : ${Variable4:?This is an Error Message from `date`}
 exit $?
-if [ $# -ne 1 ]; then
+if [ $
 	echo whatever
 	exit 1
 fi

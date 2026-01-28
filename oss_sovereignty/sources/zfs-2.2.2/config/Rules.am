@@ -1,7 +1,7 @@
-#
-# Default build rules for all user space components, every Makefile.am
-# should include these rules and override or extend them as needed.
-#
+
+
+
+
 
 PHONY =
 AM_CPPFLAGS = \
@@ -76,11 +76,11 @@ AM_LDFLAGS += -lm
 endif
 
 
-# If a target includes kernel code, generate warnings for large stack frames
+
 KERNEL_CFLAGS       = $(FRAME_LARGER_THAN)
 
-# See https://debbugs.gnu.org/cgi/bugreport.cgi?bug=54020
+
 LIBRARY_CFLAGS      = -no-suppress
 
-# Forcibly enable asserts/debugging for libzpool &al.
+
 FORCEDEBUG_CPPFLAGS = -DDEBUG -UNDEBUG -DZFS_DEBUG

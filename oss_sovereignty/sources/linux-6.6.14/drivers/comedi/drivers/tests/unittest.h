@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  comedi/drivers/tests/unittest.h
- *  Simple framework for unittests for comedi drivers.
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2016 Spencer E. Olson <olsonse@umich.edu>
- *  based of parts of drivers/of/unittest.c
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
+
+
 
 #ifndef _COMEDI_DRIVERS_TESTS_UNITTEST_H
 #define _COMEDI_DRIVERS_TESTS_UNITTEST_H
@@ -42,11 +25,7 @@ typedef void (*unittest_fptr)(void);
 	failed; \
 })
 
-/**
- * Execute an array of unit tests.
- * @name:	Name of set of unit tests--will be shown at INFO log level.
- * @unit_tests:	A null-terminated list of unit tests to execute.
- */
+
 static inline void exec_unittests(const char *name,
 				  const unittest_fptr *unit_tests)
 {
@@ -59,4 +38,4 @@ static inline void exec_unittests(const char *name,
 		unittest_results.passed, unittest_results.failed);
 }
 
-#endif /* _COMEDI_DRIVERS_TESTS_UNITTEST_H */
+#endif 

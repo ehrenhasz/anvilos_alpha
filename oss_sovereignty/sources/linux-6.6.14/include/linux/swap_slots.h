@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SWAP_SLOTS_H
 #define _LINUX_SWAP_SLOTS_H
 
@@ -12,11 +12,11 @@
 
 struct swap_slots_cache {
 	bool		lock_initialized;
-	struct mutex	alloc_lock; /* protects slots, nr, cur */
+	struct mutex	alloc_lock; 
 	swp_entry_t	*slots;
 	int		nr;
 	int		cur;
-	spinlock_t	free_lock;  /* protects slots_ret, n_ret */
+	spinlock_t	free_lock;  
 	swp_entry_t	*slots_ret;
 	int		n_ret;
 };
@@ -28,4 +28,4 @@ void free_swap_slot(swp_entry_t entry);
 
 extern bool swap_slot_cache_enabled;
 
-#endif /* _LINUX_SWAP_SLOTS_H */
+#endif 

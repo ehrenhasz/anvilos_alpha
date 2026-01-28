@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * CAN driver for PEAK System USB adapters
- * Derived from the PCAN project file driver/src/pcan_usb_core.c
- *
- * Copyright (C) 2003-2010 PEAK System-Technik GmbH
- * Copyright (C) 2010-2012 Stephane Grosjean <s.grosjean@peak-system.com>
- *
- * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
- */
+
+
 #ifndef PCAN_USB_CORE_H
 #define PCAN_USB_CORE_H
 
-/* PEAK-System vendor id. */
+
 #define PCAN_USB_VENDOR_ID		0x0c72
 
-/* supported device ids. */
+
 #define PCAN_USB_PRODUCT_ID		0x000c
 #define PCAN_USBPRO_PRODUCT_ID		0x000d
 #define PCAN_USBPROFD_PRODUCT_ID	0x0011
@@ -24,19 +16,19 @@
 
 #define PCAN_USB_DRIVER_NAME		"peak_usb"
 
-/* number of urbs that are submitted for rx/tx per channel */
+
 #define PCAN_USB_MAX_RX_URBS		4
 #define PCAN_USB_MAX_TX_URBS		10
 
-/* usb adapters maximum channels per usb interface */
+
 #define PCAN_USB_MAX_CHANNEL		2
 
-/* maximum length of the usb commands sent to/received from the devices */
+
 #define PCAN_USB_MAX_CMD_LEN		32
 
 struct peak_usb_device;
 
-/* PEAK-System USB adapter descriptor */
+
 struct peak_usb_adapter {
 	char *name;
 	u32 device_id;
@@ -106,7 +98,7 @@ struct peak_tx_urb_context {
 #define PCAN_USB_STATE_CONNECTED	0x00000001
 #define PCAN_USB_STATE_STARTED		0x00000002
 
-/* PEAK-System USB device */
+
 struct peak_usb_device {
 	struct can_priv can;
 	const struct peak_usb_adapter *adapter;
@@ -123,7 +115,7 @@ struct peak_usb_device {
 	u8 *cmd_buf;
 	struct usb_anchor rx_submitted;
 
-	/* equivalent to the device ID in the Windows API */
+	
 	u32 can_channel_id;
 	u8 device_rev;
 
@@ -136,7 +128,7 @@ struct peak_usb_device {
 
 void pcan_dump_mem(const char *prompt, const void *p, int l);
 
-/* common timestamp management */
+
 void peak_usb_init_time_ref(struct peak_time_ref *time_ref,
 			    const struct peak_usb_adapter *adapter);
 void peak_usb_update_ts_now(struct peak_time_ref *time_ref, u32 ts_now);
@@ -147,7 +139,7 @@ void peak_usb_async_complete(struct urb *urb);
 void peak_usb_restart_complete(struct peak_usb_device *dev);
 int pcan_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info);
 
-/* common 32-bit CAN channel ID ethtool management */
+
 int peak_usb_get_eeprom_len(struct net_device *netdev);
 int peak_usb_get_eeprom(struct net_device *netdev,
 			struct ethtool_eeprom *eeprom, u8 *data);

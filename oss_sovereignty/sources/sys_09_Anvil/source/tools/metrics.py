@@ -8,8 +8,8 @@ Typical usage is:
     <wait for build to complete>
     $ ./tools/metrics.py diff size0 size1
 Other commands:
-    $ ./tools/metrics.py sizes # print all firmware sizes
-    $ ./tools/metrics.py clean # clean all ports
+    $ ./tools/metrics.py sizes 
+    $ ./tools/metrics.py clean 
 """
 import collections, sys, re, subprocess
 MAKE_FLAGS = ["-j3", "CFLAGS_EXTRA=-DNDEBUG"]

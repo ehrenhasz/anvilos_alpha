@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* This file defines field values used by the versaclock 6 family
- * for defining output type
- */
+
+
 
 #define VC5_LVPECL	0
 #define VC5_CMOS	1

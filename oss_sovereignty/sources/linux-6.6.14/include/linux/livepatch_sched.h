@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _LINUX_LIVEPATCH_SCHED_H_
 #define _LINUX_LIVEPATCH_SCHED_H_
 
@@ -19,11 +19,11 @@ static __always_inline void klp_sched_try_switch(void)
 		__klp_sched_try_switch();
 }
 
-#endif /* !CONFIG_PREEMPT_DYNAMIC || !CONFIG_HAVE_PREEMPT_DYNAMIC_CALL */
+#endif 
 
-#else /* !CONFIG_LIVEPATCH */
+#else 
 static inline void klp_sched_try_switch(void) {}
 static inline void __klp_sched_try_switch(void) {}
-#endif /* CONFIG_LIVEPATCH */
+#endif 
 
-#endif /* _LINUX_LIVEPATCH_SCHED_H_ */
+#endif 

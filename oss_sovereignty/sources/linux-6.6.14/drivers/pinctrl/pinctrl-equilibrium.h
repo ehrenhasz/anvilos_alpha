@@ -1,41 +1,39 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright(c) 2019 Intel Corporation.
- */
+
+
 
 #ifndef __PINCTRL_EQUILIBRIUM_H
 #define __PINCTRL_EQUILIBRIUM_H
 
-/* PINPAD register offset */
-#define REG_PMX_BASE	0x0	/* Port Multiplexer Control Register */
-#define REG_PUEN	0x80	/* PULL UP Enable Register */
-#define REG_PDEN	0x84	/* PULL DOWN Enable Register */
-#define REG_SRC		0x88	/* Slew Rate Control Register */
-#define REG_DCC0	0x8C	/* Drive Current Control Register 0 */
-#define REG_DCC1	0x90	/* Drive Current Control Register 1 */
-#define REG_OD		0x94	/* Open Drain Enable Register */
-#define REG_AVAIL	0x98	/* Pad Control Availability Register */
-#define DRV_CUR_PINS	16	/* Drive Current pin number per register */
-#define REG_DRCC(x)	(REG_DCC0 + (x) * 4) /* Driver current macro */
 
-/* GPIO register offset */
-#define GPIO_OUT	0x0	/* Data Output Register */
-#define GPIO_IN		0x4	/* Data Input Register */
-#define GPIO_DIR	0x8	/* Direction Register */
-#define GPIO_EXINTCR0	0x18	/* External Interrupt Control Register 0 */
-#define GPIO_EXINTCR1	0x1C	/* External Interrupt Control Register 1 */
-#define GPIO_IRNCR	0x20	/* IRN Capture Register */
-#define GPIO_IRNICR	0x24	/* IRN Interrupt Control Register */
-#define GPIO_IRNEN	0x28	/* IRN Interrupt Enable Register */
-#define GPIO_IRNCFG	0x2C	/* IRN Interrupt Configuration Register */
-#define GPIO_IRNRNSET	0x30	/* IRN Interrupt Enable Set Register */
-#define GPIO_IRNENCLR	0x34	/* IRN Interrupt Enable Clear Register */
-#define GPIO_OUTSET	0x40	/* Output Set Register */
-#define GPIO_OUTCLR	0x44	/* Output Clear Register */
-#define GPIO_DIRSET	0x48	/* Direction Set Register */
-#define GPIO_DIRCLR	0x4C	/* Direction Clear Register */
+#define REG_PMX_BASE	0x0	
+#define REG_PUEN	0x80	
+#define REG_PDEN	0x84	
+#define REG_SRC		0x88	
+#define REG_DCC0	0x8C	
+#define REG_DCC1	0x90	
+#define REG_OD		0x94	
+#define REG_AVAIL	0x98	
+#define DRV_CUR_PINS	16	
+#define REG_DRCC(x)	(REG_DCC0 + (x) * 4) 
 
-/* parse given pin's driver current value */
+
+#define GPIO_OUT	0x0	
+#define GPIO_IN		0x4	
+#define GPIO_DIR	0x8	
+#define GPIO_EXINTCR0	0x18	
+#define GPIO_EXINTCR1	0x1C	
+#define GPIO_IRNCR	0x20	
+#define GPIO_IRNICR	0x24	
+#define GPIO_IRNEN	0x28	
+#define GPIO_IRNCFG	0x2C	
+#define GPIO_IRNRNSET	0x30	
+#define GPIO_IRNENCLR	0x34	
+#define GPIO_OUTSET	0x40	
+#define GPIO_OUTCLR	0x44	
+#define GPIO_DIRSET	0x48	
+#define GPIO_DIRCLR	0x4C	
+
+
 #define PARSE_DRV_CURRENT(val, pin) (((val) >> ((pin) * 2)) & 0x3)
 
 #define GPIO_EDGE_TRIG		0
@@ -55,38 +53,21 @@ typedef enum {
 	OP_NONE,
 } funcs_util_ops;
 
-/**
- * struct gpio_irq_type: gpio irq configuration
- * @trig_type: level trigger or edge trigger
- * @edge_type: sigle edge or both edge
- * @logic_type: positive trigger or negative trigger
- */
+
 struct gpio_irq_type {
 	unsigned int trig_type;
 	unsigned int edge_type;
 	unsigned int logic_type;
 };
 
-/**
- * struct eqbr_pmx_func: represent a pin function.
- * @name: name of the pin function, used to lookup the function.
- * @groups: one or more names of pin groups that provide this function.
- * @nr_groups: number of groups included in @groups.
- */
+
 struct eqbr_pmx_func {
 	const char		*name;
 	const char		**groups;
 	unsigned int		nr_groups;
 };
 
-/**
- * struct eqbr_pin_bank: represent a pin bank.
- * @membase: base address of the pin bank register.
- * @id: bank id, to idenify the unique bank.
- * @pin_base: starting pin number of the pin bank.
- * @nr_pins: number of the pins of the pin bank.
- * @aval_pinmap: available pin bitmap of the pin bank.
- */
+
 struct eqbr_pin_bank {
 	void __iomem		*membase;
 	unsigned int		id;
@@ -97,16 +78,7 @@ struct eqbr_pin_bank {
 
 struct fwnode_handle;
 
-/**
- * struct eqbr_gpio_ctrl: represent a gpio controller.
- * @chip: gpio chip.
- * @fwnode: firmware node of gpio controller.
- * @bank: pointer to corresponding pin bank.
- * @membase: base address of the gpio controller.
- * @name: gpio chip name.
- * @virq: irq number of the gpio chip to parent's irq domain.
- * @lock: spin lock to protect gpio register write.
- */
+
 struct eqbr_gpio_ctrl {
 	struct gpio_chip	chip;
 	struct fwnode_handle	*fwnode;
@@ -114,21 +86,10 @@ struct eqbr_gpio_ctrl {
 	void __iomem		*membase;
 	const char		*name;
 	unsigned int		virq;
-	raw_spinlock_t		lock; /* protect gpio register */
+	raw_spinlock_t		lock; 
 };
 
-/**
- * struct eqbr_pinctrl_drv_data:
- * @dev: device instance representing the controller.
- * @pctl_desc: pin controller descriptor.
- * @pctl_dev: pin control class device
- * @membase: base address of pin controller
- * @pin_banks: list of pin banks of the driver.
- * @nr_banks: number of pin banks.
- * @gpio_ctrls: list of gpio controllers.
- * @nr_gpio_ctrls: number of gpio controllers.
- * @lock: protect pinctrl register write
- */
+
 struct eqbr_pinctrl_drv_data {
 	struct device			*dev;
 	struct pinctrl_desc		pctl_desc;
@@ -138,7 +99,7 @@ struct eqbr_pinctrl_drv_data {
 	unsigned int			nr_banks;
 	struct eqbr_gpio_ctrl		*gpio_ctrls;
 	unsigned int			nr_gpio_ctrls;
-	raw_spinlock_t			lock; /* protect pinpad register */
+	raw_spinlock_t			lock; 
 };
 
-#endif /* __PINCTRL_EQUILIBRIUM_H */
+#endif 

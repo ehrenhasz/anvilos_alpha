@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 Intel Corporation
- */
+
+
 
 #ifndef __UFS_DEBUGFS_H__
 #define __UFS_DEBUGFS_H__

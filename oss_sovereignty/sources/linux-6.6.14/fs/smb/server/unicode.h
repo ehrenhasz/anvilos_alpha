@@ -1,23 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Some of the source code in this file came from fs/cifs/cifs_unicode.c
- * cifs_unicode:  Unicode kernel case support
- *
- * Function:
- *     Convert a unicode character to upper or lower case using
- *     compressed tables.
- *
- *   Copyright (c) International Business Machines  Corp., 2000,2009
- *
- *
- * Notes:
- *     These APIs are based on the C library functions.  The semantics
- *     should match the C functions but with expanded size operands.
- *
- *     The upper/lower functions are based on a table created by mkupr.
- *     This is a compressed table of upper and lower case conversion.
- *
- */
+
+
 #ifndef _SMB_UNICODE_H
 #define _SMB_UNICODE_H
 
@@ -38,4 +20,4 @@ int smbConvertToUTF16(__le16 *target, const char *source, int srclen,
 char *ksmbd_extract_sharename(struct unicode_map *um, const char *treename);
 #endif
 
-#endif /* _SMB_UNICODE_H */
+#endif 

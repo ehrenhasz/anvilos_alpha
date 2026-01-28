@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for Broadcom MPI3 Storage Controllers
- *
- * Copyright (C) 2017-2023 Broadcom Inc.
- *  (mailto: mpi3mr-linuxdrv.pdl@broadcom.com)
- *
- */
+
+
 
 #ifndef MPI3SAS_DEBUG_H_INCLUDED
 
 #define MPI3SAS_DEBUG_H_INCLUDED
 
-/*
- * debug levels
- */
+
 
 #define MPI3_DEBUG_EVENT		0x00000001
 #define MPI3_DEBUG_EVENT_WORK_TASK	0x00000002
@@ -34,9 +26,7 @@
 #define MPI3_DEBUG_SG			0x02000000
 
 
-/*
- * debug macros
- */
+
 
 #define ioc_err(ioc, fmt, ...) \
 	pr_err("%s: " fmt, (ioc)->name, ##__VA_ARGS__)
@@ -149,14 +139,9 @@
 			pr_info("%s: " fmt, (ioc)->name, ##__VA_ARGS__); \
 	} while (0)
 
-#endif /* MPT3SAS_DEBUG_H_INCLUDED */
+#endif 
 
-/**
- * dprint_dump - print contents of a memory buffer
- * @req: Pointer to a memory buffer
- * @sz: Memory buffer size
- * @namestr: Name String to identify the buffer type
- */
+
 static inline void
 dprint_dump(void *req, int sz, const char *name_string)
 {
@@ -176,11 +161,7 @@ dprint_dump(void *req, int sz, const char *name_string)
 	pr_info("\n");
 }
 
-/**
- * dprint_dump_req - print message frame contents
- * @req: pointer to message frame
- * @sz: number of dwords
- */
+
 static inline void
 dprint_dump_req(void *req, int sz)
 {

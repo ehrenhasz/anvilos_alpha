@@ -1,5 +1,0 @@
-/dts-v1/;
-#include "alpine.dtsi"
-/ {
-	model = "Annapurna Labs Alpine Dev Board";
-};

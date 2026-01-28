@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
+
+
 
 #ifndef __PINCTRL_MTK_MT8183_H
 #define __PINCTRL_MTK_MT8183_H
@@ -1913,4 +1908,4 @@ static struct mtk_pin_desc mtk_pins_mt8183[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT8183_H */
+#endif 

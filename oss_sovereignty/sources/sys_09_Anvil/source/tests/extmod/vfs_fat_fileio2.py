@@ -15,9 +15,9 @@ class RAMFS:
         for i in range(len(buf)):
             self.data[n * self.SEC_SIZE + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return len(self.data) // self.SEC_SIZE
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.SEC_SIZE
 try:
     bdev = RAMFS(50)
@@ -73,5 +73,5 @@ try:
     f = open("large_file.txt", "wb")
     f.write(bytearray(bsize * free))
 except OSError as e:
-    print("ENOSPC:", e.errno == 28)  # errno.ENOSPC
+    print("ENOSPC:", e.errno == 28)  
 f.close()

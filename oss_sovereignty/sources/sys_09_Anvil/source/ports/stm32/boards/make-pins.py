@@ -28,12 +28,12 @@ CONDITIONAL_VAR = {
 PinAf = namedtuple(
     "PinAf",
     [
-        "af_idx",  # int, 0-15
-        "af_fn",  # e.g. "I2C"
-        "af_unit",  # int, e.g. 1 (for I2C1) or None (for OTG_HS_ULPI_CK)
-        "af_pin",  # e.g. "SDA"
-        "af_supported",  # bool, see table above
-        "af_name",  # e.g. "I2C1_SDA"
+        "af_idx",  
+        "af_fn",  
+        "af_unit",  
+        "af_pin",  
+        "af_supported",  
+        "af_name",  
     ],
 )
 MIN_ADC_UNIT = 1
@@ -114,7 +114,7 @@ class Stm32Pin(boardgen.Pin):
         for af in self._afs:
             if af.af_fn in CONDITIONAL_VAR:
                 print(
-                    "    #if defined({:s})".format(
+                    "    
                         CONDITIONAL_VAR[af.af_fn].format(num=af.af_unit)
                     ),
                     file=out_source,
@@ -136,7 +136,7 @@ class Stm32Pin(boardgen.Pin):
                 file=out_source,
             )
             if af.af_fn in CONDITIONAL_VAR:
-                print("    #endif", file=out_source)
+                print("    
         print("};", file=out_source)
     @staticmethod
     def validate_cpu_pin_name(cpu_pin_name):
@@ -155,7 +155,7 @@ class Stm32PinGenerator(boardgen.PinGenerator):
         return super().parse_af_csv(filename, header_rows=2, pin_col=1, af_col=2)
     def count_adc_pins(self):
         adc_units = defaultdict(lambda: (0, 0))
-        for pin in self._pins:  # All pins
+        for pin in self._pins:  
             for unit in pin._adc_units:
                 num, max_channel = adc_units[unit]
                 if pin._available:
@@ -213,7 +213,7 @@ class Stm32PinGenerator(boardgen.PinGenerator):
             name, af_fn, af_unit = key
             if af_fn in CONDITIONAL_VAR:
                 print(
-                    "    #if defined({:s})".format(CONDITIONAL_VAR[af_fn].format(num=af_unit)),
+                    "    
                     file=out_af_const,
                 )
             print(
@@ -221,7 +221,7 @@ class Stm32PinGenerator(boardgen.PinGenerator):
                 file=out_af_const,
             )
             if af_fn in CONDITIONAL_VAR:
-                print("    #endif", file=out_af_const)
+                print("    
     def print_af_defs(self, out_af_defs):
         af_defs = defaultdict(list)
         for pin in self._pins:
@@ -232,7 +232,7 @@ class Stm32PinGenerator(boardgen.PinGenerator):
             af_fn, af_unit, af_pin = key
             print(file=out_af_defs)
             print(
-                "#define STATIC_AF_{:s}{:s}_{:s}(pin_obj) ( \\".format(
+                "
                     af_fn, "" if af_unit is None else str(af_unit), af_pin or "NULL"
                 ),
                 file=out_af_defs,
@@ -245,7 +245,7 @@ class Stm32PinGenerator(boardgen.PinGenerator):
                     )
                 else:
                     print(
-                        '    ((strcmp( #pin_obj , "(&pin_{:s}_obj)") & strcmp( #pin_obj , "((&pin_{:s}_obj))")) == 0) ? ({:d}) : \\'.format(
+                        '    ((strcmp( 
                             pin.name(), pin.name(), af_idx
                         ),
                         file=out_af_defs,

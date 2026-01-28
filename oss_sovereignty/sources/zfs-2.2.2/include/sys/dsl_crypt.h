@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
 
-/*
- * Copyright (c) 2017, Datto, Inc. All rights reserved.
- */
+
+
 
 #ifndef	_SYS_DSL_CRYPT_H
 #define	_SYS_DSL_CRYPT_H
@@ -26,11 +11,7 @@
 #include <sys/spa.h>
 #include <sys/dsl_dataset.h>
 
-/*
- * ZAP entry keys for DSL Crypto Keys stored on disk. In addition,
- * ZFS_PROP_KEYFORMAT, ZFS_PROP_PBKDF2_SALT, and ZFS_PROP_PBKDF2_ITERS are
- * also maintained here using their respective property names.
- */
+
 #define	DSL_CRYPTO_KEY_CRYPTO_SUITE	"DSL_CRYPTO_SUITE"
 #define	DSL_CRYPTO_KEY_GUID		"DSL_CRYPTO_GUID"
 #define	DSL_CRYPTO_KEY_IV		"DSL_CRYPTO_IV"
@@ -41,126 +22,111 @@
 #define	DSL_CRYPTO_KEY_REFCOUNT		"DSL_CRYPTO_REFCOUNT"
 #define	DSL_CRYPTO_KEY_VERSION		"DSL_CRYPTO_VERSION"
 
-/*
- * In-memory representation of a wrapping key. One of these structs will exist
- * for each encryption root with its key loaded.
- */
+
 typedef struct dsl_wrapping_key {
-	/* link on spa_keystore_t:sk_wkeys */
+	
 	avl_node_t wk_avl_link;
 
-	/* keyformat property enum */
+	
 	zfs_keyformat_t wk_keyformat;
 
-	/* the pbkdf2 salt, if the keyformat is of type passphrase */
+	
 	uint64_t wk_salt;
 
-	/* the pbkdf2 iterations, if the keyformat is of type passphrase */
+	
 	uint64_t wk_iters;
 
-	/* actual wrapping key */
+	
 	crypto_key_t wk_key;
 
-	/* refcount of number of dsl_crypto_key_t's holding this struct */
+	
 	zfs_refcount_t wk_refcnt;
 
-	/* dsl directory object that owns this wrapping key */
+	
 	uint64_t wk_ddobj;
 } dsl_wrapping_key_t;
 
-/* enum of commands indicating special actions that should be run */
-typedef enum dcp_cmd {
-	/* key creation commands */
-	DCP_CMD_NONE = 0,	/* no specific command */
-	DCP_CMD_RAW_RECV,	/* raw receive */
 
-	/* key changing commands */
-	DCP_CMD_NEW_KEY,	/* rewrap key as an encryption root */
-	DCP_CMD_INHERIT,	/* rewrap key with parent's wrapping key */
-	DCP_CMD_FORCE_NEW_KEY,	/* change to encryption root without rewrap */
-	DCP_CMD_FORCE_INHERIT,	/* inherit parent's key without rewrap */
+typedef enum dcp_cmd {
+	
+	DCP_CMD_NONE = 0,	
+	DCP_CMD_RAW_RECV,	
+
+	
+	DCP_CMD_NEW_KEY,	
+	DCP_CMD_INHERIT,	
+	DCP_CMD_FORCE_NEW_KEY,	
+	DCP_CMD_FORCE_INHERIT,	
 
 	DCP_CMD_MAX
 } dcp_cmd_t;
 
-/*
- * This struct is a simple wrapper around all the parameters that are usually
- * required to setup encryption. It exists so that all of the params can be
- * passed around the kernel together for convenience.
- */
+
 typedef struct dsl_crypto_params {
-	/* command indicating intended action */
+	
 	dcp_cmd_t cp_cmd;
 
-	/* the encryption algorithm */
+	
 	enum zio_encrypt cp_crypt;
 
-	/* keylocation property string */
+	
 	char *cp_keylocation;
 
-	/* the wrapping key */
+	
 	dsl_wrapping_key_t *cp_wkey;
 } dsl_crypto_params_t;
 
-/*
- * In-memory representation of a DSL Crypto Key object. One of these structs
- * (and corresponding on-disk ZAP object) will exist for each encrypted
- * clone family that is mounted or otherwise reading protected data.
- */
+
 typedef struct dsl_crypto_key {
-	/* link on spa_keystore_t:sk_dsl_keys */
+	
 	avl_node_t dck_avl_link;
 
-	/* refcount of holders of this key */
+	
 	zfs_refcount_t dck_holds;
 
-	/* master key used to derive encryption keys */
+	
 	zio_crypt_key_t dck_key;
 
-	/* wrapping key for syncing this structure to disk */
+	
 	dsl_wrapping_key_t *dck_wkey;
 
-	/* on-disk object id */
+	
 	uint64_t dck_obj;
 } dsl_crypto_key_t;
 
-/*
- * In-memory mapping of a dataset object id to a DSL Crypto Key. This is used
- * to look up the corresponding dsl_crypto_key_t from the zio layer for
- * performing data encryption and decryption.
- */
+
 typedef struct dsl_key_mapping {
-	/* link on spa_keystore_t:sk_key_mappings */
+	
 	avl_node_t km_avl_link;
 
-	/* refcount of how many users are depending on this mapping */
+	
 	zfs_refcount_t km_refcnt;
 
-	/* dataset this crypto key belongs to (index) */
+	
 	uint64_t km_dsobj;
 
-	/* crypto key (value) of this record */
+	
 	dsl_crypto_key_t *km_key;
 } dsl_key_mapping_t;
 
-/* in memory structure for holding all wrapping and dsl keys */
+
 typedef struct spa_keystore {
-	/* lock for protecting sk_dsl_keys */
+	
 	krwlock_t sk_dk_lock;
 
-	/* tree of all dsl_crypto_key_t's */
+	
 	avl_tree_t sk_dsl_keys;
 
-	/* lock for protecting sk_key_mappings */
+	
 	krwlock_t sk_km_lock;
 
-	/* tree of all dsl_key_mapping_t's, indexed by dsobj */
+	
 	avl_tree_t sk_key_mappings;
 
-	/* lock for protecting the wrapping keys tree */
+	
 	krwlock_t sk_wkeys_lock;
 
-	/* tree of all dsl_wrapping_key_t's, indexed by ddobj */
+	
 	avl_tree_t sk_wkeys;
 } spa_keystore_t;
 

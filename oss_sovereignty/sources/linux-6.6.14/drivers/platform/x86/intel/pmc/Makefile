@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Intel x86 Platform-Specific Drivers
-#
+
+
+
+
 
 intel_pmc_core-y			:= core.o core_ssram.o spt.o cnp.o \
 					   icl.o tgl.o adl.o mtl.o

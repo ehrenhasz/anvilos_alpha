@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * POWER Data Stream Control Register (DSCR)
- *
- * This header file contains helper functions and macros
- * required for all the DSCR related test cases.
- *
- * Copyright 2012, Anton Blanchard, IBM Corporation.
- * Copyright 2015, Anshuman Khandual, IBM Corporation.
- */
+
+
 #ifndef _SELFTESTS_POWERPC_DSCR_DSCR_H
 #define _SELFTESTS_POWERPC_DSCR_DSCR_H
 
@@ -26,10 +18,10 @@
 #include "reg.h"
 #include "utils.h"
 
-#define THREADS		100	/* Max threads */
-#define COUNT		100	/* Max iterations */
-#define DSCR_MAX	16	/* Max DSCR value */
-#define LEN_MAX		100	/* Max name length */
+#define THREADS		100	
+#define COUNT		100	
+#define DSCR_MAX	16	
+#define LEN_MAX		100	
 
 #define DSCR_DEFAULT	"/sys/devices/system/cpu/dscr_default"
 #define CPU_PATH	"/sys/devices/system/cpu/"
@@ -39,7 +31,7 @@
 
 #define READ_ONCE(x) (*(volatile typeof(x) *)&(x))
 
-/* Prilvilege state DSCR access */
+
 inline unsigned long get_dscr(void)
 {
 	return mfspr(SPRN_DSCR_PRIV);
@@ -50,7 +42,7 @@ inline void set_dscr(unsigned long val)
 	mtspr(SPRN_DSCR_PRIV, val);
 }
 
-/* Problem state DSCR access */
+
 inline unsigned long get_dscr_usr(void)
 {
 	return mfspr(SPRN_DSCR);
@@ -61,7 +53,7 @@ inline void set_dscr_usr(unsigned long val)
 	mtspr(SPRN_DSCR, val);
 }
 
-/* Default DSCR access */
+
 unsigned long get_default_dscr(void)
 {
 	int err;
@@ -86,4 +78,4 @@ void set_default_dscr(unsigned long val)
 	}
 }
 
-#endif	/* _SELFTESTS_POWERPC_DSCR_DSCR_H */
+#endif	

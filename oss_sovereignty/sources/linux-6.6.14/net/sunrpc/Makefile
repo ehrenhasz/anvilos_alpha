@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Linux kernel SUN RPC
-#
+
+
+
+
 
 
 obj-$(CONFIG_SUNRPC) += sunrpc.o

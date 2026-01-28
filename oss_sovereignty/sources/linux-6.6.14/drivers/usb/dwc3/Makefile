@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# define_trace.h needs to know how to find our header
+
+
 CFLAGS_trace.o				:= -I$(src)
 
 obj-$(CONFIG_USB_DWC3)			+= dwc3.o
@@ -30,17 +30,17 @@ ifneq ($(CONFIG_DEBUG_FS),)
 	dwc3-y				+= debugfs.o
 endif
 
-##
-# Platform-specific glue layers go here
-#
-# NOTICE: Make sure your glue layer doesn't depend on anything
-# which is arch-specific and that it compiles on all situations.
-#
-# We want to keep this requirement in order to be able to compile
-# the entire driver (with all its glue layers) on several architectures
-# and make sure it compiles fine. This will also help with allmodconfig
-# and allyesconfig builds.
-##
+
+
+
+
+
+
+
+
+
+
+
 
 obj-$(CONFIG_USB_DWC3_AM62)		+= dwc3-am62.o
 obj-$(CONFIG_USB_DWC3_OMAP)		+= dwc3-omap.o

@@ -1,24 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// Spreadtrum divider clock driver
-//
-// Copyright (C) 2017 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@spreadtrum.com>
+
+
+
+
+
+
 
 #ifndef _SPRD_DIV_H_
 #define _SPRD_DIV_H_
 
 #include "common.h"
 
-/**
- * struct sprd_div_internal - Internal divider description
- * @shift: Bit offset of the divider in its register
- * @width: Width of the divider field in its register
- *
- * That structure represents a single divider, and is meant to be
- * embedded in other structures representing the various clock
- * classes.
- */
+
 struct sprd_div_internal {
 	u8	shift;
 	u8	width;
@@ -75,4 +67,4 @@ int sprd_div_helper_set_rate(const struct sprd_clk_common *common,
 
 extern const struct clk_ops sprd_div_ops;
 
-#endif /* _SPRD_DIV_H_ */
+#endif 

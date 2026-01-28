@@ -21,8 +21,8 @@ class A:
 class B(A):
     def foo(self):
         print('B foo')
-        print(super().bar) # accessing attribute after super()
-        return super().foo().count(2) # calling a subsequent method
+        print(super().bar) 
+        return super().foo().count(2) 
 print(B().foo())
 try:
     super(1, 1)

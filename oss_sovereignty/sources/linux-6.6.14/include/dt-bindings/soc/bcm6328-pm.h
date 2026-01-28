@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_BMIPS_BCM6328_PM_H
 #define __DT_BINDINGS_BMIPS_BCM6328_PM_H
@@ -14,4 +14,4 @@
 #define BCM6328_POWER_DOMAIN_ROBOSW	8
 #define BCM6328_POWER_DOMAIN_EPHY	9
 
-#endif /* __DT_BINDINGS_BMIPS_BCM6328_PM_H */
+#endif 

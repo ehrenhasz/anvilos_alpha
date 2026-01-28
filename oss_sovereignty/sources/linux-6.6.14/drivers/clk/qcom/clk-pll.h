@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __QCOM_CLK_PLL_H__
 #define __QCOM_CLK_PLL_H__
@@ -9,13 +7,7 @@
 #include <linux/clk-provider.h>
 #include "clk-regmap.h"
 
-/**
- * struct pll_freq_tbl - PLL frequency table
- * @l: L value
- * @m: M value
- * @n: N value
- * @ibits: internal values
- */
+
 struct pll_freq_tbl {
 	unsigned long freq;
 	u16 l;
@@ -24,18 +16,7 @@ struct pll_freq_tbl {
 	u32 ibits;
 };
 
-/**
- * struct clk_pll - phase locked loop (PLL)
- * @l_reg: L register
- * @m_reg: M register
- * @n_reg: N register
- * @config_reg: config register
- * @mode_reg: mode register
- * @status_reg: status register
- * @status_bit: ANDed with @status_reg to determine if PLL is enabled
- * @freq_tbl: PLL frequency table
- * @hw: handle between common and hardware-specific interfaces
- */
+
 struct clk_pll {
 	u32	l_reg;
 	u32	m_reg;

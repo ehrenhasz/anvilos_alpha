@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Twofish Cipher 8-way parallel algorithm (AVX/x86_64)
- *
- * Copyright (C) 2012 Johannes Goetzfried
- *     <Johannes.Goetzfried@informatik.stud.uni-erlangen.de>
- *
- * Copyright © 2012-2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
@@ -21,7 +14,7 @@
 
 .text
 
-/* structure of crypto context */
+
 #define s0	0
 #define s1	1024
 #define s2	2048
@@ -29,9 +22,7 @@
 #define w	4096
 #define k	4128
 
-/**********************************************************************
-  8-way AVX twofish
- **********************************************************************/
+
 #define CTX %rdi
 
 #define RA1 %xmm0
@@ -96,7 +87,7 @@
 	xorl		t2(CTX, RID1, 4), dst ## d;  \
 	xorl		t3(CTX, RID2, 4), dst ## d;
 
-#define dummy(d) /* do nothing */
+#define dummy(d) 
 
 #define shr_next(reg) \
 	shrq $16,	reg;
@@ -229,12 +220,7 @@
 	vpxor		x3, wkey, x3;
 
 SYM_FUNC_START_LOCAL(__twofish_enc_blk8)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: blocks
-	 * output:
-	 *	RC1, RD1, RA1, RB1, RC2, RD2, RA2, RB2: encrypted blocks
-	 */
+	
 
 	vmovdqu w(CTX), RK1;
 
@@ -270,12 +256,7 @@ SYM_FUNC_START_LOCAL(__twofish_enc_blk8)
 SYM_FUNC_END(__twofish_enc_blk8)
 
 SYM_FUNC_START_LOCAL(__twofish_dec_blk8)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	RC1, RD1, RA1, RB1, RC2, RD2, RA2, RB2: encrypted blocks
-	 * output:
-	 *	RA1, RB1, RC1, RD1, RA2, RB2, RC2, RD2: decrypted blocks
-	 */
+	
 
 	vmovdqu (w+4*4)(CTX), RK1;
 
@@ -309,11 +290,7 @@ SYM_FUNC_START_LOCAL(__twofish_dec_blk8)
 SYM_FUNC_END(__twofish_dec_blk8)
 
 SYM_FUNC_START(twofish_ecb_enc_8way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	movq %rsi, %r11;
@@ -329,11 +306,7 @@ SYM_FUNC_START(twofish_ecb_enc_8way)
 SYM_FUNC_END(twofish_ecb_enc_8way)
 
 SYM_FUNC_START(twofish_ecb_dec_8way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	movq %rsi, %r11;
@@ -349,11 +322,7 @@ SYM_FUNC_START(twofish_ecb_dec_8way)
 SYM_FUNC_END(twofish_ecb_dec_8way)
 
 SYM_FUNC_START(twofish_cbc_dec_8way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src
-	 */
+	
 	FRAME_BEGIN
 
 	pushq %r12;

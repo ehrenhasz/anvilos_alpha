@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SERIAL_BCM63XX_H
 #define _LINUX_SERIAL_BCM63XX_H
 
-/* UART Control Register */
+
 #define UART_CTL_REG			0x0
 #define UART_CTL_RXTMOUTCNT_SHIFT	0
 #define UART_CTL_RXTMOUTCNT_MASK	(0x1f << UART_CTL_RXTMOUTCNT_SHIFT)
@@ -39,10 +39,10 @@
 #define UART_CTL_BRGEN_SHIFT		23
 #define UART_CTL_BRGEN_MASK		(1 << UART_CTL_BRGEN_SHIFT)
 
-/* UART Baudword register */
+
 #define UART_BAUD_REG			0x4
 
-/* UART Misc Control register */
+
 #define UART_MCTL_REG			0x8
 #define UART_MCTL_DTR_SHIFT		0
 #define UART_MCTL_DTR_MASK		(1 << UART_MCTL_DTR_SHIFT)
@@ -57,7 +57,7 @@
 #define UART_MCTL_TXFIFOFILL_SHIFT	24
 #define UART_MCTL_TXFIFOFILL_MASK	(0x1f << UART_MCTL_TXFIFOFILL_SHIFT)
 
-/* UART External Input Configuration register */
+
 #define UART_EXTINP_REG			0xc
 #define UART_EXTINP_RI_SHIFT		0
 #define UART_EXTINP_RI_MASK		(1 << UART_EXTINP_RI_SHIFT)
@@ -82,7 +82,7 @@
 #define UART_EXTINP_DSR_NOSENSE_SHIFT	19
 #define UART_EXTINP_DSR_NOSENSE_MASK	(1 << UART_EXTINP_DSR_NOSENSE_SHIFT)
 
-/* UART Interrupt register */
+
 #define UART_IR_REG			0x10
 #define UART_IR_MASK(x)			(1 << (x + 16))
 #define UART_IR_STAT(x)			(1 << (x))
@@ -103,7 +103,7 @@
 #define UART_IR_RXBRK			14
 #define UART_IR_TXDONE			15
 
-/* UART Fifo register */
+
 #define UART_FIFO_REG			0x14
 #define UART_FIFO_VALID_SHIFT		0
 #define UART_FIFO_VALID_MASK		0xff
@@ -117,4 +117,4 @@
 					UART_FIFO_PARERR_MASK |		\
 					UART_FIFO_BRKDET_MASK)
 
-#endif /* _LINUX_SERIAL_BCM63XX_H */
+#endif 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * apei-internal.h - ACPI Platform Error Interface internal
- * definitions.
- */
+
+
 
 #ifndef APEI_INTERNAL_H
 #define APEI_INTERNAL_H
@@ -58,15 +55,15 @@ static inline int apei_exec_run(struct apei_exec_context *ctx, u8 action)
 	return __apei_exec_run(ctx, action, 0);
 }
 
-/* It is optional whether the firmware provides the action */
+
 static inline int apei_exec_run_optional(struct apei_exec_context *ctx, u8 action)
 {
 	return __apei_exec_run(ctx, action, 1);
 }
 
-/* Common instruction implementation */
 
-/* IP has been set in instruction function */
+
+
 #define APEI_EXEC_SET_IP	1
 
 int apei_map_generic_address(struct acpi_generic_address *reg);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010, Intel Corporation.
- *
- * Author: John Fastabend <john.r.fastabend@intel.com>
- */
+
+
 
 #ifndef _DCB_EVENT_H
 #define _DCB_EVENT_H
@@ -34,6 +30,6 @@ static inline int call_dcbevent_notifiers(unsigned long val, void *v)
 {
 	return 0;
 }
-#endif /* CONFIG_DCB */
+#endif 
 
 #endif

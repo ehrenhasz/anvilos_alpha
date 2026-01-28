@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR CDDL-1.0) */
-/*
- * VBox Guest additions version info, this is used by the host to determine
- * supported guest-addition features in some cases. So this will need to be
- * synced with vbox upstreams versioning scheme when we implement / port
- * new features from the upstream out-of-tree vboxguest driver.
- */
+
+
 
 #ifndef __VBOX_VERSION_H__
 #define __VBOX_VERSION_H__

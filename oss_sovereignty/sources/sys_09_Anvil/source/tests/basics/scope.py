@@ -1,7 +1,7 @@
 a = 1
 def f():
     global a
-    global a, a # should be able to redefine as global
+    global a, a 
     a = 2
 f()
 print(a)
@@ -9,7 +9,7 @@ def f():
     a = 1
     def g():
         nonlocal a
-        nonlocal a, a # should be able to redefine as nonlocal
+        nonlocal a, a 
         a = 2
     g()
     return a

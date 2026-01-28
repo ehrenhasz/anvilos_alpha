@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *  Copyright (C) 2013 Intel Corporation. All rights reserved.
- *  Copyright (C) 2014 Marvell International Ltd.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- *
- *  Acknowledgements:
- *  This file is based on hci_core.h, which was written
- *  by Maxim Krasnyansky.
- */
+
+
 
 #ifndef __NCI_CORE_H
 #define __NCI_CORE_H
@@ -24,7 +11,7 @@
 #include <net/nfc/nfc.h>
 #include <net/nfc/nci.h>
 
-/* NCI device flags */
+
 enum nci_flag {
 	NCI_INIT,
 	NCI_UP,
@@ -33,7 +20,7 @@ enum nci_flag {
 	NCI_UNREG,
 };
 
-/* NCI device states */
+
 enum nci_state {
 	NCI_IDLE,
 	NCI_DISCOVERY,
@@ -44,7 +31,7 @@ enum nci_state {
 	NCI_LISTEN_SLEEP,
 };
 
-/* NCI timeouts */
+
 #define NCI_RESET_TIMEOUT			5000
 #define NCI_INIT_TIMEOUT			5000
 #define NCI_SET_CONFIG_TIMEOUT			5000
@@ -98,11 +85,7 @@ struct nci_ops {
 
 struct nci_conn_info {
 	struct list_head list;
-	/* NCI specification 4.4.2 Connection Creation
-	 * The combination of destination type and destination specific
-	 * parameters shall uniquely identify a single destination for the
-	 * Logical Connection
-	 */
+	
 	struct dest_spec_params *dest_params;
 	__u8	dest_type;
 	__u8	conn_id;
@@ -121,17 +104,17 @@ struct nci_conn_info {
 
 #define NCI_HCI_ANY_OPEN_PIPE      0x03
 
-/* Gates */
+
 #define NCI_HCI_ADMIN_GATE         0x00
 #define NCI_HCI_LOOPBACK_GATE	   0x04
 #define NCI_HCI_IDENTITY_MGMT_GATE 0x05
 #define NCI_HCI_LINK_MGMT_GATE     0x06
 
-/* Pipes */
+
 #define NCI_HCI_LINK_MGMT_PIPE             0x00
 #define NCI_HCI_ADMIN_PIPE                 0x01
 
-/* Generic responses */
+
 #define NCI_HCI_ANY_OK                     0x00
 #define NCI_HCI_ANY_E_NOT_CONNECTED        0x01
 #define NCI_HCI_ANY_E_CMD_PAR_UNKNOWN      0x02
@@ -151,10 +134,7 @@ struct nci_conn_info {
 #define NCI_HCI_INVALID_HOST               0x80
 
 #define NCI_HCI_MAX_CUSTOM_GATES   50
-/*
- * According to specification 102 622 chapter 4.4 Pipes,
- * the pipe identifier is 7 bits long.
- */
+
 #define NCI_HCI_MAX_PIPES          128
 
 struct nci_hci_gate {
@@ -192,7 +172,7 @@ struct nci_hci_dev {
 	struct sk_buff_head msg_rx_queue;
 };
 
-/* NCI Core structures */
+
 struct nci_dev {
 	struct nfc_dev		*nfc_dev;
 	const struct nci_ops	*ops;
@@ -239,10 +219,10 @@ struct nci_dev {
 	struct nfc_target	targets[NCI_MAX_DISCOVERED_TARGETS];
 	int			n_targets;
 
-	/* received during NCI_OP_CORE_RESET_RSP */
+	
 	__u8			nci_ver;
 
-	/* received during NCI_OP_CORE_INIT_RSP */
+	
 	__u32			nfcc_features;
 	__u8			num_supported_rf_interfaces;
 	__u8			supported_rf_interfaces
@@ -254,20 +234,20 @@ struct nci_dev {
 	__u8			manufact_id;
 	__u32			manufact_specific_info;
 
-	/* Save RF Discovery ID or NFCEE ID under conn_create */
+	
 	struct dest_spec_params cur_params;
-	/* Save destination type under conn_create */
+	
 	__u8			cur_dest_type;
 
-	/* stored during nci_data_exchange */
+	
 	struct sk_buff		*rx_data_reassembly;
 
-	/* stored during intf_activated_ntf */
+	
 	__u8 remote_gb[NFC_MAX_GT_LEN];
 	__u8 remote_gb_len;
 };
 
-/* ----- NCI Devices ----- */
+
 struct nci_dev *nci_allocate_device(const struct nci_ops *ops,
 				    __u32 supported_protocols,
 				    int tx_headroom,
@@ -372,7 +352,7 @@ void nci_hci_data_received_cb(void *context, struct sk_buff *skb, int err);
 
 void nci_clear_target_list(struct nci_dev *ndev);
 
-/* ----- NCI requests ----- */
+
 #define NCI_REQ_DONE		0
 #define NCI_REQ_PEND		1
 #define NCI_REQ_CANCELED	2
@@ -383,25 +363,21 @@ struct nci_conn_info *nci_get_conn_info_by_conn_id(struct nci_dev *ndev,
 int nci_get_conn_info_by_dest_type_params(struct nci_dev *ndev, u8 dest_type,
 					  const struct dest_spec_params *params);
 
-/* ----- NCI status code ----- */
+
 int nci_to_errno(__u8 code);
 
-/* ----- NCI over SPI acknowledge modes ----- */
+
 #define NCI_SPI_CRC_DISABLED	0x00
 #define NCI_SPI_CRC_ENABLED	0x01
 
-/* ----- NCI SPI structures ----- */
+
 struct nci_spi {
 	struct nci_dev		*ndev;
 	struct spi_device	*spi;
 
-	unsigned int		xfer_udelay;	/* microseconds delay between
-						  transactions */
+	unsigned int		xfer_udelay;	
 
-	unsigned int		xfer_speed_hz; /*
-						* SPI clock frequency
-						* 0 => default clock
-						*/
+	unsigned int		xfer_speed_hz; 
 
 	u8			acknowledge_mode;
 
@@ -409,7 +385,7 @@ struct nci_spi {
 	u8			req_result;
 };
 
-/* ----- NCI SPI ----- */
+
 struct nci_spi *nci_spi_allocate_spi(struct spi_device *spi,
 				     u8 acknowledge_mode, unsigned int delay,
 				     struct nci_dev *ndev);
@@ -418,9 +394,9 @@ int nci_spi_send(struct nci_spi *nspi,
 		 struct sk_buff *skb);
 struct sk_buff *nci_spi_read(struct nci_spi *nspi);
 
-/* ----- NCI UART ---- */
 
-/* Ioctl */
+
+
 #define NCIUARTSETDRIVER	_IOW('U', 0, char *)
 
 enum nci_uart_driver {
@@ -445,7 +421,7 @@ struct nci_uart {
 	const char		*name;
 	enum nci_uart_driver	driver;
 
-	/* Dynamic data */
+	
 	struct nci_dev		*ndev;
 	spinlock_t		rx_lock;
 	struct work_struct	write_work;
@@ -462,4 +438,4 @@ int nci_uart_register(struct nci_uart *nu);
 void nci_uart_unregister(struct nci_uart *nu);
 void nci_uart_set_config(struct nci_uart *nu, int baudrate, int flow_ctrl);
 
-#endif /* __NCI_CORE_H */
+#endif 

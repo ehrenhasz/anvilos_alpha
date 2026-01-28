@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Network filesystem support module tracepoints
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM netfs
 
@@ -12,9 +8,7 @@
 
 #include <linux/tracepoint.h>
 
-/*
- * Define enums for tracing information.
- */
+
 #define netfs_read_traces					\
 	EM(netfs_read_trace_expanded,		"EXPANDED ")	\
 	EM(netfs_read_trace_readahead,		"READAHEAD")	\
@@ -98,9 +92,7 @@ enum netfs_sreq_ref_trace { netfs_sreq_ref_traces } __mode(byte);
 
 #endif
 
-/*
- * Export enum symbols via userspace.
- */
+
 #undef EM
 #undef E_
 #define EM(a, b) TRACE_DEFINE_ENUM(a);
@@ -115,10 +107,7 @@ netfs_failures;
 netfs_rreq_ref_traces;
 netfs_sreq_ref_traces;
 
-/*
- * Now redefine the EM() and E_() macros to map the enums to the strings that
- * will be printed in the output.
- */
+
 #undef EM
 #undef E_
 #define EM(a, b)	{ a, b },
@@ -316,7 +305,7 @@ TRACE_EVENT(netfs_sreq_ref,
 
 #undef EM
 #undef E_
-#endif /* _TRACE_NETFS_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

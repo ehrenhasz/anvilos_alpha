@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SDM_LPASS_SDM845_H
 #define _DT_BINDINGS_CLK_SDM_LPASS_SDM845_H

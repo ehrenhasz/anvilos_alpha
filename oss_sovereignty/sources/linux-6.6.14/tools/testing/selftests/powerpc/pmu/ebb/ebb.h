@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+
 
 #ifndef _SELFTESTS_POWERPC_PMU_EBB_EBB_H
 #define _SELFTESTS_POWERPC_PMU_EBB_EBB_H
@@ -73,4 +71,4 @@ int ebb_child(union pipe read_pipe, union pipe write_pipe);
 int catch_sigill(void (*func)(void));
 void write_pmc1(void);
 
-#endif /* _SELFTESTS_POWERPC_PMU_EBB_EBB_H */
+#endif 

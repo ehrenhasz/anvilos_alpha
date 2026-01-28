@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_INTERNAL_THREADMAP_H
 #define __LIBPERF_INTERNAL_THREADMAP_H
 
@@ -20,4 +20,4 @@ struct perf_thread_map {
 
 struct perf_thread_map *perf_thread_map__realloc(struct perf_thread_map *map, int nr);
 
-#endif /* __LIBPERF_INTERNAL_THREADMAP_H */
+#endif 

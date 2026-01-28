@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 CFLAGS += -Wall -pthread
 
 all: ${HELPER_PROGS}

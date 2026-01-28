@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __MACH_SUNXI_CLK_FACTORS_H
 #define __MACH_SUNXI_CLK_FACTORS_H
 
@@ -46,7 +46,7 @@ struct clk_factors {
 	void (*get_factors)(struct factors_request *req);
 	void (*recalc)(struct factors_request *req);
 	spinlock_t *lock;
-	/* for cleanup */
+	
 	struct clk_mux *mux;
 	struct clk_gate *gate;
 };

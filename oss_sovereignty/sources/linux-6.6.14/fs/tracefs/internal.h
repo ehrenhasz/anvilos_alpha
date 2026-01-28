@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TRACEFS_INTERNAL_H
 #define _TRACEFS_INTERNAL_H
 
@@ -27,4 +27,4 @@ struct dentry *eventfs_failed_creating(struct dentry *dentry);
 struct dentry *eventfs_end_creating(struct dentry *dentry);
 void eventfs_set_ef_status_free(struct tracefs_inode *ti, struct dentry *dentry);
 
-#endif /* _TRACEFS_INTERNAL_H */
+#endif 

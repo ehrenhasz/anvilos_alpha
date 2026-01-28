@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus SVC code
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+
 
 #ifndef __SVC_H
 #define __SVC_H
@@ -100,4 +95,4 @@ bool gb_svc_watchdog_enabled(struct gb_svc *svc);
 int gb_svc_watchdog_enable(struct gb_svc *svc);
 int gb_svc_watchdog_disable(struct gb_svc *svc);
 
-#endif /* __SVC_H */
+#endif 

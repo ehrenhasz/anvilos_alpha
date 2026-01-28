@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Internal header file _only_ for device mapper core
- *
- * Copyright (C) 2016 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the LGPL.
- */
+
+
 
 #ifndef DM_CORE_INTERNAL_H
 #define DM_CORE_INTERNAL_H
@@ -30,15 +24,9 @@ struct dm_kobject_holder {
 	struct completion completion;
 };
 
-/*
- * DM core internal structures used directly by dm.c, dm-rq.c and dm-table.c.
- * DM targets must _not_ deference a mapped_device or dm_table to directly
- * access their members!
- */
 
-/*
- * For mempools pre-allocation at the table loading time.
- */
+
+
 struct dm_md_mempools {
 	struct bio_set bs;
 	struct bio_set io_bs;
@@ -50,16 +38,12 @@ struct mapped_device {
 	struct mutex table_devices_lock;
 	struct list_head table_devices;
 
-	/*
-	 * The current mapping (struct dm_table *).
-	 * Use dm_get_live_table{_fast} or take suspend_lock for
-	 * dereference.
-	 */
+	
 	void __rcu *map;
 
 	unsigned long flags;
 
-	/* Protect queue and type against concurrent access. */
+	
 	struct mutex type_lock;
 	enum dm_queue_mode type;
 
@@ -79,59 +63,47 @@ struct mapped_device {
 	wait_queue_head_t wait;
 	unsigned long __percpu *pending_io;
 
-	/* forced geometry settings */
+	
 	struct hd_geometry geometry;
 
-	/*
-	 * Processing queue (flush)
-	 */
+	
 	struct workqueue_struct *wq;
 
-	/*
-	 * A list of ios that arrived while we were suspended.
-	 */
+	
 	struct work_struct work;
 	spinlock_t deferred_lock;
 	struct bio_list deferred;
 
-	/*
-	 * requeue work context is needed for cloning one new bio
-	 * to represent the dm_io to be requeued, since each
-	 * dm_io may point to the original bio from FS.
-	 */
+	
 	struct work_struct requeue_work;
 	struct dm_io *requeue_list;
 
 	void *interface_ptr;
 
-	/*
-	 * Event handling.
-	 */
+	
 	wait_queue_head_t eventq;
 	atomic_t event_nr;
 	atomic_t uevent_seq;
 	struct list_head uevent_list;
-	spinlock_t uevent_lock; /* Protect access to uevent_list */
+	spinlock_t uevent_lock; 
 
-	/* for blk-mq request-based DM support */
+	
 	bool init_tio_pdu:1;
 	struct blk_mq_tag_set *tag_set;
 
 	struct dm_stats stats;
 
-	/* the number of internal suspends */
+	
 	unsigned int internal_suspend_count;
 
 	int swap_bios;
 	struct semaphore swap_bios_semaphore;
 	struct mutex swap_bios_lock;
 
-	/*
-	 * io objects are allocated from here.
-	 */
+	
 	struct dm_md_mempools *mempools;
 
-	/* kobject and completion */
+	
 	struct dm_kobject_holder kobj_holder;
 
 	struct srcu_struct io_barrier;
@@ -146,9 +118,7 @@ struct mapped_device {
 #endif
 };
 
-/*
- * Bits for the flags field of struct mapped_device.
- */
+
 #define DMF_BLOCK_IO_FOR_SUSPEND 0
 #define DMF_SUSPENDED 1
 #define DMF_FROZEN 2
@@ -190,9 +160,9 @@ struct dm_table {
 	struct mapped_device *md;
 	enum dm_queue_mode type;
 
-	/* btree table */
+	
 	unsigned int depth;
-	unsigned int counts[DM_TABLE_MAX_DEPTH]; /* in nodes */
+	unsigned int counts[DM_TABLE_MAX_DEPTH]; 
 	sector_t *index[DM_TABLE_MAX_DEPTH];
 
 	unsigned int num_targets;
@@ -206,17 +176,14 @@ struct dm_table {
 	bool singleton:1;
 	unsigned integrity_added:1;
 
-	/*
-	 * Indicates the rw permissions for the new logical device.  This
-	 * should be a combination of BLK_OPEN_READ and BLK_OPEN_WRITE.
-	 */
+	
 	blk_mode_t mode;
 
-	/* a list of devices used by this table */
+	
 	struct list_head devices;
 	struct rw_semaphore devices_lock;
 
-	/* events get handed up using this callback */
+	
 	void (*event_fn)(void *data);
 	void *event_context;
 
@@ -234,9 +201,7 @@ static inline struct dm_target *dm_table_get_target(struct dm_table *t,
 	return t->targets + index;
 }
 
-/*
- * One of these is allocated per clone bio.
- */
+
 #define DM_TIO_MAGIC 28714
 struct dm_target_io {
 	unsigned short magic;
@@ -252,9 +217,7 @@ struct dm_target_io {
 #define DM_IO_BIO_OFFSET \
 	(offsetof(struct dm_target_io, clone) + offsetof(struct dm_io, tio))
 
-/*
- * dm_target_io flags
- */
+
 enum {
 	DM_TIO_INSIDE_DM_IO,
 	DM_TIO_IS_DUPLICATE_BIO
@@ -276,10 +239,7 @@ static inline bool dm_tio_is_normal(struct dm_target_io *tio)
 		!dm_tio_flagged(tio, DM_TIO_IS_DUPLICATE_BIO));
 }
 
-/*
- * One of these is allocated per original bio.
- * It contains the first clone used for that original.
- */
+
 #define DM_IO_MAGIC 19577
 struct dm_io {
 	unsigned short magic;
@@ -293,18 +253,16 @@ struct dm_io {
 	atomic_t io_count;
 	struct mapped_device *md;
 
-	/* The three fields represent mapped part of original bio */
+	
 	struct bio *orig_bio;
-	unsigned int sector_offset; /* offset to end of orig_bio */
+	unsigned int sector_offset; 
 	unsigned int sectors;
 
-	/* last member of dm_target_io is 'struct bio' */
+	
 	struct dm_target_io tio;
 };
 
-/*
- * dm_io flags
- */
+
 enum {
 	DM_IO_ACCOUNTED,
 	DM_IO_WAS_SPLIT,

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/kvm_util_base.h
- *
- * Copyright (C) 2018, Google LLC.
- */
+
+
 #ifndef SELFTEST_KVM_UTIL_BASE_H
 #define SELFTEST_KVM_UTIL_BASE_H
 
@@ -23,15 +19,7 @@
 
 #include "sparsebit.h"
 
-/*
- * Provide a version of static_assert() that is guaranteed to have an optional
- * message param.  If _ISOC11_SOURCE is defined, glibc (/usr/include/assert.h)
- * #undefs and #defines static_assert() as a direct alias to _Static_assert(),
- * i.e. effectively makes the message mandatory.  Many KVM selftests #define
- * _GNU_SOURCE for various reasons, and _GNU_SOURCE implies _ISOC11_SOURCE.  As
- * a result, static_assert() behavior is non-deterministic and may or may not
- * require a message depending on #include order.
- */
+
 #define __kvm_static_assert(expr, msg, ...) _Static_assert(expr, msg)
 #define kvm_static_assert(expr, ...) __kvm_static_assert(expr, ##__VA_ARGS__, #expr)
 
@@ -40,8 +28,8 @@
 
 #define NSEC_PER_SEC 1000000000L
 
-typedef uint64_t vm_paddr_t; /* Virtual Machine (Guest) physical address */
-typedef uint64_t vm_vaddr_t; /* Virtual Machine (Guest) virtual address */
+typedef uint64_t vm_paddr_t; 
+typedef uint64_t vm_vaddr_t; 
 
 struct userspace_mem_region {
 	struct kvm_userspace_memory_region region;
@@ -112,16 +100,12 @@ struct kvm_vm {
 	vm_vaddr_t handlers;
 	uint32_t dirty_ring_size;
 
-	/* Cache of information for binary stats interface */
+	
 	int stats_fd;
 	struct kvm_stats_header stats_header;
 	struct kvm_stats_desc *stats_desc;
 
-	/*
-	 * KVM region slots. These are the default memslots used by page
-	 * allocators, e.g., lib/elf uses the memslots[MEM_REGION_CODE]
-	 * memslot.
-	 */
+	
 	uint32_t memslots[NR_MEM_REGIONS];
 };
 
@@ -162,7 +146,7 @@ static inline struct userspace_mem_region *vm_get_mem_region(struct kvm_vm *vm,
 	return memslot2region(vm, vm->memslots[type]);
 }
 
-/* Minimum allocated guest virtual and physical addresses */
+
 #define KVM_UTIL_MIN_VADDR		0x2000
 #define KVM_GUEST_PAGE_TABLE_MIN_PADDR	0x180000
 
@@ -178,7 +162,7 @@ enum vm_guest_mode {
 	VM_MODE_P40V48_4K,
 	VM_MODE_P40V48_16K,
 	VM_MODE_P40V48_64K,
-	VM_MODE_PXXV48_4K,	/* For 48bits VA but ANY bits PA */
+	VM_MODE_PXXV48_4K,	
 	VM_MODE_P47V64_4K,
 	VM_MODE_P44V64_4K,
 	VM_MODE_P36V48_4K,
@@ -308,10 +292,7 @@ static __always_inline void static_assert_is_vcpu(struct kvm_vcpu *vcpu) { }
 #define vcpu_ioctl(vcpu, cmd, arg)				\
 	_vcpu_ioctl(vcpu, cmd, #cmd, arg)
 
-/*
- * Looks up and returns the value corresponding to the capability
- * (KVM_CAP_*) given by cap.
- */
+
 static inline int vm_check_cap(struct kvm_vm *vm, long cap)
 {
 	int ret =  __vm_ioctl(vm, KVM_CHECK_EXTENSION, (void *)cap);
@@ -394,12 +375,7 @@ struct kvm_stats_desc *read_stats_descriptors(int stats_fd,
 
 static inline ssize_t get_stats_descriptor_size(struct kvm_stats_header *header)
 {
-	 /*
-	  * The base size of the descriptor is defined by KVM's ABI, but the
-	  * size of the name field is variable, as far as KVM's ABI is
-	  * concerned. For a given instance of KVM, the name field is the same
-	  * size for all stats and is provided in the overall stats header.
-	  */
+	 
 	return sizeof(struct kvm_stats_desc) + header->name_size;
 }
 
@@ -407,10 +383,7 @@ static inline struct kvm_stats_desc *get_stats_descriptor(struct kvm_stats_desc 
 							  int index,
 							  struct kvm_stats_header *header)
 {
-	/*
-	 * Note, size_desc includes the size of the name field, which is
-	 * variable. i.e. this is NOT equivalent to &stats_desc[i].
-	 */
+	
 	return (void *)stats + index * get_stats_descriptor_size(header);
 }
 
@@ -669,23 +642,7 @@ static inline int kvm_create_device(struct kvm_vm *vm, uint64_t type)
 
 void *vcpu_map_dirty_ring(struct kvm_vcpu *vcpu);
 
-/*
- * VM VCPU Args Set
- *
- * Input Args:
- *   vm - Virtual Machine
- *   num - number of arguments
- *   ... - arguments, each of type uint64_t
- *
- * Output Args: None
- *
- * Return: None
- *
- * Sets the first @num input parameters for the function at @vcpu's entry point,
- * per the C calling convention of the architecture, to the values given as
- * variable args. Each of the variable args is expected to be of type uint64_t.
- * The maximum @num can be is specific to the architecture.
- */
+
 void vcpu_args_set(struct kvm_vcpu *vcpu, unsigned int num, ...);
 
 void kvm_irq_line(struct kvm_vm *vm, uint32_t irq, int level);
@@ -707,12 +664,7 @@ vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
 			      vm_paddr_t paddr_min, uint32_t memslot);
 vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
 
-/*
- * ____vm_create() does KVM_CREATE_VM and little else.  __vm_create() also
- * loads the test binary into guest memory and creates an IRQ chip (x86 only).
- * __vm_create() does NOT create vCPUs, @nr_runnable_vcpus is used purely to
- * calculate the amount of memory needed for per-vCPU data, e.g. stacks.
- */
+
 struct kvm_vm *____vm_create(enum vm_guest_mode mode);
 struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint32_t nr_runnable_vcpus,
 			   uint64_t nr_extra_pages);
@@ -739,10 +691,7 @@ static inline struct kvm_vm *vm_create_with_vcpus(uint32_t nr_vcpus,
 				      guest_code, vcpus);
 }
 
-/*
- * Create a VM with a single vCPU with reasonable defaults and @extra_mem_pages
- * additional pages of guest memory.  Returns the VM and vCPU (via out param).
- */
+
 struct kvm_vm *__vm_create_with_one_vcpu(struct kvm_vcpu **vcpu,
 					 uint64_t extra_mem_pages,
 					 void *guest_code);
@@ -770,7 +719,7 @@ vm_adjust_num_guest_pages(enum vm_guest_mode mode, unsigned int num_guest_pages)
 	unsigned int n;
 	n = vm_num_guest_pages(mode, vm_num_host_pages(mode, num_guest_pages));
 #ifdef __s390x__
-	/* s390 requires 1M aligned guest sizes */
+	
 	n = (n + 255) & ~255;
 #endif
 	return n;
@@ -790,12 +739,7 @@ kvm_userspace_memory_region_find(struct kvm_vm *vm, uint64_t start,
 	memcpy(&(g), _p, sizeof(g));				\
 })
 
-/*
- * Write a global value, but only in the VM's (guest's) domain.  Primarily used
- * for "globals" that hold per-VM values (VMs always duplicate code and global
- * data into their own region of physical memory), but can be used anytime it's
- * undesirable to change the host's copy of the global.
- */
+
 #define write_guest_global(vm, g, val) ({			\
 	typeof(g) *_p = addr_gva2hva(vm, (vm_vaddr_t)&(g));	\
 	typeof(g) _val = val;					\
@@ -814,14 +758,7 @@ static inline void vcpu_dump(FILE *stream, struct kvm_vcpu *vcpu,
 	vcpu_arch_dump(stream, vcpu, indent);
 }
 
-/*
- * Adds a vCPU with reasonable defaults (e.g. a stack)
- *
- * Input Args:
- *   vm - Virtual Machine
- *   vcpu_id - The id of the VCPU to add to the VM.
- *   guest_code - The vCPU's entry point
- */
+
 struct kvm_vcpu *vm_arch_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 				  void *guest_code);
 
@@ -831,7 +768,7 @@ static inline struct kvm_vcpu *vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id,
 	return vm_arch_vcpu_add(vm, vcpu_id, guest_code);
 }
 
-/* Re-create a vCPU after restarting a VM, e.g. for state save/restore tests. */
+
 struct kvm_vcpu *vm_arch_vcpu_recreate(struct kvm_vm *vm, uint32_t vcpu_id);
 
 static inline struct kvm_vcpu *vm_vcpu_recreate(struct kvm_vm *vm,
@@ -849,22 +786,7 @@ static inline void virt_pgd_alloc(struct kvm_vm *vm)
 	virt_arch_pgd_alloc(vm);
 }
 
-/*
- * VM Virtual Page Map
- *
- * Input Args:
- *   vm - Virtual Machine
- *   vaddr - VM Virtual Address
- *   paddr - VM Physical Address
- *   memslot - Memory region slot for new virtual translation tables
- *
- * Output Args: None
- *
- * Return: None
- *
- * Within @vm, creates a virtual translation for the page starting
- * at @vaddr to the page starting at @paddr.
- */
+
 void virt_arch_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr);
 
 static inline void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
@@ -873,21 +795,7 @@ static inline void virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr
 }
 
 
-/*
- * Address Guest Virtual to Guest Physical
- *
- * Input Args:
- *   vm - Virtual Machine
- *   gva - VM virtual address
- *
- * Output Args: None
- *
- * Return:
- *   Equivalent VM physical address
- *
- * Returns the VM physical address of the translated VM virtual
- * address given by @gva.
- */
+
 vm_paddr_t addr_arch_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva);
 
 static inline vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
@@ -895,21 +803,7 @@ static inline vm_paddr_t addr_gva2gpa(struct kvm_vm *vm, vm_vaddr_t gva)
 	return addr_arch_gva2gpa(vm, gva);
 }
 
-/*
- * Virtual Translation Tables Dump
- *
- * Input Args:
- *   stream - Output FILE stream
- *   vm     - Virtual Machine
- *   indent - Left margin indent amount
- *
- * Output Args: None
- *
- * Return: None
- *
- * Dumps to the FILE stream given by @stream, the contents of all the
- * virtual translation tables for the VM given by @vm.
- */
+
 void virt_arch_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent);
 
 static inline void virt_dump(FILE *stream, struct kvm_vm *vm, uint8_t indent)
@@ -923,13 +817,9 @@ static inline int __vm_disable_nx_huge_pages(struct kvm_vm *vm)
 	return __vm_enable_cap(vm, KVM_CAP_VM_DISABLE_NX_HUGE_PAGES, 0);
 }
 
-/*
- * Arch hook that is invoked via a constructor, i.e. before exeucting main(),
- * to allow for arch-specific setup that is common to all tests, e.g. computing
- * the default guest "mode".
- */
+
 void kvm_selftest_arch_init(void);
 
 void kvm_arch_vm_post_create(struct kvm_vm *vm);
 
-#endif /* SELFTEST_KVM_UTIL_BASE_H */
+#endif 

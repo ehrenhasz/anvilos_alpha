@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * -- <linux/cdrom.h>
- * General header file for linux CD-ROM drivers 
- * Copyright (C) 1992         David Giller, rafetmad@oxy.edu
- *               1994, 1995   Eberhard Mönkeberg, emoenke@gwdg.de
- *               1996         David van Leeuwen, david@tm.tno.nl
- *               1997, 1998   Erik Andersen, andersee@debian.org
- *               1998-2002    Jens Axboe, axboe@suse.de
- */
+
+
 #ifndef	_LINUX_CDROM_H
 #define	_LINUX_CDROM_H
 
-#include <linux/fs.h>		/* not really needed, later.. */
+#include <linux/fs.h>		
 #include <linux/list.h>
 #include <linux/blkdev.h>
 #include <scsi/scsi_common.h>
@@ -30,38 +22,36 @@ struct packet_command
 	void			*reserved[1];
 };
 
-/*
- * _OLD will use PIO transfer on atapi devices, _BPC_* will use DMA
- */
-#define CDDA_OLD		0	/* old style */
-#define CDDA_BPC_SINGLE		1	/* single frame block pc */
-#define CDDA_BPC_FULL		2	/* multi frame block pc */
 
-/* Uniform cdrom data structures for cdrom.c */
+#define CDDA_OLD		0	
+#define CDDA_BPC_SINGLE		1	
+#define CDDA_BPC_FULL		2	
+
+
 struct cdrom_device_info {
-	const struct cdrom_device_ops *ops; /* link to device_ops */
-	struct list_head list;		/* linked list of all device_info */
-	struct gendisk *disk;		/* matching block layer disk */
-	void *handle;		        /* driver-dependent data */
-/* specifications */
-	int mask;                       /* mask of capability: disables them */
-	int speed;			/* maximum speed for reading data */
-	int capacity;			/* number of discs in jukebox */
-/* device-related storage */
-	unsigned int options	: 30;	/* options flags */
-	unsigned mc_flags	: 2;	/* media change buffer flags */
-	unsigned int vfs_events;	/* cached events for vfs path */
-	unsigned int ioctl_events;	/* cached events for ioctl path */
-    	int use_count;                  /* number of times device opened */
-    	char name[20];                  /* name of the device type */
-/* per-device flags */
-        __u8 sanyo_slot		: 2;	/* Sanyo 3 CD changer support */
-        __u8 keeplocked		: 1;	/* CDROM_LOCKDOOR status */
-        __u8 reserved		: 5;	/* not used yet */
-	int cdda_method;		/* see flags */
+	const struct cdrom_device_ops *ops; 
+	struct list_head list;		
+	struct gendisk *disk;		
+	void *handle;		        
+
+	int mask;                       
+	int speed;			
+	int capacity;			
+
+	unsigned int options	: 30;	
+	unsigned mc_flags	: 2;	
+	unsigned int vfs_events;	
+	unsigned int ioctl_events;	
+    	int use_count;                  
+    	char name[20];                  
+
+        __u8 sanyo_slot		: 2;	
+        __u8 keeplocked		: 1;	
+        __u8 reserved		: 5;	
+	int cdda_method;		
 	__u8 last_sense;
-	__u8 media_written;		/* dirty flag, DVD+RW bookkeeping */
-	unsigned short mmc3_profile;	/* current MMC3 profile */
+	__u8 media_written;		
+	unsigned short mmc3_profile;	
 	int (*exit)(struct cdrom_device_info *);
 	int mrw_mode_page;
 	bool opened_for_data;
@@ -69,7 +59,7 @@ struct cdrom_device_info {
 };
 
 struct cdrom_device_ops {
-/* routines */
+
 	int (*open) (struct cdrom_device_info *, int);
 	void (*release) (struct cdrom_device_info *);
 	int (*drive_status) (struct cdrom_device_info *, int);
@@ -82,18 +72,18 @@ struct cdrom_device_ops {
 				 struct cdrom_multisession *);
 	int (*get_mcn) (struct cdrom_device_info *,
 			struct cdrom_mcn *);
-	/* hard reset device */
+	
 	int (*reset) (struct cdrom_device_info *);
-	/* play stuff */
+	
 	int (*audio_ioctl) (struct cdrom_device_info *,unsigned int, void *);
 
-	/* handle uniform packets for scsi type devices (scsi,atapi) */
+	
 	int (*generic_packet) (struct cdrom_device_info *,
 			       struct packet_command *);
 	int (*read_cdda_bpc)(struct cdrom_device_info *cdi, void __user *ubuf,
 			       u32 lba, u32 nframes, u8 *last_sense);
-/* driver specifications */
-	const int capability;   /* capability flags */
+
+	const int capability;   
 };
 
 int cdrom_multisession(struct cdrom_device_info *cdi,
@@ -101,7 +91,7 @@ int cdrom_multisession(struct cdrom_device_info *cdi,
 int cdrom_read_tocentry(struct cdrom_device_info *cdi,
 		struct cdrom_tocentry *entry);
 
-/* the general block_device operations structure: */
+
 int cdrom_open(struct cdrom_device_info *cdi, blk_mode_t mode);
 void cdrom_release(struct cdrom_device_info *cdi);
 int cdrom_ioctl(struct cdrom_device_info *cdi, struct block_device *bdev,
@@ -132,7 +122,7 @@ extern void init_cdrom_command(struct packet_command *cgc,
 extern int cdrom_dummy_generic_packet(struct cdrom_device_info *cdi,
 				      struct packet_command *cgc);
 
-/* The SCSI spec says there could be 256 slots. */
+
 #define CDROM_MAX_SLOTS	256
 
 struct cdrom_mechstat_header {
@@ -193,7 +183,7 @@ typedef struct {
 	__u8 ls_v		: 1;
 	__u8 test_write		: 1;
         __u8 write_type		: 4;
-	__u8 multi_session	: 2; /* or border, DVD */
+	__u8 multi_session	: 2; 
 	__u8 fp			: 1;
 	__u8 copy		: 1;
 	__u8 track_mode		: 4;
@@ -212,7 +202,7 @@ typedef struct {
 	__u8 track_mode		: 4;
 	__u8 copy		: 1;
 	__u8 fp			: 1;
-	__u8 multi_session	: 2; /* or border, DVD */
+	__u8 multi_session	: 2; 
 	__u8 data_block_type	: 4;
 	__u8 reserved3		: 4;
 #endif
@@ -308,7 +298,7 @@ extern int cdrom_get_media_event(struct cdrom_device_info *cdi, struct media_eve
 static inline void lba_to_msf(int lba, u8 *m, u8 *s, u8 *f)
 {
 	lba += CD_MSF_OFFSET;
-	lba &= 0xffffff;  /* negative lbas use only 24 bits */
+	lba &= 0xffffff;  
 	*m = lba / (CD_SECS * CD_FRAMES);
 	lba %= (CD_SECS * CD_FRAMES);
 	*s = lba / CD_FRAMES;
@@ -319,4 +309,4 @@ static inline int msf_to_lba(u8 m, u8 s, u8 f)
 {
 	return (((m * CD_SECS) + s) * CD_FRAMES + f) - CD_MSF_OFFSET;
 }
-#endif  /* _LINUX_CDROM_H */
+#endif  

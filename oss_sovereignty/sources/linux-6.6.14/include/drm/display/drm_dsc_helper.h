@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: MIT
- * Copyright (C) 2018 Intel Corp.
- *
- * Authors:
- * Manasi Navare <manasi.d.navare@intel.com>
- */
+
 
 #ifndef DRM_DSC_HELPER_H_
 #define DRM_DSC_HELPER_H_
@@ -12,7 +7,7 @@
 
 enum drm_dsc_params_type {
 	DRM_DSC_1_2_444,
-	DRM_DSC_1_1_PRE_SCR, /* legacy params from DSC 1.1 */
+	DRM_DSC_1_1_PRE_SCR, 
 	DRM_DSC_1_2_422,
 	DRM_DSC_1_2_420,
 };
@@ -29,5 +24,5 @@ u8 drm_dsc_initial_scale_value(const struct drm_dsc_config *dsc);
 u32 drm_dsc_flatness_det_thresh(const struct drm_dsc_config *dsc);
 u32 drm_dsc_get_bpp_int(const struct drm_dsc_config *vdsc_cfg);
 
-#endif /* _DRM_DSC_HELPER_H_ */
+#endif 
 

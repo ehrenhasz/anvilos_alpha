@@ -1,4 +1,0 @@
-#ifndef __ASM_POWERPC_ELFNOTE_H__
-#define __ASM_POWERPC_ELFNOTE_H__
-#define PPC_ELFNOTE_CAPABILITIES 1
-#endif  

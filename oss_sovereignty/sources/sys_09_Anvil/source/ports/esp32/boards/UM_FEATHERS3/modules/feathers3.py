@@ -33,10 +33,10 @@ def get_battery_voltage():
     Returns the current battery voltage. If no battery is connected, returns 4.2V which is the charge voltage
     This is an approximation only, but useful to detect if the charge state of the battery is getting low.
     """
-    adc = ADC(Pin(VBAT_SENSE))  # Assign the ADC pin to read
-    adc.atten(ADC.ATTN_2_5DB)  # Needs 2.5DB attenuation to read a max voltage of 1.1163V
-    measuredvbat = adc.read_uv() / 1000000  # Read micovolts and convert to volts
-    measuredvbat *= 3.7624  # Multiply by ratio of battery voltage to ADC pin voltage: 4.2/1.1163
+    adc = ADC(Pin(VBAT_SENSE))  
+    adc.atten(ADC.ATTN_2_5DB)  
+    measuredvbat = adc.read_uv() / 1000000  
+    measuredvbat *= 3.7624  
     return round(measuredvbat, 2)
 def get_vbus_present():
     """Detect if VBUS (5V) power source is present"""

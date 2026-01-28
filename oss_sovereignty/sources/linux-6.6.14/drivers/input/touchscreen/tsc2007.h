@@ -1,20 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 
-/*
- * Copyright (c) 2008 MtekVision Co., Ltd.
- *	Kwangwoo Lee <kwlee@mtekvision.com>
- *
- * Using code from:
- *  - ads7846.c
- *	Copyright (c) 2005 David Brownell
- *	Copyright (c) 2006 Nokia Corporation
- *  - corgi_ts.c
- *	Copyright (C) 2004-2005 Richard Purdie
- *  - omap_ts.[hc], ads7846.h, ts_osk.c
- *	Copyright (C) 2002 MontaVista Software
- *	Copyright (C) 2004 Texas Instruments
- *	Copyright (C) 2005 Dirk Behme
- */
+
+
 
 #ifndef _TSC2007_H
 #define _TSC2007_H
@@ -66,7 +52,7 @@ struct tsc2007 {
 	u16			model;
 	u16			x_plate_ohms;
 	u16			max_rt;
-	unsigned long		poll_period; /* in jiffies */
+	unsigned long		poll_period; 
 	int			fuzzx;
 	int			fuzzy;
 	int			fuzzz;
@@ -88,13 +74,13 @@ u32 tsc2007_calculate_resistance(struct tsc2007 *tsc, struct ts_event *tc);
 bool tsc2007_is_pen_down(struct tsc2007 *ts);
 
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_TSC2007_IIO)
-/* defined in tsc2007_iio.c */
+
 int tsc2007_iio_configure(struct tsc2007 *ts);
 #else
 static inline int tsc2007_iio_configure(struct tsc2007 *ts)
 {
 	return 0;
 }
-#endif /* CONFIG_TOUCHSCREEN_TSC2007_IIO */
+#endif 
 
-#endif /* _TSC2007_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NFNETLINK_H
 #define _NFNETLINK_H
 
@@ -38,9 +38,9 @@ enum nfnl_abort_action {
 
 struct nfnetlink_subsystem {
 	const char *name;
-	__u8 subsys_id;			/* nfnetlink subsystem ID */
-	__u8 cb_count;			/* number of callbacks */
-	const struct nfnl_callback *cb;	/* callback for individual types */
+	__u8 subsys_id;			
+	__u8 cb_count;			
+	const struct nfnl_callback *cb;	
 	struct module *owner;
 	int (*commit)(struct net *net, struct sk_buff *skb);
 	int (*abort)(struct net *net, struct sk_buff *skb,
@@ -100,9 +100,9 @@ static inline bool lockdep_nfnl_is_held(__u8 subsys_id)
 {
 	return true;
 }
-#endif /* CONFIG_PROVE_LOCKING */
+#endif 
 
 #define MODULE_ALIAS_NFNL_SUBSYS(subsys) \
 	MODULE_ALIAS("nfnetlink-subsys-" __stringify(subsys))
 
-#endif	/* _NFNETLINK_H */
+#endif	

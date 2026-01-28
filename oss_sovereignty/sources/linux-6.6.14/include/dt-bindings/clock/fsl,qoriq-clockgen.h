@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef DT_CLOCK_FSL_QORIQ_CLOCKGEN_H
 #define DT_CLOCK_FSL_QORIQ_CLOCKGEN_H
@@ -12,4 +12,4 @@
 
 #define QORIQ_CLK_PLL_DIV(x)	((x) - 1)
 
-#endif /* DT_CLOCK_FSL_QORIQ_CLOCKGEN_H */
+#endif 

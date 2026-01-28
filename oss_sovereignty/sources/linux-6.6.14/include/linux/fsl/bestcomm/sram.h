@@ -1,13 +1,4 @@
-/*
- * Handling of a sram zone for bestcomm
- *
- *
- * Copyright (C) 2007 Sylvain Munaut <tnt@246tNt.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+
 
 #ifndef __BESTCOMM_SRAM_H__
 #define __BESTCOMM_SRAM_H__
@@ -17,10 +8,8 @@
 #include <linux/spinlock.h>
 
 
-/* Structure used internally */
-	/* The internals are here for the inline functions
-	 * sake, certainly not for the user to mess with !
-	 */
+
+	
 struct bcom_sram {
 	phys_addr_t		 base_phys;
 	void 			*base_virt;
@@ -32,7 +21,7 @@ struct bcom_sram {
 extern struct bcom_sram *bcom_sram;
 
 
-/* Public API */
+
 extern int  bcom_sram_init(struct device_node *sram_node, char *owner);
 extern void bcom_sram_cleanup(void);
 
@@ -50,5 +39,5 @@ static inline void *bcom_sram_pa2va(phys_addr_t pa) {
 }
 
 
-#endif  /* __BESTCOMM_SRAM_H__ */
+#endif  
 

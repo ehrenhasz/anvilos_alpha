@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Shared glue code for 128bit block ciphers, AVX2 assembler macros
- *
- * Copyright © 2012-2013 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- */
+
+
 
 #define load_16way(src, x0, x1, x2, x3, x4, x5, x6, x7) \
 	vmovdqu (0*32)(src), x0; \

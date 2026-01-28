@@ -1,4 +1,4 @@
-/* vi: set sw=4 ts=4: */
+
 #ifndef UNARCHIVE_H
 #define UNARCHIVE_H 1
 
@@ -9,12 +9,12 @@ enum {
 	COMPRESS_MAGIC = 0x1f9d,
 	GZIP_MAGIC  = 0x1f8b,
 	BZIP2_MAGIC = 256 * 'B' + 'Z',
-	/* .xz signature: 0xfd, '7', 'z', 'X', 'Z', 0x00 */
-	/* More info at: http://tukaani.org/xz/xz-file-format.txt */
+	
+	
 	XZ_MAGIC1   = 256 * 0xfd + '7',
 	XZ_MAGIC2   = 256 * (unsigned)(256 * (256 * 'z' + 'X') + 'Z') + 0,
-	/* Different form: 32 bits, then 16 bits: */
-	/* (unsigned) cast suppresses "integer overflow in expression" warning */
+	
+	
 	XZ_MAGIC1a  = 256 * (unsigned)(256 * (256 * 0xfd + '7') + 'z') + 'X',
 	XZ_MAGIC2a  = 256 * 'Z' + 0,
 #else
@@ -46,40 +46,40 @@ typedef struct file_header_t {
 struct hardlinks_t;
 
 typedef struct archive_handle_t {
-	/* Flags. 1st since it is most used member */
+	
 	unsigned ah_flags;
 
-	/* The raw stream as read from disk or stdin */
+	
 	int src_fd;
 
-	/* Define if the header and data component should be processed */
+	
 	char FAST_FUNC (*filter)(struct archive_handle_t *);
-	/* List of files that have been accepted */
+	
 	llist_t *accept;
-	/* List of files that have been rejected */
+	
 	llist_t *reject;
-	/* List of files that have successfully been worked on */
+	
 	llist_t *passed;
 
-	/* Currently processed file's header */
+	
 	file_header_t *file_header;
 
-	/* List of link placeholders */
+	
 	llist_t *link_placeholders;
 
-	/* Process the header component, e.g. tar -t */
+	
 	void FAST_FUNC (*action_header)(const file_header_t *);
 
-	/* Process the data component, e.g. extract to filesystem */
+	
 	void FAST_FUNC (*action_data)(struct archive_handle_t *);
 
-	/* Function that skips data */
+	
 	void FAST_FUNC (*seek)(int fd, off_t amount);
 
-	/* Count processed bytes */
+	
 	off_t offset;
 
-	/* Archiver specific. Can make it a union if it ever gets big */
+	
 #if ENABLE_FEATURE_TAR_LONG_OPTIONS
 	unsigned tar__strip_components;
 #endif
@@ -106,11 +106,11 @@ typedef struct archive_handle_t {
 	struct hardlinks_t *cpio__created_hardlinks;
 #endif
 #if ENABLE_DPKG || ENABLE_DPKG_DEB
-	/* Temporary storage */
+	
 	char *dpkg__buffer;
-	/* How to process any sub archive, e.g. get_header_tar_gz */
+	
 	char FAST_FUNC (*dpkg__action_data_subarchive)(struct archive_handle_t *);
-	/* Contains the handle to a sub archive */
+	
 	struct archive_handle_t *dpkg__sub_archive;
 #endif
 #if ENABLE_FEATURE_AR_CREATE
@@ -122,7 +122,7 @@ typedef struct archive_handle_t {
 	unsigned ar__long_name_size;
 #endif
 } archive_handle_t;
-/* bits in ah_flags */
+
 #define ARCHIVE_RESTORE_DATE        (1 << 0)
 #define ARCHIVE_CREATE_LEADING_DIRS (1 << 1)
 #define ARCHIVE_UNLINK_OLD          (1 << 2)
@@ -137,32 +137,30 @@ typedef struct archive_handle_t {
 #endif
 
 
-/* POSIX tar Header Block, from POSIX 1003.1-1990  */
+
 #define TAR_BLOCK_SIZE 512
 #define NAME_SIZE      100
 #define NAME_SIZE_STR "100"
-typedef struct tar_header_t {     /* byte offset */
-	char name[NAME_SIZE];     /*   0-99 */
-	char mode[8];             /* 100-107 */
-	char uid[8];              /* 108-115 */
-	char gid[8];              /* 116-123 */
-	char size[12];            /* 124-135 */
-	char mtime[12];           /* 136-147 */
-	char chksum[8];           /* 148-155 */
-	char typeflag;            /* 156-156 */
-	char linkname[NAME_SIZE]; /* 157-256 */
-	/* POSIX:   "ustar" NUL "00" */
-	/* GNU tar: "ustar  " NUL */
-	/* Normally it's defined as magic[6] followed by
-	 * version[2], but we put them together to save code.
-	 */
-	char magic[8];            /* 257-264 */
-	char uname[32];           /* 265-296 */
-	char gname[32];           /* 297-328 */
-	char devmajor[8];         /* 329-336 */
-	char devminor[8];         /* 337-344 */
-	char prefix[155];         /* 345-499 */
-	char padding[12];         /* 500-512 (pad to exactly TAR_BLOCK_SIZE) */
+typedef struct tar_header_t {     
+	char name[NAME_SIZE];     
+	char mode[8];             
+	char uid[8];              
+	char gid[8];              
+	char size[12];            
+	char mtime[12];           
+	char chksum[8];           
+	char typeflag;            
+	char linkname[NAME_SIZE]; 
+	
+	
+	
+	char magic[8];            
+	char uname[32];           
+	char gname[32];           
+	char devmajor[8];         
+	char devminor[8];         
+	char prefix[155];         
+	char padding[12];         
 } tar_header_t;
 struct BUG_tar_header {
 	char c[sizeof(tar_header_t) == TAR_BLOCK_SIZE ? 1 : -1];
@@ -213,30 +211,30 @@ void data_align(archive_handle_t *archive_handle, unsigned boundary) FAST_FUNC;
 const llist_t *find_list_entry(const llist_t *list, const char *filename) FAST_FUNC;
 const llist_t *find_list_entry2(const llist_t *list, const char *filename) FAST_FUNC;
 
-/* A bit of bunzip2 internals are exposed for compressed help support: */
+
 char *unpack_bz2_data(const char *packed, int packed_len, int unpacked_len) FAST_FUNC;
 
-/* Meaning and direction (input/output) of the fields are transformer-specific */
+
 typedef struct transformer_state_t {
-	smallint signature_skipped; /* most often referenced member */
+	smallint signature_skipped; 
 
 	IF_DESKTOP(long long) int FAST_FUNC (*xformer)(struct transformer_state_t *xstate);
 	USE_FOR_NOMMU(const char *xformer_prog;)
 
-	/* Source */
+	
 	int      src_fd;
-	/* Output */
+	
 	int      dst_fd;
-	size_t   mem_output_size_max; /* if non-zero, decompress to RAM instead of fd */
+	size_t   mem_output_size_max; 
 	size_t   mem_output_size;
 	char     *mem_output_buf;
 
 	off_t    bytes_out;
-	off_t    bytes_in;  /* used in unzip code only: needs to know packed size */
+	off_t    bytes_in;  
 	uint32_t crc32;
-	time_t   mtime;     /* gunzip code may set this on exit */
+	time_t   mtime;     
 
-	union {             /* if we read magic, it's saved here */
+	union {             
 		uint8_t b[8];
 		uint16_t b16[4];
 		uint32_t b32[2];
@@ -267,11 +265,11 @@ int bbunpack(char **argv,
 enum {
 	BBUNPK_OPT_STDOUT     = 1 << 0,
 	BBUNPK_OPT_FORCE      = 1 << 1,
-	/* only some decompressors: */
+	
 	BBUNPK_OPT_KEEP       = 1 << 2,
 	BBUNPK_OPT_VERBOSE    = 1 << 3,
 	BBUNPK_OPT_QUIET      = 1 << 4,
-	/* not included in BBUNPK_OPTSTR: */
+	
 	BBUNPK_OPT_DECOMPRESS = 1 << 5,
 	BBUNPK_OPT_TEST       = 1 << 6,
 	BBUNPK_SEAMLESS_MAGIC = (1 << 31) * ENABLE_ZCAT * SEAMLESS_COMPRESSION,
@@ -288,7 +286,7 @@ void fork_transformer(int fd,
 #else
 void fork_transformer(int fd, const char *transform_prog) FAST_FUNC;
 #define fork_transformer_with_sig(fd, transformer, transform_prog) fork_transformer((fd), (transform_prog))
-/* fork_transformer_with_no_sig() does not exist on NOMMU */
+
 #endif
 
 

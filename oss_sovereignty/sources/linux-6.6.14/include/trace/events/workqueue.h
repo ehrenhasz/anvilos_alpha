@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM workqueue
 
@@ -10,16 +10,7 @@
 
 struct pool_workqueue;
 
-/**
- * workqueue_queue_work - called when a work gets queued
- * @req_cpu:	the requested cpu
- * @pwq:	pointer to struct pool_workqueue
- * @work:	pointer to struct work_struct
- *
- * This event occurs when a work is queued immediately or once a
- * delayed work is actually queued on a workqueue (ie: once the delay
- * has been reached).
- */
+
 TRACE_EVENT(workqueue_queue_work,
 
 	TP_PROTO(int req_cpu, struct pool_workqueue *pwq,
@@ -48,14 +39,7 @@ TRACE_EVENT(workqueue_queue_work,
 		  __entry->req_cpu, __entry->cpu)
 );
 
-/**
- * workqueue_activate_work - called when a work gets activated
- * @work:	pointer to struct work_struct
- *
- * This event occurs when a queued work is put on the active queue,
- * which happens immediately after queueing unless @max_active limit
- * is reached.
- */
+
 TRACE_EVENT(workqueue_activate_work,
 
 	TP_PROTO(struct work_struct *work),
@@ -73,12 +57,7 @@ TRACE_EVENT(workqueue_activate_work,
 	TP_printk("work struct %p", __entry->work)
 );
 
-/**
- * workqueue_execute_start - called immediately before the workqueue callback
- * @work:	pointer to struct work_struct
- *
- * Allows to track workqueue execution.
- */
+
 TRACE_EVENT(workqueue_execute_start,
 
 	TP_PROTO(struct work_struct *work),
@@ -98,13 +77,7 @@ TRACE_EVENT(workqueue_execute_start,
 	TP_printk("work struct %p: function %ps", __entry->work, __entry->function)
 );
 
-/**
- * workqueue_execute_end - called immediately after the workqueue callback
- * @work:	pointer to struct work_struct
- * @function:   pointer to worker function
- *
- * Allows to track workqueue execution.
- */
+
 TRACE_EVENT(workqueue_execute_end,
 
 	TP_PROTO(struct work_struct *work, work_func_t function),
@@ -124,7 +97,7 @@ TRACE_EVENT(workqueue_execute_end,
 	TP_printk("work struct %p: function %ps", __entry->work, __entry->function)
 );
 
-#endif /*  _TRACE_WORKQUEUE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

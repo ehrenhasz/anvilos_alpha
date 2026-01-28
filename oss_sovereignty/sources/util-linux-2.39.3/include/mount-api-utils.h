@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_MOUNT_API_UTILS
 #define UTIL_LINUX_MOUNT_API_UTILS
 
@@ -10,7 +7,7 @@
 #include <sys/syscall.h>
 #include <linux/mount.h>
 
-/* Accepted by both open_tree() and mount_setattr(). */
+
 #ifndef AT_RECURSIVE
 # define AT_RECURSIVE 0x8000
 #endif
@@ -31,31 +28,31 @@ static inline int open_tree(int dfd, const char *filename, unsigned int flags)
 #endif
 
 #ifndef MOVE_MOUNT_F_SYMLINKS
-# define MOVE_MOUNT_F_SYMLINKS 0x00000001 /* Follow symlinks on from path */
+# define MOVE_MOUNT_F_SYMLINKS 0x00000001 
 #endif
 
 #ifndef MOVE_MOUNT_F_AUTOMOUNTS
-# define MOVE_MOUNT_F_AUTOMOUNTS 0x00000002 /* Follow automounts on from path */
+# define MOVE_MOUNT_F_AUTOMOUNTS 0x00000002 
 #endif
 
 #ifndef MOVE_MOUNT_F_EMPTY_PATH
-# define MOVE_MOUNT_F_EMPTY_PATH 0x00000004 /* Empty from path permitted */
+# define MOVE_MOUNT_F_EMPTY_PATH 0x00000004 
 #endif
 
 #ifndef MOVE_MOUNT_T_SYMLINKS
-# define MOVE_MOUNT_T_SYMLINKS 0x00000010 /* Follow symlinks on to path */
+# define MOVE_MOUNT_T_SYMLINKS 0x00000010 
 #endif
 
 #ifndef MOVE_MOUNT_T_AUTOMOUNTS
-# define MOVE_MOUNT_T_AUTOMOUNTS 0x00000020 /* Follow automounts on to path */
+# define MOVE_MOUNT_T_AUTOMOUNTS 0x00000020 
 #endif
 
 #ifndef MOVE_MOUNT_T_EMPTY_PATH
-# define MOVE_MOUNT_T_EMPTY_PATH 0x00000040 /* Empty to path permitted */
+# define MOVE_MOUNT_T_EMPTY_PATH 0x00000040 
 #endif
 
 #ifndef MOVE_MOUNT_SET_GROUP
-# define MOVE_MOUNT_SET_GROUP	0x00000100 /* Set sharing group instead */
+# define MOVE_MOUNT_SET_GROUP	0x00000100 
 #endif
 
 #ifndef MOVE_MOUNT__MASK
@@ -116,7 +113,7 @@ static inline int move_mount(int from_dfd, const char *from_pathname, int to_dfd
 #endif
 
 #ifndef HAVE_STRUCT_MOUNT_ATTR
-# ifndef MOUNT_ATTR_SIZE_VER0 /* For case mount.h comes from a place invisible for autotools/meson */
+# ifndef MOUNT_ATTR_SIZE_VER0 
 # include <inttypes.h>
 struct mount_attr {
 	uint64_t attr_set;
@@ -136,16 +133,16 @@ static inline int mount_setattr(int dfd, const char *path, unsigned int flags,
 #endif
 
 #ifndef HAVE_ENUM_FSCONFIG_COMMAND
-# ifndef FSOPEN_CLOEXEC /* For case mount.h comes from a place invisible for autotools/meson */
+# ifndef FSOPEN_CLOEXEC 
 enum fsconfig_command {
-	FSCONFIG_SET_FLAG	= 0,	/* Set parameter, supplying no value */
-	FSCONFIG_SET_STRING	= 1,	/* Set parameter, supplying a string value */
-	FSCONFIG_SET_BINARY	= 2,	/* Set parameter, supplying a binary blob value */
-	FSCONFIG_SET_PATH	= 3,	/* Set parameter, supplying an object by path */
-	FSCONFIG_SET_PATH_EMPTY	= 4,	/* Set parameter, supplying an object by (empty) path */
-	FSCONFIG_SET_FD		= 5,	/* Set parameter, supplying an object by fd */
-	FSCONFIG_CMD_CREATE	= 6,	/* Invoke superblock creation */
-	FSCONFIG_CMD_RECONFIGURE = 7,	/* Invoke superblock reconfiguration */
+	FSCONFIG_SET_FLAG	= 0,	
+	FSCONFIG_SET_STRING	= 1,	
+	FSCONFIG_SET_BINARY	= 2,	
+	FSCONFIG_SET_PATH	= 3,	
+	FSCONFIG_SET_PATH_EMPTY	= 4,	
+	FSCONFIG_SET_FD		= 5,	
+	FSCONFIG_CMD_CREATE	= 6,	
+	FSCONFIG_CMD_RECONFIGURE = 7,	
 };
 # endif
 #endif
@@ -203,6 +200,6 @@ static inline int fspick(int dfd, const char *pathname, unsigned int flags)
 }
 #endif
 
-#endif /* HAVE_MOUNTFD_API && HAVE_LINUX_MOUNT_H */
-#endif /* UTIL_LINUX_MOUNT_API_UTILS */
+#endif 
+#endif 
 

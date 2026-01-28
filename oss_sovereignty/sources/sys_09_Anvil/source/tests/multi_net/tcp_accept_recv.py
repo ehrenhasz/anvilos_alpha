@@ -9,7 +9,7 @@ def instance0():
     multitest.next()
     s.accept()
     try:
-        print("recv", s.recv(10))  # should raise Errno 107 ENOTCONN
+        print("recv", s.recv(10))  
     except OSError as er:
         print(er.errno in (107, 128))
     s.close()

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2006 Micron Technology Inc.
- */
+
+
 
 #ifndef	_MTD_NAND_OMAP2_H
 #define	_MTD_NAND_OMAP2_H
@@ -12,33 +10,27 @@
 #define	GPMC_BCH_NUM_REMAINDER	8
 
 enum nand_io {
-	NAND_OMAP_PREFETCH_POLLED = 0,	/* prefetch polled mode, default */
-	NAND_OMAP_POLLED,		/* polled mode, without prefetch */
-	NAND_OMAP_PREFETCH_DMA,		/* prefetch enabled sDMA mode */
-	NAND_OMAP_PREFETCH_IRQ		/* prefetch enabled irq mode */
+	NAND_OMAP_PREFETCH_POLLED = 0,	
+	NAND_OMAP_POLLED,		
+	NAND_OMAP_PREFETCH_DMA,		
+	NAND_OMAP_PREFETCH_IRQ		
 };
 
 enum omap_ecc {
-	/*
-	 * 1-bit ECC: calculation and correction by SW
-	 * ECC stored at end of spare area
-	 */
+	
 	OMAP_ECC_HAM1_CODE_SW = 0,
 
-	/*
-	 * 1-bit ECC: calculation by GPMC, Error detection by Software
-	 * ECC layout compatible with ROM code layout
-	 */
+	
 	OMAP_ECC_HAM1_CODE_HW,
-	/* 4-bit  ECC calculation by GPMC, Error detection by Software */
+	
 	OMAP_ECC_BCH4_CODE_HW_DETECTION_SW,
-	/* 4-bit  ECC calculation by GPMC, Error detection by ELM */
+	
 	OMAP_ECC_BCH4_CODE_HW,
-	/* 8-bit  ECC calculation by GPMC, Error detection by Software */
+	
 	OMAP_ECC_BCH8_CODE_HW_DETECTION_SW,
-	/* 8-bit  ECC calculation by GPMC, Error detection by ELM */
+	
 	OMAP_ECC_BCH8_CODE_HW,
-	/* 16-bit ECC calculation by GPMC, Error detection by ELM */
+	
 	OMAP_ECC_BCH16_CODE_HW,
 };
 
@@ -69,4 +61,4 @@ static const struct of_device_id omap_nand_ids[] = {
 	{},
 };
 
-#endif /* _MTD_NAND_OMAP2_H */
+#endif 

@@ -37,15 +37,15 @@ def sram2a_dump(num_words=64, width=8):
         for j in range(width):
             print(" %08x" % (mem32[SRAM2A_BASE + (i * width + j) * 4] & 0xFFFFFFFF), end="")
         print()
-SYS_CMD_BUF = 0  # next*,prev*,type8,...; 272 bytes
-SYS_SYS_QUEUE = 0  # next*,prev*
-MM_BLE_SPARE_EVT_BUF = 0  # next*,prev*; 272 bytes
-MM_SYS_SPARE_EVT_BUF = 0  # next*,prev*; 272 bytes
-MM_BLE_POOL = 0  # ?
-MM_BLE_POOL_SIZE = 0  # ?
-MM_FREE_BUF_QUEUE = 0  # next*,prev*
-MM_EV_POOL = 0  # ?
-MM_EV_POOL_SIZE = 0  # ?
+SYS_CMD_BUF = 0  
+SYS_SYS_QUEUE = 0  
+MM_BLE_SPARE_EVT_BUF = 0  
+MM_SYS_SPARE_EVT_BUF = 0  
+MM_BLE_POOL = 0  
+MM_BLE_POOL_SIZE = 0  
+MM_FREE_BUF_QUEUE = 0  
+MM_EV_POOL = 0  
+MM_EV_POOL_SIZE = 0  
 BLE_CMD_BUF = 0
 BLE_CS_BUF = 0
 BLE_EVT_QUEUE = 0

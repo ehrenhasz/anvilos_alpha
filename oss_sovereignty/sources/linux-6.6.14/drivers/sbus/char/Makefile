@@ -1,12 +1,12 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the kernel miscellaneous SPARC device drivers.
-#
-# Dave Redman Frame Buffer tuning support.
-#
-# 7 October 2000, Bartlomiej Zolnierkiewicz <bkz@linux-ide.org>
-# Rewritten to use lists instead of if-statements.
-#
+
+
+
+
+
+
+
+
+
 
 bbc-objs := bbc_i2c.o bbc_envctrl.o
 

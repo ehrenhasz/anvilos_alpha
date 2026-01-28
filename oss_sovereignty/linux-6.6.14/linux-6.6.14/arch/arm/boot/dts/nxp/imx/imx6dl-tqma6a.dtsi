@@ -1,9 +1,0 @@
-#include "imx6dl.dtsi"
-#include "imx6qdl-tqma6a.dtsi"
-#include "imx6qdl-tqma6.dtsi"
-/ {
-	memory@10000000 {
-		device_type = "memory";
-		reg = <0x10000000 0x20000000>;
-	};
-};

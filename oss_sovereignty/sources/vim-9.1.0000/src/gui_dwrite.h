@@ -1,14 +1,5 @@
-/* vi:set ts=8 sts=4 sw=4 noet: */
-/*
- * Author: MURAOKA Taro <koron.kaoriya@gmail.com>
- *
- * Contributors:
- *  - Ken Takata
- *  - Yasuhiro Matsumoto
- *
- * Copyright (C) 2013 MURAOKA Taro <koron.kaoriya@gmail.com>
- * THIS FILE IS DISTRIBUTED UNDER THE VIM LICENSE.
- */
+
+
 
 #ifndef GUI_DWRITE_H
 #define GUI_DWRITE_H
@@ -23,31 +14,11 @@ typedef struct DWriteRenderingParams {
     float gamma;
     float enhancedContrast;
     float clearTypeLevel;
-    /*
-     * pixelGeometry:
-     *	0 - DWRITE_PIXEL_GEOMETRY_FLAT
-     *	1 - DWRITE_PIXEL_GEOMETRY_RGB
-     *	2 - DWRITE_PIXEL_GEOMETRY_BGR
-     */
+    
     int pixelGeometry;
-    /*
-     * renderingMode:
-     *	0 - DWRITE_RENDERING_MODE_DEFAULT
-     *	1 - DWRITE_RENDERING_MODE_ALIASED
-     *	2 - DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC
-     *	3 - DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL
-     *	4 - DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL
-     *	5 - DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC
-     *	6 - DWRITE_RENDERING_MODE_OUTLINE
-     */
+    
     int renderingMode;
-    /*
-     * antialiasMode:
-     *	0 - D2D1_TEXT_ANTIALIAS_MODE_DEFAULT
-     *	1 - D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE
-     *	2 - D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE
-     *	3 - D2D1_TEXT_ANTIALIAS_MODE_ALIASED
-     */
+    
     int textAntialiasMode;
 } DWriteRenderingParams;
 
@@ -89,4 +60,4 @@ DWriteRenderingParams *DWriteContext_GetRenderingParams(
 #ifdef __cplusplus
 }
 #endif
-#endif/*GUI_DWRITE_H*/
+#endif

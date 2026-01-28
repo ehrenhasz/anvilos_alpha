@@ -1,6 +1,6 @@
-desc=""				# Output prefix.
-module=""			# Filename (without the .ko).
-args=""				# modprobe arguments.
+desc=""				
+module=""			
+args=""				
 modprobe="/sbin/modprobe"
 main() {
     parse_args "$@"
@@ -9,8 +9,8 @@ main() {
     run_module
 }
 parse_args() {
-    script=${0##*/}
-    if [ $# -lt 2 ]; then
+    script=${0
+    if [ $
 	echo "Usage: $script <description> <module_name> [FAIL]"
 	exit 1
     fi

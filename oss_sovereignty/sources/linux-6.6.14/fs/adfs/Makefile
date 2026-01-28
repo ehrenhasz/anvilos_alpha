@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the linux adfs filesystem routines.
-#
+
+
+
+
 
 obj-$(CONFIG_ADFS_FS) += adfs.o
 

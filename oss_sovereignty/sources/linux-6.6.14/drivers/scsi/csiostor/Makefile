@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-## Chelsio FCoE driver
-#
-##
+
+
+
+
+
 
 ccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/cxgb4
 

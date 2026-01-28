@@ -161,7 +161,7 @@ run_test() {
 			echo "[FAIL]"
 			exitcode=1
 		fi
-	fi # test_selected
+	fi 
 }
 CATEGORY="hugetlb" run_test ./hugepage-mmap
 shmmax=$(cat /proc/sys/kernel/shmmax)
@@ -219,7 +219,7 @@ if [ $VADDR64 -ne 0 ]; then
 	if [ "$ARCH" == "$ARCH_ARM64" ]; then
 		echo $prev_nr_hugepages > /proc/sys/vm/nr_hugepages
 	fi
-fi # VADDR64
+fi 
 CATEGORY="vmalloc" run_test bash ./test_vmalloc.sh smoke
 CATEGORY="mremap" run_test ./mremap_dontunmap
 CATEGORY="hmm" run_test bash ./test_hmm.sh smoke

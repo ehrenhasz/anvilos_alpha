@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifndef __LINUX_USB_ROLE_H
 #define __LINUX_USB_ROLE_H
@@ -17,24 +17,7 @@ typedef int (*usb_role_switch_set_t)(struct usb_role_switch *sw,
 				     enum usb_role role);
 typedef enum usb_role (*usb_role_switch_get_t)(struct usb_role_switch *sw);
 
-/**
- * struct usb_role_switch_desc - USB Role Switch Descriptor
- * @fwnode: The device node to be associated with the role switch
- * @usb2_port: Optional reference to the host controller port device (USB2)
- * @usb3_port: Optional reference to the host controller port device (USB3)
- * @udc: Optional reference to the peripheral controller device
- * @set: Callback for setting the role
- * @get: Callback for getting the role (optional)
- * @allow_userspace_control: If true userspace may change the role through sysfs
- * @driver_data: Private data pointer
- * @name: Name for the switch (optional)
- *
- * @usb2_port and @usb3_port will point to the USB host port and @udc to the USB
- * device controller behind the USB connector with the role switch. If
- * @usb2_port, @usb3_port and @udc are included in the description, the
- * reference count for them should be incremented by the caller of
- * usb_role_switch_register() before registering the switch.
- */
+
 struct usb_role_switch_desc {
 	struct fwnode_handle *fwnode;
 	struct device *usb2_port;
@@ -123,4 +106,4 @@ static inline const char *usb_role_string(enum usb_role role)
 
 #endif
 
-#endif /* __LINUX_USB_ROLE_H */
+#endif 

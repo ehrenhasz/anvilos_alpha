@@ -7,7 +7,7 @@ body:
       value: |
         Please provide as much detail as you can, it really helps us find and fix bugs faster.
 
-        #### Not a bug report?
+        
 
         * If you have a question \"How Do I ...?\", please post it on [GitHub Discussions](https://github.com/orgs/micropython/discussions/) or [Discord](https://discord.gg/RB8HZSAExQ) instead of here.
         * For missing or incorrect documentation, or feature requests, then please [choose a different issue type](https://github.com/micropython/micropython/issues/new/choose).

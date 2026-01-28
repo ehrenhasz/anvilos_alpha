@@ -1,15 +1,6 @@
-/*
- * Copyright (C) 2008-2013 Karel Zak <kzak@redhat.com>
- *
- * This file may be redistributed under the terms of the
- * GNU Lesser General Public License.
- */
 
-/**
- * SECTION: init
- * @title: Library initialization
- * @short_description: initialize debugging
- */
+
+
 
 #include <stdarg.h>
 
@@ -35,16 +26,7 @@ UL_DEBUG_DEFINE_MASKNAMES(libblkid) =
 	{ NULL, 0, NULL }
 };
 
-/**
- * blkid_init_debug:
- * @mask: debug mask (0xffff to enable full debugging)
- *
- * If the @mask is not specified then this function reads
- * LIBBLKID_DEBUG environment variable to get the mask.
- *
- * Already initialized debugging stuff cannot be changed. It does not
- * have effect to call this function twice.
- */
+
 void blkid_init_debug(int mask)
 {
 	if (libblkid_debug_mask)

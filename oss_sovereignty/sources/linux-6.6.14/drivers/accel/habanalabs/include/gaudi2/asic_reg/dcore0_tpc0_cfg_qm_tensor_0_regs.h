@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_TPC0_CFG_QM_TENSOR_0_REGS_H_
 #define ASIC_REG_DCORE0_TPC0_CFG_QM_TENSOR_0_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_TPC0_CFG_QM_TENSOR_0
- *   (Prototype: TPC_TENSOR)
- *****************************************
- */
+
 
 #define mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE_ADDR_LOW 0x400B5DC
 
@@ -60,4 +47,4 @@
 
 #define mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_SIZE_STRIDE_HIGH 0x400B628
 
-#endif /* ASIC_REG_DCORE0_TPC0_CFG_QM_TENSOR_0_REGS_H_ */
+#endif 

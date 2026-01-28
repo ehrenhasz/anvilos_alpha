@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/sound/rt5659.h -- Platform data for RT5659
- *
- * Copyright 2013 Realtek Microelectronics
- */
+
+
 
 #ifndef __LINUX_SND_RT5659_H
 #define __LINUX_SND_RT5659_H
@@ -35,8 +31,8 @@ struct rt5659_platform_data {
 	bool in3_diff;
 	bool in4_diff;
 
-	int ldo1_en; /* GPIO for LDO1_EN */
-	int reset; /* GPIO for RESET */
+	int ldo1_en; 
+	int reset; 
 
 	enum rt5659_dmic1_data_pin dmic1_data_pin;
 	enum rt5659_dmic2_data_pin dmic2_data_pin;

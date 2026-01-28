@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef WACOM_WAC_H
 #define WACOM_WAC_H
@@ -7,7 +7,7 @@
 #include <linux/hid.h>
 #include <linux/kfifo.h>
 
-/* maximum packet length for USB/BT devices */
+
 #define WACOM_PKGLEN_MAX	361
 
 #define WACOM_NAME_MAX		64
@@ -15,7 +15,7 @@
 #define WACOM_STATUS_UNKNOWN	255
 #define WACOM_REMOTE_BATTERY_TIMEOUT	21000000000ll
 
-/* packet length for individual models */
+
 #define WACOM_PKGLEN_BBFUN	 9
 #define WACOM_PKGLEN_TPC1FG	 5
 #define WACOM_PKGLEN_TPC1FG_B	10
@@ -28,19 +28,19 @@
 #define WACOM_PKGLEN_BPAD_TOUCH	32
 #define WACOM_PKGLEN_BPAD_TOUCH_USB	64
 
-/* wacom data size per MT contact */
+
 #define WACOM_BYTES_PER_MT_PACKET	11
 #define WACOM_BYTES_PER_24HDT_PACKET	14
 #define WACOM_BYTES_PER_QHDTHID_PACKET	 6
 
-/* device IDs */
+
 #define STYLUS_DEVICE_ID	0x02
 #define TOUCH_DEVICE_ID		0x03
 #define CURSOR_DEVICE_ID	0x06
 #define ERASER_DEVICE_ID	0x0A
 #define PAD_DEVICE_ID		0x0F
 
-/* wacom data packet report IDs */
+
 #define WACOM_REPORT_PENABLED		2
 #define WACOM_REPORT_PENABLED_BT	3
 #define WACOM_REPORT_INTUOS_ID1		5
@@ -68,7 +68,7 @@
 #define WACOM_REPORT_REMOTE		17
 #define WACOM_REPORT_INTUOSHT2_ID	8
 
-/* wacom command report ids */
+
 #define WAC_CMD_WL_LED_CONTROL          0x03
 #define WAC_CMD_LED_CONTROL             0x20
 #define WAC_CMD_ICON_START              0x21
@@ -79,7 +79,7 @@
 #define WAC_CMD_UNPAIR_ALL              0xFF
 #define WAC_CMD_WL_INTUOSP2             0x82
 
-/* device quirks */
+
 #define WACOM_QUIRK_BBTOUCH_LOWRES	0x0001
 #define WACOM_QUIRK_SENSE		0x0002
 #define WACOM_QUIRK_AESPEN		0x0004
@@ -87,7 +87,7 @@
 #define WACOM_QUIRK_TOOLSERIAL		0x0010
 #define WACOM_QUIRK_PEN_BUTTON3	0x0020
 
-/* device types */
+
 #define WACOM_DEVICETYPE_NONE           0x0000
 #define WACOM_DEVICETYPE_PEN            0x0001
 #define WACOM_DEVICETYPE_TOUCH          0x0002
@@ -237,7 +237,7 @@ enum {
 	BAMBOO_PAD,
 	WIRELESS,
 	REMOTE,
-	TABLETPC,   /* add new TPC below */
+	TABLETPC,   
 	TABLETPCE,
 	TABLETPC2FG,
 	MTSCREEN,
@@ -284,7 +284,7 @@ struct wacom_features {
 struct wacom_shared {
 	bool stylus_in_proximity;
 	bool touch_down;
-	/* for wireless device to access USB interfaces */
+	
 	unsigned touch_max;
 	int type;
 	struct input_dev *touch_input;
@@ -295,8 +295,8 @@ struct wacom_shared {
 };
 
 struct hid_data {
-	__s16 inputmode;	/* InputMode HID feature, -1 if non-existent */
-	__s16 inputmode_index;	/* InputMode HID feature index in the report */
+	__s16 inputmode;	
+	__s16 inputmode_index;	
 	bool sense_state;
 	bool inrange_state;
 	bool invert_state;

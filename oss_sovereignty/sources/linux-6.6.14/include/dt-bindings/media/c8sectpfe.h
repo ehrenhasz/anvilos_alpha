@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_C8SECTPFE_H
 #define __DT_C8SECTPFE_H
 
@@ -10,4 +10,4 @@
 #define STV0903_6110_LNB24_NIMA	4
 #define STV0903_6110_LNB24_NIMB	5
 
-#endif /* __DT_C8SECTPFE_H */
+#endif 

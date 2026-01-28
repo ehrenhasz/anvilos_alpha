@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_SRAM_Y0_X2_RTR_REGS_H_
 #define ASIC_REG_SRAM_Y0_X2_RTR_REGS_H_
 
-/*
- *****************************************
- *   SRAM_Y0_X2_RTR (Prototype: IC_RTR)
- *****************************************
- */
+
 
 #define mmSRAM_Y0_X2_RTR_HBW_RD_RQ_E_ARB                             0x209100
 
@@ -79,4 +67,4 @@
 
 #define mmSRAM_Y0_X2_RTR_DBG_L_ARB_MAX                               0x209330
 
-#endif /* ASIC_REG_SRAM_Y0_X2_RTR_REGS_H_ */
+#endif 

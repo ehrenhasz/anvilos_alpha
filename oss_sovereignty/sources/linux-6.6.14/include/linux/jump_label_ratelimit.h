@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_JUMP_LABEL_RATELIMIT_H
 #define _LINUX_JUMP_LABEL_RATELIMIT_H
 
@@ -60,7 +60,7 @@ extern void jump_label_update_timeout(struct work_struct *work);
 						   0),			\
 	}
 
-#else	/* !CONFIG_JUMP_LABEL */
+#else	
 struct static_key_deferred {
 	struct static_key  key;
 };
@@ -92,8 +92,8 @@ jump_label_rate_limit(struct static_key_deferred *key,
 {
 	STATIC_KEY_CHECK_USE(key);
 }
-#endif	/* CONFIG_JUMP_LABEL */
+#endif	
 
 #define static_branch_deferred_inc(x)	static_branch_inc(&(x)->key)
 
-#endif	/* _LINUX_JUMP_LABEL_RATELIMIT_H */
+#endif	

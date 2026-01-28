@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Industrial I/O software trigger interface
- *
- * Copyright (c) 2015 Intel Corporation
- */
+
+
 
 #ifndef __IIO_SW_TRIGGER
 #define __IIO_SW_TRIGGER
@@ -64,4 +60,4 @@ void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
 #endif
 }
 
-#endif /* __IIO_SW_TRIGGER */
+#endif 

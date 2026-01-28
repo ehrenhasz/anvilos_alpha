@@ -1,20 +1,11 @@
-/*
- * ARM PrimeXsys System Controller SP810 header file
- *
- * Copyright (C) 2009 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+
 
 #ifndef __AMBA_SP810_H
 #define __AMBA_SP810_H
 
 #include <linux/io.h>
 
-/* sysctl registers offset */
+
 #define SCCTRL			0x000
 #define SCSYSSTAT		0x004
 #define SCIMCTRL		0x008
@@ -52,11 +43,11 @@
 
 static inline void sysctl_soft_reset(void __iomem *base)
 {
-	/* switch to slow mode */
+	
 	writel(0x2, base + SCCTRL);
 
-	/* writing any value to SCSYSSTAT reg will reset system */
+	
 	writel(0, base + SCSYSSTAT);
 }
 
-#endif /* __AMBA_SP810_H */
+#endif 

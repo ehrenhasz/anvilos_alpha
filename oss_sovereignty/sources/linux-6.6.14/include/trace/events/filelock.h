@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Events for filesystem locks
- *
- * Copyright 2013 Jeff Layton <jlayton@poochiereds.net>
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM filelock
 
@@ -238,7 +234,7 @@ TRACE_EVENT(leases_conflict,
 		show_fl_type(__entry->b_fl_type))
 );
 
-#endif /* _TRACE_FILELOCK_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

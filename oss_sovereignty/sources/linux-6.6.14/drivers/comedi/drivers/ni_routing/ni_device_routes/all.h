@@ -1,28 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  comedi/drivers/ni_routing/ni_device_routes/all.h
- *  List of valid routes for specific NI boards.
- *
- *  COMEDI - Linux Control and Measurement Device Interface
- *  Copyright (C) 2016 Spencer E. Olson <olsonse@umich.edu>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
 
-/*
- * The contents of this file are generated using the tools in
- * comedi/drivers/ni_routing/tools
- *
- * Please use those tools to help maintain the contents of this file.
- */
+
+
+
 
 #ifndef _COMEDI_DRIVERS_NI_ROUTING_NI_DEVICE_ROUTES_EXTERN_H
 #define _COMEDI_DRIVERS_NI_ROUTING_NI_DEVICE_ROUTES_EXTERN_H
@@ -50,4 +29,4 @@ extern struct ni_device_routes ni_pci_6733_device_routes;
 extern struct ni_device_routes ni_pxi_6733_device_routes;
 extern struct ni_device_routes ni_pxie_6738_device_routes;
 
-#endif //_COMEDI_DRIVERS_NI_ROUTING_NI_DEVICE_ROUTES_EXTERN_H
+#endif 

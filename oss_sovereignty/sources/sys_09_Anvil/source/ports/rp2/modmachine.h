@@ -10,4 +10,4 @@ void machine_pwm_deinit_all(void);
 
 struct _machine_spi_obj_t *spi_from_mp_obj(mp_obj_t o);
 
-#endif // MICROPY_INCLUDED_RP2_MODMACHINE_H
+#endif 

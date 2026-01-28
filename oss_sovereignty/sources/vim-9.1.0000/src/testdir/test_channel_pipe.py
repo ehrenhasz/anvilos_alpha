@@ -27,7 +27,7 @@ if __name__ == "__main__":
             pass
     while True:
         typed = sys.stdin.readline()
-        if typed == "":  # EOF -- stop
+        if typed == "":  
             break
         if typed.startswith("quit"):
             print("Goodbye!")

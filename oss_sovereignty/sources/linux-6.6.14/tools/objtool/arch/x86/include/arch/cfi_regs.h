@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef _OBJTOOL_CFI_REGS_H
 #define _OBJTOOL_CFI_REGS_H
@@ -22,4 +22,4 @@
 #define CFI_RA			16
 #define CFI_NUM_REGS		17
 
-#endif /* _OBJTOOL_CFI_REGS_H */
+#endif 

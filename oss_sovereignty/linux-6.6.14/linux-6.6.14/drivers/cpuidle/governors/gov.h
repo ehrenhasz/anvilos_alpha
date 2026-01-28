@@ -1,4 +1,0 @@
-#ifndef __CPUIDLE_GOVERNOR_H
-#define __CPUIDLE_GOVERNOR_H
-#define RESIDENCY_THRESHOLD_NS	(15 * NSEC_PER_USEC)
-#endif  

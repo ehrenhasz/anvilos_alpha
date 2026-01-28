@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ASM_PREEMPT_H
 #define __ASM_PREEMPT_H
 
@@ -21,9 +21,7 @@ static __always_inline void preempt_count_set(int pc)
 	*preempt_count_ptr() = pc;
 }
 
-/*
- * must be macros to avoid header recursion hell
- */
+
 #define init_task_preempt_count(p) do { \
 	task_thread_info(p)->preempt_count = FORK_PREEMPT_COUNT; \
 } while (0)
@@ -45,9 +43,7 @@ static __always_inline bool test_preempt_need_resched(void)
 	return false;
 }
 
-/*
- * The various preempt_count add/sub methods
- */
+
 
 static __always_inline void __preempt_count_add(int val)
 {
@@ -61,17 +57,11 @@ static __always_inline void __preempt_count_sub(int val)
 
 static __always_inline bool __preempt_count_dec_and_test(void)
 {
-	/*
-	 * Because of load-store architectures cannot do per-cpu atomic
-	 * operations; we cannot use PREEMPT_NEED_RESCHED because it might get
-	 * lost.
-	 */
+	
 	return !--*preempt_count_ptr() && tif_need_resched();
 }
 
-/*
- * Returns true when we need to resched and can (barring IRQ state).
- */
+
 static __always_inline bool should_resched(int preempt_offset)
 {
 	return unlikely(preempt_count() == preempt_offset &&
@@ -89,12 +79,12 @@ void dynamic_preempt_schedule_notrace(void);
 #define __preempt_schedule()		dynamic_preempt_schedule()
 #define __preempt_schedule_notrace()	dynamic_preempt_schedule_notrace()
 
-#else /* !CONFIG_PREEMPT_DYNAMIC || !CONFIG_HAVE_PREEMPT_DYNAMIC_KEY*/
+#else 
 
 #define __preempt_schedule() preempt_schedule()
 #define __preempt_schedule_notrace() preempt_schedule_notrace()
 
-#endif /* CONFIG_PREEMPT_DYNAMIC && CONFIG_HAVE_PREEMPT_DYNAMIC_KEY*/
-#endif /* CONFIG_PREEMPTION */
+#endif 
+#endif 
 
-#endif /* __ASM_PREEMPT_H */
+#endif 

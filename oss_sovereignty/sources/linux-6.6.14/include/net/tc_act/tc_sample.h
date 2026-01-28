@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_SAMPLE_H
 #define __NET_TC_SAMPLE_H
 
@@ -41,4 +41,4 @@ static inline int tcf_sample_trunc_size(const struct tc_action *a)
 	return to_sample(a)->trunc_size;
 }
 
-#endif /* __NET_TC_SAMPLE_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __KVM_X86_VMX_VMCS_H
 #define __KVM_X86_VMX_VMCS_H
 
@@ -26,14 +26,10 @@ struct vmcs {
 
 DECLARE_PER_CPU(struct vmcs *, current_vmcs);
 
-/*
- * vmcs_host_state tracks registers that are loaded from the VMCS on VMEXIT
- * and whose values change infrequently, but are not constant.  I.e. this is
- * used as a write-through cache of the corresponding VMCS fields.
- */
+
 struct vmcs_host_state {
-	unsigned long cr3;	/* May not match real cr3 */
-	unsigned long cr4;	/* May not match real cr4 */
+	unsigned long cr3;	
+	unsigned long cr4;	
 	unsigned long gs_base;
 	unsigned long fs_base;
 	unsigned long rsp;
@@ -53,11 +49,7 @@ struct vmcs_controls_shadow {
 	u64 tertiary_exec;
 };
 
-/*
- * Track a VMCS that may be loaded on a certain CPU. If it is (cpu!=-1), also
- * remember whether it was VMLAUNCHed, and maintain a linked list of all VMCSs
- * loaded on this CPU (so we can clear them if the CPU goes down).
- */
+
 struct loaded_vmcs {
 	struct vmcs *vmcs;
 	struct vmcs *shadow_vmcs;
@@ -65,7 +57,7 @@ struct loaded_vmcs {
 	bool launched;
 	bool nmi_known_unmasked;
 	bool hv_timer_soft_disabled;
-	/* Support for vnmi-less CPUs */
+	
 	int soft_vnmi_blocked;
 	ktime_t entry_time;
 	s64 vnmi_blocked_time;
@@ -140,7 +132,7 @@ static inline bool is_nm_fault(u32 intr_info)
 	return is_exception_n(intr_info, NM_VECTOR);
 }
 
-/* Undocumented: icebp/int1 */
+
 static inline bool is_icebp(u32 intr_info)
 {
 	return is_intr_type(intr_info, INTR_TYPE_PRIV_SW_EXCEPTION);
@@ -172,7 +164,7 @@ enum vmcs_field_width {
 
 static inline int vmcs_field_width(unsigned long field)
 {
-	if (0x1 & field)	/* the *_HIGH fields are all 32 bit */
+	if (0x1 & field)	
 		return VMCS_FIELD_WIDTH_U32;
 	return (field >> 13) & 0x3;
 }
@@ -190,4 +182,4 @@ static inline unsigned int vmcs_field_index(unsigned long field)
 	return (field & VMCS_FIELD_INDEX_MASK) >> VMCS_FIELD_INDEX_SHIFT;
 }
 
-#endif /* __KVM_X86_VMX_VMCS_H */
+#endif 

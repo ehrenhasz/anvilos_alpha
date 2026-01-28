@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ELEVATOR_H
 #define _ELEVATOR_H
 
@@ -10,9 +10,7 @@ struct io_cq;
 struct elevator_type;
 struct blk_mq_debugfs_attr;
 
-/*
- * Return values from elevator merger
- */
+
 enum elv_merge {
 	ELEVATOR_NO_MERGE	= 0,
 	ELEVATOR_FRONT_MERGE	= 1,
@@ -58,19 +56,17 @@ struct elv_fs_entry {
 	ssize_t (*store)(struct elevator_queue *, const char *, size_t);
 };
 
-/*
- * identifies an elevator type, such as AS or deadline
- */
+
 struct elevator_type
 {
-	/* managed by elevator core */
+	
 	struct kmem_cache *icq_cache;
 
-	/* fields provided by elevator implementation */
+	
 	struct elevator_mq_ops ops;
 
-	size_t icq_size;	/* see iocontext.h */
-	size_t icq_align;	/* ditto */
+	size_t icq_size;	
+	size_t icq_align;	
 	struct elv_fs_entry *elevator_attrs;
 	const char *elevator_name;
 	const char *elevator_alias;
@@ -81,8 +77,8 @@ struct elevator_type
 	const struct blk_mq_debugfs_attr *hctx_debugfs_attrs;
 #endif
 
-	/* managed by elevator core */
-	char icq_cache_name[ELV_NAME_MAX + 6];	/* elvname + "_io_cq" */
+	
+	char icq_cache_name[ELV_NAME_MAX + 6];	
 	struct list_head list;
 };
 
@@ -108,9 +104,7 @@ void elv_rqhash_add(struct request_queue *q, struct request *rq);
 void elv_rqhash_reposition(struct request_queue *q, struct request *rq);
 struct request *elv_rqhash_find(struct request_queue *q, sector_t offset);
 
-/*
- * each queue has an elevator_queue associated with it
- */
+
 struct elevator_queue
 {
 	struct elevator_type *type;
@@ -124,9 +118,7 @@ struct elevator_queue
 #define ELEVATOR_FLAG_REGISTERED	0
 #define ELEVATOR_FLAG_DISABLE_WBT	1
 
-/*
- * block elevator interface
- */
+
 extern enum elv_merge elv_merge(struct request_queue *, struct request **,
 		struct bio *);
 extern void elv_merge_requests(struct request_queue *, struct request *,
@@ -139,15 +131,11 @@ extern struct request *elv_former_request(struct request_queue *, struct request
 extern struct request *elv_latter_request(struct request_queue *, struct request *);
 void elevator_init_mq(struct request_queue *q);
 
-/*
- * io scheduler registration
- */
+
 extern int elv_register(struct elevator_type *);
 extern void elv_unregister(struct elevator_type *);
 
-/*
- * io scheduler sysfs switching
- */
+
 extern ssize_t elv_iosched_show(struct request_queue *, char *);
 extern ssize_t elv_iosched_store(struct request_queue *, const char *, size_t);
 
@@ -155,22 +143,16 @@ extern bool elv_bio_merge_ok(struct request *, struct bio *);
 extern struct elevator_queue *elevator_alloc(struct request_queue *,
 					struct elevator_type *);
 
-/*
- * Helper functions.
- */
+
 extern struct request *elv_rb_former_request(struct request_queue *, struct request *);
 extern struct request *elv_rb_latter_request(struct request_queue *, struct request *);
 
-/*
- * rb support functions.
- */
+
 extern void elv_rb_add(struct rb_root *, struct request *);
 extern void elv_rb_del(struct rb_root *, struct request *);
 extern struct request *elv_rb_find(struct rb_root *, sector_t);
 
-/*
- * Insertion selection
- */
+
 #define ELEVATOR_INSERT_FRONT	1
 #define ELEVATOR_INSERT_BACK	2
 #define ELEVATOR_INSERT_SORT	3
@@ -183,4 +165,4 @@ extern struct request *elv_rb_find(struct rb_root *, sector_t);
 #define rq_entry_fifo(ptr)	list_entry((ptr), struct request, queuelist)
 #define rq_fifo_clear(rq)	list_del_init(&(rq)->queuelist)
 
-#endif /* _ELEVATOR_H */
+#endif 

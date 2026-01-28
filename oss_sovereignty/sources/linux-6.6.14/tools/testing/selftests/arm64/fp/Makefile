@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
 
-# A proper top_srcdir is needed by KSFT(lib.mk)
+
+
 top_srcdir = $(realpath ../../../../../)
 
 CFLAGS += $(KHDR_INCLUDES)
@@ -21,7 +21,7 @@ TEST_PROGS_EXTENDED := fpsimd-stress sve-stress ssve-stress za-stress
 
 EXTRA_CLEAN += $(OUTPUT)/asm-utils.o $(OUTPUT)/rdvl.o $(OUTPUT)/za-fork-asm.o
 
-# Build with nolibc to avoid effects due to libc's clone() support
+
 $(OUTPUT)/fp-pidbench: fp-pidbench.S $(OUTPUT)/asm-utils.o
 	$(CC) -nostdlib $^ -o $@
 $(OUTPUT)/fpsimd-test: fpsimd-test.S $(OUTPUT)/asm-utils.o

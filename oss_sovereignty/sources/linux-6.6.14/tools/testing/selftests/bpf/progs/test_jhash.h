@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <features.h>
 
 typedef unsigned int u32;
@@ -63,7 +63,7 @@ u32 jhash(const void *key, u32 length, u32 initval)
 	case 1:  a += k[0];
 		 c ^= a;
 		 __jhash_final(a, b, c);
-	case 0: /* Nothing left to add */
+	case 0: 
 		break;
 	}
 

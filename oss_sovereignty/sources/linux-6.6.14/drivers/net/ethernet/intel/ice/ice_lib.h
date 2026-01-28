@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Intel Corporation. */
+
+
 
 #ifndef _ICE_LIB_H_
 #define _ICE_LIB_H_
@@ -7,20 +7,11 @@
 #include "ice.h"
 #include "ice_vlan.h"
 
-/* Flags used for VSI configuration and rebuild */
+
 #define ICE_VSI_FLAG_INIT	BIT(0)
 #define ICE_VSI_FLAG_NO_INIT	0
 
-/**
- * struct ice_vsi_cfg_params - VSI configuration parameters
- * @pi: pointer to the port_info instance for the VSI
- * @ch: pointer to the channel structure for the VSI, may be NULL
- * @vf: pointer to the VF associated with this VSI, may be NULL
- * @type: the type of VSI to configure
- * @flags: VSI flags used for rebuild and configuration
- *
- * Parameter structure used when configuring a new VSI.
- */
+
 struct ice_vsi_cfg_params {
 	struct ice_port_info *pi;
 	struct ice_channel *ch;
@@ -29,13 +20,7 @@ struct ice_vsi_cfg_params {
 	u32 flags;
 };
 
-/**
- * ice_vsi_to_params - Get parameters for an existing VSI
- * @vsi: the VSI to get parameters for
- *
- * Fill a parameter structure for reconfiguring a VSI with its current
- * parameters, such as during a rebuild operation.
- */
+
 static inline struct ice_vsi_cfg_params ice_vsi_to_params(struct ice_vsi *vsi)
 {
 	struct ice_vsi_cfg_params params = {};
@@ -162,4 +147,4 @@ void ice_set_feature_support(struct ice_pf *pf, enum ice_feature f);
 void ice_clear_feature_support(struct ice_pf *pf, enum ice_feature f);
 void ice_init_feature_support(struct ice_pf *pf);
 bool ice_vsi_is_rx_queue_active(struct ice_vsi *vsi);
-#endif /* !_ICE_LIB_H_ */
+#endif 

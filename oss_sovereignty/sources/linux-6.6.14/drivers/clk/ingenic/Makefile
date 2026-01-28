@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 obj-$(CONFIG_INGENIC_CGU_COMMON)	+= cgu.o pm.o
 obj-$(CONFIG_INGENIC_CGU_JZ4740)	+= jz4740-cgu.o
 obj-$(CONFIG_INGENIC_CGU_JZ4755)	+= jz4755-cgu.o

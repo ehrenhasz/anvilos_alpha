@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TARGET_CORE_BACKEND_H
 #define TARGET_CORE_BACKEND_H
 
@@ -7,10 +7,7 @@
 #include <target/target_core_base.h>
 
 #define TRANSPORT_FLAG_PASSTHROUGH		0x1
-/*
- * ALUA commands, state checks and setup operations are handled by the
- * backend module.
- */
+
 #define TRANSPORT_FLAG_PASSTHROUGH_ALUA		0x2
 #define TRANSPORT_FLAG_PASSTHROUGH_PGR          0x4
 
@@ -48,7 +45,7 @@ struct target_backend_ops {
 	u32 (*get_device_type)(struct se_device *);
 	sector_t (*get_blocks)(struct se_device *);
 	sector_t (*get_alignment_offset_lbas)(struct se_device *);
-	/* lbppbe = logical blocks per physical block exponent. see SBC-3 */
+	
 	unsigned int (*get_lbppbe)(struct se_device *);
 	unsigned int (*get_io_min)(struct se_device *);
 	unsigned int (*get_io_opt)(struct se_device *);
@@ -108,10 +105,10 @@ extern struct configfs_attribute *sbc_attrib_attrs[];
 extern struct configfs_attribute *passthrough_attrib_attrs[];
 extern struct configfs_attribute *passthrough_pr_attrib_attrs[];
 
-/* core helpers also used by command snooping in pscsi */
+
 void	*transport_kmap_data_sg(struct se_cmd *);
 void	transport_kunmap_data_sg(struct se_cmd *);
-/* core helpers also used by xcopy during internal command setup */
+
 sense_reason_t	transport_generic_map_mem_to_cmd(struct se_cmd *,
 		struct scatterlist *, u32, struct scatterlist *, u32);
 
@@ -129,4 +126,4 @@ static inline bool target_dev_configured(struct se_device *se_dev)
 	return !!(se_dev->dev_flags & DF_CONFIGURED);
 }
 
-#endif /* TARGET_CORE_BACKEND_H */
+#endif 

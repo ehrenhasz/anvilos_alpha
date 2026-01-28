@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/x86_64/apic.h
- *
- * Copyright (C) 2021, Google LLC.
- */
+
+
 
 #ifndef SELFTEST_KVM_APIC_H
 #define SELFTEST_KVM_APIC_H
@@ -14,7 +10,7 @@
 
 #define APIC_DEFAULT_GPA		0xfee00000ULL
 
-/* APIC base address MSR and fields */
+
 #define MSR_IA32_APICBASE		0x0000001b
 #define MSR_IA32_APICBASE_BSP		(1<<8)
 #define MSR_IA32_APICBASE_EXTD		(1<<10)
@@ -90,4 +86,4 @@ static inline void x2apic_write_reg(unsigned int reg, uint64_t value)
 	wrmsr(APIC_BASE_MSR + (reg >> 4), value);
 }
 
-#endif /* SELFTEST_KVM_APIC_H */
+#endif 

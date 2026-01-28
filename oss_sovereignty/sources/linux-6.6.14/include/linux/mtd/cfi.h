@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org> et al.
- */
+
+
 
 #ifndef __MTD_CFI_H__
 #define __MTD_CFI_H__
@@ -90,19 +88,14 @@ static inline int cfi_interleave_supported(int i)
 }
 
 
-/* NB: these values must represents the number of bytes needed to meet the
- *     device type (x8, x16, x32).  Eg. a 32 bit device is 4 x 8 bytes.
- *     These numbers are used in calculations.
- */
+
 #define CFI_DEVICETYPE_X8  (8 / 8)
 #define CFI_DEVICETYPE_X16 (16 / 8)
 #define CFI_DEVICETYPE_X32 (32 / 8)
 #define CFI_DEVICETYPE_X64 (64 / 8)
 
 
-/* Device Interface Code Assignments from the "Common Flash Memory Interface
- * Publication 100" dated December 1, 2001.
- */
+
 #define CFI_INTERFACE_X8_ASYNC		0x0000
 #define CFI_INTERFACE_X16_ASYNC		0x0001
 #define CFI_INTERFACE_X8_BY_X16_ASYNC	0x0002
@@ -111,11 +104,9 @@ static inline int cfi_interleave_supported(int i)
 #define CFI_INTERFACE_NOT_ALLOWED	0xffff
 
 
-/* NB: We keep these structures in memory in HOST byteorder, except
- * where individually noted.
- */
 
-/* Basic Query Structure */
+
+
 struct cfi_ident {
 	uint8_t  qry[3];
 	uint16_t P_ID;
@@ -138,10 +129,10 @@ struct cfi_ident {
 	uint16_t InterfaceDesc;
 	uint16_t MaxBufWriteSize;
 	uint8_t  NumEraseRegions;
-	uint32_t EraseRegionInfo[]; /* Not host ordered */
+	uint32_t EraseRegionInfo[]; 
 } __packed;
 
-/* Extended Query Structure for both PRI and ALT */
+
 
 struct cfi_extquery {
 	uint8_t  pri[3];
@@ -149,14 +140,13 @@ struct cfi_extquery {
 	uint8_t  MinorVersion;
 } __packed;
 
-/* Vendor-Specific PRI for Intel/Sharp Extended Command Set (0x0001) */
+
 
 struct cfi_pri_intelext {
 	uint8_t  pri[3];
 	uint8_t  MajorVersion;
 	uint8_t  MinorVersion;
-	uint32_t FeatureSupport; /* if bit 31 is set then an additional uint32_t feature
-				    block follows - FIXME - not currently supported */
+	uint32_t FeatureSupport; 
 	uint8_t  SuspendCmdSupport;
 	uint16_t BlkStatusRegMask;
 	uint8_t  VccOptimal;
@@ -202,13 +192,13 @@ struct cfi_intelext_programming_regioninfo {
 	uint8_t  Reserved3;
 } __packed;
 
-/* Vendor-Specific PRI for AMD/Fujitsu Extended Command Set (0x0002) */
+
 
 struct cfi_pri_amdstd {
 	uint8_t  pri[3];
 	uint8_t  MajorVersion;
 	uint8_t  MinorVersion;
-	uint8_t  SiliconRevision; /* bits 1-0: Address Sensitive Unlock */
+	uint8_t  SiliconRevision; 
 	uint8_t  EraseSuspend;
 	uint8_t  BlkProt;
 	uint8_t  TmpBlkUnprotect;
@@ -219,7 +209,7 @@ struct cfi_pri_amdstd {
 	uint8_t  VppMin;
 	uint8_t  VppMax;
 	uint8_t  TopBottom;
-	/* Below field are added from version 1.5 */
+	
 	uint8_t  ProgramSuspend;
 	uint8_t  UnlockBypass;
 	uint8_t  SecureSiliconSector;
@@ -228,7 +218,7 @@ struct cfi_pri_amdstd {
 #define CFI_POLL_DQ		BIT(1)
 } __packed;
 
-/* Vendor-Specific PRI for Atmel chips (command set 0x0002) */
+
 
 struct cfi_pri_atmel {
 	uint8_t pri[3];
@@ -242,13 +232,13 @@ struct cfi_pri_atmel {
 
 struct cfi_pri_query {
 	uint8_t  NumFields;
-	uint32_t ProtField[1]; /* Not host ordered */
+	uint32_t ProtField[1]; 
 } __packed;
 
 struct cfi_bri_query {
 	uint8_t  PageModeReadCap;
 	uint8_t  NumFields;
-	uint32_t ConfField[1]; /* Not host ordered */
+	uint32_t ConfField[1]; 
 } __packed;
 
 #define P_ID_NONE               0x0000
@@ -275,19 +265,18 @@ struct cfi_private {
 	void *cmdset_priv;
 	int interleave;
 	int device_type;
-	int cfi_mode;		/* Are we a JEDEC device pretending to be CFI? */
+	int cfi_mode;		
 	int addr_unlock1;
 	int addr_unlock2;
 	struct mtd_info *(*cmdset_setup)(struct map_info *);
-	struct cfi_ident *cfiq; /* For now only one. We insist that all devs
-				  must be of the same type. */
+	struct cfi_ident *cfiq; 
 	int mfr, id;
 	int numchips;
 	map_word sector_erase_cmd;
-	unsigned long chipshift; /* Because they're of the same type */
-	const char *im_name;	 /* inter_module name for cmdset_setup */
+	unsigned long chipshift; 
+	const char *im_name;	 
 	unsigned long quirks;
-	struct flchip chips[];  /* per-chip data structure for each chip */
+	struct flchip chips[];  
 };
 
 uint32_t cfi_build_cmd_addr(uint32_t cmd_ofs,
@@ -313,9 +302,7 @@ static inline uint8_t cfi_read_query(struct map_info *map, uint32_t addr)
 	} else if (map_bankwidth_is_2(map)) {
 		return cfi16_to_cpu(map, val.x[0]);
 	} else {
-		/* No point in a 64-bit byteswap since that would just be
-		   swapping the responses from different chips, and we are
-		   only interested in one chip (a representative sample) */
+		
 		return cfi32_to_cpu(map, val.x[0]);
 	}
 }
@@ -329,9 +316,7 @@ static inline uint16_t cfi_read_query16(struct map_info *map, uint32_t addr)
 	} else if (map_bankwidth_is_2(map)) {
 		return cfi16_to_cpu(map, val.x[0]);
 	} else {
-		/* No point in a 64-bit byteswap since that would just be
-		   swapping the responses from different chips, and we are
-		   only interested in one chip (a representative sample) */
+		
 		return cfi32_to_cpu(map, val.x[0]);
 	}
 }
@@ -370,8 +355,8 @@ struct cfi_fixup {
 #define CFI_MFR_SAMSUNG		0x00EC
 #define CFI_MFR_SHARP		0x00B0
 #define CFI_MFR_SST		0x00BF
-#define CFI_MFR_ST		0x0020 /* STMicroelectronics */
-#define CFI_MFR_MICRON		0x002C /* Micron */
+#define CFI_MFR_ST		0x0020 
+#define CFI_MFR_MICRON		0x002C 
 #define CFI_MFR_TOSHIBA		0x0098
 #define CFI_MFR_WINBOND		0x00DA
 
@@ -384,4 +369,4 @@ int cfi_varsize_frob(struct mtd_info *mtd, varsize_frob_t frob,
 	loff_t ofs, size_t len, void *thunk);
 
 
-#endif /* __MTD_CFI_H__ */
+#endif 

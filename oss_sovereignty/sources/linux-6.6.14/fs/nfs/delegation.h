@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/fs/nfs/delegation.h
- *
- * Copyright (c) Trond Myklebust
- *
- * Definitions pertaining to NFS delegated files
- */
+
+
 #ifndef FS_NFS_DELEGATION_H
 #define FS_NFS_DELEGATION_H
 
 #if IS_ENABLED(CONFIG_NFS_V4)
-/*
- * NFSv4 delegation
- */
+
 struct nfs_delegation {
 	struct list_head super_list;
 	const struct cred *cred;
@@ -65,7 +57,7 @@ void nfs_mark_test_expired_all_delegations(struct nfs_client *clp);
 void nfs_test_expired_all_delegations(struct nfs_client *clp);
 void nfs_reap_expired_delegations(struct nfs_client *clp);
 
-/* NFSv4 delegation-related procedures */
+
 int nfs4_proc_delegreturn(struct inode *inode, const struct cred *cred, const nfs4_stateid *stateid, int issync);
 int nfs4_open_delegation_recall(struct nfs_open_context *ctx, struct nfs4_state *state, const nfs4_stateid *stateid);
 int nfs4_lock_delegation_recall(struct file_lock *fl, struct nfs4_state *state, const nfs4_stateid *stateid);

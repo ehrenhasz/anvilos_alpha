@@ -1,26 +1,7 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * Author: Paul Burton <paul.burton@mips.com>
- * (C) Copyright 2018 MIPS Tech LLC
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- */
 
-/*
- * RSEQ_SIG uses the break instruction. The instruction pattern is:
- *
- * On MIPS:
- *	0350000d        break     0x350
- *
- * On nanoMIPS:
- *      00100350        break     0x350
- *
- * On microMIPS:
- *      0000d407        break     0x350
- *
- * For nanoMIPS32 and microMIPS, the instruction stream is encoded as 16-bit
- * halfwords, so the signature halfwords need to be swapped accordingly for
- * little-endian.
- */
+
+
+
 #if defined(__nanomips__)
 # ifdef __MIPSEL__
 #  define RSEQ_SIG	0x03500010
@@ -36,7 +17,7 @@
 #elif defined(__mips__)
 # define RSEQ_SIG	0x0350000d
 #else
-/* Unknown MIPS architecture. */
+
 #endif
 
 #define rseq_smp_mb()	__asm__ __volatile__ ("sync" ::: "memory")
@@ -98,14 +79,7 @@ do {									\
 	__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip, \
 				(post_commit_ip - start_ip), abort_ip)
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip) \
 		".pushsection __rseq_exit_point_array, \"aw\"\n\t" \
 		LONG " " U32_U64_PAD(__rseq_str(start_ip)) "\n\t" \
@@ -148,7 +122,7 @@ do {									\
 		teardown \
 		"b %l[" __rseq_str(cmpfail_label) "]\n\t"
 
-/* Per-cpu-id indexing. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -160,7 +134,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -172,7 +146,7 @@ do {									\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

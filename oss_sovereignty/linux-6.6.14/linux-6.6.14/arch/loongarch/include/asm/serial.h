@@ -1,5 +1,0 @@
-#ifndef __ASM__SERIAL_H
-#define __ASM__SERIAL_H
-#define BASE_BAUD 0
-#define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST)
-#endif  

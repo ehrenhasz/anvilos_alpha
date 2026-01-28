@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+
 
 #ifndef ENA_H
 #define ENA_H
@@ -28,15 +26,11 @@
 
 #define DEVICE_NAME	"Elastic Network Adapter (ENA)"
 
-/* 1 for AENQ + ADMIN */
+
 #define ENA_ADMIN_MSIX_VEC		1
 #define ENA_MAX_MSIX_VEC(io_queues)	(ENA_ADMIN_MSIX_VEC + (io_queues))
 
-/* The ENA buffer length fields is 16 bit long. So when PAGE_SIZE == 64kB the
- * driver passes 0.
- * Since the max packet size the ENA handles is ~9kB limit the buffer length to
- * 16kB.
- */
+
 #if PAGE_SIZE > SZ_16K
 #define ENA_PAGE_SIZE (_AC(SZ_16K, UL))
 #else
@@ -69,20 +63,16 @@
 #define ENA_RX_RSS_TABLE_LOG_SIZE  7
 #define ENA_RX_RSS_TABLE_SIZE	(1 << ENA_RX_RSS_TABLE_LOG_SIZE)
 
-/* The number of tx packet completions that will be handled each NAPI poll
- * cycle is ring_size / ENA_TX_POLL_BUDGET_DIVIDER.
- */
+
 #define ENA_TX_POLL_BUDGET_DIVIDER	4
 
-/* Refill Rx queue when number of required descriptors is above
- * QUEUE_SIZE / ENA_RX_REFILL_THRESH_DIVIDER or ENA_RX_REFILL_THRESH_PACKET
- */
+
 #define ENA_RX_REFILL_THRESH_DIVIDER	8
 #define ENA_RX_REFILL_THRESH_PACKET	256
 
-/* Number of queues to check for missing queues per timer service */
+
 #define ENA_MONITORED_TX_QUEUES	4
-/* Max timeout packets before device reset */
+
 #define MAX_NUM_OF_TIMEOUTED_PACKETS 128
 
 #define ENA_TX_RING_IDX_NEXT(idx, ring_size) (((idx) + 1) & ((ring_size) - 1))
@@ -102,19 +92,13 @@
 
 #define ENA_ADMIN_POLL_DELAY_US 100
 
-/* ENA device should send keep alive msg every 1 sec.
- * We wait for 6 sec just to be on the safe side.
- */
+
 #define ENA_DEVICE_KALIVE_TIMEOUT	(6 * HZ)
 #define ENA_MAX_NO_INTERRUPT_ITERATIONS 3
 
 #define ENA_MMIO_DISABLE_REG_READ	BIT(0)
 
-/* The max MTU size is configured to be the ethernet frame size without
- * the overhead of the ethernet header, which can have a VLAN header, and
- * a frame check sequence (FCS).
- * The buffer size we share with the device is defined to be ENA_PAGE_SIZE
- */
+
 
 #define ENA_XDP_MAX_MTU (ENA_PAGE_SIZE - ETH_HLEN - ETH_FCS_LEN -	\
 			 VLAN_HLEN - XDP_PACKET_HEADROOM -		\
@@ -145,32 +129,20 @@ struct ena_napi {
 
 struct ena_tx_buffer {
 	struct sk_buff *skb;
-	/* num of ena desc for this specific skb
-	 * (includes data desc and metadata desc)
-	 */
+	
 	u32 tx_descs;
-	/* num of buffers used by this skb */
+	
 	u32 num_of_bufs;
 
-	/* XDP buffer structure which is used for sending packets in
-	 * the xdp queues
-	 */
+	
 	struct xdp_frame *xdpf;
 
-	/* Indicate if bufs[0] map the linear data of the skb. */
+	
 	u8 map_linear_data;
 
-	/* Used for detect missing tx packets to limit the number of prints */
+	
 	u32 print_once;
-	/* Save the last jiffies to detect missing tx packets
-	 *
-	 * sets to non zero value on ena_start_xmit and set to zero on
-	 * napi and timer_Service_routine.
-	 *
-	 * while this value is not protected by lock,
-	 * a given packet is not expected to be handled by ena_start_xmit
-	 * and by napi/timer_service at the same time.
-	 */
+	
 	unsigned long last_jiffies;
 	struct ena_com_buf bufs[ENA_PKT_MAX_BUFS];
 } ____cacheline_aligned;
@@ -226,9 +198,7 @@ struct ena_stats_rx {
 };
 
 struct ena_ring {
-	/* Holds the empty requests for TX/RX
-	 * out of order completions
-	 */
+	
 	u16 *free_ids;
 
 	union {
@@ -236,7 +206,7 @@ struct ena_ring {
 		struct ena_rx_buffer *rx_buffer_info;
 	};
 
-	/* cache ptr to avoid using the adapter */
+	
 	struct device *dev;
 	struct pci_dev *pdev;
 	struct napi_struct *napi;
@@ -247,10 +217,8 @@ struct ena_ring {
 	struct ena_com_io_sq *ena_com_io_sq;
 	struct bpf_prog *xdp_bpf_prog;
 	struct xdp_rxq_info xdp_rxq;
-	spinlock_t xdp_tx_lock;	/* synchronize XDP TX/Redirect traffic */
-	/* Used for rx queues only to point to the xdp tx ring, to
-	 * which traffic should be redirected from this rx ring.
-	 */
+	spinlock_t xdp_tx_lock;	
+	
 	struct ena_ring *xdp_ring;
 
 	u16 next_to_use;
@@ -261,17 +229,17 @@ struct ena_ring {
 	u16 mtu;
 	u16 sgl_size;
 
-	/* The maximum header length the device can handle */
+	
 	u8 tx_max_header_size;
 
 	bool disable_meta_caching;
 	u16 no_interrupt_event_cnt;
 
-	/* cpu and NUMA for TPH */
+	
 	int cpu;
 	int numa_node;
 
-	/* number of tx/rx_buffer_info's entries */
+	
 	int ring_size;
 
 	enum ena_admin_placement_policy_type tx_mem_queue_type;
@@ -311,16 +279,14 @@ enum ena_flags_t {
 	ENA_FLAG_ONGOING_RESET
 };
 
-/* adapter specific private data structure */
+
 struct ena_adapter {
 	struct ena_com_dev *ena_dev;
-	/* OS defined structs */
+	
 	struct net_device *netdev;
 	struct pci_dev *pdev;
 
-	/* rx packets that shorter that this len will be copied to the skb
-	 * header
-	 */
+	
 	u32 rx_copybreak;
 	u32 max_mtu;
 
@@ -339,11 +305,7 @@ struct ena_adapter {
 
 	u32 msg_enable;
 
-	/* large_llq_header_enabled is used for two purposes:
-	 * 1. Indicates that large LLQ has been requested.
-	 * 2. Indicates whether large LLQ is set or not after device
-	 *    initialization / configuration.
-	 */
+	
 	bool large_llq_header_enabled;
 	bool large_llq_header_supported;
 
@@ -358,11 +320,11 @@ struct ena_adapter {
 	char name[ENA_NAME_MAX_LEN];
 
 	unsigned long flags;
-	/* TX */
+	
 	struct ena_ring tx_ring[ENA_MAX_NUM_IO_QUEUES]
 		____cacheline_aligned_in_smp;
 
-	/* RX */
+	
 	struct ena_ring rx_ring[ENA_MAX_NUM_IO_QUEUES]
 		____cacheline_aligned_in_smp;
 
@@ -370,7 +332,7 @@ struct ena_adapter {
 
 	struct ena_irq irq_tbl[ENA_MAX_MSIX_VEC(ENA_MAX_NUM_IO_QUEUES)];
 
-	/* timer service */
+	
 	struct work_struct reset_task;
 	struct timer_list timer_service;
 
@@ -383,7 +345,7 @@ struct ena_adapter {
 	struct ena_stats_dev dev_stats;
 	struct ena_admin_eni_stats eni_stats;
 
-	/* last queue index that was checked for uncompleted tx packets */
+	
 	u32 last_monitored_tx_qid;
 
 	enum ena_regs_reset_reason_types reset_reason;
@@ -416,7 +378,7 @@ static inline void ena_reset_device(struct ena_adapter *adapter,
 				    enum ena_regs_reset_reason_types reset_reason)
 {
 	adapter->reset_reason = reset_reason;
-	/* Make sure reset reason is set before triggering the reset */
+	
 	smp_mb__before_atomic();
 	set_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
 }
@@ -464,4 +426,4 @@ static inline enum ena_xdp_errors_t ena_xdp_allowed(struct ena_adapter *adapter)
 	return rc;
 }
 
-#endif /* !(ENA_H) */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ext4
 
@@ -51,11 +51,7 @@ struct partial_cluster;
 	{ EXT4_GET_BLOCKS_IO_SUBMIT,		"IO_SUBMIT" },		\
 	{ EXT4_EX_NOCACHE,			"EX_NOCACHE" })
 
-/*
- * __print_flags() requires that all enum values be wrapped in the
- * TRACE_DEFINE_ENUM macro so that the enum value can be encoded in the ftrace
- * ring buffer.
- */
+
 TRACE_DEFINE_ENUM(BH_New);
 TRACE_DEFINE_ENUM(BH_Mapped);
 TRACE_DEFINE_ENUM(BH_Unwritten);
@@ -1535,7 +1531,7 @@ DEFINE_EVENT(ext4__truncate, ext4_truncate_exit,
 	TP_ARGS(inode)
 );
 
-/* 'ux' is the unwritten extent. */
+
 TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map,
 		 struct ext4_extent *ux),
@@ -1570,10 +1566,7 @@ TRACE_EVENT(ext4_ext_convert_to_initialized_enter,
 		  __entry->u_lblk, __entry->u_len, __entry->u_pblk)
 );
 
-/*
- * 'ux' is the unwritten extent.
- * 'ix' is the initialized extent to which blocks are transferred.
- */
+
 TRACE_EVENT(ext4_ext_convert_to_initialized_fastpath,
 	TP_PROTO(struct inode *inode, struct ext4_map_blocks *map,
 		 struct ext4_extent *ux, struct ext4_extent *ix),
@@ -2516,7 +2509,7 @@ TRACE_EVENT(ext4_es_insert_delayed_block,
 		  __entry->allocated)
 );
 
-/* fsmap traces */
+
 DECLARE_EVENT_CLASS(ext4_fsmap_class,
 	TP_PROTO(struct super_block *sb, u32 keydev, u32 agno, u64 bno, u64 len,
 		 u64 owner),
@@ -2980,7 +2973,7 @@ TRACE_EVENT(ext4_update_sb,
 		  __entry->fsblk, __entry->flags)
 );
 
-#endif /* _TRACE_EXT4_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

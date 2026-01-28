@@ -21,9 +21,9 @@ VRF_TABLE=1111
 log_section()
 {
 	echo
-	echo "###########################################################################"
+	echo "
 	echo "$*"
-	echo "###########################################################################"
+	echo "
 	echo
 }
 log_test()
@@ -333,7 +333,7 @@ do_test()
 usage()
 {
         cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
 	-p          Pause on fail
 	-v          verbose mode (show commands and output)
 EOF

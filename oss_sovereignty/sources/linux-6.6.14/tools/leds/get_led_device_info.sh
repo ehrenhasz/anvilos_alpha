@@ -1,5 +1,5 @@
 led_common_defs_path="include/dt-bindings/leds/common.h"
-num_args=$#
+num_args=$
 if [ $num_args -eq 1 ]; then
         linux_top=$(dirname `realpath $0` | awk -F/     \
                         '{                              \
@@ -66,9 +66,9 @@ else
 	echo "Unknown device type."
 	exit 1
 fi
-printf "\n#####################################\n"
-printf "# LED class device hardware details #\n"
-printf "#####################################\n\n"
+printf "\n
+printf "
+printf "
 printf "bus:\t\t\t$bus\n"
 if [ ! -z "$idVendor" ]; then
 	printf "idVendor:\t\t$idVendor\n"
@@ -88,9 +88,9 @@ fi
 if [ ! -z "$input_node" ]; then
 	printf "associated input node:\t$input_node\n"
 fi
-printf "\n####################################\n"
-printf "# LED class device name validation #\n"
-printf "####################################\n\n"
+printf "\n
+printf "
+printf "
 led_name=`echo $led_cdev_path | sed s'/.*\///'`
 num_sections=`echo $led_name | awk -F: '{print NF}'`
 if [ $num_sections -eq 1 ]; then

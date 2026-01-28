@@ -1,78 +1,73 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2014 QLogic Corporation
- */
+
+
 #ifndef __QLA_MR_H
 #define __QLA_MR_H
 
 #include "qla_dsd.h"
 
-/*
- * The PCI VendorID and DeviceID for our board.
- */
+
 #define PCI_DEVICE_ID_QLOGIC_ISPF001		0xF001
 
-/* FX00 specific definitions */
 
-#define FX00_COMMAND_TYPE_7	0x07	/* Command Type 7 entry for 7XXX */
+
+#define FX00_COMMAND_TYPE_7	0x07	
 struct cmd_type_7_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
-	uint8_t sys_define;		/* System defined. */
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
+	uint8_t sys_define;		
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
+	uint32_t handle;		
 	uint8_t reserved_0;
 	uint8_t port_path_ctrl;
 	uint16_t reserved_1;
 
-	__le16 tgt_idx;		/* Target Idx. */
-	uint16_t timeout;		/* Command timeout. */
+	__le16 tgt_idx;		
+	uint16_t timeout;		
 
-	__le16 dseg_count;		/* Data segment count. */
+	__le16 dseg_count;		
 	uint8_t	scsi_rsp_dsd_len;
 	uint8_t reserved_2;
 
-	struct scsi_lun lun;		/* LUN (LE). */
+	struct scsi_lun lun;		
 
 	uint8_t cntrl_flags;
 
-	uint8_t task_mgmt_flags;	/* Task management flags. */
+	uint8_t task_mgmt_flags;	
 
 	uint8_t task;
 
 	uint8_t crn;
 
-	uint8_t fcp_cdb[MAX_CMDSZ];	/* SCSI command words. */
-	__le32 byte_count;		/* Total byte count. */
+	uint8_t fcp_cdb[MAX_CMDSZ];	
+	__le32 byte_count;		
 
 	struct dsd64 dsd;
 };
 
-#define	STATUS_TYPE_FX00	0x01		/* Status entry. */
+#define	STATUS_TYPE_FX00	0x01		
 struct sts_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
-	uint8_t sys_define;		/* System defined. */
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
+	uint8_t sys_define;		
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
-	uint32_t reserved_3;		/* System handle. */
+	uint32_t handle;		
+	uint32_t reserved_3;		
 
-	__le16 comp_status;		/* Completion status. */
-	uint16_t reserved_0;		/* OX_ID used by the firmware. */
+	__le16 comp_status;		
+	uint16_t reserved_0;		
 
-	__le32 residual_len;		/* FW calc residual transfer length. */
+	__le32 residual_len;		
 
 	uint16_t reserved_1;
-	uint16_t state_flags;		/* State flags. */
+	uint16_t state_flags;		
 
 	uint16_t reserved_2;
-	__le16 scsi_status;		/* SCSI status. */
+	__le16 scsi_status;		
 
-	uint32_t sense_len;		/* FCP SENSE length. */
-	uint8_t data[32];		/* FCP response/sense information. */
+	uint32_t sense_len;		
+	uint8_t data[32];		
 };
 
 
@@ -80,8 +75,8 @@ struct sts_entry_fx00 {
 #define MULTI_STATUS_TYPE_FX00	0x0D
 
 struct multi_sts_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
 	uint8_t handle_count;
 	uint8_t entry_status;
 
@@ -90,43 +85,43 @@ struct multi_sts_entry_fx00 {
 
 #define TSK_MGMT_IOCB_TYPE_FX00		0x05
 struct tsk_mgmt_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
 	uint8_t sys_define;
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
+	uint32_t handle;		
 
 	uint32_t reserved_0;
 
-	__le16 tgt_id;		/* Target Idx. */
+	__le16 tgt_id;		
 
 	uint16_t reserved_1;
 	uint16_t reserved_3;
 	uint16_t reserved_4;
 
-	struct scsi_lun lun;		/* LUN (LE). */
+	struct scsi_lun lun;		
 
-	__le32 control_flags;		/* Control Flags. */
+	__le32 control_flags;		
 
 	uint8_t reserved_2[32];
 };
 
 
-#define	ABORT_IOCB_TYPE_FX00	0x08		/* Abort IOCB status. */
+#define	ABORT_IOCB_TYPE_FX00	0x08		
 struct abort_iocb_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
-	uint8_t sys_define;		/* System defined. */
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
+	uint8_t sys_define;		
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
+	uint32_t handle;		
 	__le32 reserved_0;
 
-	__le16 tgt_id_sts;		/* Completion status. */
+	__le16 tgt_id_sts;		
 	__le16 options;
 
-	uint32_t abort_handle;		/* System handle. */
+	uint32_t abort_handle;		
 	__le32 reserved_2;
 
 	__le16 req_que_no;
@@ -135,19 +130,19 @@ struct abort_iocb_entry_fx00 {
 
 #define IOCTL_IOSB_TYPE_FX00	0x0C
 struct ioctl_iocb_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
-	uint8_t sys_define;		/* System defined. */
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
+	uint8_t sys_define;		
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
-	uint32_t reserved_0;		/* System handle. */
+	uint32_t handle;		
+	uint32_t reserved_0;		
 
 	uint16_t comp_func_num;
 	__le16 fw_iotcl_flags;
 
-	__le32 dataword_r;		/* Data word returned */
-	uint32_t adapid;		/* Adapter ID */
+	__le32 dataword_r;		
+	uint32_t adapid;		
 	uint32_t dataword_r_extra;
 
 	__le32 seq_no;
@@ -160,13 +155,13 @@ struct ioctl_iocb_entry_fx00 {
 
 #define FX00_IOCB_TYPE		0x0B
 struct fxdisc_entry_fx00 {
-	uint8_t entry_type;		/* Entry type. */
-	uint8_t entry_count;		/* Entry count. */
-	uint8_t sys_define;		/* System Defined. */
-	uint8_t entry_status;		/* Entry Status. */
+	uint8_t entry_type;		
+	uint8_t entry_count;		
+	uint8_t sys_define;		
+	uint8_t entry_status;		
 
-	uint32_t handle;		/* System handle. */
-	__le32 reserved_0;		/* System handle. */
+	uint32_t handle;		
+	__le32 reserved_0;		
 
 	__le16 func_num;
 	__le16 req_xfrcnt;
@@ -176,10 +171,7 @@ struct fxdisc_entry_fx00 {
 	uint8_t flags;
 	uint8_t reserved_1;
 
-	/*
-	 * Use array size 1 below to prevent that Coverity complains about
-	 * the append_dsd64() calls for the two arrays below.
-	 */
+	
 	struct dsd64 dseg_rq[1];
 	struct dsd64 dseg_rsp[1];
 
@@ -247,11 +239,11 @@ struct port_info_data {
 	uint32_t        uiReserved[48];
 } __packed;
 
-/* OS Type Designations */
+
 #define OS_TYPE_UNKNOWN             0
 #define OS_TYPE_LINUX               2
 
-/* Linux Info */
+
 #define SYSNAME_LENGTH              128
 #define NODENAME_LENGTH             64
 #define RELEASE_LENGTH              64
@@ -272,9 +264,9 @@ struct host_system_info {
 } __packed;
 
 struct register_host_info {
-	struct host_system_info     hsi;	/* host system info */
-	uint64_t        utc;			/* UTC (system time) */
-	uint32_t        reserved[64];		/* future additions */
+	struct host_system_info     hsi;	
+	uint64_t        utc;			
+	uint32_t        reserved[64];		
 } __packed;
 
 
@@ -359,7 +351,7 @@ struct config_info_data {
 #define SOC_CORE_TIMER_REG                     0x0021850
 #define SOC_IRQ_ACK_REG                        0x00218b4
 
-#define CONTINUE_A64_TYPE_FX00	0x03	/* Continuation entry. */
+#define CONTINUE_A64_TYPE_FX00	0x03	
 
 #define QLAFX00_SET_HST_INTR(ha, value) \
 	wrt_reg_dword((ha)->cregbase + QLAFX00_HST_TO_HBA_REG, \
@@ -452,18 +444,12 @@ struct qla_mt_iocb_rsp_fx00 {
 #define MAX_FIBRE_DEVICES_FX00	512
 #define MAX_LUNS_FX00		0x1024
 #define MAX_TARGETS_FX00	MAX_ISA_DEVICES
-#define REQUEST_ENTRY_CNT_FX00		512	/* Number of request entries. */
-#define RESPONSE_ENTRY_CNT_FX00		256	/* Number of response entries.*/
+#define REQUEST_ENTRY_CNT_FX00		512	
+#define RESPONSE_ENTRY_CNT_FX00		256	
 
-/*
- * Firmware state codes for QLAFX00 adapters
- */
-#define FSTATE_FX00_CONFIG_WAIT     0x0000	/* Waiting for driver to issue
-						 * Initialize FW Mbox cmd
-						 */
-#define FSTATE_FX00_INITIALIZED     0x1000	/* FW has been initialized by
-						 * the driver
-						 */
+
+#define FSTATE_FX00_CONFIG_WAIT     0x0000	
+#define FSTATE_FX00_INITIALIZED     0x1000	
 
 #define FX00_DEF_RATOV	10
 
@@ -474,10 +460,7 @@ struct mr_data_fx00 {
 	uint8_t	fw_version[16];
 	uint8_t	uboot_version[16];
 	uint8_t	fru_serial_num[32];
-	fc_port_t       fcport;		/* fcport used for requests
-					 * that are not linked
-					 * to a particular target
-					 */
+	fc_port_t       fcport;		
 	uint8_t fw_hbt_en;
 	uint8_t fw_hbt_cnt;
 	uint8_t fw_hbt_miss_cnt;
@@ -494,36 +477,25 @@ struct mr_data_fx00 {
 
 #define QLAFX00_EXTENDED_IO_EN_MASK    0x20
 
-/*
- * SoC Junction Temperature is stored in
- * bits 9:1 of SoC Junction Temperature Register
- * in a firmware specific format format.
- * To get the temperature in Celsius degrees
- * the value from this bitfiled should be converted
- * using this formula:
- * Temperature (degrees C) = ((3,153,000 - (10,000 * X)) / 13,825)
- * where X is the bit field value
- * this macro reads the register, extracts the bitfield value,
- * performs the calcualtions and returns temperature in Celsius
- */
+
 #define QLAFX00_GET_TEMPERATURE(ha) ((3153000 - (10000 * \
 	((QLAFX00_RD_REG(ha, QLAFX00_SOC_TEMP_REG) & 0x3FE) >> 1))) / 13825)
 
 
-#define QLAFX00_LOOP_DOWN_TIME		615     /* 600 */
-#define QLAFX00_HEARTBEAT_INTERVAL	6	/* number of seconds */
-#define QLAFX00_HEARTBEAT_MISS_CNT	3	/* number of miss */
-#define QLAFX00_RESET_INTERVAL		120	/* number of seconds */
-#define QLAFX00_MAX_RESET_INTERVAL	600	/* number of seconds */
-#define QLAFX00_CRITEMP_INTERVAL	60	/* number of seconds */
-#define QLAFX00_HINFO_RESEND_INTERVAL	60	/* number of seconds */
+#define QLAFX00_LOOP_DOWN_TIME		615     
+#define QLAFX00_HEARTBEAT_INTERVAL	6	
+#define QLAFX00_HEARTBEAT_MISS_CNT	3	
+#define QLAFX00_RESET_INTERVAL		120	
+#define QLAFX00_MAX_RESET_INTERVAL	600	
+#define QLAFX00_CRITEMP_INTERVAL	60	
+#define QLAFX00_HINFO_RESEND_INTERVAL	60	
 
-#define QLAFX00_CRITEMP_THRSHLD		80	/* Celsius degrees */
+#define QLAFX00_CRITEMP_THRSHLD		80	
 
-/* Max conncurrent IOs that can be queued */
+
 #define QLAFX00_MAX_CANQUEUE		1024
 
-/* IOCTL IOCB abort success */
+
 #define QLAFX00_IOCTL_ICOB_ABORT_SUCCESS	0x68
 
 #endif

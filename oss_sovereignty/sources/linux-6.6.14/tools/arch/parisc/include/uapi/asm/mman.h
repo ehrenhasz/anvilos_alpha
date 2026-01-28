@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef TOOLS_ARCH_PARISC_UAPI_ASM_MMAN_FIX_H
 #define TOOLS_ARCH_PARISC_UAPI_ASM_MMAN_FIX_H
 #define MADV_DODUMP	17
@@ -37,7 +37,7 @@
 #define PROT_WRITE	0x2
 #define MADV_HWPOISON	100
 #define MADV_SOFT_OFFLINE 101
-/* MAP_32BIT is undefined on parisc, fix it for perf */
+
 #define MAP_32BIT	0
 #define MAP_UNINITIALIZED	0
 #endif

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# S/390 block devices
-#
+
+
+
+
 
 dasd_eckd_mod-objs := dasd_eckd.o dasd_3990_erp.o dasd_alias.o
 dasd_fba_mod-objs  := dasd_fba.o

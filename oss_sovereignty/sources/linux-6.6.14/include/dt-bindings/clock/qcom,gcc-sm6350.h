@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6350_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM6350_H
 
-/* GCC clocks */
+
 #define GPLL0					0
 #define GPLL0_OUT_EVEN				1
 #define GPLL0_OUT_ODD				2
@@ -155,7 +152,7 @@
 #define GCC_GPU_GPLL0_MAIN_DIV_CLK_SRC		144
 #define GCC_NPU_PLL0_MAIN_DIV_CLK_SRC		145
 
-/* GCC resets */
+
 #define GCC_QUSB2PHY_PRIM_BCR			0
 #define GCC_QUSB2PHY_SEC_BCR			1
 #define GCC_SDCC1_BCR				2
@@ -169,7 +166,7 @@
 #define GCC_USB3_PHY_PRIM_BCR			10
 #define GCC_USB3_DP_PHY_PRIM_BCR		11
 
-/* GCC GDSCs */
+
 #define USB30_PRIM_GDSC				0
 #define UFS_PHY_GDSC				1
 #define HLOS1_VOTE_MMNOC_MMU_TBU_HF0_GDSC	2

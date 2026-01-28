@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2009-2010 Advanced Micro Devices, Inc.
- * Author: Joerg Roedel <jroedel@suse.de>
- */
+
+
 
 #ifndef AMD_IOMMU_H
 #define AMD_IOMMU_H
@@ -28,7 +25,7 @@ void amd_iommu_debugfs_setup(struct amd_iommu *iommu);
 static inline void amd_iommu_debugfs_setup(struct amd_iommu *iommu) {}
 #endif
 
-/* Needed for interrupt remapping */
+
 int amd_iommu_prepare(void);
 int amd_iommu_enable(void);
 void amd_iommu_disable(void);
@@ -38,7 +35,7 @@ extern int amd_iommu_guest_ir;
 extern enum io_pgtable_fmt amd_iommu_pgtable;
 extern int amd_iommu_gpt_level;
 
-/* IOMMUv2 specific functions */
+
 struct iommu_domain;
 
 bool amd_iommu_v2_supported(void);
@@ -107,7 +104,7 @@ void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
 {
 	atomic64_set(&domain->iop.pt_root, root);
 	domain->iop.root = (u64 *)(root & PAGE_MASK);
-	domain->iop.mode = root & 7; /* lowest 3 bits encode pgtable mode */
+	domain->iop.mode = root & 7; 
 }
 
 static inline

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * DAMON Debugfs Interface Unit Tests
- *
- * Author: SeongJae Park <sjpark@amazon.de>
- */
+
+
 
 #ifdef CONFIG_DAMON_DBGFS_KUNIT_TEST
 
@@ -73,7 +69,7 @@ static void damon_dbgfs_test_set_targets(struct kunit *test)
 	struct damon_ctx *ctx = dbgfs_new_ctx();
 	char buf[64];
 
-	/* Make DAMON consider target has no pid */
+	
 	damon_select_ops(ctx, DAMON_OPS_PADDR);
 
 	dbgfs_set_targets(ctx, 0, NULL);
@@ -94,19 +90,19 @@ static void damon_dbgfs_test_set_targets(struct kunit *test)
 static void damon_dbgfs_test_set_init_regions(struct kunit *test)
 {
 	struct damon_ctx *ctx = damon_new_ctx();
-	/* Each line represents one region in ``<target idx> <start> <end>`` */
+	
 	char * const valid_inputs[] = {"1 10 20\n 1   20 30\n1 35 45",
 		"1 10 20\n",
 		"1 10 20\n0 39 59\n0 70 134\n  1  20 25\n",
 		""};
-	/* Reading the file again will show sorted, clean output */
+	
 	char * const valid_expects[] = {"1 10 20\n1 20 30\n1 35 45\n",
 		"1 10 20\n",
 		"0 39 59\n0 70 134\n1 10 20\n1 20 25\n",
 		""};
-	char * const invalid_inputs[] = {"3 10 20\n",	/* target not exists */
-		"1 10 20\n 1 14 26\n",		/* regions overlap */
-		"0 10 20\n1 30 40\n 0 5 8"};	/* not sorted by address */
+	char * const invalid_inputs[] = {"3 10 20\n",	
+		"1 10 20\n 1 14 26\n",		
+		"0 10 20\n1 30 40\n 0 5 8"};	
 	char *input, *expect;
 	int i, rc;
 	char buf[256];
@@ -115,7 +111,7 @@ static void damon_dbgfs_test_set_init_regions(struct kunit *test)
 
 	dbgfs_set_targets(ctx, 3, NULL);
 
-	/* Put valid inputs and check the results */
+	
 	for (i = 0; i < ARRAY_SIZE(valid_inputs); i++) {
 		input = valid_inputs[i];
 		expect = valid_expects[i];
@@ -128,7 +124,7 @@ static void damon_dbgfs_test_set_init_regions(struct kunit *test)
 
 		KUNIT_EXPECT_STREQ(test, (char *)buf, expect);
 	}
-	/* Put invalid inputs and check the return error code */
+	
 	for (i = 0; i < ARRAY_SIZE(invalid_inputs); i++) {
 		input = invalid_inputs[i];
 		pr_info("input: %s\n", input);
@@ -158,6 +154,6 @@ static struct kunit_suite damon_test_suite = {
 };
 kunit_test_suite(damon_test_suite);
 
-#endif /* _DAMON_TEST_H */
+#endif 
 
-#endif	/* CONFIG_DAMON_KUNIT_TEST */
+#endif	

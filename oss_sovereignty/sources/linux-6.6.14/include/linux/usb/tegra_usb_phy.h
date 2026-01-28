@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2010 Google, Inc.
- */
+
+
 
 #ifndef __TEGRA_USB_PHY_H
 #define __TEGRA_USB_PHY_H
@@ -12,17 +10,7 @@
 #include <linux/reset.h>
 #include <linux/usb/otg.h>
 
-/*
- * utmi_pll_config_in_car_module: true if the UTMI PLL configuration registers
- *     should be set up by clk-tegra, false if by the PHY code
- * has_hostpc: true if the USB controller has the HOSTPC extension, which
- *     changes the location of the PHCD and PTS fields
- * requires_usbmode_setup: true if the USBMODE register needs to be set to
- *      enter host mode
- * requires_extra_tuning_parameters: true if xcvr_hsslew, hssquelch_level
- *      and hsdiscon_level should be set for adequate signal quality
- * requires_pmc_ao_power_up: true if USB AO is powered down by default
- */
+
 
 struct tegra_phy_soc_config {
 	bool utmi_pll_config_in_car_module;
@@ -88,4 +76,4 @@ void tegra_ehci_phy_restore_start(struct usb_phy *phy,
 
 void tegra_ehci_phy_restore_end(struct usb_phy *phy);
 
-#endif /* __TEGRA_USB_PHY_H */
+#endif 

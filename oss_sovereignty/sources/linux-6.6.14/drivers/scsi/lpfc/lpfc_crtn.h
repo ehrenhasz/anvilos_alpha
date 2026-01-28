@@ -1,24 +1,4 @@
-/*******************************************************************
- * This file is part of the Emulex Linux Device Driver for         *
- * Fibre Channel Host Bus Adapters.                                *
- * Copyright (C) 2017-2023 Broadcom. All Rights Reserved. The term *
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
- * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.broadcom.com                                                *
- *                                                                 *
- * This program is free software; you can redistribute it and/or   *
- * modify it under the terms of version 2 of the GNU General       *
- * Public License as published by the Free Software Foundation.    *
- * This program is distributed in the hope that it will be useful. *
- * ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND          *
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,  *
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE      *
- * DISCLAIMED, EXCEPT TO THE EXTENT THAT SUCH DISCLAIMERS ARE HELD *
- * TO BE LEGALLY INVALID.  See the GNU General Public License for  *
- * more details, a copy of which can be found in the file COPYING  *
- * included with this package.                                     *
- *******************************************************************/
+
 
 typedef int (*node_filter)(struct lpfc_nodelist *, void *);
 
@@ -443,7 +423,7 @@ void lpfc_rq_buf_free(struct lpfc_hba *phba, struct lpfc_dmabuf *mp);
 void lpfc_setup_fdmi_mask(struct lpfc_vport *vport);
 int lpfc_link_reset(struct lpfc_vport *vport);
 
-/* Function prototypes. */
+
 int lpfc_check_pci_resettable(struct lpfc_hba *phba);
 const char* lpfc_info(struct Scsi_Host *);
 int lpfc_scan_finished(struct Scsi_Host *, unsigned long);
@@ -490,7 +470,7 @@ extern void lpfc_debugfs_nvme_trc(struct lpfc_hba *phba, char *fmt,
 				uint16_t data1, uint16_t data2, uint32_t data3);
 extern struct lpfc_hbq_init *lpfc_hbq_defs[];
 
-/* SLI4 if_type 2 externs. */
+
 int lpfc_sli4_alloc_resource_identifiers(struct lpfc_hba *);
 int lpfc_sli4_dealloc_resource_identifiers(struct lpfc_hba *);
 int lpfc_sli4_get_allocated_extnts(struct lpfc_hba *, uint16_t,
@@ -498,7 +478,7 @@ int lpfc_sli4_get_allocated_extnts(struct lpfc_hba *, uint16_t,
 int lpfc_sli4_get_avail_extnt_rsrc(struct lpfc_hba *, uint16_t,
 					  uint16_t *, uint16_t *);
 
-/* Interface exported by fabric iocb scheduler */
+
 void lpfc_fabric_abort_nport(struct lpfc_nodelist *);
 void lpfc_fabric_abort_hba(struct lpfc_hba *);
 void lpfc_fabric_block_timeout(struct timer_list *);
@@ -529,7 +509,7 @@ struct lpfc_sglq *__lpfc_get_active_sglq(struct lpfc_hba *, uint16_t);
 #define HBA_EVENT_LINK_UP                2
 #define HBA_EVENT_LINK_DOWN              3
 
-/* functions to support SGIOv4/bsg interface */
+
 int lpfc_bsg_request(struct bsg_job *);
 int lpfc_bsg_timeout(struct bsg_job *);
 int lpfc_bsg_ct_unsol_event(struct lpfc_hba *, struct lpfc_sli_ring *,
@@ -557,7 +537,7 @@ void lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *, enum nemb_type,
 	struct lpfc_dmabuf *, uint32_t);
 void lpfc_idiag_mbxacc_dump_issue_mbox(struct lpfc_hba *, MAILBOX_t *);
 int lpfc_wr_object(struct lpfc_hba *, struct list_head *, uint32_t, uint32_t *);
-/* functions to support SR-IOV */
+
 int lpfc_sli_probe_sriov_nr_virtfn(struct lpfc_hba *, int);
 uint16_t lpfc_sli_sriov_nr_virtfn_get(struct lpfc_hba *);
 int lpfc_sli4_queue_create(struct lpfc_hba *);
@@ -606,7 +586,7 @@ bool lpfc_find_next_oas_lun(struct lpfc_hba *, struct lpfc_name *,
 int lpfc_sli4_dump_page_a0(struct lpfc_hba *phba, struct lpfcMboxq *mbox);
 void lpfc_mbx_cmpl_rdp_page_a0(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb);
 
-/* RAS Interface */
+
 void lpfc_sli4_ras_init(struct lpfc_hba *phba);
 void lpfc_sli4_ras_setup(struct lpfc_hba *phba);
 int  lpfc_sli4_ras_fwlog_init(struct lpfc_hba *phba, uint32_t fwlog_level,
@@ -614,7 +594,7 @@ int  lpfc_sli4_ras_fwlog_init(struct lpfc_hba *phba, uint32_t fwlog_level,
 void lpfc_ras_stop_fwlog(struct lpfc_hba *phba);
 int lpfc_check_fwlog_support(struct lpfc_hba *phba);
 
-/* NVME interfaces. */
+
 void lpfc_nvme_rescan_port(struct lpfc_vport *vport,
 			   struct lpfc_nodelist *ndlp);
 void lpfc_nvme_unregister_port(struct lpfc_vport *vport,
@@ -672,7 +652,7 @@ extern union lpfc_wqe128 lpfc_iread_cmd_template;
 extern union lpfc_wqe128 lpfc_iwrite_cmd_template;
 extern union lpfc_wqe128 lpfc_icmnd_cmd_template;
 
-/* vmid interface */
+
 int lpfc_vmid_uvem(struct lpfc_vport *vport, struct lpfc_vmid *vmid, bool ins);
 uint32_t lpfc_vmid_get_cs_ctl(struct lpfc_vport *vport);
 int lpfc_vmid_cmd(struct lpfc_vport *vport,

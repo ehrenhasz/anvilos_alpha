@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015, Heiner Kallweit <hkallweit1@gmail.com>
- */
+
+
 
 #if IS_ENABLED(CONFIG_BT_LEDS)
 

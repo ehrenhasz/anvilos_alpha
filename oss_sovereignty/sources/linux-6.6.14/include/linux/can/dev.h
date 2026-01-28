@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/can/dev.h
- *
- * Definitions for the CAN network device driver interface
- *
- * Copyright (C) 2006 Andrey Volkov <avolkov@varma-el.com>
- *               Varma Electronics Oy
- *
- * Copyright (C) 2008 Wolfgang Grandegger <wg@grandegger.com>
- *
- */
+
+
 
 #ifndef _CAN_DEV_H
 #define _CAN_DEV_H
@@ -23,9 +13,7 @@
 #include <linux/ethtool.h>
 #include <linux/netdevice.h>
 
-/*
- * CAN mode
- */
+
 enum can_mode {
 	CAN_MODE_STOP = 0,
 	CAN_MODE_START,
@@ -38,9 +26,7 @@ enum can_termination_gpio {
 	CAN_TERMINATION_GPIO_MAX,
 };
 
-/*
- * CAN common private data
- */
+
 struct can_priv {
 	struct net_device *dev;
 	struct can_device_stats can_stats;
@@ -69,9 +55,9 @@ struct can_priv {
 
 	enum can_state state;
 
-	/* CAN controller features - see include/uapi/linux/can/netlink.h */
-	u32 ctrlmode;		/* current options setting */
-	u32 ctrlmode_supported;	/* options that can be modified by netlink */
+	
+	u32 ctrlmode;		
+	u32 ctrlmode_supported;	
 
 	int restart_ms;
 	struct delayed_work restart_work;
@@ -92,26 +78,7 @@ static inline bool can_tdc_is_enabled(const struct can_priv *priv)
 	return !!(priv->ctrlmode & CAN_CTRLMODE_TDC_MASK);
 }
 
-/*
- * can_get_relative_tdco() - TDCO relative to the sample point
- *
- * struct can_tdc::tdco represents the absolute offset from TDCV. Some
- * controllers use instead an offset relative to the Sample Point (SP)
- * such that:
- *
- * SSP = TDCV + absolute TDCO
- *     = TDCV + SP + relative TDCO
- *
- * -+----------- one bit ----------+-- TX pin
- *  |<--- Sample Point --->|
- *
- *                         --+----------- one bit ----------+-- RX pin
- *  |<-------- TDCV -------->|
- *                           |<------------------------>| absolute TDCO
- *                           |<--- Sample Point --->|
- *                           |                      |<->| relative TDCO
- *  |<------------- Secondary Sample Point ------------>|
- */
+
 static inline s32 can_get_relative_tdco(const struct can_priv *priv)
 {
 	const struct can_bittiming *dbt = &priv->data_bittiming;
@@ -121,13 +88,13 @@ static inline s32 can_get_relative_tdco(const struct can_priv *priv)
 	return (s32)priv->tdc.tdco - sample_point_in_tc;
 }
 
-/* helper to define static CAN controller features at device creation time */
+
 static inline int __must_check can_set_static_ctrlmode(struct net_device *dev,
 						       u32 static_mode)
 {
 	struct can_priv *priv = netdev_priv(dev);
 
-	/* alloc_candev() succeeded => netdev_priv() is valid at this point */
+	
 	if (priv->ctrlmode_supported & static_mode) {
 		netdev_warn(dev,
 			    "Controller features can not be supported and static at the same time\n");
@@ -135,7 +102,7 @@ static inline int __must_check can_set_static_ctrlmode(struct net_device *dev,
 	}
 	priv->ctrlmode = static_mode;
 
-	/* override MTU which was set by default in can_setup()? */
+	
 	if (static_mode & CAN_CTRLMODE_FD)
 		dev->mtu = CANFD_MTU;
 
@@ -152,7 +119,7 @@ static inline bool can_is_canxl_dev_mtu(unsigned int mtu)
 	return (mtu >= CANXL_MIN_MTU && mtu <= CANXL_MAX_MTU);
 }
 
-/* drop skb if it does not contain a valid CAN frame for sending */
+
 static inline bool can_dev_dropped_skb(struct net_device *dev, struct sk_buff *skb)
 {
 	struct can_priv *priv = netdev_priv(dev);
@@ -178,7 +145,7 @@ struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
 	alloc_candev_mqs(sizeof_priv, echo_skb_max, count, count)
 void free_candev(struct net_device *dev);
 
-/* a candev safe wrapper around netdev_priv */
+
 struct can_priv *safe_candev_priv(struct net_device *dev);
 
 int open_candev(struct net_device *dev);
@@ -208,4 +175,4 @@ extern struct rtnl_link_ops can_link_ops;
 int can_netlink_register(void);
 void can_netlink_unregister(void);
 
-#endif /* !_CAN_DEV_H */
+#endif 

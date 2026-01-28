@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xdp
 
@@ -85,7 +85,7 @@ TRACE_EVENT(xdp_bulk_tx,
 struct _bpf_dtab_netdev {
 	struct net_device *dev;
 };
-#endif /* __DEVMAP_OBJ_TYPE */
+#endif 
 
 DECLARE_EVENT_CLASS(xdp_redirect_template,
 
@@ -111,9 +111,7 @@ DECLARE_EVENT_CLASS(xdp_redirect_template,
 		u32 ifindex = 0, map_index = index;
 
 		if (map_type == BPF_MAP_TYPE_DEVMAP || map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
-			/* Just leave to_ifindex to 0 if do broadcast redirect,
-			 * as tgt will be NULL.
-			 */
+			
 			if (tgt)
 				ifindex = ((struct _bpf_dtab_netdev *)tgt)->dev->ifindex;
 		} else if (map_type == BPF_MAP_TYPE_UNSPEC && map_id == INT_MAX) {
@@ -168,7 +166,7 @@ DEFINE_EVENT(xdp_redirect_template, xdp_redirect_err,
 #define _trace_xdp_redirect_map_err(dev, xdp, to, map_type, map_id, index, err) \
 	 trace_xdp_redirect_err(dev, xdp, to, err, map_type, map_id, index)
 
-/* not used anymore, but kept around so as not to break old programs */
+
 DEFINE_EVENT(xdp_redirect_template, xdp_redirect_map,
 	TP_PROTO(const struct net_device *dev,
 		 const struct bpf_prog *xdp,
@@ -301,7 +299,7 @@ TRACE_EVENT(xdp_devmap_xmit,
 		  __entry->err)
 );
 
-/* Expect users already include <net/xdp.h>, but not xdp_priv.h */
+
 #include <net/xdp_priv.h>
 
 #define __MEM_TYPE_MAP(FN)	\
@@ -422,6 +420,6 @@ TRACE_EVENT(bpf_xdp_link_attach_failed,
 	TP_printk("errmsg=%s", __get_str(msg))
 );
 
-#endif /* _TRACE_XDP_H */
+#endif 
 
 #include <trace/define_trace.h>

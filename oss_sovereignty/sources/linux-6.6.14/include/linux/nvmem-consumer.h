@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * nvmem framework consumer.
- *
- * Copyright (C) 2015 Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
- * Copyright (C) 2013 Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+
 
 #ifndef _LINUX_NVMEM_CONSUMER_H
 #define _LINUX_NVMEM_CONSUMER_H
@@ -15,21 +10,12 @@
 
 struct device;
 struct device_node;
-/* consumer cookie */
+
 struct nvmem_cell;
 struct nvmem_device;
 struct nvmem_cell_info;
 
-/**
- * struct nvmem_cell_lookup - cell lookup entry
- *
- * @nvmem_name:	Name of the provider.
- * @cell_name:	Name of the nvmem cell as defined in the name field of
- *		struct nvmem_cell_info.
- * @dev_id:	Name of the consumer device that will be associated with
- *		this cell.
- * @con_id:	Connector id for this cell lookup.
- */
+
 struct nvmem_cell_lookup {
 	const char		*nvmem_name;
 	const char		*cell_name;
@@ -49,7 +35,7 @@ enum {
 
 #if IS_ENABLED(CONFIG_NVMEM)
 
-/* Cell based interface */
+
 struct nvmem_cell *nvmem_cell_get(struct device *dev, const char *id);
 struct nvmem_cell *devm_nvmem_cell_get(struct device *dev, const char *id);
 void nvmem_cell_put(struct nvmem_cell *cell);
@@ -65,7 +51,7 @@ int nvmem_cell_read_variable_le_u32(struct device *dev, const char *cell_id,
 int nvmem_cell_read_variable_le_u64(struct device *dev, const char *cell_id,
 				    u64 *val);
 
-/* direct nvmem device read/write interface */
+
 struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
 struct nvmem_device *devm_nvmem_device_get(struct device *dev,
 					   const char *name);
@@ -234,7 +220,7 @@ static inline struct nvmem_device *nvmem_device_find(void *data,
 	return NULL;
 }
 
-#endif /* CONFIG_NVMEM */
+#endif 
 
 #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
 struct nvmem_cell *of_nvmem_cell_get(struct device_node *np,
@@ -260,6 +246,6 @@ of_nvmem_layout_get_container(struct nvmem_device *nvmem)
 {
 	return NULL;
 }
-#endif /* CONFIG_NVMEM && CONFIG_OF */
+#endif 
 
-#endif  /* ifndef _LINUX_NVMEM_CONSUMER_H */
+#endif  

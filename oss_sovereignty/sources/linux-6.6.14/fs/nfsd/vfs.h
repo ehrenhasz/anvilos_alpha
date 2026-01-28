@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 1995-1997 Olaf Kirch <okir@monad.swb.de>
- */
+
+
 
 #ifndef LINUX_NFSD_VFS_H
 #define LINUX_NFSD_VFS_H
@@ -11,47 +9,43 @@
 #include "nfsfh.h"
 #include "nfsd.h"
 
-/*
- * Flags for nfsd_permission
- */
+
 #define NFSD_MAY_NOP			0
-#define NFSD_MAY_EXEC			0x001 /* == MAY_EXEC */
-#define NFSD_MAY_WRITE			0x002 /* == MAY_WRITE */
-#define NFSD_MAY_READ			0x004 /* == MAY_READ */
+#define NFSD_MAY_EXEC			0x001 
+#define NFSD_MAY_WRITE			0x002 
+#define NFSD_MAY_READ			0x004 
 #define NFSD_MAY_SATTR			0x008
 #define NFSD_MAY_TRUNC			0x010
 #define NFSD_MAY_LOCK			0x020
 #define NFSD_MAY_MASK			0x03f
 
-/* extra hints to permission and open routines: */
+
 #define NFSD_MAY_OWNER_OVERRIDE		0x040
-#define NFSD_MAY_LOCAL_ACCESS		0x080 /* for device special files */
+#define NFSD_MAY_LOCAL_ACCESS		0x080 
 #define NFSD_MAY_BYPASS_GSS_ON_ROOT	0x100
 #define NFSD_MAY_NOT_BREAK_LEASE	0x200
 #define NFSD_MAY_BYPASS_GSS		0x400
 #define NFSD_MAY_READ_IF_EXEC		0x800
 
-#define NFSD_MAY_64BIT_COOKIE		0x1000 /* 64 bit readdir cookies for >= NFSv3 */
+#define NFSD_MAY_64BIT_COOKIE		0x1000 
 
 #define NFSD_MAY_CREATE		(NFSD_MAY_EXEC|NFSD_MAY_WRITE)
 #define NFSD_MAY_REMOVE		(NFSD_MAY_EXEC|NFSD_MAY_WRITE|NFSD_MAY_TRUNC)
 
 struct nfsd_file;
 
-/*
- * Callback function for readdir
- */
+
 typedef int (*nfsd_filldir_t)(void *, const char *, int, loff_t, u64, unsigned);
 
-/* nfsd/vfs.c */
-struct nfsd_attrs {
-	struct iattr		*na_iattr;	/* input */
-	struct xdr_netobj	*na_seclabel;	/* input */
-	struct posix_acl	*na_pacl;	/* input */
-	struct posix_acl	*na_dpacl;	/* input */
 
-	int			na_labelerr;	/* output */
-	int			na_aclerr;	/* output */
+struct nfsd_attrs {
+	struct iattr		*na_iattr;	
+	struct xdr_netobj	*na_seclabel;	
+	struct posix_acl	*na_pacl;	
+	struct posix_acl	*na_dpacl;	
+
+	int			na_labelerr;	
+	int			na_aclerr;	
 };
 
 static inline void nfsd_attrs_free(struct nfsd_attrs *attrs)
@@ -78,7 +72,7 @@ __be32		nfsd4_clone_file_range(struct svc_rqst *rqstp,
 				       struct nfsd_file *nf_src, u64 src_pos,
 				       struct nfsd_file *nf_dst, u64 dst_pos,
 				       u64 count, bool sync);
-#endif /* CONFIG_NFSD_V4 */
+#endif 
 __be32		nfsd_create_locked(struct svc_rqst *, struct svc_fh *,
 				struct nfsd_attrs *attrs, int type, dev_t rdev,
 				struct svc_fh *res);
@@ -180,4 +174,4 @@ static inline __be32 fh_getattr(const struct svc_fh *fh, struct kstat *stat)
 				    AT_STATX_SYNC_AS_STAT));
 }
 
-#endif /* LINUX_NFSD_VFS_H */
+#endif 

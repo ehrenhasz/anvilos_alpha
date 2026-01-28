@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus CPort control protocol
- *
- * Copyright 2015 Google Inc.
- * Copyright 2015 Linaro Ltd.
- */
+
+
 
 #ifndef __CONTROL_H
 #define __CONTROL_H
@@ -57,4 +52,4 @@ int gb_control_bundle_activate(struct gb_control *control, u8 bundle_id);
 int gb_control_interface_suspend_prepare(struct gb_control *control);
 int gb_control_interface_deactivate_prepare(struct gb_control *control);
 int gb_control_interface_hibernate_abort(struct gb_control *control);
-#endif /* __CONTROL_H */
+#endif 

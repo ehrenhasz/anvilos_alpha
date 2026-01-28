@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM scsi
 
@@ -344,7 +344,7 @@ TRACE_EVENT(scsi_eh_wakeup,
 	TP_printk("host_no=%u", __entry->host_no)
 );
 
-#endif /*  _TRACE_SCSI_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

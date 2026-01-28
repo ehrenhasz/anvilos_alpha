@@ -15,9 +15,9 @@ class RAMFS:
         for i in range(len(buf)):
             self.data[n * self.SEC_SIZE + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return len(self.data) // self.SEC_SIZE
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.SEC_SIZE
 try:
     bdev = RAMFS(50)
@@ -64,7 +64,7 @@ for exist in ("", "/", "dir", "/dir", "dir/subdir"):
     try:
         os.mkdir(exist)
     except OSError as er:
-        print("mkdir OSError", er.errno == 17)  # EEXIST
+        print("mkdir OSError", er.errno == 17)  
 os.chdir("/")
 print(os.stat("test5.txt")[:-3])
 vfs.VfsFat.mkfs(bdev2)

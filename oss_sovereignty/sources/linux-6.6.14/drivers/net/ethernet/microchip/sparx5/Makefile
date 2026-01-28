@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the Microchip Sparx5 network device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
 
@@ -15,5 +15,5 @@ sparx5-switch-y  := sparx5_main.o sparx5_packet.o \
 sparx5-switch-$(CONFIG_SPARX5_DCB) += sparx5_dcb.o
 sparx5-switch-$(CONFIG_DEBUG_FS) += sparx5_vcap_debugfs.o
 
-# Provide include files
+
 ccflags-y += -I$(srctree)/drivers/net/ethernet/microchip/vcap

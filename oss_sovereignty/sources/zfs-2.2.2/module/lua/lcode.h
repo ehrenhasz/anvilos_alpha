@@ -1,8 +1,4 @@
-/*
-** $Id: lcode.h,v 1.58.1.1 2013/04/12 18:48:47 roberto Exp $
-** Code generator for Lua
-** See Copyright Notice in lua.h
-*/
+
 
 #ifndef lcode_h
 #define lcode_h
@@ -13,16 +9,11 @@
 #include "lparser.h"
 
 
-/*
-** Marks the end of a patch list. It is an invalid value both as an absolute
-** address, and as a list link (would link an element to itself).
-*/
+
 #define NO_JUMP (-1)
 
 
-/*
-** grep "ORDER OPR" if you change these enums  (ORDER OP)
-*/
+
 typedef enum BinOpr {
   OPR_ADD, OPR_SUB, OPR_MUL, OPR_DIV, OPR_MOD, OPR_POW,
   OPR_CONCAT,

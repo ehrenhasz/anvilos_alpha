@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI_H
 #define GAUDI_H
@@ -12,31 +7,31 @@
 #define CFG_BAR_ID		2
 #define HBM_BAR_ID		4
 
-#define SRAM_BAR_SIZE		0x4000000ull		/* 64MB */
-#define CFG_BAR_SIZE		0x8000000ull		/* 128MB */
+#define SRAM_BAR_SIZE		0x4000000ull		
+#define CFG_BAR_SIZE		0x8000000ull		
 
 #define CFG_BASE		0x7FFC000000ull
-#define CFG_SIZE		0x4000000		/* 32MB CFG + 32MB DBG*/
+#define CFG_SIZE		0x4000000		
 
 #define SRAM_BASE_ADDR		0x7FF0000000ull
-#define SRAM_SIZE		0x1400000		/* 20MB */
+#define SRAM_SIZE		0x1400000		
 
 #define SPI_FLASH_BASE_ADDR	0x7FF8000000ull
 
 #define PSOC_SCRATCHPAD_ADDR	0x7FFBFE0000ull
-#define PSOC_SCRATCHPAD_SIZE	0x10000			/* 64KB */
+#define PSOC_SCRATCHPAD_SIZE	0x10000			
 
 #define PCIE_FW_SRAM_ADDR	0x7FFBFF0000ull
-#define PCIE_FW_SRAM_SIZE	0x8000			/* 32KB */
+#define PCIE_FW_SRAM_SIZE	0x8000			
 
 #define DRAM_PHYS_BASE		0x0ull
 
-#define HOST_PHYS_BASE		0x8000000000ull		/* 0.5TB */
-#define HOST_PHYS_SIZE		0x1000000000000ull	/* 0.25PB (48 bits) */
+#define HOST_PHYS_BASE		0x8000000000ull		
+#define HOST_PHYS_SIZE		0x1000000000000ull	
 
 #define GAUDI_MSI_ENTRIES	32
 
-#define QMAN_PQ_ENTRY_SIZE	16			/* Bytes */
+#define QMAN_PQ_ENTRY_SIZE	16			
 
 #define MAX_ASID		2
 
@@ -58,4 +53,4 @@
 
 #define DEVICE_CACHE_LINE_SIZE	128
 
-#endif /* GAUDI_H */
+#endif 

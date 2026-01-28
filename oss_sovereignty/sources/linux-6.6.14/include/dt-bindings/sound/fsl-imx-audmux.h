@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DT_FSL_IMX_AUDMUX_H
 #define __DT_FSL_IMX_AUDMUX_H
 
@@ -25,14 +25,11 @@
 #define MX51_AUDMUX_PORT6		5
 #define MX51_AUDMUX_PORT7		6
 
-/*
- * TFCSEL/RFCSEL (i.MX27) or TFSEL/TCSEL/RFSEL/RCSEL (i.MX31/51/53/6Q)
- * can be sourced from Rx/Tx.
- */
+
 #define IMX_AUDMUX_RXFS			0x8
 #define IMX_AUDMUX_RXCLK		0x8
 
-/* Register definitions for the i.MX21/27 Digital Audio Multiplexer */
+
 #define IMX_AUDMUX_V1_PCR_INMMASK(x)	((x) & 0xff)
 #define IMX_AUDMUX_V1_PCR_INMEN		(1 << 8)
 #define IMX_AUDMUX_V1_PCR_TXRXEN	(1 << 10)
@@ -45,7 +42,7 @@
 #define IMX_AUDMUX_V1_PCR_TCLKDIR	(1 << 30)
 #define IMX_AUDMUX_V1_PCR_TFSDIR	(1 << 31)
 
-/* Register definitions for the i.MX25/31/35/51 Digital Audio Multiplexer */
+
 #define IMX_AUDMUX_V2_PTCR_TFSDIR	(1 << 31)
 #define IMX_AUDMUX_V2_PTCR_TFSEL(x)	(((x) & 0xf) << 27)
 #define IMX_AUDMUX_V2_PTCR_TCLKDIR	(1 << 26)
@@ -61,4 +58,4 @@
 #define IMX_AUDMUX_V2_PDCR_MODE(x)	(((x) & 0x3) << 8)
 #define IMX_AUDMUX_V2_PDCR_INMMASK(x)	((x) & 0xff)
 
-#endif /* __DT_FSL_IMX_AUDMUX_H */
+#endif 

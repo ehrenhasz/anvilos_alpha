@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * unistd function definitions for NOLIBC
- * Copyright (C) 2017-2022 Willy Tarreau <w@1wt.eu>
- */
+
+
 
 #ifndef _NOLIBC_UNISTD_H
 #define _NOLIBC_UNISTD_H
@@ -62,7 +59,7 @@ int tcsetpgrp(int fd, pid_t pid)
 #define _syscall_n(N, ...) _syscall(N, __VA_ARGS__)
 #define syscall(...) _syscall_n(_syscall_narg(__VA_ARGS__), ##__VA_ARGS__)
 
-/* make sure to include all global symbols */
+
 #include "nolibc.h"
 
-#endif /* _NOLIBC_UNISTD_H */
+#endif 

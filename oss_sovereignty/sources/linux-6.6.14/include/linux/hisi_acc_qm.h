@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+
 #ifndef HISI_ACC_QM_H
 #define HISI_ACC_QM_H
 
@@ -13,7 +13,7 @@
 #define QM_QNUM_V2			1024
 #define QM_MAX_VFS_NUM_V2		63
 
-/* qm user domain */
+
 #define QM_ARUSER_M_CFG_1		0x100088
 #define AXUSER_SNOOP_ENABLE		BIT(30)
 #define AXUSER_CMD_TYPE			GENMASK(14, 12)
@@ -34,7 +34,7 @@
 #define QM_WUSER_M_CFG_ENABLE		0x1000a8
 #define WUSER_M_CFG_ENABLE		0xffffffff
 
-/* mailbox */
+
 #define QM_MB_CMD_SQC                   0x0
 #define QM_MB_CMD_CQC                   0x1
 #define QM_MB_CMD_EQC                   0x2
@@ -54,7 +54,7 @@
 #define QM_MB_CMD_DATA_ADDR_H		0x308
 #define QM_MB_MAX_WAIT_CNT		6000
 
-/* doorbell */
+
 #define QM_DOORBELL_CMD_SQ              0
 #define QM_DOORBELL_CMD_CQ              1
 #define QM_DOORBELL_CMD_EQ              2
@@ -69,7 +69,7 @@
 #define QM_DB_PRIORITY_SHIFT_V2		48
 #define QM_VF_STATE			0x60
 
-/* qm cache */
+
 #define QM_CACHE_CTL			0x100050
 #define SQC_CACHE_ENABLE		BIT(0)
 #define CQC_CACHE_ENABLE		BIT(1)
@@ -93,12 +93,12 @@
 #define QM_SHAPER_ENABLE		BIT(30)
 #define QM_SHAPER_TYPE1_OFFSET		10
 
-/* page number for queue file region */
+
 #define QM_DOORBELL_PAGE_NR		1
 
-/* uacce mode of the driver */
-#define UACCE_MODE_NOUACCE		0 /* don't use uacce */
-#define UACCE_MODE_SVA			1 /* use uacce sva mode */
+
+#define UACCE_MODE_NOUACCE		0 
+#define UACCE_MODE_SVA			1 
 #define UACCE_MODE_DESC	"0(default) means only register to crypto, 1 means both register to crypto and uacce"
 
 enum qm_stop_reason {
@@ -194,7 +194,7 @@ struct qm_debug {
 	struct dentry *qm_d;
 	struct debugfs_file files[DEBUG_FILE_NUM];
 	unsigned int *qm_last_words;
-	/* ACC engines recoreding last regs */
+	
 	unsigned int *last_words;
 	struct dfx_diff_registers *qm_diff_regs;
 	struct dfx_diff_registers *acc_diff_regs;
@@ -260,9 +260,9 @@ struct hisi_qm_err_ini {
 
 struct hisi_qm_cap_info {
 	u32 type;
-	/* Register offset */
+	
 	u32 offset;
-	/* Bit offset in register */
+	
 	u32 shift;
 	u32 mask;
 	u32 v1_val;
@@ -294,13 +294,7 @@ struct hisi_qm_poll_data {
 	u16 eqe_num;
 };
 
-/**
- * struct qm_err_isolate
- * @isolate_lock: protects device error log
- * @err_threshold: user config error threshold which triggers isolation
- * @is_isolate: device isolation state
- * @uacce_hw_errs: index into qm device error list
- */
+
 struct qm_err_isolate {
 	struct mutex isolate_lock;
 	u32 err_threshold;
@@ -316,7 +310,7 @@ struct hisi_qm {
 	void __iomem *io_base;
 	void __iomem *db_io_base;
 
-	/* Capbility version, 0: not supports */
+	
 	u32 cap_ver;
 	u32 sqe_size;
 	u32 qp_base;
@@ -345,9 +339,9 @@ struct hisi_qm {
 	const struct hisi_qm_err_ini *err_ini;
 	struct hisi_qm_err_info err_info;
 	struct hisi_qm_err_status err_status;
-	/* driver removing and reset sched */
+	
 	unsigned long misc_ctl;
-	/* Device capability bit */
+	
 	unsigned long caps;
 
 	struct rw_semaphore qps_lock;
@@ -555,7 +549,7 @@ u32 hisi_qm_get_hw_info(struct hisi_qm *qm,
 int hisi_qm_set_algs(struct hisi_qm *qm, u64 alg_msk, const struct qm_dev_alg *dev_algs,
 		     u32 dev_algs_size);
 
-/* Used by VFIO ACC live migration driver */
+
 struct pci_driver *hisi_sec_get_pf_driver(void);
 struct pci_driver *hisi_hpre_get_pf_driver(void);
 struct pci_driver *hisi_zip_get_pf_driver(void);

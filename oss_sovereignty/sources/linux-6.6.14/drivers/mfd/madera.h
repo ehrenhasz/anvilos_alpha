@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD internals for Cirrus Logic Madera codecs
- *
- * Copyright 2015-2018 Cirrus Logic
- */
+
+
 
 #ifndef MADERA_MFD_H
 #define MADERA_MFD_H

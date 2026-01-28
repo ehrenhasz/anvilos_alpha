@@ -1,35 +1,11 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019-2020 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
 #define MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
 
 #include "py/mpconfig.h"
 #include "py/mphal.h"
 
-// Use this to tag global static data in RAM that doesn't need to be zeroed on startup
+
 #define SECTION_NOZERO_BSS __attribute__((section(".nozero_bss")))
 
 #define ELEM_DATA_SIZE (1024)
@@ -39,7 +15,7 @@
 #define NORETURN __attribute__((noreturn))
 #define MP_ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-// The default UI code in ui.c only works if there is at least one LED configured.
+
 #if defined(MBOOT_LED1) || defined(MICROPY_HW_LED1)
 #define MBOOT_ENABLE_DEFAULT_UI (1)
 #else
@@ -82,61 +58,61 @@
 #define MBOOT_ADDRESS_SPACE_64BIT (0)
 #endif
 
-// These values are used in initial_r0 to enter mboot programmatically.
+
 #define MBOOT_INITIAL_R0_KEY (0x70ad0000)
 #define MBOOT_INITIAL_R0_KEY_FSLOAD (MBOOT_INITIAL_R0_KEY | 0x80)
 
-// These are for led_state_all() and can be or'd together.
+
 #define MBOOT_LED_STATE_LED0 (0x01)
 #define MBOOT_LED_STATE_LED1 (0x02)
 #define MBOOT_LED_STATE_LED2 (0x04)
 #define MBOOT_LED_STATE_LED3 (0x08)
 
-// Whether to support loading firmware from a filesystem.
+
 #ifndef MBOOT_FSLOAD
 #define MBOOT_FSLOAD (0)
 #endif
 
-// Whether to support FAT filesystems.
+
 #ifndef MBOOT_VFS_FAT
 #define MBOOT_VFS_FAT (0)
 #endif
 
-// Whether to support Littlefs v1 filesystems.
+
 #ifndef MBOOT_VFS_LFS1
 #define MBOOT_VFS_LFS1 (0)
 #endif
 
-// Whether to support Littlefs v2 filesystems.
+
 #ifndef MBOOT_VFS_LFS2
 #define MBOOT_VFS_LFS2 (0)
 #endif
 
-// Whether to support raw filesystems.
+
 #ifndef MBOOT_VFS_RAW
 #define MBOOT_VFS_RAW (MBOOT_FSLOAD)
 #endif
 
-// These enum values are passed as the first argument to mboot_state_change() to
-// notify of a change in state of the bootloader activity.  This function has a
-// default implementation in ui.c but can be overridden by a board.  Some states
-// have an argument passed along as the second argument to mboot_state_change().
-// If this argument is unused then 0 is passed in.  A result of an operation is
-// 0 for success and <0 for failure, with a failure being either an MP_Exxx code
-// or MBOOT_ERRNO_xxx code.
+
+
+
+
+
+
+
 typedef enum {
-    MBOOT_STATE_DFU_START,          // arg: unused
-    MBOOT_STATE_DFU_END,            // arg: unused
-    MBOOT_STATE_FSLOAD_START,       // arg: unused
-    MBOOT_STATE_FSLOAD_END,         // arg: result of fsload operation
-    MBOOT_STATE_FSLOAD_PASS_START,  // arg: pass number, 0 or 1 (verify and write respectively)
-    MBOOT_STATE_FSLOAD_PROGRESS,    // arg: total bytes processed so far, high bit set when doing write pass
-    MBOOT_STATE_ERASE_START,        // arg: address of erase
-    MBOOT_STATE_ERASE_END,          // arg: result of erase
-    MBOOT_STATE_READ_START,         // arg: address of read
-    MBOOT_STATE_READ_END,           // arg: result of read
-    MBOOT_STATE_WRITE_START,        // arg: address of write
-    MBOOT_STATE_WRITE_END,          // arg: result of write
+    MBOOT_STATE_DFU_START,          
+    MBOOT_STATE_DFU_END,            
+    MBOOT_STATE_FSLOAD_START,       
+    MBOOT_STATE_FSLOAD_END,         
+    MBOOT_STATE_FSLOAD_PASS_START,  
+    MBOOT_STATE_FSLOAD_PROGRESS,    
+    MBOOT_STATE_ERASE_START,        
+    MBOOT_STATE_ERASE_END,          
+    MBOOT_STATE_READ_START,         
+    MBOOT_STATE_READ_END,           
+    MBOOT_STATE_WRITE_START,        
+    MBOOT_STATE_WRITE_END,          
 } mboot_state_t;
 
 enum {
@@ -186,7 +162,7 @@ enum {
     ELEM_MOUNT_RAW,
 };
 
-// Configure the type used to hold an address in the mboot address space.
+
 #if MBOOT_ADDRESS_SPACE_64BIT
 typedef uint64_t mboot_addr_t;
 #else
@@ -219,15 +195,15 @@ int fsload_process(void);
 
 static inline void mboot_entry_init_default(void) {
     #if MBOOT_ENABLE_DEFAULT_UI
-    // Init subsystems (mboot_get_reset_mode() may call these, calling them again is ok)
+    
     led_init();
     #endif
 
-    // set the system clock to be HSE
+    
     SystemClock_Config();
 
     #if defined(STM32H7)
-    // Ensure IRQs are enabled (needed coming out of ST bootloader on H7)
+    
     __set_PRIMASK(0);
     #endif
 }
@@ -239,4 +215,4 @@ static inline void mboot_state_change(mboot_state_t state, uint32_t arg) {
     return MBOOT_BOARD_STATE_CHANGE(state, arg);
 }
 
-#endif // MICROPY_INCLUDED_STM32_MBOOT_MBOOT_H
+#endif 

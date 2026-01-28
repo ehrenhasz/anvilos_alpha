@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -34,15 +15,8 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     dmu_tx_t *, ...,
- *     uint64_t, ...,
- *     uint64_t, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_delay_mintime_class,
 	TP_PROTO(dmu_tx_t *tx, uint64_t dirty, uint64_t min_tx_time),
 	TP_ARGS(tx, dirty, min_tx_time),
@@ -79,7 +53,7 @@ DECLARE_EVENT_CLASS(zfs_delay_mintime_class,
 	    __entry->tx_wait_dirty, __entry->tx_err,
 	    __entry->dirty, __entry->min_tx_time)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_DELAY_MINTIME_EVENT(name) \
 DEFINE_EVENT(zfs_delay_mintime_class, name, \
@@ -87,7 +61,7 @@ DEFINE_EVENT(zfs_delay_mintime_class, name, \
     TP_ARGS(tx, dirty, min_tx_time))
 DEFINE_DELAY_MINTIME_EVENT(zfs_delay__mintime);
 
-/* BEGIN CSTYLED */
+
 DECLARE_EVENT_CLASS(zfs_free_long_range_class,
 	TP_PROTO(uint64_t long_free_dirty_all_txgs, uint64_t chunk_len, \
 	    uint64_t txg),
@@ -106,7 +80,7 @@ DECLARE_EVENT_CLASS(zfs_free_long_range_class,
 	   __entry->long_free_dirty_all_txgs,
 	   __entry->chunk_len, __entry->txg)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_FREE_LONG_RANGE_EVENT(name) \
 DEFINE_EVENT(zfs_free_long_range_class, name, \
@@ -115,7 +89,7 @@ DEFINE_EVENT(zfs_free_long_range_class, name, \
     TP_ARGS(long_free_dirty_all_txgs, chunk_len, txg))
 DEFINE_FREE_LONG_RANGE_EVENT(zfs_free__long__range);
 
-#endif /* _TRACE_DMU_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -128,5 +102,5 @@ DEFINE_FREE_LONG_RANGE_EVENT(zfs_free__long__range);
 DEFINE_DTRACE_PROBE3(delay__mintime);
 DEFINE_DTRACE_PROBE3(free__long__range);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

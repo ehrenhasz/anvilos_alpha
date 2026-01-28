@@ -13,7 +13,7 @@ function ts_canonicalize {
 	fi
 }
 function ts_cd {
-	if [ $# -eq 0 ]; then
+	if [ $
 		ts_failed "ul_cd: not enough arguments"
 	fi
 	DEST=$(readlink -f "$1" 2>/dev/null)
@@ -57,7 +57,7 @@ function ts_check_test_command {
 		;;
 	*/*)
 		if [ ! -x "$1" ]; then
-			ts_skip "${1##*/} not found"
+			ts_skip "${1
 		fi
 		;;
 	*)
@@ -345,7 +345,7 @@ function ts_init {
 }
 function ts_init_suid {
 	PROG="$1"
-	ct=${#TS_SUID_PROGS[*]}
+	ct=${
 	TS_SUID_PROGS[$ct]=$PROG
 	TS_SUID_USER[$ct]=$(stat --printf="%U" $PROG)
 	TS_SUID_GROUP[$ct]=$(stat --printf="%G" $PROG)
@@ -483,7 +483,7 @@ function ts_die {
 	ts_finalize
 }
 function ts_cleanup_on_exit {
-	for idx in $(seq 0 $((${#TS_SUID_PROGS[*]} - 1))); do
+	for idx in $(seq 0 $((${
 		PROG=${TS_SUID_PROGS[$idx]}
 		chmod a-s $PROG &> /dev/null
 		chown ${TS_SUID_USER[$idx]}:${TS_SUID_GROUP[$idx]} $PROG &> /dev/null
@@ -499,7 +499,7 @@ function ts_image_md5sum {
 	echo $("$TS_HELPER_MD5" < "$img") $(basename "$img")
 }
 function ts_image_init {
-	local mib=${1:-"5"}	# size in MiBs
+	local mib=${1:-"5"}	
 	local img=${2:-"$TS_OUTDIR/${TS_TESTNAME}.img"}
 	rm -f $img
 	truncate -s "${mib}M" "$img"
@@ -507,7 +507,7 @@ function ts_image_init {
 	return 0
 }
 function ts_register_loop_device {
-	local ct=${#TS_LOOP_DEVS[*]}
+	local ct=${
 	TS_LOOP_DEVS[$ct]=$1
 }
 function ts_device_init {
@@ -590,8 +590,8 @@ function ts_is_uuid()
 }
 function ts_udevadm_settle()
 {
-	local dev=$1 # optional, might be empty
-	shift        # all other args are tags, LABEL, UUID, ...
+	local dev=$1 
+	shift        
 	udevadm settle
 }
 function ts_mount {
@@ -617,16 +617,16 @@ function ts_mount {
 function ts_is_mounted {
 	local DEV=$(ts_canonicalize "$1")
 	grep -q "\(^\| \)$DEV " /proc/mounts && return 0
-	if [ "${DEV#/dev/loop/}" != "$DEV" ]; then
-		grep -q "^/dev/loop${DEV#/dev/loop/} " /proc/mounts && return 0
+	if [ "${DEV
+		grep -q "^/dev/loop${DEV
 	fi
 	return 1
 }
 function ts_fstab_open {
-	echo "# <!-- util-linux test entry" >> /etc/fstab
+	echo "
 }
 function ts_fstab_close {
-	echo "# -->" >> /etc/fstab
+	echo "
 	sync /etc/fstab 2>/dev/null
 }
 function ts_fstab_addline {
@@ -648,13 +648,13 @@ function ts_fstab_add {
 function ts_fstab_clean {
 	ts_have_lock "fstab" || return 0
 	sed --in-place "
-/# <!-- util-linux/!b
+/
 :a
-/# -->/!{
+/
   N
   ba
 }
-s/# <!-- util-linux.*-->//;
+s/
 /^$/d" /etc/fstab
 	sync /etc/fstab 2>/dev/null
 	ts_unlock "fstab"
@@ -831,7 +831,7 @@ function ts_init_socket_to_file {
 	fi
 }
 function ts_has_ncurses_support {
-	grep -q '#define HAVE_LIBNCURSES' ${top_builddir}/config.h
+	grep -q '
 	if [ $? == 0 ]; then
 		echo "yes"
 	else
@@ -871,7 +871,7 @@ function ts_is_virt {
 }
 function ts_check_enosys_syscalls {
 	ts_check_test_command "$TS_HELPER_ENOSYS"
-	"$TS_HELPER_ENOSYS" ${@/#/-s } true 2> /dev/null
+	"$TS_HELPER_ENOSYS" ${@/
 	[ $? -ne 0 ] && ts_skip "test_enosys does not work: $*"
 }
 function ts_skip_docker {

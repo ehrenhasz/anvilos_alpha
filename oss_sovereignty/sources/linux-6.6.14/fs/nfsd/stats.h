@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Statistics for NFS server.
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+
 #ifndef _NFSD_STATS_H
 #define _NFSD_STATS_H
 
@@ -12,17 +8,17 @@
 
 
 enum {
-	NFSD_STATS_RC_HITS,		/* repcache hits */
-	NFSD_STATS_RC_MISSES,		/* repcache misses */
-	NFSD_STATS_RC_NOCACHE,		/* uncached reqs */
-	NFSD_STATS_FH_STALE,		/* FH stale error */
-	NFSD_STATS_IO_READ,		/* bytes returned to read requests */
-	NFSD_STATS_IO_WRITE,		/* bytes passed in write requests */
+	NFSD_STATS_RC_HITS,		
+	NFSD_STATS_RC_MISSES,		
+	NFSD_STATS_RC_NOCACHE,		
+	NFSD_STATS_FH_STALE,		
+	NFSD_STATS_IO_READ,		
+	NFSD_STATS_IO_WRITE,		
 #ifdef CONFIG_NFSD_V4
-	NFSD_STATS_FIRST_NFS4_OP,	/* count of individual nfsv4 operations */
+	NFSD_STATS_FIRST_NFS4_OP,	
 	NFSD_STATS_LAST_NFS4_OP = NFSD_STATS_FIRST_NFS4_OP + LAST_NFS4_OP,
 #define NFSD_STATS_NFS4_OP(op)	(NFSD_STATS_FIRST_NFS4_OP + (op))
-	NFSD_STATS_WDELEG_GETATTR,	/* count of getattr conflict with wdeleg */
+	NFSD_STATS_WDELEG_GETATTR,	
 #endif
 	NFSD_STATS_COUNTERS_NUM
 };
@@ -30,7 +26,7 @@ enum {
 struct nfsd_stats {
 	struct percpu_counter	counter[NFSD_STATS_COUNTERS_NUM];
 
-	atomic_t	th_cnt;		/* number of available threads */
+	atomic_t	th_cnt;		
 };
 
 extern struct nfsd_stats	nfsdstats;
@@ -100,4 +96,4 @@ static inline void nfsd_stats_wdeleg_getattr_inc(void)
 	percpu_counter_inc(&nfsdstats.counter[NFSD_STATS_WDELEG_GETATTR]);
 }
 #endif
-#endif /* _NFSD_STATS_H */
+#endif 

@@ -1,14 +1,14 @@
 #define MICROPY_HW_BOARD_NAME "Teensy 4.0"
 #define MICROPY_HW_MCU_NAME   "MIMXRT1062DVJ6A"
 
-// Teensy 4.0 has 1 board LED
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_B0_03)
 #define MICROPY_HW_LED_ON(pin) (mp_hal_pin_high(pin))
 #define MICROPY_HW_LED_OFF(pin) (mp_hal_pin_low(pin))
 
 #define MICROPY_HW_NUM_PIN_IRQS (4 * 32 + 3)
 
-// UART config: 7 UARTs at the pins for Teensy 4.0
+
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 0, 6, 4, 2, 3, 8, 1, 7 }
 
@@ -54,11 +54,11 @@
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx, \
                          kDmaRequestMuxLPSPI3Tx, kDmaRequestMuxLPSPI4Tx }
 
-// Define mapping hardware I2C # to logical I2C #
-// SDA/SCL  HW-I2C    Logical I2C
-// 17/16    LPI2C3 ->    0
-// 18/19    LPI2C1 ->    1
-// 25/24    LPI2C4 ->    2
+
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 1, 3, 4 }
 
@@ -89,19 +89,19 @@
 
 #define I2S_GPIO_MAP \
     { \
-        I2S_GPIO(1, SCK, RX, GPIO_AD_B1_11, IOMUXC_GPIO_AD_B1_11_SAI1_RX_BCLK), /* pin 21 */ \
-        I2S_GPIO(1, WS, RX, GPIO_AD_B1_10, IOMUXC_GPIO_AD_B1_10_SAI1_RX_SYNC), /* pin 20 */ \
-        I2S_GPIO(1, SD, RX, GPIO_B1_00, IOMUXC_GPIO_B1_00_SAI1_RX_DATA00), /* pin 8 */ \
-        I2S_GPIO(1, SCK, TX, GPIO_AD_B1_14, IOMUXC_GPIO_AD_B1_14_SAI1_TX_BCLK), /* pin 26 */ \
-        I2S_GPIO(1, SCK, TX, GPIO_B1_02, IOMUXC_GPIO_B1_02_SAI1_TX_BCLK), /* pin 36 */ \
-        I2S_GPIO(1, WS, TX, GPIO_AD_B1_15, IOMUXC_GPIO_AD_B1_15_SAI1_TX_SYNC), /* pin 27 */ \
-        I2S_GPIO(1, WS, TX, GPIO_B1_03, IOMUXC_GPIO_B1_03_SAI1_TX_SYNC), /* pin 37 */ \
-        I2S_GPIO(1, SD, TX, GPIO_B1_01, IOMUXC_GPIO_B1_01_SAI1_TX_DATA00), /* pin 7 */ \
-        I2S_GPIO(1, MCK, TX, GPIO_AD_B1_09, IOMUXC_GPIO_AD_B1_09_SAI1_MCLK), /* pin 23 */ \
-        I2S_GPIO(2, SCK, TX, GPIO_EMC_06, IOMUXC_GPIO_EMC_06_SAI2_TX_BCLK), /* pin 4 */ \
-        I2S_GPIO(2, WS, TX, GPIO_EMC_05, IOMUXC_GPIO_EMC_05_SAI2_TX_SYNC), /* pin 3 */ \
-        I2S_GPIO(2, SD, TX, GPIO_EMC_04, IOMUXC_GPIO_EMC_04_SAI2_TX_DATA), /* pin 2 */ \
-        I2S_GPIO(2, MCK, TX, GPIO_EMC_07, IOMUXC_GPIO_EMC_07_SAI2_MCLK) /* pin 33 */ \
+        I2S_GPIO(1, SCK, RX, GPIO_AD_B1_11, IOMUXC_GPIO_AD_B1_11_SAI1_RX_BCLK),  \
+        I2S_GPIO(1, WS, RX, GPIO_AD_B1_10, IOMUXC_GPIO_AD_B1_10_SAI1_RX_SYNC),  \
+        I2S_GPIO(1, SD, RX, GPIO_B1_00, IOMUXC_GPIO_B1_00_SAI1_RX_DATA00),  \
+        I2S_GPIO(1, SCK, TX, GPIO_AD_B1_14, IOMUXC_GPIO_AD_B1_14_SAI1_TX_BCLK),  \
+        I2S_GPIO(1, SCK, TX, GPIO_B1_02, IOMUXC_GPIO_B1_02_SAI1_TX_BCLK),  \
+        I2S_GPIO(1, WS, TX, GPIO_AD_B1_15, IOMUXC_GPIO_AD_B1_15_SAI1_TX_SYNC),  \
+        I2S_GPIO(1, WS, TX, GPIO_B1_03, IOMUXC_GPIO_B1_03_SAI1_TX_SYNC),  \
+        I2S_GPIO(1, SD, TX, GPIO_B1_01, IOMUXC_GPIO_B1_01_SAI1_TX_DATA00),  \
+        I2S_GPIO(1, MCK, TX, GPIO_AD_B1_09, IOMUXC_GPIO_AD_B1_09_SAI1_MCLK),  \
+        I2S_GPIO(2, SCK, TX, GPIO_EMC_06, IOMUXC_GPIO_EMC_06_SAI2_TX_BCLK),  \
+        I2S_GPIO(2, WS, TX, GPIO_EMC_05, IOMUXC_GPIO_EMC_05_SAI2_TX_SYNC),  \
+        I2S_GPIO(2, SD, TX, GPIO_EMC_04, IOMUXC_GPIO_EMC_04_SAI2_TX_DATA),  \
+        I2S_GPIO(2, MCK, TX, GPIO_EMC_07, IOMUXC_GPIO_EMC_07_SAI2_MCLK)  \
     }
 
 #define USDHC_DUMMY_PIN NULL, 0

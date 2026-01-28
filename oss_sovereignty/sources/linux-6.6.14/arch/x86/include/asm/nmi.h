@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_NMI_H
 #define _ASM_X86_NMI_H
 
@@ -19,7 +19,7 @@ extern int proc_nmi_enabled(struct ctl_table *, int ,
 			void __user *, size_t *, loff_t *);
 extern int unknown_nmi_panic;
 
-#endif /* CONFIG_X86_LOCAL_APIC */
+#endif 
 
 #define NMI_FLAG_FIRST	1
 
@@ -63,4 +63,4 @@ void stop_nmi(void);
 void restart_nmi(void);
 void local_touch_nmi(void);
 
-#endif /* _ASM_X86_NMI_H */
+#endif 

@@ -1,7 +1,0 @@
-#include "armada-388-clearfog.dts"
-/ {
-	model = "SolidRun Clearfog Pro A1";
-	compatible = "solidrun,clearfog-pro-a1",
-		"solidrun,clearfog-a1", "marvell,armada388",
-		"marvell,armada385", "marvell,armada380";
-};

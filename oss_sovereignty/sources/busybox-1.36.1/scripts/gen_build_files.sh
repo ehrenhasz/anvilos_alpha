@@ -1,5 +1,5 @@
 export LC_ALL=C
-test $# -ge 2 || { echo "Syntax: $0 SRCTREE OBJTREE"; exit 1; }
+test $
 cd -- "$2" || { echo "Syntax: $0 SRCTREE OBJTREE"; exit 1; }
 mkdir include 2>/dev/null
 srctree="$1"
@@ -64,7 +64,7 @@ sed -n -e 's@^//usage:\([ '"$TAB"'].*\)$@\1 \\@p' \
 	"/* DO NOT EDIT. This file is generated from usage.src.h */"
 { cd -- "$srctree" && find . -type d ! '(' -name '.?*' -prune ')'; } \
 | while read -r d; do
-	d="${d#./}"
+	d="${d
 	src="$srctree/$d/Kbuild.src"
 	dst="$d/Kbuild"
 	if test -f "$src"; then
@@ -72,7 +72,7 @@ sed -n -e 's@^//usage:\([ '"$TAB"'].*\)$@\1 \\@p' \
 		sed -n 's@^//kbuild:@@p' "$srctree/$d"/*.c \
 		| generate \
 			"${src}" "${dst}" \
-			"# DO NOT EDIT. This file is generated from Kbuild.src"
+			"
 	fi
 	src="$srctree/$d/Config.src"
 	dst="$d/Config.in"
@@ -81,7 +81,7 @@ sed -n -e 's@^//usage:\([ '"$TAB"'].*\)$@\1 \\@p' \
 		sed -n 's@^//config:@@p' "$srctree/$d"/*.c \
 		| generate \
 			"${src}" "${dst}" \
-			"# DO NOT EDIT. This file is generated from Config.src"
+			"
 	fi
 done
 exit 0

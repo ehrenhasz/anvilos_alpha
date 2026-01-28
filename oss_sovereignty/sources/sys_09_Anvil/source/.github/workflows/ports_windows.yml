@@ -36,7 +36,7 @@ jobs:
         - visualstudio: '2022'
           runner: windows-2022
           vs_version: '[17, 18)'
-        # trim down the number of jobs in the matrix
+        
         exclude:
         - variant: standard
           configuration: Debug
@@ -138,7 +138,7 @@ jobs:
       run: make -C ports/windows -j2 VARIANT=${{ matrix.variant }}
     - name: Run tests
       id: test
-      # msys python breaks tests so we need to use "real" windows python
+      
       run: MICROPY_CPYTHON3=$(cygpath "${{ steps.python_path.outputs.python }}") make -C ports/windows test_full VARIANT=${{ matrix.variant }}
     - name: Print failures
       if: failure() && steps.test.conclusion == 'failure'

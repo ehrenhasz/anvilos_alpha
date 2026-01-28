@@ -5,7 +5,7 @@ grep ^IF_ include/applets.h \
 | sed 's/IF_\([A-Z0-9._-]*\)(.*/\1/' \
 | sort | uniq
 `"
-test $# = 0 && set -- $apps
+test $
 mintext=999999999
 for app; do
 	b="busybox_${app}"
@@ -17,7 +17,7 @@ for app; do
 	}
 	test $mintext -gt $text && {
 		mintext=$text
-		echo "# New mintext from $app: $mintext"
+		echo "
 	}
 	eval "text_${app}=$text"
 done
@@ -25,7 +25,7 @@ for app; do
 	b="busybox_${app}"
 	test -f "$b" || continue
 	eval "text=\$text_${app}"
-	echo "# $app adds $((text-mintext))"
+	echo "
 done
 grep ^IF_ include/applets.h \
 | grep -v ^IF_FEATURE_ \

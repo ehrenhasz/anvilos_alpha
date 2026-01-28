@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/device.h>
 #include <linux/mutex.h>
 #include <linux/regmap.h>
@@ -18,7 +18,7 @@ extern const struct xrs700x_info xrs7004e_info;
 extern const struct xrs700x_info xrs7004f_info;
 
 struct xrs700x_port {
-	struct mutex mib_mutex; /* protects mib_data */
+	struct mutex mib_mutex; 
 	u64 *mib_data;
 	struct rtnl_link_stats64 stats64;
 	struct u64_stats_sync syncp;

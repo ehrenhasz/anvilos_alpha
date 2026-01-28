@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef XEN_HVC_CONSOLE_H
 #define XEN_HVC_CONSOLE_H
 
@@ -16,4 +16,4 @@ static inline __printf(1, 2)
 void xen_raw_printk(const char *fmt, ...) { }
 #endif
 
-#endif	/* XEN_HVC_CONSOLE_H */
+#endif	

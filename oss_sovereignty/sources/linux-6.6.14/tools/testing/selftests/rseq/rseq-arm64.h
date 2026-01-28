@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * rseq-arm64.h
- *
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- * (C) Copyright 2018 - Will Deacon <will.deacon@arm.com>
- */
 
-/*
- * aarch64 -mbig-endian generates mixed endianness code vs data:
- * little-endian code and big-endian data. Ensure the RSEQ_SIG signature
- * matches code endianness.
- */
-#define RSEQ_SIG_CODE	0xd428bc00	/* BRK #0x45E0.  */
+
+
+
+#define RSEQ_SIG_CODE	0xd428bc00	
 
 #ifdef __AARCH64EB__
-#define RSEQ_SIG_DATA	0x00bc28d4	/* BRK #0x45E0.  */
+#define RSEQ_SIG_DATA	0x00bc28d4	
 #else
 #define RSEQ_SIG_DATA	RSEQ_SIG_CODE
 #endif
@@ -109,14 +100,7 @@ do {										\
 	__RSEQ_ASM_DEFINE_TABLE(label, 0x0, 0x0, start_ip,			\
 				(post_commit_ip - start_ip), abort_ip)
 
-/*
- * Exit points of a rseq critical section consist of all instructions outside
- * of the critical section where a critical section can either branch to or
- * reach through the normal course of its execution. The abort IP and the
- * post-commit IP are already part of the __rseq_cs section and should not be
- * explicitly defined as additional exit points. Knowing all exit points is
- * useful to assist debuggers stepping over the critical section.
- */
+
 #define RSEQ_ASM_DEFINE_EXIT_POINT(start_ip, exit_ip)				\
 	"	.pushsection __rseq_exit_point_array, \"aw\"\n"			\
 	"	.quad " __rseq_str(start_ip) ", " __rseq_str(exit_ip) "\n"	\
@@ -202,7 +186,7 @@ do {										\
 	"	cbnz	" RSEQ_ASM_TMP_REG_2 ", 222b\n"				\
 	"333:\n"
 
-/* Per-cpu-id indexing. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -214,7 +198,7 @@ do {										\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_CPU_ID
 
-/* Per-mm-cid indexing. */
+
 
 #define RSEQ_TEMPLATE_MM_CID
 #define RSEQ_TEMPLATE_MO_RELAXED
@@ -226,7 +210,7 @@ do {										\
 #undef RSEQ_TEMPLATE_MO_RELEASE
 #undef RSEQ_TEMPLATE_MM_CID
 
-/* APIs which are not based on cpu ids. */
+
 
 #define RSEQ_TEMPLATE_CPU_ID_NONE
 #define RSEQ_TEMPLATE_MO_RELAXED

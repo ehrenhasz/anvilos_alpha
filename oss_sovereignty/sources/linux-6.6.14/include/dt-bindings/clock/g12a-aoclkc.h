@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * Copyright (c) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- */
+
+
 
 #ifndef DT_BINDINGS_CLOCK_AMLOGIC_MESON_G12A_AOCLK
 #define DT_BINDINGS_CLOCK_AMLOGIC_MESON_G12A_AOCLK

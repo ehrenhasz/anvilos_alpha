@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_CALLCHAIN_H
 #define __PERF_CALLCHAIN_H
 
@@ -61,10 +61,10 @@ struct callchain_node {
 	struct callchain_node	*parent;
 	struct list_head	val;
 	struct list_head	parent_val;
-	struct rb_node		rb_node_in; /* to insert nodes in an rbtree */
-	struct rb_node		rb_node;    /* to sort nodes in an output tree */
-	struct rb_root		rb_root_in; /* input tree of children */
-	struct rb_root		rb_root;    /* sorted output tree of children */
+	struct rb_node		rb_node_in; 
+	struct rb_node		rb_node;    
+	struct rb_root		rb_root_in; 
+	struct rb_root		rb_root;    
 	unsigned int		val_nr;
 	unsigned int		count;
 	unsigned int		children_count;
@@ -118,7 +118,7 @@ extern struct callchain_param callchain_param_default;
 struct callchain_list {
 	u64			ip;
 	struct map_symbol	ms;
-	struct /* for TUI */ {
+	struct  {
 		bool		unfolded;
 		bool		has_children;
 	};
@@ -134,17 +134,12 @@ struct callchain_list {
 	struct list_head	list;
 };
 
-/*
- * A callchain cursor is a single linked list that
- * let one feed a callchain progressively.
- * It keeps persistent allocated entries to minimize
- * allocations.
- */
+
 struct callchain_cursor_node {
 	u64				ip;
 	struct map_symbol		ms;
 	const char			*srcline;
-	/* Indicate valid cursor node for LBR stitch */
+	
 	bool				valid;
 
 	bool				branch;
@@ -206,7 +201,7 @@ int callchain_cursor_append(struct callchain_cursor *cursor, u64 ip,
 			    int nr_loop_iter, u64 iter_cycles, u64 branch_from,
 			    const char *srcline);
 
-/* Close a cursor writing session. Initialize for the reader */
+
 static inline void callchain_cursor_commit(struct callchain_cursor *cursor)
 {
 	if (cursor == NULL)
@@ -215,7 +210,7 @@ static inline void callchain_cursor_commit(struct callchain_cursor *cursor)
 	cursor->pos = 0;
 }
 
-/* Cursor reading iteration helpers */
+
 static inline struct callchain_cursor_node *
 callchain_cursor_current(struct callchain_cursor *cursor)
 {
@@ -311,4 +306,4 @@ u64 callchain_total_hits(struct hists *hists);
 
 s64 callchain_avg_cycles(struct callchain_node *cnode);
 
-#endif	/* __PERF_CALLCHAIN_H */
+#endif	

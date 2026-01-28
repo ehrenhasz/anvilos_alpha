@@ -1,5 +1,0 @@
-#include "zynqmp-zcu102-rev1.0.dts"
-/ {
-	model = "ZynqMP ZCU102 Rev1.1";
-	compatible = "xlnx,zynqmp-zcu102-rev1.1", "xlnx,zynqmp-zcu102", "xlnx,zynqmp";
-};

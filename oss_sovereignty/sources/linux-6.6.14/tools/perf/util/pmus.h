@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PMUS_H
 #define __PMUS_H
 
@@ -24,4 +24,4 @@ int perf_pmus__num_core_pmus(void);
 bool perf_pmus__supports_extended_type(void);
 char *perf_pmus__default_pmu_name(void);
 
-#endif /* __PMUS_H */
+#endif 

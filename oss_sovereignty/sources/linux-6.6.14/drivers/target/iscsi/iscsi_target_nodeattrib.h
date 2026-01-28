@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ISCSI_TARGET_NODEATTRIB_H
 #define ISCSI_TARGET_NODEATTRIB_H
 
@@ -18,4 +18,4 @@ extern int iscsit_na_random_datain_seq_offsets(struct iscsi_node_acl *, u32);
 extern int iscsit_na_random_r2t_offsets(struct iscsi_node_acl *, u32);
 extern int iscsit_na_default_erl(struct iscsi_node_acl *, u32);
 
-#endif /* ISCSI_TARGET_NODEATTRIB_H */
+#endif 

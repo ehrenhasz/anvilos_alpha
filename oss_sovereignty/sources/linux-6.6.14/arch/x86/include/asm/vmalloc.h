@@ -23,4 +23,4 @@ static inline bool arch_vmap_pmd_supported(pgprot_t prot)
 
 #endif
 
-#endif /* _ASM_X86_VMALLOC_H */
+#endif 

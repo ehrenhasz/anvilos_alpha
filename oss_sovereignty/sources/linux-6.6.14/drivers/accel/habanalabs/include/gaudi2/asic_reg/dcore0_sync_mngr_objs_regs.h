@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_SYNC_MNGR_OBJS_REGS_H_
 #define ASIC_REG_DCORE0_SYNC_MNGR_OBJS_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_SYNC_MNGR_OBJS
- *   (Prototype: SOB_OBJS)
- *****************************************
- */
+
 
 #define mmDCORE0_SYNC_MNGR_OBJS_SOB_OBJ_0 0x4100000
 
@@ -43540,4 +43527,4 @@
 
 #define mmDCORE0_SYNC_MNGR_OBJS_SM_PRIV_639 0x41159FC
 
-#endif /* ASIC_REG_DCORE0_SYNC_MNGR_OBJS_REGS_H_ */
+#endif 

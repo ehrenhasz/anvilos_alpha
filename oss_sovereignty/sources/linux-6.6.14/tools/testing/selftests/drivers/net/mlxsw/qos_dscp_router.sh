@@ -103,11 +103,11 @@ dscp_ping_test()
 	local dev1=$1; shift
 	local dev2=$1; shift
 	local i
-	local prio2=$($reprio $prio)   # ICMP Request egress prio
-	local prio3=$($reprio $prio2)  # ICMP Response egress prio
-	local dscp=$((prio << 2))     # ICMP Request ingress DSCP
-	local dscp2=$((prio2 << 2))   # ICMP Request egress DSCP
-	local dscp3=$((prio3 << 2))   # ICMP Response egress DSCP
+	local prio2=$($reprio $prio)   
+	local prio3=$($reprio $prio2)  
+	local dscp=$((prio << 2))     
+	local dscp2=$((prio2 << 2))   
+	local dscp3=$((prio3 << 2))   
 	RET=0
 	eval "local -A dev1_t0s=($(dscp_fetch_stats $dev1 0))"
 	eval "local -A dev2_t0s=($(dscp_fetch_stats $dev2 0))"

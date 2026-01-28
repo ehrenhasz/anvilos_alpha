@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vb2
 
@@ -63,7 +63,7 @@ DEFINE_EVENT(vb2_event_class, vb2_qbuf,
 	TP_ARGS(q, vb)
 );
 
-#endif /* if !defined(_TRACE_VB2_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

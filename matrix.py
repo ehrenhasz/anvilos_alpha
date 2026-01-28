@@ -112,7 +112,7 @@ class MatrixStream:
                     break
                 height = shutil.get_terminal_size().lines
                 effective_height = max(10, height - 5)
-                line_delay = 3.0 / effective_height
+                line_delay = 1.5 / effective_height
                 if not self.paused:
                     if time.time() - self.last_scan > 5.0:
                         self.scan_and_ingest()

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TPM_DEV_H
 #define _TPM_DEV_H
 
@@ -10,7 +10,7 @@ struct file_priv {
 	struct tpm_space *space;
 
 	struct mutex buffer_mutex;
-	struct timer_list user_read_timer;      /* user needs to claim result */
+	struct timer_list user_read_timer;      
 	struct work_struct timeout_work;
 	struct work_struct async_work;
 	wait_queue_head_t async_wait;

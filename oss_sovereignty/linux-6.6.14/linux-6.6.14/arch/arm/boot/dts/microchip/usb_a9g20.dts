@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "usb_a9g20_common.dtsi"
-/ {
-	model = "Calao USB A9G20";
-	compatible = "calao,usb-a9g20", "atmel,at91sam9g20", "atmel,at91sam9";
-};

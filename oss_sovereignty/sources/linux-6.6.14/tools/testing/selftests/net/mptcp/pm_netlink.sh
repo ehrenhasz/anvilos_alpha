@@ -47,7 +47,7 @@ check()
 	if [ $cmd_ret -ne 0 ]; then
 		echo "[FAIL] command execution '$cmd' stderr "
 		cat $err
-		mptcp_lib_result_fail "${msg} # error ${cmd_ret}"
+		mptcp_lib_result_fail "${msg} 
 		ret=1
 	elif [ "$out" = "$expected" ]; then
 		echo "[ OK ]"
@@ -55,7 +55,7 @@ check()
 	else
 		echo -n "[FAIL] "
 		echo "expected '$expected' got '$out'"
-		mptcp_lib_result_fail "${msg} # different output"
+		mptcp_lib_result_fail "${msg} 
 		ret=1
 	fi
 }

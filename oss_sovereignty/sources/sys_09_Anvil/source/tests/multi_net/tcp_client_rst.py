@@ -40,4 +40,4 @@ def instance1():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("ii", lgr_onoff, lgr_linger))
     s.send(b"GET / HTTP/1.0\r\n\r\n")
     time.sleep(0.2)
-    s.close()  # This issues a TCP RST since we've set the linger option
+    s.close()  

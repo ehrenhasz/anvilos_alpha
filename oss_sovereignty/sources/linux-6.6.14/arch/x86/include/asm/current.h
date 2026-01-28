@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_CURRENT_H
 #define _ASM_X86_CURRENT_H
 
@@ -43,6 +43,6 @@ static __always_inline struct task_struct *get_current(void)
 
 #define current get_current()
 
-#endif /* __ASSEMBLY__ */
+#endif 
 
-#endif /* _ASM_X86_CURRENT_H */
+#endif 

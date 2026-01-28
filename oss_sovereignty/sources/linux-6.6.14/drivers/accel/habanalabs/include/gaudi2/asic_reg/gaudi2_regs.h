@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020-2023 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef ASIC_REG_GAUDI2_REGS_H_
 #define ASIC_REG_GAUDI2_REGS_H_
@@ -319,112 +314,112 @@
 #define STLB_RANGE_CACHE_INVALIDATION_OFFSET	\
 			STLB_OFFSET(mmDCORE0_HMMU0_STLB_RANGE_CACHE_INVALIDATION)
 
-/* RTR CTR RAZWI related offsets */
+
 #define RTR_MSTR_IF_OFFSET	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE - mmDCORE0_RTR0_CTRL_BASE)
 
 #define RTR_LBW_MSTR_IF_OFFSET	\
 			(mmSFT0_LBW_RTR_IF_MSTR_IF_RR_SHRD_HBW_BASE - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw aw addr high */
+
 #define DEC_RAZWI_HBW_AW_ADDR_HI	\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AW_HI_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw aw addr low */
+
 #define DEC_RAZWI_HBW_AW_ADDR_LO	\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AW_LO_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw aw set */
+
 #define DEC_RAZWI_HBW_AW_SET		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AW_SET - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw ar addr high */
+
 #define DEC_RAZWI_HBW_AR_ADDR_HI \
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AR_HI_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw ar addr low */
+
 #define DEC_RAZWI_HBW_AR_ADDR_LO	\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AR_LO_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured hbw ar set */
+
 #define DEC_RAZWI_HBW_AR_SET		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AR_SET - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured lbw aw addr */
+
 #define DEC_RAZWI_LBW_AW_ADDR		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_LBW_AW_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured lbw aw set */
+
 #define DEC_RAZWI_LBW_AW_SET		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_HBW_AW_SET - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured lbw ar addr */
+
 #define DEC_RAZWI_LBW_AR_ADDR		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_LBW_AR_ADDR - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured lbw ar set */
+
 #define DEC_RAZWI_LBW_AR_SET		\
 			(mmDCORE0_RTR0_CTRL_DEC_RAZWI_LBW_AR_SET - mmDCORE0_RTR0_CTRL_BASE)
 
-/* RAZWI captured shared hbw aw addr high */
+
 #define RR_SHRD_HBW_AW_RAZWI_HI		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AW_RAZWI_HI - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared hbw aw addr low */
+
 #define RR_SHRD_HBW_AW_RAZWI_LO		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AW_RAZWI_LO - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared hbw ar addr high */
+
 #define RR_SHRD_HBW_AR_RAZWI_HI		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AR_RAZWI_HI - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared hbw ar addr low */
+
 #define RR_SHRD_HBW_AR_RAZWI_LO		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AR_RAZWI_LO - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared aw XY coordinates */
+
 #define RR_SHRD_HBW_AW_RAZWI_XY		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AW_RAZWI_XY - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared ar XY coordinates */
+
 #define RR_SHRD_HBW_AR_RAZWI_XY		\
 	(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AR_RAZWI_XY - mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI hbw shared occurred due to write access */
+
 #define RR_SHRD_HBW_AW_RAZWI_HAPPENED	\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AW_RAZWI_HAPPENED - \
 				mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI hbw shared occurred due to read access */
+
 #define RR_SHRD_HBW_AR_RAZWI_HAPPENED	\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_AR_RAZWI_HAPPENED - \
 				mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared lbw aw addr */
+
 #define RR_SHRD_LBW_AW_RAZWI		\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AW_RAZWI - \
 					mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared lbw ar addr */
+
 #define RR_SHRD_LBW_AR_RAZWI		\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AR_RAZWI - \
 					mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared lbw aw XY coordinates */
+
 #define RR_SHRD_LBW_AW_RAZWI_XY		\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AW_RAZWI_XY - \
 					mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI captured shared lbw ar XY coordinates */
+
 #define RR_SHRD_LBW_AR_RAZWI_XY		\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AR_RAZWI_XY - \
 					mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI lbw shared occurred due to write access */
+
 #define RR_SHRD_LBW_AW_RAZWI_HAPPENED	\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AW_RAZWI_HAPPENED - \
 					mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
 
-/* RAZWI lbw shared occurred due to read access */
+
 #define RR_SHRD_LBW_AR_RAZWI_HAPPENED	\
 			(mmDCORE0_RTR0_MSTR_IF_RR_SHRD_LBW_AR_RAZWI_HAPPENED - \
 				mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_BASE)
@@ -568,4 +563,4 @@
 #define NIC_UMR_OFFSET \
 	(mmNIC0_UMR0_1_UNSECURE_DOORBELL0_BASE - mmNIC0_UMR0_0_UNSECURE_DOORBELL0_BASE)
 
-#endif /* ASIC_REG_GAUDI2_REGS_H_ */
+#endif 

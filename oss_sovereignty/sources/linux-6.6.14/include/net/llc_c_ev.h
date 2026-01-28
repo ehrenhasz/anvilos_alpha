@@ -1,25 +1,15 @@
 #ifndef LLC_C_EV_H
 #define LLC_C_EV_H
-/*
- * Copyright (c) 1997 by Procom Technology,Inc.
- *		 2001 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
+
 
 #include <net/sock.h>
 
-/* Connection component state transition event qualifiers */
-/* Types of events (possible values in 'ev->type') */
+
+
 #define LLC_CONN_EV_TYPE_SIMPLE		 1
 #define LLC_CONN_EV_TYPE_CONDITION	 2
 #define LLC_CONN_EV_TYPE_PRIM		 3
-#define LLC_CONN_EV_TYPE_PDU		 4	/* command/response PDU */
+#define LLC_CONN_EV_TYPE_PDU		 4	
 #define LLC_CONN_EV_TYPE_ACK_TMR	 5
 #define LLC_CONN_EV_TYPE_P_TMR		 6
 #define LLC_CONN_EV_TYPE_REJ_TMR	 7
@@ -28,7 +18,7 @@
 #define LLC_CONN_EV_TYPE_SENDACK_TMR	10
 
 #define NBR_CONN_EV		   5
-/* Connection events which cause state transitions when fully qualified */
+
 
 #define LLC_CONN_EV_CONN_REQ				 1
 #define LLC_CONN_EV_CONN_RESP				 2
@@ -91,12 +81,7 @@
 #define LLC_CONN_EV_TX_BUFF_FULL			59
 
 #define LLC_CONN_EV_INIT_P_F_CYCLE			100
-/*
- * Connection event qualifiers; for some events a certain combination of
- * these qualifiers must be TRUE before event recognized valid for state;
- * these constants act as indexes into the Event Qualifier function
- * table
- */
+
 #define LLC_CONN_EV_QFY_DATA_FLAG_EQ_1		 1
 #define LLC_CONN_EV_QFY_DATA_FLAG_EQ_0		 2
 #define LLC_CONN_EV_QFY_DATA_FLAG_EQ_2		 3
@@ -158,7 +143,7 @@ int llc_conn_ev_p_tmr_exp(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_ack_tmr_exp(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_rej_tmr_exp(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_busy_tmr_exp(struct sock *sk, struct sk_buff *skb);
-/* NOT_USED functions and their variations */
+
 int llc_conn_ev_rx_xxx_cmd_pbit_set_1(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_rx_xxx_rsp_fbit_set_1(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_rx_i_cmd_pbit_set_0_unexpd_ns(struct sock *sk,
@@ -189,7 +174,7 @@ int llc_conn_ev_rx_any_frame(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_tx_buffer_full(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_init_p_f_cycle(struct sock *sk, struct sk_buff *skb);
 
-/* Available connection action qualifiers */
+
 int llc_conn_ev_qlfy_data_flag_eq_1(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_qlfy_data_flag_eq_0(struct sock *sk, struct sk_buff *skb);
 int llc_conn_ev_qlfy_data_flag_eq_2(struct sock *sk, struct sk_buff *skb);
@@ -220,4 +205,4 @@ static __inline__ int llc_conn_space(struct sock *sk, struct sk_buff *skb)
 	return atomic_read(&sk->sk_rmem_alloc) + skb->truesize <
 	       (unsigned int)sk->sk_rcvbuf;
 }
-#endif /* LLC_C_EV_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010 Intel Corporation
- */
+
+
 
 #ifndef PCH_DMA_H
 #define PCH_DMA_H

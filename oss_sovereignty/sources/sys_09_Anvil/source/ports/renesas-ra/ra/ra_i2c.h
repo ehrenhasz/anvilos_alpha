@@ -1,26 +1,4 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Renesas Electronics Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef RA_RA_I2C_H_
 #define RA_RA_I2C_H_
@@ -29,16 +7,16 @@
 #include <stdbool.h>
 
 #ifdef RA6M5
-// #define R_IIC2_BASE            0x4009F200
+
 #ifndef R_IIC2
 #define R_IIC2             ((R_IIC0_Type *)0x4009F200)
 #endif
 #endif
 
-#define RA_I2C_DEF_TIMEOUT              1000    // 1000 ms
-#define RA_I2C_TIMEOUT_STOP_CONDITION   100000  // counts
-#define RA_I2C_TIMEOUT_BUS_BUSY         100000  // counts
-#define RA_I2C_CLOCK_MAX                1000000 // counts
+#define RA_I2C_DEF_TIMEOUT              1000    
+#define RA_I2C_TIMEOUT_STOP_CONDITION   100000  
+#define RA_I2C_TIMEOUT_BUS_BUSY         100000  
+#define RA_I2C_CLOCK_MAX                1000000 
 
 typedef enum
 {
@@ -104,4 +82,4 @@ void iic_master_tei_isr(void);
 void iic_master_eri_isr(void);
 bool ra_i2c_action_execute(R_IIC0_Type *i2c_inst, xaction_t *action, bool repeated_start, uint32_t timeout_ms);
 
-#endif /* RA_RA_I2C_H_ */
+#endif 

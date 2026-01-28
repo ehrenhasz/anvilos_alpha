@@ -210,7 +210,7 @@ __fail_next_test()
 	check_err $? "$type stats reported as not requested after device request"
 	$IP stats set dev dummy1 ${type}_stats off
 	nsim_hwstats_disable $instance dummy1 $type
-	log_test "Injected failure of $type stats enablement (netdevsim #$instance)"
+	log_test "Injected failure of $type stats enablement (netdevsim 
 }
 fail_next_test()
 {

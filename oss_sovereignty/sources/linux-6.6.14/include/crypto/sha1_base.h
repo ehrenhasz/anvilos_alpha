@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sha1_base.h - core logic for SHA-1 implementations
- *
- * Copyright (C) 2015 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+
 
 #ifndef _CRYPTO_SHA1_BASE_H
 #define _CRYPTO_SHA1_BASE_H
@@ -106,4 +102,4 @@ static inline int sha1_base_finish(struct shash_desc *desc, u8 *out)
 	return 0;
 }
 
-#endif /* _CRYPTO_SHA1_BASE_H */
+#endif 

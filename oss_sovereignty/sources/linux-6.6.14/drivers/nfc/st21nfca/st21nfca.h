@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014  STMicroelectronics SAS. All rights reserved.
- */
+
+
 
 #ifndef __LOCAL_ST21NFCA_H_
 #define __LOCAL_ST21NFCA_H_
@@ -12,16 +10,13 @@
 
 #define HCI_MODE 0
 
-/* framing in HCI mode */
+
 #define ST21NFCA_SOF_EOF_LEN    2
 
-/* Almost every time value is 0 */
+
 #define ST21NFCA_HCI_LLC_LEN    1
 
-/* Size in worst case :
- * In normal case CRC len = 2 but byte stuffing
- * may appear in case one CRC byte = ST21NFCA_SOF_EOF
- */
+
 #define ST21NFCA_HCI_LLC_CRC    4
 
 #define ST21NFCA_HCI_LLC_LEN_CRC        (ST21NFCA_SOF_EOF_LEN + \
@@ -29,12 +24,12 @@
 						ST21NFCA_HCI_LLC_CRC)
 #define ST21NFCA_HCI_LLC_MIN_SIZE       (1 + ST21NFCA_HCI_LLC_LEN_CRC)
 
-/* Worst case when adding byte stuffing between each byte */
+
 #define ST21NFCA_HCI_LLC_MAX_PAYLOAD    29
 #define ST21NFCA_HCI_LLC_MAX_SIZE       (ST21NFCA_HCI_LLC_LEN_CRC + 1 + \
 					ST21NFCA_HCI_LLC_MAX_PAYLOAD)
 
-/* Reader RF commands */
+
 #define ST21NFCA_WR_XCHG_DATA           0x10
 
 #define ST21NFCA_DEVICE_MGNT_GATE       0x01
@@ -43,10 +38,7 @@
 #define ST21NFCA_APDU_READER_GATE	0xf0
 #define ST21NFCA_CONNECTIVITY_GATE	0x41
 
-/*
- * ref ISO7816-3 chap 8.1. the initial character TS is followed by a
- * sequence of at most 32 characters.
- */
+
 #define ST21NFCA_ESE_MAX_LENGTH		33
 #define ST21NFCA_ESE_HOST_ID		0xc0
 
@@ -55,7 +47,7 @@
 #define ST21NFCA_HCI_MODE		0
 #define ST21NFCA_NUM_DEVICES		256
 
-#define ST21NFCA_VENDOR_OUI		0x0080E1 /* STMicroelectronics */
+#define ST21NFCA_VENDOR_OUI		0x0080E1 
 #define ST21NFCA_FACTORY_MODE		2
 
 struct st21nfca_se_status {
@@ -68,31 +60,7 @@ enum st21nfca_state {
 	ST21NFCA_ST_READY,
 };
 
-/**
- * enum nfc_vendor_cmds - supported nfc vendor commands
- *
- * @FACTORY_MODE: Allow to set the driver into a mode where no secure element
- *	are activated. It does not consider any NFC_ATTR_VENDOR_DATA.
- * @HCI_CLEAR_ALL_PIPES: Allow to execute a HCI clear all pipes command.
- *	It does not consider any NFC_ATTR_VENDOR_DATA.
- * @HCI_DM_PUT_DATA: Allow to configure specific CLF registry as for example
- *	RF trimmings or low level drivers configurations (I2C, SPI, SWP).
- * @HCI_DM_UPDATE_AID: Allow to configure an AID routing into the CLF routing
- *	table following RF technology, CLF mode or protocol.
- * @HCI_DM_GET_INFO: Allow to retrieve CLF information.
- * @HCI_DM_GET_DATA: Allow to retrieve CLF configurable data such as low
- *	level drivers configurations or RF trimmings.
- * @HCI_DM_LOAD: Allow to load a firmware into the CLF. A complete
- *	packet can be more than 8KB.
- * @HCI_DM_RESET: Allow to run a CLF reset in order to "commit" CLF
- *	configuration changes without CLF power off.
- * @HCI_GET_PARAM: Allow to retrieve an HCI CLF parameter (for example the
- *	white list).
- * @HCI_DM_FIELD_GENERATOR: Allow to generate different kind of RF
- *	technology. When using this command to anti-collision is done.
- * @HCI_LOOPBACK: Allow to echo a command and test the Dh to CLF
- *	connectivity.
- */
+
 enum nfc_vendor_cmds {
 	FACTORY_MODE,
 	HCI_CLEAR_ALL_PIPES,
@@ -129,7 +97,7 @@ struct st21nfca_se_info {
 	struct completion req_completion;
 
 	struct timer_list bwi_timer;
-	int wt_timeout; /* in msecs */
+	int wt_timeout; 
 	bool bwi_active;
 
 	struct timer_list se_active_timer;
@@ -198,4 +166,4 @@ int st21nfca_hci_loopback_event_received(struct nfc_hci_dev *ndev, u8 event,
 					 struct sk_buff *skb);
 int st21nfca_vendor_cmds_init(struct nfc_hci_dev *ndev);
 
-#endif /* __LOCAL_ST21NFCA_H_ */
+#endif 

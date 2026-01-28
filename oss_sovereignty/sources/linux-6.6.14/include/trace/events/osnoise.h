@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM osnoise
 
@@ -136,7 +136,7 @@ TRACE_EVENT(sample_threshold,
 		__entry->interference)
 );
 
-#endif /* _TRACE_OSNOISE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -31,8 +31,8 @@ def sleep(t):
 asyncio_timer = None
 class ThenableEvent:
     def __init__(self, thenable):
-        self.result = None  # Result of the thenable
-        self.waiting = None  # Task waiting on completion of this thenable
+        self.result = None  
+        self.waiting = None  
         thenable.then(self.set)
     def set(self, value=None):
         self.result = value
@@ -56,8 +56,8 @@ def _schedule_run_iter(dt):
     asyncio_timer = js.setTimeout(_run_iter, dt)
 def _run_iter():
     global cur_task
-    excs_all = (CancelledError, Exception)  # To prevent heap allocation in loop
-    excs_stop = (CancelledError, StopIteration)  # To prevent heap allocation in loop
+    excs_all = (CancelledError, Exception)  
+    excs_stop = (CancelledError, StopIteration)  
     while True:
         t = _task_queue.peek()
         if t:
@@ -133,6 +133,6 @@ def current_task():
     return cur_task
 def new_event_loop():
     global _task_queue
-    _task_queue = TaskQueue()  # TaskQueue of Task instances.
+    _task_queue = TaskQueue()  
     return Loop
 new_event_loop()

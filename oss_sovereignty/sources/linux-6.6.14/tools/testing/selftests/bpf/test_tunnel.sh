@@ -4,7 +4,7 @@ PING_ARG="-c 3 -w 10 -q"
 ret=0
 GREEN='\033[0;92m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m' 
 config_device()
 {
 	ip netns add at_ns0
@@ -108,7 +108,7 @@ add_ip6geneve_tunnel()
 	ip link set dev veth1 up
 	ip netns exec at_ns0 \
 		ip link add dev $DEV_NS type $TYPE id 22 \
-		remote ::22     # geneve has no local option
+		remote ::22     
 	ip netns exec at_ns0 ip addr add dev $DEV_NS 10.1.1.100/24
 	ip netns exec at_ns0 ip link set dev $DEV_NS up
 	ip link add dev $DEV type $TYPE external

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_LIB_CRYPTO_H__
 #define __MLX5_LIB_CRYPTO_H__
@@ -31,4 +31,4 @@ u32 mlx5_crypto_dek_get_id(struct mlx5_crypto_dek *dek);
 
 struct mlx5_crypto_dek_priv *mlx5_crypto_dek_init(struct mlx5_core_dev *mdev);
 void mlx5_crypto_dek_cleanup(struct mlx5_crypto_dek_priv *dek_priv);
-#endif /* __MLX5_LIB_CRYPTO_H__ */
+#endif 

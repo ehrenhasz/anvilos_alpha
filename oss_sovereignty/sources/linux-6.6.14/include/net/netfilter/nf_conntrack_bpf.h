@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _NF_CONNTRACK_BPF_H
 #define _NF_CONNTRACK_BPF_H
@@ -43,4 +43,4 @@ static inline int register_nf_nat_bpf(void)
 
 #endif
 
-#endif /* _NF_CONNTRACK_BPF_H */
+#endif 

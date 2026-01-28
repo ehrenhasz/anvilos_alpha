@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_TSC_H
 #define __PERF_TSC_H
 
@@ -29,4 +29,4 @@ double arch_get_tsc_freq(void);
 
 size_t perf_event__fprintf_time_conv(union perf_event *event, FILE *fp);
 
-#endif // __PERF_TSC_H
+#endif 

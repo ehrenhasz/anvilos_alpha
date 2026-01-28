@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _INET_ECN_H_
 #define _INET_ECN_H_
 
@@ -35,14 +35,7 @@ static inline int INET_ECN_is_capable(__u8 dsfield)
 	return dsfield & INET_ECN_ECT_0;
 }
 
-/*
- * RFC 3168 9.1.1
- *  The full-functionality option for ECN encapsulation is to copy the
- *  ECN codepoint of the inside header to the outside header on
- *  encapsulation if the inside header is not-ECT or ECT, and to set the
- *  ECN codepoint of the outside header to ECT(0) if the ECN codepoint of
- *  the inside header is CE.
- */
+
 static inline __u8 INET_ECN_encapsulate(__u8 outer, __u8 inner)
 {
 	outer &= ~INET_ECN_MASK;
@@ -79,21 +72,11 @@ static inline int IP_ECN_set_ce(struct iphdr *iph)
 	u32 ecn = (iph->tos + 1) & INET_ECN_MASK;
 	__be16 check_add;
 
-	/*
-	 * After the last operation we have (in binary):
-	 * INET_ECN_NOT_ECT => 01
-	 * INET_ECN_ECT_1   => 10
-	 * INET_ECN_ECT_0   => 11
-	 * INET_ECN_CE      => 00
-	 */
+	
 	if (!(ecn & 2))
 		return !ecn;
 
-	/*
-	 * The following gives us:
-	 * INET_ECN_ECT_1 => check += htons(0xFFFD)
-	 * INET_ECN_ECT_0 => check += htons(0xFFFE)
-	 */
+	
 	check_add = (__force __be16)((__force u16)htons(0xFFFB) +
 				     (__force u16)htons(ecn));
 
@@ -125,12 +108,7 @@ static inline void ipv4_copy_dscp(unsigned int dscp, struct iphdr *inner)
 
 struct ipv6hdr;
 
-/* Note:
- * IP_ECN_set_ce() has to tweak IPV4 checksum when setting CE,
- * meaning both changes have no effect on skb->csum if/when CHECKSUM_COMPLETE
- * In IPv6 case, no checksum compensates the change in IPv6 header,
- * so we have to update skb->csum.
- */
+
 static inline int IP6_ECN_set_ce(struct sk_buff *skb, struct ipv6hdr *iph)
 {
 	__be32 from, to;
@@ -224,30 +202,7 @@ static inline int INET_ECN_set_ect1(struct sk_buff *skb)
 	return 0;
 }
 
-/*
- * RFC 6040 4.2
- *  To decapsulate the inner header at the tunnel egress, a compliant
- *  tunnel egress MUST set the outgoing ECN field to the codepoint at the
- *  intersection of the appropriate arriving inner header (row) and outer
- *  header (column) in Figure 4
- *
- *      +---------+------------------------------------------------+
- *      |Arriving |            Arriving Outer Header               |
- *      |   Inner +---------+------------+------------+------------+
- *      |  Header | Not-ECT | ECT(0)     | ECT(1)     |     CE     |
- *      +---------+---------+------------+------------+------------+
- *      | Not-ECT | Not-ECT |Not-ECT(!!!)|Not-ECT(!!!)| <drop>(!!!)|
- *      |  ECT(0) |  ECT(0) | ECT(0)     | ECT(1)     |     CE     |
- *      |  ECT(1) |  ECT(1) | ECT(1) (!) | ECT(1)     |     CE     |
- *      |    CE   |      CE |     CE     |     CE(!!!)|     CE     |
- *      +---------+---------+------------+------------+------------+
- *
- *             Figure 4: New IP in IP Decapsulation Behaviour
- *
- *  returns 0 on success
- *          1 if something is broken and should be logged (!!! above)
- *          2 if packet should be dropped
- */
+
 static inline int __INET_ECN_decapsulate(__u8 outer, __u8 inner, bool *set_ce)
 {
 	if (INET_ECN_is_not_ect(inner)) {

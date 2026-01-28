@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <sys/mman.h>
 #include <err.h>
-#include <string.h> /* ffsl() */
-#include <unistd.h> /* _SC_PAGESIZE */
+#include <string.h> 
+#include <unistd.h> 
 
 #define BIT_ULL(nr)                   (1ULL << (nr))
 #define PM_SOFT_DIRTY                 BIT_ULL(55)
@@ -52,9 +52,7 @@ int uffd_unregister(int uffd, void *addr, uint64_t len);
 int uffd_register_with_ioctls(int uffd, void *addr, uint64_t len,
 			      bool miss, bool wp, bool minor, uint64_t *ioctls);
 
-/*
- * On ppc64 this will only work with radix 2M hugepage size
- */
+
 #define HPAGE_SHIFT 21
 #define HPAGE_SIZE (1 << HPAGE_SHIFT)
 

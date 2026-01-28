@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_REGS_H_
 #define ASIC_REG_DCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END
- *   (Prototype: MME_NON_TENSOR_DESCRIPTOR)
- *****************************************
- */
+
 
 #define mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_CONV_KERNEL_SIZE_MINUS_1 0x40CB280
 
@@ -68,4 +55,4 @@
 
 #define mmDCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_WKL_ID 0x40CB2DC
 
-#endif /* ASIC_REG_DCORE0_MME_CTRL_LO_ARCH_NON_TENSOR_END_REGS_H_ */
+#endif 

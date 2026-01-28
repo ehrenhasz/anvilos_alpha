@@ -22,7 +22,7 @@
 		DEFINE_AUTOCONF_EVENT(zfs_autoconf_event_one);
 		DEFINE_AUTOCONF_EVENT(zfs_autoconf_event_two);
 
-		#endif /* _CONFTEST_H */
+		#endif 
 
 		#undef  TRACE_INCLUDE_PATH
 		#define TRACE_INCLUDE_PATH .

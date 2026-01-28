@@ -16,7 +16,7 @@ abis=
 emit_nr=
 offset=
 prefix=
-while [ $# -gt 0 ]
+while [ $
 do
 	case $1 in
 	--abis)
@@ -38,7 +38,7 @@ do
 		break;;
 	esac
 done
-if [ $# -ne 2 ]; then
+if [ $
 	usage
 fi
 infile="$1"
@@ -47,8 +47,8 @@ guard=_UAPI_ASM_$(basename "$outfile" |
 	sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g')
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis" "$infile" | {
-	echo "#ifndef $guard"
-	echo "#define $guard"
+	echo "
+	echo "
 	echo
 	max=0
 	while read nr abi name native compat ; do
@@ -56,14 +56,14 @@ grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis" "$infile" | {
 		if [ -n "$offset" ]; then
 			nr="($offset + $nr)"
 		fi
-		echo "#define __NR_$prefix$name $nr"
+		echo "
 	done
 	if [ -n "$emit_nr" ]; then
 		echo
-		echo "#ifdef __KERNEL__"
-		echo "#define __NR_${prefix}syscalls $(($max + 1))"
-		echo "#endif"
+		echo "
+		echo "
+		echo "
 	fi
 	echo
-	echo "#endif /* $guard */"
+	echo "
 } > "$outfile"

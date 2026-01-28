@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/include/linux/nfs_page.h
- *
- * Copyright (C) 2000 Trond Myklebust
- *
- * NFS page cache wrapper.
- */
+
+
 
 #ifndef _LINUX_NFS_PAGE_H
 #define _LINUX_NFS_PAGE_H
@@ -19,44 +13,42 @@
 
 #include <linux/kref.h>
 
-/*
- * Valid flags for a dirty buffer
- */
+
 enum {
-	PG_BUSY = 0,		/* nfs_{un}lock_request */
-	PG_MAPPED,		/* page private set for buffered io */
-	PG_FOLIO,		/* Tracking a folio (unset for O_DIRECT) */
-	PG_CLEAN,		/* write succeeded */
-	PG_COMMIT_TO_DS,	/* used by pnfs layouts */
-	PG_INODE_REF,		/* extra ref held by inode when in writeback */
-	PG_HEADLOCK,		/* page group lock of wb_head */
-	PG_TEARDOWN,		/* page group sync for destroy */
-	PG_UNLOCKPAGE,		/* page group sync bit in read path */
-	PG_UPTODATE,		/* page group sync bit in read path */
-	PG_WB_END,		/* page group sync bit in write path */
-	PG_REMOVE,		/* page group sync bit in write path */
-	PG_CONTENDED1,		/* Is someone waiting for a lock? */
-	PG_CONTENDED2,		/* Is someone waiting for a lock? */
+	PG_BUSY = 0,		
+	PG_MAPPED,		
+	PG_FOLIO,		
+	PG_CLEAN,		
+	PG_COMMIT_TO_DS,	
+	PG_INODE_REF,		
+	PG_HEADLOCK,		
+	PG_TEARDOWN,		
+	PG_UNLOCKPAGE,		
+	PG_UPTODATE,		
+	PG_WB_END,		
+	PG_REMOVE,		
+	PG_CONTENDED1,		
+	PG_CONTENDED2,		
 };
 
 struct nfs_inode;
 struct nfs_page {
-	struct list_head	wb_list;	/* Defines state of page: */
+	struct list_head	wb_list;	
 	union {
-		struct page	*wb_page;	/* page to read in/write out */
+		struct page	*wb_page;	
 		struct folio	*wb_folio;
 	};
-	struct nfs_lock_context	*wb_lock_context;	/* lock context info */
-	pgoff_t			wb_index;	/* Offset >> PAGE_SHIFT */
-	unsigned int		wb_offset,	/* Offset & ~PAGE_MASK */
-				wb_pgbase,	/* Start of page data */
-				wb_bytes;	/* Length of request */
-	struct kref		wb_kref;	/* reference count */
+	struct nfs_lock_context	*wb_lock_context;	
+	pgoff_t			wb_index;	
+	unsigned int		wb_offset,	
+				wb_pgbase,	
+				wb_bytes;	
+	struct kref		wb_kref;	
 	unsigned long		wb_flags;
-	struct nfs_write_verifier	wb_verf;	/* Commit cookie */
-	struct nfs_page		*wb_this_page;  /* list of reqs for this page */
-	struct nfs_page		*wb_head;       /* head pointer for req list */
-	unsigned short		wb_nio;		/* Number of I/O attempts */
+	struct nfs_write_verifier	wb_verf;	
+	struct nfs_page		*wb_this_page;  
+	struct nfs_page		*wb_head;       
+	unsigned short		wb_nio;		
 };
 
 struct nfs_pgio_mirror;
@@ -108,18 +100,18 @@ struct nfs_pageio_descriptor {
 #ifdef CONFIG_NFS_FSCACHE
 	void			*pg_netfs;
 #endif
-	unsigned int		pg_bsize;	/* default bsize for mirrors */
+	unsigned int		pg_bsize;	
 
 	u32			pg_mirror_count;
 	struct nfs_pgio_mirror	*pg_mirrors;
 	struct nfs_pgio_mirror	pg_mirrors_static[1];
 	struct nfs_pgio_mirror	*pg_mirrors_dynamic;
-	u32			pg_mirror_idx;	/* current mirror */
+	u32			pg_mirror_idx;	
 	unsigned short		pg_maxretrans;
 	unsigned char		pg_moreio : 1;
 };
 
-/* arbitrarily selected limit to number of mirrors */
+
 #define NFS_PAGEIO_DESCRIPTOR_MIRROR_MAX 16
 
 #define NFS_WBACK_BUSY(req)	(test_bit(PG_BUSY,&(req)->wb_flags))
@@ -167,12 +159,7 @@ extern	int nfs_page_set_headlock(struct nfs_page *req);
 extern void nfs_page_clear_headlock(struct nfs_page *req);
 extern bool nfs_async_iocounter_wait(struct rpc_task *, struct nfs_lock_context *);
 
-/**
- * nfs_page_to_folio - Retrieve a struct folio for the request
- * @req: pointer to a struct nfs_page
- *
- * If a folio was assigned to @req, then return it, otherwise return NULL.
- */
+
 static inline struct folio *nfs_page_to_folio(const struct nfs_page *req)
 {
 	if (test_bit(PG_FOLIO, &req->wb_flags))
@@ -180,15 +167,7 @@ static inline struct folio *nfs_page_to_folio(const struct nfs_page *req)
 	return NULL;
 }
 
-/**
- * nfs_page_to_page - Retrieve a struct page for the request
- * @req: pointer to a struct nfs_page
- * @pgbase: folio byte offset
- *
- * Return the page containing the byte that is at offset @pgbase relative
- * to the start of the folio.
- * Note: The request starts at offset @req->wb_pgbase.
- */
+
 static inline struct page *nfs_page_to_page(const struct nfs_page *req,
 					    size_t pgbase)
 {
@@ -199,10 +178,7 @@ static inline struct page *nfs_page_to_page(const struct nfs_page *req,
 	return folio_page(folio, pgbase >> PAGE_SHIFT);
 }
 
-/**
- * nfs_page_to_inode - Retrieve an inode for the request
- * @req: pointer to a struct nfs_page
- */
+
 static inline struct inode *nfs_page_to_inode(const struct nfs_page *req)
 {
 	struct folio *folio = nfs_page_to_folio(req);
@@ -212,12 +188,7 @@ static inline struct inode *nfs_page_to_inode(const struct nfs_page *req)
 	return folio_file_mapping(folio)->host;
 }
 
-/**
- * nfs_page_max_length - Retrieve the maximum possible length for a request
- * @req: pointer to a struct nfs_page
- *
- * Returns the maximum possible length of a request
- */
+
 static inline size_t nfs_page_max_length(const struct nfs_page *req)
 {
 	struct folio *folio = nfs_page_to_folio(req);
@@ -227,41 +198,28 @@ static inline size_t nfs_page_max_length(const struct nfs_page *req)
 	return folio_size(folio);
 }
 
-/*
- * Lock the page of an asynchronous request
- */
+
 static inline int
 nfs_lock_request(struct nfs_page *req)
 {
 	return !test_and_set_bit(PG_BUSY, &req->wb_flags);
 }
 
-/**
- * nfs_list_add_request - Insert a request into a list
- * @req: request
- * @head: head of list into which to insert the request.
- */
+
 static inline void
 nfs_list_add_request(struct nfs_page *req, struct list_head *head)
 {
 	list_add_tail(&req->wb_list, head);
 }
 
-/**
- * nfs_list_move_request - Move a request to a new list
- * @req: request
- * @head: head of list into which to insert the request.
- */
+
 static inline void
 nfs_list_move_request(struct nfs_page *req, struct list_head *head)
 {
 	list_move_tail(&req->wb_list, head);
 }
 
-/**
- * nfs_list_remove_request - Remove a request from its wb_list
- * @req: request
- */
+
 static inline void
 nfs_list_remove_request(struct nfs_page *req)
 {
@@ -287,4 +245,4 @@ nfs_req_openctx(struct nfs_page *req)
 	return req->wb_lock_context->open_context;
 }
 
-#endif /* _LINUX_NFS_PAGE_H */
+#endif 

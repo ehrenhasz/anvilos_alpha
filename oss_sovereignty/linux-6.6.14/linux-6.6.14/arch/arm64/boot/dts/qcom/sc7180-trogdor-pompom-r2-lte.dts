@@ -1,6 +1,0 @@
-#include "sc7180-trogdor-pompom-r2.dts"
-#include "sc7180-trogdor-lte-sku.dtsi"
-/ {
-	model = "Google Pompom (rev2) with LTE";
-	compatible = "google,pompom-rev2-sku0", "qcom,sc7180";
-};

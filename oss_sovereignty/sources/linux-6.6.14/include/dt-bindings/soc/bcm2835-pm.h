@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
+
 
 #ifndef _DT_BINDINGS_ARM_BCM2835_PM_H
 #define _DT_BINDINGS_ARM_BCM2835_PM_H
@@ -25,4 +25,4 @@
 
 #define BCM2835_RESET_COUNT			3
 
-#endif /* _DT_BINDINGS_ARM_BCM2835_PM_H */
+#endif 

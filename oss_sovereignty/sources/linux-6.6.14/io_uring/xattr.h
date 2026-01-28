@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 void io_xattr_cleanup(struct io_kiocb *req);
 

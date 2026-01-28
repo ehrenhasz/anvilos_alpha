@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later OR BSD-2-Clause */
-/*
- * Copyright (c) 2019-2020, Huawei Tech. Co., Ltd.
- *
- * Author: Dongjiu Geng <gengdongjiu@huawei.com>
- */
+
+
 
 #ifndef __DTS_HI3559AV100_CLOCK_H
 #define __DTS_HI3559AV100_CLOCK_H
 
-/*  fixed   rate    */
+
 #define HI3559AV100_FIXED_1188M     1
 #define HI3559AV100_FIXED_1000M     2
 #define HI3559AV100_FIXED_842M      3
@@ -82,7 +78,7 @@
 #define HI3559AV100_EDMAC1_AXICLK 72
 #define HI3559AV100_VDMAC_CLK     73
 
-/*  mux clocks  */
+
 #define HI3559AV100_FMC_MUX     80
 #define HI3559AV100_SYSAPB_MUX  81
 #define HI3559AV100_UART_MUX    82
@@ -93,7 +89,7 @@
 #define HI3559AV100_MMC2_MUX    87
 #define HI3559AV100_MMC3_MUX    88
 
-/*  gate    clocks  */
+
 #define HI3559AV100_FMC_CLK     90
 #define HI3559AV100_UART0_CLK   91
 #define HI3559AV100_UART1_CLK   92
@@ -110,14 +106,14 @@
 #define HI3559AV100_ETH1_CLK        102
 #define HI3559AV100_ETH1_MACIF_CLK  103
 
-/*  complex */
+
 #define HI3559AV100_MAC0_CLK                110
 #define HI3559AV100_MAC1_CLK                111
 #define HI3559AV100_SATA_CLK                112
 #define HI3559AV100_USB_CLK                 113
 #define HI3559AV100_USB1_CLK                114
 
-/* pll clocks */
+
 #define HI3559AV100_APLL_CLK                250
 #define HI3559AV100_GPLL_CLK                251
 
@@ -161,5 +157,5 @@
 
 #define HI3559AV100_SHUB_NR_CLKS            50
 
-#endif  /* __DTS_HI3559AV100_CLOCK_H */
+#endif  
 

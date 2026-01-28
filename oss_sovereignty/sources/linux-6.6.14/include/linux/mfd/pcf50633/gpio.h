@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * gpio.h -- GPIO driver for NXP PCF50633
- *
- * (C) 2006-2008 by Openmoko, Inc.
- * All rights reserved.
- */
+
+
 
 #ifndef __LINUX_MFD_PCF50633_GPIO_H
 #define __LINUX_MFD_PCF50633_GPIO_H
@@ -43,6 +38,6 @@ int pcf50633_gpio_invert_get(struct pcf50633 *pcf, int gpio);
 
 int pcf50633_gpio_power_supply_set(struct pcf50633 *,
 					int gpio, int regulator, int on);
-#endif /* __LINUX_MFD_PCF50633_GPIO_H */
+#endif 
 
 

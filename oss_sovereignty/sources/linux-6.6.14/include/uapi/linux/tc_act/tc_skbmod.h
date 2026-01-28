@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Copyright (c) 2016, Jamal Hadi Salim
- */
+
+
 
 #ifndef __LINUX_TC_SKBMOD_H
 #define __LINUX_TC_SKBMOD_H

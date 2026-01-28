@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NET_IP6_TUNNEL_H
 #define _NET_IP6_TUNNEL_H
 
@@ -11,24 +11,24 @@
 
 #define IP6TUNNEL_ERR_TIMEO (30*HZ)
 
-/* capable of sending packets */
+
 #define IP6_TNL_F_CAP_XMIT 0x10000
-/* capable of receiving packets */
+
 #define IP6_TNL_F_CAP_RCV 0x20000
-/* determine capability on a per-packet basis */
+
 #define IP6_TNL_F_CAP_PER_PACKET 0x40000
 
 struct __ip6_tnl_parm {
-	char name[IFNAMSIZ];	/* name of tunnel device */
-	int link;		/* ifindex of underlying L2 interface */
-	__u8 proto;		/* tunnel protocol */
-	__u8 encap_limit;	/* encapsulation limit for tunnel */
-	__u8 hop_limit;		/* hop limit for tunnel */
+	char name[IFNAMSIZ];	
+	int link;		
+	__u8 proto;		
+	__u8 encap_limit;	
+	__u8 hop_limit;		
 	bool collect_md;
-	__be32 flowinfo;	/* traffic class and flowlabel for tunnel */
-	__u32 flags;		/* tunnel flags */
-	struct in6_addr laddr;	/* local tunnel end-point address */
-	struct in6_addr raddr;	/* remote tunnel end-point address */
+	__be32 flowinfo;	
+	__u32 flags;		
+	struct in6_addr laddr;	
+	struct in6_addr raddr;	
 
 	__be16			i_flags;
 	__be16			o_flags;
@@ -36,32 +36,32 @@ struct __ip6_tnl_parm {
 	__be32			o_key;
 
 	__u32			fwmark;
-	__u32			index;	/* ERSPAN type II index */
-	__u8			erspan_ver;	/* ERSPAN version */
-	__u8			dir;	/* direction */
-	__u16			hwid;	/* hwid */
+	__u32			index;	
+	__u8			erspan_ver;	
+	__u8			dir;	
+	__u16			hwid;	
 };
 
-/* IPv6 tunnel */
+
 struct ip6_tnl {
-	struct ip6_tnl __rcu *next;	/* next tunnel in list */
-	struct net_device *dev;	/* virtual device associated with tunnel */
+	struct ip6_tnl __rcu *next;	
+	struct net_device *dev;	
 	netdevice_tracker dev_tracker;
-	struct net *net;	/* netns for packet i/o */
-	struct __ip6_tnl_parm parms;	/* tunnel configuration parameters */
-	struct flowi fl;	/* flowi template for xmit */
-	struct dst_cache dst_cache;	/* cached dst */
+	struct net *net;	
+	struct __ip6_tnl_parm parms;	
+	struct flowi fl;	
+	struct dst_cache dst_cache;	
 	struct gro_cells gro_cells;
 
 	int err_count;
 	unsigned long err_time;
 
-	/* These fields used only by GRE */
-	__u32 i_seqno;	/* The last seen seqno	*/
-	atomic_t o_seqno;	/* The last output seqno */
-	int hlen;       /* tun_hlen + encap_hlen */
-	int tun_hlen;	/* Precalculated header length */
-	int encap_hlen; /* Encap header length (FOU,GUE) */
+	
+	__u32 i_seqno;	
+	atomic_t o_seqno;	
+	int hlen;       
+	int tun_hlen;	
+	int encap_hlen; 
 	struct ip_tunnel_encap encap;
 	int mlink;
 };
@@ -127,12 +127,12 @@ static inline int ip6_tnl_encap(struct sk_buff *skb, struct ip6_tnl *t,
 	return ret;
 }
 
-/* Tunnel encapsulation limit destination sub-option */
+
 
 struct ipv6_tlv_tnl_enc_lim {
-	__u8 type;		/* type-code for option         */
-	__u8 length;		/* option length                */
-	__u8 encap_limit;	/* tunnel encapsulation limit   */
+	__u8 type;		
+	__u8 length;		
+	__u8 encap_limit;	
 } __packed;
 
 int ip6_tnl_rcv_ctl(struct ip6_tnl *t, const struct in6_addr *laddr,

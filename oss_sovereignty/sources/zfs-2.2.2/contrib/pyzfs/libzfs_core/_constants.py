@@ -6,7 +6,7 @@ import errno
 import sys
 if sys.platform.startswith('freebsd'):
     ECHRNG = errno.ENXIO
-    ECKSUM = 97  # EINTEGRITY
+    ECKSUM = 97  
     ETIME = errno.ETIMEDOUT
 else:
     ECHRNG = errno.ECHRNG

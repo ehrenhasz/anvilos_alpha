@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Device Tree binding constants for Bitmain BM1880 SoC
- *
- * Copyright (c) 2019 Linaro Ltd.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_BM1880_H
 #define __DT_BINDINGS_CLOCK_BM1880_H
@@ -79,4 +75,4 @@
 #define BM1880_CLK_AXI6			68
 #define BM1880_NR_CLKS			69
 
-#endif /* __DT_BINDINGS_CLOCK_BM1880_H */
+#endif 

@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
 
-/* \file cc_cipher.h
- * ARM CryptoCell Cipher Crypto API
- */
+
+
+
 
 #ifndef __CC_CIPHER_H__
 #define __CC_CIPHER_H__
@@ -36,4 +34,4 @@ struct cc_hkey_info {
 
 #define CC_HW_KEY_SIZE sizeof(struct cc_hkey_info)
 
-#endif /*__CC_CIPHER_H__*/
+#endif 

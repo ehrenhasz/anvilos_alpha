@@ -1,4 +1,4 @@
-if [ "$#" -ne 1 ]; then
+if [ "$
     echo "Usage: bootgen.sh *build dir*"
     exit 1
 fi

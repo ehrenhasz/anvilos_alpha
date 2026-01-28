@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/ipc/util.h
- * Copyright (C) 1999 Christoph Rohland
- *
- * ipc helper functions (c) 1999 Manfred Spraul <manfred@colorfullife.com>
- * namespaces support.      2006 OpenVZ, SWsoft Inc.
- *                               Pavel Emelianov <xemul@openvz.org>
- */
+
+
 
 #ifndef _IPC_UTIL_H
 #define _IPC_UTIL_H
@@ -15,16 +8,7 @@
 #include <linux/err.h>
 #include <linux/ipc_namespace.h>
 
-/*
- * The IPC ID contains 2 separate numbers - index and sequence number.
- * By default,
- *   bits  0-14: index (32k, 15 bits)
- *   bits 15-30: sequence number (64k, 16 bits)
- *
- * When IPCMNI extension mode is turned on, the composition changes:
- *   bits  0-23: index (16M, 24 bits)
- *   bits 24-30: sequence number (128, 7 bits)
- */
+
 #define IPCMNI_SHIFT		15
 #define IPCMNI_EXTEND_SHIFT	24
 #define IPCMNI_EXTEND_MIN_CYCLE	(RADIX_TREE_MAP_SIZE * RADIX_TREE_MAP_SIZE)
@@ -39,13 +23,13 @@ extern int ipc_min_cycle;
 #define ipcmni_seq_shift()	ipc_mni_shift
 #define IPCMNI_IDX_MASK		((1 << ipc_mni_shift) - 1)
 
-#else /* CONFIG_SYSVIPC_SYSCTL */
+#else 
 
 #define ipc_mni			IPCMNI
 #define ipc_min_cycle		((int)RADIX_TREE_MAP_SIZE)
 #define ipcmni_seq_shift()	IPCMNI_SHIFT
 #define IPCMNI_IDX_MASK		((1 << IPCMNI_SHIFT) - 1)
-#endif /* CONFIG_SYSVIPC_SYSCTL */
+#endif 
 
 void sem_init(void);
 void msg_init(void);
@@ -78,29 +62,17 @@ static inline void msg_exit_ns(struct ipc_namespace *ns) { }
 static inline void shm_exit_ns(struct ipc_namespace *ns) { }
 #endif
 
-/*
- * Structure that holds the parameters needed by the ipc operations
- * (see after)
- */
+
 struct ipc_params {
 	key_t key;
 	int flg;
 	union {
-		size_t size;	/* for shared memories */
-		int nsems;	/* for semaphores */
-	} u;			/* holds the getnew() specific param */
+		size_t size;	
+		int nsems;	
+	} u;			
 };
 
-/*
- * Structure that holds some ipc operations. This structure is used to unify
- * the calls to sys_msgget(), sys_semget(), sys_shmget()
- *      . routine to call to create a new ipc object. Can be one of newque,
- *        newary, newseg
- *      . routine to call to check permissions for a new ipc object.
- *        Can be one of security_msg_associate, security_sem_associate,
- *        security_shm_associate
- *      . routine to call for an extra check if needed
- */
+
 struct ipc_ops {
 	int (*getnew)(struct ipc_namespace *, struct ipc_params *);
 	int (*associate)(struct kern_ipc_perm *, int);
@@ -127,27 +99,19 @@ struct pid_namespace *ipc_seq_pid_ns(struct seq_file *);
 #define ipcid_to_seqx(id) ((id) >> ipcmni_seq_shift())
 #define ipcid_seq_max()	  (INT_MAX >> ipcmni_seq_shift())
 
-/* must be called with ids->rwsem acquired for writing */
+
 int ipc_addid(struct ipc_ids *, struct kern_ipc_perm *, int);
 
-/* must be called with both locks acquired. */
+
 void ipc_rmid(struct ipc_ids *, struct kern_ipc_perm *);
 
-/* must be called with both locks acquired. */
+
 void ipc_set_key_private(struct ipc_ids *, struct kern_ipc_perm *);
 
-/* must be called with ipcp locked */
+
 int ipcperms(struct ipc_namespace *ns, struct kern_ipc_perm *ipcp, short flg);
 
-/**
- * ipc_get_maxidx - get the highest assigned index
- * @ids: ipc identifier set
- *
- * The function returns the highest assigned index for @ids. The function
- * doesn't scan the idr tree, it uses a cached value.
- *
- * Called with ipc_ids.rwsem held for reading.
- */
+
 static inline int ipc_get_maxidx(struct ipc_ids *ids)
 {
 	if (ids->in_use == 0)
@@ -159,15 +123,7 @@ static inline int ipc_get_maxidx(struct ipc_ids *ids)
 	return ids->max_idx;
 }
 
-/*
- * For allocation that need to be freed by RCU.
- * Objects are reference counted, they start with reference count 1.
- * getref increases the refcount, the putref call that reduces the recount
- * to 0 schedules the rcu destruction. Caller must guarantee locking.
- *
- * refcount is initialized by ipc_addid(), before that point call_rcu()
- * must be used.
- */
+
 bool ipc_rcu_getref(struct kern_ipc_perm *ptr);
 void ipc_rcu_putref(struct kern_ipc_perm *ptr,
 			void (*func)(struct rcu_head *head));
@@ -225,14 +181,7 @@ static inline void ipc_unlock(struct kern_ipc_perm *perm)
 	rcu_read_unlock();
 }
 
-/*
- * ipc_valid_object() - helper to sort out IPC_RMID races for codepaths
- * where the respective ipc_ids.rwsem is not being held down.
- * Checks whether the ipc object is still around or if it's gone already, as
- * ipc_rmid() may have already freed the ID while the ipc lock was spinning.
- * Needs to be called with kern_ipc_perm.lock held -- exception made for one
- * checkpoint case at sys_semtimedop() as noted in code commentary.
- */
+
 static inline bool ipc_valid_object(struct kern_ipc_perm *perm)
 {
 	return !perm->deleted;
@@ -245,10 +194,7 @@ void free_ipcs(struct ipc_namespace *ns, struct ipc_ids *ids,
 		void (*free)(struct ipc_namespace *, struct kern_ipc_perm *));
 
 static inline int sem_check_semmni(struct ipc_namespace *ns) {
-	/*
-	 * Check semmni range [0, ipc_mni]
-	 * semmni is the last element of sem_ctls[4] array
-	 */
+	
 	return ((ns->sem_ctls[3] < 0) || (ns->sem_ctls[3] > ipc_mni))
 		? -ERANGE : 0;
 }

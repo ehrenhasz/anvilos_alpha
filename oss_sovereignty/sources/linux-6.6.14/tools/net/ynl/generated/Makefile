@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 CC=gcc
 CFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \

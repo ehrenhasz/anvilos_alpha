@@ -45,7 +45,7 @@ def scope5():
         print([var5 := i for i in range(2)])
     inner5()
     print(var5)
-    var5 = 0  # force var5 to be a local to scope5
+    var5 = 0  
 print("scope5")
 scope5()
 print(globals().get("var5", None))

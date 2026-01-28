@@ -1,10 +1,10 @@
-// We use the ST Cube HAL library for most hardware peripherals
+
 #include STM32_HAL_H
 #include "pin.h"
 
 extern uint8_t mp_hal_unique_id_address[12];
 
-// F0-1.9.0+F4-1.16.0+F7-1.7.0+G0-1.5.1+G4-1.3.0+H7-1.6.0+L0-1.11.2+L4-1.17.0+WB-1.10.0+WL-1.1.0
+
 #if defined(STM32F0)
 #define MICROPY_PLATFORM_VERSION "HAL1.9.0"
 #elif defined(STM32F4)
@@ -38,30 +38,30 @@ static inline int mp_hal_status_to_neg_errno(HAL_StatusTypeDef status) {
 }
 
 NORETURN void mp_hal_raise(HAL_StatusTypeDef status);
-void mp_hal_set_interrupt_char(int c); // -1 to disable
+void mp_hal_set_interrupt_char(int c); 
 
-// Atomic section helpers.
+
 
 #include "irq.h"
 
 #define MICROPY_BEGIN_ATOMIC_SECTION()     disable_irq()
 #define MICROPY_END_ATOMIC_SECTION(state)  enable_irq(state)
 
-// For regular code that wants to prevent "background tasks" from running.
-// These background tasks (LWIP, Bluetooth) run in PENDSV context.
+
+
 #define MICROPY_PY_PENDSV_ENTER   uint32_t atomic_state = raise_irq_pri(IRQ_PRI_PENDSV);
 #define MICROPY_PY_PENDSV_REENTER atomic_state = raise_irq_pri(IRQ_PRI_PENDSV);
 #define MICROPY_PY_PENDSV_EXIT    restore_irq_pri(atomic_state);
 
-// Prevent the "lwIP task" from running.
+
 #define MICROPY_PY_LWIP_ENTER   MICROPY_PY_PENDSV_ENTER
 #define MICROPY_PY_LWIP_REENTER MICROPY_PY_PENDSV_REENTER
 #define MICROPY_PY_LWIP_EXIT    MICROPY_PY_PENDSV_EXIT
 
-// Timing functions.
+
 
 #if __CORTEX_M == 0
-// Don't have raise_irq_pri on Cortex-M0 so keep IRQs enabled to have SysTick timing
+
 #define mp_hal_quiet_timing_enter() (1)
 #define mp_hal_quiet_timing_exit(irq_state) (void)(irq_state)
 #else
@@ -82,7 +82,7 @@ static inline mp_uint_t mp_hal_ticks_cpu(void) {
     #endif
 }
 
-// C-level pin HAL
+
 
 #include "pin.h"
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2013-2014 Chelsio Communications.  All rights reserved.
- *
- *  Written by Anish Bhatt (anish@chelsio.com)
- */
+
+
 
 #ifndef __CXGB4_DCB_H
 #define __CXGB4_DCB_H
@@ -58,29 +54,25 @@
 					    CXGB4_DCB_INPUT_FW_ALLSYNCED); \
 	} while (0)
 
-/* States we can be in for a port's Data Center Bridging.
- */
+
 enum cxgb4_dcb_state {
-	CXGB4_DCB_STATE_START,		/* initial unknown state */
-	CXGB4_DCB_STATE_HOST,		/* we're using Host DCB (if at all) */
-	CXGB4_DCB_STATE_FW_INCOMPLETE,	/* using firmware DCB, incomplete */
-	CXGB4_DCB_STATE_FW_ALLSYNCED,	/* using firmware DCB, all sync'ed */
+	CXGB4_DCB_STATE_START,		
+	CXGB4_DCB_STATE_HOST,		
+	CXGB4_DCB_STATE_FW_INCOMPLETE,	
+	CXGB4_DCB_STATE_FW_ALLSYNCED,	
 };
 
-/* Data Center Bridging state input for the Finite State Machine.
- */
+
 enum cxgb4_dcb_state_input {
-	/* Input from the firmware.
-	 */
-	CXGB4_DCB_INPUT_FW_DISABLED,	/* firmware DCB disabled */
-	CXGB4_DCB_INPUT_FW_ENABLED,	/* firmware DCB enabled */
-	CXGB4_DCB_INPUT_FW_INCOMPLETE,	/* firmware reports incomplete DCB */
-	CXGB4_DCB_INPUT_FW_ALLSYNCED,	/* firmware reports all sync'ed */
+	
+	CXGB4_DCB_INPUT_FW_DISABLED,	
+	CXGB4_DCB_INPUT_FW_ENABLED,	
+	CXGB4_DCB_INPUT_FW_INCOMPLETE,	
+	CXGB4_DCB_INPUT_FW_ALLSYNCED,	
 
 };
 
-/* Firmware DCB messages that we've received so far ...
- */
+
 enum cxgb4_dcb_fw_msgs {
 	CXGB4_DCB_FW_PGID	= 0x01,
 	CXGB4_DCB_FW_PGRATE	= 0x02,
@@ -91,29 +83,26 @@ enum cxgb4_dcb_fw_msgs {
 
 #define CXGB4_MAX_DCBX_APP_SUPPORTED 8
 
-/* Data Center Bridging support;
- */
-struct port_dcb_info {
-	enum cxgb4_dcb_state state;	/* DCB State Machine */
-	enum cxgb4_dcb_fw_msgs msgs;	/* DCB Firmware messages received */
-	unsigned int supported;		/* OS DCB capabilities supported */
-	bool enabled;			/* OS Enabled state */
 
-	/* Cached copies of DCB information sent by the firmware (in Host
-	 * Native Endian format).
-	 */
-	u32	pgid;			/* Priority Group[0..7] */
-	u8	dcb_version;		/* Running DCBx version */
-	u8	pfcen;			/* Priority Flow Control[0..7] */
-	u8	pg_num_tcs_supported;	/* max PG Traffic Classes */
-	u8	pfc_num_tcs_supported;	/* max PFC Traffic Classes */
-	u8	pgrate[8];		/* Priority Group Rate[0..7] */
-	u8	priorate[8];		/* Priority Rate[0..7] */
-	u8	tsa[8];			/* TSA Algorithm[0..7] */
-	struct app_priority { /* Application Information */
-		u8	user_prio_map;	/* Priority Map bitfield */
-		u8	sel_field;	/* Protocol ID interpretation */
-		u16	protocolid;	/* Protocol ID */
+struct port_dcb_info {
+	enum cxgb4_dcb_state state;	
+	enum cxgb4_dcb_fw_msgs msgs;	
+	unsigned int supported;		
+	bool enabled;			
+
+	
+	u32	pgid;			
+	u8	dcb_version;		
+	u8	pfcen;			
+	u8	pg_num_tcs_supported;	
+	u8	pfc_num_tcs_supported;	
+	u8	pgrate[8];		
+	u8	priorate[8];		
+	u8	tsa[8];			
+	struct app_priority { 
+		u8	user_prio_map;	
+		u8	sel_field;	
+		u16	protocolid;	
 	} app_priority[CXGB4_MAX_DCBX_APP_SUPPORTED];
 };
 
@@ -141,7 +130,7 @@ extern const char * const dcb_ver_array[];
 
 #define CXGB4_DCB_ENABLED true
 
-#else /* !CONFIG_CHELSIO_T4_DCB */
+#else 
 
 static inline void cxgb4_dcb_state_init(struct net_device *dev)
 {
@@ -149,6 +138,6 @@ static inline void cxgb4_dcb_state_init(struct net_device *dev)
 
 #define CXGB4_DCB_ENABLED false
 
-#endif /* !CONFIG_CHELSIO_T4_DCB */
+#endif 
 
-#endif /* __CXGB4_DCB_H */
+#endif 

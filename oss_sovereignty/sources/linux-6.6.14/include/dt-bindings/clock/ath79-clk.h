@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014, 2016 Antony Pavlov <antonynpavlov@gmail.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_ATH79_CLK_H
 #define __DT_BINDINGS_ATH79_CLK_H
@@ -14,4 +12,4 @@
 
 #define ATH79_CLK_END		5
 
-#endif /* __DT_BINDINGS_ATH79_CLK_H */
+#endif 

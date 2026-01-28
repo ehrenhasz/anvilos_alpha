@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_MM_PAGE_IDLE_H
 #define _LINUX_MM_PAGE_IDLE_H
 
@@ -9,10 +9,7 @@
 #ifdef CONFIG_PAGE_IDLE_FLAG
 
 #ifndef CONFIG_64BIT
-/*
- * If there is not enough space to store Idle and Young bits in page flags, use
- * page ext flags instead.
- */
+
 static inline bool folio_test_young(struct folio *folio)
 {
 	struct page_ext *page_ext = page_ext_get(&folio->page);
@@ -87,9 +84,9 @@ static inline void folio_clear_idle(struct folio *folio)
 	clear_bit(PAGE_EXT_IDLE, &page_ext->flags);
 	page_ext_put(page_ext);
 }
-#endif /* !CONFIG_64BIT */
+#endif 
 
-#else /* !CONFIG_PAGE_IDLE_FLAG */
+#else 
 
 static inline bool folio_test_young(struct folio *folio)
 {
@@ -118,7 +115,7 @@ static inline void folio_clear_idle(struct folio *folio)
 {
 }
 
-#endif /* CONFIG_PAGE_IDLE_FLAG */
+#endif 
 
 static inline bool page_is_young(struct page *page)
 {
@@ -144,4 +141,4 @@ static inline void set_page_idle(struct page *page)
 {
 	folio_set_idle(page_folio(page));
 }
-#endif /* _LINUX_MM_PAGE_IDLE_H */
+#endif 

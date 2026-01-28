@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Xilinx Zynq MPSoC Firmware layer
- *
- *  Copyright (C) 2014-2021 Xilinx
- *
- *  Michal Simek <michal.simek@amd.com>
- *  Davorin Mista <davorin.mista@aggios.com>
- *  Jolly Shah <jollys@xilinx.com>
- *  Rajan Vaja <rajanv@xilinx.com>
- */
+
+
 
 #ifndef __FIRMWARE_ZYNQMP_H__
 #define __FIRMWARE_ZYNQMP_H__
@@ -28,10 +19,10 @@
 #define ZYNQMP_TZ_VERSION	((ZYNQMP_TZ_VERSION_MAJOR << 16) | \
 					ZYNQMP_TZ_VERSION_MINOR)
 
-/* SMC SIP service Call Function Identifier Prefix */
+
 #define PM_SIP_SVC			0xC2000000
 
-/* PM API versions */
+
 #define PM_API_VERSION_2	2
 
 #define PM_PINCTRL_PARAM_SET_VERSION	2
@@ -39,7 +30,7 @@
 #define ZYNQMP_FAMILY_CODE 0x23
 #define VERSAL_FAMILY_CODE 0x26
 
-/* When all subfamily of platform need to support */
+
 #define ALL_SUB_FAMILY_CODE		0x00
 #define VERSAL_SUB_FAMILY_CODE		0x01
 #define VERSALNET_SUB_FAMILY_CODE	0x03
@@ -47,56 +38,50 @@
 #define FAMILY_CODE_MASK	GENMASK(27, 21)
 #define SUB_FAMILY_CODE_MASK	GENMASK(20, 19)
 
-/* ATF only commands */
+
 #define TF_A_PM_REGISTER_SGI		0xa04
 #define PM_GET_TRUSTZONE_VERSION	0xa03
 #define PM_SET_SUSPEND_MODE		0xa02
 #define GET_CALLBACK_DATA		0xa01
 
-/* Number of 32bits values in payload */
+
 #define PAYLOAD_ARG_CNT	4U
 
-/* Number of arguments for a callback */
+
 #define CB_ARG_CNT     4
 
-/* Payload size (consists of callback API ID + arguments) */
+
 #define CB_PAYLOAD_SIZE (CB_ARG_CNT + 1)
 
 #define ZYNQMP_PM_MAX_QOS		100U
 
 #define GSS_NUM_REGS	(4)
 
-/* Node capabilities */
+
 #define	ZYNQMP_PM_CAPABILITY_ACCESS	0x1U
 #define	ZYNQMP_PM_CAPABILITY_CONTEXT	0x2U
 #define	ZYNQMP_PM_CAPABILITY_WAKEUP	0x4U
 #define	ZYNQMP_PM_CAPABILITY_UNUSABLE	0x8U
 
-/* Loader commands */
+
 #define PM_LOAD_PDI	0x701
 #define PDI_SRC_DDR	0xF
 
-/*
- * Firmware FPGA Manager flags
- * XILINX_ZYNQMP_PM_FPGA_FULL:	FPGA full reconfiguration
- * XILINX_ZYNQMP_PM_FPGA_PARTIAL: FPGA partial reconfiguration
- */
+
 #define XILINX_ZYNQMP_PM_FPGA_FULL	0x0U
 #define XILINX_ZYNQMP_PM_FPGA_PARTIAL	BIT(0)
 
-/* FPGA Status Reg */
+
 #define XILINX_ZYNQMP_PM_FPGA_CONFIG_STAT_OFFSET	7U
 #define XILINX_ZYNQMP_PM_FPGA_READ_CONFIG_REG		0U
 
-/*
- * Node IDs for the Error Events.
- */
+
 #define EVENT_ERROR_PMC_ERR1	(0x28100000U)
 #define EVENT_ERROR_PMC_ERR2	(0x28104000U)
 #define EVENT_ERROR_PSM_ERR1	(0x28108000U)
 #define EVENT_ERROR_PSM_ERR2	(0x2810C000U)
 
-/* ZynqMP SD tap delay tuning */
+
 #define SD_ITAPDLY	0xFF180314
 #define SD_OTAPDLYSEL	0xFF180318
 
@@ -146,7 +131,7 @@ enum pm_api_id {
 	PM_FEATURE_CHECK = 63,
 };
 
-/* PMU-FW return status codes */
+
 enum pm_ret_status {
 	XST_PM_SUCCESS = 0,
 	XST_PM_NO_FEATURE = 19,
@@ -175,15 +160,15 @@ enum pm_ioctl_id {
 	IOCTL_READ_GGS = 13,
 	IOCTL_WRITE_PGGS = 14,
 	IOCTL_READ_PGGS = 15,
-	/* Set healthy bit value */
+	
 	IOCTL_SET_BOOT_HEALTH_STATUS = 17,
 	IOCTL_OSPI_MUX_SELECT = 21,
-	/* Register SGI to ATF */
+	
 	IOCTL_REGISTER_SGI = 25,
-	/* Runtime feature configuration */
+	
 	IOCTL_SET_FEATURE_CONFIG = 26,
 	IOCTL_GET_FEATURE_CONFIG = 27,
-	/* Dynamic SD/GEM configuration */
+	
 	IOCTL_SET_SD_CONFIG = 30,
 	IOCTL_SET_GEM_CONFIG = 31,
 };
@@ -459,13 +444,7 @@ enum pm_feature_config_id {
 	PM_FEATURE_EXTWDT_VALUE = 4,
 };
 
-/**
- * enum pm_sd_config_type - PM SD configuration.
- * @SD_CONFIG_EMMC_SEL: To set SD_EMMC_SEL in CTRL_REG_SD and SD_SLOTTYPE
- * @SD_CONFIG_BASECLK: To set SD_BASECLK in SD_CONFIG_REG1
- * @SD_CONFIG_8BIT: To set SD_8BIT in SD_CONFIG_REG2
- * @SD_CONFIG_FIXED: To set fixed config registers
- */
+
 enum pm_sd_config_type {
 	SD_CONFIG_EMMC_SEL = 1,
 	SD_CONFIG_BASECLK = 2,
@@ -473,23 +452,13 @@ enum pm_sd_config_type {
 	SD_CONFIG_FIXED = 4,
 };
 
-/**
- * enum pm_gem_config_type - PM GEM configuration.
- * @GEM_CONFIG_SGMII_MODE: To set GEM_SGMII_MODE in GEM_CLK_CTRL register
- * @GEM_CONFIG_FIXED: To set fixed config registers
- */
+
 enum pm_gem_config_type {
 	GEM_CONFIG_SGMII_MODE = 1,
 	GEM_CONFIG_FIXED = 2,
 };
 
-/**
- * struct zynqmp_pm_query_data - PM query data
- * @qid:	query ID
- * @arg1:	Argument 1 of query data
- * @arg2:	Argument 2 of query data
- * @arg3:	Argument 3 of query data
- */
+
 struct zynqmp_pm_query_data {
 	u32 qid;
 	u32 arg1;
@@ -899,4 +868,4 @@ static inline int zynqmp_pm_set_gem_config(u32 node,
 
 #endif
 
-#endif /* __FIRMWARE_ZYNQMP_H__ */
+#endif 

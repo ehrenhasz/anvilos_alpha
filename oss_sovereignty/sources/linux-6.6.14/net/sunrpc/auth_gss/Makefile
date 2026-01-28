@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Linux kernel rpcsec_gss implementation
-#
+
+
+
+
 
 obj-$(CONFIG_SUNRPC_GSS) += auth_rpcgss.o
 

@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Twofish Cipher 3-way parallel algorithm (x86_64)
- *
- * Copyright (C) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
- */
+
+
 
 #include <linux/linkage.h>
 
 .file "twofish-x86_64-asm-3way.S"
 .text
 
-/* structure of crypto context */
+
 #define s0	0
 #define s1	1024
 #define s2	2048
@@ -18,9 +14,7 @@
 #define w	4096
 #define k	4128
 
-/**********************************************************************
-  3-way twofish
- **********************************************************************/
+
 #define CTX %rdi
 #define RIO %rdx
 
@@ -86,12 +80,9 @@
 	movq ab, cd;			\
 	movq tmp, ab;
 
-/*
- * Combined G1 & G2 function. Reordered with help of rotates to have moves
- * at beginning.
- */
+
 #define g1g2_3(ab, cd, Tx0, Tx1, Tx2, Tx3, Ty0, Ty1, Ty2, Ty3, x, y) \
-	/* G1,1 && G2,1 */ \
+	 \
 	do16bit_ror(32, mov, xor, Tx0, Tx1, RT0, x ## 0, ab ## 0, x ## 0); \
 	do16bit_ror(48, mov, xor, Ty1, Ty2, RT0, y ## 0, ab ## 0, y ## 0); \
 	\
@@ -101,7 +92,7 @@
 	do16bit_ror(32, mov, xor, Tx0, Tx1, RT0, x ## 2, ab ## 2, x ## 2); \
 	do16bit_ror(48, mov, xor, Ty1, Ty2, RT0, y ## 2, ab ## 2, y ## 2); \
 	\
-	/* G1,2 && G2,2 */ \
+	 \
 	do16bit_ror(32, xor, xor, Tx2, Tx3, RT0, RT1, ab ## 0, x ## 0); \
 	do16bit_ror(16, xor, xor, Ty3, Ty0, RT0, RT1, ab ## 0, y ## 0); \
 	swap_ab_with_cd(ab ## 0, cd ## 0, RT0); \
@@ -221,18 +212,13 @@
 	outunpack3(mov, RIO, 2, RAB, 2);
 
 SYM_FUNC_START(__twofish_enc_blk_3way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src, RIO
-	 *	%rcx: bool, if true: xor output
-	 */
+	
 	pushq %r13;
 	pushq %r12;
 	pushq %rbx;
 
-	pushq %rcx; /* bool xor */
-	pushq %rsi; /* dst */
+	pushq %rcx; 
+	pushq %rsi; 
 
 	inpack_enc3();
 
@@ -247,8 +233,8 @@ SYM_FUNC_START(__twofish_enc_blk_3way)
 	encrypt_cycle3(RAB, CD, 7);
 	pop_cd();
 
-	popq RIO; /* dst */
-	popq RT1; /* bool xor */
+	popq RIO; 
+	popq RT1; 
 
 	testb RT1bl, RT1bl;
 	jnz .L__enc_xor3;
@@ -270,16 +256,12 @@ SYM_FUNC_START(__twofish_enc_blk_3way)
 SYM_FUNC_END(__twofish_enc_blk_3way)
 
 SYM_FUNC_START(twofish_dec_blk_3way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst
-	 *	%rdx: src, RIO
-	 */
+	
 	pushq %r13;
 	pushq %r12;
 	pushq %rbx;
 
-	pushq %rsi; /* dst */
+	pushq %rsi; 
 
 	inpack_dec3();
 
@@ -294,7 +276,7 @@ SYM_FUNC_START(twofish_dec_blk_3way)
 	decrypt_cycle3(RAB, CD, 0);
 	pop_cd();
 
-	popq RIO; /* dst */
+	popq RIO; 
 
 	outunpack_dec3();
 

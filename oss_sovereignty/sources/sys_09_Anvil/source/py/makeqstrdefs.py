@@ -66,7 +66,7 @@ def write_out(fname, output):
         with open(args.output_dir + "/" + fname + "." + args.mode, "w") as f:
             f.write("\n".join(output) + "\n")
 def process_file(f):
-    re_line = re.compile(r"^#(?:line)?\s+\d+\s\"([^\"]+)\"")
+    re_line = re.compile(r"^
     if args.mode == _MODE_QSTR:
         re_match = re.compile(r"MP_QSTR_[_a-zA-Z0-9]+")
     elif args.mode == _MODE_COMPRESS:
@@ -173,9 +173,9 @@ if __name__ == "__main__":
             sys.exit(1)
         sys.exit(0)
     args.mode = sys.argv[2]
-    args.input_filename = sys.argv[3]  # Unused for command=cat
+    args.input_filename = sys.argv[3]  
     args.output_dir = sys.argv[4]
-    args.output_file = None if len(sys.argv) == 5 else sys.argv[5]  # Unused for command=split
+    args.output_file = None if len(sys.argv) == 5 else sys.argv[5]  
     if args.mode not in (_MODE_QSTR, _MODE_COMPRESS, _MODE_MODULE, _MODE_ROOT_POINTER):
         print("error: mode %s unrecognised" % sys.argv[2])
         sys.exit(2)

@@ -1,19 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
 
 #ifndef __T7XX_DPMAIF_H__
 #define __T7XX_DPMAIF_H__
@@ -66,12 +51,12 @@ struct dpmaif_hw_info {
 	struct dpmaif_isr_en_mask	isr_en_mask;
 };
 
-/* DPMAIF HW Initialization parameter structure */
+
 struct dpmaif_hw_params {
-	/* UL part */
+	
 	dma_addr_t			drb_base_addr[DPMAIF_TXQ_NUM];
 	unsigned int			drb_size_cnt[DPMAIF_TXQ_NUM];
-	/* DL part */
+	
 	dma_addr_t			pkt_bat_base_addr[DPMAIF_RXQ_NUM];
 	unsigned int			pkt_bat_size_cnt[DPMAIF_RXQ_NUM];
 	dma_addr_t			frg_bat_base_addr[DPMAIF_RXQ_NUM];
@@ -176,4 +161,4 @@ unsigned int t7xx_dpmaif_dl_get_frg_rd_idx(struct dpmaif_hw_info *hw_info, unsig
 unsigned int t7xx_dpmaif_dl_dlq_pit_get_wr_idx(struct dpmaif_hw_info *hw_info,
 					       unsigned int dlq_pit_idx);
 
-#endif /* __T7XX_DPMAIF_H__ */
+#endif 

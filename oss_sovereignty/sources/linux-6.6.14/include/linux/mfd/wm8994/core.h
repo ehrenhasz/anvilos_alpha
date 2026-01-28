@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/linux/mfd/wm8994/core.h -- Core interface for WM8994
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+
 
 #ifndef __MFD_WM8994_CORE_H__
 #define __MFD_WM8994_CORE_H__
@@ -47,7 +41,7 @@ struct irq_domain;
 #define WM8994_IRQ_DCS_DONE		14
 #define WM8994_IRQ_TEMP_WARN		15
 
-/* GPIOs in the chip are numbered from 1-11 */
+
 #define WM8994_IRQ_GPIO(x) (x + WM8994_IRQ_TEMP_WARN)
 
 struct wm8994 {
@@ -69,7 +63,7 @@ struct wm8994 {
 	struct regmap_irq_chip_data *irq_data;
 	struct irq_domain *edge_irq;
 
-	/* Used over suspend/resume */
+	
 	bool suspended;
 
 	struct regulator_dev *dbvdd;
@@ -77,7 +71,7 @@ struct wm8994 {
 	struct regulator_bulk_data *supplies;
 };
 
-/* Device I/O API */
+
 
 static inline int wm8994_reg_read(struct wm8994 *wm8994, unsigned short reg)
 {
@@ -116,7 +110,7 @@ static inline int wm8994_set_bits(struct wm8994 *wm8994, unsigned short reg,
 	return regmap_update_bits(wm8994->regmap, reg, mask, val);
 }
 
-/* Helper to save on boilerplate */
+
 static inline int wm8994_request_irq(struct wm8994 *wm8994, int irq,
 				     irq_handler_t handler, const char *name,
 				     void *data)

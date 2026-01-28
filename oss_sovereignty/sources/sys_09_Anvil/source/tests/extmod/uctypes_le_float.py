@@ -6,7 +6,7 @@ except ImportError:
 desc = {
     "f32": uctypes.FLOAT32 | 0,
     "f64": uctypes.FLOAT64 | 0,
-    "uf64": uctypes.FLOAT64 | 2,  # unaligned
+    "uf64": uctypes.FLOAT64 | 2,  
 }
 data = bytearray(10)
 S = uctypes.struct(uctypes.addressof(data), desc, uctypes.LITTLE_ENDIAN)

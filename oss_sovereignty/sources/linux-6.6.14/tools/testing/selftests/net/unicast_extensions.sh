@@ -82,9 +82,9 @@ route_test(){
 	[ -n "$expect_failure" ] && test_result=`expr 1 - $test_result`
 	show_result $test_result "$6"
 }
-echo "###########################################################################"
+echo "
 echo "Unicast address extensions tests (behavior of reserved IPv4 addresses)"
-echo "###########################################################################"
+echo "
 segmenttest 240.1.2.1   240.1.2.4    24 "assign and ping within 240/4 (1 of 2) (is allowed)"
 segmenttest 250.100.2.1 250.100.30.4 16 "assign and ping within 240/4 (2 of 2) (is allowed)"
 segmenttest 0.1.2.17    0.1.2.23  24 "assign and ping within 0/8 (1 of 2) (is allowed)"

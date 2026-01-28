@@ -1,7 +1,0 @@
-#include "cn9132-db.dtsi"
-/ {
-	model = "Marvell Armada CN9132-DB setup B";
-};
-&cp0_nand_controller {
-	status = "okay";
-};

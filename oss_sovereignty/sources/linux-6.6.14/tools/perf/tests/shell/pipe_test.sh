@@ -7,17 +7,17 @@ if ! perf record -e task-clock:u -o - ${prog} | perf report -i - --task | grep $
 	exit 1
 fi
 if ! perf record -e task-clock:u -o - ${prog} | perf inject -b | perf report -i - | grep ${sym}; then
-	echo "cannot find noploop function in pipe #1"
+	echo "cannot find noploop function in pipe 
 	exit 1
 fi
 perf record -e task-clock:u -o - ${prog} | perf inject -b -o ${data}
 if ! perf report -i ${data} | grep ${sym}; then
-	echo "cannot find noploop function in pipe #2"
+	echo "cannot find noploop function in pipe 
 	exit 1
 fi
 perf record -e task-clock:u -o ${data} ${prog}
 if ! perf inject -b -i ${data} | perf report -i - | grep ${sym}; then
-	echo "cannot find noploop function in pipe #3"
+	echo "cannot find noploop function in pipe 
 	exit 1
 fi
 rm -f ${data} ${data}.old

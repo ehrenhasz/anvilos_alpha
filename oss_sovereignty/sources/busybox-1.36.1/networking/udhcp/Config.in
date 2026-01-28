@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 config UDHCPD
 	bool "udhcpd (21 kb)"
@@ -104,7 +104,7 @@ config UDHCPC6_DEFAULT_SCRIPT
 	default "/usr/share/udhcpc/default6.script"
 	depends on UDHCPC6
 
-# udhcpc6 config is inserted here:
+
 config UDHCPC6
 	bool "udhcpc6 (21 kb)"
 	default y

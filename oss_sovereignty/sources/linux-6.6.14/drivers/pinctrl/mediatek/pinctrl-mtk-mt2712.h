@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
- *
- */
+
+
 #ifndef PINCTRL_MTK_MT2712_H
 #define PINCTRL_MTK_MT2712_H
 
@@ -1754,4 +1750,4 @@ static const struct mtk_desc_pin mtk_pins_mt2712[] = {
 	),
 };
 
-#endif /* __PINCTRL_MTK_MT2712_H */
+#endif 

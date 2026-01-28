@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SECCOMP_H
 #define _LINUX_SECCOMP_H
 
@@ -11,7 +11,7 @@
 					 SECCOMP_FILTER_FLAG_TSYNC_ESRCH | \
 					 SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV)
 
-/* sizeof() the first published struct seccomp_notif_addfd */
+
 #define SECCOMP_NOTIFY_ADDFD_SIZE_VER0 24
 #define SECCOMP_NOTIFY_ADDFD_SIZE_LATEST SECCOMP_NOTIFY_ADDFD_SIZE_VER0
 
@@ -22,18 +22,7 @@
 #include <asm/seccomp.h>
 
 struct seccomp_filter;
-/**
- * struct seccomp - the state of a seccomp'ed process
- *
- * @mode:  indicates one of the valid values above for controlled
- *         system calls available to a process.
- * @filter_count: number of seccomp filters
- * @filter: must always point to a valid seccomp-filter or NULL as it is
- *          accessed without locking during system call entry.
- *
- *          @filter must only be accessed from the context of current as there
- *          is no read locking.
- */
+
 struct seccomp {
 	int mode;
 	atomic_t filter_count;
@@ -60,7 +49,7 @@ static inline int seccomp_mode(struct seccomp *s)
 	return s->mode;
 }
 
-#else /* CONFIG_SECCOMP */
+#else 
 
 #include <linux/errno.h>
 
@@ -89,12 +78,12 @@ static inline int seccomp_mode(struct seccomp *s)
 {
 	return SECCOMP_MODE_DISABLED;
 }
-#endif /* CONFIG_SECCOMP */
+#endif 
 
 #ifdef CONFIG_SECCOMP_FILTER
 extern void seccomp_filter_release(struct task_struct *tsk);
 extern void get_seccomp_filter(struct task_struct *tsk);
-#else  /* CONFIG_SECCOMP_FILTER */
+#else  
 static inline void seccomp_filter_release(struct task_struct *tsk)
 {
 	return;
@@ -103,7 +92,7 @@ static inline void get_seccomp_filter(struct task_struct *tsk)
 {
 	return;
 }
-#endif /* CONFIG_SECCOMP_FILTER */
+#endif 
 
 #if defined(CONFIG_SECCOMP_FILTER) && defined(CONFIG_CHECKPOINT_RESTORE)
 extern long seccomp_get_filter(struct task_struct *task,
@@ -122,7 +111,7 @@ static inline long seccomp_get_metadata(struct task_struct *task,
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_SECCOMP_FILTER && CONFIG_CHECKPOINT_RESTORE */
+#endif 
 
 #ifdef CONFIG_SECCOMP_CACHE_DEBUG
 struct seq_file;
@@ -130,4 +119,4 @@ struct seq_file;
 int proc_pid_seccomp_cache(struct seq_file *m, struct pid_namespace *ns,
 			   struct pid *pid, struct task_struct *task);
 #endif
-#endif /* _LINUX_SECCOMP_H */
+#endif 

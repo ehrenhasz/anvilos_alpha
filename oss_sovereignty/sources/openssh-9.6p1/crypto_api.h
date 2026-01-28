@@ -1,9 +1,6 @@
-/* $OpenBSD: crypto_api.h,v 1.8 2023/01/15 23:05:32 djm Exp $ */
 
-/*
- * Assembled from generated headers and source files by Markus Friedl.
- * Placed in the public domain.
- */
+
+
 
 #ifndef crypto_api_h
 #define crypto_api_h
@@ -53,4 +50,4 @@ int	crypto_kem_sntrup761_dec(unsigned char *k,
     const unsigned char *cstr, const unsigned char *sk);
 int	crypto_kem_sntrup761_keypair(unsigned char *pk, unsigned char *sk);
 
-#endif /* crypto_api_h */
+#endif 

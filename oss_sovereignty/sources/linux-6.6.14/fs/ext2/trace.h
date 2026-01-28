@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ext2
@@ -86,7 +86,7 @@ TRACE_EVENT(ext2_dio_write_endio,
 		  __entry->ret)
 );
 
-#endif /* _EXT2_TRACE_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,9 +1,9 @@
 ksft_skip=4
 ret=0
 rnd=$(mktemp -u XXXXXXXX)
-nsr="nsr-$rnd"	# synproxy machine
-ns1="ns1-$rnd"  # iperf client
-ns2="ns2-$rnd"  # iperf server
+nsr="nsr-$rnd"	
+ns1="ns1-$rnd"  
+ns2="ns2-$rnd"  
 checktool (){
 	if ! $1 > /dev/null 2>&1; then
 		echo "SKIP: Could not $2"

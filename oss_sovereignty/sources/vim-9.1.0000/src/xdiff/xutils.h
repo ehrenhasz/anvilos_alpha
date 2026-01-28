@@ -1,24 +1,4 @@
-/*
- *  LibXDiff by Davide Libenzi ( File Differential Library )
- *  Copyright (C) 2003  Davide Libenzi
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- *
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, see
- *  <http://www.gnu.org/licenses/>.
- *
- *  Davide Libenzi <davidel@xmailserver.org>
- *
- */
+
 
 #if !defined(XUTILS_H)
 #define XUTILS_H
@@ -42,7 +22,7 @@ int xdl_emit_hunk_hdr(long s1, long c1, long s2, long c2,
 int xdl_fall_back_diff(xdfenv_t *diff_env, xpparam_t const *xpp,
 		       int line1, int count1, int line2, int count2);
 
-/* Do not call this function, use XDL_ALLOC_GROW instead */
+
 void* xdl_alloc_grow_helper(void* p, long nr, long* alloc, size_t size);
 
-#endif /* #if !defined(XUTILS_H) */
+#endif 

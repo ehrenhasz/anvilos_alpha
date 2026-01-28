@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_MAP_H
 #define __PERF_MAP_H
 
@@ -25,9 +25,9 @@ DECLARE_RC_STRUCT(map) {
 	u64			pgoff;
 	u64			reloc;
 
-	/* ip -> dso rip */
+	
 	u64			(*map_ip)(const struct map *, u64);
-	/* dso rip -> ip */
+	
 	u64			(*unmap_ip)(const struct map *, u64);
 
 	struct dso		*dso;
@@ -41,11 +41,11 @@ struct kmap *__map__kmap(struct map *map);
 struct kmap *map__kmap(struct map *map);
 struct maps *map__kmaps(struct map *map);
 
-/* ip -> dso rip */
+
 u64 map__dso_map_ip(const struct map *map, u64 ip);
-/* dso rip -> ip */
+
 u64 map__dso_unmap_ip(const struct map *map, u64 ip);
-/* Returns ip */
+
 u64 identity__map_ip(const struct map *map __maybe_unused, u64 ip);
 
 static inline struct dso *map__dso(const struct map *map)
@@ -123,33 +123,20 @@ static inline size_t map__size(const struct map *map)
 	return map__end(map) - map__start(map);
 }
 
-/* rip/ip <-> addr suitable for passing to `objdump --start-address=` */
+
 u64 map__rip_2objdump(struct map *map, u64 rip);
 
-/* objdump address -> memory address */
+
 u64 map__objdump_2mem(struct map *map, u64 ip);
 
 struct symbol;
 struct thread;
 
-/* map__for_each_symbol - iterate over the symbols in the given map
- *
- * @map: the 'struct map *' in which symbols are iterated
- * @pos: the 'struct symbol *' to use as a loop cursor
- * @n: the 'struct rb_node *' to use as a temporary storage
- * Note: caller must ensure map->dso is not NULL (map is loaded).
- */
+
 #define map__for_each_symbol(map, pos, n)	\
 	dso__for_each_symbol(map__dso(map), pos, n)
 
-/* map__for_each_symbol_with_name - iterate over the symbols in the given map
- *                                  that have the given name
- *
- * @map: the 'struct map *' in which symbols are iterated
- * @sym_name: the symbol name
- * @pos: the 'struct symbol *' to use as a loop cursor
- * @idx: the cursor index in the symbol names array
- */
+
 #define __map__for_each_symbol_by_name(map, sym_name, pos, idx)		\
 	for (pos = map__find_symbol_by_name_idx(map, sym_name, &idx);	\
 	     pos &&						\
@@ -242,7 +229,7 @@ static inline bool is_bpf_image(const char *name)
 
 static inline int is_anon_memory(const char *filename)
 {
-	return !strcmp(filename, "//anon") ||
+	return !strcmp(filename, "
 	       !strncmp(filename, "/dev/zero", sizeof("/dev/zero") - 1) ||
 	       !strncmp(filename, "/anon_hugepage", sizeof("/anon_hugepage") - 1);
 }
@@ -303,4 +290,4 @@ static inline void map__set_unmap_ip(struct map *map, u64 (*unmap_ip)(const stru
 {
 	RC_CHK_ACCESS(map)->unmap_ip = unmap_ip;
 }
-#endif /* __PERF_MAP_H */
+#endif 

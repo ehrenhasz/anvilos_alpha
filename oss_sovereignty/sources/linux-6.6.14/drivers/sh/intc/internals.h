@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/sh_intc.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
@@ -81,11 +81,11 @@ enum {
 	REG_FN_MODIFY_BASE = 9
 };
 
-enum {	MODE_ENABLE_REG = 0, /* Bit(s) set -> interrupt enabled */
-	MODE_MASK_REG,       /* Bit(s) set -> interrupt disabled */
-	MODE_DUAL_REG,       /* Two registers, set bit to enable / disable */
-	MODE_PRIO_REG,       /* Priority value written to enable interrupt */
-	MODE_PCLR_REG,       /* Above plus all bits set to disable interrupt */
+enum {	MODE_ENABLE_REG = 0, 
+	MODE_MASK_REG,       
+	MODE_DUAL_REG,       
+	MODE_PRIO_REG,       
+	MODE_PCLR_REG,       
 };
 
 static inline struct intc_desc_int *get_intc_desc(unsigned int irq)
@@ -95,9 +95,7 @@ static inline struct intc_desc_int *get_intc_desc(unsigned int irq)
 	return container_of(chip, struct intc_desc_int, chip);
 }
 
-/*
- * Grumble.
- */
+
 static inline void activate_irq(int irq)
 {
 	irq_modify_status(irq, IRQ_NOREQUEST, IRQ_NOPROBE);
@@ -111,7 +109,7 @@ static inline int intc_handle_int_cmp(const void *a, const void *b)
 	return _a->irq - _b->irq;
 }
 
-/* access.c */
+
 extern unsigned long
 (*intc_reg_fns[])(unsigned long addr, unsigned long h, unsigned long data);
 
@@ -139,7 +137,7 @@ unsigned int intc_set_field_from_handle(unsigned int value,
 unsigned long intc_get_field_from_handle(unsigned int value,
 					 unsigned int handle);
 
-/* balancing.c */
+
 #ifdef CONFIG_INTC_BALANCING
 void intc_balancing_enable(unsigned int irq);
 void intc_balancing_disable(unsigned int irq);
@@ -153,11 +151,11 @@ intc_set_dist_handle(unsigned int irq, struct intc_desc *desc,
 		     struct intc_desc_int *d, intc_enum id) { }
 #endif
 
-/* chip.c */
+
 extern struct irq_chip intc_irq_chip;
 void _intc_enable(struct irq_data *data, unsigned long handle);
 
-/* core.c */
+
 extern struct list_head intc_list;
 extern raw_spinlock_t intc_big_lock;
 extern struct bus_type intc_subsys;
@@ -166,7 +164,7 @@ unsigned int intc_get_dfl_prio_level(void);
 unsigned int intc_get_prio_level(unsigned int irq);
 void intc_set_prio_level(unsigned int irq, unsigned int level);
 
-/* handle.c */
+
 unsigned int intc_get_mask_handle(struct intc_desc *desc,
 				  struct intc_desc_int *d,
 				  intc_enum enum_id, int do_grps);
@@ -182,10 +180,10 @@ unsigned long intc_get_ack_handle(unsigned int irq);
 void intc_enable_disable_enum(struct intc_desc *desc, struct intc_desc_int *d,
 			      intc_enum enum_id, int enable);
 
-/* irqdomain.c */
+
 void intc_irq_domain_init(struct intc_desc_int *d, struct intc_hw_desc *hw);
 
-/* virq.c */
+
 void intc_subgroup_init(struct intc_desc *desc, struct intc_desc_int *d);
 void intc_irq_xlate_set(unsigned int irq, intc_enum id, struct intc_desc_int *d);
 struct intc_map_entry *intc_irq_xlate_get(unsigned int irq);

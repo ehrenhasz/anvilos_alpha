@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "rk3399-khadas-edge.dtsi"
-/ {
-	model = "Khadas Edge";
-	compatible = "khadas,edge", "rockchip,rk3399";
-};

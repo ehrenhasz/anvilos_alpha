@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_BLOCK_H
 #define __PERF_BLOCK_H
 
@@ -83,4 +83,4 @@ int report__browse_block_hists(struct block_hist *bh, float min_percent,
 
 float block_info__total_cycles_percent(struct hist_entry *he);
 
-#endif /* __PERF_BLOCK_H */
+#endif 

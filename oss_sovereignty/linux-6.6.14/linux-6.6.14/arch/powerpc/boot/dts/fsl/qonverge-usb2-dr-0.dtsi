@@ -1,7 +1,0 @@
-usb0: usb@210000 {
-	compatible = "fsl-usb2-dr";
-	reg = <0x210000 0x1000>;
-	#address-cells = <1>;
-	#size-cells = <0>;
-	interrupts = <44 0x2 0 0>;
-};

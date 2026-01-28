@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland
- */
+
+
 
 #ifndef CFFRML_H_
 #define CFFRML_H_
@@ -18,4 +15,4 @@ void cffrml_put(struct cflayer *layr);
 void cffrml_hold(struct cflayer *layr);
 int cffrml_refcnt_read(struct cflayer *layr);
 
-#endif /* CFFRML_H_ */
+#endif 

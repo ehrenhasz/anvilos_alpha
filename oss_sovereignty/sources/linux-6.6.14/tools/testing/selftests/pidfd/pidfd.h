@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __PIDFD_H
 #define __PIDFD_H
@@ -50,18 +50,10 @@
 #define PIDFD_NONBLOCK O_NONBLOCK
 #endif
 
-/*
- * The kernel reserves 300 pids via RESERVED_PIDS in kernel/pid.c
- * That means, when it wraps around any pid < 300 will be skipped.
- * So we need to use a pid > 300 in order to test recycling.
- */
+
 #define PID_RECYCLE 1000
 
-/*
- * Define a few custom error codes for the child process to clearly indicate
- * what is happening. This way we can tell the difference between a system
- * error, a test error, etc.
- */
+
 #define PIDFD_PASS 0
 #define PIDFD_FAIL 1
 #define PIDFD_ERROR 2
@@ -114,4 +106,4 @@ static inline int sys_memfd_create(const char *name, unsigned int flags)
 	return syscall(__NR_memfd_create, name, flags);
 }
 
-#endif /* __PIDFD_H */
+#endif 

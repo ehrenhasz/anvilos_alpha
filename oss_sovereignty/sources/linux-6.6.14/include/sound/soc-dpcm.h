@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * linux/sound/soc-dpcm.h -- ALSA SoC Dynamic PCM Support
- *
- * Author:		Liam Girdwood <lrg@ti.com>
- */
+
 
 #ifndef __LINUX_SND_SOC_DPCM_H
 #define __LINUX_SND_SOC_DPCM_H
@@ -14,27 +9,20 @@
 
 struct snd_soc_pcm_runtime;
 
-/*
- * Types of runtime_update to perform. e.g. originated from FE PCM ops
- * or audio route changes triggered by muxes/mixers.
- */
+
 enum snd_soc_dpcm_update {
 	SND_SOC_DPCM_UPDATE_NO	= 0,
 	SND_SOC_DPCM_UPDATE_BE,
 	SND_SOC_DPCM_UPDATE_FE,
 };
 
-/*
- * Dynamic PCM Frontend -> Backend link management states.
- */
+
 enum snd_soc_dpcm_link_state {
-	SND_SOC_DPCM_LINK_STATE_NEW	= 0,	/* newly created link */
-	SND_SOC_DPCM_LINK_STATE_FREE,		/* link to be dismantled */
+	SND_SOC_DPCM_LINK_STATE_NEW	= 0,	
+	SND_SOC_DPCM_LINK_STATE_FREE,		
 };
 
-/*
- * Dynamic PCM Frontend -> Backend link PCM states.
- */
+
 enum snd_soc_dpcm_state {
 	SND_SOC_DPCM_STATE_NEW	= 0,
 	SND_SOC_DPCM_STATE_OPEN,
@@ -48,33 +36,23 @@ enum snd_soc_dpcm_state {
 	SND_SOC_DPCM_STATE_CLOSE,
 };
 
-/*
- * Dynamic PCM trigger ordering. Triggering flexibility is required as some
- * DSPs require triggering before/after their CPU platform and DAIs.
- *
- * i.e. some clients may want to manually order this call in their PCM
- * trigger() whilst others will just use the regular core ordering.
- */
+
 enum snd_soc_dpcm_trigger {
 	SND_SOC_DPCM_TRIGGER_PRE		= 0,
 	SND_SOC_DPCM_TRIGGER_POST,
 	SND_SOC_DPCM_TRIGGER_BESPOKE,
 };
 
-/*
- * Dynamic PCM link
- * This links together a FE and BE DAI at runtime and stores the link
- * state information and the hw_params configuration.
- */
+
 struct snd_soc_dpcm {
-	/* FE and BE DAIs*/
+	
 	struct snd_soc_pcm_runtime *be;
 	struct snd_soc_pcm_runtime *fe;
 
-	/* link state */
+	
 	enum snd_soc_dpcm_link_state state;
 
-	/* list of BE and FE for this DPCM link */
+	
 	struct list_head list_be;
 	struct list_head list_fe;
 
@@ -83,9 +61,7 @@ struct snd_soc_dpcm {
 #endif
 };
 
-/*
- * Dynamic PCM runtime data.
- */
+
 struct snd_soc_dpcm_runtime {
 	struct list_head be_clients;
 	struct list_head fe_clients;
@@ -93,15 +69,15 @@ struct snd_soc_dpcm_runtime {
 	int users;
 	struct snd_pcm_hw_params hw_params;
 
-	/* state and update */
+	
 	enum snd_soc_dpcm_update runtime_update;
 	enum snd_soc_dpcm_state state;
 
-	int trigger_pending; /* trigger cmd + 1 if pending, 0 if not */
+	int trigger_pending; 
 
-	int be_start; /* refcount protected by BE stream pcm lock */
-	int be_pause; /* refcount protected by BE stream pcm lock */
-	bool fe_pause; /* used to track STOP after PAUSE */
+	int be_start; 
+	int be_pause; 
+	bool fe_pause; 
 };
 
 #define for_each_dpcm_fe(be, stream, _dpcm)				\
@@ -114,30 +90,30 @@ struct snd_soc_dpcm_runtime {
 #define for_each_dpcm_be_rollback(fe, stream, _dpcm)			\
 	list_for_each_entry_continue_reverse(_dpcm, &(fe)->dpcm[stream].be_clients, list_be)
 
-/* can this BE stop and free */
+
 int snd_soc_dpcm_can_be_free_stop(struct snd_soc_pcm_runtime *fe,
 		struct snd_soc_pcm_runtime *be, int stream);
 
-/* can this BE perform a hw_params() */
+
 int snd_soc_dpcm_can_be_params(struct snd_soc_pcm_runtime *fe,
 		struct snd_soc_pcm_runtime *be, int stream);
 
-/* can this BE perform prepare */
+
 int snd_soc_dpcm_can_be_prepared(struct snd_soc_pcm_runtime *fe,
 				 struct snd_soc_pcm_runtime *be, int stream);
 
-/* is the current PCM operation for this FE ? */
+
 int snd_soc_dpcm_fe_can_update(struct snd_soc_pcm_runtime *fe, int stream);
 
-/* is the current PCM operation for this BE ? */
+
 int snd_soc_dpcm_be_can_update(struct snd_soc_pcm_runtime *fe,
 		struct snd_soc_pcm_runtime *be, int stream);
 
-/* get the substream for this BE */
+
 struct snd_pcm_substream *
 	snd_soc_dpcm_get_substream(struct snd_soc_pcm_runtime *be, int stream);
 
-/* update audio routing between PCMs and any DAI links */
+
 int snd_soc_dpcm_runtime_update(struct snd_soc_card *card);
 
 #ifdef CONFIG_DEBUG_FS

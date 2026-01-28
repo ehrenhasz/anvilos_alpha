@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef BTRFS_EXTENT_TREE_H
 #define BTRFS_EXTENT_TREE_H
@@ -14,7 +14,7 @@ enum btrfs_extent_allocation_policy {
 };
 
 struct find_free_extent_ctl {
-	/* Basic allocation info */
+	
 	u64 ram_bytes;
 	u64 num_bytes;
 	u64 min_alloc_size;
@@ -22,10 +22,10 @@ struct find_free_extent_ctl {
 	u64 flags;
 	int delalloc;
 
-	/* Where to start the search inside the bg */
+	
 	u64 search_start;
 
-	/* For clustered allocation */
+	
 	u64 empty_cluster;
 	struct btrfs_free_cluster *last_ptr;
 	bool use_cluster;
@@ -33,49 +33,43 @@ struct find_free_extent_ctl {
 	bool have_caching_bg;
 	bool orig_have_caching_bg;
 
-	/* Allocation is called for tree-log */
+	
 	bool for_treelog;
 
-	/* Allocation is called for data relocation */
+	
 	bool for_data_reloc;
 
-	/* RAID index, converted from flags */
+	
 	int index;
 
-	/*
-	 * Current loop number, check find_free_extent_update_loop() for details
-	 */
+	
 	int loop;
 
-	/*
-	 * Set to true if we're retrying the allocation on this block group
-	 * after waiting for caching progress, this is so that we retry only
-	 * once before moving on to another block group.
-	 */
+	
 	bool retry_uncached;
 
-	/* If current block group is cached */
+	
 	int cached;
 
-	/* Max contiguous hole found */
+	
 	u64 max_extent_size;
 
-	/* Total free space from free space cache, not always contiguous */
+	
 	u64 total_free_space;
 
-	/* Found result */
+	
 	u64 found_offset;
 
-	/* Hint where to start looking for an empty space */
+	
 	u64 hint_byte;
 
-	/* Allocation policy */
+	
 	enum btrfs_extent_allocation_policy policy;
 
-	/* Whether or not the allocator is currently following a hint */
+	
 	bool hinted;
 
-	/* Size class of block groups to prefer in early loops */
+	
 	enum btrfs_block_group_size_class size_class;
 };
 

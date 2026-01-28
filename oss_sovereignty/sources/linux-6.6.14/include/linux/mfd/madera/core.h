@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD internals for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2015-2018 Cirrus Logic
- */
+
+
 
 #ifndef MADERA_CORE_H
 #define MADERA_CORE_H
@@ -18,7 +14,7 @@
 #include <linux/regulator/consumer.h>
 
 enum madera_type {
-	/* 0 is reserved for indicating failure to identify */
+	
 	CS47L35 = 1,
 	CS47L85 = 2,
 	CS47L90 = 3,
@@ -50,12 +46,12 @@ enum {
 
 #define MADERA_MAX_HP_OUTPUT		3
 
-/* Notifier events */
+
 #define MADERA_NOTIFY_VOICE_TRIGGER	0x1
 #define MADERA_NOTIFY_HPDET		0x2
 #define MADERA_NOTIFY_MICDET		0x4
 
-/* GPIO Function Definitions */
+
 #define MADERA_GP_FN_ALTERNATE		0x00
 #define MADERA_GP_FN_GPIO		0x01
 #define MADERA_GP_FN_DSP_GPIO		0x02
@@ -144,34 +140,7 @@ enum {
 
 struct snd_soc_dapm_context;
 
-/*
- * struct madera - internal data shared by the set of Madera drivers
- *
- * This should not be used by anything except child drivers of the Madera MFD
- *
- * @regmap:		pointer to the regmap instance for 16-bit registers
- * @regmap_32bit:	pointer to the regmap instance for 32-bit registers
- * @dev:		pointer to the MFD device
- * @type:		type of codec
- * @rev:		silicon revision
- * @type_name:		display name of this codec
- * @num_core_supplies:	number of core supply regulators
- * @core_supplies:	list of core supplies that are always required
- * @dcvdd:		pointer to DCVDD regulator
- * @internal_dcvdd:	true if DCVDD is supplied from the internal LDO1
- * @pdata:		our pdata
- * @irq_dev:		the irqchip child driver device
- * @irq_data:		pointer to irqchip data for the child irqchip driver
- * @irq:		host irq number from SPI or I2C configuration
- * @mclk:		Structure holding clock supplies
- * @out_clamp:		indicates output clamp state for each analogue output
- * @out_shorted:	indicates short circuit state for each analogue output
- * @hp_ena:		bitflags of enable state for the headphone outputs
- * @num_micbias:	number of MICBIAS outputs
- * @num_childbias:	number of child biases for each MICBIAS
- * @dapm:		pointer to codec driver DAPM context
- * @notifier:		notifier for signalling events to ASoC machine driver
- */
+
 struct madera {
 	struct regmap *regmap;
 	struct regmap *regmap_32bit;

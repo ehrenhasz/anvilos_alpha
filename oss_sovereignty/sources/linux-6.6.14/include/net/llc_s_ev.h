@@ -1,26 +1,16 @@
 #ifndef LLC_S_EV_H
 #define LLC_S_EV_H
-/*
- * Copyright (c) 1997 by Procom Technology,Inc.
- * 		 2001 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- *
- * This program can be redistributed or modified under the terms of the
- * GNU General Public License as published by the Free Software Foundation.
- * This program is distributed without any warranty or implied warranty
- * of merchantability or fitness for a particular purpose.
- *
- * See the GNU General Public License for more details.
- */
+
 
 #include <linux/skbuff.h>
 #include <net/llc.h>
 
-/* Defines SAP component events */
-/* Types of events (possible values in 'ev->type') */
+
+
 #define LLC_SAP_EV_TYPE_SIMPLE		1
 #define LLC_SAP_EV_TYPE_CONDITION	2
 #define LLC_SAP_EV_TYPE_PRIM		3
-#define LLC_SAP_EV_TYPE_PDU		4   /* command/response PDU */
+#define LLC_SAP_EV_TYPE_PDU		4   
 #define LLC_SAP_EV_TYPE_ACK_TMR		5
 #define LLC_SAP_EV_TYPE_RPT_STATUS	6
 
@@ -64,4 +54,4 @@ int llc_sap_ev_test_req(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_ev_rx_test_c(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_ev_rx_test_r(struct llc_sap *sap, struct sk_buff *skb);
 int llc_sap_ev_deactivation_req(struct llc_sap *sap, struct sk_buff *skb);
-#endif /* LLC_S_EV_H */
+#endif 

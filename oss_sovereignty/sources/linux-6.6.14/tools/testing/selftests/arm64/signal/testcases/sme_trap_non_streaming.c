@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that using an instruction not supported in streaming mode
- * traps when in streaming mode.
- */
+
+
 
 #include <signal.h>
 #include <ucontext.h>
@@ -15,14 +10,10 @@
 
 int sme_trap_non_streaming_trigger(struct tdescr *td)
 {
-	/*
-	 * The framework will handle SIGILL so we need to exit SM to
-	 * stop any other code triggering a further SIGILL down the
-	 * line from using a streaming-illegal instruction.
-	 */
-	asm volatile(".inst 0xd503437f; /* SMSTART ZA */ \
+	
+	asm volatile(".inst 0xd503437f;  \
 		      cnt v0.16b, v0.16b; \
-                      .inst 0xd503447f  /* SMSTOP ZA */");
+                      .inst 0xd503447f  ");
 
 	return 0;
 }

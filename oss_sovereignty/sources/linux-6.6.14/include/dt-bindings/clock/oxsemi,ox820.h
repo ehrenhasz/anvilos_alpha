@@ -1,16 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Neil Armstrong <narmstrong@baylibre.com>
- */
+
+
 
 #ifndef DT_CLOCK_OXSEMI_OX820_H
 #define DT_CLOCK_OXSEMI_OX820_H
 
-/* PLLs */
+
 #define CLK_820_PLLA		0
 #define CLK_820_PLLB		1
 
-/* Gate Clocks */
+
 #define CLK_820_LEON		2
 #define CLK_820_DMA_SGDMA	3
 #define CLK_820_CIPHER		4
@@ -26,4 +24,4 @@
 #define CLK_820_REF600		14
 #define CLK_820_USBDEV		15
 
-#endif /* DT_CLOCK_OXSEMI_OX820_H */
+#endif 

@@ -9,7 +9,7 @@ MLXSW_SPECTRUM_REV=$(case $MLXSW_CHIP in
 			     mlxsw_spectrum)
 				     echo 1 ;;
 			     mlxsw_spectrum*)
-				     echo ${MLXSW_CHIP#mlxsw_spectrum} ;;
+				     echo ${MLXSW_CHIP
 			     *)
 				     echo "Couldn't determine Spectrum chip revision." \
 					  > /dev/stderr ;;

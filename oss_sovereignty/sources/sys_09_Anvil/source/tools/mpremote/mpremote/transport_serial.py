@@ -32,10 +32,10 @@ class SerialTransport(Transport):
                 elif os.name == "nt":
                     self.serial = serial.Serial(**serial_kwargs)
                     self.serial.port = device
-                    portinfo = list(serial.tools.list_ports.grep(device))  # type: ignore
+                    portinfo = list(serial.tools.list_ports.grep(device))  
                     if portinfo and portinfo[0].manufacturer != "Microsoft":
-                        self.serial.dtr = False  # DTR False = gpio0 High = Normal boot
-                        self.serial.rts = False  # RTS False = EN High = MCU enabled
+                        self.serial.dtr = False  
+                        self.serial.rts = False  
                     self.serial.open()
                 else:
                     self.serial = serial.Serial(device, **serial_kwargs)
@@ -81,18 +81,18 @@ class SerialTransport(Transport):
                 time.sleep(0.01)
         return data
     def enter_raw_repl(self, soft_reset=True):
-        self.serial.write(b"\r\x03\x03")  # ctrl-C twice: interrupt any running program
+        self.serial.write(b"\r\x03\x03")  
         n = self.serial.inWaiting()
         while n > 0:
             self.serial.read(n)
             n = self.serial.inWaiting()
-        self.serial.write(b"\r\x01")  # ctrl-A: enter raw REPL
+        self.serial.write(b"\r\x01")  
         if soft_reset:
             data = self.read_until(1, b"raw REPL; CTRL-B to exit\r\n>")
             if not data.endswith(b"raw REPL; CTRL-B to exit\r\n>"):
                 print(data)
                 raise TransportError("could not enter raw repl")
-            self.serial.write(b"\x04")  # ctrl-D: soft reset
+            self.serial.write(b"\x04")  
             data = self.read_until(1, b"soft reboot\r\n")
             if not data.endswith(b"soft reboot\r\n"):
                 print(data)
@@ -103,7 +103,7 @@ class SerialTransport(Transport):
             raise TransportError("could not enter raw repl")
         self.in_raw_repl = True
     def exit_raw_repl(self):
-        self.serial.write(b"\r\x02")  # ctrl-B: enter friendly REPL
+        self.serial.write(b"\r\x02")  
         self.in_raw_repl = False
     def follow(self, timeout, data_consumer=None):
         data = self.read_until(1, b"\x04", timeout=timeout, data_consumer=data_consumer)
@@ -565,14 +565,14 @@ class RemoteFile(io.IOBase):
             raise StopIteration
         return l
     def ioctl(self, request, arg):
-        if request == 1:  # FLUSH
+        if request == 1:  
             self.flush()
-        elif request == 2:  # SEEK
+        elif request == 2:  
             import machine
             machine.mem32[arg] = self.seek(machine.mem32[arg], machine.mem32[arg + 4])
-        elif request == 4:  # CLOSE
+        elif request == 4:  
             self.close()
-        elif request == 11:  # BUFFER_SIZE
+        elif request == 11:  
             return 249
         else:
             return -1
@@ -741,7 +741,7 @@ def __mount():
 """
 for key, value in fs_hook_cmds.items():
     fs_hook_code = re.sub(key, str(value), fs_hook_code)
-fs_hook_code = re.sub(" *#.*$", "", fs_hook_code, flags=re.MULTILINE)
+fs_hook_code = re.sub(" *
 fs_hook_code = re.sub("\n\n+", "\n", fs_hook_code)
 fs_hook_code = re.sub("    ", " ", fs_hook_code)
 fs_hook_code = re.sub("rd_", "r", fs_hook_code)
@@ -791,7 +791,7 @@ class PyboardCommand:
             parent = os.path.abspath(self.root)
             child = os.path.abspath(path)
         if parent != os.path.commonpath([parent, child]):
-            raise OSError(EPERM, "")  # File is outside mounted dir
+            raise OSError(EPERM, "")  
     def do_stat(self):
         path = self.root + self.rd_str()
         try:
@@ -934,11 +934,11 @@ class SerialIntercept:
             c = self.orig_serial.read(1)
             if c == b"\x18":
                 c = self.orig_serial.read(1)[0]
-                self.orig_serial.write(b"\x18")  # Acknowledge command
+                self.orig_serial.write(b"\x18")  
                 PyboardCommand.cmd_table[c](self.cmd)
             elif not VT_ENABLED and c == b"\x1b":
                 esctype = self.orig_serial.read(1)
-                if esctype == b"[":  # CSI
+                if esctype == b"[":  
                     while not (0x40 < self.orig_serial.read(1)[0] < 0x7E):
                         pass
             else:

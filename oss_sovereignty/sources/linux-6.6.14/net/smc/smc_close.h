@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Socket Closing
- *
- * Copyright IBM Corp. 2016
- *
- * Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef SMC_CLOSE_H
 #define SMC_CLOSE_H
@@ -27,4 +19,4 @@ void smc_clcsock_release(struct smc_sock *smc);
 int smc_close_abort(struct smc_connection *conn);
 void smc_close_active_abort(struct smc_sock *smc);
 
-#endif /* SMC_CLOSE_H */
+#endif 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Martin Hundebøll, Jeppe Ledet-Pedersen
- */
+
+
 
 #ifndef _NET_BATMAN_ADV_NETWORK_CODING_H_
 #define _NET_BATMAN_ADV_NETWORK_CODING_H_
@@ -38,7 +35,7 @@ void batadv_nc_skb_store_for_decoding(struct batadv_priv *bat_priv,
 void batadv_nc_skb_store_sniffed_unicast(struct batadv_priv *bat_priv,
 					 struct sk_buff *skb);
 
-#else /* ifdef CONFIG_BATMAN_ADV_NC */
+#else 
 
 static inline void batadv_nc_status_update(struct net_device *net_dev)
 {
@@ -101,6 +98,6 @@ batadv_nc_skb_store_sniffed_unicast(struct batadv_priv *bat_priv,
 {
 }
 
-#endif /* ifdef CONFIG_BATMAN_ADV_NC */
+#endif 
 
-#endif /* _NET_BATMAN_ADV_NETWORK_CODING_H_ */
+#endif 

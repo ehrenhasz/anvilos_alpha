@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Kevin Chen <kevin-cw.chen@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT6797_H
 #define _DT_BINDINGS_CLK_MT6797_H
 
-/* TOPCKGEN */
+
 #define	CLK_TOP_MUX_ULPOSC_AXI_CK_MUX_PRE	1
 #define	CLK_TOP_MUX_ULPOSC_AXI_CK_MUX		2
 #define	CLK_TOP_MUX_AXI				3
@@ -104,7 +101,7 @@
 #define	CLK_TOP_MSDCPLL_D8			94
 #define	CLK_TOP_NR				95
 
-/* APMIXED_SYS */
+
 #define CLK_APMIXED_MAINPLL			1
 #define CLK_APMIXED_UNIVPLL			2
 #define CLK_APMIXED_MFGPLL			3
@@ -117,7 +114,7 @@
 #define CLK_APMIXED_APLL2			10
 #define CLK_APMIXED_NR				11
 
-/* INFRA_SYS */
+
 #define	CLK_INFRA_PMIC_TMR			1
 #define	CLK_INFRA_PMIC_AP			2
 #define	CLK_INFRA_PMIC_MD			3
@@ -204,14 +201,14 @@
 #define	CLK_INFRA_13M				84
 #define	CLK_INFRA_NR				85
 
-/* IMG_SYS */
+
 #define	CLK_IMG_FDVT				1
 #define	CLK_IMG_DPE				2
 #define	CLK_IMG_DIP				3
 #define	CLK_IMG_LARB6				4
 #define	CLK_IMG_NR				5
 
-/* MM_SYS */
+
 #define	CLK_MM_SMI_COMMON			1
 #define	CLK_MM_SMI_LARB0			2
 #define	CLK_MM_SMI_LARB5			3
@@ -256,18 +253,18 @@
 #define	CLK_MM_DSI1_INTERFACE_CLOCK		42
 #define	CLK_MM_NR				43
 
-/* VDEC_SYS */
+
 #define	CLK_VDEC_CKEN_ENG			1
 #define	CLK_VDEC_ACTIVE				2
 #define	CLK_VDEC_CKEN				3
 #define	CLK_VDEC_LARB1_CKEN			4
 #define	CLK_VDEC_NR				5
 
-/* VENC_SYS */
+
 #define	CLK_VENC_0				1
 #define	CLK_VENC_1				2
 #define	CLK_VENC_2				3
 #define	CLK_VENC_3				4
 #define	CLK_VENC_NR				5
 
-#endif /* _DT_BINDINGS_CLK_MT6797_H */
+#endif 

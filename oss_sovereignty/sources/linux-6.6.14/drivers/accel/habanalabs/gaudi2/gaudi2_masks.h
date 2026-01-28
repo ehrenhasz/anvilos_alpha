@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI2_MASKS_H_
 #define GAUDI2_MASKS_H_
 
 #include "../include/gaudi2/asic_reg/gaudi2_regs.h"
 
-/* Useful masks for bits in various registers */
+
 #define QMAN_GLBL_ERR_CFG_MSG_EN_MASK	\
 	((0xF << PDMA0_QM_GLBL_ERR_CFG_PQF_ERR_MSG_EN_SHIFT) | \
 	(0x1F << PDMA0_QM_GLBL_ERR_CFG_CQF_ERR_MSG_EN_SHIFT) | \
@@ -63,7 +58,7 @@
 	(0x1F << PDMA0_QM_GLBL_CFG0_CP_EN_SHIFT)  | \
 	(0x1 << PDMA0_QM_GLBL_CFG0_ARC_CQF_EN_SHIFT))
 
-/* QM_IDLE_MASK is valid for all engines QM idle check */
+
 #define QM_IDLE_MASK	(DCORE0_EDMA0_QM_GLBL_STS0_PQF_IDLE_MASK | \
 			DCORE0_EDMA0_QM_GLBL_STS0_CQF_IDLE_MASK | \
 			DCORE0_EDMA0_QM_GLBL_STS0_CP_IDLE_MASK)
@@ -88,7 +83,7 @@
 
 #define DCORE0_TPC0_EML_CFG_DBG_CNT_DBG_EXIT_MASK 0x40
 
-/* CGM_IDLE_MASK is valid for all engines CGM idle check */
+
 #define CGM_IDLE_MASK	DCORE0_TPC0_QM_CGM_STS_AGENT_IDLE_MASK
 
 #define QM_GLBL_CFG1_PQF_STOP		PDMA0_QM_GLBL_CFG1_PQF_STOP_MASK
@@ -158,4 +153,4 @@
 #define PCIE_WRAP_PCIE_IC_SEI_INTR_IND_BAD_ACCESS_INTR_MASK_SHIFT	5
 #define PCIE_WRAP_PCIE_IC_SEI_INTR_IND_BAD_ACCESS_INTR_MASK_MASK	0x20
 
-#endif /* GAUDI2_MASKS_H_ */
+#endif 

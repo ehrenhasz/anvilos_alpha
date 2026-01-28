@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_VIRTIO_PCI_MODERN_H
 #define _LINUX_VIRTIO_PCI_MODERN_H
 
@@ -8,52 +8,45 @@
 struct virtio_pci_modern_common_cfg {
 	struct virtio_pci_common_cfg cfg;
 
-	__le16 queue_notify_data;	/* read-write */
-	__le16 queue_reset;		/* read-write */
+	__le16 queue_notify_data;	
+	__le16 queue_reset;		
 };
 
 struct virtio_pci_modern_device {
 	struct pci_dev *pci_dev;
 
 	struct virtio_pci_common_cfg __iomem *common;
-	/* Device-specific data (non-legacy mode)  */
+	
 	void __iomem *device;
-	/* Base of vq notifications (non-legacy mode). */
+	
 	void __iomem *notify_base;
-	/* Physical base of vq notifications */
+	
 	resource_size_t notify_pa;
-	/* Where to read and clear interrupt */
+	
 	u8 __iomem *isr;
 
-	/* So we can sanity-check accesses. */
+	
 	size_t notify_len;
 	size_t device_len;
 
-	/* Capability for when we need to map notifications per-vq. */
+	
 	int notify_map_cap;
 
-	/* Multiply queue_notify_off by this value. (non-legacy mode). */
+	
 	u32 notify_offset_multiplier;
 
 	int modern_bars;
 
 	struct virtio_device_id id;
 
-	/* optional check for vendor virtio device, returns dev_id or -ERRNO */
+	
 	int (*device_id_check)(struct pci_dev *pdev);
 
-	/* optional mask for devices with limited DMA space */
+	
 	u64 dma_mask;
 };
 
-/*
- * Type-safe wrappers for io accesses.
- * Use these to enforce at compile time the following spec requirement:
- *
- * The driver MUST access each field using the “natural” access
- * method, i.e. 32-bit accesses for 32-bit fields, 16-bit accesses
- * for 16-bit fields and 8-bit accesses for 8-bit fields.
- */
+
 static inline u8 vp_ioread8(const u8 __iomem *addr)
 {
 	return ioread8(addr);

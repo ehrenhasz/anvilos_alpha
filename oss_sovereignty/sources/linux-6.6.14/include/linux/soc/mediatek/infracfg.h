@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SOC_MEDIATEK_INFRACFG_H
 #define __SOC_MEDIATEK_INFRACFG_H
 
@@ -274,38 +274,38 @@
 #define MT8186_TOP_AXI_PROT_EN_3_CLR			(0x2BC)
 #define MT8186_TOP_AXI_PROT_EN_3_STA			(0x2C8)
 
-/* MFG1 */
+
 #define MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP1		(GENMASK(28, 27))
 #define MT8186_TOP_AXI_PROT_EN_MFG1_STEP2		(GENMASK(22, 21))
 #define MT8186_TOP_AXI_PROT_EN_MFG1_STEP3		(BIT(25))
 #define MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP4		(BIT(29))
-/* DIS */
+
 #define MT8186_TOP_AXI_PROT_EN_1_DIS_STEP1		(GENMASK(12, 11))
 #define MT8186_TOP_AXI_PROT_EN_DIS_STEP2		(GENMASK(2, 1) | GENMASK(11, 10))
-/* IMG */
+
 #define MT8186_TOP_AXI_PROT_EN_1_IMG_STEP1		(BIT(23))
 #define MT8186_TOP_AXI_PROT_EN_1_IMG_STEP2		(BIT(15))
-/* IPE */
+
 #define MT8186_TOP_AXI_PROT_EN_1_IPE_STEP1		(BIT(24))
 #define MT8186_TOP_AXI_PROT_EN_1_IPE_STEP2		(BIT(16))
-/* CAM */
+
 #define MT8186_TOP_AXI_PROT_EN_1_CAM_STEP1		(GENMASK(22, 21))
 #define MT8186_TOP_AXI_PROT_EN_1_CAM_STEP2		(GENMASK(14, 13))
-/* VENC */
+
 #define MT8186_TOP_AXI_PROT_EN_1_VENC_STEP1		(BIT(31))
 #define MT8186_TOP_AXI_PROT_EN_1_VENC_STEP2		(BIT(19))
-/* VDEC */
+
 #define MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP1		(BIT(30))
 #define MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP2		(BIT(17))
-/* WPE */
+
 #define MT8186_TOP_AXI_PROT_EN_2_WPE_STEP1		(BIT(17))
 #define MT8186_TOP_AXI_PROT_EN_2_WPE_STEP2		(BIT(16))
-/* CONN_ON */
+
 #define MT8186_TOP_AXI_PROT_EN_1_CONN_ON_STEP1		(BIT(18))
 #define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP2		(BIT(14))
 #define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP3		(BIT(13))
 #define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP4		(BIT(16))
-/* ADSP_TOP */
+
 #define MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP1		(GENMASK(12, 11))
 #define MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP2		(GENMASK(1, 0))
 
@@ -408,4 +408,4 @@ int mtk_infracfg_set_bus_protection(struct regmap *infracfg, u32 mask,
 		bool reg_update);
 int mtk_infracfg_clear_bus_protection(struct regmap *infracfg, u32 mask,
 		bool reg_update);
-#endif /* __SOC_MEDIATEK_INFRACFG_H */
+#endif 

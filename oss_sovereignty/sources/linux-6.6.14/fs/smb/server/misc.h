@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __KSMBD_MISC_H__
 #define __KSMBD_MISC_H__
@@ -34,4 +32,4 @@ char *ksmbd_convert_dir_info_name(struct ksmbd_dir_info *d_info,
 struct timespec64 ksmbd_NTtimeToUnix(__le64 ntutc);
 u64 ksmbd_UnixTimeToNT(struct timespec64 t);
 long long ksmbd_systime(void);
-#endif /* __KSMBD_MISC_H__ */
+#endif 

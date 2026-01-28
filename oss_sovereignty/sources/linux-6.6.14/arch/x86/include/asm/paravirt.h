@@ -1,8 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_PARAVIRT_H
 #define _ASM_X86_PARAVIRT_H
-/* Various instructions on x86 need to be replaced for
- * para-virtualization: those hooks are defined here. */
+
 
 #include <asm/paravirt_types.h>
 
@@ -49,7 +48,7 @@ static inline u64 paravirt_steal_clock(int cpu)
 void __init paravirt_set_cap(void);
 #endif
 
-/* The paravirtualized I/O functions */
+
 static inline void slow_down_io(void)
 {
 	PVOP_VCALL0(cpu.io_delay);
@@ -109,16 +108,14 @@ static inline void load_sp0(unsigned long sp0)
 	PVOP_VCALL1(cpu.load_sp0, sp0);
 }
 
-/* The paravirtualized CPUID instruction. */
+
 static inline void __cpuid(unsigned int *eax, unsigned int *ebx,
 			   unsigned int *ecx, unsigned int *edx)
 {
 	PVOP_VCALL4(cpu.cpuid, eax, ebx, ecx, edx);
 }
 
-/*
- * These special macros can be used to get or set a debugging register
- */
+
 static __always_inline unsigned long paravirt_get_debugreg(int reg)
 {
 	return PVOP_CALL1(unsigned long, cpu.get_debugreg, reg);
@@ -231,7 +228,7 @@ static inline void wrmsrl(unsigned msr, u64 val)
 
 #define wrmsr_safe(msr, a, b)	paravirt_write_msr_safe(msr, a, b)
 
-/* rdmsr with exception handling */
+
 #define rdmsr_safe(msr, a, b)				\
 ({							\
 	int _err;					\
@@ -521,7 +518,7 @@ static inline void __set_pgd(pgd_t *pgdp, pgd_t pgd)
 		set_pgd(pgdp, native_make_pgd(0));			\
 } while (0)
 
-#endif  /* CONFIG_PGTABLE_LEVELS == 5 */
+#endif  
 
 static inline void p4d_clear(p4d_t *p4dp)
 {
@@ -571,7 +568,7 @@ static inline void arch_flush_lazy_mmu_mode(void)
 	PVOP_VCALL0(mmu.lazy_mode.flush);
 }
 
-static inline void __set_fixmap(unsigned /* enum fixed_addresses */ idx,
+static inline void __set_fixmap(unsigned  idx,
 				phys_addr_t phys, pgprot_t flags)
 {
 	pv_ops.mmu.set_fixmap(idx, phys, flags);
@@ -613,14 +610,14 @@ static __always_inline bool pv_vcpu_is_preempted(long cpu)
 void __raw_callee_save___native_queued_spin_unlock(struct qspinlock *lock);
 bool __raw_callee_save___native_vcpu_is_preempted(long cpu);
 
-#endif /* SMP && PARAVIRT_SPINLOCKS */
+#endif 
 
 #ifdef CONFIG_X86_32
-/* save and restore all caller-save registers, except return value */
+
 #define PV_SAVE_ALL_CALLER_REGS		"pushl %ecx;"
 #define PV_RESTORE_ALL_CALLER_REGS	"popl  %ecx;"
 #else
-/* save and restore all caller-save registers, except return value */
+
 #define PV_SAVE_ALL_CALLER_REGS						\
 	"push %rcx;"							\
 	"push %rdx;"							\
@@ -641,18 +638,7 @@ bool __raw_callee_save___native_vcpu_is_preempted(long cpu);
 	"pop %rcx;"
 #endif
 
-/*
- * Generate a thunk around a function which saves all caller-save
- * registers except for the return value.  This allows C functions to
- * be called from assembler code where fewer than normal registers are
- * available.  It may also help code generation around calls from C
- * code if the common case doesn't use many registers.
- *
- * When a callee is wrapped in a thunk, the caller can assume that all
- * arg regs and all scratch registers are preserved across the
- * call. The return value in rax/eax will not be saved, even for void
- * functions.
- */
+
 #define PV_THUNK_NAME(func) "__raw_callee_save_" #func
 #define __PV_CALLEE_SAVE_REGS_THUNK(func, section)			\
 	extern typeof(func) __raw_callee_save_##func;			\
@@ -675,11 +661,11 @@ bool __raw_callee_save___native_vcpu_is_preempted(long cpu);
 #define PV_CALLEE_SAVE_REGS_THUNK(func)			\
 	__PV_CALLEE_SAVE_REGS_THUNK(func, ".text")
 
-/* Get a reference to a callee-save function */
+
 #define PV_CALLEE_SAVE(func)						\
 	((struct paravirt_callee_save) { __raw_callee_save_##func })
 
-/* Promise that "func" already uses the right calling convention */
+
 #define __PV_IS_CALLEE_SAVE(func)			\
 	((struct paravirt_callee_save) { func })
 
@@ -711,7 +697,7 @@ static __always_inline unsigned long arch_local_irq_save(void)
 #endif
 
 
-/* Make sure as little as possible of this mess escapes. */
+
 #undef PARAVIRT_CALL
 #undef __PVOP_CALL
 #undef __PVOP_VCALL
@@ -741,7 +727,7 @@ static __always_inline unsigned long arch_local_irq_save(void)
 extern void default_banner(void);
 void native_pv_lock_init(void) __init;
 
-#else  /* __ASSEMBLY__ */
+#else  
 
 #define _PVSITE(ptype, ops, word, algn)		\
 771:;						\
@@ -773,11 +759,11 @@ void native_pv_lock_init(void) __init;
 #define SAVE_FLAGS	ALTERNATIVE "PARA_IRQ_save_fl;", "pushf; pop %rax;", \
 				    ALT_NOT(X86_FEATURE_XENPV)
 #endif
-#endif /* CONFIG_PARAVIRT_XXL */
-#endif	/* CONFIG_X86_64 */
+#endif 
+#endif	
 
-#endif /* __ASSEMBLY__ */
-#else  /* CONFIG_PARAVIRT */
+#endif 
+#else  
 # define default_banner x86_init_noop
 
 #ifndef __ASSEMBLY__
@@ -785,7 +771,7 @@ static inline void native_pv_lock_init(void)
 {
 }
 #endif
-#endif /* !CONFIG_PARAVIRT */
+#endif 
 
 #ifndef __ASSEMBLY__
 #ifndef CONFIG_PARAVIRT_XXL
@@ -805,5 +791,5 @@ static inline void paravirt_set_cap(void)
 {
 }
 #endif
-#endif /* __ASSEMBLY__ */
-#endif /* _ASM_X86_PARAVIRT_H */
+#endif 
+#endif 

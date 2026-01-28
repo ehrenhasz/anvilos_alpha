@@ -12,7 +12,7 @@ if 1
   echo 'this is skipped without +eval'
 endif
 
-# colon required for a range
+
 :$-1,$w! test.out
 qa!
 END

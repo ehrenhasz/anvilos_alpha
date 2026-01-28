@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for:
- * Cypress TrueTouch(TM) Standard Product (TTSP) touchscreen drivers.
- * For use with Cypress Txx3xx parts.
- * Supported parts include:
- * CY8CTST341
- * CY8CTMA340
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- *
- * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
- */
+
+
 
 
 #ifndef __CYTTSP_CORE_H__
@@ -24,14 +12,14 @@
 #include <linux/device.h>
 #include <linux/regulator/consumer.h>
 
-#define CY_NUM_RETRY		16 /* max number of retries for read ops */
+#define CY_NUM_RETRY		16 
 
 struct cyttsp_tch {
 	__be16 x, y;
 	u8 z;
 } __packed;
 
-/* TrueTouch Standard Product Gen3 interface definition */
+
 struct cyttsp_xydata {
 	u8 hst_mode;
 	u8 tt_mode;
@@ -50,7 +38,7 @@ struct cyttsp_xydata {
 } __packed;
 
 
-/* TTSP System Information interface definition */
+
 struct cyttsp_sysinfo_data {
 	u8 hst_mode;
 	u8 mfg_stat;
@@ -73,7 +61,7 @@ struct cyttsp_sysinfo_data {
 	u8 lp_intrvl;
 };
 
-/* TTSP Bootloader Register Map interface definition */
+
 #define CY_BL_CHKSUM_OK 0x01
 struct cyttsp_bootloader_data {
 	u8 bl_file;
@@ -143,4 +131,4 @@ int cyttsp_i2c_read_block_data(struct device *dev, u8 *xfer_buf, u16 addr,
 		u8 length, void *values);
 extern const struct dev_pm_ops cyttsp_pm_ops;
 
-#endif /* __CYTTSP_CORE_H__ */
+#endif 

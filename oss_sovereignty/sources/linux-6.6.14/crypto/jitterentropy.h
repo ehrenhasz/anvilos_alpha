@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 extern void *jent_zalloc(unsigned int len);
 extern void jent_zfree(void *ptr);
@@ -22,8 +22,8 @@ extern void jent_entropy_collector_free(struct rand_data *entropy_collector);
 int jent_raw_hires_entropy_store(__u32 value);
 void jent_testing_init(void);
 void jent_testing_exit(void);
-#else /* CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE */
+#else 
 static inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }
 static inline void jent_testing_init(void) { }
 static inline void jent_testing_exit(void) { }
-#endif /* CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE */
+#endif 

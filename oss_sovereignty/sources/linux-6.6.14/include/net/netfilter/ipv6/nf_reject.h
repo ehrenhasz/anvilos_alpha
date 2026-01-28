@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _IPV6_NF_REJECT_H
 #define _IPV6_NF_REJECT_H
 
@@ -28,4 +28,4 @@ struct sk_buff *nf_reject_skb_v6_unreach(struct net *net,
 					 const struct net_device *dev,
 					 int hook, u8 code);
 
-#endif /* _IPV6_NF_REJECT_H */
+#endif 

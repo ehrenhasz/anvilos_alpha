@@ -35,7 +35,7 @@ mount | grep -q loop
 dd if=/dev/zero of=rootfs bs=1k count=$FSSIZE
 $MKFS -i 2000 rootfs
 mkdir $TARGET_DIR
-mount -o loop,exec rootfs $TARGET_DIR # must be root
+mount -o loop,exec rootfs $TARGET_DIR 
 mkdir -p $TARGET_DIR/lib
 cd $UCLIBC_DIR
 make INSTALL_DIR=

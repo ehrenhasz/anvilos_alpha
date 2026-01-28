@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __MLX5E_REP_H__
 #define __MLX5E_REP_H__
@@ -45,16 +15,13 @@ extern const struct mlx5e_rx_handlers mlx5e_rx_handlers_rep;
 
 struct mlx5e_neigh_update_table {
 	struct rhashtable       neigh_ht;
-	/* Save the neigh hash entries in a list in addition to the hash table
-	 * (neigh_ht). In order to iterate easily over the neigh entries.
-	 * Used for stats query.
-	 */
+	
 	struct list_head	neigh_list;
-	/* protect lookup/remove operations */
+	
 	struct mutex		encap_lock;
 	struct notifier_block   netevent_nb;
 	struct delayed_work     neigh_stats_work;
-	unsigned long           min_interval; /* jiffies */
+	unsigned long           min_interval; 
 };
 
 struct mlx5_tc_ct_priv;
@@ -65,43 +32,37 @@ struct mlx5e_post_act;
 struct mlx5e_flow_meters;
 
 struct mlx5_rep_uplink_priv {
-	/* indirect block callbacks are invoked on bind/unbind events
-	 * on registered higher level devices (e.g. tunnel devices)
-	 *
-	 * tc_indr_block_cb_priv_list is used to lookup indirect callback
-	 * private data
-	 *
-	 */
+	
 	struct list_head	    tc_indr_block_priv_list;
 
 	struct mlx5_tun_entropy tun_entropy;
 
-	/* protects unready_flows */
+	
 	struct mutex                unready_flows_lock;
 	struct list_head            unready_flows;
 	struct work_struct          reoffload_flows_work;
 
-	/* maps tun_info to a unique id*/
+	
 	struct mapping_ctx *tunnel_mapping;
-	/* maps tun_enc_opts to a unique id*/
+	
 	struct mapping_ctx *tunnel_enc_opts_mapping;
 
 	struct mlx5e_post_act *post_act;
 	struct mlx5_tc_ct_priv *ct_priv;
 	struct mlx5e_tc_psample *tc_psample;
 
-	/* support eswitch vports bonding */
+	
 	struct mlx5e_rep_bond *bond;
 
-	/* tc tunneling encapsulation private data */
+	
 	struct mlx5e_tc_tun_encap *encap;
 
-	/* OVS internal port support */
+	
 	struct mlx5e_tc_int_port_priv *int_port_priv;
 
 	struct mlx5e_flow_meters *flow_meters;
 
-	/* tc action stats */
+	
 	struct mlx5e_tc_act_stats_handle *action_stats_handle;
 
 	struct work_struct mpesw_work;
@@ -114,7 +75,7 @@ struct mlx5e_rep_priv {
 	struct mlx5_flow_table *root_ft;
 	struct mlx5_flow_handle *vport_rx_rule;
 	struct list_head       vport_sqs_list;
-	struct mlx5_rep_uplink_priv uplink_priv; /* valid for uplink rep */
+	struct mlx5_rep_uplink_priv uplink_priv; 
 	struct rtnl_link_stats64 prev_vf_vport_stats;
 	struct mlx5_flow_handle *send_to_vport_meta_rule;
 	struct rhashtable tc_ht;
@@ -141,34 +102,25 @@ struct mlx5e_neigh_hash_entry {
 	struct mlx5e_priv *priv;
 	struct net_device *neigh_dev;
 
-	/* Save the neigh hash entry in a list on the representor in
-	 * addition to the hash table. In order to iterate easily over the
-	 * neighbour entries. Used for stats query.
-	 */
+	
 	struct list_head neigh_list;
 
-	/* protects encap list */
+	
 	spinlock_t encap_list_lock;
-	/* encap list sharing the same neigh */
+	
 	struct list_head encap_list;
 
-	/* neigh hash entry can be deleted only when the refcount is zero.
-	 * refcount is needed to avoid neigh hash entry removal by TC, while
-	 * it's used by the neigh notification call.
-	 */
+	
 	refcount_t refcnt;
 
-	/* Save the last reported time offloaded traffic pass over one of the
-	 * neigh hash entry flows. Use it to periodically update the neigh
-	 * 'used' value and avoid neigh deleting by the kernel.
-	 */
+	
 	unsigned long reported_lastuse;
 
 	struct rcu_head rcu;
 };
 
 enum {
-	/* set when the encap entry is successfully offloaded into HW */
+	
 	MLX5_ENCAP_ENTRY_VALID     = BIT(0),
 	MLX5_REFORMAT_DECAP        = BIT(1),
 	MLX5_ENCAP_ENTRY_NO_ROUTE  = BIT(2),
@@ -197,20 +149,18 @@ struct mlx5e_mpls_info {
 };
 
 struct mlx5e_encap_entry {
-	/* attached neigh hash entry */
+	
 	struct mlx5e_neigh_hash_entry *nhe;
-	/* neigh hash entry list of encaps sharing the same neigh */
+	
 	struct list_head encap_list;
-	/* a node of the eswitch encap hash table which keeping all the encap
-	 * entries
-	 */
+	
 	struct hlist_node encap_hlist;
 	struct list_head flows;
 	struct list_head route_list;
 	struct mlx5_pkt_reformat *pkt_reformat;
 	const struct ip_tunnel_info *tun_info;
 	struct mlx5e_mpls_info mpls_info;
-	unsigned char h_dest[ETH_ALEN];	/* destination eth addr	*/
+	unsigned char h_dest[ETH_ALEN];	
 
 	struct net_device *out_dev;
 	int route_dev_ifindex;
@@ -266,7 +216,7 @@ static inline bool mlx5e_eswitch_rep(const struct net_device *netdev)
 	       mlx5e_eswitch_uplink_rep(netdev);
 }
 
-#else /* CONFIG_MLX5_ESWITCH */
+#else 
 static inline bool mlx5e_is_uplink_rep(struct mlx5e_priv *priv) { return false; }
 static inline void mlx5e_rep_activate_channels(struct mlx5e_priv *priv) {}
 static inline void mlx5e_rep_deactivate_channels(struct mlx5e_priv *priv) {}
@@ -283,4 +233,4 @@ static inline bool mlx5e_is_vport_rep(struct mlx5e_priv *priv)
 {
 	return (MLX5_ESWITCH_MANAGER(priv->mdev) && priv->ppriv);
 }
-#endif /* __MLX5E_REP_H__ */
+#endif 

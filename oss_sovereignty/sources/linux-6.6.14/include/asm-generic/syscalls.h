@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ASM_GENERIC_SYSCALLS_H
 #define __ASM_GENERIC_SYSCALLS_H
 
 #include <linux/compiler.h>
 #include <linux/linkage.h>
 
-/*
- * Calling conventions for these system calls can differ, so
- * it's possible to override them.
- */
+
 
 #ifndef sys_mmap2
 asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
@@ -26,4 +23,4 @@ asmlinkage long sys_mmap(unsigned long addr, unsigned long len,
 asmlinkage long sys_rt_sigreturn(struct pt_regs *regs);
 #endif
 
-#endif /* __ASM_GENERIC_SYSCALLS_H */
+#endif 

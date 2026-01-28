@@ -1,9 +1,9 @@
-/* GNU linker script for STM32F405 */
+
 
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 0x100000 /* entire flash, 1 MiB */
-    RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 0x020000 /* 128 KiB */
+    FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 0x100000 
+    RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 0x020000 
 }
 
 _estack = ORIGIN(RAM) + LENGTH(RAM);

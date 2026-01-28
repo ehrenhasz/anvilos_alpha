@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 ARM Limited
- *
- * Generic test wrapper for arm64 signal tests.
- *
- * Each test provides its own tde struct tdescr descriptor to link with
- * this wrapper. Framework provides common helpers.
- */
+
+
 #include <kselftest.h>
 
 #include "test_signals.h"

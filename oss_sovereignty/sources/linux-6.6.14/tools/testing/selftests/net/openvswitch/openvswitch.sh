@@ -174,7 +174,7 @@ test_drop_reason() {
 	ovs_add_flow "test_drop_reason" dropreason \
 		"in_port(2),eth(),eth_type(0x0800),ipv4(src=172.31.110.20,proto=1),icmp()" 'drop'
 	ovs_drop_record_and_run "test_drop_reason" ip netns exec client ping -c 2 172.31.110.20
-	ovs_drop_reason_count 0x30001 # OVS_DROP_FLOW_ACTION
+	ovs_drop_reason_count 0x30001 
 	if [[ "$?" -ne "2" ]]; then
 		info "Did not detect expected drops: $?"
 		return 1
@@ -187,14 +187,14 @@ test_drop_reason() {
                 'drop(0)'
 	ovs_drop_record_and_run \
             "test_drop_reason" ip netns exec client nc -i 1 -zuv 172.31.110.20 6000
-	ovs_drop_reason_count 0x30004 # OVS_DROP_EXPLICIT_ACTION_ERROR
+	ovs_drop_reason_count 0x30004 
 	if [[ "$?" -ne "1" ]]; then
 		info "Did not detect expected explicit error drops: $?"
 		return 1
 	fi
 	ovs_drop_record_and_run \
             "test_drop_reason" ip netns exec client nc -i 1 -zuv 172.31.110.20 7000
-	ovs_drop_reason_count 0x30003 # OVS_DROP_EXPLICIT_ACTION
+	ovs_drop_reason_count 0x30003 
 	if [[ "$?" -ne "1" ]]; then
 		info "Did not detect expected explicit drops: $?"
 		return 1
@@ -473,7 +473,7 @@ for t in ${tests}; do
 	[ "${desc}" = "" ]	&& desc="${t}"
 	run_this=1
 	for arg do
-		[ "${arg}" != "${arg#--*}" ] && continue
+		[ "${arg}" != "${arg
 		[ "${arg}" = "${name}" ] && run_this=1 && break
 		run_this=0
 	done

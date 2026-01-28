@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * sha256_base.h - core logic for SHA-256 implementations
- *
- * Copyright (C) 2015 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+
 
 #ifndef _CRYPTO_SHA256_BASE_H
 #define _CRYPTO_SHA256_BASE_H
@@ -132,4 +128,4 @@ static inline int sha256_base_finish(struct shash_desc *desc, u8 *out)
 	return lib_sha256_base_finish(sctx, out, digest_size);
 }
 
-#endif /* _CRYPTO_SHA256_BASE_H */
+#endif 

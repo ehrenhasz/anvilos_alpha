@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NDISC_H
 #define _NDISC_H
 
 #include <net/ipv6_stubs.h>
 
-/*
- *	ICMP codes for neighbour discovery messages
- */
+
 
 #define NDISC_ROUTER_SOLICITATION	133
 #define NDISC_ROUTER_ADVERTISEMENT	134
@@ -14,34 +12,29 @@
 #define NDISC_NEIGHBOUR_ADVERTISEMENT	136
 #define NDISC_REDIRECT			137
 
-/*
- * Router type: cross-layer information from link-layer to
- * IPv6 layer reported by certain link types (e.g., RFC4214).
- */
-#define NDISC_NODETYPE_UNSPEC		0	/* unspecified (default) */
-#define NDISC_NODETYPE_HOST		1	/* host or unauthorized router */
-#define NDISC_NODETYPE_NODEFAULT	2	/* non-default router */
-#define NDISC_NODETYPE_DEFAULT		3	/* default router */
 
-/*
- *	ndisc options
- */
+#define NDISC_NODETYPE_UNSPEC		0	
+#define NDISC_NODETYPE_HOST		1	
+#define NDISC_NODETYPE_NODEFAULT	2	
+#define NDISC_NODETYPE_DEFAULT		3	
+
+
 
 enum {
 	__ND_OPT_PREFIX_INFO_END = 0,
-	ND_OPT_SOURCE_LL_ADDR = 1,	/* RFC2461 */
-	ND_OPT_TARGET_LL_ADDR = 2,	/* RFC2461 */
-	ND_OPT_PREFIX_INFO = 3,		/* RFC2461 */
-	ND_OPT_REDIRECT_HDR = 4,	/* RFC2461 */
-	ND_OPT_MTU = 5,			/* RFC2461 */
-	ND_OPT_NONCE = 14,              /* RFC7527 */
+	ND_OPT_SOURCE_LL_ADDR = 1,	
+	ND_OPT_TARGET_LL_ADDR = 2,	
+	ND_OPT_PREFIX_INFO = 3,		
+	ND_OPT_REDIRECT_HDR = 4,	
+	ND_OPT_MTU = 5,			
+	ND_OPT_NONCE = 14,              
 	__ND_OPT_ARRAY_MAX,
-	ND_OPT_ROUTE_INFO = 24,		/* RFC4191 */
-	ND_OPT_RDNSS = 25,		/* RFC5006 */
-	ND_OPT_DNSSL = 31,		/* RFC6106 */
-	ND_OPT_6CO = 34,		/* RFC6775 */
-	ND_OPT_CAPTIVE_PORTAL = 37,	/* RFC7710 */
-	ND_OPT_PREF64 = 38,		/* RFC8781 */
+	ND_OPT_ROUTE_INFO = 24,		
+	ND_OPT_RDNSS = 25,		
+	ND_OPT_DNSSL = 31,		
+	ND_OPT_6CO = 34,		
+	ND_OPT_CAPTIVE_PORTAL = 37,	
+	ND_OPT_PREF64 = 38,		
 	__ND_OPT_MAX
 };
 
@@ -60,7 +53,7 @@ enum {
 
 #include <net/neighbour.h>
 
-/* Set to 3 to get tracing... */
+
 #define ND_DEBUG 1
 
 #define ND_PRINTK(val, level, fmt, ...)				\
@@ -107,7 +100,7 @@ struct nd_opt_hdr {
 	__u8		nd_opt_len;
 } __packed;
 
-/* ND options */
+
 struct ndisc_options {
 	struct nd_opt_hdr *nd_opt_array[__ND_OPT_ARRAY_MAX];
 #ifdef CONFIG_IPV6_ROUTE_INFO
@@ -142,63 +135,7 @@ void __ndisc_fill_addr_option(struct sk_buff *skb, int type, const void *data,
 
 #define NDISC_OPS_REDIRECT_DATA_SPACE	2
 
-/*
- * This structure defines the hooks for IPv6 neighbour discovery.
- * The following hooks can be defined; unless noted otherwise, they are
- * optional and can be filled with a null pointer.
- *
- * int (*is_useropt)(u8 nd_opt_type):
- *     This function is called when IPv6 decide RA userspace options. if
- *     this function returns 1 then the option given by nd_opt_type will
- *     be handled as userspace option additional to the IPv6 options.
- *
- * int (*parse_options)(const struct net_device *dev,
- *			struct nd_opt_hdr *nd_opt,
- *			struct ndisc_options *ndopts):
- *     This function is called while parsing ndisc ops and put each position
- *     as pointer into ndopts. If this function return unequal 0, then this
- *     function took care about the ndisc option, if 0 then the IPv6 ndisc
- *     option parser will take care about that option.
- *
- * void (*update)(const struct net_device *dev, struct neighbour *n,
- *		  u32 flags, u8 icmp6_type,
- *		  const struct ndisc_options *ndopts):
- *     This function is called when IPv6 ndisc updates the neighbour cache
- *     entry. Additional options which can be updated may be previously
- *     parsed by parse_opts callback and accessible over ndopts parameter.
- *
- * int (*opt_addr_space)(const struct net_device *dev, u8 icmp6_type,
- *			 struct neighbour *neigh, u8 *ha_buf,
- *			 u8 **ha):
- *     This function is called when the necessary option space will be
- *     calculated before allocating a skb. The parameters neigh, ha_buf
- *     abd ha are available on NDISC_REDIRECT messages only.
- *
- * void (*fill_addr_option)(const struct net_device *dev,
- *			    struct sk_buff *skb, u8 icmp6_type,
- *			    const u8 *ha):
- *     This function is called when the skb will finally fill the option
- *     fields inside skb. NOTE: this callback should fill the option
- *     fields to the skb which are previously indicated by opt_space
- *     parameter. That means the decision to add such option should
- *     not lost between these two callbacks, e.g. protected by interface
- *     up state.
- *
- * void (*prefix_rcv_add_addr)(struct net *net, struct net_device *dev,
- *			       const struct prefix_info *pinfo,
- *			       struct inet6_dev *in6_dev,
- *			       struct in6_addr *addr,
- *			       int addr_type, u32 addr_flags,
- *			       bool sllao, bool tokenized,
- *			       __u32 valid_lft, u32 prefered_lft,
- *			       bool dev_addr_generated):
- *     This function is called when a RA messages is received with valid
- *     PIO option fields and an IPv6 address will be added to the interface
- *     for autoconfiguration. The parameter dev_addr_generated reports about
- *     if the address was based on dev->dev_addr or not. This can be used
- *     to add a second address if link-layer operates with two link layer
- *     addresses. E.g. 802.15.4 6LoWPAN.
- */
+
 struct ndisc_ops {
 	int	(*is_useropt)(u8 nd_opt_type);
 	int	(*parse_options)(const struct net_device *dev,
@@ -312,12 +249,7 @@ static inline void ndisc_ops_prefix_rcv_add_addr(struct net *net,
 }
 #endif
 
-/*
- * Return the padding between the option length and the start of the
- * link addr.  Currently only IP-over-InfiniBand needs this, although
- * if RFC 3831 IPv6-over-Fibre Channel is ever implemented it may
- * also need a pad of 2.
- */
+
 static inline int ndisc_addr_option_pad(unsigned short type)
 {
 	switch (type) {
@@ -426,7 +358,7 @@ static inline void __ipv6_confirm_neigh_stub(struct net_device *dev,
 	rcu_read_unlock();
 }
 
-/* uses ipv6_stub and is meant for use outside of IPv6 core */
+
 static inline struct neighbour *ip_neigh_gw6(struct net_device *dev,
 					     const void *addr)
 {
@@ -471,9 +403,7 @@ void ndisc_update(const struct net_device *dev, struct neighbour *neigh,
 		  const u8 *lladdr, u8 new, u32 flags, u8 icmp6_type,
 		  struct ndisc_options *ndopts);
 
-/*
- *	IGMP
- */
+
 int igmp6_init(void);
 int igmp6_late_init(void);
 

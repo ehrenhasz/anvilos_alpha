@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 #ifndef _LINUX_OF_H
 #define _LINUX_OF_H
-/*
- * Definitions for talking to the Open Firmware PROM on
- * Power Macintosh and other computers.
- *
- * Copyright (C) 1996-2005 Paul Mackerras.
- *
- * Updates for PPC64 by Peter Bergner & David Engebretsen, IBM Corp.
- * Updates for SPARC64 by David S. Miller
- * Derived from PowerPC and Sparc prom.h files by Stephen Rothwell, IBM Corp.
- */
+
 #include <linux/types.h>
 #include <linux/bitops.h>
 #include <linux/errno.h>
@@ -51,7 +42,7 @@ struct device_node {
 	struct fwnode_handle fwnode;
 
 	struct	property *properties;
-	struct	property *deadprops;	/* removed properties */
+	struct	property *deadprops;	
 	struct	device_node *parent;
 	struct	device_node *child;
 	struct	device_node *sibling;
@@ -74,16 +65,16 @@ struct of_phandle_args {
 };
 
 struct of_phandle_iterator {
-	/* Common iterator information */
+	
 	const char *cells_name;
 	int cell_count;
 	const struct device_node *parent;
 
-	/* List size information */
+	
 	const __be32 *list_end;
 	const __be32 *phandle_end;
 
-	/* Current position state */
+	
 	const __be32 *cur;
 	uint32_t cur_count;
 	phandle phandle;
@@ -99,16 +90,7 @@ struct of_reconfig_data {
 extern const struct kobj_type of_node_ktype;
 extern const struct fwnode_operations of_fwnode_ops;
 
-/**
- * of_node_init - initialize a devicetree node
- * @node: Pointer to device node that has been created by kzalloc()
- *
- * On return the device_node refcount is set to one.  Use of_node_put()
- * on @node when done to free the memory allocated for it.  If the node
- * is NOT a dynamic node the memory will not be freed. The decision of
- * whether to free the memory will be done by node->release(), which is
- * of_node_release().
- */
+
 static inline void of_node_init(struct device_node *node)
 {
 #if defined(CONFIG_OF_KOBJ)
@@ -126,31 +108,28 @@ static inline void of_node_init(struct device_node *node)
 #ifdef CONFIG_OF_DYNAMIC
 extern struct device_node *of_node_get(struct device_node *node);
 extern void of_node_put(struct device_node *node);
-#else /* CONFIG_OF_DYNAMIC */
-/* Dummy ref counting routines - to be implemented later */
+#else 
+
 static inline struct device_node *of_node_get(struct device_node *node)
 {
 	return node;
 }
 static inline void of_node_put(struct device_node *node) { }
-#endif /* !CONFIG_OF_DYNAMIC */
+#endif 
 
-/* Pointer for first entry in chain of all nodes. */
+
 extern struct device_node *of_root;
 extern struct device_node *of_chosen;
 extern struct device_node *of_aliases;
 extern struct device_node *of_stdout;
 
-/*
- * struct device_node flag descriptions
- * (need to be visible even when !CONFIG_OF)
- */
-#define OF_DYNAMIC		1 /* (and properties) allocated via kmalloc */
-#define OF_DETACHED		2 /* detached from the device tree */
-#define OF_POPULATED		3 /* device already created */
-#define OF_POPULATED_BUS	4 /* platform bus created for children */
-#define OF_OVERLAY		5 /* allocated for an overlay */
-#define OF_OVERLAY_FREE_CSET	6 /* in overlay cset being freed */
+
+#define OF_DYNAMIC		1 
+#define OF_DETACHED		2 
+#define OF_POPULATED		3 
+#define OF_POPULATED_BUS	4 
+#define OF_OVERLAY		5 
+#define OF_OVERLAY_FREE_CSET	6 
 
 #define OF_BAD_ADDR	((u64)-1)
 
@@ -231,11 +210,9 @@ static inline void of_property_clear_flag(struct property *p, unsigned long flag
 extern struct device_node *__of_find_all_nodes(struct device_node *prev);
 extern struct device_node *of_find_all_nodes(struct device_node *prev);
 
-/*
- * OF address retrieval & translation
- */
 
-/* Helper to read a big number; size is in cells (not bytes) */
+
+
 static inline u64 of_read_number(const __be32 *cell, int size)
 {
 	u64 r = 0;
@@ -244,10 +221,10 @@ static inline u64 of_read_number(const __be32 *cell, int size)
 	return r;
 }
 
-/* Like of_read_number, but we want an unsigned long result */
+
 static inline unsigned long of_read_ulong(const __be32 *cell, int size)
 {
-	/* toss away upper bits if unsigned long is smaller than u64 */
+	
 	return of_read_number(cell, size);
 }
 
@@ -300,7 +277,7 @@ extern struct device_node *of_get_compatible_child(const struct device_node *par
 extern struct device_node *of_get_child_by_name(const struct device_node *node,
 					const char *name);
 
-/* cache lookup */
+
 extern struct device_node *of_find_next_cache_node(const struct device_node *);
 extern int of_find_last_cache_level(unsigned int cpu);
 extern struct device_node *of_find_node_with_property(
@@ -382,11 +359,11 @@ extern int of_parse_phandle_with_args_map(const struct device_node *np,
 extern int of_count_phandle_with_args(const struct device_node *np,
 	const char *list_name, const char *cells_name);
 
-/* module functions */
+
 extern ssize_t of_modalias(const struct device_node *np, char *str, ssize_t len);
 extern int of_request_module(const struct device_node *np);
 
-/* phandle iterator functions */
+
 extern int of_phandle_iterator_init(struct of_phandle_iterator *it,
 				    const struct device_node *np,
 				    const char *list_name,
@@ -408,7 +385,7 @@ extern int of_add_property(struct device_node *np, struct property *prop);
 extern int of_remove_property(struct device_node *np, struct property *prop);
 extern int of_update_property(struct device_node *np, struct property *newprop);
 
-/* For updating the device tree at runtime */
+
 #define OF_RECONFIG_ATTACH_NODE		0x0001
 #define OF_RECONFIG_DETACH_NODE		0x0002
 #define OF_RECONFIG_ADD_PROPERTY	0x0003
@@ -420,23 +397,10 @@ extern int of_detach_node(struct device_node *);
 
 #define of_match_ptr(_ptr)	(_ptr)
 
-/*
- * struct property *prop;
- * const __be32 *p;
- * u32 u;
- *
- * of_property_for_each_u32(np, "propname", prop, p, u)
- *         printk("U32 value: %x\n", u);
- */
+
 const __be32 *of_prop_next_u32(struct property *prop, const __be32 *cur,
 			       u32 *pu);
-/*
- * struct property *prop;
- * const char *s;
- *
- * of_property_for_each_string(np, "propname", prop, s)
- *         printk("String value: %s\n", s);
- */
+
 const char *of_prop_next_string(struct property *prop, const char *cur);
 
 bool of_console_check(struct device_node *dn, char *name, int index);
@@ -452,7 +416,7 @@ void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
 				   unsigned long initrd_load_addr,
 				   unsigned long initrd_len,
 				   const char *cmdline, size_t extra_fdt_size);
-#else /* CONFIG_OF */
+#else 
 
 static inline void of_core_init(void)
 {
@@ -877,9 +841,9 @@ static inline const void *of_device_get_match_data(const struct device *dev)
 
 #define of_match_ptr(_ptr)	NULL
 #define of_match_node(_matches, _node)	NULL
-#endif /* CONFIG_OF */
+#endif 
 
-/* Default string compare functions, Allow arch asm/prom.h to override */
+
 #if !defined(of_compat_cmp)
 #define of_compat_cmp(s1, s2, l)	strcasecmp((s1), (s2))
 #define of_prop_cmp(s1, s2)		strcmp((s1), (s2))
@@ -929,16 +893,7 @@ static inline bool of_node_is_type(const struct device_node *np, const char *typ
 	return np && match && type && !strcmp(match, type);
 }
 
-/**
- * of_parse_phandle - Resolve a phandle property to a device_node pointer
- * @np: Pointer to device node holding phandle property
- * @phandle_name: Name of property holding a phandle value
- * @index: For properties holding a table of phandles, this is the index into
- *         the table
- *
- * Return: The device_node pointer with refcount incremented.  Use
- * of_node_put() on it when done.
- */
+
 static inline struct device_node *of_parse_phandle(const struct device_node *np,
 						   const char *phandle_name,
 						   int index)
@@ -952,38 +907,7 @@ static inline struct device_node *of_parse_phandle(const struct device_node *np,
 	return args.np;
 }
 
-/**
- * of_parse_phandle_with_args() - Find a node pointed by phandle in a list
- * @np:		pointer to a device tree node containing a list
- * @list_name:	property name that contains a list
- * @cells_name:	property name that specifies phandles' arguments count
- * @index:	index of a phandle to parse out
- * @out_args:	optional pointer to output arguments structure (will be filled)
- *
- * This function is useful to parse lists of phandles and their arguments.
- * Returns 0 on success and fills out_args, on error returns appropriate
- * errno value.
- *
- * Caller is responsible to call of_node_put() on the returned out_args->np
- * pointer.
- *
- * Example::
- *
- *  phandle1: node1 {
- *	#list-cells = <2>;
- *  };
- *
- *  phandle2: node2 {
- *	#list-cells = <1>;
- *  };
- *
- *  node3 {
- *	list = <&phandle1 1 2 &phandle2 3>;
- *  };
- *
- * To get a device_node of the ``node2`` node you may call this:
- * of_parse_phandle_with_args(node3, "list", "#list-cells", 1, &args);
- */
+
 static inline int of_parse_phandle_with_args(const struct device_node *np,
 					     const char *list_name,
 					     const char *cells_name,
@@ -992,7 +916,7 @@ static inline int of_parse_phandle_with_args(const struct device_node *np,
 {
 	int cell_count = -1;
 
-	/* If cells_name is NULL we assume a cell count of 0 */
+	
 	if (!cells_name)
 		cell_count = 0;
 
@@ -1000,36 +924,7 @@ static inline int of_parse_phandle_with_args(const struct device_node *np,
 					    cell_count, index, out_args);
 }
 
-/**
- * of_parse_phandle_with_fixed_args() - Find a node pointed by phandle in a list
- * @np:		pointer to a device tree node containing a list
- * @list_name:	property name that contains a list
- * @cell_count: number of argument cells following the phandle
- * @index:	index of a phandle to parse out
- * @out_args:	optional pointer to output arguments structure (will be filled)
- *
- * This function is useful to parse lists of phandles and their arguments.
- * Returns 0 on success and fills out_args, on error returns appropriate
- * errno value.
- *
- * Caller is responsible to call of_node_put() on the returned out_args->np
- * pointer.
- *
- * Example::
- *
- *  phandle1: node1 {
- *  };
- *
- *  phandle2: node2 {
- *  };
- *
- *  node3 {
- *	list = <&phandle1 0 2 &phandle2 2 3>;
- *  };
- *
- * To get a device_node of the ``node2`` node you may call this:
- * of_parse_phandle_with_fixed_args(node3, "list", 2, 1, &args);
- */
+
 static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
 						   const char *list_name,
 						   int cell_count,
@@ -1040,21 +935,7 @@ static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
 					    index, out_args);
 }
 
-/**
- * of_parse_phandle_with_optional_args() - Find a node pointed by phandle in a list
- * @np:		pointer to a device tree node containing a list
- * @list_name:	property name that contains a list
- * @cells_name:	property name that specifies phandles' arguments count
- * @index:	index of a phandle to parse out
- * @out_args:	optional pointer to output arguments structure (will be filled)
- *
- * Same as of_parse_phandle_with_args() except that if the cells_name property
- * is not found, cell_count of 0 is assumed.
- *
- * This is used to useful, if you have a phandle which didn't have arguments
- * before and thus doesn't have a '#*-cells' property but is now migrated to
- * having arguments while retaining backwards compatibility.
- */
+
 static inline int of_parse_phandle_with_optional_args(const struct device_node *np,
 						      const char *list_name,
 						      const char *cells_name,
@@ -1065,95 +946,35 @@ static inline int of_parse_phandle_with_optional_args(const struct device_node *
 					    0, index, out_args);
 }
 
-/**
- * of_property_count_u8_elems - Count the number of u8 elements in a property
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device node and count the number of u8 elements
- * in it.
- *
- * Return: The number of elements on sucess, -EINVAL if the property does
- * not exist or its length does not match a multiple of u8 and -ENODATA if the
- * property does not have a value.
- */
+
 static inline int of_property_count_u8_elems(const struct device_node *np,
 				const char *propname)
 {
 	return of_property_count_elems_of_size(np, propname, sizeof(u8));
 }
 
-/**
- * of_property_count_u16_elems - Count the number of u16 elements in a property
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device node and count the number of u16 elements
- * in it.
- *
- * Return: The number of elements on sucess, -EINVAL if the property does
- * not exist or its length does not match a multiple of u16 and -ENODATA if the
- * property does not have a value.
- */
+
 static inline int of_property_count_u16_elems(const struct device_node *np,
 				const char *propname)
 {
 	return of_property_count_elems_of_size(np, propname, sizeof(u16));
 }
 
-/**
- * of_property_count_u32_elems - Count the number of u32 elements in a property
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device node and count the number of u32 elements
- * in it.
- *
- * Return: The number of elements on sucess, -EINVAL if the property does
- * not exist or its length does not match a multiple of u32 and -ENODATA if the
- * property does not have a value.
- */
+
 static inline int of_property_count_u32_elems(const struct device_node *np,
 				const char *propname)
 {
 	return of_property_count_elems_of_size(np, propname, sizeof(u32));
 }
 
-/**
- * of_property_count_u64_elems - Count the number of u64 elements in a property
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device node and count the number of u64 elements
- * in it.
- *
- * Return: The number of elements on sucess, -EINVAL if the property does
- * not exist or its length does not match a multiple of u64 and -ENODATA if the
- * property does not have a value.
- */
+
 static inline int of_property_count_u64_elems(const struct device_node *np,
 				const char *propname)
 {
 	return of_property_count_elems_of_size(np, propname, sizeof(u64));
 }
 
-/**
- * of_property_read_string_array() - Read an array of strings from a multiple
- * strings property.
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_strs:	output array of string pointers.
- * @sz:		number of array elements to read.
- *
- * Search for a property in a device tree node and retrieve a list of
- * terminated string values (pointer to data, not a copy) in that property.
- *
- * Return: If @out_strs is NULL, the number of strings in the property is returned.
- */
+
 static inline int of_property_read_string_array(const struct device_node *np,
 						const char *propname, const char **out_strs,
 						size_t sz)
@@ -1161,44 +982,14 @@ static inline int of_property_read_string_array(const struct device_node *np,
 	return of_property_read_string_helper(np, propname, out_strs, sz, 0);
 }
 
-/**
- * of_property_count_strings() - Find and return the number of strings from a
- * multiple strings property.
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a property in a device tree node and retrieve the number of null
- * terminated string contain in it.
- *
- * Return: The number of strings on success, -EINVAL if the property does not
- * exist, -ENODATA if property does not have a value, and -EILSEQ if the string
- * is not null-terminated within the length of the property data.
- */
+
 static inline int of_property_count_strings(const struct device_node *np,
 					    const char *propname)
 {
 	return of_property_read_string_helper(np, propname, NULL, 0, 0);
 }
 
-/**
- * of_property_read_string_index() - Find and read a string from a multiple
- * strings property.
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @index:	index of the string in the list of strings
- * @output:	pointer to null terminated return string, modified only if
- *		return value is 0.
- *
- * Search for a property in a device tree node and retrieve a null
- * terminated string value (pointer to data, not a copy) in the list of strings
- * contained in that property.
- *
- * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
- * property does not have a value, and -EILSEQ if the string is not
- * null-terminated within the length of the property data.
- *
- * The out_string pointer is modified only if a valid string can be decoded.
- */
+
 static inline int of_property_read_string_index(const struct device_node *np,
 						const char *propname,
 						int index, const char **output)
@@ -1207,16 +998,7 @@ static inline int of_property_read_string_index(const struct device_node *np,
 	return rc < 0 ? rc : 0;
 }
 
-/**
- * of_property_read_bool - Find a property
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- *
- * Search for a boolean property in a device node. Usage on non-boolean
- * property types is deprecated.
- *
- * Return: true if the property exists false otherwise.
- */
+
 static inline bool of_property_read_bool(const struct device_node *np,
 					 const char *propname)
 {
@@ -1225,40 +1007,13 @@ static inline bool of_property_read_bool(const struct device_node *np,
 	return prop ? true : false;
 }
 
-/**
- * of_property_present - Test if a property is present in a node
- * @np:		device node to search for the property.
- * @propname:	name of the property to be searched.
- *
- * Test for a property present in a device node.
- *
- * Return: true if the property exists false otherwise.
- */
+
 static inline bool of_property_present(const struct device_node *np, const char *propname)
 {
 	return of_property_read_bool(np, propname);
 }
 
-/**
- * of_property_read_u8_array - Find and read an array of u8 from a property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to return value, modified only if return value is 0.
- * @sz:		number of array elements to read
- *
- * Search for a property in a device node and read 8-bit value(s) from
- * it.
- *
- * dts entry of array should be like:
- *  ``property = /bits/ 8 <0x50 0x60 0x70>;``
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_values is modified only if a valid u8 value can be decoded.
- */
+
 static inline int of_property_read_u8_array(const struct device_node *np,
 					    const char *propname,
 					    u8 *out_values, size_t sz)
@@ -1271,26 +1026,7 @@ static inline int of_property_read_u8_array(const struct device_node *np,
 		return ret;
 }
 
-/**
- * of_property_read_u16_array - Find and read an array of u16 from a property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to return value, modified only if return value is 0.
- * @sz:		number of array elements to read
- *
- * Search for a property in a device node and read 16-bit value(s) from
- * it.
- *
- * dts entry of array should be like:
- *  ``property = /bits/ 16 <0x5000 0x6000 0x7000>;``
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_values is modified only if a valid u16 value can be decoded.
- */
+
 static inline int of_property_read_u16_array(const struct device_node *np,
 					     const char *propname,
 					     u16 *out_values, size_t sz)
@@ -1303,24 +1039,7 @@ static inline int of_property_read_u16_array(const struct device_node *np,
 		return ret;
 }
 
-/**
- * of_property_read_u32_array - Find and read an array of 32 bit integers
- * from a property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to return value, modified only if return value is 0.
- * @sz:		number of array elements to read
- *
- * Search for a property in a device node and read 32-bit value(s) from
- * it.
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_values is modified only if a valid u32 value can be decoded.
- */
+
 static inline int of_property_read_u32_array(const struct device_node *np,
 					     const char *propname,
 					     u32 *out_values, size_t sz)
@@ -1333,24 +1052,7 @@ static inline int of_property_read_u32_array(const struct device_node *np,
 		return ret;
 }
 
-/**
- * of_property_read_u64_array - Find and read an array of 64 bit integers
- * from a property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to return value, modified only if return value is 0.
- * @sz:		number of array elements to read
- *
- * Search for a property in a device node and read 64-bit value(s) from
- * it.
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_values is modified only if a valid u64 value can be decoded.
- */
+
 static inline int of_property_read_u64_array(const struct device_node *np,
 					     const char *propname,
 					     u64 *out_values, size_t sz)
@@ -1491,20 +1193,7 @@ typedef void (*of_init_fn_1)(struct device_node *);
 #define OF_DECLARE_2(table, name, compat, fn) \
 		_OF_DECLARE(table, name, compat, fn, of_init_fn_2)
 
-/**
- * struct of_changeset_entry	- Holds a changeset entry
- *
- * @node:	list_head for the log list
- * @action:	notifier action
- * @np:		pointer to the device node affected
- * @prop:	pointer to the property affected
- * @old_prop:	hold a pointer to the original property
- *
- * Every modification of the device tree during a changeset
- * is held in a list of of_changeset_entry structures.
- * That way we can recover from a partial application, or we can
- * revert the changeset
- */
+
 struct of_changeset_entry {
 	struct list_head node;
 	unsigned long action;
@@ -1513,16 +1202,7 @@ struct of_changeset_entry {
 	struct property *old_prop;
 };
 
-/**
- * struct of_changeset - changeset tracker structure
- *
- * @entries:	list_head for the changeset entries
- *
- * changesets are a convenient way to apply bulk changes to the
- * live tree. In case of an error, changes are rolled-back.
- * changesets live on after initial application, and if not
- * destroyed after use, they can be reverted in one single call.
- */
+
 struct of_changeset {
 	struct list_head entries;
 };
@@ -1602,7 +1282,7 @@ static inline int of_changeset_add_prop_u32(struct of_changeset *ocs,
 	return of_changeset_add_prop_u32_array(ocs, np, prop_name, &val, 1);
 }
 
-#else /* CONFIG_OF_DYNAMIC */
+#else 
 static inline int of_reconfig_notifier_register(struct notifier_block *nb)
 {
 	return -EINVAL;
@@ -1621,25 +1301,18 @@ static inline int of_reconfig_get_state_change(unsigned long action,
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_OF_DYNAMIC */
+#endif 
 
-/**
- * of_device_is_system_power_controller - Tells if system-power-controller is found for device_node
- * @np: Pointer to the given device_node
- *
- * Return: true if present false otherwise
- */
+
 static inline bool of_device_is_system_power_controller(const struct device_node *np)
 {
 	return of_property_read_bool(np, "system-power-controller");
 }
 
-/*
- * Overlay support
- */
+
 
 enum of_overlay_notify_action {
-	OF_OVERLAY_INIT = 0,	/* kzalloc() of ovcs sets this value */
+	OF_OVERLAY_INIT = 0,	
 	OF_OVERLAY_PRE_APPLY,
 	OF_OVERLAY_POST_APPLY,
 	OF_OVERLAY_PRE_REMOVE,
@@ -1704,4 +1377,4 @@ static inline int of_overlay_notifier_unregister(struct notifier_block *nb)
 
 #endif
 
-#endif /* _LINUX_OF_H */
+#endif 

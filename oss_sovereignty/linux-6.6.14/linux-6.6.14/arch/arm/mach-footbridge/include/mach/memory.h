@@ -1,5 +1,0 @@
-#ifndef __ASM_ARCH_MEMORY_H
-#define __ASM_ARCH_MEMORY_H
-#define FLUSH_BASE		0xf9000000
-#define FLUSH_BASE_PHYS		0x50000000
-#endif

@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_OF_DEVICE_H
 #define _LINUX_OF_DEVICE_H
 
 #include <linux/platform_device.h>
-#include <linux/of_platform.h> /* temporary until merge */
+#include <linux/of_platform.h> 
 
 #include <linux/of.h>
 
@@ -15,11 +15,7 @@ struct kobj_uevent_env;
 extern const struct of_device_id *of_match_device(
 	const struct of_device_id *matches, const struct device *dev);
 
-/**
- * of_driver_match_device - Tell if a driver's of_match_table matches a device.
- * @drv: the device_driver structure to test
- * @dev: the device structure to match against
- */
+
 static inline int of_driver_match_device(struct device *dev,
 					 const struct device_driver *drv)
 {
@@ -40,7 +36,7 @@ static inline int of_dma_configure(struct device *dev,
 {
 	return of_dma_configure_id(dev, np, force_dma, NULL);
 }
-#else /* CONFIG_OF */
+#else 
 
 static inline int of_driver_match_device(struct device *dev,
 					 const struct device_driver *drv)
@@ -82,6 +78,6 @@ static inline int of_dma_configure(struct device *dev,
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif 
 
-#endif /* _LINUX_OF_DEVICE_H */
+#endif 

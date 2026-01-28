@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
+
+
 
 #ifndef __MESON_PARM_H
 #define __MESON_PARM_H
@@ -42,5 +39,5 @@ static inline void meson_parm_write(struct regmap *map, struct parm *p,
 			   val << p->shift);
 }
 
-#endif /* __MESON_PARM_H */
+#endif 
 

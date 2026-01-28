@@ -1,6 +1,6 @@
-/* GNU linker script for ESP8266, common sections and symbols */
 
-/* define the top of RAM */
+
+
 _heap_end = ORIGIN(dram0_0_seg) + LENGTH(dram0_0_seg);
 
 PHDRS
@@ -23,7 +23,7 @@ _firmware_size = ORIGIN(irom0_0_seg) + LENGTH(irom0_0_seg) - 0x40200000;
 
 PROVIDE(_memmap_vecbase_reset = 0x40000000);
 
-/* Various memory-map dependent cache attribute settings: */
+
 _memmap_cacheattr_wb_base = 0x00000110;
 _memmap_cacheattr_wt_base = 0x00000110;
 _memmap_cacheattr_bp_base = 0x00000220;
@@ -73,11 +73,7 @@ SECTIONS
         _irom0_text_start = ABSOLUTE(.);
         *(.irom0.literal .irom.literal .irom.text.literal .irom0.text .irom.text)
 
-        /* Vendor SDK in v2.1.0-7-gb8fd588 started to build these with
-           -ffunction-sections -fdata-sections, and require routing to
-           irom via linker:
-           https://github.com/espressif/ESP8266_NONOS_SDK/commit/b8fd588a33f0319dc135523b51655e97b483b205
-         */
+        
 
         *libcrypto.a:(.literal.* .text.*)
         *libnet80211.a:(.literal.* .text.*)
@@ -85,7 +81,7 @@ SECTIONS
         *libwpa2.a:(.literal.* .text.*)
         *libespnow.a:(.literal.* .text.*)
 
-        /* we put some specific text in this section */
+        
 
         *py/argcheck.o*(.literal* .text*)
         *py/asm*.o*(.literal* .text*)
@@ -128,24 +124,7 @@ SECTIONS
         *py/vstr.o*(.literal* .text*)
         *py/warning.o*(.literal* .text*)
 
-        *extmod/*.o*(.literal* .text*)
-
-        *lib/oofatfs/*.o*(.literal*, .text*)
-        *lib/axtls/*.o(.literal*, .text*)
-        *lib/berkeley-db-1.xx/*.o(.literal*, .text*)
-        *lib/libm/*.o*(.literal*, .text*)
-        *lib/littlefs/*.o*(.literal*, .text*)
-        *shared/libc/printf.o*(.literal*, .text*)
-        *shared/netutils/*.o*(.literal*, .text*)
-        *shared/readline/*.o(.literal*, .text*)
-        *shared/runtime/interrupt_char.o*(.literal*, .text*)
-        *shared/runtime/pyexec.o*(.literal*, .text*)
-        *shared/runtime/stdout_helpers.o*(.literal*, .text*)
-        *shared/runtime/sys_stdio_mphal.o*(.literal*, .text*)
-        *shared/timeutils/*.o*(.literal*, .text*)
-        *drivers/bus/*.o(.literal* .text*)
-
-        */main.o(.literal* .text*)
+        *extmodmain.o(.literal* .text*)
         *fatfs_port.o(.literal* .text*)
         *gccollect.o(.literal* .text*)
         *gchelper.o(.literal* .text*)
@@ -171,102 +150,17 @@ SECTIONS
         *network_wlan.o(.literal* .text*)
         *esp_mphal.o(.literal* .text*)
 
-        /* we put as much rodata as possible in this section */
-        /* note that only rodata accessed as a machine word is allowed here */
+        
+        
         *py/qstr.o(.rodata.const_pool)
-        *.o(.rodata.mp_type_*) /* catches type: mp_obj_type_t */
-        *.o(.rodata.*_locals_dict*) /* catches types: mp_obj_dict_t, mp_map_elem_t */
-        *.o(.rodata.mp_module_*) /* catches types: mp_obj_module_t, mp_obj_dict_t, mp_map_elem_t */
-        */frozen.o(.rodata.mp_frozen_sizes) /* frozen modules */
-        */frozen.o(.rodata.mp_frozen_content) /* frozen modules */
+        *.o(.rodata.mp_type_*) 
+        *.o(.rodata.*_locals_dict*) 
+        *.o(.rodata.mp_module_*) 
+        */frozen.o(.rodata.mp_frozen_sizes) 
+        */frozen.o(.rodata.mp_frozen_content) 
 
-        /* for -mforce-l32 */
-        */*.o(.rodata*)
-
-        _irom0_text_end = ABSOLUTE(.);
-    } >irom0_0_seg :irom0_0_phdr
-
-    .text : ALIGN(4)
-    {
-        _stext = .;
-        _text_start = ABSOLUTE(.);
-        *(.UserEnter.text)
-        . = ALIGN(16);
-        *(.DebugExceptionVector.text)
-        . = ALIGN(16);
-        *(.NMIExceptionVector.text)
-        . = ALIGN(16);
-        *(.KernelExceptionVector.text)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        . = ALIGN(16);
-        *(.UserExceptionVector.text)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        . = ALIGN(16);
-        *(.DoubleExceptionVector.text)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        LONG(0)
-        . = ALIGN (16);
-        *(.entry.text)
-        *(.init.literal)
-        *(.init)
-        *(.literal .text .literal.* .text.* .iram0.literal .iram0.text .iram0.text.*.literal .iram0.text.*)
-        *(.stub .gnu.warning .gnu.linkonce.literal.* .gnu.linkonce.t.*.literal .gnu.linkonce.t.*)
-        *(.fini.literal)
-        *(.fini)
-        *(.gnu.version)
-        _text_end = ABSOLUTE(.);
-        _etext = .;
-    } >iram1_0_seg :iram1_0_phdr
-
-    .lit4 : ALIGN(4)
-    {
-        _lit4_start = ABSOLUTE(.);
-        *(*.lit4)
-        *(.lit4.*)
-        *(.gnu.linkonce.lit4.*)
-        _lit4_end = ABSOLUTE(.);
-    } >iram1_0_seg :iram1_0_phdr
-
-    .data : ALIGN(4)
-    {
-        _data_start = ABSOLUTE(.);
-        *(.data)
-        *(.data.*)
-        *(.gnu.linkonce.d.*)
-        *(.data1)
-        *(.sdata)
-        *(.sdata.*)
-        *(.gnu.linkonce.s.*)
-        *(.sdata2)
-        *(.sdata2.*)
-        *(.gnu.linkonce.s2.*)
-        *(.jcr)
-        _data_end = ABSOLUTE(.);
-    } >dram0_0_seg :dram0_0_phdr
-
-    .rodata : ALIGN(4)
-    {
-        _rodata_start = ABSOLUTE(.);
-        *(.sdk.version)
-        *(.rodata)
-        *(.rodata.*)
-        *(.gnu.linkonce.r.*)
-        *(.rodata1)
-        __XT_EXCEPTION_TABLE__ = ABSOLUTE(.);
-        *(.xt_except_table)
-        *(.gcc_except_table)
-        *(.gnu.linkonce.e.*)
-        *(.gnu.version_r)
-        *(.eh_frame)
-        /*  C++ constructor and destructor tables, properly ordered:  */
+        
+        *
         KEEP (*crtbegin.o(.ctors))
         KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
         KEEP (*(SORT(.ctors.*)))
@@ -275,7 +169,7 @@ SECTIONS
         KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
         KEEP (*(SORT(.dtors.*)))
         KEEP (*(.dtors))
-        /*  C++ exception handlers table:  */
+        
         __XT_EXCEPTION_DESCS__ = ABSOLUTE(.);
         *(.xt_except_desc)
         *(.gnu.linkonce.h.*)
@@ -283,7 +177,7 @@ SECTIONS
         *(.xt_except_desc_end)
         *(.dynamic)
         *(.gnu.version_d)
-        . = ALIGN(4);        /* this table MUST be 4-byte aligned */
+        . = ALIGN(4);        
         _bss_table_start = ABSOLUTE(.);
         LONG(_bss_start)
         LONG(_bss_end)
@@ -314,5 +208,5 @@ SECTIONS
     } >dram0_0_seg :dram0_0_bss_phdr
 }
 
-/* get ROM code address */
+
 INCLUDE "boards/eagle.rom.addr.v6.ld"

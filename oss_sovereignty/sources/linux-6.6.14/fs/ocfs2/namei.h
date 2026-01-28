@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * namei.h
- *
- * Function prototypes
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
+
+
 
 #ifndef OCFS2_NAMEI_H
 #define OCFS2_NAMEI_H
@@ -35,4 +29,4 @@ int ocfs2_mv_orphaned_inode_to_new(struct inode *dir,
 				   struct inode *new_inode,
 				   struct dentry *new_dentry);
 
-#endif /* OCFS2_NAMEI_H */
+#endif 

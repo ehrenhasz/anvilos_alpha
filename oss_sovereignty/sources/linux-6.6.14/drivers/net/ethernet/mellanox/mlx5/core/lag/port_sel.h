@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+
+
 
 #ifndef __MLX5_LAG_FS_H__
 #define __MLX5_LAG_FS_H__
@@ -10,9 +10,7 @@ struct mlx5_lag_definer {
 	struct mlx5_flow_definer *definer;
 	struct mlx5_flow_table *ft;
 	struct mlx5_flow_group *fg;
-	/* Each port has ldev->buckets number of rules and they are arrange in
-	 * [port * buckets .. port * buckets + buckets) locations
-	 */
+	
 	struct mlx5_flow_handle *rules[MLX5_MAX_PORTS * MLX5_LAG_MAX_HASH_BUCKETS];
 };
 
@@ -35,7 +33,7 @@ void mlx5_lag_port_sel_destroy(struct mlx5_lag *ldev);
 int mlx5_lag_port_sel_create(struct mlx5_lag *ldev,
 			     enum netdev_lag_hash hash_type, u8 *ports);
 
-#else /* CONFIG_MLX5_ESWITCH */
+#else 
 static inline int mlx5_lag_port_sel_create(struct mlx5_lag *ldev,
 					   enum netdev_lag_hash hash_type,
 					   u8 *ports)
@@ -49,5 +47,5 @@ static inline int mlx5_lag_port_sel_modify(struct mlx5_lag *ldev, u8 *ports)
 }
 
 static inline void mlx5_lag_port_sel_destroy(struct mlx5_lag *ldev) {}
-#endif /* CONFIG_MLX5_ESWITCH */
-#endif /* __MLX5_LAG_FS_H__ */
+#endif 
+#endif 

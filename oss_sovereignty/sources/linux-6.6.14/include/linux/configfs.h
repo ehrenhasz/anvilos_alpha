@@ -1,29 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * configfs.h - definitions for the device driver filesystem
- *
- * Based on sysfs:
- * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
- *
- * Based on kobject.h:
- *      Copyright (c) 2002-2003	Patrick Mochel
- *      Copyright (c) 2002-2003	Open Source Development Labs
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- *
- * Please read Documentation/filesystems/configfs.rst before using
- * the configfs interface, ESPECIALLY the parts about reference counts and
- * item destructors.
- */
+
+
 
 #ifndef _CONFIGFS_H_
 #define _CONFIGFS_H_
 
-#include <linux/stat.h>   /* S_IRUGO */
-#include <linux/types.h>  /* ssize_t */
-#include <linux/list.h>   /* struct list_head */
-#include <linux/kref.h>   /* struct kref */
-#include <linux/mutex.h>  /* struct mutex */
+#include <linux/stat.h>   
+#include <linux/types.h>  
+#include <linux/list.h>   
+#include <linux/kref.h>   
+#include <linux/mutex.h>  
 
 #define CONFIGFS_ITEM_NAME_LEN	20
 
@@ -70,10 +55,7 @@ struct config_item_type {
 	struct configfs_bin_attribute		**ct_bin_attrs;
 };
 
-/**
- *	group - a group of config_items of a specific type, belonging
- *	to a specific subsystem.
- */
+
 struct config_group {
 	struct config_item		cg_item;
 	struct list_head		cg_children;
@@ -149,9 +131,9 @@ struct file;
 struct vm_area_struct;
 
 struct configfs_bin_attribute {
-	struct configfs_attribute cb_attr;	/* std. attribute */
-	void *cb_private;			/* for user       */
-	size_t cb_max_size;			/* max core size  */
+	struct configfs_attribute cb_attr;	
+	void *cb_private;			
+	size_t cb_max_size;			
 	ssize_t (*read)(struct config_item *, void *, size_t);
 	ssize_t (*write)(struct config_item *, const void *, size_t);
 };
@@ -193,18 +175,7 @@ static struct configfs_bin_attribute _pfx##attr_##_name = {	\
 	.write		= _pfx##_name##_write,			\
 }
 
-/*
- * If allow_link() exists, the item can symlink(2) out to other
- * items.  If the item is a group, it may support mkdir(2).
- * Groups supply one of make_group() and make_item().  If the
- * group supports make_group(), one can create group children.  If it
- * supports make_item(), one can create config_item children.  make_group()
- * and make_item() return ERR_PTR() on errors.  If it has
- * default_groups on group->default_groups, it has automatically created
- * group children.  default_groups may coexist alongsize make_group() or
- * make_item(), but if the group wishes to have only default_groups
- * children (disallowing mkdir(2)), it need not provide either function.
- */
+
 struct configfs_item_operations {
 	void (*release)(struct config_item *);
 	int (*allow_link)(struct config_item *src, struct config_item *target);
@@ -245,19 +216,13 @@ configfs_register_default_group(struct config_group *parent_group,
 				const struct config_item_type *item_type);
 void configfs_unregister_default_group(struct config_group *group);
 
-/* These functions can sleep and can alloc with GFP_KERNEL */
-/* WARNING: These cannot be called underneath configfs callbacks!! */
+
+
 int configfs_depend_item(struct configfs_subsystem *subsys,
 			 struct config_item *target);
 void configfs_undepend_item(struct config_item *target);
 
-/*
- * These functions can sleep and can alloc with GFP_KERNEL
- * NOTE: These should be called only underneath configfs callbacks.
- * NOTE: First parameter is a caller's subsystem, not target's.
- * WARNING: These cannot be called on newly created item
- *        (in make_group()/make_item() callback)
- */
+
 int configfs_depend_item_unlocked(struct configfs_subsystem *caller_subsys,
 				  struct config_item *target);
 
@@ -267,4 +232,4 @@ static inline void configfs_undepend_item_unlocked(struct config_item *target)
 	configfs_undepend_item(target);
 }
 
-#endif /* _CONFIGFS_H_ */
+#endif 

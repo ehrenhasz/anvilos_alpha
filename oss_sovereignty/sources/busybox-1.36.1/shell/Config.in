@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Shells"
 
@@ -14,7 +14,7 @@ choice
 	Choose which shell you want to be executed by 'sh' alias.
 	The ash shell is the most bash compatible and full featured one.
 
-# note: cannot use "select ASH" here, it breaks "make allnoconfig"
+
 config SH_IS_ASH
 	depends on !NOMMU
 	bool "ash"
@@ -50,7 +50,7 @@ choice
 	Note that selecting this option does not switch on any bash
 	compatibility code. It merely makes it possible to install
 	/bin/bash (sym)link and run scripts which start with
-	#!/bin/bash line.
+	
 
 	Many systems use it in scripts which use bash-specific features,
 	even simple ones like $RANDOM. Without this option, busybox
@@ -83,7 +83,7 @@ endchoice
 
 
 config SHELL_ASH
-	bool #hidden option
+	bool 
 	depends on !NOMMU
 
 config ASH
@@ -97,9 +97,9 @@ config ASH
 	shell (by Herbert Xu), which was created by porting the 'ash' shell
 	(written by Kenneth Almquist) from NetBSD.
 
-# ash options
-# note: Don't remove !NOMMU part in the next line; it would break
-# menuconfig's indenting.
+
+
+
 if !NOMMU && (SHELL_ASH || ASH || SH_IS_ASH || BASH_IS_ASH)
 
 config ASH_OPTIMIZE_FOR_SIZE
@@ -109,7 +109,7 @@ config ASH_OPTIMIZE_FOR_SIZE
 
 config ASH_INTERNAL_GLOB
 	bool "Use internal glob() implementation"
-	default y	# Y is bigger, but because of uclibc glob() bug, let Y be default for now
+	default y	
 	depends on SHELL_ASH
 	help
 	Do not use glob() function from libc, use internal implementation.
@@ -125,7 +125,7 @@ config ASH_BASH_COMPAT
 
 config ASH_BASH_SOURCE_CURDIR
 	bool "'source' and '.' builtins search current directory after $PATH"
-	default n   # do not encourage non-standard behavior
+	default n   
 	depends on ASH_BASH_COMPAT
 	help
 	This is not compliant with standards. Avoid if possible.
@@ -165,7 +165,7 @@ config ASH_EXPAND_PRMT
 	default y
 	depends on SHELL_ASH
 	help
-	$PS# may contain volatile content, such as backquote commands.
+	$PS
 	This option recreates the prompt string from the environment
 	variable each time it is displayed.
 
@@ -225,7 +225,7 @@ config ASH_CMDCMD
 	you to run the specified command or builtin,
 	even when there is a function with the same name.
 
-endif # ash options
+endif 
 config CTTYHACK
 	bool "cttyhack (2.4 kb)"
 	default y
@@ -259,16 +259,16 @@ config CTTYHACK
 
 	Giving controlling tty to shell running with PID 1:
 
-	# exec cttyhack sh
+	
 
 	Without cttyhack, you need to know exact tty name,
 	and do something like this:
 
-	# exec setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
+	
 
 	Starting getty on a controlling tty from a shell script:
 
-	# getty 115200 $(cttyhack)
+	
 config HUSH
 	bool "hush (68 kb)"
 	default y
@@ -288,8 +288,8 @@ config SHELL_HUSH
 	bool "Internal shell for embedded script support"
 	default n
 
-# hush options
-# It's only needed to get "nice" menuconfig indenting.
+
+
 if SHELL_HUSH || HUSH || SH_IS_HUSH || BASH_IS_HUSH
 
 config HUSH_BASH_COMPAT
@@ -306,7 +306,7 @@ config HUSH_BRACE_EXPANSION
 
 config HUSH_BASH_SOURCE_CURDIR
 	bool "'source' and '.' builtins search current directory after $PATH"
-	default n   # do not encourage non-standard behavior
+	default n   
 	depends on HUSH_BASH_COMPAT
 	help
 	This is not compliant with standards. Avoid if possible.
@@ -500,7 +500,7 @@ config HUSH_MEMLEAK
 	default n
 	depends on SHELL_HUSH
 
-endif # hush options
+endif 
 
 
 comment "Options common to all shells"
@@ -523,7 +523,7 @@ config FEATURE_SH_MATH_64
 	This is not in POSIX, so do not rely on this in portable code.
 
 config FEATURE_SH_MATH_BASE
-	bool "Support BASE#nnnn literals"
+	bool "Support BASE
 	default y
 	depends on FEATURE_SH_MATH
 
@@ -603,6 +603,6 @@ config FEATURE_SH_EMBEDDED_SCRIPTS
 	the script in 'applets_sh' and a stub C file containing
 	configuration in the appropriate subsystem directory.
 
-endif # Options common to all shells
+endif 
 
 endmenu

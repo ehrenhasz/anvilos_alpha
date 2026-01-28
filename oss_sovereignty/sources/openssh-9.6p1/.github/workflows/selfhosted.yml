@@ -15,9 +15,9 @@ jobs:
       TARGET_CONFIG: ${{ matrix.config }}
     strategy:
       fail-fast: false
-      # We use a matrix in two parts: firstly all of the VMs are tested with the
-      # default config.  "target" corresponds to a label associated with the
-      # worker.  The default is an ephemeral VM running under libvirt.
+      
+      
+      
       matrix:
         target:
           - alpine
@@ -51,7 +51,7 @@ jobs:
         host:
           - libvirt
         include:
-          # Long-running/slow tests have access to high priority runners.
+          
           - { target: aix51, config: default, host: libvirt-hipri }
           - { target: openindiana, config: pam, host: libvirt-hipri }
           - { target: sol10,  config: default, host: libvirt-hipri }
@@ -59,7 +59,7 @@ jobs:
           - { target: sol11,  config: default, host: libvirt-hipri }
           - { target: sol11,  config: pam-krb5, host: libvirt-hipri }
           - { target: sol11,  config: sol64, host: libvirt-hipri }
-          # Then we include extra libvirt test configs.
+          
           - { target: centos7, config: pam, host: libvirt }
           - { target: debian-i386, config: pam, host: libvirt }
           - { target: dfly30, config: without-openssl, host: libvirt}
@@ -73,10 +73,10 @@ jobs:
           - { target: fbsd14, config: pam, host: libvirt }
           - { target: nbsd8,  config: pam, host: libvirt }
           - { target: nbsd9,  config: pam, host: libvirt }
-          # VMs with persistent disks that have their own runner.
+          
           - { target: win10, config: default, host: win10 }
           - { target: win10, config: cygwin-release, host: win10 }
-          # Physical hosts, with either native runners or remote via ssh.
+          
           - { target: ARM, config: default, host: ARM }
           - { target: ARM64, config: default, host: ARM64 }
           - { target: ARM64, config: pam, host: ARM64 }

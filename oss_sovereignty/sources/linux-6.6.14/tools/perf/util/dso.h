@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_DSO
 #define __PERF_DSO
 
@@ -78,23 +78,17 @@ enum dso_type {
 enum dso_load_errno {
 	DSO_LOAD_ERRNO__SUCCESS		= 0,
 
-	/*
-	 * Choose an arbitrary negative big number not to clash with standard
-	 * errno since SUS requires the errno has distinct positive values.
-	 * See 'Issue 6' in the link below.
-	 *
-	 * http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/errno.h.html
-	 */
+	
 	__DSO_LOAD_ERRNO__START		= -10000,
 
 	DSO_LOAD_ERRNO__INTERNAL_ERROR	= __DSO_LOAD_ERRNO__START,
 
-	/* for symsrc__init() */
+	
 	DSO_LOAD_ERRNO__INVALID_ELF,
 	DSO_LOAD_ERRNO__CANNOT_READ_BUILDID,
 	DSO_LOAD_ERRNO__MISMATCHING_BUILDID,
 
-	/* for decompress_kmodule */
+	
 	DSO_LOAD_ERRNO__DECOMPRESSION_FAILURE,
 
 	__DSO_LOAD_ERRNO__END,
@@ -125,9 +119,7 @@ enum dso_load_errno {
 #define DSO__DATA_CACHE_SIZE 4096
 #define DSO__DATA_CACHE_MASK ~(DSO__DATA_CACHE_SIZE - 1)
 
-/*
- * Data about backing storage DSO, comes from PERF_RECORD_MMAP2 meta events
- */
+
 struct dso_id {
 	u32	maj;
 	u32	min;
@@ -147,8 +139,8 @@ struct auxtrace_cache;
 struct dso {
 	struct mutex	 lock;
 	struct list_head node;
-	struct rb_node	 rb_node;	/* rbtree node sorted by long name */
-	struct rb_root	 *root;		/* root of rbtree that rb_node is in */
+	struct rb_node	 rb_node;	
+	struct rb_root	 *root;		
 	struct rb_root_cached symbols;
 	struct symbol	 **symbol_names;
 	size_t		 symbol_names_len;
@@ -185,11 +177,11 @@ struct dso {
 	const char	 *long_name;
 	u16		 long_name_len;
 	u16		 short_name_len;
-	void		*dwfl;			/* DWARF debug info */
+	void		*dwfl;			
 	struct auxtrace_cache *auxtrace_cache;
 	int		 comp;
 
-	/* dso data file */
+	
 	struct {
 		struct rb_root	 cache;
 		int		 fd;
@@ -202,14 +194,14 @@ struct dso {
 		u64		 eh_frame_hdr_addr;
 		u64		 eh_frame_hdr_offset;
 	} data;
-	/* bpf prog information */
+	
 	struct {
 		u32		id;
 		u32		sub_id;
 		struct perf_env	*env;
 	} bpf_prog;
 
-	union { /* Tool specific area */
+	union { 
 		void	 *priv;
 		u64	 db_id;
 	};
@@ -219,12 +211,7 @@ struct dso {
 	char		 name[];
 };
 
-/* dso__for_each_symbol - iterate over the symbols of given type
- *
- * @dso: the 'struct dso *' in which symbols are iterated
- * @pos: the 'struct symbol *' to use as a loop cursor
- * @n: the 'struct rb_node *' to use as a temporary storage
- */
+
 #define dso__for_each_symbol(dso, pos, n)	\
 	symbols__for_each_entry(&(dso)->symbols, pos, n)
 
@@ -308,51 +295,7 @@ int __kmod_path__parse(struct kmod_path *m, const char *path,
 void dso__set_module_info(struct dso *dso, struct kmod_path *m,
 			  struct machine *machine);
 
-/*
- * The dso__data_* external interface provides following functions:
- *   dso__data_get_fd
- *   dso__data_put_fd
- *   dso__data_close
- *   dso__data_size
- *   dso__data_read_offset
- *   dso__data_read_addr
- *   dso__data_write_cache_offs
- *   dso__data_write_cache_addr
- *
- * Please refer to the dso.c object code for each function and
- * arguments documentation. Following text tries to explain the
- * dso file descriptor caching.
- *
- * The dso__data* interface allows caching of opened file descriptors
- * to speed up the dso data accesses. The idea is to leave the file
- * descriptor opened ideally for the whole life of the dso object.
- *
- * The current usage of the dso__data_* interface is as follows:
- *
- * Get DSO's fd:
- *   int fd = dso__data_get_fd(dso, machine);
- *   if (fd >= 0) {
- *       USE 'fd' SOMEHOW
- *       dso__data_put_fd(dso);
- *   }
- *
- * Read DSO's data:
- *   n = dso__data_read_offset(dso_0, &machine, 0, buf, BUFSIZE);
- *   n = dso__data_read_addr(dso_0, &machine, 0, buf, BUFSIZE);
- *
- * Eventually close DSO's fd:
- *   dso__data_close(dso);
- *
- * It is not necessary to close the DSO object data file. Each time new
- * DSO data file is opened, the limit (RLIMIT_NOFILE/2) is checked. Once
- * it is crossed, the oldest opened DSO object is closed.
- *
- * The dso__delete function calls close_dso function to ensure the
- * data file descriptor gets closed/unmapped before the dso object
- * is freed.
- *
- * TODO
-*/
+
 int dso__data_get_fd(struct dso *dso, struct machine *machine);
 void dso__data_put_fd(struct dso *dso);
 void dso__data_close(struct dso *dso);
@@ -407,4 +350,4 @@ int dso__strerror_load(struct dso *dso, char *buf, size_t buflen);
 
 void reset_fd_limit(void);
 
-#endif /* __PERF_DSO */
+#endif 

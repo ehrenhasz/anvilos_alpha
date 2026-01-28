@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018-2019 Intel Corporation
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- * Copyright (C) 2012 Linaro Ltd.
- */
+
+
 
 #ifndef __LINUX_MFD_ALTERA_SYSMGR_H__
 #define __LINUX_MFD_ALTERA_SYSMGR_H__
@@ -26,4 +22,4 @@ altr_sysmgr_regmap_lookup_by_phandle(struct device_node *np,
 }
 #endif
 
-#endif /* __LINUX_MFD_ALTERA_SYSMGR_H__ */
+#endif 

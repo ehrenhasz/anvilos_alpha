@@ -10,7 +10,7 @@ except NameError:
     print("NameError")
 try:
     do_del()
-except: # NameError:
+except: 
     print("NameError")
 a = 1
 del (a,)

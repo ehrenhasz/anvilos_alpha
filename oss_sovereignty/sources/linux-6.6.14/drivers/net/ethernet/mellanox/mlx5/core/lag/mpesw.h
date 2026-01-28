@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_LAG_MPESW_H__
 #define __MLX5_LAG_MPESW_H__
@@ -32,4 +32,4 @@ bool mlx5_lag_is_mpesw(struct mlx5_core_dev *dev);
 void mlx5_lag_mpesw_disable(struct mlx5_core_dev *dev);
 int mlx5_lag_mpesw_enable(struct mlx5_core_dev *dev);
 
-#endif /* __MLX5_LAG_MPESW_H__ */
+#endif 

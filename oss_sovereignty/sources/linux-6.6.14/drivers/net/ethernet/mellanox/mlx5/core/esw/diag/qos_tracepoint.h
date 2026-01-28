@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
@@ -113,9 +113,9 @@ TRACE_EVENT(mlx5_esw_group_qos_config,
 		      __entry->bw_share, __entry->max_rate
 		      )
 );
-#endif /* _MLX5_ESW_TP_ */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH esw/diag
 #undef TRACE_INCLUDE_FILE

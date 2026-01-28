@@ -14,10 +14,10 @@ for i in range(100000):
     [42, 42, 42, 42]
 print(list(m))
 m = None
-gc.collect()  # cleanup from previous test
+gc.collect()  
 m = memoryview(memoryview(bytearray(i for i in range(50)))[5:-5])
 print(sum(m), list(m[:10]))
 gc.collect()
 for i in range(10):
-    list(range(10))  # allocate memory to overwrite any reclaimed heap
+    list(range(10))  
 print(sum(m), list(m[:10]))

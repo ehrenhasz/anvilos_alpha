@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _OBJTOOL_ARCH_ELF
 #define _OBJTOOL_ARCH_ELF
 
@@ -10,4 +10,4 @@
 #define R_TEXT32	R_PPC_REL32
 #define R_TEXT64	R_PPC64_REL32
 
-#endif /* _OBJTOOL_ARCH_ELF */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _PERF_SYS_H
 #define _PERF_SYS_H
 
@@ -18,4 +18,4 @@ sys_perf_event_open(struct perf_event_attr *attr,
 		       group_fd, flags);
 }
 
-#endif /* _PERF_SYS_H */
+#endif 

@@ -7,10 +7,10 @@ gen_param_check()
 	local type="${arg%%:*}"
 	local name="$(gen_param_name "${arg}")"
 	local rw="write"
-	case "${type#c}" in
+	case "${type
 	i) return;;
 	esac
-	if [ ${type#c} != ${type} ]; then
+	if [ ${type
 		rw="read"
 	elif [ "${meta}" != "s" ]; then
 		rw="read_write"
@@ -26,7 +26,7 @@ gen_params_checks()
 	elif [ -z "${order}" ] && ! meta_in "$meta" "slv"; then
 		printf "\tkcsan_mb();\n"
 	fi
-	while [ "$#" -gt 0 ]; do
+	while [ "$
 		gen_param_check "$meta" "$1"
 		shift;
 	done
@@ -68,7 +68,7 @@ gen_xchg()
 		"")			kcsan_barrier="kcsan_mb()" ;;
 		esac
 	fi
-	if [ "${xchg%${xchg#try_cmpxchg}}" = "try_cmpxchg" ] ; then
+	if [ "${xchg%${xchg
 cat <<EOF
 ({ \\
 	typeof(ptr) __ai_ptr = (ptr); \\

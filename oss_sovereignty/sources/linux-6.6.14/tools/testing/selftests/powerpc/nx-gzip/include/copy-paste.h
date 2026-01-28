@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 
-/* From asm-compat.h */
+
+
 #define __stringify_in_c(...)	#__VA_ARGS__
 #define stringify_in_c(...)	__stringify_in_c(__VA_ARGS__) " "
 
-/*
- * Macros taken from arch/powerpc/include/asm/ppc-opcode.h and other
- * header files.
- */
+
 #define ___PPC_RA(a)    (((a) & 0x1f) << 16)
 #define ___PPC_RB(b)    (((b) & 0x1f) << 11)
 
@@ -20,17 +17,7 @@
 						___PPC_RA(a) | ___PPC_RB(b))
 #define CR0_SHIFT	28
 #define CR0_MASK	0xF
-/*
- * Copy/paste instructions:
- *
- *	copy RA,RB
- *		Copy contents of address (RA) + effective_address(RB)
- *		to internal copy-buffer.
- *
- *	paste RA,RB
- *		Paste contents of internal copy-buffer to the address
- *		(RA) + effective_address(RB)
- */
+
 static inline int vas_copy(void *crb, int offset)
 {
 	asm volatile(PPC_COPY(%0, %1)";"

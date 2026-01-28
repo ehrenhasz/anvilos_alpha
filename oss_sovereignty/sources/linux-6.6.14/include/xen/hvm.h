@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Simple wrappers around HVM functions */
+
+
 #ifndef XEN_HVM_H__
 #define XEN_HVM_H__
 
@@ -62,4 +62,4 @@ void xen_setup_callback_vector(void);
 
 int xen_set_upcall_vector(unsigned int cpu);
 
-#endif /* XEN_HVM_H__ */
+#endif 

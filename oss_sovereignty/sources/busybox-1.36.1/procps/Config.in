@@ -1,14 +1,14 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Process Utilities"
 
 config FEATURE_FAST_TOP
 	bool "Faster /proc scanning code (+100 bytes)"
-	default n  # all "fast or small" options default to small
+	default n  
 	help
 	This option makes top and ps ~20% faster (or 20% less CPU hungry),
 	but code size is slightly bigger.

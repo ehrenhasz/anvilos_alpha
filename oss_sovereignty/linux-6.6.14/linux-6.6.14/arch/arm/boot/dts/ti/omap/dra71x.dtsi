@@ -1,4 +1,0 @@
-#include "dra72-evm-common.dtsi"
-&rtctarget {
-	status = "disabled";
-};

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt driver - control channel and configuration commands
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+
+
 
 #ifndef _TB_CFG
 #define _TB_CFG
@@ -15,7 +10,7 @@
 #include "nhi.h"
 #include "tb_msgs.h"
 
-/* control channel */
+
 struct tb_ctl;
 
 typedef bool (*event_cb)(void *data, enum tb_cfg_pkg_type type,
@@ -27,20 +22,13 @@ void tb_ctl_start(struct tb_ctl *ctl);
 void tb_ctl_stop(struct tb_ctl *ctl);
 void tb_ctl_free(struct tb_ctl *ctl);
 
-/* configuration commands */
+
 
 struct tb_cfg_result {
 	u64 response_route;
-	u32 response_port; /*
-			    * If err = 1 then this is the port that send the
-			    * error.
-			    * If err = 0 and if this was a cfg_read/write then
-			    * this is the upstream port of the responding
-			    * switch.
-			    * Otherwise the field is set to zero.
-			    */
-	int err; /* negative errors, 0 for success, 1 for tb errors */
-	enum tb_cfg_error tb_error; /* valid if err == 1 */
+	u32 response_port; 
+	int err; 
+	enum tb_cfg_error tb_error; 
 };
 
 struct ctl_pkg {
@@ -49,30 +37,7 @@ struct ctl_pkg {
 	struct ring_frame frame;
 };
 
-/**
- * struct tb_cfg_request - Control channel request
- * @kref: Reference count
- * @ctl: Pointer to the control channel structure. Only set when the
- *	 request is queued.
- * @request_size: Size of the request packet (in bytes)
- * @request_type: Type of the request packet
- * @response: Response is stored here
- * @response_size: Maximum size of one response packet
- * @response_type: Expected type of the response packet
- * @npackets: Number of packets expected to be returned with this request
- * @match: Function used to match the incoming packet
- * @copy: Function used to copy the incoming packet to @response
- * @callback: Callback called when the request is finished successfully
- * @callback_data: Data to be passed to @callback
- * @flags: Flags for the request
- * @work: Work item used to complete the request
- * @result: Result after the request has been completed
- * @list: Requests are queued using this field
- *
- * An arbitrary request over Thunderbolt control channel. For standard
- * control channel message, one should use tb_cfg_read/write() and
- * friends if possible.
- */
+
 struct tb_cfg_request {
 	struct kref kref;
 	struct tb_ctl *ctl;
@@ -117,7 +82,7 @@ static inline struct tb_cfg_header tb_cfg_make_header(u64 route)
 		.route_hi = route >> 32,
 		.route_lo = route,
 	};
-	/* check for overflow, route_hi is not 32 bits! */
+	
 	WARN_ON(tb_cfg_get_route(&header) != route);
 	return header;
 }

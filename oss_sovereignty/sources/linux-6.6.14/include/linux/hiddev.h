@@ -1,24 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (c) 1999-2000 Vojtech Pavlik
- *
- *  Sponsored by SuSE
- */
-/*
- * 
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
- * Vojtech Pavlik, Ucitelska 1576, Prague 8, 182 00 Czech Republic
- */
+
+
+
 #ifndef _HIDDEV_H
 #define _HIDDEV_H
 
 #include <uapi/linux/hiddev.h>
 
 
-/*
- * In-kernel definitions.
- */
+
 
 struct hiddev {
 	int minor;

@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __HID_DEBUG_H
 #define __HID_DEBUG_H
 
-/*
- *  Copyright (c) 2007-2009	Jiri Kosina
- */
 
-/*
- */
+
+
 
 #ifdef CONFIG_DEBUG_FS
 

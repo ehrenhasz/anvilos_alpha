@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2012 Red Hat.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_RCU_STRING_H
 #define BTRFS_RCU_STRING_H
@@ -18,7 +16,7 @@ static inline struct rcu_string *rcu_string_strdup(const char *src, gfp_t mask)
 					 (len * sizeof(char)), mask);
 	if (!ret)
 		return ret;
-	/* Warn if the source got unexpectedly truncated. */
+	
 	if (WARN_ON(strscpy(ret->str, src, len) < 0)) {
 		kfree(ret);
 		return NULL;

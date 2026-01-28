@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * ASoC audio graph card support
- *
- */
+
 
 #ifndef __GRAPH_CARD_H
 #define __GRAPH_CARD_H
@@ -32,4 +28,4 @@ int audio_graph2_link_dpcm(struct asoc_simple_priv *priv,
 int audio_graph2_link_c2c(struct asoc_simple_priv *priv,
 			  struct device_node *lnk, struct link_info *li);
 
-#endif /* __GRAPH_CARD_H */
+#endif 

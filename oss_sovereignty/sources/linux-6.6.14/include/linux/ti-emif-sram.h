@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI AM33XX EMIF Routines
- *
- * Copyright (C) 2016-2017 Texas Instruments Inc.
- *	Dave Gerlach
- */
+
+
 #ifndef __LINUX_TI_EMIF_H
 #define __LINUX_TI_EMIF_H
 
@@ -136,4 +131,4 @@ int ti_emif_copy_pm_function_table(struct gen_pool *sram_pool, void *dst);
 int ti_emif_get_mem_type(void);
 
 #endif
-#endif /* __LINUX_TI_EMIF_H */
+#endif 

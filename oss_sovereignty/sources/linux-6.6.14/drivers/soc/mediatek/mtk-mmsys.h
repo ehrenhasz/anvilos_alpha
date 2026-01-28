@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __SOC_MEDIATEK_MTK_MMSYS_H
 #define __SOC_MEDIATEK_MTK_MMSYS_H
@@ -95,15 +95,7 @@ struct mtk_mmsys_driver_data {
 	const bool is_vppsys;
 };
 
-/*
- * Routes in mt2701 and mt2712 are different. That means
- * in the same register address, it controls different input/output
- * selection for each SoC. But, right now, they use the same table as
- * default routes meet their requirements. But we don't have the complete
- * route information for these three SoC, so just keep them in the same
- * table. After we've more information, we could separate mt2701, mt2712
- * to an independent table.
- */
+
 static const struct mtk_mmsys_routes mmsys_default_routing_table[] = {
 	{
 		DDP_COMPONENT_BLS, DDP_COMPONENT_DSI0,
@@ -272,4 +264,4 @@ static const struct mtk_mmsys_routes mmsys_default_routing_table[] = {
 	}
 };
 
-#endif /* __SOC_MEDIATEK_MTK_MMSYS_H */
+#endif 

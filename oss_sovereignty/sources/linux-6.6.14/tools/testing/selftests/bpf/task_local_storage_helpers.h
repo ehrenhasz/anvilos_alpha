@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __TASK_LOCAL_STORAGE_HELPER_H
 #define __TASK_LOCAL_STORAGE_HELPER_H
 

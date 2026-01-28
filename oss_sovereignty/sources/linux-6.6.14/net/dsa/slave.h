@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef __DSA_SLAVE_H
 #define __DSA_SLAVE_H
@@ -18,20 +18,20 @@ extern struct notifier_block dsa_slave_switchdev_notifier;
 extern struct notifier_block dsa_slave_switchdev_blocking_notifier;
 
 struct dsa_slave_priv {
-	/* Copy of CPU port xmit for faster access in slave transmit hot path */
+	
 	struct sk_buff *	(*xmit)(struct sk_buff *skb,
 					struct net_device *dev);
 
 	struct gro_cells	gcells;
 
-	/* DSA port data, such as switch, port index, etc. */
+	
 	struct dsa_port		*dp;
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	struct netpoll		*netpoll;
 #endif
 
-	/* TC context */
+	
 	struct list_head	mall_tc_list;
 };
 

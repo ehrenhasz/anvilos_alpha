@@ -16,14 +16,14 @@ cleanup() {
 }
 trap cleanup EXIT TERM
 NO=1
-xpass() { # pass test command
+xpass() { 
   echo "test case $NO ($*)... "
   if ! ($@ && echo "\t\t[OK]"); then
      echo "\t\t[NG]"; NG=$((NG + 1))
   fi
   NO=$((NO + 1))
 }
-xfail() { # fail test command
+xfail() { 
   echo "test case $NO ($*)... "
   if ! (! $@ && echo "\t\t[OK]"); then
      echo "\t\t[NG]"; NG=$((NG + 1))
@@ -81,7 +81,7 @@ dd if=/dev/urandom bs=768 count=32 | base64 -w0 >> $TEMPCONF
 echo "\"" >> $TEMPCONF
 xfail $BOOTCONF -a $TEMPCONF $INITRD
 truncate -s 32764 $TEMPCONF
-echo "\"" >> $TEMPCONF	# add 2 bytes + terminal ('\"\n\0')
+echo "\"" >> $TEMPCONF	
 xpass $BOOTCONF -a $TEMPCONF $INITRD
 echo "Adding same-key values"
 cat > $TEMPCONF << EOF
@@ -123,8 +123,8 @@ $BOOTCONF $INITRD > $OUTFILE
 xpass grep -q "bar" $OUTFILE
 echo "Remove/keep tailing spaces"
 cat > $TEMPCONF << EOF
-foo = val     # comment
-bar = "val2 " # comment
+foo = val     
+bar = "val2 " 
 EOF
 echo > $INITRD
 xpass $BOOTCONF -a $TEMPCONF $INITRD
@@ -141,8 +141,8 @@ for i in samples/good-* ; do
 done
 echo
 echo "=== Summary ==="
-echo "# of Passed: $(expr $NO - $NG - 1)"
-echo "# of Failed: $NG"
+echo "
+echo "
 echo
 if [ $NG -eq 0 ]; then
 	echo "All tests passed"

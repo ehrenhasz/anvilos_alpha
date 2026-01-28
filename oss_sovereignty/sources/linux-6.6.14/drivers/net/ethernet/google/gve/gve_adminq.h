@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- * Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
 
 #ifndef _GVE_ADMINQ_H
 #define _GVE_ADMINQ_H
 
 #include <linux/build_bug.h>
 
-/* Admin queue opcodes */
+
 enum gve_adminq_opcodes {
 	GVE_ADMINQ_DESCRIBE_DEVICE		= 0x1,
 	GVE_ADMINQ_CONFIGURE_DEVICE_RESOURCES	= 0x2,
@@ -27,7 +23,7 @@ enum gve_adminq_opcodes {
 	GVE_ADMINQ_VERIFY_DRIVER_COMPATIBILITY	= 0xF,
 };
 
-/* Admin queue status codes */
+
 enum gve_adminq_statuses {
 	GVE_ADMINQ_COMMAND_UNSET			= 0x0,
 	GVE_ADMINQ_COMMAND_PASSED			= 0x1,
@@ -51,9 +47,7 @@ enum gve_adminq_statuses {
 
 #define GVE_ADMINQ_DEVICE_DESCRIPTOR_VERSION 1
 
-/* All AdminQ command structs should be naturally packed. The static_assert
- * calls make sure this is the case at compile time.
- */
+
 
 struct gve_adminq_describe_device {
 	__be64 device_descriptor_addr;
@@ -125,14 +119,7 @@ struct gve_device_option_jumbo_frames {
 
 static_assert(sizeof(struct gve_device_option_jumbo_frames) == 8);
 
-/* Terminology:
- *
- * RDA - Raw DMA Addressing - Buffers associated with SKBs are directly DMA
- *       mapped and read/updated by the device.
- *
- * QPL - Queue Page Lists - Driver uses bounce buffers which are DMA mapped with
- *       the device for read/write and data is copied from/to SKBs.
- */
+
 enum gve_dev_opt_id {
 	GVE_DEV_OPT_ID_GQI_RAW_ADDRESSING = 0x1,
 	GVE_DEV_OPT_ID_GQI_RDA = 0x2,
@@ -162,7 +149,7 @@ enum gve_sup_feature_mask {
 enum gve_driver_capbility {
 	gve_driver_capability_gqi_qpl = 0,
 	gve_driver_capability_gqi_rda = 1,
-	gve_driver_capability_dqo_qpl = 2, /* reserved for future use */
+	gve_driver_capability_dqo_qpl = 2, 
 	gve_driver_capability_dqo_rda = 3,
 	gve_driver_capability_alt_miss_compl = 4,
 };
@@ -183,7 +170,7 @@ enum gve_driver_capbility {
 #define GVE_DRIVER_CAPABILITY_FLAGS4 0x0
 
 struct gve_driver_info {
-	u8 os_type;	/* 0x01 = Linux */
+	u8 os_type;	
 	u8 driver_major;
 	u8 driver_minor;
 	u8 driver_sub;
@@ -264,12 +251,12 @@ struct gve_adminq_create_rx_queue {
 
 static_assert(sizeof(struct gve_adminq_create_rx_queue) == 56);
 
-/* Queue resources that are shared with the device */
+
 struct gve_queue_resources {
 	union {
 		struct {
-			__be32 db_index;	/* Device -> Guest */
-			__be32 counter_index;	/* Device -> Guest */
+			__be32 db_index;	
+			__be32 counter_index;	
 		};
 		u8 reserved[64];
 	};
@@ -289,7 +276,7 @@ struct gve_adminq_destroy_rx_queue {
 
 static_assert(sizeof(struct gve_adminq_destroy_rx_queue) == 4);
 
-/* GVE Set Driver Parameter Types */
+
 enum gve_set_driver_param_types {
 	GVE_SET_PARAM_MTU	= 0x1,
 };
@@ -332,7 +319,7 @@ struct gve_stats_report {
 static_assert(sizeof(struct gve_stats_report) == 8);
 
 enum gve_stat_names {
-	// stats from gve
+	
 	TX_WAKE_CNT			= 1,
 	TX_STOP_CNT			= 2,
 	TX_FRAMES_SENT			= 3,
@@ -341,7 +328,7 @@ enum gve_stat_names {
 	RX_NEXT_EXPECTED_SEQUENCE	= 6,
 	RX_BUFFERS_POSTED		= 7,
 	TX_TIMEOUT_CNT			= 8,
-	// stats from NIC
+	
 	RX_QUEUE_DROP_CNT		= 65,
 	RX_NO_BUFFERS_POSTED		= 66,
 	RX_DROPS_PACKET_OVER_MRU	= 67,
@@ -349,7 +336,7 @@ enum gve_stat_names {
 };
 
 enum gve_l3_type {
-	/* Must be zero so zero initialized LUT is unknown. */
+	
 	GVE_L3_TYPE_UNKNOWN = 0,
 	GVE_L3_TYPE_OTHER,
 	GVE_L3_TYPE_IPV4,
@@ -357,7 +344,7 @@ enum gve_l3_type {
 };
 
 enum gve_l4_type {
-	/* Must be zero so zero initialized LUT is unknown. */
+	
 	GVE_L4_TYPE_UNKNOWN = 0,
 	GVE_L4_TYPE_OTHER,
 	GVE_L4_TYPE_TCP,
@@ -366,16 +353,14 @@ enum gve_l4_type {
 	GVE_L4_TYPE_SCTP,
 };
 
-/* These are control path types for PTYPE which are the same as the data path
- * types.
- */
+
 struct gve_ptype_entry {
 	u8 l3_type;
 	u8 l4_type;
 };
 
 struct gve_ptype_map {
-	struct gve_ptype_entry ptypes[1 << 10]; /* PTYPES are always 10 bits. */
+	struct gve_ptype_entry ptypes[1 << 10]; 
 };
 
 struct gve_adminq_get_ptype_map {
@@ -439,4 +424,4 @@ struct gve_ptype_lut;
 int gve_adminq_get_ptype_map_dqo(struct gve_priv *priv,
 				 struct gve_ptype_lut *ptype_lut);
 
-#endif /* _GVE_ADMINQ_H */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for the MDIO interface of Microsemi network switches.
- *
- * Author: Colin Foster <colin.foster@in-advantage.com>
- * Copyright (C) 2021 Innovative Advantage
- */
+
+
 #ifndef MDIO_MSCC_MIIM_H
 #define MDIO_MSCC_MIIM_H
 

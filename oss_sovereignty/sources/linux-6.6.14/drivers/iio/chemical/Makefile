@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for IIO chemical sensors
-#
 
-# When adding new entries keep the list in alphabetical order
+
+
+
+
+
 obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-sensor.o
 obj-$(CONFIG_ATLAS_EZO_SENSOR)	+= atlas-ezo-sensor.o
 obj-$(CONFIG_BME680) += bme680_core.o

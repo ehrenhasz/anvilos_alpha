@@ -1,22 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Intel Corporation
- * Author: johannes@sipsolutions.net
- */
+
+
 #ifndef _LOGIC_IO_H
 #define _LOGIC_IO_H
 #include <linux/types.h>
 
-/* include this file into asm/io.h */
+
 
 #ifdef CONFIG_INDIRECT_IOMEM
 
 #ifdef CONFIG_INDIRECT_IOMEM_FALLBACK
-/*
- * If you want emulated IO memory to fall back to 'normal' IO memory
- * if a region wasn't registered as emulated, then you need to have
- * all of the real_* functions implemented.
- */
+
 #if !defined(real_ioremap) || !defined(real_iounmap) || \
     !defined(real_raw_readb) || !defined(real_raw_writeb) || \
     !defined(real_raw_readw) || !defined(real_raw_writew) || \
@@ -27,8 +20,8 @@
     !defined(real_memcpy_fromio) || \
     !defined(real_memcpy_toio)
 #error "Must provide fallbacks for real IO memory access"
-#endif /* defined ... */
-#endif /* CONFIG_INDIRECT_IOMEM_FALLBACK */
+#endif 
+#endif 
 
 #define ioremap ioremap
 void __iomem *ioremap(phys_addr_t offset, size_t size);
@@ -48,7 +41,7 @@ u32 __raw_readl(const volatile void __iomem *addr);
 #ifdef CONFIG_64BIT
 #define __raw_readq __raw_readq
 u64 __raw_readq(const volatile void __iomem *addr);
-#endif /* CONFIG_64BIT */
+#endif 
 
 #define __raw_writeb __raw_writeb
 void __raw_writeb(u8 value, volatile void __iomem *addr);
@@ -62,7 +55,7 @@ void __raw_writel(u32 value, volatile void __iomem *addr);
 #ifdef CONFIG_64BIT
 #define __raw_writeq __raw_writeq
 void __raw_writeq(u64 value, volatile void __iomem *addr);
-#endif /* CONFIG_64BIT */
+#endif 
 
 #define memset_io memset_io
 void memset_io(volatile void __iomem *addr, int value, size_t size);
@@ -74,5 +67,5 @@ void memcpy_fromio(void *buffer, const volatile void __iomem *addr,
 #define memcpy_toio memcpy_toio
 void memcpy_toio(volatile void __iomem *addr, const void *buffer, size_t size);
 
-#endif /* CONFIG_INDIRECT_IOMEM */
-#endif /* _LOGIC_IO_H */
+#endif 
+#endif 

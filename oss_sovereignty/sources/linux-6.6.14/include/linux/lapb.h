@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * These are the public elements of the Linux LAPB module.
- */
+
+
 
 #ifndef	LAPB_KERNEL_H
 #define	LAPB_KERNEL_H

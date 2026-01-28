@@ -1,6 +1,6 @@
 cnt=60
 exec </dev/null
-exec >"/tmp/${0##*/}.$$.out"
+exec >"/tmp/${0
 exec 2>&1
 (
 echo "Running: $0"

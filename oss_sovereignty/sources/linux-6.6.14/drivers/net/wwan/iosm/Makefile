@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: (GPL-2.0-only)
-#
-# Copyright (C) 2020-21 Intel Corporation.
-#
+
+
+
+
 
 iosm-y = \
 	iosm_ipc_task_queue.o	\

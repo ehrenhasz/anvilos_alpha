@@ -67,8 +67,8 @@ gen_ret_stmt()
 }
 gen_param_name()
 {
-	local name="${1#c}"
-	printf "${name#*:}"
+	local name="${1
+	printf "${name
 }
 gen_param_type()
 {
@@ -96,17 +96,17 @@ gen_params()
 {
 	local int="$1"; shift
 	local atomic="$1"; shift
-	while [ "$#" -gt 0 ]; do
+	while [ "$
 		gen_param "$1" "${int}" "${atomic}"
-		[ "$#" -gt 1 ] && printf ", "
+		[ "$
 		shift;
 	done
 }
 gen_args()
 {
-	while [ "$#" -gt 0 ]; do
+	while [ "$
 		printf "$(gen_param_name "$1")"
-		[ "$#" -gt 1 ] && printf ", "
+		[ "$
 		shift;
 	done
 }
@@ -148,7 +148,7 @@ gen_template_kerneldoc()
 	local desc_instrumentation=""
 	local desc_return=""
 	if [ ! -z "${order}" ]; then
-		desc_order="${order##_}"
+		desc_order="${order
 	elif meta_is_implicitly_relaxed "${meta}"; then
 		desc_order="relaxed"
 	else

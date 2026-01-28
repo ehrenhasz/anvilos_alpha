@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * MUSB OTG driver debug defines
- *
- * Copyright 2005 Mentor Graphics Corporation
- * Copyright (C) 2005-2006 by Texas Instruments
- * Copyright (C) 2006-2007 Nokia Corporation
- */
+
+
 
 #ifndef __MUSB_LINUX_DEBUG_H__
 #define __MUSB_LINUX_DEBUG_H__
@@ -31,4 +25,4 @@ static inline void musb_exit_debugfs(struct musb *musb)
 }
 #endif
 
-#endif				/*  __MUSB_LINUX_DEBUG_H__ */
+#endif				

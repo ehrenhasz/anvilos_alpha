@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_common.h: Basic includes for all files in project. */
+
+
+
 
 #ifndef AQ_COMMON_H
 #define AQ_COMMON_H
@@ -74,4 +70,4 @@
 				 AQ_NIC_RATE_EEE_1G |\
 				 AQ_NIC_RATE_EEE_100M)
 
-#endif /* AQ_COMMON_H */
+#endif 

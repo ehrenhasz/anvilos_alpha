@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_LINUX_THERMAL_H
 #define _UAPI_LINUX_THERMAL_H
 
@@ -16,13 +16,13 @@ enum thermal_trip_type {
 	THERMAL_TRIP_CRITICAL,
 };
 
-/* Adding event notification support elements */
+
 #define THERMAL_GENL_FAMILY_NAME		"thermal"
 #define THERMAL_GENL_VERSION			0x01
 #define THERMAL_GENL_SAMPLING_GROUP_NAME	"sampling"
 #define THERMAL_GENL_EVENT_GROUP_NAME		"event"
 
-/* Attributes of thermal_genl_family */
+
 enum thermal_genl_attr {
 	THERMAL_GENL_ATTR_UNSPEC,
 	THERMAL_GENL_ATTR_TZ,
@@ -58,38 +58,38 @@ enum thermal_genl_sampling {
 };
 #define THERMAL_GENL_SAMPLING_MAX (__THERMAL_GENL_SAMPLING_MAX - 1)
 
-/* Events of thermal_genl_family */
+
 enum thermal_genl_event {
 	THERMAL_GENL_EVENT_UNSPEC,
-	THERMAL_GENL_EVENT_TZ_CREATE,		/* Thermal zone creation */
-	THERMAL_GENL_EVENT_TZ_DELETE,		/* Thermal zone deletion */
-	THERMAL_GENL_EVENT_TZ_DISABLE,		/* Thermal zone disabled */
-	THERMAL_GENL_EVENT_TZ_ENABLE,		/* Thermal zone enabled */
-	THERMAL_GENL_EVENT_TZ_TRIP_UP,		/* Trip point crossed the way up */
-	THERMAL_GENL_EVENT_TZ_TRIP_DOWN,	/* Trip point crossed the way down */
-	THERMAL_GENL_EVENT_TZ_TRIP_CHANGE,	/* Trip point changed */
-	THERMAL_GENL_EVENT_TZ_TRIP_ADD,		/* Trip point added */
-	THERMAL_GENL_EVENT_TZ_TRIP_DELETE,	/* Trip point deleted */
-	THERMAL_GENL_EVENT_CDEV_ADD,		/* Cdev bound to the thermal zone */
-	THERMAL_GENL_EVENT_CDEV_DELETE,		/* Cdev unbound */
-	THERMAL_GENL_EVENT_CDEV_STATE_UPDATE,	/* Cdev state updated */
-	THERMAL_GENL_EVENT_TZ_GOV_CHANGE,	/* Governor policy changed  */
-	THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE,	/* CPU capability changed */
+	THERMAL_GENL_EVENT_TZ_CREATE,		
+	THERMAL_GENL_EVENT_TZ_DELETE,		
+	THERMAL_GENL_EVENT_TZ_DISABLE,		
+	THERMAL_GENL_EVENT_TZ_ENABLE,		
+	THERMAL_GENL_EVENT_TZ_TRIP_UP,		
+	THERMAL_GENL_EVENT_TZ_TRIP_DOWN,	
+	THERMAL_GENL_EVENT_TZ_TRIP_CHANGE,	
+	THERMAL_GENL_EVENT_TZ_TRIP_ADD,		
+	THERMAL_GENL_EVENT_TZ_TRIP_DELETE,	
+	THERMAL_GENL_EVENT_CDEV_ADD,		
+	THERMAL_GENL_EVENT_CDEV_DELETE,		
+	THERMAL_GENL_EVENT_CDEV_STATE_UPDATE,	
+	THERMAL_GENL_EVENT_TZ_GOV_CHANGE,	
+	THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE,	
 	__THERMAL_GENL_EVENT_MAX,
 };
 #define THERMAL_GENL_EVENT_MAX (__THERMAL_GENL_EVENT_MAX - 1)
 
-/* Commands supported by the thermal_genl_family */
+
 enum thermal_genl_cmd {
 	THERMAL_GENL_CMD_UNSPEC,
-	THERMAL_GENL_CMD_TZ_GET_ID,	/* List of thermal zones id */
-	THERMAL_GENL_CMD_TZ_GET_TRIP,	/* List of thermal trips */
-	THERMAL_GENL_CMD_TZ_GET_TEMP,	/* Get the thermal zone temperature */
-	THERMAL_GENL_CMD_TZ_GET_GOV,	/* Get the thermal zone governor */
-	THERMAL_GENL_CMD_TZ_GET_MODE,	/* Get the thermal zone mode */
-	THERMAL_GENL_CMD_CDEV_GET,	/* List of cdev id */
+	THERMAL_GENL_CMD_TZ_GET_ID,	
+	THERMAL_GENL_CMD_TZ_GET_TRIP,	
+	THERMAL_GENL_CMD_TZ_GET_TEMP,	
+	THERMAL_GENL_CMD_TZ_GET_GOV,	
+	THERMAL_GENL_CMD_TZ_GET_MODE,	
+	THERMAL_GENL_CMD_CDEV_GET,	
 	__THERMAL_GENL_CMD_MAX,
 };
 #define THERMAL_GENL_CMD_MAX (__THERMAL_GENL_CMD_MAX - 1)
 
-#endif /* _UAPI_LINUX_THERMAL_H */
+#endif 

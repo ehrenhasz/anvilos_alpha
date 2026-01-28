@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_CONTEXT_TRACKING_H
 #define _LINUX_CONTEXT_TRACKING_H
 
@@ -13,7 +13,7 @@
 #ifdef CONFIG_CONTEXT_TRACKING_USER
 extern void ct_cpu_track_user(int cpu);
 
-/* Called with interrupts disabled.  */
+
 extern void __ct_user_enter(enum ctx_state state);
 extern void __ct_user_exit(enum ctx_state state);
 
@@ -35,7 +35,7 @@ static inline void user_exit(void)
 		ct_user_exit(CONTEXT_USER);
 }
 
-/* Called with interrupts disabled.  */
+
 static __always_inline void user_enter_irqoff(void)
 {
 	if (context_tracking_enabled())
@@ -100,32 +100,25 @@ static inline int __ct_state(void) { return -1; }
 static __always_inline bool context_tracking_guest_enter(void) { return false; }
 static __always_inline void context_tracking_guest_exit(void) { }
 #define CT_WARN_ON(cond) do { } while (0)
-#endif /* !CONFIG_CONTEXT_TRACKING_USER */
+#endif 
 
 #ifdef CONFIG_CONTEXT_TRACKING_USER_FORCE
 extern void context_tracking_init(void);
 #else
 static inline void context_tracking_init(void) { }
-#endif /* CONFIG_CONTEXT_TRACKING_USER_FORCE */
+#endif 
 
 #ifdef CONFIG_CONTEXT_TRACKING_IDLE
 extern void ct_idle_enter(void);
 extern void ct_idle_exit(void);
 
-/*
- * Is the current CPU in an extended quiescent state?
- *
- * No ordering, as we are sampling CPU-local information.
- */
+
 static __always_inline bool rcu_dynticks_curr_cpu_in_eqs(void)
 {
 	return !(raw_atomic_read(this_cpu_ptr(&context_tracking.state)) & RCU_DYNTICKS_IDX);
 }
 
-/*
- * Increment the current CPU's context_tracking structure's ->state field
- * with ordering.  Return the new value.
- */
+
 static __always_inline unsigned long ct_state_inc(int incby)
 {
 	return raw_atomic_add_return(incby, this_cpu_ptr(&context_tracking.state));
@@ -135,10 +128,7 @@ static __always_inline bool warn_rcu_enter(void)
 {
 	bool ret = false;
 
-	/*
-	 * Horrible hack to shut up recursive RCU isn't watching fail since
-	 * lots of the actual reporting also relies on RCU.
-	 */
+	
 	preempt_disable_notrace();
 	if (rcu_dynticks_curr_cpu_in_eqs()) {
 		ret = true;
@@ -161,6 +151,6 @@ static inline void ct_idle_exit(void) { }
 
 static __always_inline bool warn_rcu_enter(void) { return false; }
 static __always_inline void warn_rcu_exit(bool rcu) { }
-#endif /* !CONFIG_CONTEXT_TRACKING_IDLE */
+#endif 
 
 #endif

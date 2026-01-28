@@ -1,26 +1,4 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Renesas Electronics Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef RA_ADC_H_
 #define RA_ADC_H_
@@ -123,7 +101,7 @@ enum ADC14_PIN
     AN120 = 52,
 
     #elif defined(RA6M2)
-    // Unit 0
+    
     AN000 = 0,
     AN001 = 1,
     AN002 = 2,
@@ -137,7 +115,7 @@ enum ADC14_PIN
     AN018 = 18,
     AN019 = 19,
     AN020 = 20,
-    // Unit 1
+    
     AN100 = 32,
     AN101 = 33,
     AN102 = 34,
@@ -149,7 +127,7 @@ enum ADC14_PIN
     AN118 = 50,
 
     #elif defined(RA6M3)
-    // Unit 0
+    
     AN000 = 0,
     AN001 = 1,
     AN002 = 2,
@@ -163,7 +141,7 @@ enum ADC14_PIN
     AN018 = 18,
     AN019 = 19,
     AN020 = 20,
-    // Unit 1
+    
     AN100 = 32,
     AN101 = 33,
     AN102 = 34,
@@ -177,7 +155,7 @@ enum ADC14_PIN
     AN119 = 51,
 
     #elif defined(RA6M5)
-    // Unit 0
+    
     AN000 = 0,
     AN001 = 1,
     AN002 = 2,
@@ -191,7 +169,7 @@ enum ADC14_PIN
     AN010 = 10,
     AN012 = 12,
     AN013 = 13,
-    // Unit 1
+    
     AN100 = 32,
     AN101 = 33,
     AN102 = 34,
@@ -226,8 +204,8 @@ enum ADC14_PIN
 bool ra_adc_pin_to_ch(uint32_t pin, uint8_t *ch);
 bool ra_adc_ch_to_pin(uint8_t ch, uint32_t *pin);
 uint8_t ra_adc_get_channel(uint32_t pin);
-// static void ra_adc_module_start(void);
-// static void ra_adc_module_stop(void);
+
+
 void ra_adc_set_pin(uint32_t pin, bool adc_enable);
 void ra_adc_enable(uint32_t pin);
 void ra_adc_disable(uint32_t pin);
@@ -244,4 +222,4 @@ bool ra_adc_init(void);
 bool ra_adc_deinit(void);
 __attribute__((weak)) void adc_scan_end_isr(void);
 
-#endif /* RA_ADC_H_ */
+#endif 

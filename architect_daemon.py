@@ -104,10 +104,88 @@ def architect_recipe(goal):
     except Exception as e:
         logger.error(f"Reasoning Error: {e}")
         return None
+def auto_repair_jams():
+    """
+    Scans for Jammed cards (stat=9), asks Gemini for a fix, and injects the remedy.
+    """
+    try:
+        # Fetch one jammed card at a time to avoid flooding
+        jammed = DB.fetch_jammed_card() # Need to ensure this method exists or use raw SQL
+        if not jammed:
+            return
+
+        card_id = jammed['id']
+        op = jammed['op']
+        pld = jammed['pld']
+        error = jammed.get('ret', 'Unknown Error')
+        
+        logger.info(f"DETECTED JAM: Card {card_id} failed with: {error}")
+        
+        # 1. Ask Gemini for a fix
+        prompt = f"""
+        SYSTEM ALERT: A card has JAMMED (Failed) in the AnvilOS Mainframe.
+        Your job is to architect a REPAIR RECIPE.
+        
+        FAILED CARD:
+        OP: {op}
+        PAYLOAD: {pld}
+        ERROR: {error}
+        
+        MISSION:
+        1. Analyze the error.
+        2. Create a sequence of cards to FIX the underlying issue (e.g., create missing dir, install dependency).
+        3. Re-inject the original operation if necessary (or a corrected version).
+        
+        CONSTRAINTS:
+        - Use ONLY valid AnvilOS ops (SYS_CMD, FILE_WRITE).
+        - DO NOT hallucinate commands like 'apt-get' if on Gentoo/Alpine (unless the error specifically asks for it and you are sure).
+        - KEEP IT MINIMAL.
+        
+        Return ONLY a JSON list of cards.
+        """
+        
+        try:
+            response = CLIENT.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    temperature=0.1,
+                    response_mime_type="application/json"
+                )
+            )
+            fix_recipe = json.loads(response.text)
+            
+            if fix_recipe:
+                logger.info(f"Forged REPAIR RECIPE with {len(fix_recipe)} cards.")
+                
+                # 2. Archive the Jammed Card (Remove from active stack to prevent loops)
+                # We assume DB.archive_card or similar exists, or we use raw SQL
+                # Since I don't see archive_card in the snippet, I'll use raw SQL via DB connection if possible
+                # But DB is a CortexDB object. I'll rely on DB interface or extend it.
+                # Ideally, we set stat=99 (Archived/Dead) or move it.
+                DB.update_card_status(card_id, 99) # 99 = Dead/handled
+                
+                # 3. Inject Fix
+                for i, card in enumerate(fix_recipe):
+                    new_id = str(uuid.uuid4())
+                    pld = card.get('pld', {})
+                    if isinstance(pld, dict):
+                        pld["_source"] = "FORGE_REPAIR"
+                    DB.push_card(new_id, i, card.get('op'), pld)
+                    
+                logger.info(f"Repair injected for Jam {card_id}.")
+                
+        except Exception as e:
+            logger.error(f"Repair Failed: {e}")
+            
+    except Exception as e:
+        logger.error(f"Auto-Repair Loop Error: {e}")
+
 def main_loop():
-    logger.info("The Forge Online. Monitoring sys_goals...")
+    logger.info("The Forge Online. Monitoring sys_goals and JAMS...")
     while True:
         try:
+            # 1. Process Goals
             goal_row = DB.fetch_pending_goal()
             if goal_row:
                 goal_id = goal_row['id']
@@ -128,6 +206,10 @@ def main_loop():
                 else:
                     DB.update_goal_status(goal_id, 9)
                     logger.error(f"Failed to forge recipe for goal {goal_id}")
+            
+            # 2. Auto-Repair Jams
+            auto_repair_jams()
+            
         except Exception as e:
             logger.error(f"Loop Error: {e}")
         time.sleep(5)

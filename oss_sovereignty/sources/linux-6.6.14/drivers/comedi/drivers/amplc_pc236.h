@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * comedi/drivers/amplc_pc236.h
- * Header for "amplc_pc236", "amplc_pci236" and "amplc_pc236_common".
- *
- * Copyright (C) 2002-2014 MEV Ltd. <https://www.mev.co.uk/>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
+
+
 
 #ifndef AMPLC_PC236_H_INCLUDED
 #define AMPLC_PC236_H_INCLUDED
@@ -23,7 +15,7 @@ struct pc236_board {
 };
 
 struct pc236_private {
-	unsigned long lcr_iobase; /* PLX PCI9052 config registers in PCIBAR1 */
+	unsigned long lcr_iobase; 
 	bool enable_irq;
 };
 

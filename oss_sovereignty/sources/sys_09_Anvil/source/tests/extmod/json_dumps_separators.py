@@ -37,7 +37,7 @@ for sep in [
     print(json.dumps({1: 2}, separators=sep))
 try:
     json.dumps(False, separators={"a": 1})
-except (TypeError, ValueError):  # CPython and uPy have different errors
+except (TypeError, ValueError):  
     print("Exception")
 for sep in [1, object()]:
     try:

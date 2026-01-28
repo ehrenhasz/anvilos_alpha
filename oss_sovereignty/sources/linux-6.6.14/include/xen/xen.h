@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _XEN_XEN_H
 #define _XEN_XEN_H
 
 #include <linux/types.h>
 
 enum xen_domain_type {
-	XEN_NATIVE,		/* running on bare hardware    */
-	XEN_PV_DOMAIN,		/* running in a PV domain      */
-	XEN_HVM_DOMAIN,		/* running in a Xen hvm domain */
+	XEN_NATIVE,		
+	XEN_PV_DOMAIN,		
+	XEN_HVM_DOMAIN,		
 };
 
 #ifdef CONFIG_XEN
@@ -47,9 +47,9 @@ void xen_pv_evtchn_do_upcall(struct pt_regs *regs);
 
 #define xen_initial_domain()	(xen_domain() && \
 				 (xen_start_flags & SIF_INITDOMAIN))
-#else  /* !CONFIG_XEN_DOM0 */
+#else  
 #define xen_initial_domain()	(0)
-#endif	/* CONFIG_XEN_DOM0 */
+#endif	
 
 struct bio_vec;
 struct page;
@@ -91,4 +91,4 @@ static inline bool xen_processor_present(uint32_t acpi_id)
 }
 #endif
 
-#endif	/* _XEN_XEN_H */
+#endif	

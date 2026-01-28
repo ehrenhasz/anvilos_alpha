@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 ARM Ltd.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+
 
 #ifndef __ASM_ARM_KVM_ARCH_TIMER_H
 #define __ASM_ARM_KVM_ARCH_TIMER_H
@@ -28,50 +25,40 @@ enum kvm_arch_timer_regs {
 };
 
 struct arch_timer_offset {
-	/*
-	 * If set, pointer to one of the offsets in the kvm's offset
-	 * structure. If NULL, assume a zero offset.
-	 */
+	
 	u64	*vm_offset;
-	/*
-	 * If set, pointer to one of the offsets in the vcpu's sysreg
-	 * array. If NULL, assume a zero offset.
-	 */
+	
 	u64	*vcpu_offset;
 };
 
 struct arch_timer_vm_data {
-	/* Offset applied to the virtual timer/counter */
+	
 	u64	voffset;
-	/* Offset applied to the physical timer/counter */
+	
 	u64	poffset;
 
-	/* The PPI for each timer, global to the VM */
+	
 	u8	ppi[NR_KVM_TIMERS];
 };
 
 struct arch_timer_context {
 	struct kvm_vcpu			*vcpu;
 
-	/* Emulated Timer (may be unused) */
+	
 	struct hrtimer			hrtimer;
 	u64				ns_frac;
 
-	/* Offset for this counter/timer */
+	
 	struct arch_timer_offset	offset;
-	/*
-	 * We have multiple paths which can save/restore the timer state onto
-	 * the hardware, so we need some way of keeping track of where the
-	 * latest state is.
-	 */
+	
 	bool				loaded;
 
-	/* Output level of the timer IRQ */
+	
 	struct {
 		bool			level;
 	} irq;
 
-	/* Duplicated state from arch_timer.c for convenience */
+	
 	u32				host_timer_irq;
 };
 
@@ -87,10 +74,10 @@ void get_timer_map(struct kvm_vcpu *vcpu, struct timer_map *map);
 struct arch_timer_cpu {
 	struct arch_timer_context timers[NR_KVM_TIMERS];
 
-	/* Background timer used when the guest is not running */
+	
 	struct hrtimer			bg_timer;
 
-	/* Is the timer enabled */
+	
 	bool			enabled;
 };
 
@@ -139,11 +126,11 @@ void kvm_arm_timer_write_sysreg(struct kvm_vcpu *vcpu,
 				enum kvm_arch_timer_regs treg,
 				u64 val);
 
-/* Needed for tracing */
+
 u32 timer_get_ctl(struct arch_timer_context *ctxt);
 u64 timer_get_cval(struct arch_timer_context *ctxt);
 
-/* CPU HP callbacks */
+
 void kvm_timer_cpu_up(void);
 void kvm_timer_cpu_down(void);
 

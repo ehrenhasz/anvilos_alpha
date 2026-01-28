@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021 HiSilicon Ltd. */
+
+
 
 #ifndef HISI_ACC_VFIO_PCI_H
 #define HISI_ACC_VFIO_PCI_H
@@ -33,7 +33,7 @@
 #define QM_SQC_VFT_NUM_SHIFT_V2		45
 #define QM_SQC_VFT_NUM_MASK_V2		GENMASK(9, 0)
 
-/* RW regs */
+
 #define QM_REGS_MAX_LEN		7
 #define QM_REG_ADDR_OFFSET	0x0004
 
@@ -51,7 +51,7 @@
 
 struct acc_vf_data {
 #define QM_MATCH_SIZE offsetofend(struct acc_vf_data, qm_rsv_state)
-	/* QM match information */
+	
 #define ACC_DEV_MAGIC	0XCDCDCDCDFEEDAACC
 	u64 acc_magic;
 	u32 qp_num;
@@ -59,10 +59,10 @@ struct acc_vf_data {
 	u32 que_iso_cfg;
 	u32 qp_base;
 	u32 vf_qm_state;
-	/* QM reserved match information */
+	
 	u32 qm_rsv_state[3];
 
-	/* QM RW regs */
+	
 	u32 aeq_int_mask;
 	u32 eq_int_mask;
 	u32 ifc_int_source;
@@ -70,16 +70,16 @@ struct acc_vf_data {
 	u32 ifc_int_set;
 	u32 page_size;
 
-	/* QM_EQC_DW has 7 regs */
+	
 	u32 qm_eqc_dw[7];
 
-	/* QM_AEQC_DW has 7 regs */
+	
 	u32 qm_aeqc_dw[7];
 
-	/* QM reserved 5 regs */
+	
 	u32 qm_rsv_regs[5];
 	u32 padding;
-	/* QM memory init information */
+	
 	u64 eqe_dma;
 	u64 aeqe_dma;
 	u64 sqc_dma;
@@ -100,7 +100,7 @@ struct hisi_acc_vf_core_device {
 	struct vfio_pci_core_device core_device;
 	u8 match_done:1;
 	u8 deferred_reset:1;
-	/* For migration state */
+	
 	struct mutex state_mutex;
 	enum vfio_device_mig_state mig_state;
 	struct pci_dev *pf_dev;
@@ -109,9 +109,9 @@ struct hisi_acc_vf_core_device {
 	struct hisi_qm vf_qm;
 	u32 vf_qm_state;
 	int vf_id;
-	/* For reset handler */
+	
 	spinlock_t reset_lock;
 	struct hisi_acc_vf_migration_file *resuming_migf;
 	struct hisi_acc_vf_migration_file *saving_migf;
 };
-#endif /* HISI_ACC_VFIO_PCI_H */
+#endif 

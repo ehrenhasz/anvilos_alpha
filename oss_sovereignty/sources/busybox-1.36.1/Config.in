@@ -1,7 +1,7 @@
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
 
 mainmenu "Configuration"
 
@@ -255,15 +255,15 @@ config FEATURE_SUID_CONFIG
 	An example might help:
 
 	|[SUID]
-	|su = ssx root.0 # applet su can be run by anyone and runs with
-	|                # euid=0,egid=0
-	|su = ssx        # exactly the same
+	|su = ssx root.0 
+	|                
+	|su = ssx        
 	|
-	|mount = sx- root.disk # applet mount can be run by root and members
-	|                      # of group disk (but not anyone else)
-	|                      # and runs with euid=0 (egid is not changed)
+	|mount = sx- root.disk 
+	|                      
+	|                      
 	|
-	|cp = --- # disable applet cp for everyone
+	|cp = --- 
 
 	The file has to be owned by user root, group root and has to be
 	writeable only by root:
@@ -348,14 +348,14 @@ config FEATURE_SYSLOG_INFO
 	LOG_ERR log levels, but by disabling this option all messages will
 	be logged at the LOG_ERR level, saving just under 200 bytes.
 
-# These are auto-selected by other options
+
 
 config FEATURE_SYSLOG
-	bool #No description makes it a hidden option
+	bool 
 	default n
-	#help
-	#This option is auto-selected when you select any applet which may
-	#send its output to syslog. You do not need to select it manually.
+	
+	
+	
 
 comment 'Build Options'
 
@@ -391,8 +391,8 @@ config NOMMU
 
 	Most people will leave this set to 'N'.
 
-# PIE can be made to work with BUILD_LIBBUSYBOX, but currently
-# build system does not support that
+
+
 config BUILD_LIBBUSYBOX
 	bool "Build shared libbusybox"
 	default n
@@ -448,24 +448,24 @@ config FEATURE_SHARED_BUSYBOX
 
 	You need to have a working dynamic linker.
 
-### config BUILD_AT_ONCE
-###	bool "Compile all sources at once"
-###	default n
-###	help
-###	Normally each source-file is compiled with one invocation of
-###	the compiler.
-###	If you set this option, all sources are compiled at once.
-###	This gives the compiler more opportunities to optimize which can
-###	result in smaller and/or faster binaries.
-###
-###	Setting this option will consume alot of memory, e.g. if you
-###	enable all applets with all features, gcc uses more than 300MB
-###	RAM during compilation of busybox.
-###
-###	This option is most likely only beneficial for newer compilers
-###	such as gcc-4.1 and above.
-###
-###	Say 'N' unless you know what you are doing.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 config CROSS_COMPILER_PREFIX
 	string "Cross compiler prefix"

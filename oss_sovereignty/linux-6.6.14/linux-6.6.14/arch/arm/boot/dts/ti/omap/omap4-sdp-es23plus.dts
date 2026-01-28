@@ -1,8 +1,0 @@
-#include "omap4-sdp.dts"
-&dss_hdmi_pins {
-	pinctrl-single,pins = <
-		OMAP4_IOPAD(0x09a, PIN_INPUT | MUX_MODE0)		 
-		OMAP4_IOPAD(0x09c, PIN_INPUT | MUX_MODE0)		 
-		OMAP4_IOPAD(0x09e, PIN_INPUT | MUX_MODE0)		 
-		>;
-};

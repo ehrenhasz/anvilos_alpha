@@ -1,6 +1,0 @@
-&pcie1 {
-	status = "okay";
-};
-&pcie1_phy {
-	status = "okay";
-};

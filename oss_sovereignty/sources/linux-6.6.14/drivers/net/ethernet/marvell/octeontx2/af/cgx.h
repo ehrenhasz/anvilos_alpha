@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell OcteonTx2 CGX driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
+
+
 
 #ifndef CGX_H
 #define CGX_H
@@ -12,15 +8,15 @@
 #include "cgx_fw_if.h"
 #include "rpm.h"
 
- /* PCI device IDs */
+ 
 #define	PCI_DEVID_OCTEONTX2_CGX		0xA059
 
-/* PCI BAR nos */
+
 #define PCI_CFG_REG_BAR_NUM		0
 
 #define CGX_ID_MASK			0xF
 
-/* Registers */
+
 #define CGXX_CMRX_CFG			0x00
 #define CMR_P2X_SEL_MASK		GENMASK_ULL(61, 59)
 #define CMR_P2X_SEL_SHIFT		59ULL
@@ -89,7 +85,7 @@
 
 #define CGX_COMMAND_REG			CGXX_SCRATCH1_REG
 #define CGX_EVENT_REG			CGXX_SCRATCH0_REG
-#define CGX_CMD_TIMEOUT			5000 /* msecs */
+#define CGX_CMD_TIMEOUT			5000 
 #define DEFAULT_PAUSE_TIME		0x7FF
 
 #define CGX_LMAC_FWI			0
@@ -120,11 +116,7 @@ struct cgx_link_event {
 	u8 lmac_id;
 };
 
-/**
- * struct cgx_event_cb
- * @notify_link_chg:	callback for link change notification
- * @data:	data passed to callback function
- */
+
 struct cgx_event_cb {
 	int (*notify_link_chg)(struct cgx_link_event *event, void *data);
 	void *data;
@@ -184,4 +176,4 @@ int cgx_lmac_get_pfc_frm_cfg(void *cgxd, int lmac_id, u8 *tx_pause,
 int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
 		       int pfvf_idx);
 int cgx_lmac_reset(void *cgxd, int lmac_id, u8 pf_req_flr);
-#endif /* CGX_H */
+#endif 

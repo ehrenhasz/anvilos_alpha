@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _ASM_X86_ACPI_H
 #define _ASM_X86_ACPI_H
 
-/*
- *  Copyright (C) 2001 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *  Copyright (C) 2001 Patrick Mochel <mochel@osdl.org>
- */
+
 #include <acpi/proc_cap_intel.h>
 
 #include <asm/numa.h>
@@ -63,10 +60,10 @@ static inline void acpi_disable_pci(void)
 	acpi_noirq_set();
 }
 
-/* Low-level suspend routine. */
+
 extern int (*acpi_suspend_lowlevel)(void);
 
-/* Physical address to resume after wakeup */
+
 unsigned long acpi_get_wakeup_address(void);
 
 static inline bool acpi_skip_set_wakeup_address(void)
@@ -76,17 +73,10 @@ static inline bool acpi_skip_set_wakeup_address(void)
 
 #define acpi_skip_set_wakeup_address acpi_skip_set_wakeup_address
 
-/*
- * Check if the CPU can handle C2 and deeper
- */
+
 static inline unsigned int acpi_processor_cstate_check(unsigned int max_cstate)
 {
-	/*
-	 * Early models (<=5) of AMD Opterons are not supposed to go into
-	 * C2 state.
-	 *
-	 * Steppings 0x0A and later are good
-	 */
+	
 	if (boot_cpu_data.x86 == 0x0F &&
 	    boot_cpu_data.x86_vendor == X86_VENDOR_AMD &&
 	    boot_cpu_data.x86_model <= 0x05 &&
@@ -111,7 +101,7 @@ static inline void arch_acpi_set_proc_cap_bits(u32 *cap)
 
 	*cap |= ACPI_PROC_CAP_C_CAPABILITY_SMP;
 
-	/* Enable coordination with firmware's _TSD info */
+	
 	*cap |= ACPI_PROC_CAP_SMP_T_SWCOORD;
 
 	if (cpu_has(c, X86_FEATURE_EST))
@@ -123,22 +113,13 @@ static inline void arch_acpi_set_proc_cap_bits(u32 *cap)
 	if (cpu_has(c, X86_FEATURE_HWP))
 		*cap |= ACPI_PROC_CAP_COLLAB_PROC_PERF;
 
-	/*
-	 * If mwait/monitor is unsupported, C_C1_FFH and
-	 * C2/C3_FFH will be disabled.
-	 */
+	
 	if (!cpu_has(c, X86_FEATURE_MWAIT) ||
 	    boot_option_idle_override == IDLE_NOMWAIT)
 		*cap &= ~(ACPI_PROC_CAP_C_C1_FFH | ACPI_PROC_CAP_C_C2C3_FFH);
 
 	if (xen_initial_domain()) {
-		/*
-		 * When Linux is running as Xen dom0, the hypervisor is the
-		 * entity in charge of the processor power management, and so
-		 * Xen needs to check the OS capabilities reported in the
-		 * processor capabilities buffer matches what the hypervisor
-		 * driver supports.
-		 */
+		
 		xen_sanitize_proc_cap_bits(cap);
 	}
 }
@@ -165,7 +146,7 @@ void acpi_generic_reduced_hw_init(void);
 void x86_default_set_root_pointer(u64 addr);
 u64 x86_default_get_root_pointer(void);
 
-#else /* !CONFIG_ACPI */
+#else 
 
 #define acpi_lapic 0
 #define acpi_ioapic 0
@@ -183,32 +164,20 @@ static inline u64 x86_default_get_root_pointer(void)
 	return 0;
 }
 
-#endif /* !CONFIG_ACPI */
+#endif 
 
 #define ARCH_HAS_POWER_INIT	1
 
 #ifdef CONFIG_ACPI_NUMA
 extern int x86_acpi_numa_init(void);
-#endif /* CONFIG_ACPI_NUMA */
+#endif 
 
 struct cper_ia_proc_ctx;
 
 #ifdef CONFIG_ACPI_APEI
 static inline pgprot_t arch_apei_get_mem_attribute(phys_addr_t addr)
 {
-	/*
-	 * We currently have no way to look up the EFI memory map
-	 * attributes for a region in a consistent way, because the
-	 * memmap is discarded after efi_free_boot_services(). So if
-	 * you call efi_mem_attributes() during boot and at runtime,
-	 * you could theoretically see different attributes.
-	 *
-	 * We are yet to see any x86 platforms that require anything
-	 * other than PAGE_KERNEL (some ARM64 platforms require the
-	 * equivalent of PAGE_KERNEL_NOCACHE). Additionally, if SME
-	 * is active, the ACPI information will not be encrypted,
-	 * so return PAGE_KERNEL_NOENC until we know differently.
-	 */
+	
 	return PAGE_KERNEL_NOENC;
 }
 
@@ -224,4 +193,4 @@ static inline int arch_apei_report_x86_error(struct cper_ia_proc_ctx *ctx_info,
 
 #define ACPI_TABLE_UPGRADE_MAX_PHYS (max_low_pfn_mapped << PAGE_SHIFT)
 
-#endif /* _ASM_X86_ACPI_H */
+#endif 

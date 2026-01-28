@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+
 
 #ifndef __IVPU_MMU_H__
 #define __IVPU_MMU_H__
@@ -29,7 +27,7 @@ struct ivpu_mmu_queue {
 };
 
 struct ivpu_mmu_info {
-	struct mutex lock; /* Protects cdtab, strtab, cmdq, on */
+	struct mutex lock; 
 	struct ivpu_mmu_cdtab cdtab;
 	struct ivpu_mmu_strtab strtab;
 	struct ivpu_mmu_queue cmdq;
@@ -47,4 +45,4 @@ int ivpu_mmu_invalidate_tlb(struct ivpu_device *vdev, u16 ssid);
 void ivpu_mmu_irq_evtq_handler(struct ivpu_device *vdev);
 void ivpu_mmu_irq_gerr_handler(struct ivpu_device *vdev);
 
-#endif /* __IVPU_MMU_H__ */
+#endif 

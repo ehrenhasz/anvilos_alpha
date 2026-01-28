@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright (C) 2018 ROHM Semiconductors */
+
+
 
 #ifndef __LINUX_MFD_BD718XX_H__
 #define __LINUX_MFD_BD718XX_H__
@@ -26,7 +26,7 @@ enum {
 	BD718XX_REGULATOR_AMOUNT,
 };
 
-/* Common voltage configurations */
+
 #define BD718XX_DVS_BUCK_VOLTAGE_NUM		0x3D
 #define BD718XX_4TH_NODVS_BUCK_VOLTAGE_NUM	0x3D
 
@@ -36,19 +36,19 @@ enum {
 #define BD718XX_LDO4_VOLTAGE_NUM	0x0A
 #define BD718XX_LDO6_VOLTAGE_NUM	0x0A
 
-/* BD71837 specific voltage configurations */
+
 #define BD71837_BUCK5_VOLTAGE_NUM	0x10
 #define BD71837_BUCK6_VOLTAGE_NUM	0x04
 #define BD71837_BUCK7_VOLTAGE_NUM	0x08
 #define BD71837_LDO5_VOLTAGE_NUM	0x10
 #define BD71837_LDO7_VOLTAGE_NUM	0x10
 
-/* BD71847 specific voltage configurations */
+
 #define BD71847_BUCK3_VOLTAGE_NUM	0x18
 #define BD71847_BUCK4_VOLTAGE_NUM	0x08
 #define BD71847_LDO5_VOLTAGE_NUM	0x20
 
-/* Registers specific to BD71837 */
+
 enum {
 	BD71837_REG_BUCK3_CTRL =	0x07,
 	BD71837_REG_BUCK4_CTRL =	0x08,
@@ -57,7 +57,7 @@ enum {
 	BD71837_REG_LDO7_VOLT =		0x1E,
 };
 
-/* Registers common for BD71837 and BD71847 */
+
 enum {
 	BD718XX_REG_REV =			0x00,
 	BD718XX_REG_SWRESET =			0x01,
@@ -109,16 +109,16 @@ enum {
 #define REGLOCK_PWRSEQ	0x1
 #define REGLOCK_VREG	0x10
 
-/* Generic BUCK control masks */
+
 #define BD718XX_BUCK_SEL	0x02
 #define BD718XX_BUCK_EN		0x01
 #define BD718XX_BUCK_RUN_ON	0x04
 
-/* Generic LDO masks */
+
 #define BD718XX_LDO_SEL		0x80
 #define BD718XX_LDO_EN		0x40
 
-/* BD71837 BUCK ramp rate CTRL reg bits */
+
 #define BUCK_RAMPRATE_MASK	0xC0
 #define BUCK_RAMPRATE_10P00MV	0x0
 #define BUCK_RAMPRATE_5P00MV	0x1
@@ -155,7 +155,7 @@ enum {
 
 #define BD71837_LDO7_MASK		0x0F
 
-/* BD718XX Voltage monitoring masks */
+
 #define BD718XX_BUCK1_VRMON80           0x1
 #define BD718XX_BUCK1_VRMON130          0x2
 #define BD718XX_BUCK2_VRMON80           0x4
@@ -175,14 +175,14 @@ enum {
 #define BD718XX_LDO5_VRMON80            0x10
 #define BD718XX_LDO6_VRMON80            0x20
 
-/* BD71837 specific voltage monitoring masks */
+
 #define BD71837_BUCK3_VRMON80           0x10
 #define BD71837_BUCK3_VRMON130          0x20
 #define BD71837_BUCK4_VRMON80           0x40
 #define BD71837_BUCK4_VRMON130          0x80
 #define BD71837_LDO7_VRMON80            0x40
 
-/* BD718XX_REG_IRQ bits */
+
 #define IRQ_SWRST		0x40
 #define IRQ_PWRON_S		0x20
 #define IRQ_PWRON_L		0x10
@@ -191,7 +191,7 @@ enum {
 #define IRQ_ON_REQ		0x02
 #define IRQ_STBY_REQ		0x01
 
-/* ROHM BD718XX irqs */
+
 enum {
 	BD718XX_INT_STBY_REQ,
 	BD718XX_INT_ON_REQ,
@@ -202,7 +202,7 @@ enum {
 	BD718XX_INT_SWRST
 };
 
-/* ROHM BD718XX interrupt masks */
+
 #define BD718XX_INT_SWRST_MASK		0x40
 #define BD718XX_INT_PWRBTN_S_MASK	0x20
 #define BD718XX_INT_PWRBTN_L_MASK	0x10
@@ -211,14 +211,9 @@ enum {
 #define BD718XX_INT_ON_REQ_MASK		0x2
 #define BD718XX_INT_STBY_REQ_MASK	0x1
 
-/* Register write induced reset settings */
 
-/*
- * Even though the bit zero is not SWRESET type we still want to write zero
- * to it when changing type. Bit zero is 'SWRESET' trigger bit and if we
- * write 1 to it we will trigger the action. So always write 0 to it when
- * changning SWRESET action - no matter what we read from it.
- */
+
+
 #define BD718XX_SWRESET_TYPE_MASK	7
 #define BD718XX_SWRESET_TYPE_DISABLED	0
 #define BD718XX_SWRESET_TYPE_COLD	4
@@ -227,7 +222,7 @@ enum {
 #define BD718XX_SWRESET_RESET_MASK	1
 #define BD718XX_SWRESET_RESET		1
 
-/* Poweroff state transition conditions */
+
 
 #define BD718XX_ON_REQ_POWEROFF_MASK	1
 #define BD718XX_SWRESET_POWEROFF_MASK	2
@@ -257,7 +252,7 @@ enum {
 	BD718XX_POWOFF_TIME_1500MS
 };
 
-/* Poweron sequence state transition conditions */
+
 #define BD718XX_RDY_TO_SNVS_MASK 0xF
 #define BD718XX_SNVS_TO_RUN_MASK 0xF0
 
@@ -270,7 +265,7 @@ enum {
 
 #define BD718XX_PWRBTN_PRESS_DURATION_MASK 0xF
 
-/* Timeout value for detecting short press */
+
 enum {
 	BD718XX_PWRBTN_SHORT_PRESS_10MS = 0,
 	BD718XX_PWRBTN_SHORT_PRESS_500MS,
@@ -290,7 +285,7 @@ enum {
 	BD718XX_PWRBTN_SHORT_PRESS_7500MS
 };
 
-/* Timeout value for detecting LONG press */
+
 enum {
 	BD718XX_PWRBTN_LONG_PRESS_10MS = 0,
 	BD718XX_PWRBTN_LONG_PRESS_1S,
@@ -310,4 +305,4 @@ enum {
 	BD718XX_PWRBTN_LONG_PRESS_15S
 };
 
-#endif /* __LINUX_MFD_BD718XX_H__ */
+#endif 

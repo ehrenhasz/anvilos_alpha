@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor security domain transition function definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+
 
 #include <linux/binfmts.h>
 #include <linux/types.h>
@@ -30,4 +23,4 @@ int apparmor_bprm_creds_for_exec(struct linux_binprm *bprm);
 int aa_change_hat(const char *hats[], int count, u64 token, int flags);
 int aa_change_profile(const char *fqname, int flags);
 
-#endif /* __AA_DOMAIN_H */
+#endif 

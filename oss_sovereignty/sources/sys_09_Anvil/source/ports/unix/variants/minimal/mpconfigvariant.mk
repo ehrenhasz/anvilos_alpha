@@ -1,4 +1,4 @@
-# build a minimal interpreter
+
 
 FROZEN_MANIFEST =
 

@@ -1,6 +1,6 @@
 main()
 {
-	if [ "$#" -eq 0 ]; then
+	if [ "$
 		echo "$0: Generating default compression gzip"
 		copts="cvzf"
 		ext=".tar.gz"

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware vSockets Driver
- *
- * Copyright (C) 2009-2013 VMware, Inc. All rights reserved.
- */
+
+
 
 #ifndef __VMCI_TRANSPORT_NOTIFY_H__
 #define __VMCI_TRANSPORT_NOTIFY_H__
@@ -14,10 +10,10 @@
 
 #include "vmci_transport.h"
 
-/* Comment this out to compare with old protocol. */
+
 #define VSOCK_OPTIMIZATION_WAITING_NOTIFY 1
 #if defined(VSOCK_OPTIMIZATION_WAITING_NOTIFY)
-/* Comment this out to remove flow control for "new" protocol */
+
 #define VSOCK_OPTIMIZATION_FLOW_CONTROL 1
 #endif
 
@@ -34,7 +30,7 @@ struct vmci_transport_send_notify_data {
 	u64 produce_tail;
 };
 
-/* Socket notification callbacks. */
+
 struct vmci_transport_notify_ops {
 	void (*socket_init) (struct sock *sk);
 	void (*socket_destruct) (struct vsock_sock *vsk);
@@ -72,4 +68,4 @@ extern const struct vmci_transport_notify_ops vmci_transport_notify_pkt_ops;
 extern const
 struct vmci_transport_notify_ops vmci_transport_notify_pkt_q_state_ops;
 
-#endif /* __VMCI_TRANSPORT_NOTIFY_H__ */
+#endif 

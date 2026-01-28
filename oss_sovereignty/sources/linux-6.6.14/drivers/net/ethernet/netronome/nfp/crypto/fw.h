@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+
 
 #ifndef NFP_CRYPTO_FW_H
 #define NFP_CRYPTO_FW_H 1

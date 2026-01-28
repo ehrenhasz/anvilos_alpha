@@ -21,7 +21,7 @@ def print_stacktrace(frame, level=0):
 trace_count = 0
 def trace_tick_handler(frame, event, arg):
     global trace_count
-    print("### trace_handler::main event:", event)
+    print("
     trace_count += 1
     print_stacktrace(frame)
     return trace_tick_handler

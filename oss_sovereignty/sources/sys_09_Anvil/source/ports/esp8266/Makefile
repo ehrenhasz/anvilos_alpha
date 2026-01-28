@@ -1,10 +1,10 @@
-# Select the board to build for:
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to ESP8266_GENERIC.
+
 BOARD ?= ESP8266_GENERIC
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -16,8 +16,8 @@ endif
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
 
-# If the build directory is not given, make it reflect the board name (and
-# optionally the board variant).
+
+
 ifneq ($(BOARD_VARIANT),)
 BUILD ?= build-$(BOARD)-$(BOARD_VARIANT)
 else
@@ -26,14 +26,14 @@ endif
 
 include ../../py/mkenv.mk
 
-# Optional
+
 -include $(BOARD_DIR)/mpconfigboard.mk
 
-# qstr definitions (must come before including py.mk)
-QSTR_DEFS = qstrdefsport.h #$(BUILD)/pins_qstr.h
+
+QSTR_DEFS = qstrdefsport.h 
 QSTR_GLOBAL_DEPENDENCIES = $(BOARD_DIR)/mpconfigboard.h
 
-# MicroPython feature configurations
+
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 MICROPY_PY_SSL = 1
 MICROPY_SSL_AXTLS = 1
@@ -42,7 +42,7 @@ BTREE_DEFS_EXTRA = -DMICROPY_BERKELEY_DB_DEFPSIZE=1024 -DMICROPY_BERKELEY_DB_MIN
 
 FROZEN_MANIFEST ?= boards/manifest.py
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -61,8 +61,8 @@ INC += -I$(TOP)
 INC += -I$(BUILD)
 INC += -I$(ESP_SDK)/include
 
-# UART for "os" messages. 0 is normal UART as used by MicroPython REPL,
-# 1 is debug UART (tx only), -1 to disable.
+
+
 UART_OS = -1
 
 CFLAGS_XTENSA = -fsingle-precision-constant -Wdouble-promotion \
@@ -86,8 +86,8 @@ endif
 LIBGCC_FILE_NAME = $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 LIBS += -L$(dir $(LIBGCC_FILE_NAME)) -lgcc
 
-# Debugging/Optimization
-CFLAGS += -g  # always include debug info in the ELF
+
+CFLAGS += -g  
 ifeq ($(DEBUG), 1)
 COPT = -O0
 else
@@ -96,10 +96,10 @@ COPT += -Os -DNDEBUG
 LDFLAGS += --gc-sections
 endif
 
-# Flags for optional C++ source code
+
 CXXFLAGS += $(filter-out -Wmissing-prototypes -Wold-style-definition -std=gnu99,$(CFLAGS))
 
-# Options for mpy-cross
+
 MPY_CROSS_FLAGS += -march=xtensa
 
 SRC_C = \
@@ -160,7 +160,7 @@ OBJ += $(addprefix $(BUILD)/, $(SHARED_SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(LIB_SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(DRIVERS_SRC_C:.c=.o))
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C) $(SHARED_SRC_C)
 
 all: $(FWBIN)

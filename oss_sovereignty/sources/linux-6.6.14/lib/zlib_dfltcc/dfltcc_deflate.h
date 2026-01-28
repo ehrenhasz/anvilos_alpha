@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: Zlib
+
 #ifndef DFLTCC_DEFLATE_H
 #define DFLTCC_DEFLATE_H
 
 #include "dfltcc.h"
 
-/* External functions */
+
 int dfltcc_can_deflate(z_streamp strm);
 int dfltcc_deflate(z_streamp strm,
                    int flush,
@@ -18,4 +18,4 @@ void dfltcc_reset_deflate_state(z_streamp strm);
 
 #define DEFLATE_NEED_CHECKSUM(strm) (!dfltcc_can_deflate((strm)))
 
-#endif /* DFLTCC_DEFLATE_H */
+#endif 

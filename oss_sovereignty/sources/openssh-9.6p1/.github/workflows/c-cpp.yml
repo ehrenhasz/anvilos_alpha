@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # First we test all OSes in the default configuration.
+        
         target:
           - ubuntu-20.04
           - ubuntu-22.04
@@ -22,8 +22,8 @@ jobs:
           - windows-2019
           - windows-2022
         config: [default]
-        # Then we include any extra configs we want to test for specific VMs.
-        # Valgrind slows things down quite a bit, so start them first.
+        
+        
         include:
           - { target: windows-2019, config: cygwin-release }
           - { target: windows-2022, config: cygwin-release }
@@ -74,8 +74,8 @@ jobs:
           - { target: ubuntu-latest, config: openssl-3.1.4 }
           - { target: ubuntu-latest, config: openssl-3.2.0 }
           - { target: ubuntu-latest, config: openssl-1.1.1_stable }
-          - { target: ubuntu-latest, config: openssl-3.0 }  # stable branch
-          - { target: ubuntu-latest, config: openssl-3.2 }  # stable branch
+          - { target: ubuntu-latest, config: openssl-3.0 }  
+          - { target: ubuntu-latest, config: openssl-3.2 }  
           - { target: ubuntu-latest, config: zlib-develop }
           - { target: ubuntu-22.04, config: pam }
           - { target: ubuntu-22.04, config: krb5 }

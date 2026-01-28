@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the nVidia framebuffer driver
-#
+
+
+
+
 
 obj-$(CONFIG_FB_NVIDIA)          += nvidiafb.o
 

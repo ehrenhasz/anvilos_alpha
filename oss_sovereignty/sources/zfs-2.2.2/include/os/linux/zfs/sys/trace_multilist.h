@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -34,15 +15,8 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for three argument tracepoints of the form:
- *
- * DTRACE_PROBE3(...,
- *     multilist_t *, ...,
- *     unsigned int, ...,
- *     void *, ...);
- */
-/* BEGIN CSTYLED */
+
+
 DECLARE_EVENT_CLASS(zfs_multilist_insert_remove_class,
 	TP_PROTO(multilist_t *ml, unsigned sublist_idx, void *obj),
 	TP_ARGS(ml, sublist_idx, obj),
@@ -61,7 +35,7 @@ DECLARE_EVENT_CLASS(zfs_multilist_insert_remove_class,
 	TP_printk("ml { offset %ld numsublists %llu sublistidx %u } ",
 	    __entry->ml_offset, __entry->ml_num_sublists, __entry->sublist_idx)
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_MULTILIST_INSERT_REMOVE_EVENT(name) \
 DEFINE_EVENT(zfs_multilist_insert_remove_class, name, \
@@ -70,7 +44,7 @@ DEFINE_EVENT(zfs_multilist_insert_remove_class, name, \
 DEFINE_MULTILIST_INSERT_REMOVE_EVENT(zfs_multilist__insert);
 DEFINE_MULTILIST_INSERT_REMOVE_EVENT(zfs_multilist__remove);
 
-#endif /* _TRACE_MULTILIST_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -83,5 +57,5 @@ DEFINE_MULTILIST_INSERT_REMOVE_EVENT(zfs_multilist__remove);
 DEFINE_DTRACE_PROBE3(multilist__insert);
 DEFINE_DTRACE_PROBE3(multilist__remove);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

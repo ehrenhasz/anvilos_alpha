@@ -62,19 +62,19 @@ def generate_module_table_header(modules):
         print(
             (
                 "extern const struct _mp_obj_module_t {obj_module};\n"
-                "#undef {mod_def}\n"
-                "#define {mod_def} {{ MP_ROM_QSTR(MP_QSTR_{module_name}), MP_ROM_PTR(&{obj_module}) }},\n"
+                "
+                "
             ).format(
                 module_name=module_name,
                 obj_module=obj_module,
                 mod_def=mod_def,
             )
         )
-    print("\n#define MICROPY_REGISTERED_MODULES \\")
+    print("\n
     for mod_def in sorted(mod_defs):
         print("    {mod_def} \\".format(mod_def=mod_def))
     print("// MICROPY_REGISTERED_MODULES")
-    print("\n#define MICROPY_REGISTERED_EXTENSIBLE_MODULES \\")
+    print("\n
     for mod_def in sorted(extensible_mod_defs):
         print("    {mod_def} \\".format(mod_def=mod_def))
     print("// MICROPY_REGISTERED_EXTENSIBLE_MODULES")
@@ -84,7 +84,7 @@ def generate_module_delegations(delegations):
     print()
     for obj_module, fun_name in delegations:
         print("extern void {}(mp_obj_t self_in, qstr attr, mp_obj_t *dest);".format(fun_name))
-    print("#define MICROPY_MODULE_DELEGATIONS \\")
+    print("
     for obj_module, fun_name in delegations:
         print(
             "    {{ MP_ROM_PTR(&{obj_module}), {fun_name} }}, \\".format(

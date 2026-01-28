@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2021 Broadcom Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef BNXT_PTP_H
 #define BNXT_PTP_H
@@ -83,7 +76,7 @@ struct bnxt_ptp_cfg {
 	struct cyclecounter	cc;
 	struct timecounter	tc;
 	struct bnxt_pps		pps_info;
-	/* serialize timecounter access */
+	
 	spinlock_t		ptp_lock;
 	struct sk_buff		*tx_skb;
 	u64			current_time;
@@ -91,7 +84,7 @@ struct bnxt_ptp_cfg {
 	unsigned long		next_period;
 	unsigned long		next_overflow_check;
 	u32			cmult;
-	/* a 23b shift cyclecounter will overflow in ~36 mins.  Check overflow every 18 mins. */
+	
 	#define BNXT_PHC_OVERFLOW_PERIOD	(18 * 60 * HZ)
 
 	u16			tx_seqid;

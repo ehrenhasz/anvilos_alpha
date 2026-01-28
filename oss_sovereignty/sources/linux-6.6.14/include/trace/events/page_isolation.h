@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM page_isolation
 
@@ -33,7 +33,7 @@ TRACE_EVENT(test_pages_isolated,
 		__entry->end_pfn <= __entry->fin_pfn ? "success" : "fail")
 );
 
-#endif /* _TRACE_PAGE_ISOLATION_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

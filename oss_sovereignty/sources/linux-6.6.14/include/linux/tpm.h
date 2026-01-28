@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004,2007,2008 IBM Corporation
- *
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- * Debora Velarde <dvelarde@us.ibm.com>
- *
- * Maintained by: <tpmdd_devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- */
+
+
 #ifndef __LINUX_TPM_H__
 #define __LINUX_TPM_H__
 
@@ -24,14 +10,14 @@
 #include <linux/highmem.h>
 #include <crypto/hash_info.h>
 
-#define TPM_DIGEST_SIZE 20	/* Max TPM v1.2 PCR size */
+#define TPM_DIGEST_SIZE 20	
 #define TPM_MAX_DIGEST_SIZE SHA512_DIGEST_SIZE
 
 struct tpm_chip;
 struct trusted_key_payload;
 struct trusted_key_options;
 
-/* if you add a new hash to this, increment TPM_MAX_HASHES below */
+
 enum tpm_algorithms {
 	TPM_ALG_ERROR		= 0x0000,
 	TPM_ALG_SHA1		= 0x0004,
@@ -43,10 +29,7 @@ enum tpm_algorithms {
 	TPM_ALG_SM3_256		= 0x0012,
 };
 
-/*
- * maximum number of hashing algorithms a TPM can have.  This is
- * basically a count of every hash in tpm_algorithms above
- */
+
 #define TPM_MAX_HASHES	5
 
 struct tpm_digest {
@@ -86,7 +69,7 @@ struct tpm_class_ops {
 
 #define TPM_NUM_EVENT_LOG_FILES		3
 
-/* Indexes the duration array */
+
 enum tpm_duration {
 	TPM_SHORT = 0,
 	TPM_MEDIUM = 1,
@@ -122,10 +105,7 @@ struct tpm_chip {
 	struct cdev cdev;
 	struct cdev cdevs;
 
-	/* A driver callback under ops cannot be run unless ops_sem is held
-	 * (sometimes implicitly, eg for the sysfs code). ops becomes null
-	 * when the driver is unregistered, see tpm_try_get_ops.
-	 */
+	
 	struct rw_semaphore ops_sem;
 	const struct tpm_class_ops *ops;
 
@@ -135,20 +115,20 @@ struct tpm_chip {
 
 	unsigned int flags;
 
-	int dev_num;		/* /dev/tpm# */
-	unsigned long is_open;	/* only one allowed */
+	int dev_num;		
+	unsigned long is_open;	
 
 	char hwrng_name[64];
 	struct hwrng hwrng;
 
-	struct mutex tpm_mutex;	/* tpm is processing */
+	struct mutex tpm_mutex;	
 
-	unsigned long timeout_a; /* jiffies */
-	unsigned long timeout_b; /* jiffies */
-	unsigned long timeout_c; /* jiffies */
-	unsigned long timeout_d; /* jiffies */
+	unsigned long timeout_a; 
+	unsigned long timeout_b; 
+	unsigned long timeout_c; 
+	unsigned long timeout_d; 
 	bool timeout_adjusted;
-	unsigned long duration[TPM_NUM_DURATIONS]; /* jiffies */
+	unsigned long duration[TPM_NUM_DURATIONS]; 
 	bool duration_adjusted;
 
 	struct dentry *bios_dir[TPM_NUM_EVENT_LOG_FILES];
@@ -161,14 +141,14 @@ struct tpm_chip {
 #ifdef CONFIG_ACPI
 	acpi_handle acpi_dev_handle;
 	char ppi_version[TPM_PPI_VERSION_LEN + 1];
-#endif /* CONFIG_ACPI */
+#endif 
 
 	struct tpm_space work_space;
 	u32 last_cc;
 	u32 nr_commands;
 	u32 *cc_attrs_tbl;
 
-	/* active locality */
+	
 	int locality;
 };
 
@@ -196,20 +176,20 @@ enum tpm2_structures {
 	TPM2_ST_SESSIONS	= 0x8002,
 };
 
-/* Indicates from what layer of the software stack the error comes from */
+
 #define TSS2_RC_LAYER_SHIFT	 16
 #define TSS2_RESMGR_TPM_RC_LAYER (11 << TSS2_RC_LAYER_SHIFT)
 
 enum tpm2_return_codes {
 	TPM2_RC_SUCCESS		= 0x0000,
-	TPM2_RC_HASH		= 0x0083, /* RC_FMT1 */
+	TPM2_RC_HASH		= 0x0083, 
 	TPM2_RC_HANDLE		= 0x008B,
-	TPM2_RC_INITIALIZE	= 0x0100, /* RC_VER1 */
+	TPM2_RC_INITIALIZE	= 0x0100, 
 	TPM2_RC_FAILURE		= 0x0101,
 	TPM2_RC_DISABLED	= 0x0120,
 	TPM2_RC_UPGRADE		= 0x012D,
 	TPM2_RC_COMMAND_CODE    = 0x0143,
-	TPM2_RC_TESTING		= 0x090A, /* RC_WARN */
+	TPM2_RC_TESTING		= 0x090A, 
 	TPM2_RC_REFERENCE_H0	= 0x0910,
 	TPM2_RC_RETRY		= 0x0922,
 };
@@ -239,7 +219,7 @@ enum tpm2_command_codes {
 	TPM2_CC_EVENT_SEQUENCE_COMPLETE = 0x0185,
 	TPM2_CC_HASH_SEQUENCE_START     = 0x0186,
 	TPM2_CC_CREATE_LOADED           = 0x0191,
-	TPM2_CC_LAST		        = 0x0193, /* Spec 1.36 */
+	TPM2_CC_LAST		        = 0x0193, 
 };
 
 enum tpm2_permanent_handles {
@@ -297,10 +277,7 @@ struct tpm_header {
 	};
 } __packed;
 
-/* A string buffer type for constructing TPM commands. This is based on the
- * ideas of string buffer code in security/keys/trusted.h but is heap based
- * in order to keep the stack usage minimal.
- */
+
 
 enum tpm_buf_flags {
 	TPM_BUF_OVERFLOW	= BIT(0),
@@ -372,7 +349,7 @@ static inline void tpm_buf_append(struct tpm_buf *buf,
 	struct tpm_header *head = (struct tpm_header *)buf->data;
 	u32 len = tpm_buf_length(buf);
 
-	/* Return silently if overflow has already happened. */
+	
 	if (buf->flags & TPM_BUF_OVERFLOW)
 		return;
 
@@ -405,9 +382,7 @@ static inline void tpm_buf_append_u32(struct tpm_buf *buf, const u32 value)
 	tpm_buf_append(buf, (u8 *) &value2, 4);
 }
 
-/*
- * Check if TPM device is in the firmware upgrade mode.
- */
+
 static inline bool tpm_is_firmware_upgrade(struct tpm_chip *chip)
 {
 	return chip->flags & TPM_CHIP_FLAG_FIRMWARE_UPGRADE;

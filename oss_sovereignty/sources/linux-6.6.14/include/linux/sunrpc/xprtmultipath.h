@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * RPC client multipathing definitions
- *
- * Copyright (c) 2015, 2016, Primary Data, Inc. All rights reserved.
- *
- * Trond Myklebust <trond.myklebust@primarydata.com>
- */
+
+
 #ifndef _NET_SUNRPC_XPRTMULTIPATH_H
 #define _NET_SUNRPC_XPRTMULTIPATH_H
 

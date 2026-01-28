@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2021 Taehee Yoo <ap420073@gmail.com>
- */
+
+
 #ifndef _NET_AMT_H_
 #define _NET_AMT_H_
 
@@ -25,13 +23,13 @@ enum amt_msg_type {
 #define AMT_MSG_MAX (__AMT_MSG_MAX - 1)
 
 enum amt_ops {
-	/* A*B */
+	
 	AMT_OPS_INT,
-	/* A+B */
+	
 	AMT_OPS_UNI,
-	/* A-B */
+	
 	AMT_OPS_SUB,
-	/* B-A */
+	
 	AMT_OPS_SUB_REV,
 	__AMT_OPS_MAX,
 };
@@ -81,7 +79,7 @@ enum amt_status {
 
 #define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
 
-/* Gateway events only */
+
 enum amt_event {
 	AMT_EVENT_NONE,
 	AMT_EVENT_RECEIVE,
@@ -237,7 +235,7 @@ struct amt_skb_cb {
 
 struct amt_tunnel_list {
 	struct list_head	list;
-	/* Protect All resources under an amt_tunne_list */
+	
 	spinlock_t		lock;
 	struct amt_dev		*amt;
 	u32			nr_groups;
@@ -261,22 +259,16 @@ union amt_addr {
 #endif
 };
 
-/* RFC 3810
- *
- * When the router is in EXCLUDE mode, the router state is represented
- * by the notation EXCLUDE (X,Y), where X is called the "Requested List"
- * and Y is called the "Exclude List".  All sources, except those from
- * the Exclude List, will be forwarded by the router
- */
+
 enum amt_source_status {
 	AMT_SOURCE_STATUS_NONE,
-	/* Node of Requested List */
+	
 	AMT_SOURCE_STATUS_FWD,
-	/* Node of Exclude List */
+	
 	AMT_SOURCE_STATUS_D_FWD,
 };
 
-/* protected by gnode->lock */
+
 struct amt_source_node {
 	struct hlist_node	node;
 	struct amt_group_node	*gnode;
@@ -289,7 +281,7 @@ struct amt_source_node {
 	struct rcu_head		rcu;
 };
 
-/* Protected by amt_tunnel_list->lock */
+
 struct amt_group_node {
 	struct amt_dev		*amt;
 	union amt_addr		group_addr;
@@ -314,57 +306,57 @@ struct amt_dev {
 	struct net_device       *dev;
 	struct net_device       *stream_dev;
 	struct net		*net;
-	/* Global lock for amt device */
+	
 	spinlock_t		lock;
-	/* Used only in relay mode */
+	
 	struct list_head        tunnel_list;
 	struct gro_cells	gro_cells;
 
-	/* Protected by RTNL */
+	
 	struct delayed_work     discovery_wq;
-	/* Protected by RTNL */
+	
 	struct delayed_work     req_wq;
-	/* Protected by RTNL */
+	
 	struct delayed_work     secret_wq;
 	struct work_struct	event_wq;
-	/* AMT status */
+	
 	enum amt_status		status;
-	/* Generated key */
+	
 	siphash_key_t		key;
 	struct socket	  __rcu *sock;
 	u32			max_groups;
 	u32			max_sources;
 	u32			hash_buckets;
 	u32			hash_seed;
-	/* Default 128 */
+	
 	u32                     max_tunnels;
-	/* Default 128 */
+	
 	u32                     nr_tunnels;
-	/* Gateway or Relay mode */
+	
 	u32                     mode;
-	/* Default 2268 */
+	
 	__be16			relay_port;
-	/* Default 2268 */
+	
 	__be16			gw_port;
-	/* Outer local ip */
+	
 	__be32			local_ip;
-	/* Outer remote ip */
+	
 	__be32			remote_ip;
-	/* Outer discovery ip */
+	
 	__be32			discovery_ip;
-	/* Only used in gateway mode */
+	
 	__be32			nonce;
-	/* Gateway sent request and received query */
+	
 	bool			ready4;
 	bool			ready6;
 	u8			req_cnt;
 	u8			qi;
 	u64			qrv;
 	u64			qri;
-	/* Used only in gateway mode */
+	
 	u64			mac:48,
 				reserved:16;
-	/* AMT gateway side message handler queue */
+	
 	struct amt_events	events[AMT_MAX_EVENTS];
 	u8			event_idx;
 	u8			nr_events;
@@ -405,4 +397,4 @@ static inline u64 amt_gmi(const struct amt_dev *amt)
 	return ((amt->qrv * amt->qi) + amt->qri) * 1000;
 }
 
-#endif /* _NET_AMT_H_ */
+#endif 

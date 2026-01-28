@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 Invensense, Inc.
- */
+
+
 
 #ifndef INV_ICM42600_H_
 #define INV_ICM42600_H_
@@ -26,7 +24,7 @@ enum inv_icm42600_chip {
 	INV_CHIP_NB,
 };
 
-/* serial bus slew rates */
+
 enum inv_icm42600_slew_rate {
 	INV_ICM42600_SLEW_RATE_20_60NS,
 	INV_ICM42600_SLEW_RATE_12_36NS,
@@ -44,7 +42,7 @@ enum inv_icm42600_sensor_mode {
 	INV_ICM42600_SENSOR_MODE_NB,
 };
 
-/* gyroscope fullscale values */
+
 enum inv_icm42600_gyro_fs {
 	INV_ICM42600_GYRO_FS_2000DPS,
 	INV_ICM42600_GYRO_FS_1000DPS,
@@ -57,7 +55,7 @@ enum inv_icm42600_gyro_fs {
 	INV_ICM42600_GYRO_FS_NB,
 };
 
-/* accelerometer fullscale values */
+
 enum inv_icm42600_accel_fs {
 	INV_ICM42600_ACCEL_FS_16G,
 	INV_ICM42600_ACCEL_FS_8G,
@@ -66,7 +64,7 @@ enum inv_icm42600_accel_fs {
 	INV_ICM42600_ACCEL_FS_NB,
 };
 
-/* ODR suffixed by LN or LP are Low-Noise or Low-Power mode only */
+
 enum inv_icm42600_odr {
 	INV_ICM42600_ODR_8KHZ_LN = 3,
 	INV_ICM42600_ODR_4KHZ_LN,
@@ -85,10 +83,10 @@ enum inv_icm42600_odr {
 };
 
 enum inv_icm42600_filter {
-	/* Low-Noise mode sensor data filter (3rd order filter by default) */
+	
 	INV_ICM42600_FILTER_BW_ODR_DIV_2,
 
-	/* Low-Power mode sensor data filter (averaging) */
+	
 	INV_ICM42600_FILTER_AVG_1X = 1,
 	INV_ICM42600_FILTER_AVG_16X = 6,
 };
@@ -113,23 +111,7 @@ struct inv_icm42600_suspended {
 	bool temp;
 };
 
-/**
- *  struct inv_icm42600_state - driver state variables
- *  @lock:		lock for serializing multiple registers access.
- *  @chip:		chip identifier.
- *  @name:		chip name.
- *  @map:		regmap pointer.
- *  @vdd_supply:	VDD voltage regulator for the chip.
- *  @vddio_supply:	I/O voltage regulator for the chip.
- *  @orientation:	sensor chip orientation relative to main hardware.
- *  @conf:		chip sensors configurations.
- *  @suspended:		suspended sensors configuration.
- *  @indio_gyro:	gyroscope IIO device.
- *  @indio_accel:	accelerometer IIO device.
- *  @buffer:		data transfer buffer aligned for DMA.
- *  @fifo:		FIFO management structure.
- *  @timestamp:		interrupt timestamps.
- */
+
 struct inv_icm42600_state {
 	struct mutex lock;
 	enum inv_icm42600_chip chip;
@@ -150,13 +132,13 @@ struct inv_icm42600_state {
 	} timestamp;
 };
 
-/* Virtual register addresses: @bank on MSB (4 upper bits), @address on LSB */
 
-/* Bank selection register, available in all banks */
+
+
 #define INV_ICM42600_REG_BANK_SEL			0x76
 #define INV_ICM42600_BANK_SEL_MASK			GENMASK(2, 0)
 
-/* User bank 0 (MSB 0x00) */
+
 #define INV_ICM42600_REG_DEVICE_CONFIG			0x0011
 #define INV_ICM42600_DEVICE_CONFIG_SOFT_RESET		BIT(0)
 
@@ -187,7 +169,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_FIFO_CONFIG_STOP_ON_FULL		\
 		FIELD_PREP(INV_ICM42600_FIFO_CONFIG_MASK, 2)
 
-/* all sensor data are 16 bits (2 registers wide) in big-endian */
+
 #define INV_ICM42600_REG_TEMP_DATA			0x001D
 #define INV_ICM42600_REG_ACCEL_DATA_X			0x001F
 #define INV_ICM42600_REG_ACCEL_DATA_Y			0x0021
@@ -206,11 +188,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_INT_STATUS_FIFO_FULL		BIT(1)
 #define INV_ICM42600_INT_STATUS_AGC_RDY			BIT(0)
 
-/*
- * FIFO access registers
- * FIFO count is 16 bits (2 registers) big-endian
- * FIFO data is a continuous read register to read FIFO content
- */
+
 #define INV_ICM42600_REG_FIFO_COUNT			0x002E
 #define INV_ICM42600_REG_FIFO_DATA			0x0030
 
@@ -221,7 +199,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_SIGNAL_PATH_RESET_TMST_STROBE	BIT(2)
 #define INV_ICM42600_SIGNAL_PATH_RESET_FIFO_FLUSH	BIT(1)
 
-/* default configuration: all data big-endian and fifo count in bytes */
+
 #define INV_ICM42600_REG_INTF_CONFIG0			0x004C
 #define INV_ICM42600_INTF_CONFIG0_FIFO_HOLD_LAST_DATA	BIT(7)
 #define INV_ICM42600_INTF_CONFIG0_FIFO_COUNT_REC	BIT(6)
@@ -278,11 +256,11 @@ struct inv_icm42600_state {
 #define INV_ICM42600_FIFO_CONFIG1_GYRO_EN		BIT(1)
 #define INV_ICM42600_FIFO_CONFIG1_ACCEL_EN		BIT(0)
 
-/* FIFO watermark is 16 bits (2 registers wide) in little-endian */
+
 #define INV_ICM42600_REG_FIFO_WATERMARK			0x0060
 #define INV_ICM42600_FIFO_WATERMARK_VAL(_wm)		\
 		cpu_to_le16((_wm) & GENMASK(11, 0))
-/* FIFO is 2048 bytes, let 12 samples for reading latency */
+
 #define INV_ICM42600_FIFO_WATERMARK_MAX			(2048 - 12 * 16)
 
 #define INV_ICM42600_REG_INT_CONFIG1			0x0064
@@ -306,7 +284,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_WHOAMI_ICM42622			0x46
 #define INV_ICM42600_WHOAMI_ICM42631			0x5C
 
-/* User bank 1 (MSB 0x10) */
+
 #define INV_ICM42600_REG_SENSOR_CONFIG0			0x1003
 #define INV_ICM42600_SENSOR_CONFIG0_ZG_DISABLE		BIT(5)
 #define INV_ICM42600_SENSOR_CONFIG0_YG_DISABLE		BIT(4)
@@ -315,7 +293,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_SENSOR_CONFIG0_YA_DISABLE		BIT(1)
 #define INV_ICM42600_SENSOR_CONFIG0_XA_DISABLE		BIT(0)
 
-/* Timestamp value is 20 bits (3 registers) in little-endian */
+
 #define INV_ICM42600_REG_TMSTVAL			0x1062
 #define INV_ICM42600_TMSTVAL_MASK			GENMASK(19, 0)
 
@@ -331,7 +309,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_INTF_CONFIG6_I3C_DDR_EN		BIT(1)
 #define INV_ICM42600_INTF_CONFIG6_I3C_SDR_EN		BIT(0)
 
-/* User bank 4 (MSB 0x40) */
+
 #define INV_ICM42600_REG_INT_SOURCE8			0x404F
 #define INV_ICM42600_INT_SOURCE8_FSYNC_IBI_EN		BIT(5)
 #define INV_ICM42600_INT_SOURCE8_PLL_RDY_IBI_EN		BIT(4)
@@ -350,7 +328,7 @@ struct inv_icm42600_state {
 #define INV_ICM42600_REG_OFFSET_USER7			0x407E
 #define INV_ICM42600_REG_OFFSET_USER8			0x407F
 
-/* Sleep times required by the driver */
+
 #define INV_ICM42600_POWER_UP_TIME_MS		100
 #define INV_ICM42600_RESET_TIME_MS		1
 #define INV_ICM42600_ACCEL_STARTUP_TIME_MS	20

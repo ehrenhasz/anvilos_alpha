@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef TARGET_CORE_UA_H
 #define TARGET_CORE_UA_H
 
 #include <target/target_core_base.h>
 
-/*
- * From spc4r17, Table D.1: ASC and ASCQ Assignement
- */
+
 #define ASCQ_29H_POWER_ON_RESET_OR_BUS_DEVICE_RESET_OCCURED	0x00
 #define ASCQ_29H_POWER_ON_OCCURRED				0x01
 #define ASCQ_29H_SCSI_BUS_RESET_OCCURED				0x02
@@ -42,4 +40,4 @@ extern bool core_scsi3_ua_for_check_condition(struct se_cmd *, u8 *, u8 *,
 extern int core_scsi3_ua_clear_for_request_sense(struct se_cmd *,
 						u8 *, u8 *);
 
-#endif /* TARGET_CORE_UA_H */
+#endif 

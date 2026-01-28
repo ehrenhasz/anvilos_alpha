@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM jbd2
 
@@ -491,7 +491,7 @@ TRACE_EVENT(jbd2_shrink_checkpoint_list,
 		  __entry->nr_freed, __entry->next_tid)
 );
 
-#endif /* _TRACE_JBD2_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,6 +1,6 @@
 try:
     next(iter([]), 42)
-except TypeError:  # 2-argument version not supported
+except TypeError:  
     print('SKIP')
     raise SystemExit
 print(next(iter([]), 42))

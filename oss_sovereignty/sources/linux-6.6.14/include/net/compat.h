@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef NET_COMPAT_H
 #define NET_COMPAT_H
 
@@ -8,11 +8,11 @@ struct sock;
 #include <linux/compat.h>
 
 struct compat_msghdr {
-	compat_uptr_t	msg_name;	/* void * */
+	compat_uptr_t	msg_name;	
 	compat_int_t	msg_namelen;
-	compat_uptr_t	msg_iov;	/* struct compat_iovec * */
+	compat_uptr_t	msg_iov;	
 	compat_size_t	msg_iovlen;
-	compat_uptr_t	msg_control;	/* void * */
+	compat_uptr_t	msg_control;	
 	compat_size_t	msg_controllen;
 	compat_uint_t	msg_flags;
 };
@@ -30,20 +30,20 @@ struct compat_cmsghdr {
 
 struct compat_rtentry {
 	u32		rt_pad1;
-	struct sockaddr rt_dst;         /* target address               */
-	struct sockaddr rt_gateway;     /* gateway addr (RTF_GATEWAY)   */
-	struct sockaddr rt_genmask;     /* target network mask (IP)     */
+	struct sockaddr rt_dst;         
+	struct sockaddr rt_gateway;     
+	struct sockaddr rt_genmask;     
 	unsigned short	rt_flags;
 	short		rt_pad2;
 	u32		rt_pad3;
 	unsigned char	rt_tos;
 	unsigned char	rt_class;
 	short		rt_pad4;
-	short		rt_metric;      /* +1 for binary compatibility! */
-	compat_uptr_t	rt_dev;         /* forcing the device at add    */
-	u32		rt_mtu;         /* per route MTU/Window         */
-	u32		rt_window;      /* Window clamping              */
-	unsigned short  rt_irtt;        /* Initial RTT                  */
+	short		rt_metric;      
+	compat_uptr_t	rt_dev;         
+	u32		rt_mtu;         
+	u32		rt_window;      
+	unsigned short  rt_irtt;        
 };
 
 int __get_compat_msghdr(struct msghdr *kmsg, struct compat_msghdr *msg,
@@ -92,4 +92,4 @@ struct compat_group_filter {
 	};
 } __packed;
 
-#endif /* NET_COMPAT_H */
+#endif 

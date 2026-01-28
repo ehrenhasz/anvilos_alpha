@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM v4l2
 
@@ -8,7 +8,7 @@
 #include <linux/tracepoint.h>
 #include <media/videobuf2-v4l2.h>
 
-/* Enums require being exported to userspace, for user tool parsing */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -52,16 +52,13 @@ SHOW_TYPE
 
 SHOW_FIELD
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},
 #define EMe(a, b)	{a, b}
 
-/* V4L2_TC_TYPE_* are macros, not defines, they do not need processing */
+
 
 #define show_timecode_type(type)					\
 	__print_symbolic(type,						\
@@ -262,7 +259,7 @@ DEFINE_EVENT(vb2_v4l2_event_class, vb2_v4l2_qbuf,
 	TP_ARGS(q, vb)
 );
 
-#endif /* if !defined(_TRACE_V4L2_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * CrOS Kunit tests utilities.
- */
+
+
 
 #ifndef _CROS_KUNIT_UTIL_H_
 #define _CROS_KUNIT_UTIL_H_
@@ -12,11 +10,11 @@ struct ec_xfer_mock {
 	struct list_head list;
 	struct kunit *test;
 
-	/* input */
+	
 	struct cros_ec_command msg;
 	void *i_data;
 
-	/* output */
+	
 	int ret;
 	int result;
 	void *o_data;

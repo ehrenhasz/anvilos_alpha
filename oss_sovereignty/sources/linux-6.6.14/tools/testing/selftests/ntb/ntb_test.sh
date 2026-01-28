@@ -76,7 +76,7 @@ function split_remote()
 	REMOTE=
 	if [[ "$VPATH" == *":/"* ]]; then
 		REMOTE=${VPATH%%:*}
-		VPATH=${VPATH#*:}
+		VPATH=${VPATH
 	fi
 }
 function read_file()

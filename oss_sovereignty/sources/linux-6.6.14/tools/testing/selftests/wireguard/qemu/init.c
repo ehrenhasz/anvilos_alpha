@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+
 
 #define _GNU_SOURCE
 #include <unistd.h>
@@ -100,7 +98,7 @@ static void mount_filesystems(void)
 	if (mount("none", "/run", "tmpfs", 0, NULL))
 		panic("tmpfs mount");
 	if (mount("none", "/sys/kernel/debug", "debugfs", 0, NULL))
-		; /* Not a problem if it fails.*/
+		; 
 	if (symlink("/run", "/var/run"))
 		panic("run symlink");
 	if (symlink("/proc/self/fd", "/dev/fd"))
@@ -251,7 +249,7 @@ static void check_leaks(void)
 	if (fd < 0)
 		return;
 	pretty_message("[+] Scanning for memory leaks...");
-	sleep(2); /* Wait for any grace periods. */
+	sleep(2); 
 	write(fd, "scan\n", 5);
 	close(fd);
 

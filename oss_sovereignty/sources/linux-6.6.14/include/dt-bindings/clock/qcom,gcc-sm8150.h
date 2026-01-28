@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM8150_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM8150_H
 
-/* GCC clocks */
+
 #define GCC_AGGRE_NOC_PCIE_TBU_CLK				0
 #define GCC_AGGRE_UFS_CARD_AXI_CLK				1
 #define GCC_AGGRE_UFS_CARD_AXI_HW_CTL_CLK			2
@@ -209,7 +207,7 @@
 #define GPLL7							199
 #define GPLL9							200
 
-/* Reset clocks */
+
 #define GCC_EMAC_BCR						0
 #define GCC_GPU_BCR						1
 #define GCC_MMSS_BCR						2
@@ -240,7 +238,7 @@
 #define GCC_USB30_SEC_BCR					27
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR				28
 
-/* GCC GDSCRs */
+
 #define PCIE_0_GDSC						0
 #define PCIE_1_GDSC						1
 #define UFS_CARD_GDSC						2

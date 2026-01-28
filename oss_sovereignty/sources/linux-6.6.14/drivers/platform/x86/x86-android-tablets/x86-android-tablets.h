@@ -1,12 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later
- *
- * DMI based code to deal with broken DSDTs on X86 tablets which ship with
- * Android as (part of) the factory image. The factory kernels shipped on these
- * devices typically have a bunch of things hardcoded, rather than specified
- * in their DSDT.
- *
- * Copyright (C) 2021-2023 Hans de Goede <hdegoede@redhat.com>
- */
+
 #ifndef __PDX86_X86_ANDROID_TABLETS_H
 #define __PDX86_X86_ANDROID_TABLETS_H
 
@@ -19,10 +11,7 @@ struct gpiod_lookup_table;
 struct platform_device_info;
 struct software_node;
 
-/*
- * Helpers to get Linux IRQ numbers given a description of the IRQ source
- * (either IOAPIC index, or GPIO chip name + pin-number).
- */
+
 enum x86_acpi_irq_type {
 	X86_ACPI_IRQ_TYPE_NONE,
 	X86_ACPI_IRQ_TYPE_APIC,
@@ -31,15 +20,15 @@ enum x86_acpi_irq_type {
 };
 
 struct x86_acpi_irq_data {
-	char *chip;   /* GPIO chip label (GPIOINT) or PMIC ACPI path (PMIC) */
+	char *chip;   
 	enum x86_acpi_irq_type type;
 	enum irq_domain_bus_token domain;
 	int index;
-	int trigger;  /* ACPI_EDGE_SENSITIVE / ACPI_LEVEL_SENSITIVE */
-	int polarity; /* ACPI_ACTIVE_HIGH / ACPI_ACTIVE_LOW / ACPI_ACTIVE_BOTH */
+	int trigger;  
+	int polarity; 
 };
 
-/* Structs to describe devices to instantiate */
+
 struct x86_i2c_client_info {
 	struct i2c_board_info board_info;
 	char *adapter_path;
@@ -50,12 +39,7 @@ struct x86_serdev_info {
 	const char *ctrl_hid;
 	const char *ctrl_uid;
 	const char *ctrl_devname;
-	/*
-	 * ATM the serdev core only supports of or ACPI matching; and sofar all
-	 * Android x86 tablets DSDTs have usable serdev nodes, but sometimes
-	 * under the wrong controller. So we just tie the existing serdev ACPI
-	 * node to the right controller.
-	 */
+	
 	const char *serdev_hid;
 };
 
@@ -85,10 +69,7 @@ struct x86_dev_info {
 int x86_android_tablet_get_gpiod(const char *label, int pin, struct gpio_desc **desc);
 int x86_acpi_irq_helper_get(const struct x86_acpi_irq_data *data);
 
-/*
- * Extern declarations of x86_dev_info structs so there can be a single
- * MODULE_DEVICE_TABLE(dmi, ...), while splitting the board descriptions.
- */
+
 extern const struct x86_dev_info acer_b1_750_info;
 extern const struct x86_dev_info advantech_mica_071_info;
 extern const struct x86_dev_info asus_me176c_info;

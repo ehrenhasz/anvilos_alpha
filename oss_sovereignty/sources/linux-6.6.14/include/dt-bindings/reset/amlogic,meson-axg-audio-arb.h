@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- *
- * Copyright (c) 2018 Baylibre SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
 
 #ifndef _DT_BINDINGS_AMLOGIC_MESON_AXG_AUDIO_ARB_H
 #define _DT_BINDINGS_AMLOGIC_MESON_AXG_AUDIO_ARB_H
@@ -16,4 +12,4 @@
 #define AXG_ARB_TODDR_D	6
 #define AXG_ARB_FRDDR_D	7
 
-#endif /* _DT_BINDINGS_AMLOGIC_MESON_AXG_AUDIO_ARB_H */
+#endif 

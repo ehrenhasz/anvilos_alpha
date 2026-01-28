@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_VDEC0_BRDG_CTRL_REGS_H_
 #define ASIC_REG_DCORE0_VDEC0_BRDG_CTRL_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_VDEC0_BRDG_CTRL
- *   (Prototype: VDEC_BRDG_CTRL)
- *****************************************
- */
+
 
 #define mmDCORE0_VDEC0_BRDG_CTRL_CGM_DISABLE 0x41E3100
 
@@ -242,4 +229,4 @@
 
 #define mmDCORE0_VDEC0_BRDG_CTRL_HBW_LAST_ARADDR_TERM_H 0x41E3734
 
-#endif /* ASIC_REG_DCORE0_VDEC0_BRDG_CTRL_REGS_H_ */
+#endif 

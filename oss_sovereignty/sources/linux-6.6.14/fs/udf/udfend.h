@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __UDF_ENDIAN_H
 #define __UDF_ENDIAN_H
 
@@ -75,4 +75,4 @@ static inline struct kernel_extent_ad leea_to_cpu(struct extent_ad in)
 	return out;
 }
 
-#endif /* __UDF_ENDIAN_H */
+#endif 

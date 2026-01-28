@@ -1,27 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Atmel SFR (Special Function Registers) register offsets and bit definitions.
- *
- * Copyright (C) 2016 Atmel
- *
- * Author: Ludovic Desroches <ludovic.desroches@atmel.com>
- */
+
+
 
 #ifndef _LINUX_MFD_SYSCON_ATMEL_SFR_H
 #define _LINUX_MFD_SYSCON_ATMEL_SFR_H
 
-#define AT91_SFR_DDRCFG		0x04	/* DDR Configuration Register */
-#define AT91_SFR_CCFG_EBICSA	0x04	/* EBI Chip Select Register */
-/* 0x08 ~ 0x0c: Reserved */
-#define AT91_SFR_OHCIICR	0x10	/* OHCI INT Configuration Register */
-#define AT91_SFR_OHCIISR	0x14	/* OHCI INT Status Register */
-#define AT91_SFR_UTMICKTRIM	0x30	/* UTMI Clock Trimming Register */
-#define AT91_SFR_UTMISWAP	0x3c	/* UTMI DP/DM Pin Swapping Register */
-#define AT91_SFR_LS		0x7c	/* Light Sleep Register */
-#define AT91_SFR_I2SCLKSEL	0x90	/* I2SC Register */
-#define AT91_SFR_WPMR		0xe4	/* Write Protection Mode Register */
+#define AT91_SFR_DDRCFG		0x04	
+#define AT91_SFR_CCFG_EBICSA	0x04	
 
-/* Field definitions */
+#define AT91_SFR_OHCIICR	0x10	
+#define AT91_SFR_OHCIISR	0x14	
+#define AT91_SFR_UTMICKTRIM	0x30	
+#define AT91_SFR_UTMISWAP	0x3c	
+#define AT91_SFR_LS		0x7c	
+#define AT91_SFR_I2SCLKSEL	0x90	
+#define AT91_SFR_WPMR		0xe4	
+
+
 #define AT91_SFR_CCFG_EBI_CSA(cs, val)		((val) << (cs))
 #define AT91_SFR_CCFG_EBI_DBPUC			BIT(8)
 #define AT91_SFR_CCFG_EBI_DBPDC			BIT(9)
@@ -48,4 +42,4 @@
 #define AT91_SFR_WPMR_WPEN			BIT(0)
 #define AT91_SFR_WPMR_WPKEY_MASK		GENMASK(31, 8)
 
-#endif /* _LINUX_MFD_SYSCON_ATMEL_SFR_H */
+#endif 

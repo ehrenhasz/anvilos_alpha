@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Generic netlink handshake service
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2023, Oracle and/or its affiliates.
- */
+
+
 
 #ifndef _INTERNAL_HANDSHAKE_H
 #define _INTERNAL_HANDSHAKE_H
 
-/* Per-net namespace context */
+
 struct handshake_net {
-	spinlock_t		hn_lock;	/* protects next 3 fields */
+	spinlock_t		hn_lock;	
 	int			hn_pending;
 	int			hn_pending_max;
 	struct list_head	hn_requests;
@@ -26,7 +20,7 @@ enum hn_flags_bits {
 
 struct handshake_proto;
 
-/* One handshake request */
+
 struct handshake_req {
 	struct list_head		hr_list;
 	struct rhash_head		hr_rhash;
@@ -35,7 +29,7 @@ struct handshake_req {
 	struct sock			*hr_sk;
 	void				(*hr_odestruct)(struct sock *sk);
 
-	/* Always the last field */
+	
 	char				hr_priv[];
 };
 
@@ -46,9 +40,7 @@ enum hr_flags_bits {
 
 struct genl_info;
 
-/* Invariants for all handshake requests for one transport layer
- * security protocol
- */
+
 struct handshake_proto {
 	int			hp_handler_class;
 	size_t			hp_privsize;
@@ -66,17 +58,17 @@ enum hp_flags_bits {
 	HANDSHAKE_F_PROTO_NOTIFY,
 };
 
-/* alert.c */
+
 int tls_alert_send(struct socket *sock, u8 level, u8 description);
 
-/* netlink.c */
+
 int handshake_genl_notify(struct net *net, const struct handshake_proto *proto,
 			  gfp_t flags);
 struct nlmsghdr *handshake_genl_put(struct sk_buff *msg,
 				    struct genl_info *info);
 struct handshake_net *handshake_pernet(struct net *net);
 
-/* request.c */
+
 struct handshake_req *handshake_req_alloc(const struct handshake_proto *proto,
 					  gfp_t flags);
 int handshake_req_hash_init(void);
@@ -90,4 +82,4 @@ void handshake_complete(struct handshake_req *req, unsigned int status,
 			struct genl_info *info);
 bool handshake_req_cancel(struct sock *sk);
 
-#endif /* _INTERNAL_HANDSHAKE_H */
+#endif 

@@ -6,9 +6,9 @@ import os
 import os.path
 import argparse
 import json
-UF2_MAGIC_START0 = 0x0A324655  # "UF2\n"
-UF2_MAGIC_START1 = 0x9E5D5157  # Randomly selected
-UF2_MAGIC_END = 0x0AB16F30  # Ditto
+UF2_MAGIC_START0 = 0x0A324655  
+UF2_MAGIC_START1 = 0x9E5D5157  
+UF2_MAGIC_END = 0x0AB16F30  
 INFO_FILE = "/INFO_UF2.TXT"
 appstartaddr = 0x2000
 familyid = 0x0

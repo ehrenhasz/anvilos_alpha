@@ -7,13 +7,13 @@ def do_repl_main_loop(
         console_in.waitchar(state.transport.serial)
         c = console_in.readchar()
         if c:
-            if c in (b"\x1d", b"\x18"):  # ctrl-] or ctrl-x, quit
+            if c in (b"\x1d", b"\x18"):  
                 break
-            elif c == b"\x04":  # ctrl-D
+            elif c == b"\x04":  
                 state.transport.write_ctrl_d(console_out_write)
-            elif c == b"\x0a" and code_to_inject is not None:  # ctrl-j, inject code
+            elif c == b"\x0a" and code_to_inject is not None:  
                 state.transport.serial.write(code_to_inject)
-            elif c == b"\x0b" and file_to_inject is not None:  # ctrl-k, inject script
+            elif c == b"\x0b" and file_to_inject is not None:  
                 console_out_write(bytes("Injecting %s\r\n" % file_to_inject, "utf8"))
                 state.transport.enter_raw_repl(soft_reset=False)
                 with open(file_to_inject, "rb") as f:
@@ -29,7 +29,7 @@ def do_repl_main_loop(
         try:
             n = state.transport.serial.inWaiting()
         except OSError as er:
-            if er.args[0] == 5:  # IO error, device disappeared
+            if er.args[0] == 5:  
                 print("device disconnected")
                 break
         if n > 0:

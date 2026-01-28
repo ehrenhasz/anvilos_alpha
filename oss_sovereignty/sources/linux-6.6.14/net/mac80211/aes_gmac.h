@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015, Qualcomm Atheros, Inc.
- */
+
+
 
 #ifndef AES_GMAC_H
 #define AES_GMAC_H
@@ -18,4 +16,4 @@ int ieee80211_aes_gmac(struct crypto_aead *tfm, const u8 *aad, u8 *nonce,
 		       const u8 *data, size_t data_len, u8 *mic);
 void ieee80211_aes_gmac_key_free(struct crypto_aead *tfm);
 
-#endif /* AES_GMAC_H */
+#endif 

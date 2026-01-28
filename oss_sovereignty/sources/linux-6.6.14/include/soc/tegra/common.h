@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 NVIDIA Corporation
- */
+
+
 
 #ifndef __SOC_TEGRA_COMMON_H__
 #define __SOC_TEGRA_COMMON_H__
@@ -11,11 +9,7 @@
 
 struct device;
 
-/**
- * Tegra SoC core device OPP table configuration
- *
- * @init_state: pre-initialize OPP state of a device
- */
+
 struct tegra_core_opp_params {
 	bool init_state;
 };
@@ -54,4 +48,4 @@ devm_tegra_core_dev_init_opp_table_common(struct device *dev)
 	return 0;
 }
 
-#endif /* __SOC_TEGRA_COMMON_H__ */
+#endif 

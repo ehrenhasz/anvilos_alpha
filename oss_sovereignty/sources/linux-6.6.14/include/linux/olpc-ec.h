@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_OLPC_EC_H
 #define _LINUX_OLPC_EC_H
 
 #include <linux/bits.h>
 
-/* XO-1 EC commands */
+
 #define EC_FIRMWARE_REV			0x08
 #define EC_WRITE_SCI_MASK		0x1b
 #define EC_WAKE_UP_WLAN			0x24
@@ -18,16 +18,16 @@
 #define EC_SCI_QUERY			0x84
 #define EC_EXT_SCI_QUERY		0x85
 
-/* SCI source values */
+
 #define EC_SCI_SRC_GAME         BIT(0)
 #define EC_SCI_SRC_BATTERY      BIT(1)
 #define EC_SCI_SRC_BATSOC       BIT(2)
 #define EC_SCI_SRC_BATERR       BIT(3)
-#define EC_SCI_SRC_EBOOK        BIT(4)    /* XO-1 only */
-#define EC_SCI_SRC_WLAN         BIT(5)    /* XO-1 only */
+#define EC_SCI_SRC_EBOOK        BIT(4)    
+#define EC_SCI_SRC_WLAN         BIT(5)    
 #define EC_SCI_SRC_ACPWR        BIT(6)
 #define EC_SCI_SRC_BATCRIT      BIT(7)
-#define EC_SCI_SRC_GPWAKE       BIT(8)   /* XO-1.5 only */
+#define EC_SCI_SRC_GPWAKE       BIT(8)   
 #define EC_SCI_SRC_ALL          GENMASK(8, 0)
 
 struct platform_device;
@@ -71,6 +71,6 @@ static inline bool olpc_ec_wakeup_available(void)
 	return false;
 }
 
-#endif /* CONFIG_OLPC_EC */
+#endif 
 
-#endif /* _LINUX_OLPC_EC_H */
+#endif 

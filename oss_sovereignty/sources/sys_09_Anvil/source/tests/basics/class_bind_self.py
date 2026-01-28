@@ -16,14 +16,14 @@ class C:
     def f1(self, arg):
         return 'C.f1', self is c, arg
     f2 = lambda self, arg: ('C.f2', self is c, arg)
-    f3 = make_closure('f3') # closure
-    def f4(self, arg): # generator
+    f3 = make_closure('f3') 
+    def f4(self, arg): 
         yield self is c, arg
-    f5 = int # builtin type
-    f6 = abs # builtin function
-    f7 = A # user type
-    f8 = A(8) # user instance which is callable
-    f9 = A(9).foo # user bound method
+    f5 = int 
+    f6 = abs 
+    f7 = A 
+    f8 = A(8) 
+    f9 = A(9).foo 
 c = C()
 print(c.f1(1))
 print(c.f2(2))

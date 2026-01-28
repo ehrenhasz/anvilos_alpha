@@ -159,20 +159,20 @@ OBJ += $(addprefix $(BUILD)/, $(APP_MAIN_SRC_C:.c=.o) $(APP_SHARED_SRC_C:.c=.o) 
 OBJ += $(BUILD)/shared/runtime/gchelper_thumb2.o
 OBJ += $(BUILD)/pins.o
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(APP_MODS_SRC_C) $(APP_MISC_SRC_C) $(APP_STM_SRC_C) $(APP_SHARED_SRC_C) $(APP_HAL_SRC_C) $(GEN_PINS_SRC)
 
-# Add the linker script
+
 LINKER_SCRIPT = application.lds
 LDFLAGS += -T $(LINKER_SCRIPT)
 
-# Add the application specific CFLAGS
+
 CFLAGS += $(APP_CPPDEFINES) $(APP_INC)
 
-# Disable strict aliasing for the simplelink driver
+
 $(BUILD)/drivers/cc3100/src/driver.o: CFLAGS += -fno-strict-aliasing
 
-# Check if we would like to debug the port code
+
 ifeq ($(BTYPE), release)
 CFLAGS += -DNDEBUG
 else
@@ -222,14 +222,14 @@ PREFIX_FILE = boards/cc3200_prefix.c
 GEN_PINS_SRC = $(BUILD)/pins.c
 GEN_PINS_HDR = $(HEADER_BUILD)/pins.h
 
-# Making OBJ use an order-only dependency on the generated pins.h file
-# has the side effect of making the pins.h file before we actually compile
-# any of the objects. The normal dependency generation will deal with the
-# case when pins.h is modified. But when it doesn't exist, we don't know
-# which source files might need it.
+
+
+
+
+
 $(OBJ): | $(GEN_PINS_HDR)
 
-# Call make-pins.py to generate both pins_gen.c and pins.h
+
 $(GEN_PINS_SRC) $(GEN_PINS_HDR): $(BOARD_PINS) $(MAKE_PINS) $(AF_FILE) $(PREFIX_FILE) | $(HEADER_BUILD)
 	$(ECHO) "Create $@"
 	$(Q)$(PYTHON) $(MAKE_PINS) --board-csv $(BOARD_PINS) --af-csv $(AF_FILE) --prefix $(PREFIX_FILE) \

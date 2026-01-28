@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Tracepoints for vfio_ccw driver
- *
- * Copyright IBM Corp. 2018
- *
- * Author(s): Dong Jia Shi <bjsdjshi@linux.vnet.ibm.com>
- *            Halil Pasic <pasic@linux.vnet.ibm.com>
- */
+
+
 
 #include "cio.h"
 
@@ -134,9 +128,9 @@ TRACE_EVENT(vfio_ccw_fsm_io_request,
 		  __entry->errstr)
 );
 
-#endif /* _VFIO_CCW_TRACE_ */
+#endif 
 
-/* This part must be outside protection */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -23,23 +23,23 @@ echo ' * Public Domain, Authors:'
 sed -e '/Alphabetical order:/d' -e 's/^/ * - /' < $AUTHOR
 echo ' */'
 echo
-echo '#include <string.h>'
-echo '#include "crypto_api.h"'
+echo '
+echo '
 echo
 for t in int8 uint8 int16 uint16 int32 uint32 int64 uint64; do
-	echo "#define $t crypto_${t}"
+	echo "
 done
 echo
 for i in $FILES; do
 	echo "/* from $i */"
-	sed -e "/#include/d" \
+	sed -e "/
 	    -e "s/crypto_kem_/crypto_kem_sntrup761_/g" \
 	    -e "s/^void /static void /g" \
 	    -e "s/^int16 /static int16 /g" \
 	    -e "s/^uint16 /static uint16 /g" \
 	    -e "/^extern /d" \
 	    -e '/CRYPTO_NAMESPACE/d' \
-	    -e "/^#define int32 crypto_int32/d" \
+	    -e "/^
 	    -e 's/[	 ]*$//' \
 	    $i | \
 	case "$i" in

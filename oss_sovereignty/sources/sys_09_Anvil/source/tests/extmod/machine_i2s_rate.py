@@ -17,7 +17,7 @@ elif "mimxrt" in sys.platform:
         (2, Pin("D4"), Pin("D3"), Pin("D2"), None),
     )
 TEST_BYTES = b"01234567"
-RATE = 11025  # frames/sec
+RATE = 11025  
 def test(i2s_id, sck_pin, ws_pin, sd_pin, mode, bits_per_sample, frame_format):
     if sd_pin is None:
         return

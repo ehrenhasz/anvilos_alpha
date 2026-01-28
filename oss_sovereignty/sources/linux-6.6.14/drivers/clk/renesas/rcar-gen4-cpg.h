@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * R-Car Gen4 Clock Pulse Generator
- *
- * Copyright (C) 2021 Renesas Electronics Corp.
- *
- */
+
+
 
 #ifndef __CLK_RENESAS_RCAR_GEN4_CPG_H__
 #define __CLK_RENESAS_RCAR_GEN4_CPG_H__
@@ -14,7 +9,7 @@ enum rcar_gen4_clk_types {
 	CLK_TYPE_GEN4_PLL1,
 	CLK_TYPE_GEN4_PLL2,
 	CLK_TYPE_GEN4_PLL2_VAR,
-	CLK_TYPE_GEN4_PLL2X_3X,	/* r8a779a0 only */
+	CLK_TYPE_GEN4_PLL2X_3X,	
 	CLK_TYPE_GEN4_PLL3,
 	CLK_TYPE_GEN4_PLL4,
 	CLK_TYPE_GEN4_PLL5,
@@ -22,14 +17,14 @@ enum rcar_gen4_clk_types {
 	CLK_TYPE_GEN4_SDSRC,
 	CLK_TYPE_GEN4_SDH,
 	CLK_TYPE_GEN4_SD,
-	CLK_TYPE_GEN4_MDSEL,	/* Select parent/divider using mode pin */
+	CLK_TYPE_GEN4_MDSEL,	
 	CLK_TYPE_GEN4_Z,
-	CLK_TYPE_GEN4_OSC,	/* OSC EXTAL predivider and fixed divider */
+	CLK_TYPE_GEN4_OSC,	
 	CLK_TYPE_GEN4_RPCSRC,
 	CLK_TYPE_GEN4_RPC,
 	CLK_TYPE_GEN4_RPCD2,
 
-	/* SoC specific definitions start here */
+	
 	CLK_TYPE_GEN4_SOC_BASE,
 };
 

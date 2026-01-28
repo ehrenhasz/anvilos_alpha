@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_PCIE_CADENCE) += cadence/
 obj-$(CONFIG_PCI_FTPCI100) += pci-ftpci100.o
 obj-$(CONFIG_PCI_IXP4XX) += pci-ixp4xx.o
@@ -40,20 +40,20 @@ obj-$(CONFIG_PCIE_HISI_ERR) += pcie-hisi-error.o
 obj-$(CONFIG_PCIE_APPLE) += pcie-apple.o
 obj-$(CONFIG_PCIE_MT7621) += pcie-mt7621.o
 
-# pcie-hisi.o quirks are needed even without CONFIG_PCIE_DW
+
 obj-y				+= dwc/
 obj-y				+= mobiveil/
 
 
-# The following drivers are for devices that use the generic ACPI
-# pci_root.c driver but don't support standard ECAM config access.
-# They contain MCFG quirks to replace the generic ECAM accessors with
-# device-specific ones that are shared with the DT driver.
 
-# The ACPI driver is generic and should not require driver-specific
-# config options to be enabled, so we always build these drivers on
-# ARM64 and use internal ifdefs to only build the pieces we need
-# depending on whether ACPI, the DT driver, or both are enabled.
+
+
+
+
+
+
+
+
 
 ifdef CONFIG_ACPI
 ifdef CONFIG_PCI_QUIRKS

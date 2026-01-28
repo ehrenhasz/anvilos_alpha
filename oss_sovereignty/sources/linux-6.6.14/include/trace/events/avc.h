@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Authors:	Thiébaud Weksteen <tweek@google.com>
- *		Peter Enderborg <Peter.Enderborg@sony.com>
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM avc
 
@@ -49,5 +46,5 @@ TRACE_EVENT(selinux_audited,
 
 #endif
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

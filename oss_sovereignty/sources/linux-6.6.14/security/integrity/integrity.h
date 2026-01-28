@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2009-2010 IBM Corporation
- *
- * Authors:
- * Mimi Zohar <zohar@us.ibm.com>
- */
+
+
 
 #ifdef pr_fmt
 #undef pr_fmt
@@ -19,19 +14,19 @@
 #include <linux/key.h>
 #include <linux/audit.h>
 
-/* iint action cache flags */
+
 #define IMA_MEASURE		0x00000001
 #define IMA_MEASURED		0x00000002
 #define IMA_APPRAISE		0x00000004
 #define IMA_APPRAISED		0x00000008
-/*#define IMA_COLLECT		0x00000010  do not use this flag */
+
 #define IMA_COLLECTED		0x00000020
 #define IMA_AUDIT		0x00000040
 #define IMA_AUDITED		0x00000080
 #define IMA_HASH		0x00000100
 #define IMA_HASHED		0x00000200
 
-/* iint policy rule cache flags */
+
 #define IMA_NONACTION_FLAGS	0xff000000
 #define IMA_DIGSIG_REQUIRED	0x01000000
 #define IMA_PERMIT_DIRECTIO	0x02000000
@@ -48,7 +43,7 @@
 				 IMA_HASHED | IMA_COLLECTED | \
 				 IMA_APPRAISED_SUBMASK)
 
-/* iint subaction appraise cache flags */
+
 #define IMA_FILE_APPRAISE	0x00001000
 #define IMA_FILE_APPRAISED	0x00002000
 #define IMA_MMAP_APPRAISE	0x00004000
@@ -66,7 +61,7 @@
 				 IMA_BPRM_APPRAISED | IMA_READ_APPRAISED | \
 				 IMA_CREDS_APPRAISED)
 
-/* iint cache atomic_flags */
+
 #define IMA_CHANGE_XATTR	0
 #define IMA_UPDATE_XATTR	1
 #define IMA_CHANGE_ATTR		2
@@ -88,7 +83,7 @@ struct evm_ima_xattr_data {
 	u8 data[];
 } __packed;
 
-/* Only used in the EVM HMAC code. */
+
 struct evm_xattr {
 	struct evm_ima_xattr_data data;
 	u8 digest[SHA1_DIGEST_SIZE];
@@ -113,54 +108,35 @@ struct ima_digest_data {
 	u8 digest[];
 } __packed;
 
-/*
- * Instead of wrapping the ima_digest_data struct inside a local structure
- * with the maximum hash size, define ima_max_digest_data struct.
- */
+
 struct ima_max_digest_data {
 	struct ima_digest_data hdr;
 	u8 digest[HASH_MAX_DIGESTSIZE];
 } __packed;
 
-/*
- * signature header format v2 - for using with asymmetric keys
- *
- * The signature_v2_hdr struct includes a signature format version
- * to simplify defining new signature formats.
- *
- * signature format:
- * version 2: regular file data hash based signature
- * version 3: struct ima_file_id data based signature
- */
+
 struct signature_v2_hdr {
-	uint8_t type;		/* xattr type */
-	uint8_t version;	/* signature format version */
-	uint8_t	hash_algo;	/* Digest algorithm [enum hash_algo] */
-	__be32 keyid;		/* IMA key identifier - not X509/PGP specific */
-	__be16 sig_size;	/* signature size */
-	uint8_t sig[];		/* signature payload */
+	uint8_t type;		
+	uint8_t version;	
+	uint8_t	hash_algo;	
+	__be32 keyid;		
+	__be16 sig_size;	
+	uint8_t sig[];		
 } __packed;
 
-/*
- * IMA signature version 3 disambiguates the data that is signed, by
- * indirectly signing the hash of the ima_file_id structure data,
- * containing either the fsverity_descriptor struct digest or, in the
- * future, the regular IMA file hash.
- *
- * (The hash of the ima_file_id structure is only of the portion used.)
- */
+
 struct ima_file_id {
-	__u8 hash_type;		/* xattr type [enum evm_ima_xattr_type] */
-	__u8 hash_algorithm;	/* Digest algorithm [enum hash_algo] */
+	__u8 hash_type;		
+	__u8 hash_algorithm;	
 	__u8 hash[HASH_MAX_DIGESTSIZE];
 } __packed;
 
-/* integrity data associated with an inode */
+
 struct integrity_iint_cache {
-	struct rb_node rb_node;	/* rooted in integrity_iint_tree */
-	struct mutex mutex;	/* protects: version, flags, digest */
-	struct inode *inode;	/* back pointer to inode in question */
-	u64 version;		/* track inode changes */
+	struct rb_node rb_node;	
+	struct mutex mutex;	
+	struct inode *inode;	
+	u64 version;		
 	unsigned long flags;
 	unsigned long measured_pcrs;
 	unsigned long atomic_flags;
@@ -175,9 +151,7 @@ struct integrity_iint_cache {
 	struct ima_digest_data *ima_hash;
 };
 
-/* rbtree tree calls to lookup, insert, delete
- * integrity data associated with an inode.
- */
+
 struct integrity_iint_cache *integrity_iint_find(struct inode *inode);
 
 int integrity_kernel_read(struct file *file, loff_t offset,
@@ -230,7 +204,7 @@ static inline int __init integrity_load_cert(const unsigned int id,
 {
 	return 0;
 }
-#endif /* CONFIG_INTEGRITY_SIGNATURE */
+#endif 
 
 #ifdef CONFIG_INTEGRITY_ASYMMETRIC_KEYS
 int asymmetric_verify(struct key *keyring, const char *sig,
@@ -270,7 +244,7 @@ static inline void evm_load_x509(void)
 #endif
 
 #ifdef CONFIG_INTEGRITY_AUDIT
-/* declarations */
+
 void integrity_audit_msg(int audit_msgno, struct inode *inode,
 			 const unsigned char *fname, const char *op,
 			 const char *cause, int result, int info);

@@ -1,29 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_QUOTA_H__
 #define __XFS_QUOTA_H__
 
 #include "xfs_quota_defs.h"
 
-/*
- * Kernel only quota definitions and functions
- */
+
 
 struct xfs_trans;
 struct xfs_buf;
 
-/*
- * This check is done typically without holding the inode lock;
- * that may seem racy, but it is harmless in the context that it is used.
- * The inode cannot go inactive as long a reference is kept, and
- * therefore if dquot(s) were attached, they'll stay consistent.
- * If, for example, the ownership of the inode changes while
- * we didn't have the inode locked, the appropriate dquot(s) will be
- * attached atomically.
- */
+
 #define XFS_NOT_DQATTACHED(mp, ip) \
 	((XFS_IS_UQUOTA_ON(mp) && (ip)->i_udquot == NULL) || \
 	 (XFS_IS_GQUOTA_ON(mp) && (ip)->i_gdquot == NULL) || \
@@ -53,25 +40,22 @@ xfs_quota_chkd_flag(
 	}
 }
 
-/*
- * The structure kept inside the xfs_trans_t keep track of dquot changes
- * within a transaction and apply them later.
- */
+
 struct xfs_dqtrx {
-	struct xfs_dquot *qt_dquot;	  /* the dquot this refers to */
+	struct xfs_dquot *qt_dquot;	  
 
-	uint64_t	qt_blk_res;	  /* blks reserved on a dquot */
-	int64_t		qt_bcount_delta;  /* dquot blk count changes */
-	int64_t		qt_delbcnt_delta; /* delayed dquot blk count changes */
+	uint64_t	qt_blk_res;	  
+	int64_t		qt_bcount_delta;  
+	int64_t		qt_delbcnt_delta; 
 
-	uint64_t	qt_rtblk_res;	  /* # blks reserved on a dquot */
-	uint64_t	qt_rtblk_res_used;/* # blks used from reservation */
-	int64_t		qt_rtbcount_delta;/* dquot realtime blk changes */
-	int64_t		qt_delrtb_delta;  /* delayed RT blk count changes */
+	uint64_t	qt_rtblk_res;	  
+	uint64_t	qt_rtblk_res_used;
+	int64_t		qt_rtbcount_delta;
+	int64_t		qt_delrtb_delta;  
 
-	uint64_t	qt_ino_res;	  /* inode reserved on a dquot */
-	uint64_t	qt_ino_res_used;  /* inodes used from the reservation */
-	int64_t		qt_icount_delta;  /* dquot inode count changes */
+	uint64_t	qt_ino_res;	  
+	uint64_t	qt_ino_res_used;  
+	int64_t		qt_icount_delta;  
 };
 
 #ifdef CONFIG_XFS_QUOTA
@@ -170,7 +154,7 @@ xfs_trans_reserve_quota_icreate(struct xfs_trans *tp, struct xfs_dquot *udqp,
 #define xfs_qm_unmount(mp)
 #define xfs_qm_unmount_quotas(mp)
 #define xfs_inode_near_dquot_enforcement(ip, type)			(false)
-#endif /* CONFIG_XFS_QUOTA */
+#endif 
 
 static inline int
 xfs_quota_unreserve_blkres(struct xfs_inode *ip, int64_t blocks)
@@ -180,4 +164,4 @@ xfs_quota_unreserve_blkres(struct xfs_inode *ip, int64_t blocks)
 
 extern int xfs_mount_reset_sbqflags(struct xfs_mount *);
 
-#endif	/* __XFS_QUOTA_H__ */
+#endif	

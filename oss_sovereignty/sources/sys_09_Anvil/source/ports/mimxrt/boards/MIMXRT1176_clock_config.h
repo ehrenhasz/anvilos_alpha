@@ -1,62 +1,46 @@
-/*
- * Copyright 2020 NXP
- * All rights reserved.
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
+
 
 #ifndef _CLOCK_CONFIG_H_
 #define _CLOCK_CONFIG_H_
 
 #include "fsl_common.h"
 
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
 
-#define BOARD_XTAL0_CLK_HZ 24000000U /*!< Board xtal0 frequency in Hz */
 
-#define BOARD_XTAL32K_CLK_HZ 32768U  /*!< Board xtal32k frequency in Hz */
+#define BOARD_XTAL0_CLK_HZ 24000000U 
 
-/*******************************************************************************
- ************************ BOARD_InitBootClocks function ************************
- ******************************************************************************/
+#define BOARD_XTAL32K_CLK_HZ 32768U  
+
+
 
 #if defined(__cplusplus)
 extern "C" {
-#endif /* __cplusplus*/
+#endif 
 
-/*!
- * @brief This function executes default configuration of clocks.
- *
- */
+
 void BOARD_InitBootClocks(void);
 
 #if defined(__cplusplus)
 }
-#endif /* __cplusplus*/
+#endif 
 
-/*******************************************************************************
- ********************** Configuration BOARD_BootClockRUN ***********************
- ******************************************************************************/
-/*******************************************************************************
- * Definitions for BOARD_BootClockRUN configuration
- ******************************************************************************/
+
+
 #if __CORTEX_M == 7
-    #define BOARD_BOOTCLOCKRUN_CORE_CLOCK 996000000UL /*!< CM7 Core clock frequency: 996000000Hz */
+    #define BOARD_BOOTCLOCKRUN_CORE_CLOCK 996000000UL 
 #else
-    #define BOARD_BOOTCLOCKRUN_CORE_CLOCK 392727272UL /*!< CM4 Core clock frequency: 392727272Hz */
+    #define BOARD_BOOTCLOCKRUN_CORE_CLOCK 392727272UL 
 #endif
 
-/* Clock outputs (values are in Hz): */
+
 #define BOARD_BOOTCLOCKRUN_ACMP_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_ADC1_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_ADC2_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_ARM_PLL_CLK                996000000UL
 #define BOARD_BOOTCLOCKRUN_ASRC_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_AXI_CLK_ROOT               996000000UL
-#define BOARD_BOOTCLOCKRUN_BUS_CLK_ROOT               160000000UL  // 160MHz
-#define BOARD_BOOTCLOCKRUN_BUS_LPSR_CLK_ROOT          120000000UL  // 120MHz
+#define BOARD_BOOTCLOCKRUN_BUS_CLK_ROOT               160000000UL  
+#define BOARD_BOOTCLOCKRUN_BUS_LPSR_CLK_ROOT          120000000UL  
 #define BOARD_BOOTCLOCKRUN_CAN1_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_CAN2_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_CAN3_CLK_ROOT              24000000UL
@@ -99,18 +83,18 @@ void BOARD_InitBootClocks(void);
 #define BOARD_BOOTCLOCKRUN_GPT6_CLK_ROOT              24000000UL
 #define BOARD_BOOTCLOCKRUN_GPT6_IPG_CLK_HIGHFREQ      24000000UL
 #define BOARD_BOOTCLOCKRUN_LCDIFV2_CLK_ROOT           24000000UL
-#define BOARD_BOOTCLOCKRUN_LPI2C1_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPI2C2_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPI2C3_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPI2C4_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPI2C5_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPI2C6_CLK_ROOT            60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI1_CLK_ROOT            13500000UL  // 135MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI2_CLK_ROOT            13500000UL  // 135MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI3_CLK_ROOT            13500000UL  // 135MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI4_CLK_ROOT            13500000UL  // 135MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI5_CLK_ROOT            13500000UL  // 135MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI6_CLK_ROOT            13500000UL  // 135MHz
+#define BOARD_BOOTCLOCKRUN_LPI2C1_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPI2C2_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPI2C3_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPI2C4_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPI2C5_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPI2C6_CLK_ROOT            60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI1_CLK_ROOT            13500000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI2_CLK_ROOT            13500000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI3_CLK_ROOT            13500000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI4_CLK_ROOT            13500000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI5_CLK_ROOT            13500000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI6_CLK_ROOT            13500000UL  
 #define BOARD_BOOTCLOCKRUN_LPUART10_CLK_ROOT          74250000UL
 #define BOARD_BOOTCLOCKRUN_LPUART11_CLK_ROOT          74250000UL
 #define BOARD_BOOTCLOCKRUN_LPUART12_CLK_ROOT          74250000UL
@@ -185,26 +169,21 @@ void BOARD_InitBootClocks(void);
 #define BOARD_BOOTCLOCKRUN_USDHC2_CLK_ROOT            24000000UL
 
 
-// Configuration for all instances of peripherals are identical
-#define BOARD_BOOTCLOCKRUN_LPI2C_CLK_ROOT             60000000UL  // 60MHz
-#define BOARD_BOOTCLOCKRUN_LPSPI_CLK_ROOT             135000000UL // 135MHz
-#define BOARD_BOOTCLOCKRUN_PERCLK_CLK_ROOT            160000000UL // 160MHz
-#define BOARD_BOOTCLOCKRUN_UART_CLK_ROOT              74250000UL  // 74.25MHz
-/*******************************************************************************
- * API for BOARD_BootClockRUN configuration
- ******************************************************************************/
+
+#define BOARD_BOOTCLOCKRUN_LPI2C_CLK_ROOT             60000000UL  
+#define BOARD_BOOTCLOCKRUN_LPSPI_CLK_ROOT             135000000UL 
+#define BOARD_BOOTCLOCKRUN_PERCLK_CLK_ROOT            160000000UL 
+#define BOARD_BOOTCLOCKRUN_UART_CLK_ROOT              74250000UL  
+
 #if defined(__cplusplus)
 extern "C" {
-#endif /* __cplusplus*/
+#endif 
 
-/*!
- * @brief This function executes configuration of clocks.
- *
- */
+
 void BOARD_BootClockRUN(void);
 
 #if defined(__cplusplus)
 }
-#endif /* __cplusplus*/
+#endif 
 
-#endif /* _CLOCK_CONFIG_H_ */
+#endif 

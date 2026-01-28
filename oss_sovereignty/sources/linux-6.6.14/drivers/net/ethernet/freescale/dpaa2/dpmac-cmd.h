@@ -1,11 +1,9 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2019 NXP
- */
+
+
 #ifndef _FSL_DPMAC_CMD_H
 #define _FSL_DPMAC_CMD_H
 
-/* DPMAC Version */
+
 #define DPMAC_VER_MAJOR				4
 #define DPMAC_VER_MINOR				4
 #define DPMAC_CMD_BASE_VERSION			1
@@ -15,7 +13,7 @@
 #define DPMAC_CMD(id)	(((id) << DPMAC_CMD_ID_OFFSET) | DPMAC_CMD_BASE_VERSION)
 #define DPMAC_CMD_V2(id) (((id) << DPMAC_CMD_ID_OFFSET) | DPMAC_CMD_2ND_VERSION)
 
-/* Command IDs */
+
 #define DPMAC_CMDID_CLOSE		DPMAC_CMD(0x800)
 #define DPMAC_CMDID_OPEN		DPMAC_CMD(0x80c)
 
@@ -28,7 +26,7 @@
 
 #define DPMAC_CMDID_SET_PROTOCOL	DPMAC_CMD(0x0c7)
 
-/* Macros for accessing command fields smaller than 1byte */
+
 #define DPMAC_MASK(field)        \
 	GENMASK(DPMAC_##field##_SHIFT + DPMAC_##field##_SIZE - 1, \
 		DPMAC_##field##_SHIFT)
@@ -58,7 +56,7 @@ struct dpmac_cmd_set_link_state {
 	__le64 options;
 	__le32 rate;
 	__le32 pad0;
-	/* from lsb: up:1, state_valid:1 */
+	
 	u8 state;
 	u8 pad1[7];
 	__le64 supported;
@@ -82,4 +80,4 @@ struct dpmac_rsp_get_api_version {
 struct dpmac_cmd_set_protocol {
 	u8 eth_if;
 };
-#endif /* _FSL_DPMAC_CMD_H */
+#endif 

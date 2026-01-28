@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Actions Semi S700 SPS
- *
- * Copyright (c) 2017 Andreas Färber
- */
+
+
 #ifndef DT_BINDINGS_POWER_OWL_S700_POWERGATE_H
 #define DT_BINDINGS_POWER_OWL_S700_POWERGATE_H
 

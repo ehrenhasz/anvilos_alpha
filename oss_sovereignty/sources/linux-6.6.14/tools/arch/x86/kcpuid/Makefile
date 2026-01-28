@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for x86/kcpuid tool
+
+
 
 kcpuid : kcpuid.c
 

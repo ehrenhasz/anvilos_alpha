@@ -1,22 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/linkage.h>
 #include <linux/errno.h>
 #include <asm/asm.h>
 #include <asm/msr.h>
 
 #ifdef CONFIG_X86_64
-/*
- * int {rdmsr,wrmsr}_safe_regs(u32 gprs[8]);
- *
- * reg layout: u32 gprs[eax, ecx, edx, ebx, esp, ebp, esi, edi]
- *
- */
+
 .macro op_safe_regs op
 SYM_FUNC_START(\op\()_safe_regs)
 	pushq %rbx
 	pushq %r12
-	movq	%rdi, %r10	/* Save pointer */
-	xorl	%r11d, %r11d	/* Return value */
+	movq	%rdi, %r10	
+	xorl	%r11d, %r11d	
 	movl    (%rdi), %eax
 	movl    4(%rdi), %ecx
 	movl    8(%rdi), %edx
@@ -26,7 +21,7 @@ SYM_FUNC_START(\op\()_safe_regs)
 	movl    28(%rdi), %edi
 1:	\op
 2:	movl    %eax, (%r10)
-	movl	%r11d, %eax	/* Return value */
+	movl	%r11d, %eax	
 	movl    %ecx, 4(%r10)
 	movl    %edx, 8(%r10)
 	movl    %ebx, 12(%r10)
@@ -44,7 +39,7 @@ SYM_FUNC_START(\op\()_safe_regs)
 SYM_FUNC_END(\op\()_safe_regs)
 .endm
 
-#else /* X86_32 */
+#else 
 
 .macro op_safe_regs op
 SYM_FUNC_START(\op\()_safe_regs)
@@ -52,7 +47,7 @@ SYM_FUNC_START(\op\()_safe_regs)
 	pushl %ebp
 	pushl %esi
 	pushl %edi
-	pushl $0              /* Return value */
+	pushl $0              
 	pushl %eax
 	movl    4(%eax), %ecx
 	movl    8(%eax), %edx

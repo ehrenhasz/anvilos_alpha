@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * SuperH Pin Function Controller support.
- *
- * Copyright (C) 2012  Renesas Solutions Corp.
- */
+
 #ifndef __SH_PFC_CORE_H__
 #define __SH_PFC_CORE_H__
 
@@ -29,4 +24,4 @@ void sh_pfc_write(struct sh_pfc *pfc, u32 reg, u32 data);
 int sh_pfc_get_pin_index(struct sh_pfc *pfc, unsigned int pin);
 int sh_pfc_config_mux(struct sh_pfc *pfc, unsigned mark, int pinmux_type);
 
-#endif /* __SH_PFC_CORE_H__ */
+#endif 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Linux proc filesystem routines.
-#
+
+
+
+
 
 obj-y   += proc.o
 

@@ -22,6 +22,6 @@ palette.pixel(1, 0, fg)
 fbd.blit(fbc, 0, 0, -1, palette)
 print(fbd.pixel(0, 0) == fg)
 print(fbd.pixel(7, 7) == fg)
-print(fbd.pixel(8, 8) == 0)  # Outside blit
+print(fbd.pixel(8, 8) == 0)  
 print(fbd.pixel(0, 1) == bg)
 print(fbd.pixel(1, 0) == bg)

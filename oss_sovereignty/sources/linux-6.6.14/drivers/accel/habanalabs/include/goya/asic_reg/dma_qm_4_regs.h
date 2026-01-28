@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DMA_QM_4_REGS_H_
 #define ASIC_REG_DMA_QM_4_REGS_H_
 
-/*
- *****************************************
- *   DMA_QM_4 (Prototype: QMAN)
- *****************************************
- */
+
 
 #define mmDMA_QM_4_GLBL_CFG0                                         0x420000
 
@@ -175,4 +163,4 @@
 
 #define mmDMA_QM_4_CQ_BUF_RDATA                                      0x42030C
 
-#endif /* ASIC_REG_DMA_QM_4_REGS_H_ */
+#endif 

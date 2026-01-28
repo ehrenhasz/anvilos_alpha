@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  PNET table queries
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Thomas Richter <tmricht@linux.vnet.ibm.com>
- */
+
+
 
 #ifndef _SMC_PNET_H
 #define _SMC_PNET_H
@@ -23,17 +15,13 @@ struct smcd_dev;
 struct smc_init_info;
 struct smc_link_group;
 
-/**
- * struct smc_pnettable - SMC PNET table anchor
- * @lock: Lock for list action
- * @pnetlist: List of PNETIDs
- */
+
 struct smc_pnettable {
 	struct mutex lock;
 	struct list_head pnetlist;
 };
 
-struct smc_pnetids_ndev {	/* list of pnetids for net devices in UP state*/
+struct smc_pnetids_ndev {	
 	struct list_head	list;
 	rwlock_t		lock;
 };

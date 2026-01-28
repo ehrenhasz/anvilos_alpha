@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD internals for Renesas RZ/G2L MTU3 Core driver
- *
- * Copyright (C) 2023 Renesas Electronics Corporation
- */
+
+
 
 #ifndef RZ_MTU3_MFD_H
 #define RZ_MTU3_MFD_H

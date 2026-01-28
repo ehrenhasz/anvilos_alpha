@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * amlogic.h - hardware cryptographic offloader for Amlogic SoC
- *
- * Copyright (C) 2018-2019 Corentin LABBE <clabbe@baylibre.com>
- */
+
+
 #include <crypto/aes.h>
 #include <crypto/engine.h>
 #include <crypto/skcipher.h>
@@ -30,42 +26,14 @@
 #define DESC_ENCRYPTION BIT(28)
 #define DESC_OWN BIT(31)
 
-/*
- * struct meson_desc - Descriptor for DMA operations
- * Note that without datasheet, some are unknown
- * @t_status:	Descriptor of the cipher operation (see description below)
- * @t_src:	Physical address of data to read
- * @t_dst:	Physical address of data to write
- * t_status is segmented like this:
- * @len:	0-16	length of data to operate
- * @irq:	17	Ignored by hardware
- * @eoc:	18	End means the descriptor is the last
- * @loop:	19	Unknown
- * @mode:	20-23	Type of algorithm (AES, SHA)
- * @begin:	24	Unknown
- * @end:	25	Unknown
- * @op_mode:	26-27	Blockmode (CBC, ECB)
- * @enc:	28	0 means decryption, 1 is for encryption
- * @block:	29	Unknown
- * @error:	30	Unknown
- * @owner:	31	owner of the descriptor, 1 own by HW
- */
+
 struct meson_desc {
 	__le32 t_status;
 	__le32 t_src;
 	__le32 t_dst;
 };
 
-/*
- * struct meson_flow - Information used by each flow
- * @engine:	ptr to the crypto_engine for this flow
- * @keylen:	keylen for this flow operation
- * @complete:	completion for the current task on this flow
- * @status:	set to 1 by interrupt if task is done
- * @t_phy:	Physical address of task
- * @tl:		pointer to the current ce_task for this flow
- * @stat_req:	number of request done by this flow
- */
+
 struct meson_flow {
 	struct crypto_engine *engine;
 	struct completion complete;
@@ -78,17 +46,7 @@ struct meson_flow {
 #endif
 };
 
-/*
- * struct meson_dev - main container for all this driver information
- * @base:	base address of amlogic-crypto
- * @busclk:	bus clock for amlogic-crypto
- * @dev:	the platform device
- * @chanlist:	array of all flow
- * @flow:	flow to use in next request
- * @irqs:	IRQ numbers for amlogic-crypto
- * @dbgfs_dir:	Debugfs dentry for statistic directory
- * @dbgfs_stats: Debugfs dentry for statistic counters
- */
+
 struct meson_dev {
 	void __iomem *base;
 	struct clk *busclk;
@@ -101,25 +59,14 @@ struct meson_dev {
 #endif
 };
 
-/*
- * struct meson_cipher_req_ctx - context for a skcipher request
- * @op_dir:	direction (encrypt vs decrypt) for this request
- * @flow:	the flow to use for this request
- */
+
 struct meson_cipher_req_ctx {
 	u32 op_dir;
 	int flow;
-	struct skcipher_request fallback_req;	// keep at the end
+	struct skcipher_request fallback_req;	
 };
 
-/*
- * struct meson_cipher_tfm_ctx - context for a skcipher TFM
- * @key:		pointer to key data
- * @keylen:		len of the key
- * @keymode:		The keymode(type and size of key) associated with this TFM
- * @mc:			pointer to the private data of driver handling this TFM
- * @fallback_tfm:	pointer to the fallback TFM
- */
+
 struct meson_cipher_tfm_ctx {
 	u32 *key;
 	u32 keylen;
@@ -128,15 +75,7 @@ struct meson_cipher_tfm_ctx {
 	struct crypto_skcipher *fallback_tfm;
 };
 
-/*
- * struct meson_alg_template - crypto_alg template
- * @type:		the CRYPTO_ALG_TYPE for this template
- * @blockmode:		the type of block operation
- * @mc:			pointer to the meson_dev structure associated with this template
- * @alg:		one of sub struct must be used
- * @stat_req:		number of request done on this template
- * @stat_fb:		total of all data len done on this template
- */
+
 struct meson_alg_template {
 	u32 type;
 	u32 blockmode;

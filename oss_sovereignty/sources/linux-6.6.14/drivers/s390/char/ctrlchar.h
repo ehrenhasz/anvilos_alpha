@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Unified handling of special chars.
- *
- *    Copyright IBM Corp. 2001
- *    Author(s): Fritz Elfert <felfert@millenux.com> <elfert@de.ibm.com>
- *
- */
+
+
 
 #include <linux/tty.h>
 #include <linux/sysrq.h>

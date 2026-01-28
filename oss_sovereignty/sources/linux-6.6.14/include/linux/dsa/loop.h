@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef DSA_LOOP_H
 #define DSA_LOOP_H
 
@@ -39,4 +39,4 @@ struct dsa_loop_priv {
 	struct dsa_loop_port ports[DSA_MAX_PORTS];
 };
 
-#endif /* DSA_LOOP_H */
+#endif 

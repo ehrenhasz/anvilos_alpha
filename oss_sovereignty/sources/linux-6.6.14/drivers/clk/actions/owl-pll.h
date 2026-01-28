@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-//
-// OWL pll clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #ifndef _OWL_PLL_H_
 #define _OWL_PLL_H_
@@ -15,7 +15,7 @@
 
 #define OWL_PLL_DEF_DELAY	50
 
-/* last entry should have rate = 0 */
+
 struct clk_pll_table {
 	unsigned int		val;
 	unsigned long		rate;
@@ -107,4 +107,4 @@ static inline struct owl_pll *hw_to_owl_pll(const struct clk_hw *hw)
 
 extern const struct clk_ops owl_pll_ops;
 
-#endif /* _OWL_PLL_H_ */
+#endif 

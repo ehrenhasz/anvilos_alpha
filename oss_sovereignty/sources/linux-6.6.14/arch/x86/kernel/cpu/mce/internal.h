@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __X86_MCE_INTERNAL_H__
 #define __X86_MCE_INTERNAL_H__
 
@@ -22,7 +22,7 @@ enum severity_level {
 
 extern struct blocking_notifier_head x86_mce_decoder_chain;
 
-#define INITIAL_CHECK_INTERVAL	5 * 60 /* 5 minutes */
+#define INITIAL_CHECK_INTERVAL	5 * 60 
 
 struct mce_evt_llist {
 	struct llist_node llnode;
@@ -86,12 +86,7 @@ static inline int apei_clear_mce(u64 record_id)
 }
 #endif
 
-/*
- * We consider records to be equivalent if bank+status+addr+misc all match.
- * This is only used when the system is going down because of a fatal error
- * to avoid cluttering the console log with essentially repeated information.
- * In normal processing all errors seen are logged.
- */
+
 static inline bool mce_cmp(struct mce *m1, struct mce *m2)
 {
 	return m1->bank != m2->bank ||
@@ -118,7 +113,7 @@ struct mca_config {
 	      ser			: 1,
 	      recovery			: 1,
 	      bios_cmci_threshold	: 1,
-	      /* Proper #MC exception handler is set */
+	      
 	      initialized		: 1,
 	      __reserved		: 58;
 
@@ -137,42 +132,31 @@ extern struct mca_config mca_cfg;
 DECLARE_PER_CPU_READ_MOSTLY(unsigned int, mce_num_banks);
 
 struct mce_vendor_flags {
-	/*
-	 * Indicates that overflow conditions are not fatal, when set.
-	 */
+	
 	__u64 overflow_recov	: 1,
 
-	/*
-	 * (AMD) SUCCOR stands for S/W UnCorrectable error COntainment and
-	 * Recovery. It indicates support for data poisoning in HW and deferred
-	 * error interrupts.
-	 */
+	
 	succor			: 1,
 
-	/*
-	 * (AMD) SMCA: This bit indicates support for Scalable MCA which expands
-	 * the register space for each MCA bank and also increases number of
-	 * banks. Also, to accommodate the new banks and registers, the MCA
-	 * register space is moved to a new MSR range.
-	 */
+	
 	smca			: 1,
 
-	/* Zen IFU quirk */
+	
 	zen_ifu_quirk		: 1,
 
-	/* AMD-style error thresholding banks present. */
+	
 	amd_threshold		: 1,
 
-	/* Pentium, family 5-style MCA */
+	
 	p5			: 1,
 
-	/* Centaur Winchip C6-style MCA */
+	
 	winchip			: 1,
 
-	/* SandyBridge IFU quirk */
+	
 	snb_ifu_quirk		: 1,
 
-	/* Skylake, Cascade Lake, Cooper Lake REP;MOVS* quirk */
+	
 	skx_repmov_quirk	: 1,
 
 	__reserved_0		: 55;
@@ -181,16 +165,13 @@ struct mce_vendor_flags {
 extern struct mce_vendor_flags mce_flags;
 
 struct mce_bank {
-	/* subevents to enable */
+	
 	u64			ctl;
 
-	/* initialise bank? */
+	
 	__u64 init		: 1,
 
-	/*
-	 * (AMD) MCA_CONFIG[McaLsbInStatusSupported]: When set, this bit indicates
-	 * the LSB field is found in MCA_STATUS and not in MCA_ADDR.
-	 */
+	
 	lsb_in_status		: 1,
 
 	__reserved_1		: 62;
@@ -205,16 +186,13 @@ enum mca_msr {
 	MCA_MISC,
 };
 
-/* Decide whether to add MCE record to MCE event pool or filter it out. */
+
 extern bool filter_mce(struct mce *m);
 
 #ifdef CONFIG_X86_MCE_AMD
 extern bool amd_filter_mce(struct mce *m);
 
-/*
- * If MCA_CONFIG[McaLsbInStatusSupported] is set, extract ErrAddr in bits
- * [56:0] of MCA_STATUS, else in bits [55:0] of MCA_ADDR.
- */
+
 static __always_inline void smca_extract_err_addr(struct mce *m)
 {
 	u8 lsb;
@@ -278,4 +256,4 @@ static __always_inline u32 mca_msr_reg(int bank, enum mca_msr reg)
 }
 
 extern void (*mc_poll_banks)(void);
-#endif /* __X86_MCE_INTERNAL_H__ */
+#endif 

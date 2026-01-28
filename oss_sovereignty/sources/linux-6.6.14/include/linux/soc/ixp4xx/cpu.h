@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * IXP4XX cpu type detection
- *
- * Copyright (C) 2007 MontaVista Software, Inc.
- */
+
+
 
 #ifndef __SOC_IXP4XX_CPU_H__
 #define __SOC_IXP4XX_CPU_H__
@@ -14,21 +10,21 @@
 #include <asm/cputype.h>
 #endif
 
-/* Processor id value in CP15 Register 0 */
-#define IXP42X_PROCESSOR_ID_VALUE	0x690541c0 /* including unused 0x690541Ex */
+
+#define IXP42X_PROCESSOR_ID_VALUE	0x690541c0 
 #define IXP42X_PROCESSOR_ID_MASK	0xffffffc0
 
 #define IXP43X_PROCESSOR_ID_VALUE	0x69054040
 #define IXP43X_PROCESSOR_ID_MASK	0xfffffff0
 
-#define IXP46X_PROCESSOR_ID_VALUE	0x69054200 /* including IXP455 */
+#define IXP46X_PROCESSOR_ID_VALUE	0x69054200 
 #define IXP46X_PROCESSOR_ID_MASK	0xfffffff0
 
-/* Feature register in the expansion bus controller */
+
 #define IXP4XX_EXP_CNFG2		0x2c
 
-/* "fuse" bits of IXP_EXP_CFG2 */
-/* All IXP4xx CPUs */
+
+
 #define IXP4XX_FEATURE_RCOMP		(1 << 0)
 #define IXP4XX_FEATURE_USB_DEVICE	(1 << 1)
 #define IXP4XX_FEATURE_HASH		(1 << 2)
@@ -65,7 +61,7 @@
 					 IXP4XX_FEATURE_XSCALE_MAX_FREQ)
 
 
-/* IXP43x/46x CPUs */
+
 #define IXP4XX_FEATURE_ECC_TIMESYNC	(1 << 15)
 #define IXP4XX_FEATURE_USB_HOST		(1 << 18)
 #define IXP4XX_FEATURE_NPEA_ETH		(1 << 19)
@@ -74,7 +70,7 @@
 					 IXP4XX_FEATURE_USB_HOST         | \
 					 IXP4XX_FEATURE_NPEA_ETH)
 
-/* IXP46x CPU (including IXP455) only */
+
 #define IXP4XX_FEATURE_NPEB_ETH_1_TO_3	(1 << 20)
 #define IXP4XX_FEATURE_RSA		(1 << 21)
 #define IXP46X_FEATURE_MASK		(IXP43X_FEATURE_MASK             | \
@@ -95,7 +91,7 @@ static inline u32 cpu_ixp4xx_features(struct regmap *rmap)
 	u32 val;
 
 	regmap_read(rmap, IXP4XX_EXP_CNFG2, &val);
-	/* For some reason this register is inverted */
+	
 	val = ~val;
 	if (cpu_is_ixp42x_rev_a0())
 		return IXP42X_FEATURE_MASK & ~(IXP4XX_FEATURE_RCOMP |
@@ -117,4 +113,4 @@ static inline u32 cpu_ixp4xx_features(struct regmap *rmap)
 }
 #endif
 
-#endif  /* _ASM_ARCH_CPU_H */
+#endif  

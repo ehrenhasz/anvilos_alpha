@@ -1,20 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/**
- * lib/minmax.c: windowed min/max tracker by Kathleen Nichols.
- *
- */
+
+
 #ifndef MINMAX_H
 #define MINMAX_H
 
 #include <linux/types.h>
 
-/* A single data point for our parameterized min-max tracker */
+
 struct minmax_sample {
-	u32	t;	/* time measurement was taken */
-	u32	v;	/* value measured */
+	u32	t;	
+	u32	v;	
 };
 
-/* State for the parameterized min-max tracker */
+
 struct minmax {
 	struct minmax_sample s[3];
 };

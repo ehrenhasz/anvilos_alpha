@@ -39,7 +39,7 @@ def f(x):
         finally:
             try:
                 print(1)
-                raise ValueError # cancels any active return
+                raise ValueError 
             finally:
                 print(2)
             print(3)
@@ -62,8 +62,8 @@ def f(x):
         finally:
             try:
                 print(1)
-                raise Exception # cancels any active return
-            except: # cancels the exception and resumes any active return
+                raise Exception 
+            except: 
                 print(2)
             print(3)
         print(4)

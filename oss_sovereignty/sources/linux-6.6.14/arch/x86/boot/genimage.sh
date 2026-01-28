@@ -21,7 +21,7 @@ FIMAGE="$2"
 FBZIMAGE="$3"
 MTOOLSRC="$4"
 KCMDLINE="$5"
-shift 5				# Remaining arguments = initrd files
+shift 5				
 export MTOOLSRC
 dd='dd iflag=fullblock'
 verify "$FBZIMAGE"
@@ -49,17 +49,17 @@ le() {
 }
 efiarch() {
 	[ -f "$1" ] || return
-	[ $(le "$1" 0 2) -eq 23117 ] || return		# MZ magic
-	peoffs=$(le "$1" 60 4)				# PE header offset
+	[ $(le "$1" 0 2) -eq 23117 ] || return		
+	peoffs=$(le "$1" 60 4)				
 	[ $peoffs -ge 64 ] || return
-	[ $(le "$1" $peoffs 4) -eq 17744 ] || return	# PE magic
-	case $(le "$1" $((peoffs+4+20)) 2) in		# PE type
-		267)	;;				# PE32
-		523)	;;				# PE32+
-		*) return 1 ;;				# Invalid
+	[ $(le "$1" $peoffs 4) -eq 17744 ] || return	
+	case $(le "$1" $((peoffs+4+20)) 2) in		
+		267)	;;				
+		523)	;;				
+		*) return 1 ;;				
 	esac
-	[ $(le "$1" $((peoffs+4+20+68)) 2) -eq 10 ] || return # EFI app
-	case $(le "$1" $((peoffs+4)) 2) in		# Machine type
+	[ $(le "$1" $((peoffs+4+20+68)) 2) -eq 10 ] || return 
+	case $(le "$1" $((peoffs+4)) 2) in		
 		 332)	echo i386	;;
 		 450)	echo arm	;;
 		 512)	echo ia64	;;
@@ -125,7 +125,7 @@ findovmf() {
 	die "Need a $1 file for $arch, please install EDK2/OVMF."
 }
 do_mcopy() {
-	if [ ${#FDINITRDS[@]} -gt 0 ]; then
+	if [ ${
 		mcopy "${FDINITRDS[@]}" "$1"
 	fi
 	if [ -n "$efishell" ]; then
@@ -166,7 +166,7 @@ genhdimage() {
 	kefiarch="$(efiarch "$FBZIMAGE")"
 	if [ -n "$kefiarch" ]; then
 		efishell="$(findovmf $kefiarch shell.efi shell${kefiarch}.efi)"
-		ptype='-T 0xef'	# EFI system partition, no GPT
+		ptype='-T 0xef'	
 	fi
 	sizes=$(filesizes "$FBZIMAGE" "${FDINITRDS[@]}" "$efishell")
 	megs=$(((sizes + sizes/100 + 2*1024*1024 - 1)/(1024*1024)))

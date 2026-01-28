@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdint.h>
 #include <time.h>
 #include <sched.h>
 
-/*
- * '18446744073709551615\0'
- */
+
 #define BUFF_U64_STR_SIZE	24
 #define MAX_PATH		1024
 

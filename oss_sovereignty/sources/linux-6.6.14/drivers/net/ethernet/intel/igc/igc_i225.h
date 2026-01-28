@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c)  2018 Intel Corporation */
+
+
 
 #ifndef _IGC_I225_H_
 #define _IGC_I225_H_

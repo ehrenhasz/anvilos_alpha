@@ -1,75 +1,75 @@
-//*****************************************************************************
-//
-//  i2c.h
-//
-//  Prototypes for the I2C Driver.
-//
-//  Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
-//
-//
-//  Redistribution and use in source and binary forms, with or without
-//  modification, are permitted provided that the following conditions
-//  are met:
-//
-//    Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//    Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the
-//    distribution.
-//
-//    Neither the name of Texas Instruments Incorporated nor the names of
-//    its contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-//*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef __DRIVERLIB_I2C_H__
 #define __DRIVERLIB_I2C_H__
 
-//*****************************************************************************
-//
-// If building with a C++ compiler, make all of the definitions in this header
-// have a C binding.
-//
-//*****************************************************************************
+
+
+
+
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-//*****************************************************************************
-//
-// Defines for the API.
-//
-//*****************************************************************************
 
-//*****************************************************************************
-//
-// Interrupt defines.
-//
-//*****************************************************************************
+
+
+
+
+
+
+
+
+
+
 #define I2C_INT_MASTER          0x00000001
 #define I2C_INT_SLAVE           0x00000002
 
-//*****************************************************************************
-//
-// I2C Master commands.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_MASTER_CMD_SINGLE_SEND                                            \
                                 0x00000007
 #define I2C_MASTER_CMD_SINGLE_RECEIVE                                         \
@@ -117,11 +117,11 @@ extern "C"
 #define I2C_MASTER_CMD_FIFO_BURST_RECEIVE_ERROR_STOP                          \
                                 0x00000004
 
-//*****************************************************************************
-//
-// I2C Master glitch filter configuration.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_MASTER_GLITCH_FILTER_DISABLED                                     \
                                 0
 #define I2C_MASTER_GLITCH_FILTER_1                                            \
@@ -139,98 +139,98 @@ extern "C"
 #define I2C_MASTER_GLITCH_FILTER_32                                           \
                                 0x00070000
 
-//*****************************************************************************
-//
-// I2C Master error status.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_MASTER_ERR_NONE     0
 #define I2C_MASTER_ERR_ADDR_ACK 0x00000004
 #define I2C_MASTER_ERR_DATA_ACK 0x00000008
 #define I2C_MASTER_ERR_ARB_LOST 0x00000010
 #define I2C_MASTER_ERR_CLK_TOUT 0x00000080
 
-//*****************************************************************************
-//
-// I2C Slave action requests
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_SLAVE_ACT_NONE      0
-#define I2C_SLAVE_ACT_RREQ      0x00000001  // Master has sent data
-#define I2C_SLAVE_ACT_TREQ      0x00000002  // Master has requested data
-#define I2C_SLAVE_ACT_RREQ_FBR  0x00000005  // Master has sent first byte
-#define I2C_SLAVE_ACT_OWN2SEL   0x00000008  // Master requested secondary slave
-#define I2C_SLAVE_ACT_QCMD      0x00000010  // Master has sent a Quick Command
-#define I2C_SLAVE_ACT_QCMD_DATA 0x00000020  // Master Quick Command value
+#define I2C_SLAVE_ACT_RREQ      0x00000001  
+#define I2C_SLAVE_ACT_TREQ      0x00000002  
+#define I2C_SLAVE_ACT_RREQ_FBR  0x00000005  
+#define I2C_SLAVE_ACT_OWN2SEL   0x00000008  
+#define I2C_SLAVE_ACT_QCMD      0x00000010  
+#define I2C_SLAVE_ACT_QCMD_DATA 0x00000020  
 
-//*****************************************************************************
-//
-// Miscellaneous I2C driver definitions.
-//
-//*****************************************************************************
-#define I2C_MASTER_MAX_RETRIES  1000        // Number of retries
 
-//*****************************************************************************
-//
-// I2C Master interrupts.
-//
-//*****************************************************************************
+
+
+
+
+#define I2C_MASTER_MAX_RETRIES  1000        
+
+
+
+
+
+
 #define I2C_MASTER_INT_RX_FIFO_FULL                                           \
-                                0x00000800  // RX FIFO Full Interrupt
+                                0x00000800  
 #define I2C_MASTER_INT_TX_FIFO_EMPTY                                          \
-                                0x00000400  // TX FIFO Empty Interrupt
+                                0x00000400  
 #define I2C_MASTER_INT_RX_FIFO_REQ                                            \
-                                0x00000200  // RX FIFO Request Interrupt
+                                0x00000200  
 #define I2C_MASTER_INT_TX_FIFO_REQ                                            \
-                                0x00000100  // TX FIFO Request Interrupt
+                                0x00000100  
 #define I2C_MASTER_INT_ARB_LOST                                               \
-                                0x00000080  // Arb Lost Interrupt
-#define I2C_MASTER_INT_STOP     0x00000040  // Stop Condition Interrupt
-#define I2C_MASTER_INT_START    0x00000020  // Start Condition Interrupt
-#define I2C_MASTER_INT_NACK     0x00000010  // Addr/Data NACK Interrupt
+                                0x00000080  
+#define I2C_MASTER_INT_STOP     0x00000040  
+#define I2C_MASTER_INT_START    0x00000020  
+#define I2C_MASTER_INT_NACK     0x00000010  
 #define I2C_MASTER_INT_TX_DMA_DONE                                            \
-                                0x00000008  // TX DMA Complete Interrupt
+                                0x00000008  
 #define I2C_MASTER_INT_RX_DMA_DONE                                            \
-                                0x00000004  // RX DMA Complete Interrupt
-#define I2C_MASTER_INT_TIMEOUT  0x00000002  // Clock Timeout Interrupt
-#define I2C_MASTER_INT_DATA     0x00000001  // Data Interrupt
+                                0x00000004  
+#define I2C_MASTER_INT_TIMEOUT  0x00000002  
+#define I2C_MASTER_INT_DATA     0x00000001  
 
-//*****************************************************************************
-//
-// I2C Slave interrupts.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_SLAVE_INT_RX_FIFO_FULL                                            \
-                                0x00000100  // RX FIFO Full Interrupt
+                                0x00000100  
 #define I2C_SLAVE_INT_TX_FIFO_EMPTY                                           \
-                                0x00000080  // TX FIFO Empty Interrupt
+                                0x00000080  
 #define I2C_SLAVE_INT_RX_FIFO_REQ                                             \
-                                0x00000040  // RX FIFO Request Interrupt
+                                0x00000040  
 #define I2C_SLAVE_INT_TX_FIFO_REQ                                             \
-                                0x00000020  // TX FIFO Request Interrupt
+                                0x00000020  
 #define I2C_SLAVE_INT_TX_DMA_DONE                                             \
-                                0x00000010  // TX DMA Complete Interrupt
+                                0x00000010  
 #define I2C_SLAVE_INT_RX_DMA_DONE                                             \
-                                0x00000008  // RX DMA Complete Interrupt
-#define I2C_SLAVE_INT_STOP      0x00000004  // Stop Condition Interrupt
-#define I2C_SLAVE_INT_START     0x00000002  // Start Condition Interrupt
-#define I2C_SLAVE_INT_DATA      0x00000001  // Data Interrupt
+                                0x00000008  
+#define I2C_SLAVE_INT_STOP      0x00000004  
+#define I2C_SLAVE_INT_START     0x00000002  
+#define I2C_SLAVE_INT_DATA      0x00000001  
 
-//*****************************************************************************
-//
-// I2C Slave FIFO configuration macros.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_SLAVE_TX_FIFO_ENABLE                                              \
                                 0x00000002
 #define I2C_SLAVE_RX_FIFO_ENABLE                                              \
                                 0x00000004
 
-//*****************************************************************************
-//
-// I2C FIFO configuration macros.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_FIFO_CFG_TX_MASTER  0x00000000
 #define I2C_FIFO_CFG_TX_SLAVE   0x00008000
 #define I2C_FIFO_CFG_RX_MASTER  0x00000000
@@ -262,11 +262,11 @@ extern "C"
 #define I2C_FIFO_CFG_RX_TRIG_7  0x00070000
 #define I2C_FIFO_CFG_RX_TRIG_8  0x00080000
 
-//*****************************************************************************
-//
-// I2C FIFO status.
-//
-//*****************************************************************************
+
+
+
+
+
 #define I2C_FIFO_RX_BELOW_TRIG_LEVEL                                          \
                                 0x00040000
 #define I2C_FIFO_RX_FULL        0x00020000
@@ -276,11 +276,11 @@ extern "C"
 #define I2C_FIFO_TX_FULL        0x00000002
 #define I2C_FIFO_TX_EMPTY       0x00000001
 
-//*****************************************************************************
-//
-// Prototypes for the APIs.
-//
-//*****************************************************************************
+
+
+
+
+
 extern void I2CIntRegister(uint32_t ui32Base, void(pfnHandler)(void));
 extern void I2CIntUnregister(uint32_t ui32Base);
 extern void I2CTxFIFOConfigSet(uint32_t ui32Base, uint32_t ui32Config);
@@ -348,13 +348,13 @@ extern uint32_t I2CSlaveIntStatusEx(uint32_t ui32Base,
                                       bool bMasked);
 extern uint32_t I2CSlaveStatus(uint32_t ui32Base);
 
-//*****************************************************************************
-//
-// Mark the end of the C bindings section for C++ compilers.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __DRIVERLIB_I2C_H__
+#endif 

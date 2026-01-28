@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_DEF_H
 #define __NET_TC_DEF_H
 
@@ -11,4 +11,4 @@ struct tcf_defact {
 };
 #define to_defact(a) ((struct tcf_defact *)a)
 
-#endif /* __NET_TC_DEF_H */
+#endif 

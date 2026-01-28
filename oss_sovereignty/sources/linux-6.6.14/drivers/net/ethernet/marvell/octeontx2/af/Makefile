@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Marvell's RVU Admin Function driver
-#
+
+
+
+
 
 ccflags-y += -I$(src)
 obj-$(CONFIG_OCTEONTX2_MBOX) += rvu_mbox.o

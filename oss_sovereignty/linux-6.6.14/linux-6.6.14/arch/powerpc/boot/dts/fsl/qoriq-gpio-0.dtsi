@@ -1,7 +1,0 @@
-gpio0: gpio@130000 {
-	compatible = "fsl,qoriq-gpio";
-	reg = <0x130000 0x1000>;
-	interrupts = <55 2 0 0>;
-	#gpio-cells = <2>;
-	gpio-controller;
-};

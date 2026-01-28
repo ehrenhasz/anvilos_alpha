@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Ethernet driver
- *
- * Copyright (C) 2021 Marvell.
- *
- */
+
+
 
 #ifndef CN10K_H
 #define CN10K_H
@@ -14,9 +10,7 @@ static inline int mtu_to_dwrr_weight(struct otx2_nic *pfvf, int mtu)
 {
 	u32 weight;
 
-	/* On OTx2, since AF returns DWRR_MTU as '1', this logic
-	 * will work on those silicons as well.
-	 */
+	
 	weight = mtu / pfvf->hw.dwrr_mtu;
 	if (mtu % pfvf->hw.dwrr_mtu)
 		weight += 1;
@@ -39,4 +33,4 @@ int cn10k_alloc_leaf_profile(struct otx2_nic *pfvf, u16 *leaf);
 int cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,
 			    u32 burst, u64 rate, bool pps);
 int cn10k_free_leaf_profile(struct otx2_nic *pfvf, u16 leaf);
-#endif /* CN10K_H */
+#endif 

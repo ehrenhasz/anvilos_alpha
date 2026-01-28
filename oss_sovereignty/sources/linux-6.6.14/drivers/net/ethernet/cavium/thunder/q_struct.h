@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file contains HW queue descriptor formats, config register
- * structures etc
- *
- * Copyright (C) 2015 Cavium, Inc.
- */
+
+
 
 #ifndef Q_STRUCT_H
 #define Q_STRUCT_H
 
-/* Load transaction types for reading segment bytes specified by
- * NIC_SEND_GATHER_S[LD_TYPE].
- */
+
 enum nic_send_ld_type_e {
 	NIC_SEND_LD_TYPE_E_LDD = 0x0,
 	NIC_SEND_LD_TYPE_E_LDT = 0x1,
@@ -51,7 +44,7 @@ enum layer4_type {
 	L4TYPE_OTHER = 0x0E,
 };
 
-/* CPI and RSSI configuration */
+
 enum cpi_algorithm_type {
 	CPI_ALG_NONE = 0x0,
 	CPI_ALG_VLAN = 0x1,
@@ -82,7 +75,7 @@ enum rss_hash_cfg {
 	RSS_L4_BIDI = 0x08,
 };
 
-/* Completion queue entry types */
+
 enum cqe_type {
 	CQE_TYPE_INVALID = 0x0,
 	CQE_TYPE_RX = 0x2,
@@ -125,7 +118,7 @@ enum cqe_rx_tcp_end_reason {
 	CQE_RX_TCP_END_QS_DISABLED = 0x0F,
 };
 
-/* Packet protocol level error enumeration */
+
 enum cqe_rx_err_level {
 	CQE_RX_ERRLVL_RE = 0x0,
 	CQE_RX_ERRLVL_L2 = 0x1,
@@ -133,7 +126,7 @@ enum cqe_rx_err_level {
 	CQE_RX_ERRLVL_L4 = 0x3,
 };
 
-/* Packet protocol level error type enumeration */
+
 enum cqe_rx_err_opcode {
 	CQE_RX_ERR_RE_NONE = 0x0,
 	CQE_RX_ERR_RE_PARTIAL = 0x1,
@@ -170,7 +163,7 @@ enum cqe_rx_err_opcode {
 
 struct cqe_rx_t {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 	u64   stdn_fault:1;
 	u64   rsvd0:1;
 	u64   rq_qs:7;
@@ -189,7 +182,7 @@ struct cqe_rx_t {
 	u64   err_level:3;
 	u64   err_opcode:8;
 
-	u64   pkt_len:16; /* W1 */
+	u64   pkt_len:16; 
 	u64   l2_ptr:8;
 	u64   l3_ptr:8;
 	u64   l4_ptr:8;
@@ -198,22 +191,22 @@ struct cqe_rx_t {
 	u64   rsvd3:1;
 	u64   chan:12;
 
-	u64   rss_tag:32; /* W2 */
+	u64   rss_tag:32; 
 	u64   vlan_tci:16;
 	u64   vlan_ptr:8;
 	u64   vlan2_ptr:8;
 
-	u64   rb3_sz:16; /* W3 */
+	u64   rb3_sz:16; 
 	u64   rb2_sz:16;
 	u64   rb1_sz:16;
 	u64   rb0_sz:16;
 
-	u64   rb7_sz:16; /* W4 */
+	u64   rb7_sz:16; 
 	u64   rb6_sz:16;
 	u64   rb5_sz:16;
 	u64   rb4_sz:16;
 
-	u64   rb11_sz:16; /* W5 */
+	u64   rb11_sz:16; 
 	u64   rb10_sz:16;
 	u64   rb9_sz:16;
 	u64   rb8_sz:16;
@@ -235,7 +228,7 @@ struct cqe_rx_t {
 	u64   rq_qs:7;
 	u64   rsvd0:1;
 	u64   stdn_fault:1;
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 	u64   chan:12;
 	u64   rsvd3:1;
 	u64   align_pad:3;
@@ -243,23 +236,23 @@ struct cqe_rx_t {
 	u64   l4_ptr:8;
 	u64   l3_ptr:8;
 	u64   l2_ptr:8;
-	u64   pkt_len:16; /* W1 */
+	u64   pkt_len:16; 
 	u64   vlan2_ptr:8;
 	u64   vlan_ptr:8;
 	u64   vlan_tci:16;
-	u64   rss_tag:32; /* W2 */
+	u64   rss_tag:32; 
 	u64   rb0_sz:16;
 	u64   rb1_sz:16;
 	u64   rb2_sz:16;
-	u64   rb3_sz:16; /* W3 */
+	u64   rb3_sz:16; 
 	u64   rb4_sz:16;
 	u64   rb5_sz:16;
 	u64   rb6_sz:16;
-	u64   rb7_sz:16; /* W4 */
+	u64   rb7_sz:16; 
 	u64   rb8_sz:16;
 	u64   rb9_sz:16;
 	u64   rb10_sz:16;
-	u64   rb11_sz:16; /* W5 */
+	u64   rb11_sz:16; 
 #endif
 	u64   rb0_ptr:64;
 	u64   rb1_ptr:64;
@@ -277,10 +270,10 @@ struct cqe_rx_t {
 
 struct cqe_rx_tcp_err_t {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 	u64   rsvd0:60;
 
-	u64   rsvd1:4; /* W1 */
+	u64   rsvd1:4; 
 	u64   partial_first:1;
 	u64   rsvd2:27;
 	u64   rbdr_bytes:8;
@@ -299,29 +292,29 @@ struct cqe_rx_tcp_err_t {
 
 struct cqe_rx_tcp_t {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 	u64   rsvd0:52;
 	u64   cq_tcp_status:8;
 
-	u64   rsvd1:32; /* W1 */
+	u64   rsvd1:32; 
 	u64   tcp_cntx_bytes:8;
 	u64   rsvd2:8;
 	u64   tcp_err_bytes:16;
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64   cq_tcp_status:8;
 	u64   rsvd0:52;
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 
 	u64   tcp_err_bytes:16;
 	u64   rsvd2:8;
 	u64   tcp_cntx_bytes:8;
-	u64   rsvd1:32; /* W1 */
+	u64   rsvd1:32; 
 #endif
 };
 
 struct cqe_send_t {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 	u64   rsvd0:4;
 	u64   sqe_ptr:16;
 	u64   rsvd1:4;
@@ -331,7 +324,7 @@ struct cqe_send_t {
 	u64   rsvd3:8;
 	u64   send_status:8;
 
-	u64   ptp_timestamp:64; /* W1 */
+	u64   ptp_timestamp:64; 
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64   send_status:8;
 	u64   rsvd3:8;
@@ -341,9 +334,9 @@ struct cqe_send_t {
 	u64   rsvd1:4;
 	u64   sqe_ptr:16;
 	u64   rsvd0:4;
-	u64   cqe_type:4; /* W0 */
+	u64   cqe_type:4; 
 
-	u64   ptp_timestamp:64; /* W1 */
+	u64   ptp_timestamp:64; 
 #endif
 };
 
@@ -359,7 +352,7 @@ struct rbdr_entry_t {
 	u64   buf_addr;
 };
 
-/* TCP reassembly context */
+
 struct rbe_tcp_cnxt_t {
 #if defined(__BIG_ENDIAN_BITFIELD)
 	u64   tcp_pkt_cnt:12;
@@ -386,7 +379,7 @@ struct rbe_tcp_cnxt_t {
 #endif
 };
 
-/* Always Big endian */
+
 struct rx_hdr_t {
 	u64   opaque:32;
 	u64   rss_flow:8;
@@ -465,51 +458,51 @@ struct sq_crc_subdesc {
 
 struct sq_gather_subdesc {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 	u64    ld_type:2;
 	u64    rsvd0:42;
 	u64    size:16;
 
-	u64    rsvd1:15; /* W1 */
+	u64    rsvd1:15; 
 	u64    addr:49;
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64    size:16;
 	u64    rsvd0:42;
 	u64    ld_type:2;
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 
 	u64    addr:49;
-	u64    rsvd1:15; /* W1 */
+	u64    rsvd1:15; 
 #endif
 };
 
-/* SQ immediate subdescriptor */
+
 struct sq_imm_subdesc {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 	u64    rsvd0:46;
 	u64    len:14;
 
-	u64    data:64; /* W1 */
+	u64    data:64; 
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64    len:14;
 	u64    rsvd0:46;
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 
-	u64    data:64; /* W1 */
+	u64    data:64; 
 #endif
 };
 
 struct sq_mem_subdesc {
 #if defined(__BIG_ENDIAN_BITFIELD)
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 	u64    mem_alg:4;
 	u64    mem_dsz:2;
 	u64    wmem:1;
 	u64    rsvd0:21;
 	u64    offset:32;
 
-	u64    rsvd1:15; /* W1 */
+	u64    rsvd1:15; 
 	u64    addr:49;
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64    offset:32;
@@ -517,10 +510,10 @@ struct sq_mem_subdesc {
 	u64    wmem:1;
 	u64    mem_dsz:2;
 	u64    mem_alg:4;
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 
 	u64    addr:49;
-	u64    rsvd1:15; /* W1 */
+	u64    rsvd1:15; 
 #endif
 };
 
@@ -528,7 +521,7 @@ struct sq_hdr_subdesc {
 #if defined(__BIG_ENDIAN_BITFIELD)
 	u64    subdesc_type:4;
 	u64    tso:1;
-	u64    post_cqe:1; /* Post CQE on no error also */
+	u64    post_cqe:1; 
 	u64    dont_send:1;
 	u64    tstmp:1;
 	u64    subdesc_cnt:8;
@@ -540,14 +533,14 @@ struct sq_hdr_subdesc {
 	u64    l4_offset:8;
 	u64    l3_offset:8;
 	u64    rsvd1:4;
-	u64    tot_len:20; /* W0 */
+	u64    tot_len:20; 
 
 	u64    rsvd2:24;
 	u64    inner_l4_offset:8;
 	u64    inner_l3_offset:8;
 	u64    tso_start:8;
 	u64    rsvd3:2;
-	u64    tso_max_paysize:14; /* W1 */
+	u64    tso_max_paysize:14; 
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 	u64    tot_len:20;
 	u64    rsvd1:4;
@@ -561,20 +554,20 @@ struct sq_hdr_subdesc {
 	u64    subdesc_cnt:8;
 	u64    tstmp:1;
 	u64    dont_send:1;
-	u64    post_cqe:1; /* Post CQE on no error also */
+	u64    post_cqe:1; 
 	u64    tso:1;
-	u64    subdesc_type:4; /* W0 */
+	u64    subdesc_type:4; 
 
 	u64    tso_max_paysize:14;
 	u64    rsvd3:2;
 	u64    tso_start:8;
 	u64    inner_l3_offset:8;
 	u64    inner_l4_offset:8;
-	u64    rsvd2:24; /* W1 */
+	u64    rsvd2:24; 
 #endif
 };
 
-/* Queue config register formats */
+
 struct rq_cfg {
 #if defined(__BIG_ENDIAN_BITFIELD)
 	u64 reserved_2_63:62;
@@ -693,4 +686,4 @@ struct qs_cfg {
 #endif
 };
 
-#endif /* Q_STRUCT_H */
+#endif 

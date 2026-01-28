@@ -1,8 +1,0 @@
-#include "px30.dtsi"
-&display_subsystem {
-	ports = <&vopb_out>;
-};
-/delete-node/ &dsi_in_vopl;
-/delete-node/ &lvds_vopl_in;
-/delete-node/ &vopl;
-/delete-node/ &vopl_mmu;

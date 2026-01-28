@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Symmetric key ciphers.
- * 
- * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+
 
 #ifndef _CRYPTO_INTERNAL_SKCIPHER_H
 #define _CRYPTO_INTERNAL_SKCIPHER_H
@@ -14,12 +10,7 @@
 #include <linux/list.h>
 #include <linux/types.h>
 
-/*
- * Set this if your algorithm is sync but needs a reqsize larger
- * than MAX_SYNC_SKCIPHER_REQSIZE.
- *
- * Reuse bit that is specific to hash algorithms.
- */
+
 #define CRYPTO_ALG_SKCIPHER_REQSIZE_LARGE CRYPTO_ALG_OPTIONAL_KEY
 
 struct aead_request;
@@ -209,26 +200,16 @@ static inline unsigned int crypto_skcipher_alg_walksize(
 	return alg->walksize;
 }
 
-/**
- * crypto_skcipher_walksize() - obtain walk size
- * @tfm: cipher handle
- *
- * In some cases, algorithms can only perform optimally when operating on
- * multiple blocks in parallel. This is reflected by the walksize, which
- * must be a multiple of the chunksize (or equal if the concern does not
- * apply)
- *
- * Return: walk size in bytes
- */
+
 static inline unsigned int crypto_skcipher_walksize(
 	struct crypto_skcipher *tfm)
 {
 	return crypto_skcipher_alg_walksize(crypto_skcipher_alg(tfm));
 }
 
-/* Helpers for simple block cipher modes of operation */
+
 struct skcipher_ctx_simple {
-	struct crypto_cipher *cipher;	/* underlying block cipher */
+	struct crypto_cipher *cipher;	
 };
 static inline struct crypto_cipher *
 skcipher_cipher_simple(struct crypto_skcipher *tfm)
@@ -249,5 +230,5 @@ static inline struct crypto_alg *skcipher_ialg_simple(
 	return crypto_spawn_cipher_alg(spawn);
 }
 
-#endif	/* _CRYPTO_INTERNAL_SKCIPHER_H */
+#endif	
 

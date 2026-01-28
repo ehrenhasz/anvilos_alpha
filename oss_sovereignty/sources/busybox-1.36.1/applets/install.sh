@@ -7,7 +7,7 @@ if [ -z "$prefix" ]; then
 	echo "  OPTS is one or more of: --cleanup --noclobber"
 	exit 1
 fi
-shift # Keep only remaining options
+shift 
 . ./.config
 h=`sort busybox.links | uniq`
 sharedlib_dir="0_lib"
@@ -16,7 +16,7 @@ scriptwrapper="n"
 binaries="n"
 cleanup="0"
 noclobber="0"
-while [ ${#} -gt 0 ]; do
+while [ ${
 	case "$1" in
 		--hardlinks)     linkopts="-f";;
 		--symlinks)      linkopts="-fs";;
@@ -78,7 +78,7 @@ for i in $h; do
 			ln $linkopts busybox "$prefix/$i" || exit 1
 		else
 			rm -f "$prefix/$i"
-			echo "#!/bin/busybox" >"$prefix/$i"
+			echo "
 			chmod +x "$prefix/$i"
 		fi
 		echo "	$prefix/$i"

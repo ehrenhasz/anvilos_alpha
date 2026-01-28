@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+
 
 #ifndef __DT_BINDINGS_BMIPS_BCM63268_PM_H
 #define __DT_BINDINGS_BMIPS_BCM63268_PM_H
@@ -18,4 +18,4 @@
 #define BCM63268_POWER_DOMAIN_PCIE	12
 #define BCM63268_POWER_DOMAIN_WLAN_PADS	13
 
-#endif /* __DT_BINDINGS_BMIPS_BCM63268_PM_H */
+#endif 

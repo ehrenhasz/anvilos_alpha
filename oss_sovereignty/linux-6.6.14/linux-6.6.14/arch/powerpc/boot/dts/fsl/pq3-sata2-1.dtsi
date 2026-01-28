@@ -1,6 +1,0 @@
-sata@19000 {
-	compatible = "fsl,pq-sata-v2";
-	reg = <0x19000 0x1000>;
-	cell-index = <2>;
-	interrupts = <41 0x2 0 0>;
-};

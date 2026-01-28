@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _PERF_UTIL_TRACE_EVENT_H
 #define _PERF_UTIL_TRACE_EVENT_H
 
@@ -21,7 +21,7 @@ struct trace_event {
 	struct tep_plugin_list	*plugin_list;
 };
 
-/* Computes a version number comparable with LIBTRACEEVENT_VERSION from Makefile.config. */
+
 #define MAKE_LIBTRACEEVENT_VERSION(a, b, c) ((a)*255*255+(b)*255+(c))
 
 typedef char *(tep_func_resolver_t)(void *priv,
@@ -62,14 +62,11 @@ unsigned long long eval_flag(const char *flag);
 
 int read_tracing_data(int fd, struct list_head *pattrs);
 
-/*
- * Return the tracepoint name in the format "subsystem:event_name",
- * callers should free the returned string.
- */
+
 char *tracepoint_id_to_name(u64 config);
 
 struct tracing_data {
-	/* size is only valid if temp is 'true' */
+	
 	ssize_t size;
 	bool temp;
 	char temp_file[50];
@@ -87,7 +84,7 @@ struct perf_stat_config;
 
 struct scripting_ops {
 	const char *name;
-	const char *dirname; /* For script path .../scripts/<dirname>/... */
+	const char *dirname; 
 	int (*start_script)(const char *script, int argc, const char **argv,
 			    struct perf_session *session);
 	int (*flush_script) (void);
@@ -162,4 +159,4 @@ static inline bool tep_field_is_relative(unsigned long flags __maybe_unused)
 }
 #endif
 
-#endif /* _PERF_UTIL_TRACE_EVENT_H */
+#endif 

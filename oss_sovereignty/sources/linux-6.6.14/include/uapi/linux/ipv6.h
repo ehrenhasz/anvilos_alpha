@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_IPV6_H
 #define _UAPI_IPV6_H
 
@@ -8,15 +8,11 @@
 #include <linux/in6.h>
 #include <asm/byteorder.h>
 
-/* The latest drafts declared increase in minimal mtu up to 1280. */
+
 
 #define IPV6_MIN_MTU	1280
 
-/*
- *	Advanced API
- *	source interface/address selection, source routing, etc...
- *	*under construction*
- */
+
 
 #if __UAPI_DEF_IN6_PKTINFO
 struct in6_pktinfo {
@@ -38,45 +34,36 @@ struct in6_ifreq {
 	int		ifr6_ifindex; 
 };
 
-#define IPV6_SRCRT_STRICT	0x01	/* Deprecated; will be removed */
-#define IPV6_SRCRT_TYPE_0	0	/* Deprecated; will be removed */
-#define IPV6_SRCRT_TYPE_2	2	/* IPv6 type 2 Routing Header	*/
-#define IPV6_SRCRT_TYPE_3	3	/* RPL Segment Routing with IPv6 */
-#define IPV6_SRCRT_TYPE_4	4	/* Segment Routing with IPv6 */
+#define IPV6_SRCRT_STRICT	0x01	
+#define IPV6_SRCRT_TYPE_0	0	
+#define IPV6_SRCRT_TYPE_2	2	
+#define IPV6_SRCRT_TYPE_3	3	
+#define IPV6_SRCRT_TYPE_4	4	
 
-/*
- *	routing header
- */
+
 struct ipv6_rt_hdr {
 	__u8		nexthdr;
 	__u8		hdrlen;
 	__u8		type;
 	__u8		segments_left;
 
-	/*
-	 *	type specific data
-	 *	variable length field
-	 */
+	
 };
 
 
 struct ipv6_opt_hdr {
 	__u8 		nexthdr;
 	__u8 		hdrlen;
-	/* 
-	 * TLV encoded option data follows.
-	 */
-} __attribute__((packed));	/* required for some archs */
+	
+} __attribute__((packed));	
 
 #define ipv6_destopt_hdr ipv6_opt_hdr
 #define ipv6_hopopt_hdr  ipv6_opt_hdr
 
-/* Router Alert option values (RFC2711) */
-#define IPV6_OPT_ROUTERALERT_MLD	0x0000	/* MLD(RFC2710) */
 
-/*
- *	routing header type 0 (used in cmsghdr struct)
- */
+#define IPV6_OPT_ROUTERALERT_MLD	0x0000	
+
+
 
 struct rt0_hdr {
 	struct ipv6_rt_hdr	rt_hdr;
@@ -86,9 +73,7 @@ struct rt0_hdr {
 #define rt0_type		rt_hdr.type
 };
 
-/*
- *	routing header type 2
- */
+
 
 struct rt2_hdr {
 	struct ipv6_rt_hdr	rt_hdr;
@@ -98,9 +83,7 @@ struct rt2_hdr {
 #define rt2_type		rt_hdr.type
 };
 
-/*
- *	home address option in destination options header
- */
+
 
 struct ipv6_destopt_hao {
 	__u8			type;
@@ -108,12 +91,7 @@ struct ipv6_destopt_hao {
 	struct in6_addr		addr;
 } __attribute__((packed));
 
-/*
- *	IPv6 fixed header
- *
- *	BEWARE, it is incorrect. The first 4 bits of flow_lbl
- *	are glued to priority now, forming "class".
- */
+
 
 struct ipv6hdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
@@ -131,14 +109,14 @@ struct ipv6hdr {
 	__u8			nexthdr;
 	__u8			hop_limit;
 
-	__struct_group(/* no tag */, addrs, /* no attrs */,
+	__struct_group(, addrs, ,
 		struct	in6_addr	saddr;
 		struct	in6_addr	daddr;
 	);
 };
 
 
-/* index values for the variables in ipv6_devconf */
+
 enum {
 	DEVCONF_FORWARDING = 0,
 	DEVCONF_HOPLIMIT,
@@ -203,4 +181,4 @@ enum {
 };
 
 
-#endif /* _UAPI_IPV6_H */
+#endif 

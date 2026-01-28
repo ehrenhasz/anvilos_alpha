@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _LINUX_TRACE_EVENT_H
 #define _LINUX_TRACE_EVENT_H
@@ -59,7 +59,7 @@ int trace_raw_output_prep(struct trace_iterator *iter,
 extern __printf(2, 3)
 void trace_event_printf(struct trace_iterator *iter, const char *fmt, ...);
 
-/* Used to find the offset and length of dynamic fields in trace events */
+
 struct trace_dynamic_info {
 #ifdef CONFIG_CPU_BIG_ENDIAN
 	u16	len;
@@ -70,12 +70,7 @@ struct trace_dynamic_info {
 #endif
 } __packed;
 
-/*
- * The trace entry - the most basic unit of tracing. This is what
- * is printed in the end as a single line in the trace output, such as:
- *
- *     bash-15816 [01]   235.197585: idle_cpu <- irq_enter
- */
+
 struct trace_entry {
 	unsigned short		type;
 	unsigned char		flags;
@@ -86,10 +81,7 @@ struct trace_entry {
 #define TRACE_EVENT_TYPE_MAX						\
 	((1 << (sizeof(((struct trace_entry *)0)->type) * 8)) - 1)
 
-/*
- * Trace iterator - used by printout routines who present trace
- * results to users and which routines might sleep, etc:
- */
+
 struct trace_iterator {
 	struct trace_array	*tr;
 	struct tracer		*trace;
@@ -99,21 +91,21 @@ struct trace_iterator {
 	struct mutex		mutex;
 	struct ring_buffer_iter	**buffer_iter;
 	unsigned long		iter_flags;
-	void			*temp;	/* temp holder */
+	void			*temp;	
 	unsigned int		temp_size;
-	char			*fmt;	/* modified format holder */
+	char			*fmt;	
 	unsigned int		fmt_size;
 	long			wait_index;
 
-	/* trace_seq for __print_flags() and __print_symbolic() etc. */
+	
 	struct trace_seq	tmp_seq;
 
 	cpumask_var_t		started;
 
-	/* it's true when current open file is snapshot */
+	
 	bool			snapshot;
 
-	/* The below is zeroed out in pipe_read */
+	
 	struct trace_seq	seq;
 	struct trace_entry	*ent;
 	unsigned long		lost_events;
@@ -125,7 +117,7 @@ struct trace_iterator {
 	loff_t			pos;
 	long			idx;
 
-	/* All new field here will be zeroed out in pipe_read */
+	
 };
 
 enum trace_iter_flags {
@@ -154,12 +146,12 @@ struct trace_event {
 extern int register_trace_event(struct trace_event *event);
 extern int unregister_trace_event(struct trace_event *event);
 
-/* Return values for print_line callback */
+
 enum print_line_t {
-	TRACE_TYPE_PARTIAL_LINE	= 0,	/* Retry after flushing the seq */
+	TRACE_TYPE_PARTIAL_LINE	= 0,	
 	TRACE_TYPE_HANDLED	= 1,
-	TRACE_TYPE_UNHANDLED	= 2,	/* Relay to other output functions */
-	TRACE_TYPE_NO_CONSUME	= 3	/* Handled but ask to not consume */
+	TRACE_TYPE_UNHANDLED	= 2,	
+	TRACE_TYPE_NO_CONSUME	= 3	
 };
 
 enum print_line_t trace_handle_return(struct trace_seq *s);
@@ -218,10 +210,7 @@ static inline unsigned int tracing_gen_ctx_dec(void)
 	unsigned int trace_ctx;
 
 	trace_ctx = tracing_gen_ctx();
-	/*
-	 * Subtract one from the preemption counter if preemption is enabled,
-	 * see trace_event_buffer_reserve()for details.
-	 */
+	
 	if (IS_ENABLED(CONFIG_PREEMPTION))
 		trace_ctx--;
 	return trace_ctx;
@@ -258,11 +247,7 @@ enum trace_reg {
 	TRACE_REG_PERF_UNREGISTER,
 	TRACE_REG_PERF_OPEN,
 	TRACE_REG_PERF_CLOSE,
-	/*
-	 * These (ADD/DEL) use a 'boolean' return value, where 1 (true) means a
-	 * custom action was taken and the default action is not to be
-	 * performed.
-	 */
+	
 	TRACE_REG_PERF_ADD,
 	TRACE_REG_PERF_DEL,
 #endif
@@ -333,22 +318,7 @@ enum {
 	TRACE_EVENT_FL_CUSTOM_BIT,
 };
 
-/*
- * Event flags:
- *  FILTERED	  - The event has a filter attached
- *  CAP_ANY	  - Any user can enable for perf
- *  NO_SET_FILTER - Set when filter has error and is to be ignored
- *  IGNORE_ENABLE - For trace internal events, do not enable with debugfs file
- *  TRACEPOINT    - Event is a tracepoint
- *  DYNAMIC       - Event is a dynamic event (created at run time)
- *  KPROBE        - Event is a kprobe
- *  UPROBE        - Event is a uprobe
- *  EPROBE        - Event is an event probe
- *  FPROBE        - Event is an function probe
- *  CUSTOM        - Event is a custom event (to be attached to an exsiting tracepoint)
- *                   This is set when the custom event has not been attached
- *                   to a tracepoint yet, then it is cleared when it is.
- */
+
 enum {
 	TRACE_EVENT_FL_FILTERED		= (1 << TRACE_EVENT_FL_FILTERED_BIT),
 	TRACE_EVENT_FL_CAP_ANY		= (1 << TRACE_EVENT_FL_CAP_ANY_BIT),
@@ -370,24 +340,21 @@ struct trace_event_call {
 	struct trace_event_class *class;
 	union {
 		char			*name;
-		/* Set TRACE_EVENT_FL_TRACEPOINT flag when using "tp" */
+		
 		struct tracepoint	*tp;
 	};
 	struct trace_event	event;
 	char			*print_fmt;
 	struct event_filter	*filter;
-	/*
-	 * Static events can disappear with modules,
-	 * where as dynamic ones need their own ref count.
-	 */
+	
 	union {
 		void				*module;
 		atomic_t			refcnt;
 	};
 	void			*data;
 
-	/* See the TRACE_EVENT_FL_* flags above */
-	int			flags; /* static flags of different events */
+	
+	int			flags; 
 
 #ifdef CONFIG_PERF_EVENTS
 	int				perf_refcount;
@@ -406,7 +373,7 @@ bool trace_event_dyn_busy(struct trace_event_call *call);
 #else
 static inline bool trace_event_dyn_try_get_ref(struct trace_event_call *call)
 {
-	/* Without DYNAMIC_EVENTS configured, nothing should be calling this */
+	
 	return false;
 }
 static inline void trace_event_dyn_put_ref(struct trace_event_call *call)
@@ -414,7 +381,7 @@ static inline void trace_event_dyn_put_ref(struct trace_event_call *call)
 }
 static inline bool trace_event_dyn_busy(struct trace_event_call *call)
 {
-	/* Nothing should call this without DYNAIMIC_EVENTS configured. */
+	
 	return true;
 }
 #endif
@@ -438,23 +405,7 @@ static inline void trace_event_put_ref(struct trace_event_call *call)
 #ifdef CONFIG_PERF_EVENTS
 static inline bool bpf_prog_array_valid(struct trace_event_call *call)
 {
-	/*
-	 * This inline function checks whether call->prog_array
-	 * is valid or not. The function is called in various places,
-	 * outside rcu_read_lock/unlock, as a heuristic to speed up execution.
-	 *
-	 * If this function returns true, and later call->prog_array
-	 * becomes false inside rcu_read_lock/unlock region,
-	 * we bail out then. If this function return false,
-	 * there is a risk that we might miss a few events if the checking
-	 * were delayed until inside rcu_read_lock/unlock region and
-	 * call->prog_array happened to become non-NULL then.
-	 *
-	 * Here, READ_ONCE() is used instead of rcu_access_pointer().
-	 * rcu_access_pointer() requires the actual definition of
-	 * "struct bpf_prog_array" while READ_ONCE() only needs
-	 * a declaration of the same type.
-	 */
+	
 	return !!READ_ONCE(call->prog_array);
 }
 #endif
@@ -617,22 +568,7 @@ extern int __kprobe_event_add_fields(struct dynevent_cmd *cmd, ...);
 #define kretprobe_event_gen_cmd_end(cmd)	\
 	dynevent_create(cmd)
 
-/*
- * Event file flags:
- *  ENABLED	  - The event is enabled
- *  RECORDED_CMD  - The comms should be recorded at sched_switch
- *  RECORDED_TGID - The tgids should be recorded at sched_switch
- *  FILTERED	  - The event has a filter attached
- *  NO_SET_FILTER - Set when filter has error and is to be ignored
- *  SOFT_MODE     - The event is enabled/disabled by SOFT_DISABLED
- *  SOFT_DISABLED - When set, do not trace the event (even though its
- *                   tracepoint may be enabled)
- *  TRIGGER_MODE  - When set, invoke the triggers associated with the event
- *  TRIGGER_COND  - When set, one or more triggers has an associated filter
- *  PID_FILTER    - When set, the event is filtered based on pid
- *  WAS_ENABLED   - Set when enabled to know to clear trace on module removal
- *  FREED         - File descriptor is freed, all fields should be considered invalid
- */
+
 enum {
 	EVENT_FILE_FL_ENABLED		= (1 << EVENT_FILE_FL_ENABLED_BIT),
 	EVENT_FILE_FL_RECORDED_CMD	= (1 << EVENT_FILE_FL_RECORDED_CMD_BIT),
@@ -657,26 +593,11 @@ struct trace_event_file {
 	struct trace_subsystem_dir	*system;
 	struct list_head		triggers;
 
-	/*
-	 * 32 bit flags:
-	 *   bit 0:		enabled
-	 *   bit 1:		enabled cmd record
-	 *   bit 2:		enable/disable with the soft disable bit
-	 *   bit 3:		soft disabled
-	 *   bit 4:		trigger enabled
-	 *
-	 * Note: The bits must be set atomically to prevent races
-	 * from other writers. Reads of flags do not need to be in
-	 * sync as they occur in critical sections. But the way flags
-	 * is currently used, these changes do not affect the code
-	 * except that when a change is made, it may have a slight
-	 * delay in propagating the changes to other CPUs due to
-	 * caching and such. Which is mostly OK ;-)
-	 */
+	
 	unsigned long		flags;
-	atomic_t		ref;	/* ref count for opened files */
-	atomic_t		sm_ref;	/* soft-mode reference counter */
-	atomic_t		tm_ref;	/* trigger-mode reference counter */
+	atomic_t		ref;	
+	atomic_t		sm_ref;	
+	atomic_t		tm_ref;	
 };
 
 #define __TRACE_EVENT_FLAGS(name, value)				\
@@ -702,7 +623,7 @@ struct trace_event_file {
 
 #define PERF_MAX_TRACE_SIZE	8192
 
-#define MAX_FILTER_STR_VAL	256U	/* Should handle KSYM_SYMBOL_LEN */
+#define MAX_FILTER_STR_VAL	256U	
 
 enum event_trigger_type {
 	ETT_NONE		= (0),
@@ -729,15 +650,7 @@ bool trace_event_ignore_this_pid(struct trace_event_file *trace_file);
 
 bool __trace_trigger_soft_disabled(struct trace_event_file *file);
 
-/**
- * trace_trigger_soft_disabled - do triggers and test if soft disabled
- * @file: The file pointer of the event to test
- *
- * If any triggers without filters are attached to this event, they
- * will be called here. If the event is soft disabled and has no
- * triggers that require testing the fields, it will return true,
- * otherwise false.
- */
+
 static __always_inline bool
 trace_trigger_soft_disabled(struct trace_event_file *file)
 {
@@ -846,11 +759,7 @@ int ftrace_set_clr_event(struct trace_array *tr, char *buf, int set);
 int trace_set_clr_event(const char *system, const char *event, int set);
 int trace_array_set_clr_event(struct trace_array *tr, const char *system,
 		const char *event, bool enable);
-/*
- * The double __builtin_constant_p is because gcc will give us an error
- * if we try to allocate the static variable to fmt if it is not a
- * constant. Even with the outer if statement optimizing out.
- */
+
 #define event_trace_printk(ip, fmt, args...)				\
 do {									\
 	__trace_printk_check_format(fmt, ##args);			\
@@ -945,10 +854,7 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
 
 #define TRACE_EVENT_STR_MAX	512
 
-/*
- * gcc warns that you can not use a va_list in an inlined
- * function. But lets me make it into a macro :-/
- */
+
 #define __trace_event_vstr_len(fmt, va)			\
 ({							\
 	va_list __ap;					\
@@ -961,14 +867,9 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
 	min(__ret, TRACE_EVENT_STR_MAX);		\
 })
 
-#endif /* _LINUX_TRACE_EVENT_H */
+#endif 
 
-/*
- * Note: we keep the TRACE_CUSTOM_EVENT outside the include file ifdef protection.
- *  This is due to the way trace custom events work. If a file includes two
- *  trace event headers under one "CREATE_CUSTOM_TRACE_EVENTS" the first include
- *  will override the TRACE_CUSTOM_EVENT and break the second include.
- */
+
 
 #ifndef TRACE_CUSTOM_EVENT
 
@@ -976,4 +877,4 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
 #define DEFINE_CUSTOM_EVENT(template, name, proto, args)
 #define TRACE_CUSTOM_EVENT(name, proto, args, struct, assign, print)
 
-#endif /* ifdef TRACE_CUSTOM_EVENT (see note above) */
+#endif 

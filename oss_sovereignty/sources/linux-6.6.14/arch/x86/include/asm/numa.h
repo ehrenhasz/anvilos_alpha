@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_NUMA_H
 #define _ASM_X86_NUMA_H
 
@@ -14,14 +14,7 @@
 
 extern int numa_off;
 
-/*
- * __apicid_to_node[] stores the raw mapping between physical apicid and
- * node and is used to initialize cpu_to_node mapping.
- *
- * The mapping may be overridden by apic->numa_cpu_node() on 32bit and thus
- * should be accessed by the accessors - set_apicid_to_node() and
- * numa_cpu_node().
- */
+
 extern s16 __apicid_to_node[MAX_LOCAL_APIC];
 extern nodemask_t numa_nodes_parsed __initdata;
 
@@ -35,7 +28,7 @@ static inline void set_apicid_to_node(int apicid, s16 node)
 
 extern int numa_cpu_node(int cpu);
 
-#else	/* CONFIG_NUMA */
+#else	
 static inline void set_apicid_to_node(int apicid, s16 node)
 {
 }
@@ -44,7 +37,7 @@ static inline int numa_cpu_node(int cpu)
 {
 	return NUMA_NO_NODE;
 }
-#endif	/* CONFIG_NUMA */
+#endif	
 
 #ifdef CONFIG_X86_32
 # include <asm/numa_32.h>
@@ -57,14 +50,14 @@ extern void __init init_cpu_to_node(void);
 extern void numa_add_cpu(int cpu);
 extern void numa_remove_cpu(int cpu);
 extern void init_gi_nodes(void);
-#else	/* CONFIG_NUMA */
+#else	
 static inline void numa_set_node(int cpu, int node)	{ }
 static inline void numa_clear_node(int cpu)		{ }
 static inline void init_cpu_to_node(void)		{ }
 static inline void numa_add_cpu(int cpu)		{ }
 static inline void numa_remove_cpu(int cpu)		{ }
 static inline void init_gi_nodes(void)			{ }
-#endif	/* CONFIG_NUMA */
+#endif	
 
 #ifdef CONFIG_DEBUG_PER_CPU_MAPS
 void debug_cpumask_set_cpu(int cpu, int node, bool enable);
@@ -74,11 +67,11 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable);
 #define FAKE_NODE_MIN_SIZE	((u64)32 << 20)
 #define FAKE_NODE_MIN_HASH_MASK	(~(FAKE_NODE_MIN_SIZE - 1UL))
 int numa_emu_cmdline(char *str);
-#else /* CONFIG_NUMA_EMU */
+#else 
 static inline int numa_emu_cmdline(char *str)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_NUMA_EMU */
+#endif 
 
-#endif	/* _ASM_X86_NUMA_H */
+#endif	

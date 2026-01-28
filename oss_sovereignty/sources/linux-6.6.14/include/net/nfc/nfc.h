@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- * Copyright (C) 2014 Marvell International Ltd.
- *
- * Authors:
- *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
- *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
- */
+
+
 
 #ifndef __NET_NFC_H
 #define __NET_NFC_H
@@ -27,17 +20,7 @@ struct nfc_phy_ops {
 
 struct nfc_dev;
 
-/**
- * data_exchange_cb_t - Definition of nfc_data_exchange callback
- *
- * @context: nfc_data_exchange cb_context parameter
- * @skb: response data
- * @err: If an error has occurred during data exchange, it is the
- *	error number. Zero means no error.
- *
- * When a rx or tx package is lost or corrupted or the target gets out
- * of the operating field, err is -EIO.
- */
+
 typedef void (*data_exchange_cb_t)(void *context, struct sk_buff *skb,
 								int err);
 
@@ -65,7 +48,7 @@ struct nfc_ops {
 	int (*check_presence)(struct nfc_dev *dev, struct nfc_target *target);
 	int (*fw_download)(struct nfc_dev *dev, const char *firmware_name);
 
-	/* Secure Element API */
+	
 	int (*discover_se)(struct nfc_dev *dev);
 	int (*enable_se)(struct nfc_dev *dev, u32 se_idx);
 	int (*disable_se)(struct nfc_dev *dev, u32 se_idx);
@@ -79,14 +62,7 @@ struct nfc_ops {
 #define NFC_ATR_RES_GT_OFFSET 15
 #define NFC_ATR_REQ_GT_OFFSET 14
 
-/**
- * struct nfc_target - NFC target descriptiom
- *
- * @sens_res: 2 bytes describing the target SENS_RES response, if the target
- *	is a type A one. The %sens_res most significant byte must be byte 2
- *	as described by the NFC Forum digital specification (i.e. the platform
- *	configuration one) while %sens_res least significant byte is byte 1.
- */
+
 struct nfc_target {
 	u32 idx;
 	u32 supported_protocols;
@@ -107,16 +83,7 @@ struct nfc_target {
 	u8 iso15693_uid[NFC_ISO15693_UID_MAXSIZE];
 };
 
-/**
- * nfc_se - A structure for NFC accessible secure elements.
- *
- * @idx: The secure element index. User space will enable or
- *       disable a secure element by its index.
- * @type: The secure element type. It can be SE_UICC or
- *        SE_EMBEDDED.
- * @state: The secure element state, either enabled or disabled.
- *
- */
+
 struct nfc_se {
 	struct list_head list;
 	u32 idx;
@@ -124,18 +91,7 @@ struct nfc_se {
 	u16 state;
 };
 
-/**
- * nfc_evt_transaction - A struct for NFC secure element event transaction.
- *
- * @aid: The application identifier triggering the event
- *
- * @aid_len: The application identifier length [5:16]
- *
- * @params: The application parameters transmitted during the transaction
- *
- * @params_len: The applications parameters length [0:255]
- *
- */
+
 #define NFC_MIN_AID_LENGTH	5
 #define	NFC_MAX_AID_LENGTH	16
 #define NFC_MAX_PARAMS_LENGTH	255
@@ -203,11 +159,7 @@ struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 				    int tx_headroom,
 				    int tx_tailroom);
 
-/**
- * nfc_free_device - free nfc device
- *
- * @dev: The nfc device to free
- */
+
 static inline void nfc_free_device(struct nfc_dev *dev)
 {
 	put_device(&dev->dev);
@@ -217,44 +169,26 @@ int nfc_register_device(struct nfc_dev *dev);
 
 void nfc_unregister_device(struct nfc_dev *dev);
 
-/**
- * nfc_set_parent_dev - set the parent device
- *
- * @nfc_dev: The nfc device whose parent is being set
- * @dev: The parent device
- */
+
 static inline void nfc_set_parent_dev(struct nfc_dev *nfc_dev,
 				      struct device *dev)
 {
 	nfc_dev->dev.parent = dev;
 }
 
-/**
- * nfc_set_drvdata - set driver specifc data
- *
- * @dev: The nfc device
- * @data: Pointer to driver specifc data
- */
+
 static inline void nfc_set_drvdata(struct nfc_dev *dev, void *data)
 {
 	dev_set_drvdata(&dev->dev, data);
 }
 
-/**
- * nfc_get_drvdata - get driver specifc data
- *
- * @dev: The nfc device
- */
+
 static inline void *nfc_get_drvdata(const struct nfc_dev *dev)
 {
 	return dev_get_drvdata(&dev->dev);
 }
 
-/**
- * nfc_device_name - get the nfc device name
- *
- * @dev: The nfc device whose name to return
- */
+
 static inline const char *nfc_device_name(const struct nfc_dev *dev)
 {
 	return dev_name(&dev->dev);
@@ -315,30 +249,7 @@ struct sk_buff *__nfc_alloc_vendor_cmd_reply_skb(struct nfc_dev *dev,
 						 int approxlen);
 int nfc_vendor_cmd_reply(struct sk_buff *skb);
 
-/**
- * nfc_vendor_cmd_alloc_reply_skb - allocate vendor command reply
- * @dev: nfc device
- * @oui: vendor oui
- * @approxlen: an upper bound of the length of the data that will
- *      be put into the skb
- *
- * This function allocates and pre-fills an skb for a reply to
- * a vendor command. Since it is intended for a reply, calling
- * it outside of a vendor command's doit() operation is invalid.
- *
- * The returned skb is pre-filled with some identifying data in
- * a way that any data that is put into the skb (with skb_put(),
- * nla_put() or similar) will end up being within the
- * %NFC_ATTR_VENDOR_DATA attribute, so all that needs to be done
- * with the skb is adding data for the corresponding userspace tool
- * which can then read that data out of the vendor data attribute.
- * You must not modify the skb in any other way.
- *
- * When done, call nfc_vendor_cmd_reply() with the skb and return
- * its error code as the result of the doit() operation.
- *
- * Return: An allocated and pre-filled skb. %NULL if any errors happen.
- */
+
 static inline struct sk_buff *
 nfc_vendor_cmd_alloc_reply_skb(struct nfc_dev *dev,
 				u32 oui, u32 subcmd, int approxlen)
@@ -349,4 +260,4 @@ nfc_vendor_cmd_alloc_reply_skb(struct nfc_dev *dev,
 						subcmd, approxlen);
 }
 
-#endif /* __NET_NFC_H */
+#endif 

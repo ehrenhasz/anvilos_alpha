@@ -1,17 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
- *	      http://www.samsung.com/
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- *
- * Samsung Exynos SoC Adaptive Supply Voltage support
- */
+
+
 #ifndef __LINUX_SOC_EXYNOS_ASV_H
 #define __LINUX_SOC_EXYNOS_ASV_H
 
 struct regmap;
 
-/* HPM, IDS values to select target group */
+
 struct asv_limit_entry {
 	unsigned int hpm;
 	unsigned int ids;
@@ -44,9 +38,9 @@ struct exynos_asv {
 	unsigned int group;
 	unsigned int table;
 
-	/* True if SG fields from PKG_ID register should be used */
+	
 	bool use_sg;
-	/* ASV bin read from DT */
+	
 	int of_bin;
 };
 
@@ -70,4 +64,4 @@ static inline u32 exynos_asv_opp_get_frequency(const struct exynos_asv_subsys *s
 
 int exynos_asv_init(struct device *dev, struct regmap *regmap);
 
-#endif /* __LINUX_SOC_EXYNOS_ASV_H */
+#endif 

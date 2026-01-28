@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2015 EZchip Technologies.
- */
+
+
 
 #ifndef _NPS_ENET_H
 #define _NPS_ENET_H
 
-/* default values */
+
 #define NPS_ENET_NAPI_POLL_WEIGHT		0x2
 #define NPS_ENET_MAX_FRAME_LENGTH		0x3FFF
 #define NPS_ENET_GE_MAC_CFG_0_TX_FC_RETR	0x7
@@ -19,7 +17,7 @@
 #define NPS_ENET_ENABLE				1
 #define NPS_ENET_DISABLE			0
 
-/* register definitions  */
+
 #define NPS_ENET_REG_TX_CTL		0x800
 #define NPS_ENET_REG_TX_BUF		0x808
 #define NPS_ENET_REG_RX_CTL		0x810
@@ -32,7 +30,7 @@
 #define NPS_ENET_REG_GE_RST		0x1400
 #define NPS_ENET_REG_PHASE_FIFO_CTL	0x1404
 
-/* Tx control register masks and shifts */
+
 #define TX_CTL_NT_MASK 0x7FF
 #define TX_CTL_NT_SHIFT 0
 #define TX_CTL_ET_MASK 0x4000
@@ -40,7 +38,7 @@
 #define TX_CTL_CT_MASK 0x8000
 #define TX_CTL_CT_SHIFT 15
 
-/* Rx control register masks and shifts */
+
 #define RX_CTL_NR_MASK 0x7FF
 #define RX_CTL_NR_SHIFT 0
 #define RX_CTL_CRC_MASK 0x2000
@@ -50,13 +48,13 @@
 #define RX_CTL_CR_MASK 0x8000
 #define RX_CTL_CR_SHIFT 15
 
-/* Interrupt enable for data buffer events register masks and shifts */
+
 #define RX_RDY_MASK 0x1
 #define RX_RDY_SHIFT 0
 #define TX_DONE_MASK 0x2
 #define TX_DONE_SHIFT 1
 
-/* Gbps Eth MAC Configuration 0 register masks and shifts */
+
 #define CFG_0_RX_EN_MASK 0x1
 #define CFG_0_RX_EN_SHIFT 0
 #define CFG_0_TX_EN_MASK 0x2
@@ -90,7 +88,7 @@
 #define CFG_0_TX_PR_LEN_MASK 0xF0000000
 #define CFG_0_TX_PR_LEN_SHIFT 28
 
-/* Gbps Eth MAC Configuration 1 register masks and shifts */
+
 #define CFG_1_OCTET_0_MASK 0x000000FF
 #define CFG_1_OCTET_0_SHIFT 0
 #define CFG_1_OCTET_1_MASK 0x0000FF00
@@ -100,7 +98,7 @@
 #define CFG_1_OCTET_3_MASK 0xFF000000
 #define CFG_1_OCTET_3_SHIFT 24
 
-/* Gbps Eth MAC Configuration 2 register masks and shifts */
+
 #define CFG_2_OCTET_4_MASK 0x000000FF
 #define CFG_2_OCTET_4_SHIFT 0
 #define CFG_2_OCTET_5_MASK 0x0000FF00
@@ -116,7 +114,7 @@
 #define CFG_2_TRANSMIT_FLUSH_EN_MASK 0x80000000
 #define CFG_2_TRANSMIT_FLUSH_EN_SHIFT 31
 
-/* Gbps Eth MAC Configuration 3 register masks and shifts */
+
 #define CFG_3_TM_HD_MODE_MASK 0x1
 #define CFG_3_TM_HD_MODE_SHIFT 0
 #define CFG_3_RX_CBFC_EN_MASK 0x2
@@ -138,25 +136,19 @@
 #define CFG_3_EXT_OOB_CBFC_SEL_MASK 0xC0000000
 #define CFG_3_EXT_OOB_CBFC_SEL_SHIFT 30
 
-/* GE MAC, PCS reset control register masks and shifts */
+
 #define RST_SPCS_MASK 0x1
 #define RST_SPCS_SHIFT 0
 #define RST_GMAC_0_MASK 0x100
 #define RST_GMAC_0_SHIFT 8
 
-/* Tx phase sync FIFO control register masks and shifts */
+
 #define PHASE_FIFO_CTL_RST_MASK 0x1
 #define PHASE_FIFO_CTL_RST_SHIFT 0
 #define PHASE_FIFO_CTL_INIT_MASK 0x2
 #define PHASE_FIFO_CTL_INIT_SHIFT 1
 
-/**
- * struct nps_enet_priv - Storage of ENET's private information.
- * @regs_base:      Base address of ENET memory-mapped control registers.
- * @irq:            For RX/TX IRQ number.
- * @tx_skb:         socket buffer of sent frame.
- * @napi:           Structure for NAPI.
- */
+
 struct nps_enet_priv {
 	void __iomem *regs_base;
 	s32 irq;
@@ -166,28 +158,17 @@ struct nps_enet_priv {
 	u32 ge_mac_cfg_3_value;
 };
 
-/**
- * nps_enet_reg_set - Sets ENET register with provided value.
- * @priv:       Pointer to EZchip ENET private data structure.
- * @reg:        Register offset from base address.
- * @value:      Value to set in register.
- */
+
 static inline void nps_enet_reg_set(struct nps_enet_priv *priv,
 				    s32 reg, s32 value)
 {
 	iowrite32be(value, priv->regs_base + reg);
 }
 
-/**
- * nps_enet_reg_get - Gets value of specified ENET register.
- * @priv:       Pointer to EZchip ENET private data structure.
- * @reg:        Register offset from base address.
- *
- * returns:     Value of requested register.
- */
+
 static inline u32 nps_enet_reg_get(struct nps_enet_priv *priv, s32 reg)
 {
 	return ioread32be(priv->regs_base + reg);
 }
 
-#endif /* _NPS_ENET_H */
+#endif 

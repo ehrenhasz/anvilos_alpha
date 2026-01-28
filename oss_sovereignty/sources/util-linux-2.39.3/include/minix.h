@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_MINIX_H
 #define UTIL_LINUX_MINIX_H
 
@@ -42,7 +39,7 @@ struct minix_super_block {
 	uint32_t s_zones;
 };
 
-/* V3 minix super-block data on disk */
+
 struct minix3_super_block {
 	uint32_t s_ninodes;
 	uint16_t s_pad0;
@@ -59,31 +56,29 @@ struct minix3_super_block {
 	uint8_t  s_disk_version;
 };
 
-/*
- * Minix subpartitions are always within primary dos partition.
- */
+
 #define MINIX_MAXPARTITIONS  4
 
 #define MINIX_BLOCK_SIZE_BITS 10
 #define MINIX_BLOCK_SIZE     (1 << MINIX_BLOCK_SIZE_BITS)
 
-#define MINIX_NAME_MAX       255             /* # chars in a file name */
+#define MINIX_NAME_MAX       255             
 #define MINIX_MAX_INODES     65535
 
 #define MINIX_INODES_PER_BLOCK ((MINIX_BLOCK_SIZE)/(sizeof (struct minix_inode)))
 #define MINIX2_INODES_PER_BLOCK ((MINIX_BLOCK_SIZE)/(sizeof (struct minix2_inode)))
 
-/* minix_super_block.s_state */
-#define MINIX_VALID_FS       0x0001          /* Clean fs. */
-#define MINIX_ERROR_FS       0x0002          /* fs has errors. */
+
+#define MINIX_VALID_FS       0x0001          
+#define MINIX_ERROR_FS       0x0002          
 
 
-#define MINIX_SUPER_MAGIC    0x137F          /* minix V1 fs, 14 char names */
-#define MINIX_SUPER_MAGIC2   0x138F          /* minix V1 fs, 30 char names */
+#define MINIX_SUPER_MAGIC    0x137F          
+#define MINIX_SUPER_MAGIC2   0x138F          
 
-#define MINIX2_SUPER_MAGIC   0x2468	     /* minix V2 fs, 14 char names */
-#define MINIX2_SUPER_MAGIC2  0x2478	     /* minix V2 fs, 30 char names */
+#define MINIX2_SUPER_MAGIC   0x2468	     
+#define MINIX2_SUPER_MAGIC2  0x2478	     
 
-#define MINIX3_SUPER_MAGIC   0x4d5a          /* minix V3 fs (60 char names) */
+#define MINIX3_SUPER_MAGIC   0x4d5a          
 
-#endif /* UTIL_LINUX_MINIX_H */
+#endif 

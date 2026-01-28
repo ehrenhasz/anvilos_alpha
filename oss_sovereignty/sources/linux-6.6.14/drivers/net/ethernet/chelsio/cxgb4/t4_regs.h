@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2003-2014 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __T4_REGS_H
 #define __T4_REGS_H
@@ -555,7 +523,7 @@
 #define SGE_CTXT_CMD_A 0x11fc
 #define SGE_DBQ_CTXT_BADDR_A 0x1084
 
-/* registers for module PCIE */
+
 #define PCIE_PF_CFG_A	0x40
 
 #define AIVEC_S    4
@@ -884,13 +852,10 @@
 #define TDUE_V(x) ((x) << TDUE_S)
 #define TDUE_F    TDUE_V(1U)
 
-/* SPARE2 register contains 32-bit value at offset 0x6 in Serial INIT
- * Configuration flashed on EEPROM. This value corresponds to 32-bit
- * Serial Configuration Version information.
- */
+
 #define PCIE_STATIC_SPARE2_A	0x5bfc
 
-/* registers for module MC */
+
 #define MC_INT_CAUSE_A		0x7518
 #define MC_P_INT_CAUSE_A	0x41318
 
@@ -945,7 +910,7 @@
 
 #define MC_BIST_STATUS_RDATA_A 0x7688
 
-/* registers for module MA */
+
 #define MA_EDRAM0_BAR_A 0x77c0
 
 #define EDRAM0_BASE_S    16
@@ -1053,7 +1018,7 @@
 #define MA_PARITY_ERROR_STATUS1_A	0x77f4
 #define MA_PARITY_ERROR_STATUS2_A	0x7804
 
-/* registers for module EDC_0 */
+
 #define EDC_0_BASE_ADDR		0x7900
 
 #define EDC_BIST_CMD_A		0x7904
@@ -1077,10 +1042,10 @@
 
 #define EDC_ECC_STATUS_A	0x797c
 
-/* registers for module EDC_1 */
+
 #define EDC_1_BASE_ADDR	0x7980
 
-/* registers for module CIM */
+
 #define CIM_BOOT_CFG_A 0x7b00
 #define CIM_SDRAM_BASE_ADDR_A 0x7b14
 #define CIM_SDRAM_ADDR_SIZE_A 0x7b18
@@ -1326,7 +1291,7 @@
 #define RSVDSPACEINT_V(x) ((x) << RSVDSPACEINT_S)
 #define RSVDSPACEINT_F    RSVDSPACEINT_V(1U)
 
-/* registers for module TP */
+
 #define DBGLAWHLF_S    23
 #define DBGLAWHLF_V(x) ((x) << DBGLAWHLF_S)
 #define DBGLAWHLF_F    DBGLAWHLF_V(1U)
@@ -1732,7 +1697,7 @@
 #define ULP_TX_ASIC_DEBUG_3_A 0x8f80
 #define ULP_TX_ASIC_DEBUG_4_A 0x8f84
 
-/* registers for module PM_RX */
+
 #define PM_RX_BASE_ADDR 0x8fc0
 
 #define PMRX_E_PCMD_PAR_ERROR_S    0
@@ -2850,7 +2815,7 @@
 
 #define ULP_RX_TDDP_PSZ_A 0x19178
 
-/* registers for module SF */
+
 #define SF_DATA_A 0x193f8
 #define SF_OP_A 0x193fc
 
@@ -3234,7 +3199,7 @@
 #define PL_VF_WHOAMI_A 0x0
 #define PL_VF_REVISION_A 0x8
 
-/* registers for module CIM */
+
 #define CIM_HOST_ACC_CTRL_A	0x7b50
 #define CIM_HOST_ACC_DATA_A	0x7b54
 #define UP_UP_DBG_LA_CFG_A	0x140
@@ -3383,4 +3348,4 @@
 #define QUENUMSELECT_S    0
 #define QUENUMSELECT_V(x) ((x) << QUENUMSELECT_S)
 
-#endif /* __T4_REGS_H */
+#endif 

@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2012 by Delphix. All rights reserved.
- */
+
+
+
 
 #ifndef	_SYS_RR_RW_LOCK_H
 #define	_SYS_RR_RW_LOCK_H
@@ -41,20 +17,7 @@ extern "C" {
 
 extern uint_t rrw_tsd_key;
 
-/*
- * A reader-writer lock implementation that allows re-entrant reads, but
- * still gives writers priority on "new" reads.
- *
- * See rrwlock.c for more details about the implementation.
- *
- * Fields of the rrwlock_t structure:
- * - rr_lock: protects modification and reading of rrwlock_t fields
- * - rr_cv: cv for waking up readers or waiting writers
- * - rr_writer: thread id of the current writer
- * - rr_anon_rount: number of active anonymous readers
- * - rr_linked_rcount: total number of non-anonymous active readers
- * - rr_writer_wanted: a writer wants the lock
- */
+
 typedef struct rrwlock {
 	kmutex_t	rr_lock;
 	kcondvar_t	rr_cv;
@@ -65,11 +28,7 @@ typedef struct rrwlock {
 	boolean_t	rr_track_all;
 } rrwlock_t;
 
-/*
- * 'tag' is used in reference counting tracking.  The
- * 'tag' must be the same in a rrw_enter() as in its
- * corresponding rrw_exit().
- */
+
 void rrw_init(rrwlock_t *rrl, boolean_t track_all);
 void rrw_destroy(rrwlock_t *rrl);
 void rrw_enter(rrwlock_t *rrl, krw_t rw, const void *tag);
@@ -85,13 +44,7 @@ void rrw_tsd_destroy(void *arg);
 #define	RRW_LOCK_HELD(x) \
 	(rrw_held(x, RW_WRITER) || rrw_held(x, RW_READER))
 
-/*
- * A reader-mostly lock implementation, tuning above reader-writer locks
- * for hightly parallel read acquisitions, pessimizing write acquisitions.
- *
- * This should be a prime number.  See comment in rrwlock.c near
- * RRM_TD_LOCK() for details.
- */
+
 #define	RRM_NUM_LOCKS		17
 typedef struct rrmlock {
 	rrwlock_t	locks[RRM_NUM_LOCKS];
@@ -114,4 +67,4 @@ boolean_t rrm_held(rrmlock_t *rrl, krw_t rw);
 }
 #endif
 
-#endif	/* _SYS_RR_RW_LOCK_H */
+#endif	

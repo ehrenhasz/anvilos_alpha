@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #if IS_ENABLED(CONFIG_NET_DEVLINK)
 
 #undef TRACE_SYSTEM
@@ -11,9 +11,7 @@
 #include <net/devlink.h>
 #include <linux/tracepoint.h>
 
-/*
- * Tracepoint for devlink hardware message:
- */
+
 TRACE_EVENT(devlink_hwmsg,
 	TP_PROTO(const struct devlink *devlink, bool incoming,
 		 unsigned long type, const u8 *buf, size_t len),
@@ -46,9 +44,7 @@ TRACE_EVENT(devlink_hwmsg,
 		  (int) __entry->len, __get_dynamic_array(buf), __entry->len)
 );
 
-/*
- * Tracepoint for devlink hardware error:
- */
+
 TRACE_EVENT(devlink_hwerr,
 	TP_PROTO(const struct devlink *devlink, int err, const char *msg),
 
@@ -75,9 +71,7 @@ TRACE_EVENT(devlink_hwerr,
 			__get_str(driver_name), __entry->err, __get_str(msg))
 );
 
-/*
- * Tracepoint for devlink health message:
- */
+
 TRACE_EVENT(devlink_health_report,
 	TP_PROTO(const struct devlink *devlink, const char *reporter_name,
 		 const char *msg),
@@ -106,9 +100,7 @@ TRACE_EVENT(devlink_health_report,
 		  __get_str(msg))
 );
 
-/*
- * Tracepoint for devlink health recover aborted message:
- */
+
 TRACE_EVENT(devlink_health_recover_aborted,
 	TP_PROTO(const struct devlink *devlink, const char *reporter_name,
 		 bool health_state, u64 time_since_last_recover),
@@ -140,9 +132,7 @@ TRACE_EVENT(devlink_health_recover_aborted,
 		  __entry->time_since_last_recover)
 );
 
-/*
- * Tracepoint for devlink health reporter state update:
- */
+
 TRACE_EVENT(devlink_health_reporter_state_update,
 	TP_PROTO(const struct devlink *devlink, const char *reporter_name,
 		 bool new_state),
@@ -171,9 +161,7 @@ TRACE_EVENT(devlink_health_reporter_state_update,
 		  __entry->new_state)
 );
 
-/*
- * Tracepoint for devlink packet trap:
- */
+
 TRACE_EVENT(devlink_trap_report,
 	TP_PROTO(const struct devlink *devlink, struct sk_buff *skb,
 		 const struct devlink_trap_metadata *metadata),
@@ -207,12 +195,12 @@ TRACE_EVENT(devlink_trap_report,
 		  __entry->input_dev_name)
 );
 
-#endif /* _TRACE_DEVLINK_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>
 
-#else /* CONFIG_NET_DEVLINK */
+#else 
 
 #if !defined(_TRACE_DEVLINK_H)
 #define _TRACE_DEVLINK_H
@@ -229,6 +217,6 @@ static inline void trace_devlink_hwerr(const struct devlink *devlink,
 				       int err, const char *msg)
 {
 }
-#endif /* _TRACE_DEVLINK_H */
+#endif 
 
 #endif

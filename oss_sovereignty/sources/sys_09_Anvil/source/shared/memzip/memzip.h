@@ -15,8 +15,8 @@ typedef struct
     uint16_t    filename_len;
     uint16_t    extra_len;
 
-    /* char     filename[filename_len]  */
-    /* uint8_t  extra[extra_len]        */
+    
+    
 
 } MEMZIP_FILE_HDR;
 
@@ -40,8 +40,8 @@ typedef struct
     uint32_t    external_file_attributes;
     uint32_t    file_header_offset;
 
-    /* char     filename[filename_len]  */
-    /* uint8_t  extra[extra_len]        */
+    
+    
 
 } MEMZIP_CENTRAL_DIRECTORY_HDR;
 
@@ -57,16 +57,16 @@ typedef struct
     uint32_t    central_directory_offset;
     uint16_t    comment_len;
 
-    /* char     comment[comment_len]    */
+    
 
 } MEMZIP_END_OF_CENTRAL_DIRECTORY;
 
 #pragma pack(pop)
 
 typedef enum {
-    MZ_OK = 0,          /* (0) Succeeded */
-    MZ_NO_FILE,         /* (1) Could not find the file. */
-    MZ_FILE_COMPRESSED, /* (2) File is compressed (expecting uncompressed) */
+    MZ_OK = 0,          
+    MZ_NO_FILE,         
+    MZ_FILE_COMPRESSED, 
 
 } MEMZIP_RESULT;
 

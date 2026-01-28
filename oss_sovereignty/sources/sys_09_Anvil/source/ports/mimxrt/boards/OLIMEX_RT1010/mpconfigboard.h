@@ -5,7 +5,7 @@
 #define MICROPY_HW_USB_PID 0x0046
 #define MICROPY_PY_OS_DUPTERM_BUILTIN_STREAM (0)
 
-// Olimex RT1010-Py has 1 board LED
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_11)
 #define MICROPY_HW_LED_ON(pin) (mp_hal_pin_high(pin))
 #define MICROPY_HW_LED_OFF(pin) (mp_hal_pin_low(pin))
@@ -13,9 +13,9 @@
 #define MICROPY_HW_NUM_PIN_IRQS (2 * 32)
 #define MICROPY_PY_MACHINE_SDCARD    (0)
 
-// Define mapping logical UART # to hardware UART #
-// LPUART1 on RX/TX    -> 1
-// LPUART4 on D5/D6    -> 2
+
+
+
 
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 0, 1, 3, 4 }
@@ -45,10 +45,10 @@
 #define DMA_REQ_SRC_RX { 0, kDmaRequestMuxLPSPI1Rx, kDmaRequestMuxLPSPI2Rx }
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx }
 
-// Define mapping hardware I2C # to logical I2C #
-// SDA/SCL    HW-I2C    Logical I2C
-// SDA1/SCL1  LPI2C1 ->    0
-// SDA2/SCL2  LPI2C2 ->    1
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 0, 1, 2 }
 
@@ -77,14 +77,14 @@
 
 #define I2S_GPIO_MAP \
     { \
-        I2S_GPIO(1, MCK, TX, GPIO_08, IOMUXC_GPIO_08_SAI1_MCLK), /* pin D8 */ \
-        I2S_GPIO(1, SCK, RX, GPIO_01, IOMUXC_GPIO_01_SAI1_RX_BCLK), /* pin D1 */ \
-        I2S_GPIO(1, WS, RX, GPIO_02, IOMUXC_GPIO_02_SAI1_RX_SYNC), /* pin D2 */ \
-        I2S_GPIO(1, SD, RX, GPIO_03, IOMUXC_GPIO_03_SAI1_RX_DATA00), /* pin D3 */ \
-        I2S_GPIO(1, SCK, TX, GPIO_06, IOMUXC_GPIO_06_SAI1_TX_BCLK), /* pin D6 */ \
-        I2S_GPIO(1, WS, TX, GPIO_07, IOMUXC_GPIO_07_SAI1_TX_SYNC), /* pin D7 */ \
-        I2S_GPIO(1, SD, TX, GPIO_04, IOMUXC_GPIO_04_SAI1_TX_DATA00), /* pin D4 */ \
-        I2S_GPIO(3, SCK, TX, GPIO_SD_01, IOMUXC_GPIO_SD_01_SAI3_TX_BCLK), /* pin D10 */ \
-        I2S_GPIO(3, WS, TX, GPIO_SD_00, IOMUXC_GPIO_SD_00_SAI3_TX_SYNC), /* pin D9 */ \
-        I2S_GPIO(3, SD, TX, GPIO_SD_02, IOMUXC_GPIO_SD_02_SAI3_TX_DATA) /* pin D11 */ \
+        I2S_GPIO(1, MCK, TX, GPIO_08, IOMUXC_GPIO_08_SAI1_MCLK),  \
+        I2S_GPIO(1, SCK, RX, GPIO_01, IOMUXC_GPIO_01_SAI1_RX_BCLK),  \
+        I2S_GPIO(1, WS, RX, GPIO_02, IOMUXC_GPIO_02_SAI1_RX_SYNC),  \
+        I2S_GPIO(1, SD, RX, GPIO_03, IOMUXC_GPIO_03_SAI1_RX_DATA00),  \
+        I2S_GPIO(1, SCK, TX, GPIO_06, IOMUXC_GPIO_06_SAI1_TX_BCLK),  \
+        I2S_GPIO(1, WS, TX, GPIO_07, IOMUXC_GPIO_07_SAI1_TX_SYNC),  \
+        I2S_GPIO(1, SD, TX, GPIO_04, IOMUXC_GPIO_04_SAI1_TX_DATA00),  \
+        I2S_GPIO(3, SCK, TX, GPIO_SD_01, IOMUXC_GPIO_SD_01_SAI3_TX_BCLK),  \
+        I2S_GPIO(3, WS, TX, GPIO_SD_00, IOMUXC_GPIO_SD_00_SAI3_TX_SYNC),  \
+        I2S_GPIO(3, SD, TX, GPIO_SD_02, IOMUXC_GPIO_SD_02_SAI3_TX_DATA)  \
     }

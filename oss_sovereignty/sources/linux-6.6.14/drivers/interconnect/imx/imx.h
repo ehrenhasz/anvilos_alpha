@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Interconnect framework driver for i.MX SoC
- *
- * Copyright (c) 2019, BayLibre
- * Copyright (c) 2019-2020, NXP
- * Author: Alexandre Bailon <abailon@baylibre.com>
- * Author: Leonard Crestez <leonard.crestez@nxp.com>
- */
+
+
 #ifndef __DRIVERS_INTERCONNECT_IMX_H
 #define __DRIVERS_INTERCONNECT_IMX_H
 
@@ -15,19 +8,13 @@
 
 #define IMX_ICC_MAX_LINKS	4
 
-/*
- * High throughput priority level in Regulator mode
- * Read Priority in Fixed/Limiter mode
- */
+
 #define PRIORITY0_SHIFT	0
-/*
- * Low throughput priority level in Regulator mode
- * Write Priority in Fixed/Limiter mode
- */
+
 #define PRIORITY1_SHIFT	8
 #define PRIORITY_MASK		0x7
 
-#define PRIORITY_COMP_MARK	BIT(31)	/* Must set */
+#define PRIORITY_COMP_MARK	BIT(31)	
 
 #define IMX_NOC_MODE_FIXED		0
 #define IMX_NOC_MODE_LIMITER		1
@@ -46,22 +33,14 @@ struct imx_icc_provider {
 	struct icc_provider provider;
 };
 
-/*
- * struct imx_icc_node_adj - Describe a dynamic adjustable node
- */
+
 struct imx_icc_node_adj_desc {
 	unsigned int bw_mul, bw_div;
 	const char *phandle_name;
 	bool main_noc;
 };
 
-/*
- * struct imx_icc_node - Describe an interconnect node
- * @name: name of the node
- * @id: an unique id to identify the node
- * @links: an array of slaves' node id
- * @num_links: number of id defined in links
- */
+
 struct imx_icc_node_desc {
 	const char *name;
 	u16 id;
@@ -70,13 +49,7 @@ struct imx_icc_node_desc {
 	const struct imx_icc_node_adj_desc *adj;
 };
 
-/*
- * struct imx_icc_noc_setting - Describe an interconnect node setting
- * @reg: register offset inside the NoC
- * @prio_level: priority level
- * @mode: functional mode
- * @ext_control: external input control
- */
+
 struct imx_icc_noc_setting {
 	u32 reg;
 	u32 prio_level;
@@ -105,4 +78,4 @@ int imx_icc_register(struct platform_device *pdev,
 		     struct imx_icc_noc_setting *noc_settings);
 void imx_icc_unregister(struct platform_device *pdev);
 
-#endif /* __DRIVERS_INTERCONNECT_IMX_H */
+#endif 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_VFIO) += vfio.o
 
 vfio-y += vfio_main.o \

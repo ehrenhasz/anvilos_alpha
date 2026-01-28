@@ -10,7 +10,7 @@ trap cleanup EXIT
 run_one() {
 	local -r all="$@"
 	local -r tx_args=${all%rx*}
-	local rx_args=${all#*rx}
+	local rx_args=${all
 	[[ "${tx_args}" == *"-4"* ]] && rx_args="${rx_args} -4"
 	ip netns add "${PEER_NS}"
 	ip -netns "${PEER_NS}" link set lo up
@@ -59,7 +59,7 @@ if [ ! -f ${BPF_FILE} ]; then
 	echo "Missing ${BPF_FILE}. Build bpf selftest first"
 	exit -1
 fi
-if [[ $# -eq 0 ]]; then
+if [[ $
 	run_all
 elif [[ $1 == "__subprocess" ]]; then
 	shift

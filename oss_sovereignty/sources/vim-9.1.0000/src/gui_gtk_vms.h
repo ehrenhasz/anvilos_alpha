@@ -1,84 +1,12 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved    by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- *
- * File MOTIF_REDEFINES.H originally delivers together with
- * OpenVMS Porting Library
- * http://www.openvms.compaq.com/openvms/products/ips/porting.html
- *
- * This file has been modified for Vim development.
- * Original file contains just defines that GTK for OpenVMS uses,
- * but not all functions that DECW library has. Therefore it has been expanded
- * with necessary defines for Vim on OpenVMS with GTK GUI.
- *
- * Zoltan Arpadffy <arpadffy@polarhome.com>
- */
 
-/*
- *************************************************************************
- *									 *
- * Copyright 2000 Compaq Computer Corporation				 *
- *									 *
- * COMPAQ Registered in U.S. Patent and Trademark Office.		 *
- *									 *
- *************************************************************************
- * IMPORTANT: Carefully read the License Terms below before		 *
- * proceeding.	By use of these materials you agree to these terms.	 *
- * If you do not agree to these terms, you may not use this software or  *
- * the accompanying documentation.					 *
- *************************************************************************
- * LICENSE TERMS							 *
- * 1. GRANT								 *
- * Compaq Computer Corporation ("COMPAQ") grants you the right to use,	 *
- * modify, and distribute the following source code (the "Software")	 *
- * on any number of computers. You may use the Software as part of	 *
- * creating a software program or product intended for commercial or	 *
- * non-commercial distribution in machine-readable source code, binary,  *
- * or executable formats. You may distribute the Software as		 *
- * machine-readable source code provided this license is not removed	 *
- * from the Software and any modifications are conspicuously indicated.  *
- * 2. COPYRIGHT								 *
- * The Software is owned by COMPAQ and its suppliers and is protected by *
- * copyright laws and international treaties.  Your use of the Software  *
- * and associated documentation is subject to the applicable copyright	 *
- * laws and the express rights and restrictions of these terms.		 *
- * 3. RESTRICTIONS							 *
- * You may not remove any copyright, trademark, or other proprietary	 *
- * notices from the Software or the associated	documentation.		 *
- * You are responsible for compliance with all applicable export or	 *
- * re-export control laws and regulations if you export the Software.	 *
- * This license is governed by and is to be construed under the laws	 *
- * of the State of Texas.						 *
- *									 *
- * DISCLAIMER OF WARRANTY AND LIABILITY					 *
- * Compaq shall not be liable for technical or editorial errors or	 *
- * omissions contained herein. The information contained herein is	 *
- * subject to change without notice.					 *
- *									 *
- * THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.	 *
- * THE ENTIRE RISK ARISING OUT OF THE USE OF THIS SOFTWARE REMAINS WITH  *
- * RECIPIENT.  IN NO EVENT SHALL COMPAQ BE LIABLE FOR ANY DIRECT,	 *
- * CONSEQUENTIAL, INCIDENTAL, SPECIAL, PUNITIVE OR OTHER DAMAGES	 *
- * WHATSOEVER (INCLUDING WITHOUT LIMITATION DAMAGES FOR LOSS OF BUSINESS *
- * PROFITS, BUSINESS INTERRUPTION, OR LOSS OF BUSINESS INFORMATION),	 *
- * EVEN IF COMPAQ HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES	 *
- * AND WHETHER IN AN ACTION OF CONTRACT OR TORT INCLUDING NEGLIGENCE.	 *
- *									 *
- * If you have any questions concerning this license, please contact:	 *
- * Compaq Computer Corporation, Software Business Practices, ZKO1-2/D22, *
- * 110 Spit Brook Road, Nashua, NH. 03062-2698.				 *
- *									 *
- *************************************************************************
- */
 
-// INTRINSIC.H omits proto if XtFree is defined
-// VMS_BEGIN_C_PLUS_PLUS
+
+
+
+
 extern void XtFree(char*);
 extern void XTFREE(char*);
-// VMS_END_C_PLUS_PLUS
+
 
 #define _XRegisterFilterByType _XREGISTERFILTERBYTYPE
 
@@ -711,20 +639,13 @@ extern void XTFREE(char*);
 #define xmToggleButtonGadgetClass XMTOGGLEBUTTONGADGETCLASS
 #define xmToggleButtonWidgetClass XMTOGGLEBUTTONWIDGETCLASS
 
-/*
-** XtRegisterDrawable and XtUnregisterDrawable don't exist until R6.
-** So we have to fake it for R5 and earlier. It would be real nice to
-** include X11.h here and then test for R6 by checking
-** XlibSpecificationRelease. But including X11.h defines the symbol "None"
-** and there's Mozilla code in gfx/src/gtk that defines an enum element
-** named None. So for now hard code this is R5....
-*/
+
 #ifndef VMS_X11R6
-// R5 or earlier
+
 #define _XtRegisterWindow _XTREGISTERWINDOW
 #define _XtUnregisterWindow _XTUNREGISTERWINDOW
 #else
-// R6 or later
+
 #define XtRegisterDrawable XTREGISTERDRAWABLE
 #define XtUnregisterDrawable XTUNREGISTERDRAWABLE
 #endif

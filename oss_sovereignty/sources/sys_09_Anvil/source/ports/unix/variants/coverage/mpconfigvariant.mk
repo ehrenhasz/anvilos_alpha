@@ -1,4 +1,4 @@
-# Disable optimisations and enable assert() on coverage builds.
+
 DEBUG ?= 1
 
 CFLAGS += \

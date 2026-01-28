@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Intel 82586/82593/82596 chipset device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_ARM_ETHER1) += ether1.o
 obj-$(CONFIG_SUN3_82586) += sun3_82586.o

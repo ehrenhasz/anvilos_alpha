@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Inspired by original work from pxa2xx-regs.h by Nicolas Pitre
- * Copyright (C) 2014 Robert Jarzmik
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_PXA2XX_H__
 #define __DT_BINDINGS_CLOCK_PXA2XX_H__

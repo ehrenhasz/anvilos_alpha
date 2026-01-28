@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Xen-specific pieces of head.S, intended to be included in the right
-	place in head.S */
+
+
 
 #ifdef CONFIG_XEN
 
@@ -28,9 +27,7 @@ SYM_CODE_START(hypercall_page)
 		ANNOTATE_NOENDBR
 		ANNOTATE_UNRET_SAFE
 		ret
-		/*
-		 * Xen will write the hypercall page, and sort out ENDBR.
-		 */
+		
 		.skip 31, 0xcc
 	.endr
 
@@ -51,13 +48,7 @@ SYM_CODE_START(startup_xen)
 
 	leaq	(__end_init_task - PTREGS_SIZE)(%rip), %rsp
 
-	/* Set up %gs.
-	 *
-	 * The base of %gs always points to fixed_percpu_data.  If the
-	 * stack protector canary is enabled, it is located at %gs:40.
-	 * Note that, on SMP, the boot cpu uses init data section until
-	 * the per cpu areas are set up.
-	 */
+	
 	movl	$MSR_GS_BASE,%ecx
 	movq	$INIT_PER_CPU_VAR(fixed_percpu_data),%rax
 	cdq
@@ -92,7 +83,7 @@ SYM_CODE_END(xen_cpu_bringup_again)
 	ELFNOTE(Xen, XEN_ELFNOTE_XEN_VERSION,    .asciz "xen-3.0")
 #ifdef CONFIG_XEN_PV
 	ELFNOTE(Xen, XEN_ELFNOTE_VIRT_BASE,      _ASM_PTR __START_KERNEL_map)
-	/* Map the p2m table to a 512GB-aligned user address. */
+	
 	ELFNOTE(Xen, XEN_ELFNOTE_INIT_P2M,       .quad (PUD_SIZE * PTRS_PER_PUD))
 	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,          _ASM_PTR startup_xen)
 	ELFNOTE(Xen, XEN_ELFNOTE_FEATURES,       .ascii "!writable_page_tables")
@@ -121,4 +112,4 @@ SYM_CODE_END(xen_cpu_bringup_again)
 	ELFNOTE(Xen, XEN_ELFNOTE_LOADER,         .asciz "generic")
 	ELFNOTE(Xen, XEN_ELFNOTE_SUSPEND_CANCEL, .long 1)
 
-#endif /*CONFIG_XEN */
+#endif 

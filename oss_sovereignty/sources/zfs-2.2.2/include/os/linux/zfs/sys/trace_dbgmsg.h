@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -33,25 +14,10 @@
 
 #include <linux/tracepoint.h>
 
-/*
- * This file defines tracepoint events for use by the dbgmsg(),
- * dprintf(), and SET_ERROR() interfaces. These are grouped here because
- * they all provide a way to store simple messages in the debug log (as
- * opposed to events used by the DTRACE_PROBE interfaces which typically
- * dump structured data).
- *
- * This header is included inside the trace.h multiple inclusion guard,
- * and it is guarded above against direct inclusion, so it and need not
- * be guarded separately.
- */
 
-/*
- * Generic support for one argument tracepoints of the form:
- *
- * DTRACE_PROBE1(...,
- *     const char *, ...);
- */
-/* BEGIN CSTYLED */
+
+
+
 DECLARE_EVENT_CLASS(zfs_dprintf_class,
 	TP_PROTO(const char *msg),
 	TP_ARGS(msg),
@@ -63,7 +29,7 @@ DECLARE_EVENT_CLASS(zfs_dprintf_class,
 	),
 	TP_printk("%s", __get_str(msg))
 );
-/* END CSTYLED */
+
 
 #define	DEFINE_DPRINTF_EVENT(name) \
 DEFINE_EVENT(zfs_dprintf_class, name, \
@@ -71,7 +37,7 @@ DEFINE_EVENT(zfs_dprintf_class, name, \
     TP_ARGS(msg))
 DEFINE_DPRINTF_EVENT(zfs_zfs__dprintf);
 
-#endif /* _TRACE_DBGMSG_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -83,5 +49,5 @@ DEFINE_DPRINTF_EVENT(zfs_zfs__dprintf);
 
 DEFINE_DTRACE_PROBE1(zfs__dprintf);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

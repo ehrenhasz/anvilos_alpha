@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_nffw.h
- * Authors: Jason McMullan <jason.mcmullan@netronome.com>
- *          Francois H. Theron <francois.theron@netronome.com>
- */
+
+
+
 
 #ifndef NFP_NFFW_H
 #define NFP_NFFW_H
 
-/* Implemented in nfp_nffw.c */
+
 
 struct nfp_nffw_info;
 
@@ -18,7 +14,7 @@ struct nfp_nffw_info *nfp_nffw_info_open(struct nfp_cpp *cpp);
 void nfp_nffw_info_close(struct nfp_nffw_info *state);
 int nfp_nffw_info_mip_first(struct nfp_nffw_info *state, u32 *cpp_id, u64 *off);
 
-/* Implemented in nfp_mip.c */
+
 
 struct nfp_mip;
 
@@ -29,7 +25,7 @@ const char *nfp_mip_name(const struct nfp_mip *mip);
 void nfp_mip_symtab(const struct nfp_mip *mip, u32 *addr, u32 *size);
 void nfp_mip_strtab(const struct nfp_mip *mip, u32 *addr, u32 *size);
 
-/* Implemented in nfp_rtsym.c */
+
 
 enum nfp_rtsym_type {
 	NFP_RTSYM_TYPE_NONE	= 0,
@@ -42,15 +38,7 @@ enum nfp_rtsym_type {
 #define NFP_RTSYM_TARGET_LMEM		-1
 #define NFP_RTSYM_TARGET_EMU_CACHE	-7
 
-/**
- * struct nfp_rtsym - RTSYM descriptor
- * @name:	Symbol name
- * @addr:	Address in the domain/target's address space
- * @size:	Size (in bytes) of the symbol
- * @type:	NFP_RTSYM_TYPE_* of the symbol
- * @target:	CPP Target identifier, or NFP_RTSYM_TARGET_*
- * @domain:	CPP Target Domain (island)
- */
+
 struct nfp_rtsym {
 	const char *name;
 	u64 addr;
@@ -104,4 +92,4 @@ u8 __iomem *
 nfp_rtsym_map(struct nfp_rtsym_table *rtbl, const char *name, const char *id,
 	      unsigned int min_size, struct nfp_cpp_area **area);
 
-#endif /* NFP_NFFW_H */
+#endif 

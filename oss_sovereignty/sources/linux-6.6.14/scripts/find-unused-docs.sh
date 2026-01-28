@@ -2,7 +2,7 @@ if ! [ -d "Documentation" ]; then
 	echo "Run from top level of kernel tree"
 	exit 1
 fi
-if [ "$#" -ne 1 ]; then
+if [ "$
 	echo "Usage: scripts/find-unused-docs.sh directory"
 	exit 1
 fi

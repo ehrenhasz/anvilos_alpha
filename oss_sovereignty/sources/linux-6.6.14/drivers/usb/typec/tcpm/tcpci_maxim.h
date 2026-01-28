@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2022 Google, Inc
- *
- * MAXIM TCPC header file.
- */
+
+
 #ifndef TCPCI_MAXIM_H_
 #define TCPCI_MAXIM_H_
 
@@ -50,11 +46,7 @@ enum contamiant_state {
 	SINK,
 };
 
-/*
- * @potential_contaminant:
- *		Last returned result to tcpm indicating whether the TCPM port
- *		has potential contaminant.
- */
+
 struct max_tcpci_chip {
 	struct tcpci_data data;
 	struct tcpci *tcpci;
@@ -86,4 +78,4 @@ static inline int max_tcpci_write8(struct max_tcpci_chip *chip, unsigned int reg
 
 bool max_contaminant_is_contaminant(struct max_tcpci_chip *chip, bool disconnect_while_debounce);
 
-#endif  // TCPCI_MAXIM_H_
+#endif  

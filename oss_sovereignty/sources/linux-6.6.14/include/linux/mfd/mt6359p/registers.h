@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+
 
 #ifndef __MFD_MT6359P_REGISTERS_H__
 #define __MFD_MT6359P_REGISTERS_H__
 
 #define MT6359P_CHIP_VER 0x5930
 
-/* PMIC Registers */
+
 #define MT6359P_HWCID                         0x8
 #define MT6359P_TOP_TRAP                      0x50
 #define MT6359P_TOP_TMA_KEY                   0x3a8
@@ -246,4 +244,4 @@
 
 #define TMA_KEY 0x9CA6
 
-#endif /* __MFD_MT6359P_REGISTERS_H__ */
+#endif 

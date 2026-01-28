@@ -12,9 +12,9 @@ class Rp2Pin(boardgen.Pin):
         self._afs = []
         if self.name().startswith("EXT_"):
             self._index = None
-            self._ext_index = int(self.name()[8:])  # "EXT_GPIOn"
+            self._ext_index = int(self.name()[8:])  
         else:
-            self._index = int(self.name()[4:])  # "GPIOn"
+            self._index = int(self.name()[4:])  
             self._ext_index = None
     def index(self):
         return self._index

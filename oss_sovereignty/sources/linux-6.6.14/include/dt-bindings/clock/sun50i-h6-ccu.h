@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SUN50I_H6_H_
 #define _DT_BINDINGS_CLK_SUN50I_H6_H_
@@ -122,4 +120,4 @@
 #define CLK_HDCP		136
 #define CLK_BUS_HDCP		137
 
-#endif /* _DT_BINDINGS_CLK_SUN50I_H6_H_ */
+#endif 

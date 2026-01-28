@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * I2C slave tracepoints
- *
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i2c_slave
 
@@ -61,7 +57,7 @@ TRACE_EVENT(i2c_slave,
 		show_event_type(__entry->event), __entry->len, __entry->buf
 		));
 
-#endif /* _TRACE_I2C_SLAVE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

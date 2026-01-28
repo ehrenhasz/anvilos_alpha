@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 MediaTek Inc.
- */
+
+
 #ifndef __MT8365_PINFUNC_H
 #define __MT8365_PINFUNC_H
 
@@ -855,4 +853,4 @@
 #define MT8365_PIN_144_CONN_WF_CTRL2__FUNC_GPIO144 (MTK_PIN_NO(144) | 0)
 #define MT8365_PIN_144_CONN_WF_CTRL2__FUNC_CONN_WF_CTRL2 (MTK_PIN_NO(144) | 1)
 
-#endif /* __MT8365_PINFUNC_H */
+#endif 

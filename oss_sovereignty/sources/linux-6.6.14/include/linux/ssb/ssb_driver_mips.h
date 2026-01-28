@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_SSB_MIPSCORE_H_
 #define LINUX_SSB_MIPSCORE_H_
 
@@ -51,7 +51,7 @@ extern u32 ssb_cpu_clock(struct ssb_mipscore *mcore);
 extern unsigned int ssb_mips_irq(struct ssb_device *dev);
 
 
-#else /* CONFIG_SSB_DRIVER_MIPS */
+#else 
 
 struct ssb_mipscore {
 };
@@ -66,6 +66,6 @@ static inline unsigned int ssb_mips_irq(struct ssb_device *dev)
 	return 0;
 }
 
-#endif /* CONFIG_SSB_DRIVER_MIPS */
+#endif 
 
-#endif /* LINUX_SSB_MIPSCORE_H_ */
+#endif 

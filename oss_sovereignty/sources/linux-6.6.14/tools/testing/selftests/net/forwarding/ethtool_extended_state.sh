@@ -6,7 +6,7 @@ ALL_TESTS="
 NUM_NETIFS=2
 source lib.sh
 source ethtool_lib.sh
-TIMEOUT=$((WAIT_TIMEOUT * 1000)) # ms
+TIMEOUT=$((WAIT_TIMEOUT * 1000)) 
 setup_prepare()
 {
 	swp1=${NETIFS[p1]}

@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _FS_CEPH_MDSMAP_H
 #define _FS_CEPH_MDSMAP_H
 
 #include <linux/bug.h>
 #include <linux/ceph/types.h>
 
-/*
- * mds map - describe servers in the mds cluster.
- *
- * we limit fields to those the client actually xcares about
- */
+
 struct ceph_mds_info {
 	u64 global_id;
 	struct ceph_entity_addr addr;
@@ -22,16 +18,16 @@ struct ceph_mds_info {
 struct ceph_mdsmap {
 	u32 m_epoch, m_client_epoch, m_last_failure;
 	u32 m_root;
-	u32 m_session_timeout;          /* seconds */
-	u32 m_session_autoclose;        /* seconds */
+	u32 m_session_timeout;          
+	u32 m_session_autoclose;        
 	u64 m_max_file_size;
-	u64 m_max_xattr_size;		/* maximum size for xattrs blob */
-	u32 m_max_mds;			/* expected up:active mds number */
-	u32 m_num_active_mds;		/* actual up:active mds number */
-	u32 possible_max_rank;		/* possible max rank index */
+	u64 m_max_xattr_size;		
+	u32 m_max_mds;			
+	u32 m_num_active_mds;		
+	u32 possible_max_rank;		
 	struct ceph_mds_info *m_info;
 
-	/* which object pools file data can be stored in */
+	
 	int m_num_data_pg_pools;
 	u64 *m_data_pg_pools;
 	u64 m_cas_pg_pool;

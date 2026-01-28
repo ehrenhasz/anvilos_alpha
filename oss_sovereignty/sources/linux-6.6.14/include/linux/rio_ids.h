@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RapidIO devices
- *
- * Copyright 2005 MontaVista Software, Inc.
- * Matt Porter <mporter@kernel.crashing.org>
- */
+
+
 
 #ifndef LINUX_RIO_IDS_H
 #define LINUX_RIO_IDS_H
@@ -24,4 +19,4 @@
 #define RIO_DID_IDTRXS1632		0x80e5
 #define RIO_DID_IDTRXS2448		0x80e6
 
-#endif				/* LINUX_RIO_IDS_H */
+#endif				

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell 88PM80x Interface
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Qiao Zhou <zhouqiao@marvell.com>
- */
+
+
 
 #ifndef __LINUX_MFD_88PM80X_H
 #define __LINUX_MFD_88PM80X_H
@@ -51,11 +46,11 @@ enum {
 
 	PM800_ID_RG_MAX,
 };
-#define PM800_MAX_REGULATOR	PM800_ID_RG_MAX	/* 5 Bucks, 19 LDOs */
-#define PM800_NUM_BUCK (5)	/*5 Bucks */
-#define PM800_NUM_LDO (19)	/*19 Bucks */
+#define PM800_MAX_REGULATOR	PM800_ID_RG_MAX	
+#define PM800_NUM_BUCK (5)	
+#define PM800_NUM_LDO (19)	
 
-/* page 0 basic: slave adder 0x60 */
+
 
 #define PM800_STATUS_1			(0x01)
 #define PM800_ONKEY_STS1		BIT(0)
@@ -69,7 +64,7 @@ enum {
 #define PM800_STATUS_2			(0x02)
 #define PM800_RTC_ALARM_STS2		BIT(0)
 
-/* Wakeup Registers */
+
 #define PM800_WAKEUP1			(0x0D)
 
 #define PM800_WAKEUP2			(0x0E)
@@ -79,13 +74,13 @@ enum {
 
 #define PM800_POWER_UP_LOG		(0x10)
 
-/* Referance and low power registers */
+
 #define PM800_LOW_POWER1		(0x20)
 #define PM800_LOW_POWER2		(0x21)
 #define PM800_LOW_POWER_CONFIG3		(0x22)
 #define PM800_LOW_POWER_CONFIG4		(0x23)
 
-/* GPIO register */
+
 #define PM800_GPIO_0_1_CNTRL		(0x30)
 #define PM800_GPIO0_VAL			BIT(0)
 #define PM800_GPIO0_GPIO_MODE(x)	(x << 1)
@@ -107,36 +102,36 @@ enum {
 #define PM800_HEADSET_CNTRL		(0x38)
 #define PM800_HEADSET_DET_EN		BIT(7)
 #define PM800_HSDET_SLP			BIT(1)
-/* PWM register */
+
 #define PM800_PWM1			(0x40)
 #define PM800_PWM2			(0x41)
 #define PM800_PWM3			(0x42)
 #define PM800_PWM4			(0x43)
 
-/* RTC Registers */
+
 #define PM800_RTC_CONTROL		(0xD0)
 #define PM800_RTC_MISC1			(0xE1)
 #define PM800_RTC_MISC2			(0xE2)
 #define PM800_RTC_MISC3			(0xE3)
 #define PM800_RTC_MISC4			(0xE4)
 #define PM800_RTC_MISC5			(0xE7)
-/* bit definitions of RTC Register 1 (0xD0) */
+
 #define PM800_ALARM1_EN			BIT(0)
 #define PM800_ALARM_WAKEUP		BIT(4)
 #define PM800_ALARM			BIT(5)
 #define PM800_RTC1_USE_XO		BIT(7)
 
-/* Regulator Control Registers: BUCK1,BUCK5,LDO1 have DVC */
 
-/* buck registers */
+
+
 #define PM800_SLEEP_BUCK1		(0x30)
 
-/* BUCK Sleep Mode Register 1: BUCK[1..4] */
+
 #define PM800_BUCK_SLP1			(0x5A)
 #define PM800_BUCK1_SLP1_SHIFT		0
 #define PM800_BUCK1_SLP1_MASK		(0x3 << PM800_BUCK1_SLP1_SHIFT)
 
-/* page 2 GPADC: slave adder 0x02 */
+
 #define PM800_GPADC_MEAS_EN1		(0x01)
 #define PM800_MEAS_EN1_VBAT		BIT(2)
 #define PM800_GPADC_MEAS_EN2		(0x02)
@@ -210,9 +205,9 @@ enum {
 #define PM800_GPADC4_AVG1		0xA8
 #define PM800_GPADC4_AVG2		0xA9
 
-/* 88PM805 Registers */
+
 #define PM805_MAIN_POWERUP		(0x01)
-#define PM805_INT_STATUS0		(0x02)	/* for ena/dis all interrupts */
+#define PM805_INT_STATUS0		(0x02)	
 
 #define PM805_STATUS0_INT_CLEAR		(1 << 0)
 #define PM805_STATUS0_INV_INT		(1 << 1)
@@ -240,7 +235,7 @@ enum {
 #define PM805_INT_MASK2			(0x06)
 #define PM805_SHRT_BTN_DET		BIT(1)
 
-/* number of status and int reg in a row */
+
 #define PM805_INT_REG_NUM		(2)
 
 #define PM805_MIC_DET1			(0x07)
@@ -280,12 +275,12 @@ struct pm80x_rtc_pdata {
 };
 
 struct pm80x_subchip {
-	struct i2c_client *power_page;	/* chip client for power page */
-	struct i2c_client *gpadc_page;	/* chip client for gpadc page */
+	struct i2c_client *power_page;	
+	struct i2c_client *gpadc_page;	
 	struct regmap *regmap_power;
 	struct regmap *regmap_gpadc;
-	unsigned short power_page_addr;	/* power page I2C address */
-	unsigned short gpadc_page_addr;	/* gpadc page I2C address */
+	unsigned short power_page_addr;	
+	unsigned short gpadc_page_addr;	
 };
 
 struct pm80x_chip {
@@ -305,16 +300,11 @@ struct pm80x_chip {
 
 struct pm80x_platform_data {
 	struct pm80x_rtc_pdata *rtc;
-	/*
-	 * For the regulator not defined, set regulators[not_defined] to be
-	 * NULL. num_regulators are the number of regulators supposed to be
-	 * initialized. If all regulators are not defined, set num_regulators
-	 * to be 0.
-	 */
+	
 	struct regulator_init_data *regulators[PM800_ID_RG_MAX];
 	unsigned int num_regulators;
-	int irq_mode;		/* Clear interrupt by read/write(0/1) */
-	int batt_det;		/* enable/disable */
+	int irq_mode;		
+	int batt_det;		
 	int (*plat_config)(struct pm80x_chip *chip,
 				struct pm80x_platform_data *pdata);
 };
@@ -367,4 +357,4 @@ static inline int pm80x_dev_resume(struct device *dev)
 
 extern int pm80x_init(struct i2c_client *client);
 extern int pm80x_deinit(void);
-#endif /* __LINUX_MFD_88PM80X_H */
+#endif 

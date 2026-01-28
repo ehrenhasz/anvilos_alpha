@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Device driver for regulators in MAX5970 and MAX5978 IC
- *
- * Copyright (c) 2022 9elements GmbH
- *
- * Author: Patrick Rudolph <patrick.rudolph@9elements.com>
- */
+
+
 
 #ifndef _MFD_MAX5970_H
 #define _MFD_MAX5970_H
@@ -93,4 +87,4 @@ enum max5970_chip_type {
 #define MAX_REGISTERS			0x49
 #define ADC_MASK			0x3FF
 
-#endif				/* _MFD_MAX5970_H */
+#endif				

@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
+
+
 
 #ifndef __LINUX_MFD_S2MPS13_H
 #define __LINUX_MFD_S2MPS13_H
 
-/* S2MPS13 registers */
+
 enum s2mps13_reg {
 	S2MPS13_REG_ID,
 	S2MPS13_REG_INT1,
@@ -110,7 +107,7 @@ enum s2mps13_reg {
 	S2MPS13_REG_LDODSCH5,
 };
 
-/*  regulator ids */
+
 enum s2mps13_regulators {
 	S2MPS13_LDO1,
 	S2MPS13_LDO2,
@@ -166,12 +163,8 @@ enum s2mps13_regulators {
 	S2MPS13_REGULATOR_MAX,
 };
 
-/*
- * Default ramp delay in uv/us. Datasheet says that ramp delay can be
- * controlled however it does not specify which register is used for that.
- * Let's assume that default value will be set.
- */
+
 #define S2MPS13_BUCK_RAMP_DELAY		12500
 #define S2MPS13_REG_WRSTBI_MASK		BIT(5)
 
-#endif /*  __LINUX_MFD_S2MPS13_H */
+#endif 

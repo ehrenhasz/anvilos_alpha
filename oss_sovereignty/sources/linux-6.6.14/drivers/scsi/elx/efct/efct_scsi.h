@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+
 
 #if !defined(__EFCT_SCSI_H__)
 #define __EFCT_SCSI_H__
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport_fc.h>
 
-/* efct_scsi_rcv_cmd() efct_scsi_rcv_tmf() flags */
+
 #define EFCT_SCSI_CMD_DIR_IN		(1 << 0)
 #define EFCT_SCSI_CMD_DIR_OUT		(1 << 1)
 #define EFCT_SCSI_CMD_SIMPLE		(1 << 2)
@@ -20,7 +17,7 @@
 #define EFCT_SCSI_FIRST_BURST_ERR	(1 << 7)
 #define EFCT_SCSI_FIRST_BURST_ABORTED	(1 << 8)
 
-/* efct_scsi_send_rd_data/recv_wr_data/send_resp flags */
+
 #define EFCT_SCSI_LAST_DATAPHASE	(1 << 0)
 #define EFCT_SCSI_NO_AUTO_RESPONSE	(1 << 1)
 #define EFCT_SCSI_LOW_LATENCY		(1 << 2)
@@ -62,7 +59,7 @@ struct efct_vport {
 	u64			npiv_wwnn;
 };
 
-/* Status values returned by IO callbacks */
+
 enum efct_scsi_io_status {
 	EFCT_SCSI_STATUS_GOOD = 0,
 	EFCT_SCSI_STATUS_ABORTED,
@@ -86,24 +83,24 @@ struct efct_io;
 struct efc_node;
 struct efc_nport;
 
-/* Callback used by send_rd_data(), recv_wr_data(), send_resp() */
+
 typedef int (*efct_scsi_io_cb_t)(struct efct_io *io,
 				    enum efct_scsi_io_status status,
 				    u32 flags, void *arg);
 
-/* Callback used by send_rd_io(), send_wr_io() */
+
 typedef int (*efct_scsi_rsp_io_cb_t)(struct efct_io *io,
 			enum efct_scsi_io_status status,
 			struct efct_scsi_cmd_resp *rsp,
 			u32 flags, void *arg);
 
-/* efct_scsi_cb_t flags */
+
 #define EFCT_SCSI_IO_CMPL		(1 << 0)
-/* IO completed, response sent */
+
 #define EFCT_SCSI_IO_CMPL_RSP_SENT	(1 << 1)
 #define EFCT_SCSI_IO_ABORTED		(1 << 2)
 
-/* efct_scsi_recv_tmf() request values */
+
 enum efct_scsi_tmf_cmd {
 	EFCT_SCSI_TMF_ABORT_TASK = 1,
 	EFCT_SCSI_TMF_QUERY_TASK_SET,
@@ -115,7 +112,7 @@ enum efct_scsi_tmf_cmd {
 	EFCT_SCSI_TMF_TARGET_RESET,
 };
 
-/* efct_scsi_send_tmf_resp() response values */
+
 enum efct_scsi_tmf_resp {
 	EFCT_SCSI_TMF_FUNCTION_COMPLETE = 1,
 	EFCT_SCSI_TMF_FUNCTION_SUCCEEDED,
@@ -200,4 +197,4 @@ void efct_scsi_check_pending(struct efct *efct);
 struct efct_io *
 efct_bls_send_rjt(struct efct_io *io, struct fc_frame_header *hdr);
 
-#endif /* __EFCT_SCSI_H__ */
+#endif 

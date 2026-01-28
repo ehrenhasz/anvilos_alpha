@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef GHES_H
 #define GHES_H
 
 #include <acpi/apei.h>
 #include <acpi/hed.h>
 
-/*
- * One struct ghes is created for each generic hardware error source.
- * It provides the context for APEI hardware error timer/IRQ/SCI/NMI
- * handler.
- *
- * estatus: memory buffer for error status block, allocated during
- * HEST parsing.
- */
+
 #define GHES_EXITING		0x0002
 
 struct ghes {
@@ -56,20 +49,10 @@ enum {
 };
 
 #ifdef CONFIG_ACPI_APEI_GHES
-/**
- * ghes_register_vendor_record_notifier - register a notifier for vendor
- * records that the kernel would otherwise ignore.
- * @nb: pointer to the notifier_block structure of the event handler.
- *
- * return 0 : SUCCESS, non-zero : FAIL
- */
+
 int ghes_register_vendor_record_notifier(struct notifier_block *nb);
 
-/**
- * ghes_unregister_vendor_record_notifier - unregister the previously
- * registered vendor record notifier.
- * @nb: pointer to the notifier_block structure of the vendor record handler.
- */
+
 void ghes_unregister_vendor_record_notifier(struct notifier_block *nb);
 
 struct list_head *ghes_get_devices(void);
@@ -133,4 +116,4 @@ static inline int ghes_notify_sea(void) { return -ENOENT; }
 struct notifier_block;
 extern void ghes_register_report_chain(struct notifier_block *nb);
 extern void ghes_unregister_report_chain(struct notifier_block *nb);
-#endif /* GHES_H */
+#endif 

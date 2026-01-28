@@ -5,7 +5,7 @@ except NameError:
     raise SystemExit
 eval('1 + 2')
 eval('1 + 2\n')
-eval('1 + 2\n\n#comment\n')
+eval('1 + 2\n\n
 x = 4
 eval('x')
 eval('lambda x: x + 10')(-5)

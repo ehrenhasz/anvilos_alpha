@@ -1,36 +1,33 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* n2rng.h: Niagara2 RNG defines.
- *
- * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
- */
+
+
 
 #ifndef _N2RNG_H
 #define _N2RNG_H
 
-/* ver1 devices - n2-rng, vf-rng, kt-rng */
-#define RNG_v1_CTL_WAIT       0x0000000001fffe00ULL /* Minimum wait time    */
+
+#define RNG_v1_CTL_WAIT       0x0000000001fffe00ULL 
 #define RNG_v1_CTL_WAIT_SHIFT 9
-#define RNG_v1_CTL_BYPASS     0x0000000000000100ULL /* VCO voltage source   */
-#define RNG_v1_CTL_VCO        0x00000000000000c0ULL /* VCO rate control     */
+#define RNG_v1_CTL_BYPASS     0x0000000000000100ULL 
+#define RNG_v1_CTL_VCO        0x00000000000000c0ULL 
 #define RNG_v1_CTL_VCO_SHIFT  6
-#define RNG_v1_CTL_ASEL       0x0000000000000030ULL /* Analog MUX select    */
+#define RNG_v1_CTL_ASEL       0x0000000000000030ULL 
 #define RNG_v1_CTL_ASEL_SHIFT 4
 #define RNG_v1_CTL_ASEL_NOOUT 2
 
-/* these are the same in v2 as in v1 */
-#define RNG_CTL_LFSR       0x0000000000000008ULL /* Use LFSR or plain shift */
-#define RNG_CTL_ES3        0x0000000000000004ULL /* Enable entropy source 3 */
-#define RNG_CTL_ES2        0x0000000000000002ULL /* Enable entropy source 2 */
-#define RNG_CTL_ES1        0x0000000000000001ULL /* Enable entropy source 1 */
 
-/* ver2 devices - m4-rng, m7-rng */
-#define RNG_v2_CTL_WAIT       0x0000000007fff800ULL /* Minimum wait time    */
+#define RNG_CTL_LFSR       0x0000000000000008ULL 
+#define RNG_CTL_ES3        0x0000000000000004ULL 
+#define RNG_CTL_ES2        0x0000000000000002ULL 
+#define RNG_CTL_ES1        0x0000000000000001ULL 
+
+
+#define RNG_v2_CTL_WAIT       0x0000000007fff800ULL 
 #define RNG_v2_CTL_WAIT_SHIFT 12
-#define RNG_v2_CTL_BYPASS     0x0000000000000400ULL /* VCO voltage source   */
-#define RNG_v2_CTL_VCO        0x0000000000000300ULL /* VCO rate control     */
+#define RNG_v2_CTL_BYPASS     0x0000000000000400ULL 
+#define RNG_v2_CTL_VCO        0x0000000000000300ULL 
 #define RNG_v2_CTL_VCO_SHIFT  9
-#define RNG_v2_CTL_PERF       0x0000000000000180ULL /* Perf */
-#define RNG_v2_CTL_ASEL       0x0000000000000070ULL /* Analog MUX select    */
+#define RNG_v2_CTL_PERF       0x0000000000000180ULL 
+#define RNG_v2_CTL_ASEL       0x0000000000000070ULL 
 #define RNG_v2_CTL_ASEL_SHIFT 4
 #define RNG_v2_CTL_ASEL_NOOUT 7
 
@@ -99,11 +96,11 @@ struct n2rng {
 	struct platform_device	*op;
 
 	unsigned long		flags;
-#define N2RNG_FLAG_MULTI	0x00000001 /* Multi-unit capable RNG */
-#define N2RNG_FLAG_CONTROL	0x00000002 /* Operating in control domain */
-#define N2RNG_FLAG_READY	0x00000008 /* Ready for hw-rng layer      */
-#define N2RNG_FLAG_SHUTDOWN	0x00000010 /* Driver unregistering        */
-#define N2RNG_FLAG_BUFFER_VALID	0x00000020 /* u32 buffer holds valid data */
+#define N2RNG_FLAG_MULTI	0x00000001 
+#define N2RNG_FLAG_CONTROL	0x00000002 
+#define N2RNG_FLAG_READY	0x00000008 
+#define N2RNG_FLAG_SHUTDOWN	0x00000010 
+#define N2RNG_FLAG_BUFFER_VALID	0x00000020 
 
 	struct n2rng_template	*data;
 	int			num_units;
@@ -112,13 +109,13 @@ struct n2rng {
 	struct hwrng		hwrng;
 	u32			buffer;
 
-	/* Registered hypervisor group API major and minor version.  */
+	
 	unsigned long		hvapi_major;
 	unsigned long		hvapi_minor;
 
 	struct delayed_work	work;
 
-	unsigned long		hv_state; /* HV_RNG_STATE_foo */
+	unsigned long		hv_state; 
 
 	unsigned long		health_check_sec;
 	unsigned long		accum_cycles;
@@ -147,6 +144,6 @@ struct n2rng {
 #define N2RNG_BUSY_LIMIT	100
 #define N2RNG_HCHECK_LIMIT	100
 
-#endif /* !(__ASSEMBLY__) */
+#endif 
 
-#endif /* _N2RNG_H */
+#endif 

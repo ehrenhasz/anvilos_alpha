@@ -1,16 +1,4 @@
-/*
- * ndis.h
- *
- * ntddndis.h modified by Benedikt Spranger <b.spranger@pengutronix.de>
- *
- * Thanks to the cygwin development team,
- * espacially to Casper S. Hornstrup <chorns@users.sourceforge.net>
- *
- * THIS SOFTWARE IS NOT COPYRIGHTED
- *
- * This source code is offered for use in the public domain. You may
- * use, modify or distribute it freely.
- */
+
 
 #ifndef _LINUX_NDIS_H
 #define _LINUX_NDIS_H
@@ -44,4 +32,4 @@ struct NDIS_PM_PACKET_PATTERN {
 	__le32	PatternFlags;
 };
 
-#endif /* _LINUX_NDIS_H */
+#endif 

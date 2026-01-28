@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 agpgart-y := backend.o generic.o isoch.o
 
 ifeq ($(CONFIG_DRM_LEGACY),y)

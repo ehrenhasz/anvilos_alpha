@@ -23,18 +23,18 @@ def f4():
 global_var = 1
 def test():
     global global_var, global_exc
-    global_var = 2  # set an existing global variable
-    for i in range(2):  # for loop
-        f1(i)  # function call
-        f1(i * 2 + 1)  # binary operation with small ints
-        f1(a=i)  # keyword arguments
-        f2(i)  # default arg (second one)
-        f2(i, i)  # 2 args
-    f1((1, "two", (b"three",)))  # use a constant tuple
-    f3(1, 2, 3, 4)  # function with lots of local state
-    for i in 1, "two":  # iterate over constant tuple
+    global_var = 2  
+    for i in range(2):  
+        f1(i)  
+        f1(i * 2 + 1)  
+        f1(a=i)  
+        f2(i)  
+        f2(i, i)  
+    f1((1, "two", (b"three",)))  
+    f3(1, 2, 3, 4)  
+    for i in 1, "two":  
         print(i)
-    print(f4())  # returns a constant tuple
+    print(f4())  
 micropython.heap_lock()
 test()
 micropython.heap_unlock()

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* The industrial I/O core function defs.
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * These definitions are meant for use only within the IIO core, not individual
- * drivers.
- */
+
+
 
 #ifndef _IIO_CORE_H_
 #define _IIO_CORE_H_
@@ -58,7 +52,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
 
 ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
 
-/* Event interface flags */
+
 #define IIO_BUSY_BIT_POS 1
 
 #ifdef CONFIG_IIO_BUFFER

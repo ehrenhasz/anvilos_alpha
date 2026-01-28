@@ -22,25 +22,25 @@ echo ' * Public Domain, Authors:'
 sed -e '/Alphabetical order:/d' -e 's/^/ * - /' < $AUTHOR
 echo ' */'
 echo
-echo '#include <string.h>'
+echo '
 echo
-echo '#include "crypto_api.h"'
+echo '
 echo
 for t in int8 uint8 int16 uint16 int32 uint32 int64 uint64; do
-	echo "#define $t crypto_${t}"
+	echo "
 done
 echo
 for i in $FILES; do
 	echo "/* from $i */"
 	sed \
-	    -e "/#include \"ge25519_base.data\"/r $DATA" \
-	    -e "/#include/d" \
+	    -e "/
+	    -e "/
 	    -e "s/^void /static void /g" \
 	    -e 's/CRYPTO_NAMESPACE[(]\([a-zA-Z0-9_]*\)[)]/crypto_sign_ed25519_ref_\1/g' \
 	    $i | \
 	case "$i" in
 	*/crypto_verify/32/ref/verify.c)
-	    sed -e "/^#include.*/d" \
+	    sed -e "/^
 	        -e "s/crypto_verify/crypto_verify_32/g" \
 	        -e "s/^int /static int /g"
 	    ;;

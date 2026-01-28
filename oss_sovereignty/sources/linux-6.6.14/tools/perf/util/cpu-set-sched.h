@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-// Definitions taken from glibc for use with older systems, same licensing.
+
+
 #ifndef _CPU_SET_SCHED_PERF_H
 #define _CPU_SET_SCHED_PERF_H
 
@@ -23,11 +23,11 @@
 	  break;							      \
       __i == __imax; }))
 #endif
-#endif // __CPU_EQUAL_S
+#endif 
 
 #define CPU_EQUAL(cpusetp1, cpusetp2) \
   __CPU_EQUAL_S (sizeof (cpu_set_t), cpusetp1, cpusetp2)
-#endif // CPU_EQUAL
+#endif 
 
 #ifndef CPU_OR
 #ifndef __CPU_OP_S
@@ -41,10 +41,10 @@
       for (__i = 0; __i < __imax; ++__i)				      \
 	((__cpu_mask *) __dest->__bits)[__i] = __arr1[__i] op __arr2[__i];    \
       __dest; }))
-#endif // __CPU_OP_S
+#endif 
 
 #define CPU_OR(destset, srcset1, srcset2) \
   __CPU_OP_S (sizeof (cpu_set_t), destset, srcset1, srcset2, |)
-#endif // CPU_OR
+#endif 
 
-#endif // _CPU_SET_SCHED_PERF_H
+#endif 

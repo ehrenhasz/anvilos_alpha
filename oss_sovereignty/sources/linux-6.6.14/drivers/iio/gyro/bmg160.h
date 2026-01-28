@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef BMG160_H_
 #define BMG160_H_
 
@@ -8,4 +8,4 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
 		      const char *name);
 void bmg160_core_remove(struct device *dev);
 
-#endif  /* BMG160_H_ */
+#endif  

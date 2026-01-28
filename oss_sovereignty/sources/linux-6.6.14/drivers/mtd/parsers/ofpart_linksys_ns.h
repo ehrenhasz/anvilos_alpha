@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __OFPART_LINKSYS_NS_H
 #define __OFPART_LINKSYS_NS_H
 

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
+
 
 obj-$(CONFIG_INV_ICM42600) += inv-icm42600.o
 inv-icm42600-y += inv_icm42600_core.o

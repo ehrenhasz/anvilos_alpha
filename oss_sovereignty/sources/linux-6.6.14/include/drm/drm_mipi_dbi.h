@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * MIPI Display Bus Interface (DBI) LCD controller support
- *
- * Copyright 2016 Noralf Trønnes
- */
+
+
 
 #ifndef __LINUX_MIPI_DBI_H
 #define __LINUX_MIPI_DBI_H
@@ -18,131 +14,77 @@ struct iosys_map;
 struct regulator;
 struct spi_device;
 
-/**
- * struct mipi_dbi - MIPI DBI interface
- */
+
 struct mipi_dbi {
-	/**
-	 * @cmdlock: Command lock
-	 */
+	
 	struct mutex cmdlock;
 
-	/**
-	 * @command: Bus specific callback executing commands.
-	 */
+	
 	int (*command)(struct mipi_dbi *dbi, u8 *cmd, u8 *param, size_t num);
 
-	/**
-	 * @read_commands: Array of read commands terminated by a zero entry.
-	 *                 Reading is disabled if this is NULL.
-	 */
+	
 	const u8 *read_commands;
 
-	/**
-	 * @swap_bytes: Swap bytes in buffer before transfer
-	 */
+	
 	bool swap_bytes;
 
-	/**
-	 * @reset: Optional reset gpio
-	 */
+	
 	struct gpio_desc *reset;
 
-	/* Type C specific */
+	
 
-	/**
-	 * @spi: SPI device
-	 */
+	
 	struct spi_device *spi;
 
-	/**
-	 * @dc: Optional D/C gpio.
-	 */
+	
 	struct gpio_desc *dc;
 
-	/**
-	 * @tx_buf9: Buffer used for Option 1 9-bit conversion
-	 */
+	
 	void *tx_buf9;
 
-	/**
-	 * @tx_buf9_len: Size of tx_buf9.
-	 */
+	
 	size_t tx_buf9_len;
 };
 
-/**
- * struct mipi_dbi_dev - MIPI DBI device
- */
+
 struct mipi_dbi_dev {
-	/**
-	 * @drm: DRM device
-	 */
+	
 	struct drm_device drm;
 
-	/**
-	 * @pipe: Display pipe structure
-	 */
+	
 	struct drm_simple_display_pipe pipe;
 
-	/**
-	 * @connector: Connector
-	 */
+	
 	struct drm_connector connector;
 
-	/**
-	 * @mode: Fixed display mode
-	 */
+	
 	struct drm_display_mode mode;
 
-	/**
-	 * @tx_buf: Buffer used for transfer (copy clip rect area)
-	 */
+	
 	u16 *tx_buf;
 
-	/**
-	 * @rotation: initial rotation in degrees Counter Clock Wise
-	 */
+	
 	unsigned int rotation;
 
-	/**
-	 * @left_offset: Horizontal offset of the display relative to the
-	 *               controller's driver array
-	 */
+	
 	unsigned int left_offset;
 
-	/**
-	 * @top_offset: Vertical offset of the display relative to the
-	 *              controller's driver array
-	 */
+	
 	unsigned int top_offset;
 
-	/**
-	 * @backlight: backlight device (optional)
-	 */
+	
 	struct backlight_device *backlight;
 
-	/**
-	 * @regulator: power regulator (Vdd) (optional)
-	 */
+	
 	struct regulator *regulator;
 
-	/**
-	 * @io_regulator: I/O power regulator (Vddi) (optional)
-	 */
+	
 	struct regulator *io_regulator;
 
-	/**
-	 * @dbi: MIPI DBI interface
-	 */
+	
 	struct mipi_dbi dbi;
 
-	/**
-	 * @driver_private: Driver private data.
-	 *                  Necessary for drivers with private data since devm_drm_dev_alloc()
-	 *                  can't allocate structures that embed a structure which then again
-	 *                  embeds drm_device.
-	 */
+	
 	void *driver_private;
 };
 
@@ -194,18 +136,7 @@ int mipi_dbi_command_stackbuf(struct mipi_dbi *dbi, u8 cmd, const u8 *data,
 int mipi_dbi_buf_copy(void *dst, struct iosys_map *src, struct drm_framebuffer *fb,
 		      struct drm_rect *clip, bool swap);
 
-/**
- * mipi_dbi_command - MIPI DCS command with optional parameter(s)
- * @dbi: MIPI DBI structure
- * @cmd: Command
- * @seq: Optional parameter(s)
- *
- * Send MIPI DCS command to the controller. Use mipi_dbi_command_read() for
- * get/read.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+
 #define mipi_dbi_command(dbi, cmd, seq...) \
 ({ \
 	const u8 d[] = { seq }; \
@@ -223,16 +154,7 @@ void mipi_dbi_debugfs_init(struct drm_minor *minor);
 static inline void mipi_dbi_debugfs_init(struct drm_minor *minor) {}
 #endif
 
-/**
- * DRM_MIPI_DBI_SIMPLE_DISPLAY_PIPE_FUNCS - Initializes struct drm_simple_display_pipe_funcs
- *                                          for MIPI-DBI devices
- * @enable_: Enable-callback implementation
- *
- * This macro initializes struct drm_simple_display_pipe_funcs with default
- * values for MIPI-DBI-based devices. The only callback that depends on the
- * hardware is @enable, for which the driver has to provide an implementation.
- * MIPI-based drivers are encouraged to use this macro for initialization.
- */
+
 #define DRM_MIPI_DBI_SIMPLE_DISPLAY_PIPE_FUNCS(enable_) \
 	.mode_valid = mipi_dbi_pipe_mode_valid, \
 	.enable = (enable_), \
@@ -244,4 +166,4 @@ static inline void mipi_dbi_debugfs_init(struct drm_minor *minor) {}
 	.duplicate_plane_state = mipi_dbi_pipe_duplicate_plane_state, \
 	.destroy_plane_state = mipi_dbi_pipe_destroy_plane_state
 
-#endif /* __LINUX_MIPI_DBI_H */
+#endif 

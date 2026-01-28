@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2006-2011 Solarflare Communications Inc.
- */
+
+
 
 #ifndef EF4_MDIO_10G_H
 #define EF4_MDIO_10G_H
 
 #include <linux/mdio.h>
 
-/*
- * Helper functions for doing 10G MDIO as specified in IEEE 802.3 clause 45.
- */
+
 
 #include "efx.h"
 
@@ -55,46 +50,39 @@ static inline bool ef4_mdio_phyxgxs_lane_sync(struct ef4_nic *efx)
 
 const char *ef4_mdio_mmd_name(int mmd);
 
-/*
- * Reset a specific MMD and wait for reset to clear.
- * Return number of spins left (>0) on success, -%ETIMEDOUT on failure.
- *
- * This function will sleep
- */
+
 int ef4_mdio_reset_mmd(struct ef4_nic *efx, int mmd, int spins, int spintime);
 
-/* As ef4_mdio_check_mmd but for multiple MMDs */
+
 int ef4_mdio_check_mmds(struct ef4_nic *efx, unsigned int mmd_mask);
 
-/* Check the link status of specified mmds in bit mask */
+
 bool ef4_mdio_links_ok(struct ef4_nic *efx, unsigned int mmd_mask);
 
-/* Generic transmit disable support though PMAPMD */
+
 void ef4_mdio_transmit_disable(struct ef4_nic *efx);
 
-/* Generic part of reconfigure: set/clear loopback bits */
+
 void ef4_mdio_phy_reconfigure(struct ef4_nic *efx);
 
-/* Set the power state of the specified MMDs */
+
 void ef4_mdio_set_mmds_lpower(struct ef4_nic *efx, int low_power,
 			      unsigned int mmd_mask);
 
-/* Set (some of) the PHY settings over MDIO */
+
 int ef4_mdio_set_link_ksettings(struct ef4_nic *efx,
 				const struct ethtool_link_ksettings *cmd);
 
-/* Push advertising flags and restart autonegotiation */
+
 void ef4_mdio_an_reconfigure(struct ef4_nic *efx);
 
-/* Get pause parameters from AN if available (otherwise return
- * requested pause parameters)
- */
+
 u8 ef4_mdio_get_pause(struct ef4_nic *efx);
 
-/* Wait for specified MMDs to exit reset within a timeout */
+
 int ef4_mdio_wait_reset_mmds(struct ef4_nic *efx, unsigned int mmd_mask);
 
-/* Set or clear flag, debouncing */
+
 static inline void
 ef4_mdio_set_flag(struct ef4_nic *efx, int devad, int addr,
 		  int mask, bool state)
@@ -102,7 +90,7 @@ ef4_mdio_set_flag(struct ef4_nic *efx, int devad, int addr,
 	mdio_set_flag(&efx->mdio, efx->mdio.prtad, devad, addr, mask, state);
 }
 
-/* Liveness self-test for MDIO PHYs */
+
 int ef4_mdio_test_alive(struct ef4_nic *efx);
 
-#endif /* EF4_MDIO_10G_H */
+#endif 

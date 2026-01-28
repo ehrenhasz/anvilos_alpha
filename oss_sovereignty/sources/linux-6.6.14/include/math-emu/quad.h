@@ -1,26 +1,4 @@
-/* Software floating-point emulation.
-   Definitions for IEEE Quad Precision.
-   Copyright (C) 1997,1998,1999 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Richard Henderson (rth@cygnus.com),
-		  Jakub Jelinek (jj@ultra.linux.cz),
-		  David S. Miller (davem@redhat.com) and
-		  Peter Maydell (pmaydell@chiark.greenend.org.uk).
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If
-   not, write to the Free Software Foundation, Inc.,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef  __MATH_EMU_QUAD_H__
 #define  __MATH_EMU_QUAD_H__
@@ -71,7 +49,7 @@ union _FP_UNION_Q
       unsigned long frac3 : _FP_FRACBITS_Q - (_FP_IMPLBIT_Q != 0)-(_FP_W_TYPE_SIZE * 3);
       unsigned exp : _FP_EXPBITS_Q;
       unsigned sign : 1;
-#endif /* not bigendian */
+#endif 
    } bits __attribute__((packed));
 };
 
@@ -130,10 +108,10 @@ union _FP_UNION_Q
 #define _FP_FRAC_HIGH_Q(X)	_FP_FRAC_HIGH_4(X)
 #define _FP_FRAC_HIGH_RAW_Q(X)	_FP_FRAC_HIGH_4(X)
 
-#else   /* not _FP_W_TYPE_SIZE < 64 */
+#else   
 union _FP_UNION_Q
 {
-  long double flt /* __attribute__((mode(TF))) */ ;
+  long double flt  ;
   struct {
 #if __BYTE_ORDER == __BIG_ENDIAN
     unsigned sign  : 1;
@@ -203,6 +181,6 @@ union _FP_UNION_Q
 #define _FP_FRAC_HIGH_Q(X)	_FP_FRAC_HIGH_2(X)
 #define _FP_FRAC_HIGH_RAW_Q(X)	_FP_FRAC_HIGH_2(X)
 
-#endif /* not _FP_W_TYPE_SIZE < 64 */
+#endif 
 
-#endif /* __MATH_EMU_QUAD_H__ */
+#endif 

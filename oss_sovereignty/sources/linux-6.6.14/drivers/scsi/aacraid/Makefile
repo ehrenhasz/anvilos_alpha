@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0-only
-# Adaptec aacraid
+
+
 
 obj-$(CONFIG_SCSI_AACRAID) := aacraid.o
 

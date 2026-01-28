@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+
+
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
@@ -20,7 +18,7 @@
 #define CCU_FEATURE_KEY_FIELD		BIT(8)
 #define CCU_FEATURE_CLOSEST_RATE	BIT(9)
 
-/* MMC timing mode switch bit */
+
 #define CCU_MMC_NEW_TIMING_MODE		BIT(30)
 
 struct device_node;
@@ -75,4 +73,4 @@ int devm_sunxi_ccu_probe(struct device *dev, void __iomem *reg,
 void of_sunxi_ccu_probe(struct device_node *node, void __iomem *reg,
 			const struct sunxi_ccu_desc *desc);
 
-#endif /* _COMMON_H_ */
+#endif 

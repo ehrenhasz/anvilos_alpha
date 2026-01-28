@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
@@ -30,9 +30,9 @@ TRACE_EVENT(mlx5_sf_vhca_event,
 		      __entry->sfnum, __entry->vhca_state)
 );
 
-#endif /* _MLX5_SF_VHCA_TP_ */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH sf/diag
 #undef TRACE_INCLUDE_FILE

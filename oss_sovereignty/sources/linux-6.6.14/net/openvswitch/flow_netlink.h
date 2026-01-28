@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2007-2013 Nicira, Inc.
- */
+
+
 
 
 #ifndef FLOW_NETLINK_H
@@ -70,4 +68,4 @@ int nsh_key_from_nlattr(const struct nlattr *attr, struct ovs_key_nsh *nsh,
 int nsh_hdr_from_nlattr(const struct nlattr *attr, struct nshhdr *nh,
 			size_t size);
 
-#endif /* flow_netlink.h */
+#endif 

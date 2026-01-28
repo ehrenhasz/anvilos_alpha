@@ -18,11 +18,11 @@ class RAMBlockDevice:
         for i in range(len(buf)):
             self.data[addr + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # block count
+        if op == 4:  
             return len(self.data) // self.ERASE_BLOCK_SIZE
-        if op == 5:  # block size
+        if op == 5:  
             return self.ERASE_BLOCK_SIZE
-        if op == 6:  # erase block
+        if op == 6:  
             return 0
 def print_stat(st, print_size=True):
     print(st[:6], st[6] if print_size else -1, type(st[7]), type(st[8]), type(st[9]))

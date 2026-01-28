@@ -257,4 +257,4 @@ Variable4=${Variable4:?$HOME$SHELL}
 Variable4=${Variable4:?$HOME:$SHELL}
 Variable4=${Variable4:?This is OK}
 Variable4=${Variable4:?This is OK, too: `date`}
-Variable5=${#identifier[*]}
+Variable5=${

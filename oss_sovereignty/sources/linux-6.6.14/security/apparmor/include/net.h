@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor network mediation definitions.
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2017 Canonical Ltd.
- */
+
+
 
 #ifndef __AA_NET_H
 #define __AA_NET_H
@@ -113,4 +106,4 @@ int aa_sock_file_perm(const struct cred *subj_cred, struct aa_label *label,
 int apparmor_secmark_check(struct aa_label *label, char *op, u32 request,
 			   u32 secid, const struct sock *sk);
 
-#endif /* __AA_NET_H */
+#endif 

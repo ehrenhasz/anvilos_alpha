@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
- */
+
 
 #ifndef __UM_PROCESSOR_I386_H
 #define __UM_PROCESSOR_I386_H
@@ -37,7 +34,7 @@ struct arch_thread {
 
 static inline void arch_flush_thread(struct arch_thread *thread)
 {
-	/* Clear any TLS still hanging */
+	
 	memset(&thread->tls_array, 0, sizeof(thread->tls_array));
 }
 

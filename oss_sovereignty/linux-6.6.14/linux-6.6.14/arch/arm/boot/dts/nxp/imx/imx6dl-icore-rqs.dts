@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx6dl.dtsi"
-#include "imx6qdl-icore-rqs.dtsi"
-/ {
-	model = "Engicam i.CoreM6 DualLite/Solo RQS Starter Kit";
-	compatible = "engicam,imx6-icore-rqs", "fsl,imx6dl";
-};

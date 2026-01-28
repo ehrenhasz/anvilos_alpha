@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2017 Microsemi Corporation
- */
+
+
 
 #ifndef _MSCC_OCELOT_H_
 #define _MSCC_OCELOT_H_
@@ -51,13 +47,7 @@ struct ocelot_port_private {
 	struct ocelot_port_tc tc;
 };
 
-/* A (PGID) port mask structure, encoding the 2^ocelot->num_phys_ports
- * possibilities of egress port masks for L2 multicast traffic.
- * For a switch with 9 user ports, there are 512 possible port masks, but the
- * hardware only has 46 individual PGIDs that it can forward multicast traffic
- * to. So we need a structure that maps the limited PGID indices to the port
- * destinations requested by the user for L2 multicast.
- */
+
 struct ocelot_pgid {
 	unsigned long ports;
 	int index;

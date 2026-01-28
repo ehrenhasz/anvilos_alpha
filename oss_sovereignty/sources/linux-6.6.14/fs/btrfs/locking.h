@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_LOCKING_H
 #define BTRFS_LOCKING_H
@@ -14,67 +12,28 @@
 #define BTRFS_WRITE_LOCK 1
 #define BTRFS_READ_LOCK 2
 
-/*
- * We are limited in number of subclasses by MAX_LOCKDEP_SUBCLASSES, which at
- * the time of this patch is 8, which is how many we use.  Keep this in mind if
- * you decide you want to add another subclass.
- */
+
 enum btrfs_lock_nesting {
 	BTRFS_NESTING_NORMAL,
 
-	/*
-	 * When we COW a block we are holding the lock on the original block,
-	 * and since our lockdep maps are rootid+level, this confuses lockdep
-	 * when we lock the newly allocated COW'd block.  Handle this by having
-	 * a subclass for COW'ed blocks so that lockdep doesn't complain.
-	 */
+	
 	BTRFS_NESTING_COW,
 
-	/*
-	 * Oftentimes we need to lock adjacent nodes on the same level while
-	 * still holding the lock on the original node we searched to, such as
-	 * for searching forward or for split/balance.
-	 *
-	 * Because of this we need to indicate to lockdep that this is
-	 * acceptable by having a different subclass for each of these
-	 * operations.
-	 */
+	
 	BTRFS_NESTING_LEFT,
 	BTRFS_NESTING_RIGHT,
 
-	/*
-	 * When splitting we will be holding a lock on the left/right node when
-	 * we need to cow that node, thus we need a new set of subclasses for
-	 * these two operations.
-	 */
+	
 	BTRFS_NESTING_LEFT_COW,
 	BTRFS_NESTING_RIGHT_COW,
 
-	/*
-	 * When splitting we may push nodes to the left or right, but still use
-	 * the subsequent nodes in our path, keeping our locks on those adjacent
-	 * blocks.  Thus when we go to allocate a new split block we've already
-	 * used up all of our available subclasses, so this subclass exists to
-	 * handle this case where we need to allocate a new split block.
-	 */
+	
 	BTRFS_NESTING_SPLIT,
 
-	/*
-	 * When promoting a new block to a root we need to have a special
-	 * subclass so we don't confuse lockdep, as it will appear that we are
-	 * locking a higher level node before a lower level one.  Copying also
-	 * has this problem as it appears we're locking the same block again
-	 * when we make a snapshot of an existing root.
-	 */
+	
 	BTRFS_NESTING_NEW_ROOT,
 
-	/*
-	 * We are limited to MAX_LOCKDEP_SUBLCLASSES number of subclasses, so
-	 * add this in here and add a static_assert to keep us from going over
-	 * the limit.  As of this writing we're limited to 8, and we're
-	 * definitely using 8, hence this check to keep us from messing up in
-	 * the future.
-	 */
+	
 	BTRFS_NESTING_MAX,
 };
 
@@ -85,48 +44,22 @@ enum btrfs_lockdep_trans_states {
 	BTRFS_LOCKDEP_TRANS_COMPLETED,
 };
 
-/*
- * Lockdep annotation for wait events.
- *
- * @owner:  The struct where the lockdep map is defined
- * @lock:   The lockdep map corresponding to a wait event
- *
- * This macro is used to annotate a wait event. In this case a thread acquires
- * the lockdep map as writer (exclusive lock) because it has to block until all
- * the threads that hold the lock as readers signal the condition for the wait
- * event and release their locks.
- */
+
 #define btrfs_might_wait_for_event(owner, lock)					\
 	do {									\
 		rwsem_acquire(&owner->lock##_map, 0, 0, _THIS_IP_);		\
 		rwsem_release(&owner->lock##_map, _THIS_IP_);			\
 	} while (0)
 
-/*
- * Protection for the resource/condition of a wait event.
- *
- * @owner:  The struct where the lockdep map is defined
- * @lock:   The lockdep map corresponding to a wait event
- *
- * Many threads can modify the condition for the wait event at the same time
- * and signal the threads that block on the wait event. The threads that modify
- * the condition and do the signaling acquire the lock as readers (shared
- * lock).
- */
+
 #define btrfs_lockdep_acquire(owner, lock)					\
 	rwsem_acquire_read(&owner->lock##_map, 0, 0, _THIS_IP_)
 
-/*
- * Used after signaling the condition for a wait event to release the lockdep
- * map held by a reader thread.
- */
+
 #define btrfs_lockdep_release(owner, lock)					\
 	rwsem_release(&owner->lock##_map, _THIS_IP_)
 
-/*
- * Macros for the transaction states wait events, similar to the generic wait
- * event macros.
- */
+
 #define btrfs_might_wait_for_state(owner, i)					\
 	do {									\
 		rwsem_acquire(&owner->btrfs_state_change_map[i], 0, 0, _THIS_IP_); \
@@ -139,14 +72,14 @@ enum btrfs_lockdep_trans_states {
 #define btrfs_trans_state_lockdep_release(owner, i)				\
 	rwsem_release(&owner->btrfs_state_change_map[i], _THIS_IP_)
 
-/* Initialization of the lockdep map */
+
 #define btrfs_lockdep_init_map(owner, lock)					\
 	do {									\
 		static struct lock_class_key lock##_key;			\
 		lockdep_init_map(&owner->lock##_map, #lock, &lock##_key, 0);	\
 	} while (0)
 
-/* Initialization of the transaction states lockdep maps. */
+
 #define btrfs_state_lockdep_init_map(owner, lock, state)			\
 	do {									\
 		static struct lock_class_key lock##_key;			\

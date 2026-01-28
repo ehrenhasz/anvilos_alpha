@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * lirc.h - linux infrared remote control header file
- */
+
+
 
 #ifndef _LINUX_LIRC_H
 #define _LINUX_LIRC_H
@@ -36,10 +34,10 @@
 #define LIRC_IS_TIMEOUT(val) (LIRC_MODE2(val) == LIRC_MODE2_TIMEOUT)
 #define LIRC_IS_OVERFLOW(val) (LIRC_MODE2(val) == LIRC_MODE2_OVERFLOW)
 
-/* used heavily by lirc userspace */
+
 #define lirc_t int
 
-/*** lirc compatible hardware features ***/
+
 
 #define LIRC_MODE2SEND(x) (x)
 #define LIRC_SEND2MODE(x) (x)
@@ -84,14 +82,11 @@
 #define LIRC_CAN_SEND(x) ((x)&LIRC_CAN_SEND_MASK)
 #define LIRC_CAN_REC(x) ((x)&LIRC_CAN_REC_MASK)
 
-/*
- * Unused features. These features were never implemented, in tree or
- * out of tree. These definitions are here so not to break the lircd build.
- */
+
 #define LIRC_CAN_SET_REC_FILTER		0
 #define LIRC_CAN_NOTIFY_DECODE		0
 
-/*** IOCTL commands for lirc driver ***/
+
 
 #define LIRC_GET_FEATURES              _IOR('i', 0x00000000, __u32)
 
@@ -102,60 +97,35 @@
 #define LIRC_GET_MIN_TIMEOUT           _IOR('i', 0x00000008, __u32)
 #define LIRC_GET_MAX_TIMEOUT           _IOR('i', 0x00000009, __u32)
 
-/* code length in bits, currently only for LIRC_MODE_LIRCCODE */
+
 #define LIRC_GET_LENGTH                _IOR('i', 0x0000000f, __u32)
 
 #define LIRC_SET_SEND_MODE             _IOW('i', 0x00000011, __u32)
 #define LIRC_SET_REC_MODE              _IOW('i', 0x00000012, __u32)
-/* Note: these can reset the according pulse_width */
+
 #define LIRC_SET_SEND_CARRIER          _IOW('i', 0x00000013, __u32)
 #define LIRC_SET_REC_CARRIER           _IOW('i', 0x00000014, __u32)
 #define LIRC_SET_SEND_DUTY_CYCLE       _IOW('i', 0x00000015, __u32)
 #define LIRC_SET_TRANSMITTER_MASK      _IOW('i', 0x00000017, __u32)
 
-/*
- * when a timeout != 0 is set the driver will send a
- * LIRC_MODE2_TIMEOUT data packet, otherwise LIRC_MODE2_TIMEOUT is
- * never sent, timeout is disabled by default
- */
+
 #define LIRC_SET_REC_TIMEOUT           _IOW('i', 0x00000018, __u32)
 
-/* 1 enables, 0 disables timeout reports in MODE2 */
+
 #define LIRC_SET_REC_TIMEOUT_REPORTS   _IOW('i', 0x00000019, __u32)
 
-/*
- * if enabled from the next key press on the driver will send
- * LIRC_MODE2_FREQUENCY packets
- */
+
 #define LIRC_SET_MEASURE_CARRIER_MODE	_IOW('i', 0x0000001d, __u32)
 
-/*
- * to set a range use LIRC_SET_REC_CARRIER_RANGE with the
- * lower bound first and later LIRC_SET_REC_CARRIER with the upper bound
- */
+
 #define LIRC_SET_REC_CARRIER_RANGE     _IOW('i', 0x0000001f, __u32)
 
 #define LIRC_SET_WIDEBAND_RECEIVER     _IOW('i', 0x00000023, __u32)
 
-/*
- * Return the recording timeout, which is either set by
- * the ioctl LIRC_SET_REC_TIMEOUT or by the kernel after setting the protocols.
- */
+
 #define LIRC_GET_REC_TIMEOUT	       _IOR('i', 0x00000024, __u32)
 
-/**
- * struct lirc_scancode - decoded scancode with protocol for use with
- *	LIRC_MODE_SCANCODE
- *
- * @timestamp: Timestamp in nanoseconds using CLOCK_MONOTONIC when IR
- *	was decoded.
- * @flags: should be 0 for transmit. When receiving scancodes,
- *	LIRC_SCANCODE_FLAG_TOGGLE or LIRC_SCANCODE_FLAG_REPEAT can be set
- *	depending on the protocol
- * @rc_proto: see enum rc_proto
- * @keycode: the translated keycode. Set to 0 for transmit.
- * @scancode: the scancode received or to be sent
- */
+
 struct lirc_scancode {
 	__u64	timestamp;
 	__u16	flags;
@@ -164,44 +134,12 @@ struct lirc_scancode {
 	__u64	scancode;
 };
 
-/* Set if the toggle bit of rc-5 or rc-6 is enabled */
+
 #define LIRC_SCANCODE_FLAG_TOGGLE	1
-/* Set if this is a nec or sanyo repeat */
+
 #define LIRC_SCANCODE_FLAG_REPEAT	2
 
-/**
- * enum rc_proto - the Remote Controller protocol
- *
- * @RC_PROTO_UNKNOWN: Protocol not known
- * @RC_PROTO_OTHER: Protocol known but proprietary
- * @RC_PROTO_RC5: Philips RC5 protocol
- * @RC_PROTO_RC5X_20: Philips RC5x 20 bit protocol
- * @RC_PROTO_RC5_SZ: StreamZap variant of RC5
- * @RC_PROTO_JVC: JVC protocol
- * @RC_PROTO_SONY12: Sony 12 bit protocol
- * @RC_PROTO_SONY15: Sony 15 bit protocol
- * @RC_PROTO_SONY20: Sony 20 bit protocol
- * @RC_PROTO_NEC: NEC protocol
- * @RC_PROTO_NECX: Extended NEC protocol
- * @RC_PROTO_NEC32: NEC 32 bit protocol
- * @RC_PROTO_SANYO: Sanyo protocol
- * @RC_PROTO_MCIR2_KBD: RC6-ish MCE keyboard
- * @RC_PROTO_MCIR2_MSE: RC6-ish MCE mouse
- * @RC_PROTO_RC6_0: Philips RC6-0-16 protocol
- * @RC_PROTO_RC6_6A_20: Philips RC6-6A-20 protocol
- * @RC_PROTO_RC6_6A_24: Philips RC6-6A-24 protocol
- * @RC_PROTO_RC6_6A_32: Philips RC6-6A-32 protocol
- * @RC_PROTO_RC6_MCE: MCE (Philips RC6-6A-32 subtype) protocol
- * @RC_PROTO_SHARP: Sharp protocol
- * @RC_PROTO_XMP: XMP protocol
- * @RC_PROTO_CEC: CEC protocol
- * @RC_PROTO_IMON: iMon Pad protocol
- * @RC_PROTO_RCMM12: RC-MM protocol 12 bits
- * @RC_PROTO_RCMM24: RC-MM protocol 24 bits
- * @RC_PROTO_RCMM32: RC-MM protocol 32 bits
- * @RC_PROTO_XBOX_DVD: Xbox DVD Movie Playback Kit protocol
- * @RC_PROTO_MAX: Maximum value of enum rc_proto
- */
+
 enum rc_proto {
 	RC_PROTO_UNKNOWN	= 0,
 	RC_PROTO_OTHER		= 1,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _DT_BINDINGS_POWER_MT8173_POWER_H
 #define _DT_BINDINGS_POWER_MT8173_POWER_H
 
@@ -13,4 +13,4 @@
 #define MT8173_POWER_DOMAIN_MFG_2D	8
 #define MT8173_POWER_DOMAIN_MFG		9
 
-#endif /* _DT_BINDINGS_POWER_MT8173_POWER_H */
+#endif 

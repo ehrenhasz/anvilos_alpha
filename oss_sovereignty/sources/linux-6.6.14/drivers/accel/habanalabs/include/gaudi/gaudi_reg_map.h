@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2019-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI_REG_MAP_H_
 #define GAUDI_REG_MAP_H_
 
-/*
- * PSOC scratch-pad registers
- */
+
 #define mmHW_STATE			mmPSOC_GLOBAL_CONF_SCRATCHPAD_0
 #define mmGIC_HOST_PI_UPD_IRQ_POLL_REG	mmPSOC_GLOBAL_CONF_SCRATCHPAD_1
 #define mmGIC_TPC_QM_IRQ_CTRL_POLL_REG	mmPSOC_GLOBAL_CONF_SCRATCHPAD_2
@@ -36,4 +29,4 @@
 #define mmCOLD_RST_DATA			mmPSOC_GLOBAL_CONF_COLD_RST_FLOPS_2
 #define mmUPD_PENDING_STS		mmPSOC_GLOBAL_CONF_COLD_RST_FLOPS_3
 
-#endif /* GAUDI_REG_MAP_H_ */
+#endif 

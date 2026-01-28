@@ -1,5 +1,5 @@
 ttyname=`tty`
-ttybase="${ttyname%%[0123456789]*}"     # strip numeric tail
+ttybase="${ttyname%%[0123456789]*}"     
 if test "$ttybase" = "/dev/tty"; then
 	tail="${ttyname:8}"
 	echo "* Setting terminal device's owner to $LOGIN_UID:$LOGIN_GID"

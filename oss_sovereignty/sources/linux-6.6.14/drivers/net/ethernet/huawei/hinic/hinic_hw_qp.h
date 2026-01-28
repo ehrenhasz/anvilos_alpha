@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+
 
 #ifndef HINIC_HW_QP_H
 #define HINIC_HW_QP_H
@@ -47,7 +44,7 @@
 #define HINIC_MAX_QUEUE_DEPTH			SZ_4K
 #define HINIC_MIN_QUEUE_DEPTH			128
 
-/* In any change to HINIC_RX_BUF_SZ, HINIC_RX_BUF_SZ_IDX must be changed */
+
 #define HINIC_RX_BUF_SZ                         2048
 #define HINIC_RX_BUF_SZ_IDX			HINIC_RX_BUF_SZ_2048_IDX
 

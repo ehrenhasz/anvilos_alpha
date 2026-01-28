@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TOOLS_ENDIAN_H
 #define _TOOLS_ENDIAN_H
 
@@ -28,7 +28,7 @@
 #define le64toh(x) (x)
 #endif
 
-#else /* __BYTE_ORDER */
+#else 
 
 #ifndef htole16
 #define htole16(x) __bswap_16(x)
@@ -54,4 +54,4 @@
 
 #endif
 
-#endif /* _TOOLS_ENDIAN_H */
+#endif 

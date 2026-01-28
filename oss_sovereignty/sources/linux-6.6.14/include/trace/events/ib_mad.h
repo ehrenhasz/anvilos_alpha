@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
 
-/*
- * Copyright (c) 2018 Intel Corporation.  All rights reserved.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ib_mad
@@ -380,6 +378,6 @@ DEFINE_EVENT(ib_mad_opa_ib_template, ib_mad_handle_out_ib_smi,
 	TP_PROTO(struct ib_smp *smp),
 	TP_ARGS(smp));
 
-#endif /* _TRACE_IB_MAD_H */
+#endif 
 
 #include <trace/define_trace.h>

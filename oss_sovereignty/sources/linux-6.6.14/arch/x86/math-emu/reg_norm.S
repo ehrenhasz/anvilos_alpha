@@ -1,22 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*---------------------------------------------------------------------------+
- |  reg_norm.S                                                               |
- |                                                                           |
- | Copyright (C) 1992,1993,1994,1995,1997                                    |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail billm@suburbia.net               |
- |                                                                           |
- | Normalize the value in a FPU_REG.                                         |
- |                                                                           |
- | Call from C as:                                                           |
- |    int FPU_normalize(FPU_REG *n)                                          |
- |                                                                           |
- |    int FPU_normalize_nuo(FPU_REG *n)                                      |
- |                                                                           |
- |    Return value is the tag of the answer, or-ed with FPU_Exception if     |
- |    one was raised, or -1 on internal error.                               |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+
+
 
 #include "fpu_emu.h"
 
@@ -32,25 +15,25 @@ SYM_FUNC_START(FPU_normalize)
 	movl	SIGH(%ebx),%edx
 	movl	SIGL(%ebx),%eax
 
-	orl	%edx,%edx	/* ms bits */
-	js	L_done		/* Already normalized */
-	jnz	L_shift_1	/* Shift left 1 - 31 bits */
+	orl	%edx,%edx	
+	js	L_done		
+	jnz	L_shift_1	
 
 	orl	%eax,%eax
-	jz	L_zero		/* The contents are zero */
+	jz	L_zero		
 
 	movl	%eax,%edx
 	xorl	%eax,%eax
-	subw	$32,EXP(%ebx)	/* This can cause an underflow */
+	subw	$32,EXP(%ebx)	
 
-/* We need to shift left by 1 - 31 bits */
+
 L_shift_1:
-	bsrl	%edx,%ecx	/* get the required shift in %ecx */
+	bsrl	%edx,%ecx	
 	subl	$31,%ecx
 	negl	%ecx
 	shld	%cl,%eax,%edx
 	shl	%cl,%eax
-	subw	%cx,EXP(%ebx)	/* This can cause an underflow */
+	subw	%cx,EXP(%ebx)	
 
 	movl	%edx,SIGH(%ebx)
 	movl	%eax,SIGL(%ebx)
@@ -65,7 +48,7 @@ L_done:
 L_exit_valid:
 	movl	TAG_Valid,%eax
 
-	/* Convert the exponent to 80x87 form. */
+	
 	addw	EXTENDED_Ebias,EXP(%ebx)
 	andw	$0x7fff,EXP(%ebx)
 
@@ -81,7 +64,7 @@ L_zero:
 	jmp	L_exit
 
 L_underflow:
-	/* Convert the exponent to 80x87 form. */
+	
 	addw	EXTENDED_Ebias,EXP(%ebx)
 	push	%ebx
 	call	arith_underflow
@@ -89,7 +72,7 @@ L_underflow:
 	jmp	L_exit
 
 L_overflow:
-	/* Convert the exponent to 80x87 form. */
+	
 	addw	EXTENDED_Ebias,EXP(%ebx)
 	push	%ebx
 	call	arith_overflow
@@ -99,7 +82,7 @@ SYM_FUNC_END(FPU_normalize)
 
 
 
-/* Normalise without reporting underflow or overflow */
+
 SYM_FUNC_START(FPU_normalize_nuo)
 	pushl	%ebp
 	movl	%esp,%ebp
@@ -110,25 +93,25 @@ SYM_FUNC_START(FPU_normalize_nuo)
 	movl	SIGH(%ebx),%edx
 	movl	SIGL(%ebx),%eax
 
-	orl	%edx,%edx	/* ms bits */
-	js	L_exit_nuo_valid	/* Already normalized */
-	jnz	L_nuo_shift_1	/* Shift left 1 - 31 bits */
+	orl	%edx,%edx	
+	js	L_exit_nuo_valid	
+	jnz	L_nuo_shift_1	
 
 	orl	%eax,%eax
-	jz	L_exit_nuo_zero		/* The contents are zero */
+	jz	L_exit_nuo_zero		
 
 	movl	%eax,%edx
 	xorl	%eax,%eax
-	subw	$32,EXP(%ebx)	/* This can cause an underflow */
+	subw	$32,EXP(%ebx)	
 
-/* We need to shift left by 1 - 31 bits */
+
 L_nuo_shift_1:
-	bsrl	%edx,%ecx	/* get the required shift in %ecx */
+	bsrl	%edx,%ecx	
 	subl	$31,%ecx
 	negl	%ecx
 	shld	%cl,%eax,%edx
 	shl	%cl,%eax
-	subw	%cx,EXP(%ebx)	/* This can cause an underflow */
+	subw	%cx,EXP(%ebx)	
 
 	movl	%edx,SIGH(%ebx)
 	movl	%eax,SIGL(%ebx)

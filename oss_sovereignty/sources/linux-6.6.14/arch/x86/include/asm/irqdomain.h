@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_IRQDOMAIN_H
 #define _ASM_IRQDOMAIN_H
 
@@ -19,7 +19,7 @@ extern void init_irq_alloc_info(struct irq_alloc_info *info,
 				const struct cpumask *mask);
 extern void copy_irq_alloc_info(struct irq_alloc_info *dst,
 				struct irq_alloc_info *src);
-#endif /* CONFIG_X86_LOCAL_APIC */
+#endif 
 
 #ifdef CONFIG_X86_IO_APIC
 struct device_node;
@@ -49,7 +49,7 @@ extern int mp_irqdomain_activate(struct irq_domain *domain,
 extern void mp_irqdomain_deactivate(struct irq_domain *domain,
 				    struct irq_data *irq_data);
 extern int mp_irqdomain_ioapic_idx(struct irq_domain *domain);
-#endif /* CONFIG_X86_IO_APIC */
+#endif 
 
 #ifdef CONFIG_PCI_MSI
 void x86_create_pci_msi_domain(void);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _IPV6_STUBS_H
 #define _IPV6_STUBS_H
 
@@ -10,15 +10,13 @@
 #include <net/neighbour.h>
 #include <net/sock.h>
 
-/* structs from net/ip6_fib.h */
+
 struct fib6_info;
 struct fib6_nh;
 struct fib6_config;
 struct fib6_result;
 
-/* This is ugly, ideally these symbols should be built
- * into the core kernel.
- */
+
 struct ipv6_stub {
 	int (*ipv6_sock_mc_join)(struct sock *sk, int ifindex,
 				 const struct in6_addr *addr);
@@ -72,7 +70,7 @@ struct ipv6_stub {
 };
 extern const struct ipv6_stub *ipv6_stub __read_mostly;
 
-/* A stub used by bpf helpers. Similarly ugly as ipv6_stub */
+
 struct ipv6_bpf_stub {
 	int (*inet6_bind)(struct sock *sk, struct sockaddr *uaddr, int addr_len,
 			  u32 flags);

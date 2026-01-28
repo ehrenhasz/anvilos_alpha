@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _BCACHE_UTIL_H
 #define _BCACHE_UTIL_H
@@ -23,7 +23,7 @@ struct closure;
 #define atomic_dec_bug(v)	BUG_ON(atomic_dec_return(v) < 0)
 #define atomic_inc_bug(v, i)	BUG_ON(atomic_inc_return(v) <= i)
 
-#else /* DEBUG */
+#else 
 
 #define EBUG_ON(cond)		do { if (cond) do {} while (0); } while (0)
 #define atomic_dec_bug(v)	atomic_dec(v)
@@ -231,17 +231,7 @@ do {									\
 		fifo_push(dest, _t);					\
 } while (0)
 
-/*
- * Simple array based allocator - preallocates a number of elements and you can
- * never allocate more than that, also has no locking.
- *
- * Handy because if you know you only need a fixed number of elements you don't
- * have to worry about memory allocation failure, and sometimes a mempool isn't
- * what you want.
- *
- * We treat the free elements as entries in a singly linked list, and the
- * freelist as a stack - allocating and freeing push and pop off the freelist.
- */
+
 
 #define DECLARE_ARRAY_ALLOCATOR(type, name, size)			\
 	struct {							\
@@ -347,10 +337,7 @@ int bch_parse_uuid(const char *s, char *uuid);
 
 struct time_stats {
 	spinlock_t	lock;
-	/*
-	 * all fields are in nanoseconds, averages are ewmas stored left shifted
-	 * by 8
-	 */
+	
 	uint64_t	max_duration;
 	uint64_t	average_duration;
 	uint64_t	average_frequency;
@@ -416,13 +403,10 @@ read_attribute(name ## _last_ ## frequency_units)
 })
 
 struct bch_ratelimit {
-	/* Next time we want to do some work, in nanoseconds */
+	
 	uint64_t		next;
 
-	/*
-	 * Rate at which we want to do work, in units per second
-	 * The units here correspond to the units passed to bch_next_delay()
-	 */
+	
 	atomic_long_t		rate;
 };
 
@@ -531,32 +515,19 @@ static inline uint64_t bch_crc64(const void *p, size_t len)
 	return crc ^ 0xffffffffffffffffULL;
 }
 
-/*
- * A stepwise-linear pseudo-exponential.  This returns 1 << (x >>
- * frac_bits), with the less-significant bits filled in by linear
- * interpolation.
- *
- * This can also be interpreted as a floating-point number format,
- * where the low frac_bits are the mantissa (with implicit leading
- * 1 bit), and the more significant bits are the exponent.
- * The return value is 1.mantissa * 2^exponent.
- *
- * The way this is used, fract_bits is 6 and the largest possible
- * input is CONGESTED_MAX-1 = 1023 (exponent 16, mantissa 0x1.fc),
- * so the maximum output is 0x1fc00.
- */
+
 static inline unsigned int fract_exp_two(unsigned int x,
 					 unsigned int fract_bits)
 {
-	unsigned int mantissa = 1 << fract_bits;	/* Implicit bit */
+	unsigned int mantissa = 1 << fract_bits;	
 
 	mantissa += x & (mantissa - 1);
-	x >>= fract_bits;	/* The exponent */
-	/* Largest intermediate value 0x7f0000 */
+	x >>= fract_bits;	
+	
 	return mantissa << x >> fract_bits;
 }
 
 void bch_bio_map(struct bio *bio, void *base);
 int bch_bio_alloc_pages(struct bio *bio, gfp_t gfp_mask);
 
-#endif /* _BCACHE_UTIL_H */
+#endif 

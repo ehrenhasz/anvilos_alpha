@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_BCM963XX_NVRAM_H__
 #define __LINUX_BCM963XX_NVRAM_H__
 
@@ -7,13 +7,7 @@
 #include <linux/sizes.h>
 #include <linux/types.h>
 
-/*
- * Broadcom BCM963xx SoC board nvram data structure.
- *
- * The nvram structure varies in size depending on the SoC board version. Use
- * the appropriate minimum BCM963XX_NVRAM_*_SIZE define for the information
- * you need instead of sizeof(struct bcm963xx_nvram) as this may change.
- */
+
 
 #define BCM963XX_NVRAM_V4_SIZE		300
 #define BCM963XX_NVRAM_V5_SIZE		(1 * SZ_1K)
@@ -68,15 +62,7 @@ static inline u64 __pure bcm963xx_nvram_nand_part_size(
 	return nvram->nand_part_size[part] * SZ_1K;
 }
 
-/*
- * bcm963xx_nvram_checksum - Verify nvram checksum
- *
- * @nvram: pointer to full size nvram data structure
- * @expected_out: optional pointer to store expected checksum value
- * @actual_out: optional pointer to store actual checksum value
- *
- * Return: 0 if the checksum is valid, otherwise -EINVAL
- */
+
 static int __maybe_unused bcm963xx_nvram_checksum(
 	const struct bcm963xx_nvram *nvram,
 	u32 *expected_out, u32 *actual_out)
@@ -92,12 +78,7 @@ static int __maybe_unused bcm963xx_nvram_checksum(
 		len = BCM963XX_NVRAM_V5_SIZE - sizeof(u32);
 	}
 
-	/*
-	 * Calculate the CRC32 value for the nvram with a checksum value
-	 * of 0 without modifying or copying the nvram by combining:
-	 * - The CRC32 of the nvram without the checksum value
-	 * - The CRC32 of a zero checksum value (which is also 0)
-	 */
+	
 	actual = crc32_le_combine(
 		crc32_le(~0, (u8 *)nvram, len), 0, sizeof(u32));
 
@@ -110,4 +91,4 @@ static int __maybe_unused bcm963xx_nvram_checksum(
 	return expected == actual ? 0 : -EINVAL;
 };
 
-#endif /* __LINUX_BCM963XX_NVRAM_H__ */
+#endif 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2013, 2018, The Linux Foundation. All rights reserved. */
+
+
 
 #ifndef __QCOM_CLK_RCG_H__
 #define __QCOM_CLK_RCG_H__
@@ -17,16 +17,7 @@ struct freq_tbl {
 	u16 n;
 };
 
-/**
- * struct mn - M/N:D counter
- * @mnctr_en_bit: bit to enable mn counter
- * @mnctr_reset_bit: bit to assert mn counter reset
- * @mnctr_mode_shift: lowest bit of mn counter mode field
- * @n_val_shift: lowest bit of n value field
- * @m_val_shift: lowest bit of m value field
- * @width: number of bits in m/n/d values
- * @reset_in_cc: true if the mnctr_reset_bit is in the CC register
- */
+
 struct mn {
 	u8		mnctr_en_bit;
 	u8		mnctr_reset_bit;
@@ -39,39 +30,20 @@ struct mn {
 	bool		reset_in_cc;
 };
 
-/**
- * struct pre_div - pre-divider
- * @pre_div_shift: lowest bit of pre divider field
- * @pre_div_width: number of bits in predivider
- */
+
 struct pre_div {
 	u8		pre_div_shift;
 	u8		pre_div_width;
 };
 
-/**
- * struct src_sel - source selector
- * @src_sel_shift: lowest bit of source selection field
- * @parent_map: map from software's parent index to hardware's src_sel field
- */
+
 struct src_sel {
 	u8		src_sel_shift;
 #define SRC_SEL_MASK	0x7
 	const struct parent_map	*parent_map;
 };
 
-/**
- * struct clk_rcg - root clock generator
- *
- * @ns_reg: NS register
- * @md_reg: MD register
- * @mn: mn counter
- * @p: pre divider
- * @s: source selector
- * @freq_tbl: frequency table
- * @clkr: regmap clock handle
- * @lock: register lock
- */
+
 struct clk_rcg {
 	u32		ns_reg;
 	u32		md_reg;
@@ -95,19 +67,7 @@ extern const struct clk_ops clk_rcg_lcc_ops;
 
 #define to_clk_rcg(_hw) container_of(to_clk_regmap(_hw), struct clk_rcg, clkr)
 
-/**
- * struct clk_dyn_rcg - root clock generator with glitch free mux
- *
- * @mux_sel_bit: bit to switch glitch free mux
- * @ns_reg: NS0 and NS1 register
- * @md_reg: MD0 and MD1 register
- * @bank_reg: register to XOR @mux_sel_bit into to switch glitch free mux
- * @mn: mn counter (banked)
- * @s: source selector (banked)
- * @freq_tbl: frequency table
- * @clkr: regmap clock handle
- * @lock: register lock
- */
+
 struct clk_dyn_rcg {
 	u32	ns_reg[2];
 	u32	md_reg[2];
@@ -129,20 +89,7 @@ extern const struct clk_ops clk_dyn_rcg_ops;
 #define to_clk_dyn_rcg(_hw) \
 	container_of(to_clk_regmap(_hw), struct clk_dyn_rcg, clkr)
 
-/**
- * struct clk_rcg2 - root clock generator
- *
- * @cmd_rcgr: corresponds to *_CMD_RCGR
- * @mnd_width: number of bits in m/n/d values
- * @hid_width: number of bits in half integer divider
- * @safe_src_index: safe src index value
- * @parent_map: map from software's parent index to hardware's src_sel field
- * @freq_tbl: frequency table
- * @clkr: regmap clock handle
- * @cfg_off: defines the cfg register offset from the CMD_RCGR + CFG_REG
- * @parked_cfg: cached value of the CFG register for parked RCGs
- * @hw_clk_ctrl: whether to enable hardware clock control
- */
+
 struct clk_rcg2 {
 	u32			cmd_rcgr;
 	u8			mnd_width;

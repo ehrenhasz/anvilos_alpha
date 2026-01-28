@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+
 
 #ifndef DRM_HDMI_HELPER
 #define DRM_HDMI_HELPER

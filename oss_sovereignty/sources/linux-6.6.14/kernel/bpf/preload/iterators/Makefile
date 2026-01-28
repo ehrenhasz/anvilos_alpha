@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 OUTPUT := .output
 abs_out := $(abspath $(OUTPUT))
 

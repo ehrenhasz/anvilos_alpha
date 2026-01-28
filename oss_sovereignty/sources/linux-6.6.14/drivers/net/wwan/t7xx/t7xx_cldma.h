@@ -1,18 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
 
 #ifndef __T7XX_CLDMA_H__
 #define __T7XX_CLDMA_H__
@@ -24,7 +10,7 @@
 #define CLDMA_RXQ_NUM			8
 #define CLDMA_ALL_Q			GENMASK(7, 0)
 
-/* Interrupt status bits */
+
 #define EMPTY_STATUS_BITMASK		GENMASK(15, 8)
 #define TXRX_STATUS_BITMASK		GENMASK(7, 0)
 #define EQ_STA_BIT_OFFSET		8
@@ -45,7 +31,7 @@
 #define CLDMA_R_AO_BASE			0x10023000
 #define CLDMA_R_PD_BASE			0x1023d000
 
-/* CLDMA TX */
+
 #define REG_CLDMA_UL_START_ADDRL_0	0x0004
 #define REG_CLDMA_UL_START_ADDRH_0	0x0008
 #define REG_CLDMA_UL_CURRENT_ADDRL_0	0x0044
@@ -64,7 +50,7 @@
 #define REG_CLDMA_UL_MEM		0x009c
 #define UL_MEM_CHECK_DIS		BIT(0)
 
-/* CLDMA RX */
+
 #define REG_CLDMA_DL_START_CMD		0x05bc
 #define REG_CLDMA_DL_RESUME_CMD		0x05c0
 #define REG_CLDMA_DL_STOP_CMD		0x05c4
@@ -84,7 +70,7 @@
 #define REG_CLDMA_DL_CURRENT_ADDRH_0	0x04bc
 #define REG_CLDMA_DL_STATUS		0x04f8
 
-/* CLDMA MISC */
+
 #define REG_CLDMA_L2TISAR0		0x0810
 #define REG_CLDMA_L2TISAR1		0x0814
 #define REG_CLDMA_L2TIMR0		0x0818
@@ -104,7 +90,7 @@
 #define CLDMA_L2TISAR0_ALL_INT_MASK	GENMASK(15, 0)
 #define CLDMA_L2RISAR0_ALL_INT_MASK	GENMASK(15, 0)
 
-/* CLDMA MISC */
+
 #define REG_CLDMA_L2RIMR0		0x0858
 #define REG_CLDMA_L2RIMR1		0x085c
 #define REG_CLDMA_L2RIMCR0		0x0860
@@ -118,7 +104,7 @@
 
 #define REG_CLDMA_INT_MASK		0x0960
 
-/* CLDMA RESET */
+
 #define REG_INFRA_RST4_SET		0x0730
 #define RST4_CLDMA1_SW_RST_SET		BIT(20)
 

@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_ROT0_QM_AXUSER_NONSECURED_REGS_H_
 #define ASIC_REG_ROT0_QM_AXUSER_NONSECURED_REGS_H_
 
-/*
- *****************************************
- *   ROT0_QM_AXUSER_NONSECURED
- *   (Prototype: AXUSER)
- *****************************************
- */
+
 
 #define mmROT0_QM_AXUSER_NONSECURED_HB_ASID 0x4E0AB80
 
@@ -58,4 +45,4 @@
 
 #define mmROT0_QM_AXUSER_NONSECURED_LB_OVRD 0x4E0ABCC
 
-#endif /* ASIC_REG_ROT0_QM_AXUSER_NONSECURED_REGS_H_ */
+#endif 

@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * vdso_config.h: Configuration options for vDSO tests.
- * Copyright (c) 2019 Arm Ltd.
- */
+
+
 #ifndef __VDSO_CONFIG_H__
 #define __VDSO_CONFIG_H__
 
-/*
- * Each architecture exports its vDSO implementation with different names
- * and a different version from the others, so we need to handle it as a
- * special case.
- */
+
 #if defined(__arm__)
 #define VDSO_VERSION		0
 #define VDSO_NAMES		1
@@ -87,4 +80,4 @@ static const char *names[2][6] = {
 	},
 };
 
-#endif /* __VDSO_CONFIG_H__ */
+#endif 

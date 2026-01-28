@@ -1,8 +1,8 @@
-#// SPDX-License-Identifier: GPL-2.0
-#/*
-# * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
-# * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
-# */
+
+
+
+
+
 
 
 obj-$(CONFIG_SCSI_EFCT) := efct.o

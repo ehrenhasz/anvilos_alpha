@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 
-/*
- * Core definitions for RAVE SP MFD driver.
- *
- * Copyright (C) 2017 Zodiac Inflight Innovations
- */
+
+
 
 #ifndef _LINUX_RAVE_SP_H_
 #define _LINUX_RAVE_SP_H_
@@ -59,4 +55,4 @@ struct device;
 int devm_rave_sp_register_event_notifier(struct device *dev,
 					 struct notifier_block *nb);
 
-#endif /* _LINUX_RAVE_SP_H_ */
+#endif 

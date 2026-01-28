@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * include/linux/arch_topology.h - arch specific cpu topology information
- */
+
+
 #ifndef _LINUX_ARCH_TOPOLOGY_H_
 #define _LINUX_ARCH_TOPOLOGY_H_
 
@@ -94,4 +92,4 @@ void reset_cpu_topology(void);
 int parse_acpi_topology(void);
 #endif
 
-#endif /* _LINUX_ARCH_TOPOLOGY_H_ */
+#endif 

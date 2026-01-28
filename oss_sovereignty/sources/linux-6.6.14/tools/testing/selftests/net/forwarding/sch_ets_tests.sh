@@ -1,7 +1,7 @@
 declare -a WS
 qdisc_describe()
 {
-	local nbands=${#WS[@]}
+	local nbands=${
 	local nstrict=0
 	local i
 	for ((i = 0; i < nbands; i++)); do
@@ -70,11 +70,11 @@ __ets_dwrr_test()
 	t0=($(collect_stats "${streams[@]}"))
 	sleep 10
 	t1=($(collect_stats "${streams[@]}"))
-	d=($(for ((i = 0; i < ${#streams[@]}; i++)); do
+	d=($(for ((i = 0; i < ${
 		 echo $((${t1[$i]} - ${t0[$i]}))
 	     done))
 	total=$(echo ${d[@]} | sed 's/ /+/g' | bc)
-	for ((i = 0; i < ${#streams[@]}; i++)); do
+	for ((i = 0; i < ${
 		local stream=${streams[$i]}
 		if ((seen_strict)); then
 			notraf_eval "band $stream" ${d[$i]} $total
@@ -110,7 +110,7 @@ ets_qdisc_setup()
 	local dev=$1; shift
 	local nstrict=$1; shift
 	local -a quanta=("$@")
-	local ndwrr=${#quanta[@]}
+	local ndwrr=${
 	local nbands=$((nstrict + ndwrr))
 	local nstreams=$(if ((nbands > 3)); then echo 3; else echo $nbands; fi)
 	local priomap=$(seq 0 $((nstreams - 1)))

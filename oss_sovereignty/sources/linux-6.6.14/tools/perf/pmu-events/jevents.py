@@ -137,7 +137,7 @@ class JsonEvent:
   def __init__(self, jd: dict):
     """Constructor passed the dictionary of parsed json values."""
     def llx(x: int) -> str:
-      """Convert an int to a string similar to a printf modifier of %#llx."""
+      """Convert an int to a string similar to a printf modifier of %
       return '0' if x == 0 else hex(x)
     def fixdesc(s: str) -> str:
       """Fix formatting issue for the desc string."""
@@ -549,7 +549,7 @@ const struct pmu_events_map pmu_events_map[] = {
         table = csv.reader(csvfile)
         first = True
         for row in table:
-          if not first and len(row) > 0 and not row[0].startswith('#'):
+          if not first and len(row) > 0 and not row[0].startswith('
             event_tblname = file_name_to_table_name('pmu_events_', [], row[2].replace('/', '_'))
             if event_tblname in _event_tables:
               event_size = f'ARRAY_SIZE({event_tblname})'

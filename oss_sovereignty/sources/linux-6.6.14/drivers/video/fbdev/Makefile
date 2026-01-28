@@ -1,16 +1,16 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for the Linux video drivers.
-# 5 Aug 1999, James Simmons, <mailto:jsimmons@users.sf.net>
-# Rewritten to use lists instead of if-statements.
 
-# Each configuration option enables a list of files.
+
+
+
+
+
 
 obj-y				+= core/
 
 obj-$(CONFIG_FB_MACMODES)      += macmodes.o
 obj-$(CONFIG_FB_WMT_GE_ROPS)   += wmt_ge_rops.o
 
-# Hardware specific drivers go first
+
 obj-$(CONFIG_FB_AMIGA)            += amifb.o c2p_planar.o
 obj-$(CONFIG_FB_ARC)              += arcfb.o
 obj-$(CONFIG_FB_CLPS711X)	  += clps711x-fb.o
@@ -116,7 +116,7 @@ obj-$(CONFIG_FB_HYPERV)		  += hyperv_fb.o
 obj-$(CONFIG_FB_OPENCORES)	  += ocfb.o
 obj-$(CONFIG_FB_SM712)		  += sm712fb.o
 
-# Platform or fallback drivers go here
+
 obj-$(CONFIG_FB_UVESA)            += uvesafb.o
 obj-$(CONFIG_FB_VESA)             += vesafb.o
 obj-$(CONFIG_FB_EFI)              += efifb.o
@@ -126,5 +126,5 @@ obj-$(CONFIG_FB_DA8XX)		  += da8xx-fb.o
 obj-$(CONFIG_FB_SSD1307)	  += ssd1307fb.o
 obj-$(CONFIG_FB_SIMPLE)           += simplefb.o
 
-# the test framebuffer is last
+
 obj-$(CONFIG_FB_VIRTUAL)          += vfb.o

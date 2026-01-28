@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * National Semiconductors LP3971 PMIC chip client interface
- *
- *  Copyright (C) 2009 Samsung Electronics
- *  Author: Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Based on wm8400.h
- */
+
+
 
 #ifndef __LINUX_REGULATOR_LP3971_H
 #define __LINUX_REGULATOR_LP3971_H

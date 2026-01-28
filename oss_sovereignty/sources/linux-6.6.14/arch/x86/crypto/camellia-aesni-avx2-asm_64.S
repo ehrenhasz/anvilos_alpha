@@ -1,26 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * x86_64/AVX2/AES-NI assembler implementation of Camellia
- *
- * Copyright © 2013 Jussi Kivilinna <jussi.kivilinna@iki.fi>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
 
 #define CAMELLIA_TABLE_BYTE_LEN 272
 
-/* struct camellia_ctx: */
+
 #define key_table 0
 #define key_length CAMELLIA_TABLE_BYTE_LEN
 
-/* register macros */
+
 #define CTX %rdi
 #define RIO %r8
 
-/**********************************************************************
-  helper macros
- **********************************************************************/
+
 #define filter_8bit(x, lo_t, hi_t, mask4bit, tmp0) \
 	vpand x, mask4bit, tmp0; \
 	vpandn x, mask4bit, x; \
@@ -47,23 +41,12 @@
 #define ymm14_x xmm14
 #define ymm15_x xmm15
 
-/**********************************************************************
-  32-way camellia
- **********************************************************************/
 
-/*
- * IN:
- *   x0..x7: byte-sliced AB state
- *   mem_cd: register pointer storing CD state
- *   key: index for key material
- * OUT:
- *   x0..x7: new byte-sliced CD state
- */
+
+
 #define roundsm32(x0, x1, x2, x3, x4, x5, x6, x7, t0, t1, t2, t3, t4, t5, t6, \
 		  t7, mem_cd, key) \
-	/* \
-	 * S-function with AES subbytes \
-	 */ \
+	 \
 	vbroadcasti128 .Linv_shift_row(%rip), t4; \
 	vpbroadcastd .L0f0f0f0f(%rip), t7; \
 	vbroadcasti128 .Lpre_tf_lo_s1(%rip), t5; \
@@ -71,7 +54,7 @@
 	vbroadcasti128 .Lpre_tf_lo_s4(%rip), t2; \
 	vbroadcasti128 .Lpre_tf_hi_s4(%rip), t3; \
 	\
-	/* AES inverse shift rows */ \
+	 \
 	vpshufb t4, x0, x0; \
 	vpshufb t4, x7, x7; \
 	vpshufb t4, x3, x3; \
@@ -81,8 +64,8 @@
 	vpshufb t4, x1, x1; \
 	vpshufb t4, x4, x4; \
 	\
-	/* prefilter sboxes 1, 2 and 3 */ \
-	/* prefilter sbox 4 */ \
+	 \
+	 \
 	filter_8bit(x0, t5, t6, t7, t4); \
 	filter_8bit(x7, t5, t6, t7, t4); \
 	vextracti128 $1, x0, t0##_x; \
@@ -98,7 +81,7 @@
 	\
 	vpxor t4##_x, t4##_x, t4##_x; \
 	\
-	/* AES subbytes + AES shift rows */ \
+	 \
 	vextracti128 $1, x2, t6##_x; \
 	vextracti128 $1, x5, t5##_x; \
 	vaesenclast t4##_x, x0##_x, x0##_x; \
@@ -130,7 +113,7 @@
 	vaesenclast t4##_x, t2##_x, t2##_x; \
 	vinserti128 $1, t2##_x, x4, x4; \
 	\
-	/* postfilter sboxes 1 and 4 */ \
+	 \
 	vbroadcasti128 .Lpost_tf_lo_s3(%rip), t2; \
 	vbroadcasti128 .Lpost_tf_hi_s3(%rip), t3; \
 	filter_8bit(x0, t0, t1, t7, t6); \
@@ -138,15 +121,15 @@
 	filter_8bit(x3, t0, t1, t7, t6); \
 	filter_8bit(x6, t0, t1, t7, t6); \
 	\
-	/* postfilter sbox 3 */ \
+	 \
 	vbroadcasti128 .Lpost_tf_lo_s2(%rip), t4; \
 	vbroadcasti128 .Lpost_tf_hi_s2(%rip), t5; \
 	filter_8bit(x2, t2, t3, t7, t6); \
 	filter_8bit(x5, t2, t3, t7, t6); \
 	\
-	vpbroadcastq key, t0; /* higher 64-bit duplicate ignored */ \
+	vpbroadcastq key, t0;  \
 	\
-	/* postfilter sbox 2 */ \
+	 \
 	filter_8bit(x1, t4, t5, t7, t2); \
 	filter_8bit(x4, t4, t5, t7, t2); \
 	vpxor t7, t7, t7; \
@@ -156,7 +139,7 @@
 	vpshufb t7, t1, t1; \
 	vpsrldq $3, t0, t3; \
 	\
-	/* P-function */ \
+	 \
 	vpxor x5, x0, x0; \
 	vpxor x6, x1, x1; \
 	vpxor x7, x2, x2; \
@@ -185,9 +168,9 @@
 	vpxor x3, x4, x4; \
 	vpxor x0, x5, x5; \
 	vpxor x1, x6, x6; \
-	vpxor x2, x7, x7; /* note: high and low parts swapped */ \
+	vpxor x2, x7, x7;  \
 	\
-	/* Add key material and result to CD (x becomes new CD) */ \
+	 \
 	\
 	vpxor t6, x1, x1; \
 	vpxor 5 * 32(mem_cd), x1, x1; \
@@ -217,10 +200,7 @@
 	vpxor t0, x7, x7; \
 	vpxor 3 * 32(mem_cd), x7, x7;
 
-/*
- * Size optimization... with inlined roundsm32 binary would be over 5 times
- * larger and would only marginally faster.
- */
+
 SYM_FUNC_START_LOCAL(roundsm32_x0_x1_x2_x3_x4_x5_x6_x7_y0_y1_y2_y3_y4_y5_y6_y7_cd)
 	roundsm32(%ymm0, %ymm1, %ymm2, %ymm3, %ymm4, %ymm5, %ymm6, %ymm7,
 		  %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14, %ymm15,
@@ -235,12 +215,7 @@ SYM_FUNC_START_LOCAL(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_a
 	RET;
 SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 
-/*
- * IN/OUT:
- *  x0..x7: byte-sliced AB state preloaded
- *  mem_ab: byte-sliced AB state in memory
- *  mem_cb: byte-sliced CD state in memory
- */
+
 #define two_roundsm32(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, \
 		      y6, y7, mem_ab, mem_cd, i, dir, store_ab) \
 	leaq (key_table + (i) * 8)(CTX), %r9; \
@@ -260,10 +235,10 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	\
 	store_ab(x0, x1, x2, x3, x4, x5, x6, x7, mem_ab);
 
-#define dummy_store(x0, x1, x2, x3, x4, x5, x6, x7, mem_ab) /* do nothing */
+#define dummy_store(x0, x1, x2, x3, x4, x5, x6, x7, mem_ab) 
 
 #define store_ab_state(x0, x1, x2, x3, x4, x5, x6, x7, mem_ab) \
-	/* Store new AB state */ \
+	 \
 	vmovdqu x4, 4 * 32(mem_ab); \
 	vmovdqu x5, 5 * 32(mem_ab); \
 	vmovdqu x6, 6 * 32(mem_ab); \
@@ -291,12 +266,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	two_roundsm32(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, \
 		      y6, y7, mem_ab, mem_cd, (i) + 3, -1, dummy_store);
 
-/*
- * IN:
- *  v0..3: byte-sliced 32-bit integers
- * OUT:
- *  v0..3: (IN <<< 1)
- */
+
 #define rol32_1_32(v0, v1, v2, v3, t0, t1, t2, zero) \
 	vpcmpgtb v0, zero, t0; \
 	vpaddb v0, v0, v0; \
@@ -320,21 +290,11 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vpor t2, v3, v3; \
 	vpor t0, v0, v0;
 
-/*
- * IN:
- *   r: byte-sliced AB state in memory
- *   l: byte-sliced CD state in memory
- * OUT:
- *   x0..x7: new byte-sliced CD state
- */
+
 #define fls32(l, l0, l1, l2, l3, l4, l5, l6, l7, r, t0, t1, t2, t3, tt0, \
 	      tt1, tt2, tt3, kll, klr, krl, krr) \
-	/* \
-	 * t0 = kll; \
-	 * t0 &= ll; \
-	 * lr ^= rol32(t0, 1); \
-	 */ \
-	vpbroadcastd kll, t0; /* only lowest 32-bit used */ \
+	 \
+	vpbroadcastd kll, t0;  \
 	vpxor tt0, tt0, tt0; \
 	vpshufb tt0, t0, t3; \
 	vpsrldq $1, t0, t0; \
@@ -352,7 +312,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	rol32_1_32(t3, t2, t1, t0, tt1, tt2, tt3, tt0); \
 	\
 	vpxor l4, t0, l4; \
-	vpbroadcastd krr, t0; /* only lowest 32-bit used */ \
+	vpbroadcastd krr, t0;  \
 	vmovdqu l4, 4 * 32(l); \
 	vpxor l5, t1, l5; \
 	vmovdqu l5, 5 * 32(l); \
@@ -361,11 +321,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vpxor l7, t3, l7; \
 	vmovdqu l7, 7 * 32(l); \
 	\
-	/* \
-	 * t2 = krr; \
-	 * t2 |= rr; \
-	 * rl ^= t2; \
-	 */ \
+	 \
 	\
 	vpshufb tt0, t0, t3; \
 	vpsrldq $1, t0, t0; \
@@ -385,16 +341,12 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vpxor 2 * 32(r), t2, t2; \
 	vpxor 3 * 32(r), t3, t3; \
 	vmovdqu t0, 0 * 32(r); \
-	vpbroadcastd krl, t0; /* only lowest 32-bit used */ \
+	vpbroadcastd krl, t0;  \
 	vmovdqu t1, 1 * 32(r); \
 	vmovdqu t2, 2 * 32(r); \
 	vmovdqu t3, 3 * 32(r); \
 	\
-	/* \
-	 * t2 = krl; \
-	 * t2 &= rl; \
-	 * rr ^= rol32(t2, 1); \
-	 */ \
+	 \
 	vpshufb tt0, t0, t3; \
 	vpsrldq $1, t0, t0; \
 	vpshufb tt0, t0, t2; \
@@ -415,16 +367,12 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vpxor 6 * 32(r), t2, t2; \
 	vpxor 7 * 32(r), t3, t3; \
 	vmovdqu t0, 4 * 32(r); \
-	vpbroadcastd klr, t0; /* only lowest 32-bit used */ \
+	vpbroadcastd klr, t0;  \
 	vmovdqu t1, 5 * 32(r); \
 	vmovdqu t2, 6 * 32(r); \
 	vmovdqu t3, 7 * 32(r); \
 	\
-	/* \
-	 * t0 = klr; \
-	 * t0 |= lr; \
-	 * ll ^= t0; \
-	 */ \
+	 \
 	\
 	vpshufb tt0, t0, t3; \
 	vpsrldq $1, t0, t0; \
@@ -508,9 +456,9 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	transpose_4x4(a3, b3, c3, d3, b0, b1); \
 	vmovdqu st0, b0; \
 	vmovdqu st1, b1; \
-	/* does not adjust output bytes inside vectors */
+	
 
-/* load blocks to registers and apply pre-whitening */
+
 #define inpack32_pre(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, \
 		     y6, y7, rio, key) \
 	vpbroadcastq key, x0; \
@@ -533,7 +481,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vpxor 14 * 32(rio), x0, x1; \
 	vpxor 15 * 32(rio), x0, x0;
 
-/* byteslice pre-whitened blocks and store to temporary memory */
+
 #define inpack32_post(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, \
 		      y6, y7, mem_ab, mem_cd) \
 	byteslice_16x16b_fast(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, \
@@ -556,7 +504,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	vmovdqu y6, 6 * 32(mem_cd); \
 	vmovdqu y7, 7 * 32(mem_cd);
 
-/* de-byteslice, apply post-whitening and store blocks */
+
 #define outunpack32(x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, \
 		    y5, y6, y7, key, stack_tmp0, stack_tmp1) \
 	byteslice_16x16b_fast(y0, y4, x0, x4, y1, y5, x1, x5, y2, y6, x2, x6, \
@@ -618,24 +566,11 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.long 0x00010203, 0x04050607, 0x80808080, 0x80808080
 	.long 0x00010203, 0x04050607, 0x80808080, 0x80808080
 
-/* NB: section is mergeable, all elements must be aligned 16-byte blocks */
+
 .section	.rodata.cst16, "aM", @progbits, 16
 .align 16
 
-/*
- * pre-SubByte transform
- *
- * pre-lookup for sbox1, sbox2, sbox3:
- *   swap_bitendianness(
- *       isom_map_camellia_to_aes(
- *           camellia_f(
- *               swap_bitendianess(in)
- *           )
- *       )
- *   )
- *
- * (note: '⊕ 0xc5' inside camellia_f())
- */
+
 .Lpre_tf_lo_s1:
 	.byte 0x45, 0xe8, 0x40, 0xed, 0x2e, 0x83, 0x2b, 0x86
 	.byte 0x4b, 0xe6, 0x4e, 0xe3, 0x20, 0x8d, 0x25, 0x88
@@ -643,20 +578,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.byte 0x00, 0x51, 0xf1, 0xa0, 0x8a, 0xdb, 0x7b, 0x2a
 	.byte 0x09, 0x58, 0xf8, 0xa9, 0x83, 0xd2, 0x72, 0x23
 
-/*
- * pre-SubByte transform
- *
- * pre-lookup for sbox4:
- *   swap_bitendianness(
- *       isom_map_camellia_to_aes(
- *           camellia_f(
- *               swap_bitendianess(in <<< 1)
- *           )
- *       )
- *   )
- *
- * (note: '⊕ 0xc5' inside camellia_f())
- */
+
 .Lpre_tf_lo_s4:
 	.byte 0x45, 0x40, 0x2e, 0x2b, 0x4b, 0x4e, 0x20, 0x25
 	.byte 0x14, 0x11, 0x7f, 0x7a, 0x1a, 0x1f, 0x71, 0x74
@@ -664,22 +586,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.byte 0x00, 0xf1, 0x8a, 0x7b, 0x09, 0xf8, 0x83, 0x72
 	.byte 0xad, 0x5c, 0x27, 0xd6, 0xa4, 0x55, 0x2e, 0xdf
 
-/*
- * post-SubByte transform
- *
- * post-lookup for sbox1, sbox4:
- *  swap_bitendianness(
- *      camellia_h(
- *          isom_map_aes_to_camellia(
- *              swap_bitendianness(
- *                  aes_inverse_affine_transform(in)
- *              )
- *          )
- *      )
- *  )
- *
- * (note: '⊕ 0x6e' inside camellia_h())
- */
+
 .Lpost_tf_lo_s1:
 	.byte 0x3c, 0xcc, 0xcf, 0x3f, 0x32, 0xc2, 0xc1, 0x31
 	.byte 0xdc, 0x2c, 0x2f, 0xdf, 0xd2, 0x22, 0x21, 0xd1
@@ -687,22 +594,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.byte 0x00, 0xf9, 0x86, 0x7f, 0xd7, 0x2e, 0x51, 0xa8
 	.byte 0xa4, 0x5d, 0x22, 0xdb, 0x73, 0x8a, 0xf5, 0x0c
 
-/*
- * post-SubByte transform
- *
- * post-lookup for sbox2:
- *  swap_bitendianness(
- *      camellia_h(
- *          isom_map_aes_to_camellia(
- *              swap_bitendianness(
- *                  aes_inverse_affine_transform(in)
- *              )
- *          )
- *      )
- *  ) <<< 1
- *
- * (note: '⊕ 0x6e' inside camellia_h())
- */
+
 .Lpost_tf_lo_s2:
 	.byte 0x78, 0x99, 0x9f, 0x7e, 0x64, 0x85, 0x83, 0x62
 	.byte 0xb9, 0x58, 0x5e, 0xbf, 0xa5, 0x44, 0x42, 0xa3
@@ -710,22 +602,7 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.byte 0x00, 0xf3, 0x0d, 0xfe, 0xaf, 0x5c, 0xa2, 0x51
 	.byte 0x49, 0xba, 0x44, 0xb7, 0xe6, 0x15, 0xeb, 0x18
 
-/*
- * post-SubByte transform
- *
- * post-lookup for sbox3:
- *  swap_bitendianness(
- *      camellia_h(
- *          isom_map_aes_to_camellia(
- *              swap_bitendianness(
- *                  aes_inverse_affine_transform(in)
- *              )
- *          )
- *      )
- *  ) >>> 1
- *
- * (note: '⊕ 0x6e' inside camellia_h())
- */
+
 .Lpost_tf_lo_s3:
 	.byte 0x1e, 0x66, 0xe7, 0x9f, 0x19, 0x61, 0xe0, 0x98
 	.byte 0x6e, 0x16, 0x97, 0xef, 0x69, 0x11, 0x90, 0xe8
@@ -733,28 +610,21 @@ SYM_FUNC_END(roundsm32_x4_x5_x6_x7_x0_x1_x2_x3_y4_y5_y6_y7_y0_y1_y2_y3_ab)
 	.byte 0x00, 0xfc, 0x43, 0xbf, 0xeb, 0x17, 0xa8, 0x54
 	.byte 0x52, 0xae, 0x11, 0xed, 0xb9, 0x45, 0xfa, 0x06
 
-/* For isolating SubBytes from AESENCLAST, inverse shift row */
+
 .Linv_shift_row:
 	.byte 0x00, 0x0d, 0x0a, 0x07, 0x04, 0x01, 0x0e, 0x0b
 	.byte 0x08, 0x05, 0x02, 0x0f, 0x0c, 0x09, 0x06, 0x03
 
 .section	.rodata.cst4.L0f0f0f0f, "aM", @progbits, 4
 .align 4
-/* 4-bit mask */
+
 .L0f0f0f0f:
 	.long 0x0f0f0f0f
 
 .text
 
 SYM_FUNC_START_LOCAL(__camellia_enc_blk32)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rax: temporary storage, 512 bytes
-	 *	%ymm0..%ymm15: 32 plaintext blocks
-	 * output:
-	 *	%ymm0..%ymm15: 32 encrypted blocks, order swapped:
-	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
-	 */
+	
 	FRAME_BEGIN
 
 	leaq 8 * 32(%rax), %rcx;
@@ -796,7 +666,7 @@ SYM_FUNC_START_LOCAL(__camellia_enc_blk32)
 	jne .Lenc_max32;
 
 .Lenc_done:
-	/* load CD for output */
+	
 	vmovdqu 0 * 32(%rcx), %ymm8;
 	vmovdqu 1 * 32(%rcx), %ymm9;
 	vmovdqu 2 * 32(%rcx), %ymm10;
@@ -833,15 +703,7 @@ SYM_FUNC_START_LOCAL(__camellia_enc_blk32)
 SYM_FUNC_END(__camellia_enc_blk32)
 
 SYM_FUNC_START_LOCAL(__camellia_dec_blk32)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rax: temporary storage, 512 bytes
-	 *	%r8d: 24 for 16 byte key, 32 for larger
-	 *	%ymm0..%ymm15: 16 encrypted blocks
-	 * output:
-	 *	%ymm0..%ymm15: 16 plaintext blocks, order swapped:
-	 *       7, 8, 6, 5, 4, 3, 2, 1, 0, 15, 14, 13, 12, 11, 10, 9, 8
-	 */
+	
 	FRAME_BEGIN
 
 	leaq 8 * 32(%rax), %rcx;
@@ -882,7 +744,7 @@ SYM_FUNC_START_LOCAL(__camellia_dec_blk32)
 		     %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
 		     %ymm15, %rax, %rcx, 0);
 
-	/* load CD for output */
+	
 	vmovdqu 0 * 32(%rcx), %ymm8;
 	vmovdqu 1 * 32(%rcx), %ymm9;
 	vmovdqu 2 * 32(%rcx), %ymm10;
@@ -917,11 +779,7 @@ SYM_FUNC_START_LOCAL(__camellia_dec_blk32)
 SYM_FUNC_END(__camellia_dec_blk32)
 
 SYM_FUNC_START(camellia_ecb_enc_32way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst (32 blocks)
-	 *	%rdx: src (32 blocks)
-	 */
+	
 	FRAME_BEGIN
 
 	vzeroupper;
@@ -930,7 +788,7 @@ SYM_FUNC_START(camellia_ecb_enc_32way)
 		     %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
 		     %ymm15, %rdx, (key_table)(CTX));
 
-	/* now dst can be used as temporary buffer (even in src == dst case) */
+	
 	movq	%rsi, %rax;
 
 	call __camellia_enc_blk32;
@@ -946,11 +804,7 @@ SYM_FUNC_START(camellia_ecb_enc_32way)
 SYM_FUNC_END(camellia_ecb_enc_32way)
 
 SYM_FUNC_START(camellia_ecb_dec_32way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst (32 blocks)
-	 *	%rdx: src (32 blocks)
-	 */
+	
 	FRAME_BEGIN
 
 	vzeroupper;
@@ -958,13 +812,13 @@ SYM_FUNC_START(camellia_ecb_dec_32way)
 	cmpl $16, key_length(CTX);
 	movl $32, %r8d;
 	movl $24, %eax;
-	cmovel %eax, %r8d; /* max */
+	cmovel %eax, %r8d; 
 
 	inpack32_pre(%ymm0, %ymm1, %ymm2, %ymm3, %ymm4, %ymm5, %ymm6, %ymm7,
 		     %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
 		     %ymm15, %rdx, (key_table)(CTX, %r8, 8));
 
-	/* now dst can be used as temporary buffer (even in src == dst case) */
+	
 	movq	%rsi, %rax;
 
 	call __camellia_dec_blk32;
@@ -980,11 +834,7 @@ SYM_FUNC_START(camellia_ecb_dec_32way)
 SYM_FUNC_END(camellia_ecb_dec_32way)
 
 SYM_FUNC_START(camellia_cbc_dec_32way)
-	/* input:
-	 *	%rdi: ctx, CTX
-	 *	%rsi: dst (32 blocks)
-	 *	%rdx: src (32 blocks)
-	 */
+	
 	FRAME_BEGIN
 	subq $(16 * 32), %rsp;
 
@@ -993,7 +843,7 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
 	cmpl $16, key_length(CTX);
 	movl $32, %r8d;
 	movl $24, %eax;
-	cmovel %eax, %r8d; /* max */
+	cmovel %eax, %r8d; 
 
 	inpack32_pre(%ymm0, %ymm1, %ymm2, %ymm3, %ymm4, %ymm5, %ymm6, %ymm7,
 		     %ymm8, %ymm9, %ymm10, %ymm11, %ymm12, %ymm13, %ymm14,
@@ -1002,15 +852,12 @@ SYM_FUNC_START(camellia_cbc_dec_32way)
 	cmpq %rsi, %rdx;
 	je .Lcbc_dec_use_stack;
 
-	/* dst can be used as temporary storage, src is not overwritten. */
+	
 	movq %rsi, %rax;
 	jmp .Lcbc_dec_continue;
 
 .Lcbc_dec_use_stack:
-	/*
-	 * dst still in-use (because dst == src), so use stack for temporary
-	 * storage.
-	 */
+	
 	movq %rsp, %rax;
 
 .Lcbc_dec_continue:

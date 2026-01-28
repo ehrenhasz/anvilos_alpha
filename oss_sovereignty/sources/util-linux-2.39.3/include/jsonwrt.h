@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_JSONWRT_H
 #define UTIL_LINUX_JSONWRT_H
 
@@ -48,4 +45,4 @@ void ul_jsonwrt_value_boolean(struct ul_jsonwrt *fmt,
 void ul_jsonwrt_value_null(struct ul_jsonwrt *fmt,
 			const char *name);
 
-#endif /* UTIL_LINUX_JSONWRT_H */
+#endif 

@@ -1,11 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * linux/sound/soc.h -- ALSA SoC Layer
- *
- * Author:	Liam Girdwood
- * Created:	Aug 11th 2005
- * Copyright:	Wolfson Microelectronics. PLC.
- */
+
 
 #ifndef __LINUX_SND_SOC_H
 #define __LINUX_SND_SOC_H
@@ -25,9 +18,7 @@
 #include <sound/control.h>
 #include <sound/ac97_codec.h>
 
-/*
- * Convenience kcontrol builders
- */
+
 #define SOC_DOUBLE_VALUE(xreg, shift_left, shift_right, xmax, xinvert, xautodisable) \
 	((unsigned long)&(struct soc_mixer_control) \
 	{.reg = xreg, .rreg = xreg, .shift = shift_left, \
@@ -345,9 +336,7 @@
 		{.base = xbase, .num_regs = xregs,	      \
 		 .mask = xmask }) }
 
-/*
- * SND_SOC_BYTES_EXT is deprecated, please USE SND_SOC_BYTES_TLV instead
- */
+
 #define SND_SOC_BYTES_EXT(xname, xcount, xhandler_get, xhandler_put) \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
 	.info = snd_soc_bytes_info_ext, \
@@ -375,10 +364,7 @@
 	SOC_SINGLE_EXT(xname, xreg, xshift, 1, xinvert, \
 		snd_soc_get_strobe, snd_soc_put_strobe)
 
-/*
- * Simplified versions of above macros, declaring a struct and calculating
- * ARRAY_SIZE internally
- */
+
 #define SOC_ENUM_DOUBLE_DECL(name, xreg, xshift_l, xshift_r, xtexts) \
 	const struct soc_enum name = SOC_ENUM_DOUBLE(xreg, xshift_l, xshift_r, \
 						ARRAY_SIZE(xtexts), xtexts)
@@ -509,7 +495,7 @@ static inline int snd_soc_set_dmi_name(struct snd_soc_card *card,
 }
 #endif
 
-/* Utility functions to get clock rates from various things */
+
 int snd_soc_calc_frame_size(int sample_size, int channels, int tdm_slots);
 int snd_soc_params_to_frame_size(struct snd_pcm_hw_params *params);
 int snd_soc_calc_bclk(int fs, int sample_size, int channels, int tdm_slots);
@@ -517,7 +503,7 @@ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *parms);
 int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
 			       int tdm_width, int tdm_slots, int slot_multiple);
 
-/* set runtime hw params */
+
 int snd_soc_set_runtime_hwparams(struct snd_pcm_substream *substream,
 	const struct snd_pcm_hardware *hw);
 
@@ -545,9 +531,7 @@ static inline int snd_soc_set_ac97_ops(struct snd_ac97_bus_ops *ops)
 }
 #endif
 
-/*
- *Controls
- */
+
 struct snd_kcontrol *snd_soc_cnew(const struct snd_kcontrol_new *_template,
 				  void *data, const char *long_name,
 				  const char *prefix);
@@ -608,26 +592,26 @@ int snd_soc_put_strobe(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol);
 
 enum snd_soc_trigger_order {
-						/* start			stop		     */
-	SND_SOC_TRIGGER_ORDER_DEFAULT	= 0,	/* Link->Component->DAI		DAI->Component->Link */
-	SND_SOC_TRIGGER_ORDER_LDC,		/* Link->DAI->Component		Component->DAI->Link */
+						
+	SND_SOC_TRIGGER_ORDER_DEFAULT	= 0,	
+	SND_SOC_TRIGGER_ORDER_LDC,		
 
 	SND_SOC_TRIGGER_ORDER_MAX,
 };
 
-/* SoC PCM stream information */
+
 struct snd_soc_pcm_stream {
 	const char *stream_name;
-	u64 formats;			/* SNDRV_PCM_FMTBIT_* */
-	unsigned int rates;		/* SNDRV_PCM_RATE_* */
-	unsigned int rate_min;		/* min rate */
-	unsigned int rate_max;		/* max rate */
-	unsigned int channels_min;	/* min channels */
-	unsigned int channels_max;	/* max channels */
-	unsigned int sig_bits;		/* number of bits of content */
+	u64 formats;			
+	unsigned int rates;		
+	unsigned int rate_min;		
+	unsigned int rate_max;		
+	unsigned int channels_min;	
+	unsigned int channels_max;	
+	unsigned int sig_bits;		
 };
 
-/* SoC audio ops */
+
 struct snd_soc_ops {
 	int (*startup)(struct snd_pcm_substream *);
 	void (*shutdown)(struct snd_pcm_substream *);
@@ -660,117 +644,93 @@ struct snd_soc_dai_link_codec_ch_map {
 };
 
 struct snd_soc_dai_link {
-	/* config - must be set by machine driver */
-	const char *name;			/* Codec name */
-	const char *stream_name;		/* Stream name */
+	
+	const char *name;			
+	const char *stream_name;		
 
-	/*
-	 * You MAY specify the link's CPU-side device, either by device name,
-	 * or by DT/OF node, but not both. If this information is omitted,
-	 * the CPU-side DAI is matched using .cpu_dai_name only, which hence
-	 * must be globally unique. These fields are currently typically used
-	 * only for codec to codec links, or systems using device tree.
-	 */
-	/*
-	 * You MAY specify the DAI name of the CPU DAI. If this information is
-	 * omitted, the CPU-side DAI is matched using .cpu_name/.cpu_of_node
-	 * only, which only works well when that device exposes a single DAI.
-	 */
+	
+	
 	struct snd_soc_dai_link_component *cpus;
 	unsigned int num_cpus;
 
-	/*
-	 * You MUST specify the link's codec, either by device name, or by
-	 * DT/OF node, but not both.
-	 */
-	/* You MUST specify the DAI name within the codec */
+	
+	
 	struct snd_soc_dai_link_component *codecs;
 	unsigned int num_codecs;
 
 	struct snd_soc_dai_link_codec_ch_map *codec_ch_maps;
-	/*
-	 * You MAY specify the link's platform/PCM/DMA driver, either by
-	 * device name, or by DT/OF node, but not both. Some forms of link
-	 * do not need a platform. In such case, platforms are not mandatory.
-	 */
+	
 	struct snd_soc_dai_link_component *platforms;
 	unsigned int num_platforms;
 
-	int id;	/* optional ID for machine driver link identification */
+	int id;	
 
-	/*
-	 * for Codec2Codec
-	 */
+	
 	const struct snd_soc_pcm_stream *c2c_params;
 	unsigned int num_c2c_params;
 
-	unsigned int dai_fmt;           /* format to set on init */
+	unsigned int dai_fmt;           
 
-	enum snd_soc_dpcm_trigger trigger[2]; /* trigger type for DPCM */
+	enum snd_soc_dpcm_trigger trigger[2]; 
 
-	/* codec/machine specific init - e.g. add machine controls */
+	
 	int (*init)(struct snd_soc_pcm_runtime *rtd);
 
-	/* codec/machine specific exit - dual of init() */
+	
 	void (*exit)(struct snd_soc_pcm_runtime *rtd);
 
-	/* optional hw_params re-writing for BE and FE sync */
+	
 	int (*be_hw_params_fixup)(struct snd_soc_pcm_runtime *rtd,
 			struct snd_pcm_hw_params *params);
 
-	/* machine stream operations */
+	
 	const struct snd_soc_ops *ops;
 	const struct snd_soc_compr_ops *compr_ops;
 
-	/*
-	 * soc_pcm_trigger() start/stop sequence.
-	 * see also
-	 *	snd_soc_component_driver
-	 *	soc_pcm_trigger()
-	 */
+	
 	enum snd_soc_trigger_order trigger_start;
 	enum snd_soc_trigger_order trigger_stop;
 
-	/* Mark this pcm with non atomic ops */
+	
 	unsigned int nonatomic:1;
 
-	/* For unidirectional dai links */
+	
 	unsigned int playback_only:1;
 	unsigned int capture_only:1;
 
-	/* Keep DAI active over suspend */
+	
 	unsigned int ignore_suspend:1;
 
-	/* Symmetry requirements */
+	
 	unsigned int symmetric_rate:1;
 	unsigned int symmetric_channels:1;
 	unsigned int symmetric_sample_bits:1;
 
-	/* Do not create a PCM for this DAI link (Backend link) */
+	
 	unsigned int no_pcm:1;
 
-	/* This DAI link can route to other DAI links at runtime (Frontend)*/
+	
 	unsigned int dynamic:1;
 
-	/* DPCM capture and Playback support */
+	
 	unsigned int dpcm_capture:1;
 	unsigned int dpcm_playback:1;
 
-	/* DPCM used FE & BE merged format */
+	
 	unsigned int dpcm_merged_format:1;
-	/* DPCM used FE & BE merged channel */
+	
 	unsigned int dpcm_merged_chan:1;
-	/* DPCM used FE & BE merged rate */
+	
 	unsigned int dpcm_merged_rate:1;
 
-	/* pmdown_time is ignored at stop */
+	
 	unsigned int ignore_pmdown_time:1;
 
-	/* Do not create a PCM for this DAI link (Backend link) */
+	
 	unsigned int ignore:1;
 
 #ifdef CONFIG_SND_SOC_TOPOLOGY
-	struct snd_soc_dobj dobj; /* For topology */
+	struct snd_soc_dobj dobj; 
 #endif
 };
 
@@ -807,58 +767,7 @@ asoc_link_to_platform(struct snd_soc_dai_link *link, int n) {
 		     ((cpu) = asoc_link_to_cpu(link, i));		\
 	     (i)++)
 
-/*
- * Sample 1 : Single CPU/Codec/Platform
- *
- * SND_SOC_DAILINK_DEFS(test,
- *	DAILINK_COMP_ARRAY(COMP_CPU("cpu_dai")),
- *	DAILINK_COMP_ARRAY(COMP_CODEC("codec", "codec_dai")),
- *	DAILINK_COMP_ARRAY(COMP_PLATFORM("platform")));
- *
- * struct snd_soc_dai_link link = {
- *	...
- *	SND_SOC_DAILINK_REG(test),
- * };
- *
- * Sample 2 : Multi CPU/Codec, no Platform
- *
- * SND_SOC_DAILINK_DEFS(test,
- *	DAILINK_COMP_ARRAY(COMP_CPU("cpu_dai1"),
- *			   COMP_CPU("cpu_dai2")),
- *	DAILINK_COMP_ARRAY(COMP_CODEC("codec1", "codec_dai1"),
- *			   COMP_CODEC("codec2", "codec_dai2")));
- *
- * struct snd_soc_dai_link link = {
- *	...
- *	SND_SOC_DAILINK_REG(test),
- * };
- *
- * Sample 3 : Define each CPU/Codec/Platform manually
- *
- * SND_SOC_DAILINK_DEF(test_cpu,
- *		DAILINK_COMP_ARRAY(COMP_CPU("cpu_dai1"),
- *				   COMP_CPU("cpu_dai2")));
- * SND_SOC_DAILINK_DEF(test_codec,
- *		DAILINK_COMP_ARRAY(COMP_CODEC("codec1", "codec_dai1"),
- *				   COMP_CODEC("codec2", "codec_dai2")));
- * SND_SOC_DAILINK_DEF(test_platform,
- *		DAILINK_COMP_ARRAY(COMP_PLATFORM("platform")));
- *
- * struct snd_soc_dai_link link = {
- *	...
- *	SND_SOC_DAILINK_REG(test_cpu,
- *			    test_codec,
- *			    test_platform),
- * };
- *
- * Sample 4 : Sample3 without platform
- *
- * struct snd_soc_dai_link link = {
- *	...
- *	SND_SOC_DAILINK_REG(test_cpu,
- *			    test_codec);
- * };
- */
+
 
 #define SND_SOC_DAILINK_REG1(name)	 SND_SOC_DAILINK_REG3(name##_cpus, name##_codecs, name##_platforms)
 #define SND_SOC_DAILINK_REG2(cpu, codec) SND_SOC_DAILINK_REG3(cpu, codec, null_dailink_component)
@@ -899,31 +808,22 @@ extern struct snd_soc_dai_link_component asoc_dummy_dlc;
 
 
 struct snd_soc_codec_conf {
-	/*
-	 * specify device either by device name, or by
-	 * DT/OF node, but not both.
-	 */
+	
 	struct snd_soc_dai_link_component dlc;
 
-	/*
-	 * optional map of kcontrol, widget and path name prefixes that are
-	 * associated per device
-	 */
+	
 	const char *name_prefix;
 };
 
 struct snd_soc_aux_dev {
-	/*
-	 * specify multi-codec either by device name, or by
-	 * DT/OF node, but not both.
-	 */
+	
 	struct snd_soc_dai_link_component dlc;
 
-	/* codec/machine specific init - e.g. add machine controls */
+	
 	int (*init)(struct snd_soc_component *component);
 };
 
-/* SoC card */
+
 struct snd_soc_card {
 	const char *name;
 	const char *long_name;
@@ -931,17 +831,14 @@ struct snd_soc_card {
 	const char *components;
 #ifdef CONFIG_DMI
 	char dmi_longname[80];
-#endif /* CONFIG_DMI */
+#endif 
 
 #ifdef CONFIG_PCI
-	/*
-	 * PCI does not define 0 as invalid, so pci_subsystem_set indicates
-	 * whether a value has been written to these fields.
-	 */
+	
 	unsigned short pci_subsystem_vendor;
 	unsigned short pci_subsystem_device;
 	bool pci_subsystem_set;
-#endif /* CONFIG_PCI */
+#endif 
 
 	char topology_shortname[32];
 
@@ -952,7 +849,7 @@ struct snd_soc_card {
 	struct mutex mutex;
 	struct mutex dapm_mutex;
 
-	/* Mutex for PCM operations */
+	
 	struct mutex pcm_mutex;
 	enum snd_soc_pcm_subclass pcm_subclass;
 
@@ -961,14 +858,13 @@ struct snd_soc_card {
 	void (*fixup_controls)(struct snd_soc_card *card);
 	int (*remove)(struct snd_soc_card *card);
 
-	/* the pre and post PM functions are used to do any PM work before and
-	 * after the codec and DAI's do any PM work. */
+	
 	int (*suspend_pre)(struct snd_soc_card *card);
 	int (*suspend_post)(struct snd_soc_card *card);
 	int (*resume_pre)(struct snd_soc_card *card);
 	int (*resume_post)(struct snd_soc_card *card);
 
-	/* callbacks */
+	
 	int (*set_bias_level)(struct snd_soc_card *,
 			      struct snd_soc_dapm_context *dapm,
 			      enum snd_soc_bias_level level);
@@ -983,21 +879,18 @@ struct snd_soc_card {
 
 	long pmdown_time;
 
-	/* CPU <--> Codec DAI links  */
-	struct snd_soc_dai_link *dai_link;  /* predefined links only */
-	int num_links;  /* predefined links only */
+	
+	struct snd_soc_dai_link *dai_link;  
+	int num_links;  
 
 	struct list_head rtd_list;
 	int num_rtd;
 
-	/* optional codec specific configuration */
+	
 	struct snd_soc_codec_conf *codec_conf;
 	int num_configs;
 
-	/*
-	 * optional auxiliary devices such as amplifiers or codecs with DAI
-	 * link unused
-	 */
+	
 	struct snd_soc_aux_dev *aux_dev;
 	int num_aux_devs;
 	struct list_head aux_comp_list;
@@ -1005,10 +898,7 @@ struct snd_soc_card {
 	const struct snd_kcontrol_new *controls;
 	int num_controls;
 
-	/*
-	 * Card-specific routes and widgets.
-	 * Note: of_dapm_xxx for Device Tree; Otherwise for driver build-in.
-	 */
+	
 	const struct snd_soc_dapm_widget *dapm_widgets;
 	int num_dapm_widgets;
 	const struct snd_soc_dapm_route *dapm_routes;
@@ -1018,7 +908,7 @@ struct snd_soc_card {
 	const struct snd_soc_dapm_route *of_dapm_routes;
 	int num_of_dapm_routes;
 
-	/* lists of probed devices belonging to this card */
+	
 	struct list_head component_dev_list;
 	struct list_head list;
 
@@ -1027,10 +917,10 @@ struct snd_soc_card {
 	struct list_head dapm_list;
 	struct list_head dapm_dirty;
 
-	/* attached dynamic objects */
+	
 	struct list_head dobj_list;
 
-	/* Generic DAPM context for the card */
+	
 	struct snd_soc_dapm_context dapm;
 	struct snd_soc_dapm_stats dapm_stats;
 	struct snd_soc_dapm_update *update;
@@ -1043,7 +933,7 @@ struct snd_soc_card {
 #endif
 	u32 pop_time;
 
-	/* bit field */
+	
 	unsigned int instantiated:1;
 	unsigned int topology_shortname_created:1;
 	unsigned int fully_routed:1;
@@ -1090,32 +980,26 @@ static inline int snd_soc_card_is_instantiated(struct snd_soc_card *card)
 	return card && card->instantiated;
 }
 
-/* SoC machine DAI configuration, glues a codec and cpu DAI together */
+
 struct snd_soc_pcm_runtime {
 	struct device *dev;
 	struct snd_soc_card *card;
 	struct snd_soc_dai_link *dai_link;
 	struct snd_pcm_ops ops;
 
-	unsigned int c2c_params_select; /* currently selected c2c_param for dai link */
+	unsigned int c2c_params_select; 
 
-	/* Dynamic PCM BE runtime data */
+	
 	struct snd_soc_dpcm_runtime dpcm[SNDRV_PCM_STREAM_LAST + 1];
 	struct snd_soc_dapm_widget *c2c_widget[SNDRV_PCM_STREAM_LAST + 1];
 
 	long pmdown_time;
 
-	/* runtime devices */
+	
 	struct snd_pcm *pcm;
 	struct snd_compr *compr;
 
-	/*
-	 * dais = cpu_dai + codec_dai
-	 * see
-	 *	soc_new_pcm_runtime()
-	 *	asoc_rtd_to_cpu()
-	 *	asoc_rtd_to_codec()
-	 */
+	
 	struct snd_soc_dai **dais;
 
 	struct delayed_work delayed_work;
@@ -1124,25 +1008,25 @@ struct snd_soc_pcm_runtime {
 	struct dentry *debugfs_dpcm_root;
 #endif
 
-	unsigned int num; /* 0-based and monotonic increasing */
-	struct list_head list; /* rtd list of the soc card */
+	unsigned int num; 
+	struct list_head list; 
 
-	/* function mark */
+	
 	struct snd_pcm_substream *mark_startup;
 	struct snd_pcm_substream *mark_hw_params;
 	struct snd_pcm_substream *mark_trigger;
 	struct snd_compr_stream  *mark_compr_startup;
 
-	/* bit field */
+	
 	unsigned int pop_wait:1;
-	unsigned int fe_compr:1; /* for Dynamic PCM */
+	unsigned int fe_compr:1; 
 
 	bool initialized;
 
 	int num_components;
-	struct snd_soc_component *components[]; /* CPU/Codec/Platform */
+	struct snd_soc_component *components[]; 
 };
-/* see soc_new_pcm_runtime()  */
+
 #define asoc_rtd_to_cpu(rtd, n)   (rtd)->dais[n]
 #define asoc_rtd_to_codec(rtd, n) (rtd)->dais[n + (rtd)->dai_link->num_cpus]
 #define asoc_substream_to_rtd(substream) \
@@ -1168,7 +1052,7 @@ struct snd_soc_pcm_runtime {
 
 void snd_soc_close_delayed_work(struct snd_soc_pcm_runtime *rtd);
 
-/* mixer control */
+
 struct soc_mixer_control {
 	int min, max, platform_max;
 	int reg, rreg;
@@ -1192,20 +1076,20 @@ struct soc_bytes_ext {
 #ifdef CONFIG_SND_SOC_TOPOLOGY
 	struct snd_soc_dobj dobj;
 #endif
-	/* used for TLV byte control */
+	
 	int (*get)(struct snd_kcontrol *kcontrol, unsigned int __user *bytes,
 			unsigned int size);
 	int (*put)(struct snd_kcontrol *kcontrol, const unsigned int __user *bytes,
 			unsigned int size);
 };
 
-/* multi register control */
+
 struct soc_mreg_control {
 	long min, max;
 	unsigned int regbase, regcount, nbits, invert;
 };
 
-/* enumerated kcontrol */
+
 struct soc_enum {
 	int reg;
 	unsigned char shift_l;
@@ -1224,11 +1108,7 @@ static inline bool snd_soc_volsw_is_stereo(struct soc_mixer_control *mc)
 {
 	if (mc->reg == mc->rreg && mc->shift == mc->rshift)
 		return false;
-	/*
-	 * mc->reg == mc->rreg && mc->shift != mc->rshift, or
-	 * mc->reg != mc->rreg means that the control is
-	 * stereo (bits in one register or in two registers)
-	 */
+	
 	return true;
 }
 
@@ -1256,16 +1136,7 @@ static inline unsigned int snd_soc_enum_item_to_val(struct soc_enum *e,
 	return e->values[item];
 }
 
-/**
- * snd_soc_kcontrol_component() - Returns the component that registered the
- *  control
- * @kcontrol: The control for which to get the component
- *
- * Note: This function will work correctly if the control has been registered
- * for a component. With snd_soc_add_codec_controls() or via table based
- * setup for either a CODEC or component driver. Otherwise the behavior is
- * undefined.
- */
+
 static inline struct snd_soc_component *snd_soc_kcontrol_component(
 	struct snd_kcontrol *kcontrol)
 {
@@ -1378,12 +1249,12 @@ int snd_soc_fixup_dai_links_platform_name(struct snd_soc_card *card,
 	const char *name;
 	int i;
 
-	if (!platform_name) /* nothing to do */
+	if (!platform_name) 
 		return 0;
 
-	/* set platform name for each dailink */
+	
 	for_each_card_prelinks(card, i, dai_link) {
-		/* only single platform is supported for now */
+		
 		if (dai_link->num_platforms != 1)
 			return -EINVAL;
 
@@ -1394,7 +1265,7 @@ int snd_soc_fixup_dai_links_platform_name(struct snd_soc_card *card,
 		if (!name)
 			return -ENOMEM;
 
-		/* only single platform is supported for now */
+		
 		dai_link->platforms->name = name;
 	}
 
@@ -1407,9 +1278,7 @@ extern struct dentry *snd_soc_debugfs_root;
 
 extern const struct dev_pm_ops snd_soc_pm_ops;
 
-/*
- *	DAPM helper functions
- */
+
 enum snd_soc_dapm_subclass {
 	SND_SOC_DAPM_CLASS_ROOT		= 0,
 	SND_SOC_DAPM_CLASS_RUNTIME	= 1,
@@ -1468,9 +1337,7 @@ static inline void _snd_soc_dapm_mutex_assert_held_d(struct snd_soc_dapm_context
 	struct snd_soc_card * :		_snd_soc_dapm_mutex_assert_held_c, \
 	struct snd_soc_dapm_context * :	_snd_soc_dapm_mutex_assert_held_d)(x)
 
-/*
- *	PCM helper functions
- */
+
 static inline void _snd_soc_dpcm_mutex_lock_c(struct snd_soc_card *card)
 {
 	mutex_lock_nested(&card->pcm_mutex, card->pcm_subclass);

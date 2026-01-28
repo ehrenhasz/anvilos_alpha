@@ -1,20 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-	.file	"div_small.S"
-/*---------------------------------------------------------------------------+
- |  div_small.S                                                              |
- |                                                                           |
- | Divide a 64 bit integer by a 32 bit integer & return remainder.           |
- |                                                                           |
- | Copyright (C) 1992,1995                                                   |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail billm@jacobi.maths.monash.edu.au |
- |                                                                           |
- |                                                                           |
- +---------------------------------------------------------------------------*/
 
-/*---------------------------------------------------------------------------+
- |    unsigned long FPU_div_small(unsigned long long *x, unsigned long y)    |
- +---------------------------------------------------------------------------*/
+	.file	"div_small.S"
+
+
+
 
 #include "fpu_emu.h"
 
@@ -25,21 +13,21 @@ SYM_FUNC_START(FPU_div_small)
 
 	pushl	%esi
 
-	movl	PARAM1,%esi	/* pointer to num */
-	movl	PARAM2,%ecx	/* The denominator */
+	movl	PARAM1,%esi	
+	movl	PARAM2,%ecx	
 
-	movl	4(%esi),%eax	/* Get the current num msw */
+	movl	4(%esi),%eax	
 	xorl	%edx,%edx
 	divl	%ecx
 
 	movl	%eax,4(%esi)
 
-	movl	(%esi),%eax	/* Get the num lsw */
+	movl	(%esi),%eax	
 	divl	%ecx
 
 	movl	%eax,(%esi)
 
-	movl	%edx,%eax	/* Return the remainder in eax */
+	movl	%edx,%eax	
 
 	popl	%esi
 

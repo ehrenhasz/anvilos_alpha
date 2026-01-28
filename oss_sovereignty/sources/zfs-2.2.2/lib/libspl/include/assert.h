@@ -1,28 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License, Version 1.0 only
- * (the "License").  You may not use this file except in compliance
- * with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+
+
 
 #include_next <assert.h>
 
@@ -34,22 +11,22 @@
 #include <stdarg.h>
 #include <sys/types.h>
 
-/* Workaround for non-Clang compilers */
+
 #ifndef __has_feature
 #define	__has_feature(x) 0
 #endif
 
-/* We need to workaround libspl_set_assert_ok() that we have for zdb */
+
 #if __has_feature(attribute_analyzer_noreturn) || defined(__COVERITY__)
 #define	NORETURN	__attribute__((__noreturn__))
 #else
 #define	NORETURN
 #endif
 
-/* Set to non-zero to avoid abort()ing on an assertion failure */
+
 extern void libspl_set_assert_ok(boolean_t val);
 
-/* printf version of libspl_assert */
+
 extern void libspl_assertf(const char *file, const char *func, int line,
     const char *format, ...) NORETURN __attribute__((format(printf, 4, 5)));
 
@@ -157,6 +134,6 @@ do {									\
 	    libspl_assert("(" #A ") is equivalent to (" #B ")", \
 	    __FILE__, __FUNCTION__, __LINE__)))
 
-#endif  /* NDEBUG */
+#endif  
 
-#endif  /* _LIBSPL_ASSERT_H */
+#endif  

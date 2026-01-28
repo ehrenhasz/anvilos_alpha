@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/net.h>
 #include <linux/uio.h>
@@ -32,7 +32,7 @@ static inline void io_notif_flush(struct io_kiocb *notif)
 {
 	struct io_notif_data *nd = io_notif_to_data(notif);
 
-	/* drop slot's master ref */
+	
 	if (refcount_dec_and_test(&nd->uarg.refcnt))
 		__io_req_task_work_add(notif, IOU_F_TWQ_LAZY_WAKE);
 }

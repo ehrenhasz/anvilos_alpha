@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_ASM_S390_SIE_H
 #define _UAPI_ASM_S390_SIE_H
 
@@ -216,28 +216,14 @@
 	{ 0x40, "I/O instruction" },				\
 	{ 0x48, "Timing subset" }
 
-/*
- * This is the simple interceptable instructions decoder.
- *
- * It will be used as userspace interface and it can be used in places
- * that does not allow to use general decoder functions,
- * such as trace events declarations.
- *
- * Some userspace tools may want to parse this code
- * and would be confused by switch(), if() and other statements,
- * but they can understand conditional operator.
- */
+
 #define INSN_DECODE_IPA0(ipa0, insn, rshift, mask)		\
 	(insn >> 56) == (ipa0) ?				\
 		((ipa0 << 8) | ((insn >> rshift) & mask)) :
 
 #define INSN_DECODE(insn) (insn >> 56)
 
-/*
- * The macro icpt_insn_decoder() takes an intercepted instruction
- * and returns a key, which can be used to find a mnemonic name
- * of the instruction in the icpt_insn_codes table.
- */
+
 #define icpt_insn_decoder(insn) (		\
 	INSN_DECODE_IPA0(0x01, insn, 48, 0xff)	\
 	INSN_DECODE_IPA0(0xaa, insn, 48, 0x0f)	\
@@ -249,4 +235,4 @@
 	INSN_DECODE_IPA0(0xc8, insn, 48, 0x0f)	\
 	INSN_DECODE(insn))
 
-#endif /* _UAPI_ASM_S390_SIE_H */
+#endif 

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for SCTP support code.
-#
+
+
+
+
 
 obj-$(CONFIG_IP_SCTP) += sctp.o
 obj-$(CONFIG_INET_SCTP_DIAG) += sctp_diag.o

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2002 Russell King
- *
- *  Commonly used functions by the ARM SCSI-II drivers.
- */
+
+
 
 #include <linux/scatterlist.h>
 
@@ -20,23 +16,14 @@ static inline struct scsi_pointer *arm_scsi_pointer(struct scsi_cmnd *cmd)
 	return &acmd->scsi_pointer;
 }
 
-/*
- * The scatter-gather list handling.  This contains all
- * the yucky stuff that needs to be fixed properly.
- */
 
-/*
- * copy_SCp_to_sg() Assumes contiguous allocation at @sg of at-most @max
- * entries of uninitialized memory. SCp is from scsi-ml and has a valid
- * (possibly chained) sg-list
- */
+
+
 static inline int copy_SCp_to_sg(struct scatterlist *sg, struct scsi_pointer *SCp, int max)
 {
 	int bufs = SCp->buffers_residual;
 
-	/* FIXME: It should be easy for drivers to loop on copy_SCp_to_sg().
-	 * and to remove this BUG_ON. Use min() in-its-place
-	 */
+	
 	BUG_ON(bufs + 1 > max);
 
 	sg_set_buf(sg, SCp->ptr, SCp->this_residual);
@@ -101,10 +88,7 @@ static inline void init_SCp(struct scsi_cmnd *SCpnt)
 		scsi_pointer->phase = scsi_bufflen(SCpnt);
 
 #ifdef BELT_AND_BRACES
-		{	/*
-			 * Calculate correct buffer length.  Some commands
-			 * come in with the wrong scsi_bufflen.
-			 */
+		{	
 			struct scatterlist *sg;
 			unsigned i, sg_count = scsi_sg_count(SCpnt);
 
@@ -118,10 +102,7 @@ static inline void init_SCp(struct scsi_cmnd *SCpnt)
 					SCpnt->device->host->host_no,
 					'0' + SCpnt->device->id,
 					scsi_bufflen(SCpnt), len);
-				/*
-				 * FIXME: Totaly naive fixup. We should abort
-				 * with error
-				 */
+				
 				scsi_pointer->phase =
 					min_t(unsigned long, len,
 					      scsi_bufflen(SCpnt));

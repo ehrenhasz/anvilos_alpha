@@ -1,19 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2007-2016, Synaptics Incorporated
- * Copyright (C) 2016 Zodiac Inflight Innovations
- */
+
+
 
 #ifndef _RMI_F34_H
 #define _RMI_F34_H
 
-/* F34 image file offsets. */
+
 #define F34_FW_IMAGE_OFFSET	0x100
 
-/* F34 register offsets. */
+
 #define F34_BLOCK_DATA_OFFSET	2
 
-/* F34 commands */
+
 #define F34_WRITE_FW_BLOCK	0x2
 #define F34_ERASE_ALL		0x3
 #define F34_READ_CONFIG_BLOCK	0x5
@@ -31,7 +28,7 @@
 
 #define F34_BOOTLOADER_ID_LEN	2
 
-/* F34 V7 defines */
+
 #define V7_FLASH_STATUS_OFFSET		0
 #define V7_PARTITION_ID_OFFSET		1
 #define V7_BLOCK_NUMBER_OFFSET		2
@@ -51,7 +48,7 @@
 #define HAS_GUEST_CODE			BIT(6)
 #define HAS_DISP_CFG			BIT(5)
 
-/* F34 V7 commands */
+
 #define CMD_V7_IDLE			0
 #define CMD_V7_ENTER_BL			1
 #define CMD_V7_READ			2
@@ -81,7 +78,7 @@
 #define v7_DP_CONFIG_AREA		3
 #define v7_FLASH_CONFIG_AREA		4
 
-/* F34 V7 partition IDs */
+
 #define BOOTLOADER_PARTITION		1
 #define DEVICE_CONFIG_PARTITION		2
 #define FLASH_CONFIG_PARTITION		3
@@ -93,7 +90,7 @@
 #define GUEST_CODE_PARTITION		9
 #define DISPLAY_CONFIG_PARTITION	10
 
-/* F34 V7 container IDs */
+
 #define TOP_LEVEL_CONTAINER			0
 #define UI_CONTAINER				1
 #define UI_CONFIG_CONTAINER			2
@@ -117,16 +114,16 @@
 #define DISPLAY_CONFIG_CONTAINER		20
 
 struct f34v7_query_1_7 {
-	u8 bl_minor_revision;			/* query 1 */
+	u8 bl_minor_revision;			
 	u8 bl_major_revision;
-	__le32 bl_fw_id;			/* query 2 */
-	u8 minimum_write_size;			/* query 3 */
+	__le32 bl_fw_id;			
+	u8 minimum_write_size;			
 	__le16 block_size;
 	__le16 flash_page_size;
-	__le16 adjustable_partition_area_size;	/* query 4 */
-	__le16 flash_config_length;		/* query 5 */
-	__le16 payload_length;			/* query 6 */
-	u8 partition_support[4];		/* query 7 */
+	__le16 adjustable_partition_area_size;	
+	__le16 flash_config_length;		
+	__le16 payload_length;			
+	u8 partition_support[4];		
 } __packed;
 
 struct f34v7_data_1_5 {
@@ -292,4 +289,4 @@ int rmi_f34v7_start_reflash(struct f34_data *f34, const struct firmware *fw);
 int rmi_f34v7_do_reflash(struct f34_data *f34, const struct firmware *fw);
 int rmi_f34v7_probe(struct f34_data *f34);
 
-#endif /* _RMI_F34_H */
+#endif 

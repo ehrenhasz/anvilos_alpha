@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "mt8183-kukui-jacuzzi-willow.dtsi"
-#include "mt8183-kukui-audio-ts3a227e-max98357a.dtsi"
-/ {
-	model = "Google willow board sku1";
-	compatible = "google,willow-sku1", "google,willow", "mediatek,mt8183";
-};

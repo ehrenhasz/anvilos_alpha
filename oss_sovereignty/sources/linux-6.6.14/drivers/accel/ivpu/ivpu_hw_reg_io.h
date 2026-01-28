@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+
 
 #ifndef __IVPU_HW_REG_IO_H__
 #define __IVPU_HW_REG_IO_H__
@@ -112,4 +110,4 @@ ivpu_hw_reg_wr32_index(struct ivpu_device *vdev, void __iomem *base, u32 reg,
 	writel(val, base + reg);
 }
 
-#endif /* __IVPU_HW_REG_IO_H__ */
+#endif 

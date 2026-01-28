@@ -49,8 +49,8 @@ INCDIR=$(PREFIX)/include
 MANDIR=$(PREFIX)/share/man
 MAN3DIR=$(MANDIR)/man3
 
-# Uncomment to check for memory access errors with valgrind.
-# VALGRIND=1
+
+
 
 all: $(LIBRARY) $(BINFILES)
 
@@ -105,7 +105,7 @@ install-bin: $(BINFILES)
 	install -d $(DESTDIR)$(BINDIR)
 	$(LIBTOOL) --mode=install install $(BINFILES) $(DESTDIR)$(BINDIR)/
 
-# DIST CUT
+
 
 DISTDIR=libvterm-$(VERSION)
 
@@ -123,7 +123,7 @@ distdir: $(INCFILES)
 	mkdir __distdir/t
 	cp t/*.test t/harness.c t/run-test.pl __distdir/t
 	sed "s,@VERSION@,$(VERSION)," <vterm.pc.in >__distdir/vterm.pc.in
-	sed "/^# DIST CUT/Q" <Makefile >__distdir/Makefile
+	sed "/^
 	mv __distdir $(DISTDIR)
 
 TARBALL=$(DISTDIR).tar.gz

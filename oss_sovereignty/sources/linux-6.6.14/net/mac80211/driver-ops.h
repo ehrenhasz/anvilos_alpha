@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
-* Portions of this file
-* Copyright(c) 2016 Intel Deutschland GmbH
-* Copyright (C) 2018 - 2019, 2021 - 2023 Intel Corporation
-*/
+
+
 
 #ifndef __MAC80211_DRIVER_OPS
 #define __MAC80211_DRIVER_OPS
@@ -596,7 +592,7 @@ void drv_reset_tsf(struct ieee80211_local *local,
 
 static inline int drv_tx_last_beacon(struct ieee80211_local *local)
 {
-	int ret = 0; /* default unsupported op for less congestion */
+	int ret = 0; 
 
 	might_sleep();
 
@@ -950,7 +946,7 @@ static inline void drv_change_chanctx(struct ieee80211_local *local,
 static inline void drv_verify_link_exists(struct ieee80211_sub_if_data *sdata,
 					  struct ieee80211_bss_conf *link_conf)
 {
-	/* deflink always exists, so need to check only for other links */
+	
 	if (sdata->deflink.conf != link_conf)
 		sdata_assert_lock(sdata);
 }
@@ -973,7 +969,7 @@ static inline int drv_start_ap(struct ieee80211_local *local,
 {
 	int ret = 0;
 
-	/* make sure link_conf is protected */
+	
 	drv_verify_link_exists(sdata, link_conf);
 
 	might_sleep();
@@ -992,7 +988,7 @@ static inline void drv_stop_ap(struct ieee80211_local *local,
 			       struct ieee80211_sub_if_data *sdata,
 			       struct ieee80211_bss_conf *link_conf)
 {
-	/* make sure link_conf is protected */
+	
 	drv_verify_link_exists(sdata, link_conf);
 
 	if (!check_sdata_in_driver(sdata))
@@ -1235,7 +1231,7 @@ static inline void drv_wake_tx_queue(struct ieee80211_local *local,
 {
 	struct ieee80211_sub_if_data *sdata = vif_to_sdata(txq->txq.vif);
 
-	/* In reconfig don't transmit now, but mark for waking later */
+	
 	if (local->in_reconfig) {
 		set_bit(IEEE80211_TXQ_DIRTY, &txq->flags);
 		return;
@@ -1550,4 +1546,4 @@ int drv_change_sta_links(struct ieee80211_local *local,
 			 struct ieee80211_sta *sta,
 			 u16 old_links, u16 new_links);
 
-#endif /* __MAC80211_DRIVER_OPS */
+#endif 

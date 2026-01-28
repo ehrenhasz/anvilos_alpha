@@ -7,23 +7,23 @@
  * This file may be redistributed under the terms of the
  * GNU Lesser General Public License.
  */
-#ifndef _LIBSMARTCOLS_H
-#define _LIBSMARTCOLS_H
 
-#ifdef __cplusplus
+
+
+
 extern "C" {
-#endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
+
+
+
+
 
 /**
  * LIBSMARTCOLS_VERSION:
  *
  * Library version string
  */
-#define LIBSMARTCOLS_VERSION   "@LIBSMARTCOLS_VERSION@"
+
 
 /**
  * libscols_iter:
@@ -342,8 +342,8 @@ extern int scols_table_print_range_to_string(	struct libscols_table *tb,
 int scols_line_link_group(struct libscols_line *ln, struct libscols_line *member, int id);
 int scols_table_group_lines(struct libscols_table *tb, struct libscols_line *ln,
                             struct libscols_line *member, int id);
-#ifdef __cplusplus
-}
-#endif
 
-#endif /* _LIBSMARTCOLS_H */
+}
+
+
+

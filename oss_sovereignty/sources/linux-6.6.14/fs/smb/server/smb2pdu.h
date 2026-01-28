@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef _SMB2PDU_H
 #define _SMB2PDU_H
@@ -10,17 +7,17 @@
 #include "ntlmssp.h"
 #include "smbacl.h"
 
-/*Create Action Flags*/
+
 #define FILE_SUPERSEDED                0x00000000
 #define FILE_OPENED            0x00000001
 #define FILE_CREATED           0x00000002
 #define FILE_OVERWRITTEN       0x00000003
 
-/* SMB2 Max Credits */
+
 #define SMB2_MAX_CREDITS		8192
 
-/* BB FIXME - analyze following length BB */
-#define MAX_SMB2_HDR_SIZE 0x78 /* 4 len + 64 hdr + (2*24 wct) + 2 bct + 2 pad */
+
+#define MAX_SMB2_HDR_SIZE 0x78 
 
 #define SMB21_DEFAULT_IOSIZE	(1024 * 1024)
 #define SMB3_DEFAULT_TRANS_SIZE	(1024 * 1024)
@@ -28,32 +25,21 @@
 #define SMB3_MAX_IOSIZE		(8 * 1024 * 1024)
 #define SMB3_MAX_MSGSIZE	(4 * 4096)
 
-/*
- *	Definitions for SMB2 Protocol Data Units (network frames)
- *
- *  See MS-SMB2.PDF specification for protocol details.
- *  The Naming convention is the lower case version of the SMB2
- *  command code name for the struct. Note that structures must be packed.
- *
- */
+
 
 struct preauth_integrity_info {
-	/* PreAuth integrity Hash ID */
+	
 	__le16			Preauth_HashId;
-	/* PreAuth integrity Hash Value */
+	
 	__u8			Preauth_HashValue[SMB2_PREAUTH_HASH_SIZE];
 };
 
-/* offset is sizeof smb2_negotiate_rsp but rounded up to 8 bytes. */
+
 #ifdef CONFIG_SMB_SERVER_KERBEROS5
-/* sizeof(struct smb2_negotiate_rsp) =
- * header(64) + response(64) + GSS_LENGTH(96) + GSS_PADDING(0)
- */
+
 #define OFFSET_OF_NEG_CONTEXT	0xe0
 #else
-/* sizeof(struct smb2_negotiate_rsp) =
- * header(64) + response(64) + GSS_LENGTH(74) + GSS_PADDING(6)
- */
+
 #define OFFSET_OF_NEG_CONTEXT	0xd0
 #endif
 
@@ -105,14 +91,14 @@ struct create_durable_v2_rsp {
 	__le32 Flags;
 } __packed;
 
-/* equivalent of the contents of SMB3.1.1 POSIX open context response */
+
 struct create_posix_rsp {
 	struct create_context ccontext;
 	__u8    Name[16];
 	__le32 nlink;
 	__le32 reparse_tag;
 	__le32 mode;
-	/* SidBuffer contain two sids(Domain sid(28), UNIX group sid(16)) */
+	
 	u8 SidBuffer[44];
 } __packed;
 
@@ -152,9 +138,9 @@ struct sockaddr_storage_rsp {
 #define RDMA_CAPABLE	0x00000002
 
 struct network_interface_info_ioctl_rsp {
-	__le32 Next; /* next interface. zero if this is last one */
+	__le32 Next; 
 	__le32 IfIndex;
-	__le32 Capability; /* RSS or RDMA Capable */
+	__le32 Capability; 
 	__le32 Reserved;
 	__le64 LinkSpeed;
 	char	SockAddr_Storage[128];
@@ -170,14 +156,14 @@ struct file_object_buf_type1_ioctl_rsp {
 struct resume_key_ioctl_rsp {
 	__u64 ResumeKey[3];
 	__le32 ContextLength;
-	__u8 Context[4]; /* ignored, Windows sets to 4 bytes of zero */
+	__u8 Context[4]; 
 } __packed;
 
 struct copychunk_ioctl_req {
 	__le64 ResumeKey[3];
 	__le32 ChunkCount;
 	__le32 Reserved;
-	__u8 Chunks[1]; /* array of srv_copychunk */
+	__u8 Chunks[1]; 
 } __packed;
 
 struct srv_copychunk {
@@ -197,7 +183,7 @@ struct file_sparse {
 	__u8	SetSparse;
 } __packed;
 
-/* FILE Info response size */
+
 #define FILE_DIRECTORY_INFORMATION_SIZE       1
 #define FILE_FULL_DIRECTORY_INFORMATION_SIZE  2
 #define FILE_BOTH_DIRECTORY_INFORMATION_SIZE  3
@@ -227,14 +213,14 @@ struct file_sparse {
 #define FILE_MAILSLOT_SET_INFORMATION_SIZE    27
 #define FILE_COMPRESSION_INFORMATION_SIZE     16
 #define FILE_OBJECT_ID_INFORMATION_SIZE       29
-/* Number 30 not defined in documents */
+
 #define FILE_MOVE_CLUSTER_INFORMATION_SIZE    31
 #define FILE_QUOTA_INFORMATION_SIZE           32
 #define FILE_REPARSE_POINT_INFORMATION_SIZE   33
 #define FILE_NETWORK_OPEN_INFORMATION_SIZE    56
 #define FILE_ATTRIBUTE_TAG_INFORMATION_SIZE   8
 
-/* FS Info response  size */
+
 #define FS_DEVICE_INFORMATION_SIZE     8
 #define FS_ATTRIBUTE_INFORMATION_SIZE  16
 #define FS_VOLUME_INFORMATION_SIZE     24
@@ -245,17 +231,14 @@ struct file_sparse {
 #define FS_CONTROL_INFORMATION_SIZE 48
 #define FS_POSIX_INFORMATION_SIZE 56
 
-/* FS_ATTRIBUTE_File_System_Name */
+
 #define FS_TYPE_SUPPORT_SIZE   44
 struct fs_type_info {
 	char		*fs_name;
 	long		magic_number;
 } __packed;
 
-/*
- *	PDU query infolevel structure definitions
- *	BB consider moving to a different header
- */
+
 
 struct smb2_file_access_info {
 	__le32 AccessFlags;
@@ -265,13 +248,13 @@ struct smb2_file_alignment_info {
 	__le32 AlignmentRequirement;
 } __packed;
 
-struct smb2_file_basic_info { /* data block encoding of response to level 18 */
-	__le64 CreationTime;	/* Beginning of FILE_BASIC_INFO equivalent */
+struct smb2_file_basic_info { 
+	__le64 CreationTime;	
 	__le64 LastAccessTime;
 	__le64 LastWriteTime;
 	__le64 ChangeTime;
 	__le32 Attributes;
-	__u32  Pad1;		/* End of FILE_BASIC_INFO_INFO equivalent */
+	__u32  Pad1;		
 } __packed;
 
 struct smb2_file_alt_name_info {
@@ -301,11 +284,11 @@ struct smb2_file_ntwrk_info {
 struct smb2_file_standard_info {
 	__le64 AllocationSize;
 	__le64 EndOfFile;
-	__le32 NumberOfLinks;	/* hard links */
+	__le32 NumberOfLinks;	
 	__u8   DeletePending;
 	__u8   Directory;
 	__le16 Reserved;
-} __packed; /* level 18 Query */
+} __packed; 
 
 struct smb2_file_ea_info {
 	__le32 EASize;
@@ -354,7 +337,7 @@ struct smb2_ea_info_req {
 	__le32 NextEntryOffset;
 	__u8   EaNameLength;
 	char name[1];
-} __packed; /* level 15 Query */
+} __packed; 
 
 struct smb2_ea_info {
 	__le32 NextEntryOffset;
@@ -362,8 +345,8 @@ struct smb2_ea_info {
 	__u8   EaNameLength;
 	__le16 EaValueLength;
 	char name[];
-	/* optionally followed by value */
-} __packed; /* level 15 Query */
+	
+} __packed; 
 
 struct create_ea_buf_req {
 	struct create_context ccontext;
@@ -390,23 +373,18 @@ struct smb2_posix_info {
 	__le64 Inode;
 	__le32 DeviceId;
 	__le32 Zero;
-	/* beginning of POSIX Create Context Response */
+	
 	__le32 HardLinks;
 	__le32 ReparseTag;
 	__le32 Mode;
-	/* SidBuffer contain two sids (UNIX user sid(16), UNIX group sid(16)) */
+	
 	u8 SidBuffer[32];
 	__le32 name_len;
 	u8 name[];
-	/*
-	 * var sized owner SID
-	 * var sized group SID
-	 * le32 filenamelength
-	 * u8  filename[]
-	 */
+	
 } __packed;
 
-/* functions */
+
 void init_smb2_1_server(struct ksmbd_conn *conn);
 void init_smb3_0_server(struct ksmbd_conn *conn);
 void init_smb3_02_server(struct ksmbd_conn *conn);
@@ -451,10 +429,10 @@ bool smb3_11_final_sess_setup_resp(struct ksmbd_work *work);
 int smb2_set_rsp_credits(struct ksmbd_work *work);
 bool smb3_encryption_negotiated(struct ksmbd_conn *conn);
 
-/* smb2 misc functions */
+
 int ksmbd_smb2_check_message(struct ksmbd_work *work);
 
-/* smb2 command handlers */
+
 int smb2_handle_negotiate(struct ksmbd_work *work);
 int smb2_negotiate_request(struct ksmbd_work *work);
 int smb2_sess_setup(struct ksmbd_work *work);
@@ -476,13 +454,10 @@ int smb2_ioctl(struct ksmbd_work *work);
 int smb2_oplock_break(struct ksmbd_work *work);
 int smb2_notify(struct ksmbd_work *ksmbd_work);
 
-/*
- * Get the body of the smb2 message excluding the 4 byte rfc1002 headers
- * from request/response buffer.
- */
+
 static inline void *smb2_get_msg(void *buf)
 {
 	return buf + 4;
 }
 
-#endif	/* _SMB2PDU_H */
+#endif	

@@ -5,5 +5,5 @@
 
 blkid_probe get_swap_prober(const char *devname);
 
-#endif /* UTIL_LINUX_SWAP_PROBER_H */
+#endif 
 

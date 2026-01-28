@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM openvswitch
 
@@ -148,9 +148,9 @@ TRACE_EVENT(ovs_dp_upcall,
 		  __entry->upcall_mru)
 );
 
-#endif /* _TRACE_OPENVSWITCH_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

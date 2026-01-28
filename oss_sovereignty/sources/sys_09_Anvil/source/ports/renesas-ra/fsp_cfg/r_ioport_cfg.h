@@ -1,4 +1,4 @@
-/* generated configuration header file - do not edit */
+
 #ifndef R_IOPORT_CFG_H_
 #define R_IOPORT_CFG_H_
 #ifdef __cplusplus
@@ -10,4 +10,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* R_IOPORT_CFG_H_ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LINUX_NETFILTER_H
 #define __LINUX_NETFILTER_H
 
@@ -85,14 +85,14 @@ enum nf_hook_ops_type {
 };
 
 struct nf_hook_ops {
-	/* User fills in from here down. */
+	
 	nf_hookfn		*hook;
 	struct net_device	*dev;
 	void			*priv;
 	u8			pf;
 	enum nf_hook_ops_type	hook_ops_type:8;
 	unsigned int		hooknum;
-	/* Hooks are ordered in ascending priority. */
+	
 	int			priority;
 };
 
@@ -108,22 +108,10 @@ struct nf_hook_entries_rcu_head {
 
 struct nf_hook_entries {
 	u16				num_hook_entries;
-	/* padding */
+	
 	struct nf_hook_entry		hooks[];
 
-	/* trailer: pointers to original orig_ops of each hook,
-	 * followed by rcu_head and scratch space used for freeing
-	 * the structure via call_rcu.
-	 *
-	 *   This is not part of struct nf_hook_entry since its only
-	 *   needed in slow path (hook register/unregister):
-	 * const struct nf_hook_ops     *orig_ops[]
-	 *
-	 *   For the same reason, we store this at end -- its
-	 *   only needed when a hook is deleted, not during
-	 *   packet path processing:
-	 * struct nf_hook_entries_rcu_head     head
-	 */
+	
 };
 
 #ifdef CONFIG_NETFILTER
@@ -132,7 +120,7 @@ static inline struct nf_hook_ops **nf_hook_entries_get_hook_ops(const struct nf_
 	unsigned int n = e->num_hook_entries;
 	const void *hook_end;
 
-	hook_end = &e->hooks[n]; /* this is *past* ->hooks[]! */
+	hook_end = &e->hooks[n]; 
 
 	return (struct nf_hook_ops **)hook_end;
 }
@@ -169,7 +157,7 @@ struct nf_sockopt_ops {
 
 	u_int8_t pf;
 
-	/* Non-inclusive ranges: use 0/0/NULL to never get called. */
+	
 	int set_optmin;
 	int set_optmax;
 	int (*set)(struct sock *sk, int optval, sockptr_t arg,
@@ -177,11 +165,11 @@ struct nf_sockopt_ops {
 	int get_optmin;
 	int get_optmax;
 	int (*get)(struct sock *sk, int optval, void __user *user, int *len);
-	/* Use the module struct to lock set/get code in place */
+	
 	struct module *owner;
 };
 
-/* Function to register/unregister hook points. */
+
 int nf_register_net_hook(struct net *net, const struct nf_hook_ops *ops);
 void nf_unregister_net_hook(struct net *net, const struct nf_hook_ops *ops);
 int nf_register_net_hooks(struct net *net, const struct nf_hook_ops *reg,
@@ -189,8 +177,7 @@ int nf_register_net_hooks(struct net *net, const struct nf_hook_ops *reg,
 void nf_unregister_net_hooks(struct net *net, const struct nf_hook_ops *reg,
 			     unsigned int n);
 
-/* Functions to register get/setsockopt ranges (non-inclusive).  You
-   need to check permissions yourself! */
+
 int nf_register_sockopt(struct nf_sockopt_ops *reg);
 void nf_unregister_sockopt(struct nf_sockopt_ops *reg);
 
@@ -203,13 +190,7 @@ int nf_hook_slow(struct sk_buff *skb, struct nf_hook_state *state,
 
 void nf_hook_slow_list(struct list_head *head, struct nf_hook_state *state,
 		       const struct nf_hook_entries *e);
-/**
- *	nf_hook - call a netfilter hook
- *
- *	Returns 1 if the hook has allowed the packet to pass.  The function
- *	okfn must be invoked by the caller in this case.  Any other return
- *	value indicates the packet has been consumed by the hook.
- */
+
 static inline int nf_hook(u_int8_t pf, unsigned int hook, struct net *net,
 			  struct sock *sk, struct sk_buff *skb,
 			  struct net_device *indev, struct net_device *outdev,
@@ -263,22 +244,9 @@ static inline int nf_hook(u_int8_t pf, unsigned int hook, struct net *net,
 	return ret;
 }
 
-/* Activate hook; either okfn or kfree_skb called, unless a hook
-   returns NF_STOLEN (in which case, it's up to the hook to deal with
-   the consequences).
 
-   Returns -ERRNO if packet dropped.  Zero means queued, stolen or
-   accepted.
-*/
 
-/* RR:
-   > I don't want nf_hook to return anything because people might forget
-   > about async and trust the return value to mean "packet was ok".
 
-   AK:
-   Just document it clearly, then you can expect some sense from kernel
-   coders :)
-*/
 
 static inline int
 NF_HOOK_COND(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
@@ -342,7 +310,7 @@ NF_HOOK_LIST(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
 	rcu_read_unlock();
 }
 
-/* Call setsockopt() */
+
 int nf_setsockopt(struct sock *sk, u_int8_t pf, int optval, sockptr_t opt,
 		  unsigned int len);
 int nf_getsockopt(struct sock *sk, u_int8_t pf, int optval, char __user *opt,
@@ -395,7 +363,7 @@ nf_nat_decode_session(struct sk_buff *skb, struct flowi *fl, u_int8_t family)
 #endif
 }
 
-#else /* !CONFIG_NETFILTER */
+#else 
 static inline int
 NF_HOOK_COND(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
 	     struct sk_buff *skb, struct net_device *in, struct net_device *out,
@@ -418,7 +386,7 @@ NF_HOOK_LIST(uint8_t pf, unsigned int hook, struct net *net, struct sock *sk,
 	     struct list_head *head, struct net_device *in, struct net_device *out,
 	     int (*okfn)(struct net *, struct sock *, struct sk_buff *))
 {
-	/* nothing to do */
+	
 }
 
 static inline int nf_hook(u_int8_t pf, unsigned int hook, struct net *net,
@@ -433,7 +401,7 @@ static inline void
 nf_nat_decode_session(struct sk_buff *skb, struct flowi *fl, u_int8_t family)
 {
 }
-#endif /*CONFIG_NETFILTER*/
+#endif 
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
 #include <linux/netfilter/nf_conntrack_zones_common.h>
@@ -491,20 +459,9 @@ struct nf_defrag_hook {
 extern const struct nf_defrag_hook __rcu *nf_defrag_v4_hook;
 extern const struct nf_defrag_hook __rcu *nf_defrag_v6_hook;
 
-/*
- * nf_skb_duplicated - TEE target has sent a packet
- *
- * When a xtables target sends a packet, the OUTPUT and POSTROUTING
- * hooks are traversed again, i.e. nft and xtables are invoked recursively.
- *
- * This is used by xtables TEE target to prevent the duplicated skb from
- * being duplicated again.
- */
+
 DECLARE_PER_CPU(bool, nf_skb_duplicated);
 
-/*
- * Contains bitmask of ctnetlink event subscribers, if any.
- * Can't be pernet due to NETLINK_LISTEN_ALL_NSID setsockopt flag.
- */
+
 extern u8 nf_ctnetlink_has_listener;
-#endif /*__LINUX_NETFILTER_H*/
+#endif 

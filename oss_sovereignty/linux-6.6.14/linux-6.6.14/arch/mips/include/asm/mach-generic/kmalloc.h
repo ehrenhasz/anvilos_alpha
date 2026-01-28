@@ -1,6 +1,0 @@
-#ifndef __ASM_MACH_GENERIC_KMALLOC_H
-#define __ASM_MACH_GENERIC_KMALLOC_H
-#ifdef CONFIG_DMA_NONCOHERENT
-#define ARCH_DMA_MINALIGN	128
-#endif
-#endif  

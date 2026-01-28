@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    Copyright IBM Corp. 2007
- *    Author(s): Utz Bacher <utz.bacher@de.ibm.com>,
- *		 Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+
+
 
 #ifndef __QETH_CORE_H__
 #define __QETH_CORE_H__
@@ -48,14 +42,12 @@
 
 #include "qeth_core_mpc.h"
 
-/**
- * Debug Facility stuff
- */
+
 enum qeth_dbf_names {
 	QETH_DBF_SETUP,
 	QETH_DBF_MSG,
 	QETH_DBF_CTRL,
-	QETH_DBF_INFOS	/* must be last element */
+	QETH_DBF_INFOS	
 };
 
 struct qeth_dbf_info {
@@ -111,9 +103,7 @@ static inline u32 qeth_get_device_id(struct ccw_device *cdev)
 	return id;
 }
 
-/*
- * Common IO related definitions
- */
+
 #define CARD_RDEV(card) card->read.ccwdev
 #define CARD_WDEV(card) card->write.ccwdev
 #define CARD_DDEV(card) card->data.ccwdev
@@ -124,12 +114,12 @@ static inline u32 qeth_get_device_id(struct ccw_device *cdev)
 #define CCW_DEVID(cdev)		(qeth_get_device_id(cdev))
 #define CARD_DEVID(card)	(CCW_DEVID(CARD_RDEV(card)))
 
-/* Routing stuff */
+
 struct qeth_routing_info {
 	enum qeth_routing_types type;
 };
 
-/* SETBRIDGEPORT stuff */
+
 enum qeth_sbp_roles {
 	QETH_SBP_ROLE_NONE	= 0,
 	QETH_SBP_ROLE_PRIMARY	= 1,
@@ -153,17 +143,17 @@ struct qeth_sbp_info {
 };
 
 struct qeth_vnicc_info {
-	/* supported/currently configured VNICCs; updated in IPA exchanges */
+	
 	u32 sup_chars;
 	u32 cur_chars;
-	/* supported commands: bitmasks which VNICCs support respective cmd */
+	
 	u32 set_char_sup;
 	u32 getset_timeout_sup;
-	/* timeout value for the learning characteristic */
+	
 	u32 learning_timeout;
-	/* characteristics wanted/configured by user */
+	
 	u32 wanted_chars;
-	/* has user explicitly enabled rx_bcast while online? */
+	
 	bool rx_bcast_enabled;
 };
 
@@ -174,19 +164,17 @@ struct qeth_vnicc_info {
 #define CCW_CMD_WRITE		0x01
 #define CCW_CMD_READ		0x02
 
-/**
- * some more defs
- */
+
 #define QETH_TX_TIMEOUT		(100 * HZ)
 #define QETH_RCD_TIMEOUT	(60 * HZ)
 #define QETH_RECLAIM_WORK_TIME	HZ
 #define QETH_MAX_PORTNO		15
 
-/*****************************************************************************/
-/* QDIO queue and buffer handling                                            */
-/*****************************************************************************/
+
+
+
 #define QETH_MAX_OUT_QUEUES	4
-#define QETH_IQD_MIN_TXQ	2	/* One for ucast, one for mcast. */
+#define QETH_IQD_MIN_TXQ	2	
 #define QETH_IQD_MCAST_TXQ	0
 #define QETH_IQD_MIN_UCAST_TXQ	1
 
@@ -201,14 +189,14 @@ struct qeth_vnicc_info {
 #define QETH_IN_BUF_REQUEUE_THRESHOLD(card) \
 		 ((card)->qdio.in_buf_pool.buf_count / 2)
 
-/* buffers we have to be behind before we get a PCI */
+
 #define QETH_PCI_THRESHOLD_A(card) ((card)->qdio.in_buf_pool.buf_count+1)
-/*enqueued free buffers left before we get a PCI*/
+
 #define QETH_PCI_THRESHOLD_B(card) 0
-/*not used unless the microcode gets patched*/
+
 #define QETH_PCI_TIMER_VALUE(card) 3
 
-/* priority queing */
+
 #define QETH_PRIOQ_DEFAULT QETH_NO_PRIO_QUEUEING
 #define QETH_DEFAULT_QUEUE    2
 #define QETH_NO_PRIO_QUEUEING 0
@@ -218,7 +206,7 @@ struct qeth_vnicc_info {
 #define QETH_PRIO_Q_ING_VLAN  4
 #define QETH_PRIO_Q_ING_FIXED 5
 
-/* Packing */
+
 #define QETH_LOW_WATERMARK_PACK  2
 #define QETH_HIGH_WATERMARK_PACK 5
 #define QETH_WATERMARK_PACK_FUZZ 1
@@ -226,17 +214,17 @@ struct qeth_vnicc_info {
 struct qeth_hdr_layer3 {
 	__u8  id;
 	__u8  flags;
-	__u16 inbound_checksum; /*TSO:__u16 seqno */
-	__u32 token;		/*TSO: __u32 reserved */
+	__u16 inbound_checksum; 
+	__u32 token;		
 	__u16 length;
 	__u8  vlan_prio;
 	__u8  ext_flags;
 	__u16 vlan_id;
 	__u16 frame_offset;
 	union {
-		/* TX: */
+		
 		struct in6_addr addr;
-		/* RX: */
+		
 		struct rx {
 			u8 res1[2];
 			u8 src_mac[6];
@@ -286,7 +274,7 @@ struct qeth_qib_parms {
 	u32 pque_priority[4];
 };
 
-/*TCP Segmentation Offload header*/
+
 struct qeth_hdr_ext_tso {
 	__u16 hdr_tot_len;
 	__u8  imb_hdr_no;
@@ -301,12 +289,12 @@ struct qeth_hdr_ext_tso {
 } __attribute__ ((packed));
 
 struct qeth_hdr_tso {
-	struct qeth_hdr hdr;	/*hdr->hdr.l3.xxx*/
+	struct qeth_hdr hdr;	
 	struct qeth_hdr_ext_tso ext;
 } __attribute__ ((packed));
 
 
-/* flags for qeth_hdr.flags */
+
 #define QETH_HDR_PASSTHRU 0x10
 #define QETH_HDR_IPV6     0x80
 #define QETH_HDR_CAST_MASK 0x07
@@ -332,14 +320,14 @@ enum qeth_header_ids {
 	QETH_HEADER_TYPE_L2_TSO	= 0x06,
 	QETH_HEADER_MASK_INVAL	= 0x80,
 };
-/* flags for qeth_hdr.ext_flags */
+
 #define QETH_HDR_EXT_VLAN_FRAME       0x01
 #define QETH_HDR_EXT_TOKEN_ID         0x02
 #define QETH_HDR_EXT_INCLUDE_VLAN_TAG 0x04
 #define QETH_HDR_EXT_SRC_MAC_ADDR     0x08
 #define QETH_HDR_EXT_CSUM_HDR_REQ     0x10
 #define QETH_HDR_EXT_CSUM_TRANSP_REQ  0x20
-#define QETH_HDR_EXT_UDP	      0x40 /*bit off for TCP*/
+#define QETH_HDR_EXT_UDP	      0x40 
 
 static inline bool qeth_l2_same_vlan(struct qeth_hdr_layer2 *h1,
 				     struct qeth_hdr_layer2 *h2)
@@ -388,7 +376,7 @@ struct qeth_qdio_buffer_pool {
 
 struct qeth_qdio_buffer {
 	struct qdio_buffer *buffer;
-	/* the buffer pool entry currently associated to this buffer */
+	
 	struct qeth_buffer_pool_entry *pool_entry;
 	struct sk_buff *rx_skb;
 };
@@ -400,9 +388,9 @@ struct qeth_qdio_q {
 };
 
 enum qeth_qdio_out_buffer_state {
-	/* Owned by driver, in order to be filled. */
+	
 	QETH_QDIO_BUF_EMPTY,
-	/* Filled by driver; owned by hardware in order to be sent. */
+	
 	QETH_QDIO_BUF_PRIMED,
 };
 
@@ -449,7 +437,7 @@ struct qeth_card_stats {
 	u64 rx_dropped_notsupp;
 	u64 rx_dropped_runt;
 
-	/* rtnl_link_stats64 */
+	
 	u64 rx_packets;
 	u64 rx_bytes;
 	u64 rx_multicast;
@@ -477,7 +465,7 @@ struct qeth_out_q_stats {
 	u64 completion_yield;
 	u64 completion_timer;
 
-	/* rtnl_link_stats64 */
+	
 	u64 tx_packets;
 	u64 tx_bytes;
 	u64 tx_errors;
@@ -500,12 +488,9 @@ struct qeth_qdio_out_q {
 	u8 queue_no;
 	u8 do_pack;
 	struct qeth_card *card;
-	/*
-	 * number of buffers that are currently filled (PRIMED)
-	 * -> these buffers are hardware-owned
-	 */
+	
 	atomic_t used_buffers;
-	/* indicates whether PCI flag must be set (or if one is outstanding) */
+	
 	atomic_t set_pci_flags_count;
 	struct napi_struct napi;
 	struct timer_list timer;
@@ -544,42 +529,36 @@ static inline bool qeth_out_queue_is_empty(struct qeth_qdio_out_q *queue)
 
 struct qeth_qdio_info {
 	atomic_t state;
-	/* input */
+	
 	struct qeth_qdio_q *in_q;
 	struct qeth_qdio_q *c_q;
 	struct qeth_qdio_buffer_pool in_buf_pool;
 	struct qeth_qdio_buffer_pool init_pool;
 	int in_buf_size;
 
-	/* output */
+	
 	unsigned int no_out_queues;
 	struct qeth_qdio_out_q *out_qs[QETH_MAX_OUT_QUEUES];
 
-	/* priority queueing */
+	
 	int do_prio_queueing;
 	int default_out_queue;
 };
 
-/**
- *  channel state machine
- */
+
 enum qeth_channel_states {
 	CH_STATE_UP,
 	CH_STATE_DOWN,
 	CH_STATE_HALTED,
 	CH_STATE_STOPPED,
 };
-/**
- * card state machine
- */
+
 enum qeth_card_states {
 	CARD_STATE_DOWN,
 	CARD_STATE_SOFTSETUP,
 };
 
-/**
- * Protocol versions
- */
+
 enum qeth_prot_versions {
 	QETH_PROT_NONE = 0x0000,
 	QETH_PROT_IPV4 = 0x0004,
@@ -652,9 +631,7 @@ static inline struct ccw1 *__ccw_from_cmd(struct qeth_cmd_buffer *iob)
 	return (struct ccw1 *)(iob->data + ALIGN(iob->length, 8));
 }
 
-/**
- *  OSA card related definitions
- */
+
 struct qeth_token {
 	__u32 issuer_rm_w;
 	__u32 issuer_rm_r;
@@ -707,19 +684,19 @@ struct qeth_card_info {
 	unsigned short cula;
 	__u16 func_level;
 	char mcl_level[QETH_MCL_LENGTH + 1];
-	/* doubleword below corresponds to net_if_token */
+	
 	u16 ddev_devno;
 	u8 cssid;
 	u8 iid;
 	u8 ssid;
 	u8 chpid;
 	u16 chid;
-	u8 ids_valid:1; /* cssid,iid,chid */
+	u8 ids_valid:1; 
 	u8 dev_addr_is_registered:1;
 	u8 promisc_mode:1;
 	u8 use_v1_blkt:1;
 	u8 is_vm_nic:1;
-	/* no bitfield, we take a pointer on these two: */
+	
 	u8 has_lp2lp_cso_v6;
 	u8 has_lp2lp_cso_v4;
 	enum qeth_pnso_mode pnso_mode;
@@ -744,9 +721,9 @@ struct qeth_card_options {
 	struct qeth_ipa_caps ipa6;
 	struct qeth_routing_info route4;
 	struct qeth_routing_info route6;
-	struct qeth_ipa_caps adp; /* Adapter parameters */
-	struct qeth_sbp_info sbp; /* SETBRIDGEPORT options */
-	struct qeth_vnicc_info vnicc; /* VNICC options */
+	struct qeth_ipa_caps adp; 
+	struct qeth_sbp_info sbp; 
+	struct qeth_vnicc_info vnicc; 
 	enum qeth_discipline_id layer;
 	enum qeth_ipa_isolation_modes isolation;
 	int sniffer;
@@ -757,9 +734,7 @@ struct qeth_card_options {
 #define	IS_LAYER2(card)	((card)->options.layer == QETH_DISCIPLINE_LAYER2)
 #define	IS_LAYER3(card)	((card)->options.layer == QETH_DISCIPLINE_LAYER3)
 
-/*
- * thread bits for qeth_card thread masks
- */
+
 enum qeth_threads {
 	QETH_RECOVER_THREAD = 1,
 };
@@ -822,7 +797,7 @@ struct qeth_card {
 	wait_queue_head_t wait_q;
 
 	struct mutex ip_lock;
-	/* protected by ip_lock: */
+	
 	DECLARE_HASHTABLE(ip_htable, 4);
 	struct qeth_ipato ipato;
 
@@ -838,7 +813,7 @@ struct qeth_card {
 	unsigned long thread_allowed_mask;
 	unsigned long thread_running_mask;
 	struct list_head cmd_waiter_list;
-	/* QDIO buffer handling */
+	
 	struct qeth_qdio_info qdio;
 	int read_or_write_problem;
 	const struct qeth_discipline *discipline;
@@ -927,14 +902,7 @@ static inline void qeth_scrub_qdio_buffer(struct qdio_buffer *buf,
 	buf->element[15].sflags = 0;
 }
 
-/**
- * qeth_get_elements_for_range() -	find number of SBALEs to cover range.
- * @start:				Start of the address range.
- * @end:				Address after the end of the range.
- *
- * Returns the number of pages, and thus QDIO buffer elements, needed to cover
- * the specified address range.
- */
+
 static inline int qeth_get_elements_for_range(addr_t start, addr_t end)
 {
 	return PFN_UP(end) - PFN_DOWN(start);
@@ -1010,7 +978,7 @@ int qeth_send_simple_setassparms_prot(struct qeth_card *card,
 				      enum qeth_ipa_funcs ipa_func,
 				      u16 cmd_code, u32 *data,
 				      enum qeth_prot_versions prot);
-/* IPv4 variant */
+
 static inline int qeth_send_simple_setassparms(struct qeth_card *card,
 					       enum qeth_ipa_funcs ipa_func,
 					       u16 cmd_code, u32 *data)
@@ -1037,7 +1005,7 @@ int qeth_resize_buffer_pool(struct qeth_card *card, unsigned int count);
 int qeth_setup_discipline(struct qeth_card *card, enum qeth_discipline_id disc);
 void qeth_remove_discipline(struct qeth_card *card);
 
-/* exports for qeth discipline device drivers */
+
 extern struct qeth_dbf_info qeth_dbf[QETH_DBF_INFOS];
 
 struct net_device *qeth_clone_netdev(struct net_device *orig);
@@ -1106,4 +1074,4 @@ int qeth_xmit(struct qeth_card *card, struct sk_buff *skb,
 				  struct qeth_hdr *hdr, struct sk_buff *skb,
 				  __be16 proto, unsigned int data_len));
 
-#endif /* __QETH_CORE_H__ */
+#endif 

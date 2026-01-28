@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015 IBM Corp.
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cxl
@@ -682,9 +680,9 @@ TRACE_EVENT(cxl_hcall_download_facility,
 	)
 );
 
-#endif /* _CXL_TRACE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

@@ -1,14 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NF_LOG_H
 #define _NF_LOG_H
 
 #include <linux/netfilter.h>
 #include <linux/netfilter/nf_log.h>
 
-/* Log tcp sequence, tcp options, ip options and uid owning local socket */
+
 #define NF_LOG_DEFAULT_MASK	0x0f
 
-/* This flag indicates that copy_len field in nf_loginfo is set */
+
 #define NF_LOG_F_COPY_LEN	0x1
 
 enum nf_log_type {
@@ -21,9 +21,7 @@ struct nf_loginfo {
 	u_int8_t type;
 	union {
 		struct {
-			/* copy_len will be used iff you set
-			 * NF_LOG_F_COPY_LEN in flags
-			 */
+			
 			u_int32_t copy_len;
 			u_int16_t group;
 			u_int16_t qthreshold;
@@ -52,10 +50,10 @@ struct nf_logger {
 	struct module		*me;
 };
 
-/* sysctl_nf_log_all_netns - allow LOG target in all network namespaces */
+
 extern int sysctl_nf_log_all_netns;
 
-/* Function to register/unregister log function. */
+
 int nf_log_register(u_int8_t pf, struct nf_logger *logger);
 void nf_log_unregister(struct nf_logger *logger);
 
@@ -72,7 +70,7 @@ void nf_logger_put(int pf, enum nf_log_type type);
 #define MODULE_ALIAS_NF_LOGGER(family, type) \
 	MODULE_ALIAS("nf-logger-" __stringify(family) "-" __stringify(type))
 
-/* Calls the registered backend logging function */
+
 __printf(8, 9)
 void nf_log_packet(struct net *net,
 		   u_int8_t pf,
@@ -98,4 +96,4 @@ struct nf_log_buf;
 struct nf_log_buf *nf_log_buf_open(void);
 __printf(2, 3) int nf_log_buf_add(struct nf_log_buf *m, const char *f, ...);
 void nf_log_buf_close(struct nf_log_buf *m);
-#endif /* _NF_LOG_H */
+#endif 

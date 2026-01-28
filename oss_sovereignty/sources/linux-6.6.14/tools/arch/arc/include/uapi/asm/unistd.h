@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
 
-/******** no-legacy-syscalls-ABI *******/
 
-/*
- * Non-typical guard macro to enable inclusion twice in ARCH sys.c
- * That is how the Generic syscall wrapper generator works
- */
+
+
+
+
 #if !defined(_UAPI_ASM_ARC_UNISTD_H) || defined(__SYSCALL)
 #define _UAPI_ASM_ARC_UNISTD_H
 
@@ -31,10 +22,10 @@
 
 #define NR_syscalls	__NR_syscalls
 
-/* Generic syscall (fs/filesystems.c - lost in asm-generic/unistd.h */
+
 #define __NR_sysfs		(__NR_arch_specific_syscall + 3)
 
-/* ARC specific syscall */
+
 #define __NR_cacheflush		(__NR_arch_specific_syscall + 0)
 #define __NR_arc_settls		(__NR_arch_specific_syscall + 1)
 #define __NR_arc_gettls		(__NR_arch_specific_syscall + 2)

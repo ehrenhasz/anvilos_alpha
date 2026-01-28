@@ -175,7 +175,7 @@ main()
 	done
 	shift $((OPTIND -1))
 	if [[ "${debug_shell}" == "no" ]]; then
-		if [[ $# -eq 0 ]]; then
+		if [[ $
 			echo "No command specified, will run ${DEFAULT_COMMAND} in the vm"
 		else
 			command="$@"

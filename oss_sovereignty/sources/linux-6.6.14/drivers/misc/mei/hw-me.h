@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2012-2022, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+
 
 #ifndef _MEI_INTERFACE_H_
 #define _MEI_INTERFACE_H_
@@ -14,16 +11,7 @@
 #include "mei_dev.h"
 #include "client.h"
 
-/*
- * mei_cfg - mei device configuration
- *
- * @fw_status: FW status
- * @quirk_probe: device exclusion quirk
- * @kind: MEI head kind
- * @dma_size: device DMA buffers size
- * @fw_ver_supported: is fw version retrievable from FW
- * @hw_trc_supported: does the hw support trc register
- */
+
 struct mei_cfg {
 	const struct mei_fw_status fw_status;
 	bool (*quirk_probe)(const struct pci_dev *pdev);
@@ -39,22 +27,9 @@ struct mei_cfg {
 	.subvendor = PCI_ANY_ID, .subdevice = PCI_ANY_ID, \
 	.driver_data = (kernel_ulong_t)(cfg),
 
-#define MEI_ME_RPM_TIMEOUT    500 /* ms */
+#define MEI_ME_RPM_TIMEOUT    500 
 
-/**
- * struct mei_me_hw - me hw specific data
- *
- * @cfg: per device generation config and ops
- * @mem_addr: io memory address
- * @irq: irq number
- * @pg_state: power gating state
- * @d0i3_supported: di03 support
- * @hbuf_depth: depth of hardware host/write buffer in slots
- * @read_fws: read FW status register handler
- * @polling_thread: interrupt polling thread
- * @wait_active: the polling thread activity wait queue
- * @is_active: the device is active
- */
+
 struct mei_me_hw {
 	const struct mei_cfg *cfg;
 	void __iomem *mem_addr;
@@ -63,7 +38,7 @@ struct mei_me_hw {
 	bool d0i3_supported;
 	u8 hbuf_depth;
 	int (*read_fws)(const struct mei_device *dev, int where, u32 *val);
-	/* polling */
+	
 	struct task_struct *polling_thread;
 	wait_queue_head_t wait_active;
 	bool is_active;
@@ -76,38 +51,7 @@ static inline bool mei_me_hw_use_polling(const struct mei_me_hw *hw)
 	return hw->irq < 0;
 }
 
-/**
- * enum mei_cfg_idx - indices to platform specific configurations.
- *
- * Note: has to be synchronized with mei_cfg_list[]
- *
- * @MEI_ME_UNDEF_CFG:      Lower sentinel.
- * @MEI_ME_ICH_CFG:        I/O Controller Hub legacy devices.
- * @MEI_ME_ICH10_CFG:      I/O Controller Hub platforms Gen10
- * @MEI_ME_PCH6_CFG:       Platform Controller Hub platforms (Gen6).
- * @MEI_ME_PCH7_CFG:       Platform Controller Hub platforms (Gen7).
- * @MEI_ME_PCH_CPT_PBG_CFG:Platform Controller Hub workstations
- *                         with quirk for Node Manager exclusion.
- * @MEI_ME_PCH8_CFG:       Platform Controller Hub Gen8 and newer
- *                         client platforms.
- * @MEI_ME_PCH8_ITOUCH_CFG:Platform Controller Hub Gen8 and newer
- *                         client platforms (iTouch).
- * @MEI_ME_PCH8_SPS_4_CFG: Platform Controller Hub Gen8 and newer
- *                         servers platforms with quirk for
- *                         SPS firmware exclusion.
- * @MEI_ME_PCH12_CFG:      Platform Controller Hub Gen12 and newer
- * @MEI_ME_PCH12_SPS_4_CFG:Platform Controller Hub Gen12 up to 4.0
- *                         servers platforms with quirk for
- *                         SPS firmware exclusion.
- * @MEI_ME_PCH12_SPS_CFG:  Platform Controller Hub Gen12 5.0 and newer
- *                         servers platforms with quirk for
- *                         SPS firmware exclusion.
- * @MEI_ME_PCH15_CFG:      Platform Controller Hub Gen15 and newer
- * @MEI_ME_PCH15_SPS_CFG:  Platform Controller Hub Gen15 and newer
- *                         servers platforms with quirk for
- *                         SPS firmware exclusion.
- * @MEI_ME_NUM_CFG:        Upper Sentinel.
- */
+
 enum mei_cfg_idx {
 	MEI_ME_UNDEF_CFG,
 	MEI_ME_ICH_CFG,
@@ -141,4 +85,4 @@ irqreturn_t mei_me_irq_quick_handler(int irq, void *dev_id);
 irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id);
 int mei_me_polling_thread(void *_dev);
 
-#endif /* _MEI_INTERFACE_H_ */
+#endif 

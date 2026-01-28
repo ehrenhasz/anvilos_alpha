@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# linux/drivers/mtd/devices/Makefile
-#
+
+
+
+
 
 obj-$(CONFIG_MTD_DOCG3)		+= docg3.o
 obj-$(CONFIG_MTD_SLRAM)		+= slram.o

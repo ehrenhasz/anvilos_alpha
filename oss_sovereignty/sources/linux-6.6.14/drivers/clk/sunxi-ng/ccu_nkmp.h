@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+
+
 
 #ifndef _CCU_NKMP_H_
 #define _CCU_NKMP_H_
@@ -12,11 +10,7 @@
 #include "ccu_div.h"
 #include "ccu_mult.h"
 
-/*
- * struct ccu_nkmp - Definition of an N-K-M-P clock
- *
- * Clocks based on the formula parent * N * K >> P / M
- */
+
 struct ccu_nkmp {
 	u32			enable;
 	u32			lock;
@@ -63,4 +57,4 @@ static inline struct ccu_nkmp *hw_to_ccu_nkmp(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_nkmp_ops;
 
-#endif /* _CCU_NKMP_H_ */
+#endif 

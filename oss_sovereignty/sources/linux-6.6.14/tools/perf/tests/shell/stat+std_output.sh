@@ -29,15 +29,15 @@ function commachecker()
 	while read line
 	do
 		x=${line:0:1}
-		[ "$x" = "#" ] && continue
+		[ "$x" = "
 		[ "$line" = "" ] && continue
 		x=${line:0:25}
 		[ "$x" = "Performance counter stats" ] && continue
 		[[ "$line" == *"time elapsed"* ]] && break
 		main_body=$(echo $line | cut -d' ' -f$prefix-)
-		x=${main_body%#*}
+		x=${main_body%
 		[ "$x" = "" ] && continue
-		y=${main_body#*#}
+		y=${main_body
 		for i in "${!skip_metric[@]}"; do
 			[[ "$y" == *"${skip_metric[$i]}"* ]] && break
 		done
@@ -49,7 +49,7 @@ function commachecker()
 			echo "Unknown event name in $line" 1>&2
 			exit 1;
 		}
-		[[ ! "$main_body" == *"#"* ]] && continue
+		[[ ! "$main_body" == *"
 		[[ ! "$main_body" == *"${event_metric[$i]}"* ]] && {
 			echo "wrong event metric. expected ${event_metric[$i]} in $line" 1>&2
 			exit 1;

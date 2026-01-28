@@ -2,7 +2,7 @@ import time
 import machine
 import rp2
 src = bytes(i & 0xFF for i in range(16 * 1024))
-print("# test basic usage")
+print("
 dma = rp2.DMA()
 print(dma)
 print(rp2.DMA.unpack_ctrl(dma.pack_ctrl()))
@@ -18,7 +18,7 @@ try:
     assert False
 except ValueError:
     print("ValueError")
-print("# test memory copy")
+print("
 dest = bytearray(1024)
 dma = rp2.DMA()
 dma.config(read=src, write=dest, count=len(dest) // 4, ctrl=dma.pack_ctrl(), trigger=False)
@@ -38,7 +38,7 @@ def run_and_time_dma(dma):
     t1 = ticks_us()
     machine.enable_irq(irq_state)
     return time.ticks_diff(t1, t0)
-print("# test timing")
+print("
 dest = bytearray(16 * 1024)
 dma = rp2.DMA()
 dma.read = src
@@ -49,7 +49,7 @@ dt = run_and_time_dma(dma)
 print(70 <= dt <= 110)
 print(dest[:8], dest[-8:])
 dma.close()
-print("# test immediate trigger")
+print("
 dest = bytearray(1024)
 dma = rp2.DMA()
 dma.config(read=src, write=dest, count=len(dest) // 4, ctrl=dma.pack_ctrl(), trigger=True)
@@ -57,7 +57,7 @@ while dma.active():
     pass
 print(dest[:8], dest[-8:])
 dma.close()
-print("# test irq")
+print("
 dest = bytearray(1024)
 dma = rp2.DMA()
 dma.irq(lambda dma: print("irq fired", dma.irq().flags()))

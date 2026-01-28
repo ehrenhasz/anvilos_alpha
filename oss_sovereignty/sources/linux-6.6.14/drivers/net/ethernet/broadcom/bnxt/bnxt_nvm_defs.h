@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2014-2016 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef _BNXT_NVM_DEFS_H_
 #define _BNXT_NVM_DEFS_H_
@@ -69,4 +62,4 @@ enum bnxnvm_pkglog_field_index {
 	BNX_PKG_LOG_FIELD_IDX_INSTALLED_MASK		= 6
 };
 
-#endif				/* Don't add anything after this line */
+#endif				

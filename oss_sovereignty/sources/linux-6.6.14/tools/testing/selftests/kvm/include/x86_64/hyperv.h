@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * tools/testing/selftests/kvm/include/x86_64/hyperv.h
- *
- * Copyright (C) 2021, Red Hat, Inc.
- *
- */
+
+
 
 #ifndef SELFTEST_KVM_HYPERV_H
 #define SELFTEST_KVM_HYPERV_H
@@ -84,7 +79,7 @@
 #define HV_X64_MSR_SYNDBG_PENDING_BUFFER	0x400000F5
 #define HV_X64_MSR_SYNDBG_OPTIONS		0x400000FF
 
-/* HYPERV_CPUID_FEATURES.EAX */
+
 #define HV_MSR_VP_RUNTIME_AVAILABLE		\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EAX, 0)
 #define HV_MSR_TIME_REF_COUNT_AVAILABLE		\
@@ -114,7 +109,7 @@
 #define HV_ACCESS_TSC_INVARIANT			\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EAX, 15)
 
-/* HYPERV_CPUID_FEATURES.EBX */
+
 #define HV_CREATE_PARTITIONS		        \
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EBX, 0)
 #define HV_ACCESS_PARTITION_ID			\
@@ -142,7 +137,7 @@
 #define HV_ISOLATION				\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EBX, 22)
 
-/* HYPERV_CPUID_FEATURES.EDX */
+
 #define HV_X64_MWAIT_AVAILABLE				\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EDX, 0)
 #define HV_X64_GUEST_DEBUGGING_AVAILABLE		\
@@ -164,7 +159,7 @@
 #define HV_STIMER_DIRECT_MODE_AVAILABLE			\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_FEATURES, 0, EDX, 19)
 
-/* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
+
 #define HV_X64_AS_SWITCH_RECOMMENDED			\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_ENLIGHTMENT_INFO, 0, EAX, 0)
 #define HV_X64_LOCAL_TLB_FLUSH_RECOMMENDED		\
@@ -186,11 +181,11 @@
 #define HV_X64_ENLIGHTENED_VMCS_RECOMMENDED		\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_ENLIGHTMENT_INFO, 0, EAX, 14)
 
-/* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
+
 #define HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING	\
 	KVM_X86_CPU_FEATURE(HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES, 0, EAX, 1)
 
-/* Hypercalls */
+
 #define HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE	0x0002
 #define HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST	0x0003
 #define HVCALL_NOTIFY_LONG_SPIN_WAIT		0x0008
@@ -215,7 +210,7 @@
 #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
 #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
 
-/* Extended hypercalls */
+
 #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
 
 #define HV_FLUSH_ALL_PROCESSORS			BIT(0)
@@ -223,7 +218,7 @@
 #define HV_FLUSH_NON_GLOBAL_MAPPINGS_ONLY	BIT(2)
 #define HV_FLUSH_USE_EXTENDED_RANGE_FORMAT	BIT(3)
 
-/* hypercall status code */
+
 #define HV_STATUS_SUCCESS			0
 #define HV_STATUS_INVALID_HYPERCALL_CODE	2
 #define HV_STATUS_INVALID_HYPERCALL_INPUT	3
@@ -236,15 +231,12 @@
 #define HV_STATUS_INVALID_CONNECTION_ID		18
 #define HV_STATUS_INSUFFICIENT_BUFFERS		19
 
-/* hypercall options */
+
 #define HV_HYPERCALL_FAST_BIT		BIT(16)
 #define HV_HYPERCALL_VARHEAD_OFFSET	17
 #define HV_HYPERCALL_REP_COMP_OFFSET	32
 
-/*
- * Issue a Hyper-V hypercall. Returns exception vector raised or 0, 'hv_status'
- * is set to the hypercall status (if no exception occurred).
- */
+
 static inline uint8_t __hyperv_hypercall(u64 control, vm_vaddr_t input_address,
 					 vm_vaddr_t output_address,
 					 uint64_t *hv_status)
@@ -252,7 +244,7 @@ static inline uint8_t __hyperv_hypercall(u64 control, vm_vaddr_t input_address,
 	uint64_t error_code;
 	uint8_t vector;
 
-	/* Note both the hypercall and the "asm safe" clobber r9-r11. */
+	
 	asm volatile("mov %[output_address], %%r8\n\t"
 		     KVM_ASM_SAFE("vmcall")
 		     : "=a" (*hv_status),
@@ -264,7 +256,7 @@ static inline uint8_t __hyperv_hypercall(u64 control, vm_vaddr_t input_address,
 	return vector;
 }
 
-/* Issue a Hyper-V hypercall and assert that it succeeded. */
+
 static inline void hyperv_hypercall(u64 control, vm_vaddr_t input_address,
 				    vm_vaddr_t output_address)
 {
@@ -277,7 +269,7 @@ static inline void hyperv_hypercall(u64 control, vm_vaddr_t input_address,
 	GUEST_ASSERT((hv_status & 0xffff) == 0);
 }
 
-/* Write 'Fast' hypercall input 'data' to the first 'n_sse_regs' SSE regs */
+
 static inline void hyperv_write_xmm_input(void *data, int n_sse_regs)
 {
 	int i;
@@ -286,7 +278,7 @@ static inline void hyperv_write_xmm_input(void *data, int n_sse_regs)
 		write_sse_reg(i, (sse128_t *)(data + sizeof(sse128_t) * i));
 }
 
-/* Proper HV_X64_MSR_GUEST_OS_ID value */
+
 #define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
 
 #define HV_X64_MSR_VP_ASSIST_PAGE		0x40000073
@@ -305,7 +297,7 @@ struct hv_nested_enlightenments_control {
 	} hypercallControls;
 } __packed;
 
-/* Define virtual processor assist page structure. */
+
 struct hv_vp_assist_page {
 	__u32 apic_assist;
 	__u32 reserved1;
@@ -321,17 +313,17 @@ extern struct hv_vp_assist_page *current_vp_assist;
 int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist);
 
 struct hyperv_test_pages {
-	/* VP assist page */
+	
 	void *vp_assist_hva;
 	uint64_t vp_assist_gpa;
 	void *vp_assist;
 
-	/* Partition assist page */
+	
 	void *partition_assist_hva;
 	uint64_t partition_assist_gpa;
 	void *partition_assist;
 
-	/* Enlightened VMCS */
+	
 	void *enlightened_vmcs_hva;
 	uint64_t enlightened_vmcs_gpa;
 	void *enlightened_vmcs;
@@ -340,7 +332,7 @@ struct hyperv_test_pages {
 struct hyperv_test_pages *vcpu_alloc_hyperv_test_pages(struct kvm_vm *vm,
 						       vm_vaddr_t *p_hv_pages_gva);
 
-/* HV_X64_MSR_TSC_INVARIANT_CONTROL bits */
+
 #define HV_INVARIANT_TSC_EXPOSED               BIT_ULL(0)
 
-#endif /* !SELFTEST_KVM_HYPERV_H */
+#endif 

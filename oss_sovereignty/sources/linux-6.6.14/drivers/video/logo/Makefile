@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for the Linux logos
+
+
 
 obj-$(CONFIG_LOGO)			+= logo.o
 obj-$(CONFIG_LOGO_LINUX_MONO)		+= logo_linux_mono.o
@@ -16,11 +16,11 @@ obj-$(CONFIG_LOGO_SUPERH_CLUT224)	+= logo_superh_clut224.o
 
 obj-$(CONFIG_SPU_BASE)			+= logo_spe_clut224.o
 
-# How to generate logo's
+
 
 hostprogs := pnmtologo
 
-# Create commands like "pnmtologo -t mono -n logo_mac_mono -o ..."
+
 quiet_cmd_logo = LOGO    $@
       cmd_logo = $(obj)/pnmtologo -t $(lastword $(subst _, ,$*)) -n $* -o $@ $<
 
@@ -33,5 +33,5 @@ $(obj)/%.c: $(src)/%.ppm $(obj)/pnmtologo FORCE
 $(obj)/%.c: $(src)/%.pgm $(obj)/pnmtologo FORCE
 	$(call if_changed,logo)
 
-# generated C files
+
 targets += *_mono.c *_vga16.c *_clut224.c *_gray256.c

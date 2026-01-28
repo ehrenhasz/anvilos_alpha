@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifdef DEFINE_DWARF_REGSTR_TABLE
-/* This is included in perf/util/dwarf-regs.c */
+
 
 static const char * const sparc_regstr_tbl[] = {
 	"%g0", "%g1", "%g2", "%g3", "%g4", "%g5", "%g6", "%g7",

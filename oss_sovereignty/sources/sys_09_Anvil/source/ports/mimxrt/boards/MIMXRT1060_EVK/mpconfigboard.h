@@ -3,19 +3,19 @@
 
 #define MICROPY_PY_NETWORK_HOSTNAME_DEFAULT "mpy-1060evk"
 
-// MIMXRT1060_EVK has 1 user LED
+
 #define MICROPY_HW_LED1_PIN (pin_GPIO_AD_B0_09)
 #define MICROPY_HW_LED_ON(pin) (mp_hal_pin_low(pin))
 #define MICROPY_HW_LED_OFF(pin) (mp_hal_pin_high(pin))
 
 #define MICROPY_HW_NUM_PIN_IRQS (4 * 32 + 3)
 
-// Define mapping logical UART # to hardware UART #
-// LPUART1 on USB_DBG  -> 0
-// LPUART3 on D0/D1    -> 1
-// LPUART2 on D7/D6    -> 2
-// LPUART6 on D8/D9    -> 3
-// LPUART8 on A1/A0    -> 4
+
+
+
+
+
+
 
 #define MICROPY_HW_UART_NUM     (sizeof(uart_index_table) / sizeof(uart_index_table)[0])
 #define MICROPY_HW_UART_INDEX   { 1, 3, 2, 6, 8 }
@@ -53,10 +53,10 @@
 #define DMA_REQ_SRC_TX { 0, kDmaRequestMuxLPSPI1Tx, kDmaRequestMuxLPSPI2Tx, \
                          kDmaRequestMuxLPSPI3Tx, kDmaRequestMuxLPSPI4Tx }
 
-// Define the mapping hardware I2C # to logical I2C #
-// SDA/SCL  HW-I2C    Logical I2C
-// D14/D15  LPI2C1 ->    0
-// D1/D0    LPI2C3 ->    1
+
+
+
+
 
 #define MICROPY_HW_I2C_INDEX   { 1, 3 }
 
@@ -108,7 +108,7 @@
         .data3 = { GPIO_SD_B0_05_USDHC1_DATA3 }, \
     }
 
-// --- SEMC --- //
+
 #define MIMXRT_IOMUXC_SEMC_DATA00 IOMUXC_GPIO_EMC_00_SEMC_DATA00
 #define MIMXRT_IOMUXC_SEMC_DATA01 IOMUXC_GPIO_EMC_01_SEMC_DATA01
 #define MIMXRT_IOMUXC_SEMC_DATA02 IOMUXC_GPIO_EMC_02_SEMC_DATA02
@@ -153,8 +153,8 @@
 
 #define MIMXRT_IOMUXC_SEMC_CS0 IOMUXC_GPIO_EMC_29_SEMC_CS0
 
-// Network definitions
-// Transceiver Phy Address
+
+
 #define ENET_PHY_ADDRESS    (2)
 #define ENET_PHY_OPS        phyksz8081_ops
 

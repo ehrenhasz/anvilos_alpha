@@ -3,7 +3,7 @@ shopt -s extglob
 exec 3>&1
 export LANG=C
 export WG_HIDE_KEYS=never
-NPROC=( /sys/devices/system/cpu/cpu+([0-9]) ); NPROC=${#NPROC[@]}
+NPROC=( /sys/devices/system/cpu/cpu+([0-9]) ); NPROC=${
 netns0="wg-test-$$-0"
 netns1="wg-test-$$-1"
 netns2="wg-test-$$-2"
@@ -260,8 +260,8 @@ n2 ping -W 1 -c 1 192.168.241.1
 n1 wg set wg0 peer "$pub2" persistent-keepalive 0
 n1 ping -I wg0 -c 1 -W 1 192.168.241.2
 n1 iptables -t mangle -I OUTPUT -j MARK --set-xmark 1
-n1 ping -c 1 -W 1 192.168.241.2 # First the boring case
-n1 ping -I wg0 -c 1 -W 1 192.168.241.2 # Then the sk_bound_dev_if case
+n1 ping -c 1 -W 1 192.168.241.2 
+n1 ping -I wg0 -c 1 -W 1 192.168.241.2 
 n1 iptables -t mangle -D OUTPUT -j MARK --set-xmark 1
 n1 wg set wg0 peer "$pub3" allowed-ips 192.168.242.2/32 endpoint 192.168.241.2:5
 ip1 addr add 192.168.242.1/24 dev wg0
@@ -272,7 +272,7 @@ ip2 link set wg1 up
 n1 ping -W 1 -c 1 192.168.242.2
 ip2 link del wg1
 n1 wg set wg0 peer "$pub3" endpoint 192.168.242.2:5
-! n1 ping -W 1 -c 1 192.168.242.2 || false # Should not crash kernel
+! n1 ping -W 1 -c 1 192.168.242.2 || false 
 n1 wg set wg0 peer "$pub3" remove
 ip1 addr del 192.168.242.1/24 dev wg0
 ip1 -6 addr add fc00::9/96 dev vethc
@@ -290,7 +290,7 @@ n1 bash -c 'printf 0 > /proc/sys/net/ipv4/conf/vethc/rp_filter'
 n1 ping -W 1 -c 100 -f 192.168.99.7
 n1 ping -W 1 -c 100 -f abab::1111
 n2 iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -d 192.168.241.0/24 -j SNAT --to 192.168.241.2
-n0 iptables -t filter -A INPUT \! -s 10.0.0.0/24 -i vethrs -j DROP # Manual rpfilter just to be explicit.
+n0 iptables -t filter -A INPUT \! -s 10.0.0.0/24 -i vethrs -j DROP 
 n2 bash -c 'printf 1 > /proc/sys/net/ipv4/ip_forward'
 ip0 -4 route add 192.168.241.1 via 10.0.0.100
 n2 wg set wg0 peer "$pub1" remove
@@ -546,7 +546,7 @@ pp ip netns delete $netns1
 pp ip netns delete $netns2
 pp ip netns add $netns1
 pp ip netns add $netns2
-sleep 2 # Wait for cleanup and grace periods
+sleep 2 
 declare -A objects
 while read -t 0.1 -r line 2>/dev/null || [[ $? -ne 142 ]]; do
 	[[ $line =~ .*(wg[0-9]+:\ [A-Z][a-z]+\ ?[0-9]*)\ .*(created|destroyed).* ]] || continue

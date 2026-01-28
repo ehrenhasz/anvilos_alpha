@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
-/*
- * Copyright (c) 2021 Amlogic, Inc. All rights reserved.
- * Author: Huqiang Qin <huqiang.qin@amlogic.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_AMLOGIC_C3_GPIO_H
 #define _DT_BINDINGS_AMLOGIC_C3_GPIO_H
@@ -69,4 +66,4 @@
 
 #define	GPIO_TEST_N	54
 
-#endif /* _DT_BINDINGS_AMLOGIC_C3_GPIO_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _STATIC_CALL_TYPES_H
 #define _STATIC_CALL_TYPES_H
 
@@ -18,17 +18,12 @@
 #define STATIC_CALL_TRAMP(name)		__PASTE(STATIC_CALL_TRAMP_PREFIX, name)
 #define STATIC_CALL_TRAMP_STR(name)	__stringify(STATIC_CALL_TRAMP(name))
 
-/*
- * Flags in the low bits of static_call_site::key.
- */
-#define STATIC_CALL_SITE_TAIL 1UL	/* tail call */
-#define STATIC_CALL_SITE_INIT 2UL	/* init section */
+
+#define STATIC_CALL_SITE_TAIL 1UL	
+#define STATIC_CALL_SITE_INIT 2UL	
 #define STATIC_CALL_SITE_FLAGS 3UL
 
-/*
- * The static call site table needs to be created by external tooling (objtool
- * or a compiler plugin).
- */
+
 struct static_call_site {
 	s32 addr;
 	s32 key;
@@ -44,11 +39,7 @@ struct static_call_site {
 
 #ifdef CONFIG_HAVE_STATIC_CALL_INLINE
 
-/*
- * __ADDRESSABLE() is used to ensure the key symbol doesn't get stripped from
- * the symbol table so that objtool can reference it when it generates the
- * .static_call_sites section.
- */
+
 #define __STATIC_CALL_ADDRESSABLE(name) \
 	__ADDRESSABLE(STATIC_CALL_KEY(name))
 
@@ -61,14 +52,14 @@ struct static_call_site {
 struct static_call_key {
 	void *func;
 	union {
-		/* bit 0: 0 = mods, 1 = sites */
+		
 		unsigned long type;
 		struct static_call_mod *mods;
 		struct static_call_site *sites;
 	};
 };
 
-#else /* !CONFIG_HAVE_STATIC_CALL_INLINE */
+#else 
 
 #define __STATIC_CALL_ADDRESSABLE(name)
 #define __static_call(name)	__raw_static_call(name)
@@ -77,7 +68,7 @@ struct static_call_key {
 	void *func;
 };
 
-#endif /* CONFIG_HAVE_STATIC_CALL_INLINE */
+#endif 
 
 #ifdef MODULE
 #define __STATIC_CALL_MOD_ADDRESSABLE(name)
@@ -98,6 +89,6 @@ struct static_call_key {
 #define static_call(name)						\
 	((typeof(STATIC_CALL_TRAMP(name))*)(STATIC_CALL_KEY(name).func))
 
-#endif /* CONFIG_HAVE_STATIC_CALL */
+#endif 
 
-#endif /* _STATIC_CALL_TYPES_H */
+#endif 

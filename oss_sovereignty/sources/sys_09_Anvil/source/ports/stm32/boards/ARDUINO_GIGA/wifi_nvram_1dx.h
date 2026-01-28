@@ -1,6 +1,6 @@
 static const uint8_t wifi_nvram_4343[] CYW43_RESOURCE_ATTRIBUTE =
-    // Type1DX_Final_nvram2.txt
-    // 2.4 GHz, 20 MHz BW mode
+    
+    
     "manfid=0x2d0\x00"
     "prodid=0x0726\x00"
     "vendid=0x14e4\x00"
@@ -17,13 +17,13 @@ static const uint8_t wifi_nvram_4343[] CYW43_RESOURCE_ATTRIBUTE =
     "ag0=0\x00"
     "aa2g=1\x00"
     "ccode=ALL\x00"
-    // "pa0itssit=0x20\x00"
+    
     "extpagain2g=0\x00"
     "pa2ga0=-145,6667,-751\x00"
     "AvVmid_c0=0x0,0xc8\x00"
     "cckpwroffset0=2\x00"
     "maxp2ga0=74\x00"
-    // "txpwrbckof=6\x00"
+    
     "cckbw202gpo=0\x00"
     "legofdmbw202gpo=0x88888888\x00"
     "mcsbw202gpo=0xaaaaaaaa\x00"
@@ -38,11 +38,11 @@ static const uint8_t wifi_nvram_4343[] CYW43_RESOURCE_ATTRIBUTE =
     "il0macaddr=00:90:4c:c5:12:38\x00"
     "wl0id=0x431b\x00"
     "muxenab=0x10\x00"
-    // BT COEX deferral limit setting
-    // "btc_params 8 45000\x00"
-    // "btc_params 10 20000\x00"
-    // "spurconfig=0x3\x00"
-    // Antenna diversity
+    
+    
+    
+    
+    
     "swdiv_en=1\x00"
     "swdiv_gpio=1\x00"
     "\x00\x00"

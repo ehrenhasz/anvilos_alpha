@@ -1,18 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * V4L2 DV timings header.
- *
- * Copyright (C) 2012-2016  Hans Verkuil <hans.verkuil@cisco.com>
- */
+
+
 
 #ifndef _V4L2_DV_TIMINGS_H
 #define _V4L2_DV_TIMINGS_H
 
 #if __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
-/* Sadly gcc versions older than 4.6 have a bug in how they initialize
-   anonymous unions where they require additional curly brackets.
-   This violates the C1x standard. This workaround adds the curly brackets
-   if needed. */
+
 #define V4L2_INIT_BT_TIMINGS(_width, args...) \
 	{ .bt = { _width , ## args } }
 #else
@@ -20,7 +13,7 @@
 	.bt = { _width , ## args }
 #endif
 
-/* CEA-861-F timings (i.e. standard HDTV timings) */
+
 
 #define V4L2_DV_BT_CEA_640X480P59_94 { \
 	.type = V4L2_DV_BT_656_1120, \
@@ -30,8 +23,7 @@
 		V4L2_DV_FL_HAS_CEA861_VIC, { 0, 0 }, 1) \
 }
 
-/* Note: these are the nominal timings, for HDMI links this format is typically
- * double-clocked to meet the minimum pixelclock requirements.  */
+
 #define V4L2_DV_BT_CEA_720X480I59_94 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(720, 480, 1, 0, \
@@ -51,8 +43,7 @@
 		V4L2_DV_FL_HAS_CEA861_VIC, { 4, 3 }, 2) \
 }
 
-/* Note: these are the nominal timings, for HDMI links this format is typically
- * double-clocked to meet the minimum pixelclock requirements.  */
+
 #define V4L2_DV_BT_CEA_720X576I50 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(720, 576, 1, 0, \
@@ -289,7 +280,7 @@
 }
 
 
-/* VESA Discrete Monitor Timings as per version 1.0, revision 12 */
+
 
 #define V4L2_DV_BT_DMT_640X350P85 { \
 	.type = V4L2_DV_BT_656_1120, \
@@ -312,7 +303,7 @@
 		V4L2_DV_BT_STD_DMT, 0) \
 }
 
-/* VGA resolutions */
+
 #define V4L2_DV_BT_DMT_640X480P60 V4L2_DV_BT_CEA_640X480P59_94
 
 #define V4L2_DV_BT_DMT_640X480P72 { \
@@ -336,7 +327,7 @@
 		V4L2_DV_BT_STD_DMT, 0) \
 }
 
-/* SVGA resolutions */
+
 #define V4L2_DV_BT_DMT_800X600P56 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(800, 600, 0, \
@@ -401,7 +392,7 @@
 		V4L2_DV_BT_STD_DMT, 0) \
 }
 
-/* XGA resolutions */
+
 #define V4L2_DV_BT_DMT_1024X768P60 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1024, 768, 0, 0, \
@@ -440,7 +431,7 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* XGA+ resolution */
+
 #define V4L2_DV_BT_DMT_1152X864P75 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1152, 864, 0, \
@@ -451,7 +442,7 @@
 
 #define V4L2_DV_BT_DMT_1280X720P60 V4L2_DV_BT_CEA_1280X720P60
 
-/* WXGA resolutions */
+
 #define V4L2_DV_BT_DMT_1280X768P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1280, 768, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -550,7 +541,7 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* SXGA resolutions */
+
 #define V4L2_DV_BT_DMT_1280X1024P60 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1280, 1024, 0, \
@@ -615,7 +606,7 @@
 		V4L2_DV_BT_STD_DMT, V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* SXGA+ resolutions */
+
 #define V4L2_DV_BT_DMT_1400X1050P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1400, 1050, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -653,7 +644,7 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* WXGA+ resolutions */
+
 #define V4L2_DV_BT_DMT_1440X900P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1440, 900, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -699,7 +690,7 @@
 		V4L2_DV_BT_STD_DMT, V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* UXGA resolutions */
+
 #define V4L2_DV_BT_DMT_1600X1200P60 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1600, 1200, 0, \
@@ -748,7 +739,7 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* WSXGA+ resolutions */
+
 #define V4L2_DV_BT_DMT_1680X1050P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1680, 1050, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -832,7 +823,7 @@
 
 #define V4L2_DV_BT_DMT_1920X1080P60 V4L2_DV_BT_CEA_1920X1080P60
 
-/* WUXGA resolutions */
+
 #define V4L2_DV_BT_DMT_1920X1200P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(1920, 1200, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -900,7 +891,7 @@
 		V4L2_DV_BT_STD_DMT, V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* WQXGA resolutions */
+
 #define V4L2_DV_BT_DMT_2560X1600P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(2560, 1600, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -938,7 +929,7 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* 4K resolutions */
+
 #define V4L2_DV_BT_DMT_4096X2160P60_RB { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(4096, 2160, 0, V4L2_DV_HSYNC_POS_POL, \
@@ -955,9 +946,9 @@
 		V4L2_DV_FL_REDUCED_BLANKING) \
 }
 
-/* SDI timings definitions */
 
-/* SMPTE-125M */
+
+
 #define V4L2_DV_BT_SDI_720X487I60 { \
 	.type = V4L2_DV_BT_656_1120, \
 	V4L2_INIT_BT_TIMINGS(720, 487, 1, \

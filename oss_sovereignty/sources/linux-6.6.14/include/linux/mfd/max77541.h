@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef __MFD_MAX77541_H
 #define __MFD_MAX77541_H
@@ -6,7 +6,7 @@
 #include <linux/bits.h>
 #include <linux/types.h>
 
-/* REGISTERS */
+
 #define MAX77541_REG_INT_SRC                    0x00
 #define MAX77541_REG_INT_SRC_M                  0x01
 
@@ -23,7 +23,7 @@
 #define MAX77541_BIT_TOPSYS_INT_ALT_SWO         BIT(4)
 #define MAX77541_BIT_TOPSYS_INT_EXT_FREQ_DET    BIT(5)
 
-/* REGULATORS */
+
 #define MAX77541_REG_BUCK_INT                   0x20
 #define MAX77541_REG_BUCK_INT_M                 0x21
 
@@ -47,7 +47,7 @@
 
 #define MAX77541_BITS_MX_CFG1_RNG               GENMASK(7, 6)
 
-/* ADC */
+
 #define MAX77541_REG_ADC_INT                    0x70
 #define MAX77541_REG_ADC_INT_M                  0x71
 
@@ -61,7 +61,7 @@
 #define MAX77541_REG_ADC_DATA_CH3               0x74
 #define MAX77541_REG_ADC_DATA_CH6               0x77
 
-/* INTERRUPT MASKS*/
+
 #define MAX77541_REG_INT_SRC_MASK               0x00
 #define MAX77541_REG_TOPSYS_INT_MASK            0x00
 #define MAX77541_REG_BUCK_INT_MASK              0x00
@@ -88,4 +88,4 @@ struct max77541 {
 	struct regmap_irq_chip_data *irq_adc;
 };
 
-#endif /* __MFD_MAX77541_H */
+#endif 

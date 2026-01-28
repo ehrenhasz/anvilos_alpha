@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2019-2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef GAUDI2_FW_IF_H
 #define GAUDI2_FW_IF_H
 
 #define GAUDI2_EVENT_QUEUE_MSIX_IDX	0
 
-#define UBOOT_FW_OFFSET			0x100000	/* 1MB in SRAM */
-#define LINUX_FW_OFFSET			0x800000	/* 8BM in DDR */
+#define UBOOT_FW_OFFSET			0x100000	
+#define LINUX_FW_OFFSET			0x800000	
 
-#define GAUDI2_PLL_FREQ_LOW		200000000 /* 200 MHz */
+#define GAUDI2_PLL_FREQ_LOW		200000000 
 
 #define GAUDI2_SP_SRAM_BASE_ADDR	0x27FE0000
 #define GAUDI2_MAILBOX_BASE_ADDR	0x27FE1800
@@ -46,9 +41,9 @@
 					GAUDI2_SP_SRAM_BASE_ADDR)
 
 enum gaudi2_fw_status {
-	GAUDI2_PID_STATUS_UP = 0x1,	/* PID on ARC0 is up */
-	GAUDI2_ARM_STATUS_UP = 0x2,	/* ARM Linux Boot complete */
-	GAUDI2_MGMT_STATUS_UP = 0x3,	/* ARC1 Mgmt is up */
+	GAUDI2_PID_STATUS_UP = 0x1,	
+	GAUDI2_ARM_STATUS_UP = 0x2,	
+	GAUDI2_MGMT_STATUS_UP = 0x3,	
 	GAUDI2_STATUS_LAST = 0xFF
 };
 
@@ -101,7 +96,7 @@ struct gaudi2_redundancy_ctx {
 	__le64 hmmu_hif_mask;
 	__le64 xbar_edge_mask;
 	__u8 mme_pe_iso[GAUDI2_NUM_MME];
-	__le32 full_hbm_mode;	/* true on full (non binning hbm)*/
+	__le32 full_hbm_mode;	
 } __packed;
 
-#endif /* GAUDI2_FW_IF_H */
+#endif 

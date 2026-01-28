@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Cryptographic Coprocessor (CCP) crypto API support
- *
- * Copyright (C) 2013,2017 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+
+
 
 #ifndef __CCP_CRYPTO_H__
 #define __CCP_CRYPTO_H__
@@ -25,7 +19,7 @@
 #include <crypto/skcipher.h>
 #include <crypto/internal/rsa.h>
 
-/* We want the module name in front of our messages */
+
 #undef pr_fmt
 #define	pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -56,7 +50,7 @@ struct ccp_crypto_ahash_alg {
 	u32 type;
 	u32 mode;
 
-	/* Child algorithm used for HMAC, CMAC, etc */
+	
 	char child_alg[CRYPTO_MAX_ALG_NAME];
 
 	struct ahash_alg alg;
@@ -87,9 +81,9 @@ static inline struct ccp_crypto_ahash_alg *
 	return container_of(ahash_alg, struct ccp_crypto_ahash_alg, alg);
 }
 
-/***** AES related defines *****/
+
 struct ccp_aes_ctx {
-	/* Fallback cipher for XTS with unsupported unit sizes */
+	
 	struct crypto_skcipher *tfm_skcipher;
 
 	enum ccp_engine engine;
@@ -102,7 +96,7 @@ struct ccp_aes_ctx {
 
 	u8 nonce[CTR_RFC3686_NONCE_SIZE];
 
-	/* CMAC key structures */
+	
 	struct scatterlist k1_sg;
 	struct scatterlist k2_sg;
 	unsigned int kn_len;
@@ -117,13 +111,13 @@ struct ccp_aes_req_ctx {
 	struct scatterlist tag_sg;
 	u8 tag[AES_BLOCK_SIZE];
 
-	/* Fields used for RFC3686 requests */
+	
 	u8 *rfc3686_info;
 	u8 rfc3686_iv[AES_BLOCK_SIZE];
 
 	struct ccp_cmd cmd;
 
-	struct skcipher_request fallback_req;	// keep at the end
+	struct skcipher_request fallback_req;	
 };
 
 struct ccp_aes_cmac_req_ctx {
@@ -161,7 +155,7 @@ struct ccp_aes_cmac_exp_ctx {
 	u8 buf[AES_BLOCK_SIZE];
 };
 
-/***** 3DES related defines *****/
+
 struct ccp_des3_ctx {
 	enum ccp_engine engine;
 	enum ccp_des3_type type;
@@ -179,9 +173,7 @@ struct ccp_des3_req_ctx {
 	struct ccp_cmd cmd;
 };
 
-/* SHA-related defines
- * These values must be large enough to accommodate any variant
- */
+
 #define MAX_SHA_CONTEXT_SIZE	SHA512_DIGEST_SIZE
 #define MAX_SHA_BLOCK_SIZE	SHA512_BLOCK_SIZE
 
@@ -219,7 +211,7 @@ struct ccp_sha_req_ctx {
 	unsigned int buf_count;
 	u8 buf[MAX_SHA_BLOCK_SIZE];
 
-	/* CCP driver command */
+	
 	struct ccp_cmd cmd;
 };
 
@@ -236,10 +228,10 @@ struct ccp_sha_exp_ctx {
 	u8 buf[MAX_SHA_BLOCK_SIZE];
 };
 
-/***** RSA related defines *****/
+
 
 struct ccp_rsa_ctx {
-	unsigned int key_len; /* in bits */
+	unsigned int key_len; 
 	struct scatterlist e_sg;
 	u8 *e_buf;
 	unsigned int e_len;
@@ -258,7 +250,7 @@ struct ccp_rsa_req_ctx {
 #define	CCP_RSA_MAXMOD	(4 * 1024 / 8)
 #define	CCP5_RSA_MAXMOD	(16 * 1024 / 8)
 
-/***** Common Context Structure *****/
+
 struct ccp_ctx {
 	int (*complete)(struct crypto_async_request *req, int ret);
 

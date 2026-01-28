@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019 Facebook */
+
+
 #ifndef _BPF_SK_STORAGE_H
 #define _BPF_SK_STORAGE_H
 
@@ -60,4 +60,4 @@ static inline int bpf_sk_storage_diag_put(struct bpf_sk_storage_diag *diag,
 }
 #endif
 
-#endif /* _BPF_SK_STORAGE_H */
+#endif 

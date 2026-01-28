@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Thunderbolt driver - NHI driver
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+
+
 
 #ifndef DSL3510_H_
 #define DSL3510_H_
@@ -30,15 +25,7 @@ enum nhi_mailbox_cmd {
 int nhi_mailbox_cmd(struct tb_nhi *nhi, enum nhi_mailbox_cmd cmd, u32 data);
 enum nhi_fw_mode nhi_mailbox_mode(struct tb_nhi *nhi);
 
-/**
- * struct tb_nhi_ops - NHI specific optional operations
- * @init: NHI specific initialization
- * @suspend_noirq: NHI specific suspend_noirq hook
- * @resume_noirq: NHI specific resume_noirq hook
- * @runtime_suspend: NHI specific runtime_suspend hook
- * @runtime_resume: NHI specific runtime_resume hook
- * @shutdown: NHI specific shutdown
- */
+
 struct tb_nhi_ops {
 	int (*init)(struct tb_nhi *nhi);
 	int (*suspend_noirq)(struct tb_nhi *nhi, bool wakeup);
@@ -50,11 +37,7 @@ struct tb_nhi_ops {
 
 extern const struct tb_nhi_ops icl_nhi_ops;
 
-/*
- * PCI IDs used in this driver from Win Ridge forward. There is no
- * need for the PCI quirk anymore as we will use ICM also on Apple
- * hardware.
- */
+
 #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_2C_NHI		0x1134
 #define PCI_DEVICE_ID_INTEL_MAPLE_RIDGE_4C_NHI		0x1137
 #define PCI_DEVICE_ID_INTEL_WIN_RIDGE_2C_NHI            0x157d

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Support for SATA devices on Serial Attached SCSI (SAS) controllers
- *
- * Copyright (C) 2006 IBM Corporation
- *
- * Written by: Darrick J. Wong <djwong@us.ibm.com>, IBM Corporation
- */
+
+
 
 #ifndef _SAS_ATA_H_
 #define _SAS_ATA_H_
@@ -125,4 +119,4 @@ static inline int sas_ata_add_dev(struct domain_device *parent, struct ex_phy *p
 }
 #endif
 
-#endif /* _SAS_ATA_H_ */
+#endif 

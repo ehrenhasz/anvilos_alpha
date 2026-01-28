@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_NETDEV_RX_QUEUE_H
 #define _LINUX_NETDEV_RX_QUEUE_H
 
@@ -7,7 +7,7 @@
 #include <linux/sysfs.h>
 #include <net/xdp.h>
 
-/* This structure contains an instance of an RX queue. */
+
 struct netdev_rx_queue {
 	struct xdp_rxq_info		xdp_rxq;
 #ifdef CONFIG_RPS
@@ -23,9 +23,7 @@ struct netdev_rx_queue {
 #endif
 } ____cacheline_aligned_in_smp;
 
-/*
- * RX queue sysfs structures and functions.
- */
+
 struct rx_queue_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct netdev_rx_queue *queue, char *buf);

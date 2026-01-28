@@ -1,14 +1,6 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * Definitions of various common control characters.
- */
+
+
 
 #define CharOrd(x)	((x) < 'a' ? (x) - 'A' : (x) - 'a')
 #define CharOrdLow(x)	((x) - 'a')
@@ -22,7 +14,7 @@
 #define NL		'\012'
 #define NL_STR		(char_u *)"\012"
 #define FF		'\014'
-#define CAR		'\015'	// CR is used by Mac OS X
+#define CAR		'\015'	
 #define ESC		'\033'
 #define ESC_STR		(char_u *)"\033"
 #define ESC_STR_nc	"\033"
@@ -31,14 +23,14 @@
 
 #define POUND		0xA3
 
-#define Ctrl_chr(x)	(TOUPPER_ASC(x) ^ 0x40) // '?' -> DEL, '@' -> ^@, etc.
+#define Ctrl_chr(x)	(TOUPPER_ASC(x) ^ 0x40) 
 #define Meta(x)		((x) | 0x80)
 
 #define CTRL_F_STR	"\006"
 #define CTRL_H_STR	"\010"
 #define CTRL_V_STR	"\026"
 
-#define Ctrl_AT		0   // @
+#define Ctrl_AT		0   
 #define Ctrl_A		1
 #define Ctrl_B		2
 #define Ctrl_C		3
@@ -65,24 +57,19 @@
 #define Ctrl_X		24
 #define Ctrl_Y		25
 #define Ctrl_Z		26
-			    // CTRL- [ Left Square Bracket == ESC
-#define Ctrl_BSL	28  // \ BackSLash
-#define Ctrl_RSB	29  // ] Right Square Bracket
-#define Ctrl_HAT	30  // ^
+			    
+#define Ctrl_BSL	28  
+#define Ctrl_RSB	29  
+#define Ctrl_HAT	30  
 #define Ctrl__		31
 
-#define CSI		0x9b	// Control Sequence Introducer
+#define CSI		0x9b	
 #define CSI_STR		"\233"
-#define DCS		0x90	// Device Control String
-#define OSC		0x9d	// Operating System Command
-#define STERM		0x9c	// String Terminator
+#define DCS		0x90	
+#define OSC		0x9d	
+#define STERM		0x9c	
 
-/*
- * Character that separates dir names in a path.
- * For MS-DOS, WIN32 and OS/2 we use a backslash.  A slash mostly works
- * fine, but there are places where it doesn't (e.g. in a command name).
- * For Acorn we use a dot.
- */
+
 #ifdef BACKSLASH_IN_FILENAME
 # define PATHSEP	psepc
 # define PATHSEPSTR	pseps

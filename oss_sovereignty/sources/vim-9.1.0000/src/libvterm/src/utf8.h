@@ -1,7 +1,4 @@
-/* The following functions copied and adapted from libtermkey
- *
- * http://www.leonerd.org.uk/code/libtermkey/
- */
+
 unsigned int utf8_seqlen(long codepoint);
 
 #if defined(DEFINE_INLINES) || USE_INLINE
@@ -16,7 +13,7 @@ INLINE unsigned int utf8_seqlen(long codepoint)
 }
 #endif
 
-/* Does NOT NUL-terminate the buffer */
+
 int fill_utf8(long codepoint, char *str);
 
 #if defined(DEFINE_INLINES) || USE_INLINE
@@ -24,7 +21,7 @@ INLINE int fill_utf8(long codepoint, char *str)
 {
   int nbytes = utf8_seqlen(codepoint);
 
-  // This is easier done backwards
+  
   int b = nbytes;
   while(b > 1) {
     b--;
@@ -44,4 +41,4 @@ INLINE int fill_utf8(long codepoint, char *str)
   return nbytes;
 }
 #endif
-/* end copy */
+

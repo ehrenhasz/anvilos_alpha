@@ -1,11 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# fixdep: used to generate dependency information during build process
+
+
+
 
 hostprogs-always-y	+= fixdep
 
-# randstruct: the seed is needed before building the gcc-plugin or
-# before running a Clang kernel build.
+
+
 gen-randstruct-seed	:= $(srctree)/scripts/gen-randstruct-seed.sh
 quiet_cmd_create_randstruct_seed = GENSEED $@
 cmd_create_randstruct_seed = \

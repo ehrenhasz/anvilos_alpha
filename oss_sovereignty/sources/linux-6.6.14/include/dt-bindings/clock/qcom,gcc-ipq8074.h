@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLOCK_IPQ_GCC_8074_H
 #define _DT_BINDINGS_CLOCK_IPQ_GCC_8074_H

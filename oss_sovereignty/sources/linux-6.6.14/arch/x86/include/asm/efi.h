@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_EFI_H
 #define _ASM_X86_EFI_H
 
@@ -15,16 +15,7 @@
 extern unsigned long efi_fw_vendor, efi_config_table;
 extern unsigned long efi_mixed_mode_stack_pa;
 
-/*
- * We map the EFI regions needed for runtime services non-contiguously,
- * with preserved alignment on virtual addresses starting from -4G down
- * for a total max space of 64G. This way, we provide for stable runtime
- * services addresses across kernels so that a kexec'd kernel can still
- * use them.
- *
- * This is the main reason why we're doing stable VA mappings for RT
- * services.
- */
+
 
 #define EFI32_LOADER_SIGNATURE	"EL32"
 #define EFI64_LOADER_SIGNATURE	"EL64"
@@ -33,19 +24,7 @@ extern unsigned long efi_mixed_mode_stack_pa;
 
 #define EFI_UNACCEPTED_UNIT_SIZE PMD_SIZE
 
-/*
- * The EFI services are called through variadic functions in many cases. These
- * functions are implemented in assembler and support only a fixed number of
- * arguments. The macros below allows us to check at build time that we don't
- * try to call them with too many arguments.
- *
- * __efi_nargs() will return the number of arguments if it is 7 or less, and
- * cause a BUILD_BUG otherwise. The limitations of the C preprocessor make it
- * impossible to calculate the exact number of arguments beyond some
- * pre-defined limit. The maximum number of arguments currently supported by
- * any of the thunks is 7, so this is good enough for now and can be extended
- * in the obvious way if we ever need more.
- */
+
 
 #define __efi_nargs(...) __efi_nargs_(__VA_ARGS__)
 #define __efi_nargs_(...) __efi_nargs__(0, ##__VA_ARGS__,	\
@@ -59,10 +38,7 @@ extern unsigned long efi_mixed_mode_stack_pa;
 		({ BUILD_BUG_ON_MSG(1, "__efi_nargs limit exceeded"); 10; }))
 #define __efi_arg_sentinel(n) , n
 
-/*
- * __efi_nargs_check(f, n, ...) will cause a BUILD_BUG if the ellipsis
- * represents more than n arguments.
- */
+
 
 #define __efi_nargs_check(f, n, ...)					\
 	__efi_nargs_check_(f, __efi_nargs(__VA_ARGS__), n)
@@ -75,12 +51,7 @@ extern unsigned long efi_mixed_mode_stack_pa;
 
 static inline void efi_fpu_begin(void)
 {
-	/*
-	 * The UEFI calling convention (UEFI spec 2.3.2 and 2.3.4) requires
-	 * that FCW and MXCSR (64-bit) must be initialized prior to calling
-	 * UEFI code.  (Oddly the spec does not require that the FPU stack
-	 * be empty.)
-	 */
+	
 	kernel_fpu_begin_mask(KFPU_387 | KFPU_MXCSR);
 }
 
@@ -91,7 +62,7 @@ static inline void efi_fpu_end(void)
 
 #ifdef CONFIG_X86_32
 #define EFI_X86_KERNEL_ALLOC_LIMIT		(SZ_512M - 1)
-#else /* !CONFIG_X86_32 */
+#else 
 #define EFI_X86_KERNEL_ALLOC_LIMIT		EFI_ALLOC_LIMIT
 
 extern asmlinkage u64 __efi_call(void *fp, ...);
@@ -112,18 +83,13 @@ extern bool efi_disable_ibt_for_runtime;
 })
 
 #ifdef CONFIG_KASAN
-/*
- * CONFIG_KASAN may redefine memset to __memset.  __memset function is present
- * only in kernel binary.  Since the EFI stub linked into a separate binary it
- * doesn't have __memset().  So we should use standard memset from
- * arch/x86/boot/compressed/string.c.  The same applies to memcpy and memmove.
- */
+
 #undef memcpy
 #undef memset
 #undef memmove
 #endif
 
-#endif /* CONFIG_X86_32 */
+#endif 
 
 extern int __init efi_memblock_x86_reserve_range(void);
 extern void __init efi_print_memmap(void);
@@ -143,7 +109,7 @@ extern void efi_free_boot_services(void);
 void arch_efi_call_virt_setup(void);
 void arch_efi_call_virt_teardown(void);
 
-/* kexec external ABI */
+
 struct efi_setup_data {
 	u64 fw_vendor;
 	u64 __unused;
@@ -158,7 +124,7 @@ extern u64 efi_setup;
 extern u64 __efi64_thunk(u32, ...);
 
 #define efi64_thunk(...) ({						\
-	u64 __pad[3]; /* must have space for 3 args on the stack */	\
+	u64 __pad[3]; 	\
 	__efi_nargs_check(efi64_thunk, 9, __VA_ARGS__);			\
 	__efi64_thunk(__VA_ARGS__, __pad);				\
 })
@@ -187,7 +153,7 @@ efi_status_t efi_set_virtual_address_map(unsigned long memory_map_size,
 					 efi_memory_desc_t *virtual_map,
 					 unsigned long systab_phys);
 
-/* arch specific definitions used by the stub code */
+
 
 #ifdef CONFIG_EFI_MIXED
 
@@ -217,24 +183,7 @@ static inline bool efi_is_native(void)
 		u32:		(unsigned long)(inst->mixed_mode.attr),	\
 		default:	(inst->mixed_mode.attr))
 
-/*
- * The following macros allow translating arguments if necessary from native to
- * mixed mode. The use case for this is to initialize the upper 32 bits of
- * output parameters, and where the 32-bit method requires a 64-bit argument,
- * which must be split up into two arguments to be thunked properly.
- *
- * As examples, the AllocatePool boot service returns the address of the
- * allocation, but it will not set the high 32 bits of the address. To ensure
- * that the full 64-bit address is initialized, we zero-init the address before
- * calling the thunk.
- *
- * The FreePages boot service takes a 64-bit physical address even in 32-bit
- * mode. For the thunk to work correctly, a native 64-bit call of
- * 	free_pages(addr, size)
- * must be translated to
- * 	efi64_thunk(free_pages, addr & U32_MAX, addr >> 32, size)
- * so that the two 32-bit halves of addr get pushed onto the stack separately.
- */
+
 
 static inline void *efi64_zero_upper(void *p)
 {
@@ -279,42 +228,42 @@ static inline u32 efi64_convert_status(efi_status_t status)
 #define __efi64_argmap_exit(handle, status, size, data)			\
 	((handle), efi64_convert_status(status), (size), (data))
 
-/* PCI I/O */
+
 #define __efi64_argmap_get_location(protocol, seg, bus, dev, func)	\
 	((protocol), efi64_zero_upper(seg), efi64_zero_upper(bus),	\
 	 efi64_zero_upper(dev), efi64_zero_upper(func))
 
-/* LoadFile */
+
 #define __efi64_argmap_load_file(protocol, path, policy, bufsize, buf)	\
 	((protocol), (path), (policy), efi64_zero_upper(bufsize), (buf))
 
-/* Graphics Output Protocol */
+
 #define __efi64_argmap_query_mode(gop, mode, size, info)		\
 	((gop), (mode), efi64_zero_upper(size), efi64_zero_upper(info))
 
-/* TCG2 protocol */
+
 #define __efi64_argmap_hash_log_extend_event(prot, fl, addr, size, ev)	\
 	((prot), (fl), 0ULL, (u64)(addr), 0ULL, (u64)(size), 0ULL, ev)
 
-/* DXE services */
+
 #define __efi64_argmap_get_memory_space_descriptor(phys, desc) \
 	(__efi64_split(phys), (desc))
 
 #define __efi64_argmap_set_memory_space_attributes(phys, size, flags) \
 	(__efi64_split(phys), __efi64_split(size), __efi64_split(flags))
 
-/* file protocol */
+
 #define __efi64_argmap_open(prot, newh, fname, mode, attr) \
 	((prot), efi64_zero_upper(newh), (fname), __efi64_split(mode), \
 	 __efi64_split(attr))
 
 #define __efi64_argmap_set_position(pos) (__efi64_split(pos))
 
-/* file system protocol */
+
 #define __efi64_argmap_open_volume(prot, file) \
 	((prot), efi64_zero_upper(file))
 
-/* Memory Attribute Protocol */
+
 #define __efi64_argmap_get_memory_attributes(protocol, phys, size, flags) \
 	((protocol), __efi64_split(phys), __efi64_split(size), (flags))
 
@@ -324,11 +273,7 @@ static inline u32 efi64_convert_status(efi_status_t status)
 #define __efi64_argmap_clear_memory_attributes(protocol, phys, size, flags) \
 	((protocol), __efi64_split(phys), __efi64_split(size), __efi64_split(flags))
 
-/*
- * The macros below handle the plumbing for the argument mapping. To add a
- * mapping for a specific EFI method, simply define a macro
- * __efi64_argmap_<method name>, following the examples above.
- */
+
 
 #define __efi64_thunk_map(inst, func, ...)				\
 	efi64_thunk(inst->mixed_mode.func,				\
@@ -345,11 +290,11 @@ static inline u32 efi64_convert_status(efi_status_t status)
 
 static inline efi_status_t __efi64_widen_efi_status(u64 status)
 {
-	/* use rotate to move the value of bit #31 into position #63 */
+	
 	return ror64(rol32(status, 1), 1);
 }
 
-/* The macro below handles dispatching via the thunk if needed */
+
 
 #define efi_fn_call(inst, func, ...)					\
 	(efi_is_native() ? (inst)->func(__VA_ARGS__)			\
@@ -365,14 +310,14 @@ static inline efi_status_t __efi64_widen_efi_status(u64 status)
 		(__typeof__(inst->func(__VA_ARGS__)))			\
 			__efi64_thunk_map(inst, func, ##__VA_ARGS__))
 
-#else /* CONFIG_EFI_MIXED */
+#else 
 
 static inline bool efi_is_64bit(void)
 {
 	return IS_ENABLED(CONFIG_X86_64);
 }
 
-#endif /* CONFIG_EFI_MIXED */
+#endif 
 
 extern bool efi_reboot_required(void);
 extern bool efi_is_table_address(unsigned long phys_addr);
@@ -391,7 +336,7 @@ static inline  bool efi_is_table_address(unsigned long phys_addr)
 static inline void efi_reserve_boot_services(void)
 {
 }
-#endif /* CONFIG_EFI */
+#endif 
 
 #ifdef CONFIG_EFI_FAKE_MEMMAP
 extern void __init efi_fake_memmap_early(void);
@@ -443,4 +388,4 @@ static inline int efi_runtime_map_copy(void *buf, size_t bufsz)
 
 #endif
 
-#endif /* _ASM_X86_EFI_H */
+#endif 

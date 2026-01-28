@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef GENL_MAGIC_FUNC_H
 #define GENL_MAGIC_FUNC_H
 
@@ -6,11 +6,7 @@
 #include <linux/build_bug.h>
 #include <linux/genl_magic_struct.h>
 
-/*
- * Magic: declare tla policy						{{{1
- * Magic: declare nested policies
- *									{{{2
- */
+
 #undef GENL_mc_group
 #define GENL_mc_group(group)
 
@@ -86,8 +82,7 @@ static void dprint_array(const char *dir, int nla_type,
 		pr_info("%s attr %s: [len:%u] '%s'\n", dir, name, len, val);
 		break;
 	default:
-		/* we can always show 4 byte,
-		 * thats what nlattr are aligned to. */
+		
 		pr_info("%s attr %s: [len:%u] %02x%02x%02x%02x ...\n",
 			dir, name, len, val[0], val[1], val[2], val[3]);
 	}
@@ -95,10 +90,7 @@ static void dprint_array(const char *dir, int nla_type,
 
 #define DPRINT_TLA(a, op, b) pr_info("%s %s %s\n", a, op, b);
 
-/* Name is a member field name of the struct s.
- * If s is NULL (only parsing, no copy requested in *_from_attrs()),
- * nla is supposed to point to the attribute containing the information
- * corresponding to that struct member. */
+
 #define DPRINT_FIELD(dir, nla_type, name, s, nla)			\
 	do {								\
 		if (s)							\
@@ -124,19 +116,14 @@ static void dprint_array(const char *dir, int nla_type,
 #define	DPRINT_ARRAY(dir, nla_type, name, s, nla) do {} while (0)
 #endif
 
-/*
- * Magic: provide conversion functions					{{{1
- * populate struct from attribute table:
- *									{{{2
- */
 
-/* processing of generic netlink messages is serialized.
- * use one static buffer for parsing of nested attributes */
+
+
 static struct nlattr *nested_attr_tb[128];
 
 #undef GENL_struct
 #define GENL_struct(tag_name, tag_number, s_name, s_fields)		\
-/* *_from_attrs functions are static, but potentially unused */		\
+		\
 static int __ ## s_name ## _from_attrs(struct s_name *s,		\
 		struct genl_info *info, bool exclude_invariants)	\
 {									\
@@ -176,8 +163,8 @@ static int s_name ## _from_attrs_for_change(struct s_name *s,		\
 			}						\
 			assignment;					\
 		} else if (exclude_invariants && !!((attr_flag) & DRBD_F_INVARIANT)) {		\
-			/* attribute missing from payload, */		\
-			/* which was expected */			\
+					\
+						\
 		} else if ((attr_flag) & DRBD_F_REQUIRED) {		\
 			pr_info("<< missing attr: %s\n", #name);	\
 			return -ENOMSG;					\
@@ -191,7 +178,7 @@ static int s_name ## _from_attrs_for_change(struct s_name *s,		\
 				s->name = __get(nla);			\
 			DPRINT_FIELD("<<", nla_type, name, s, nla))
 
-/* validate_nla() already checked nla_len <= maxlen appropriately. */
+
 #undef __array
 #define __array(attr_nr, attr_flag, name, nla_type, type, maxlen,	\
 		__get, __put, __is_signed)				\
@@ -206,10 +193,7 @@ static int s_name ## _from_attrs_for_change(struct s_name *s,		\
 #undef GENL_struct
 #define GENL_struct(tag_name, tag_number, s_name, s_fields)
 
-/*
- * Magic: define op number to op name mapping				{{{1
- *									{{{2
- */
+
 static const char *CONCATENATE(GENL_MAGIC_FAMILY, _genl_cmd_to_str)(__u8 cmd)
 {
 	switch (cmd) {
@@ -224,10 +208,7 @@ static const char *CONCATENATE(GENL_MAGIC_FAMILY, _genl_cmd_to_str)(__u8 cmd)
 
 #ifdef __KERNEL__
 #include <linux/stringify.h>
-/*
- * Magic: define genl_ops						{{{1
- *									{{{2
- */
+
 
 #undef GENL_op
 #define GENL_op(op_name, op_num, handler, tla_list)		\
@@ -244,17 +225,10 @@ static struct genl_ops ZZZ_genl_ops[] __read_mostly = {
 #undef GENL_op
 #define GENL_op(op_name, op_num, handler, tla_list)
 
-/*
- * Define the genl_family, multicast groups,				{{{1
- * and provide register/unregister functions.
- *									{{{2
- */
+
 #define ZZZ_genl_family		CONCATENATE(GENL_MAGIC_FAMILY, _genl_family)
 static struct genl_family ZZZ_genl_family;
-/*
- * Magic: define multicast groups
- * Magic: define multicast group registration helper
- */
+
 #define ZZZ_genl_mcgrps		CONCATENATE(GENL_MAGIC_FAMILY, _genl_mcgrps)
 static const struct genl_multicast_group ZZZ_genl_mcgrps[] = {
 #undef GENL_mc_group
@@ -295,7 +269,7 @@ static struct genl_family ZZZ_genl_family __ro_after_init = {
 	.ops = ZZZ_genl_ops,
 	.n_ops = ARRAY_SIZE(ZZZ_genl_ops),
 	.mcgrps = ZZZ_genl_mcgrps,
-	.resv_start_op = 42, /* drbd is currently the only user */
+	.resv_start_op = 42, 
 	.n_mcgrps = ARRAY_SIZE(ZZZ_genl_mcgrps),
 	.module = THIS_MODULE,
 };
@@ -310,11 +284,7 @@ void CONCATENATE(GENL_MAGIC_FAMILY, _genl_unregister)(void)
 	genl_unregister_family(&ZZZ_genl_family);
 }
 
-/*
- * Magic: provide conversion functions					{{{1
- * populate skb from struct.
- *									{{{2
- */
+
 
 #undef GENL_op
 #define GENL_op(op_name, op_num, handler, tla_list)
@@ -372,7 +342,7 @@ static inline int s_name ## _to_unpriv_skb(struct sk_buff *skb,		\
 #include GENL_MAGIC_INCLUDE_FILE
 
 
-/* Functions for initializing structs to default values.  */
+
 
 #undef __field
 #define __field(attr_nr, attr_flag, name, nla_type, type, __get, __put,	\
@@ -402,7 +372,7 @@ s_fields								\
 
 #include GENL_MAGIC_INCLUDE_FILE
 
-#endif /* __KERNEL__ */
+#endif 
 
-/* }}}1 */
-#endif /* GENL_MAGIC_FUNC_H */
+
+#endif 

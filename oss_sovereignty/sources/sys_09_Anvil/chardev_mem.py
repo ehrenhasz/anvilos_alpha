@@ -18,7 +18,7 @@ class CharDevMem:
         if count < 0:
             return b''
         if self.mode == self.MODE_NULL:
-            return b'' # EOF immediately
+            return b'' 
         elif self.mode == self.MODE_ZERO:
             return b'\x00' * count
         elif self.mode == self.MODE_FULL:
@@ -26,9 +26,9 @@ class CharDevMem:
         return b''
     def write(self, data):
         if self.mode == self.MODE_NULL:
-            return len(data) # Accept and discard
+            return len(data) 
         elif self.mode == self.MODE_ZERO:
-            return len(data) # Accept and discard
+            return len(data) 
         elif self.mode == self.MODE_FULL:
             raise OSError(28) 
         return 0

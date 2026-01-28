@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Marvell NFC driver
- *
- * Copyright (C) 2014-2015, Marvell International Ltd.
- */
+
+
 
 #ifndef _NFCMRVL_H_
 #define _NFCMRVL_H_
 
 #include "fw_dnld.h"
 
-/* Define private flags: */
+
 #define NFCMRVL_NCI_RUNNING			1
 #define NFCMRVL_PHY_ERROR			2
 
@@ -22,17 +18,13 @@
 #define NFCMRVL_GPIO_PIN_NFC_ACTIVE		0xB
 #define NFCMRVL_NCI_MAX_EVENT_SIZE		260
 
-/*
- * NCI FW Parameters
- */
+
 
 #define NFCMRVL_PB_BAIL_OUT			0x11
 #define NFCMRVL_PROP_REF_CLOCK			0xF0
 #define NFCMRVL_PROP_SET_HI_CONFIG		0xF1
 
-/*
- * HCI defines
- */
+
 
 #define NFCMRVL_HCI_EVENT_HEADER_SIZE		0x04
 #define NFCMRVL_HCI_EVENT_CODE			0x04
@@ -49,28 +41,22 @@ enum nfcmrvl_phy {
 };
 
 struct nfcmrvl_platform_data {
-	/*
-	 * Generic
-	 */
+	
 
-	/* GPIO that is wired to RESET_N signal */
+	
 	int reset_n_io;
-	/* Tell if transport is muxed in HCI one */
+	
 	bool hci_muxed;
 
-	/*
-	 * UART specific
-	 */
+	
 
-	/* Tell if UART needs flow control at init */
+	
 	bool flow_control;
-	/* Tell if firmware supports break control for power management */
+	
 	bool break_control;
 
 
-	/*
-	 * I2C specific
-	 */
+	
 
 	unsigned int irq;
 	unsigned int irq_polarity;
@@ -80,29 +66,27 @@ struct nfcmrvl_private {
 
 	unsigned long flags;
 
-	/* Platform configuration */
+	
 	struct nfcmrvl_platform_data config;
 
-	/* Parent dev */
+	
 	struct nci_dev *ndev;
 
-	/* FW download context */
+	
 	struct nfcmrvl_fw_dnld fw_dnld;
 
-	/* FW download support */
+	
 	bool support_fw_dnld;
 
-	/*
-	 * PHY related information
-	 */
+	
 
-	/* PHY driver context */
+	
 	void *drv_data;
-	/* PHY device */
+	
 	struct device *dev;
-	/* PHY type */
+	
 	enum nfcmrvl_phy phy;
-	/* Low level driver ops */
+	
 	const struct nfcmrvl_if_ops *if_ops;
 };
 

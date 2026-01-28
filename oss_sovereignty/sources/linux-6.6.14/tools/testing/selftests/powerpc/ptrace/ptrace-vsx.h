@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+
 #define VEC_MAX 128
 #define VSX_MAX 32
 #define VMX_MAX 32
 
-/*
- * unsigned long vsx[32]
- * unsigned long load[128]
- */
+
 int validate_vsx(unsigned long *vsx, unsigned long *load)
 {
 	int i;
@@ -24,10 +19,7 @@ int validate_vsx(unsigned long *vsx, unsigned long *load)
 	return TEST_PASS;
 }
 
-/*
- * unsigned long vmx[32][2]
- * unsigned long load[128]
- */
+
 int validate_vmx(unsigned long vmx[][2], unsigned long *load)
 {
 	int i;
@@ -44,10 +36,7 @@ int validate_vmx(unsigned long vmx[][2], unsigned long *load)
 					load[65 + 2 * i]);
 			return TEST_FAIL;
 		}
-		#else  /*
-			* In LE each value pair is stored in an
-			* alternate manner.
-			*/
+		#else  
 		if ((vmx[i][0] != load[65 + 2 * i]) ||
 				(vmx[i][1] != load[64 + 2 * i])) {
 			printf("vmx[%d][0]: %lx load[%d] %lx\n",
@@ -63,10 +52,7 @@ int validate_vmx(unsigned long vmx[][2], unsigned long *load)
 	return TEST_PASS;
 }
 
-/*
- * unsigned long store[128]
- * unsigned long load[128]
- */
+
 int compare_vsx_vmx(unsigned long *store, unsigned long *load)
 {
 	int i;
@@ -88,7 +74,7 @@ int compare_vsx_vmx(unsigned long *store, unsigned long *load)
 			return TEST_FAIL;
 		}
 	}
-	#else	/* In LE each value pair is stored in an alternate manner */
+	#else	
 	for (i = 64; i < VEC_MAX; i++) {
 		if (!(i % 2) && (store[i] != load[i+1])) {
 			printf("store[%d]: %lx load[%d] %lx\n",

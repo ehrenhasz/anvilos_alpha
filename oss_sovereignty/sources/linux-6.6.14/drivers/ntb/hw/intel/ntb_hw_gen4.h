@@ -1,16 +1,16 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)          */
-/* Copyright(c) 2020 Intel Corporation. All rights reserved.   */
+
+
 #ifndef _NTB_INTEL_GEN4_H_
 #define _NTB_INTEL_GEN4_H_
 
 #include "ntb_hw_intel.h"
 
-/* Supported PCI device revision range for ICX */
+
 #define PCI_DEVICE_REVISION_ICX_MIN	0x2
 #define PCI_DEVICE_REVISION_ICX_MAX	0xF
 
-/* Intel Gen4 NTB hardware */
-/* PCIe config space */
+
+
 #define GEN4_IMBAR23SZ_OFFSET		0x00c4
 #define GEN4_IMBAR45SZ_OFFSET		0x00c5
 #define GEN4_EMBAR23SZ_OFFSET		0x00c6
@@ -20,26 +20,26 @@
 #define GEN4_UNCERRSTS_OFFSET		0x0104
 #define GEN4_CORERRSTS_OFFSET		0x0110
 
-/* BAR0 MMIO */
+
 #define GEN4_NTBCNTL_OFFSET		0x0000
-#define GEN4_IM23XBASE_OFFSET		0x0010	/* IMBAR1XBASE */
-#define GEN4_IM23XLMT_OFFSET		0x0018  /* IMBAR1XLMT */
-#define GEN4_IM45XBASE_OFFSET		0x0020	/* IMBAR2XBASE */
-#define GEN4_IM45XLMT_OFFSET		0x0028  /* IMBAR2XLMT */
+#define GEN4_IM23XBASE_OFFSET		0x0010	
+#define GEN4_IM23XLMT_OFFSET		0x0018  
+#define GEN4_IM45XBASE_OFFSET		0x0020	
+#define GEN4_IM45XLMT_OFFSET		0x0028  
 #define GEN4_IM_INT_STATUS_OFFSET	0x0040
 #define GEN4_IM_INT_DISABLE_OFFSET	0x0048
-#define GEN4_INTVEC_OFFSET		0x0050  /* 0-32 vecs */
+#define GEN4_INTVEC_OFFSET		0x0050  
 #define GEN4_IM23XBASEIDX_OFFSET	0x0074
 #define GEN4_IM45XBASEIDX_OFFSET	0x0076
-#define GEN4_IM_SPAD_OFFSET		0x0080  /* 0-15 SPADs */
-#define GEN4_IM_SPAD_SEM_OFFSET		0x00c0	/* SPAD hw semaphore */
-#define GEN4_IM_SPAD_STICKY_OFFSET	0x00c4  /* sticky SPAD */
-#define GEN4_IM_DOORBELL_OFFSET		0x0100  /* 0-31 doorbells */
+#define GEN4_IM_SPAD_OFFSET		0x0080  
+#define GEN4_IM_SPAD_SEM_OFFSET		0x00c0	
+#define GEN4_IM_SPAD_STICKY_OFFSET	0x00c4  
+#define GEN4_IM_DOORBELL_OFFSET		0x0100  
 #define GEN4_LTR_SWSEL_OFFSET		0x30ec
 #define GEN4_LTR_ACTIVE_OFFSET		0x30f0
 #define GEN4_LTR_IDLE_OFFSET		0x30f4
 #define GEN4_EM_SPAD_OFFSET		0x8080
-/* note, link status is now in MMIO and not config space for NTB */
+
 #define GEN4_LINK_CTRL_OFFSET		0xb050
 #define GEN4_LINK_STATUS_OFFSET		0xb052
 #define GEN4_PPD0_OFFSET		0xb0d4
@@ -95,13 +95,13 @@
 #define NTB_LTR_SWSEL_IDLE		0x1
 
 #define NTB_LTR_NS_SHIFT		16
-#define NTB_LTR_ACTIVE_VAL		0x0000  /* 0 us */
-#define NTB_LTR_ACTIVE_LATSCALE		0x0800  /* 1us scale */
-#define NTB_LTR_ACTIVE_REQMNT		0x8000  /* snoop req enable */
+#define NTB_LTR_ACTIVE_VAL		0x0000  
+#define NTB_LTR_ACTIVE_LATSCALE		0x0800  
+#define NTB_LTR_ACTIVE_REQMNT		0x8000  
 
-#define NTB_LTR_IDLE_VAL		0x0258  /* 600 us */
-#define NTB_LTR_IDLE_LATSCALE		0x0800  /* 1us scale */
-#define NTB_LTR_IDLE_REQMNT		0x8000  /* snoop req enable */
+#define NTB_LTR_IDLE_VAL		0x0258  
+#define NTB_LTR_IDLE_LATSCALE		0x0800  
+#define NTB_LTR_IDLE_REQMNT		0x8000  
 
 ssize_t ndev_ntb4_debugfs_read(struct file *filp, char __user *ubuf,
 				      size_t count, loff_t *offp);

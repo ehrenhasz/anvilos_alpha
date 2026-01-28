@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm interconnect IDs
- *
- * Copyright (c) 2019, Linaro Ltd.
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_MSM8916_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_MSM8916_H

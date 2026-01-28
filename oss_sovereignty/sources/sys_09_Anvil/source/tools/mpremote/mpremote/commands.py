@@ -80,7 +80,7 @@ def show_progress_bar(size, total_size, op="copying"):
         bar = size * bar_length // total_size
         progress = size * 100 // total_size
         print(
-            "\r ... {} {:3d}% [{}{}]".format(op, progress, "#" * bar, "-" * (bar_length - bar)),
+            "\r ... {} {:3d}% [{}{}]".format(op, progress, "
             end="",
         )
 def do_filesystem(state, args):

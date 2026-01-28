@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
-  * Marvell UMI head file
-  *
-  * Copyright 2011 Marvell. <jyli@marvell.com>
- */
+
+
 
 #ifndef MVUMI_H
 #define MVUMI_H
@@ -32,7 +28,7 @@ enum mvumi_qc_result {
 };
 
 struct mvumi_hw_regs {
-	/* For CPU */
+	
 	void *main_int_cause_reg;
 	void *enpointa_mask_reg;
 	void *enpointb_mask_reg;
@@ -41,7 +37,7 @@ struct mvumi_hw_regs {
 	void *rstoutn_mask_reg;
 	void *sys_soft_rst_reg;
 
-	/* For Doorbell */
+	
 	void *pciea_to_arm_drbl_reg;
 	void *arm_to_pciea_drbl_reg;
 	void *arm_to_pciea_mask_reg;
@@ -50,11 +46,11 @@ struct mvumi_hw_regs {
 	void *arm_to_pciea_msg0;
 	void *arm_to_pciea_msg1;
 
-	/* reset register */
+	
 	void *reset_request;
 	void *reset_enable;
 
-	/* For Message Unit */
+	
 	void *inb_list_basel;
 	void *inb_list_baseh;
 	void *inb_aval_count_basel;
@@ -72,7 +68,7 @@ struct mvumi_hw_regs {
 	void *outb_coal_cfg;
 	void *outb_coal_timeout;
 
-	/* Bit setting for HW */
+	
 	u32 int_comaout;
 	u32 int_comaerr;
 	u32 int_dl_cpu2pciea;
@@ -105,16 +101,14 @@ enum {
 	DRBL_MU_RESET			= 1 << 4,
 	DRBL_HANDSHAKE_ISR		= DRBL_HANDSHAKE,
 
-	/*
-	* Command flag is the flag for the CDB command itself
-	*/
-	/* 1-non data; 0-data command */
+	
+	
 	CMD_FLAG_NON_DATA		= 1 << 0,
 	CMD_FLAG_DMA			= 1 << 1,
 	CMD_FLAG_PIO			= 1 << 2,
-	/* 1-host read data */
+	
 	CMD_FLAG_DATA_IN		= 1 << 3,
-	/* 1-host write data */
+	
 	CMD_FLAG_DATA_OUT		= 1 << 4,
 	CMD_FLAG_PRDT_IN_HOST		= 1 << 5,
 };
@@ -213,10 +207,10 @@ struct mvumi_res {
 	dma_addr_t bus_addr;
 	void *virt_addr;
 	unsigned int size;
-	unsigned short type;	/* enum Resource_Type */
+	unsigned short type;	
 };
 
-/* Resource type */
+
 enum resource_type {
 	RESOURCE_CACHED_MEMORY = 0,
 	RESOURCE_UNCACHED_MEMORY
@@ -240,7 +234,7 @@ struct mvumi_sense_data {
 	u8 sense_key_specific[3];
 };
 
-/* Request initiator must set the status to REQ_STATUS_PENDING. */
+
 #define REQ_STATUS_PENDING		0x80
 
 struct mvumi_cmd {
@@ -263,9 +257,7 @@ static inline struct mvumi_cmd_priv *mvumi_priv(struct scsi_cmnd *cmd)
 	return scsi_cmd_priv(cmd);
 }
 
-/*
- * the function type of the in bound frame
- */
+
 #define CL_FUN_SCSI_CMD			0x1
 
 struct mvumi_msg_frame {
@@ -282,9 +274,7 @@ struct mvumi_msg_frame {
 	u32 payload[];
 };
 
-/*
- * the respond flag for data_payload of the out bound frame
- */
+
 #define CL_RSP_FLAG_NODATA		0x0
 #define CL_RSP_FLAG_SENSEDATA		0x1
 
@@ -292,7 +282,7 @@ struct mvumi_rsp_frame {
 	u16 device_id;
 	u16 tag;
 	u8 req_status;
-	u8 rsp_flag;	/* Indicates the type of Data_Payload.*/
+	u8 rsp_flag;	
 	u16 request_id;
 	u32 payload[];
 };
@@ -314,9 +304,7 @@ struct version_info {
 #define MVUMI_FW_ATTACH			(1U << 1)
 #define MVUMI_FW_ALLOC			(1U << 2)
 
-/*
- * State is the state of the MU
- */
+
 #define FW_STATE_IDLE			0
 #define FW_STATE_STARTING		1
 #define FW_STATE_HANDSHAKING		2
@@ -327,12 +315,12 @@ struct version_info {
 #define HANDSHAKE_READYSTATE		0x55AA5AA5L
 #define HANDSHAKE_DONESTATE		0x55AAA55AL
 
-/* HandShake Status definition */
+
 #define HS_STATUS_OK			1
 #define HS_STATUS_ERR			2
 #define HS_STATUS_INVALID		3
 
-/* HandShake State/Cmd definition */
+
 #define HS_S_START			1
 #define HS_S_RESET			2
 #define HS_S_PAGE_ADDR			3
@@ -347,21 +335,21 @@ struct version_info {
 #define HS_SET_STATE(a, b)		(a |= (b & 0xFFFF))
 #define HS_SET_STATUS(a, b)		(a |= ((b & 0xFFFF) << 16))
 
-/* handshake frame */
+
 struct mvumi_hs_frame {
 	u16 size;
-	/* host information */
+	
 	u8 host_type;
 	u8 reserved_1[1];
-	struct version_info host_ver; /* bios or driver version */
+	struct version_info host_ver; 
 
-	/* controller information */
+	
 	u32 system_io_bus;
 	u32 slot_number;
 	u32 intr_level;
 	u32 intr_vector;
 
-	/* communication list configuration */
+	
 	u32 ib_baseaddr_l;
 	u32 ib_baseaddr_h;
 	u32 ob_baseaddr_l;
@@ -372,7 +360,7 @@ struct mvumi_hs_frame {
 	u8 ob_depth;
 	u8 ib_depth;
 
-	/* system time */
+	
 	u64 seconds_since1970;
 };
 
@@ -383,9 +371,7 @@ struct mvumi_hs_header {
 	u32	frame_content[];
 };
 
-/*
- * the page code type of the handshake header
- */
+
 #define HS_PAGE_FIRM_CAP	0x1
 #define HS_PAGE_HOST_INFO	0x2
 #define HS_PAGE_FIRM_CTL	0x3
@@ -402,7 +388,7 @@ struct mvumi_hs_header {
 	size;						\
 })
 
-/* The format of the page code for Firmware capability */
+
 struct mvumi_hs_page1 {
 	u8 pagecode;
 	u8 checksum;
@@ -422,7 +408,7 @@ struct mvumi_hs_page1 {
 	u16 reserved1;
 };
 
-/* The format of the page code for Host information */
+
 struct mvumi_hs_page2 {
 	u8 pagecode;
 	u8 checksum;
@@ -439,7 +425,7 @@ struct mvumi_hs_page2 {
 	u64 seconds_since1970;
 };
 
-/* The format of the page code for firmware control  */
+
 struct mvumi_hs_page3 {
 	u8	pagecode;
 	u8	checksum;

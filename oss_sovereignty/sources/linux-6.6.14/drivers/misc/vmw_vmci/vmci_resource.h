@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+
+
 
 #ifndef _VMCI_RESOURCE_H_
 #define _VMCI_RESOURCE_H_
@@ -48,4 +44,4 @@ int vmci_resource_put(struct vmci_resource *resource);
 
 struct vmci_handle vmci_resource_handle(struct vmci_resource *resource);
 
-#endif /* _VMCI_RESOURCE_H_ */
+#endif 

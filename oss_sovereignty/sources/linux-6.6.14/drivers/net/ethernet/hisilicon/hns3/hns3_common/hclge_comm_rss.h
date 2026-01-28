@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2021-2021 Hisilicon Limited.
+
+
 
 #ifndef __HCLGE_COMM_RSS_H
 #define __HCLGE_COMM_RSS_H
@@ -60,9 +60,9 @@ struct hclge_comm_rss_config_cmd {
 };
 
 struct hclge_comm_rss_cfg {
-	u8 rss_hash_key[HCLGE_COMM_RSS_KEY_SIZE]; /* user configured hash keys */
+	u8 rss_hash_key[HCLGE_COMM_RSS_KEY_SIZE]; 
 
-	/* shadow table */
+	
 	u16 *rss_indirection_tbl;
 	u32 rss_algo;
 

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_QSERDES_COM_V5_H_
 #define QCOM_PHY_QMP_QSERDES_COM_V5_H_
 
-/* Only for QMP V5 PHY - QSERDES COM registers */
+
 #define QSERDES_V5_COM_ATB_SEL1				0x000
 #define QSERDES_V5_COM_ATB_SEL2				0x004
 #define QSERDES_V5_COM_FREQ_UPDATE			0x008

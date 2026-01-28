@@ -262,7 +262,7 @@ check_mptcp_disabled()
 }
 is_v6()
 {
-	[ -z "${1##*:*}" ]
+	[ -z "${1
 }
 do_ping()
 {
@@ -399,7 +399,7 @@ do_transfer()
 	fi
 	local duration
 	duration=$((stop-start))
-	result_msg+=" # time=${duration}ms"
+	result_msg+=" 
 	printf "(duration %05sms) " "${duration}"
 	if [ ${rets} -ne 0 ] || [ ${retc} -ne 0 ]; then
 		echo "[ FAIL ] client exit code $retc, server $rets" 1>&2
@@ -426,7 +426,7 @@ do_transfer()
 	expect_synrx=$((stat_synrx_last_l))
 	expect_ackrx=$((stat_ackrx_last_l))
 	cookies=$(ip netns exec ${listener_ns} sysctl net.ipv4.tcp_syncookies)
-	cookies=${cookies##*=}
+	cookies=${cookies
 	if [ ${cl_proto} = "MPTCP" ] && [ ${srv_proto} = "MPTCP" ]; then
 		expect_synrx=$((stat_synrx_last_l+$connect_per_transfer))
 		expect_ackrx=$((stat_ackrx_last_l+$connect_per_transfer))

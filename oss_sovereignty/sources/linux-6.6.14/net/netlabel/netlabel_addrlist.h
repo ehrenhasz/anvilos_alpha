@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NetLabel Network Address Lists
- *
- * This file contains network address list functions used to manage ordered
- * lists of network addresses for use by the NetLabel subsystem.  The NetLabel
- * system manages static and dynamic label mappings for network protocols such
- * as CIPSO and RIPSO.
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
 
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2008
- */
+
+
+
 
 #ifndef _NETLABEL_ADDRLIST_H
 #define _NETLABEL_ADDRLIST_H
@@ -23,13 +12,7 @@
 #include <linux/in6.h>
 #include <linux/audit.h>
 
-/**
- * struct netlbl_af4list - NetLabel IPv4 address list
- * @addr: IPv4 address
- * @mask: IPv4 address mask
- * @valid: valid flag
- * @list: list structure, used internally
- */
+
 struct netlbl_af4list {
 	__be32 addr;
 	__be32 mask;
@@ -38,13 +21,7 @@ struct netlbl_af4list {
 	struct list_head list;
 };
 
-/**
- * struct netlbl_af6list - NetLabel IPv6 address list
- * @addr: IPv6 address
- * @mask: IPv6 address mask
- * @valid: valid flag
- * @list: list structure, used internally
- */
+
 struct netlbl_af6list {
 	struct in6_addr addr;
 	struct in6_addr mask;
@@ -189,6 +166,6 @@ static inline void netlbl_af6list_audit_addr(struct audit_buffer *audit_buf,
 {
 }
 #endif
-#endif /* IPV6 */
+#endif 
 
 #endif

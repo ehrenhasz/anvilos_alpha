@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_MME4_RTR_REGS_H_
 #define ASIC_REG_MME4_RTR_REGS_H_
 
-/*
- *****************************************
- *   MME4_RTR (Prototype: MME_RTR)
- *****************************************
- */
+
 
 #define mmMME4_RTR_HBW_RD_RQ_E_ARB                                   0x100100
 
@@ -327,4 +315,4 @@
 
 #define mmMME4_RTR_NON_LIN_SCRAMB                                    0x100604
 
-#endif /* ASIC_REG_MME4_RTR_REGS_H_ */
+#endif 

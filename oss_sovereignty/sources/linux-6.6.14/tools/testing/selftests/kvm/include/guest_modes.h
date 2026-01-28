@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020, Red Hat, Inc.
- */
+
+
 #include "kvm_util.h"
 
 struct guest_mode {

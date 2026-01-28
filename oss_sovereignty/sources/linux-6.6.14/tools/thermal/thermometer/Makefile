@@ -1,11 +1,11 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for cgroup tools
+
+
 
 ifeq ($(srctree),)
 srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
-# $(info Determined 'srctree' to be $(srctree))
+
 endif
 
 CFLAGS = -Wall -Wextra

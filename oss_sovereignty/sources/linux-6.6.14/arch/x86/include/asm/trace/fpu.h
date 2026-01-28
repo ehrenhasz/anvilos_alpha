@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM x86_fpu
 
@@ -93,7 +93,7 @@ DEFINE_EVENT(x86_fpu, x86_fpu_xstate_check_failed,
 #define TRACE_INCLUDE_PATH asm/trace/
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE fpu
-#endif /* _TRACE_FPU_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

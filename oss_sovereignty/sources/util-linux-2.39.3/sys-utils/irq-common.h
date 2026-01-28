@@ -5,7 +5,7 @@
 #include "nls.h"
 #include "cpuset.h"
 
-/* supported columns */
+
 enum {
 	COL_IRQ = 0,
 	COL_TOTAL,
@@ -16,10 +16,10 @@ enum {
 };
 
 struct irq_info {
-	char *irq;			/* short name of this irq */
-	char *name;			/* descriptive name of this irq */
-	unsigned long total;		/* total count since system start up */
-	unsigned long delta;		/* delta count since previous update */
+	char *irq;			
+	char *name;			
+	unsigned long total;		
+	unsigned long delta;		
 };
 
 struct irq_cpu {
@@ -28,19 +28,19 @@ struct irq_cpu {
 };
 
 struct irq_stat {
-	unsigned long nr_irq;		/* number of irq vector */
-	unsigned long nr_irq_info;	/* number of irq info */
-	struct irq_info *irq_info;	/* array of irq_info */
-	struct irq_cpu *cpus;		 /* array of irq_cpu */
-	size_t nr_active_cpu;		/* number of active cpu */
-	unsigned long total_irq;	/* total irqs */
-	unsigned long delta_irq;	/* delta irqs */
+	unsigned long nr_irq;		
+	unsigned long nr_irq_info;	
+	struct irq_info *irq_info;	
+	struct irq_cpu *cpus;		 
+	size_t nr_active_cpu;		
+	unsigned long total_irq;	
+	unsigned long delta_irq;	
 };
 
 
 typedef int (irq_cmp_t)(const struct irq_info *, const struct irq_info *);
 
-/* output definition */
+
 struct irq_output {
 	int columns[__COL_COUNT * 2];
 	size_t ncolumns;
@@ -48,9 +48,9 @@ struct irq_output {
 	irq_cmp_t *sort_cmp_func;
 
 	unsigned int
-		json:1,		/* JSON output */
-		pairs:1,	/* export, NAME="value" aoutput */
-		no_headings:1;	/* don't print header */
+		json:1,		
+		pairs:1,	
+		no_headings:1;	
 };
 
 int irq_column_name_to_id(char const *const name, size_t const namesz);
@@ -74,4 +74,4 @@ struct libscols_table *get_scols_cpus_table(struct irq_output *out,
                                         size_t setsize,
                                         cpu_set_t *cpuset);
 
-#endif /* UTIL_LINUX_H_IRQ_COMMON */
+#endif 

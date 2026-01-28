@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2018-2019 Hisilicon Limited. */
 
-/* This must be outside ifdef _HCLGEVF_TRACE_H */
+
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hns3
 
@@ -77,9 +77,9 @@ TRACE_EVENT(hclge_vf_mbx_send,
 	)
 );
 
-#endif /* _HCLGEVF_TRACE_H_ */
+#endif 
 
-/* This must be outside ifdef _HCLGEVF_TRACE_H */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

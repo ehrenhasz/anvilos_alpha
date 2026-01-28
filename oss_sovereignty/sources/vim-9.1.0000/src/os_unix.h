@@ -1,14 +1,6 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * NextStep has a problem with configure, undefine a few things:
- */
+
+
 #ifdef NeXT
 # ifdef HAVE_UTIME
 #  undef HAVE_UTIME
@@ -34,16 +26,16 @@
 #endif
 
 #ifdef __CYGWIN__
-# define WIN32UNIX	// Compiling for Win32 using Unix files.
+# define WIN32UNIX	
 # define BINARY_FILE_IO
 
 # define CASE_INSENSITIVE_FILENAME
-# define USE_FNAME_CASE	// Fix filename case differences.
+# define USE_FNAME_CASE	
 #endif
 
-// On AIX 4.2 there is a conflicting prototype for ioctl() in stropts.h and
-// unistd.h.  This hack should fix that (suggested by Jeff George).
-// But on AIX 4.3 it's alright (suggested by Jake Hamby).
+
+
+
 #if defined(FEAT_GUI) && defined(_AIX) && !defined(_AIX43) && !defined(_NO_PROTO)
 # define _NO_PROTO
 #endif
@@ -53,24 +45,19 @@
 #endif
 
 #ifdef HAVE_LIBC_H
-# include <libc.h>		    // for NeXT
+# include <libc.h>		    
 #endif
 
 #ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>	    // defines BSD, if it's a BSD system
+# include <sys/param.h>	    
 #endif
 
-/*
- * Using getcwd() is preferred, because it checks for a buffer overflow.
- * Don't use getcwd() on systems do use system("sh -c pwd").  There is an
- * autoconf check for this.
- * Use getcwd() anyway if getwd() isn't present.
- */
+
 #if defined(HAVE_GETCWD) && !(defined(BAD_GETCWD) && defined(HAVE_GETWD))
 # define USE_GETCWD
 #endif
 
-// always use unlink() to remove files
+
 #ifndef PROTO
 # ifdef VMS
 #  define vim_mkdir(x, y) mkdir((char *)vms_fixfilename(x), y)
@@ -83,9 +70,9 @@
 # endif
 #endif
 
-// The number of arguments to a signal handler is configured here.
-// It used to be a long list of almost all systems. Any system that doesn't
-// have an argument???
+
+
+
 #define SIGHASARG
 
 #ifdef SIGHASARG
@@ -131,19 +118,16 @@ typedef void (*sighandler_T) SIGPROTOARG;
 #endif
 
 #if defined(UFS_MAXNAMLEN) && !defined(MAXNAMLEN)
-# define MAXNAMLEN UFS_MAXNAMLEN    // for dynix/ptx
+# define MAXNAMLEN UFS_MAXNAMLEN    
 #endif
 
 #if defined(NAME_MAX) && !defined(MAXNAMLEN)
-# define MAXNAMLEN NAME_MAX	    // for Linux before .99p3
+# define MAXNAMLEN NAME_MAX	    
 #endif
 
-/*
- * Note: if MAXNAMLEN has the wrong value, you will get error messages
- *	 for not being able to open the swap file.
- */
+
 #if !defined(MAXNAMLEN)
-# define MAXNAMLEN 512		    // for all other Unix
+# define MAXNAMLEN 512		    
 #endif
 
 #define BASENAMELEN	(MAXNAMLEN - 5)
@@ -192,21 +176,19 @@ typedef void (*sighandler_T) SIGPROTOARG;
 #  define XFree XFREE
 #  define XmRepTypeInstallTearOffModelCon XMREPTYPEINSTALLTEAROFFMODELCON
 # endif
-#endif // VMS
+#endif 
 
 #ifdef HAVE_FLOCK
 # include <sys/file.h>
 #endif
 
-#endif // PROTO
+#endif 
 
 #ifdef VMS
 typedef struct dsc$descriptor   DESC;
 #endif
 
-/*
- * Unix system-dependent file names
- */
+
 #ifndef SYS_VIMRC_FILE
 # define SYS_VIMRC_FILE "$VIM/vimrc"
 #endif
@@ -318,7 +300,7 @@ typedef struct dsc$descriptor   DESC;
 # ifdef VMS
 #  define DFLT_BDIR    "./,sys$login:,tmp:"
 # else
-#  define DFLT_BDIR    ".,~/tmp,~/"    // default for 'backupdir'
+#  define DFLT_BDIR    ".,~/tmp,~/"    
 # endif
 #endif
 
@@ -326,7 +308,7 @@ typedef struct dsc$descriptor   DESC;
 # ifdef VMS
 #  define DFLT_DIR     "./,sys$login:,tmp:"
 # else
-#  define DFLT_DIR     ".,~/tmp,/var/tmp,/tmp" // default for 'directory'
+#  define DFLT_DIR     ".,~/tmp,/var/tmp,/tmp" 
 # endif
 #endif
 
@@ -334,7 +316,7 @@ typedef struct dsc$descriptor   DESC;
 # ifdef VMS
 #  define DFLT_VDIR    "sys$login:vimfiles/view"
 # else
-#  define DFLT_VDIR    "$HOME/.vim/view"       // default for 'viewdir'
+#  define DFLT_VDIR    "$HOME/.vim/view"       
 # endif
 #endif
 
@@ -364,34 +346,32 @@ typedef struct dsc$descriptor   DESC;
 
 #ifdef VMS
 # ifndef VAX
-#  define VMS_TEMPNAM    // to fix default .LIS extension
+#  define VMS_TEMPNAM    
 # endif
 # define TEMPNAME       "TMP:v?XXXXXX.txt"
 # define TEMPNAMELEN    28
 #else
-// Try several directories to put the temp files.
+
 # define TEMPDIRNAMES  "$TMPDIR", "/tmp", ".", "$HOME"
 # define TEMPNAMELEN    256
 #endif
 
-// Special wildcards that need to be handled by the shell
+
 #define SPECIAL_WILDCHAR    "`'{"
 
-/*
- * Unix has plenty of memory, use large buffers
- */
-#define CMDBUFFSIZE 1024	// size of the command processing buffer
 
-// Use the system path length if it makes sense.
+#define CMDBUFFSIZE 1024	
+
+
 #if defined(PATH_MAX) && (PATH_MAX > 1000)
 # define MAXPATHL	PATH_MAX
 #else
 # define MAXPATHL	1024
 #endif
 
-#define CHECK_INODE		// used when checking if a swap file already
-				// exists for a file
-#ifdef VMS  // Use less memory because of older systems
+#define CHECK_INODE		
+				
+#ifdef VMS  
 # ifndef DFLT_MAXMEM
 #  define DFLT_MAXMEM (2*1024)
 # endif
@@ -400,23 +380,23 @@ typedef struct dsc$descriptor   DESC;
 # endif
 #else
 # ifndef DFLT_MAXMEM
-#  define DFLT_MAXMEM	(5*1024)	 // use up to 5 Mbyte for a buffer
+#  define DFLT_MAXMEM	(5*1024)	 
 # endif
 # ifndef DFLT_MAXMEMTOT
-#  define DFLT_MAXMEMTOT	(10*1024)    // use up to 10 Mbyte for Vim
+#  define DFLT_MAXMEMTOT	(10*1024)    
 # endif
 #endif
 
-// memmove() is not present on all systems, use memmove, bcopy or memcpy.
-// Some systems have (void *) arguments, some (char *). If we use (char *) it
-// works for all
+
+
+
 #if defined(USEMEMMOVE) || (!defined(USEBCOPY) && !defined(USEMEMCPY))
 # define mch_memmove(to, from, len) memmove((char *)(to), (char *)(from), len)
 #else
 # ifdef USEBCOPY
 #  define mch_memmove(to, from, len) bcopy((char *)(from), (char *)(to), len)
 # else
-    // ifdef USEMEMCPY
+    
 #   define mch_memmove(to, from, len) memcpy((char *)(to), (char *)(from), len)
 # endif
 #endif
@@ -429,8 +409,8 @@ int mch_rename(const char *src, const char *dest);
 # endif
 # ifndef VMS
 #  ifdef __MVS__
-  // on OS390 Unix getenv() doesn't return a pointer to persistent
-  // storage -> use __getenv()
+  
+  
 #   define mch_getenv(x) (char_u *)__getenv((char *)(x))
 #  else
 #   define mch_getenv(x) (char_u *)getenv((char *)(x))
@@ -439,8 +419,8 @@ int mch_rename(const char *src, const char *dest);
 # endif
 #endif
 
-// Note: Some systems need both string.h and strings.h (Savage).  However,
-// some systems can't handle both, only use string.h in that case.
+
+
 #ifdef HAVE_STRING_H
 # include <string.h>
 #endif
@@ -462,9 +442,9 @@ int mch_rename(const char *src, const char *dest);
 #endif
 
 #ifndef HAVE_DUP
-# define HAVE_DUP		// have dup()
+# define HAVE_DUP		
 #endif
-#define HAVE_ST_MODE		// have stat.st_mode
+#define HAVE_ST_MODE		
 
-// We have three kinds of ACL support.
+
 #define HAVE_ACL (HAVE_POSIX_ACL || HAVE_SOLARIS_ACL || HAVE_AIX_ACL)

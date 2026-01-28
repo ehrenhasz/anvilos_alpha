@@ -27,7 +27,7 @@ class TestRustIsAvailable(unittest.TestCase):
         return path
     @classmethod
     def generate_clang(cls, stdout):
-        return cls.generate_executable(f"""#!/usr/bin/env python3
+        return cls.generate_executable(f"""
 import sys
 if "-E" in " ".join(sys.argv):
     print({repr("Clang " + " ".join(cls.llvm_default_version.split(" ")))})
@@ -36,7 +36,7 @@ else:
 """)
     @classmethod
     def generate_rustc(cls, stdout):
-        return cls.generate_executable(f"""#!/usr/bin/env python3
+        return cls.generate_executable(f"""
 import sys
 if "--print sysroot" in " ".join(sys.argv):
     print({repr(cls.rust_default_sysroot)})
@@ -45,7 +45,7 @@ else:
 """)
     @classmethod
     def generate_bindgen(cls, version_stdout, libclang_stderr):
-        return cls.generate_executable(f"""#!/usr/bin/env python3
+        return cls.generate_executable(f"""
 import sys
 if "rust_is_available_bindgen_libclang.h" in " ".join(sys.argv):
     print({repr(libclang_stderr)}, file=sys.stderr)
@@ -71,7 +71,7 @@ else:
         cls.llvm_default_version = subprocess.check_output(("scripts/min-tool-version.sh", "llvm")).decode().strip()
         cls.rust_default_sysroot = subprocess.check_output(("rustc", "--print", "sysroot")).decode().strip()
         cls.bindgen_default_bindgen_version_stdout = f"bindgen {cls.bindgen_default_version}"
-        cls.bindgen_default_bindgen_libclang_stderr = f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {cls.llvm_default_version} [-W#pragma-messages], err: false"
+        cls.bindgen_default_bindgen_libclang_stderr = f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {cls.llvm_default_version} [-W
         cls.default_rustc = cls.generate_rustc(f"rustc {cls.rustc_default_version}")
         cls.default_bindgen =  cls.generate_bindgen(cls.bindgen_default_bindgen_version_stdout, cls.bindgen_default_bindgen_libclang_stderr)
         cls.default_cc = cls.generate_clang(f"clang version {cls.llvm_default_version}")
@@ -183,16 +183,16 @@ else:
                 self.assertIn("Running 'bindgen' to check the libclang version (used by the Rust", result.stderr)
                 self.assertIn("bindings generator) failed with code ", result.stderr)
     def test_bindgen_libclang_unexpected_version(self):
-        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version unexpected [-W#pragma-messages], err: false")
+        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version unexpected [-W
         result = self.run_script(self.Expected.FAILURE, { "BINDGEN": bindgen })
         self.assertIn(f"Running '{bindgen}' to check the libclang version (used by the Rust", result.stderr)
         self.assertIn("bindings generator) did not return an expected output. See output", result.stderr)
     def test_bindgen_libclang_old_version(self):
-        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version 10.0.0 [-W#pragma-messages], err: false")
+        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version 10.0.0 [-W
         result = self.run_script(self.Expected.FAILURE, { "BINDGEN": bindgen })
         self.assertIn(f"libclang (used by the Rust bindings generator '{bindgen}') is too old.", result.stderr)
     def test_clang_matches_bindgen_libclang_different_bindgen(self):
-        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version 999.0.0 [-W#pragma-messages], err: false")
+        bindgen = self.generate_bindgen_libclang("scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version 999.0.0 [-W
         result = self.run_script(self.Expected.SUCCESS_WITH_WARNINGS, { "BINDGEN": bindgen })
         self.assertIn("version does not match Clang's. This may be a problem.", result.stderr)
     def test_clang_matches_bindgen_libclang_different_clang(self):
@@ -235,16 +235,16 @@ InstalledDir: /usr/bin
                 result = self.run_script(self.Expected.SUCCESS, { "BINDGEN": bindgen })
     def test_success_bindgen_libclang(self):
         for stderr in (
-            f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (https://github.com/llvm/llvm-project.git 4a2c05b05ed07f1f620e94f6524a8b4b2760a0b1) [-W#pragma-messages], err: false",
-            f"/home/jd/Documents/dev/kernel-module-flake/linux-6.1/outputs/dev/lib/modules/6.1.0-development/source/scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version}  [-W#pragma-messages], err: false",
-            f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (Fedora 13.0.0-3.fc35) [-W#pragma-messages], err: false",
+            f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (https://github.com/llvm/llvm-project.git 4a2c05b05ed07f1f620e94f6524a8b4b2760a0b1) [-W
+            f"/home/jd/Documents/dev/kernel-module-flake/linux-6.1/outputs/dev/lib/modules/6.1.0-development/source/scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version}  [-W
+            f"scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (Fedora 13.0.0-3.fc35) [-W
             f"""
 /nix/store/dsd5gz46hdbdk2rfdimqddhq6m8m8fqs-bash-5.1-p16/bin/bash: warning: setlocale: LC_ALL: cannot change locale (c)
-scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version}  [-W#pragma-messages], err: false
+scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version}  [-W
 """,
             f"""
 /nix/store/dsd5gz46hdbdk2rfdimqddhq6m8m8fqs-bash-5.1.0-p16/bin/bash: warning: setlocale: LC_ALL: cannot change locale (c)
-/home/jd/Documents/dev/kernel-module-flake/linux-6.1/outputs/dev/lib/modules/6.1.0-development/source/scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (Fedora 13.0.0-3.fc35) [-W#pragma-messages], err: false
+/home/jd/Documents/dev/kernel-module-flake/linux-6.1/outputs/dev/lib/modules/6.1.0-development/source/scripts/rust_is_available_bindgen_libclang.h:2:9: warning: clang version {self.llvm_default_version} (Fedora 13.0.0-3.fc35) [-W
 """
         ):
             with self.subTest(stderr=stderr):

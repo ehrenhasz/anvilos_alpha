@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 1999 - 2010 Intel Corporation.
- * Copyright (C) 2010 OKI SEMICONDUCTOR Co., LTD.
- *
- * This code was derived from the Intel e1000e Linux driver.
- */
+
+
 #ifndef _PCH_GBE_PHY_H_
 #define _PCH_GBE_PHY_H_
 
@@ -21,4 +16,4 @@ void pch_gbe_phy_set_rgmii(struct pch_gbe_hw *hw);
 void pch_gbe_phy_init_setting(struct pch_gbe_hw *hw);
 int pch_gbe_phy_disable_hibernate(struct pch_gbe_hw *hw);
 
-#endif /* _PCH_GBE_PHY_H_ */
+#endif 

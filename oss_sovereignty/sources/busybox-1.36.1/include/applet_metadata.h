@@ -1,13 +1,11 @@
-/* vi: set sw=4 ts=4: */
-/*
- * Licensed under GPLv2 or later, see file LICENSE in this source tree.
- */
+
+
 #ifndef APPLET_METADATA_H
 #define APPLET_METADATA_H 1
 
-/* Note: can be included by both host and target builds! */
 
-/* order matters: used as index into "install_dir[]" in appletlib.c */
+
+
 typedef enum bb_install_loc_t {
 	BB_DIR_ROOT = 0,
 	BB_DIR_BIN,

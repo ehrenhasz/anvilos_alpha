@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Chelsio Communications, Inc.
- */
+
+
 
 #ifndef __CXGBIT_H__
 #define __CXGBIT_H__
@@ -61,10 +59,10 @@ struct cxgbit_iso_info {
 };
 
 enum cxgbit_skcb_flags {
-	SKCBF_TX_NEED_HDR	= (1 << 0), /* packet needs a header */
-	SKCBF_TX_FLAG_COMPL	= (1 << 1), /* wr completion flag */
-	SKCBF_TX_ISO		= (1 << 2), /* iso cpl in tx skb */
-	SKCBF_RX_LRO		= (1 << 3), /* lro skb */
+	SKCBF_TX_NEED_HDR	= (1 << 0), 
+	SKCBF_TX_FLAG_COMPL	= (1 << 1), 
+	SKCBF_TX_ISO		= (1 << 2), 
+	SKCBF_RX_LRO		= (1 << 3), 
 };
 
 struct cxgbit_skb_rx_cb {
@@ -88,7 +86,7 @@ union cxgbit_skb_cb {
 	};
 
 	struct {
-		/* This member must be first. */
+		
 		struct l2t_skb_cb l2t;
 		struct sk_buff *wr_next;
 	};
@@ -124,7 +122,7 @@ struct np_info {
 
 struct cxgbit_list_head {
 	struct list_head list;
-	/* device lock */
+	
 	spinlock_t lock;
 };
 
@@ -132,7 +130,7 @@ struct cxgbit_device {
 	struct list_head list;
 	struct cxgb4_lld_info lldi;
 	struct np_info *np_hash_tab[NP_INFO_HASH_SIZE];
-	/* np lock */
+	
 	spinlock_t np_lock;
 	u8 selectq[MAX_NPORTS][2];
 	struct cxgbit_list_head cskq;
@@ -180,7 +178,7 @@ struct cxgbit_np {
 	struct iscsi_np *np;
 	struct completion accept_comp;
 	struct list_head np_accept_list;
-	/* np accept lock */
+	
 	spinlock_t np_accept_lock;
 	struct kref kref;
 	unsigned int stid;
@@ -204,7 +202,7 @@ struct cxgbit_sock {
 	struct sk_buff *lro_skb;
 	struct sk_buff *lro_hskb;
 	struct list_head accept_node;
-	/* socket lock */
+	
 	spinlock_t lock;
 	wait_queue_head_t waitq;
 	bool lock_owner;
@@ -337,7 +335,7 @@ void cxgbit_get_rx_pdu(struct iscsit_conn *);
 int cxgbit_validate_params(struct iscsit_conn *);
 struct cxgbit_device *cxgbit_find_device(struct net_device *, u8 *);
 
-/* DDP */
+
 int cxgbit_ddp_init(struct cxgbit_device *);
 int cxgbit_setup_conn_pgidx(struct cxgbit_sock *, u32);
 int cxgbit_reserve_ttt(struct cxgbit_sock *, struct iscsit_cmd *);
@@ -348,4 +346,4 @@ struct cxgbi_ppm *cdev2ppm(struct cxgbit_device *cdev)
 {
 	return (struct cxgbi_ppm *)(*cdev->lldi.iscsi_ppm);
 }
-#endif /* __CXGBIT_H__ */
+#endif 

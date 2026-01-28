@@ -1,4 +1,0 @@
-#ifndef _TOOLS_ASM_ALTERNATIVE_ASM_H
-#define _TOOLS_ASM_ALTERNATIVE_ASM_H
-#define ALTERNATIVE #
-#endif

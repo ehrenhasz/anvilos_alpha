@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022 Paulo Alcantara <palcantara@suse.de>
- */
+
+
 
 #ifndef _CIFS_DFS_H
 #define _CIFS_DFS_H
@@ -149,4 +147,4 @@ static inline void dfs_put_root_smb_sessions(struct list_head *head)
 	}
 }
 
-#endif /* _CIFS_DFS_H */
+#endif 

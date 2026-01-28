@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __MLX5_WQ_H__
 #define __MLX5_WQ_H__
@@ -64,7 +34,7 @@ struct mlx5_wq_qp {
 struct mlx5_cqwq {
 	struct mlx5_frag_buf_ctrl fbc;
 	__be32			  *db;
-	u32			  cc; /* consumer counter */
+	u32			  cc; 
 };
 
 struct mlx5_wq_ll {
@@ -201,7 +171,7 @@ static inline struct mlx5_cqe64 *mlx5_cqwq_get_wqe(struct mlx5_cqwq *wq, u32 ix)
 {
 	struct mlx5_cqe64 *cqe = mlx5_frag_buf_get_wqe(&wq->fbc, ix);
 
-	/* For 128B CQEs the data is in the last 64B */
+	
 	cqe += wq->fbc.log_stride == 7;
 
 	return cqe;
@@ -237,7 +207,7 @@ static inline struct mlx5_cqe64 *mlx5_cqwq_get_cqe(struct mlx5_cqwq *wq)
 	if (cqe_ownership_bit != sw_ownership_val)
 		return NULL;
 
-	/* ensure cqe content is read after cqe ownership bit */
+	
 	dma_rmb();
 
 	return cqe;
@@ -254,7 +224,7 @@ struct mlx5_cqe64 *mlx5_cqwq_get_cqe_enahnced_comp(struct mlx5_cqwq *wq)
 	if (cqe->validity_iteration_count != sw_validity_iteration_count)
 		return NULL;
 
-	/* ensure cqe content is read after cqe ownership bit/validity byte */
+	
 	dma_rmb();
 
 	return cqe;
@@ -322,4 +292,4 @@ static inline u16 mlx5_wq_ll_get_counter(struct mlx5_wq_ll *wq)
 	return wq->wqe_ctr;
 }
 
-#endif /* __MLX5_WQ_H__ */
+#endif 

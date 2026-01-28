@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Matthias Schiffer
- */
+
+
 
 #ifndef _NET_BATMAN_ADV_NETLINK_H_
 #define _NET_BATMAN_ADV_NETLINK_H_
@@ -23,4 +20,4 @@ int batadv_netlink_tpmeter_notify(struct batadv_priv *bat_priv, const u8 *dst,
 
 extern struct genl_family batadv_netlink_family;
 
-#endif /* _NET_BATMAN_ADV_NETLINK_H_ */
+#endif 

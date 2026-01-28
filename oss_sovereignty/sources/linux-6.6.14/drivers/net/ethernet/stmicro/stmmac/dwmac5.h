@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-// Copyright (c) 2017 Synopsys, Inc. and/or its affiliates.
-// stmmac Support for 5.xx Ethernet QoS cores
+
+
+
 
 #ifndef __DWMAC5_H__
 #define __DWMAC5_H__
@@ -129,7 +129,7 @@
 #define TCEIE				BIT(0)
 #define DMA_ECC_INT_STATUS		0x00001088
 
-/* EQoS version 5.xx VLAN Tag Filter Fail Packets Queuing */
+
 #define GMAC_RXQ_CTRL4			0x00000094
 #define GMAC_RXQCTRL_VFFQ_MASK		GENMASK(19, 17)
 #define GMAC_RXQCTRL_VFFQ_SHIFT		17
@@ -161,4 +161,4 @@ void dwmac5_fpe_send_mpacket(void __iomem *ioaddr,
 			     enum stmmac_mpacket_type type);
 int dwmac5_fpe_irq_status(void __iomem *ioaddr, struct net_device *dev);
 
-#endif /* __DWMAC5_H__ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
@@ -9,7 +9,7 @@ struct ovl_config;
 extern const struct fs_parameter_spec ovl_parameter_spec[];
 extern const struct constant_table ovl_parameter_redirect_dir[];
 
-/* The set of options that user requested explicitly via mount options */
+
 struct ovl_opt_set {
 	bool metacopy;
 	bool redirect;
@@ -28,7 +28,7 @@ struct ovl_fs_context {
 	struct path upper;
 	struct path work;
 	size_t capacity;
-	size_t nr; /* includes nr_data */
+	size_t nr; 
 	size_t nr_data;
 	struct ovl_opt_set set;
 	struct ovl_fs_context_layer *lower;

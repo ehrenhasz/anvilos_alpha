@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Portions
- * Copyright (C) 2022 - 2023 Intel Corporation
- */
+
+
 #ifndef __MAC80211_DEBUG_H
 #define __MAC80211_DEBUG_H
 #include <net/cfg80211.h>
@@ -231,4 +228,4 @@ do {									\
 	_sdata_dbg(MAC80211_MLME_DEBUG && net_ratelimit(),		\
 		   sdata, fmt, ##__VA_ARGS__)
 
-#endif /* __MAC80211_DEBUG_H */
+#endif 

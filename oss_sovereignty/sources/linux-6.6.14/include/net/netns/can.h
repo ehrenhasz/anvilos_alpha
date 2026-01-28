@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * can in net namespaces
- */
+
+
 
 #ifndef __NETNS_CAN_H__
 #define __NETNS_CAN_H__
@@ -27,15 +25,15 @@ struct netns_can {
 	struct proc_dir_entry *bcmproc_dir;
 #endif
 
-	/* receive filters subscribed for 'all' CAN devices */
+	
 	struct can_dev_rcv_lists *rx_alldev_list;
 	spinlock_t rcvlists_lock;
-	struct timer_list stattimer; /* timer for statistics update */
+	struct timer_list stattimer; 
 	struct can_pkg_stats *pkg_stats;
 	struct can_rcv_lists_stats *rcv_lists_stats;
 
-	/* CAN GW per-net gateway jobs */
+	
 	struct hlist_head cgw_list;
 };
 
-#endif /* __NETNS_CAN_H__ */
+#endif 

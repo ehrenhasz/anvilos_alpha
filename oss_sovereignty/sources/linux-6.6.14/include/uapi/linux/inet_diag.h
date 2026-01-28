@@ -1,16 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _UAPI_INET_DIAG_H_
 #define _UAPI_INET_DIAG_H_
 
 #include <linux/types.h>
 
-/* Just some random number */
+
 #define TCPDIAG_GETSOCK 18
 #define DCCPDIAG_GETSOCK 19
 
 #define INET_DIAG_GETSOCK_MAX 24
 
-/* Socket identity */
+
 struct inet_diag_sockid {
 	__be16	idiag_sport;
 	__be16	idiag_dport;
@@ -21,18 +21,18 @@ struct inet_diag_sockid {
 #define INET_DIAG_NOCOOKIE (~0U)
 };
 
-/* Request structure */
+
 
 struct inet_diag_req {
-	__u8	idiag_family;		/* Family of addresses. */
+	__u8	idiag_family;		
 	__u8	idiag_src_len;
 	__u8	idiag_dst_len;
-	__u8	idiag_ext;		/* Query extended information */
+	__u8	idiag_ext;		
 
 	struct inet_diag_sockid id;
 
-	__u32	idiag_states;		/* States to dump */
-	__u32	idiag_dbs;		/* Tables to dump (NI) */
+	__u32	idiag_states;		
+	__u32	idiag_dbs;		
 };
 
 struct inet_diag_req_v2 {
@@ -44,14 +44,7 @@ struct inet_diag_req_v2 {
 	struct inet_diag_sockid id;
 };
 
-/*
- * SOCK_RAW sockets require the underlied protocol to be
- * additionally specified so we can use @pad member for
- * this, but we can't rename it because userspace programs
- * still may depend on this name. Instead lets use another
- * structure definition as an alias for struct
- * @inet_diag_req_v2.
- */
+
 struct inet_diag_req_raw {
 	__u8	sdiag_family;
 	__u8	sdiag_protocol;
@@ -71,11 +64,7 @@ enum {
 
 #define INET_DIAG_REQ_MAX (__INET_DIAG_REQ_MAX - 1)
 
-/* Bytecode is sequence of 4 byte commands followed by variable arguments.
- * All the commands identified by "code" are conditional jumps forward:
- * to offset cc+"yes" or to offset cc+"no". "yes" is supposed to be
- * length of the command and its arguments.
- */
+
  
 struct inet_diag_bc_op {
 	unsigned char	code;
@@ -93,11 +82,11 @@ enum {
 	INET_DIAG_BC_AUTO,
 	INET_DIAG_BC_S_COND,
 	INET_DIAG_BC_D_COND,
-	INET_DIAG_BC_DEV_COND,   /* u32 ifindex */
+	INET_DIAG_BC_DEV_COND,   
 	INET_DIAG_BC_MARK_COND,
 	INET_DIAG_BC_S_EQ,
 	INET_DIAG_BC_D_EQ,
-	INET_DIAG_BC_CGROUP_COND,   /* u64 cgroup v2 ID */
+	INET_DIAG_BC_CGROUP_COND,   
 };
 
 struct inet_diag_hostcond {
@@ -112,8 +101,7 @@ struct inet_diag_markcond {
 	__u32 mask;
 };
 
-/* Base info structure. It contains socket identity (addrs/ports/cookie)
- * and, alas, the information shown by netstat. */
+
 struct inet_diag_msg {
 	__u8	idiag_family;
 	__u8	idiag_state;
@@ -129,7 +117,7 @@ struct inet_diag_msg {
 	__u32	idiag_inode;
 };
 
-/* Extensions */
+
 
 enum {
 	INET_DIAG_NONE,
@@ -142,20 +130,17 @@ enum {
 	INET_DIAG_SKMEMINFO,
 	INET_DIAG_SHUTDOWN,
 
-	/*
-	 * Next extenstions cannot be requested in struct inet_diag_req_v2:
-	 * its field idiag_ext has only 8 bits.
-	 */
+	
 
-	INET_DIAG_DCTCPINFO,	/* request as INET_DIAG_VEGASINFO */
-	INET_DIAG_PROTOCOL,	/* response attribute only */
+	INET_DIAG_DCTCPINFO,	
+	INET_DIAG_PROTOCOL,	
 	INET_DIAG_SKV6ONLY,
 	INET_DIAG_LOCALS,
 	INET_DIAG_PEERS,
 	INET_DIAG_PAD,
-	INET_DIAG_MARK,		/* only with CAP_NET_ADMIN */
-	INET_DIAG_BBRINFO,	/* request as INET_DIAG_VEGASINFO */
-	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
+	INET_DIAG_MARK,		
+	INET_DIAG_BBRINFO,	
+	INET_DIAG_CLASS_ID,	
 	INET_DIAG_MD5SIG,
 	INET_DIAG_ULP_INFO,
 	INET_DIAG_SK_BPF_STORAGES,
@@ -175,7 +160,7 @@ enum {
 };
 #define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
 
-/* INET_DIAG_MEM */
+
 
 struct inet_diag_meminfo {
 	__u32	idiag_rmem;
@@ -184,7 +169,7 @@ struct inet_diag_meminfo {
 	__u32	idiag_tmem;
 };
 
-/* INET_DIAG_SOCKOPT */
+
 
 struct inet_diag_sockopt {
 	__u8	recverr:1,
@@ -201,7 +186,7 @@ struct inet_diag_sockopt {
 		unused:5;
 };
 
-/* INET_DIAG_VEGASINFO */
+
 
 struct tcpvegas_info {
 	__u32	tcpv_enabled;
@@ -210,7 +195,7 @@ struct tcpvegas_info {
 	__u32	tcpv_minrtt;
 };
 
-/* INET_DIAG_DCTCPINFO */
+
 
 struct tcp_dctcp_info {
 	__u16	dctcp_enabled;
@@ -220,15 +205,15 @@ struct tcp_dctcp_info {
 	__u32	dctcp_ab_tot;
 };
 
-/* INET_DIAG_BBRINFO */
+
 
 struct tcp_bbr_info {
-	/* u64 bw: max-filtered BW (app throughput) estimate in Byte per sec: */
-	__u32	bbr_bw_lo;		/* lower 32 bits of bw */
-	__u32	bbr_bw_hi;		/* upper 32 bits of bw */
-	__u32	bbr_min_rtt;		/* min-filtered RTT in uSec */
-	__u32	bbr_pacing_gain;	/* pacing gain shifted left 8 bits */
-	__u32	bbr_cwnd_gain;		/* cwnd gain shifted left 8 bits */
+	
+	__u32	bbr_bw_lo;		
+	__u32	bbr_bw_hi;		
+	__u32	bbr_min_rtt;		
+	__u32	bbr_pacing_gain;	
+	__u32	bbr_cwnd_gain;		
 };
 
 union tcp_cc_info {
@@ -236,4 +221,4 @@ union tcp_cc_info {
 	struct tcp_dctcp_info	dctcp;
 	struct tcp_bbr_info	bbr;
 };
-#endif /* _UAPI_INET_DIAG_H_ */
+#endif 

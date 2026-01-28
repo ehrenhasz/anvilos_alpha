@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ISCSI_TARGET_ERL2_H
 #define ISCSI_TARGET_ERL2_H
 
@@ -23,4 +23,4 @@ extern int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsit_conn 
 extern int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *);
 extern int iscsit_connection_recovery_transport_reset(struct iscsit_conn *);
 
-#endif /*** ISCSI_TARGET_ERL2_H ***/
+#endif 

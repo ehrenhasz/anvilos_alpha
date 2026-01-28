@@ -15,7 +15,7 @@ class SSD1306_I2C_Mod(SSD1306_I2C):
         self.write_cmd(SET_PAGE_ADDR)
         self.write_cmd(0)
         self.write_cmd(self.pages - 1)
-        chunk_size = 254  # 255, excluding opcode.
+        chunk_size = 254  
         num_of_chunks = len(self.buffer) // chunk_size
         leftover = len(self.buffer) - (num_of_chunks * chunk_size)
         for i in range(0, num_of_chunks):
@@ -23,5 +23,5 @@ class SSD1306_I2C_Mod(SSD1306_I2C):
         if leftover > 0:
             self.write_data(self.buffer[chunk_size * num_of_chunks :])
     def write_data(self, buf):
-        buffer = bytearray([0x40]) + buf  # Co=0, D/C#=1
+        buffer = bytearray([0x40]) + buf  
         self.i2c.writeto(self.addr, buffer)

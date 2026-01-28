@@ -9,7 +9,7 @@ function check_test_sigreceive {
 			rc=1
 			break
 		fi
-		sigmask=$((16#$( awk '/SigCgt/ { print $2}' /proc/$pid/status) ))
+		sigmask=$((16
 		if [ $(( $sigmask & 1 )) == 1 ]; then
 			rc=1
 			break

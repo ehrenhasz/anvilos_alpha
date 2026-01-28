@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010 ASIX Electronics Corporation
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
- *
- * ASIX AX88796C SPI Fast Ethernet Linux driver
- */
+
+
 
 #ifndef _AX88796C_SPI_H
 #define _AX88796C_SPI_H
@@ -12,7 +7,7 @@
 #include <linux/spi/spi.h>
 #include <linux/types.h>
 
-/* Definition of SPI command */
+
 #define AX_SPICMD_WRITE_TXQ		0x02
 #define AX_SPICMD_READ_REG		0x03
 #define AX_SPICMD_READ_STATUS		0x05

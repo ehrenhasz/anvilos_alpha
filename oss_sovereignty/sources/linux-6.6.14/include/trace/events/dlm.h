@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dlm
 
@@ -89,7 +89,7 @@
 	{ DLM_RCOM_LOCK_REPLY,          "LOCK_REPLY"})
 
 
-/* note: we begin tracing dlm_lock_start() only if ls and lkb are found */
+
 TRACE_EVENT(dlm_lock_start,
 
 	TP_PROTO(struct dlm_ls *ls, struct dlm_lkb *lkb, const void *name,
@@ -168,10 +168,7 @@ TRACE_EVENT(dlm_lock_end,
 			       __get_dynamic_array_len(res_name));
 
 		if (kernel_lock) {
-			/* return value will be zeroed in those cases by dlm_lock()
-			 * we do it here again to not introduce more overhead if
-			 * trace isn't running and error reflects the return value.
-			 */
+			
 			if (error == -EAGAIN || error == -EDEADLK)
 				__entry->error = 0;
 		}
@@ -259,7 +256,7 @@ TRACE_EVENT(dlm_ast,
 
 );
 
-/* note: we begin tracing dlm_unlock_start() only if ls and lkb are found */
+
 TRACE_EVENT(dlm_unlock_start,
 
 	TP_PROTO(struct dlm_ls *ls, struct dlm_lkb *lkb, __u32 flags),
@@ -676,7 +673,7 @@ TRACE_EVENT(dlm_recv,
 
 );
 
-#endif /* if !defined(_TRACE_DLM_H) || defined(TRACE_HEADER_MULTI_READ) */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

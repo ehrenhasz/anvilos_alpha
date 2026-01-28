@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_CPU_IF_REGS_H_
 #define ASIC_REG_CPU_IF_REGS_H_
 
-/*
- *****************************************
- *   CPU_IF (Prototype: CPU_IF)
- *****************************************
- */
+
 
 #define mmCPU_IF_ARUSER_OVR                                          0x442104
 
@@ -171,4 +159,4 @@
 
 #define mmCPU_IF_DMA_IF_SEI_INTR_MASK                                0x442438
 
-#endif /* ASIC_REG_CPU_IF_REGS_H_ */
+#endif 

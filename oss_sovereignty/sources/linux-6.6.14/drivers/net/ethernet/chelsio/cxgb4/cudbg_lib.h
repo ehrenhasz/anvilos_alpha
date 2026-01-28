@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
+
+
 
 #ifndef __CUDBG_LIB_H__
 #define __CUDBG_LIB_H__
@@ -280,4 +278,4 @@ struct cudbg_qdesc_entry *cudbg_next_qdesc(struct cudbg_qdesc_entry *e)
 	return (struct cudbg_qdesc_entry *)
 	       ((u8 *)e + sizeof(*e) + e->data_size);
 }
-#endif /* __CUDBG_LIB_H__ */
+#endif 

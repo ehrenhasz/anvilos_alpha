@@ -27,14 +27,14 @@ lc_wait_until_state_changes()
 {
 	local lc=$1
 	local state=$2
-	local timeout=$3 # ms
+	local timeout=$3 
 	busywait "$timeout" until_lc_state_is_not "$state" lc_state_get "$lc"
 }
 lc_wait_until_state_becomes()
 {
 	local lc=$1
 	local state=$2
-	local timeout=$3 # ms
+	local timeout=$3 
 	busywait "$timeout" until_lc_state_is "$state" lc_state_get "$lc"
 }
 until_lc_port_count_is()
@@ -53,7 +53,7 @@ lc_wait_until_port_count_is()
 {
 	local lc=$1
 	local port_count=$2
-	local timeout=$3 # ms
+	local timeout=$3 
 	busywait "$timeout" until_lc_port_count_is "$port_count" lc_port_count_get "$lc"
 }
 lc_nested_devlink_dev_get()
@@ -61,9 +61,9 @@ lc_nested_devlink_dev_get()
 	local lc=$1
 	devlink lc show $DEVLINK_DEV lc $lc -j | jq -e -r ".[][][].nested_devlink"
 }
-PROV_UNPROV_TIMEOUT=8000 # ms
-POST_PROV_ACT_TIMEOUT=2000 # ms
-PROV_PORTS_INSTANTIATION_TIMEOUT=15000 # ms
+PROV_UNPROV_TIMEOUT=8000 
+POST_PROV_ACT_TIMEOUT=2000 
+PROV_PORTS_INSTANTIATION_TIMEOUT=15000 
 unprovision_one()
 {
 	local lc=$1
@@ -181,7 +181,7 @@ provision_test()
 	lc_dev_info_provisioned_check $lc $nested_devlink_dev
 	log_test "Provision"
 }
-ACTIVATION_TIMEOUT=20000 # ms
+ACTIVATION_TIMEOUT=20000 
 interface_check()
 {
 	ip link set $h1 up

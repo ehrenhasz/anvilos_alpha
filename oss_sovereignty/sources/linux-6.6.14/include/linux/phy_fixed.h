@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PHY_FIXED_H
 #define __PHY_FIXED_H
 
@@ -67,6 +67,6 @@ static inline int fixed_phy_change_carrier(struct net_device *dev, bool new_carr
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_FIXED_PHY */
+#endif 
 
-#endif /* __PHY_FIXED_H */
+#endif 

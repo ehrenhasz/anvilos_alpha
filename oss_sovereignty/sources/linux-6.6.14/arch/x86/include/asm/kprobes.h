@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _ASM_X86_KPROBES_H
 #define _ASM_X86_KPROBES_H
-/*
- *  Kernel Probes (KProbes)
- *
- * Copyright (C) IBM Corporation, 2002, 2004
- *
- * See arch/x86/kernel/kprobes.c for x86 kprobes history.
- */
+
 
 #include <asm-generic/kprobes.h>
 
@@ -34,7 +28,7 @@ typedef u8 kprobe_opcode_t;
 
 #define flush_insn_slot(p)	do { } while (0)
 
-/* optinsn template addresses */
+
 extern __visible kprobe_opcode_t optprobe_template_entry[];
 extern __visible kprobe_opcode_t optprobe_template_clac[];
 extern __visible kprobe_opcode_t optprobe_template_val[];
@@ -50,19 +44,13 @@ extern const int kretprobe_blacklist_size;
 
 void arch_remove_kprobe(struct kprobe *p);
 
-/* Architecture specific copy of original instruction*/
+
 struct arch_specific_insn {
-	/* copy of the original instruction */
+	
 	kprobe_opcode_t *insn;
-	/*
-	 * boostable = 0: This instruction type is not boostable.
-	 * boostable = 1: This instruction has been boosted: we have
-	 * added a relative jump after the instruction copy in insn,
-	 * so no single-step and fixup are needed (unless there's
-	 * a post_handler).
-	 */
+	
 	unsigned boostable:1;
-	unsigned char size;	/* The size of insn */
+	unsigned char size;	
 	union {
 		unsigned char opcode;
 		struct {
@@ -76,22 +64,22 @@ struct arch_specific_insn {
 			unsigned char reg;
 		} indirect;
 	};
-	s32 rel32;	/* relative offset must be s32, s16, or s8 */
+	s32 rel32;	
 	void (*emulate_op)(struct kprobe *p, struct pt_regs *regs);
-	/* Number of bytes of text poked */
+	
 	int tp_len;
 };
 
 struct arch_optimized_insn {
-	/* copy of the original instructions */
+	
 	kprobe_opcode_t copied_insn[DISP32_SIZE];
-	/* detour code buffer */
+	
 	kprobe_opcode_t *insn;
-	/* the size of instructions copied to detour code buffer */
+	
 	size_t size;
 };
 
-/* Return true (!0) if optinsn is prepared for optimization. */
+
 static inline int arch_prepared_optinsn(struct arch_optimized_insn *optinsn)
 {
 	return optinsn->size;
@@ -104,7 +92,7 @@ struct prev_kprobe {
 	unsigned long saved_flags;
 };
 
-/* per-cpu kprobe control block */
+
 struct kprobe_ctlblk {
 	unsigned long kprobe_status;
 	unsigned long kprobe_old_flags;
@@ -121,5 +109,5 @@ extern int kprobe_int3_handler(struct pt_regs *regs);
 
 static inline int kprobe_debug_handler(struct pt_regs *regs) { return 0; }
 
-#endif /* CONFIG_KPROBES */
-#endif /* _ASM_X86_KPROBES_H */
+#endif 
+#endif 

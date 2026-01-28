@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 CFLAGS += -O2 -g -std=gnu89 -pthread -Wall -Wextra
 CFLAGS += $(KHDR_INCLUDES)
 LDFLAGS += -pthread
@@ -7,8 +7,8 @@ LDFLAGS += -pthread
 
 include ../lib.mk
 
-# lib.mk TEST_CUSTOM_PROGS var is for custom tests that need special
-# build rules. lib.mk will run and install them.
+
+
 
 TEST_CUSTOM_PROGS := $(OUTPUT)/sync_test
 all: $(TEST_CUSTOM_PROGS)

@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants specific to AM33XX pinctrl bindings.
- */
+
+
 
 #ifndef _DT_BINDINGS_PINCTRL_AM33XX_H
 #define _DT_BINDINGS_PINCTRL_AM33XX_H
 
 #include <dt-bindings/pinctrl/omap.h>
 
-/* am33xx specific mux bit defines */
+
 #undef PULL_ENA
 #undef INPUT_EN
 
@@ -17,7 +15,7 @@
 #define SLEWCTRL_SLOW		(1 << 6)
 #define SLEWCTRL_FAST		0
 
-/* update macro depending on INPUT_EN and PULL_ENA */
+
 #undef PIN_OUTPUT
 #undef PIN_OUTPUT_PULLUP
 #undef PIN_OUTPUT_PULLDOWN
@@ -32,7 +30,7 @@
 #define PIN_INPUT_PULLUP	(INPUT_EN | PULL_UP)
 #define PIN_INPUT_PULLDOWN	(INPUT_EN)
 
-/* undef non-existing modes */
+
 #undef PIN_OFF_NONE
 #undef PIN_OFF_OUTPUT_HIGH
 #undef PIN_OFF_OUTPUT_LOW

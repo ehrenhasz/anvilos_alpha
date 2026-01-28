@@ -1,5 +1,0 @@
-ptp_clock@24e00 {
-	compatible = "fsl,etsec-ptp";
-	reg = <0x24e00 0xb0>;
-	interrupts = <68 2 0 0 69 2 0 0>;
-};

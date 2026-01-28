@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef BRCMNAND_PLAT_DATA_H
 #define BRCMNAND_PLAT_DATA_H
 
@@ -9,4 +9,4 @@ struct brcmnand_platform_data {
 	unsigned int ecc_strength;
 };
 
-#endif /* BRCMNAND_PLAT_DATA_H */
+#endif 

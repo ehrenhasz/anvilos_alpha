@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Because linux/module.h has tracepoints in the header, and ftrace.h
- * used to include this file, define_trace.h includes linux/module.h
- * But we do not want the module.h to override the TRACE_SYSTEM macro
- * variable that define_trace.h is processing, so we only set it
- * when module events are being processed, which would happen when
- * CREATE_TRACE_POINTS is defined.
- */
+
+
 #ifdef CREATE_TRACE_POINTS
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM module
@@ -65,7 +58,7 @@ TRACE_EVENT(module_free,
 );
 
 #ifdef CONFIG_MODULE_UNLOAD
-/* trace_module_get/put are only used if CONFIG_MODULE_UNLOAD is defined */
+
 
 DECLARE_EVENT_CLASS(module_refcnt,
 
@@ -102,7 +95,7 @@ DEFINE_EVENT(module_refcnt, module_put,
 
 	TP_ARGS(mod, ip)
 );
-#endif /* CONFIG_MODULE_UNLOAD */
+#endif 
 
 TRACE_EVENT(module_request,
 
@@ -126,9 +119,9 @@ TRACE_EVENT(module_request,
 		  __get_str(name), (int)__entry->wait, (void *)__entry->ip)
 );
 
-#endif /* CONFIG_MODULES */
+#endif 
 
-#endif /* _TRACE_MODULE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

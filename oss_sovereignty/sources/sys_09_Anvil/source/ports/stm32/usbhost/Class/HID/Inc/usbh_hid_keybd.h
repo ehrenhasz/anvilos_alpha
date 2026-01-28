@@ -1,59 +1,23 @@
-/**
-  ******************************************************************************
-  * @file    usbh_hid_keybd.h
-  * @author  MCD Application Team
-  * @version V3.0.0
-  * @date    18-February-2014
-  * @brief   This file contains all the prototypes for the usbh_hid_keybd.c
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
 
-/* Define to prevent recursive -----------------------------------------------*/
+
+
 #ifndef __USBH_HID_KEYBD_H
 #define __USBH_HID_KEYBD_H
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "usbh_hid.h"
 #include "usbh_hid_keybd.h"
 
-/** @addtogroup USBH_LIB
-  * @{
-  */
 
-/** @addtogroup USBH_CLASS
-  * @{
-  */
 
-/** @addtogroup USBH_HID_CLASS
-  * @{
-  */
+
+
+
   
-/** @defgroup USBH_HID_KEYBD
-  * @brief This file is the Header file for USBH_HID_KEYBD.c
-  * @{
-  */ 
+ 
 
 
-/** @defgroup USBH_HID_KEYBD_Exported_Types
-  * @{
-  */ 
+ 
 #define KEY_NONE                               0x00
 #define KEY_ERRORROLLOVER                      0x01
 #define KEY_POSTFAIL                           0x02
@@ -293,26 +257,16 @@ USBH_StatusTypeDef USBH_HID_KeybdInit(USBH_HandleTypeDef *phost);
 HID_KEYBD_Info_TypeDef *USBH_HID_GetKeybdInfo(USBH_HandleTypeDef *phost);
 uint8_t USBH_HID_GetASCIICode(HID_KEYBD_Info_TypeDef *info);
 
-/**
-  * @}
-  */ 
+ 
 
-#endif /* __USBH_HID_KEYBD_H */
+#endif 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */ 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+ 
+
 

@@ -1,19 +1,13 @@
 #ifndef __LINUX_SPINLOCK_TYPES_H
 #define __LINUX_SPINLOCK_TYPES_H
 
-/*
- * include/linux/spinlock_types.h - generic spinlock type definitions
- *                                  and initializers
- *
- * portions Copyright 2005, Red Hat, Inc., Ingo Molnar
- * Released under the General Public License (GPL).
- */
+
 
 #include <linux/spinlock_types_raw.h>
 
 #ifndef CONFIG_PREEMPT_RT
 
-/* Non PREEMPT_RT kernels map spinlock to raw_spinlock */
+
 typedef struct spinlock {
 	union {
 		struct raw_spinlock rlock;
@@ -42,9 +36,9 @@ typedef struct spinlock {
 
 #define DEFINE_SPINLOCK(x)	spinlock_t x = __SPIN_LOCK_UNLOCKED(x)
 
-#else /* !CONFIG_PREEMPT_RT */
+#else 
 
-/* PREEMPT_RT kernels map spinlock to rt_mutex */
+
 #include <linux/rtmutex.h>
 
 typedef struct spinlock {
@@ -69,8 +63,8 @@ typedef struct spinlock {
 #define DEFINE_SPINLOCK(name)					\
 	spinlock_t name = __SPIN_LOCK_UNLOCKED(name)
 
-#endif /* CONFIG_PREEMPT_RT */
+#endif 
 
 #include <linux/rwlock_types.h>
 
-#endif /* __LINUX_SPINLOCK_TYPES_H */
+#endif 

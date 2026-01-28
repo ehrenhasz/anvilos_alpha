@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2016-2018 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+
 
 #ifndef BNXT_ULP_H
 #define BNXT_ULP_H
@@ -65,22 +58,12 @@ struct bnxt_en_dev {
 #define BNXT_EN_VF(edev)	((edev)->flags & BNXT_EN_FLAG_VF)
 
 	struct bnxt_ulp			*ulp_tbl;
-	int				l2_db_size;	/* Doorbell BAR size in
-							 * bytes mapped by L2
-							 * driver.
-							 */
-	int				l2_db_size_nc;	/* Doorbell BAR size in
-							 * bytes mapped as non-
-							 * cacheable.
-							 */
+	int				l2_db_size;	
+	int				l2_db_size_nc;	
 	u16				chip_num;
 	u16				hw_ring_stats_size;
 	u16				pf_port_id;
-	unsigned long			en_state;	/* Could be checked in
-							 * RoCE driver suspend
-							 * mode only. Will be
-							 * updated in resume.
-							 */
+	unsigned long			en_state;	
 	void __iomem                    *bar0;
 };
 

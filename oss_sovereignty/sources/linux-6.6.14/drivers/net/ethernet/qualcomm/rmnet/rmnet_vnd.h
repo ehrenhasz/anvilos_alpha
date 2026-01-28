@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
- *
- * RMNET Data Virtual Network Device APIs
- */
+
+
 
 #ifndef _RMNET_VND_H_
 #define _RMNET_VND_H_
@@ -22,4 +19,4 @@ void rmnet_vnd_setup(struct net_device *dev);
 int rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev);
 int rmnet_vnd_update_dev_mtu(struct rmnet_port *port,
 			     struct net_device *real_dev);
-#endif /* _RMNET_VND_H_ */
+#endif 

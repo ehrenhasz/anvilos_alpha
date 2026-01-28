@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_PSOC_TIMESTAMP_REGS_H_
 #define ASIC_REG_PSOC_TIMESTAMP_REGS_H_
 
-/*
- *****************************************
- *   PSOC_TIMESTAMP (Prototype: TIMESTAMP)
- *****************************************
- */
+
 
 #define mmPSOC_TIMESTAMP_CNTCR                                       0xC49000
 
@@ -53,4 +41,4 @@
 
 #define mmPSOC_TIMESTAMP_CIDR3                                       0xC49FFC
 
-#endif /* ASIC_REG_PSOC_TIMESTAMP_REGS_H_ */
+#endif 

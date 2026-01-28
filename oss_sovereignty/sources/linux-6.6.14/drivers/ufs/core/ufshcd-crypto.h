@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 Google LLC
- */
+
+
 
 #ifndef _UFSHCD_CRYPTO_H
 #define _UFSHCD_CRYPTO_H
@@ -45,7 +43,7 @@ void ufshcd_init_crypto(struct ufs_hba *hba);
 
 void ufshcd_crypto_register(struct ufs_hba *hba, struct request_queue *q);
 
-#else /* CONFIG_SCSI_UFS_CRYPTO */
+#else 
 
 static inline void ufshcd_prepare_lrbp_crypto(struct request *rq,
 					      struct ufshcd_lrb *lrbp) { }
@@ -69,6 +67,6 @@ static inline void ufshcd_init_crypto(struct ufs_hba *hba) { }
 static inline void ufshcd_crypto_register(struct ufs_hba *hba,
 					  struct request_queue *q) { }
 
-#endif /* CONFIG_SCSI_UFS_CRYPTO */
+#endif 
 
-#endif /* _UFSHCD_CRYPTO_H */
+#endif 

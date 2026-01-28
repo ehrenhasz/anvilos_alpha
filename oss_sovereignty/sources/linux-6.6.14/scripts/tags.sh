@@ -186,7 +186,7 @@ setup_regex()
 		esac
 		for r in "${tmp[@]}"; do
 			if test "$mode" = "exuberant"; then
-				regex[${#regex[@]}]="--regex-$lang=${r}b"
+				regex[${
 			else
 				case "$r" in
 				/*/*/?/)
@@ -195,9 +195,9 @@ setup_regex()
 				case "$r" in
 				/^*) ;;
 				*)
-					r="/^[^#]*${r#/}"
+					r="/^[^
 				esac
-				regex[${#regex[@]}]="--regex=$r"
+				regex[${
 			fi
 		done
 	done

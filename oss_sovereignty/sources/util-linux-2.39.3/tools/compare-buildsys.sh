@@ -11,9 +11,9 @@ if [ ! -f $AUTOCONF_CONFIG_H ]; then
 fi
 TMPFILE_MESON="/tmp/util-linux-meson"
 TMPFILE_AUTOCONF="/tmp/util-linux-autoconf"
-GREP_PATTERN="#define "
+GREP_PATTERN="
 if [ "$FILTER" = "headers" ]; then
-	GREP_PATTERN="#define .*_H[[:blank:]]"
+	GREP_PATTERN="
 fi
 echo "===MESON===" > $TMPFILE_MESON
 grep "$GREP_PATTERN" $MESON_CONFIG_H | sort >> $TMPFILE_MESON

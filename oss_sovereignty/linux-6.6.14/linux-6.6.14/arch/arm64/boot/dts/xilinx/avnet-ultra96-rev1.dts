@@ -1,8 +1,0 @@
-/dts-v1/;
-#include "zynqmp-zcu100-revC.dts"
-/ {
-	model = "Avnet Ultra96 Rev1";
-	compatible = "avnet,ultra96-rev1", "avnet,ultra96",
-		     "xlnx,zynqmp-zcu100-revC", "xlnx,zynqmp-zcu100",
-		     "xlnx,zynqmp";
-};

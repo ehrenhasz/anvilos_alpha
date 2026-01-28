@@ -53,7 +53,7 @@ struct nft_flow_key {
 	struct flow_dissector_key_vlan			cvlan;
 	struct flow_dissector_key_eth_addrs		eth_addrs;
 	struct flow_dissector_key_meta			meta;
-} __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+} __aligned(BITS_PER_LONG / 8); 
 
 struct nft_flow_match {
 	struct flow_dissector	dissector;

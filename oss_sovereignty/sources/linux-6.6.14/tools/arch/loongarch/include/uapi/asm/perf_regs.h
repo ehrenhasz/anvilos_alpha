@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _ASM_LOONGARCH_PERF_REGS_H
 #define _ASM_LOONGARCH_PERF_REGS_H
 
@@ -37,4 +37,4 @@ enum perf_event_loongarch_regs {
 	PERF_REG_LOONGARCH_R31,
 	PERF_REG_LOONGARCH_MAX,
 };
-#endif /* _ASM_LOONGARCH_PERF_REGS_H */
+#endif 

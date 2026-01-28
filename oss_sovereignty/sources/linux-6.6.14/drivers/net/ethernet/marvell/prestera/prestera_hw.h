@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved. */
+
+
 
 #ifndef _PRESTERA_HW_H_
 #define _PRESTERA_HW_H_
@@ -148,13 +148,13 @@ struct prestera_flood_domain;
 struct prestera_mdb_entry;
 struct prestera_neigh_info;
 
-/* Switch API */
+
 int prestera_hw_switch_init(struct prestera_switch *sw);
 void prestera_hw_switch_fini(struct prestera_switch *sw);
 int prestera_hw_switch_ageing_set(struct prestera_switch *sw, u32 ageing_ms);
 int prestera_hw_switch_mac_set(struct prestera_switch *sw, const char *mac);
 
-/* Port API */
+
 int prestera_hw_port_info_get(const struct prestera_port *port,
 			      u32 *dev_id, u32 *hw_id, u16 *fp_id);
 
@@ -188,7 +188,7 @@ int prestera_hw_port_br_locked_set(const struct prestera_port *port,
 				   bool br_locked);
 int prestera_hw_port_accept_frm_type(struct prestera_port *port,
 				     enum prestera_accept_frm_type type);
-/* Vlan API */
+
 int prestera_hw_vlan_create(struct prestera_switch *sw, u16 vid);
 int prestera_hw_vlan_delete(struct prestera_switch *sw, u16 vid);
 int prestera_hw_vlan_port_set(struct prestera_port *port, u16 vid,
@@ -196,7 +196,7 @@ int prestera_hw_vlan_port_set(struct prestera_port *port, u16 vid,
 int prestera_hw_vlan_port_vid_set(struct prestera_port *port, u16 vid);
 int prestera_hw_vlan_port_stp_set(struct prestera_port *port, u16 vid, u8 state);
 
-/* FDB API */
+
 int prestera_hw_fdb_add(struct prestera_port *port, const unsigned char *mac,
 			u16 vid, bool dynamic);
 int prestera_hw_fdb_del(struct prestera_port *port, const unsigned char *mac,
@@ -206,13 +206,13 @@ int prestera_hw_fdb_flush_vlan(struct prestera_switch *sw, u16 vid, u32 mode);
 int prestera_hw_fdb_flush_port_vlan(struct prestera_port *port, u16 vid,
 				    u32 mode);
 
-/* Bridge API */
+
 int prestera_hw_bridge_create(struct prestera_switch *sw, u16 *bridge_id);
 int prestera_hw_bridge_delete(struct prestera_switch *sw, u16 bridge_id);
 int prestera_hw_bridge_port_add(struct prestera_port *port, u16 bridge_id);
 int prestera_hw_bridge_port_delete(struct prestera_port *port, u16 bridge_id);
 
-/* vTCAM API */
+
 int prestera_hw_vtcam_create(struct prestera_switch *sw,
 			     u8 lookup, const u32 *keymask, u32 *vtcam_id,
 			     enum prestera_hw_vtcam_direction_t direction);
@@ -230,7 +230,7 @@ int prestera_hw_vtcam_iface_unbind(struct prestera_switch *sw,
 				   struct prestera_acl_iface *iface,
 				   u32 vtcam_id);
 
-/* Counter API */
+
 int prestera_hw_counter_trigger(struct prestera_switch *sw, u32 block_id);
 int prestera_hw_counter_abort(struct prestera_switch *sw);
 int prestera_hw_counters_get(struct prestera_switch *sw, u32 idx,
@@ -244,40 +244,40 @@ int prestera_hw_counter_block_release(struct prestera_switch *sw,
 int prestera_hw_counter_clear(struct prestera_switch *sw, u32 block_id,
 			      u32 counter_id);
 
-/* SPAN API */
+
 int prestera_hw_span_get(const struct prestera_port *port, u8 *span_id);
 int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id,
 			  bool ingress);
 int prestera_hw_span_unbind(const struct prestera_port *port, bool ingress);
 int prestera_hw_span_release(struct prestera_switch *sw, u8 span_id);
 
-/* Router API */
+
 int prestera_hw_rif_create(struct prestera_switch *sw,
 			   struct prestera_iface *iif, u8 *mac, u16 *rif_id);
 int prestera_hw_rif_delete(struct prestera_switch *sw, u16 rif_id,
 			   struct prestera_iface *iif);
 
-/* Virtual Router API */
+
 int prestera_hw_vr_create(struct prestera_switch *sw, u16 *vr_id);
 int prestera_hw_vr_delete(struct prestera_switch *sw, u16 vr_id);
 
-/* LPM PI */
+
 int prestera_hw_lpm_add(struct prestera_switch *sw, u16 vr_id,
 			__be32 dst, u32 dst_len, u32 grp_id);
 int prestera_hw_lpm_del(struct prestera_switch *sw, u16 vr_id,
 			__be32 dst, u32 dst_len);
 
-/* NH API */
+
 int prestera_hw_nh_entries_set(struct prestera_switch *sw, int count,
 			       struct prestera_neigh_info *nhs, u32 grp_id);
 int prestera_hw_nhgrp_blk_get(struct prestera_switch *sw,
-			      u8 *hw_state, u32 buf_size /* Buffer in bytes */);
+			      u8 *hw_state, u32 buf_size );
 int prestera_hw_nh_group_create(struct prestera_switch *sw, u16 nh_count,
 				u32 *grp_id);
 int prestera_hw_nh_group_delete(struct prestera_switch *sw, u16 nh_count,
 				u32 grp_id);
 
-/* Event handlers */
+
 int prestera_hw_event_handler_register(struct prestera_switch *sw,
 				       enum prestera_event_type type,
 				       prestera_event_cb_t fn,
@@ -286,11 +286,11 @@ void prestera_hw_event_handler_unregister(struct prestera_switch *sw,
 					  enum prestera_event_type type,
 					  prestera_event_cb_t fn);
 
-/* RX/TX */
+
 int prestera_hw_rxtx_init(struct prestera_switch *sw,
 			  struct prestera_rxtx_params *params);
 
-/* LAG API */
+
 int prestera_hw_lag_member_add(struct prestera_port *port, u16 lag_id);
 int prestera_hw_lag_member_del(struct prestera_port *port, u16 lag_id);
 int prestera_hw_lag_member_enable(struct prestera_port *port, u16 lag_id,
@@ -304,13 +304,13 @@ int prestera_hw_fdb_flush_lag(struct prestera_switch *sw, u16 lag_id,
 int prestera_hw_fdb_flush_lag_vlan(struct prestera_switch *sw,
 				   u16 lag_id, u16 vid, u32 mode);
 
-/* HW trap/drop counters API */
+
 int
 prestera_hw_cpu_code_counters_get(struct prestera_switch *sw, u8 code,
 				  enum prestera_hw_cpu_code_cnt_t counter_type,
 				  u64 *packet_count);
 
-/* Policer API */
+
 int prestera_hw_policer_create(struct prestera_switch *sw, u8 type,
 			       u32 *policer_id);
 int prestera_hw_policer_release(struct prestera_switch *sw,
@@ -318,7 +318,7 @@ int prestera_hw_policer_release(struct prestera_switch *sw,
 int prestera_hw_policer_sr_tcm_set(struct prestera_switch *sw,
 				   u32 policer_id, u64 cir, u32 cbs);
 
-/* Flood domain / MDB API */
+
 int prestera_hw_flood_domain_create(struct prestera_flood_domain *domain);
 int prestera_hw_flood_domain_destroy(struct prestera_flood_domain *domain);
 int prestera_hw_flood_domain_ports_set(struct prestera_flood_domain *domain);
@@ -327,4 +327,4 @@ int prestera_hw_flood_domain_ports_reset(struct prestera_flood_domain *domain);
 int prestera_hw_mdb_create(struct prestera_mdb_entry *mdb);
 int prestera_hw_mdb_destroy(struct prestera_mdb_entry *mdb);
 
-#endif /* _PRESTERA_HW_H_ */
+#endif 

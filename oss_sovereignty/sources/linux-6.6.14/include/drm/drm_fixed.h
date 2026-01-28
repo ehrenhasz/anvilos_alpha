@@ -1,27 +1,4 @@
-/*
- * Copyright 2009 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Christian König
- */
+
 #ifndef DRM_FIXED_H
 #define DRM_FIXED_H
 
@@ -33,7 +10,7 @@ typedef union dfixed {
 } fixed20_12;
 
 
-#define dfixed_const(A) (u32)(((A) << 12))/*  + ((B + 0.000122)*4096)) */
+#define dfixed_const(A) (u32)(((A) << 12))
 #define dfixed_const_half(A) (u32)(((A) << 12) + 2048)
 #define dfixed_const_666(A) (u32)(((A) << 12) + 2731)
 #define dfixed_const_8(A) (u32)(((A) << 12) + 3277)
@@ -162,10 +139,10 @@ static inline s64 drm_fixp_from_fraction(s64 a, s64 b)
 	u64 b_abs = b_neg ? -b : b;
 	u64 rem;
 
-	/* determine integer part */
+	
 	u64 res_abs  = div64_u64_rem(a_abs, b_abs, &rem);
 
-	/* determine fractional part */
+	
 	{
 		u32 i = DRM_FIXED_POINT;
 
@@ -179,7 +156,7 @@ static inline s64 drm_fixp_from_fraction(s64 a, s64 b)
 		} while (--i != 0);
 	}
 
-	/* round up LSB */
+	
 	{
 		u64 summand = (rem << 1) >= b_abs;
 

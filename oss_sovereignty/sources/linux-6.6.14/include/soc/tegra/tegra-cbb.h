@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION. All rights reserved
- */
+
+
 
 #ifndef TEGRA_CBB_H
 #define TEGRA_CBB_H
@@ -44,4 +42,4 @@ void tegra_cbb_stall_enable(struct tegra_cbb *cbb);
 void tegra_cbb_error_clear(struct tegra_cbb *cbb);
 u32 tegra_cbb_get_status(struct tegra_cbb *cbb);
 
-#endif /* TEGRA_CBB_H */
+#endif 

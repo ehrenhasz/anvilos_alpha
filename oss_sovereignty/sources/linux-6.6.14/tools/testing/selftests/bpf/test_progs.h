@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __TEST_PROGS_H
 #define __TEST_PROGS_H
 
@@ -107,26 +107,26 @@ struct test_env {
 	bool get_test_cnt;
 	bool list_test_names;
 
-	struct prog_test_def *test; /* current running test */
-	struct test_state *test_state; /* current running test state */
-	struct subtest_state *subtest_state; /* current running subtest state */
+	struct prog_test_def *test; 
+	struct test_state *test_state; 
+	struct subtest_state *subtest_state; 
 
 	FILE *stdout;
 	FILE *stderr;
 	int nr_cpus;
 	FILE *json;
 
-	int succ_cnt; /* successful tests */
-	int sub_succ_cnt; /* successful sub-tests */
-	int fail_cnt; /* total failed tests + sub-tests */
-	int skip_cnt; /* skipped tests */
+	int succ_cnt; 
+	int sub_succ_cnt; 
+	int fail_cnt; 
+	int skip_cnt; 
 
 	int saved_netns_fd;
-	int workers; /* number of worker process */
-	int worker_id; /* id number of current worker, main process is -1 */
-	pid_t *worker_pids; /* array of worker pids */
-	int *worker_socks; /* array of worker socks */
-	int *worker_current_test; /* array of current running test for each worker */
+	int workers; 
+	int worker_id; 
+	pid_t *worker_pids; 
+	int *worker_socks; 
+	int *worker_current_test; 
 };
 
 #define MAX_LOG_TRUNK_SIZE 8192
@@ -457,4 +457,4 @@ extern void test_loader_fini(struct test_loader *tester);
 	test_loader_fini(&tester);					       \
 })
 
-#endif /* __TEST_PROGS_H */
+#endif 

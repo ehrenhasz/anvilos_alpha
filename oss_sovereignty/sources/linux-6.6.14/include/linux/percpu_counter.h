@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_PERCPU_COUNTER_H
 #define _LINUX_PERCPU_COUNTER_H
-/*
- * A simple "approximate counter" for use in ext2 and ext3 superblocks.
- *
- * WARNING: these things are HUGE.  4 kbytes per counter on 32-way P4.
- */
+
 
 #include <linux/spinlock.h>
 #include <linux/smp.h>
@@ -14,7 +10,7 @@
 #include <linux/percpu.h>
 #include <linux/types.h>
 
-/* percpu_counter batch for local add or sub */
+
 #define PERCPU_COUNTER_LOCAL_BATCH	INT_MAX
 
 #ifdef CONFIG_SMP
@@ -23,7 +19,7 @@ struct percpu_counter {
 	raw_spinlock_t lock;
 	s64 count;
 #ifdef CONFIG_HOTPLUG_CPU
-	struct list_head list;	/* All percpu_counters are on a list */
+	struct list_head list;	
 #endif
 	s32 __percpu *counters;
 };
@@ -69,16 +65,7 @@ static inline void percpu_counter_add(struct percpu_counter *fbc, s64 amount)
 	percpu_counter_add_batch(fbc, amount, percpu_counter_batch);
 }
 
-/*
- * With percpu_counter_add_local() and percpu_counter_sub_local(), counts
- * are accumulated in local per cpu counter and not in fbc->count until
- * local count overflows PERCPU_COUNTER_LOCAL_BATCH. This makes counter
- * write efficient.
- * But percpu_counter_sum(), instead of percpu_counter_read(), needs to be
- * used to add up the counts from each CPU to account for all the local
- * counts. So percpu_counter_add_local() and percpu_counter_sub_local()
- * should be used when a counter is updated frequently and read rarely.
- */
+
 static inline void
 percpu_counter_add_local(struct percpu_counter *fbc, s64 amount)
 {
@@ -101,14 +88,10 @@ static inline s64 percpu_counter_read(struct percpu_counter *fbc)
 	return fbc->count;
 }
 
-/*
- * It is possible for the percpu_counter_read() to return a small negative
- * number for some counter which should never be negative.
- *
- */
+
 static inline s64 percpu_counter_read_positive(struct percpu_counter *fbc)
 {
-	/* Prevent reloads of fbc->count */
+	
 	s64 ret = READ_ONCE(fbc->count);
 
 	if (ret >= 0)
@@ -121,7 +104,7 @@ static inline bool percpu_counter_initialized(struct percpu_counter *fbc)
 	return (fbc->counters != NULL);
 }
 
-#else /* !CONFIG_SMP */
+#else 
 
 struct percpu_counter {
 	s64 count;
@@ -185,7 +168,7 @@ percpu_counter_add(struct percpu_counter *fbc, s64 amount)
 	local_irq_restore(flags);
 }
 
-/* non-SMP percpu_counter_add_local is the same with percpu_counter_add */
+
 static inline void
 percpu_counter_add_local(struct percpu_counter *fbc, s64 amount)
 {
@@ -203,10 +186,7 @@ static inline s64 percpu_counter_read(struct percpu_counter *fbc)
 	return fbc->count;
 }
 
-/*
- * percpu_counter is intended to track positive numbers. In the UP case the
- * number should never be negative.
- */
+
 static inline s64 percpu_counter_read_positive(struct percpu_counter *fbc)
 {
 	return fbc->count;
@@ -230,7 +210,7 @@ static inline bool percpu_counter_initialized(struct percpu_counter *fbc)
 static inline void percpu_counter_sync(struct percpu_counter *fbc)
 {
 }
-#endif	/* CONFIG_SMP */
+#endif	
 
 static inline void percpu_counter_inc(struct percpu_counter *fbc)
 {
@@ -253,4 +233,4 @@ percpu_counter_sub_local(struct percpu_counter *fbc, s64 amount)
 	percpu_counter_add_local(fbc, -amount);
 }
 
-#endif /* _LINUX_PERCPU_COUNTER_H */
+#endif 

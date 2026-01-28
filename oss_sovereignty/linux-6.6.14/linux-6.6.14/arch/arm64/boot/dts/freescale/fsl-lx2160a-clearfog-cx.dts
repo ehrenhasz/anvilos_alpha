@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "fsl-lx2160a-clearfog-itx.dtsi"
-/ {
-	model = "SolidRun LX2160A Clearfog CX";
-	compatible = "solidrun,clearfog-cx",
-		"solidrun,lx2160a-cex7", "fsl,lx2160a";
-};

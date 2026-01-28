@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * u_os_desc.h
- *
- * Utility definitions for "OS Descriptors" support
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
+
+
 
 #ifndef __U_OS_DESC_H__
 #define __U_OS_DESC_H__
@@ -117,4 +108,4 @@ static inline int usb_ext_prop_put_unicode(u8 *buf, int pnl, const char *string,
 	return data_len;
 }
 
-#endif /* __U_OS_DESC_H__ */
+#endif 

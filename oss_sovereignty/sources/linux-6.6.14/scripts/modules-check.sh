@@ -1,5 +1,5 @@
 set -e
-if [ $# != 1 ]; then
+if [ $
 	echo "Usage: $0 <modules.order>" >& 2
 	exit 1
 fi

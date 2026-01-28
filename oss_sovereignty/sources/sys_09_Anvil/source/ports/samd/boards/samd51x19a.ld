@@ -1,23 +1,18 @@
-/*
-    GNU linker script for SAMD51
-*/
 
-/*
-_codesize is defined in mpconfigmcu.mk or mpconfigboard.mk as
-MICROPY_HW_CODESIZE and is set in Makefile
-*/
 
-_flashsize = 512K;  /* The physical flash size */
-_bootloader = 16K;  /* Must match the ORIGIN value of FLASH */
 
-/* Specify the memory areas */
+
+_flashsize = 512K;  
+_bootloader = 16K;  
+
+
 MEMORY
 {
     FLASH (rx)  : ORIGIN = 0x00004000, LENGTH = _codesize
     RAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 192K
 }
 
-/* Top end of the stack, with room for double-tap variable */
+
 _estack = ORIGIN(RAM) + LENGTH(RAM) - 8;
 _sstack = _estack - 16K;
 

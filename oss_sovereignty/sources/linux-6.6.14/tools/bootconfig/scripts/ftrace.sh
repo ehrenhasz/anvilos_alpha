@@ -1,13 +1,13 @@
-clear_trace() { # reset trace output
+clear_trace() { 
     echo > trace
 }
-disable_tracing() { # stop trace recording
+disable_tracing() { 
     echo 0 > tracing_on
 }
-enable_tracing() { # start trace recording
+enable_tracing() { 
     echo 1 > tracing_on
 }
-reset_tracer() { # reset the current tracer
+reset_tracer() { 
     echo nop > current_tracer
 }
 reset_trigger_file() {
@@ -17,31 +17,31 @@ reset_trigger_file() {
 	file=`echo $line | cut -f1 -d:`
 	echo "!$cmd" >> $file
     done
-    grep -Hv ^# $@ |
+    grep -Hv ^
     while read line; do
         cmd=`echo $line | cut -f2- -d: | cut -f1 -d"["`
 	file=`echo $line | cut -f1 -d:`
 	echo "!$cmd" > $file
     done
 }
-reset_trigger() { # reset all current setting triggers
+reset_trigger() { 
     if [ -d events/synthetic ]; then
         reset_trigger_file events/synthetic/*/trigger
     fi
     reset_trigger_file events/*/*/trigger
 }
-reset_events_filter() { # reset all current setting filters
+reset_events_filter() { 
     grep -v ^none events/*/*/filter |
     while read line; do
 	echo 0 > `echo $line | cut -f1 -d:`
     done
 }
-reset_ftrace_filter() { # reset all triggers in set_ftrace_filter
+reset_ftrace_filter() { 
     if [ ! -f set_ftrace_filter ]; then
       return 0
     fi
     echo > set_ftrace_filter
-    grep -v '^#' set_ftrace_filter | while read t; do
+    grep -v '^
 	tr=`echo $t | cut -d: -f2`
 	if [ "$tr" = "" ]; then
 	    continue
@@ -66,13 +66,13 @@ reset_ftrace_filter() { # reset all triggers in set_ftrace_filter
 disable_events() {
     echo 0 > events/enable
 }
-clear_synthetic_events() { # reset all current synthetic events
-    grep -v ^# synthetic_events |
+clear_synthetic_events() { 
+    grep -v ^
     while read line; do
         echo "!$line" >> synthetic_events
     done
 }
-initialize_ftrace() { # Reset ftrace to initial-state
+initialize_ftrace() { 
     disable_tracing
     reset_tracer
     reset_trigger

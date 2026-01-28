@@ -1,5 +1,0 @@
-/dts-v1/;
-#include "logicpd-torpedo-37xx-devkit.dts"
-&lcd0 {
-	compatible = "logicpd,type28";
-};

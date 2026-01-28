@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_TREE_LOG_H
 #define BTRFS_TREE_LOG_H
@@ -10,15 +8,10 @@
 #include "ctree.h"
 #include "transaction.h"
 
-/* return value for btrfs_log_dentry_safe that means we don't need to log it at all */
+
 #define BTRFS_NO_LOG_SYNC 256
 
-/*
- * We can't use the tree log for whatever reason, force a transaction commit.
- * We use a negative value because there are functions through the logging code
- * that need to return an error (< 0 value), false (0) or true (1). Any negative
- * value will do, as it will cause the log to be marked for a full sync.
- */
+
 #define BTRFS_LOG_FORCE_COMMIT				(-(MAX_ERRNO + 1))
 
 struct btrfs_log_ctx {
@@ -27,11 +20,11 @@ struct btrfs_log_ctx {
 	bool log_new_dentries;
 	bool logging_new_name;
 	bool logging_new_delayed_dentries;
-	/* Indicate if the inode being logged was logged before. */
+	
 	bool logged_before;
 	struct inode *inode;
 	struct list_head list;
-	/* Only used for fast fsyncs. */
+	
 	struct list_head ordered_extents;
 	struct list_head conflict_inodes;
 	int num_conflict_inodes;

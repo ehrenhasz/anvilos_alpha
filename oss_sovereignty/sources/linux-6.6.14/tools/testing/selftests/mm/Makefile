@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for mm selftests
+
+
 
 LOCAL_HDRS += $(selfdir)/mm/local_config.h $(top_srcdir)/mm/gup_test.h
 
@@ -15,21 +15,21 @@ endif
 ARCH ?= $(shell echo $(uname_M) | sed -e 's/aarch64.*/arm64/' -e 's/ppc64.*/ppc64/')
 endif
 
-# Without this, failed build products remain, with up-to-date timestamps,
-# thus tricking Make (and you!) into believing that All Is Well, in subsequent
-# make invocations:
+
+
+
 .DELETE_ON_ERROR:
 
-# Avoid accidental wrong builds, due to built-in rules working just a little
-# bit too well--but not quite as well as required for our situation here.
-#
-# In other words, "make $SOME_TEST" is supposed to fail to build at all,
-# because this Makefile only supports either "make" (all), or "make /full/path".
-# However,  the built-in rules, if not suppressed, will pick up CFLAGS and the
-# initial LDLIBS (but not the target-specific LDLIBS, because those are only
-# set for the full path target!). This causes it to get pretty far into building
-# things despite using incorrect values such as an *occasionally* incomplete
-# LDLIBS.
+
+
+
+
+
+
+
+
+
+
 MAKEFLAGS += --no-builtin-rules
 
 CFLAGS = -Wall -I $(top_srcdir) $(EXTRA_CFLAGS) $(KHDR_INCLUDES)
@@ -151,7 +151,7 @@ $(BINARIES_64): $(OUTPUT)/%_64: %.c
 $(foreach t,$(VMTARGETS),$(eval $(call gen-target-rule-64,$(t))))
 endif
 
-# x86_64 users should be encouraged to install 32-bit libraries
+
 ifeq ($(CAN_BUILD_I386)$(CAN_BUILD_X86_64),01)
 all: warn_32bit_failure
 
@@ -170,7 +170,7 @@ warn_32bit_failure:
 endif
 endif
 
-# IOURING_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
+
 $(OUTPUT)/cow: LDLIBS += $(IOURING_EXTRA_LIBS)
 
 $(OUTPUT)/gup_longterm: LDLIBS += $(IOURING_EXTRA_LIBS)

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Device Tree binding constants for Actions Semi S500 Reset Management Unit
- *
- * Copyright (c) 2014 Actions Semi Inc.
- * Copyright (c) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_ACTIONS_S500_RESET_H
 #define __DT_BINDINGS_ACTIONS_S500_RESET_H
@@ -64,4 +59,4 @@
 #define RESET_DBG2RESET				52
 #define RESET_DBG3RESET				53
 
-#endif /* __DT_BINDINGS_ACTIONS_S500_RESET_H */
+#endif 

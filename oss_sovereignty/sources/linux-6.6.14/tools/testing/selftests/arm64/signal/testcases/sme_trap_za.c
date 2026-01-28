@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that accessing ZA without enabling it generates a SIGILL.
- */
+
+
 
 #include <signal.h>
 #include <ucontext.h>
@@ -14,7 +10,7 @@
 
 int sme_trap_za_trigger(struct tdescr *td)
 {
-	/* ZERO ZA */
+	
 	asm volatile(".inst 0xc00800ff");
 
 	return 0;

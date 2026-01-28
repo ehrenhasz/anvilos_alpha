@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 noarg:
 	$(MAKE) -C ../
 
@@ -12,7 +12,7 @@ all: $(TEST_GEN_PROGS) ebb sampling_tests event_code_tests
 
 $(TEST_GEN_PROGS): $(EXTRA_SOURCES)
 
-# loop.S can only be built 64-bit
+
 $(OUTPUT)/count_instructions: CFLAGS += -m64
 $(OUTPUT)/count_instructions: loop.S count_instructions.c $(EXTRA_SOURCES)
 

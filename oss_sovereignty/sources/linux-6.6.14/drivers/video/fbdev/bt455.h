@@ -1,18 +1,7 @@
-/*
- *	linux/drivers/video/bt455.h
- *
- *	Copyright 2003  Thiemo Seufer <seufer@csv.ica.uni-stuttgart.de>
- *	Copyright 2016  Maciej W. Rozycki <macro@linux-mips.org>
- *
- *	This file is subject to the terms and conditions of the GNU General
- *	Public License. See the file COPYING in the main directory of this
- *	archive for more details.
- */
+
 #include <linux/types.h>
 
-/*
- * Bt455 byte-wide registers, 32-bit aligned.
- */
+
 struct bt455_regs {
 	volatile u8 addr_cmap;
 	u8 pad0[3];
@@ -36,9 +25,7 @@ static inline void bt455_reset_reg(struct bt455_regs *regs)
 	regs->addr_clr = 0;
 }
 
-/*
- * Read/write to a Bt455 color map register.
- */
+
 static inline void bt455_read_cmap_next(struct bt455_regs *regs, u8 *grey)
 {
 	mb();

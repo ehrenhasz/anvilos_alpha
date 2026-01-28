@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Felix Fietkau <nbd@nbd.name> */
+
+
 
 #ifndef __MTK_PPE_H
 #define __MTK_PPE_H
@@ -32,7 +32,7 @@
 #define MTK_FOE_IB1_UDP			BIT(30)
 #define MTK_FOE_IB1_STATIC		BIT(31)
 
-/* CONFIG_MEDIATEK_NETSYS_V2 */
+
 #define MTK_FOE_IB1_BIND_TIMESTAMP_V2	GENMASK(7, 0)
 #define MTK_FOE_IB1_BIND_VLAN_LAYER_V2	GENMASK(16, 14)
 #define MTK_FOE_IB1_BIND_PPPOE_V2	BIT(17)
@@ -69,7 +69,7 @@ enum {
 
 #define MTK_FOE_IB2_DSCP		GENMASK(31, 24)
 
-/* CONFIG_MEDIATEK_NETSYS_V2 */
+
 #define MTK_FOE_IB2_QID_V2			GENMASK(6, 0)
 #define MTK_FOE_IB2_PORT_MG_V2		BIT(7)
 #define MTK_FOE_IB2_PSE_QOS_V2		BIT(8)
@@ -117,16 +117,16 @@ struct mtk_foe_mac_info {
 	u16 pppoe_id;
 	u16 src_mac_lo;
 
-	/* netsys_v2 */
+	
 	u16 minfo;
 	u16 winfo;
 
-	/* netsys_v3 */
+	
 	u32 w3info;
 	u32 wpao;
 };
 
-/* software-only entry type */
+
 struct mtk_foe_bridge {
 	u8 dest_mac[ETH_ALEN];
 	u8 src_mac[ETH_ALEN];
@@ -149,7 +149,7 @@ struct mtk_ipv4_tuple {
 		};
 		struct {
 			u8 protocol;
-			u8 _pad[3]; /* fill with 0xa5a5a5 */
+			u8 _pad[3]; 
 		};
 		u32 ports;
 	};
@@ -193,12 +193,12 @@ struct mtk_foe_ipv6 {
 	union {
 		struct {
 			u8 protocol;
-			u8 _pad[3]; /* fill with 0xa5a5a5 */
-		}; /* 3-tuple */
+			u8 _pad[3]; 
+		}; 
 		struct {
 			u16 dest_port;
 			u16 src_port;
-		}; /* 5-tuple */
+		}; 
 		u32 ports;
 	};
 

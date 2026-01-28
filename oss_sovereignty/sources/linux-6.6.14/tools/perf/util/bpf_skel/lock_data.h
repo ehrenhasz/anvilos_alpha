@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Data structures shared between BPF and tools. */
+
+
 #ifndef UTIL_BPF_SKEL_LOCK_DATA_H
 #define UTIL_BPF_SKEL_LOCK_DATA_H
 
@@ -15,13 +15,10 @@ struct contention_task_data {
 	char comm[TASK_COMM_LEN];
 };
 
-/* default buffer size */
+
 #define MAX_ENTRIES  16384
 
-/*
- * Upper bits of the flags in the contention_data are used to identify
- * some well-known locks which do not have symbols (non-global locks).
- */
+
 #define LCD_F_MMAP_LOCK		(1U << 31)
 #define LCD_F_SIGHAND_LOCK	(1U << 30)
 
@@ -46,4 +43,4 @@ enum lock_class_sym {
 	LOCK_CLASS_RQLOCK,
 };
 
-#endif /* UTIL_BPF_SKEL_LOCK_DATA_H */
+#endif 

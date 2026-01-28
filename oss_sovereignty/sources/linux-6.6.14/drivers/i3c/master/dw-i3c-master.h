@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023 Code Construct
- *
- * Author: Jeremy Kerr <jk@codeconstruct.com.au>
- */
+
+
 
 #include <linux/clk.h>
 #include <linux/i3c/master.h>
@@ -40,40 +36,19 @@ struct dw_i3c_master {
 	char type[5];
 	bool ibi_capable;
 
-	/*
-	 * Per-device hardware data, used to manage the device address table
-	 * (DAT)
-	 *
-	 * Locking: the devs array may be referenced in IRQ context while
-	 * processing an IBI. However, IBIs (for a specific device, which
-	 * implies a specific DAT entry) can only happen while interrupts are
-	 * requested for that device, which is serialised against other
-	 * insertions/removals from the array by the global i3c infrastructure.
-	 * So, devs_lock protects against concurrent updates to devs->ibi_dev
-	 * between request_ibi/free_ibi and the IBI irq event.
-	 */
+	
 	struct dw_i3c_dat_entry devs[DW_I3C_MAX_DEVS];
 	spinlock_t devs_lock;
 
-	/* platform-specific data */
+	
 	const struct dw_i3c_platform_ops *platform_ops;
 };
 
 struct dw_i3c_platform_ops {
-	/*
-	 * Called on early bus init: the i3c has been set up, but before any
-	 * transactions have taken place. Platform implementations may use to
-	 * perform actual device enabling with the i3c core ready.
-	 */
+	
 	int (*init)(struct dw_i3c_master *i3c);
 
-	/*
-	 * Initialise a DAT entry to enable/disable IBIs. Allows the platform
-	 * to perform any device workarounds on the DAT entry before
-	 * inserting into the hardware table.
-	 *
-	 * Called with the DAT lock held; must not sleep.
-	 */
+	
 	void (*set_dat_ibi)(struct dw_i3c_master *i3c,
 			    struct i3c_dev_desc *dev, bool enable, u32 *reg);
 };

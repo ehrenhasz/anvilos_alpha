@@ -1,15 +1,11 @@
-/*
- * Automatically generated header file: don't edit
- */
+
 
 #define HAVE_DOT_CONFIG 1
 #define CONFIG_PLATFORM_LINUX 1
 #undef CONFIG_PLATFORM_CYGWIN
 #undef CONFIG_PLATFORM_WIN32
 
-/*
- * General Configuration
- */
+
 #define PREFIX "/usr/local"
 #undef CONFIG_DEBUG
 #undef CONFIG_STRIP_UNWANTED_SECTIONS
@@ -22,9 +18,7 @@
 #define CONFIG_EXTRA_CFLAGS_OPTIONS ""
 #define CONFIG_EXTRA_LDFLAGS_OPTIONS ""
 
-/*
- * SSL Library
- */
+
 #undef CONFIG_SSL_SERVER_ONLY
 #undef CONFIG_SSL_CERT_VERIFICATION
 #undef CONFIG_SSL_FULL_MODE
@@ -77,9 +71,7 @@
 #undef CONFIG_HTTP_VERBOSE
 #undef CONFIG_HTTP_IS_DAEMON
 
-/*
- * Language Bindings
- */
+
 #undef CONFIG_BINDINGS
 #undef CONFIG_CSHARP_BINDINGS
 #undef CONFIG_VBNET_BINDINGS
@@ -92,9 +84,7 @@
 #undef CONFIG_LUA_BINDINGS
 #define CONFIG_LUA_CORE ""
 
-/*
- * Samples
- */
+
 #undef CONFIG_SAMPLES
 #undef CONFIG_C_SAMPLES
 #undef CONFIG_CSHARP_SAMPLES

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies inc. */
+
+
 
 #include <linux/mlx5/driver.h>
 
@@ -29,7 +29,7 @@ enum mlx5_sgmt_type {
 	MLX5_SGMT_TYPE_MENU,
 	MLX5_SGMT_TYPE_TERMINATE,
 
-	MLX5_SGMT_TYPE_NUM, /* Keep last */
+	MLX5_SGMT_TYPE_NUM, 
 };
 
 struct mlx5_rsc_key {
@@ -48,4 +48,4 @@ struct mlx5_rsc_dump_cmd *mlx5_rsc_dump_cmd_create(struct mlx5_core_dev *dev,
 void mlx5_rsc_dump_cmd_destroy(struct mlx5_rsc_dump_cmd *cmd);
 int mlx5_rsc_dump_next(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,
 		       struct page *page, int *size);
-#endif /* __MLX5_RSC_DUMP */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Texas Instruments ICSSG Industrial Ethernet Peripheral (IEP) Driver
- *
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+
 
 #ifndef __NET_TI_ICSS_IEP_H
 #define __NET_TI_ICSS_IEP_H
@@ -15,7 +11,7 @@
 struct icss_iep;
 extern const struct icss_iep_clockops prueth_iep_clockops;
 
-/* Firmware specific clock operations */
+
 struct icss_iep_clockops {
 	void (*settime)(void *clockops_data, u64 ns);
 	void (*adjtime)(void *clockops_data, s64 delta);
@@ -38,4 +34,4 @@ int icss_iep_get_ptp_clock_idx(struct icss_iep *iep);
 void icss_iep_init_fw(struct icss_iep *iep);
 void icss_iep_exit_fw(struct icss_iep *iep);
 
-#endif /* __NET_TI_ICSS_IEP_H */
+#endif 

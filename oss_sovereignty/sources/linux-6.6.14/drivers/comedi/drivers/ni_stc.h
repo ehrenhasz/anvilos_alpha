@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Register descriptions for NI DAQ-STC chip
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998-9 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * References:
- *   DAQ-STC Technical Reference Manual
- */
+
+
+
 
 #ifndef _COMEDI_NI_STC_H
 #define _COMEDI_NI_STC_H
@@ -17,9 +9,7 @@
 #include "ni_tio.h"
 #include "ni_routes.h"
 
-/*
- * Registers in the National Instruments DAQ-STC chip
- */
+
 
 #define NISTC_INTA_ACK_REG		2
 #define NISTC_INTA_ACK_G0_GATE		BIT(15)
@@ -254,8 +244,8 @@
 #define NISTC_RTSI_TRIG_OLD_CLK_CHAN	7
 #define NISTC_RTSI_TRIG_NUM_CHAN(_m)	((_m) ? 8 : 7)
 #define NISTC_RTSI_TRIG_DIR(_c, _m)	((_m) ? BIT(8 + (_c)) : BIT(7 + (_c)))
-#define NISTC_RTSI_TRIG_DIR_SUB_SEL1	BIT(2)	/* only for M-Series */
-#define NISTC_RTSI_TRIG_DIR_SUB_SEL1_SHIFT	2	/* only for M-Series */
+#define NISTC_RTSI_TRIG_DIR_SUB_SEL1	BIT(2)	
+#define NISTC_RTSI_TRIG_DIR_SUB_SEL1_SHIFT	2	
 #define NISTC_RTSI_TRIG_USE_CLK		BIT(1)
 #define NISTC_RTSI_TRIG_DRV_CLK		BIT(0)
 
@@ -291,8 +281,8 @@
 #define NISTC_ATRIG_ETC_DRV		BIT(4)
 #define NISTC_ATRIG_ETC_ENA		BIT(3)
 #define NISTC_ATRIG_ETC_MODE(x)		(((x) & 0x7) << 0)
-#define NISTC_GPFO_0_G_OUT		0 /* input to GPFO_0_SEL for Ctr0Out */
-#define NISTC_GPFO_1_G_OUT		0 /* input to GPFO_1_SEL for Ctr1Out */
+#define NISTC_GPFO_0_G_OUT		0 
+#define NISTC_GPFO_1_G_OUT		0 
 
 #define NISTC_AI_START_STOP_REG		62
 #define NISTC_AI_START_POLARITY		BIT(15)
@@ -349,7 +339,7 @@
 #define NISTC_AO_MODE3_STOP_ON_BC_TC_ERR	BIT(3)
 #define NISTC_AO_MODE3_NOT_AN_UPDATE		BIT(2)
 #define NISTC_AO_MODE3_SW_GATE			BIT(1)
-#define NISTC_AO_MODE3_LAST_GATE_DISABLE	BIT(0)	/* M-Series only */
+#define NISTC_AO_MODE3_LAST_GATE_DISABLE	BIT(0)	
 
 #define NISTC_RESET_REG			72
 #define NISTC_RESET_SOFTWARE		BIT(11)
@@ -412,14 +402,14 @@
 #define NISTC_AI_PERSONAL_AIFREQ_POL		BIT(4)
 
 #define NISTC_AO_PERSONAL_REG		78
-#define NISTC_AO_PERSONAL_MULTI_DACS		BIT(15)	/* M-Series only */
-#define NISTC_AO_PERSONAL_NUM_DAC		BIT(14)	/* 1:single; 0:dual */
-#define NISTC_AO_PERSONAL_FAST_CPU		BIT(13)	/* M-Series reserved */
+#define NISTC_AO_PERSONAL_MULTI_DACS		BIT(15)	
+#define NISTC_AO_PERSONAL_NUM_DAC		BIT(14)	
+#define NISTC_AO_PERSONAL_FAST_CPU		BIT(13)	
 #define NISTC_AO_PERSONAL_TMRDACWR_PW		BIT(12)
-#define NISTC_AO_PERSONAL_FIFO_FLAGS_POL	BIT(11)	/* M-Series reserved */
+#define NISTC_AO_PERSONAL_FIFO_FLAGS_POL	BIT(11)	
 #define NISTC_AO_PERSONAL_FIFO_ENA		BIT(10)
-#define NISTC_AO_PERSONAL_AOFREQ_POL		BIT(9)	/* M-Series reserved */
-#define NISTC_AO_PERSONAL_DMA_PIO_CTRL		BIT(8)	/* M-Series reserved */
+#define NISTC_AO_PERSONAL_AOFREQ_POL		BIT(9)	
+#define NISTC_AO_PERSONAL_DMA_PIO_CTRL		BIT(8)	
 #define NISTC_AO_PERSONAL_UPDATE_ORIG_PULSE	BIT(7)
 #define NISTC_AO_PERSONAL_UPDATE_TIMEBASE	BIT(6)
 #define NISTC_AO_PERSONAL_UPDATE_PW		BIT(5)
@@ -428,8 +418,8 @@
 
 #define NISTC_RTSI_TRIGA_OUT_REG	79
 #define NISTC_RTSI_TRIGB_OUT_REG	80
-#define NISTC_RTSI_TRIGB_SUB_SEL1	BIT(15)	/* not for M-Series */
-#define NISTC_RTSI_TRIGB_SUB_SEL1_SHIFT	15	/* not for M-Series */
+#define NISTC_RTSI_TRIGB_SUB_SEL1	BIT(15)	
+#define NISTC_RTSI_TRIGB_SUB_SEL1_SHIFT	15	
 #define NISTC_RTSI_TRIG(_c, _s)		(((_s) & 0xf) << (((_c) % 4) * 4))
 #define NISTC_RTSI_TRIG_MASK(_c)	NISTC_RTSI_TRIG((_c), 0xf)
 #define NISTC_RTSI_TRIG_TO_SRC(_c, _b)	(((_b) >> (((_c) % 4) * 4)) & 0xf)
@@ -540,45 +530,43 @@
 #define NISTC_AI_SI_SAVE_REG		64
 #define NISTC_AI_SC_SAVE_REG		66
 
-/*
- * PCI E Series Registers
- */
-#define NI_E_STC_WINDOW_ADDR_REG	0x00	/* rw16 */
-#define NI_E_STC_WINDOW_DATA_REG	0x02	/* rw16 */
 
-#define NI_E_STATUS_REG			0x01	/* r8 */
+#define NI_E_STC_WINDOW_ADDR_REG	0x00	
+#define NI_E_STC_WINDOW_DATA_REG	0x02	
+
+#define NI_E_STATUS_REG			0x01	
 #define NI_E_STATUS_AI_FIFO_LOWER_NE	BIT(3)
 #define NI_E_STATUS_PROMOUT		BIT(0)
 
-#define NI_E_DMA_AI_AO_SEL_REG		0x09	/* w8 */
+#define NI_E_DMA_AI_AO_SEL_REG		0x09	
 #define NI_E_DMA_AI_SEL(x)		(((x) & 0xf) << 0)
 #define NI_E_DMA_AI_SEL_MASK		NI_E_DMA_AI_SEL(0xf)
 #define NI_E_DMA_AO_SEL(x)		(((x) & 0xf) << 4)
 #define NI_E_DMA_AO_SEL_MASK		NI_E_DMA_AO_SEL(0xf)
 
-#define NI_E_DMA_G0_G1_SEL_REG		0x0b	/* w8 */
+#define NI_E_DMA_G0_G1_SEL_REG		0x0b	
 #define NI_E_DMA_G0_G1_SEL(_g, _c)	(((_c) & 0xf) << ((_g) * 4))
 #define NI_E_DMA_G0_G1_SEL_MASK(_g)	NI_E_DMA_G0_G1_SEL((_g), 0xf)
 
-#define NI_E_SERIAL_CMD_REG		0x0d	/* w8 */
+#define NI_E_SERIAL_CMD_REG		0x0d	
 #define NI_E_SERIAL_CMD_DAC_LD(x)	BIT(3 + (x))
 #define NI_E_SERIAL_CMD_EEPROM_CS	BIT(2)
 #define NI_E_SERIAL_CMD_SDATA		BIT(1)
 #define NI_E_SERIAL_CMD_SCLK		BIT(0)
 
-#define NI_E_MISC_CMD_REG		0x0f	/* w8 */
+#define NI_E_MISC_CMD_REG		0x0f	
 #define NI_E_MISC_CMD_INTEXT_ATRIG(x)	(((x) & 0x1) << 7)
 #define NI_E_MISC_CMD_EXT_ATRIG		NI_E_MISC_CMD_INTEXT_ATRIG(0)
 #define NI_E_MISC_CMD_INT_ATRIG		NI_E_MISC_CMD_INTEXT_ATRIG(1)
 
-#define NI_E_AI_CFG_LO_REG		0x10	/* w16 */
+#define NI_E_AI_CFG_LO_REG		0x10	
 #define NI_E_AI_CFG_LO_LAST_CHAN	BIT(15)
 #define NI_E_AI_CFG_LO_GEN_TRIG		BIT(12)
 #define NI_E_AI_CFG_LO_DITHER		BIT(9)
 #define NI_E_AI_CFG_LO_UNI		BIT(8)
 #define NI_E_AI_CFG_LO_GAIN(x)		((x) << 0)
 
-#define NI_E_AI_CFG_HI_REG		0x12	/* w16 */
+#define NI_E_AI_CFG_HI_REG		0x12	
 #define NI_E_AI_CFG_HI_TYPE(x)		(((x) & 0x7) << 12)
 #define NI_E_AI_CFG_HI_TYPE_DIFF	NI_E_AI_CFG_HI_TYPE(1)
 #define NI_E_AI_CFG_HI_TYPE_COMMON	NI_E_AI_CFG_HI_TYPE(2)
@@ -586,87 +574,81 @@
 #define NI_E_AI_CFG_HI_AC_COUPLE	BIT(11)
 #define NI_E_AI_CFG_HI_CHAN(x)		(((x) & 0x3f) << 0)
 
-#define NI_E_AO_CFG_REG			0x16	/* w16 */
+#define NI_E_AO_CFG_REG			0x16	
 #define NI_E_AO_DACSEL(x)		((x) << 8)
 #define NI_E_AO_GROUND_REF		BIT(3)
 #define NI_E_AO_EXT_REF			BIT(2)
 #define NI_E_AO_DEGLITCH		BIT(1)
 #define NI_E_AO_CFG_BIP			BIT(0)
 
-#define NI_E_DAC_DIRECT_DATA_REG(x)	(0x18 + ((x) * 2)) /* w16 */
+#define NI_E_DAC_DIRECT_DATA_REG(x)	(0x18 + ((x) * 2)) 
 
-#define NI_E_8255_BASE			0x19	/* rw8 */
+#define NI_E_8255_BASE			0x19	
 
-#define NI_E_AI_FIFO_DATA_REG		0x1c	/* r16 */
+#define NI_E_AI_FIFO_DATA_REG		0x1c	
 
-#define NI_E_AO_FIFO_DATA_REG		0x1e	/* w16 */
+#define NI_E_AO_FIFO_DATA_REG		0x1e	
 
-/*
- * 611x registers (these boards differ from the e-series)
- */
-#define NI611X_MAGIC_REG		0x19	/* w8 (new) */
-#define NI611X_CALIB_CHAN_SEL_REG	0x1a	/* w16 (new) */
-#define NI611X_AI_FIFO_DATA_REG		0x1c	/* r32 (incompatible) */
-#define NI611X_AI_FIFO_OFFSET_LOAD_REG	0x05	/* r8 (new) */
-#define NI611X_AO_FIFO_DATA_REG		0x14	/* w32 (incompatible) */
-#define NI611X_CAL_GAIN_SEL_REG		0x05	/* w8 (new) */
+
+#define NI611X_MAGIC_REG		0x19	
+#define NI611X_CALIB_CHAN_SEL_REG	0x1a	
+#define NI611X_AI_FIFO_DATA_REG		0x1c	
+#define NI611X_AI_FIFO_OFFSET_LOAD_REG	0x05	
+#define NI611X_AO_FIFO_DATA_REG		0x14	
+#define NI611X_CAL_GAIN_SEL_REG		0x05	
 
 #define NI611X_AO_WINDOW_ADDR_REG	0x18
 #define NI611X_AO_WINDOW_DATA_REG	0x1e
 
-/*
- * 6143 registers
- */
-#define NI6143_MAGIC_REG		0x19	/* w8 */
-#define NI6143_DMA_G0_G1_SEL_REG	0x0b	/* w8 */
-#define NI6143_PIPELINE_DELAY_REG	0x1f	/* w8 */
-#define NI6143_EOC_SET_REG		0x1d	/* w8 */
-#define NI6143_DMA_AI_SEL_REG		0x09	/* w8 */
-#define NI6143_AI_FIFO_DATA_REG		0x8c	/* r32 */
-#define NI6143_AI_FIFO_FLAG_REG		0x84	/* w32 */
-#define NI6143_AI_FIFO_CTRL_REG		0x88	/* w32 */
-#define NI6143_AI_FIFO_STATUS_REG	0x88	/* r32 */
-#define NI6143_AI_FIFO_DMA_THRESH_REG	0x90	/* w32 */
-#define NI6143_AI_FIFO_WORDS_AVAIL_REG	0x94	/* w32 */
 
-#define NI6143_CALIB_CHAN_REG		0x42	/* w16 */
+#define NI6143_MAGIC_REG		0x19	
+#define NI6143_DMA_G0_G1_SEL_REG	0x0b	
+#define NI6143_PIPELINE_DELAY_REG	0x1f	
+#define NI6143_EOC_SET_REG		0x1d	
+#define NI6143_DMA_AI_SEL_REG		0x09	
+#define NI6143_AI_FIFO_DATA_REG		0x8c	
+#define NI6143_AI_FIFO_FLAG_REG		0x84	
+#define NI6143_AI_FIFO_CTRL_REG		0x88	
+#define NI6143_AI_FIFO_STATUS_REG	0x88	
+#define NI6143_AI_FIFO_DMA_THRESH_REG	0x90	
+#define NI6143_AI_FIFO_WORDS_AVAIL_REG	0x94	
+
+#define NI6143_CALIB_CHAN_REG		0x42	
 #define NI6143_CALIB_CHAN_RELAY_ON	BIT(15)
 #define NI6143_CALIB_CHAN_RELAY_OFF	BIT(14)
 #define NI6143_CALIB_CHAN(x)		(((x) & 0xf) << 0)
-#define NI6143_CALIB_CHAN_GND_GND	NI6143_CALIB_CHAN(0) /* Offset Cal */
-#define NI6143_CALIB_CHAN_2V5_GND	NI6143_CALIB_CHAN(2) /* 2.5V ref */
-#define NI6143_CALIB_CHAN_PWM_GND	NI6143_CALIB_CHAN(5) /* +-5V Self Cal */
-#define NI6143_CALIB_CHAN_2V5_PWM	NI6143_CALIB_CHAN(10) /* PWM Cal */
-#define NI6143_CALIB_CHAN_PWM_PWM	NI6143_CALIB_CHAN(13) /* CMRR */
-#define NI6143_CALIB_CHAN_GND_PWM	NI6143_CALIB_CHAN(14) /* PWM Cal */
-#define NI6143_CALIB_LO_TIME_REG	0x20	/* w16 */
-#define NI6143_CALIB_HI_TIME_REG	0x22	/* w16 */
-#define NI6143_RELAY_COUNTER_LOAD_REG	0x4c	/* w32 */
-#define NI6143_SIGNATURE_REG		0x50	/* w32 */
-#define NI6143_RELEASE_DATE_REG		0x54	/* w32 */
-#define NI6143_RELEASE_OLDEST_DATE_REG	0x58	/* w32 */
+#define NI6143_CALIB_CHAN_GND_GND	NI6143_CALIB_CHAN(0) 
+#define NI6143_CALIB_CHAN_2V5_GND	NI6143_CALIB_CHAN(2) 
+#define NI6143_CALIB_CHAN_PWM_GND	NI6143_CALIB_CHAN(5) 
+#define NI6143_CALIB_CHAN_2V5_PWM	NI6143_CALIB_CHAN(10) 
+#define NI6143_CALIB_CHAN_PWM_PWM	NI6143_CALIB_CHAN(13) 
+#define NI6143_CALIB_CHAN_GND_PWM	NI6143_CALIB_CHAN(14) 
+#define NI6143_CALIB_LO_TIME_REG	0x20	
+#define NI6143_CALIB_HI_TIME_REG	0x22	
+#define NI6143_RELAY_COUNTER_LOAD_REG	0x4c	
+#define NI6143_SIGNATURE_REG		0x50	
+#define NI6143_RELEASE_DATE_REG		0x54	
+#define NI6143_RELEASE_OLDEST_DATE_REG	0x58	
 
-/*
- * 671x, 611x windowed ao registers
- */
-#define NI671X_DAC_DIRECT_DATA_REG(x)	(0x00 + (x))	/* w16 */
-#define NI611X_AO_TIMED_REG		0x10	/* w16 */
-#define NI671X_AO_IMMEDIATE_REG		0x11	/* w16 */
-#define NI611X_AO_FIFO_OFFSET_LOAD_REG	0x13	/* w32 */
-#define NI67XX_AO_SP_UPDATES_REG	0x14	/* w16 */
-#define NI611X_AO_WAVEFORM_GEN_REG	0x15	/* w16 */
-#define NI611X_AO_MISC_REG		0x16	/* w16 */
+
+#define NI671X_DAC_DIRECT_DATA_REG(x)	(0x00 + (x))	
+#define NI611X_AO_TIMED_REG		0x10	
+#define NI671X_AO_IMMEDIATE_REG		0x11	
+#define NI611X_AO_FIFO_OFFSET_LOAD_REG	0x13	
+#define NI67XX_AO_SP_UPDATES_REG	0x14	
+#define NI611X_AO_WAVEFORM_GEN_REG	0x15	
+#define NI611X_AO_MISC_REG		0x16	
 #define NI611X_AO_MISC_CLEAR_WG		BIT(0)
-#define NI67XX_AO_CAL_CHAN_SEL_REG	0x17	/* w16 */
-#define NI67XX_AO_CFG2_REG		0x18	/* w16 */
-#define NI67XX_CAL_CMD_REG		0x19	/* w16 */
-#define NI67XX_CAL_STATUS_REG		0x1a	/* r8 */
+#define NI67XX_AO_CAL_CHAN_SEL_REG	0x17	
+#define NI67XX_AO_CFG2_REG		0x18	
+#define NI67XX_CAL_CMD_REG		0x19	
+#define NI67XX_CAL_STATUS_REG		0x1a	
 #define NI67XX_CAL_STATUS_BUSY		BIT(0)
 #define NI67XX_CAL_STATUS_OSC_DETECT	BIT(1)
 #define NI67XX_CAL_STATUS_OVERRANGE	BIT(2)
-#define NI67XX_CAL_DATA_REG		0x1b	/* r16 */
-#define NI67XX_CAL_CFG_HI_REG		0x1c	/* rw16 */
-#define NI67XX_CAL_CFG_LO_REG		0x1d	/* rw16 */
+#define NI67XX_CAL_DATA_REG		0x1b	
+#define NI67XX_CAL_CFG_HI_REG		0x1c	
+#define NI67XX_CAL_CFG_LO_REG		0x1d	
 
 #define CS5529_CMD_CB			BIT(7)
 #define CS5529_CMD_SINGLE_CONV		BIT(6)
@@ -709,10 +691,7 @@
 #define CS5529_CFG_CALIB_OFFSET_SYS	CS5529_CFG_CALIB(5)
 #define CS5529_CFG_CALIB_GAIN_SYS	CS5529_CFG_CALIB(6)
 
-/*
- * M-Series specific registers not handled by the DAQ-STC and GPCT register
- * remapping.
- */
+
 #define NI_M_CDIO_DMA_SEL_REG		0x007
 #define NI_M_CDIO_DMA_SEL_CDO(x)	(((x) & 0xf) << 4)
 #define NI_M_CDIO_DMA_SEL_CDO_MASK	NI_M_CDIO_DMA_SEL_CDO(0xf)
@@ -962,7 +941,7 @@ struct ni_board_struct {
 	int reg_type;
 	unsigned int has_8255:1;
 	unsigned int has_32dio_chan:1;
-	unsigned int dio_speed; /* not for e-series */
+	unsigned int dio_speed; 
 
 	enum caldac_enum caldac[3];
 };
@@ -982,11 +961,11 @@ struct ni_private {
 	int aimode;
 	unsigned int ai_calib_source;
 	unsigned int ai_calib_source_enabled;
-	/* protects access to windowed registers */
+	
 	spinlock_t window_lock;
-	/* protects interrupt/dma register access */
+	
 	spinlock_t soft_reg_copy_lock;
-	/* protects mite DMA channel request/release */
+	
 	spinlock_t mite_channel_lock;
 
 	int changain_state;
@@ -1043,7 +1022,7 @@ struct ni_private {
 	struct mite_ring *cdo_mite_ring;
 	struct mite_ring *gpct_mite_ring[NUM_GPCT];
 
-	/* ni_pcimio board type flags (based on the boardinfo reg_type) */
+	
 	unsigned int is_m_series:1;
 	unsigned int is_6xxx:1;
 	unsigned int is_611x:1;
@@ -1055,88 +1034,22 @@ struct ni_private {
 	unsigned int is_6711:1;
 	unsigned int is_6713:1;
 
-	/*
-	 * Boolean value of whether device needs to be armed.
-	 *
-	 * Currently, only NI AO devices are known to be needing arming, since
-	 * the DAC registers must be preloaded before triggering.
-	 * This variable should only be set true during a command operation
-	 * (e.g ni_ao_cmd) and should then be set false by the arming
-	 * function (e.g. ni_ao_arm).
-	 *
-	 * This variable helps to ensure that multiple DMA allocations are not
-	 * possible.
-	 */
+	
 	unsigned int ao_needs_arming:1;
 
-	/* device signal route tables */
+	
 	struct ni_route_tables routing_tables;
 
-	/*
-	 * Number of clients (RTSI lines) for current RTSI MUX source.
-	 *
-	 * This allows resource management of RTSI board/shared mux lines by
-	 * marking the RTSI line that is using a particular MUX.  Currently,
-	 * these lines are only automatically allocated based on source of the
-	 * route requested.  Furthermore, the only way that this auto-allocation
-	 * and configuration works is via the globally-named ni signal/terminal
-	 * names.
-	 */
+	
 	u8 rtsi_shared_mux_usage[NUM_RTSI_SHARED_MUXS];
 
-	/*
-	 * softcopy register for rtsi shared mux/board lines.
-	 * For e-series, the bit layout of this register is
-	 * (docs: mhddk/nieseries/ChipObjects/tSTC.{h,ipp},
-	 *        DAQ-STC, Jan 1999, 340934B-01):
-	 *   bits 0:2  --  NI_RTSI_BRD(0) source selection
-	 *   bits 3:5  --  NI_RTSI_BRD(1) source selection
-	 *   bits 6:8  --  NI_RTSI_BRD(2) source selection
-	 *   bits 9:11 --  NI_RTSI_BRD(3) source selection
-	 *   bit  12   --  NI_RTSI_BRD(0) direction, 0:input, 1:output
-	 *   bit  13   --  NI_RTSI_BRD(1) direction, 0:input, 1:output
-	 *   bit  14   --  NI_RTSI_BRD(2) direction, 0:input, 1:output
-	 *   bit  15   --  NI_RTSI_BRD(3) direction, 0:input, 1:output
-	 *   According to DAQ-STC:
-	 *     RTSI Board Interface--Configured as an input, each bidirectional
-	 *     RTSI_BRD pin can drive any of the seven RTSI_TRIGGER pins.
-	 *     RTSI_BRD<0..1> can also be driven by AI STOP and RTSI_BRD<2..3>
-	 *     can also be driven by the AI START and SCAN_IN_PROG signals.
-	 *     These pins provide a mechanism for additional board-level signals
-	 *     to be sent on or received from the RTSI bus.
-	 *   Couple of comments:
-	 *   - Neither the DAQ-STC nor the MHDDK is clear on what the direction
-	 *     of the RTSI_BRD pins actually means.  There does not appear to be
-	 *     any clear indication on what "output" would mean, since the point
-	 *     of the RTSI_BRD lines is to always drive one of the
-	 *     RTSI_TRIGGER<0..6> lines.
-	 *   - The DAQ-STC also indicates that the NI_RTSI_BRD lines can be
-	 *     driven by any of the RTSI_TRIGGER<0..6> lines.
-	 *     But, looking at valid device routes, as visually imported from
-	 *     NI-MAX, there appears to be only one family (so far) that has the
-	 *     ability to route a signal from one TRIGGER_LINE to another
-	 *     TRIGGER_LINE: the 653x family of DIO devices.
-	 *
-	 * For m-series, the bit layout of this register is
-	 * (docs: mhddk/nimseries/ChipObjects/tMSeries.{h,ipp}):
-	 *   bits  0:3  --  NI_RTSI_BRD(0) source selection
-	 *   bits  4:7  --  NI_RTSI_BRD(1) source selection
-	 *   bits  8:11 --  NI_RTSI_BRD(2) source selection
-	 *   bits 12:15 --  NI_RTSI_BRD(3) source selection
-	 *   Note:  The m-series does not have any option to change direction of
-	 *   NI_RTSI_BRD muxes.  Furthermore, there are no register values that
-	 *   indicate the ability to have TRIGGER_LINES driving the output of
-	 *   the NI_RTSI_BRD muxes.
-	 */
+	
 	u16 rtsi_shared_mux_reg;
 
-	/*
-	 * Number of clients (RTSI lines) for current RGOUT0 path.
-	 * Stored in part of in RTSI_TRIG_DIR or RTSI_TRIGB registers
-	 */
+	
 	u8 rgout0_usage;
 };
 
 static const struct comedi_lrange range_ni_E_ao_ext;
 
-#endif /* _COMEDI_NI_STC_H */
+#endif 

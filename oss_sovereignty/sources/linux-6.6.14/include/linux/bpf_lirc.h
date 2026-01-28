@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BPF_LIRC_H
 #define _BPF_LIRC_H
 
@@ -27,4 +27,4 @@ static inline int lirc_prog_query(const union bpf_attr *attr,
 }
 #endif
 
-#endif /* _BPF_LIRC_H */
+#endif 

@@ -66,17 +66,17 @@ deb-utils: deb-local rpm-utils-initramfs
 	pkg9=$${name}-initramfs-$${version}.$${arch}.rpm; \
 	pkg10=`ls python3-pyzfs-$${version}.noarch.rpm 2>/dev/null`; \
 	pkg11=`ls pam_zfs_key-$${version}.$${arch}.rpm 2>/dev/null`; \
-## Arguments need to be passed to dh_shlibdeps. Alien provides no mechanism
-## to do this, so we install a shim onto the path which calls the real
-## dh_shlibdeps with the required arguments.
+
+
+
 	path_prepend=`mktemp -d /tmp/intercept.XXXXXX`; \
-	echo "#!$(SHELL)" > $${path_prepend}/dh_shlibdeps; \
+	echo "
 	echo "`which dh_shlibdeps` -- \
 	 -xlibuutil3linux -xlibnvpair3linux -xlibzfs5linux -xlibzpool5linux" \
 	 >> $${path_prepend}/dh_shlibdeps; \
-## These -x arguments are passed to dpkg-shlibdeps, which exclude the
-## Debianized packages from the auto-generated dependencies of the new debs,
-## which should NOT be mixed with the alien-generated debs created here
+
+
+
 	chmod +x $${path_prepend}/dh_shlibdeps; \
 	env "PATH=$${path_prepend}:$${PATH}" \
 	fakeroot $(ALIEN) --bump=0 --scripts --to-deb --target=$$debarch \

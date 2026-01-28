@@ -3,7 +3,7 @@ CMSIS_MCU = SAMD51J19A
 LD_FILES = boards/samd51x19a.ld sections.ld
 TEXT0 = 0x4000
 
-# MicroPython settings
+
 MICROPY_PY_NETWORK ?= 1
 MICROPY_PY_NETWORK_NINAW10 ?= 1
 

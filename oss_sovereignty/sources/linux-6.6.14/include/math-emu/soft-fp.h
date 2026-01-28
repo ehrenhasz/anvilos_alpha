@@ -1,32 +1,11 @@
-/* Software floating-point emulation.
-   Copyright (C) 1997,1998,1999 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Richard Henderson (rth@cygnus.com),
-		  Jakub Jelinek (jj@ultra.linux.cz),
-		  David S. Miller (davem@redhat.com) and
-		  Peter Maydell (pmaydell@chiark.greenend.org.uk).
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If
-   not, write to the Free Software Foundation, Inc.,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef __MATH_EMU_SOFT_FP_H__
 #define __MATH_EMU_SOFT_FP_H__
 
 #include <asm/sfp-machine.h>
 
-/* Allow sfp-machine to have its own byte order definitions. */
+
 #ifndef __BYTE_ORDER
 #include <endian.h>
 #endif
@@ -47,26 +26,26 @@
 #endif
 #endif
 
-/* By default don't care about exceptions. */
+
 #ifndef FP_EX_INVALID
 #define FP_EX_INVALID		0
 #endif
 #ifndef FP_EX_INVALID_SNAN
 #define FP_EX_INVALID_SNAN	0
 #endif
-/* inf - inf */
+
 #ifndef FP_EX_INVALID_ISI
 #define FP_EX_INVALID_ISI	0
 #endif
-/* inf / inf */
+
 #ifndef FP_EX_INVALID_IDI
 #define FP_EX_INVALID_IDI	0
 #endif
-/* 0 / 0 */
+
 #ifndef FP_EX_INVALID_ZDZ
 #define FP_EX_INVALID_ZDZ	0
 #endif
-/* inf * 0 */
+
 #ifndef FP_EX_INVALID_IMZ
 #define FP_EX_INVALID_IMZ	0
 #endif
@@ -102,17 +81,13 @@
 #define FP_HANDLE_EXCEPTIONS do {} while (0)
 #endif
 
-/* By default we never flush denormal input operands to signed zero. */
+
 #ifndef FP_DENORM_ZERO
 #define FP_DENORM_ZERO 0
 #endif
 
 #ifndef FP_INHIBIT_RESULTS
-/* By default we write the results always.
- * sfp-machine may override this and e.g.
- * check if some exceptions are unmasked
- * and inhibit it in such a case.
- */
+
 #define FP_INHIBIT_RESULTS 0
 #endif
 
@@ -186,7 +161,7 @@ do {						\
 #include <math-emu/op-8.h>
 #include <math-emu/op-common.h>
 
-/* Sigh.  Silly things longlong.h needs.  */
+
 #define UWtype		_FP_W_TYPE
 #define W_TYPE_SIZE	_FP_W_TYPE_SIZE
 
@@ -204,4 +179,4 @@ typedef USItype UHWtype;
 #include <stdlib/longlong.h>
 #endif
 
-#endif /* __MATH_EMU_SOFT_FP_H__ */
+#endif 

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+
 
 #ifndef INCLUDE_MMU_V2_0_H_
 #define INCLUDE_MMU_V2_0_H_
@@ -48,4 +43,4 @@
 #define DHOP3_SHIFT			HOP3_SHIFT_4K
 #define DHOP4_SHIFT			26
 
-#endif /* INCLUDE_MMU_V2_0_H_ */
+#endif 

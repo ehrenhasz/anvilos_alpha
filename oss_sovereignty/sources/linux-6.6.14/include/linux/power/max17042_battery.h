@@ -1,24 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Fuel gauge driver for Maxim 17042 / 8966 / 8997
- *  Note that Maxim 8966 and 8997 are mfd and this is its subdevice.
- *
- * Copyright (C) 2011 Samsung Electronics
- * MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+
 
 #ifndef __MAX17042_BATTERY_H_
 #define __MAX17042_BATTERY_H_
 
 #define MAX17042_STATUS_BattAbsent	(1 << 3)
-#define MAX17042_BATTERY_FULL		(95)   /* Recommend. FullSOCThr value */
+#define MAX17042_BATTERY_FULL		(95)   
 #define MAX17042_DEFAULT_SNS_RESISTOR	(10000)
 #define MAX17042_DEFAULT_VMIN		(3000)
-#define MAX17042_DEFAULT_VMAX		(4500) /* LiHV cell max */
-#define MAX17042_DEFAULT_TEMP_MIN	(0)    /* For sys without temp sensor */
-#define MAX17042_DEFAULT_TEMP_MAX	(700)  /* 70 degrees Celcius */
+#define MAX17042_DEFAULT_VMAX		(4500) 
+#define MAX17042_DEFAULT_TEMP_MIN	(0)    
+#define MAX17042_DEFAULT_TEMP_MAX	(700)  
 
-/* Consider RepCap which is less then 10 units below FullCAP full */
+
 #define MAX17042_FULL_THRESHOLD		10
 
 #define MAX17042_CHARACTERIZATION_DATA_SIZE 48
@@ -105,12 +99,12 @@ enum max17042_register {
 
 	MAX17042_OCV		= 0xEE,
 
-	MAX17042_OCVInternal	= 0xFB,  /* MAX17055 VFOCV */
+	MAX17042_OCVInternal	= 0xFB,  
 
 	MAX17042_VFSOC		= 0xFF,
 };
 
-/* Registers specific to max17055 only */
+
 enum max17055_register {
 	MAX17055_QRes		= 0x0C,
 	MAX17055_RCell		= 0x14,
@@ -156,7 +150,7 @@ enum max17055_register {
 	MAX17055_AtAvCap	= 0xDF,
 };
 
-/* Registers specific to max17047/50/55 */
+
 enum max17047_register {
 	MAX17047_QRTbl00	= 0x12,
 	MAX17047_FullSOCThr	= 0x13,
@@ -177,90 +171,82 @@ enum max170xx_chip_type {
 	MAXIM_DEVICE_TYPE_NUM
 };
 
-/*
- * used for setting a register to a desired value
- * addr : address for a register
- * data : setting value for the register
- */
+
 struct max17042_reg_data {
 	u8 addr;
 	u16 data;
 };
 
 struct max17042_config_data {
-	/* External current sense resistor value in milli-ohms */
+	
 	u32	cur_sense_val;
 
-	/* A/D measurement */
-	u16	tgain;		/* 0x2C */
-	u16	toff;		/* 0x2D */
-	u16	cgain;		/* 0x2E */
-	u16	coff;		/* 0x2F */
+	
+	u16	tgain;		
+	u16	toff;		
+	u16	cgain;		
+	u16	coff;		
 
-	/* Alert / Status */
-	u16	valrt_thresh;	/* 0x01 */
-	u16	talrt_thresh;	/* 0x02 */
-	u16	soc_alrt_thresh;	/* 0x03 */
-	u16	config;		/* 0x01D */
-	u16	shdntimer;	/* 0x03F */
+	
+	u16	valrt_thresh;	
+	u16	talrt_thresh;	
+	u16	soc_alrt_thresh;	
+	u16	config;		
+	u16	shdntimer;	
 
-	/* App data */
-	u16	full_soc_thresh;	/* 0x13 */
-	u16	design_cap;	/* 0x18 */
-	u16	ichgt_term;	/* 0x1E */
+	
+	u16	full_soc_thresh;	
+	u16	design_cap;	
+	u16	ichgt_term;	
 
-	/* MG3 config */
-	u16	at_rate;	/* 0x04 */
-	u16	learn_cfg;	/* 0x28 */
-	u16	filter_cfg;	/* 0x29 */
-	u16	relax_cfg;	/* 0x2A */
-	u16	misc_cfg;	/* 0x2B */
-	u16	masksoc;	/* 0x32 */
+	
+	u16	at_rate;	
+	u16	learn_cfg;	
+	u16	filter_cfg;	
+	u16	relax_cfg;	
+	u16	misc_cfg;	
+	u16	masksoc;	
 
-	/* MG3 save and restore */
-	u16	fullcap;	/* 0x10 */
-	u16	fullcapnom;	/* 0x23 */
-	u16	socempty;	/* 0x33 */
-	u16	iavg_empty;	/* 0x36 */
-	u16	dqacc;		/* 0x45 */
-	u16	dpacc;		/* 0x46 */
-	u16	qrtbl00;	/* 0x12 */
-	u16	qrtbl10;	/* 0x22 */
-	u16	qrtbl20;	/* 0x32 */
-	u16	qrtbl30;	/* 0x42 */
+	
+	u16	fullcap;	
+	u16	fullcapnom;	
+	u16	socempty;	
+	u16	iavg_empty;	
+	u16	dqacc;		
+	u16	dpacc;		
+	u16	qrtbl00;	
+	u16	qrtbl10;	
+	u16	qrtbl20;	
+	u16	qrtbl30;	
 
-	/* Cell technology from power_supply.h */
+	
 	u16	cell_technology;
 
-	/* Cell Data */
-	u16	vempty;		/* 0x12 */
-	u16	temp_nom;	/* 0x24 */
-	u16	temp_lim;	/* 0x25 */
-	u16	fctc;		/* 0x37 */
-	u16	rcomp0;		/* 0x38 */
-	u16	tcompc0;	/* 0x39 */
-	u16	empty_tempco;	/* 0x3A */
-	u16	kempty0;	/* 0x3B */
+	
+	u16	vempty;		
+	u16	temp_nom;	
+	u16	temp_lim;	
+	u16	fctc;		
+	u16	rcomp0;		
+	u16	tcompc0;	
+	u16	empty_tempco;	
+	u16	kempty0;	
 	u16	cell_char_tbl[MAX17042_CHARACTERIZATION_DATA_SIZE];
 } __packed;
 
 struct max17042_platform_data {
 	struct max17042_reg_data *init_data;
 	struct max17042_config_data *config_data;
-	int num_init_data; /* Number of enties in init_data array */
+	int num_init_data; 
 	bool enable_current_sense;
-	bool enable_por_init; /* Use POR init from Maxim appnote */
+	bool enable_por_init; 
 
-	/*
-	 * R_sns in micro-ohms.
-	 * default 10000 (if r_sns = 0) as it is the recommended value by
-	 * the datasheet although it can be changed by board designers.
-	 */
+	
 	unsigned int r_sns;
-	int         vmin;	/* in millivolts */
-	int         vmax;	/* in millivolts */
-	int         temp_min;	/* in tenths of degree Celsius */
-	int         temp_max;	/* in tenths of degree Celsius */
+	int         vmin;	
+	int         vmax;	
+	int         temp_min;	
+	int         temp_max;	
 };
 
-#endif /* __MAX17042_BATTERY_H_ */
+#endif 

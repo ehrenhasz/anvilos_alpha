@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved.
- */
+
+
 #ifndef _IBA_DEFS_H_
 #define _IBA_DEFS_H_
 
@@ -41,10 +39,7 @@ static inline void _iba_set32(__be32 *ptr, u32 mask, u32 prep_value)
 
 static inline u64 _iba_get64(const __be64 *ptr)
 {
-	/*
-	 * The mads are constructed so that 32 bit and smaller are naturally
-	 * aligned, everything larger has a max alignment of 4 bytes.
-	 */
+	
 	return be64_to_cpu(get_unaligned(ptr));
 }
 
@@ -68,7 +63,7 @@ static inline void _iba_set64(__be64 *ptr, u64 mask, u64 prep_value)
 	})
 #define IBA_GET_MEM_PTR(field, ptr) _IBA_GET_MEM_PTR(field, ptr)
 
-/* FIXME: A set should always set the entire field, meaning we should zero the trailing bytes */
+
 #define _IBA_SET_MEM(field_struct, field_offset, type, num_bits, ptr, in,      \
 		     bytes)                                                    \
 	({                                                                     \
@@ -103,18 +98,9 @@ static inline void _iba_set64(__be64 *ptr, u64 mask, u64 prep_value)
 	})
 #define IBA_GET_MEM(field, ptr, out, bytes) _IBA_GET_MEM(field, ptr, out, bytes)
 
-/*
- * The generated list becomes the parameters to the macros, the order is:
- *  - struct this applies to
- *  - starting offset of the max
- *  - GENMASK or GENMASK_ULL in CPU order
- *  - The width of data the mask operations should work on, in bits
- */
 
-/*
- * Extraction using a tabular description like table 106. bit_offset is from
- * the Byte[Bit] notation.
- */
+
+
 #define IBA_FIELD_BLOC(field_struct, byte_offset, bit_offset, num_bits)        \
 	field_struct, byte_offset,                                             \
 		GENMASK(7 - (bit_offset), 7 - (bit_offset) - (num_bits - 1)),  \
@@ -136,11 +122,8 @@ static inline void _iba_set64(__be64 *ptr, u64 mask, u64 prep_value)
 
 #define IBA_FIELD64_LOC(field_struct, byte_offset)                             \
 	field_struct, byte_offset, GENMASK_ULL(63, 0), 64
-/*
- * In IBTA spec, everything that is more than 64bits is multiple
- * of bytes without leftover bits.
- */
+
 #define IBA_FIELD_MLOC(field_struct, byte_offset, num_bits, type)              \
 	field_struct, byte_offset, type, num_bits
 
-#endif /* _IBA_DEFS_H_ */
+#endif 

@@ -18,11 +18,11 @@ class RAMBlockDevice:
         for i in range(len(buf)):
             self.data[addr + i] = buf[i]
     def ioctl(self, op, arg):
-        if op == 4:  # block count
+        if op == 4:  
             return len(self.data) // self.ERASE_BLOCK_SIZE
-        if op == 5:  # block size
+        if op == 5:  
             return self.ERASE_BLOCK_SIZE
-        if op == 6:  # erase block
+        if op == 6:  
             return 0
 def test(bdev, vfs_class):
     print("test", vfs_class)
@@ -63,20 +63,20 @@ def test(bdev, vfs_class):
         fs.chdir("noexist")
     except OSError:
         print("chdir OSError")
-    print(fs.getcwd())  # check still at root
+    print(fs.getcwd())  
     try:
         fs.chdir("testfile")
     except OSError:
         print("chdir OSError")
-    print(fs.getcwd())  # check still at root
+    print(fs.getcwd())  
     try:
         fs.stat("noexist")
     except OSError:
         print("stat OSError")
     with fs.open("testfile", "r") as f:
-        f.seek(1 << 30)  # SEEK_SET
+        f.seek(1 << 30)  
         try:
-            f.seek(1 << 30, 1)  # SEEK_CUR
+            f.seek(1 << 30, 1)  
         except OSError:
             print("seek OSError")
 bdev = RAMBlockDevice(30)

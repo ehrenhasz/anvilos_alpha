@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_EN_FLOW_METER_H__
 #define __MLX5_EN_FLOW_METER_H__
@@ -16,7 +16,7 @@ enum mlx5e_flow_meter_mode {
 
 struct mlx5e_flow_meter_params {
 	enum mlx5e_flow_meter_mode mode;
-	 /* police action index */
+	 
 	u32 index;
 	u64 rate;
 	u64 burst;
@@ -72,4 +72,4 @@ void
 mlx5e_tc_meter_get_stats(struct mlx5e_flow_meter_handle *meter,
 			 u64 *bytes, u64 *packets, u64 *drops, u64 *lastuse);
 
-#endif /* __MLX5_EN_FLOW_METER_H__ */
+#endif 

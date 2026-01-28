@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Traceprobe fetch helper inlines
- */
+
+
 
 static nokprobe_inline void
 fetch_store_raw(unsigned long val, struct fetch_insn *code, void *buf)
@@ -17,7 +15,7 @@ fetch_store_raw(unsigned long val, struct fetch_insn *code, void *buf)
 		*(u32 *)buf = (u32)val;
 		break;
 	case 8:
-		//TBD: 32bit signed
+		
 		*(u64 *)buf = (u64)val;
 		break;
 	default:
@@ -48,11 +46,7 @@ fetch_apply_bitfield(struct fetch_insn *code, void *buf)
 	}
 }
 
-/*
- * These functions must be defined for each callsite.
- * Return consumed dynamic data size (>= 0), or error (< 0).
- * If dest is NULL, don't store result and return required dynamic data size.
- */
+
 static int
 process_fetch_insn(struct fetch_insn *code, void *rec,
 		   void *dest, void *base);
@@ -80,10 +74,7 @@ fetch_store_symstrlen(unsigned long addr)
 	return ret + 1;
 }
 
-/*
- * Fetch a null-terminated symbol string + offset. Caller MUST set *(u32 *)buf
- * with max length and relative data location.
- */
+
 static nokprobe_inline int
 fetch_store_symstring(unsigned long addr, void *dest, void *base)
 {
@@ -98,7 +89,7 @@ fetch_store_symstring(unsigned long addr, void *dest, void *base)
 	return sprint_symbol(__dest, addr);
 }
 
-/* common part of process_fetch_insn*/
+
 static nokprobe_inline int
 process_common_fetch_insn(struct fetch_insn *code, unsigned long *val)
 {
@@ -118,7 +109,7 @@ process_common_fetch_insn(struct fetch_insn *code, unsigned long *val)
 	return 0;
 }
 
-/* From the 2nd stage, routine is same */
+
 static nokprobe_inline int
 process_fetch_insn_bottom(struct fetch_insn *code, unsigned long val,
 			   void *dest, void *base)
@@ -129,7 +120,7 @@ process_fetch_insn_bottom(struct fetch_insn *code, unsigned long val,
 	unsigned long lval = val;
 
 stage2:
-	/* 2nd stage: dereference memory if needed */
+	
 	do {
 		if (code->op == FETCH_OP_DEREF) {
 			lval = val;
@@ -148,7 +139,7 @@ stage2:
 
 	s3 = code;
 stage3:
-	/* 3rd stage: store value to buffer */
+	
 	if (unlikely(!dest)) {
 		switch (code->op) {
 		case FETCH_OP_ST_STRING:
@@ -195,14 +186,14 @@ stage3:
 	}
 	code++;
 
-	/* 4th stage: modify stored value if needed */
+	
 	if (code->op == FETCH_OP_MOD_BF) {
 		fetch_apply_bitfield(code, dest);
 		code++;
 	}
 
 array:
-	/* the last stage: Loop on array */
+	
 	if (code->op == FETCH_OP_LP_ARRAY) {
 		if (ret < 0)
 			ret = 0;
@@ -230,7 +221,7 @@ array:
 	return code->op == FETCH_OP_END ? ret : -EILSEQ;
 }
 
-/* Sum up total data length for dynamic arrays (strings) */
+
 static nokprobe_inline int
 __get_data_size(struct trace_probe *tp, struct pt_regs *regs)
 {
@@ -249,7 +240,7 @@ __get_data_size(struct trace_probe *tp, struct pt_regs *regs)
 	return ret;
 }
 
-/* Store the value of each argument */
+
 static nokprobe_inline void
 store_trace_args(void *data, struct trace_probe *tp, void *rec,
 		 int header_size, int maxlen)
@@ -257,13 +248,13 @@ store_trace_args(void *data, struct trace_probe *tp, void *rec,
 	struct probe_arg *arg;
 	void *base = data - header_size;
 	void *dyndata = data + tp->size;
-	u32 *dl;	/* Data location */
+	u32 *dl;	
 	int ret, i;
 
 	for (i = 0; i < tp->nr_args; i++) {
 		arg = tp->args + i;
 		dl = data + arg->offset;
-		/* Point the dynamic data area if needed */
+		
 		if (unlikely(arg->dynamic))
 			*dl = make_data_loc(maxlen, dyndata - base);
 		ret = process_fetch_insn(arg->code, rec, dl, base);

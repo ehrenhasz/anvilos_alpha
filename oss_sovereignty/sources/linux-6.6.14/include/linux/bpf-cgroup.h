@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BPF_CGROUP_H
 #define _BPF_CGROUP_H
 
@@ -173,7 +173,7 @@ int bpf_percpu_cgroup_storage_copy(struct bpf_map *map, void *key, void *value);
 int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
 				     void *value, u64 flags);
 
-/* Opportunistic check to see whether we have any BPF program attached*/
+
 static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
 					   enum cgroup_bpf_attach_type type)
 {
@@ -184,7 +184,7 @@ static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
 	return array != &bpf_empty_prog_array.hdr;
 }
 
-/* Wrappers for __cgroup_bpf_run_filter_skb() guarded by cgroup_bpf_enabled. */
+
 #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
 ({									      \
 	int __ret = 0;							      \
@@ -251,11 +251,7 @@ static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
 	__ret;								       \
 })
 
-/* BPF_CGROUP_INET4_BIND and BPF_CGROUP_INET6_BIND can return extra flags
- * via upper bits of return code. The only flag that is supported
- * (at bit position 0) is to indicate CAP_NET_BIND_SERVICE capability check
- * should be bypassed (BPF_RET_BIND_NO_CAP_NET_BIND_SERVICE).
- */
+
 #define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, atype, bind_flags)	       \
 ({									       \
 	u32 __flags = 0;						       \
@@ -300,21 +296,7 @@ static inline bool cgroup_bpf_sock_enabled(struct sock *sk,
 #define BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk, uaddr)			\
 	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, CGROUP_UDP6_RECVMSG, NULL)
 
-/* The SOCK_OPS"_SK" macro should be used when sock_ops->sk is not a
- * fullsock and its parent fullsock cannot be traced by
- * sk_to_full_sk().
- *
- * e.g. sock_ops->sk is a request_sock and it is under syncookie mode.
- * Its listener-sk is not attached to the rsk_listener.
- * In this case, the caller holds the listener-sk (unlocked),
- * set its sock_ops->sk to req_sk, and call this SOCK_OPS"_SK" with
- * the listener-sk such that the cgroup-bpf-progs of the
- * listener-sk will be run.
- *
- * Regardless of syncookie mode or not,
- * calling bpf_setsockopt on listener-sk will not make sense anyway,
- * so passing 'sock_ops->sk == req_sk' to the bpf prog is appropriate here.
- */
+
 #define BPF_CGROUP_RUN_PROG_SOCK_OPS_SK(sock_ops, sk)			\
 ({									\
 	int __ret = 0;							\
@@ -508,6 +490,6 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
 
 #define for_each_cgroup_storage_type(stype) for (; false; )
 
-#endif /* CONFIG_CGROUP_BPF */
+#endif 
 
-#endif /* _BPF_CGROUP_H */
+#endif 

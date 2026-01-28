@@ -10,7 +10,7 @@
 #define MICROPY_BOARD_EARLY_INIT    LIMIFROG_board_early_init
 void LIMIFROG_board_early_init(void);
 
-// MSI is used and is 4MHz
+
 #define MICROPY_HW_CLK_PLLM (1)
 #define MICROPY_HW_CLK_PLLN (40)
 #define MICROPY_HW_CLK_PLLP (RCC_PLLP_DIV7)
@@ -18,20 +18,20 @@ void LIMIFROG_board_early_init(void);
 #define MICROPY_HW_CLK_PLLQ (RCC_PLLQ_DIV2)
 #define MICROPY_HW_FLASH_LATENCY    FLASH_LATENCY_4
 
-// The board has an external 32kHz crystal
+
 #define MICROPY_HW_RTC_USE_LSE      (1)
 
-// USART config
+
 #define MICROPY_HW_UART3_TX (pin_C10)
 #define MICROPY_HW_UART3_RX (pin_C11)
 
-// I2C buses
+
 #define MICROPY_HW_I2C1_SCL (pin_B8)
 #define MICROPY_HW_I2C1_SDA (pin_B9)
 #define MICROPY_HW_I2C2_SCL (pin_B10)
 #define MICROPY_HW_I2C2_SDA (pin_B11)
 
-// SPI buses
+
 #define MICROPY_HW_SPI1_NSS     (pin_A4)
 #define MICROPY_HW_SPI1_SCK     (pin_A5)
 #define MICROPY_HW_SPI1_MISO    (pin_A6)
@@ -47,11 +47,11 @@ void LIMIFROG_board_early_init(void);
 #define MICROPY_HW_USRSW_EXTI_MODE  (GPIO_MODE_IT_RISING)
 #define MICROPY_HW_USRSW_PRESSED    (1)
 
-// LEDs
-#define MICROPY_HW_LED1             (pin_C3) // red
+
+#define MICROPY_HW_LED1             (pin_C3) 
 #define MICROPY_HW_LED_ON(pin)      (mp_hal_pin_high(pin))
 #define MICROPY_HW_LED_OFF(pin)     (mp_hal_pin_low(pin))
 
-// USB config
+
 #define MICROPY_HW_USB_FS (1)
-// #define MICROPY_HW_USB_OTG_ID_PIN      (pin_C12) // This is not the official ID Pin which should be PA10
+

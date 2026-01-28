@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _OBJAGG_H
 #define _OBJAGG_H
@@ -32,12 +32,12 @@ void objagg_destroy(struct objagg *objagg);
 
 struct objagg_obj_stats {
 	unsigned int user_count;
-	unsigned int delta_user_count; /* includes delta object users */
+	unsigned int delta_user_count; 
 };
 
 struct objagg_obj_stats_info {
 	struct objagg_obj_stats stats;
-	struct objagg_obj *objagg_obj; /* associated object */
+	struct objagg_obj *objagg_obj; 
 	bool is_root;
 };
 

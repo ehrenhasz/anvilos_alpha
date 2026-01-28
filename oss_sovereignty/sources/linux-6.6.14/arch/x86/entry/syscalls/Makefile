@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
+
 out := arch/$(SRCARCH)/include/generated/asm
 uapi := arch/$(SRCARCH)/include/generated/uapi/asm
 
-# Create output directory if not already present
+
 $(shell mkdir -p $(out) $(uapi))
 
 syscall32 := $(src)/syscall_32.tbl

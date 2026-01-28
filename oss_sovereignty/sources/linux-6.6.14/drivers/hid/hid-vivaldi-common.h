@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _HID_VIVALDI_COMMON_H
 #define _HID_VIVALDI_COMMON_H
 
@@ -11,4 +11,4 @@ void vivaldi_feature_mapping(struct hid_device *hdev,
 
 extern const struct attribute_group *vivaldi_attribute_groups[];
 
-#endif /* _HID_VIVALDI_COMMON_H */
+#endif 

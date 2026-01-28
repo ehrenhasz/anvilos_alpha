@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Internal definitions for FS-Cache
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #ifdef pr_fmt
 #undef pr_fmt
@@ -17,9 +13,7 @@
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 
-/*
- * cache.c
- */
+
 #ifdef CONFIG_PROC_FS
 extern const struct seq_operations fscache_caches_seq_ops;
 #endif
@@ -52,9 +46,7 @@ static inline bool fscache_set_cache_state_maybe(struct fscache_cache *cache,
 	return try_cmpxchg_release(&cache->state, &old_state, new_state);
 }
 
-/*
- * cookie.c
- */
+
 extern struct kmem_cache *fscache_cookie_jar;
 #ifdef CONFIG_PROC_FS
 extern const struct seq_operations fscache_cookies_seq_ops;
@@ -72,16 +64,12 @@ static inline void fscache_see_cookie(struct fscache_cookie *cookie,
 			     where);
 }
 
-/*
- * main.c
- */
+
 extern unsigned fscache_debug;
 
 extern unsigned int fscache_hash(unsigned int salt, const void *data, size_t len);
 
-/*
- * proc.c
- */
+
 #ifdef CONFIG_PROC_FS
 extern int __init fscache_proc_init(void);
 extern void fscache_proc_cleanup(void);
@@ -90,9 +78,7 @@ extern void fscache_proc_cleanup(void);
 #define fscache_proc_cleanup()	do {} while (0)
 #endif
 
-/*
- * stats.c
- */
+
 #ifdef CONFIG_FSCACHE_STATS
 extern atomic_t fscache_n_volumes;
 extern atomic_t fscache_n_volumes_collision;
@@ -136,9 +122,7 @@ int fscache_stats_show(struct seq_file *m, void *v);
 #define fscache_stat_d(stat) do {} while (0)
 #endif
 
-/*
- * volume.c
- */
+
 #ifdef CONFIG_PROC_FS
 extern const struct seq_operations fscache_volumes_seq_ops;
 #endif
@@ -153,10 +137,8 @@ bool fscache_begin_volume_access(struct fscache_volume *volume,
 void fscache_create_volume(struct fscache_volume *volume, bool wait);
 
 
-/*****************************************************************************/
-/*
- * debug tracing
- */
+
+
 #define dbgprintk(FMT, ...) \
 	printk("[%-6.6s] "FMT"\n", current->comm, ##__VA_ARGS__)
 
@@ -196,11 +178,7 @@ do {						\
 #define _debug(FMT, ...) no_printk(FMT, ##__VA_ARGS__)
 #endif
 
-/*
- * determine whether a particular optional debugging point should be logged
- * - we need to go through three steps to persuade cpp to correctly join the
- *   shorthand in FSCACHE_DEBUG_LEVEL with its prefix
- */
+
 #define ____do_kdebug(LEVEL, POINT) \
 	unlikely((fscache_debug & \
 		  (FSCACHE_POINT_##POINT << (FSCACHE_DEBUG_ ## LEVEL * 3))))
@@ -222,10 +200,8 @@ do {						\
 #define FSCACHE_DEBUG_LEVEL CACHE
 #endif
 
-/*
- * assertions
- */
-#if 1 /* defined(__KDEBUGALL) */
+
+#if 1 
 
 #define ASSERT(X)							\
 do {									\
@@ -274,4 +250,4 @@ do {									\
 #define ASSERTIF(C, X)			do {} while (0)
 #define ASSERTIFCMP(C, X, OP, Y)	do {} while (0)
 
-#endif /* assert or not */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _TOOLS_SLAB_H
 #define _TOOLS_SLAB_H
 
@@ -6,7 +6,7 @@
 #include <linux/gfp.h>
 
 #define SLAB_PANIC 2
-#define SLAB_RECLAIM_ACCOUNT    0x00020000UL            /* Objects are reclaimable */
+#define SLAB_RECLAIM_ACCOUNT    0x00020000UL            
 
 #define kzalloc_node(size, flags, node) kmalloc(size, flags)
 
@@ -45,4 +45,4 @@ void kmem_cache_free_bulk(struct kmem_cache *cachep, size_t size, void **list);
 int kmem_cache_alloc_bulk(struct kmem_cache *cachep, gfp_t gfp, size_t size,
 			  void **list);
 
-#endif		/* _TOOLS_SLAB_H */
+#endif		

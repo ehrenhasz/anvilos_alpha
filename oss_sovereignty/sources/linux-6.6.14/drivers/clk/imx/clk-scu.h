@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2018-2021 NXP
- *   Dong Aisheng <aisheng.dong@nxp.com>
- */
+
+
 
 #ifndef __IMX_CLK_SCU_H
 #define __IMX_CLK_SCU_H

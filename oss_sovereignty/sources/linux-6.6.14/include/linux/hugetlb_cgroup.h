@@ -1,16 +1,4 @@
-/*
- * Copyright IBM Corporation, 2012
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2.1 of the GNU Lesser General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- */
+
 
 #ifndef _LINUX_HUGETLB_CGROUP_H
 #define _LINUX_HUGETLB_CGROUP_H
@@ -22,11 +10,7 @@ struct resv_map;
 struct file_region;
 
 #ifdef CONFIG_CGROUP_HUGETLB
-/*
- * Minimum page order trackable by hugetlb cgroup.
- * At least 3 pages are necessary for all the tracking information.
- * The second tail page contains all of the hugetlb-specific fields.
- */
+
 #define HUGETLB_CGROUP_MIN_ORDER order_base_2(__NR_USED_SUBPAGE)
 
 enum hugetlb_memory_event {
@@ -35,30 +19,26 @@ enum hugetlb_memory_event {
 };
 
 struct hugetlb_cgroup_per_node {
-	/* hugetlb usage in pages over all hstates. */
+	
 	unsigned long usage[HUGE_MAX_HSTATE];
 };
 
 struct hugetlb_cgroup {
 	struct cgroup_subsys_state css;
 
-	/*
-	 * the counter to account for hugepages from hugetlb.
-	 */
+	
 	struct page_counter hugepage[HUGE_MAX_HSTATE];
 
-	/*
-	 * the counter to account for hugepage reservations from hugetlb.
-	 */
+	
 	struct page_counter rsvd_hugepage[HUGE_MAX_HSTATE];
 
 	atomic_long_t events[HUGE_MAX_HSTATE][HUGETLB_NR_MEMORY_EVENTS];
 	atomic_long_t events_local[HUGE_MAX_HSTATE][HUGETLB_NR_MEMORY_EVENTS];
 
-	/* Handle for "hugetlb.events" */
+	
 	struct cgroup_file events_file[HUGE_MAX_HSTATE];
 
-	/* Handle for "hugetlb.events.local" */
+	
 	struct cgroup_file events_local_file[HUGE_MAX_HSTATE];
 
 	struct hugetlb_cgroup_per_node *nodeinfo[];
@@ -278,5 +258,5 @@ static inline void hugetlb_cgroup_migrate(struct folio *old_folio,
 {
 }
 
-#endif  /* CONFIG_MEM_RES_CTLR_HUGETLB */
+#endif  
 #endif

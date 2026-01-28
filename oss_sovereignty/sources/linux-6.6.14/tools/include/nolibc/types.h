@@ -1,28 +1,19 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * Special types used by various syscalls for NOLIBC
- * Copyright (C) 2017-2021 Willy Tarreau <w@1wt.eu>
- */
+
+
 
 #ifndef _NOLIBC_TYPES_H
 #define _NOLIBC_TYPES_H
 
 #include "std.h"
 #include <linux/mman.h>
-#include <linux/reboot.h> /* for LINUX_REBOOT_* */
+#include <linux/reboot.h> 
 #include <linux/stat.h>
 #include <linux/time.h>
 
 
-/* Only the generic macros and types may be defined here. The arch-specific
- * ones such as the O_RDONLY and related macros used by fcntl() and open()
- * must not be defined here.
- */
 
-/* stat flags (WARNING, octal here). We need to check for an existing
- * definition because linux/stat.h may omit to define those if it finds
- * that any glibc header was already included.
- */
+
+
 #if !defined(S_IFMT)
 #define S_IFDIR        0040000
 #define S_IFCHR        0020000
@@ -57,7 +48,7 @@
 #define S_IXOTH 00001
 #endif
 
-/* dirent types */
+
 #define DT_UNKNOWN     0x0
 #define DT_FIFO        0x1
 #define DT_CHR         0x2
@@ -67,14 +58,12 @@
 #define DT_LNK         0xa
 #define DT_SOCK        0xc
 
-/* commonly an fd_set represents 256 FDs */
+
 #ifndef FD_SETSIZE
 #define FD_SETSIZE     256
 #endif
 
-/* PATH_MAX and MAXPATHLEN are often used and found with plenty of different
- * values.
- */
+
 #ifndef PATH_MAX
 #define PATH_MAX       4096
 #endif
@@ -83,17 +72,17 @@
 #define MAXPATHLEN     (PATH_MAX)
 #endif
 
-/* flags for mmap */
+
 #ifndef MAP_FAILED
 #define MAP_FAILED ((void *)-1)
 #endif
 
-/* whence values for lseek() */
+
 #define SEEK_SET       0
 #define SEEK_CUR       1
 #define SEEK_END       2
 
-/* flags for reboot */
+
 #define RB_AUTOBOOT     LINUX_REBOOT_CMD_RESTART
 #define RB_HALT_SYSTEM  LINUX_REBOOT_CMD_HALT
 #define RB_ENABLE_CAD   LINUX_REBOOT_CMD_CAD_ON
@@ -102,23 +91,23 @@
 #define RB_SW_SUSPEND   LINUX_REBOOT_CMD_SW_SUSPEND
 #define RB_KEXEC        LINUX_REBOOT_CMD_KEXEC
 
-/* Macros used on waitpid()'s return status */
+
 #define WEXITSTATUS(status) (((status) & 0xff00) >> 8)
 #define WIFEXITED(status)   (((status) & 0x7f) == 0)
 #define WTERMSIG(status)    ((status) & 0x7f)
 #define WIFSIGNALED(status) ((status) - 1 < 0xff)
 
-/* waitpid() flags */
+
 #define WNOHANG      1
 
-/* standard exit() codes */
+
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
 #define FD_SETIDXMASK (8 * sizeof(unsigned long))
 #define FD_SETBITMASK (8 * sizeof(unsigned long)-1)
 
-/* for select() */
+
 typedef struct {
 	unsigned long fds[(FD_SETSIZE + FD_SETBITMASK) / FD_SETIDXMASK];
 } fd_set;
@@ -157,7 +146,7 @@ typedef struct {
 			__set->fds[__idx] = 0;				\
 	} while (0)
 
-/* for poll() */
+
 #define POLLIN          0x0001
 #define POLLPRI         0x0002
 #define POLLOUT         0x0004
@@ -171,7 +160,7 @@ struct pollfd {
 	short int revents;
 };
 
-/* for getdents64() */
+
 struct linux_dirent64 {
 	uint64_t       d_ino;
 	int64_t        d_off;
@@ -180,7 +169,7 @@ struct linux_dirent64 {
 	char           d_name[];
 };
 
-/* needed by wait4() */
+
 struct rusage {
 	struct timeval ru_utime;
 	struct timeval ru_stime;
@@ -200,26 +189,24 @@ struct rusage {
 	long   ru_nivcsw;
 };
 
-/* The format of the struct as returned by the libc to the application, which
- * significantly differs from the format returned by the stat() syscall flavours.
- */
+
 struct stat {
-	dev_t     st_dev;     /* ID of device containing file */
-	ino_t     st_ino;     /* inode number */
-	mode_t    st_mode;    /* protection */
-	nlink_t   st_nlink;   /* number of hard links */
-	uid_t     st_uid;     /* user ID of owner */
-	gid_t     st_gid;     /* group ID of owner */
-	dev_t     st_rdev;    /* device ID (if special file) */
-	off_t     st_size;    /* total size, in bytes */
-	blksize_t st_blksize; /* blocksize for file system I/O */
-	blkcnt_t  st_blocks;  /* number of 512B blocks allocated */
-	union { time_t st_atime; struct timespec st_atim; }; /* time of last access */
-	union { time_t st_mtime; struct timespec st_mtim; }; /* time of last modification */
-	union { time_t st_ctime; struct timespec st_ctim; }; /* time of last status change */
+	dev_t     st_dev;     
+	ino_t     st_ino;     
+	mode_t    st_mode;    
+	nlink_t   st_nlink;   
+	uid_t     st_uid;     
+	gid_t     st_gid;     
+	dev_t     st_rdev;    
+	off_t     st_size;    
+	blksize_t st_blksize; 
+	blkcnt_t  st_blocks;  
+	union { time_t st_atime; struct timespec st_atim; }; 
+	union { time_t st_mtime; struct timespec st_mtim; }; 
+	union { time_t st_ctime; struct timespec st_ctim; }; 
 };
 
-/* WARNING, it only deals with the 4096 first majors and 256 first minors */
+
 #define makedev(major, minor) ((dev_t)((((major) & 0xfff) << 8) | ((minor) & 0xff)))
 #define major(dev) ((unsigned int)(((dev) >> 8) & 0xfff))
 #define minor(dev) ((unsigned int)(((dev) & 0xff))
@@ -235,7 +222,7 @@ struct stat {
 })
 #endif
 
-/* make sure to include all global symbols */
+
 #include "nolibc.h"
 
-#endif /* _NOLIBC_TYPES_H */
+#endif 

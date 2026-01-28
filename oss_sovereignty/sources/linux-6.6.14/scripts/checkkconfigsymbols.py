@@ -143,7 +143,7 @@ def print_undefined_symbols():
                     print("\t- %s (\"%s\")" % (yel(commit[0]), commit[1]))
             else:
                 print("\t- no commit found")
-        print()  # new line
+        print()  
 def reset(commit):
     """Reset current git tree to %commit."""
     execute(["git", "reset", "--hard", commit])
@@ -235,7 +235,7 @@ def check_symbols_helper(pool, ignore):
     source_files = []
     kconfig_files = []
     defined_symbols = []
-    referenced_symbols = dict()  # {file: [symbols]}
+    referenced_symbols = dict()  
     for gitfile in get_files():
         if REGEX_FILE_KCONFIG.match(gitfile):
             kconfig_files.append(gitfile)
@@ -259,7 +259,7 @@ def check_symbols_helper(pool, ignore):
             inv_map[symbol] = inv_map.get(symbol, set())
             inv_map[symbol].add(_file)
     referenced_symbols = inv_map
-    undefined = {}  # {symbol: [files]}
+    undefined = {}  
     for symbol in sorted(referenced_symbols):
         if symbol == "FOO" or symbol == "BAR" or \
                 symbol == "FOO_BAR" or symbol == "XXX":
@@ -324,7 +324,7 @@ def parse_kconfig_file(kfile):
     for i in range(len(lines)):
         line = lines[i]
         line = line.strip('\n')
-        line = line.split("#")[0]  # ignore comments
+        line = line.split("
         if REGEX_KCONFIG_DEF.match(line):
             symbol_def = REGEX_KCONFIG_DEF.findall(line)
             defined.append(symbol_def[0])
@@ -347,6 +347,6 @@ def main():
     except BrokenPipeError:
         devnull = os.open(os.devnull, os.O_WRONLY)
         os.dup2(devnull, sys.stdout.fileno())
-        sys.exit(1)  # Python exits with error code 1 on EPIPE
+        sys.exit(1)  
 if __name__ == "__main__":
     main()

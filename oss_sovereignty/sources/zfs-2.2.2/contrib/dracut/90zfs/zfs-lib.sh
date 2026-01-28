@@ -55,8 +55,8 @@ decode_root_args() {
             return 0
             ;;
         ZFS=*|zfs:*)
-            root="${xroot#zfs:}"
-            root="${root#ZFS=}"
+            root="${xroot
+            root="${root
             root=$(echo "$root" | tr '+' ' ')
             rootfstype=zfs
             return 0

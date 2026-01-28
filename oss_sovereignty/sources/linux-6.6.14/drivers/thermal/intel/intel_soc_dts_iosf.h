@@ -1,18 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_soc_dts_iosf.h
- * Copyright (c) 2015, Intel Corporation.
- */
+
+
 
 #ifndef _INTEL_SOC_DTS_IOSF_CORE_H
 #define _INTEL_SOC_DTS_IOSF_CORE_H
 
 #include <linux/thermal.h>
 
-/* DTS0 and DTS 1 */
+
 #define SOC_MAX_DTS_SENSORS	2
 
-/* Only 2 out of 4 is allowed for OSPM */
+
 #define SOC_MAX_DTS_TRIPS	2
 
 enum intel_soc_dts_interrupt_type {

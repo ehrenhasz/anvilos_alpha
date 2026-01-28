@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef __HID_WIIMOTE_H
 #define __HID_WIIMOTE_H
 
-/*
- * HID driver for Nintendo Wii / Wii U peripherals
- * Copyright (c) 2011-2013 David Herrmann <dh.herrmann@gmail.com>
- */
 
-/*
- */
+
+
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -32,7 +28,7 @@
 #define WIIPROTO_FLAG_ACCEL		0x20
 #define WIIPROTO_FLAG_IR_BASIC		0x40
 #define WIIPROTO_FLAG_IR_EXT		0x80
-#define WIIPROTO_FLAG_IR_FULL		0xc0 /* IR_BASIC | IR_EXT */
+#define WIIPROTO_FLAG_IR_FULL		0xc0 
 #define WIIPROTO_FLAG_EXT_PLUGGED	0x0100
 #define WIIPROTO_FLAG_EXT_USED		0x0200
 #define WIIPROTO_FLAG_EXT_ACTIVE	0x0400
@@ -50,7 +46,7 @@
 #define WIIPROTO_FLAGS_IR (WIIPROTO_FLAG_IR_BASIC | WIIPROTO_FLAG_IR_EXT | \
 							WIIPROTO_FLAG_IR_FULL)
 
-/* return flag for led \num */
+
 #define WIIPROTO_FLAG_LED(num) (WIIPROTO_FLAG_LED1 << (num - 1))
 
 enum wiiproto_keys {
@@ -122,19 +118,19 @@ struct wiimote_state {
 	__u8 exttype;
 	__u8 mp;
 
-	/* synchronous cmd requests */
+	
 	struct mutex sync;
 	struct completion ready;
 	int cmd;
 	__u32 opt;
 
-	/* results of synchronous requests */
+	
 	__u8 cmd_battery;
 	__u8 cmd_err;
 	__u8 *cmd_read_buf;
 	__u8 cmd_read_size;
 
-	/* calibration/cache data */
+	
 	__u16 calib_bboard[4][3];
 	__s16 calib_pro_sticks[4];
 	__u8 pressure_drums[7];
@@ -165,7 +161,7 @@ struct wiimote_data {
 
 extern bool wiimote_dpad_as_analog;
 
-/* wiimote modules */
+
 
 enum wiimod_module {
 	WIIMOD_KEYS,
@@ -207,7 +203,7 @@ extern const struct wiimod_ops *wiimod_table[WIIMOD_NUM];
 extern const struct wiimod_ops *wiimod_ext_table[WIIMOTE_EXT_NUM];
 extern const struct wiimod_ops wiimod_mp;
 
-/* wiimote requests */
+
 
 enum wiiproto_reqs {
 	WIIPROTO_REQ_NULL = 0x0,
@@ -223,37 +219,37 @@ enum wiiproto_reqs {
 	WIIPROTO_REQ_DATA = 0x21,
 	WIIPROTO_REQ_RETURN = 0x22,
 
-	/* DRM_K: BB*2 */
+	
 	WIIPROTO_REQ_DRM_K = 0x30,
 
-	/* DRM_KA: BB*2 AA*3 */
+	
 	WIIPROTO_REQ_DRM_KA = 0x31,
 
-	/* DRM_KE: BB*2 EE*8 */
+	
 	WIIPROTO_REQ_DRM_KE = 0x32,
 
-	/* DRM_KAI: BB*2 AA*3 II*12 */
+	
 	WIIPROTO_REQ_DRM_KAI = 0x33,
 
-	/* DRM_KEE: BB*2 EE*19 */
+	
 	WIIPROTO_REQ_DRM_KEE = 0x34,
 
-	/* DRM_KAE: BB*2 AA*3 EE*16 */
+	
 	WIIPROTO_REQ_DRM_KAE = 0x35,
 
-	/* DRM_KIE: BB*2 II*10 EE*9 */
+	
 	WIIPROTO_REQ_DRM_KIE = 0x36,
 
-	/* DRM_KAIE: BB*2 AA*3 II*10 EE*6 */
+	
 	WIIPROTO_REQ_DRM_KAIE = 0x37,
 
-	/* DRM_E: EE*21 */
+	
 	WIIPROTO_REQ_DRM_E = 0x3d,
 
-	/* DRM_SKAI1: BB*2 AA*1 II*18 */
+	
 	WIIPROTO_REQ_DRM_SKAI1 = 0x3e,
 
-	/* DRM_SKAI2: BB*2 AA*1 II*18 */
+	
 	WIIPROTO_REQ_DRM_SKAI2 = 0x3f,
 
 	WIIPROTO_REQ_MAX
@@ -294,26 +290,24 @@ static inline void wiidebug_deinit(void *u) { }
 
 #endif
 
-/* requires the state.lock spinlock to be held */
+
 static inline bool wiimote_cmd_pending(struct wiimote_data *wdata, int cmd,
 								__u32 opt)
 {
 	return wdata->state.cmd == cmd && wdata->state.opt == opt;
 }
 
-/* requires the state.lock spinlock to be held */
+
 static inline void wiimote_cmd_complete(struct wiimote_data *wdata)
 {
 	wdata->state.cmd = WIIPROTO_REQ_NULL;
 	complete(&wdata->state.ready);
 }
 
-/* requires the state.lock spinlock to be held */
+
 static inline void wiimote_cmd_abort(struct wiimote_data *wdata)
 {
-	/* Abort synchronous request by waking up the sleeping caller. But
-	 * reset the state.cmd field to an invalid value so no further event
-	 * handlers will work with it. */
+	
 	wdata->state.cmd = WIIPROTO_REQ_MAX;
 	complete(&wdata->state.ready);
 }
@@ -328,7 +322,7 @@ static inline void wiimote_cmd_acquire_noint(struct wiimote_data *wdata)
 	mutex_lock(&wdata->state.sync);
 }
 
-/* requires the state.lock spinlock to be held */
+
 static inline void wiimote_cmd_set(struct wiimote_data *wdata, int cmd,
 								__u32 opt)
 {
@@ -346,9 +340,7 @@ static inline int wiimote_cmd_wait(struct wiimote_data *wdata)
 {
 	int ret;
 
-	/* The completion acts as implicit memory barrier so we can safely
-	 * assume that state.cmd is set on success/failure and isn't accessed
-	 * by any other thread, anymore. */
+	
 
 	ret = wait_for_completion_interruptible_timeout(&wdata->state.ready, HZ);
 	if (ret < 0)
@@ -365,7 +357,7 @@ static inline int wiimote_cmd_wait_noint(struct wiimote_data *wdata)
 {
 	unsigned long ret;
 
-	/* no locking needed; see wiimote_cmd_wait() */
+	
 	ret = wait_for_completion_timeout(&wdata->state.ready, HZ);
 	if (!ret)
 		return -EIO;

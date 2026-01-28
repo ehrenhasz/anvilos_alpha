@@ -1,87 +1,62 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * This file defines the Ex commands.
- * When DO_DECLARE_EXCMD is defined, the table with ex command names and
- * options results.
- * When DO_DECLARE_EXCMD is NOT defined, the enum with all the Ex commands
- * results.
- * This clever trick was invented by Ron Aaron.
- */
 
-/*
- * When adding an Ex command:
- * 1. Add an entry in the table below.  Keep it sorted on the shortest
- *    version of the command name that works.  If it doesn't start with a
- *    lower case letter, add it at the end.
- * 2. Run "make cmdidxs" to re-generate ex_cmdidxs.h.
- * 3. Add a "case: CMD_xxx" in the big switch in ex_docmd.c.
- * 4. Add an entry in the index for Ex commands at ":help ex-cmd-index".
- * 5. Add documentation in ../doc/xxx.txt.  Add a tag for both the short and
- *    long name of the command.
- */
 
-#define EX_RANGE	0x001	// allow a linespecs
-#define EX_BANG		0x002	// allow a ! after the command name
-#define EX_EXTRA	0x004	// allow extra args after command name
-#define EX_XFILE	0x008	// expand wildcards in extra part
-#define EX_NOSPC	0x010	// no spaces allowed in the extra part
-#define	EX_DFLALL	0x020	// default file range is 1,$
-#define EX_WHOLEFOLD	0x040	// extend range to include whole fold also
-				// when less than two numbers given
-#define EX_NEEDARG	0x080	// argument required
-#define EX_TRLBAR	0x100	// check for trailing vertical bar
-#define EX_REGSTR	0x200	// allow "x for register designation
-#define EX_COUNT	0x400	// allow count in argument, after command
-#define EX_NOTRLCOM	0x800	// no trailing comment allowed
-#define EX_ZEROR       0x1000	// zero line number allowed
-#define EX_CTRLV       0x2000	// do not remove CTRL-V from argument
-#define EX_CMDARG      0x4000	// allow "+command" argument
-#define EX_BUFNAME     0x8000	// accepts buffer name
-#define EX_BUFUNL     0x10000	// accepts unlisted buffer too
-#define EX_ARGOPT     0x20000	// allow "++opt=val" argument
-#define EX_SBOXOK     0x40000	// allowed in the sandbox
-#define EX_CMDWIN     0x80000	// allowed in cmdline window
-#define EX_MODIFY    0x100000	// forbidden in non-'modifiable' buffer
-#define EX_FLAGS     0x200000	// allow flags after count in argument
-#define EX_RESTRICT  0x400000	// forbidden in restricted mode
-#define EX_EXPAND    0x800000	// expands wildcards later
-#define EX_LOCK_OK  0x1000000	// command can be executed when textlock is
-				// set; when missing disallows editing another
-				// buffer when curbuf_lock is set
-#define EX_NONWHITE_OK 0x2000000  // command can be followed by non-white
-#define EX_KEEPSCRIPT  0x4000000  // keep sctx of where command was invoked
-#define EX_EXPR_ARG    0x8000000  // argument is an expression
-#define EX_WHOLE      0x10000000  // command name cannot be shortened in Vim9
-#define EX_EXPORT     0x20000000  // command can be used after :export
 
-#define EX_FILES (EX_XFILE | EX_EXTRA)	// multiple extra files allowed
-#define EX_FILE1 (EX_FILES | EX_NOSPC)	// 1 file, defaults to current file
-#define EX_WORD1 (EX_EXTRA | EX_NOSPC)	// one extra word allowed
+
+
+#define EX_RANGE	0x001	
+#define EX_BANG		0x002	
+#define EX_EXTRA	0x004	
+#define EX_XFILE	0x008	
+#define EX_NOSPC	0x010	
+#define	EX_DFLALL	0x020	
+#define EX_WHOLEFOLD	0x040	
+				
+#define EX_NEEDARG	0x080	
+#define EX_TRLBAR	0x100	
+#define EX_REGSTR	0x200	
+#define EX_COUNT	0x400	
+#define EX_NOTRLCOM	0x800	
+#define EX_ZEROR       0x1000	
+#define EX_CTRLV       0x2000	
+#define EX_CMDARG      0x4000	
+#define EX_BUFNAME     0x8000	
+#define EX_BUFUNL     0x10000	
+#define EX_ARGOPT     0x20000	
+#define EX_SBOXOK     0x40000	
+#define EX_CMDWIN     0x80000	
+#define EX_MODIFY    0x100000	
+#define EX_FLAGS     0x200000	
+#define EX_RESTRICT  0x400000	
+#define EX_EXPAND    0x800000	
+#define EX_LOCK_OK  0x1000000	
+				
+				
+#define EX_NONWHITE_OK 0x2000000  
+#define EX_KEEPSCRIPT  0x4000000  
+#define EX_EXPR_ARG    0x8000000  
+#define EX_WHOLE      0x10000000  
+#define EX_EXPORT     0x20000000  
+
+#define EX_FILES (EX_XFILE | EX_EXTRA)	
+#define EX_FILE1 (EX_FILES | EX_NOSPC)	
+#define EX_WORD1 (EX_EXTRA | EX_NOSPC)	
 
 #ifndef DO_DECLARE_EXCMD
-/*
- * values for cmd_addr_type
- */
+
 typedef enum {
-    ADDR_LINES,		 // buffer line numbers
-    ADDR_WINDOWS,	 // window number
-    ADDR_ARGUMENTS,	 // argument number
-    ADDR_LOADED_BUFFERS, // buffer number of loaded buffer
-    ADDR_BUFFERS,	 // buffer number
-    ADDR_TABS,		 // tab page number
-    ADDR_TABS_RELATIVE,	 // Tab page that only relative
-    ADDR_QUICKFIX_VALID, // quickfix list valid entry number
-    ADDR_QUICKFIX,	 // quickfix list entry number
-    ADDR_UNSIGNED,	 // positive count or zero, defaults to 1
-    ADDR_OTHER,		 // something else, use line number for '$', '%', etc.
-    ADDR_NONE		 // no range used
+    ADDR_LINES,		 
+    ADDR_WINDOWS,	 
+    ADDR_ARGUMENTS,	 
+    ADDR_LOADED_BUFFERS, 
+    ADDR_BUFFERS,	 
+    ADDR_TABS,		 
+    ADDR_TABS_RELATIVE,	 
+    ADDR_QUICKFIX_VALID, 
+    ADDR_QUICKFIX,	 
+    ADDR_UNSIGNED,	 
+    ADDR_OTHER,		 
+    ADDR_NONE		 
 } cmd_addr_T;
 #endif
 
@@ -89,14 +64,7 @@ typedef enum {
 typedef struct exarg exarg_T;
 #endif
 
-/*
- * This array maps ex command names to command codes.
- * The order in which command names are listed below is significant --
- * ambiguous abbreviations are always resolved to be the first possible match
- * (e.g. "r" is taken to mean "read", not "rewind", because "read" comes
- * before "rewind").
- * Not supported commands are included to avoid ambiguities.
- */
+
 #ifdef DO_DECLARE_EXCMD
 # define EXCMD(a, b, c, d, e) \
 	{(char_u *)b, c, (long_u)(d), e}
@@ -105,10 +73,10 @@ typedef void (*ex_func_T) (exarg_T *eap);
 
 static struct cmdname
 {
-    char_u	*cmd_name;	// name of the command
-    ex_func_T   cmd_func;	// function for this command
-    long_u	cmd_argt;	// flags declared above
-    cmd_addr_T	cmd_addr_type;	// flag for address type
+    char_u	*cmd_name;	
+    ex_func_T   cmd_func;	
+    long_u	cmd_argt;	
+    cmd_addr_T	cmd_addr_type;	
 } cmdnames[] =
 #else
 # define EXCMD(a, b, c, d, e)  a
@@ -1850,7 +1818,7 @@ EXCMD(CMD_z,		"z",		ex_z,
 	EX_RANGE|EX_WHOLEFOLD|EX_BANG|EX_EXTRA|EX_FLAGS|EX_TRLBAR|EX_CMDWIN|EX_LOCK_OK,
 	ADDR_LINES),
 
-// commands that don't start with a letter
+
 EXCMD(CMD_bang,		"!",		ex_bang,
 	EX_RANGE|EX_WHOLEFOLD|EX_BANG|EX_FILES|EX_CMDWIN|EX_LOCK_OK|EX_NONWHITE_OK,
 	ADDR_LINES),
@@ -1875,7 +1843,7 @@ EXCMD(CMD_rshift,	">",		ex_operators,
 EXCMD(CMD_at,		"@",		ex_at,
 	EX_RANGE|EX_WHOLEFOLD|EX_EXTRA|EX_TRLBAR|EX_CMDWIN|EX_LOCK_OK|EX_NONWHITE_OK,
 	ADDR_LINES),
-EXCMD(CMD_block,	"{",		ex_block,  // not found normally
+EXCMD(CMD_block,	"{",		ex_block,  
 	EX_TRLBAR|EX_LOCK_OK|EX_CMDWIN,
 	ADDR_NONE),
 EXCMD(CMD_endblock,	"}",		ex_endblock,
@@ -1885,7 +1853,7 @@ EXCMD(CMD_tilde,	"~",		ex_substitute,
 	EX_RANGE|EX_WHOLEFOLD|EX_EXTRA|EX_CMDWIN|EX_LOCK_OK|EX_MODIFY|EX_NONWHITE_OK,
 	ADDR_LINES),
 
-// commands that start with an uppercase letter
+
 EXCMD(CMD_Next,		"Next",		ex_previous,
 	EX_EXTRA|EX_RANGE|EX_COUNT|EX_BANG|EX_CMDARG|EX_ARGOPT|EX_TRLBAR,
 	ADDR_OTHER),
@@ -1896,7 +1864,7 @@ EXCMD(CMD_X,		"X",		ex_X,
 	EX_TRLBAR,
 	ADDR_NONE),
 
-// Commands that are recognized only in find_ex_command().
+
 EXCMD(CMD_increment,	"++",		ex_incdec,
 	EX_EXTRA|EX_TRLBAR|EX_SBOXOK|EX_CMDWIN|EX_LOCK_OK,
 	ADDR_NONE),
@@ -1907,62 +1875,60 @@ EXCMD(CMD_decrement,	"--",		ex_incdec,
 #undef EXCMD
 
 #ifndef DO_DECLARE_EXCMD
-    CMD_SIZE,		// MUST be after all real commands!
-    CMD_USER = -1,	// User-defined command
-    CMD_USER_BUF = -2	// User-defined command local to buffer
+    CMD_SIZE,		
+    CMD_USER = -1,	
+    CMD_USER_BUF = -2	
 #endif
 };
 
 #ifndef DO_DECLARE_EXCMD
 typedef enum CMD_index cmdidx_T;
 
-/*
- * Arguments used for an Ex command.
- */
+
 struct exarg
 {
-    char_u	*arg;		// argument of the command
-    char_u	*nextcmd;	// next command (NULL if none)
-    char_u	*cmd;		// the name of the command (except for :make)
-    char_u	**cmdlinep;	// pointer to pointer of allocated cmdline
+    char_u	*arg;		
+    char_u	*nextcmd;	
+    char_u	*cmd;		
+    char_u	**cmdlinep;	
 #ifdef FEAT_EVAL
-    char_u	*cmdline_tofree; // free later
+    char_u	*cmdline_tofree; 
 #endif
-    cmdidx_T	cmdidx;		// the index for the command
-    long	argt;		// flags for the command
-    int		skip;		// don't execute the command, only parse it
-    int		forceit;	// TRUE if ! present
-    int		addr_count;	// the number of addresses given
-    linenr_T	line1;		// the first line number
-    linenr_T	line2;		// the second line number or count
-    cmd_addr_T	addr_type;	// type of the count/range
-    int		flags;		// extra flags after count: EXFLAG_
-    char_u	*do_ecmd_cmd;	// +command arg to be used in edited file
-    linenr_T	do_ecmd_lnum;	// the line number in an edited file
-    int		append;		// TRUE with ":w >>file" command
-    int		usefilter;	// TRUE with ":w !command" and ":r!command"
-    int		amount;		// number of '>' or '<' for shift command
-    int		regname;	// register name (NUL if none)
-    int		force_bin;	// 0, FORCE_BIN or FORCE_NOBIN
-    int		read_edit;	// ++edit argument
-    int		force_ff;	// ++ff= argument (first char of argument)
-    int		force_enc;	// ++enc= argument (index in cmd[])
-    int		bad_char;	// BAD_KEEP, BAD_DROP or replacement byte
-    int		useridx;	// user command index
-    char	*errmsg;	// returned error message
+    cmdidx_T	cmdidx;		
+    long	argt;		
+    int		skip;		
+    int		forceit;	
+    int		addr_count;	
+    linenr_T	line1;		
+    linenr_T	line2;		
+    cmd_addr_T	addr_type;	
+    int		flags;		
+    char_u	*do_ecmd_cmd;	
+    linenr_T	do_ecmd_lnum;	
+    int		append;		
+    int		usefilter;	
+    int		amount;		
+    int		regname;	
+    int		force_bin;	
+    int		read_edit;	
+    int		force_ff;	
+    int		force_enc;	
+    int		bad_char;	
+    int		useridx;	
+    char	*errmsg;	
     char_u	*(*ea_getline)(int, void *, int, getline_opt_T);
-    void	*cookie;	// argument for getline()
+    void	*cookie;	
 #ifdef FEAT_EVAL
-    cstack_T	*cstack;	// condition stack for ":if" etc.
+    cstack_T	*cstack;	
 #endif
 };
 
-#define FORCE_BIN 1		// ":edit ++bin file"
-#define FORCE_NOBIN 2		// ":edit ++nobin file"
+#define FORCE_BIN 1		
+#define FORCE_NOBIN 2		
 
-// Values for "flags"
-#define EXFLAG_LIST	0x01	// 'l': list
-#define EXFLAG_NR	0x02	// '#': number
-#define EXFLAG_PRINT	0x04	// 'p': print
+
+#define EXFLAG_LIST	0x01	
+#define EXFLAG_NR	0x02	
+#define EXFLAG_PRINT	0x04	
 
 #endif

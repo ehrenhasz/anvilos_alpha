@@ -1,11 +1,5 @@
-/* vi: set sw=4 ts=4: */
-/*
- * helper routines
- *
- * Copyright (C) 2008 by Vladimir Dronnikov <dronnikov@gmail.com>
- *
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
+
+
 
 struct globals {
 	pid_t helper_pid;
@@ -13,7 +7,7 @@ struct globals {
 	unsigned verbose;
 	char *user;
 	char *pass;
-	FILE *fp0; // initial stdin
+	FILE *fp0; 
 	char *opt_charset;
 };
 
@@ -23,7 +17,7 @@ struct globals {
 	G.opt_charset = (char *)CONFIG_FEATURE_MIME_CHARSET; \
 } while (0)
 
-//char FAST_FUNC *parse_url(char *url, char **user, char **pass);
+
 
 void launch_helper(const char **argv) FAST_FUNC;
 void get_cred_or_die(int fd) FAST_FUNC;

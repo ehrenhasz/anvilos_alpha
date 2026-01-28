@@ -1,22 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* include/linux/amba/pl080.h
- *
- * Copyright 2008 Openmoko, Inc.
- * Copyright 2008 Simtec Electronics
- *      http://armlinux.simtec.co.uk/
- *      Ben Dooks <ben@simtec.co.uk>
- *
- * ARM PrimeCell PL080 DMA controller
-*/
 
-/* Note, there are some Samsung updates to this controller block which
- * make it not entierly compatible with the PL080 specification from
- * ARM. When in doubt, check the Samsung documentation first.
- *
- * The Samsung defines are PL080S, and add an extra control register,
- * the ability to move more than 2^11 counts of data and some extra
- * OneNAND features.
-*/
+
+
+
 
 #ifndef ASM_PL080_H
 #define ASM_PL080_H
@@ -41,16 +26,16 @@
 
 #define PL080_SYNC				(0x34)
 
-/* The Faraday Technology FTDMAC020 variant registers */
+
 #define FTDMAC020_CH_BUSY			(0x20)
-/* Identical to PL080_CONFIG */
+
 #define FTDMAC020_CSR				(0x24)
-/* Identical to PL080_SYNC */
+
 #define FTDMAC020_SYNC				(0x2C)
 #define FTDMAC020_REVISION			(0x30)
 #define FTDMAC020_FEATURE			(0x34)
 
-/* Per channel configuration registers */
+
 #define PL080_Cx_BASE(x)			((0x100 + (x * 0x20)))
 #define PL080_CH_SRC_ADDR			(0x00)
 #define PL080_CH_DST_ADDR			(0x04)
@@ -59,7 +44,7 @@
 #define PL080_CH_CONFIG				(0x10)
 #define PL080S_CH_CONTROL2			(0x10)
 #define PL080S_CH_CONFIG			(0x14)
-/* The Faraday FTDMAC020 derivative shuffles the registers around */
+
 #define FTDMAC020_CH_CSR			(0x00)
 #define FTDMAC020_CH_CFG			(0x04)
 #define FTDMAC020_CH_SRC_ADDR			(0x08)
@@ -109,7 +94,7 @@
 #define PL080N_CONFIG_ITPROT			BIT(20)
 #define PL080N_CONFIG_SECPROT			BIT(19)
 #define PL080_CONFIG_HALT			BIT(18)
-#define PL080_CONFIG_ACTIVE			BIT(17)  /* RO */
+#define PL080_CONFIG_ACTIVE			BIT(17)  
 #define PL080_CONFIG_LOCK			BIT(16)
 #define PL080_CONFIG_TC_IRQ_MASK		BIT(15)
 #define PL080_CONFIG_ERR_IRQ_MASK		BIT(14)
@@ -131,7 +116,7 @@
 #define PL080_FLOW_SRC2DST_SRC			(0x7)
 
 #define FTDMAC020_CH_CSR_TC_MSK			BIT(31)
-/* Later versions have a threshold in bits 24..26,  */
+
 #define FTDMAC020_CH_CSR_FIFOTH_MSK		GENMASK(26, 24)
 #define FTDMAC020_CH_CSR_FIFOTH_SHIFT		(24)
 #define FTDMAC020_CH_CSR_CHPR1_MSK		GENMASK(23, 22)
@@ -146,7 +131,7 @@
 #define FTDMAC020_CH_CSR_DST_WIDTH_MSK		GENMASK(10, 8)
 #define FTDMAC020_CH_CSR_DST_WIDTH_SHIFT	(8)
 #define FTDMAC020_CH_CSR_MODE			BIT(7)
-/* 00 = increase, 01 = decrease, 10 = fix */
+
 #define FTDMAC020_CH_CSR_SRCAD_CTL_MSK		GENMASK(6, 5)
 #define FTDMAC020_CH_CSR_SRCAD_CTL_SHIFT	(5)
 #define FTDMAC020_CH_CSR_DSTAD_CTL_MSK		GENMASK(4, 3)
@@ -155,15 +140,15 @@
 #define FTDMAC020_CH_CSR_DST_SEL		BIT(1)
 #define FTDMAC020_CH_CSR_EN			BIT(0)
 
-/* FIFO threshold setting */
+
 #define FTDMAC020_CH_CSR_FIFOTH_1		(0x0)
 #define FTDMAC020_CH_CSR_FIFOTH_2		(0x1)
 #define FTDMAC020_CH_CSR_FIFOTH_4		(0x2)
 #define FTDMAC020_CH_CSR_FIFOTH_8		(0x3)
 #define FTDMAC020_CH_CSR_FIFOTH_16		(0x4)
-/* The FTDMAC020 supports 64bit wide transfers */
+
 #define FTDMAC020_WIDTH_64BIT			(0x3)
-/* Address can be increased, decreased or fixed */
+
 #define FTDMAC020_CH_CSR_SRCAD_CTL_INC		(0x0)
 #define FTDMAC020_CH_CSR_SRCAD_CTL_DEC		(0x1)
 #define FTDMAC020_CH_CSR_SRCAD_CTL_FIXED	(0x2)
@@ -175,7 +160,7 @@
 #define FTDMAC020_CH_CFG_INT_ERR_MASK		BIT(1)
 #define FTDMAC020_CH_CFG_INT_TC_MASK		BIT(0)
 
-/* Inside the LLIs, the applicable CSR fields are mapped differently */
+
 #define FTDMAC020_LLI_TC_MSK			BIT(28)
 #define FTDMAC020_LLI_SRC_WIDTH_MSK		GENMASK(27, 25)
 #define FTDMAC020_LLI_SRC_WIDTH_SHIFT		(25)
@@ -197,7 +182,7 @@
 #define FTDMAC020_CFG_INT_ERR_MSK		BIT(1)
 #define FTDMAC020_CFG_INT_TC_MSK		BIT(0)
 
-/* DMA linked list chain structure */
+
 
 struct pl080_lli {
 	u32	src_addr;
@@ -214,4 +199,4 @@ struct pl080s_lli {
 	u32	control1;
 };
 
-#endif /* ASM_PL080_H */
+#endif 

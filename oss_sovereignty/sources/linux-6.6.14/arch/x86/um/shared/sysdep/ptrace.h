@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SYSDEP_X86_PTRACE_H
 #define __SYSDEP_X86_PTRACE_H
 
@@ -72,4 +72,4 @@ struct uml_pt_regs {
 
 extern int user_context(unsigned long sp);
 
-#endif /* __SYSDEP_X86_PTRACE_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -11,11 +11,9 @@
 #define USEC_PER_SEC	1000000L
 #define NSEC_PER_SEC	1000000000L
 
-#define TEST_UID	65534 /* usually nobody, any !root is fine */
+#define TEST_UID	65534 
 
-/*
- * Checks if two given values differ by less than err% of their sum.
- */
+
 static inline int values_close(long a, long b, int err)
 {
 	return abs(a - b) <= (a + b) / 100 * err;

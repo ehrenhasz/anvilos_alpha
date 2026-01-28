@@ -1,23 +1,4 @@
-/* bnx2x_sriov.h: QLogic Everest network driver.
- *
- * Copyright 2009-2013 Broadcom Corporation
- * Copyright 2014 QLogic Corporation
- * All rights reserved
- *
- * Unless you and QLogic execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2, available
- * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
- *
- * Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other QLogic software provided under a
- * license other than the GPL, without QLogic's express prior written
- * consent.
- *
- * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
- * Written by: Shmulik Ravid
- *	       Ariel Elior <ariel.elior@qlogic.com>
- */
+
 #ifndef BNX2X_SRIOV_H
 #define BNX2X_SRIOV_H
 
@@ -34,30 +15,28 @@ enum sample_bulletin_result {
 
 extern struct workqueue_struct *bnx2x_iov_wq;
 
-/* The bnx2x device structure holds vfdb structure described below.
- * The VF array is indexed by the relative vfid.
- */
+
 #define BNX2X_VF_MAX_QUEUES		16
 #define BNX2X_VF_MAX_TPA_AGG_QUEUES	8
 
 struct bnx2x_sriov {
 	u32 first_vf_in_pf;
 
-	/* standard SRIOV capability fields, mostly for debugging */
-	int pos;		/* capability position */
-	int nres;		/* number of resources */
-	u32 cap;		/* SR-IOV Capabilities */
-	u16 ctrl;		/* SR-IOV Control */
-	u16 total;		/* total VFs associated with the PF */
-	u16 initial;		/* initial VFs associated with the PF */
-	u16 nr_virtfn;		/* number of VFs available */
-	u16 offset;		/* first VF Routing ID offset */
-	u16 stride;		/* following VF stride */
-	u32 pgsz;		/* page size for BAR alignment */
-	u8 link;		/* Function Dependency Link */
+	
+	int pos;		
+	int nres;		
+	u32 cap;		
+	u16 ctrl;		
+	u16 total;		
+	u16 initial;		
+	u16 nr_virtfn;		
+	u16 offset;		
+	u16 stride;		
+	u32 pgsz;		
+	u8 link;		
 };
 
-/* bars */
+
 struct bnx2x_vf_bar {
 	u64 bar;
 	u32 size;
@@ -68,22 +47,22 @@ struct bnx2x_vf_bar_info {
 	u8 nr_bars;
 };
 
-/* vf queue (used both for rx or tx) */
+
 struct bnx2x_vf_queue {
 	struct eth_context		*cxt;
 
-	/* MACs object */
+	
 	struct bnx2x_vlan_mac_obj	mac_obj;
 
-	/* VLANs object */
+	
 	struct bnx2x_vlan_mac_obj	vlan_obj;
 
-	/* VLAN-MACs object */
+	
 	struct bnx2x_vlan_mac_obj	vlan_mac_obj;
 
-	unsigned long accept_flags;	/* last accept flags configured */
+	unsigned long accept_flags;	
 
-	/* Queue Slow-path State object */
+	
 	struct bnx2x_queue_sp_obj	sp_obj;
 
 	u32 cid;
@@ -93,25 +72,23 @@ struct bnx2x_vf_queue {
 	bool sp_initialized;
 };
 
-/* struct bnx2x_vf_queue_construct_params - prepare queue construction
- * parameters: q-init, q-setup and SB index
- */
+
 struct bnx2x_vf_queue_construct_params {
 	struct bnx2x_queue_state_params		qstate;
 	struct bnx2x_queue_setup_params		prep_qsetup;
 };
 
-/* forward */
+
 struct bnx2x_virtf;
 
-/* VFOP definitions */
+
 
 struct bnx2x_vf_mac_vlan_filter {
 	int type;
 #define BNX2X_VF_FILTER_MAC	BIT(0)
 #define BNX2X_VF_FILTER_VLAN	BIT(1)
 #define BNX2X_VF_FILTER_VLAN_MAC \
-	(BNX2X_VF_FILTER_MAC | BNX2X_VF_FILTER_VLAN) /*shortcut*/
+	(BNX2X_VF_FILTER_MAC | BNX2X_VF_FILTER_VLAN) 
 
 	bool add;
 	bool applied;
@@ -124,44 +101,31 @@ struct bnx2x_vf_mac_vlan_filters {
 	struct bnx2x_vf_mac_vlan_filter filters[];
 };
 
-/* vf context */
+
 struct bnx2x_virtf {
 	u16 cfg_flags;
 #define VF_CFG_STATS_COALESCE	0x1
 #define VF_CFG_EXT_BULLETIN	0x2
 #define VF_CFG_VLAN_FILTER	0x4
-	u8 link_cfg;		/* IFLA_VF_LINK_STATE_AUTO
-				 * IFLA_VF_LINK_STATE_ENABLE
-				 * IFLA_VF_LINK_STATE_DISABLE
-				 */
+	u8 link_cfg;		
 	u8 state;
-#define VF_FREE		0	/* VF ready to be acquired holds no resc */
-#define VF_ACQUIRED	1	/* VF acquired, but not initialized */
-#define VF_ENABLED	2	/* VF Enabled */
-#define VF_RESET	3	/* VF FLR'd, pending cleanup */
-#define VF_LOST		4	/* Recovery while VFs are loaded */
+#define VF_FREE		0	
+#define VF_ACQUIRED	1	
+#define VF_ENABLED	2	
+#define VF_RESET	3	
+#define VF_LOST		4	
 
-	bool flr_clnup_stage;	/* true during flr cleanup */
-	bool malicious;		/* true if FW indicated so, until FLR */
-	/* 1(true) if spoof check is enabled */
+	bool flr_clnup_stage;	
+	bool malicious;		
+	
 	u8 spoofchk;
 
-	/* dma */
+	
 	dma_addr_t fw_stat_map;
 	u16 stats_stride;
 	dma_addr_t bulletin_map;
 
-	/* Allocated resources counters. Before the VF is acquired, the
-	 * counters hold the following values:
-	 *
-	 * - xxq_count = 0 as the queues memory is not allocated yet.
-	 *
-	 * - sb_count  = The number of status blocks configured for this VF in
-	 *		 the IGU CAM. Initially read during probe.
-	 *
-	 * - xx_rules_count = The number of rules statically and equally
-	 *		      allocated for each VF, during PF load.
-	 */
+	
 	struct vf_pf_resc_request	alloc_resc;
 #define vf_rxq_count(vf)		((vf)->alloc_resc.num_rxqs)
 #define vf_txq_count(vf)		((vf)->alloc_resc.num_txqs)
@@ -170,8 +134,8 @@ struct bnx2x_virtf {
 #define vf_vlan_rules_cnt(vf)		((vf)->alloc_resc.num_vlan_filters)
 #define vf_mc_rules_cnt(vf)		((vf)->alloc_resc.num_mc_filters)
 
-	u8 sb_count;	/* actual number of SBs */
-	u8 igu_base_id;	/* base igu status block id */
+	u8 sb_count;	
+	u8 igu_base_id;	
 
 	struct bnx2x_vf_queue	*vfqs;
 #define LEADING_IDX			0
@@ -179,35 +143,33 @@ struct bnx2x_virtf {
 #define bnx2x_vfq(vf, nr, var)		((vf)->vfqs[(nr)].var)
 #define bnx2x_leading_vfq(vf, var)	((vf)->vfqs[LEADING_IDX].var)
 
-	u8 index;	/* index in the vf array */
+	u8 index;	
 	u8 abs_vfid;
 	u8 sp_cl_id;
-	u32 error;	/* 0 means all's-well */
+	u32 error;	
 
-	/* BDF */
+	
 	unsigned int domain;
 	unsigned int bus;
 	unsigned int devfn;
 
-	/* bars */
+	
 	struct bnx2x_vf_bar bars[PCI_SRIOV_NUM_BARS];
 
-	/* set-mac ramrod state 1-pending, 0-done */
+	
 	unsigned long	filter_state;
 
-	/* leading rss client id ~~ the client id of the first rxq, must be
-	 * set for each txq.
-	 */
+	
 	int leading_rss;
 
-	/* MCAST object */
+	
 	struct bnx2x_mcast_obj		mcast_obj;
 
-	/* RSS configuration object */
+	
 	struct bnx2x_rss_config_obj     rss_conf_obj;
 
-	/* slow-path operations */
-	struct mutex			op_mutex; /* one vfop at a time mutex */
+	
+	struct mutex			op_mutex; 
 	enum channel_tlvs		op_current;
 
 	u8 fp_hsi;
@@ -237,25 +199,22 @@ struct bnx2x_virtf {
 #define FW_VF_HANDLE(abs_vfid)	\
 	(abs_vfid + FW_PF_MAX_HANDLE)
 
-#define GET_NUM_VFS_PER_PATH(bp)	64 /* use max possible value */
+#define GET_NUM_VFS_PER_PATH(bp)	64 
 #define GET_NUM_VFS_PER_PF(bp)		((bp)->vfdb ? (bp)->vfdb->sriov.total \
 						    : 0)
 #define VF_MAC_CREDIT_CNT		1
-#define VF_VLAN_CREDIT_CNT		2 /* VLAN0 + 'real' VLAN */
+#define VF_VLAN_CREDIT_CNT		2 
 
-/* locking and unlocking the channel mutex */
+
 void bnx2x_lock_vf_pf_channel(struct bnx2x *bp, struct bnx2x_virtf *vf,
 			      enum channel_tlvs tlv);
 
 void bnx2x_unlock_vf_pf_channel(struct bnx2x *bp, struct bnx2x_virtf *vf,
 				enum channel_tlvs expected_tlv);
 
-/* VF mail box (aka vf-pf channel) */
 
-/* a container for the bi-directional vf<-->pf messages.
- *  The actual response will be placed according to the offset parameter
- *  provided in the request
- */
+
+
 
 #define MBX_MSG_ALIGN	8
 #define MBX_MSG_ALIGNED_SIZE	(roundup(sizeof(struct bnx2x_vf_mbx_msg), \
@@ -270,11 +229,11 @@ struct bnx2x_vf_mbx {
 	struct bnx2x_vf_mbx_msg *msg;
 	dma_addr_t msg_mapping;
 
-	/* VF GPA address */
+	
 	u32 vf_addr_lo;
 	u32 vf_addr_hi;
 
-	struct vfpf_first_tlv first_tlv;	/* saved VF request header */
+	struct vfpf_first_tlv first_tlv;	
 };
 
 struct bnx2x_vf_sp {
@@ -316,20 +275,20 @@ struct hw_dma {
 
 struct bnx2x_vfdb {
 #define BP_VFDB(bp)		((bp)->vfdb)
-	/* vf array */
+	
 	struct bnx2x_virtf	*vfs;
 #define BP_VF(bp, idx)		((BP_VFDB(bp) && (bp)->vfdb->vfs) ? \
 					&((bp)->vfdb->vfs[idx]) : NULL)
 #define bnx2x_vf(bp, idx, var)	((bp)->vfdb->vfs[idx].var)
 
-	/* queue array - for all vfs */
+	
 	struct bnx2x_vf_queue *vfqs;
 
-	/* vf HW contexts */
+	
 	struct hw_dma		context[BNX2X_VF_CIDS/ILT_PAGE_CIDS];
 #define	BP_VF_CXT_PAGE(bp, i)	(&(bp)->vfdb->context[i])
 
-	/* SR-IOV information */
+	
 	struct bnx2x_sriov	sriov;
 	struct hw_dma		mbx_dma;
 #define BP_VF_MBX_DMA(bp)	(&((bp)->vfdb->mbx_dma))
@@ -353,25 +312,25 @@ struct bnx2x_vfdb {
 #define FLRD_VFS_DWORDS (BNX2X_MAX_NUM_OF_VFS / 32)
 	u32 flrd_vfs[FLRD_VFS_DWORDS];
 
-	/* the number of msix vectors belonging to this PF designated for VFs */
+	
 	u16 vf_sbs_pool;
 	u16 first_vf_igu_entry;
 
-	/* sp_rtnl synchronization */
+	
 	struct mutex			event_mutex;
 	u64				event_occur;
 
-	/* bulletin board update synchronization */
+	
 	struct mutex			bulletin_mutex;
 };
 
-/* queue access */
+
 static inline struct bnx2x_vf_queue *vfq_get(struct bnx2x_virtf *vf, u8 index)
 {
 	return &(vf->vfqs[index]);
 }
 
-/* FW ids */
+
 static inline u8 vf_igu_sb(struct bnx2x_virtf *vf, u16 sb_idx)
 {
 	return vf->igu_base_id + sb_idx;
@@ -400,7 +359,7 @@ static inline u8 vfq_qzone_id(struct bnx2x_virtf *vf, struct bnx2x_vf_queue *q)
 	return vfq_cl_id(vf, q);
 }
 
-/* global iov routines */
+
 int bnx2x_iov_init_ilt(struct bnx2x *bp, u16 line);
 int bnx2x_iov_init_one(struct bnx2x *bp, int int_mode_param, int num_vfs_param);
 void bnx2x_iov_remove_one(struct bnx2x *bp);
@@ -415,23 +374,23 @@ void bnx2x_iov_set_queue_sp_obj(struct bnx2x *bp, int vf_cid,
 int bnx2x_iov_eq_sp_event(struct bnx2x *bp, union event_ring_elem *elem);
 void bnx2x_iov_adjust_stats_req(struct bnx2x *bp);
 void bnx2x_iov_storm_stats_update(struct bnx2x *bp);
-/* global vf mailbox routines */
+
 void bnx2x_vf_mbx(struct bnx2x *bp);
 void bnx2x_vf_mbx_schedule(struct bnx2x *bp,
 			   struct vf_pf_event_data *vfpf_event);
 void bnx2x_vf_enable_mbx(struct bnx2x *bp, u8 abs_vfid);
 
-/* CORE VF API */
+
 typedef u8 bnx2x_mac_addr_t[ETH_ALEN];
 
-/* acquire */
+
 int bnx2x_vf_acquire(struct bnx2x *bp, struct bnx2x_virtf *vf,
 		     struct vf_pf_resc_request *resc);
-/* init */
+
 int bnx2x_vf_init(struct bnx2x *bp, struct bnx2x_virtf *vf,
 		  dma_addr_t *sb_map);
 
-/* VFOP queue construction helpers */
+
 void bnx2x_vfop_qctor_dump_tx(struct bnx2x *bp, struct bnx2x_virtf *vf,
 			    struct bnx2x_queue_init_params *init_params,
 			    struct bnx2x_queue_setup_params *setup_params,
@@ -474,22 +433,18 @@ int bnx2x_vf_tpa_update(struct bnx2x *bp, struct bnx2x_virtf *vf,
 			struct vfpf_tpa_tlv *tlv,
 			struct bnx2x_queue_update_tpa_params *params);
 
-/* VF release ~ VF close + VF release-resources
- *
- * Release is the ultimate SW shutdown and is called whenever an
- * irrecoverable error is encountered.
- */
+
 int bnx2x_vf_release(struct bnx2x *bp, struct bnx2x_virtf *vf);
 int bnx2x_vf_idx_by_abs_fid(struct bnx2x *bp, u16 abs_vfid);
 u8 bnx2x_vf_max_queue_cnt(struct bnx2x *bp, struct bnx2x_virtf *vf);
 
-/* FLR routines */
 
-/* VF FLR helpers */
+
+
 int bnx2x_vf_flr_clnup_epilog(struct bnx2x *bp, u8 abs_vfid);
 void bnx2x_vf_enable_access(struct bnx2x *bp, u8 abs_vfid);
 
-/* Handles an FLR (or VF_DISABLE) notification form the MCP */
+
 void bnx2x_vf_handle_flr_event(struct bnx2x *bp);
 
 bool bnx2x_tlv_supported(u16 tlvtype);
@@ -501,7 +456,7 @@ void bnx2x_vf_bulletin_finalize(struct pf_vf_bulletin_content *bulletin,
 
 enum sample_bulletin_result bnx2x_sample_bulletin(struct bnx2x *bp);
 
-/* VF side vfpf channel functions */
+
 int bnx2x_vfpf_acquire(struct bnx2x *bp, u8 tx_count, u8 rx_count);
 int bnx2x_vfpf_release(struct bnx2x *bp);
 int bnx2x_vfpf_init(struct bnx2x *bp);
@@ -554,7 +509,7 @@ int bnx2x_iov_link_update_vf(struct bnx2x *bp, int idx);
 int bnx2x_set_vf_link_state(struct net_device *dev, int vf, int link_state);
 
 int bnx2x_vfpf_update_vlan(struct bnx2x *bp, u16 vid, u8 vf_qid, bool add);
-#else /* CONFIG_BNX2X_SRIOV */
+#else 
 
 #define GET_NUM_VFS_PER_PATH(bp)	0
 #define GET_NUM_VFS_PER_PF(bp)		0
@@ -629,5 +584,5 @@ static inline void bnx2x_vf_bulletin_finalize(struct pf_vf_bulletin_content *bul
 
 static inline int bnx2x_vfpf_update_vlan(struct bnx2x *bp, u16 vid, u8 vf_qid, bool add) {return 0; }
 
-#endif /* CONFIG_BNX2X_SRIOV */
-#endif /* bnx2x_sriov.h */
+#endif 
+#endif 

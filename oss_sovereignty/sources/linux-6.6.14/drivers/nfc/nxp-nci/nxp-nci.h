@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014  NXP Semiconductors  All rights reserved.
- *
- * Authors: Clément Perrochaud <clement.perrochaud@nxp.com>
- *
- * Derived from PN544 device driver:
- * Copyright (C) 2012  Intel Corporation. All rights reserved.
-*/
+
+
 
 #ifndef __LOCAL_NXP_NCI_H_
 #define __LOCAL_NXP_NCI_H_
@@ -75,4 +68,4 @@ int nxp_nci_probe(void *phy_id, struct device *pdev,
 		  struct nci_dev **ndev);
 void nxp_nci_remove(struct nci_dev *ndev);
 
-#endif /* __LOCAL_NXP_NCI_H_ */
+#endif 

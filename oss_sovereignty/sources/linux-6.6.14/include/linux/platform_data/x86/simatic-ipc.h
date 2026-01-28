@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Siemens SIMATIC IPC drivers
- *
- * Copyright (c) Siemens AG, 2018-2023
- *
- * Authors:
- *  Henning Schild <henning.schild@siemens.com>
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- */
+
+
 
 #ifndef __PLATFORM_DATA_X86_SIMATIC_IPC_H
 #define __PLATFORM_DATA_X86_SIMATIC_IPC_H
@@ -16,7 +8,7 @@
 #include <linux/platform_data/x86/simatic-ipc-base.h>
 
 #define SIMATIC_IPC_DMI_ENTRY_OEM	129
-/* binary type */
+
 #define SIMATIC_IPC_DMI_TYPE		0xff
 #define SIMATIC_IPC_DMI_GROUP		0x05
 #define SIMATIC_IPC_DMI_ENTRY		0x02
@@ -43,12 +35,12 @@ enum simatic_ipc_station_ids {
 static inline u32 simatic_ipc_get_station_id(u8 *data, int max_len)
 {
 	struct {
-		u8	type;		/* type (0xff = binary) */
-		u8	len;		/* len of data entry */
+		u8	type;		
+		u8	len;		
 		u8	group;
 		u8	entry;
 		u8	tid;
-		__le32	station_id;	/* station id (LE) */
+		__le32	station_id;	
 	} __packed * data_entry = (void *)data + sizeof(struct dmi_header);
 
 	while ((u8 *)data_entry < data + max_len) {
@@ -76,4 +68,4 @@ simatic_ipc_find_dmi_entry_helper(const struct dmi_header *dh, void *_data)
 	*id = simatic_ipc_get_station_id((u8 *)dh, dh->length);
 }
 
-#endif /* __PLATFORM_DATA_X86_SIMATIC_IPC_H */
+#endif 

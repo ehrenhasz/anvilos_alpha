@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __SOC_MEDIATEK_MT8183_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8183_PM_DOMAINS_H
@@ -6,9 +6,7 @@
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mt8183-power.h>
 
-/*
- * MT8183 power domain support
- */
+
 
 static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
 	[MT8183_POWER_DOMAIN_AUDIO] = {
@@ -263,4 +261,4 @@ static const struct scpsys_soc_data mt8183_scpsys_data = {
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8183),
 };
 
-#endif /* __SOC_MEDIATEK_MT8183_PM_DOMAINS_H */
+#endif 

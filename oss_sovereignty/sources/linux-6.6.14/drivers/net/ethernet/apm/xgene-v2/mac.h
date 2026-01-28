@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Applied Micro X-Gene SoC Ethernet v2 Driver
- *
- * Copyright (c) 2017, Applied Micro Circuits Corporation
- * Author(s): Iyappan Subramanian <isubramanian@apm.com>
- *	      Keyur Chudgar <kchudgar@apm.com>
- */
+
+
 
 #ifndef __XGENE_ENET_V2_MAC_H__
 #define __XGENE_ENET_V2_MAC_H__
 
-/* Register offsets */
+
 #define MAC_CONFIG_1		0xa000
 #define MAC_CONFIG_2		0xa004
 #define MII_MGMT_CONFIG		0xa020
@@ -28,7 +22,7 @@
 #define ICM_CONFIG2_REG_0	0x2c08
 #define ECM_CONFIG0_REG_0	0x2d00
 
-/* Register fields */
+
 #define SOFT_RESET		BIT(31)
 #define TX_EN			BIT(0)
 #define RX_EN			BIT(2)
@@ -92,4 +86,4 @@ void xge_mac_disable(struct xge_pdata *pdata);
 void xge_mac_init(struct xge_pdata *pdata);
 void xge_mac_set_station_addr(struct xge_pdata *pdata);
 
-#endif /* __XGENE_ENET_V2_MAC_H__ */
+#endif 

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * DSA driver for:
- * Hirschmann Hellcreek TSN switch.
- *
- * Copyright (C) 2019-2021 Linutronix GmbH
- * Author Kurt Kanzenbach <kurt@linutronix.de>
- */
+
+
 
 #ifndef _HELLCREEK_H_
 #define _HELLCREEK_H_
@@ -23,13 +17,7 @@
 #include <net/dsa.h>
 #include <net/pkt_sched.h>
 
-/* Ports:
- *  - 0: CPU
- *  - 1: Tunnel
- *  - 2: TSN front port 1
- *  - 3: TSN front port 2
- *  - ...
- */
+
 #define CPU_PORT			0
 #define TUNNEL_PORT			1
 
@@ -39,7 +27,7 @@
 #define HELLCREEK_NUM_EGRESS_QUEUES	8
 #define HELLCREEK_DEFAULT_MAX_SDU	1536
 
-/* Register definitions */
+
 #define HR_MODID_C			(0 * 2)
 #define HR_REL_L_C			(1 * 2)
 #define HR_REL_H_C			(2 * 2)
@@ -223,25 +211,25 @@ struct hellcreek_counter {
 
 struct hellcreek;
 
-/* State flags for hellcreek_port_hwtstamp::state */
+
 enum {
 	HELLCREEK_HWTSTAMP_ENABLED,
 	HELLCREEK_HWTSTAMP_TX_IN_PROGRESS,
 };
 
-/* A structure to hold hardware timestamping information per port */
+
 struct hellcreek_port_hwtstamp {
-	/* Timestamping state */
+	
 	unsigned long state;
 
-	/* Resources for receive timestamping */
-	struct sk_buff_head rx_queue; /* For synchronization messages */
+	
+	struct sk_buff_head rx_queue; 
 
-	/* Resources for transmit timestamping */
+	
 	unsigned long tx_tstamp_start;
 	struct sk_buff *tx_skb;
 
-	/* Current timestamp configuration */
+	
 	struct hwtstamp_config tstamp_config;
 };
 
@@ -249,13 +237,13 @@ struct hellcreek_port {
 	struct hellcreek *hellcreek;
 	unsigned long *vlan_dev_bitmap;
 	int port;
-	u16 ptcfg;		/* ptcfg shadow */
+	u16 ptcfg;		
 	u64 *counter_values;
 
-	/* Per-port timestamping resources */
+	
 	struct hellcreek_port_hwtstamp port_hwtstamp;
 
-	/* Per-port Qbv schedule information */
+	
 	struct tc_taprio_qopt_offload *current_schedule;
 	struct delayed_work schedule_work;
 };
@@ -282,32 +270,27 @@ struct hellcreek {
 	struct delayed_work overflow_work;
 	struct led_classdev led_is_gm;
 	struct led_classdev led_sync_good;
-	struct mutex reg_lock;	/* Switch IP register lock */
-	struct mutex vlan_lock;	/* VLAN bitmaps lock */
-	struct mutex ptp_lock;	/* PTP IP register lock */
+	struct mutex reg_lock;	
+	struct mutex vlan_lock;	
+	struct mutex ptp_lock;	
 	struct devlink_region *vlan_region;
 	struct devlink_region *fdb_region;
 	void __iomem *base;
 	void __iomem *ptp_base;
-	u16 swcfg;		/* swcfg shadow */
-	u8 *vidmbrcfg;		/* vidmbrcfg shadow */
-	u64 seconds;		/* PTP seconds */
-	u64 last_ts;		/* Used for overflow detection */
-	u16 status_out;		/* ptp.status_out shadow */
+	u16 swcfg;		
+	u8 *vidmbrcfg;		
+	u64 seconds;		
+	u64 last_ts;		
+	u16 status_out;		
 	size_t fdb_entries;
 };
 
-/* A Qbv schedule can only started up to 8 seconds in the future. If the delta
- * between the base time and the current ptp time is larger than 8 seconds, then
- * use periodic work to check for the schedule to be started. The delayed work
- * cannot be armed directly to $base_time - 8 + X, because for large deltas the
- * PTP frequency matters.
- */
+
 #define HELLCREEK_SCHEDULE_PERIOD	(2 * HZ)
 #define dw_to_hellcreek_port(dw)				\
 	container_of(dw, struct hellcreek_port, schedule_work)
 
-/* Devlink resources */
+
 enum hellcreek_devlink_resource_id {
 	HELLCREEK_DEVLINK_PARAM_ID_VLAN_TABLE,
 	HELLCREEK_DEVLINK_PARAM_ID_FDB_TABLE,
@@ -318,4 +301,4 @@ struct hellcreek_devlink_vlan_entry {
 	u16 member;
 };
 
-#endif /* _HELLCREEK_H_ */
+#endif 

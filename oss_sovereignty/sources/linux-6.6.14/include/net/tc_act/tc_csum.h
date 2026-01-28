@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_CSUM_H
 #define __NET_TC_CSUM_H
 
@@ -38,4 +38,4 @@ static inline u32 tcf_csum_update_flags(const struct tc_action *a)
 	return update_flags;
 }
 
-#endif /* __NET_TC_CSUM_H */
+#endif 

@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-// options to control how MicroPython is built
+
 
 #define MICROPY_CONFIG_ROM_LEVEL    (MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)
 
@@ -35,21 +35,21 @@
 #define MICROPY_PY_MACHINE_PIN_BASE (1)
 #define MICROPY_VFS                 (1)
 
-// type definitions for the specific machine
+
 
 #define MP_SSIZE_MAX (0x7fffffff)
 
 #define UINT_FMT "%lu"
 #define INT_FMT "%ld"
 
-typedef int32_t mp_int_t; // must be pointer size
-typedef uint32_t mp_uint_t; // must be pointer size
+typedef int32_t mp_int_t; 
+typedef uint32_t mp_uint_t; 
 typedef long mp_off_t;
 
-// We need to provide a declaration/definition of alloca()
+
 #include <alloca.h>
 
-// We need an implementation of the log2 function which is not a macro.
+
 #define MP_NEED_LOG2 (1)
 
 #ifdef TEST

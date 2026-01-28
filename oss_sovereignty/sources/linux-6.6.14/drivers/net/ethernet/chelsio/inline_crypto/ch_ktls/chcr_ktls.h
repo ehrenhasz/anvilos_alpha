@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2020 Chelsio Communications.  All rights reserved. */
+
+
 
 #ifndef __CHCR_KTLS_H__
 #define __CHCR_KTLS_H__
@@ -36,7 +36,7 @@ enum ch_ktls_open_state {
 
 struct chcr_ktls_info {
 	struct sock *sk;
-	spinlock_t lock; /* lock for pending_close */
+	spinlock_t lock; 
 	struct ktls_key_ctx key_ctx;
 	struct adapter *adap;
 	struct l2t_entry *l2te;
@@ -91,7 +91,7 @@ chcr_get_ktls_tx_context(struct tls_context *tls_ctx)
 
 static inline int chcr_get_first_rx_qid(struct adapter *adap)
 {
-	/* u_ctx is saved in adap, fetch it */
+	
 	struct chcr_ktls_uld_ctx *u_ctx = adap->uld[CXGB4_ULD_KTLS].handle;
 
 	if (!u_ctx)
@@ -100,4 +100,4 @@ static inline int chcr_get_first_rx_qid(struct adapter *adap)
 }
 
 typedef int (*chcr_handler_func)(struct adapter *adap, unsigned char *input);
-#endif /* __CHCR_KTLS_H__ */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_INTLIST_H
 #define __PERF_INTLIST_H
 
@@ -42,7 +42,7 @@ static inline unsigned int intlist__nr_entries(const struct intlist *ilist)
 	return rblist__nr_entries(&ilist->rblist);
 }
 
-/* For intlist iteration */
+
 static inline struct int_node *intlist__first(struct intlist *ilist)
 {
 	struct rb_node *rn = rb_first_cached(&ilist->rblist.entries);
@@ -57,22 +57,12 @@ static inline struct int_node *intlist__next(struct int_node *in)
 	return rn ? rb_entry(rn, struct int_node, rb_node) : NULL;
 }
 
-/**
- * intlist__for_each_entry      - iterate over a intlist
- * @pos:	the &struct int_node to use as a loop cursor.
- * @ilist:	the &struct intlist for loop.
- */
+
 #define intlist__for_each_entry(pos, ilist)	\
 	for (pos = intlist__first(ilist); pos; pos = intlist__next(pos))
 
-/**
- * intlist__for_each_entry_safe - iterate over a intlist safe against removal of
- *                         int_node
- * @pos:	the &struct int_node to use as a loop cursor.
- * @n:		another &struct int_node to use as temporary storage.
- * @ilist:	the &struct intlist for loop.
- */
+
 #define intlist__for_each_entry_safe(pos, n, ilist)	\
 	for (pos = intlist__first(ilist), n = intlist__next(pos); pos;\
 	     pos = n, n = intlist__next(n))
-#endif /* __PERF_INTLIST_H */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Clocks for ux500 platforms
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+
 
 #ifndef __UX500_CLK_H
 #define __UX500_CLK_H
@@ -93,4 +88,4 @@ struct clk *clk_reg_sysctrl_set_parent(struct device *dev,
 				       u8 *reg_bits,
 				       unsigned long flags);
 
-#endif /* __UX500_CLK_H */
+#endif 

@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_CPU_PLL_REGS_H_
 #define ASIC_REG_CPU_PLL_REGS_H_
 
-/*
- *****************************************
- *   CPU_PLL (Prototype: PLL)
- *****************************************
- */
+
 
 #define mmCPU_PLL_NR                                                 0x4A2100
 
@@ -101,4 +89,4 @@
 
 #define mmCPU_PLL_FREQ_CALC_EN                                       0x4A2440
 
-#endif /* ASIC_REG_CPU_PLL_REGS_H_ */
+#endif 

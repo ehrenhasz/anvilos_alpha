@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Checksumming functions for IP, TCP, UDP and so on
- *
- * Authors:	Jorge Cwik, <jorge@laser.satlink.net>
- *		Arnt Gulbrandsen, <agulbra@nvg.unit.no>
- *		Borrows very liberally from tcp.c and ip.c, see those
- *		files for more names.
- */
+
+
 
 #ifndef _CHECKSUM_H
 #define _CHECKSUM_H
@@ -85,7 +74,7 @@ static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
 #ifndef HAVE_ARCH_CSUM_SHIFT
 static __always_inline __wsum csum_shift(__wsum sum, int offset)
 {
-	/* rotate sum to align it with a 16b boundary */
+	
 	if (offset & 1)
 		return (__force __wsum)ror32((__force u32)sum, 8);
 	return sum;
@@ -135,12 +124,7 @@ static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
 	*sum = csum_fold(csum_add(tmp, (__force __wsum)to));
 }
 
-/* Implements RFC 1624 (Incremental Internet Checksum)
- * 3. Discussion states :
- *     HC' = ~(~HC + ~m + m')
- *  m : old value of a 16bit field
- *  m' : new value of a 16bit field
- */
+
 static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
 {
 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
@@ -174,10 +158,10 @@ static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
 	__sum16 *psum = (__sum16 *)(ptr + offset);
 	__wsum delta;
 
-	/* Subtract out checksum up to start */
+	
 	csum = csum_sub(csum, csum_partial(ptr, start, 0));
 
-	/* Set derived checksum in packet */
+	
 	delta = csum_sub((__force __wsum)csum_fold(csum),
 			 (__force __wsum)*psum);
 	*psum = csum_fold(csum);

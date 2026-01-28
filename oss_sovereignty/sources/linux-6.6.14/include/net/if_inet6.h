@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	inet6 interface/address list definitions
- *	Linux INET6 implementation 
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>	
- */
+
+
 
 #ifndef _NET_IF_INET6_H
 #define _NET_IF_INET6_H
@@ -14,7 +8,7 @@
 #include <linux/ipv6.h>
 #include <linux/refcount.h>
 
-/* inet6_dev.if_flags */
+
 
 #define IF_RA_OTHERCONF	0x80
 #define IF_RA_MANAGED	0x40
@@ -35,7 +29,7 @@ struct inet6_ifaddr {
 	__u32			prefix_len;
 	__u32			rt_priority;
 
-	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
+	
 	__u32			valid_lft;
 	__u32			prefered_lft;
 	refcount_t		refcnt;
@@ -50,8 +44,8 @@ struct inet6_ifaddr {
 	__u16			scope;
 	__u64			dad_nonce;
 
-	unsigned long		cstamp;	/* created timestamp */
-	unsigned long		tstamp; /* updated timestamp */
+	unsigned long		cstamp;	
+	unsigned long		tstamp; 
 
 	struct delayed_work	dad_work;
 
@@ -60,13 +54,7 @@ struct inet6_ifaddr {
 
 	struct hlist_node	addr_lst;
 	struct list_head	if_list;
-	/*
-	 * Used to safely traverse idev->addr_list in process context
-	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-	 * In that case, add the items to this list temporarily and iterate
-	 * without holding idev->lock.
-	 * See addrconf_ifdown and dev_forward_change.
-	 */
+	
 	struct list_head	if_list_aux;
 
 	struct list_head	tmp_list;
@@ -88,12 +76,12 @@ struct ip6_sf_socklist {
 	struct in6_addr		sl_addr[];
 };
 
-#define IP6_SFBLOCK	10	/* allocate this many at once */
+#define IP6_SFBLOCK	10	
 
 struct ipv6_mc_socklist {
 	struct in6_addr		addr;
 	int			ifindex;
-	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
+	unsigned int		sfmode;		
 	struct ipv6_mc_socklist __rcu *next;
 	struct ip6_sf_socklist	__rcu *sflist;
 	struct rcu_head		rcu;
@@ -102,10 +90,10 @@ struct ipv6_mc_socklist {
 struct ip6_sf_list {
 	struct ip6_sf_list __rcu *sf_next;
 	struct in6_addr		sf_addr;
-	unsigned long		sf_count[2];	/* include/exclude counts */
-	unsigned char		sf_gsresp;	/* include in g & s response? */
-	unsigned char		sf_oldin;	/* change state */
-	unsigned char		sf_crcount;	/* retrans. left to send */
+	unsigned long		sf_count[2];	
+	unsigned char		sf_gsresp;	
+	unsigned char		sf_oldin;	
+	unsigned char		sf_crcount;	
 	struct rcu_head		rcu;
 };
 
@@ -133,7 +121,7 @@ struct ifmcaddr6 {
 	struct rcu_head		rcu;
 };
 
-/* Anycast stuff */
+
 
 struct ipv6_ac_socklist {
 	struct in6_addr		acl_addr;
@@ -173,28 +161,28 @@ struct inet6_dev {
 	struct ifmcaddr6	__rcu *mc_list;
 	struct ifmcaddr6	__rcu *mc_tomb;
 
-	unsigned char		mc_qrv;		/* Query Robustness Variable */
+	unsigned char		mc_qrv;		
 	unsigned char		mc_gq_running;
 	unsigned char		mc_ifc_count;
 	unsigned char		mc_dad_count;
 
-	unsigned long		mc_v1_seen;	/* Max time we stay in MLDv1 mode */
-	unsigned long		mc_qi;		/* Query Interval */
-	unsigned long		mc_qri;		/* Query Response Interval */
+	unsigned long		mc_v1_seen;	
+	unsigned long		mc_qi;		
+	unsigned long		mc_qri;		
 	unsigned long		mc_maxdelay;
 
-	struct delayed_work	mc_gq_work;	/* general query work */
-	struct delayed_work	mc_ifc_work;	/* interface change work */
-	struct delayed_work	mc_dad_work;	/* dad complete mc work */
-	struct delayed_work	mc_query_work;	/* mld query work */
-	struct delayed_work	mc_report_work;	/* mld report work */
+	struct delayed_work	mc_gq_work;	
+	struct delayed_work	mc_ifc_work;	
+	struct delayed_work	mc_dad_work;	
+	struct delayed_work	mc_query_work;	
+	struct delayed_work	mc_report_work;	
 
-	struct sk_buff_head	mc_query_queue;		/* mld query queue */
-	struct sk_buff_head	mc_report_queue;	/* mld report queue */
+	struct sk_buff_head	mc_query_queue;		
+	struct sk_buff_head	mc_report_queue;	
 
-	spinlock_t		mc_query_lock;	/* mld query queue lock */
-	spinlock_t		mc_report_lock;	/* mld query report lock */
-	struct mutex		mc_lock;	/* mld global lock */
+	spinlock_t		mc_query_lock;	
+	spinlock_t		mc_report_lock;	
+	struct mutex		mc_lock;	
 
 	struct ifacaddr6	*ac_list;
 	rwlock_t		lock;
@@ -212,10 +200,10 @@ struct inet6_dev {
 	struct ipv6_devstat	stats;
 
 	struct timer_list	rs_timer;
-	__s32			rs_interval;	/* in jiffies */
+	__s32			rs_interval;	
 	__u8			rs_probes;
 
-	unsigned long		tstamp; /* ipv6InterfaceTable update timestamp */
+	unsigned long		tstamp; 
 	struct rcu_head		rcu;
 
 	unsigned int		ra_mtu;
@@ -223,11 +211,7 @@ struct inet6_dev {
 
 static inline void ipv6_eth_mc_map(const struct in6_addr *addr, char *buf)
 {
-	/*
-	 *	+-------+-------+-------+-------+-------+-------+
-	 *      |   33  |   33  | DST13 | DST14 | DST15 | DST16 |
-	 *      +-------+-------+-------+-------+-------+-------+
-	 */
+	
 
 	buf[0]= 0x33;
 	buf[1]= 0x33;
@@ -245,15 +229,15 @@ static inline void ipv6_ib_mc_map(const struct in6_addr *addr,
 {
 	unsigned char scope = broadcast[5] & 0xF;
 
-	buf[0]  = 0;		/* Reserved */
-	buf[1]  = 0xff;		/* Multicast QPN */
+	buf[0]  = 0;		
+	buf[1]  = 0xff;		
 	buf[2]  = 0xff;
 	buf[3]  = 0xff;
 	buf[4]  = 0xff;
-	buf[5]  = 0x10 | scope;	/* scope from broadcast address */
-	buf[6]  = 0x60;		/* IPv6 signature */
+	buf[5]  = 0x10 | scope;	
+	buf[6]  = 0x60;		
 	buf[7]  = 0x1b;
-	buf[8]  = broadcast[8];	/* P_Key */
+	buf[8]  = broadcast[8];	
 	buf[9]  = broadcast[9];
 	memcpy(buf + 10, addr->s6_addr + 6, 10);
 }
@@ -264,7 +248,7 @@ static inline int ipv6_ipgre_mc_map(const struct in6_addr *addr,
 	if ((broadcast[0] | broadcast[1] | broadcast[2] | broadcast[3]) != 0) {
 		memcpy(buf, broadcast, 4);
 	} else {
-		/* v4mapped? */
+		
 		if ((addr->s6_addr32[0] | addr->s6_addr32[1] |
 		     (addr->s6_addr32[2] ^ htonl(0x0000ffff))) != 0)
 			return -EINVAL;

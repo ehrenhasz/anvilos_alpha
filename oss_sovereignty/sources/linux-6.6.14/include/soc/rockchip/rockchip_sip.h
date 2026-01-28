@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016, Fuzhou Rockchip Electronics Co., Ltd
- * Author: Lin Huang <hl@rock-chips.com>
- */
+
+
 #ifndef __SOC_ROCKCHIP_SIP_H
 #define __SOC_ROCKCHIP_SIP_H
 

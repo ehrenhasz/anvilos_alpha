@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Interconnect framework driver for i.MX SoC
- *
- * Copyright (c) 2019-2020, NXP
- */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_IMX8MN_H
 #define __DT_BINDINGS_INTERCONNECT_IMX8MN_H
@@ -38,4 +34,4 @@
 #define IMX8MN_ICM_USDHC3	22
 #define IMX8MN_ICN_MAIN		23
 
-#endif /* __DT_BINDINGS_INTERCONNECT_IMX8MN_H */
+#endif 

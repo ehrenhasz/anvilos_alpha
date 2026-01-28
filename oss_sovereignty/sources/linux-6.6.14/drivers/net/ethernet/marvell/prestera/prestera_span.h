@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved. */
+
+
 
 #ifndef _PRESTERA_SPAN_H_
 #define _PRESTERA_SPAN_H_
@@ -21,4 +21,4 @@ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
 int prestera_span_rule_del(struct prestera_flow_block_binding *binding,
 			   bool ingress);
 
-#endif /* _PRESTERA_SPAN_H_ */
+#endif 

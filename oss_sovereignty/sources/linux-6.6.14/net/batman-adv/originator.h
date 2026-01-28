@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
+
+
 
 #ifndef _NET_BATMAN_ADV_ORIGINATOR_H_
 #define _NET_BATMAN_ADV_ORIGINATOR_H_
@@ -63,14 +60,7 @@ batadv_orig_node_vlan_get(struct batadv_orig_node *orig_node,
 			  unsigned short vid);
 void batadv_orig_node_vlan_release(struct kref *ref);
 
-/**
- * batadv_choose_orig() - Return the index of the orig entry in the hash table
- * @data: mac address of the originator node
- * @size: the size of the hash table
- *
- * Return: the hash index where the object represented by @data should be
- * stored at.
- */
+
 static inline u32 batadv_choose_orig(const void *data, u32 size)
 {
 	u32 hash = 0;
@@ -82,11 +72,7 @@ static inline u32 batadv_choose_orig(const void *data, u32 size)
 struct batadv_orig_node *
 batadv_orig_hash_find(struct batadv_priv *bat_priv, const void *data);
 
-/**
- * batadv_orig_node_vlan_put() - decrement the refcounter and possibly release
- *  the originator-vlan object
- * @orig_vlan: the originator-vlan object to release
- */
+
 static inline void
 batadv_orig_node_vlan_put(struct batadv_orig_node_vlan *orig_vlan)
 {
@@ -96,11 +82,7 @@ batadv_orig_node_vlan_put(struct batadv_orig_node_vlan *orig_vlan)
 	kref_put(&orig_vlan->refcount, batadv_orig_node_vlan_release);
 }
 
-/**
- * batadv_neigh_ifinfo_put() - decrement the refcounter and possibly release
- *  the neigh_ifinfo
- * @neigh_ifinfo: the neigh_ifinfo object to release
- */
+
 static inline void
 batadv_neigh_ifinfo_put(struct batadv_neigh_ifinfo *neigh_ifinfo)
 {
@@ -110,11 +92,7 @@ batadv_neigh_ifinfo_put(struct batadv_neigh_ifinfo *neigh_ifinfo)
 	kref_put(&neigh_ifinfo->refcount, batadv_neigh_ifinfo_release);
 }
 
-/**
- * batadv_hardif_neigh_put() - decrement the hardif neighbors refcounter
- *  and possibly release it
- * @hardif_neigh: hardif neigh neighbor to free
- */
+
 static inline void
 batadv_hardif_neigh_put(struct batadv_hardif_neigh_node *hardif_neigh)
 {
@@ -124,11 +102,7 @@ batadv_hardif_neigh_put(struct batadv_hardif_neigh_node *hardif_neigh)
 	kref_put(&hardif_neigh->refcount, batadv_hardif_neigh_release);
 }
 
-/**
- * batadv_neigh_node_put() - decrement the neighbors refcounter and possibly
- *  release it
- * @neigh_node: neigh neighbor to free
- */
+
 static inline void batadv_neigh_node_put(struct batadv_neigh_node *neigh_node)
 {
 	if (!neigh_node)
@@ -137,11 +111,7 @@ static inline void batadv_neigh_node_put(struct batadv_neigh_node *neigh_node)
 	kref_put(&neigh_node->refcount, batadv_neigh_node_release);
 }
 
-/**
- * batadv_orig_ifinfo_put() - decrement the refcounter and possibly release
- *  the orig_ifinfo
- * @orig_ifinfo: the orig_ifinfo object to release
- */
+
 static inline void
 batadv_orig_ifinfo_put(struct batadv_orig_ifinfo *orig_ifinfo)
 {
@@ -151,11 +121,7 @@ batadv_orig_ifinfo_put(struct batadv_orig_ifinfo *orig_ifinfo)
 	kref_put(&orig_ifinfo->refcount, batadv_orig_ifinfo_release);
 }
 
-/**
- * batadv_orig_node_put() - decrement the orig node refcounter and possibly
- *  release it
- * @orig_node: the orig node to free
- */
+
 static inline void batadv_orig_node_put(struct batadv_orig_node *orig_node)
 {
 	if (!orig_node)
@@ -164,4 +130,4 @@ static inline void batadv_orig_node_put(struct batadv_orig_node *orig_node)
 	kref_put(&orig_node->refcount, batadv_orig_node_release);
 }
 
-#endif /* _NET_BATMAN_ADV_ORIGINATOR_H_ */
+#endif 

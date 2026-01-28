@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * File		pci-acpi.h
- *
- * Copyright (C) 2004 Intel
- * Copyright (C) Tom Long Nguyen (tom.l.nguyen@intel.com)
- */
+
+
 
 #ifndef _PCI_ACPI_H_
 #define _PCI_ACPI_H_
@@ -33,7 +28,7 @@ static inline acpi_handle acpi_find_root_bridge_handle(struct pci_dev *pdev)
 {
 	struct pci_bus *pbus = pdev->bus;
 
-	/* Find a PCI root bus */
+	
 	while (!pci_is_root_bus(pbus))
 		pbus = pbus->parent;
 
@@ -47,7 +42,7 @@ static inline acpi_handle acpi_pci_get_bridge_handle(struct pci_bus *pbus)
 	if (pci_is_root_bus(pbus))
 		dev = pbus->bridge;
 	else {
-		/* If pbus is a virtual bus, there is no bridge to it */
+		
 		if (!pbus->self)
 			return NULL;
 
@@ -116,7 +111,7 @@ static inline void acpiphp_check_host_bridge(struct acpi_device *adev) { }
 
 extern const guid_t pci_acpi_dsm_guid;
 
-/* _DSM Definitions for PCI */
+
 #define DSM_PCI_PRESERVE_BOOT_CONFIG		0x05
 #define DSM_PCI_DEVICE_NAME			0x07
 #define DSM_PCI_POWER_ON_RESET_DELAY		0x08
@@ -128,14 +123,14 @@ void pci_acpi_remove_edr_notifier(struct pci_dev *pdev);
 #else
 static inline void pci_acpi_add_edr_notifier(struct pci_dev *pdev) { }
 static inline void pci_acpi_remove_edr_notifier(struct pci_dev *pdev) { }
-#endif /* CONFIG_PCIE_EDR */
+#endif 
 
 int pci_acpi_set_companion_lookup_hook(struct acpi_device *(*func)(struct pci_dev *));
 void pci_acpi_clear_companion_lookup_hook(void);
 
-#else	/* CONFIG_ACPI */
+#else	
 static inline void acpi_pci_add_bus(struct pci_bus *bus) { }
 static inline void acpi_pci_remove_bus(struct pci_bus *bus) { }
-#endif	/* CONFIG_ACPI */
+#endif	
 
-#endif	/* _PCI_ACPI_H_ */
+#endif	

@@ -1,29 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fs/f2fs/xattr.h
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- *
- * Portions of this code from linux/fs/ext2/xattr.h
- *
- * On-disk format of extended attributes for the ext2 filesystem.
- *
- * (C) 2001 Andreas Gruenbacher, <a.gruenbacher@computer.org>
- */
+
+
 #ifndef __F2FS_XATTR_H__
 #define __F2FS_XATTR_H__
 
 #include <linux/init.h>
 #include <linux/xattr.h>
 
-/* Magic value in attribute blocks */
+
 #define F2FS_XATTR_MAGIC                0xF2F52011
 
-/* Maximum number of references to one attribute block */
+
 #define F2FS_XATTR_REFCOUNT_MAX         1024
 
-/* Name indexes */
+
 #define F2FS_SYSTEM_ADVISE_NAME			"system.advise"
 #define F2FS_XATTR_INDEX_USER			1
 #define F2FS_XATTR_INDEX_POSIX_ACL_ACCESS	2
@@ -32,7 +21,7 @@
 #define F2FS_XATTR_INDEX_LUSTRE			5
 #define F2FS_XATTR_INDEX_SECURITY		6
 #define F2FS_XATTR_INDEX_ADVISE			7
-/* Should be same as EXT4_XATTR_INDEX_ENCRYPTION */
+
 #define F2FS_XATTR_INDEX_ENCRYPTION		9
 #define F2FS_XATTR_INDEX_VERITY			11
 
@@ -40,16 +29,16 @@
 #define F2FS_XATTR_NAME_VERITY			"v"
 
 struct f2fs_xattr_header {
-	__le32  h_magic;        /* magic number for identification */
-	__le32  h_refcount;     /* reference count */
-	__u32   h_reserved[4];  /* zero right now */
+	__le32  h_magic;        
+	__le32  h_refcount;     
+	__u32   h_reserved[4];  
 };
 
 struct f2fs_xattr_entry {
 	__u8    e_name_index;
 	__u8    e_name_len;
-	__le16  e_value_size;   /* size of attribute value */
-	char    e_name[];      /* attribute name */
+	__le16  e_value_size;   
+	char    e_name[];      
 };
 
 #define XATTR_HDR(ptr)		((struct f2fs_xattr_header *)(ptr))
@@ -90,34 +79,7 @@ struct f2fs_xattr_entry {
 			DEF_INLINE_RESERVED_SIZE -			\
 			MIN_INLINE_DENTRY_SIZE / sizeof(__le32))
 
-/*
- * On-disk structure of f2fs_xattr
- * We use inline xattrs space + 1 block for xattr.
- *
- * +--------------------+
- * | f2fs_xattr_header  |
- * |                    |
- * +--------------------+
- * | f2fs_xattr_entry   |
- * | .e_name_index = 1  |
- * | .e_name_len = 3    |
- * | .e_value_size = 14 |
- * | .e_name = "foo"    |
- * | "value_of_xattr"   |<- value_offs = e_name + e_name_len
- * +--------------------+
- * | f2fs_xattr_entry   |
- * | .e_name_index = 4  |
- * | .e_name = "bar"    |
- * +--------------------+
- * |                    |
- * |        Free        |
- * |                    |
- * +--------------------+<- MIN_OFFSET
- * |   node_footer      |
- * | (nid, ino, offset) |
- * +--------------------+
- *
- **/
+
 
 #ifdef CONFIG_F2FS_FS_XATTR
 extern const struct xattr_handler f2fs_xattr_user_handler;
@@ -164,4 +126,4 @@ static inline int f2fs_init_security(struct inode *inode, struct inode *dir,
 	return 0;
 }
 #endif
-#endif /* __F2FS_XATTR_H__ */
+#endif 

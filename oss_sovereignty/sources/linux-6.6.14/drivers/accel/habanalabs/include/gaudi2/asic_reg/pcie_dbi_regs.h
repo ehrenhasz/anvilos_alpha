@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_PCIE_DBI_REGS_H_
 #define ASIC_REG_PCIE_DBI_REGS_H_
 
-/*
- *****************************************
- *   PCIE_DBI
- *   (Prototype: PCIE_DBI)
- *****************************************
- */
+
 
 #define mmPCIE_DBI_DEVICE_ID_VENDOR_ID_REG 0x4C02000
 
@@ -418,4 +405,4 @@
 
 #define mmPCIE_DBI_RX_SERIALIZATION_Q_CTRL_OFF 0x4C02C00
 
-#endif /* ASIC_REG_PCIE_DBI_REGS_H_ */
+#endif 

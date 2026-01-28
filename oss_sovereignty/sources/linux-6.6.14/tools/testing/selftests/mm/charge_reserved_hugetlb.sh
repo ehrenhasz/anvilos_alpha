@@ -442,10 +442,10 @@ for populate in "" "-o"; do
           "Incorrected reservation charged to cgroup 2."
         echo 'PASS'
         cleanup
-      done # reserve
-    done   # private
-  done     # populate
-done       # method
+      done 
+    done   
+  done     
+done       
 if [[ $do_umount ]]; then
   umount $cgroup_path
   rmdir $cgroup_path

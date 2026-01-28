@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef _NET_IPV6_GRO_H
 #define _NET_IPV6_GRO_H
@@ -13,78 +13,78 @@
 struct napi_gro_cb {
 	union {
 		struct {
-			/* Virtual address of skb_shinfo(skb)->frags[0].page + offset. */
+			
 			void	*frag0;
 
-			/* Length of frag0. */
+			
 			unsigned int frag0_len;
 		};
 
 		struct {
-			/* used in skb_gro_receive() slow path */
+			
 			struct sk_buff *last;
 
-			/* jiffies when first packet was created/queued */
+			
 			unsigned long age;
 		};
 	};
 
-	/* This indicates where we are processing relative to skb->data. */
+	
 	int	data_offset;
 
-	/* This is non-zero if the packet cannot be merged with the new skb. */
+	
 	u16	flush;
 
-	/* Save the IP ID here and check when we get to the transport layer */
+	
 	u16	flush_id;
 
-	/* Number of segments aggregated. */
+	
 	u16	count;
 
-	/* Used in ipv6_gro_receive() and foo-over-udp */
+	
 	u16	proto;
 
-/* Used in napi_gro_cb::free */
+
 #define NAPI_GRO_FREE             1
 #define NAPI_GRO_FREE_STOLEN_HEAD 2
-	/* portion of the cb set to zero at every gro iteration */
+	
 	struct_group(zeroed,
 
-		/* Start offset for remote checksum offload */
+		
 		u16	gro_remcsum_start;
 
-		/* This is non-zero if the packet may be of the same flow. */
+		
 		u8	same_flow:1;
 
-		/* Used in tunnel GRO receive */
+		
 		u8	encap_mark:1;
 
-		/* GRO checksum is valid */
+		
 		u8	csum_valid:1;
 
-		/* Number of checksums via CHECKSUM_UNNECESSARY */
+		
 		u8	csum_cnt:3;
 
-		/* Free the skb? */
+		
 		u8	free:2;
 
-		/* Used in foo-over-udp, set in udp[46]_gro_receive */
+		
 		u8	is_ipv6:1;
 
-		/* Used in GRE, set in fou/gue_gro_receive */
+		
 		u8	is_fou:1;
 
-		/* Used to determine if flush_id can be ignored */
+		
 		u8	is_atomic:1;
 
-		/* Number of gro_receive callbacks this packet already went through */
+		
 		u8 recursion_counter:4;
 
-		/* GRO is done by frag_list pointer chaining. */
+		
 		u8	is_flist:1;
 	);
 
-	/* used to support CHECKSUM_COMPLETE for tunneling protocols */
+	
 	__wsum	csum;
 };
 
@@ -199,10 +199,7 @@ static inline void skb_gro_postpull_rcsum(struct sk_buff *skb,
 						wsum_negate(NAPI_GRO_CB(skb)->csum)));
 }
 
-/* GRO checksum functions. These are logical equivalents of the normal
- * checksum functions (in skbuff.h) except that they operate on the GRO
- * offsets and fields in sk_buff.
- */
+
 
 __sum16 __skb_gro_checksum_complete(struct sk_buff *skb);
 
@@ -238,13 +235,10 @@ static inline __sum16 __skb_gro_checksum_validate_complete(struct sk_buff *skb,
 static inline void skb_gro_incr_csum_unnecessary(struct sk_buff *skb)
 {
 	if (NAPI_GRO_CB(skb)->csum_cnt > 0) {
-		/* Consume a checksum from CHECKSUM_UNNECESSARY */
+		
 		NAPI_GRO_CB(skb)->csum_cnt--;
 	} else {
-		/* Update skb for CHECKSUM_UNNECESSARY and csum_level when we
-		 * verified a new top level checksum or an encapsulated one
-		 * during GRO. This saves work if we fallback to normal path.
-		 */
+		
 		__skb_incr_checksum_unnecessary(skb);
 	}
 }
@@ -325,7 +319,7 @@ static inline void *skb_gro_remcsum_process(struct sk_buff *skb, void *ptr,
 	delta = remcsum_adjust(ptr + hdrlen, NAPI_GRO_CB(skb)->csum,
 			       start, offset);
 
-	/* Adjust skb->csum since we changed the packet */
+	
 	NAPI_GRO_CB(skb)->csum = csum_add(NAPI_GRO_CB(skb)->csum, delta);
 
 	grc->offset = off + hdrlen + offset;
@@ -431,7 +425,7 @@ static inline __wsum ip6_gro_compute_pseudo(struct sk_buff *skb, int proto)
 
 int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb);
 
-/* Pass the currently batched GRO_NORMAL SKBs up to the stack. */
+
 static inline void gro_normal_list(struct napi_struct *napi)
 {
 	if (!napi->rx_count)
@@ -441,9 +435,7 @@ static inline void gro_normal_list(struct napi_struct *napi)
 	napi->rx_count = 0;
 }
 
-/* Queue one GRO_NORMAL SKB up for list processing. If batch size exceeded,
- * pass the whole batch up to the stack.
- */
+
 static inline void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb, int segs)
 {
 	list_add_tail(&skb->list, &napi->rx_list);
@@ -452,12 +444,7 @@ static inline void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb,
 		gro_normal_list(napi);
 }
 
-/* This function is the alternative of 'inet_iif' and 'inet_sdif'
- * functions in case we can not rely on fields of IPCB.
- *
- * The caller must verify skb_valid_dst(skb) is false and skb->dev is initialized.
- * The caller must hold the RCU read lock.
- */
+
 static inline void inet_get_iif_sdif(const struct sk_buff *skb, int *iif, int *sdif)
 {
 	*iif = inet_iif(skb) ?: skb->dev->ifindex;
@@ -473,15 +460,10 @@ static inline void inet_get_iif_sdif(const struct sk_buff *skb, int *iif, int *s
 #endif
 }
 
-/* This function is the alternative of 'inet6_iif' and 'inet6_sdif'
- * functions in case we can not rely on fields of IP6CB.
- *
- * The caller must verify skb_valid_dst(skb) is false and skb->dev is initialized.
- * The caller must hold the RCU read lock.
- */
+
 static inline void inet6_get_iif_sdif(const struct sk_buff *skb, int *iif, int *sdif)
 {
-	/* using skb->dev->ifindex because skb_dst(skb) is not initialized */
+	
 	*iif = skb->dev->ifindex;
 	*sdif = 0;
 
@@ -497,4 +479,4 @@ static inline void inet6_get_iif_sdif(const struct sk_buff *skb, int *iif, int *
 
 extern struct list_head offload_base;
 
-#endif /* _NET_IPV6_GRO_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 Yangtao Li <frank@allwinnertech.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SUN50I_A100_R_CCU_H_
 #define _DT_BINDINGS_CLK_SUN50I_A100_R_CCU_H_
@@ -20,4 +18,4 @@
 #define CLK_R_APB1_BUS_IR	13
 #define CLK_R_AHB_BUS_RTC	14
 
-#endif /* _DT_BINDINGS_CLK_SUN50I_A100_R_CCU_H_ */
+#endif 

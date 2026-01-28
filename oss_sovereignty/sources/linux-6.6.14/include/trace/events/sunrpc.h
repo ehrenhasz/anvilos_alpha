@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sunrpc
 
@@ -34,7 +34,7 @@ TRACE_DEFINE_ENUM(SOCK_PACKET);
 		{ SOCK_DCCP,		"DCCP" },		\
 		{ SOCK_PACKET,		"PACKET" })
 
-/* This list is known to be incomplete, add new enums as needed. */
+
 TRACE_DEFINE_ENUM(AF_UNSPEC);
 TRACE_DEFINE_ENUM(AF_UNIX);
 TRACE_DEFINE_ENUM(AF_LOCAL);
@@ -786,10 +786,7 @@ TRACE_EVENT(rpc_xdr_alignment,
 	)
 );
 
-/*
- * First define the enums in the below macros to be exported to userspace
- * via TRACE_DEFINE_ENUM().
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -828,10 +825,7 @@ RPC_SHOW_SOCK
 
 #include <trace/events/net_probe_common.h>
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+
 #undef EM
 #undef EMe
 #define EM(a, b)	{a, b},
@@ -1525,9 +1519,7 @@ TRACE_EVENT(rpcb_unregister,
 	)
 );
 
-/**
- ** RPC-over-TLS tracepoints
- **/
+
 
 DECLARE_EVENT_CLASS(rpc_tls_class,
 	TP_PROTO(
@@ -1569,7 +1561,7 @@ DEFINE_RPC_TLS_EVENT(unavailable);
 DEFINE_RPC_TLS_EVENT(not_started);
 
 
-/* Record an xdr_buf containing a fully-formed RPC message */
+
 DECLARE_EVENT_CLASS(svc_xdr_msg_class,
 	TP_PROTO(
 		const struct xdr_buf *xdr
@@ -1616,7 +1608,7 @@ DECLARE_EVENT_CLASS(svc_xdr_msg_class,
 
 DEFINE_SVCXDRMSG_EVENT(recvfrom);
 
-/* Record an xdr_buf containing arbitrary data, tagged with an XID */
+
 DECLARE_EVENT_CLASS(svc_xdr_buf_class,
 	TP_PROTO(
 		__be32 xid,
@@ -1667,9 +1659,7 @@ DECLARE_EVENT_CLASS(svc_xdr_buf_class,
 
 DEFINE_SVCXDRBUF_EVENT(sendto);
 
-/*
- * from include/linux/sunrpc/svc.h
- */
+
 #define SVC_RQST_FLAG_LIST						\
 	svc_rqst_flag(SECURE)						\
 	svc_rqst_flag(LOCAL)						\
@@ -1921,9 +1911,7 @@ TRACE_EVENT(svc_stats_latency,
 		__get_str(procedure), __entry->execute)
 );
 
-/*
- * from include/linux/sunrpc/svc_xprt.h
- */
+
 #define SVC_XPRT_FLAG_LIST						\
 	svc_xprt_flag(BUSY)						\
 	svc_xprt_flag(CONN)						\
@@ -2517,6 +2505,6 @@ TRACE_EVENT(svc_unregister,
 	)
 );
 
-#endif /* _TRACE_SUNRPC_H */
+#endif 
 
 #include <trace/define_trace.h>

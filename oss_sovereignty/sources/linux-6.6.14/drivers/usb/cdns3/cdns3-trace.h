@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * USBSS device controller driver.
- * Trace support header file.
- *
- * Copyright (C) 2018-2019 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdns3
@@ -544,9 +537,9 @@ DEFINE_EVENT(cdns3_log_request_handled, cdns3_request_handled,
 		 int handled),
 	TP_ARGS(priv_req, current_index, handled)
 );
-#endif /* __LINUX_CDNS3_TRACE */
+#endif 
 
-/* this part must be outside header guard */
+
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

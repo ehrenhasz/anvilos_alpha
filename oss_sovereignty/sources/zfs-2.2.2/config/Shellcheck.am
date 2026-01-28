@@ -1,12 +1,12 @@
-# Global ShellCheck exclusions:
-#
-# ShellCheck can't follow non-constant source. Use a directive to specify location. [SC1090]
-# Not following: a was not specified as input (see shellcheck -x). [SC1091]
-# Prefer putting braces around variable references even when not strictly required. [SC2250]
-# Consider invoking this command separately to avoid masking its return value (or use '|| true' to ignore). [SC2312]
-# Command appears to be unreachable. Check usage (or ignore if invoked indirectly). [SC2317]
-# In POSIX sh, 'local' is undefined. [SC2039] # older ShellCheck versions
-# In POSIX sh, 'local' is undefined. [SC3043] # newer ShellCheck versions
+
+
+
+
+
+
+
+
+
 
 SHELLCHECKSCRIPTS =
 
@@ -29,11 +29,11 @@ shellcheck: $(SHELLCHECKSCRIPTS) $(call JUST_SHELLCHECK_OPTS,$(SHELLCHECKSCRIPTS
 
 PHONY += checkbashisms
 
-# command -v *is* specified by POSIX and every shell in existence supports it
+
 _BTGT = $(subst ^,/,$(subst checkbashisms-here-,,$@))
 checkbashisms-here-%:
 if HAVE_CHECKBASHISMS
-	! { [ -n "$(SHELLCHECK_SHELL)" ] && echo '#!/bin/$(SHELLCHECK_SHELL)'; cat "$$([ -e "$(_BTGT)" ] || echo "$(srcdir)/")$(_BTGT)"; } | \
+	! { [ -n "$(SHELLCHECK_SHELL)" ] && echo '
 	checkbashisms -npx 2>&1 | grep -vFe "'command' with option other than -p" -e 'command -v' -e 'any possible bashisms' $(CHECKBASHISMS_IGNORE) >&2
 else
 	@echo "skipping checkbashisms of" $(_BTGT) "because checkbashisms is not installed"

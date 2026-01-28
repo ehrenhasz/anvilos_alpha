@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright © 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright © 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * KVM Xen emulation
- */
+
+
 
 #ifndef __ARCH_X86_KVM_XEN_H__
 #define __ARCH_X86_KVM_XEN_H__
@@ -159,20 +154,14 @@ static inline void kvm_xen_runstate_set_running(struct kvm_vcpu *vcpu)
 
 static inline void kvm_xen_runstate_set_preempted(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * If the vCPU wasn't preempted but took a normal exit for
-	 * some reason (hypercalls, I/O, etc.), that is accounted as
-	 * still RUNSTATE_running, as the VMM is still operating on
-	 * behalf of the vCPU. Only if the VMM does actually block
-	 * does it need to enter RUNSTATE_blocked.
-	 */
+	
 	if (WARN_ON_ONCE(!vcpu->preempted))
 		return;
 
 	kvm_xen_update_runstate(vcpu, RUNSTATE_runnable);
 }
 
-/* 32-bit compatibility definitions, also used natively in 32-bit build */
+
 struct compat_arch_vcpu_info {
 	unsigned int cr2;
 	unsigned int pad[5];
@@ -185,7 +174,7 @@ struct compat_vcpu_info {
 	uint32_t evtchn_pending_sel;
 	struct compat_arch_vcpu_info arch;
 	struct pvclock_vcpu_time_info time;
-}; /* 64 bytes (x86) */
+}; 
 
 struct compat_arch_shared_info {
 	unsigned int max_pfn;
@@ -215,10 +204,10 @@ struct compat_vcpu_runstate_info {
 } __attribute__((packed));
 
 struct compat_sched_poll {
-	/* This is actually a guest virtual address which points to ports. */
+	
 	uint32_t ports;
 	unsigned int nr_ports;
 	uint64_t timeout;
 };
 
-#endif /* __ARCH_X86_KVM_XEN_H__ */
+#endif 

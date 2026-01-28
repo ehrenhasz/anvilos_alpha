@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2007-2017 Nicira, Inc.
- */
+
+
 
 #ifndef FLOW_H
 #define FLOW_H 1
@@ -32,23 +30,20 @@ enum sw_flow_mac_proto {
 #define SW_FLOW_KEY_INVALID	0x80
 #define MPLS_LABEL_DEPTH       3
 
-/* Bit definitions for IPv6 Extension Header pseudo-field. */
+
 enum ofp12_ipv6exthdr_flags {
-	OFPIEH12_NONEXT = 1 << 0,   /* "No next header" encountered. */
-	OFPIEH12_ESP    = 1 << 1,   /* Encrypted Sec Payload header present. */
-	OFPIEH12_AUTH   = 1 << 2,   /* Authentication header present. */
-	OFPIEH12_DEST   = 1 << 3,   /* 1 or 2 dest headers present. */
-	OFPIEH12_FRAG   = 1 << 4,   /* Fragment header present. */
-	OFPIEH12_ROUTER = 1 << 5,   /* Router header present. */
-	OFPIEH12_HOP    = 1 << 6,   /* Hop-by-hop header present. */
-	OFPIEH12_UNREP  = 1 << 7,   /* Unexpected repeats encountered. */
-	OFPIEH12_UNSEQ  = 1 << 8    /* Unexpected sequencing encountered. */
+	OFPIEH12_NONEXT = 1 << 0,   
+	OFPIEH12_ESP    = 1 << 1,   
+	OFPIEH12_AUTH   = 1 << 2,   
+	OFPIEH12_DEST   = 1 << 3,   
+	OFPIEH12_FRAG   = 1 << 4,   
+	OFPIEH12_ROUTER = 1 << 5,   
+	OFPIEH12_HOP    = 1 << 6,   
+	OFPIEH12_UNREP  = 1 << 7,   
+	OFPIEH12_UNSEQ  = 1 << 8    
 };
 
-/* Store options at the end of the array if they are less than the
- * maximum size. This allows us to get the benefits of variable length
- * matching for small options.
- */
+
 #define TUN_METADATA_OFFSET(opt_len) \
 	(sizeof_field(struct sw_flow_key, tun_opts) - opt_len)
 #define TUN_METADATA_OPTS(flow_key, opt_len) \
@@ -59,8 +54,8 @@ struct ovs_tunnel_info {
 };
 
 struct vlan_head {
-	__be16 tpid; /* Vlan type. Generally 802.1q or 802.1ad.*/
-	__be16 tci;  /* 0 if no VLAN, VLAN_CFI_MASK set otherwise. */
+	__be16 tpid; 
+	__be16 tci;  
 };
 
 #define OVS_SW_FLOW_KEY_METADATA_SIZE			\
@@ -75,96 +70,94 @@ struct ovs_key_nsh {
 struct sw_flow_key {
 	u8 tun_opts[IP_TUNNEL_OPTS_MAX];
 	u8 tun_opts_len;
-	struct ip_tunnel_key tun_key;	/* Encapsulating tunnel key. */
+	struct ip_tunnel_key tun_key;	
 	struct {
-		u32	priority;	/* Packet QoS priority. */
-		u32	skb_mark;	/* SKB mark. */
-		u16	in_port;	/* Input switch port (or DP_MAX_PORTS). */
-	} __packed phy; /* Safe when right after 'tun_key'. */
-	u8 mac_proto;			/* MAC layer protocol (e.g. Ethernet). */
-	u8 tun_proto;			/* Protocol of encapsulating tunnel. */
-	u32 ovs_flow_hash;		/* Datapath computed hash value.  */
-	u32 recirc_id;			/* Recirculation ID.  */
+		u32	priority;	
+		u32	skb_mark;	
+		u16	in_port;	
+	} __packed phy; 
+	u8 mac_proto;			
+	u8 tun_proto;			
+	u32 ovs_flow_hash;		
+	u32 recirc_id;			
 	struct {
-		u8     src[ETH_ALEN];	/* Ethernet source address. */
-		u8     dst[ETH_ALEN];	/* Ethernet destination address. */
+		u8     src[ETH_ALEN];	
+		u8     dst[ETH_ALEN];	
 		struct vlan_head vlan;
 		struct vlan_head cvlan;
-		__be16 type;		/* Ethernet frame type. */
+		__be16 type;		
 	} eth;
-	/* Filling a hole of two bytes. */
+	
 	u8 ct_state;
-	u8 ct_orig_proto;		/* CT original direction tuple IP
-					 * protocol.
-					 */
+	u8 ct_orig_proto;		
 	union {
 		struct {
-			u8     proto;	/* IP protocol or lower 8 bits of ARP opcode. */
-			u8     tos;	    /* IP ToS. */
-			u8     ttl;	    /* IP TTL/hop limit. */
-			u8     frag;	/* One of OVS_FRAG_TYPE_*. */
+			u8     proto;	
+			u8     tos;	    
+			u8     ttl;	    
+			u8     frag;	
 		} ip;
 	};
-	u16 ct_zone;			/* Conntrack zone. */
+	u16 ct_zone;			
 	struct {
-		__be16 src;		/* TCP/UDP/SCTP source port. */
-		__be16 dst;		/* TCP/UDP/SCTP destination port. */
-		__be16 flags;		/* TCP flags. */
+		__be16 src;		
+		__be16 dst;		
+		__be16 flags;		
 	} tp;
 	union {
 		struct {
 			struct {
-				__be32 src;	/* IP source address. */
-				__be32 dst;	/* IP destination address. */
+				__be32 src;	
+				__be32 dst;	
 			} addr;
 			union {
 				struct {
 					__be32 src;
 					__be32 dst;
-				} ct_orig;	/* Conntrack original direction fields. */
+				} ct_orig;	
 				struct {
-					u8 sha[ETH_ALEN];	/* ARP source hardware address. */
-					u8 tha[ETH_ALEN];	/* ARP target hardware address. */
+					u8 sha[ETH_ALEN];	
+					u8 tha[ETH_ALEN];	
 				} arp;
 			};
 		} ipv4;
 		struct {
 			struct {
-				struct in6_addr src;	/* IPv6 source address. */
-				struct in6_addr dst;	/* IPv6 destination address. */
+				struct in6_addr src;	
+				struct in6_addr dst;	
 			} addr;
-			__be32 label;			/* IPv6 flow label. */
-			u16 exthdrs;	/* IPv6 extension header flags */
+			__be32 label;			
+			u16 exthdrs;	
 			union {
 				struct {
 					struct in6_addr src;
 					struct in6_addr dst;
-				} ct_orig;	/* Conntrack original direction fields. */
+				} ct_orig;	
 				struct {
-					struct in6_addr target;	/* ND target address. */
-					u8 sll[ETH_ALEN];	/* ND source link layer address. */
-					u8 tll[ETH_ALEN];	/* ND target link layer address. */
+					struct in6_addr target;	
+					u8 sll[ETH_ALEN];	
+					u8 tll[ETH_ALEN];	
 				} nd;
 			};
 		} ipv6;
 		struct {
-			u32 num_labels_mask;    /* labels present bitmap of effective length MPLS_LABEL_DEPTH */
-			__be32 lse[MPLS_LABEL_DEPTH];     /* label stack entry  */
+			u32 num_labels_mask;    
+			__be32 lse[MPLS_LABEL_DEPTH];     
 		} mpls;
 
-		struct ovs_key_nsh nsh;         /* network service header */
+		struct ovs_key_nsh nsh;         
 	};
 	struct {
-		/* Connection tracking fields not packed above. */
+		
 		struct {
-			__be16 src;	/* CT orig tuple tp src port. */
-			__be16 dst;	/* CT orig tuple tp dst port. */
+			__be16 src;	
+			__be16 dst;	
 		} orig_tp;
 		u32 mark;
 		struct ovs_key_ct_labels labels;
 	} ct;
 
-} __aligned(BITS_PER_LONG/8); /* Ensure that we can do comparisons as longs. */
+} __aligned(BITS_PER_LONG/8); 
 
 static inline bool sw_flow_key_is_nd(const struct sw_flow_key *key)
 {
@@ -193,7 +186,7 @@ struct sw_flow_match {
 	struct sw_flow_mask *mask;
 };
 
-#define MAX_UFID_LENGTH 16 /* 128 bits */
+#define MAX_UFID_LENGTH 16 
 
 struct sw_flow_id {
 	u32 ufid_len;
@@ -205,17 +198,17 @@ struct sw_flow_id {
 
 struct sw_flow_actions {
 	struct rcu_head rcu;
-	size_t orig_len;	/* From flow_cmd_new netlink actions size */
+	size_t orig_len;	
 	u32 actions_len;
 	struct nlattr actions[];
 };
 
 struct sw_flow_stats {
-	u64 packet_count;		/* Number of packets matched. */
-	u64 byte_count;			/* Number of bytes matched. */
-	unsigned long used;		/* Last used time (in jiffies). */
-	spinlock_t lock;		/* Lock for atomic stats update. */
-	__be16 tcp_flags;		/* Union of seen TCP flags. */
+	u64 packet_count;		
+	u64 byte_count;			
+	unsigned long used;		
+	spinlock_t lock;		
+	__be16 tcp_flags;		
 };
 
 struct sw_flow {
@@ -224,33 +217,27 @@ struct sw_flow {
 		struct hlist_node node[2];
 		u32 hash;
 	} flow_table, ufid_table;
-	int stats_last_writer;		/* CPU id of the last writer on
-					 * 'stats[0]'.
-					 */
+	int stats_last_writer;		
 	struct sw_flow_key key;
 	struct sw_flow_id id;
 	struct cpumask *cpu_used_mask;
 	struct sw_flow_mask *mask;
 	struct sw_flow_actions __rcu *sf_acts;
-	struct sw_flow_stats __rcu *stats[]; /* One for each CPU.  First one
-					   * is allocated at flow creation time,
-					   * the rest are allocated on demand
-					   * while holding the 'stats[0].lock'.
-					   */
+	struct sw_flow_stats __rcu *stats[]; 
 };
 
 struct arp_eth_header {
-	__be16      ar_hrd;	/* format of hardware address   */
-	__be16      ar_pro;	/* format of protocol address   */
-	unsigned char   ar_hln;	/* length of hardware address   */
-	unsigned char   ar_pln;	/* length of protocol address   */
-	__be16      ar_op;	/* ARP opcode (command)     */
+	__be16      ar_hrd;	
+	__be16      ar_pro;	
+	unsigned char   ar_hln;	
+	unsigned char   ar_pln;	
+	__be16      ar_op;	
 
-	/* Ethernet+IPv4 specific members. */
-	unsigned char       ar_sha[ETH_ALEN];	/* sender hardware address  */
-	unsigned char       ar_sip[4];		/* sender IP address        */
-	unsigned char       ar_tha[ETH_ALEN];	/* target hardware address  */
-	unsigned char       ar_tip[4];		/* target IP address        */
+	
+	unsigned char       ar_sha[ETH_ALEN];	
+	unsigned char       ar_sip[4];		
+	unsigned char       ar_tha[ETH_ALEN];	
+	unsigned char       ar_tip[4];		
 } __packed;
 
 static inline u8 ovs_key_mac_proto(const struct sw_flow_key *key)
@@ -290,9 +277,9 @@ int ovs_flow_key_update_l3l4(struct sk_buff *skb, struct sw_flow_key *key);
 int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
 			 struct sk_buff *skb,
 			 struct sw_flow_key *key);
-/* Extract key from packet coming from userspace. */
+
 int ovs_flow_key_extract_userspace(struct net *net, const struct nlattr *attr,
 				   struct sk_buff *skb,
 				   struct sw_flow_key *key, bool log);
 
-#endif /* flow.h */
+#endif 

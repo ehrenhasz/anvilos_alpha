@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * System Control Driver
- *
- * Copyright (C) 2012 Freescale Semiconductor, Inc.
- * Copyright (C) 2012 Linaro Ltd.
- *
- * Author: Dong Aisheng <dong.aisheng@linaro.org>
- */
+
+
 
 #ifndef __LINUX_MFD_SYSCON_H__
 #define __LINUX_MFD_SYSCON_H__
@@ -72,4 +65,4 @@ static inline struct regmap *syscon_regmap_lookup_by_phandle_optional(
 
 #endif
 
-#endif /* __LINUX_MFD_SYSCON_H__ */
+#endif 

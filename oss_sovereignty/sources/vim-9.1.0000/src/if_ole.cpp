@@ -1,17 +1,7 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved		by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
+
 
 #if defined(FEAT_OLE) && defined(FEAT_GUI_MSWIN)
-/*
- * OLE server implementation.
- *
- * See os_mswin.c for the client side.
- */
+
 extern "C" {
 # include "vim.h"
 }
@@ -30,36 +20,34 @@ extern HWND vim_parent_hwnd;
 # define FINAL
 #endif
 
-#include "if_ole.h"	// Interface definitions
-#include "iid_ole.c"	// UUID definitions (compile here)
+#include "if_ole.h"	
+#include "iid_ole.c"	
 
-/* Supply function prototype to work around bug in Mingw oleauto.h header */
+
 #ifdef __MINGW32__
 WINOLEAUTAPI UnRegisterTypeLib(REFGUID libID, WORD wVerMajor,
 	    WORD wVerMinor, LCID lcid, SYSKIND syskind);
 #endif
 
-/*****************************************************************************
- 1. Internal definitions for this file
-*****************************************************************************/
+
 
 class CVim;
 class CVimCF;
 
-/* Internal data */
-// The identifier of the registered class factory
+
+
 static unsigned long cf_id = 0;
 
-// The identifier of the running application object
+
 static unsigned long app_id = 0;
 
-// The single global instance of the class factory
+
 static CVimCF *cf = 0;
 
-// The single global instance of the application object
+
 static CVim *app = 0;
 
-/* GUIDs, versions and type library information */
+
 #define MYCLSID CLSID_Vim
 #define MYLIBID LIBID_Vim
 #define MYIID IID_IVim
@@ -74,13 +62,9 @@ static CVim *app = 0;
 
 #define MAX_CLSID_LEN 100
 
-/*****************************************************************************
- 2. The application object
-*****************************************************************************/
 
-/* Definition
- * ----------
- */
+
+
 
 class CVim FINAL : public IVim
 {
@@ -88,37 +72,35 @@ public:
     virtual ~CVim();
     static CVim *Create(int *pbDoRestart);
 
-    // IUnknown members
+    
     STDMETHOD(QueryInterface)(REFIID riid, void ** ppv);
     STDMETHOD_(unsigned long, AddRef)(void);
     STDMETHOD_(unsigned long, Release)(void);
 
-    // IDispatch members
+    
     STDMETHOD(GetTypeInfoCount)(UINT *pCount);
     STDMETHOD(GetTypeInfo)(UINT iTypeInfo, LCID, ITypeInfo **ppITypeInfo);
     STDMETHOD(GetIDsOfNames)(const IID &iid, OLECHAR **names, UINT n, LCID, DISPID *dispids);
     STDMETHOD(Invoke)(DISPID member, const IID &iid, LCID, WORD flags, DISPPARAMS *dispparams, VARIANT *result, EXCEPINFO *excepinfo, UINT *argerr);
 
-    // IVim members
+    
     STDMETHOD(SendKeys)(BSTR keys);
     STDMETHOD(Eval)(BSTR expr, BSTR *result);
     STDMETHOD(SetForeground)(void);
     STDMETHOD(GetHwnd)(UINT_PTR *result);
 
 private:
-    // Constructor is private - create using CVim::Create()
+    
     CVim() : ref(0), typeinfo(0) {};
 
-    // Reference count
+    
     unsigned long ref;
 
-    // The object's TypeInfo
+    
     ITypeInfo *typeinfo;
 };
 
-/* Implementation
- * --------------
- */
+
 
 CVim *CVim::Create(int *pbDoRestart)
 {
@@ -129,7 +111,7 @@ CVim *CVim::Create(int *pbDoRestart)
 
     *pbDoRestart = FALSE;
 
-    // Create the object
+    
     me = new CVim();
     if (me == NULL)
     {
@@ -137,20 +119,20 @@ CVim *CVim::Create(int *pbDoRestart)
 	return NULL;
     }
 
-    // Load the type library from the registry
+    
     hr = LoadRegTypeLib(MYLIBID, 1, 0, 0x00, &typelib);
     if (FAILED(hr))
     {
 	HKEY hKey;
 
-	// Check we can write to the registry.
-	// RegCreateKeyEx succeeds even if key exists. W.Briscoe W2K 20021011
+	
+	
 	if (RegCreateKeyEx(HKEY_CLASSES_ROOT, MYVIPROGID, 0, NULL,
 		  REG_OPTION_NON_VOLATILE,
 		  KEY_ALL_ACCESS, NULL, &hKey, NULL))
 	{
 	    delete me;
-	    return NULL; // Unable to write to registry. Quietly fail.
+	    return NULL; 
 	}
 	RegCloseKey(hKey);
 
@@ -163,7 +145,7 @@ CVim *CVim::Create(int *pbDoRestart)
 
 	RegisterMe(FALSE);
 
-	// Load the type library from the registry
+	
 	hr = LoadRegTypeLib(MYLIBID, 1, 0, 0x00, &typelib);
 	if (FAILED(hr))
 	{
@@ -175,7 +157,7 @@ CVim *CVim::Create(int *pbDoRestart)
 	}
     }
 
-    // Get the type info of the vtable interface
+    
     hr = typelib->GetTypeInfoOfGuid(MYIID, &typeinfo);
     typelib->Release();
 
@@ -187,7 +169,7 @@ CVim *CVim::Create(int *pbDoRestart)
 	return NULL;
     }
 
-    // Save the type information
+    
     me->typeinfo = typeinfo;
     return me;
 }
@@ -222,9 +204,9 @@ CVim::AddRef()
 STDMETHODIMP_(ULONG)
 CVim::Release()
 {
-    // Don't delete the object when the reference count reaches zero, as there
-    // is only a single application object, and its lifetime is controlled by
-    // the running instance, not by its reference count.
+    
+    
+    
     if (ref > 0)
 	--ref;
     return ref;
@@ -294,7 +276,7 @@ CVim::GetHwnd(UINT_PTR *result)
 STDMETHODIMP
 CVim::SetForeground(void)
 {
-    /* Make the Vim window come to the foreground */
+    
     gui_mch_set_foreground();
     return S_OK;
 }
@@ -307,7 +289,7 @@ CVim::SendKeys(BSTR keys)
     char_u *str;
     char_u *ptr;
 
-    /* Get a suitable buffer */
+    
     len = WideCharToMultiByte(CP_ACP, 0, keys, -1, 0, 0, 0, 0);
     buffer = (char *)alloc(len+1);
 
@@ -322,31 +304,21 @@ CVim::SendKeys(BSTR keys)
 	return E_INVALIDARG;
     }
 
-    /* Translate key codes like <Esc> */
+    
     str = replace_termcodes((char_u *)buffer, &ptr, 0, REPTERM_DO_LT, NULL);
 
-    /* If ptr was set, then a new buffer was allocated,
-     * so we can free the old one.
-     */
+    
     if (ptr)
 	vim_free((char_u *)(buffer));
 
-    /* Reject strings too long to fit in the input buffer. Allow 10 bytes
-     * space to cover for the (remote) possibility that characters may enter
-     * the input buffer between now and when the WM_OLE message is actually
-     * processed. If more than 10 characters enter the input buffer in that
-     * time, the WM_OLE processing will simply fail to insert the characters.
-     */
+    
     if ((int)(STRLEN(str)) > (vim_free_in_input_buf() - 10))
     {
 	vim_free(str);
 	return E_INVALIDARG;
     }
 
-    /* Pass the string to the main input loop. The memory will be freed when
-     * the message is processed.  Except for an empty message, we don't need
-     * to post it then.
-     */
+    
     if (*str == NUL)
 	vim_free(str);
     else
@@ -364,7 +336,7 @@ CVim::Eval(BSTR expr, BSTR *result)
     char *str;
     wchar_t *w_buffer;
 
-    /* Get a suitable buffer */
+    
     len = WideCharToMultiByte(CP_ACP, 0, expr, -1, 0, 0, 0, 0);
     if (len == 0)
 	return E_INVALIDARG;
@@ -374,12 +346,12 @@ CVim::Eval(BSTR expr, BSTR *result)
     if (buffer == NULL)
 	return E_OUTOFMEMORY;
 
-    /* Convert the (wide character) expression to an ASCII string */
+    
     len = WideCharToMultiByte(CP_ACP, 0, expr, -1, buffer, len, 0, 0);
     if (len == 0)
 	return E_INVALIDARG;
 
-    /* Evaluate the expression */
+    
     ++emsg_skip;
     str = (char *)eval_to_string((char_u *)buffer, TRUE, FALSE);
     --emsg_skip;
@@ -387,7 +359,7 @@ CVim::Eval(BSTR expr, BSTR *result)
     if (str == NULL)
 	return E_FAIL;
 
-    /* Convert the result to wide characters */
+    
     MultiByteToWideChar_alloc(CP_ACP, 0, str, -1, &w_buffer, &len);
     vim_free(str);
     if (w_buffer == NULL)
@@ -399,7 +371,7 @@ CVim::Eval(BSTR expr, BSTR *result)
 	return E_FAIL;
     }
 
-    /* Store the result */
+    
     *result = SysAllocString(w_buffer);
     vim_free(w_buffer);
 
@@ -409,13 +381,9 @@ CVim::Eval(BSTR expr, BSTR *result)
 #endif
 }
 
-/*****************************************************************************
- 3. The class factory
-*****************************************************************************/
 
-/* Definition
- * ----------
- */
+
+
 
 class CVimCF FINAL : public IClassFactory
 {
@@ -430,16 +398,14 @@ public:
     STDMETHOD(LockServer)(BOOL lock);
 
 private:
-    // Constructor is private - create via Create()
+    
     CVimCF() : ref(0) {};
 
-    // Reference count
+    
     unsigned long ref;
 };
 
-/* Implementation
- * --------------
- */
+
 
 CVimCF *CVimCF::Create()
 {
@@ -474,79 +440,77 @@ CVimCF::AddRef()
 STDMETHODIMP_(ULONG)
 CVimCF::Release()
 {
-    // Don't delete the object when the reference count reaches zero, as there
-    // is only a single application object, and its lifetime is controlled by
-    // the running instance, not by its reference count.
+    
+    
+    
     if (ref > 0)
 	--ref;
     return ref;
 }
 
-/*ARGSUSED*/
+
 STDMETHODIMP
 CVimCF::CreateInstance(IUnknown *punkOuter, REFIID riid, void **ppv)
 {
     return app->QueryInterface(riid, ppv);
 }
 
-/*ARGSUSED*/
+
 STDMETHODIMP
 CVimCF::LockServer(BOOL lock)
 {
     return S_OK;
 }
 
-/*****************************************************************************
- 4. Registry manipulation code
-*****************************************************************************/
 
-// Internal use only
+
+
 static void SetKeyAndValue(const char *path, const char *subkey, const char *value);
 static void GUIDtochar(const GUID &guid, char *GUID, int length);
 static void RecursiveDeleteKey(HKEY hKeyParent, const char *child);
 static const int GUID_STRING_SIZE = 39;
 
-// Register the component in the registry
-// When "silent" is TRUE don't give any messages.
+
+
 
 extern "C" void RegisterMe(int silent)
 {
     BOOL ok = TRUE;
 
-    // Get the application startup command
+    
     char module[MAX_PATH];
 
     ::GetModuleFileName(NULL, module, MAX_PATH);
 
-    // Unregister first (quietly)
+    
     UnregisterMe(FALSE);
 
-    // Convert the CLSID into a char
+    
     char clsid[GUID_STRING_SIZE];
     GUIDtochar(MYCLSID, clsid, sizeof(clsid));
 
-    // Convert the LIBID into a char
+    
     char libid[GUID_STRING_SIZE];
     GUIDtochar(MYLIBID, libid, sizeof(libid));
 
-    // Build the key CLSID\\{...}
+    
     char Key[MAX_CLSID_LEN];
     strcpy(Key, "CLSID\\");
     strcat(Key, clsid);
 
-    // Add the CLSID to the registry
+    
     SetKeyAndValue(Key, NULL, MYNAME);
     SetKeyAndValue(Key, "LocalServer32", module);
     SetKeyAndValue(Key, "ProgID", MYPROGID);
     SetKeyAndValue(Key, "VersionIndependentProgID", MYVIPROGID);
     SetKeyAndValue(Key, "TypeLib", libid);
 
-    // Add the version-independent ProgID subkey under HKEY_CLASSES_ROOT
+    
     SetKeyAndValue(MYVIPROGID, NULL, MYNAME);
     SetKeyAndValue(MYVIPROGID, "CLSID", clsid);
     SetKeyAndValue(MYVIPROGID, "CurVer", MYPROGID);
 
-    // Add the versioned ProgID subkey under HKEY_CLASSES_ROOT
+    
     SetKeyAndValue(MYPROGID, NULL, MYNAME);
     SetKeyAndValue(MYPROGID, "CLSID", clsid);
 
@@ -577,13 +541,13 @@ extern "C" void RegisterMe(int silent)
 	MessageBox(0, "Registered successfully", "Vim", 0);
 }
 
-// Remove the component from the registry
-//
-// Note: There is little error checking in this code, to allow incomplete
-// or failed registrations to be undone.
+
+
+
+
 extern "C" void UnregisterMe(int bNotifyUser)
 {
-    // Unregister the type library
+    
     ITypeLib *typelib;
     if (SUCCEEDED(LoadRegTypeLib(MYLIBID, MAJORVER, MINORVER, LOCALE, &typelib)))
     {
@@ -597,55 +561,55 @@ extern "C" void UnregisterMe(int bNotifyUser)
 	typelib->Release();
     }
 
-    // Convert the CLSID into a char
+    
     char clsid[GUID_STRING_SIZE];
     GUIDtochar(MYCLSID, clsid, sizeof(clsid));
 
-    // Build the key CLSID\\{...}
+    
     char Key[MAX_CLSID_LEN];
     strcpy(Key, "CLSID\\");
     strcat(Key, clsid);
 
-    // Delete the CLSID Key - CLSID\{...}
+    
     RecursiveDeleteKey(HKEY_CLASSES_ROOT, Key);
 
-    // Delete the version-independent ProgID Key
+    
     RecursiveDeleteKey(HKEY_CLASSES_ROOT, MYVIPROGID);
 
-    // Delete the ProgID key
+    
     RecursiveDeleteKey(HKEY_CLASSES_ROOT, MYPROGID);
 
     if (bNotifyUser)
 	MessageBox(0, "Unregistered successfully", "Vim", 0);
 }
 
-/****************************************************************************/
 
-// Convert a GUID to a char string
+
+
 static void GUIDtochar(const GUID &guid, char *GUID, int length)
 {
-    // Get wide string version
+    
     LPOLESTR wGUID = NULL;
     StringFromCLSID(guid, &wGUID);
 
-    // Convert from wide characters to non-wide
+    
     wcstombs(GUID, wGUID, length);
 
-    // Free memory
+    
     CoTaskMemFree(wGUID);
 }
 
-// Delete a key and all of its descendants
+
 static void RecursiveDeleteKey(HKEY hKeyParent, const char *child)
 {
-    // Open the child
+    
     HKEY hKeyChild;
     LONG result = RegOpenKeyEx(hKeyParent, child, 0,
 			       KEY_ALL_ACCESS, &hKeyChild);
     if (result != ERROR_SUCCESS)
 	return;
 
-    // Enumerate all of the descendants of this child
+    
     FILETIME time;
     char buffer[1024];
     DWORD size = 1024;
@@ -653,19 +617,19 @@ static void RecursiveDeleteKey(HKEY hKeyParent, const char *child)
     while (RegEnumKeyEx(hKeyChild, 0, buffer, &size, NULL,
 			NULL, NULL, &time) == S_OK)
     {
-	// Delete the descendants of this child
+	
 	RecursiveDeleteKey(hKeyChild, buffer);
 	size = 256;
     }
 
-    // Close the child
+    
     RegCloseKey(hKeyChild);
 
-    // Delete this child
+    
     RegDeleteKey(hKeyParent, child);
 }
 
-// Create a key and set its value
+
 static void SetKeyAndValue(const char *key, const char *subkey, const char *value)
 {
     HKEY hKey;
@@ -673,14 +637,14 @@ static void SetKeyAndValue(const char *key, const char *subkey, const char *valu
 
     strcpy(buffer, key);
 
-    // Add subkey name to buffer.
+    
     if (subkey)
     {
 	strcat(buffer, "\\");
 	strcat(buffer, subkey);
     }
 
-    // Create and open key and subkey.
+    
     long result = RegCreateKeyEx(HKEY_CLASSES_ROOT,
 				 buffer,
 				 0, NULL, REG_OPTION_NON_VOLATILE,
@@ -689,7 +653,7 @@ static void SetKeyAndValue(const char *key, const char *subkey, const char *valu
     if (result != ERROR_SUCCESS)
 	return;
 
-    // Set the value
+    
     if (value)
 	RegSetValueEx(hKey, NULL, 0, REG_SZ, (BYTE *)value,
 		      (DWORD)STRLEN(value)+1);
@@ -697,16 +661,14 @@ static void SetKeyAndValue(const char *key, const char *subkey, const char *valu
     RegCloseKey(hKey);
 }
 
-/*****************************************************************************
- 5. OLE Initialisation and shutdown processing
-*****************************************************************************/
+
 extern "C" void InitOLE(int *pbDoRestart)
 {
     HRESULT hr;
 
     *pbDoRestart = FALSE;
 
-    // Initialize the OLE libraries
+    
     hr = OleInitialize(NULL);
     if (FAILED(hr))
     {
@@ -714,17 +676,17 @@ extern "C" void InitOLE(int *pbDoRestart)
 	goto error0;
     }
 
-    // Create the application object
+    
     app = CVim::Create(pbDoRestart);
     if (app == NULL)
 	goto error1;
 
-    // Create the class factory
+    
     cf = CVimCF::Create();
     if (cf == NULL)
 	goto error1;
 
-    // Register the class factory
+    
     hr = CoRegisterClassObject(
 	MYCLSID,
 	cf,
@@ -738,7 +700,7 @@ extern "C" void InitOLE(int *pbDoRestart)
 	goto error1;
     }
 
-    // Register the application object as active
+    
     hr = RegisterActiveObject(
 	app,
 	MYCLSID,
@@ -753,7 +715,7 @@ extern "C" void InitOLE(int *pbDoRestart)
 
     return;
 
-    // Errors: tidy up as much as needed and return
+    
 error1:
     UninitOLE();
 error0:
@@ -762,35 +724,35 @@ error0:
 
 extern "C" void UninitOLE()
 {
-    // Unregister the application object
+    
     if (app_id)
     {
 	RevokeActiveObject(app_id, NULL);
 	app_id = 0;
     }
 
-    // Unregister the class factory
+    
     if (cf_id)
     {
 	CoRevokeClassObject(cf_id);
 	cf_id = 0;
     }
 
-    // Shut down the OLE libraries
+    
     OleUninitialize();
 
-    // Delete the application object
+    
     if (app)
     {
 	delete app;
 	app = NULL;
     }
 
-    // Delete the class factory
+    
     if (cf)
     {
 	delete cf;
 	cf = NULL;
     }
 }
-#endif /* FEAT_OLE */
+#endif 

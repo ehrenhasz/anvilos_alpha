@@ -2,7 +2,7 @@ import os, subprocess
 SIZE=256
 NAME_MAX=int(subprocess.check_output(["getconf", "NAME_MAX", "."]))
 test_num=0
-code='''#!/usr/bin/perl
+code='''
 print "Executed interpreter! Args:\n";
 print "0 : '$0'\n";
 $counter = 1;
@@ -12,7 +12,7 @@ foreach my $a (@ARGV) {
 }
 '''
 def test(name, size, good=True, leading="", root="./", target="/perl",
-                     fill="A", arg="", newline="\n", hashbang="#!"):
+                     fill="A", arg="", newline="\n", hashbang="
     global test_num, tests, NAME_MAX
     test_num += 1
     if test_num > tests:

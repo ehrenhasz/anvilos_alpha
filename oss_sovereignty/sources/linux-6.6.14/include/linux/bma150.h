@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2011 Bosch Sensortec GmbH
- * Copyright (c) 2011 Unixphere
- */
+
+
 
 #ifndef _BMA150_H_
 #define _BMA150_H_
@@ -22,19 +19,19 @@
 #define BMA150_BW_1500HZ	6
 
 struct bma150_cfg {
-	bool any_motion_int;		/* Set to enable any-motion interrupt */
-	bool hg_int;			/* Set to enable high-G interrupt */
-	bool lg_int;			/* Set to enable low-G interrupt */
-	unsigned char any_motion_dur;	/* Any-motion duration */
-	unsigned char any_motion_thres;	/* Any-motion threshold */
-	unsigned char hg_hyst;		/* High-G hysterisis */
-	unsigned char hg_dur;		/* High-G duration */
-	unsigned char hg_thres;		/* High-G threshold */
-	unsigned char lg_hyst;		/* Low-G hysterisis */
-	unsigned char lg_dur;		/* Low-G duration */
-	unsigned char lg_thres;		/* Low-G threshold */
-	unsigned char range;		/* one of BMA150_RANGE_xxx */
-	unsigned char bandwidth;	/* one of BMA150_BW_xxx */
+	bool any_motion_int;		
+	bool hg_int;			
+	bool lg_int;			
+	unsigned char any_motion_dur;	
+	unsigned char any_motion_thres;	
+	unsigned char hg_hyst;		
+	unsigned char hg_dur;		
+	unsigned char hg_thres;		
+	unsigned char lg_hyst;		
+	unsigned char lg_dur;		
+	unsigned char lg_thres;		
+	unsigned char range;		
+	unsigned char bandwidth;	
 };
 
 struct bma150_platform_data {
@@ -42,4 +39,4 @@ struct bma150_platform_data {
 	int (*irq_gpio_cfg)(void);
 };
 
-#endif /* _BMA150_H_ */
+#endif 

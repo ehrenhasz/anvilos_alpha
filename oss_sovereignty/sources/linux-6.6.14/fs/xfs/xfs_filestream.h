@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2006-2007 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_FILESTREAM_H__
 #define __XFS_FILESTREAM_H__
 
@@ -25,4 +22,4 @@ xfs_inode_is_filestream(
 		(ip->i_diflags & XFS_DIFLAG_FILESTREAM);
 }
 
-#endif /* __XFS_FILESTREAM_H__ */
+#endif 

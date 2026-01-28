@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CLK_STARFIVE_JH71X0_H
 #define __CLK_STARFIVE_JH71X0_H
 
@@ -7,7 +7,7 @@
 #include <linux/device.h>
 #include <linux/spinlock.h>
 
-/* register fields */
+
 #define JH71X0_CLK_ENABLE	BIT(31)
 #define JH71X0_CLK_INVERT	BIT(30)
 #define JH71X0_CLK_MUX_MASK	GENMASK(27, 24)
@@ -17,11 +17,11 @@
 #define JH71X0_CLK_FRAC_SHIFT	8
 #define JH71X0_CLK_INT_MASK	GENMASK(7, 0)
 
-/* fractional divider min/max */
+
 #define JH71X0_CLK_FRAC_MIN	100UL
 #define JH71X0_CLK_FRAC_MAX	25599UL
 
-/* clock data */
+
 struct jh71x0_clk_data {
 	const char *name;
 	unsigned long flags;
@@ -110,7 +110,7 @@ struct jh71x0_clk {
 };
 
 struct jh71x0_clk_priv {
-	/* protect clk enable and set rate/parent from happening at the same time */
+	
 	spinlock_t rmw_lock;
 	struct device *dev;
 	void __iomem *base;

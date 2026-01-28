@@ -1,14 +1,4 @@
-/*
- * cxgb3i.h: Chelsio S3xx iSCSI driver.
- *
- * Copyright (c) 2008-2015 Chelsio Communications, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- */
+
 
 #ifndef __CXGB3I_H__
 #define __CXGB3I_H__
@@ -18,7 +8,7 @@
 #define ISCSI_PDU_NONPAYLOAD_MAX \
 	(sizeof(struct iscsi_hdr) + ISCSI_MAX_AHS_SIZE + 2*ISCSI_DIGEST_SIZE)
 
-/*for TX: a skb must have a headroom of at least TX_HEADER_LEN bytes */
+
 #define CXGB3I_TX_HEADER_LEN \
 	(sizeof(struct tx_data_wr) + sizeof(struct sge_opaque_hdr))
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Authentication token and access key management internal defs
- *
- * Copyright (C) 2003-5, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #ifndef _INTERNAL_H
 #define _INTERNAL_H
@@ -42,25 +38,18 @@ extern struct key_type key_type_dead;
 extern struct key_type key_type_user;
 extern struct key_type key_type_logon;
 
-/*****************************************************************************/
-/*
- * Keep track of keys for a user.
- *
- * This needs to be separate to user_struct to avoid a refcount-loop
- * (user_struct pins some keyrings which pin this struct).
- *
- * We also keep track of keys under request from userspace for this UID here.
- */
+
+
 struct key_user {
 	struct rb_node		node;
-	struct mutex		cons_lock;	/* construction initiation lock */
+	struct mutex		cons_lock;	
 	spinlock_t		lock;
-	refcount_t		usage;		/* for accessing qnkeys & qnbytes */
-	atomic_t		nkeys;		/* number of keys */
-	atomic_t		nikeys;		/* number of instantiated keys */
+	refcount_t		usage;		
+	atomic_t		nkeys;		
+	atomic_t		nikeys;		
 	kuid_t			uid;
-	int			qnkeys;		/* number of keys allocated to this user */
-	int			qnbytes;	/* number of bytes allocated to this user */
+	int			qnkeys;		
+	int			qnbytes;	
 };
 
 extern struct rb_root	key_user_tree;
@@ -70,16 +59,13 @@ extern struct key_user	root_key_user;
 extern struct key_user *key_user_lookup(kuid_t uid);
 extern void key_user_put(struct key_user *user);
 
-/*
- * Key quota limits.
- * - root has its own separate limits to everyone else
- */
+
 extern unsigned key_quota_root_maxkeys;
 extern unsigned key_quota_root_maxbytes;
 extern unsigned key_quota_maxkeys;
 extern unsigned key_quota_maxbytes;
 
-#define KEYQUOTA_LINK_BYTES	4		/* a link in a keyring is worth 4 bytes */
+#define KEYQUOTA_LINK_BYTES	4		
 
 
 extern struct kmem_cache *key_jar;
@@ -121,17 +107,17 @@ struct keyring_search_context {
 	const struct cred	*cred;
 	struct key_match_data	match_data;
 	unsigned		flags;
-#define KEYRING_SEARCH_NO_STATE_CHECK	0x0001	/* Skip state checks */
-#define KEYRING_SEARCH_DO_STATE_CHECK	0x0002	/* Override NO_STATE_CHECK */
-#define KEYRING_SEARCH_NO_UPDATE_TIME	0x0004	/* Don't update times */
-#define KEYRING_SEARCH_NO_CHECK_PERM	0x0008	/* Don't check permissions */
-#define KEYRING_SEARCH_DETECT_TOO_DEEP	0x0010	/* Give an error on excessive depth */
-#define KEYRING_SEARCH_SKIP_EXPIRED	0x0020	/* Ignore expired keys (intention to replace) */
-#define KEYRING_SEARCH_RECURSE		0x0040	/* Search child keyrings also */
+#define KEYRING_SEARCH_NO_STATE_CHECK	0x0001	
+#define KEYRING_SEARCH_DO_STATE_CHECK	0x0002	
+#define KEYRING_SEARCH_NO_UPDATE_TIME	0x0004	
+#define KEYRING_SEARCH_NO_CHECK_PERM	0x0008	
+#define KEYRING_SEARCH_DETECT_TOO_DEEP	0x0010	
+#define KEYRING_SEARCH_SKIP_EXPIRED	0x0020	
+#define KEYRING_SEARCH_RECURSE		0x0040	
 
 	int (*iterator)(const void *object, void *iterator_data);
 
-	/* Internal stuff */
+	
 	int			skipped_ret;
 	bool			possessed;
 	key_ref_t		result;
@@ -200,9 +186,7 @@ static inline void notify_key(struct key *key,
 #endif
 }
 
-/*
- * Check to see whether permission is granted to use a key in the desired way.
- */
+
 static inline int key_permission(const key_ref_t key_ref,
 				 enum key_need_perm need_perm)
 {
@@ -218,9 +202,7 @@ extern struct key *request_key_auth_new(struct key *target,
 
 extern struct key *key_get_instantiation_authkey(key_serial_t target_id);
 
-/*
- * Determine whether a key is dead.
- */
+
 static inline bool key_is_dead(const struct key *key, time64_t limit)
 {
 	time64_t expiry = key->expiry;
@@ -238,9 +220,7 @@ static inline bool key_is_dead(const struct key *key, time64_t limit)
 		key->domain_tag->removed;
 }
 
-/*
- * keyctl() functions
- */
+
 extern long keyctl_get_keyring_ID(key_serial_t, int);
 extern long keyctl_join_session_keyring(const char __user *);
 extern long keyctl_update_key(key_serial_t, const void __user *, size_t);
@@ -292,8 +272,8 @@ extern long compat_keyctl_dh_compute(struct keyctl_dh_params __user *params,
 				char __user *buffer, size_t buflen,
 				struct compat_keyctl_kdf_params __user *kdf);
 #endif
-#define KEYCTL_KDF_MAX_OUTPUT_LEN	1024	/* max length of KDF output */
-#define KEYCTL_KDF_MAX_OI_LEN		64	/* max length of otherinfo */
+#define KEYCTL_KDF_MAX_OUTPUT_LEN	1024	
+#define KEYCTL_KDF_MAX_OI_LEN		64	
 #else
 static inline long keyctl_dh_compute(struct keyctl_dh_params __user *params,
 				     char __user *buffer, size_t buflen,
@@ -363,9 +343,7 @@ static inline long keyctl_watch_key(key_serial_t key_id, int watch_fd, int watch
 }
 #endif
 
-/*
- * Debugging key validation
- */
+
 #ifdef KEY_DEBUGGING
 extern void __key_check(const struct key *);
 
@@ -380,4 +358,4 @@ static inline void key_check(const struct key *key)
 #define key_check(key) do {} while(0)
 
 #endif
-#endif /* _INTERNAL_H */
+#endif 

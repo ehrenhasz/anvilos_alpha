@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2023 Isovalent */
+
+
 #ifndef __NET_TCX_H
 #define __NET_TCX_H
 
@@ -53,9 +53,7 @@ void tcx_dec(void);
 
 static inline void tcx_entry_sync(void)
 {
-	/* bpf_mprog_entry got a/b swapped, therefore ensure that
-	 * there are no inflight users on the old one anymore.
-	 */
+	
 	synchronize_rcu();
 }
 
@@ -157,7 +155,7 @@ static inline enum tcx_action_base tcx_action_code(struct sk_buff *skb,
 		return TCX_NEXT;
 	}
 }
-#endif /* CONFIG_NET_XGRESS */
+#endif 
 
 #if defined(CONFIG_NET_XGRESS) && defined(CONFIG_BPF_SYSCALL)
 int tcx_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog);
@@ -202,5 +200,5 @@ static inline int tcx_prog_query(const union bpf_attr *attr,
 static inline void dev_tcx_uninstall(struct net_device *dev)
 {
 }
-#endif /* CONFIG_NET_XGRESS && CONFIG_BPF_SYSCALL */
-#endif /* __NET_TCX_H */
+#endif 
+#endif 

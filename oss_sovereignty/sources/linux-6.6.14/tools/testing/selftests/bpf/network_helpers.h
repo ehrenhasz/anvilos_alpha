@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NETWORK_HELPERS_H
 #define __NETWORK_HELPERS_H
 #include <sys/socket.h>
@@ -26,7 +26,7 @@ struct network_helper_opts {
 	int proto;
 };
 
-/* ipv4 test vector */
+
 struct ipv4_packet {
 	struct ethhdr eth;
 	struct iphdr iph;
@@ -34,7 +34,7 @@ struct ipv4_packet {
 } __packed;
 extern struct ipv4_packet pkt_v4;
 
-/* ipv6 test vector */
+
 struct ipv6_packet {
 	struct ethhdr eth;
 	struct ipv6hdr iph;
@@ -62,12 +62,7 @@ char *ping_command(int family);
 int get_socket_local_port(int sock_fd);
 
 struct nstoken;
-/**
- * open_netns() - Switch to specified network namespace by name.
- *
- * Returns token with which to restore the original namespace
- * using close_netns().
- */
+
 struct nstoken *open_netns(const char *name);
 void close_netns(struct nstoken *token);
 #endif

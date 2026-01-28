@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __RK3288_CRYPTO_H__
 #define __RK3288_CRYPTO_H__
 
@@ -18,7 +18,7 @@
 
 #define _SBF(v, f)			((v) << (f))
 
-/* Crypto control registers*/
+
 #define RK_CRYPTO_INTSTS		0x0000
 #define RK_CRYPTO_PKA_DONE_INT		BIT(5)
 #define RK_CRYPTO_HASH_DONE_INT		BIT(4)
@@ -49,33 +49,33 @@
 #define RK_CRYPTO_AES_START		BIT(0)
 
 #define RK_CRYPTO_CONF			0x000c
-/* HASH Receive DMA Address Mode:   fix | increment */
+
 #define RK_CRYPTO_HR_ADDR_MODE		BIT(8)
-/* Block Transmit DMA Address Mode: fix | increment */
+
 #define RK_CRYPTO_BT_ADDR_MODE		BIT(7)
-/* Block Receive DMA Address Mode:  fix | increment */
+
 #define RK_CRYPTO_BR_ADDR_MODE		BIT(6)
 #define RK_CRYPTO_BYTESWAP_HRFIFO	BIT(5)
 #define RK_CRYPTO_BYTESWAP_BTFIFO	BIT(4)
 #define RK_CRYPTO_BYTESWAP_BRFIFO	BIT(3)
-/* AES = 0 OR DES = 1 */
+
 #define RK_CRYPTO_DESSEL				BIT(2)
 #define RK_CYYPTO_HASHINSEL_INDEPENDENT_SOURCE		_SBF(0x00, 0)
 #define RK_CYYPTO_HASHINSEL_BLOCK_CIPHER_INPUT		_SBF(0x01, 0)
 #define RK_CYYPTO_HASHINSEL_BLOCK_CIPHER_OUTPUT		_SBF(0x02, 0)
 
-/* Block Receiving DMA Start Address Register */
+
 #define RK_CRYPTO_BRDMAS		0x0010
-/* Block Transmitting DMA Start Address Register */
+
 #define RK_CRYPTO_BTDMAS		0x0014
-/* Block Receiving DMA Length Register */
+
 #define RK_CRYPTO_BRDMAL		0x0018
-/* Hash Receiving DMA Start Address Register */
+
 #define RK_CRYPTO_HRDMAS		0x001c
-/* Hash Receiving DMA Length Register */
+
 #define RK_CRYPTO_HRDMAL		0x0020
 
-/* AES registers */
+
 #define RK_CRYPTO_AES_CTRL			  0x0080
 #define RK_CRYPTO_AES_BYTESWAP_CNT	BIT(11)
 #define RK_CRYPTO_AES_BYTESWAP_KEY	BIT(10)
@@ -89,33 +89,33 @@
 #define RK_CRYPTO_AES_128BIT_key	_SBF(0x00, 2)
 #define RK_CRYPTO_AES_192BIT_key	_SBF(0x01, 2)
 #define RK_CRYPTO_AES_256BIT_key	_SBF(0x02, 2)
-/* Slave = 0 / fifo = 1 */
+
 #define RK_CRYPTO_AES_FIFO_MODE		BIT(1)
-/* Encryption = 0 , Decryption = 1 */
+
 #define RK_CRYPTO_AES_DEC		BIT(0)
 
 #define RK_CRYPTO_AES_STS		0x0084
 #define RK_CRYPTO_AES_DONE		BIT(0)
 
-/* AES Input Data 0-3 Register */
+
 #define RK_CRYPTO_AES_DIN_0		0x0088
 #define RK_CRYPTO_AES_DIN_1		0x008c
 #define RK_CRYPTO_AES_DIN_2		0x0090
 #define RK_CRYPTO_AES_DIN_3		0x0094
 
-/* AES output Data 0-3 Register */
+
 #define RK_CRYPTO_AES_DOUT_0		0x0098
 #define RK_CRYPTO_AES_DOUT_1		0x009c
 #define RK_CRYPTO_AES_DOUT_2		0x00a0
 #define RK_CRYPTO_AES_DOUT_3		0x00a4
 
-/* AES IV Data 0-3 Register */
+
 #define RK_CRYPTO_AES_IV_0		0x00a8
 #define RK_CRYPTO_AES_IV_1		0x00ac
 #define RK_CRYPTO_AES_IV_2		0x00b0
 #define RK_CRYPTO_AES_IV_3		0x00b4
 
-/* AES Key Data 0-3 Register */
+
 #define RK_CRYPTO_AES_KEY_0		0x00b8
 #define RK_CRYPTO_AES_KEY_1		0x00bc
 #define RK_CRYPTO_AES_KEY_2		0x00c0
@@ -125,21 +125,21 @@
 #define RK_CRYPTO_AES_KEY_6		0x00d0
 #define RK_CRYPTO_AES_KEY_7		0x00d4
 
-/* des/tdes */
+
 #define RK_CRYPTO_TDES_CTRL		0x0100
 #define RK_CRYPTO_TDES_BYTESWAP_KEY	BIT(8)
 #define RK_CRYPTO_TDES_BYTESWAP_IV	BIT(7)
 #define RK_CRYPTO_TDES_BYTESWAP_DO	BIT(6)
 #define RK_CRYPTO_TDES_BYTESWAP_DI	BIT(5)
-/* 0: ECB, 1: CBC */
+
 #define RK_CRYPTO_TDES_CHAINMODE_CBC	BIT(4)
-/* TDES Key Mode, 0 : EDE, 1 : EEE */
+
 #define RK_CRYPTO_TDES_EEE		BIT(3)
-/* 0: DES, 1:TDES */
+
 #define RK_CRYPTO_TDES_SELECT		BIT(2)
-/* 0: Slave, 1:Fifo */
+
 #define RK_CRYPTO_TDES_FIFO_MODE	BIT(1)
-/* Encryption = 0 , Decryption = 1 */
+
 #define RK_CRYPTO_TDES_DEC		BIT(0)
 
 #define RK_CRYPTO_TDES_STS		0x0104
@@ -158,7 +158,7 @@
 #define RK_CRYPTO_TDES_KEY3_0		0x0130
 #define RK_CRYPTO_TDES_KEY3_1		0x0134
 
-/* HASH */
+
 #define RK_CRYPTO_HASH_CTRL		0x0180
 #define RK_CRYPTO_HASH_SWAP_DO		BIT(3)
 #define RK_CRYPTO_HASH_SWAP_DI		BIT(2)
@@ -187,16 +187,10 @@
 
 #define RK_MAX_CLKS 4
 
-/*
- * struct rockchip_ip - struct for managing a list of RK crypto instance
- * @dev_list:		Used for doing a list of rk_crypto_info
- * @lock:		Control access to dev_list
- * @dbgfs_dir:		Debugfs dentry for statistic directory
- * @dbgfs_stats:	Debugfs dentry for statistic counters
- */
+
 struct rockchip_ip {
 	struct list_head	dev_list;
-	spinlock_t		lock; /* Control access to dev_list */
+	spinlock_t		lock; 
 	struct dentry		*dbgfs_dir;
 	struct dentry		*dbgfs_stats;
 };
@@ -226,13 +220,13 @@ struct rk_crypto_info {
 	int status;
 };
 
-/* the private variable of hash */
+
 struct rk_ahash_ctx {
-	/* for fallback */
+	
 	struct crypto_ahash		*fallback_tfm;
 };
 
-/* the private variable of hash for fallback */
+
 struct rk_ahash_rctx {
 	struct rk_crypto_info		*dev;
 	struct ahash_request		fallback_req;
@@ -240,7 +234,7 @@ struct rk_ahash_rctx {
 	int nrsg;
 };
 
-/* the private variable of cipher */
+
 struct rk_cipher_ctx {
 	unsigned int			keylen;
 	u8				key[AES_MAX_KEY_SIZE];
@@ -252,7 +246,7 @@ struct rk_cipher_rctx {
 	struct rk_crypto_info		*dev;
 	u8 backup_iv[AES_BLOCK_SIZE];
 	u32				mode;
-	struct skcipher_request fallback_req;   // keep at the end
+	struct skcipher_request fallback_req;   
 };
 
 struct rk_crypto_tmp {

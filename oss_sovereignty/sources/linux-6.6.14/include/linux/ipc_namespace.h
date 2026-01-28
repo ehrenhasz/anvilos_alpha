@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __IPC_NAMESPACE_H__
 #define __IPC_NAMESPACE_H__
 
@@ -21,7 +21,7 @@ struct ipc_ids {
 	struct rw_semaphore rwsem;
 	struct idr ipcs_idr;
 	int max_idx;
-	int last_idx;	/* For wrap around detection */
+	int last_idx;	
 #ifdef CONFIG_CHECKPOINT_RESTORE
 	int next_id;
 #endif
@@ -44,24 +44,21 @@ struct ipc_namespace {
 	size_t		shm_ctlall;
 	unsigned long	shm_tot;
 	int		shm_ctlmni;
-	/*
-	 * Defines whether IPC_RMID is forced for _all_ shm segments regardless
-	 * of shmctl()
-	 */
+	
 	int		shm_rmid_forced;
 
 	struct notifier_block ipcns_nb;
 
-	/* The kern_mount of the mqueuefs sb.  We take a ref on it */
+	
 	struct vfsmount	*mq_mnt;
 
-	/* # queues in this ns, protected by mq_lock */
+	
 	unsigned int    mq_queues_count;
 
-	/* next fields are set through sysctl */
-	unsigned int    mq_queues_max;   /* initialized to DFLT_QUEUESMAX */
-	unsigned int    mq_msg_max;      /* initialized to DFLT_MSGMAX */
-	unsigned int    mq_msgsize_max;  /* initialized to DFLT_MSGSIZEMAX */
+	
+	unsigned int    mq_queues_max;   
+	unsigned int    mq_msg_max;      
+	unsigned int    mq_msgsize_max;  
 	unsigned int    mq_msg_default;
 	unsigned int    mq_msgsize_default;
 
@@ -71,7 +68,7 @@ struct ipc_namespace {
 	struct ctl_table_set	ipc_set;
 	struct ctl_table_header	*ipc_sysctls;
 
-	/* user_ns which owns the ipc ns */
+	
 	struct user_namespace *user_ns;
 	struct ucounts *ucounts;
 
@@ -85,36 +82,13 @@ extern spinlock_t mq_lock;
 
 #ifdef CONFIG_SYSVIPC
 extern void shm_destroy_orphaned(struct ipc_namespace *ns);
-#else /* CONFIG_SYSVIPC */
+#else 
 static inline void shm_destroy_orphaned(struct ipc_namespace *ns) {}
-#endif /* CONFIG_SYSVIPC */
+#endif 
 
 #ifdef CONFIG_POSIX_MQUEUE
 extern int mq_init_ns(struct ipc_namespace *ns);
-/*
- * POSIX Message Queue default values:
- *
- * MIN_*: Lowest value an admin can set the maximum unprivileged limit to
- * DFLT_*MAX: Default values for the maximum unprivileged limits
- * DFLT_{MSG,MSGSIZE}: Default values used when the user doesn't supply
- *   an attribute to the open call and the queue must be created
- * HARD_*: Highest value the maximums can be set to.  These are enforced
- *   on CAP_SYS_RESOURCE apps as well making them inviolate (so make them
- *   suitably high)
- *
- * POSIX Requirements:
- *   Per app minimum openable message queues - 8.  This does not map well
- *     to the fact that we limit the number of queues on a per namespace
- *     basis instead of a per app basis.  So, make the default high enough
- *     that no given app should have a hard time opening 8 queues.
- *   Minimum maximum for HARD_MSGMAX - 32767.  I bumped this to 65536.
- *   Minimum maximum for HARD_MSGSIZEMAX - POSIX is silent on this.  However,
- *     we have run into a situation where running applications in the wild
- *     require this to be at least 5MB, and preferably 10MB, so I set the
- *     value to 16MB in hopes that this user is the worst of the bunch and
- *     the new maximum will handle anyone else.  I may have to revisit this
- *     in the future.
- */
+
 #define DFLT_QUEUESMAX		      256
 #define MIN_MSGMAX			1
 #define DFLT_MSG		       10U
@@ -180,7 +154,7 @@ static inline void put_ipc_ns(struct ipc_namespace *ns)
 void retire_mq_sysctls(struct ipc_namespace *ns);
 bool setup_mq_sysctls(struct ipc_namespace *ns);
 
-#else /* CONFIG_POSIX_MQUEUE_SYSCTL */
+#else 
 
 static inline void retire_mq_sysctls(struct ipc_namespace *ns)
 {
@@ -191,14 +165,14 @@ static inline bool setup_mq_sysctls(struct ipc_namespace *ns)
 	return true;
 }
 
-#endif /* CONFIG_POSIX_MQUEUE_SYSCTL */
+#endif 
 
 #ifdef CONFIG_SYSVIPC_SYSCTL
 
 bool setup_ipc_sysctls(struct ipc_namespace *ns);
 void retire_ipc_sysctls(struct ipc_namespace *ns);
 
-#else /* CONFIG_SYSVIPC_SYSCTL */
+#else 
 
 static inline void retire_ipc_sysctls(struct ipc_namespace *ns)
 {
@@ -209,5 +183,5 @@ static inline bool setup_ipc_sysctls(struct ipc_namespace *ns)
 	return true;
 }
 
-#endif /* CONFIG_SYSVIPC_SYSCTL */
+#endif 
 #endif

@@ -1,44 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel Uncore Frequency Control: Common defines and prototypes
- * Copyright (c) 2022, Intel Corporation.
- * All rights reserved.
- *
- */
+
+
 
 #ifndef __INTEL_UNCORE_FREQ_COMMON_H
 #define __INTEL_UNCORE_FREQ_COMMON_H
 
 #include <linux/device.h>
 
-/**
- * struct uncore_data - Encapsulate all uncore data
- * @stored_uncore_data: Last user changed MSR 620 value, which will be restored
- *			on system resume.
- * @initial_min_freq_khz: Sampled minimum uncore frequency at driver init
- * @initial_max_freq_khz: Sampled maximum uncore frequency at driver init
- * @control_cpu:	Designated CPU for a die to read/write
- * @valid:		Mark the data valid/invalid
- * @package_id:	Package id for this instance
- * @die_id:		Die id for this instance
- * @domain_id:		Power domain id for this instance
- * @cluster_id:		cluster id in a domain
- * @instance_id:	Unique instance id to append to directory name
- * @name:		Sysfs entry name for this instance
- * @uncore_attr_group:	Attribute group storage
- * @max_freq_khz_dev_attr: Storage for device attribute max_freq_khz
- * @mix_freq_khz_dev_attr: Storage for device attribute min_freq_khz
- * @initial_max_freq_khz_dev_attr: Storage for device attribute initial_max_freq_khz
- * @initial_min_freq_khz_dev_attr: Storage for device attribute initial_min_freq_khz
- * @current_freq_khz_dev_attr: Storage for device attribute current_freq_khz
- * @domain_id_dev_attr: Storage for device attribute domain_id
- * @fabric_cluster_id_dev_attr: Storage for device attribute fabric_cluster_id
- * @package_id_dev_attr: Storage for device attribute package_id
- * @uncore_attrs:	Attribute storage for group creation
- *
- * This structure is used to encapsulate all data related to uncore sysfs
- * settings for a die/package.
- */
+
 struct uncore_data {
 	u64 stored_uncore_data;
 	u32 initial_min_freq_khz;

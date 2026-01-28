@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _NFNL_CTHELPER_H_
 #define _NFNL_CTHELPER_H_
 
@@ -53,4 +53,4 @@ enum nfnl_cthelper_tuple_type {
 };
 #define NFCTH_TUPLE_MAX (__NFCTH_TUPLE_MAX - 1)
 
-#endif /* _NFNL_CTHELPER_H */
+#endif 

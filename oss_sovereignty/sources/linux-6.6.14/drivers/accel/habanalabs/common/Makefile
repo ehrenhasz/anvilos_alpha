@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 
 include $(src)/common/mmu/Makefile
 habanalabs-y += $(HL_COMMON_MMU_FILES)

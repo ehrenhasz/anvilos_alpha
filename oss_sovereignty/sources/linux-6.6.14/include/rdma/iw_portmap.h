@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2014 Intel Corporation. All rights reserved.
- * Copyright (c) 2014 Chelsio, Inc. All rights reserved.
- */
+
+
 
 #ifndef _IW_PORTMAP_H
 #define _IW_PORTMAP_H
@@ -62,4 +59,4 @@ int iwpm_remove_mapinfo(struct sockaddr_storage *local_addr,
 			struct sockaddr_storage *mapped_addr);
 
 int iwpm_hello_cb(struct sk_buff *skb, struct netlink_callback *cb);
-#endif /* _IW_PORTMAP_H */
+#endif 

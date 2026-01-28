@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Sven Eckelmann
- */
+
+
 
 #if !defined(_NET_BATMAN_ADV_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _NET_BATMAN_ADV_TRACE_H_
@@ -17,14 +14,14 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM batadv
 
-/* provide dummy function when tracing is disabled */
+
 #if !defined(CONFIG_BATMAN_ADV_TRACING)
 
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, ...) \
 	static inline void trace_ ## name(proto) {}
 
-#endif /* CONFIG_BATMAN_ADV_TRACING */
+#endif 
 
 TRACE_EVENT(batadv_dbg,
 
@@ -53,12 +50,12 @@ TRACE_EVENT(batadv_dbg,
 	    )
 );
 
-#endif /* _NET_BATMAN_ADV_TRACE_H_ || TRACE_HEADER_MULTI_READ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

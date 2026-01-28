@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+
 
 #ifndef _TEST_USER_RINGBUF_H
 #define _TEST_USER_RINGBUF_H
@@ -13,7 +13,7 @@ enum test_msg_op {
 	TEST_MSG_OP_MUL64,
 	TEST_MSG_OP_MUL32,
 
-	// Must come last.
+	
 	TEST_MSG_OP_NUM_OPS,
 };
 
@@ -32,4 +32,4 @@ struct sample {
 	char comm[16];
 };
 
-#endif /* _TEST_USER_RINGBUF_H */
+#endif 

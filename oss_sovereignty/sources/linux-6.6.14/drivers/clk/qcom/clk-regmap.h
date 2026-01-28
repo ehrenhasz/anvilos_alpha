@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2014, The Linux Foundation. All rights reserved. */
+
+
 
 #ifndef __QCOM_CLK_REGMAP_H__
 #define __QCOM_CLK_REGMAP_H__
@@ -8,15 +8,7 @@
 
 struct regmap;
 
-/**
- * struct clk_regmap - regmap supporting clock
- * @hw:		handle between common and hardware-specific interfaces
- * @regmap:	regmap to use for regmap helpers and/or by providers
- * @enable_reg: register when using regmap enable/disable ops
- * @enable_mask: mask when using regmap enable/disable ops
- * @enable_is_inverted: flag to indicate set enable_mask bits to disable
- *                      when using clock_enable_regmap and friends APIs.
- */
+
 struct clk_regmap {
 	struct clk_hw hw;
 	struct regmap *regmap;

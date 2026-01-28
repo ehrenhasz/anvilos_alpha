@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Rockchip Clock specific Makefile
-#
+
+
+
+
 
 obj-$(CONFIG_COMMON_CLK_ROCKCHIP) += clk-rockchip.o
 

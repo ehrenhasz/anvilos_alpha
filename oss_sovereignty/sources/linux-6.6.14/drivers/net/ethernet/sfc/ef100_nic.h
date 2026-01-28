@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- * Copyright 2019-2020 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+
 #ifndef EFX_EF100_NIC_H
 #define EFX_EF100_NIC_H
 
@@ -73,12 +65,12 @@ struct ef100_nic_data {
 	DECLARE_BITMAP(evq_phases, EFX_MAX_CHANNELS);
 	u64 stats[EF100_STAT_COUNT];
 	u32 base_mport;
-	bool have_mport; /* base_mport was populated successfully */
+	bool have_mport; 
 	u32 own_mport;
-	u32 local_mae_intf; /* interface_idx that corresponds to us, in mport enumerate */
-	bool have_own_mport; /* own_mport was populated successfully */
-	bool have_local_intf; /* local_mae_intf was populated successfully */
-	bool grp_mae; /* MAE Privilege */
+	u32 local_mae_intf; 
+	bool have_own_mport; 
+	bool have_local_intf; 
+	bool grp_mae; 
 	u16 tso_max_hdr_len;
 	u16 tso_max_payload_num_segs;
 	u16 tso_max_frames;
@@ -95,4 +87,4 @@ int ef100_filter_table_probe(struct efx_nic *efx);
 int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
 			  int client_handle, bool empty_ok);
 int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id);
-#endif	/* EFX_EF100_NIC_H */
+#endif	

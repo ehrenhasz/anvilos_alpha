@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_IRQDOMAIN_DEFS_H
 #define _LINUX_IRQDOMAIN_DEFS_H
 
-/*
- * Should several domains have the same device node, but serve
- * different purposes (for example one domain is for PCI/MSI, and the
- * other for wired IRQs), they can be distinguished using a
- * bus-specific token. Most domains are expected to only carry
- * DOMAIN_BUS_ANY.
- */
+
 enum irq_domain_bus_token {
 	DOMAIN_BUS_ANY		= 0,
 	DOMAIN_BUS_WIRED,
@@ -28,4 +22,4 @@ enum irq_domain_bus_token {
 	DOMAIN_BUS_PCI_DEVICE_IMS,
 };
 
-#endif /* _LINUX_IRQDOMAIN_DEFS_H */
+#endif 

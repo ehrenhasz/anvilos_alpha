@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Intel Corporation. */
+
+
 
 #ifndef _ICE_OSDEP_H_
 #define _ICE_OSDEP_H_
@@ -75,7 +75,7 @@ do {								\
 				  i, ((len_l) - i), ((buf_l) + i));\
 	}							\
 } while (0)
-#endif /* DEBUG */
-#endif /* CONFIG_DYNAMIC_DEBUG */
+#endif 
+#endif 
 
-#endif /* _ICE_OSDEP_H_ */
+#endif 

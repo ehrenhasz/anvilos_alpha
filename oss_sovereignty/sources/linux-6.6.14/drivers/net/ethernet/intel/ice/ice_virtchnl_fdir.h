@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_VIRTCHNL_FDIR_H_
 #define _ICE_VIRTCHNL_FDIR_H_
@@ -25,7 +25,7 @@ struct ice_vf_fdir_ctx {
 	void *conf;
 };
 
-/* VF FDIR information structure */
+
 struct ice_vf_fdir {
 	u16 fdir_fltr_cnt[ICE_FLTR_PTYPE_MAX][ICE_FD_HW_SEG_MAX];
 	int prof_entry_cnt[ICE_FLTR_PTYPE_MAX][ICE_FD_HW_SEG_MAX];
@@ -34,7 +34,7 @@ struct ice_vf_fdir {
 	struct idr fdir_rule_idr;
 	struct list_head fdir_rule_list;
 
-	spinlock_t ctx_lock; /* protects FDIR context info */
+	spinlock_t ctx_lock; 
 	struct ice_vf_fdir_ctx ctx_irq;
 	struct ice_vf_fdir_ctx ctx_done;
 };
@@ -52,5 +52,5 @@ void ice_flush_fdir_ctx(struct ice_pf *pf);
 static inline void
 ice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi, union ice_32b_rx_flex_desc *rx_desc) { }
 static inline void ice_flush_fdir_ctx(struct ice_pf *pf) { }
-#endif /* CONFIG_PCI_IOV */
-#endif /* _ICE_VIRTCHNL_FDIR_H_ */
+#endif 
+#endif 

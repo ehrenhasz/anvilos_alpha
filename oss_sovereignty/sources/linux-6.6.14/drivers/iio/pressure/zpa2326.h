@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Murata ZPA2326 pressure and temperature sensor IIO driver
- *
- * Copyright (c) 2016 Parrot S.A.
- *
- * Author: Gregor Boirie <gregor.boirie@parrot.com>
- */
+
+
 
 #ifndef _ZPA2326_H
 #define _ZPA2326_H
 
-/* Register map. */
+
 #define ZPA2326_REF_P_XL_REG              (0x8)
 #define ZPA2326_REF_P_L_REG               (0x9)
 #define ZPA2326_REF_P_H_REG               (0xa)
@@ -48,26 +42,14 @@ bool zpa2326_isreg_writeable(struct device *dev, unsigned int reg);
 bool zpa2326_isreg_readable(struct device *dev, unsigned int reg);
 bool zpa2326_isreg_precious(struct device *dev, unsigned int reg);
 
-/**
- * zpa2326_probe() - Instantiate and register core ZPA2326 IIO device
- * @parent: Hardware sampling device the created IIO device will be a child of.
- * @name:   Arbitrary name to identify the device.
- * @irq:    Interrupt line, negative if none.
- * @hwid:   Expected device hardware id.
- * @regmap: Registers map used to abstract underlying bus accesses.
- *
- * Return: Zero when successful, a negative error code otherwise.
- */
+
 int zpa2326_probe(struct device        *parent,
 		  const char           *name,
 		  int                   irq,
 		  unsigned int          hwid,
 		  struct regmap        *regmap);
 
-/**
- * zpa2326_remove() - Unregister and destroy core ZPA2326 IIO device.
- * @parent: Hardware sampling device the IIO device to remove is a child of.
- */
+
 void zpa2326_remove(const struct device *parent);
 
 #ifdef CONFIG_PM

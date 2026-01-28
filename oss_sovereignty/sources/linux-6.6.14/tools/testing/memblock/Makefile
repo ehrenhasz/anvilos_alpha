@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
 
-# Memblock simulator requires AddressSanitizer (libasan) and liburcu development
-# packages installed
+
+
+
 CFLAGS += -I. -I../../include -Wall -O2 -fsanitize=address \
 	  -fsanitize=undefined -D CONFIG_PHYS_ADDR_T_64BIT
 LDFLAGS += -fsanitize=address -fsanitize=undefined
@@ -17,7 +17,7 @@ ifeq ($(BUILD), 32)
 	LDFLAGS += -m32
 endif
 
-# Process user parameters
+
 include scripts/Makefile.include
 
 main: $(OFILES)

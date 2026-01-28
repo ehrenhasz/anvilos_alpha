@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# We need this for the "cc-option" macro.
+
+
 include ../../build/Build.include
 
 VERSION = 1.0
@@ -7,7 +7,7 @@ VERSION = 1.0
 BINDIR=usr/bin
 WARNFLAGS=-Wall -Wshadow -W -Wformat -Wimplicit-function-declaration -Wimplicit-int
 override CFLAGS+= $(call cc-option,-O3,-O1) ${WARNFLAGS}
-# Add "-fstack-protector" only if toolchain supports it.
+
 override CFLAGS+= $(call cc-option,-fstack-protector-strong)
 CC?= $(CROSS_COMPILE)gcc
 PKG_CONFIG?= $(CROSS_COMPILE)pkg-config
@@ -18,7 +18,7 @@ TARGET=tmon
 INSTALL_PROGRAM=install -m 755 -p
 DEL_FILE=rm -f
 
-# Static builds might require -ltinfo, for instance
+
 ifneq ($(findstring -static, $(LDFLAGS)),)
 STATIC := --static
 endif

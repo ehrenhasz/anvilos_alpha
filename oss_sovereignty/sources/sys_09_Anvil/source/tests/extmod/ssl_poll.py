@@ -123,19 +123,19 @@ assert server_sock.read(3) == b"foo"
 server_io.block_reads = True
 assert_poll(
     server_sock, server_io, _MP_STREAM_POLL_RD, None, _MP_STREAM_POLL_RD
-)  # Did not go to the socket, just consumed buffered data
+)  
 assert server_sock.read(3) == b"bar"
 client_io, _ = _Pipe.new_pair()
 client_sock = ssl.wrap_socket(client_io, do_handshake=False)
 client_sock.close()
 assert_poll(
     client_sock, client_io, _MP_STREAM_POLL_RD, None, _MP_STREAM_POLL_NVAL
-)  # Did not go to the socket
+)  
 client_io, server_io = _Pipe.new_pair()
 client_sock = ssl.wrap_socket(client_io, do_handshake=False)
-server_io.write(b"fooba")  # Needs to be exactly 5 bytes
+server_io.write(b"fooba")  
 assert_poll(client_sock, client_io, _MP_STREAM_POLL_RD, _MP_STREAM_POLL_RD, _MP_STREAM_POLL_RD)
 assert_raises(client_sock.read, 128)
 assert_poll(
     client_sock, client_io, _MP_STREAM_POLL_RD, None, _MP_STREAM_POLL_NVAL
-)  # Did not go to the socket
+)  

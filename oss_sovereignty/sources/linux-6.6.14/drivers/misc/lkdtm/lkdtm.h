@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LKDTM_H
 #define __LKDTM_H
 
@@ -57,7 +57,7 @@ do {								\
 #define pr_expected_config_param(kconfig, param) pr_expected_config(kconfig)
 #endif
 
-/* Crash types. */
+
 struct crashtype {
 	const char *name;
 	void (*func)(void);
@@ -69,13 +69,13 @@ struct crashtype {
 		.func = lkdtm_ ## _name,	\
 	}
 
-/* Category's collection of crashtypes. */
+
 struct crashtype_category {
 	struct crashtype *crashtypes;
 	size_t len;
 };
 
-/* Each category's crashtypes list. */
+
 extern struct crashtype_category bugs_crashtypes;
 extern struct crashtype_category heap_crashtypes;
 extern struct crashtype_category perms_crashtypes;
@@ -86,7 +86,7 @@ extern struct crashtype_category cfi_crashtypes;
 extern struct crashtype_category fortify_crashtypes;
 extern struct crashtype_category powerpc_crashtypes;
 
-/* Each category's init/exit routines. */
+
 void __init lkdtm_bugs_init(int *recur_param);
 void __init lkdtm_heap_init(void);
 void __exit lkdtm_heap_exit(void);
@@ -94,7 +94,7 @@ void __init lkdtm_perms_init(void);
 void __init lkdtm_usercopy_init(void);
 void __exit lkdtm_usercopy_exit(void);
 
-/* Special declaration for function-in-rodata. */
+
 void lkdtm_rodata_do_nothing(void);
 
 #endif

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Bridge per vlan tunnels
- *
- *	Authors:
- *	Roopa Prabhu		<roopa@cumulusnetworks.com>
- */
+
+
 
 #ifndef _BR_PRIVATE_TUNNEL_H
 #define _BR_PRIVATE_TUNNEL_H
@@ -15,7 +10,7 @@ struct vtunnel_info {
 	u16	flags;
 };
 
-/* br_netlink_tunnel.c */
+
 int br_parse_vlan_tunnel_info(struct nlattr *attr,
 			      struct vtunnel_info *tinfo);
 int br_process_vlan_tunnel_info(const struct net_bridge *br,
@@ -33,7 +28,7 @@ int br_vlan_tunnel_info(const struct net_bridge_port *p, int cmd,
 			u16 vid, u32 tun_id, bool *changed);
 
 #ifdef CONFIG_BRIDGE_VLAN_FILTERING
-/* br_vlan_tunnel.c */
+
 int vlan_tunnel_init(struct net_bridge_vlan_group *vg);
 void vlan_tunnel_deinit(struct net_bridge_vlan_group *vg);
 int nbp_vlan_tunnel_info_delete(const struct net_bridge_port *port, u16 vid);

@@ -110,7 +110,7 @@ def main(collected_path, fn):
             num_uses += 1
             error_strings[line] = None
             max_uncompressed_len = max(max_uncompressed_len, len(line))
-    print("#define MP_MAX_UNCOMPRESSED_TEXT_LEN ({})".format(max_uncompressed_len))
+    print("
     compressed_data = fn(error_strings)
     print('MP_COMPRESSED_DATA("{}")'.format(compressed_data))
     for uncomp, comp in error_strings.items():

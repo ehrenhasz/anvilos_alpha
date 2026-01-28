@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __KVM_X86_VMX_POSTED_INTR_H
 #define __KVM_X86_VMX_POSTED_INTR_H
 
@@ -7,22 +7,22 @@
 
 #define PID_TABLE_ENTRY_VALID 1
 
-/* Posted-Interrupt Descriptor */
+
 struct pi_desc {
-	u32 pir[8];     /* Posted interrupt requested */
+	u32 pir[8];     
 	union {
 		struct {
-				/* bit 256 - Outstanding Notification */
+				
 			u16	on	: 1,
-				/* bit 257 - Suppress Notification */
+				
 				sn	: 1,
-				/* bit 271:258 - Reserved */
+				
 				rsvd_1	: 14;
-				/* bit 279:272 - Notification Vector */
+				
 			u8	nv;
-				/* bit 287:280 - Reserved */
+				
 			u8	rsvd_2;
-				/* bit 319:288 - Notification Destination */
+				
 			u32	ndst;
 		};
 		u64 control;
@@ -103,4 +103,4 @@ int vmx_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
 		       uint32_t guest_irq, bool set);
 void vmx_pi_start_assignment(struct kvm *kvm);
 
-#endif /* __KVM_X86_VMX_POSTED_INTR_H */
+#endif 

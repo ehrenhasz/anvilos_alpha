@@ -1,26 +1,4 @@
-/*
- * lsfd(1) - list file descriptors
- *
- * Copyright (C) 2021 Red Hat, Inc. All rights reserved.
- * Written by Masatake YAMATO <yamato@redhat.com>
- *
- * Very generally based on lsof(8) by Victor A. Abell <abe@purdue.edu>
- * It supports multiple OSes. lsfd specializes to Linux.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+
 #ifndef UTIL_LINUX_LSFD_H
 #define UTIL_LINUX_LSFD_H
 
@@ -33,9 +11,7 @@
 #include "path.h"
 #include "strutils.h"
 
-/*
- * column IDs
- */
+
 enum {
 	COL_AINODECLASS,
 	COL_ASSOC,
@@ -100,17 +76,15 @@ enum {
 	COL_UDPLITE_RADDR,
 	COL_UDPLITE_LPORT,
 	COL_UDPLITE_RPORT,
-	COL_UID,		/* process */
+	COL_UID,		
 	COL_UNIX_PATH,
-	COL_USER,		/* process */
-	COL_FUID,		/* file */
-	COL_OWNER,		/* file */
-	LSFD_N_COLS		/* This must be at last. */
+	COL_USER,		
+	COL_FUID,		
+	COL_OWNER,		
+	LSFD_N_COLS		
 };
 
-/*
- * Process structure
- */
+
 enum association {
 	ASSOC_EXE = 1,
 	ASSOC_CWD,
@@ -125,8 +99,8 @@ enum association {
 	ASSOC_NS_TIME4C,
 	ASSOC_NS_USER,
 	ASSOC_NS_UTS,
-	ASSOC_MEM,		/* private file mapping */
-	ASSOC_SHM,		/* shared file mapping */
+	ASSOC_MEM,		
+	ASSOC_SHM,		
 	N_ASSOCS,
 };
 
@@ -143,9 +117,7 @@ struct proc {
 
 struct proc *get_proc(pid_t pid);
 
-/*
- * File class
- */
+
 struct file {
 	struct list_head files;
 	const struct file_class *class;
@@ -187,9 +159,7 @@ struct file_class {
 extern const struct file_class file_class, cdev_class, bdev_class, sock_class, unkn_class, fifo_class,
 	nsfs_file_class;
 
-/*
- * IPC
- */
+
 struct ipc {
 	const struct ipc_class *class;
 	struct list_head endpoints;
@@ -210,9 +180,7 @@ struct ipc_class {
 struct ipc *get_ipc(struct file *file);
 void add_ipc(struct ipc *ipc, unsigned int hash);
 
-/*
- * Name managing
- */
+
 struct name_manager;
 
 struct name_manager *new_name_manager(void);
@@ -238,10 +206,8 @@ static inline void xstrputc(char **a, char c)
 	xstrappend(a, b);
 }
 
-/*
- * Net namespace
- */
+
 void load_sock_xinfo(struct path_cxt *pc, const char *name, ino_t netns);
 bool is_nsfs_dev(dev_t dev);
 
-#endif /* UTIL_LINUX_LSFD_H */
+#endif 

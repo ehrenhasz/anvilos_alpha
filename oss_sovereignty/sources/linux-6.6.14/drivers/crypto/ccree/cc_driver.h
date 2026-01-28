@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
 
-/* \file cc_driver.h
- * ARM CryptoCell Linux Crypto Driver
- */
+
+
+
 
 #ifndef __CC_DRIVER_H__
 #define __CC_DRIVER_H__
@@ -52,7 +50,7 @@ enum cc_std_body {
 #define CC_PINS_FULL	0x0
 #define CC_PINS_SLIM	0x9F
 
-/* Maximum DMA mask supported by IP */
+
 #define DMA_BIT_MASK_LEN 48
 
 #define CC_AXI_IRQ_MASK ((1 << CC_AXIM_CFG_BRESPMASK_BIT_SHIFT) | \
@@ -90,25 +88,23 @@ enum cc_std_body {
 	BIT(CC_HOST_IMR_REE_OP_ABORTED_SM_6_MASK_BIT_SHIFT) | \
 	BIT(CC_HOST_IMR_REE_OP_ABORTED_SM_7_MASK_BIT_SHIFT))
 
-/* Register name mangling macro */
+
 #define CC_REG(reg_name) CC_ ## reg_name ## _REG_OFFSET
 
-/* TEE FIPS status interrupt */
+
 #define CC_GPR0_IRQ_MASK BIT(CC_HOST_IRR_GPR0_BIT_SHIFT)
 
 #define CC_CRA_PRIO 400
 
-#define MIN_HW_QUEUE_SIZE 50 /* Minimum size required for proper function */
+#define MIN_HW_QUEUE_SIZE 50 
 
 #define MAX_REQUEST_QUEUE_SIZE 4096
 #define MAX_MLLI_BUFF_SIZE 2080
 
-/* Definitions for HW descriptors DIN/DOUT fields */
+
 #define NS_BIT 1
 #define AXI_ID 0
-/* AXI_ID is not actually the AXI ID of the transaction but the value of AXI_ID
- * field in the HW descriptor. The DMA engine +8 that value.
- */
+
 
 struct cc_cpp_req {
 	bool is_cpp;
@@ -120,19 +116,15 @@ struct cc_cpp_req {
 struct cc_crypto_req {
 	void (*user_cb)(struct device *dev, void *req, int err);
 	void *user_arg;
-	struct completion seq_compl; /* request completion */
+	struct completion seq_compl; 
 	struct cc_cpp_req cpp;
 };
 
-/**
- * struct cc_drvdata - driver private data context
- * @cc_base:	virt address of the CC registers
- * @irq:	bitmap indicating source of last interrupt
- */
+
 struct cc_drvdata {
 	void __iomem *cc_base;
 	int irq;
-	struct completion hw_queue_avail; /* wait for HW queue availability */
+	struct completion hw_queue_avail; 
 	struct platform_device *plat_dev;
 	u32 mlli_sram_addr;
 	struct dma_pool *mlli_buffs_pool;
@@ -141,8 +133,8 @@ struct cc_drvdata {
 	void *aead_handle;
 	void *request_mgr_handle;
 	void *fips_handle;
-	u32 sram_free_offset;	/* offset to non-allocated area in SRAM */
-	struct dentry *dir;	/* for debugfs */
+	u32 sram_free_offset;	
+	struct dentry *dir;	
 	struct clk *clk;
 	bool coherent;
 	char *hw_rev_name;
@@ -160,7 +152,7 @@ struct cc_drvdata {
 struct cc_crypto_alg {
 	struct list_head entry;
 	int cipher_mode;
-	int flow_mode; /* Note: currently, refers to the cipher mode only. */
+	int flow_mode; 
 	int auth_mode;
 	struct cc_drvdata *drvdata;
 	struct skcipher_alg skcipher_alg;
@@ -176,7 +168,7 @@ struct cc_alg_template {
 		struct aead_alg aead;
 	} template_u;
 	int cipher_mode;
-	int flow_mode; /* Note: currently, refers to the cipher mode only. */
+	int flow_mode; 
 	int auth_mode;
 	u32 min_hw_rev;
 	enum cc_std_body std_body;
@@ -232,4 +224,4 @@ static inline void set_queue_last_ind(struct cc_drvdata *drvdata,
 		set_queue_last_ind_bit(pdesc);
 }
 
-#endif /*__CC_DRIVER_H__*/
+#endif 

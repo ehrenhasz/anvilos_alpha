@@ -1,4 +1,0 @@
-#include "omap36xx.dtsi"
-&sgx_module {
-	status = "disabled";
-};

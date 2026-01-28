@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXSW_CORE_H
 #define _MLXSW_CORE_H
@@ -73,11 +73,11 @@ struct mlxsw_rx_md_info {
 	u32 latency;
 	u32 tx_congestion;
 	union {
-		/* Valid when 'tx_port_valid' is set. */
+		
 		u16 tx_sys_port;
 		u16 tx_lag_id;
 	};
-	u16 tx_lag_port_index; /* Valid when 'tx_port_is_lag' is set. */
+	u16 tx_lag_port_index; 
 	u8 tx_tc;
 	u8 latency_valid:1,
 	   tx_congestion_valid:1,
@@ -113,15 +113,13 @@ struct mlxsw_listener {
 		struct mlxsw_rx_listener rx_listener;
 		struct mlxsw_event_listener event_listener;
 	};
-	enum mlxsw_reg_hpkt_action en_action; /* Action when enabled */
-	enum mlxsw_reg_hpkt_action dis_action; /* Action when disabled */
-	u8 en_trap_group; /* Trap group when enabled */
-	u8 dis_trap_group; /* Trap group when disabled */
-	u8 is_ctrl:1, /* should go via control buffer or not */
+	enum mlxsw_reg_hpkt_action en_action; 
+	enum mlxsw_reg_hpkt_action dis_action; 
+	u8 en_trap_group; 
+	u8 dis_trap_group; 
+	u8 is_ctrl:1, 
 	   is_event:1,
-	   enabled_on_register:1; /* Trap should be enabled when listener
-				   * is registered.
-				   */
+	   enabled_on_register:1; 
 };
 
 #define __MLXSW_RXL(_func, _trap_id, _en_action, _is_ctrl, _en_trap_group,	\
@@ -422,9 +420,7 @@ struct mlxsw_driver {
 			     u64 *p_single_size, u64 *p_double_size,
 			     u64 *p_linear_size);
 
-	/* Notify a driver that a timestamped packet was transmitted. Driver
-	 * is responsible for freeing the passed-in SKB.
-	 */
+	
 	void (*ptp_transmitted)(struct mlxsw_core *mlxsw_core,
 				struct sk_buff *skb, u16 local_port);
 
@@ -598,9 +594,9 @@ struct mlxsw_linecard {
 	u8 slot_index;
 	struct mlxsw_linecards *linecards;
 	struct devlink_linecard *devlink_linecard;
-	struct mutex lock; /* Locks accesses to the linecard structure */
+	struct mutex lock; 
 	char name[MLXSW_REG_MDDQ_SLOT_ASCII_NAME_LEN];
-	char mbct_pl[MLXSW_REG_MBCT_LEN]; /* Too big for stack */
+	char mbct_pl[MLXSW_REG_MBCT_LEN]; 
 	enum mlxsw_linecard_status_event_type status_event_type_to;
 	struct delayed_work status_event_to_dw;
 	u8 provisioned:1,
@@ -623,7 +619,7 @@ struct mlxsw_linecards {
 	u8 count;
 	struct mlxsw_linecard_types_info *types_info;
 	struct list_head event_ops_list;
-	struct mutex event_ops_list_lock; /* Locks accesses to event ops list */
+	struct mutex event_ops_list_lock; 
 	struct mlxsw_linecard linecards[];
 };
 

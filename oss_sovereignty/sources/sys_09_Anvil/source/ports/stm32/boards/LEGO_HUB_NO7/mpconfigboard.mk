@@ -7,13 +7,13 @@ TEXT0_ADDR = 0x08010000
 BOOTLOADER_DFU_USB_VID ?= 0x0694
 BOOTLOADER_DFU_USB_PID ?= 0x000C
 
-# MicroPython settings
+
 MICROPY_PY_BLUETOOTH ?= 1
 MICROPY_BLUETOOTH_NIMBLE ?= 0
 MICROPY_BLUETOOTH_BTSTACK ?= 1
 MICROPY_VFS_LFS2 ?= 1
 
-# Board specific frozen modules
+
 FROZEN_MANIFEST ?= $(BOARD_DIR)/manifest.py
 
 SRC_HAL += $(STM32LIB_HAL_BASE)/Src/stm32f4xx_hal_fmpi2c.c
@@ -22,11 +22,11 @@ ifneq ($(BUILDING_MBOOT),1)
 LIB_SRC_C += lib/btstack/chipset/cc256x/btstack_chipset_cc256x.c
 endif
 
-# Bootloader settings
+
 MBOOT_TEXT0_ADDR = 0x08008000
 MBOOT_LD_FILES = ../boards/LEGO_HUB_NO6/mboot_memory.ld stm32_sections.ld
 
-# Backup/restore original Hub firmware
+
 
 HUB_FIRMWARE = lego_hub_firmware.dfu
 HUB_FIRMWARE_ADDR = $(MBOOT_TEXT0_ADDR)

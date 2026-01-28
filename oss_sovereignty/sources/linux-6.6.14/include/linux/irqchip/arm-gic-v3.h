@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013, 2014 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+
 #ifndef __LINUX_IRQCHIP_ARM_GIC_V3_H
 #define __LINUX_IRQCHIP_ARM_GIC_V3_H
 
-/*
- * Distributor registers. We assume we're running non-secure, with ARE
- * being set. Secure-only and non-ARE registers are not described.
- */
+
 #define GICD_CTLR			0x0000
 #define GICD_TYPER			0x0004
 #define GICD_IIDR			0x0008
@@ -46,10 +40,7 @@
 
 #define ESPI_BASE_INTID			4096
 
-/*
- * Those registers are actually from GICv2, but the spec demands that they
- * are implemented as RES0 if ARE is 1 (which we do in KVM's emulated GICv3).
- */
+
 #define GICD_ITARGETSR			0x0800
 #define GICD_SGIR			0x0F00
 #define GICD_CPENDSGIR			0x0F10
@@ -72,10 +63,7 @@
 #define GICD_IIDR_PRODUCT_ID_MASK	(0xff << GICD_IIDR_PRODUCT_ID_SHIFT)
 
 
-/*
- * In systems with a single security state (what we emulate in KVM)
- * the meaning of the interrupt group enable bits is slightly different
- */
+
 #define GICD_CTLR_ENABLE_SS_G1		(1U << 1)
 #define GICD_CTLR_ENABLE_SS_G0		(1U << 0)
 
@@ -108,9 +96,7 @@
 #define GIC_PAGE_SIZE_64K		2ULL
 #define GIC_PAGE_SIZE_MASK		3ULL
 
-/*
- * Re-Distributor registers, offsets from RD_base
- */
+
 #define GICR_CTLR			GICD_CTLR
 #define GICR_IIDR			0x0004
 #define GICR_TYPER			0x0008
@@ -169,7 +155,7 @@
 #define GIC_BASER_SHAREABILITY(reg, type)				\
 	(GIC_BASER_##type << reg##_SHAREABILITY_SHIFT)
 
-/* encode a size field of width @w containing @n - 1 units */
+
 #define GIC_ENCODE_SZ(n, w) (((unsigned long)(n) - 1) & GENMASK_ULL(((w) - 1), 0))
 
 #define GICR_PROPBASER_SHAREABILITY_SHIFT		(10)
@@ -224,9 +210,7 @@
 
 #define GICR_PENDBASER_PTZ				BIT_ULL(62)
 
-/*
- * Re-Distributor registers, offsets from SGI_base
- */
+
 #define GICR_IGROUPR0			GICD_IGROUPR
 #define GICR_ISENABLER0			GICD_ISENABLER
 #define GICR_ICENABLER0			GICD_ICENABLER
@@ -260,9 +244,7 @@
 #define LPI_PROP_GROUP1			(1 << 1)
 #define LPI_PROP_ENABLED		(1 << 0)
 
-/*
- * Re-Distributor registers, offsets from VLPI_base
- */
+
 #define GICR_VPROPBASER			0x0070
 
 #define GICR_VPROPBASER_IDBITS_MASK	0x1f
@@ -292,10 +274,7 @@
 #define GICR_VPROPBASER_RaWaWt	GIC_BASER_CACHEABILITY(GICR_VPROPBASER, INNER, RaWaWt)
 #define GICR_VPROPBASER_RaWaWb	GIC_BASER_CACHEABILITY(GICR_VPROPBASER, INNER, RaWaWb)
 
-/*
- * GICv4.1 VPROPBASER reinvention. A subtle mix between the old
- * VPROPBASER and ITS_BASER. Just not quite any of the two.
- */
+
 #define GICR_VPROPBASER_4_1_VALID	(1ULL << 63)
 #define GICR_VPROPBASER_4_1_ENTRY_SIZE	GENMASK_ULL(61, 59)
 #define GICR_VPROPBASER_4_1_INDIRECT	(1ULL << 55)
@@ -338,10 +317,7 @@
 #define GICR_VPENDBASER_IDAI		(1ULL << 62)
 #define GICR_VPENDBASER_Valid		(1ULL << 63)
 
-/*
- * GICv4.1 VPENDBASER, used for VPE residency. On top of these fields,
- * also use the above Valid, PendingLast and Dirty.
- */
+
 #define GICR_VPENDBASER_4_1_DB		(1ULL << 62)
 #define GICR_VPENDBASER_4_1_VGRP0EN	(1ULL << 59)
 #define GICR_VPENDBASER_4_1_VGRP1EN	(1ULL << 58)
@@ -356,9 +332,7 @@
 #define GICR_VSGIPENDR_BUSY		(1U << 31)
 #define GICR_VSGIPENDR_PENDING		GENMASK(15, 0)
 
-/*
- * ITS registers, offsets from ITS_base
- */
+
 #define GITS_CTLR			0x0000
 #define GITS_IIDR			0x0004
 #define GITS_TYPER			0x0008
@@ -493,9 +467,7 @@
 
 #define GITS_LVL1_ENTRY_SIZE           (8UL)
 
-/*
- * ITS commands
- */
+
 #define GITS_CMD_MAPD			0x08
 #define GITS_CMD_MAPC			0x09
 #define GITS_CMD_MAPTI			0x0a
@@ -509,23 +481,19 @@
 #define GITS_CMD_CLEAR			0x04
 #define GITS_CMD_SYNC			0x05
 
-/*
- * GICv4 ITS specific commands
- */
+
 #define GITS_CMD_GICv4(x)		((x) | 0x20)
 #define GITS_CMD_VINVALL		GITS_CMD_GICv4(GITS_CMD_INVALL)
 #define GITS_CMD_VMAPP			GITS_CMD_GICv4(GITS_CMD_MAPC)
 #define GITS_CMD_VMAPTI			GITS_CMD_GICv4(GITS_CMD_MAPTI)
 #define GITS_CMD_VMOVI			GITS_CMD_GICv4(GITS_CMD_MOVI)
 #define GITS_CMD_VSYNC			GITS_CMD_GICv4(GITS_CMD_SYNC)
-/* VMOVP, VSGI and INVDB are the odd ones, as they dont have a physical counterpart */
+
 #define GITS_CMD_VMOVP			GITS_CMD_GICv4(2)
 #define GITS_CMD_VSGI			GITS_CMD_GICv4(3)
 #define GITS_CMD_INVDB			GITS_CMD_GICv4(0xe)
 
-/*
- * ITS error numbers
- */
+
 #define E_ITS_MOVI_UNMAPPED_INTERRUPT		0x010107
 #define E_ITS_MOVI_UNMAPPED_COLLECTION		0x010109
 #define E_ITS_INT_UNMAPPED_INTERRUPT		0x010307
@@ -542,9 +510,7 @@
 #define E_ITS_MOVALL_PROCNUM_OOR		0x010e01
 #define E_ITS_DISCARD_UNMAPPED_INTERRUPT	0x010f07
 
-/*
- * CPU interface registers
- */
+
 #define ICC_CTLR_EL1_EOImode_SHIFT	(1)
 #define ICC_CTLR_EL1_EOImode_drop_dir	(0U << ICC_CTLR_EL1_EOImode_SHIFT)
 #define ICC_CTLR_EL1_EOImode_drop	(1U << ICC_CTLR_EL1_EOImode_SHIFT)
@@ -577,7 +543,7 @@
 #define ICC_SRE_EL1_DFB			(1U << 1)
 #define ICC_SRE_EL1_SRE			(1U << 0)
 
-/* These are for GICv2 emulation only */
+
 #define GICH_LR_VIRTUALID		(0x3ffUL << 0)
 #define GICH_LR_PHYSID_CPUID_SHIFT	(10)
 #define GICH_LR_PHYSID_CPUID		(7UL << GICH_LR_PHYSID_CPUID_SHIFT)
@@ -605,10 +571,7 @@
 
 #ifndef __ASSEMBLY__
 
-/*
- * We need a value to serve as a irq-type for LPIs. Choose one that will
- * hopefully pique the interest of the reviewer.
- */
+
 #define GIC_IRQ_TYPE_LPI		0xa110c8ed
 
 struct rdists {

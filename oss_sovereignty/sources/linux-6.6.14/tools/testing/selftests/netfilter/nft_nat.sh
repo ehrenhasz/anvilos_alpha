@@ -348,7 +348,7 @@ test_masquerade6()
 	local natflags=$2
 	local lret=0
 	ip netns exec "$ns0" sysctl net.ipv6.conf.all.forwarding=1 > /dev/null
-	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 via ipv6"
 		return 1
@@ -380,7 +380,7 @@ EOF
 		echo "SKIP: Could not add add $family masquerade hook"
 		return $ksft_skip
 	fi
-	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with active $family masquerade $natflags"
 		lret=1
@@ -411,7 +411,7 @@ EOF
 			lret=1
 		fi
 	done
-	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with active ipv6 masquerade $natflags (attempt 2)"
 		lret=1
@@ -431,7 +431,7 @@ test_masquerade()
 	local lret=0
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from "$ns2" $natflags"
 		lret=1
@@ -462,7 +462,7 @@ EOF
 		echo "SKIP: Could not add add $family masquerade hook"
 		return $ksft_skip
 	fi
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with active $family masquerade $natflags"
 		lret=1
@@ -493,7 +493,7 @@ EOF
 			lret=1
 		fi
 	done
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with active ip masquerade $natflags (attempt 2)"
 		lret=1
@@ -511,7 +511,7 @@ test_redirect6()
 	local family=$1
 	local lret=0
 	ip netns exec "$ns0" sysctl net.ipv6.conf.all.forwarding=1 > /dev/null
-	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannnot ping $ns1 from $ns2 via ipv6"
 		lret=1
@@ -542,7 +542,7 @@ EOF
 		echo "SKIP: Could not add add $family redirect hook"
 		return $ksft_skip
 	fi
-	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 dead:1::99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 via ipv6 with active $family redirect"
 		lret=1
@@ -577,7 +577,7 @@ test_redirect()
 	local lret=0
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2"
 		lret=1
@@ -608,7 +608,7 @@ EOF
 		echo "SKIP: Could not add add $family redirect hook"
 		return $ksft_skip
 	fi
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with active $family ip redirect"
 		lret=1
@@ -745,7 +745,7 @@ test_stateless_nat_ip()
 	local lret=0
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
 	ip netns exec "$ns0" sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 before loading stateless rules"
 		return 1
@@ -776,7 +776,7 @@ EOF
 		return $ksft_skip
 	fi
 	reset_counters
-	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null # ping ns2->ns1
+	ip netns exec "$ns2" ping -q -c 1 10.0.1.99 > /dev/null 
 	if [ $? -ne 0 ] ; then
 		echo "ERROR: cannot ping $ns1 from $ns2 with stateless rules"
 		lret=1

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* HWMON driver for Aquantia PHY
- *
- * Author: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
- * Author: Andrew Lunn <andrew@lunn.ch>
- * Author: Heiner Kallweit <hkallweit1@gmail.com>
- */
+
+
 
 #include <linux/device.h>
 #include <linux/phy.h>

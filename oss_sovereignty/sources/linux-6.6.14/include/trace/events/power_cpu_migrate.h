@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM power
 
@@ -49,20 +49,17 @@ __define_cpu_migrate_event(current);
 #undef __cpu_migrate_proto
 #undef __cpu_migrate_args
 
-/* This file can get included multiple times, TRACE_HEADER_MULTI_READ at top */
+
 #ifndef _PWR_CPU_MIGRATE_EVENT_AVOID_DOUBLE_DEFINING
 #define _PWR_CPU_MIGRATE_EVENT_AVOID_DOUBLE_DEFINING
 
-/*
- * Set from_phys_cpu and to_phys_cpu to CPU_MIGRATE_ALL_CPUS to indicate
- * a whole-cluster migration:
- */
+
 #define CPU_MIGRATE_ALL_CPUS 0x80000000U
 #endif
 
-#endif /* _TRACE_POWER_CPU_MIGRATE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE power_cpu_migrate
 #include <trace/define_trace.h>

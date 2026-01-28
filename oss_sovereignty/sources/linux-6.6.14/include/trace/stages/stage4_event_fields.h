@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* Stage 4 definitions for creating trace events */
+
+
 
 #define ALIGN_STRUCTFIELD(type) ((int)(__alignof__(struct {type b;})))
 

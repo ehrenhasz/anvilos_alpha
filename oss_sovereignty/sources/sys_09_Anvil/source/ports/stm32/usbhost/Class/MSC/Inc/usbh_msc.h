@@ -1,60 +1,24 @@
-/**
-  ******************************************************************************
-  * @file    usbh_msc.h
-  * @author  MCD Application Team
-  * @version V3.0.0
-  * @date    18-February-2014
-  * @brief   This file contains all the prototypes for the usbh_msc_core.c
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */ 
+ 
 
-/* Define to prevent recursive  ----------------------------------------------*/
+
 #ifndef __USBH_MSC_H
 #define __USBH_MSC_H
 
-/* Includes ------------------------------------------------------------------*/
+
 #include "usbh_core.h"
 #include "usbh_msc_bot.h"
 #include "usbh_msc_scsi.h"
 
-/** @addtogroup USBH_LIB
-  * @{
-  */
 
-/** @addtogroup USBH_CLASS
-  * @{
-  */
 
-/** @addtogroup USBH_MSC_CLASS
-  * @{
-  */
+
+
+
   
-/** @defgroup USBH_MSC_CORE
-  * @brief This file is the Header file for usbh_msc_core.c
-  * @{
-  */ 
+ 
 
 
-/** @defgroup USBH_MSC_CORE_Exported_Types
-  * @{
-  */ 
+ 
 
 typedef enum
 {
@@ -91,7 +55,7 @@ MSC_ReqStateTypeDef;
 
 #define MAX_SUPPORTED_LUN       2
 
-/* Structure for LUN */
+
 typedef struct
 {
   MSC_StateTypeDef            state; 
@@ -105,7 +69,7 @@ typedef struct
 }
 MSC_LUNTypeDef; 
 
-/* Structure for MSC process */
+
 typedef struct _MSC_Process
 {
   uint32_t             max_lun;   
@@ -128,55 +92,39 @@ typedef struct _MSC_Process
 MSC_HandleTypeDef; 
 
 
-/**
-  * @}
-  */ 
+ 
 
 
 
-/** @defgroup USBH_MSC_CORE_Exported_Defines
-  * @{
-  */
+
 
 #define USB_REQ_BOT_RESET                0xFF
 #define USB_REQ_GET_MAX_LUN              0xFE
    
 
-/* MSC Class Codes */
+
 #define USB_MSC_CLASS                                   0x08
 
-/* Interface Descriptor field values for HID Boot Protocol */
+
 #define MSC_BOT                                        0x50 
 #define MSC_TRANSPARENT                                0x06     
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_MSC_CORE_Exported_Macros
-  * @{
-  */ 
-/**
-  * @}
-  */ 
+ 
+ 
 
-/** @defgroup USBH_MSC_CORE_Exported_Variables
-  * @{
-  */ 
+ 
 extern USBH_ClassTypeDef  USBH_msc;
 #define USBH_MSC_CLASS    &USBH_msc
 
-/**
-  * @}
-  */ 
+ 
 
-/** @defgroup USBH_MSC_CORE_Exported_FunctionsPrototype
-  * @{
-  */ 
+ 
 
-/* Common APIs */     
+     
 uint8_t            USBH_MSC_IsReady (USBH_HandleTypeDef *phost);
 
-/* APIs for LUN */
+
 int8_t             USBH_MSC_GetMaxLUN (USBH_HandleTypeDef *phost);
 
 uint8_t            USBH_MSC_UnitIsReady (USBH_HandleTypeDef *phost, uint8_t lun);
@@ -194,29 +142,19 @@ USBH_StatusTypeDef USBH_MSC_Write(USBH_HandleTypeDef *phost,
                                      uint32_t address,
                                      uint8_t *pbuf,
                                      uint32_t length);
-/**
-  * @}
-  */ 
+ 
 
-#endif  /* __USBH_MSC_H */
+#endif  
 
 
-/**
-  * @}
-  */ 
+ 
 
-/**
-  * @}
-  */
 
-/**
-  * @}
-  */ 
 
-/**
-  * @}
-  */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+ 
+
+
+
 
 
 

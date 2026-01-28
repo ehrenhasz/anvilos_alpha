@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Red Hat, Inc.
- * Author: Michael S. Tsirkin <mst@redhat.com>
- *
- * Common macros and functions for ring benchmarking.
- */
+
+
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -35,7 +30,7 @@ static inline void wait_cycles(unsigned long long cycles)
 	asm volatile("0: brctg %0,0b" : : "d" (cycles));
 }
 
-/* tweak me */
+
 #define VMEXIT_CYCLES 200
 #define VMENTRY_CYCLES 200
 
@@ -63,23 +58,23 @@ static inline void vmentry(void)
 	wait_cycles(VMENTRY_CYCLES);
 }
 
-/* implemented by ring */
+
 void alloc_ring(void);
-/* guest side */
+
 int add_inbuf(unsigned, void *, void *);
 void *get_buf(unsigned *, void **);
 void disable_call();
 bool used_empty();
 bool enable_call();
 void kick_available();
-/* host side */
+
 void disable_kick();
 bool avail_empty();
 bool enable_kick();
 bool use_buf(unsigned *, void **);
 void call_used();
 
-/* implemented by main */
+
 extern bool do_sleep;
 void kick(void);
 void wait_for_kick(void);
@@ -88,10 +83,10 @@ void wait_for_call(void);
 
 extern unsigned ring_size;
 
-/* Compiler barrier - similar to what Linux uses */
+
 #define barrier() asm volatile("" ::: "memory")
 
-/* Is there a portable way to do this? */
+
 #if defined(__x86_64__) || defined(__i386__)
 #define cpu_relax() asm ("rep; nop" ::: "memory")
 #elif defined(__s390x__)
@@ -109,7 +104,7 @@ static inline void busy_wait(void)
 	if (do_relax)
 		cpu_relax();
 	else
-		/* prevent compiler from removing busy loops */
+		
 		barrier();
 } 
 
@@ -118,17 +113,11 @@ static inline void busy_wait(void)
 #elif defined(__aarch64__)
 #define smp_mb()     asm volatile("dmb ish" ::: "memory")
 #else
-/*
- * Not using __ATOMIC_SEQ_CST since gcc docs say they are only synchronized
- * with other __ATOMIC_SEQ_CST calls.
- */
+
 #define smp_mb() __sync_synchronize()
 #endif
 
-/*
- * This abuses the atomic builtins for thread fences, and
- * adds a compiler barrier.
- */
+
 #define smp_release() do { \
     barrier(); \
     __atomic_thread_fence(__ATOMIC_RELEASE); \
@@ -185,7 +174,7 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
 ({									\
 	union { typeof(x) __val; char __c[1]; } __u;			\
 	__read_once_size(&(x), __u.__c, sizeof(x));		\
-	smp_mb(); /* Enforce dependency ordering from x */		\
+	smp_mb(); 		\
 	__u.__val;							\
 })
 #else

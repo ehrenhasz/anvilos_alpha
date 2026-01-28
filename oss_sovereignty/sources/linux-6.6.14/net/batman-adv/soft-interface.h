@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner
- */
+
+
 
 #ifndef _NET_BATMAN_ADV_SOFT_INTERFACE_H_
 #define _NET_BATMAN_ADV_SOFT_INTERFACE_H_
@@ -26,11 +23,7 @@ void batadv_softif_vlan_release(struct kref *ref);
 struct batadv_softif_vlan *batadv_softif_vlan_get(struct batadv_priv *bat_priv,
 						  unsigned short vid);
 
-/**
- * batadv_softif_vlan_put() - decrease the vlan object refcounter and
- *  possibly release it
- * @vlan: the vlan object to release
- */
+
 static inline void batadv_softif_vlan_put(struct batadv_softif_vlan *vlan)
 {
 	if (!vlan)
@@ -39,4 +32,4 @@ static inline void batadv_softif_vlan_put(struct batadv_softif_vlan *vlan)
 	kref_put(&vlan->refcount, batadv_softif_vlan_release);
 }
 
-#endif /* _NET_BATMAN_ADV_SOFT_INTERFACE_H_ */
+#endif 

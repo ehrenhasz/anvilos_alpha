@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ATMEL_AES_REGS_H__
 #define __ATMEL_AES_REGS_H__
 
@@ -70,12 +70,12 @@
 #define AES_GCMHR(x)	(0x9c + ((x) * 0x04))
 
 #define AES_EMR		0xb0
-#define AES_EMR_APEN		BIT(0)	/* Auto Padding Enable */
-#define AES_EMR_APM		BIT(1)	/* Auto Padding Mode */
+#define AES_EMR_APEN		BIT(0)	
+#define AES_EMR_APM		BIT(1)	
 #define AES_EMR_APM_IPSEC	0x0
 #define AES_EMR_APM_SSL		BIT(1)
-#define AES_EMR_PLIPEN		BIT(4)	/* PLIP Enable */
-#define AES_EMR_PLIPD		BIT(5)	/* PLIP Decipher */
+#define AES_EMR_PLIPEN		BIT(4)	
+#define AES_EMR_PLIPD		BIT(5)	
 #define AES_EMR_PADLEN_MASK	(0xFu << 8)
 #define AES_EMR_PADLEN_OFFSET	8
 #define AES_EMR_PADLEN(padlen)	(((padlen) << AES_EMR_PADLEN_OFFSET) &\
@@ -90,4 +90,4 @@
 
 #define AES_HW_VERSION	0xFC
 
-#endif /* __ATMEL_AES_REGS_H__ */
+#endif 

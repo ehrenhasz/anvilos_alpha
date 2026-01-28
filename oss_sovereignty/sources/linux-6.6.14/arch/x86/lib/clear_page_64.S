@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #include <linux/linkage.h>
 #include <asm/asm.h>
 #include <asm/export.h>
 
-/*
- * Most CPUs support enhanced REP MOVSB/STOSB instructions. It is
- * recommended to use this when possible and we do use them by default.
- * If enhanced REP MOVSB/STOSB is not available, try to use fast string.
- * Otherwise, use original.
- */
 
-/*
- * Zero a page.
- * %rdi	- page
- */
+
+
 SYM_FUNC_START(clear_page_rep)
 	movl $4096/8,%ecx
 	xorl %eax,%eax
@@ -52,16 +44,7 @@ SYM_FUNC_START(clear_page_erms)
 SYM_FUNC_END(clear_page_erms)
 EXPORT_SYMBOL_GPL(clear_page_erms)
 
-/*
- * Default clear user-space.
- * Input:
- * rdi destination
- * rcx count
- * rax is zero
- *
- * Output:
- * rcx: uncleared bytes or 0 if successful.
- */
+
 SYM_FUNC_START(rep_stos_alternative)
 	cmpq $64,%rcx
 	jae .Lunrolled
@@ -111,23 +94,7 @@ SYM_FUNC_START(rep_stos_alternative)
 	jne .Lclear_user_tail
 	RET
 
-	/*
-	 * If we take an exception on any of the
-	 * word stores, we know that %rcx isn't zero,
-	 * so we can just go to the tail clearing to
-	 * get the exact count.
-	 *
-	 * The unrolled case might end up clearing
-	 * some bytes twice. Don't care.
-	 *
-	 * We could use the value in %rdi to avoid
-	 * a second fault on the exact count case,
-	 * but do we really care? No.
-	 *
-	 * Finally, we could try to align %rdi at the
-	 * top of the unrolling. But unaligned stores
-	 * just aren't that common or expensive.
-	 */
+	
 	_ASM_EXTABLE_UA( 1b, .Lclear_user_tail)
 	_ASM_EXTABLE_UA(10b, .Lclear_user_tail)
 	_ASM_EXTABLE_UA(11b, .Lclear_user_tail)

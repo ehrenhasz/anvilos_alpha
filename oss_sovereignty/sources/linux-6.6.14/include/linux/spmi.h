@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+
 #ifndef _LINUX_SPMI_H
 #define _LINUX_SPMI_H
 
@@ -8,10 +7,10 @@
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
 
-/* Maximum slave identifier */
+
 #define SPMI_MAX_SLAVE_ID		16
 
-/* SPMI Commands */
+
 #define SPMI_CMD_EXT_WRITE		0x00
 #define SPMI_CMD_RESET			0x10
 #define SPMI_CMD_SLEEP			0x11
@@ -30,12 +29,7 @@
 #define SPMI_CMD_READ			0x60
 #define SPMI_CMD_ZERO_WRITE		0x80
 
-/**
- * struct spmi_device - Basic representation of an SPMI device
- * @dev:	Driver model representation of the device.
- * @ctrl:	SPMI controller managing the bus hosting this device.
- * @usid:	This devices' Unique Slave IDentifier.
- */
+
 struct spmi_device {
 	struct device		dev;
 	struct spmi_controller	*ctrl;
@@ -69,14 +63,7 @@ int spmi_device_add(struct spmi_device *sdev);
 
 void spmi_device_remove(struct spmi_device *sdev);
 
-/**
- * struct spmi_controller - interface to the SPMI master controller
- * @dev:	Driver model representation of the device.
- * @nr:		board-specific number identifier for this controller/bus
- * @cmd:	sends a non-data command sequence on the SPMI bus.
- * @read_cmd:	sends a register read command sequence on the SPMI bus.
- * @write_cmd:	sends a register write command sequence on the SPMI bus.
- */
+
 struct spmi_controller {
 	struct device		dev;
 	unsigned int		nr;
@@ -107,10 +94,7 @@ static inline void spmi_controller_set_drvdata(struct spmi_controller *ctrl,
 struct spmi_controller *spmi_controller_alloc(struct device *parent,
 					      size_t size);
 
-/**
- * spmi_controller_put() - decrement controller refcount
- * @ctrl	SPMI controller.
- */
+
 static inline void spmi_controller_put(struct spmi_controller *ctrl)
 {
 	if (ctrl)
@@ -120,20 +104,7 @@ static inline void spmi_controller_put(struct spmi_controller *ctrl)
 int spmi_controller_add(struct spmi_controller *ctrl);
 void spmi_controller_remove(struct spmi_controller *ctrl);
 
-/**
- * struct spmi_driver - SPMI slave device driver
- * @driver:	SPMI device drivers should initialize name and owner field of
- *		this structure.
- * @probe:	binds this driver to a SPMI device.
- * @remove:	unbinds this driver from the SPMI device.
- *
- * If PM runtime support is desired for a slave, a device driver can call
- * pm_runtime_put() from their probe() routine (and a balancing
- * pm_runtime_get() in remove()).  PM runtime support for a slave is
- * implemented by issuing a SLEEP command to the slave on runtime_suspend(),
- * transitioning the slave into the SLEEP state.  On runtime_resume(), a WAKEUP
- * command is sent to the slave to bring it back to ACTIVE.
- */
+
 struct spmi_driver {
 	struct device_driver driver;
 	int	(*probe)(struct spmi_device *sdev);
@@ -150,10 +121,7 @@ static inline struct spmi_driver *to_spmi_driver(struct device_driver *d)
 	__spmi_driver_register(sdrv, THIS_MODULE)
 int __spmi_driver_register(struct spmi_driver *sdrv, struct module *owner);
 
-/**
- * spmi_driver_unregister() - unregister an SPMI client driver
- * @sdrv:	the driver to unregister
- */
+
 static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
 {
 	if (sdrv)

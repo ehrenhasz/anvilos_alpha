@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Based on net/mac80211/trace.h */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mac802154
@@ -31,7 +31,7 @@
 
 #define BOOL_TO_STR(bo) (bo) ? "true" : "false"
 
-/* Tracing for driver callbacks */
+
 
 DECLARE_EVENT_CLASS(local_only_evt4,
 	TP_PROTO(struct ieee802154_local *local),
@@ -289,7 +289,7 @@ DEFINE_EVENT(802154_new_scan_event, 802154_scan_event,
 	TP_ARGS(desc)
 );
 
-#endif /* !__MAC802154_DRIVER_TRACE || TRACE_HEADER_MULTI_READ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

@@ -1,23 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 	.file	"shr_Xsig.S"
-/*---------------------------------------------------------------------------+
- |  shr_Xsig.S                                                               |
- |                                                                           |
- | 12 byte right shift function                                              |
- |                                                                           |
- | Copyright (C) 1992,1994,1995                                              |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail billm@jacobi.maths.monash.edu.au |
- |                                                                           |
- | Call from C as:                                                           |
- |   void shr_Xsig(Xsig *arg, unsigned nr)                                   |
- |                                                                           |
- |   Extended shift right function.                                          |
- |   Fastest for small shifts.                                               |
- |   Shifts the 12 byte quantity pointed to by the first arg (arg)           |
- |   right by the number of bits specified by the second arg (nr).           |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+
 
 #include "fpu_emu.h"
 
@@ -28,14 +11,14 @@ SYM_FUNC_START(shr_Xsig)
 	pushl	%esi
 	movl	PARAM2,%ecx
 	movl	PARAM1,%esi
-	cmpl	$32,%ecx	/* shrd only works for 0..31 bits */
+	cmpl	$32,%ecx	
 	jnc	L_more_than_31
 
-/* less than 32 bits */
+
 	pushl	%ebx
-	movl	(%esi),%eax	/* lsl */
-	movl	4(%esi),%ebx	/* midl */
-	movl	8(%esi),%edx	/* msl */
+	movl	(%esi),%eax	
+	movl	4(%esi),%ebx	
+	movl	8(%esi),%edx	
 	shrd	%cl,%ebx,%eax
 	shrd	%cl,%edx,%ebx
 	shr	%cl,%edx
@@ -52,8 +35,8 @@ L_more_than_31:
 	jnc	L_more_than_63
 
 	subb	$32,%cl
-	movl	4(%esi),%eax	/* midl */
-	movl	8(%esi),%edx	/* msl */
+	movl	4(%esi),%eax	
+	movl	8(%esi),%edx	
 	shrd	%cl,%edx,%eax
 	shr	%cl,%edx
 	movl	%eax,(%esi)
@@ -68,7 +51,7 @@ L_more_than_63:
 	jnc	L_more_than_95
 
 	subb	$64,%cl
-	movl	8(%esi),%eax	/* msl */
+	movl	8(%esi),%eax	
 	shr	%cl,%eax
 	xorl	%edx,%edx
 	movl	%eax,(%esi)

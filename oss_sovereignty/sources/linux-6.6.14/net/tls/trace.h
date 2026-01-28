@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM tls
@@ -192,7 +192,7 @@ TRACE_EVENT(tls_device_tx_resync_send,
 	)
 );
 
-#endif /* _TLS_TRACE_H_ */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

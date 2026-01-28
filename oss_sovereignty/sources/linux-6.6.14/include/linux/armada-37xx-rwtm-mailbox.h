@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * rWTM BIU Mailbox driver for Armada 37xx
- *
- * Author: Marek Behún <kabel@kernel.org>
- */
+
+
 
 #ifndef _LINUX_ARMADA_37XX_RWTM_MAILBOX_H_
 #define _LINUX_ARMADA_37XX_RWTM_MAILBOX_H_
@@ -20,4 +16,4 @@ struct armada_37xx_rwtm_rx_msg {
 	u32 status[16];
 };
 
-#endif /* _LINUX_ARMADA_37XX_RWTM_MAILBOX_H_ */
+#endif 

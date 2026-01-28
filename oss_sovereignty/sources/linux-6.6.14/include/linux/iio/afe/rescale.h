@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2018 Axentia Technologies AB
- */
+
+
 
 #ifndef __IIO_RESCALE_H__
 #define __IIO_RESCALE_H__
@@ -33,4 +31,4 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
 int rescale_process_offset(struct rescale *rescale, int scale_type,
 			   int scale, int scale2, int schan_off,
 			   int *val, int *val2);
-#endif /* __IIO_RESCALE_H__ */
+#endif 

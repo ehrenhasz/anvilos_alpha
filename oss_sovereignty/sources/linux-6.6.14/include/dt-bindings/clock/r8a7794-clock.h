@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0+
- *
- * Copyright (C) 2014 Renesas Electronics Corporation
- * Copyright 2013 Ideas On Board SPRL
- */
+
 
 #ifndef __DT_BINDINGS_CLOCK_R8A7794_H__
 #define __DT_BINDINGS_CLOCK_R8A7794_H__
 
-/* CPG */
+
 #define R8A7794_CLK_MAIN		0
 #define R8A7794_CLK_PLL0		1
 #define R8A7794_CLK_PLL1		2
@@ -18,10 +14,10 @@
 #define R8A7794_CLK_SD0			7
 #define R8A7794_CLK_RCAN		8
 
-/* MSTP0 */
+
 #define R8A7794_CLK_MSIOF0		0
 
-/* MSTP1 */
+
 #define R8A7794_CLK_VCP0		1
 #define R8A7794_CLK_VPC0		3
 #define R8A7794_CLK_TMU1		11
@@ -35,7 +31,7 @@
 #define R8A7794_CLK_VSP1_DU0		28
 #define R8A7794_CLK_VSP1_S		31
 
-/* MSTP2 */
+
 #define R8A7794_CLK_SCIFA2		2
 #define R8A7794_CLK_SCIFA1		3
 #define R8A7794_CLK_SCIFA0		4
@@ -47,7 +43,7 @@
 #define R8A7794_CLK_SYS_DMAC1		18
 #define R8A7794_CLK_SYS_DMAC0		19
 
-/* MSTP3 */
+
 #define R8A7794_CLK_SDHI2		11
 #define R8A7794_CLK_SDHI1		12
 #define R8A7794_CLK_SDHI0		14
@@ -58,15 +54,15 @@
 #define R8A7794_CLK_USBDMAC0		30
 #define R8A7794_CLK_USBDMAC1		31
 
-/* MSTP4 */
+
 #define R8A7794_CLK_IRQC		7
 #define R8A7794_CLK_INTC_SYS		8
 
-/* MSTP5 */
+
 #define R8A7794_CLK_AUDIO_DMAC0		2
 #define R8A7794_CLK_PWM			23
 
-/* MSTP7 */
+
 #define R8A7794_CLK_EHCI		3
 #define R8A7794_CLK_HSUSB		4
 #define R8A7794_CLK_HSCIF2		13
@@ -81,13 +77,13 @@
 #define R8A7794_CLK_DU1			23
 #define R8A7794_CLK_DU0			24
 
-/* MSTP8 */
+
 #define R8A7794_CLK_VIN1		10
 #define R8A7794_CLK_VIN0		11
 #define R8A7794_CLK_ETHERAVB		12
 #define R8A7794_CLK_ETHER		13
 
-/* MSTP9 */
+
 #define R8A7794_CLK_GPIO6		5
 #define R8A7794_CLK_GPIO5		7
 #define R8A7794_CLK_GPIO4		8
@@ -105,7 +101,7 @@
 #define R8A7794_CLK_I2C1		30
 #define R8A7794_CLK_I2C0		31
 
-/* MSTP10 */
+
 #define R8A7794_CLK_SSI_ALL		5
 #define R8A7794_CLK_SSI9		6
 #define R8A7794_CLK_SSI8		7
@@ -129,9 +125,9 @@
 #define R8A7794_CLK_SCU_SRC2		29
 #define R8A7794_CLK_SCU_SRC1		30
 
-/* MSTP11 */
+
 #define R8A7794_CLK_SCIFA3		6
 #define R8A7794_CLK_SCIFA4		7
 #define R8A7794_CLK_SCIFA5		8
 
-#endif /* __DT_BINDINGS_CLOCK_R8A7794_H__ */
+#endif 

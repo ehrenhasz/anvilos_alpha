@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 Chen-Yu Tsai. All rights reserved.
- */
+
+
 
 #ifndef _CCU_SDM_H
 #define _CCU_SDM_H
@@ -13,17 +11,10 @@
 struct ccu_sdm_setting {
 	unsigned long	rate;
 
-	/*
-	 * XXX We don't know what the step and bottom register fields
-	 * mean. Just copy the whole register value from the vendor
-	 * kernel for now.
-	 */
+	
 	u32		pattern;
 
-	/*
-	 * M and N factors here should be the values used in
-	 * calculation, not the raw values written to registers
-	 */
+	
 	u32		m;
 	u32		n;
 };
@@ -31,9 +22,9 @@ struct ccu_sdm_setting {
 struct ccu_sdm_internal {
 	struct ccu_sdm_setting	*table;
 	u32		table_size;
-	/* early SoCs don't have the SDM enable bit in the PLL register */
+	
 	u32		enable;
-	/* second enable bit in tuning register */
+	
 	u32		tuning_enable;
 	u16		tuning_reg;
 };

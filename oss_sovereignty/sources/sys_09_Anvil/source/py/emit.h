@@ -1,49 +1,17 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_PY_EMIT_H
 #define MICROPY_INCLUDED_PY_EMIT_H
 
 #include "py/lexer.h"
 #include "py/scope.h"
 
-/* Notes on passes:
- * We don't know exactly the opcodes in pass 1 because they depend on the
- * closing over of variables (LOAD_CLOSURE, BUILD_TUPLE, MAKE_CLOSURE), which
- * depends on determining the scope of variables in each function, and this
- * is not known until the end of pass 1.
- * As a consequence, we don't know the maximum stack size until the end of pass 2.
- * This is problematic for some emitters (x64) since they need to know the maximum
- * stack size to compile the entry to the function, and this affects code size.
- */
+
 
 typedef enum {
-    MP_PASS_SCOPE = 1,      // work out id's and their kind, and number of labels
-    MP_PASS_STACK_SIZE = 2, // work out maximum stack size
-    MP_PASS_CODE_SIZE = 3,  // work out code size and label offsets
-    MP_PASS_EMIT = 4,       // emit code (may be run multiple times if the emitter requests it)
+    MP_PASS_SCOPE = 1,      
+    MP_PASS_STACK_SIZE = 2, 
+    MP_PASS_CODE_SIZE = 3,  
+    MP_PASS_EMIT = 4,       
 } pass_kind_t;
 
 #define MP_EMIT_STAR_FLAG_SINGLE (0x01)
@@ -51,42 +19,42 @@ typedef enum {
 
 #define MP_EMIT_BREAK_FROM_FOR (0x8000)
 
-// Kind for emit_id_ops->local()
+
 #define MP_EMIT_IDOP_LOCAL_FAST (0)
 #define MP_EMIT_IDOP_LOCAL_DEREF (1)
 
-// Kind for emit_id_ops->global()
+
 #define MP_EMIT_IDOP_GLOBAL_NAME (0)
 #define MP_EMIT_IDOP_GLOBAL_GLOBAL (1)
 
-// Kind for emit->import()
+
 #define MP_EMIT_IMPORT_NAME (0)
 #define MP_EMIT_IMPORT_FROM (1)
 #define MP_EMIT_IMPORT_STAR (2)
 
-// Kind for emit->subscr()
+
 #define MP_EMIT_SUBSCR_LOAD (0)
 #define MP_EMIT_SUBSCR_STORE (1)
 #define MP_EMIT_SUBSCR_DELETE (2)
 
-// Kind for emit->attr()
+
 #define MP_EMIT_ATTR_LOAD (0)
 #define MP_EMIT_ATTR_STORE (1)
 #define MP_EMIT_ATTR_DELETE (2)
 
-// Kind for emit->setup_block()
+
 #define MP_EMIT_SETUP_BLOCK_WITH (0)
 #define MP_EMIT_SETUP_BLOCK_EXCEPT (1)
 #define MP_EMIT_SETUP_BLOCK_FINALLY (2)
 
-// Kind for emit->build()
+
 #define MP_EMIT_BUILD_TUPLE (0)
 #define MP_EMIT_BUILD_LIST (1)
 #define MP_EMIT_BUILD_MAP (2)
 #define MP_EMIT_BUILD_SET (3)
 #define MP_EMIT_BUILD_SLICE (4)
 
-// Kind for emit->yield()
+
 #define MP_EMIT_YIELD_VALUE (0)
 #define MP_EMIT_YIELD_FROM (1)
 
@@ -164,8 +132,8 @@ typedef struct _emit_method_table_t {
     void (*raise_varargs)(emit_t *emit, mp_uint_t n_args);
     void (*yield)(emit_t *emit, int kind);
 
-    // these methods are used to control entry to/exit from an exception handler
-    // they may or may not emit code
+    
+    
     void (*start_except_handler)(emit_t *emit);
     void (*end_except_handler)(emit_t *emit);
 } emit_method_table_t;
@@ -310,4 +278,4 @@ void mp_emitter_warning(pass_kind_t pass, const char *msg);
 #define mp_emitter_warning(pass, msg)
 #endif
 
-#endif // MICROPY_INCLUDED_PY_EMIT_H
+#endif 

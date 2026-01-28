@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_PWDUTILS_H
 #define UTIL_LINUX_PWDUTILS_H
 
@@ -14,5 +11,5 @@ extern struct group *xgetgrnam(const char *groupname, char **grpbuf);
 extern struct passwd *xgetpwuid(uid_t uid, char **pwdbuf);
 extern char *xgetlogin(void);
 
-#endif /* UTIL_LINUX_PWDUTILS_H */
+#endif 
 

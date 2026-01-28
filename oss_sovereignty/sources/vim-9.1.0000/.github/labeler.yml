@@ -1,4 +1,4 @@
-# list of labels and minimatch globs to match to apply the label.
+
 
 CI:
   - all:

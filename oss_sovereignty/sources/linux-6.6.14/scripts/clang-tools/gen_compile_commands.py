@@ -116,7 +116,7 @@ def process_line(root_directory, command_prefix, file_path):
         ValueError: Could not find the extracted file based on file_path and
             root_directory or file_directory.
     """
-    prefix = command_prefix.replace('\#', '#').replace('$(pound)', '#')
+    prefix = command_prefix.replace('\
     abs_path = os.path.abspath(os.path.join(root_directory, file_path))
     if not os.path.exists(abs_path):
         raise ValueError('File %s not found' % abs_path)

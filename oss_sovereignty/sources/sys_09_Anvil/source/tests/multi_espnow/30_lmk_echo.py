@@ -46,7 +46,7 @@ def echo_client(e, peer, msglens):
         for msglen in msglens:
             msg = bytearray(msglen)
             if msglen > 0:
-                msg[0] = b"_"[0]  # Random message must not start with '!'
+                msg[0] = b"_"[0]  
             for i in range(1, msglen):
                 msg[i] = random.getrandbits(8)
             echo_test(e, peer, msg, sync)
@@ -57,7 +57,7 @@ def init(sta_active=True, ap_active=False):
     e.set_pmk(default_pmk)
     wlans[0].active(sta_active)
     wlans[1].active(ap_active)
-    wlans[0].disconnect()  # Force esp8266 STA interface to disconnect from AP
+    wlans[0].disconnect()  
     return e
 def instance0():
     e = init(True, False)

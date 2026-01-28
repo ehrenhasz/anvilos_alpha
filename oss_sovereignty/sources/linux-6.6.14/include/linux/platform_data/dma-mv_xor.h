@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Marvell XOR platform device data definition file.
- */
+
+
 
 #ifndef __DMA_MV_XOR_H
 #define __DMA_MV_XOR_H

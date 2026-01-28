@@ -1,16 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- */
+
 
 #ifndef __T7XX_MHCCIF_H__
 #define __T7XX_MHCCIF_H__
@@ -35,4 +23,4 @@ void t7xx_mhccif_init(struct t7xx_pci_dev *t7xx_dev);
 u32 t7xx_mhccif_read_sw_int_sts(struct t7xx_pci_dev *t7xx_dev);
 void t7xx_mhccif_h2d_swint_trigger(struct t7xx_pci_dev *t7xx_dev, u32 channel);
 
-#endif /*__T7XX_MHCCIF_H__ */
+#endif 

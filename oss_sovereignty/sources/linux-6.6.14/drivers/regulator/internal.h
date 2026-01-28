@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * internal.h  --  Voltage/Current Regulator framework internal code
- *
- * Copyright 2007, 2008 Wolfson Microelectronics PLC.
- * Copyright 2008 SlimLogic Ltd.
- *
- * Author: Liam Girdwood <lrg@slimlogic.co.uk>
- */
+
+
 
 #ifndef __REGULATOR_INTERNAL_H
 #define __REGULATOR_INTERNAL_H
@@ -31,17 +24,7 @@ struct regulator_voltage {
 	int max_uV;
 };
 
-/*
- * struct regulator
- *
- * One for each consumer device.
- * @voltage - a voltage array for each state of runtime, i.e.:
- *            PM_SUSPEND_ON
- *            PM_SUSPEND_TO_IDLE
- *            PM_SUSPEND_STANDBY
- *            PM_SUSPEND_MEM
- *            PM_SUSPEND_MAX
- */
+
 struct regulator {
 	struct device *dev;
 	struct list_head list;

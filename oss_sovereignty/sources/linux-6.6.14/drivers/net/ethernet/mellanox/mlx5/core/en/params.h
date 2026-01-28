@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5_EN_PARAMS_H__
 #define __MLX5_EN_PARAMS_H__
@@ -54,7 +54,7 @@ struct mlx5e_create_sq_param {
 	u8                          min_inline_mode;
 };
 
-/* Striding RQ dynamic parameters */
+
 
 u8 mlx5e_mpwrq_page_shift(struct mlx5_core_dev *mdev, struct mlx5e_xsk_param *xsk);
 enum mlx5e_mpwrq_umr_mode
@@ -75,7 +75,7 @@ u32 mlx5e_mpwrq_max_num_entries(struct mlx5_core_dev *mdev,
 u8 mlx5e_mpwrq_max_log_rq_pkts(struct mlx5_core_dev *mdev, u8 page_shift,
 			       enum mlx5e_mpwrq_umr_mode umr_mode);
 
-/* Parameter calculations */
+
 
 void mlx5e_reset_tx_moderation(struct mlx5e_params *params, u8 cq_period_mode);
 void mlx5e_reset_rx_moderation(struct mlx5e_params *params, u8 cq_period_mode);
@@ -124,7 +124,7 @@ u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
 			  struct mlx5e_params *params,
 			  struct mlx5e_xsk_param *xsk);
 
-/* Build queue parameters */
+
 
 void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e_channel *c);
 int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
@@ -172,4 +172,4 @@ static inline void mlx5e_params_print_info(struct mlx5_core_dev *mdev,
 				       "enhanced" : "basic");
 };
 
-#endif /* __MLX5_EN_PARAMS_H__ */
+#endif 

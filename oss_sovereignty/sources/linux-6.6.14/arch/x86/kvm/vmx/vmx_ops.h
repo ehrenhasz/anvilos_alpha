@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __KVM_X86_VMX_INSN_H
 #define __KVM_X86_VMX_INSN_H
 
@@ -18,24 +18,10 @@ void invvpid_error(unsigned long ext, u16 vpid, gva_t gva);
 void invept_error(unsigned long ext, u64 eptp, gpa_t gpa);
 
 #ifndef CONFIG_CC_HAS_ASM_GOTO_OUTPUT
-/*
- * The VMREAD error trampoline _always_ uses the stack to pass parameters, even
- * for 64-bit targets.  Preserving all registers allows the VMREAD inline asm
- * blob to avoid clobbering GPRs, which in turn allows the compiler to better
- * optimize sequences of VMREADs.
- *
- * Declare the trampoline as an opaque label as it's not safe to call from C
- * code; there is no way to tell the compiler to pass params on the stack for
- * 64-bit targets.
- *
- * void vmread_error_trampoline(unsigned long field, bool fault);
- */
+
 extern unsigned long vmread_error_trampoline;
 
-/*
- * The second VMREAD error trampoline, called from the assembly trampoline,
- * exists primarily to enable instrumentation for the VM-Fail path.
- */
+
 void vmread_error_trampoline2(unsigned long field, bool fault);
 
 #endif
@@ -116,38 +102,31 @@ do_exception:
 	kvm_spurious_fault();
 	return 0;
 
-#else /* !CONFIG_CC_HAS_ASM_GOTO_OUTPUT */
+#else 
 
 	asm volatile("1: vmread %2, %1\n\t"
-		     ".byte 0x3e\n\t" /* branch taken hint */
+		     ".byte 0x3e\n\t" 
 		     "ja 3f\n\t"
 
-		     /*
-		      * VMREAD failed.  Push '0' for @fault, push the failing
-		      * @field, and bounce through the trampoline to preserve
-		      * volatile registers.
-		      */
+		     
 		     "xorl %k1, %k1\n\t"
 		     "2:\n\t"
 		     "push %1\n\t"
 		     "push %2\n\t"
 		     "call vmread_error_trampoline\n\t"
 
-		     /*
-		      * Unwind the stack.  Note, the trampoline zeros out the
-		      * memory for @fault so that the result is '0' on error.
-		      */
+		     
 		     "pop %2\n\t"
 		     "pop %1\n\t"
 		     "3:\n\t"
 
-		     /* VMREAD faulted.  As above, except push '1' for @fault. */
+		     
 		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_ONE_REG, %1)
 
 		     : ASM_CALL_CONSTRAINT, "=&r"(value) : "r"(field) : "cc");
 	return value;
 
-#endif /* CONFIG_CC_HAS_ASM_GOTO_OUTPUT */
+#endif 
 }
 
 static __always_inline u16 vmcs_read16(unsigned long field)
@@ -189,7 +168,7 @@ static __always_inline unsigned long vmcs_readl(unsigned long field)
 #define vmx_asm1(insn, op1, error_args...)				\
 do {									\
 	asm_volatile_goto("1: " __stringify(insn) " %0\n\t"		\
-			  ".byte 0x2e\n\t" /* branch not taken hint */	\
+			  ".byte 0x2e\n\t" 	\
 			  "jna %l[error]\n\t"				\
 			  _ASM_EXTABLE(1b, %l[fault])			\
 			  : : op1 : "cc" : error, fault);		\
@@ -206,7 +185,7 @@ fault:									\
 #define vmx_asm2(insn, op1, op2, error_args...)				\
 do {									\
 	asm_volatile_goto("1: "  __stringify(insn) " %1, %0\n\t"	\
-			  ".byte 0x2e\n\t" /* branch not taken hint */	\
+			  ".byte 0x2e\n\t" 	\
 			  "jna %l[error]\n\t"				\
 			  _ASM_EXTABLE(1b, %l[fault])			\
 			  : : op1, op2 : "cc" : error, fault);		\
@@ -366,4 +345,4 @@ static inline void ept_sync_context(u64 eptp)
 		ept_sync_global();
 }
 
-#endif /* __KVM_X86_VMX_INSN_H */
+#endif 

@@ -42,7 +42,7 @@ dist_noinst_DATA += AUTHORS CODE_OF_CONDUCT.md COPYRIGHT LICENSE META NEWS NOTIC
 dist_noinst_DATA += README.md RELEASES.md
 dist_noinst_DATA += module/lua/README.zfs module/os/linux/spl/README.md
 
-# Include all the extra licensing information for modules
+
 dist_noinst_DATA += module/icp/algs/skein/THIRDPARTYLICENSE
 dist_noinst_DATA += module/icp/algs/skein/THIRDPARTYLICENSE.descrip
 dist_noinst_DATA += module/icp/asm-x86_64/aes/THIRDPARTYLICENSE.gladman
@@ -81,7 +81,7 @@ distclean-local:
 	-find . \( -name SCCS -o -name BitKeeper -o -name .svn -o -name CVS \
 		-o -name .pc -o -name .hg -o -name .git \) -prune -o \
 		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
-		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
+		-o -name '*.bak' -o -name '
 		-o -name '.*.rej' -o -size 0 -o -name '*%' -o -name '.*.cmd' \
 		-o -name 'core' -o -name 'Makefile' -o -name 'Module.symvers' \
 		-o -name '*.order' -o -name '*.markers' -o -name '*.gcda' \

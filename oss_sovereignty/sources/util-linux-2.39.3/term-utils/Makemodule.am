@@ -16,7 +16,7 @@ check_PROGRAMS += test_script
 test_script_SOURCES = $(script_SOURCES)
 test_script_LDADD = $(script_LDADD)
 test_script_CFLAGS = -DTEST_SCRIPT $(logger_CFLAGS)
-endif # BUILD_SCRIPT
+endif 
 
 if BUILD_SCRIPTREPLAY
 usrbin_exec_PROGRAMS += scriptreplay
@@ -26,7 +26,7 @@ scriptreplay_SOURCES = term-utils/scriptreplay.c \
 		       term-utils/script-playutils.c \
 		       term-utils/script-playutils.h
 scriptreplay_LDADD = $(LDADD) libcommon.la $(MATH_LIBS)
-endif # BUILD_SCRIPTREPLAY
+endif 
 
 if BUILD_SCRIPTLIVE
 usrbin_exec_PROGRAMS += scriptlive
@@ -39,7 +39,7 @@ scriptlive_SOURCES = term-utils/scriptlive.c \
 		       include/pty-session.h \
 		       lib/monotonic.c
 scriptlive_LDADD = $(LDADD) libcommon.la $(MATH_LIBS) $(REALTIME_LIBS) -lutil
-endif # BUILD_SCRIPTLIVE
+endif 
 
 
 if BUILD_AGETTY
@@ -58,7 +58,7 @@ endif
 if HAVE_ECONF
 agetty_LDADD += -leconf
 endif
-endif # BUILD_AGETTY
+endif 
 
 
 if BUILD_SETTERM
@@ -107,7 +107,7 @@ install-exec-hook-wall::
 INSTALL_EXEC_HOOKS += install-exec-hook-wall
 endif
 endif
-endif # BUILD_WALL
+endif 
 
 
 if BUILD_WRITE
@@ -128,4 +128,4 @@ install-exec-hook-write::
 INSTALL_EXEC_HOOKS += install-exec-hook-write
 endif
 endif
-endif # BUILD_WRITE
+endif 

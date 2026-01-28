@@ -1,19 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3036_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3036_H
 
-/* core clocks */
+
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_GPLL		3
 #define ARMCLK			4
 
-/* sclk gates (special clocks) */
+
 #define SCLK_GPU		64
 #define SCLK_SPI		65
 #define SCLK_SDMMC		68
@@ -48,7 +45,7 @@
 #define SCLK_MACPLL		153
 #define SCLK_SFC		160
 
-/* aclk gates */
+
 #define ACLK_DMAC2		194
 #define ACLK_LCDC		197
 #define ACLK_VIO		203
@@ -56,7 +53,7 @@
 #define ACLK_CPU		209
 #define ACLK_PERI		210
 
-/* pclk gates */
+
 #define PCLK_GPIO0		320
 #define PCLK_GPIO1		321
 #define PCLK_GPIO2		322
@@ -77,7 +74,7 @@
 #define PCLK_WDT		368
 #define PCLK_ACODEC		369
 
-/* hclk gates */
+
 #define HCLK_OTG0		449
 #define HCLK_OTG1		450
 #define HCLK_NANDC		453
@@ -96,7 +93,7 @@
 
 #define CLK_NR_CLKS		(HCLK_PERI + 1)
 
-/* soft-reset indices */
+
 #define SRST_CORE0		0
 #define SRST_CORE1		1
 #define SRST_CORE0_DBG		4

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ipi
 
@@ -7,15 +7,7 @@
 
 #include <linux/tracepoint.h>
 
-/**
- * ipi_raise - called when a smp cross call is made
- *
- * @mask: mask of recipient CPUs for the IPI
- * @reason: string identifying the IPI purpose
- *
- * It is necessary for @reason to be a static string declared with
- * __tracepoint_string.
- */
+
 TRACE_EVENT(ipi_raise,
 
 	TP_PROTO(const struct cpumask *mask, const char *reason),
@@ -96,15 +88,7 @@ DECLARE_EVENT_CLASS(ipi_handler,
 	TP_printk("(%s)", __entry->reason)
 );
 
-/**
- * ipi_entry - called immediately before the IPI handler
- *
- * @reason: string identifying the IPI purpose
- *
- * It is necessary for @reason to be a static string declared with
- * __tracepoint_string, ideally the same as used with trace_ipi_raise
- * for that IPI.
- */
+
 DEFINE_EVENT(ipi_handler, ipi_entry,
 
 	TP_PROTO(const char *reason),
@@ -112,15 +96,7 @@ DEFINE_EVENT(ipi_handler, ipi_entry,
 	TP_ARGS(reason)
 );
 
-/**
- * ipi_exit - called immediately after the IPI handler returns
- *
- * @reason: string identifying the IPI purpose
- *
- * It is necessary for @reason to be a static string declared with
- * __tracepoint_string, ideally the same as used with trace_ipi_raise for
- * that IPI.
- */
+
 DEFINE_EVENT(ipi_handler, ipi_exit,
 
 	TP_PROTO(const char *reason),
@@ -128,7 +104,7 @@ DEFINE_EVENT(ipi_handler, ipi_exit,
 	TP_ARGS(reason)
 );
 
-#endif /* _TRACE_IPI_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

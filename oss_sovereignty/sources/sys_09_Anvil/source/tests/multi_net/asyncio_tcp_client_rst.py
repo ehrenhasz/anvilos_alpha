@@ -6,9 +6,9 @@ except ImportError:
 import struct, time, socket
 PORT = 8000
 async def handle_connection(reader, writer):
-    data = await reader.read(10)  # should succeed
+    data = await reader.read(10)  
     print(data)
-    await asyncio.sleep(0.2)  # wait for client to drop connection
+    await asyncio.sleep(0.2)  
     try:
         data = await reader.read(100)
         print(data)
@@ -38,4 +38,4 @@ def instance1():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("ii", lgr_onoff, lgr_linger))
     s.send(b"GET / HTTP/1.0\r\n\r\n")
     time.sleep(0.1)
-    s.close()  # This issues a TCP RST since we've set the linger option
+    s.close()  

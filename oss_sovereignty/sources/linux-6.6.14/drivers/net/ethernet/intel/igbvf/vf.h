@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009 - 2018 Intel Corporation. */
+
+
 
 #ifndef _E1000_VF_H_
 #define _E1000_VF_H_
@@ -25,74 +25,70 @@ struct e1000_hw;
 #define E1000_FUNC_0	0
 #define E1000_FUNC_1	1
 
-/* Receive Address Register Count
- * Number of high/low register pairs in the RAR.  The RAR (Receive Address
- * Registers) holds the directed and multicast addresses that we monitor.
- * These entries are also used for MAC-based filtering.
- */
+
 #define E1000_RAR_ENTRIES_VF	1
 
-/* Receive Descriptor - Advanced */
+
 union e1000_adv_rx_desc {
 	struct {
-		__le64 pkt_addr; /* Packet buffer address */
-		__le64 hdr_addr; /* Header buffer address */
+		__le64 pkt_addr; 
+		__le64 hdr_addr; 
 	} read;
 	struct {
 		struct {
 			union {
 				__le32 data;
 				struct {
-					__le16 pkt_info; /* RSS/Packet type */
-					/* Split Header, hdr buffer length */
+					__le16 pkt_info; 
+					
 					__le16 hdr_info;
 				} hs_rss;
 			} lo_dword;
 			union {
-				__le32 rss; /* RSS Hash */
+				__le32 rss; 
 				struct {
-					__le16 ip_id; /* IP id */
-					__le16 csum;  /* Packet Checksum */
+					__le16 ip_id; 
+					__le16 csum;  
 				} csum_ip;
 			} hi_dword;
 		} lower;
 		struct {
-			__le32 status_error; /* ext status/error */
-			__le16 length; /* Packet length */
-			__le16 vlan; /* VLAN tag */
+			__le32 status_error; 
+			__le16 length; 
+			__le16 vlan; 
 		} upper;
-	} wb;  /* writeback */
+	} wb;  
 };
 
 #define E1000_RXDADV_HDRBUFLEN_MASK	0x7FE0
 #define E1000_RXDADV_HDRBUFLEN_SHIFT	5
 
-/* Transmit Descriptor - Advanced */
+
 union e1000_adv_tx_desc {
 	struct {
-		__le64 buffer_addr; /* Address of descriptor's data buf */
+		__le64 buffer_addr; 
 		__le32 cmd_type_len;
 		__le32 olinfo_status;
 	} read;
 	struct {
-		__le64 rsvd; /* Reserved */
+		__le64 rsvd; 
 		__le32 nxtseq_seed;
 		__le32 status;
 	} wb;
 };
 
-/* Adv Transmit Descriptor Config Masks */
-#define E1000_ADVTXD_DTYP_CTXT	0x00200000 /* Advanced Context Descriptor */
-#define E1000_ADVTXD_DTYP_DATA	0x00300000 /* Advanced Data Descriptor */
-#define E1000_ADVTXD_DCMD_EOP	0x01000000 /* End of Packet */
-#define E1000_ADVTXD_DCMD_IFCS	0x02000000 /* Insert FCS (Ethernet CRC) */
-#define E1000_ADVTXD_DCMD_RS	0x08000000 /* Report Status */
-#define E1000_ADVTXD_DCMD_DEXT	0x20000000 /* Descriptor extension (1=Adv) */
-#define E1000_ADVTXD_DCMD_VLE	0x40000000 /* VLAN pkt enable */
-#define E1000_ADVTXD_DCMD_TSE	0x80000000 /* TCP Seg enable */
-#define E1000_ADVTXD_PAYLEN_SHIFT	14 /* Adv desc PAYLEN shift */
 
-/* Context descriptors */
+#define E1000_ADVTXD_DTYP_CTXT	0x00200000 
+#define E1000_ADVTXD_DTYP_DATA	0x00300000 
+#define E1000_ADVTXD_DCMD_EOP	0x01000000 
+#define E1000_ADVTXD_DCMD_IFCS	0x02000000 
+#define E1000_ADVTXD_DCMD_RS	0x08000000 
+#define E1000_ADVTXD_DCMD_DEXT	0x20000000 
+#define E1000_ADVTXD_DCMD_VLE	0x40000000 
+#define E1000_ADVTXD_DCMD_TSE	0x80000000 
+#define E1000_ADVTXD_PAYLEN_SHIFT	14 
+
+
 struct e1000_adv_tx_context_desc {
 	__le32 vlan_macip_lens;
 	__le32 seqnum_seed;
@@ -100,18 +96,18 @@ struct e1000_adv_tx_context_desc {
 	__le32 mss_l4len_idx;
 };
 
-#define E1000_ADVTXD_MACLEN_SHIFT	9  /* Adv ctxt desc mac len shift */
-#define E1000_ADVTXD_TUCMD_IPV4		0x00000400 /* IP Packet Type: 1=IPv4 */
-#define E1000_ADVTXD_TUCMD_L4T_TCP	0x00000800 /* L4 Packet TYPE of TCP */
-#define E1000_ADVTXD_TUCMD_L4T_SCTP	0x00001000 /* L4 packet TYPE of SCTP */
-#define E1000_ADVTXD_L4LEN_SHIFT	8  /* Adv ctxt L4LEN shift */
-#define E1000_ADVTXD_MSS_SHIFT		16 /* Adv ctxt MSS shift */
+#define E1000_ADVTXD_MACLEN_SHIFT	9  
+#define E1000_ADVTXD_TUCMD_IPV4		0x00000400 
+#define E1000_ADVTXD_TUCMD_L4T_TCP	0x00000800 
+#define E1000_ADVTXD_TUCMD_L4T_SCTP	0x00001000 
+#define E1000_ADVTXD_L4LEN_SHIFT	8  
+#define E1000_ADVTXD_MSS_SHIFT		16 
 
 enum e1000_mac_type {
 	e1000_undefined = 0,
 	e1000_vfadapt,
 	e1000_vfadapt_i350,
-	e1000_num_macs  /* List is 1-based, so subtract 1 for true count. */
+	e1000_num_macs  
 };
 
 struct e1000_vf_stats {
@@ -149,7 +145,7 @@ struct e1000_vf_stats {
 #include "mbx.h"
 
 struct e1000_mac_operations {
-	/* Function pointers for the MAC. */
+	
 	s32  (*init_params)(struct e1000_hw *);
 	s32  (*check_for_link)(struct e1000_hw *);
 	void (*clear_vfta)(struct e1000_hw *);
@@ -222,7 +218,7 @@ struct e1000_hw {
 
 	struct e1000_mac_info  mac;
 	struct e1000_mbx_info mbx;
-	spinlock_t mbx_lock;		/* serializes mailbox ops */
+	spinlock_t mbx_lock;		
 
 	union {
 		struct e1000_dev_spec_vf vf;
@@ -236,8 +232,8 @@ struct e1000_hw {
 	u8  revision_id;
 };
 
-/* These functions must be implemented by drivers */
+
 void e1000_rlpml_set_vf(struct e1000_hw *, u16);
 void e1000_init_function_pointers_vf(struct e1000_hw *hw);
 
-#endif /* _E1000_VF_H_ */
+#endif 

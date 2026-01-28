@@ -1,21 +1,13 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * optiondefs.h: option definitions
- */
 
-// The options that are local to a window or buffer have "indir" set to one of
-// these values.  Special values:
-// PV_NONE: global option.
-// PV_WIN is added: window-local option
-// PV_BUF is added: buffer-local option
-// PV_BOTH is added: global option which also has a local value.
+
+
+
+
+
+
+
+
 #define PV_BOTH 0x1000
 #define PV_WIN  0x2000
 #define PV_BUF  0x4000
@@ -24,8 +16,8 @@
 #define OPT_BUF(x)  (idopt_T)(PV_BUF + (int)(x))
 #define OPT_BOTH(x) (idopt_T)(PV_BOTH + (int)(x))
 
-// Definition of the PV_ values for buffer-local options.
-// The BV_ values are defined in option.h.
+
+
 #define PV_AI		OPT_BUF(BV_AI)
 #define PV_AR		OPT_BOTH(OPT_BUF(BV_AR))
 #define PV_BKC		OPT_BOTH(OPT_BUF(BV_BKC))
@@ -148,8 +140,8 @@
 # define PV_VTS		OPT_BUF(BV_VTS)
 #endif
 
-// Definition of the PV_ values for window-local options.
-// The WV_ values are defined in option.h.
+
+
 #define PV_LIST		OPT_WIN(WV_LIST)
 #ifdef FEAT_ARABIC
 # define PV_ARAB	OPT_WIN(WV_ARAB)
@@ -232,24 +224,24 @@
 # define PV_SCL		OPT_WIN(WV_SCL)
 #endif
 
-// WV_ and BV_ values get typecasted to this for the "indir" field
+
 typedef enum
 {
     PV_NONE = 0,
-    PV_MAXVAL = 0xffff    // to avoid warnings for value out of range
+    PV_MAXVAL = 0xffff    
 } idopt_T;
 
-// Options local to a window have a value local to a buffer and global to all
-// buffers.  Indicate this by setting "var" to VAR_WIN.
+
+
 #define VAR_WIN ((char_u *)-1)
 
-// Saved values for when 'bin' is set.
+
 static int	p_et_nobin;
 static int	p_ml_nobin;
 static long	p_tw_nobin;
 static long	p_wm_nobin;
 
-// Saved values for when 'paste' is set
+
 static int	p_ai_nopaste;
 static int	p_et_nopaste;
 static long	p_sts_nopaste;
@@ -261,38 +253,38 @@ static char_u	*p_vsts_nopaste;
 
 struct vimoption
 {
-    char	*fullname;	// full option name
-    char	*shortname;	// permissible abbreviation
-    long_u	flags;		// see in option.h
-    char_u	*var;		// global option: pointer to variable;
-				// window-local option: VAR_WIN;
-				// buffer-local option: global value
-    idopt_T	indir;		// global option: PV_NONE;
-				// local option: indirect option index
-    // callback function to invoke after an option is modified to validate and
-    // apply the new value.
+    char	*fullname;	
+    char	*shortname;	
+    long_u	flags;		
+    char_u	*var;		
+				
+				
+    idopt_T	indir;		
+				
+    
+    
     opt_did_set_cb_T	opt_did_set_cb;
 
-    // callback function to invoke when expanding possible values on the
-    // cmdline. Only useful for string options.
+    
+    
     opt_expand_cb_T	opt_expand_cb;
 
-    char_u	*def_val[2];	// default values for variable (vi and vim)
+    char_u	*def_val[2];	
 #ifdef FEAT_EVAL
-    sctx_T	script_ctx;	// script context where the option was last set
+    sctx_T	script_ctx;	
 # define SCTX_INIT , {0, 0, 0, 1}
 #else
 # define SCTX_INIT
 #endif
 };
 
-#define VI_DEFAULT  0	    // def_val[VI_DEFAULT] is Vi default value
-#define VIM_DEFAULT 1	    // def_val[VIM_DEFAULT] is Vim default value
+#define VI_DEFAULT  0	    
+#define VIM_DEFAULT 1	    
 
 #define ISK_LATIN1  (char_u *)"@,48-57,_,192-255"
 
-// 'isprint' for latin1 is also used for MS-Windows cp1252, where 0x80 is used
-// for the currency sign.
+
+
 #if defined(MSWIN)
 # define ISP_LATIN1 (char_u *)"@,~-255"
 #else
@@ -301,7 +293,7 @@ struct vimoption
 
 # define HIGHLIGHT_INIT "8:SpecialKey,~:EndOfBuffer,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,y:CurSearch,m:MoreMsg,M:ModeMsg,n:LineNr,a:LineNrAbove,b:LineNrBelow,N:CursorLineNr,G:CursorLineSign,O:CursorLineFold,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,>:SignColumn,-:Conceal,B:SpellBad,P:SpellCap,R:SpellRare,L:SpellLocal,+:Pmenu,=:PmenuSel,[:PmenuKind,]:PmenuKindSel,{:PmenuExtra,}:PmenuExtraSel,x:PmenuSbar,X:PmenuThumb,*:TabLine,#:TabLineSel,_:TabLineFill,!:CursorColumn,.:CursorLine,o:ColorColumn,q:QuickFixLine,z:StatusLineTerm,Z:StatusLineTermNC"
 
-// Default python version for pyx* commands
+
 #if defined(FEAT_PYTHON) && defined(FEAT_PYTHON3)
 # define DEFAULT_PYTHON_VER	0
 #elif defined(FEAT_PYTHON3)
@@ -312,15 +304,15 @@ struct vimoption
 # define DEFAULT_PYTHON_VER	0
 #endif
 
-// used for 'cinkeys' and 'indentkeys'
+
 #define INDENTKEYS_DEFAULT (char_u *)"0{,0},0),0],:,0#,!^F,o,O,e"
 
-// options[] is initialized here.
-// The order of the options MUST be alphabetic for ":set all" and findoption().
-// All option names MUST start with a lowercase letter (for findoption()).
-// Exception: "t_" options are at the end.
-// The options with a NULL variable are 'hidden': a set command for them is
-// ignored and they are not printed.
+
+
+
+
+
+
 static struct vimoption options[] =
 {
     {"aleph",	    "al",   P_NUM|P_VI_DEF|P_CURSWANT,
@@ -622,20 +614,20 @@ static struct vimoption options[] =
     {"comments",    "com",  P_STRING|P_ALLOCED|P_VI_DEF|P_ONECOMMA
 							  |P_NODUP|P_CURSWANT,
 			    (char_u *)&p_com, PV_COM, did_set_comments, NULL,
-			    {(char_u *)"s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-",
+			    {(char_u *)"s1:,:
 				(char_u *)0L}
 			    SCTX_INIT},
     {"commentstring", "cms", P_STRING|P_ALLOCED|P_VI_DEF|P_CURSWANT,
 #ifdef FEAT_FOLDING
 			    (char_u *)&p_cms, PV_CMS, did_set_commentstring, NULL,
-			    {(char_u *)"/*%s*/", (char_u *)0L}
+			    {(char_u *)"", (char_u *)0L}
 #else
 			    (char_u *)NULL, PV_NONE, NULL, NULL,
 			    {(char_u *)0L, (char_u *)0L}
 #endif
 			    SCTX_INIT},
-			    // P_PRI_MKRC isn't needed here, optval_default()
-			    // always returns TRUE for 'compatible'
+			    
+			    
     {"compatible",  "cp",   P_BOOL|P_RALL,
 			    (char_u *)&p_cp, PV_NONE, did_set_compatible, NULL,
 			    {(char_u *)TRUE, (char_u *)FALSE} SCTX_INIT},
@@ -1131,11 +1123,11 @@ static struct vimoption options[] =
 			    (char_u *)&p_gp, PV_GP, NULL, NULL,
 			    {
 # if defined(MSWIN)
-			    // may be changed to "grep -n" in os_win32.c
+			    
 			    (char_u *)"findstr /n",
 # elif defined(UNIX)
-			    // Add an extra file name so that grep will always
-			    // insert a file name in the match line.
+			    
+			    
 			    (char_u *)"grep -n $* /dev/null",
 # elif defined(VMS)
 			    (char_u *)"SEARCH/NUMBERS ",
@@ -1155,7 +1147,7 @@ static struct vimoption options[] =
 			    {
 # ifdef FEAT_GUI
 				(char_u *)"n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175",
-# else	// Win32 console
+# else	
 				(char_u *)"n-v-c:block,o:hor50,i-ci:hor15,r-cr:hor30,sm:block",
 # endif
 				    (char_u *)0L}
@@ -1428,15 +1420,15 @@ static struct vimoption options[] =
 			    (char_u *)&p_isf, PV_NONE, did_set_isopt, NULL,
 			    {
 #ifdef BACKSLASH_IN_FILENAME
-				// Excluded are: & and ^ are special in cmd.exe
-				// ( and ) are used in text separating fnames
+				
+				
 			    (char_u *)"@,48-57,/,\\,.,-,_,+,,,#,$,%,{,},[,],:,@-@,!,~,=",
 #else
 # if defined(AMIGA)
 			    (char_u *)"@,48-57,/,.,-,_,+,,,$,:",
 # elif defined(VMS)
 			    (char_u *)"@,48-57,/,.,-,_,+,,,#,$,%,<,>,[,],:,;,~",
-# else // UNIX et al.
+# else 
 			    (char_u *)"@,48-57,/,.,-,_,+,,,#,$,%,~,=",
 # endif
 #endif
@@ -1953,8 +1945,8 @@ static struct vimoption options[] =
     {"printheader", "pheader",  P_STRING|P_VI_DEF|P_GETTEXT,
 #ifdef FEAT_PRINTER
 			    (char_u *)&p_header, PV_NONE, NULL, NULL,
-			    // untranslated to avoid problems when 'encoding'
-			    // is changed
+			    
+			    
 			    {(char_u *)"%<%f%h%m%=Page %N", (char_u *)0L}
 #else
 			    (char_u *)NULL, PV_NONE, NULL, NULL,
@@ -2198,11 +2190,11 @@ static struct vimoption options[] =
 			    (char_u *)"-",
 #else
 # if defined(MSWIN)
-			    (char_u *)"",	// set in set_init_1()
+			    (char_u *)"",	
 # else
 			    (char_u *)"sh",
 # endif
-#endif // VMS
+#endif 
 				(char_u *)0L} SCTX_INIT},
     {"shellcmdflag","shcf", P_STRING|P_VI_DEF|P_SECURE,
 			    (char_u *)&p_shcf, PV_NONE, NULL, NULL,
@@ -2476,7 +2468,7 @@ static struct vimoption options[] =
 			    {(char_u *)8L, (char_u *)0L} SCTX_INIT},
     {"tagbsearch",  "tbs",   P_BOOL|P_VI_DEF,
 			    (char_u *)&p_tbs, PV_NONE, NULL, NULL,
-#ifdef VMS	// binary searching doesn't appear to work on VMS
+#ifdef VMS	
 			    {(char_u *)0L, (char_u *)0L}
 #else
 			    {(char_u *)TRUE, (char_u *)0L}
@@ -2914,7 +2906,7 @@ static struct vimoption options[] =
 			    (char_u *)&p_xtermcodes, PV_NONE, NULL, NULL,
 			    {(char_u *)TRUE, (char_u *)0L} SCTX_INIT},
 
-// terminal output codes
+
 #define p_term(sss, vvv) \
 			    {sss, NULL, P_STRING|P_VI_DEF|P_RALL|P_SECURE, \
 			    (char_u *)&vvv, PV_NONE, did_set_term_option, NULL, \
@@ -3010,13 +3002,13 @@ static struct vimoption options[] =
     p_term("t_8b", T_8B)
     p_term("t_8u", T_8U)
 
-// terminal key codes are not in here
 
-    // end marker
+
+    
     {NULL, NULL, 0, NULL, PV_NONE, NULL, NULL, {NULL, NULL} SCTX_INIT}
 };
 
 #define OPTION_COUNT ARRAY_LENGTH(options)
 
-// The following is needed to make the gen_opt_test.vim script work.
-// {"
+
+

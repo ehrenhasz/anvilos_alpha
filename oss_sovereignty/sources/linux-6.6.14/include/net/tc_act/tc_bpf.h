@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 Jiri Pirko <jiri@resnulli.us>
- */
+
+
 
 #ifndef __NET_TC_BPF_H
 #define __NET_TC_BPF_H
@@ -21,4 +19,4 @@ struct tcf_bpf {
 };
 #define to_bpf(a) ((struct tcf_bpf *)a)
 
-#endif /* __NET_TC_BPF_H */
+#endif 

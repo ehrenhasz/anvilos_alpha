@@ -1,33 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2022 Damien P. George
- * Copyright (c) 2022 Jim Mussared
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_STM32_CYW43_CONFIGPORT_H
 #define MICROPY_INCLUDED_STM32_CYW43_CONFIGPORT_H
 
-// The board-level config will be included here, so it can set some CYW43 values.
+
 #include "py/mpconfig.h"
 #include "py/mperrno.h"
 #include "py/mphal.h"
@@ -53,10 +28,10 @@
 #define CYW43_NETUTILS                  (1)
 #define CYW43_CLEAR_SDIO_INT            (1)
 
-#define CYW43_EPERM                     MP_EPERM // Operation not permitted
-#define CYW43_EIO                       MP_EIO // I/O error
-#define CYW43_EINVAL                    MP_EINVAL // Invalid argument
-#define CYW43_ETIMEDOUT                 MP_ETIMEDOUT // Connection timed out
+#define CYW43_EPERM                     MP_EPERM 
+#define CYW43_EIO                       MP_EIO 
+#define CYW43_EINVAL                    MP_EINVAL 
+#define CYW43_ETIMEDOUT                 MP_ETIMEDOUT 
 
 #define CYW43_THREAD_ENTER              MICROPY_PY_LWIP_ENTER
 #define CYW43_THREAD_EXIT               MICROPY_PY_LWIP_EXIT
@@ -159,4 +134,4 @@ static inline int cyw43_sdio_transfer_cmd53(bool write, uint32_t block_size, uin
 
 #define CYW43_EVENT_POLL_HOOK MICROPY_EVENT_POLL_HOOK
 
-#endif // MICROPY_INCLUDED_STM32_CYW43_CONFIGPORT_H
+#endif 

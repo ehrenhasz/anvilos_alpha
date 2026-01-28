@@ -13,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        # Setting this to zero means fetch all history and tags,
-        # which hatch-vcs can use to discover the version tag.
+        
+        
         fetch-depth: 0
     - uses: actions/setup-python@v5
     - name: Install build tools

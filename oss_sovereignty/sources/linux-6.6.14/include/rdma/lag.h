@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2020 Mellanox Technologies. All rights reserved.
- */
+
+
 
 #ifndef _RDMA_LAG_H_
 #define _RDMA_LAG_H_
@@ -20,4 +18,4 @@ struct net_device *rdma_lag_get_ah_roce_slave(struct ib_device *device,
 					      struct rdma_ah_attr *ah_attr,
 					      gfp_t flags);
 
-#endif /* _RDMA_LAG_H_ */
+#endif 

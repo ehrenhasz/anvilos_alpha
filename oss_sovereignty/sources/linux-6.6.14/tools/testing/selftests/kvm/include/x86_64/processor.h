@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/x86_64/processor.h
- *
- * Copyright (C) 2018, Google LLC.
- */
+
+
 
 #ifndef SELFTEST_KVM_PROCESSOR_H
 #define SELFTEST_KVM_PROCESSOR_H
@@ -83,7 +79,7 @@ struct xstate {
 #define XFEATURE_MASK_XTILE		(XFEATURE_MASK_XTILE_DATA | \
 					 XFEATURE_MASK_XTILE_CFG)
 
-/* Note, these are ordered alphabetically to match kvm_cpuid_entry2.  Eww. */
+
 enum cpuid_output_regs {
 	KVM_CPUID_EAX,
 	KVM_CPUID_EBX,
@@ -91,10 +87,7 @@ enum cpuid_output_regs {
 	KVM_CPUID_EDX
 };
 
-/*
- * Pack the information into a 64-bit value so that each X86_FEATURE_XXX can be
- * passed by value with no overhead.
- */
+
 struct kvm_x86_cpu_feature {
 	u32	function;
 	u16	index;
@@ -118,9 +111,7 @@ struct kvm_x86_cpu_feature {
 	feature;								\
 })
 
-/*
- * Basic Leafs, a.k.a. Intel defined
- */
+
 #define	X86_FEATURE_MWAIT		KVM_X86_CPU_FEATURE(0x1, 0, ECX, 3)
 #define	X86_FEATURE_VMX			KVM_X86_CPU_FEATURE(0x1, 0, ECX, 5)
 #define	X86_FEATURE_SMX			KVM_X86_CPU_FEATURE(0x1, 0, ECX, 6)
@@ -169,9 +160,7 @@ struct kvm_x86_cpu_feature {
 #define	X86_FEATURE_XFD			KVM_X86_CPU_FEATURE(0xD, 1, EAX, 4)
 #define X86_FEATURE_XTILEDATA_XFD	KVM_X86_CPU_FEATURE(0xD, 18, ECX, 2)
 
-/*
- * Extended Leafs, a.k.a. AMD defined
- */
+
 #define	X86_FEATURE_SVM			KVM_X86_CPU_FEATURE(0x80000001, 0, ECX, 2)
 #define	X86_FEATURE_NX			KVM_X86_CPU_FEATURE(0x80000001, 0, EDX, 20)
 #define	X86_FEATURE_GBPAGES		KVM_X86_CPU_FEATURE(0x80000001, 0, EDX, 26)
@@ -190,9 +179,7 @@ struct kvm_x86_cpu_feature {
 #define X86_FEATURE_SEV			KVM_X86_CPU_FEATURE(0x8000001F, 0, EAX, 1)
 #define X86_FEATURE_SEV_ES		KVM_X86_CPU_FEATURE(0x8000001F, 0, EAX, 3)
 
-/*
- * KVM defined paravirt features.
- */
+
 #define X86_FEATURE_KVM_CLOCKSOURCE	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 0)
 #define X86_FEATURE_KVM_NOP_IO_DELAY	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 1)
 #define X86_FEATURE_KVM_MMU_OP		KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 2)
@@ -201,7 +188,7 @@ struct kvm_x86_cpu_feature {
 #define X86_FEATURE_KVM_STEAL_TIME	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 5)
 #define X86_FEATURE_KVM_PV_EOI		KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 6)
 #define X86_FEATURE_KVM_PV_UNHALT	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 7)
-/* Bit 8 apparently isn't used?!?! */
+
 #define X86_FEATURE_KVM_PV_TLB_FLUSH	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 9)
 #define X86_FEATURE_KVM_ASYNC_PF_VMEXIT	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 10)
 #define X86_FEATURE_KVM_PV_SEND_IPI	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 11)
@@ -212,11 +199,7 @@ struct kvm_x86_cpu_feature {
 #define X86_FEATURE_KVM_HC_MAP_GPA_RANGE	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 16)
 #define X86_FEATURE_KVM_MIGRATION_CONTROL	KVM_X86_CPU_FEATURE(0x40000001, 0, EAX, 17)
 
-/*
- * Same idea as X86_FEATURE_XXX, but X86_PROPERTY_XXX retrieves a multi-bit
- * value/property as opposed to a single-bit feature.  Again, pack the info
- * into a 64-bit value to pass by value with no overhead.
- */
+
 struct kvm_x86_cpu_property {
 	u32	function;
 	u8	index;
@@ -276,16 +259,7 @@ struct kvm_x86_cpu_property {
 
 #define X86_PROPERTY_MAX_CENTAUR_LEAF		KVM_X86_CPU_PROPERTY(0xC0000000, 0, EAX, 0, 31)
 
-/*
- * Intel's architectural PMU events are bizarre.  They have a "feature" bit
- * that indicates the feature is _not_ supported, and a property that states
- * the length of the bit mask of unsupported features.  A feature is supported
- * if the size of the bit mask is larger than the "unavailable" bit, and said
- * bit is not set.
- *
- * Wrap the "unavailable" feature to simplify checking whether or not a given
- * architectural event is supported.
- */
+
 struct kvm_x86_pmu_feature {
 	struct kvm_x86_cpu_feature anti_feature;
 };
@@ -317,7 +291,7 @@ static inline unsigned int x86_model(unsigned int eax)
 	return ((eax >> 12) & 0xf0) | ((eax >> 4) & 0x0f);
 }
 
-/* Page table bitfield declarations */
+
 #define PTE_PRESENT_MASK        BIT_ULL(0)
 #define PTE_WRITABLE_MASK       BIT_ULL(1)
 #define PTE_USER_MASK           BIT_ULL(2)
@@ -340,7 +314,7 @@ static inline unsigned int x86_model(unsigned int eax)
 #define PTE_GET_PA(pte)		((pte) & PHYSICAL_PAGE_MASK)
 #define PTE_GET_PFN(pte)        (PTE_GET_PA(pte) >> PAGE_SHIFT)
 
-/* General Registers in 64-Bit Mode */
+
 struct gpr64_regs {
 	u64 rax;
 	u64 rcx;
@@ -399,12 +373,7 @@ static inline uint64_t rdtsc(void)
 {
 	uint32_t eax, edx;
 	uint64_t tsc_val;
-	/*
-	 * The lfence is to wait (on Intel CPUs) until all previous
-	 * instructions have been executed. If software requires RDTSC to be
-	 * executed prior to execution of any subsequent instruction, it can
-	 * execute LFENCE immediately after RDTSC
-	 */
+	
 	__asm__ __volatile__("lfence; rdtsc; lfence" : "=a"(eax), "=d"(edx));
 	tsc_val = ((uint64_t)edx) << 32 | eax;
 	return tsc_val;
@@ -441,8 +410,8 @@ static inline uint16_t inw(uint16_t port)
 	uint16_t tmp;
 
 	__asm__ __volatile__("in %%dx, %%ax"
-		: /* output */ "=a" (tmp)
-		: /* input */ "d" (port));
+		:  "=a" (tmp)
+		:  "d" (port));
 
 	return tmp;
 }
@@ -452,7 +421,7 @@ static inline uint16_t get_es(void)
 	uint16_t es;
 
 	__asm__ __volatile__("mov %%es, %[es]"
-			     : /* output */ [es]"=rm"(es));
+			     :  [es]"=rm"(es));
 	return es;
 }
 
@@ -461,7 +430,7 @@ static inline uint16_t get_cs(void)
 	uint16_t cs;
 
 	__asm__ __volatile__("mov %%cs, %[cs]"
-			     : /* output */ [cs]"=rm"(cs));
+			     :  [cs]"=rm"(cs));
 	return cs;
 }
 
@@ -470,7 +439,7 @@ static inline uint16_t get_ss(void)
 	uint16_t ss;
 
 	__asm__ __volatile__("mov %%ss, %[ss]"
-			     : /* output */ [ss]"=rm"(ss));
+			     :  [ss]"=rm"(ss));
 	return ss;
 }
 
@@ -479,7 +448,7 @@ static inline uint16_t get_ds(void)
 	uint16_t ds;
 
 	__asm__ __volatile__("mov %%ds, %[ds]"
-			     : /* output */ [ds]"=rm"(ds));
+			     :  [ds]"=rm"(ds));
 	return ds;
 }
 
@@ -488,7 +457,7 @@ static inline uint16_t get_fs(void)
 	uint16_t fs;
 
 	__asm__ __volatile__("mov %%fs, %[fs]"
-			     : /* output */ [fs]"=rm"(fs));
+			     :  [fs]"=rm"(fs));
 	return fs;
 }
 
@@ -497,7 +466,7 @@ static inline uint16_t get_gs(void)
 	uint16_t gs;
 
 	__asm__ __volatile__("mov %%gs, %[gs]"
-			     : /* output */ [gs]"=rm"(gs));
+			     :  [gs]"=rm"(gs));
 	return gs;
 }
 
@@ -506,7 +475,7 @@ static inline uint16_t get_tr(void)
 	uint16_t tr;
 
 	__asm__ __volatile__("str %[tr]"
-			     : /* output */ [tr]"=rm"(tr));
+			     :  [tr]"=rm"(tr));
 	return tr;
 }
 
@@ -515,7 +484,7 @@ static inline uint64_t get_cr0(void)
 	uint64_t cr0;
 
 	__asm__ __volatile__("mov %%cr0, %[cr0]"
-			     : /* output */ [cr0]"=r"(cr0));
+			     :  [cr0]"=r"(cr0));
 	return cr0;
 }
 
@@ -524,7 +493,7 @@ static inline uint64_t get_cr3(void)
 	uint64_t cr3;
 
 	__asm__ __volatile__("mov %%cr3, %[cr3]"
-			     : /* output */ [cr3]"=r"(cr3));
+			     :  [cr3]"=r"(cr3));
 	return cr3;
 }
 
@@ -533,7 +502,7 @@ static inline uint64_t get_cr4(void)
 	uint64_t cr4;
 
 	__asm__ __volatile__("mov %%cr4, %[cr4]"
-			     : /* output */ [cr4]"=r"(cr4));
+			     :  [cr4]"=r"(cr4));
 	return cr4;
 }
 
@@ -562,7 +531,7 @@ static inline void xsetbv(u32 index, u64 value)
 
 static inline void wrpkru(u32 pkru)
 {
-	/* Note, ECX and EDX are architecturally required to be '0'. */
+	
 	asm volatile(".byte 0x0f,0x01,0xef\n\t"
 		     : : "a" (pkru), "c"(0), "d"(0));
 }
@@ -571,7 +540,7 @@ static inline struct desc_ptr get_gdt(void)
 {
 	struct desc_ptr gdt;
 	__asm__ __volatile__("sgdt %[gdt]"
-			     : /* output */ [gdt]"=m"(gdt));
+			     :  [gdt]"=m"(gdt));
 	return gdt;
 }
 
@@ -579,7 +548,7 @@ static inline struct desc_ptr get_idt(void)
 {
 	struct desc_ptr idt;
 	__asm__ __volatile__("sidt %[idt]"
-			     : /* output */ [idt]"=m"(idt));
+			     :  [idt]"=m"(idt));
 	return idt;
 }
 
@@ -643,9 +612,7 @@ static inline bool this_cpu_is_intel(void)
 	return this_cpu_vendor_string_is("GenuineIntel");
 }
 
-/*
- * Exclude early K5 samples with a vendor string of "AMDisbetter!"
- */
+
 static inline bool this_cpu_is_amd(void)
 {
 	return this_cpu_vendor_string_is("AuthenticAMD");
@@ -937,11 +904,7 @@ static inline size_t kvm_cpuid2_size(int nr_entries)
 	       sizeof(struct kvm_cpuid_entry2) * nr_entries;
 }
 
-/*
- * Allocate a "struct kvm_cpuid2* instance, with the 0-length arrary of
- * entries sized to hold @nr_entries.  The caller is responsible for freeing
- * the struct.
- */
+
 static inline struct kvm_cpuid2 *allocate_kvm_cpuid2(int nr_entries)
 {
 	struct kvm_cpuid2 *cpuid;
@@ -980,7 +943,7 @@ static inline int __vcpu_set_cpuid(struct kvm_vcpu *vcpu)
 	if (r)
 		return r;
 
-	/* On success, refresh the cache to pick up adjustments made by KVM. */
+	
 	vcpu_ioctl(vcpu, KVM_GET_CPUID2, vcpu->cpuid);
 	return 0;
 }
@@ -990,7 +953,7 @@ static inline void vcpu_set_cpuid(struct kvm_vcpu *vcpu)
 	TEST_ASSERT(vcpu->cpuid, "Must do vcpu_init_cpuid() first");
 	vcpu_ioctl(vcpu, KVM_SET_CPUID2, vcpu->cpuid);
 
-	/* Refresh the cache to pick up adjustments made by KVM. */
+	
 	vcpu_ioctl(vcpu, KVM_GET_CPUID2, vcpu->cpuid);
 }
 
@@ -1017,11 +980,7 @@ static inline void vcpu_clear_cpuid_feature(struct kvm_vcpu *vcpu,
 uint64_t vcpu_get_msr(struct kvm_vcpu *vcpu, uint64_t msr_index);
 int _vcpu_set_msr(struct kvm_vcpu *vcpu, uint64_t msr_index, uint64_t msr_value);
 
-/*
- * Assert on an MSR access(es) and pretty print the MSR name when possible.
- * Note, the caller provides the stringified name so that the name of macro is
- * printed, not the value the macro resolves to (due to macro expansion).
- */
+
 #define TEST_ASSERT_MSR(cond, fmt, msr, str, args...)				\
 do {										\
 	if (__builtin_constant_p(msr)) {					\
@@ -1034,12 +993,7 @@ do {										\
 	}									\
 } while (0)
 
-/*
- * Returns true if KVM should return the last written value when reading an MSR
- * from userspace, e.g. the MSR isn't a command MSR, doesn't emulate state that
- * is changing, etc.  This is NOT an exhaustive list!  The intent is to filter
- * out MSRs that are not durable _and_ that a selftest wants to write.
- */
+
 static inline bool is_durable_msr(uint32_t msr)
 {
 	return msr != MSR_IA32_TSC;
@@ -1090,35 +1044,10 @@ void vcpu_init_descriptor_tables(struct kvm_vcpu *vcpu);
 void vm_install_exception_handler(struct kvm_vm *vm, int vector,
 			void (*handler)(struct ex_regs *));
 
-/* If a toddler were to say "abracadabra". */
+
 #define KVM_EXCEPTION_MAGIC 0xabacadabaULL
 
-/*
- * KVM selftest exception fixup uses registers to coordinate with the exception
- * handler, versus the kernel's in-memory tables and KVM-Unit-Tests's in-memory
- * per-CPU data.  Using only registers avoids having to map memory into the
- * guest, doesn't require a valid, stable GS.base, and reduces the risk of
- * for recursive faults when accessing memory in the handler.  The downside to
- * using registers is that it restricts what registers can be used by the actual
- * instruction.  But, selftests are 64-bit only, making register* pressure a
- * minor concern.  Use r9-r11 as they are volatile, i.e. don't need to be saved
- * by the callee, and except for r11 are not implicit parameters to any
- * instructions.  Ideally, fixup would use r8-r10 and thus avoid implicit
- * parameters entirely, but Hyper-V's hypercall ABI uses r8 and testing Hyper-V
- * is higher priority than testing non-faulting SYSCALL/SYSRET.
- *
- * Note, the fixup handler deliberately does not handle #DE, i.e. the vector
- * is guaranteed to be non-zero on fault.
- *
- * REGISTER INPUTS:
- * r9  = MAGIC
- * r10 = RIP
- * r11 = new RIP on fault
- *
- * REGISTER OUTPUTS:
- * r9  = exception vector (non-zero)
- * r10 = error code
- */
+
 #define KVM_ASM_SAFE(insn)					\
 	"mov $" __stringify(KVM_EXCEPTION_MAGIC) ", %%r9\n\t"	\
 	"lea 1f(%%rip), %%r10\n\t"				\
@@ -1219,20 +1148,18 @@ void __virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr, int level)
 void virt_map_level(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
 		    uint64_t nr_bytes, int level);
 
-/*
- * Basic CPU control in CR0
- */
-#define X86_CR0_PE          (1UL<<0) /* Protection Enable */
-#define X86_CR0_MP          (1UL<<1) /* Monitor Coprocessor */
-#define X86_CR0_EM          (1UL<<2) /* Emulation */
-#define X86_CR0_TS          (1UL<<3) /* Task Switched */
-#define X86_CR0_ET          (1UL<<4) /* Extension Type */
-#define X86_CR0_NE          (1UL<<5) /* Numeric Error */
-#define X86_CR0_WP          (1UL<<16) /* Write Protect */
-#define X86_CR0_AM          (1UL<<18) /* Alignment Mask */
-#define X86_CR0_NW          (1UL<<29) /* Not Write-through */
-#define X86_CR0_CD          (1UL<<30) /* Cache Disable */
-#define X86_CR0_PG          (1UL<<31) /* Paging */
+
+#define X86_CR0_PE          (1UL<<0) 
+#define X86_CR0_MP          (1UL<<1) 
+#define X86_CR0_EM          (1UL<<2) 
+#define X86_CR0_TS          (1UL<<3) 
+#define X86_CR0_ET          (1UL<<4) 
+#define X86_CR0_NE          (1UL<<5) 
+#define X86_CR0_WP          (1UL<<16) 
+#define X86_CR0_AM          (1UL<<18) 
+#define X86_CR0_NW          (1UL<<29) 
+#define X86_CR0_CD          (1UL<<30) 
+#define X86_CR0_PG          (1UL<<31) 
 
 #define PFERR_PRESENT_BIT 0
 #define PFERR_WRITE_BIT 1
@@ -1256,4 +1183,4 @@ void virt_map_level(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
 #define PFERR_GUEST_PAGE_MASK	BIT_ULL(PFERR_GUEST_PAGE_BIT)
 #define PFERR_IMPLICIT_ACCESS	BIT_ULL(PFERR_IMPLICIT_ACCESS_BIT)
 
-#endif /* SELFTEST_KVM_PROCESSOR_H */
+#endif 

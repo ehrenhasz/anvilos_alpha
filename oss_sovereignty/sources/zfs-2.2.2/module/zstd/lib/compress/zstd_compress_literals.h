@@ -1,17 +1,9 @@
-/*
- * Copyright (c) 2016-2020, Yann Collet, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under both the BSD-style license (found in the
- * LICENSE file in the root directory of this source tree) and the GPLv2 (found
- * in the COPYING file in the root directory of this source tree).
- * You may select, at your option, one of the above-listed licenses.
- */
+
 
 #ifndef ZSTD_COMPRESS_LITERALS_H
 #define ZSTD_COMPRESS_LITERALS_H
 
-#include "zstd_compress_internal.h" /* ZSTD_hufCTables_t, ZSTD_minGain() */
+#include "zstd_compress_internal.h" 
 
 
 size_t ZSTD_noCompressLiterals (void* dst, size_t dstCapacity, const void* src, size_t srcSize);
@@ -26,4 +18,4 @@ size_t ZSTD_compressLiterals (ZSTD_hufCTables_t const* prevHuf,
                               void* entropyWorkspace, size_t entropyWorkspaceSize,
                         const int bmi2);
 
-#endif /* ZSTD_COMPRESS_LITERALS_H */
+#endif 

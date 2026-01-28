@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef	__XFS_TRANS_H__
 #define	__XFS_TRANS_H__
 
-/* kernel only transaction subsystem defines */
+
 
 struct xlog;
 struct xfs_buf;
@@ -29,30 +26,26 @@ struct xfs_bui_log_item;
 struct xfs_bud_log_item;
 
 struct xfs_log_item {
-	struct list_head		li_ail;		/* AIL pointers */
-	struct list_head		li_trans;	/* transaction list */
-	xfs_lsn_t			li_lsn;		/* last on-disk lsn */
+	struct list_head		li_ail;		
+	struct list_head		li_trans;	
+	xfs_lsn_t			li_lsn;		
 	struct xlog			*li_log;
-	struct xfs_ail			*li_ailp;	/* ptr to AIL */
-	uint				li_type;	/* item type */
-	unsigned long			li_flags;	/* misc flags */
-	struct xfs_buf			*li_buf;	/* real buffer pointer */
-	struct list_head		li_bio_list;	/* buffer item list */
-	const struct xfs_item_ops	*li_ops;	/* function list */
+	struct xfs_ail			*li_ailp;	
+	uint				li_type;	
+	unsigned long			li_flags;	
+	struct xfs_buf			*li_buf;	
+	struct list_head		li_bio_list;	
+	const struct xfs_item_ops	*li_ops;	
 
-	/* delayed logging */
-	struct list_head		li_cil;		/* CIL pointers */
-	struct xfs_log_vec		*li_lv;		/* active log vector */
-	struct xfs_log_vec		*li_lv_shadow;	/* standby vector */
-	xfs_csn_t			li_seq;		/* CIL commit seq */
-	uint32_t			li_order_id;	/* CIL commit order */
+	
+	struct list_head		li_cil;		
+	struct xfs_log_vec		*li_lv;		
+	struct xfs_log_vec		*li_lv_shadow;	
+	xfs_csn_t			li_seq;		
+	uint32_t			li_order_id;	
 };
 
-/*
- * li_flags use the (set/test/clear)_bit atomic interfaces because updates can
- * race with each other and we don't want to have to use the AIL lock to
- * serialise all updates.
- */
+
 #define	XFS_LI_IN_AIL	0
 #define	XFS_LI_ABORTED	1
 #define	XFS_LI_FAILED	2
@@ -86,13 +79,8 @@ struct xfs_item_ops {
 	struct xfs_log_item *(*iop_intent)(struct xfs_log_item *intent_done);
 };
 
-/*
- * Log item ops flags
- */
-/*
- * Release the log item when the journal commits instead of inserting into the
- * AIL for writeback tracking and/or log tail pinning.
- */
+
+
 #define XFS_ITEM_RELEASE_WHEN_COMMITTED	(1 << 0)
 #define XFS_ITEM_INTENT			(1 << 1)
 #define XFS_ITEM_INTENT_DONE		(1 << 2)
@@ -112,59 +100,50 @@ xlog_item_is_intent_done(struct xfs_log_item *lip)
 void	xfs_log_item_init(struct xfs_mount *mp, struct xfs_log_item *item,
 			  int type, const struct xfs_item_ops *ops);
 
-/*
- * Return values for the iop_push() routines.
- */
+
 #define XFS_ITEM_SUCCESS	0
 #define XFS_ITEM_PINNED		1
 #define XFS_ITEM_LOCKED		2
 #define XFS_ITEM_FLUSHING	3
 
-/*
- * This is the structure maintained for every active transaction.
- */
+
 typedef struct xfs_trans {
-	unsigned int		t_magic;	/* magic number */
-	unsigned int		t_log_res;	/* amt of log space resvd */
-	unsigned int		t_log_count;	/* count for perm log res */
-	unsigned int		t_blk_res;	/* # of blocks resvd */
-	unsigned int		t_blk_res_used;	/* # of resvd blocks used */
-	unsigned int		t_rtx_res;	/* # of rt extents resvd */
-	unsigned int		t_rtx_res_used;	/* # of resvd rt extents used */
-	unsigned int		t_flags;	/* misc flags */
-	xfs_agnumber_t		t_highest_agno;	/* highest AGF locked */
-	struct xlog_ticket	*t_ticket;	/* log mgr ticket */
-	struct xfs_mount	*t_mountp;	/* ptr to fs mount struct */
-	struct xfs_dquot_acct   *t_dqinfo;	/* acctg info for dquots */
-	int64_t			t_icount_delta;	/* superblock icount change */
-	int64_t			t_ifree_delta;	/* superblock ifree change */
-	int64_t			t_fdblocks_delta; /* superblock fdblocks chg */
-	int64_t			t_res_fdblocks_delta; /* on-disk only chg */
-	int64_t			t_frextents_delta;/* superblock freextents chg*/
-	int64_t			t_res_frextents_delta; /* on-disk only chg */
-	int64_t			t_dblocks_delta;/* superblock dblocks change */
-	int64_t			t_agcount_delta;/* superblock agcount change */
-	int64_t			t_imaxpct_delta;/* superblock imaxpct change */
-	int64_t			t_rextsize_delta;/* superblock rextsize chg */
-	int64_t			t_rbmblocks_delta;/* superblock rbmblocks chg */
-	int64_t			t_rblocks_delta;/* superblock rblocks change */
-	int64_t			t_rextents_delta;/* superblocks rextents chg */
-	int64_t			t_rextslog_delta;/* superblocks rextslog chg */
-	struct list_head	t_items;	/* log item descriptors */
-	struct list_head	t_busy;		/* list of busy extents */
-	struct list_head	t_dfops;	/* deferred operations */
-	unsigned long		t_pflags;	/* saved process flags state */
+	unsigned int		t_magic;	
+	unsigned int		t_log_res;	
+	unsigned int		t_log_count;	
+	unsigned int		t_blk_res;	
+	unsigned int		t_blk_res_used;	
+	unsigned int		t_rtx_res;	
+	unsigned int		t_rtx_res_used;	
+	unsigned int		t_flags;	
+	xfs_agnumber_t		t_highest_agno;	
+	struct xlog_ticket	*t_ticket;	
+	struct xfs_mount	*t_mountp;	
+	struct xfs_dquot_acct   *t_dqinfo;	
+	int64_t			t_icount_delta;	
+	int64_t			t_ifree_delta;	
+	int64_t			t_fdblocks_delta; 
+	int64_t			t_res_fdblocks_delta; 
+	int64_t			t_frextents_delta;
+	int64_t			t_res_frextents_delta; 
+	int64_t			t_dblocks_delta;
+	int64_t			t_agcount_delta;
+	int64_t			t_imaxpct_delta;
+	int64_t			t_rextsize_delta;
+	int64_t			t_rbmblocks_delta;
+	int64_t			t_rblocks_delta;
+	int64_t			t_rextents_delta;
+	int64_t			t_rextslog_delta;
+	struct list_head	t_items;	
+	struct list_head	t_busy;		
+	struct list_head	t_dfops;	
+	unsigned long		t_pflags;	
 } xfs_trans_t;
 
-/*
- * XFS transaction mechanism exported interfaces that are
- * actually macros.
- */
+
 #define	xfs_trans_set_sync(tp)		((tp)->t_flags |= XFS_TRANS_SYNC)
 
-/*
- * XFS transaction mechanism exported interfaces.
- */
+
 int		xfs_trans_alloc(struct xfs_mount *mp, struct xfs_trans_res *resp,
 			uint blocks, uint rtextents, uint flags,
 			struct xfs_trans **tpp);
@@ -301,4 +280,4 @@ xfs_trans_switch_context(
 	current->journal_info = new_tp;
 }
 
-#endif	/* __XFS_TRANS_H__ */
+#endif	

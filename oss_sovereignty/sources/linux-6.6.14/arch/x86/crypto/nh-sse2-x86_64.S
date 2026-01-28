@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NH - ε-almost-universal hash function, x86_64 SSE2 accelerated
- *
- * Copyright 2018 Google LLC
- *
- * Author: Eric Biggers <ebiggers@google.com>
- */
+
+
 
 #include <linux/linkage.h>
 #include <linux/cfi_types.h>
@@ -33,21 +27,21 @@
 
 .macro _nh_stride	k0, k1, k2, k3, offset
 
-	// Load next message stride
+	
 	movdqu		\offset(MESSAGE), T1
 
-	// Load next key stride
+	
 	movdqu		\offset(KEY), \k3
 
-	// Add message words to key words
+	
 	movdqa		T1, T2
 	movdqa		T1, T3
-	paddd		T1, \k0    // reuse k0 to avoid a move
+	paddd		T1, \k0    
 	paddd		\k1, T1
 	paddd		\k2, T2
 	paddd		\k3, T3
 
-	// Multiply 32x32 => 64 and accumulate
+	
 	pshufd		$0x10, \k0, T4
 	pshufd		$0x32, \k0, \k0
 	pshufd		$0x10, T1, T5
@@ -66,12 +60,7 @@
 	paddq		T3, PASS3_SUMS
 .endm
 
-/*
- * void nh_sse2(const u32 *key, const u8 *message, size_t message_len,
- *		__le64 hash[NH_NUM_PASSES])
- *
- * It's guaranteed that message_len % 16 == 0.
- */
+
 SYM_TYPED_FUNC_START(nh_sse2)
 
 	movdqu		0x00(KEY), K0
@@ -109,13 +98,13 @@ SYM_TYPED_FUNC_START(nh_sse2)
 	_nh_stride	K2, K3, K0, K1, 0x20
 
 .Ldone:
-	// Sum the accumulators for each pass, then store the sums to 'hash'
+	
 	movdqa		PASS0_SUMS, T0
 	movdqa		PASS2_SUMS, T1
-	punpcklqdq	PASS1_SUMS, T0		// => (PASS0_SUM_A PASS1_SUM_A)
-	punpcklqdq	PASS3_SUMS, T1		// => (PASS2_SUM_A PASS3_SUM_A)
-	punpckhqdq	PASS1_SUMS, PASS0_SUMS	// => (PASS0_SUM_B PASS1_SUM_B)
-	punpckhqdq	PASS3_SUMS, PASS2_SUMS	// => (PASS2_SUM_B PASS3_SUM_B)
+	punpcklqdq	PASS1_SUMS, T0		
+	punpcklqdq	PASS3_SUMS, T1		
+	punpckhqdq	PASS1_SUMS, PASS0_SUMS	
+	punpckhqdq	PASS3_SUMS, PASS2_SUMS	
 	paddq		PASS0_SUMS, T0
 	paddq		PASS2_SUMS, T1
 	movdqu		T0, 0x00(HASH)

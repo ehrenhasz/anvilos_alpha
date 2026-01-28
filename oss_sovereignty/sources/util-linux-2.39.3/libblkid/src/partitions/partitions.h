@@ -54,9 +54,7 @@ extern int blkid_partition_set_type_uuid(blkid_partition par,
 
 extern int blkid_partition_set_flags(blkid_partition par, unsigned long long flags);
 
-/*
- * partition probers
- */
+
 extern const struct blkid_idinfo aix_pt_idinfo;
 extern const struct blkid_idinfo bsd_pt_idinfo;
 extern const struct blkid_idinfo unixware_pt_idinfo;
@@ -71,4 +69,4 @@ extern const struct blkid_idinfo pmbr_pt_idinfo;
 extern const struct blkid_idinfo ultrix_pt_idinfo;
 extern const struct blkid_idinfo atari_pt_idinfo;
 
-#endif /* BLKID_PARTITIONS_H */
+#endif 

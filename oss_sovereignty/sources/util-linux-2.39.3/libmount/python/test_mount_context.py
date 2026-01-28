@@ -24,7 +24,7 @@ def mnt_run_test(tss, argv):
 			break
 	if ((rc < 0) and (i == ())):
 		return usage(tss)
-	return not not rc #because !!rc is too mainstream for python
+	return not not rc 
 def test_mount(ts, argv):
 	idx = 1
 	rc = 0
@@ -135,5 +135,5 @@ tss = (
 	( "--mount-all", test_mountall,  "[-O <pattern>] [-t <pattern] mount all filesystems from fstab" ),
 	( "--flags", test_flags,   "[-o <opts>] <spec>" )
 )
-os.umask(stat.S_IWGRP | stat.S_IWOTH) #to be compatible with mount(8)
+os.umask(stat.S_IWGRP | stat.S_IWOTH) 
 sys.exit(mnt_run_test(tss, sys.argv))

@@ -12,7 +12,7 @@ usage() {
 }
 abis=
 prefix=
-while [ $# -gt 0 ]
+while [ $
 do
 	case $1 in
 	--abis)
@@ -28,7 +28,7 @@ do
 		break;;
 	esac
 done
-if [ $# -ne 2 ]; then
+if [ $
 	usage
 fi
 infile="$1"
@@ -37,14 +37,14 @@ guard=_ASM_$(basename "$outfile" |
 	sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
 	-e 's/[^A-Z0-9_]/_/g' -e 's/__/_/g')
 grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis" "$infile" | sort -n | {
-	echo "#ifndef $guard"
-	echo "#define $guard"
+	echo "
+	echo "
 	echo
 	max=0
 	while read nr abi name native compat ; do
 		max=$nr
 	done
-	echo "#define __NR_${prefix}syscalls $(($max + 1))"
+	echo "
 	echo
-	echo "#endif /* $guard */"
+	echo "
 } > "$outfile"

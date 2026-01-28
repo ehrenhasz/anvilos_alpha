@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 include ../../../scripts/Makefile.include
 
 bindir ?= /usr/bin
@@ -10,8 +10,8 @@ srctree := $(patsubst %/,%,$(dir $(srctree)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 endif
 
-# Do not use make's built-in rules
-# (this improves performance and avoids hard-to-debug behaviour);
+
+
 MAKEFLAGS += -r
 override CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include -I/usr/include/libnl3
 override LDFLAGS += -lnl-genl-3 -lnl-3
@@ -24,9 +24,9 @@ all: $(ALL_PROGRAMS)
 export srctree OUTPUT CC LD CFLAGS
 include $(srctree)/tools/build/Makefile.include
 
-#
-# We need the following to be outside of kernel tree
-#
+
+
+
 $(OUTPUT)include/linux/isst_if.h: ../../../../include/uapi/linux/isst_if.h
 	mkdir -p $(OUTPUT)include/linux 2>&1 || true
 	ln -sf $(CURDIR)/../../../../include/uapi/linux/isst_if.h $@

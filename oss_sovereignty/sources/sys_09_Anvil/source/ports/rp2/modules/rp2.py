@@ -105,13 +105,13 @@ class PIOASMEmit:
     def jmp(self, cond, label=None):
         if label is None:
             label = cond
-            cond = 0  # always
+            cond = 0  
         return self.word(0x0000 | cond << 5, label)
     def wait(self, polarity, src, index):
         if src == 6:
-            src = 1  # "pin"
+            src = 1  
         elif src != 0:
-            src = 2  # "irq"
+            src = 2  
         return self.word(0x2000 | polarity << 7 | src << 5 | index)
     def in_(self, src, data):
         if not 0 < data <= 32:
@@ -119,28 +119,28 @@ class PIOASMEmit:
         return self.word(0x4000 | src << 5 | data & 0x1F)
     def out(self, dest, data):
         if dest == 8:
-            dest = 7  # exec
+            dest = 7  
         if not 0 < data <= 32:
             raise PIOASMError("invalid bit count {}".format(data))
         return self.word(0x6000 | dest << 5 | data & 0x1F)
     def push(self, value=0, value2=0):
         value |= value2
         if not value & 1:
-            value |= 0x20  # block by default
+            value |= 0x20  
         return self.word(0x8000 | (value & 0x60))
     def pull(self, value=0, value2=0):
         value |= value2
         if not value & 1:
-            value |= 0x20  # block by default
+            value |= 0x20  
         return self.word(0x8080 | (value & 0x60))
     def mov(self, dest, src):
         if dest == 8:
-            dest = 4  # exec
+            dest = 4  
         return self.word(0xA000 | dest << 5 | src)
     def irq(self, mod, index=None):
         if index is None:
             index = mod
-            mod = 0  # no modifiers
+            mod = 0  
         return self.word(0xC000 | (mod & 0x60) | index)
     def set(self, dest, data):
         return self.word(0xE000 | dest << 5 | data)
@@ -155,7 +155,7 @@ _pio_funcs = {
     "status": 5,
     "isr": 6,
     "osr": 7,
-    "exec": 8,  # translated to 4 for mov, 7 for out
+    "exec": 8,  
     "invert": lambda x: x | 0x08,
     "reverse": lambda x: x | 0x10,
     "not_x": 1,

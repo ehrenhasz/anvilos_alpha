@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CMA_H__
 #define __CMA_H__
 
@@ -6,21 +6,14 @@
 #include <linux/types.h>
 #include <linux/numa.h>
 
-/*
- * There is always at least global CMA area and a few optional
- * areas configured in kernel .config.
- */
+
 #ifdef CONFIG_CMA_AREAS
 #define MAX_CMA_AREAS	(1 + CONFIG_CMA_AREAS)
 #endif
 
 #define CMA_MAX_NAME 64
 
-/*
- *  the buddy -- especially pageblock merging and alloc_contig_range()
- * -- can deal with only some pageblocks of a higher-order page being
- *  MIGRATE_CMA, we can use pageblock_nr_pages.
- */
+
 #define CMA_MIN_ALIGNMENT_PAGES pageblock_nr_pages
 #define CMA_MIN_ALIGNMENT_BYTES (PAGE_SIZE * CMA_MIN_ALIGNMENT_PAGES)
 

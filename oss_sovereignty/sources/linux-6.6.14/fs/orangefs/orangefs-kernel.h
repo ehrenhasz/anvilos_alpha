@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
 
-/*
- *  The ORANGEFS Linux kernel support allows ORANGEFS volumes to be mounted and
- *  accessed through the Linux VFS (i.e. using standard I/O system calls).
- *  This support is only needed on clients that wish to mount the file system.
- *
- */
 
-/*
- *  Declarations and macros for the ORANGEFS Linux kernel support.
- */
+
+
+
+
 
 #ifndef __ORANGEFSKERNEL_H
 #define __ORANGEFSKERNEL_H
@@ -61,7 +50,7 @@
 
 #define ORANGEFS_BUFMAP_WAIT_TIMEOUT_SECS   30
 
-#define ORANGEFS_DEFAULT_SLOT_TIMEOUT_SECS     900	/* 15 minutes */
+#define ORANGEFS_DEFAULT_SLOT_TIMEOUT_SECS     900	
 
 #define ORANGEFS_REQDEVICE_NAME          "pvfs2-req"
 
@@ -73,17 +62,7 @@ sizeof(__u64) + sizeof(struct orangefs_upcall_s))
 #define MAX_DEV_REQ_DOWNSIZE (2 * sizeof(__s32) + \
 sizeof(__u64) + sizeof(struct orangefs_downcall_s))
 
-/*
- * valid orangefs kernel operation states
- *
- * unknown  - op was just initialized
- * waiting  - op is on request_list (upward bound)
- * inprogr  - op is in progress (waiting for downcall)
- * serviced - op has matching downcall; ok
- * purged   - op has to start a timer since client-core
- *            exited uncleanly before servicing op
- * given up - submitter has given up waiting for it
- */
+
 enum orangefs_vfs_op_states {
 	OP_VFS_STATE_UNKNOWN = 0,
 	OP_VFS_STATE_WAITING = 1,
@@ -93,9 +72,7 @@ enum orangefs_vfs_op_states {
 	OP_VFS_STATE_GIVEN_UP = 16,
 };
 
-/*
- * orangefs kernel memory related flags
- */
+
 
 #if (defined CONFIG_DEBUG_SLAB)
 #define ORANGEFS_CACHE_CREATE_FLAGS SLAB_RED_ZONE
@@ -111,21 +88,12 @@ extern int orangefs_set_acl(struct mnt_idmap *idmap,
 			    int type);
 int __orangefs_set_acl(struct inode *inode, struct posix_acl *acl, int type);
 
-/*
- * orangefs data structures
- */
+
 struct orangefs_kernel_op_s {
 	enum orangefs_vfs_op_states op_state;
 	__u64 tag;
 
-	/*
-	 * Set uses_shared_memory to non zero if this operation uses
-	 * shared memory. If true, then a retry on the op must also
-	 * get a new shared memory buffer and re-populate it.
-	 * Cancels don't care - it only matters for service_operation()
-	 * retry logics and cancels don't go through it anymore. It
-	 * safely stays non-zero when we use it as slot_to_free.
-	 */
+	
 	union {
 		int uses_shared_memory;
 		int slot_to_free;
@@ -181,14 +149,11 @@ static inline void set_op_state_purged(struct orangefs_kernel_op_s *op)
 	}
 }
 
-/* per inode private orangefs info */
+
 struct orangefs_inode_s {
 	struct orangefs_object_kref refn;
 	char link_target[ORANGEFS_NAME_MAX];
-	/*
-	 * Reading/Writing Extended attributes need to acquire the appropriate
-	 * reader/writer semaphore on the orangefs_inode_s structure.
-	 */
+	
 	struct rw_semaphore xattr_sem;
 
 	struct inode vfs_inode;
@@ -204,7 +169,7 @@ struct orangefs_inode_s {
 	DECLARE_HASHTABLE(xattr_cache, 4);
 };
 
-/* per superblock private orangefs info */
+
 struct orangefs_sb_info_s {
 	struct orangefs_khandle root_khandle;
 	__s32 fs_id;
@@ -243,10 +208,7 @@ struct orangefs_write_range {
 
 extern struct orangefs_stats orangefs_stats;
 
-/*
- * NOTE: See Documentation/filesystems/porting.rst for information
- * on implementing FOO_I and properly accessing fs private data
- */
+
 static inline struct orangefs_inode_s *ORANGEFS_I(struct inode *inode)
 {
 	return container_of(inode, struct orangefs_inode_s, vfs_inode);
@@ -257,7 +219,7 @@ static inline struct orangefs_sb_info_s *ORANGEFS_SB(struct super_block *sb)
 	return (struct orangefs_sb_info_s *) sb->s_fs_info;
 }
 
-/* ino_t descends from "unsigned long", 8 bytes, 64 bits. */
+
 static inline ino_t orangefs_khandle_to_ino(struct orangefs_khandle *khandle)
 {
 	union {
@@ -312,9 +274,7 @@ static inline int match_handle(struct orangefs_khandle resp_handle,
 		return 1;
 }
 
-/*
- * defined in orangefs-cache.c
- */
+
 int op_cache_initialize(void);
 int op_cache_finalize(void);
 struct orangefs_kernel_op_s *op_alloc(__s32 type);
@@ -324,19 +284,13 @@ char *get_opname_string(struct orangefs_kernel_op_s *new_op);
 int orangefs_inode_cache_initialize(void);
 int orangefs_inode_cache_finalize(void);
 
-/*
- * defined in orangefs-mod.c
- */
+
 void purge_inprogress_ops(void);
 
-/*
- * defined in waitqueue.c
- */
+
 void purge_waiting_ops(void);
 
-/*
- * defined in super.c
- */
+
 extern uint64_t orangefs_features;
 
 struct dentry *orangefs_mount(struct file_system_type *fst,
@@ -350,9 +304,7 @@ int orangefs_remount(struct orangefs_sb_info_s *);
 int fsid_key_table_initialize(void);
 void fsid_key_table_finalize(void);
 
-/*
- * defined in inode.c
- */
+
 vm_fault_t orangefs_page_mkwrite(struct vm_fault *);
 struct inode *orangefs_new_inode(struct super_block *sb,
 			      struct inode *dir,
@@ -372,20 +324,14 @@ int orangefs_permission(struct mnt_idmap *idmap,
 
 int orangefs_update_time(struct inode *, int);
 
-/*
- * defined in xattr.c
- */
+
 ssize_t orangefs_listxattr(struct dentry *dentry, char *buffer, size_t size);
 
-/*
- * defined in namei.c
- */
+
 struct inode *orangefs_iget(struct super_block *sb,
 			 struct orangefs_object_kref *ref);
 
-/*
- * defined in devorangefs-req.c
- */
+
 extern uint32_t orangefs_userspace_version;
 
 int orangefs_dev_init(void);
@@ -393,9 +339,7 @@ void orangefs_dev_cleanup(void);
 int is_daemon_in_service(void);
 bool __is_daemon_in_service(void);
 
-/*
- * defined in file.c
- */
+
 int orangefs_revalidate_mapping(struct inode *);
 ssize_t wait_for_direct_io(enum ORANGEFS_io_type, struct inode *, loff_t *,
     struct iov_iter *, size_t, loff_t, struct orangefs_write_range *, int *,
@@ -403,9 +347,7 @@ ssize_t wait_for_direct_io(enum ORANGEFS_io_type, struct inode *, loff_t *,
 ssize_t do_readv_writev(enum ORANGEFS_io_type, struct file *, loff_t *,
     struct iov_iter *);
 
-/*
- * defined in orangefs-utils.c
- */
+
 __s32 fsid_of_op(struct orangefs_kernel_op_s *op);
 
 ssize_t orangefs_inode_getxattr(struct inode *inode,
@@ -453,15 +395,13 @@ extern const struct inode_operations orangefs_dir_inode_operations;
 extern const struct file_operations orangefs_dir_operations;
 extern const struct dentry_operations orangefs_dentry_operations;
 
-/*
- * misc convenience macros
- */
 
-#define ORANGEFS_OP_INTERRUPTIBLE 1   /* service_operation() is interruptible */
-#define ORANGEFS_OP_PRIORITY      2   /* service_operation() is high priority */
-#define ORANGEFS_OP_CANCELLATION  4   /* this is a cancellation */
-#define ORANGEFS_OP_NO_MUTEX      8   /* don't acquire request_mutex */
-#define ORANGEFS_OP_ASYNC         16  /* Queue it, but don't wait */
+
+#define ORANGEFS_OP_INTERRUPTIBLE 1   
+#define ORANGEFS_OP_PRIORITY      2   
+#define ORANGEFS_OP_CANCELLATION  4   
+#define ORANGEFS_OP_NO_MUTEX      8   
+#define ORANGEFS_OP_ASYNC         16  
 #define ORANGEFS_OP_WRITEBACK     32
 
 int service_operation(struct orangefs_kernel_op_s *op,
@@ -490,4 +430,4 @@ static inline void orangefs_set_timeout(struct dentry *dentry)
 	dentry->d_fsdata = (void *) time;
 }
 
-#endif /* __ORANGEFSKERNEL_H */
+#endif 

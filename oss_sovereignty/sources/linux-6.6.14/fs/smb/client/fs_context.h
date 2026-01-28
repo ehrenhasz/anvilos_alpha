@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2020, Microsoft Corporation.
- *
- *   Author(s): Steve French <stfrench@microsoft.com>
- *              David Howells <dhowells@redhat.com>
- */
+
+
 
 #ifndef _FS_CONTEXT_H
 #define _FS_CONTEXT_H
@@ -13,7 +8,7 @@
 #include <linux/parser.h>
 #include <linux/fs_parser.h>
 
-/* Log errors in fs_context (new mount api) but also in dmesg (old style) */
+
 #define cifs_errorf(fc, fmt, ...)			\
 	do {						\
 		errorf(fc, fmt, ## __VA_ARGS__);	\
@@ -55,7 +50,7 @@ enum cifs_sec_param {
 };
 
 enum cifs_param {
-	/* Mount options that take no arguments */
+	
 	Opt_user_xattr,
 	Opt_forceuid,
 	Opt_forcegid,
@@ -108,7 +103,7 @@ enum cifs_param {
 	Opt_compress,
 	Opt_witness,
 
-	/* Mount options which take numeric value */
+	
 	Opt_backupuid,
 	Opt_backupgid,
 	Opt_uid,
@@ -133,7 +128,7 @@ enum cifs_param {
 	Opt_max_channels,
 	Opt_handletimeout,
 
-	/* Mount options which take string value */
+	
 	Opt_source,
 	Opt_user,
 	Opt_pass,
@@ -148,7 +143,7 @@ enum cifs_param {
 	Opt_sec,
 	Opt_cache,
 
-	/* Mount options to be ignored */
+	
 	Opt_ignore,
 
 	Opt_err
@@ -174,9 +169,9 @@ struct smb3_fs_context {
 	char *UNC;
 	char *nodename;
 	char workstation_name[CIFS_MAX_WORKSTATION_LEN];
-	char *iocharset;  /* local code page for mapping to and from Unicode */
-	char source_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; /* clnt nb name */
-	char target_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; /* srvr nb name */
+	char *iocharset;  
+	char source_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; 
+	char target_rfc1001_name[RFC1001_NAME_LEN_WITH_NULL]; 
 	kuid_t cred_uid;
 	kuid_t linux_uid;
 	kgid_t linux_gid;
@@ -184,8 +179,8 @@ struct smb3_fs_context {
 	kgid_t backupgid;
 	umode_t file_mode;
 	umode_t dir_mode;
-	enum securityEnum sectype; /* sectype requested via mnt opts */
-	bool sign; /* was signing requested via mnt opts? */
+	enum securityEnum sectype; 
+	bool sign; 
 	bool ignore_signature:1;
 	bool retry:1;
 	bool intr:1;
@@ -197,48 +192,48 @@ struct smb3_fs_context {
 	bool noperm:1;
 	bool nodelete:1;
 	bool mode_ace:1;
-	bool no_psx_acl:1; /* set if posix acl support should be disabled */
+	bool no_psx_acl:1; 
 	bool cifs_acl:1;
-	bool backupuid_specified; /* mount option  backupuid  is specified */
-	bool backupgid_specified; /* mount option  backupgid  is specified */
-	bool no_xattr:1;   /* set if xattr (EA) support should be disabled*/
-	bool server_ino:1; /* use inode numbers from server ie UniqueId */
+	bool backupuid_specified; 
+	bool backupgid_specified; 
+	bool no_xattr:1;   
+	bool server_ino:1; 
 	bool direct_io:1;
-	bool strict_io:1; /* strict cache behavior */
+	bool strict_io:1; 
 	bool cache_ro:1;
 	bool cache_rw:1;
-	bool remap:1;      /* set to remap seven reserved chars in filenames */
-	bool sfu_remap:1;  /* remap seven reserved chars ala SFU */
-	bool posix_paths:1; /* unset to not ask for posix pathnames. */
+	bool remap:1;      
+	bool sfu_remap:1;  
+	bool posix_paths:1; 
 	bool no_linux_ext:1;
 	bool linux_ext:1;
 	bool sfu_emul:1;
-	bool nullauth:1;   /* attempt to authenticate with null user */
-	bool nocase:1;     /* request case insensitive filenames */
-	bool nobrl:1;      /* disable sending byte range locks to srv */
-	bool nohandlecache:1; /* disable caching dir handles if srvr probs */
-	bool mand_lock:1;  /* send mandatory not posix byte range lock reqs */
-	bool seal:1;       /* request transport encryption on share */
-	bool nodfs:1;      /* Do not request DFS, even if available */
-	bool local_lease:1; /* check leases only on local system, not remote */
+	bool nullauth:1;   
+	bool nocase:1;     
+	bool nobrl:1;      
+	bool nohandlecache:1; 
+	bool mand_lock:1;  
+	bool seal:1;       
+	bool nodfs:1;      
+	bool local_lease:1; 
 	bool noblocksnd:1;
 	bool noautotune:1;
-	bool nostrictsync:1; /* do not force expensive SMBflush on every sync */
-	bool no_lease:1;     /* disable requesting leases */
-	bool no_sparse:1;    /* do not attempt to set files sparse */
-	bool fsc:1;	/* enable fscache */
-	bool mfsymlinks:1; /* use Minshall+French Symlinks */
+	bool nostrictsync:1; 
+	bool no_lease:1;     
+	bool no_sparse:1;    
+	bool fsc:1;	
+	bool mfsymlinks:1; 
 	bool multiuser:1;
-	bool rwpidforward:1; /* pid forward for read/write operations */
+	bool rwpidforward:1; 
 	bool nosharesock:1;
 	bool persistent:1;
 	bool nopersistent:1;
-	bool resilient:1; /* noresilient not required since not fored for CA */
+	bool resilient:1; 
 	bool domainauto:1;
 	bool rdma:1;
 	bool multichannel:1;
 	bool use_client_guid:1;
-	/* reuse existing guid for multichannel */
+	
 	u8 client_guid[SMB2_CLIENT_GUID_SIZE];
 	unsigned int bsize;
 	unsigned int rasize;
@@ -246,29 +241,29 @@ struct smb3_fs_context {
 	unsigned int wsize;
 	unsigned int min_offload;
 	bool sockopt_tcp_nodelay:1;
-	/* attribute cache timemout for files and directories in jiffies */
+	
 	unsigned long acregmax;
 	unsigned long acdirmax;
-	/* timeout for deferred close of files in jiffies */
+	
 	unsigned long closetimeo;
 	struct smb_version_operations *ops;
 	struct smb_version_values *vals;
 	char *prepath;
-	struct sockaddr_storage dstaddr; /* destination address */
-	struct sockaddr_storage srcaddr; /* allow binding to a local IP */
-	struct nls_table *local_nls; /* This is a copy of the pointer in cifs_sb */
-	unsigned int echo_interval; /* echo interval in secs */
-	__u64 snapshot_time; /* needed for timewarp tokens */
-	__u32 handle_timeout; /* persistent and durable handle timeout in ms */
-	unsigned int max_credits; /* smb3 max_credits 10 < credits < 60000 */
+	struct sockaddr_storage dstaddr; 
+	struct sockaddr_storage srcaddr; 
+	struct nls_table *local_nls; 
+	unsigned int echo_interval; 
+	__u64 snapshot_time; 
+	__u32 handle_timeout; 
+	unsigned int max_credits; 
 	unsigned int max_channels;
 	unsigned int max_cached_dirs;
-	__u16 compression; /* compression algorithm 0xFFFF default 0=disabled */
-	bool rootfs:1; /* if it's a SMB root file system */
-	bool witness:1; /* use witness protocol */
+	__u16 compression; 
+	bool rootfs:1; 
+	bool witness:1; 
 	char *leaf_fullpath;
 	struct cifs_ses *dfs_root_ses;
-	bool dfs_automount:1; /* set for dfs automount only */
+	bool dfs_automount:1; 
 };
 
 extern const struct fs_parameter_spec smb3_fs_parameters[];
@@ -285,11 +280,9 @@ static inline struct smb3_fs_context *smb3_fc2context(const struct fs_context *f
 extern int smb3_fs_context_dup(struct smb3_fs_context *new_ctx, struct smb3_fs_context *ctx);
 extern void smb3_update_mnt_flags(struct cifs_sb_info *cifs_sb);
 
-/*
- * max deferred close timeout (jiffies) - 2^30
- */
+
 #define SMB3_MAX_DCLOSETIMEO (1 << 30)
-#define SMB3_DEF_DCLOSETIMEO (1 * HZ) /* even 1 sec enough to help eg open/write/close/open/read */
+#define SMB3_DEF_DCLOSETIMEO (1 * HZ) 
 #define MAX_CACHED_FIDS 16
 extern char *cifs_sanitize_prepath(char *prepath, gfp_t gfp);
 

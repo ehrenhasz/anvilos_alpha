@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the tablet drivers
-#
+
+
+
+
 
 
 obj-$(CONFIG_TABLET_USB_ACECAD)	+= acecad.o

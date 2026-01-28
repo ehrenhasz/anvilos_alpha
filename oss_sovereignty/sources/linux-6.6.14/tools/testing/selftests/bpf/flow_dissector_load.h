@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
 #ifndef FLOW_DISSECTOR_LOAD
 #define FLOW_DISSECTOR_LOAD
 
@@ -65,4 +65,4 @@ static inline int bpf_flow_load(struct bpf_object **obj,
 	return 0;
 }
 
-#endif /* FLOW_DISSECTOR_LOAD */
+#endif 

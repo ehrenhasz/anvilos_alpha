@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Definitions for the 'struct skb_array' datastructure.
- *
- *	Author:
- *		Michael S. Tsirkin <mst@redhat.com>
- *
- *	Copyright (C) 2016 Red Hat, Inc.
- *
- *	Limited-size FIFO of skbs. Can be used more or less whenever
- *	sk_buff_head can be used, except you need to know the queue size in
- *	advance.
- *	Implemented as a type-safe wrapper around ptr_ring.
- */
+
+
 
 #ifndef _LINUX_SKB_ARRAY_H
 #define _LINUX_SKB_ARRAY_H 1
@@ -26,9 +14,7 @@ struct skb_array {
 	struct ptr_ring ring;
 };
 
-/* Might be slightly faster than skb_array_full below, but callers invoking
- * this in a loop must use a compiler barrier, for example cpu_relax().
- */
+
 static inline bool __skb_array_full(struct skb_array *a)
 {
 	return __ptr_ring_full(&a->ring);
@@ -59,10 +45,7 @@ static inline int skb_array_produce_any(struct skb_array *a, struct sk_buff *skb
 	return ptr_ring_produce_any(&a->ring, skb);
 }
 
-/* Might be slightly faster than skb_array_empty below, but only safe if the
- * array is never resized. Also, callers invoking this in a loop must take care
- * to use a compiler barrier, for example cpu_relax().
- */
+
 static inline bool __skb_array_empty(struct skb_array *a)
 {
 	return __ptr_ring_empty(&a->ring);
@@ -213,4 +196,4 @@ static inline void skb_array_cleanup(struct skb_array *a)
 	ptr_ring_cleanup(&a->ring, __skb_array_destroy_skb);
 }
 
-#endif /* _LINUX_SKB_ARRAY_H  */
+#endif 

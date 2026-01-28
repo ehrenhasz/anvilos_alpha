@@ -1,32 +1,8 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2022 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_RP2_CYW43_CONFIGPORT_H
 #define MICROPY_INCLUDED_RP2_CYW43_CONFIGPORT_H
 
-// The board-level config will be included here, so it can set some CYW43 values.
+
 #include "py/mpconfig.h"
 #include "py/mperrno.h"
 #include "py/mphal.h"
@@ -40,10 +16,10 @@
 #define CYW43_NETUTILS                  (1)
 #define CYW43_USE_OTP_MAC               (1)
 
-#define CYW43_EPERM                     MP_EPERM // Operation not permitted
-#define CYW43_EIO                       MP_EIO // I/O error
-#define CYW43_EINVAL                    MP_EINVAL // Invalid argument
-#define CYW43_ETIMEDOUT                 MP_ETIMEDOUT // Connection timed out
+#define CYW43_EPERM                     MP_EPERM 
+#define CYW43_EIO                       MP_EIO 
+#define CYW43_EINVAL                    MP_EINVAL 
+#define CYW43_ETIMEDOUT                 MP_ETIMEDOUT 
 
 #define CYW43_THREAD_ENTER              MICROPY_PY_LWIP_ENTER
 #define CYW43_THREAD_EXIT               MICROPY_PY_LWIP_EXIT
@@ -71,7 +47,7 @@
 
 #define CYW43_HAL_MAC_WLAN0             MP_HAL_MAC_WLAN0
 
-// set in SDK board header
+
 #define CYW43_NUM_GPIOS                 CYW43_WL_GPIO_COUNT
 
 #define CYW43_POST_POLL_HOOK            cyw43_post_poll_hook();
@@ -91,9 +67,9 @@
 
 #define cyw43_schedule_internal_poll_dispatch(func) pendsv_schedule_dispatch(PENDSV_DISPATCH_CYW43, func)
 
-// Bluetooth requires dynamic memory allocation to load its firmware (the allocation
-// call is made from pico-sdk).  This allocation is always done at thread-level, not
-// from an IRQ, so is safe to delegate to the MicroPython GC heap.
+
+
+
 #ifndef cyw43_malloc
 #define cyw43_malloc(nmemb) m_tracked_calloc(nmemb, 1)
 #endif
@@ -122,4 +98,4 @@ static inline void cyw43_delay_ms(uint32_t ms) {
 
 #define CYW43_EVENT_POLL_HOOK mp_event_handle_nowait()
 
-#endif // MICROPY_INCLUDED_RP2_CYW43_CONFIGPORT_H
+#endif 

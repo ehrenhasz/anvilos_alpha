@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2013  Horms Solutions Ltd.
- *
- * Contact: Simon Horman <horms@verge.net.au>
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_R8A7779_H__
 #define __DT_BINDINGS_CLOCK_R8A7779_H__
 
-/* CPG */
+
 #define R8A7779_CLK_PLLA	0
 #define R8A7779_CLK_Z		1
 #define R8A7779_CLK_ZS		2
@@ -18,7 +14,7 @@
 #define R8A7779_CLK_B		6
 #define R8A7779_CLK_OUT		7
 
-/* MSTP 0 */
+
 #define R8A7779_CLK_PWM		5
 #define R8A7779_CLK_HSPI	7
 #define R8A7779_CLK_TMU2	14
@@ -37,7 +33,7 @@
 #define R8A7779_CLK_I2C1	29
 #define R8A7779_CLK_I2C0	30
 
-/* MSTP 1 */
+
 #define R8A7779_CLK_USB01	0
 #define R8A7779_CLK_USB2	1
 #define R8A7779_CLK_DU		3
@@ -49,7 +45,7 @@
 #define R8A7779_CLK_PCIE	16
 #define R8A7779_CLK_VIN3	20
 
-/* MSTP 3 */
+
 #define R8A7779_CLK_SDHI3	20
 #define R8A7779_CLK_SDHI2	21
 #define R8A7779_CLK_SDHI1	22
@@ -58,4 +54,4 @@
 #define R8A7779_CLK_MMC0	31
 
 
-#endif /* __DT_BINDINGS_CLOCK_R8A7779_H__ */
+#endif 

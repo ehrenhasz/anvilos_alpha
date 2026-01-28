@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+
 
 #ifndef MEMORY_TEGRA_MC_H
 #define MEMORY_TEGRA_MC_H
@@ -201,12 +199,9 @@ irqreturn_t tegra30_mc_handle_irq(int irq, void *data);
 extern const char * const tegra_mc_status_names[32];
 extern const char * const tegra_mc_error_names[8];
 
-/*
- * These IDs are for internal use of Tegra ICC drivers. The ID numbers are
- * chosen such that they don't conflict with the device-tree ICC node IDs.
- */
+
 #define TEGRA_ICC_MC		1000
 #define TEGRA_ICC_EMC		1001
 #define TEGRA_ICC_EMEM		1002
 
-#endif /* MEMORY_TEGRA_MC_H */
+#endif 

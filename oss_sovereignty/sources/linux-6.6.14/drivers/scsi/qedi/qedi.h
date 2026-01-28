@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
+
+
 
 #ifndef _QEDI_H_
 #define _QEDI_H_
@@ -31,9 +28,7 @@ struct qedi_endpoint;
 	(((value) & (name ## _MASK)) >> (name ## _OFFSET))
 #endif
 
-/*
- * PCI function probe defines
- */
+
 #define QEDI_MODE_NORMAL	0
 #define QEDI_MODE_RECOVERY	1
 #define QEDI_MODE_SHUTDOWN	2
@@ -42,14 +37,14 @@ struct qedi_endpoint;
 #define QEDI_MAX_ISCSI_TASK		4096
 #define QEDI_MAX_TASK_NUM		0x0FFF
 #define QEDI_MAX_ISCSI_CONNS_PER_HBA	1024
-#define QEDI_ISCSI_MAX_BDS_PER_CMD	255	/* Firmware max BDs is 255 */
+#define QEDI_ISCSI_MAX_BDS_PER_CMD	255	
 #define MAX_OUTSTANDING_TASKS_PER_CON	1024
 
 #define QEDI_MAX_BD_LEN		0xffff
 #define QEDI_BD_SPLIT_SZ	0x1000
 #define QEDI_PAGE_SIZE		4096
 #define QEDI_FAST_SGE_COUNT	4
-/* MAX Length for cached SGL */
+
 #define MAX_SGLEN_FOR_CACHESGL	((1U << 16) - 1)
 
 #define MIN_NUM_CPUS_MSIX(x)	min_t(u32, x->dev_info.num_cqs, \
@@ -78,23 +73,23 @@ struct qedi_nvm_iscsi_image {
 };
 
 struct qedi_uio_ctrl {
-	/* meta data */
+	
 	u32 uio_hsi_version;
 
-	/* user writes */
+	
 	u32 host_tx_prod;
 	u32 host_rx_cons;
 	u32 host_rx_bd_cons;
 	u32 host_tx_pkt_len;
 	u32 host_rx_cons_cnt;
 
-	/* driver writes */
+	
 	u32 hw_tx_cons;
 	u32 hw_rx_prod;
 	u32 hw_rx_bd_prod;
 	u32 hw_rx_prod_cnt;
 
-	/* other */
+	
 	u8 mac_addr[6];
 	u8 reserve[2];
 };
@@ -133,30 +128,30 @@ struct qedi_uio_dev {
 	void			*uctrl;
 };
 
-/* List to maintain the skb pointers */
+
 struct skb_work_list {
 	struct list_head list;
 	struct sk_buff *skb;
 	u16 vlan_id;
 };
 
-/* Queue sizes in number of elements */
+
 #define QEDI_SQ_SIZE		MAX_OUTSTANDING_TASKS_PER_CON
 #define QEDI_CQ_SIZE		2048
 #define QEDI_CMDQ_SIZE		QEDI_MAX_ISCSI_TASK
 #define QEDI_PROTO_CQ_PROD_IDX	0
 
 struct qedi_glbl_q_params {
-	u64 hw_p_cq;	/* Completion queue PBL */
-	u64 hw_p_rq;	/* Request queue PBL */
-	u64 hw_p_cmdq;	/* Command queue PBL */
+	u64 hw_p_cq;	
+	u64 hw_p_rq;	
+	u64 hw_p_cmdq;	
 };
 
 struct global_queue {
 	union iscsi_cqe *cq;
 	dma_addr_t cq_dma;
 	u32 cq_mem_size;
-	u32 cq_cons_idx; /* Completion queue consumer index */
+	u32 cq_cons_idx; 
 
 	void *cq_pbl;
 	dma_addr_t cq_pbl_dma;
@@ -172,26 +167,14 @@ struct qedi_fastpath {
 	struct qedi_ctx         *qedi;
 };
 
-/* Used to pass fastpath information needed to process CQEs */
+
 struct qedi_io_work {
 	struct list_head list;
 	struct iscsi_cqe_solicited cqe;
 	u16	que_idx;
 };
 
-/**
- * struct iscsi_cid_queue - Per adapter iscsi cid queue
- *
- * @cid_que_base:           queue base memory
- * @cid_que:                queue memory pointer
- * @cid_q_prod_idx:         produce index
- * @cid_q_cons_idx:         consumer index
- * @cid_q_max_idx:          max index. used to detect wrap around condition
- * @cid_free_cnt:           queue size
- * @conn_cid_tbl:           iscsi cid to conn structure mapping table
- *
- * Per adapter iSCSI CID Queue
- */
+
 struct iscsi_cid_queue {
 	void *cid_que_base;
 	u32 *cid_que;
@@ -203,7 +186,7 @@ struct iscsi_cid_queue {
 };
 
 struct qedi_portid_tbl {
-	spinlock_t      lock;	/* Port id lock */
+	spinlock_t      lock;	
 	u16             start;
 	u16             max;
 	u16             next;
@@ -215,7 +198,7 @@ struct qedi_itt_map {
 	struct qedi_cmd *p_cmd;
 };
 
-/* I/O tracing entry */
+
 #define QEDI_IO_TRACE_SIZE             2048
 struct qedi_io_log {
 #define QEDI_IO_TRACE_REQ              0
@@ -223,42 +206,38 @@ struct qedi_io_log {
 	u8 direction;
 	u16 task_id;
 	u32 cid;
-	u32 port_id;	/* Remote port fabric ID */
+	u32 port_id;	
 	int lun;
-	u8 op;		/* SCSI CDB */
+	u8 op;		
 	u8 lba[4];
-	unsigned int bufflen;	/* SCSI buffer length */
-	unsigned int sg_count;	/* Number of SG elements */
-	u8 fast_sgs;		/* number of fast sgls */
-	u8 slow_sgs;		/* number of slow sgls */
-	u8 cached_sgs;		/* number of cached sgls */
-	int result;		/* Result passed back to mid-layer */
-	unsigned long jiffies;	/* Time stamp when I/O logged */
-	int refcount;		/* Reference count for task id */
-	unsigned int blk_req_cpu; /* CPU that the task is queued on by
-				   * blk layer
-				   */
-	unsigned int req_cpu;	/* CPU that the task is queued on */
-	unsigned int intr_cpu;	/* Interrupt CPU that the task is received on */
-	unsigned int blk_rsp_cpu;/* CPU that task is actually processed and
-				  * returned to blk layer
-				  */
+	unsigned int bufflen;	
+	unsigned int sg_count;	
+	u8 fast_sgs;		
+	u8 slow_sgs;		
+	u8 cached_sgs;		
+	int result;		
+	unsigned long jiffies;	
+	int refcount;		
+	unsigned int blk_req_cpu; 
+	unsigned int req_cpu;	
+	unsigned int intr_cpu;	
+	unsigned int blk_rsp_cpu;
 	bool cached_sge;
 	bool slow_sge;
 	bool fast_sge;
 };
 
-/* Number of entries in BDQ */
+
 #define QEDI_BDQ_NUM		256
 #define QEDI_BDQ_BUF_SIZE	256
 
-/* DMA coherent buffers for BDQ */
+
 struct qedi_bdq_buf {
 	void *buf_addr;
 	dma_addr_t buf_dma;
 };
 
-/* Main port level struct */
+
 struct qedi_ctx {
 	struct qedi_dbg_ctx dbg_ctx;
 	struct Scsi_Host *shost;
@@ -268,11 +247,11 @@ struct qedi_ctx {
 	struct qed_int_info int_info;
 	struct qedi_glbl_q_params *p_cpuq;
 	struct global_queue **global_queues;
-	/* uio declaration */
+	
 	struct qedi_uio_dev *udev;
 	struct list_head ll2_skb_list;
-	spinlock_t ll2_lock;	/* Light L2 lock */
-	spinlock_t hba_lock;	/* per port lock */
+	spinlock_t ll2_lock;	
+	spinlock_t hba_lock;	
 	struct task_struct *ll2_recv_thread;
 	unsigned long qedi_err_flags;
 #define QEDI_ERR_ATTN_CLR_EN	0
@@ -290,7 +269,7 @@ struct qedi_ctx {
 	u32 src_ip[4];
 	u8 ip_type;
 
-	/* Physical address of above array */
+	
 	dma_addr_t hw_p_cpuq;
 
 	struct qedi_bdq_buf bdq[QEDI_BDQ_NUM];
@@ -316,7 +295,7 @@ struct qedi_ctx {
 	struct qedi_endpoint **ep_tbl;
 	struct qedi_portid_tbl lcl_port_tbl;
 
-	/* Rx fast path intr context */
+	
 	struct qed_sb_info	*sb_array;
 	struct qedi_fastpath	*fp_array;
 	struct qed_iscsi_tid	tasks;
@@ -342,12 +321,12 @@ struct qedi_ctx {
 	struct delayed_work recovery_work;
 	struct delayed_work board_disable_work;
 
-	spinlock_t task_idx_lock;	/* To protect gbl context */
+	spinlock_t task_idx_lock;	
 	s32 last_tidx_alloc;
 	s32 last_tidx_clear;
 
 	struct qedi_io_log io_trace_buf[QEDI_IO_TRACE_SIZE];
-	spinlock_t io_trace_lock;	/* prtect trace Log buf */
+	spinlock_t io_trace_lock;	
 	u16 io_trace_idx;
 	unsigned int intr_cpu;
 	u32 cached_sgls;
@@ -363,7 +342,7 @@ struct qedi_ctx {
 #define IPV4_LEN	17
 	struct iscsi_boot_kset *boot_kset;
 
-	/* Used for iscsi statistics */
+	
 	struct mutex stats_lock;
 };
 
@@ -378,7 +357,7 @@ struct qedi_work {
 struct qedi_percpu_s {
 	struct task_struct *iothread;
 	struct list_head work_list;
-	spinlock_t p_work_lock;		/* Per cpu worker lock */
+	spinlock_t p_work_lock;		
 };
 
 static inline void *qedi_get_task_mem(struct qed_iscsi_tid *info, u32 tid)
@@ -390,4 +369,4 @@ static inline void *qedi_get_task_mem(struct qed_iscsi_tid *info, u32 tid)
 #define QEDI_U64_HI(val) ((u32)(((u64)(val)) >> 32))
 #define QEDI_U64_LO(val) ((u32)(((u64)(val)) & 0xffffffff))
 
-#endif /* _QEDI_H_ */
+#endif 

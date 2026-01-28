@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
+
+
 
 #ifndef _NET_BATMAN_ADV_SEND_H_
 #define _NET_BATMAN_ADV_SEND_H_
@@ -66,19 +63,7 @@ int batadv_send_skb_via_tt_generic(struct batadv_priv *bat_priv,
 int batadv_send_skb_via_gw(struct batadv_priv *bat_priv, struct sk_buff *skb,
 			   unsigned short vid);
 
-/**
- * batadv_send_skb_via_tt() - send an skb via TT lookup
- * @bat_priv: the bat priv with all the soft interface information
- * @skb: the payload to send
- * @dst_hint: can be used to override the destination contained in the skb
- * @vid: the vid to be used to search the translation table
- *
- * Look up the recipient node for the destination address in the ethernet
- * header via the translation table. Wrap the given skb into a batman-adv
- * unicast header. Then send this frame to the according destination node.
- *
- * Return: NET_XMIT_DROP in case of error or NET_XMIT_SUCCESS otherwise.
- */
+
 static inline int batadv_send_skb_via_tt(struct batadv_priv *bat_priv,
 					 struct sk_buff *skb, u8 *dst_hint,
 					 unsigned short vid)
@@ -87,21 +72,7 @@ static inline int batadv_send_skb_via_tt(struct batadv_priv *bat_priv,
 					      dst_hint, vid);
 }
 
-/**
- * batadv_send_skb_via_tt_4addr() - send an skb via TT lookup
- * @bat_priv: the bat priv with all the soft interface information
- * @skb: the payload to send
- * @packet_subtype: the unicast 4addr packet subtype to use
- * @dst_hint: can be used to override the destination contained in the skb
- * @vid: the vid to be used to search the translation table
- *
- * Look up the recipient node for the destination address in the ethernet
- * header via the translation table. Wrap the given skb into a batman-adv
- * unicast-4addr header. Then send this frame to the according destination
- * node.
- *
- * Return: NET_XMIT_DROP in case of error or NET_XMIT_SUCCESS otherwise.
- */
+
 static inline int batadv_send_skb_via_tt_4addr(struct batadv_priv *bat_priv,
 					       struct sk_buff *skb,
 					       int packet_subtype,
@@ -113,4 +84,4 @@ static inline int batadv_send_skb_via_tt_4addr(struct batadv_priv *bat_priv,
 					      packet_subtype, dst_hint, vid);
 }
 
-#endif /* _NET_BATMAN_ADV_SEND_H_ */
+#endif 

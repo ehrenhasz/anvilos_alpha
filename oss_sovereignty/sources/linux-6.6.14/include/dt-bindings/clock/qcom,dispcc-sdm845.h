@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_SDM_DISP_CC_SDM845_H
 #define _DT_BINDINGS_CLK_SDM_DISP_CC_SDM845_H
 
-/* DISP_CC clock registers */
+
 #define DISP_CC_MDSS_AHB_CLK					0
 #define DISP_CC_MDSS_AXI_CLK					1
 #define DISP_CC_MDSS_BYTE0_CLK					2
@@ -47,10 +45,10 @@
 #define DISP_CC_MDSS_DP_PIXEL_CLK				37
 #define DISP_CC_MDSS_DP_PIXEL_CLK_SRC				38
 
-/* DISP_CC Reset */
+
 #define DISP_CC_MDSS_RSCC_BCR					0
 
-/* DISP_CC GDSCR */
+
 #define MDSS_GDSC						0
 
 #endif

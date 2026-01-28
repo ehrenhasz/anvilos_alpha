@@ -166,15 +166,15 @@ class SystemValues(aslib.SystemValues):
 		fp = open(filename, 'w')
 		fp.write(self.teststamp+'\n')
 		fp.write(self.sysstamp+'\n')
-		fp.write('# command | %s\n' % self.cmdline)
-		fp.write('# kparams | %s\n' % self.kparams)
+		fp.write('
+		fp.write('
 		fp.close()
 sysvals = SystemValues()
 class Data(aslib.Data):
-	dmesg = {}  # root data structure
-	start = 0.0 # test start
-	end = 0.0   # test end
-	dmesgtext = []   # dmesg text file in memory
+	dmesg = {}  
+	start = 0.0 
+	end = 0.0   
+	dmesgtext = []   
 	testnumber = 0
 	idstr = ''
 	html_device_id = 0
@@ -189,9 +189,9 @@ class Data(aslib.Data):
 		self.dmesgtext = []
 		self.dmesg = {
 			'kernel': {'list': dict(), 'start': -1.0, 'end': -1.0, 'row': 0,
-				'order': 0, 'color': 'linear-gradient(to bottom, #fff, #bcf)'},
+				'order': 0, 'color': 'linear-gradient(to bottom, 
 			'user': {'list': dict(), 'start': -1.0, 'end': -1.0, 'row': 0,
-				'order': 1, 'color': '#fff'}
+				'order': 1, 'color': '
 		}
 	def deviceTopology(self):
 		return ''
@@ -338,7 +338,7 @@ def parseTraceLog(data):
 	tp.setTracerType('function_graph')
 	tf = open(sysvals.ftracefile, 'r')
 	for line in tf:
-		if line[0] == '#':
+		if line[0] == '
 			continue
 		m = re.match(tp.ftrace_line_fmt, line.strip())
 		if(not m):
@@ -407,16 +407,16 @@ def retrieveLogs():
 	call('cat '+sysvals.tpath+'trace >> '+sysvals.ftracefile, shell=True)
 def colorForName(name):
 	list = [
-		('c1', '#ec9999'),
-		('c2', '#ffc1a6'),
-		('c3', '#fff0a6'),
-		('c4', '#adf199'),
-		('c5', '#9fadea'),
-		('c6', '#a699c1'),
-		('c7', '#ad99b4'),
-		('c8', '#eaffea'),
-		('c9', '#dcecfb'),
-		('c10', '#ffffea')
+		('c1', '
+		('c2', '
+		('c3', '
+		('c4', '
+		('c5', '
+		('c6', '
+		('c7', '
+		('c8', '
+		('c9', '
+		('c10', '
 	]
 	i = 0
 	total = 0
@@ -546,7 +546,7 @@ def createBootGraph(data):
 		table.fstat {table-layout:fixed;padding:150px 15px 0 0;font-size:10px;column-width:30px;}\n\
 		.fstat th {width:55px;}\n\
 		.fstat td {text-align:left;width:35px;}\n\
-		.srccall {position:absolute;font-size:10px;z-index:7;overflow:hidden;color:black;text-align:center;white-space:nowrap;border-radius:5px;border:1px solid black;background:linear-gradient(to bottom right,#CCC,#969696);}\n\
+		.srccall {position:absolute;font-size:10px;z-index:7;overflow:hidden;color:black;text-align:center;white-space:nowrap;border-radius:5px;border:1px solid black;background:linear-gradient(to bottom right,
 		.srccall:hover {color:white;font-weight:bold;border:1px solid white;}\n'
 	aslib.addCSS(hf, sysvals, 1, False, extra)
 	hf.write(devtl.html)
@@ -648,7 +648,7 @@ def updateGrub(restore=False):
 		cont = False
 		for line in fp:
 			line = line.strip()
-			if len(line) == 0 or line[0] == '#':
+			if len(line) == 0 or line[0] == '
 				continue
 			opt = line.split('=')[0].strip()
 			if opt == tgtopt:

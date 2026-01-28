@@ -1,4 +1,4 @@
-CPUS_ONLINE=$(lscpu --online -p=cpu|grep -v -e '#')
+CPUS_ONLINE=$(lscpu --online -p=cpu|grep -v -e '
 HOST_AFFINITY=$(echo "${CPUS_ONLINE}"|tail -n 1)
 for cpu in $CPUS_ONLINE
 do

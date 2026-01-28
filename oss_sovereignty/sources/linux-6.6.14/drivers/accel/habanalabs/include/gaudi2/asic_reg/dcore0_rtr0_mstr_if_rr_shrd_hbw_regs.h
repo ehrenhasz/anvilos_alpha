@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_REGS_H_
 #define ASIC_REG_DCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_RTR0_MSTR_IF_RR_SHRD_HBW
- *   (Prototype: RANGE_REG_HBW)
- *****************************************
- */
+
 
 #define mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_SEC_RANGE_MIN_SHORT_LO_0 0x4142000
 
@@ -210,4 +197,4 @@
 
 #define mmDCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_RAZWI_ERR_RESP 0x4142178
 
-#endif /* ASIC_REG_DCORE0_RTR0_MSTR_IF_RR_SHRD_HBW_REGS_H_ */
+#endif 

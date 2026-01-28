@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_PID_SYSCTL_H
 #define LINUX_PID_SYSCTL_H
 
@@ -17,9 +17,9 @@ static int pid_mfd_noexec_dointvec_minmax(struct ctl_table *table,
 
 	table_copy = *table;
 
-	/* You cannot set a lower enforcement value than your parent. */
+	
 	parent_scope = pidns_memfd_noexec_scope(ns->parent);
-	/* Equivalent to pidns_memfd_noexec_scope(ns). */
+	
 	scope = max(READ_ONCE(ns->memfd_noexec_scope), parent_scope);
 
 	table_copy.data = &scope;
@@ -51,4 +51,4 @@ static inline void register_pid_ns_sysctl_table_vm(void)
 static inline void register_pid_ns_sysctl_table_vm(void) {}
 #endif
 
-#endif /* LINUX_PID_SYSCTL_H */
+#endif 

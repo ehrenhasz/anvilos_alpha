@@ -81,6 +81,6 @@ def f(arg):
             print(5)
         print(6)
     print(7)
-f(0) # no exception, else should execute
-f(1) # exception caught, else should be skipped
-f(2) # exception not caught, finally swallows exception, else should be skipped
+f(0) 
+f(1) 
+f(2) 

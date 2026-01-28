@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* thread_info.h: common low-level thread information accessors
- *
- * Copyright (C) 2002  David Howells (dhowells@redhat.com)
- * - Incorporating suggestions made by Linus Torvalds
- */
+
+
 
 #ifndef _LINUX_THREAD_INFO_H
 #define _LINUX_THREAD_INFO_H
@@ -15,21 +11,14 @@
 #include <linux/errno.h>
 
 #ifdef CONFIG_THREAD_INFO_IN_TASK
-/*
- * For CONFIG_THREAD_INFO_IN_TASK kernels we need <asm/current.h> for the
- * definition of current, but for !CONFIG_THREAD_INFO_IN_TASK kernels,
- * including <asm/current.h> can cause a circular dependency on some platforms.
- */
+
 #include <asm/current.h>
 #define current_thread_info() ((struct thread_info *)current)
 #endif
 
 #include <linux/bitops.h>
 
-/*
- * For per-arch arch_within_stack_frames() implementations, defined in
- * asm/thread_info.h.
- */
+
 enum {
 	BAD_STACK = -1,
 	NOT_STACK = 0,
@@ -79,10 +68,7 @@ static inline long set_restart_fn(struct restart_block *restart,
 
 #define THREADINFO_GFP		(GFP_KERNEL_ACCOUNT | __GFP_ZERO)
 
-/*
- * flag set/clear/test wrappers
- * - pass TIF_xxxx constants to these functions
- */
+
 
 static inline void set_ti_thread_flag(struct thread_info *ti, int flag)
 {
@@ -118,10 +104,7 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
 	return test_bit(flag, (unsigned long *)&ti->flags);
 }
 
-/*
- * This may be used in noinstr code, and needs to be __always_inline to prevent
- * inadvertent instrumentation.
- */
+
 static __always_inline unsigned long read_ti_thread_flags(struct thread_info *ti)
 {
 	return READ_ONCE(ti->flags);
@@ -160,7 +143,7 @@ static __always_inline unsigned long read_ti_thread_flags(struct thread_info *ti
 #define clear_task_syscall_work(t, fl) \
 	clear_bit(SYSCALL_WORK_BIT_##fl, &task_thread_info(t)->syscall_work)
 
-#else /* CONFIG_GENERIC_ENTRY */
+#else 
 
 #define set_syscall_work(fl)						\
 	set_ti_thread_flag(current_thread_info(), TIF_##fl)
@@ -175,7 +158,7 @@ static __always_inline unsigned long read_ti_thread_flags(struct thread_info *ti
 	test_ti_thread_flag(task_thread_info(t), TIF_##fl)
 #define clear_task_syscall_work(t, fl) \
 	clear_ti_thread_flag(task_thread_info(t), TIF_##fl)
-#endif /* !CONFIG_GENERIC_ENTRY */
+#endif 
 
 #ifdef _ASM_GENERIC_BITOPS_INSTRUMENTED_NON_ATOMIC_H
 
@@ -193,7 +176,7 @@ static __always_inline bool tif_need_resched(void)
 			(unsigned long *)(&current_thread_info()->flags));
 }
 
-#endif /* _ASM_GENERIC_BITOPS_INSTRUMENTED_NON_ATOMIC_H */
+#endif 
 
 #ifndef CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES
 static inline int arch_within_stack_frames(const void * const stack,
@@ -218,7 +201,7 @@ static __always_inline void check_object_size(const void *ptr, unsigned long n,
 static inline void check_object_size(const void *ptr, unsigned long n,
 				     bool to_user)
 { }
-#endif /* CONFIG_HARDENED_USERCOPY */
+#endif 
 
 extern void __compiletime_error("copy source size is too small")
 __bad_copy_from(void);
@@ -256,11 +239,11 @@ check_copy_size(const void *addr, size_t bytes, bool is_source)
 static inline void arch_setup_new_exec(void) { }
 #endif
 
-void arch_task_cache_init(void); /* for CONFIG_SH */
+void arch_task_cache_init(void); 
 void arch_release_task_struct(struct task_struct *tsk);
 int arch_dup_task_struct(struct task_struct *dst,
 				struct task_struct *src);
 
-#endif	/* __KERNEL__ */
+#endif	
 
-#endif /* _LINUX_THREAD_INFO_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Ltd.
- */
+
+
 
 #ifndef __LINUX_INTERCONNECT_CLK_H
 #define __LINUX_INTERCONNECT_CLK_H

@@ -1,21 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+
 #ifndef __XFS_LINUX__
 #define __XFS_LINUX__
 
 #include <linux/types.h>
 #include <linux/uuid.h>
 
-/*
- * Kernel specific type declarations for XFS
- */
 
-typedef __s64			xfs_off_t;	/* <file offset> type */
-typedef unsigned long long	xfs_ino_t;	/* <inode> type */
-typedef __s64			xfs_daddr_t;	/* <disk address> type */
+
+typedef __s64			xfs_off_t;	
+typedef unsigned long long	xfs_ino_t;	
+typedef __s64			xfs_daddr_t;	
 typedef __u32			xfs_dev_t;
 typedef __u32			xfs_nlink_t;
 
@@ -110,29 +105,22 @@ typedef __u32			xfs_nlink_t;
 #define current_restore_flags_nested(sp, f)	\
 		(current->flags = ((current->flags & ~(f)) | (*(sp) & (f))))
 
-#define NBBY		8		/* number of bits per byte */
+#define NBBY		8		
 
-/*
- * Size of block device i/o is parameterized here.
- * Currently the system supports page-sized i/o.
- */
+
 #define	BLKDEV_IOSHIFT		PAGE_SHIFT
 #define	BLKDEV_IOSIZE		(1<<BLKDEV_IOSHIFT)
-/* number of BB's per block device block */
+
 #define	BLKDEV_BB		BTOBB(BLKDEV_IOSIZE)
 
-#define ENOATTR		ENODATA		/* Attribute not found */
-#define EWRONGFS	EINVAL		/* Mount with wrong filesystem type */
-#define EFSCORRUPTED	EUCLEAN		/* Filesystem is corrupted */
-#define EFSBADCRC	EBADMSG		/* Bad CRC detected */
+#define ENOATTR		ENODATA		
+#define EWRONGFS	EINVAL		
+#define EFSCORRUPTED	EUCLEAN		
+#define EFSBADCRC	EBADMSG		
 
 #define __return_address __builtin_return_address(0)
 
-/*
- * Return the address of a label.  Use barrier() so that the optimizer
- * won't reorder code to refactor the error jumpouts into a single
- * return, which throws off the reported address.
- */
+
 #define __this_address	({ __label__ __here; __here: barrier(); &&__here; })
 
 #define XFS_PROJID_DEFAULT	0
@@ -144,12 +132,7 @@ static inline void delay(long ticks)
 	schedule_timeout_uninterruptible(ticks);
 }
 
-/*
- * XFS wrapper structure for sysfs support. It depends on external data
- * structures and is embedded in various internal data structures to implement
- * the XFS sysfs object heirarchy. Define it here for broad access throughout
- * the codebase.
- */
+
 struct xfs_kobj {
 	struct kobject		kobject;
 	struct completion	complete;
@@ -172,9 +155,7 @@ static inline xfs_dev_t linux_to_xfs_dev_t(dev_t dev)
 	return sysv_encode_dev(dev);
 }
 
-/*
- * Various platform dependent calls that don't fit anywhere else
- */
+
 #define xfs_sort(a,n,s,fn)	sort(a,n,s,fn,NULL)
 #define xfs_stack_trace()	dump_stack()
 
@@ -208,19 +189,19 @@ int xfs_rw_bdev(struct block_device *bdev, sector_t sector, unsigned int count,
 #define ASSERT(expr)	\
 	(likely(expr) ? (void)0 : assfail(NULL, #expr, __FILE__, __LINE__))
 
-#else	/* !DEBUG */
+#else	
 
 #ifdef XFS_WARN
 
 #define ASSERT(expr)	\
 	(likely(expr) ? (void)0 : asswarn(NULL, #expr, __FILE__, __LINE__))
 
-#else	/* !DEBUG && !XFS_WARN */
+#else	
 
 #define ASSERT(expr)		((void)0)
 
-#endif /* XFS_WARN */
-#endif /* DEBUG */
+#endif 
+#endif 
 
 #define XFS_IS_CORRUPT(mp, expr)	\
 	(unlikely(expr) ? xfs_corruption_error(#expr, XFS_ERRLEVEL_LOW, (mp), \
@@ -232,10 +213,7 @@ int xfs_rw_bdev(struct block_device *bdev, sector_t sector, unsigned int count,
 
 #ifdef CONFIG_XFS_RT
 
-/*
- * make sure we ignore the inode flag if the filesystem doesn't have a
- * configured realtime device.
- */
+
 #define XFS_IS_REALTIME_INODE(ip)			\
 	(((ip)->i_diflags & XFS_DIFLAG_REALTIME) &&	\
 	 (ip)->i_mount->m_rtdev_targp)
@@ -245,16 +223,11 @@ int xfs_rw_bdev(struct block_device *bdev, sector_t sector, unsigned int count,
 #define XFS_IS_REALTIME_MOUNT(mp) (0)
 #endif
 
-/*
- * Starting in Linux 4.15, the %p (raw pointer value) printk modifier
- * prints a hashed version of the pointer to avoid leaking kernel
- * pointers into dmesg.  If we're trying to debug the kernel we want the
- * raw values, so override this behavior as best we can.
- */
+
 #ifdef DEBUG
 # define PTR_FMT "%px"
 #else
 # define PTR_FMT "%p"
 #endif
 
-#endif /* __XFS_LINUX__ */
+#endif 

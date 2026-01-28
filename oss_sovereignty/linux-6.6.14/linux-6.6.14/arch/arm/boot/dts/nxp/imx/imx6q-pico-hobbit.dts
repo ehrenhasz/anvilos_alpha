@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "imx6q.dtsi"
-#include "imx6qdl-pico-hobbit.dtsi"
-/ {
-	model = "TechNexion PICO-IMX6 Quad Board and Hobbit baseboard";
-	compatible = "technexion,imx6q-pico-hobbit", "fsl,imx6q";
-};

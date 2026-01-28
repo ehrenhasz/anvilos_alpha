@@ -50,7 +50,7 @@ pymnt_debug_h(void *handler, const char *mesg, ...)
 	fputc('\n', stderr);
 }
 
-#else /* !CONFIG_PYLIBMOUNT_DEBUG */
+#else 
 # define DBG(m,x) do { ; } while (0)
 #endif
 
@@ -62,9 +62,7 @@ pymnt_debug_h(void *handler, const char *mesg, ...)
 #define MEMORY_ERR	strerror(ENOMEM)
 #define CONV_ERR	"Type conversion failed"
 
-/*
- * fs.c
- */
+
 typedef struct {
 	PyObject_HEAD
 	struct libmnt_fs *fs;
@@ -75,9 +73,7 @@ extern PyTypeObject FsType;
 extern PyObject *PyObjectResultFs(struct libmnt_fs *fs);
 extern void FS_AddModuleObject(PyObject *mod);
 
-/*
- * tab.c
- */
+
 typedef struct {
 	PyObject_HEAD
 
@@ -97,9 +93,7 @@ extern int pymnt_table_parser_errcb(struct libmnt_table *tb, const char *filenam
 
 #ifdef __linux__
 
-/*
- * context.c
- */
+
 typedef struct {
 	PyObject_HEAD
 
@@ -111,11 +105,9 @@ typedef struct {
 extern PyTypeObject ContextType;
 extern void Context_AddModuleObject(PyObject *mod);
 
-#endif /* __linux__ */
+#endif 
 
-/*
- * misc
- */
+
 extern PyObject *LibmountError;
 extern PyObject *UL_IncRef(void *killme);
 extern void *UL_RaiseExc(int e);
@@ -128,4 +120,4 @@ extern void PyFree(void *o);
 
 
 
-#endif /* UTIL_LINUX_PYLIBMOUNT */
+#endif 

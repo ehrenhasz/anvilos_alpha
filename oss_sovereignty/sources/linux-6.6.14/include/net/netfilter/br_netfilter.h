@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _BR_NETFILTER_H_
 #define _BR_NETFILTER_H_
 
@@ -74,4 +74,4 @@ br_nf_pre_routing_ipv6(void *priv, struct sk_buff *skb,
 }
 #endif
 
-#endif /* _BR_NETFILTER_H_ */
+#endif 

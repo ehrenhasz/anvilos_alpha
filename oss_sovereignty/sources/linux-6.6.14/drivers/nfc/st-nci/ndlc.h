@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NCI based Driver for STMicroelectronics NFC Chip
- *
- * Copyright (C) 2014-2015  STMicroelectronics SAS. All rights reserved.
- */
+
+
 
 #ifndef __LOCAL_NDLC_H_
 #define __LOCAL_NDLC_H_
@@ -13,7 +9,7 @@
 
 struct st_nci_se_status;
 
-/* Low Level Transport description */
+
 struct llt_ndlc {
 	struct nci_dev *ndev;
 	const struct nfc_phy_ops *ops;
@@ -33,10 +29,7 @@ struct llt_ndlc {
 
 	struct device *dev;
 
-	/*
-	 * < 0 if hardware error occurred
-	 * and prevents normal operation.
-	 */
+	
 	int hard_fault;
 	int powered;
 };
@@ -49,4 +42,4 @@ int ndlc_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,
 	       struct device *dev, int phy_headroom, int phy_tailroom,
 	       struct llt_ndlc **ndlc_id, struct st_nci_se_status *se_status);
 void ndlc_remove(struct llt_ndlc *ndlc);
-#endif /* __LOCAL_NDLC_H__ */
+#endif 

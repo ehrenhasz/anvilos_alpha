@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM lock
 
@@ -8,7 +8,7 @@
 #include <linux/sched.h>
 #include <linux/tracepoint.h>
 
-/* flags for lock:contention_begin */
+
 #define LCB_F_SPIN	(1U << 0)
 #define LCB_F_READ	(1U << 1)
 #define LCB_F_WRITE	(1U << 2)
@@ -89,8 +89,8 @@ DEFINE_EVENT(lock, lock_acquired,
 	TP_ARGS(lock, ip)
 );
 
-#endif /* CONFIG_LOCK_STAT */
-#endif /* CONFIG_LOCKDEP */
+#endif 
+#endif 
 
 TRACE_EVENT(contention_begin,
 
@@ -138,7 +138,7 @@ TRACE_EVENT(contention_end,
 	TP_printk("%p (ret=%d)", __entry->lock_addr, __entry->ret)
 );
 
-#endif /* _TRACE_LOCK_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

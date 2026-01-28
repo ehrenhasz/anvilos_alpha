@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2002 Andi Kleen, SuSE Labs */
+
+
 
 #include <linux/linkage.h>
 #include <asm/cpufeatures.h>
@@ -8,26 +8,7 @@
 
 .section .noinstr.text, "ax"
 
-/*
- * ISO C memset - set a memory block to a byte value. This function uses fast
- * string to get better performance than the original function. The code is
- * simpler and shorter than the original function as well.
- *
- * rdi   destination
- * rsi   value (char)
- * rdx   count (bytes)
- *
- * rax   original destination
- *
- * The FSRS alternative should be done inline (avoiding the call and
- * the disgusting return handling), but that would require some help
- * from the compiler for better calling conventions.
- *
- * The 'rep stosb' itself is small enough to replace the call, but all
- * the register moves blow up the code. And two of them are "needed"
- * only for the return value that is the same as the source input,
- * which the compiler could/should do much better anyway.
- */
+
 SYM_FUNC_START(__memset)
 	ALTERNATIVE "jmp memset_orig", "", X86_FEATURE_FSRS
 
@@ -46,12 +27,12 @@ EXPORT_SYMBOL(memset)
 SYM_FUNC_START_LOCAL(memset_orig)
 	movq %rdi,%r10
 
-	/* expand byte value  */
+	
 	movzbl %sil,%ecx
 	movabs $0x0101010101010101,%rax
 	imulq  %rcx,%rax
 
-	/* align dst */
+	
 	movl  %edi,%r9d
 	andl  $7,%r9d
 	jnz  .Lbad_alignment
@@ -75,8 +56,7 @@ SYM_FUNC_START_LOCAL(memset_orig)
 	leaq  64(%rdi),%rdi
 	jnz    .Lloop_64
 
-	/* Handle tail in loops. The loops should be faster than hard
-	   to predict jump tables. */
+	
 	.p2align 4
 .Lhandle_tail:
 	movl	%edx,%ecx
@@ -107,7 +87,7 @@ SYM_FUNC_START_LOCAL(memset_orig)
 .Lbad_alignment:
 	cmpq $7,%rdx
 	jbe	.Lhandle_7
-	movq %rax,(%rdi)	/* unaligned store */
+	movq %rax,(%rdi)	
 	movq $8,%r8
 	subq %r9,%r8
 	addq %r8,%rdi

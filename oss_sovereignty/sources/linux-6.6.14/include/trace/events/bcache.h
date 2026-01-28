@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM bcache
 
@@ -75,7 +75,7 @@ DECLARE_EVENT_CLASS(btree_node,
 	TP_printk("bucket %zu", __entry->bucket)
 );
 
-/* request.c */
+
 
 DEFINE_EVENT(bcache_request, bcache_request_start,
 	TP_PROTO(struct bcache_device *d, struct bio *bio),
@@ -189,7 +189,7 @@ DEFINE_EVENT(bkey, bcache_cache_insert,
 	TP_ARGS(k)
 );
 
-/* Journal */
+
 
 DECLARE_EVENT_CLASS(cache_set,
 	TP_PROTO(struct cache_set *c),
@@ -247,7 +247,7 @@ TRACE_EVENT(bcache_journal_write,
 		  __entry->nr_keys)
 );
 
-/* Btree */
+
 
 DEFINE_EVENT(cache_set, bcache_btree_cache_cannibalize,
 	TP_PROTO(struct cache_set *c),
@@ -423,7 +423,7 @@ TRACE_EVENT(bcache_keyscan,
 		  __entry->end_inode, __entry->end_offset)
 );
 
-/* Allocator */
+
 
 TRACE_EVENT(bcache_invalidate,
 	TP_PROTO(struct cache *ca, size_t bucket),
@@ -487,7 +487,7 @@ TRACE_EVENT(bcache_alloc_fail,
 		  __entry->free_inc, __entry->blocked)
 );
 
-/* Background writeback */
+
 
 DEFINE_EVENT(bkey, bcache_writeback,
 	TP_PROTO(struct bkey *k),
@@ -499,7 +499,7 @@ DEFINE_EVENT(bkey, bcache_writeback_collision,
 	TP_ARGS(k)
 );
 
-#endif /* _TRACE_BCACHE_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

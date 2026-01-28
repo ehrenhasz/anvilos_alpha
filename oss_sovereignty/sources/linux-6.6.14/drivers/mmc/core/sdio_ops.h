@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/drivers/mmc/sdio_ops.c
- *
- *  Copyright 2006-2007 Pierre Ossman
- */
+
+
 
 #ifndef _MMC_SDIO_OPS_H
 #define _MMC_SDIO_OPS_H

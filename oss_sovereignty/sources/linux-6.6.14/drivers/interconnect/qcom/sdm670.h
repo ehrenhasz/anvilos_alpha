@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SDM670 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SDM670_H
 #define __DRIVERS_INTERCONNECT_QCOM_SDM670_H

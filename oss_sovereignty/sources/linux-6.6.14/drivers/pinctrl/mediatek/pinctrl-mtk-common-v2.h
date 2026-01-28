@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- *
- * Author: Sean Wang <sean.wang@mediatek.com>
- *
- */
+
+
 
 #ifndef __PINCTRL_MTK_COMMON_V2_H
 #define __PINCTRL_MTK_COMMON_V2_H
@@ -20,13 +15,9 @@
 #define MTK_PULL_PU_PD_TYPE		BIT(0)
 #define MTK_PULL_PULLSEL_TYPE		BIT(1)
 #define MTK_PULL_PUPD_R1R0_TYPE		BIT(2)
-/* MTK_PULL_RSEL_TYPE can select resistance and can be
- * turned on/off itself. But it can't be selected pull up/down
- */
+
 #define MTK_PULL_RSEL_TYPE		BIT(3)
-/* MTK_PULL_PU_PD_RSEL_TYPE is a type which is controlled by
- * MTK_PULL_PU_PD_TYPE and MTK_PULL_RSEL_TYPE.
- */
+
 #define MTK_PULL_PU_PD_RSEL_TYPE	(MTK_PULL_PU_PD_TYPE \
 					| MTK_PULL_RSEL_TYPE)
 #define MTK_PULL_TYPE_MASK	(MTK_PULL_PU_PD_TYPE |\
@@ -66,7 +57,7 @@
 		.down_rsel = _down_rsel,				\
 	}
 
-/* List these attributes which could be modified for the pin */
+
 enum {
 	PINCTRL_PIN_REG_MODE,
 	PINCTRL_PIN_REG_DIR,
@@ -95,7 +86,7 @@ enum {
 	PINCTRL_PIN_REG_MAX,
 };
 
-/* Group the pins by the driving current */
+
 enum {
 	DRV_FIXED,
 	DRV_GRP0,
@@ -110,15 +101,7 @@ static const char * const mtk_default_register_base_names[] __maybe_unused = {
 	"base",
 };
 
-/* struct mtk_pin_field - the structure that holds the information of the field
- *			  used to describe the attribute for the pin
- * @base:		the index pointing to the entry in base address list
- * @offset:		the register offset relative to the base address
- * @mask:		the mask used to filter out the field from the register
- * @bitpos:		the start bit relative to the register
- * @next:		the indication that the field would be extended to the
-			next register
- */
+
 struct mtk_pin_field {
 	u8  index;
 	u32 offset;
@@ -127,21 +110,7 @@ struct mtk_pin_field {
 	u8  next;
 };
 
-/* struct mtk_pin_field_calc - the structure that holds the range providing
- *			       the guide used to look up the relevant field
- * @s_pin:		the start pin within the range
- * @e_pin:		the end pin within the range
- * @i_base:		the index pointing to the entry in base address list
- * @s_addr:		the start address for the range
- * @x_addrs:		the address distance between two consecutive registers
- *			within the range
- * @s_bit:		the start bit for the first register within the range
- * @x_bits:		the bit distance between two consecutive pins within
- *			the range
- * @sz_reg:		the size of bits in a register
- * @fixed:		the consecutive pins share the same bits with the 1st
- *			pin
- */
+
 struct mtk_pin_field_calc {
 	u16 s_pin;
 	u16 e_pin;
@@ -154,14 +123,7 @@ struct mtk_pin_field_calc {
 	u8  fixed;
 };
 
-/**
- * struct mtk_pin_rsel - the structure that provides bias resistance selection.
- * @s_pin:		the start pin within the rsel range
- * @e_pin:		the end pin within the rsel range
- * @rsel_index:	the rsel bias resistance index
- * @up_rsel:	the pullup rsel bias resistance value
- * @down_rsel:	the pulldown rsel bias resistance value
- */
+
 struct mtk_pin_rsel {
 	u16 s_pin;
 	u16 e_pin;
@@ -170,50 +132,25 @@ struct mtk_pin_rsel {
 	u32 down_rsel;
 };
 
-/* struct mtk_pin_reg_calc - the structure that holds all ranges used to
- *			     determine which register the pin would make use of
- *			     for certain pin attribute.
- * @range:		     the start address for the range
- * @nranges:		     the number of items in the range
- */
+
 struct mtk_pin_reg_calc {
 	const struct mtk_pin_field_calc *range;
 	unsigned int nranges;
 };
 
-/**
- * struct mtk_func_desc - the structure that providing information
- *			  all the funcs for this pin
- * @name:		the name of function
- * @muxval:		the mux to the function
- */
+
 struct mtk_func_desc {
 	const char *name;
 	u8 muxval;
 };
 
-/**
- * struct mtk_eint_desc - the structure that providing information
- *			       for eint data per pin
- * @eint_m:		the eint mux for this pin
- * @eitn_n:		the eint number for this pin
- */
+
 struct mtk_eint_desc {
 	u16 eint_m;
 	u16 eint_n;
 };
 
-/**
- * struct mtk_pin_desc - the structure that providing information
- *			       for each pin of chips
- * @number:		unique pin number from the global pin number space
- * @name:		name for this pin
- * @eint:		the eint data for this pin
- * @drv_n:		the index with the driving group
- * @funcs:		all available functions for this pins (only used in
- *			those drivers compatible to pinctrl-mtk-common.c-like
- *			ones)
- */
+
 struct mtk_pin_desc {
 	unsigned int number;
 	const char *name;
@@ -230,7 +167,7 @@ struct mtk_pinctrl_group {
 
 struct mtk_pinctrl;
 
-/* struct mtk_pin_soc - the structure that holds SoC-specific data */
+
 struct mtk_pin_soc {
 	const struct mtk_pin_reg_calc	*reg_cal;
 	const struct mtk_pin_desc	*pins;
@@ -242,7 +179,7 @@ struct mtk_pin_soc {
 	const struct mtk_eint_regs	*eint_regs;
 	const struct mtk_eint_hw	*eint_hw;
 
-	/* Specific parameters per SoC */
+	
 	u8				gpio_m;
 	bool				ies_present;
 	const char * const		*base_names;
@@ -251,7 +188,7 @@ struct mtk_pin_soc {
 	const struct mtk_pin_rsel	*pin_rsel;
 	unsigned int			npin_rsel;
 
-	/* Specific pinconfig operations */
+	
 	int (*bias_disable_set)(struct mtk_pinctrl *hw,
 				const struct mtk_pin_desc *desc);
 	int (*bias_disable_get)(struct mtk_pinctrl *hw,
@@ -282,7 +219,7 @@ struct mtk_pin_soc {
 	int (*adv_drive_get)(struct mtk_pinctrl *hw,
 			     const struct mtk_pin_desc *desc, u32 *val);
 
-	/* Specific driver data */
+	
 	void				*driver_data;
 };
 
@@ -296,9 +233,9 @@ struct mtk_pinctrl {
 	struct mtk_eint			*eint;
 	struct mtk_pinctrl_group	*groups;
 	const char          **grp_names;
-	/* lock pin's register resource to avoid multiple threads issue*/
+	
 	spinlock_t lock;
-	/* identify rsel setting by si unit or rsel define in dts node */
+	
 	bool rsel_si_unit;
 };
 
@@ -369,4 +306,4 @@ int mtk_pinconf_adv_drive_get_raw(struct mtk_pinctrl *hw,
 				  const struct mtk_pin_desc *desc, u32 *val);
 
 bool mtk_is_virt_gpio(struct mtk_pinctrl *hw, unsigned int gpio_n);
-#endif /* __PINCTRL_MTK_COMMON_V2_H */
+#endif 

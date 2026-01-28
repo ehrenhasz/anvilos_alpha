@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Broadcom BCM7xxx System Port Ethernet MAC driver
- *
- * Copyright (C) 2014 Broadcom Corporation
- */
+
+
 
 #ifndef __BCM_SYSPORT_H
 #define __BCM_SYSPORT_H
@@ -15,7 +11,7 @@
 
 #include "unimac.h"
 
-/* Receive/transmit descriptor format */
+
 #define DESC_ADDR_HI_STATUS_LEN	0x00
 #define  DESC_ADDR_HI_SHIFT	0
 #define  DESC_ADDR_HI_MASK	0xff
@@ -25,21 +21,19 @@
 #define  DESC_LEN_MASK		0x7fff
 #define DESC_ADDR_LO		0x04
 
-/* HW supports 40-bit addressing hence the */
+
 #define DESC_SIZE		(WORDS_PER_DESC * sizeof(u32))
 
-/* Default RX buffer allocation size */
+
 #define RX_BUF_LENGTH		2048
 
-/* Body(1500) + EH_SIZE(14) + VLANTAG(4) + BRCMTAG(4) + FCS(4) = 1526.
- * 1536 is multiple of 256 bytes
- */
+
 #define ENET_BRCM_TAG_LEN	4
 #define ENET_PAD		10
 #define UMAC_MAX_MTU_SIZE	(ETH_DATA_LEN + ETH_HLEN + VLAN_HLEN + \
 				 ENET_BRCM_TAG_LEN + ETH_FCS_LEN + ENET_PAD)
 
-/* Transmit status block */
+
 struct bcm_tsb {
 	u32 pcp_dei_vid;
 #define PCP_DEI_MASK		0xf
@@ -55,20 +49,18 @@ struct bcm_tsb {
 #define DEST_MAP_MASK		0x1ff
 };
 
-/* Receive status block uses the same
- * definitions as the DMA descriptor
- */
+
 struct bcm_rsb {
 	u32 rx_status_len;
 	u32 brcm_egress_tag;
 };
 
-/* Common Receive/Transmit status bits */
+
 #define DESC_L4_CSUM		(1 << 7)
 #define DESC_SOP		(1 << 8)
 #define DESC_EOP		(1 << 9)
 
-/* Receive Status bits */
+
 #define RX_STATUS_UCAST			0
 #define RX_STATUS_BCAST			0x04
 #define RX_STATUS_MCAST			0x08
@@ -77,7 +69,7 @@ struct bcm_rsb {
 #define RX_STATUS_OVFLOW		(1 << 5)
 #define RX_STATUS_PARSE_FAIL		(1 << 6)
 
-/* Transmit Status bits */
+
 #define TX_STATUS_VLAN_NO_ACT		0x00
 #define TX_STATUS_VLAN_PCP_TSB		0x01
 #define TX_STATUS_VLAN_QUEUE		0x02
@@ -90,7 +82,7 @@ struct bcm_rsb {
 #define TX_STATUS_BRCM_TAG_ONE_TSB	0x30
 #define TX_STATUS_SKIP_BYTES		(1 << 6)
 
-/* Specific register definitions */
+
 #define SYS_PORT_TOPCTRL_OFFSET		0
 #define REV_CNTL			0x00
 #define  REV_MASK			0xffff
@@ -105,7 +97,7 @@ struct bcm_rsb {
 #define  SYS_CLK_SEL			(1 << 0)
 #define  TDMA_EOP_SEL			(1 << 1)
 
-/* Level-2 Interrupt controller offsets and defines */
+
 #define SYS_PORT_INTRL2_0_OFFSET	0x200
 #define SYS_PORT_INTRL2_1_OFFSET	0x240
 #define INTRL2_CPU_STATUS		0x00
@@ -115,7 +107,7 @@ struct bcm_rsb {
 #define INTRL2_CPU_MASK_SET		0x10
 #define INTRL2_CPU_MASK_CLEAR		0x14
 
-/* Level-2 instance 0 interrupt bits */
+
 #define INTRL2_0_GISB_ERR		(1 << 0)
 #define INTRL2_0_RBUF_OVFLOW		(1 << 1)
 #define INTRL2_0_TBUF_UNDFLOW		(1 << 2)
@@ -129,11 +121,11 @@ struct bcm_rsb {
 #define INTRL2_0_DESC_ALLOC_ERR		(1 << 10)
 #define INTRL2_0_UNEXP_PKTSIZE_ACK	(1 << 11)
 
-/* SYSTEMPORT Lite groups the TX queues interrupts on instance 0 */
+
 #define INTRL2_0_TDMA_MBDONE_SHIFT	12
 #define INTRL2_0_TDMA_MBDONE_MASK	(0xffff << INTRL2_0_TDMA_MBDONE_SHIFT)
 
-/* RXCHK offset and defines */
+
 #define SYS_PORT_RXCHK_OFFSET		0x300
 
 #define RXCHK_CONTROL			0x00
@@ -168,11 +160,11 @@ struct bcm_rsb {
 #define RXCHK_BRCM_TAG_CID_SHIFT	16
 #define RXCHK_BRCM_TAG_CID_MASK		0xff
 
-/* TXCHCK offsets and defines */
+
 #define SYS_PORT_TXCHK_OFFSET		0x380
 #define TXCHK_PKT_RDY_THRESH		0x00
 
-/* Receive buffer offset and defines */
+
 #define SYS_PORT_RBUF_OFFSET		0x400
 
 #define RBUF_CONTROL			0x00
@@ -186,7 +178,7 @@ struct bcm_rsb {
 #define  RBUF_OK_TO_SEND_MASK		0xff
 #define  RBUF_CRC_REPLACE		(1 << 20)
 #define  RBUF_OK_TO_SEND_MODE		(1 << 21)
-/* SYSTEMPORT Lite uses two bits here */
+
 #define  RBUF_RSB_SWAP0			(1 << 22)
 #define  RBUF_RSB_SWAP1			(1 << 23)
 #define  RBUF_ACPI_EN			(1 << 23)
@@ -202,7 +194,7 @@ struct bcm_rsb {
 #define RBUF_OVFL_DISC_CNTR		0x0c
 #define RBUF_ERR_PKT_CNTR		0x10
 
-/* Transmit buffer offset and defines */
+
 #define SYS_PORT_TBUF_OFFSET		0x600
 
 #define TBUF_CONTROL			0x00
@@ -212,14 +204,12 @@ struct bcm_rsb {
 #define  TBUF_FULL_THRESH_SHIFT		8
 #define  TBUF_FULL_THRESH_MASK		0x1f
 
-/* UniMAC offset and defines */
+
 #define SYS_PORT_UMAC_OFFSET		0x800
 
 #define UMAC_MIB_START			0x400
 
-/* There is a 0xC gap between the end of RX and beginning of TX stats and then
- * between the end of TX stats and the beginning of the RX RUNT
- */
+
 #define UMAC_MIB_STAT_OFFSET		0xc
 
 #define UMAC_MIB_CTRL			0x580
@@ -227,7 +217,7 @@ struct bcm_rsb {
 #define  MIB_RUNT_CNT_RST		(1 << 1)
 #define  MIB_TX_CNT_RST			(1 << 2)
 
-/* These offsets are valid for SYSTEMPORT and SYSTEMPORT Lite */
+
 #define UMAC_MPD_CTRL			0x620
 #define  MPD_EN				(1 << 0)
 #define  MSEQ_LEN_SHIFT			16
@@ -239,7 +229,7 @@ struct bcm_rsb {
 #define UMAC_MDF_CTRL			0x650
 #define UMAC_MDF_ADDR			0x654
 
-/* Only valid on SYSTEMPORT Lite */
+
 #define SYS_PORT_GIB_OFFSET		0x1000
 
 #define GIB_CONTROL			0x00
@@ -268,7 +258,7 @@ struct bcm_rsb {
 #define GIB_MAC1			0x08
 #define GIB_MAC0			0x0c
 
-/* Receive DMA offset and defines */
+
 #define SYS_PORT_RDMA_OFFSET		0x2000
 
 #define RDMA_CONTROL			0x1000
@@ -324,9 +314,9 @@ struct bcm_rsb {
 
 #define RDMA_DEBUG			0x1048
 
-/* Transmit DMA offset and defines */
-#define TDMA_NUM_RINGS			32	/* rings = queues */
-#define TDMA_PORT_SIZE			DESC_SIZE /* two 32-bits words */
+
+#define TDMA_NUM_RINGS			32	
+#define TDMA_PORT_SIZE			DESC_SIZE 
 
 #define SYS_PORT_TDMA_OFFSET		0x4000
 #define TDMA_WRITE_PORT_OFFSET		0x0000
@@ -350,7 +340,7 @@ struct bcm_rsb {
 #define TDMA_DESC_RING_00_BASE		(TDMA_READ_PORT_CMD_OFFSET + \
 					(TDMA_NUM_RINGS * sizeof(u32)))
 
-/* Register offsets and defines relatives to a specific ring number */
+
 #define RING_HEAD_TAIL_PTR		0x00
 #define  RING_HEAD_MASK			0x7ff
 #define  RING_TAIL_SHIFT		11
@@ -398,11 +388,11 @@ struct bcm_rsb {
 
 #define TDMA_DESC_RING_SIZE		28
 
-/* Defininition for a given TX ring base address */
+
 #define TDMA_DESC_RING_BASE(i)		(TDMA_DESC_RING_00_BASE + \
 					((i) * TDMA_DESC_RING_SIZE))
 
-/* Ring indexed register addreses */
+
 #define TDMA_DESC_RING_HEAD_TAIL_PTR(i)	(TDMA_DESC_RING_BASE(i) + \
 					RING_HEAD_TAIL_PTR)
 #define TDMA_DESC_RING_COUNT(i)		(TDMA_DESC_RING_BASE(i) + \
@@ -422,9 +412,7 @@ struct bcm_rsb {
 #define TDMA_CONTROL			0x600
 #define  TDMA_EN			0
 #define  TSB_EN				1
-/* Uses 2 bits on SYSTEMPORT Lite and shifts everything by 1 bit, we
- * keep the SYSTEMPORT layout here and adjust with tdma_control_bit()
- */
+
 #define  TSB_SWAP0			2
 #define  TSB_SWAP1			3
 #define  ACB_ALGO			3
@@ -483,76 +471,76 @@ struct bcm_rsb {
 
 #define TDMA_DEBUG			0x64c
 
-/* Number of Receive hardware descriptor words */
+
 #define SP_NUM_HW_RX_DESC_WORDS		1024
 #define SP_LT_NUM_HW_RX_DESC_WORDS	512
 
-/* Internal linked-list RAM size */
+
 #define SP_NUM_TX_DESC			1536
 #define SP_LT_NUM_TX_DESC		256
 
 #define WORDS_PER_DESC			2
 
-/* Rx/Tx common counter group.*/
+
 struct bcm_sysport_pkt_counters {
-	u32	cnt_64;		/* RO Received/Transmited 64 bytes packet */
-	u32	cnt_127;	/* RO Rx/Tx 127 bytes packet */
-	u32	cnt_255;	/* RO Rx/Tx 65-255 bytes packet */
-	u32	cnt_511;	/* RO Rx/Tx 256-511 bytes packet */
-	u32	cnt_1023;	/* RO Rx/Tx 512-1023 bytes packet */
-	u32	cnt_1518;	/* RO Rx/Tx 1024-1518 bytes packet */
-	u32	cnt_mgv;	/* RO Rx/Tx 1519-1522 good VLAN packet */
-	u32	cnt_2047;	/* RO Rx/Tx 1522-2047 bytes packet*/
-	u32	cnt_4095;	/* RO Rx/Tx 2048-4095 bytes packet*/
-	u32	cnt_9216;	/* RO Rx/Tx 4096-9216 bytes packet*/
+	u32	cnt_64;		
+	u32	cnt_127;	
+	u32	cnt_255;	
+	u32	cnt_511;	
+	u32	cnt_1023;	
+	u32	cnt_1518;	
+	u32	cnt_mgv;	
+	u32	cnt_2047;	
+	u32	cnt_4095;	
+	u32	cnt_9216;	
 };
 
-/* RSV, Receive Status Vector */
+
 struct bcm_sysport_rx_counters {
 	struct  bcm_sysport_pkt_counters pkt_cnt;
-	u32	pkt;		/* RO (0x428) Received pkt count*/
-	u32	bytes;		/* RO Received byte count */
-	u32	mca;		/* RO # of Received multicast pkt */
-	u32	bca;		/* RO # of Receive broadcast pkt */
-	u32	fcs;		/* RO # of Received FCS error  */
-	u32	cf;		/* RO # of Received control frame pkt*/
-	u32	pf;		/* RO # of Received pause frame pkt */
-	u32	uo;		/* RO # of unknown op code pkt */
-	u32	aln;		/* RO # of alignment error count */
-	u32	flr;		/* RO # of frame length out of range count */
-	u32	cde;		/* RO # of code error pkt */
-	u32	fcr;		/* RO # of carrier sense error pkt */
-	u32	ovr;		/* RO # of oversize pkt*/
-	u32	jbr;		/* RO # of jabber count */
-	u32	mtue;		/* RO # of MTU error pkt*/
-	u32	pok;		/* RO # of Received good pkt */
-	u32	uc;		/* RO # of unicast pkt */
-	u32	ppp;		/* RO # of PPP pkt */
-	u32	rcrc;		/* RO (0x470),# of CRC match pkt */
+	u32	pkt;		
+	u32	bytes;		
+	u32	mca;		
+	u32	bca;		
+	u32	fcs;		
+	u32	cf;		
+	u32	pf;		
+	u32	uo;		
+	u32	aln;		
+	u32	flr;		
+	u32	cde;		
+	u32	fcr;		
+	u32	ovr;		
+	u32	jbr;		
+	u32	mtue;		
+	u32	pok;		
+	u32	uc;		
+	u32	ppp;		
+	u32	rcrc;		
 };
 
-/* TSV, Transmit Status Vector */
+
 struct bcm_sysport_tx_counters {
 	struct bcm_sysport_pkt_counters pkt_cnt;
-	u32	pkts;		/* RO (0x4a8) Transmited pkt */
-	u32	mca;		/* RO # of xmited multicast pkt */
-	u32	bca;		/* RO # of xmited broadcast pkt */
-	u32	pf;		/* RO # of xmited pause frame count */
-	u32	cf;		/* RO # of xmited control frame count */
-	u32	fcs;		/* RO # of xmited FCS error count */
-	u32	ovr;		/* RO # of xmited oversize pkt */
-	u32	drf;		/* RO # of xmited deferral pkt */
-	u32	edf;		/* RO # of xmited Excessive deferral pkt*/
-	u32	scl;		/* RO # of xmited single collision pkt */
-	u32	mcl;		/* RO # of xmited multiple collision pkt*/
-	u32	lcl;		/* RO # of xmited late collision pkt */
-	u32	ecl;		/* RO # of xmited excessive collision pkt*/
-	u32	frg;		/* RO # of xmited fragments pkt*/
-	u32	ncl;		/* RO # of xmited total collision count */
-	u32	jbr;		/* RO # of xmited jabber count*/
-	u32	bytes;		/* RO # of xmited byte count */
-	u32	pok;		/* RO # of xmited good pkt */
-	u32	uc;		/* RO (0x4f0) # of xmited unicast pkt */
+	u32	pkts;		
+	u32	mca;		
+	u32	bca;		
+	u32	pf;		
+	u32	cf;		
+	u32	fcs;		
+	u32	ovr;		
+	u32	drf;		
+	u32	edf;		
+	u32	scl;		
+	u32	mcl;		
+	u32	lcl;		
+	u32	ecl;		
+	u32	frg;		
+	u32	ncl;		
+	u32	jbr;		
+	u32	bytes;		
+	u32	pok;		
+	u32	uc;		
 };
 
 struct bcm_sysport_mib {
@@ -574,7 +562,7 @@ struct bcm_sysport_mib {
 	u32 tx_realloc_tsb_failed;
 };
 
-/* HW maintains a large list of counters */
+
 enum bcm_sysport_stat_type {
 	BCM_SYSPORT_STAT_NETDEV = -1,
 	BCM_SYSPORT_STAT_NETDEV64,
@@ -587,7 +575,7 @@ enum bcm_sysport_stat_type {
 	BCM_SYSPORT_STAT_SOFT,
 };
 
-/* Macros to help define ethtool statistics */
+
 #define STAT_NETDEV(m) { \
 	.stat_string = __stringify(m), \
 	.stat_sizeof = sizeof(((struct net_device_stats *)0)->m), \
@@ -638,7 +626,7 @@ enum bcm_sysport_stat_type {
 	.reg_offset = ofs, \
 }
 
-/* TX bytes and packets */
+
 #define NUM_SYSPORT_TXQ_STAT	2
 
 struct bcm_sysport_stats {
@@ -646,22 +634,22 @@ struct bcm_sysport_stats {
 	int stat_sizeof;
 	int stat_offset;
 	enum bcm_sysport_stat_type type;
-	/* reg offset from UMAC base for misc counters */
+	
 	u16 reg_offset;
 };
 
 struct bcm_sysport_stats64 {
-	/* 64bit stats on 32bit/64bit Machine */
+	
 	u64	rx_packets;
 	u64	rx_bytes;
 	u64	tx_packets;
 	u64	tx_bytes;
 };
 
-/* Software house keeping helper structure */
+
 struct bcm_sysport_cb {
-	struct sk_buff	*skb;		/* SKB for RX packets */
-	void __iomem	*bd_addr;	/* Buffer descriptor PHYS addr */
+	struct sk_buff	*skb;		
+	void __iomem	*bd_addr;	
 
 	DEFINE_DMA_UNMAP_ADDR(dma_addr);
 	DEFINE_DMA_UNMAP_LEN(dma_len);
@@ -685,27 +673,27 @@ struct bcm_sysport_net_dim {
 	struct dim		dim;
 };
 
-/* Software view of the TX ring */
+
 struct bcm_sysport_tx_ring {
-	spinlock_t	lock;		/* Ring lock for tx reclaim/xmit */
-	struct napi_struct napi;	/* NAPI per tx queue */
-	unsigned int	index;		/* Ring index */
-	unsigned int	size;		/* Ring current size */
-	unsigned int	alloc_size;	/* Ring one-time allocated size */
-	unsigned int	desc_count;	/* Number of descriptors */
-	unsigned int	curr_desc;	/* Current descriptor */
-	unsigned int	c_index;	/* Last consumer index */
-	unsigned int	clean_index;	/* Current clean index */
-	struct bcm_sysport_cb *cbs;	/* Transmit control blocks */
-	struct bcm_sysport_priv *priv;	/* private context backpointer */
-	unsigned long	packets;	/* packets statistics */
-	unsigned long	bytes;		/* bytes statistics */
-	unsigned int	switch_queue;	/* switch port queue number */
-	unsigned int	switch_port;	/* switch port queue number */
-	bool		inspect;	/* inspect switch port and queue */
+	spinlock_t	lock;		
+	struct napi_struct napi;	
+	unsigned int	index;		
+	unsigned int	size;		
+	unsigned int	alloc_size;	
+	unsigned int	desc_count;	
+	unsigned int	curr_desc;	
+	unsigned int	c_index;	
+	unsigned int	clean_index;	
+	struct bcm_sysport_cb *cbs;	
+	struct bcm_sysport_priv *priv;	
+	unsigned long	packets;	
+	unsigned long	bytes;		
+	unsigned int	switch_queue;	
+	unsigned int	switch_port;	
+	bool		inspect;	
 };
 
-/* Driver private structure */
+
 struct bcm_sysport_priv {
 	void __iomem		*base;
 	u32			irq0_stat;
@@ -721,11 +709,11 @@ struct bcm_sysport_priv {
 	int			irq1;
 	int			wol_irq;
 
-	/* Transmit rings */
+	
 	spinlock_t		desc_lock;
 	struct bcm_sysport_tx_ring *tx_rings;
 
-	/* Receive queue */
+	
 	void __iomem		*rx_bds;
 	struct bcm_sysport_cb	*rx_cbs;
 	unsigned int		num_rx_bds;
@@ -736,14 +724,14 @@ struct bcm_sysport_priv {
 	u32			rx_max_coalesced_frames;
 	u32			rx_coalesce_usecs;
 
-	/* PHY device */
+	
 	struct device_node	*phy_dn;
 	phy_interface_t		phy_interface;
 	int			old_pause;
 	int			old_link;
 	int			old_duplex;
 
-	/* Misc fields */
+	
 	unsigned int		rx_chk_en:1;
 	unsigned int		tsb_en:1;
 	unsigned int		crc_fwd:1;
@@ -754,23 +742,23 @@ struct bcm_sysport_priv {
 	struct clk		*clk;
 	struct clk		*wol_clk;
 
-	/* MIB related fields */
+	
 	struct bcm_sysport_mib	mib;
 
-	/* Ethtool */
+	
 	u32			msg_enable;
 	DECLARE_BITMAP(filters, RXCHK_BRCM_TAG_MAX);
 	u32			filters_loc[RXCHK_BRCM_TAG_MAX];
 
 	struct bcm_sysport_stats64	stats64;
 
-	/* For atomic update generic 64bit value on 32bit Machine */
+	
 	struct u64_stats_sync	syncp;
 
-	/* map information between switch port queues and local queues */
+	
 	struct notifier_block	netdev_notifier;
 	unsigned int		per_port_num_tx_queues;
 	struct bcm_sysport_tx_ring *ring_map[DSA_MAX_PORTS * 8];
 
 };
-#endif /* __BCM_SYSPORT_H */
+#endif 

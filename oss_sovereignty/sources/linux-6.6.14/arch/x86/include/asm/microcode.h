@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_MICROCODE_H
 #define _ASM_X86_MICROCODE_H
 
@@ -24,7 +24,7 @@ static inline void microcode_bsp_resume(void) { }
 #endif
 
 #ifdef CONFIG_CPU_SUP_INTEL
-/* Intel specific microcode defines. Public for IFS */
+
 struct microcode_header_intel {
 	unsigned int	hdrver;
 	unsigned int	rev;
@@ -60,10 +60,10 @@ static inline u32 intel_get_microcode_revision(void)
 
 	native_wrmsrl(MSR_IA32_UCODE_REV, 0);
 
-	/* As documented in the SDM: Do a CPUID 1 here */
+	
 	native_cpuid_eax(1);
 
-	/* get the current revision from MSR 0x8B */
+	
 	native_rdmsr(MSR_IA32_UCODE_REV, dummy, rev);
 
 	return rev;
@@ -71,8 +71,8 @@ static inline u32 intel_get_microcode_revision(void)
 
 void show_ucode_info_early(void);
 
-#else /* CONFIG_CPU_SUP_INTEL */
+#else 
 static inline void show_ucode_info_early(void) { }
-#endif /* !CONFIG_CPU_SUP_INTEL */
+#endif 
 
-#endif /* _ASM_X86_MICROCODE_H */
+#endif 

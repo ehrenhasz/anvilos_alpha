@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Character LCD driver for Linux
- *
- * Copyright (C) 2000-2008, Willy Tarreau <w@1wt.eu>
- * Copyright (C) 2016-2017 Glider bvba
- */
+
+
 
 #ifndef _CHARLCD_H
 #define _CHARLCD_H
 
-#define LCD_FLAG_B		0x0004	/* Blink on */
-#define LCD_FLAG_C		0x0008	/* Cursor on */
-#define LCD_FLAG_D		0x0010	/* Display on */
-#define LCD_FLAG_F		0x0020	/* Large font mode */
-#define LCD_FLAG_N		0x0040	/* 2-rows mode */
-#define LCD_FLAG_L		0x0080	/* Backlight enabled */
+#define LCD_FLAG_B		0x0004	
+#define LCD_FLAG_C		0x0008	
+#define LCD_FLAG_D		0x0010	
+#define LCD_FLAG_F		0x0020	
+#define LCD_FLAG_N		0x0040	
+#define LCD_FLAG_L		0x0080	
 
 enum charlcd_onoff {
 	CHARLCD_OFF = 0,
@@ -38,12 +33,12 @@ enum charlcd_lines {
 
 struct charlcd {
 	const struct charlcd_ops *ops;
-	const unsigned char *char_conv;	/* Optional */
+	const unsigned char *char_conv;	
 
 	int height;
 	int width;
 
-	/* Contains the LCD X and Y offset */
+	
 	struct {
 		unsigned long x;
 		unsigned long y;
@@ -52,29 +47,7 @@ struct charlcd {
 	void *drvdata;
 };
 
-/**
- * struct charlcd_ops - Functions used by charlcd. Drivers have to implement
- * these.
- * @backlight: Turn backlight on or off. Optional.
- * @print: Print one character to the display at current cursor position.
- * The buffered cursor position is advanced by charlcd. The cursor should not
- * wrap to the next line at the end of a line.
- * @gotoxy: Set cursor to x, y. The x and y values to set the cursor to are
- * previously set in addr.x and addr.y by charlcd.
- * @home: Set cursor to 0, 0. The values in addr.x and addr.y are set to 0, 0 by
- * charlcd prior to calling this function.
- * @clear_display: Clear the whole display and set the cursor to 0, 0. The
- * values in addr.x and addr.y are set to 0, 0 by charlcd after to calling this
- * function.
- * @init_display: Initialize the display.
- * @shift_cursor: Shift cursor left or right one position.
- * @shift_display: Shift whole display content left or right.
- * @display: Turn display on or off.
- * @cursor: Turn cursor on or off.
- * @blink: Turn cursor blink on or off.
- * @lines: One or two lines.
- * @redefine_char: Redefine the actual pixel matrix of character.
- */
+
 struct charlcd_ops {
 	void (*backlight)(struct charlcd *lcd, enum charlcd_onoff on);
 	int (*print)(struct charlcd *lcd, int c);
@@ -101,4 +74,4 @@ int charlcd_unregister(struct charlcd *lcd);
 
 void charlcd_poke(struct charlcd *lcd);
 
-#endif /* CHARLCD_H */
+#endif 

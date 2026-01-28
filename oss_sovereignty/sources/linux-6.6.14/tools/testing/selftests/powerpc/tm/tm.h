@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2015, Michael Ellerman, IBM Corp.
- */
+
+
 
 #ifndef _SELFTESTS_POWERPC_TM_TM_H
 #define _SELFTESTS_POWERPC_TM_TM_H
@@ -34,22 +32,12 @@ static inline bool have_htm_nosc(void)
 #endif
 }
 
-/*
- * Transactional Memory was removed in ISA 3.1. A synthetic TM implementation
- * is provided on P10 for threads running in P8/P9 compatibility  mode. The
- * synthetic implementation immediately fails after tbegin. This failure sets
- * Bit 7 (Failure Persistent) and Bit 15 (Implementation-specific).
- */
+
 static inline bool htm_is_synthetic(void)
 {
 	int i;
 
-	/*
-	 * Per the ISA, the Failure Persistent bit may be incorrect. Try a few
-	 * times in case we got an Implementation-specific failure on a non ISA
-	 * v3.1 system. On these systems the Implementation-specific failure
-	 * should not be persistent.
-	 */
+	
 	for (i = 0; i < TM_RETRIES; i++) {
 		asm volatile(
 		"tbegin.;"
@@ -129,4 +117,4 @@ static inline bool tcheck_transactional(void)
 	return tcheck() & 6;
 }
 
-#endif /* _SELFTESTS_POWERPC_TM_TM_H */
+#endif 

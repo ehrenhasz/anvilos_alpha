@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NetCP driver local header
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		Sandeep Paulraj <s-paulraj@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- *		Wingman Kwok <w-kwok2@ti.com>
- *		Murali Karicheri <m-karicheri2@ti.com>
- */
+
+
 #ifndef __NETCP_H__
 #define __NETCP_H__
 
@@ -17,7 +7,7 @@
 #include <linux/soc/ti/knav_dma.h>
 #include <linux/u64_stats_sync.h>
 
-/* Maximum Ethernet frame size supported by Keystone switch */
+
 #define NETCP_MAX_FRAME_SIZE		9504
 
 #define SGMII_LINK_MAC_MAC_AUTONEG	0
@@ -36,7 +26,7 @@ struct netcp_tx_pipe {
 	struct netcp_device	*netcp_device;
 	void			*dma_queue;
 	unsigned int		dma_queue_id;
-	/* To port for packet forwarded to switch. Used only by ethss */
+	
 	u8			switch_to_port;
 #define	SWITCH_TO_PORT_IN_TAGINFO	BIT(0)
 	u8			flags;
@@ -99,7 +89,7 @@ struct netcp_intf {
 #define ETH_SW_CAN_REMOVE_ETH_FCS	BIT(0)
 	u32			hw_cap;
 
-	/* 64-bit netcp stats */
+	
 	struct netcp_stats	stats;
 
 	void			*rx_channel;
@@ -114,12 +104,12 @@ struct netcp_intf {
 	bool			netdev_registered;
 	bool			primary_module_attached;
 
-	/* Lock used for protecting Rx/Tx hook list management */
+	
 	spinlock_t		lock;
 	struct netcp_device	*netcp_device;
 	struct device_node	*node_interface;
 
-	/* DMA configuration data */
+	
 	u32			msg_enable;
 	u32			rx_queue_depths[KNAV_DMA_FDQ_PER_CHAN];
 };
@@ -189,13 +179,13 @@ struct netcp_module {
 	struct module		*owner;
 	bool			primary;
 
-	/* probe/remove: called once per NETCP instance */
+	
 	int	(*probe)(struct netcp_device *netcp_device,
 			 struct device *device, struct device_node *node,
 			 void **inst_priv);
 	int	(*remove)(struct netcp_device *netcp_device, void *inst_priv);
 
-	/* attach/release: called once per network interface */
+	
 	int	(*attach)(void *inst_priv, struct net_device *ndev,
 			  struct device_node *node, void **intf_priv);
 	int	(*release)(void *intf_priv);
@@ -208,7 +198,7 @@ struct netcp_module {
 	int	(*ioctl)(void *intf_priv, struct ifreq *req, int cmd);
 	int	(*set_rx_mode)(void *intf_priv, bool promisc);
 
-	/* used internally */
+	
 	struct list_head	module_list;
 	struct list_head	interface_list;
 };
@@ -234,13 +224,13 @@ int netcp_register_rxhook(struct netcp_intf *netcp_priv, int order,
 int netcp_unregister_rxhook(struct netcp_intf *netcp_priv, int order,
 			    netcp_hook_rtn *hook_rtn, void *hook_data);
 
-/* SGMII functions */
+
 int netcp_sgmii_reset(void __iomem *sgmii_ofs, int port);
 bool netcp_sgmii_rtreset(void __iomem *sgmii_ofs, int port, bool set);
 int netcp_sgmii_get_port_link(void __iomem *sgmii_ofs, int port);
 int netcp_sgmii_config(void __iomem *sgmii_ofs, int port, u32 interface);
 
-/* XGBE SERDES init functions */
+
 int netcp_xgbe_serdes_init(void __iomem *serdes_regs, void __iomem *xgbe_regs);
 
-#endif	/* __NETCP_H__ */
+#endif	

@@ -1,15 +1,4 @@
-/*
- * libcxgbi.h: Chelsio common library for T3/T4 iSCSI driver.
- *
- * Copyright (c) 2010-2015 Chelsio Communications, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- *
- * Written by: Karen Xie (kxie@chelsio.com)
- * Written by: Rakesh Ranjan (rranjan@chelsio.com)
- */
+
 
 #ifndef	__LIBCXGBI_H__
 #define	__LIBCXGBI_H__
@@ -55,18 +44,16 @@ do {									\
 		addr1, addr2, args_trail);				\
 } while (0)
 
-/* max. connections per adapter */
+
 #define CXGBI_MAX_CONN		16384
 
-/* always allocate rooms for AHS */
+
 #define SKB_TX_ISCSI_PDU_HEADER_MAX	\
 	(sizeof(struct iscsi_hdr) + ISCSI_MAX_AHS_SIZE)
 
-#define	ISCSI_PDU_NONPAYLOAD_LEN	312 /* bhs(48) + ahs(256) + digest(8)*/
+#define	ISCSI_PDU_NONPAYLOAD_LEN	312 
 
-/*
- * align pdu size to multiple of 512 for better performance
- */
+
 #define cxgbi_align_pdu_size(n) do { n = (n) & (~511); } while (0)
 
 #define ULP2_MODE_ISCSI		2
@@ -83,27 +70,19 @@ do {									\
 #define cxgbi_is_iso_config(csk)	((csk)->cdev->skb_iso_txhdr)
 #define cxgbi_is_iso_disabled(csk)	((csk)->disable_iso)
 
-/*
- * For iscsi connections HW may inserts digest bytes into the pdu. Those digest
- * bytes are not sent by the host but are part of the TCP payload and therefore
- * consume TCP sequence space.
- */
+
 static const unsigned int ulp2_extra_len[] = { 0, 4, 4, 8 };
 static inline unsigned int cxgbi_ulp_extra_len(int submode)
 {
 	return ulp2_extra_len[submode & 3];
 }
 
-#define CPL_RX_DDP_STATUS_DDP_SHIFT	16 /* ddp'able */
-#define CPL_RX_DDP_STATUS_PAD_SHIFT	19 /* pad error */
-#define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 /* hcrc error */
-#define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 /* dcrc error */
+#define CPL_RX_DDP_STATUS_DDP_SHIFT	16 
+#define CPL_RX_DDP_STATUS_PAD_SHIFT	19 
+#define CPL_RX_DDP_STATUS_HCRC_SHIFT	20 
+#define CPL_RX_DDP_STATUS_DCRC_SHIFT	21 
 
-/*
- * sge_opaque_hdr -
- * Opaque version of structure the SGE stores at skb->head of TX_DATA packets
- * and for which we must reserve space.
- */
+
 struct sge_opaque_hdr {
 	void *dev;
 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
@@ -175,9 +154,7 @@ struct cxgbi_sock {
 	unsigned long prev_iso_ts;
 };
 
-/*
- * connection states
- */
+
 enum cxgbi_sock_states{
 	CTP_CLOSED,
 	CTP_CONNECTING,
@@ -190,19 +167,17 @@ enum cxgbi_sock_states{
 	CTP_ABORTING,
 };
 
-/*
- * Connection flags -- many to track some close related events.
- */
+
 enum cxgbi_sock_flags {
-	CTPF_ABORT_RPL_RCVD,	/*received one ABORT_RPL_RSS message */
-	CTPF_ABORT_REQ_RCVD,	/*received one ABORT_REQ_RSS message */
-	CTPF_ABORT_RPL_PENDING,	/* expecting an abort reply */
-	CTPF_TX_DATA_SENT,	/* already sent a TX_DATA WR */
-	CTPF_ACTIVE_CLOSE_NEEDED,/* need to be closed */
-	CTPF_HAS_ATID,		/* reserved atid */
-	CTPF_HAS_TID,		/* reserved hw tid */
-	CTPF_OFFLOAD_DOWN,	/* offload function off */
-	CTPF_LOGOUT_RSP_RCVD,   /* received logout response */
+	CTPF_ABORT_RPL_RCVD,	
+	CTPF_ABORT_REQ_RCVD,	
+	CTPF_ABORT_RPL_PENDING,	
+	CTPF_TX_DATA_SENT,	
+	CTPF_ACTIVE_CLOSE_NEEDED,
+	CTPF_HAS_ATID,		
+	CTPF_HAS_TID,		
+	CTPF_OFFLOAD_DOWN,	
+	CTPF_LOGOUT_RSP_RCVD,   
 };
 
 struct cxgbi_skb_rx_cb {
@@ -219,19 +194,19 @@ struct cxgbi_skb_tx_cb {
 };
 
 enum cxgbi_skcb_flags {
-	SKCBF_TX_NEED_HDR,	/* packet needs a header */
-	SKCBF_TX_MEM_WRITE,     /* memory write */
-	SKCBF_TX_FLAG_COMPL,    /* wr completion flag */
-	SKCBF_RX_COALESCED,	/* received whole pdu */
-	SKCBF_RX_HDR,		/* received pdu header */
-	SKCBF_RX_DATA,		/* received pdu payload */
-	SKCBF_RX_STATUS,	/* received ddp status */
-	SKCBF_RX_ISCSI_COMPL,   /* received iscsi completion */
-	SKCBF_RX_DATA_DDPD,	/* pdu payload ddp'd */
-	SKCBF_RX_HCRC_ERR,	/* header digest error */
-	SKCBF_RX_DCRC_ERR,	/* data digest error */
-	SKCBF_RX_PAD_ERR,	/* padding byte error */
-	SKCBF_TX_ISO,		/* iso cpl in tx skb */
+	SKCBF_TX_NEED_HDR,	
+	SKCBF_TX_MEM_WRITE,     
+	SKCBF_TX_FLAG_COMPL,    
+	SKCBF_RX_COALESCED,	
+	SKCBF_RX_HDR,		
+	SKCBF_RX_DATA,		
+	SKCBF_RX_STATUS,	
+	SKCBF_RX_ISCSI_COMPL,   
+	SKCBF_RX_DATA_DDPD,	
+	SKCBF_RX_HCRC_ERR,	
+	SKCBF_RX_DCRC_ERR,	
+	SKCBF_RX_PAD_ERR,	
+	SKCBF_TX_ISO,		
 };
 
 struct cxgbi_skb_cb {
@@ -375,12 +350,7 @@ static inline struct sk_buff *alloc_wr(int wrlen, int dlen, gfp_t gfp)
 }
 
 
-/*
- * The number of WRs needed for an skb depends on the number of fragments
- * in the skb and whether it has any payload in its main body.  This maps the
- * length of the gather list represented by an skb into the # of necessary WRs.
- * The extra two fragments are for iscsi bhs and payload padding.
- */
+
 #define SKB_WR_LIST_SIZE	 (MAX_SKB_FRAGS + 2)
 
 static inline void cxgbi_sock_reset_wr_list(struct cxgbi_sock *csk)
@@ -392,10 +362,7 @@ static inline void cxgbi_sock_enqueue_wr(struct cxgbi_sock *csk,
 					  struct sk_buff *skb)
 {
 	cxgbi_skcb_tx_wr_next(skb) = NULL;
-	/*
-	 * We want to take an extra reference since both us and the driver
-	 * need to free the packet before it's really freed.
-	 */
+	
 	skb_get(skb);
 
 	if (!csk->wr_pending_head)
@@ -450,7 +417,7 @@ void cxgbi_sock_free_cpl_skbs(struct cxgbi_sock *);
 
 struct cxgbi_hba {
 	struct net_device *ndev;
-	struct net_device *vdev;	/* vlan dev */
+	struct net_device *vdev;	
 	struct Scsi_Host *shost;
 	struct cxgbi_device *cdev;
 	__be32 ipv4addr;
@@ -493,7 +460,7 @@ struct cxgbi_device {
 	unsigned int rx_credit_thres;
 	unsigned int skb_tx_rsvd;
 	u32 skb_iso_txhdr;
-	unsigned int skb_rx_extra;	/* for msg coalesced mode */
+	unsigned int skb_rx_extra;	
 	unsigned int tx_max_size;
 	unsigned int rx_max_size;
 	unsigned int rxq_idx_cntr;
@@ -643,4 +610,4 @@ int cxgbi_ddp_ppm_setup(void **ppm_pp, struct cxgbi_device *cdev,
 			unsigned int iscsi_size, unsigned int llimit,
 			unsigned int start, unsigned int rsvd_factor,
 			unsigned int edram_start, unsigned int edram_size);
-#endif	/*__LIBCXGBI_H__*/
+#endif	

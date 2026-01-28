@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+
 
 #ifndef _SELFTESTS_POWERPC_PMU_EBB_TRACE_H
 #define _SELFTESTS_POWERPC_PMU_EBB_TRACE_H
@@ -38,4 +36,4 @@ int trace_log_outdent(struct trace_buffer *tb);
 void trace_buffer_print(struct trace_buffer *tb);
 void trace_print_location(struct trace_buffer *tb);
 
-#endif /* _SELFTESTS_POWERPC_PMU_EBB_TRACE_H */
+#endif 

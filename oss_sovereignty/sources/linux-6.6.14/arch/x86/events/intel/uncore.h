@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/slab.h>
 #include <linux/pci.h>
 #include <asm/apicdef.h>
@@ -62,7 +62,7 @@ struct intel_uncore_type {
 	unsigned fixed_ctr;
 	unsigned fixed_ctl;
 	unsigned box_ctl;
-	u64 *box_ctls;	/* Unit ctrl addr of the first box of each die */
+	u64 *box_ctls;	
 	union {
 		unsigned msr_offset;
 		unsigned mmio_offset;
@@ -85,16 +85,10 @@ struct intel_uncore_type {
 	struct freerunning_counters *freerunning;
 	const struct attribute_group *attr_groups[4];
 	const struct attribute_group **attr_update;
-	struct pmu *pmu; /* for custom pmu ops */
-	/*
-	 * Uncore PMU would store relevant platform topology configuration here
-	 * to identify which platform component each PMON block of that type is
-	 * supposed to monitor.
-	 */
+	struct pmu *pmu; 
+	
 	struct intel_uncore_topology **topology;
-	/*
-	 * Optional callbacks for managing mapping of Uncore units to PMONs
-	 */
+	
 	int (*get_topology)(struct intel_uncore_type *type);
 	void (*set_mapping)(struct intel_uncore_type *type);
 	void (*cleanup_mapping)(struct intel_uncore_type *type);
@@ -136,10 +130,10 @@ struct intel_uncore_extra_reg {
 };
 
 struct intel_uncore_box {
-	int dieid;	/* Logical die ID */
-	int n_active;	/* number of active events */
+	int dieid;	
+	int n_active;	
 	int n_events;
-	int cpu;	/* cpu to collect events */
+	int cpu;	
 	unsigned long flags;
 	atomic_t refcnt;
 	struct perf_event *events[UNCORE_PMC_IDX_MAX];
@@ -149,7 +143,7 @@ struct intel_uncore_box {
 	u64 tags[UNCORE_PMC_IDX_MAX];
 	struct pci_dev *pci_dev;
 	struct intel_uncore_pmu *pmu;
-	u64 hrtimer_duration; /* hrtimer timeout for this box */
+	u64 hrtimer_duration; 
 	struct hrtimer hrtimer;
 	struct list_head list;
 	struct list_head active_list;
@@ -157,14 +151,14 @@ struct intel_uncore_box {
 	struct intel_uncore_extra_reg shared_regs[];
 };
 
-/* CFL uncore 8th cbox MSRs */
+
 #define CFL_UNC_CBO_7_PERFEVTSEL0		0xf70
 #define CFL_UNC_CBO_7_PER_CTR0			0xf76
 
 #define UNCORE_BOX_FLAG_INITIATED		0
-/* event config registers are 8-byte apart */
+
 #define UNCORE_BOX_FLAG_CTL_OFFS8		1
-/* CFL 8th CBOX has different MSR space */
+
 #define UNCORE_BOX_FLAG_CFL8_CBOX_MSR_OFFS	2
 
 struct uncore_event_desc {
@@ -331,34 +325,7 @@ static inline unsigned uncore_msr_fixed_ctr(struct intel_uncore_box *box)
 }
 
 
-/*
- * In the uncore document, there is no event-code assigned to free running
- * counters. Some events need to be defined to indicate the free running
- * counters. The events are encoded as event-code + umask-code.
- *
- * The event-code for all free running counters is 0xff, which is the same as
- * the fixed counters.
- *
- * The umask-code is used to distinguish a fixed counter and a free running
- * counter, and different types of free running counters.
- * - For fixed counters, the umask-code is 0x0X.
- *   X indicates the index of the fixed counter, which starts from 0.
- * - For free running counters, the umask-code uses the rest of the space.
- *   It would bare the format of 0xXY.
- *   X stands for the type of free running counters, which starts from 1.
- *   Y stands for the index of free running counters of same type, which
- *   starts from 0.
- *
- * For example, there are three types of IIO free running counters on Skylake
- * server, IO CLOCKS counters, BANDWIDTH counters and UTILIZATION counters.
- * The event-code for all the free running counters is 0xff.
- * 'ioclk' is the first counter of IO CLOCKS. IO CLOCKS is the first type,
- * which umask-code starts from 0x10.
- * So 'ioclk' is encoded as event=0xff,umask=0x10
- * 'bw_in_port2' is the third counter of BANDWIDTH counters. BANDWIDTH is
- * the second type, which umask-code starts from 0x20.
- * So 'bw_in_port2' is encoded as event=0xff,umask=0x22
- */
+
 static inline unsigned int uncore_freerunning_idx(u64 config)
 {
 	return ((config >> 8) & 0xf);
@@ -504,7 +471,7 @@ static inline bool is_freerunning_event(struct perf_event *event)
 	       (((cfg >> 8) & 0xff) >= UNCORE_FREERUNNING_UMASK_START);
 }
 
-/* Check and reject invalid config */
+
 static inline int uncore_freerunning_hw_config(struct intel_uncore_box *box,
 					       struct perf_event *event)
 {
@@ -594,7 +561,7 @@ extern struct pci_extra_dev *uncore_extra_pci_dev;
 extern struct event_constraint uncore_constraint_empty;
 extern int spr_uncore_units_ignore[];
 
-/* uncore_snb.c */
+
 int snb_uncore_pci_init(void);
 int ivb_uncore_pci_init(void);
 int hsw_uncore_pci_init(void);
@@ -612,7 +579,7 @@ void tgl_l_uncore_mmio_init(void);
 void adl_uncore_mmio_init(void);
 int snb_pci2phy_map_init(int devid);
 
-/* uncore_snbep.c */
+
 int snbep_uncore_pci_init(void);
 void snbep_uncore_cpu_init(void);
 int ivbep_uncore_pci_init(void);
@@ -635,5 +602,5 @@ int spr_uncore_pci_init(void);
 void spr_uncore_cpu_init(void);
 void spr_uncore_mmio_init(void);
 
-/* uncore_nhmex.c */
+
 void nhmex_uncore_cpu_init(void);

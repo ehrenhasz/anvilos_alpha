@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+
+
 
 #ifndef	_COMMON_CRYPTO_MODES_H
 #define	_COMMON_CRYPTO_MODES_H
@@ -34,11 +12,7 @@ extern "C" {
 #include <sys/crypto/common.h>
 #include <sys/crypto/impl.h>
 
-/*
- * Does the build chain support all instructions needed for the GCM assembler
- * routines. AVX support should imply AES-NI and PCLMULQDQ, but make sure
- * anyhow.
- */
+
 #if defined(__x86_64__) && defined(HAVE_AVX) && \
     defined(HAVE_AES) && defined(HAVE_PCLMULQDQ)
 #define	CAN_USE_GCM_ASM
@@ -52,32 +26,7 @@ extern boolean_t gcm_avx_can_use_movbe;
 #define	GCM_MODE			0x00000020
 #define	GMAC_MODE			0x00000040
 
-/*
- * cc_keysched:		Pointer to key schedule.
- *
- * cc_keysched_len:	Length of the key schedule.
- *
- * cc_remainder:	This is for residual data, i.e. data that can't
- *			be processed because there are too few bytes.
- *			Must wait until more data arrives.
- *
- * cc_remainder_len:	Number of bytes in cc_remainder.
- *
- * cc_iv:		Scratch buffer that sometimes contains the IV.
- *
- * cc_lastp:		Pointer to previous block of ciphertext.
- *
- * cc_copy_to:		Pointer to where encrypted residual data needs
- *			to be copied.
- *
- * cc_flags:		PROVIDER_OWNS_KEY_SCHEDULE
- *			When a context is freed, it is necessary
- *			to know whether the key schedule was allocated
- *			by the caller, or internally, e.g. an init routine.
- *			If allocated by the latter, then it needs to be freed.
- *
- *			ECB_MODE, CBC_MODE, CTR_MODE, or CCM_MODE
- */
+
 struct common_ctx {
 	void *cc_keysched;
 	size_t cc_keysched_len;
@@ -119,10 +68,7 @@ typedef struct cbc_ctx {
 #define	cbc_copy_to		cbc_common.cc_copy_to
 #define	cbc_flags		cbc_common.cc_flags
 
-/*
- * ctr_lower_mask		Bit-mask for lower 8 bytes of counter block.
- * ctr_upper_mask		Bit-mask for upper 8 bytes of counter block.
- */
+
 typedef struct ctr_ctx {
 	struct common_ctx ctr_common;
 	uint64_t ctr_lower_mask;
@@ -130,9 +76,7 @@ typedef struct ctr_ctx {
 	uint32_t ctr_tmp[4];
 } ctr_ctx_t;
 
-/*
- * ctr_cb			Counter block.
- */
+
 #define	ctr_keysched		ctr_common.cc_keysched
 #define	ctr_keysched_len	ctr_common.cc_keysched_len
 #define	ctr_cb			ctr_common.cc_iv
@@ -142,25 +86,7 @@ typedef struct ctr_ctx {
 #define	ctr_copy_to		ctr_common.cc_copy_to
 #define	ctr_flags		ctr_common.cc_flags
 
-/*
- *
- * ccm_mac_len:		Stores length of the MAC in CCM mode.
- * ccm_mac_buf:		Stores the intermediate value for MAC in CCM encrypt.
- *			In CCM decrypt, stores the input MAC value.
- * ccm_data_len:	Length of the plaintext for CCM mode encrypt, or
- *			length of the ciphertext for CCM mode decrypt.
- * ccm_processed_data_len:
- *			Length of processed plaintext in CCM mode encrypt,
- *			or length of processed ciphertext for CCM mode decrypt.
- * ccm_processed_mac_len:
- *			Length of MAC data accumulated in CCM mode decrypt.
- *
- * ccm_pt_buf:		Only used in CCM mode decrypt.  It stores the
- *			decrypted plaintext to be returned when
- *			MAC verification succeeds in decrypt_final.
- *			Memory for this should be allocated in the AES module.
- *
- */
+
 typedef struct ccm_ctx {
 	struct common_ctx ccm_common;
 	uint32_t ccm_tmp[4];
@@ -183,41 +109,14 @@ typedef struct ccm_ctx {
 #define	ccm_copy_to		ccm_common.cc_copy_to
 #define	ccm_flags		ccm_common.cc_flags
 
-/*
- * gcm_tag_len:		Length of authentication tag.
- *
- * gcm_ghash:		Stores output from the GHASH function.
- *
- * gcm_processed_data_len:
- *			Length of processed plaintext (encrypt) or
- *			length of processed ciphertext (decrypt).
- *
- * gcm_pt_buf:		Stores the decrypted plaintext returned by
- *			decrypt_final when the computed authentication
- *			tag matches the	user supplied tag.
- *
- * gcm_pt_buf_len:	Length of the plaintext buffer.
- *
- * gcm_H:		Subkey.
- *
- * gcm_Htable:		Pre-computed and pre-shifted H, H^2, ... H^6 for the
- *			Karatsuba Algorithm in host byte order.
- *
- * gcm_J0:		Pre-counter block generated from the IV.
- *
- * gcm_len_a_len_c:	64-bit representations of the bit lengths of
- *			AAD and ciphertext.
- */
+
 typedef struct gcm_ctx {
 	struct common_ctx gcm_common;
 	size_t gcm_tag_len;
 	size_t gcm_processed_data_len;
 	size_t gcm_pt_buf_len;
 	uint32_t gcm_tmp[4];
-	/*
-	 * The offset of gcm_Htable relative to gcm_ghash, (32), is hard coded
-	 * in aesni-gcm-x86_64.S, so please don't change (or adjust there).
-	 */
+	
 	uint64_t gcm_ghash[2];
 	uint64_t gcm_H[2];
 #ifdef CAN_USE_GCM_ASM
@@ -404,4 +303,4 @@ extern void crypto_free_mode_ctx(void *);
 }
 #endif
 
-#endif	/* _COMMON_CRYPTO_MODES_H */
+#endif	

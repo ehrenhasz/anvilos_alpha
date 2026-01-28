@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_PCS_USB_V6_H_
 #define QCOM_PHY_QMP_PCS_USB_V6_H_
 
-/* Only for QMP V6 PHY - USB3 have different offsets than V5 */
+
 #define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG1		0xc4
 #define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG2		0xc8
 #define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG3		0xcc

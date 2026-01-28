@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+
 include ../../scripts/Makefile.include
 
 ifeq ($(srctree),)
@@ -34,8 +34,8 @@ LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)include
 LIBBPF_BOOTSTRAP_HDRS_DIR := $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
 LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
 
-# We need to copy hashmap.h, nlattr.h, relo_core.h and libbpf_internal.h
-# which are not otherwise exported by libbpf, but still required by bpftool.
+
+
 LIBBPF_INTERNAL_HDRS := $(addprefix $(LIBBPF_HDRS_DIR)/,hashmap.h nlattr.h relo_core.h libbpf_internal.h)
 LIBBPF_BOOTSTRAP_INTERNAL_HDRS := $(addprefix $(LIBBPF_BOOTSTRAP_HDRS_DIR)/,hashmap.h relo_core.h libbpf_internal.h)
 
@@ -140,7 +140,7 @@ all: $(OUTPUT)bpftool
 SRCS := $(wildcard *.c)
 
 ifeq ($(feature-llvm),1)
-  # If LLVM is available, use it for JIT disassembly
+  
   CFLAGS  += -DHAVE_LLVM_SUPPORT
   LLVM_CONFIG_LIB_COMPONENTS := mcdisassembler all-targets
   CFLAGS  += $(shell $(LLVM_CONFIG) --cflags --libs $(LLVM_CONFIG_LIB_COMPONENTS))
@@ -151,7 +151,7 @@ ifeq ($(feature-llvm),1)
   endif
   LDFLAGS += $(shell $(LLVM_CONFIG) --ldflags)
 else
-  # Fall back on libbfd
+  
   ifeq ($(feature-libbfd),1)
     LIBS += -lbfd -ldl -lopcodes
   else ifeq ($(feature-libbfd-liberty),1)
@@ -160,11 +160,11 @@ else
     LIBS += -lbfd -ldl -lopcodes -liberty -lz
   endif
 
-  # If one of the above feature combinations is set, we support libbfd
+  
   ifneq ($(filter -lbfd,$(LIBS)),)
     CFLAGS += -DHAVE_LIBBFD_SUPPORT
 
-    # Libbfd interface changed over time, figure out what we need
+    
     ifeq ($(feature-disassembler-four-args), 1)
       CFLAGS += -DDISASM_FOUR_ARGS_SIGNATURE
     endif
@@ -174,7 +174,7 @@ else
   endif
 endif
 ifeq ($(filter -DHAVE_LLVM_SUPPORT -DHAVE_LIBBFD_SUPPORT,$(CFLAGS)),)
-  # No support for JIT disassembly
+  
   SRCS := $(filter-out jit_disasm.c,$(SRCS))
 endif
 
@@ -295,5 +295,5 @@ FORCE:
 .PHONY: doc doc-clean doc-install doc-uninstall
 .DEFAULT_GOAL := all
 
-# Delete partially updated (corrupted) files on error
+
 .DELETE_ON_ERROR:

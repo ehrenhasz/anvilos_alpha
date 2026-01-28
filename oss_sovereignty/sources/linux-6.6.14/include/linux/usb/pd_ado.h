@@ -1,14 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2017 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+
+
 
 #ifndef __LINUX_USB_PD_ADO_H
 #define __LINUX_USB_PD_ADO_H
 
-/* ADO : Alert Data Object */
+
 #define USB_PD_ADO_TYPE_SHIFT			24
 #define USB_PD_ADO_TYPE_MASK			0xff
 #define USB_PD_ADO_FIXED_BATT_SHIFT		20
@@ -39,4 +35,4 @@ static inline unsigned int usb_pd_ado_hot_swap_batt(u32 ado)
 	return (ado >> USB_PD_ADO_HOT_SWAP_BATT_SHIFT) &
 	       USB_PD_ADO_HOT_SWAP_BATT_MASK;
 }
-#endif /* __LINUX_USB_PD_ADO_H */
+#endif 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+
+
 
 #ifndef __LINUX_REGULATOR_MT6315_H
 #define __LINUX_REGULATOR_MT6315_H
@@ -18,7 +16,7 @@ enum {
 	MT6315_VBUCK_MAX,
 };
 
-/* Register */
+
 #define MT6315_TOP2_ELR7			0x139
 #define MT6315_TOP_TMA_KEY			0x39F
 #define MT6315_TOP_TMA_KEY_H			0x3A0
@@ -41,4 +39,4 @@ enum {
 #define PROTECTION_KEY_H			0x9C
 #define PROTECTION_KEY				0xEA
 
-#endif /* __LINUX_REGULATOR_MT6315_H */
+#endif 

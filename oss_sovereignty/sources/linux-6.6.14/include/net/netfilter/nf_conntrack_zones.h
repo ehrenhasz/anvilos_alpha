@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NF_CONNTRACK_ZONES_H
 #define _NF_CONNTRACK_ZONES_H
 
@@ -86,4 +86,4 @@ static inline bool nf_ct_zone_equal_any(const struct nf_conn *a,
 #endif
 }
 
-#endif /* _NF_CONNTRACK_ZONES_H */
+#endif 

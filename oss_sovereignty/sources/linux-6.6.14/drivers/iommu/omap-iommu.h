@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * omap iommu: main structures
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Written by Hiroshi DOYU <Hiroshi.DOYU@nokia.com>
- */
+
+
 
 #ifndef _OMAP_IOMMU_H
 #define _OMAP_IOMMU_H
@@ -25,24 +19,13 @@ struct iotlb_entry {
 	u32 endian, elsz, mixed;
 };
 
-/**
- * struct omap_iommu_device - omap iommu device data
- * @pgtable:	page table used by an omap iommu attached to a domain
- * @iommu_dev:	pointer to store an omap iommu instance attached to a domain
- */
+
 struct omap_iommu_device {
 	u32 *pgtable;
 	struct omap_iommu *iommu_dev;
 };
 
-/**
- * struct omap_iommu_domain - omap iommu domain
- * @num_iommus: number of iommus in this domain
- * @iommus:	omap iommu device data for all iommus in this domain
- * @dev:	Device using this domain.
- * @lock:	domain lock, should be taken when attaching/detaching
- * @domain:	generic domain handle used by iommu core code
- */
+
 struct omap_iommu_domain {
 	u32 num_iommus;
 	struct omap_iommu_device *iommus;
@@ -59,19 +42,16 @@ struct omap_iommu {
 	struct iommu_domain *domain;
 	struct dentry	*debug_dir;
 
-	spinlock_t	iommu_lock;	/* global for this whole object */
+	spinlock_t	iommu_lock;	
 
-	/*
-	 * We don't change iopgd for a situation like pgd for a task,
-	 * but share it globally for each iommu.
-	 */
+	
 	u32		*iopgd;
-	spinlock_t	page_table_lock; /* protect iopgd */
+	spinlock_t	page_table_lock; 
 	dma_addr_t	pd_dma;
 
 	int		nr_tlb_entries;
 
-	void *ctx; /* iommu context: registres saved area */
+	void *ctx; 
 
 	struct cr_regs *cr_ctx;
 	u32 num_cr_ctx;
@@ -85,16 +65,7 @@ struct omap_iommu {
 	u8 pwrst;
 };
 
-/**
- * struct omap_iommu_arch_data - omap iommu private data
- * @iommu_dev: handle of the OMAP iommu device
- * @dev: handle of the iommu device
- *
- * This is an omap iommu private data object, which binds an iommu user
- * to its iommu device. This object should be placed at the iommu user's
- * dev_archdata so generic IOMMU API can be used without having to
- * utilize omap-specific plumbing anymore.
- */
+
 struct omap_iommu_arch_data {
 	struct omap_iommu *iommu_dev;
 	struct device *dev;
@@ -110,9 +81,7 @@ struct iotlb_lock {
 	short vict;
 };
 
-/*
- * MMU Register offsets
- */
+
 #define MMU_REVISION		0x00
 #define MMU_IRQSTATUS		0x18
 #define MMU_IRQENABLE		0x1c
@@ -133,10 +102,8 @@ struct iotlb_lock {
 
 #define MMU_REG_SIZE		256
 
-/*
- * MMU Register bit definitions
- */
-/* IRQSTATUS & IRQENABLE */
+
+
 #define MMU_IRQ_MULTIHITFAULT	BIT(4)
 #define MMU_IRQ_TABLEWALKFAULT	BIT(3)
 #define MMU_IRQ_EMUMISS		BIT(2)
@@ -150,14 +117,14 @@ struct iotlb_lock {
 #define MMU_IRQ_TWL_MASK	(__MMU_IRQ_FAULT | MMU_IRQ_TABLEWALKFAULT)
 #define MMU_IRQ_TLB_MISS_MASK	(__MMU_IRQ_FAULT | MMU_IRQ_TLBMISS)
 
-/* MMU_CNTL */
+
 #define MMU_CNTL_SHIFT		1
 #define MMU_CNTL_MASK		(7 << MMU_CNTL_SHIFT)
 #define MMU_CNTL_EML_TLB	BIT(3)
 #define MMU_CNTL_TWL_EN		BIT(2)
 #define MMU_CNTL_MMU_EN		BIT(1)
 
-/* CAM */
+
 #define MMU_CAM_VATAG_SHIFT	12
 #define MMU_CAM_VATAG_MASK \
 	((~0UL >> MMU_CAM_VATAG_SHIFT) << MMU_CAM_VATAG_SHIFT)
@@ -169,7 +136,7 @@ struct iotlb_lock {
 #define MMU_CAM_PGSZ_4K		(2 << 0)
 #define MMU_CAM_PGSZ_16M	(3 << 0)
 
-/* RAM */
+
 #define MMU_RAM_PADDR_SHIFT	12
 #define MMU_RAM_PADDR_MASK \
 	((~0UL >> MMU_RAM_PADDR_SHIFT) << MMU_RAM_PADDR_SHIFT)
@@ -197,16 +164,12 @@ struct iotlb_lock {
 	 ((pgsz) == MMU_CAM_PGSZ_64K) ? 0xffff0000 :	\
 	 ((pgsz) == MMU_CAM_PGSZ_4K)  ? 0xfffff000 : 0)
 
-/*
- * DSP_SYSTEM registers and bit definitions (applicable only for DRA7xx DSP)
- */
+
 #define DSP_SYS_REVISION		0x00
 #define DSP_SYS_MMU_CONFIG		0x18
 #define DSP_SYS_MMU_CONFIG_EN_SHIFT	4
 
-/*
- * utilities for super page(16MB, 1MB, 64KB and 4KB)
- */
+
 
 #define iopgsz_max(bytes)			\
 	(((bytes) >= SZ_16M) ? SZ_16M :		\
@@ -228,9 +191,7 @@ struct iotlb_lock {
 
 #define iopgsz_ok(bytes) (bytes_to_iopgsz(bytes) >= 0)
 
-/*
- * global functions
- */
+
 
 struct cr_regs __iotlb_read_cr(struct omap_iommu *obj, int n);
 void iotlb_lock_get(struct omap_iommu *obj, struct iotlb_lock *l);
@@ -250,9 +211,7 @@ static inline void omap_iommu_debugfs_add(struct omap_iommu *obj) { }
 static inline void omap_iommu_debugfs_remove(struct omap_iommu *obj) { }
 #endif
 
-/*
- * register accessors
- */
+
 static inline u32 iommu_read_reg(struct omap_iommu *obj, size_t offs)
 {
 	return __raw_readl(obj->regbase + offs);
@@ -271,4 +230,4 @@ static inline int iotlb_cr_valid(struct cr_regs *cr)
 	return cr->cam & MMU_CAM_V;
 }
 
-#endif /* _OMAP_IOMMU_H */
+#endif 

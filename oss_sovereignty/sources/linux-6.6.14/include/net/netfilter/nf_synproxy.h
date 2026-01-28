@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NF_SYNPROXY_SHARED_H
 #define _NF_SYNPROXY_SHARED_H
 
@@ -84,6 +84,6 @@ static inline int
 nf_synproxy_ipv6_init(struct synproxy_net *snet, struct net *net) { return 0; }
 static inline void
 nf_synproxy_ipv6_fini(struct synproxy_net *snet, struct net *net) {};
-#endif /* CONFIG_IPV6 */
+#endif 
 
-#endif /* _NF_SYNPROXY_SHARED_H */
+#endif 

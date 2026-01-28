@@ -1,26 +1,4 @@
-/* Software floating-point emulation.
-   Definitions for IEEE Single Precision.
-   Copyright (C) 1997,1998,1999 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Richard Henderson (rth@cygnus.com),
-		  Jakub Jelinek (jj@ultra.linux.cz),
-		  David S. Miller (davem@redhat.com) and
-		  Peter Maydell (pmaydell@chiark.greenend.org.uk).
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If
-   not, write to the Free Software Foundation, Inc.,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifndef    __MATH_EMU_SINGLE_H__
 #define    __MATH_EMU_SINGLE_H__
@@ -40,8 +18,7 @@
 #define _FP_IMPLBIT_S		((_FP_W_TYPE)1 << (_FP_FRACBITS_S-1))
 #define _FP_OVERFLOW_S		((_FP_W_TYPE)1 << (_FP_WFRACBITS_S))
 
-/* The implementation of _FP_MUL_MEAT_S and _FP_DIV_MEAT_S should be
-   chosen by the target machine.  */
+
 
 union _FP_UNION_S
 {
@@ -113,4 +90,4 @@ union _FP_UNION_S
 #define _FP_FRAC_HIGH_S(X)	_FP_FRAC_HIGH_1(X)
 #define _FP_FRAC_HIGH_RAW_S(X)	_FP_FRAC_HIGH_1(X)
 
-#endif /* __MATH_EMU_SINGLE_H__ */
+#endif 

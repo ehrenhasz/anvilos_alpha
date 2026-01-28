@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_BUG_H
 #define _LINUX_BUG_H
 
@@ -16,7 +16,7 @@ struct pt_regs;
 
 #ifdef __CHECKER__
 #define MAYBE_BUILD_BUG_ON(cond) (0)
-#else /* __CHECKER__ */
+#else 
 
 #define MAYBE_BUILD_BUG_ON(cond)			\
 	do {						\
@@ -26,7 +26,7 @@ struct pt_regs;
 			BUG_ON(cond);                   \
 	} while (0)
 
-#endif	/* __CHECKER__ */
+#endif	
 
 #ifdef CONFIG_GENERIC_BUG
 #include <asm-generic/bug.h>
@@ -43,12 +43,12 @@ struct bug_entry *find_bug(unsigned long bugaddr);
 
 enum bug_trap_type report_bug(unsigned long bug_addr, struct pt_regs *regs);
 
-/* These are defined by the architecture */
+
 int is_valid_bugaddr(unsigned long addr);
 
 void generic_bug_clear_once(void);
 
-#else	/* !CONFIG_GENERIC_BUG */
+#else	
 
 static inline void *find_bug(unsigned long bugaddr)
 {
@@ -71,12 +71,9 @@ static inline void bug_get_file_line(struct bug_entry *bug, const char **file,
 
 static inline void generic_bug_clear_once(void) {}
 
-#endif	/* CONFIG_GENERIC_BUG */
+#endif	
 
-/*
- * Since detected data corruption should stop operation on the affected
- * structures. Return value must be checked and sanely acted on by caller.
- */
+
 static inline __must_check bool check_data_corruption(bool v) { return v; }
 #define CHECK_DATA_CORRUPTION(condition, fmt, ...)			 \
 	check_data_corruption(({					 \
@@ -91,4 +88,4 @@ static inline __must_check bool check_data_corruption(bool v) { return v; }
 		corruption;						 \
 	}))
 
-#endif	/* _LINUX_BUG_H */
+#endif	

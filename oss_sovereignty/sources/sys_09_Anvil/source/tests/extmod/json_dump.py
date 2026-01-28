@@ -12,9 +12,9 @@ json.dump({"a": (2, [3, None])}, s)
 print(s.getvalue())
 try:
     json.dump(123, 1)
-except (AttributeError, OSError):  # CPython and uPy have different errors
+except (AttributeError, OSError):  
     print("Exception")
 try:
     json.dump(123, {})
-except (AttributeError, OSError):  # CPython and uPy have different errors
+except (AttributeError, OSError):  
     print("Exception")

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 obj-$(CONFIG_DTPM) += dtpm.o
 obj-$(CONFIG_DTPM_CPU) += dtpm_cpu.o
 obj-$(CONFIG_DTPM_DEVFREQ) += dtpm_devfreq.o

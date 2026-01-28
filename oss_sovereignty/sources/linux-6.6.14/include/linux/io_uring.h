@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 #ifndef _LINUX_IO_URING_H
 #define _LINUX_IO_URING_H
 
@@ -9,14 +9,14 @@
 enum io_uring_cmd_flags {
 	IO_URING_F_COMPLETE_DEFER	= 1,
 	IO_URING_F_UNLOCKED		= 2,
-	/* the request is executed from poll, it should not be freed */
+	
 	IO_URING_F_MULTISHOT		= 4,
-	/* executed by io-wq */
+	
 	IO_URING_F_IOWQ			= 8,
-	/* int's last bit, sign checks are usually faster than a bit test */
+	
 	IO_URING_F_NONBLOCK		= INT_MIN,
 
-	/* ctx state flags, for URING_CMD */
+	
 	IO_URING_F_SQE128		= (1 << 8),
 	IO_URING_F_CQE32		= (1 << 9),
 	IO_URING_F_IOPOLL		= (1 << 10),
@@ -26,14 +26,14 @@ struct io_uring_cmd {
 	struct file	*file;
 	const struct io_uring_sqe *sqe;
 	union {
-		/* callback to defer completions to task context */
+		
 		void (*task_work_cb)(struct io_uring_cmd *cmd, unsigned);
-		/* used for polled completion */
+		
 		void *cookie;
 	};
 	u32		cmd_op;
 	u32		flags;
-	u8		pdu[32]; /* available inline for free use */
+	u8		pdu[32]; 
 };
 
 static inline const void *io_uring_sqe_cmd(const struct io_uring_sqe *sqe)
@@ -54,7 +54,7 @@ const char *io_uring_get_opcode(u8 opcode);
 void __io_uring_cmd_do_in_task(struct io_uring_cmd *ioucmd,
 			    void (*task_work_cb)(struct io_uring_cmd *, unsigned),
 			    unsigned flags);
-/* users should follow semantics of IOU_F_TWQ_LAZY_WAKE */
+
 void io_uring_cmd_do_in_task_lazy(struct io_uring_cmd *ioucmd,
 			void (*task_work_cb)(struct io_uring_cmd *, unsigned));
 

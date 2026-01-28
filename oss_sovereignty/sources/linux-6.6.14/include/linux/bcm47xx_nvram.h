@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- */
+
+
 
 #ifndef __BCM47XX_NVRAM_H
 #define __BCM47XX_NVRAM_H
@@ -50,4 +49,4 @@ static inline void bcm47xx_nvram_release_contents(char *nvram)
 };
 #endif
 
-#endif /* __BCM47XX_NVRAM_H */
+#endif 

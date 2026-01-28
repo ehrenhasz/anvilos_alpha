@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2021 Felix Fietkau <nbd@nbd.name> */
+
+
 
 #ifndef __MTK_WED_PRIV_H
 #define __MTK_WED_PRIV_H

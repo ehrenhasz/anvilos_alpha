@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2020, Mellanox Technologies inc. All rights reserved.
- *
- * This file is IBTA volume 1, chapter 12 declarations:
- *  CHAPTER 12: COMMUNICATION MANAGEMENT
- */
+
+
 #ifndef _IBTA_VOL1_C12_H_
 #define _IBTA_VOL1_C12_H_
 
@@ -36,7 +31,7 @@
 			  BUILD_BUG_ON_ZERO((total_len) % 32 != 0)];           \
 	}
 
-/* Table 106 REQ Message Contents */
+
 #define CM_REQ_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_req_msg, 0, 32)
 #define CM_REQ_VENDOR_ID CM_FIELD32_LOC(struct cm_req_msg, 5, 24)
 #define CM_REQ_SERVICE_ID CM_FIELD64_LOC(struct cm_req_msg, 8)
@@ -97,7 +92,7 @@
 #define CM_REQ_PRIVATE_DATA CM_FIELD_MLOC(struct cm_req_msg, 140, 736, void)
 CM_STRUCT(struct cm_req_msg, 140 * 8 + 736);
 
-/* Table 107 MRA Message Contents */
+
 #define CM_MRA_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_mra_msg, 0, 32)
 #define CM_MRA_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_mra_msg, 4, 32)
 #define CM_MRA_MESSAGE_MRAED CM_FIELD8_LOC(struct cm_mra_msg, 8, 2)
@@ -105,7 +100,7 @@ CM_STRUCT(struct cm_req_msg, 140 * 8 + 736);
 #define CM_MRA_PRIVATE_DATA CM_FIELD_MLOC(struct cm_mra_msg, 10, 1776, void)
 CM_STRUCT(struct cm_mra_msg, 10 * 8 + 1776);
 
-/* Table 108 REJ Message Contents */
+
 #define CM_REJ_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_rej_msg, 0, 32)
 #define CM_REJ_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_rej_msg, 4, 32)
 #define CM_REJ_MESSAGE_REJECTED CM_FIELD8_LOC(struct cm_rej_msg, 8, 2)
@@ -115,7 +110,7 @@ CM_STRUCT(struct cm_mra_msg, 10 * 8 + 1776);
 #define CM_REJ_PRIVATE_DATA CM_FIELD_MLOC(struct cm_rej_msg, 84, 1184, void)
 CM_STRUCT(struct cm_rej_msg, 84 * 8 + 1184);
 
-/* Table 110 REP Message Contents */
+
 #define CM_REP_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_rep_msg, 0, 32)
 #define CM_REP_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_rep_msg, 4, 32)
 #define CM_REP_LOCAL_Q_KEY CM_FIELD32_LOC(struct cm_rep_msg, 8, 32)
@@ -137,26 +132,26 @@ CM_STRUCT(struct cm_rej_msg, 84 * 8 + 1184);
 #define CM_REP_PRIVATE_DATA CM_FIELD_MLOC(struct cm_rep_msg, 36, 1568, void)
 CM_STRUCT(struct cm_rep_msg, 36 * 8 + 1568);
 
-/* Table 111 RTU Message Contents */
+
 #define CM_RTU_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_rtu_msg, 0, 32)
 #define CM_RTU_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_rtu_msg, 4, 32)
 #define CM_RTU_PRIVATE_DATA CM_FIELD_MLOC(struct cm_rtu_msg, 8, 1792, void)
 CM_STRUCT(struct cm_rtu_msg, 8 * 8 + 1792);
 
-/* Table 112 DREQ Message Contents */
+
 #define CM_DREQ_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_dreq_msg, 0, 32)
 #define CM_DREQ_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_dreq_msg, 4, 32)
 #define CM_DREQ_REMOTE_QPN_EECN CM_FIELD32_LOC(struct cm_dreq_msg, 8, 24)
 #define CM_DREQ_PRIVATE_DATA CM_FIELD_MLOC(struct cm_dreq_msg, 12, 1760, void)
 CM_STRUCT(struct cm_dreq_msg, 12 * 8 + 1760);
 
-/* Table 113 DREP Message Contents */
+
 #define CM_DREP_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_drep_msg, 0, 32)
 #define CM_DREP_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_drep_msg, 4, 32)
 #define CM_DREP_PRIVATE_DATA CM_FIELD_MLOC(struct cm_drep_msg, 8, 1792, void)
 CM_STRUCT(struct cm_drep_msg, 8 * 8 + 1792);
 
-/* Table 115 LAP Message Contents */
+
 #define CM_LAP_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_lap_msg, 0, 32)
 #define CM_LAP_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_lap_msg, 4, 32)
 #define CM_LAP_REMOTE_QPN_EECN CM_FIELD32_LOC(struct cm_lap_msg, 12, 24)
@@ -181,7 +176,7 @@ CM_STRUCT(struct cm_drep_msg, 8 * 8 + 1792);
 #define CM_LAP_PRIVATE_DATA CM_FIELD_MLOC(struct cm_lap_msg, 64, 1344, void)
 CM_STRUCT(struct cm_lap_msg, 64 * 8 + 1344);
 
-/* Table 116 APR Message Contents */
+
 #define CM_APR_LOCAL_COMM_ID CM_FIELD32_LOC(struct cm_apr_msg, 0, 32)
 #define CM_APR_REMOTE_COMM_ID CM_FIELD32_LOC(struct cm_apr_msg, 4, 32)
 #define CM_APR_ADDITIONAL_INFORMATION_LENGTH                                   \
@@ -192,7 +187,7 @@ CM_STRUCT(struct cm_lap_msg, 64 * 8 + 1344);
 #define CM_APR_PRIVATE_DATA CM_FIELD_MLOC(struct cm_apr_msg, 84, 1184, void)
 CM_STRUCT(struct cm_apr_msg, 84 * 8 + 1184);
 
-/* Table 119 SIDR_REQ Message Contents */
+
 #define CM_SIDR_REQ_REQUESTID CM_FIELD32_LOC(struct cm_sidr_req_msg, 0, 32)
 #define CM_SIDR_REQ_PARTITION_KEY CM_FIELD16_LOC(struct cm_sidr_req_msg, 4, 16)
 #define CM_SIDR_REQ_SERVICEID CM_FIELD64_LOC(struct cm_sidr_req_msg, 8)
@@ -200,7 +195,7 @@ CM_STRUCT(struct cm_apr_msg, 84 * 8 + 1184);
 	CM_FIELD_MLOC(struct cm_sidr_req_msg, 16, 1728, void)
 CM_STRUCT(struct cm_sidr_req_msg, 16 * 8 + 1728);
 
-/* Table 120 SIDR_REP Message Contents */
+
 #define CM_SIDR_REP_REQUESTID CM_FIELD32_LOC(struct cm_sidr_rep_msg, 0, 32)
 #define CM_SIDR_REP_STATUS CM_FIELD8_LOC(struct cm_sidr_rep_msg, 4, 8)
 #define CM_SIDR_REP_ADDITIONAL_INFORMATION_LENGTH                              \
@@ -216,4 +211,4 @@ CM_STRUCT(struct cm_sidr_req_msg, 16 * 8 + 1728);
 	CM_FIELD_MLOC(struct cm_sidr_rep_msg, 96, 1088, void)
 CM_STRUCT(struct cm_sidr_rep_msg, 96 * 8 + 1088);
 
-#endif /* _IBTA_VOL1_C12_H_ */
+#endif 

@@ -1,6 +1,0 @@
-/dts-v1/;
-#include "armada-3720-espressobin.dtsi"
-/ {
-	model = "Globalscale Marvell ESPRESSOBin Board";
-	compatible = "globalscale,espressobin", "marvell,armada3720", "marvell,armada3700";
-};

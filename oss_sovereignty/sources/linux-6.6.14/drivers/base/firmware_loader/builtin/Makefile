@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-y  += main.o
 
-# Create $(fwdir) from $(CONFIG_EXTRA_FIRMWARE_DIR) -- if it doesn't have a
-# leading /, it's relative to $(srctree).
+
+
 fwdir := $(CONFIG_EXTRA_FIRMWARE_DIR)
 fwdir := $(addprefix $(srctree)/,$(filter-out /%,$(fwdir)))$(filter /%,$(fwdir))
 
@@ -35,7 +35,7 @@ filechk_fwbin = \
 $(obj)/%.gen.S: FORCE
 	$(call filechk,fwbin)
 
-# The .o files depend on the binaries directly; the .S files don't.
+
 $(addprefix $(obj)/, $(firmware)): $(obj)/%.gen.o: $(fwdir)/%
 
 targets := $(patsubst $(obj)/%,%, \

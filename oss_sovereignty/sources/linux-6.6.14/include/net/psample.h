@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_PSAMPLE_H
 #define __NET_PSAMPLE_H
 
@@ -19,8 +19,8 @@ struct psample_metadata {
 	int in_ifindex;
 	int out_ifindex;
 	u16 out_tc;
-	u64 out_tc_occ;	/* bytes */
-	u64 latency;	/* nanoseconds */
+	u64 out_tc_occ;	
+	u64 latency;	
 	u8 out_tc_valid:1,
 	   out_tc_occ_valid:1,
 	   latency_valid:1,
@@ -48,4 +48,4 @@ static inline void psample_sample_packet(struct psample_group *group,
 
 #endif
 
-#endif /* __NET_PSAMPLE_H */
+#endif 

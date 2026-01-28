@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __CPUPOWER_CPUIDLE_H__
 #define __CPUPOWER_CPUIDLE_H__
 
@@ -21,4 +21,4 @@ unsigned int cpuidle_state_count(unsigned int cpu);
 char *cpuidle_get_governor(void);
 char *cpuidle_get_driver(void);
 
-#endif /* __CPUPOWER_HELPERS_SYSFS_H__ */
+#endif 

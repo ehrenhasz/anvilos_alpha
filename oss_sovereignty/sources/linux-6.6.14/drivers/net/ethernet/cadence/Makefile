@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the Atmel network device drivers.
-#
+
+
+
+
 macb-y	:= macb_main.o
 
 ifeq ($(CONFIG_MACB_USE_HWSTAMP),y)

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (C) 2018 Microchip Technology Inc. */
+
+
 
 #ifndef _LAN743X_PTP_H
 #define _LAN743X_PTP_H
@@ -8,14 +8,12 @@
 #include "linux/netdevice.h"
 
 #define LAN7430_N_LED			4
-#define LAN7430_N_GPIO			4	/* multiplexed with PHY LEDs */
+#define LAN7430_N_GPIO			4	
 #define LAN7431_N_GPIO			12
 
 #define LAN743X_PTP_N_GPIO		LAN7431_N_GPIO
 
-/* the number of periodic outputs is limited by number of
- * PTP clock event channels
- */
+
 #define LAN743X_PTP_N_EVENT_CHAN	2
 #define LAN743X_PTP_N_PEROUT		LAN743X_PTP_N_EVENT_CHAN
 #define LAN743X_PTP_N_EXTTS		4
@@ -24,9 +22,9 @@
 
 struct lan743x_adapter;
 
-/* GPIO */
+
 struct lan743x_gpio {
-	/* gpio_lock: used to prevent concurrent access to gpio settings */
+	
 	spinlock_t gpio_lock;
 
 	int used_bits;
@@ -59,8 +57,8 @@ int lan743x_ptp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd);
 #define PTP_FLAG_ISR_ENABLED			BIT(2)
 
 struct lan743x_ptp_perout {
-	int  event_ch;	/* PTP event channel (0=channel A, 1=channel B) */
-	int  gpio_pin;	/* GPIO pin where output appears */
+	int  event_ch;	
+	int  gpio_pin;	
 };
 
 struct lan743x_extts {
@@ -71,7 +69,7 @@ struct lan743x_extts {
 struct lan743x_ptp {
 	int flags;
 
-	/* command_lock: used to prevent concurrent ptp commands */
+	
 	struct mutex	command_lock;
 
 	struct ptp_clock *ptp_clock;
@@ -80,13 +78,13 @@ struct lan743x_ptp {
 
 	unsigned long used_event_ch;
 	struct lan743x_ptp_perout perout[LAN743X_PTP_N_PEROUT];
-	int ptp_io_perout[LAN743X_PTP_N_PEROUT]; /* PTP event channel (0=channel A, 1=channel B) */
+	int ptp_io_perout[LAN743X_PTP_N_PEROUT]; 
 	struct lan743x_extts extts[LAN743X_PTP_N_EXTTS];
 
 	bool leds_multiplexed;
 	bool led_enabled[LAN7430_N_LED];
 
-	/* tx_ts_lock: used to prevent concurrent access to timestamp arrays */
+	
 	spinlock_t	tx_ts_lock;
 	int pending_tx_timestamps;
 	struct sk_buff *tx_ts_skb_queue[LAN743X_PTP_NUMBER_OF_TX_TIMESTAMPS];
@@ -98,4 +96,4 @@ struct lan743x_ptp {
 	int tx_ts_queue_size;
 };
 
-#endif /* _LAN743X_PTP_H */
+#endif 

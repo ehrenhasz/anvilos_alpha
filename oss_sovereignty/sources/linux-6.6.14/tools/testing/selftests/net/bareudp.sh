@@ -1,4 +1,4 @@
-ERR=4 # Return 4 by default, which is the SKIP code for kselftest
+ERR=4 
 PING6="ping"
 PAUSE_ON_FAIL="no"
 readonly NS0=$(mktemp -u ns0-XXXXXXXX)

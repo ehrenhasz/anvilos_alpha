@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0-only
-# Makefile for the Linux video drivers.
-# 5 Aug 1999, James Simmons, <mailto:jsimmons@edgeglobal.com>
-# Rewritten to use lists instead of if-statements.
 
-# Each configuration option enables a list of files.
+
+
+
+
+
 
 my-obj-$(CONFIG_FB_MATROX_G)      += g450_pll.o matroxfb_g450.o matroxfb_crtc2.o
 

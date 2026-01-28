@@ -35,8 +35,8 @@ UL_DEBUG_DECLARE_MASK(lscpu);
 #define _PATH_ACPI_PPTT		"/sys/firmware/acpi/tables/PPTT"
 
 struct lscpu_cache {
-	int		id;		/* unique identifier */
-	int		nth;		/* cache<number> from cpuinfo */
+	int		id;		
+	int		nth;		
 	char		*name;
 	char		*type;
 	char		*allocation_policy;
@@ -57,26 +57,26 @@ struct lscpu_cputype {
 	int	refcount;
 
 	char	*vendor;
-	int	vendor_id;	/* created by lscpu_decode_arm() */
-	char	*bios_vendor;	/* aarch64 */
-	char	*machinetype;	/* s390 */
+	int	vendor_id;	
+	char	*bios_vendor;	
+	char	*machinetype;	
 	char	*family;
 	char	*model;
 	char	*modelname;
-	char	*bios_modelname; /* aarch64 */
-	char	*bios_family; /* aarch64 */
-	char	*revision;	/* alternative for model (ppc) */
+	char	*bios_modelname; 
+	char	*bios_family; 
+	char	*revision;	
 	char	*stepping;
 	char    *bogomips;
 	char	*flags;
-	char	*mtid;		/* maximum thread id (s390) */
-	char	*addrsz;	/* address sizes */
-	int	dispatching;	/* -1 if not evailable, DIST_* */
-	int	freqboost;	/* -1 if not evailable */
+	char	*mtid;		
+	char	*addrsz;	
+	int	dispatching;	
+	int	freqboost;	
 
-	size_t	physsockets;	/* Physical sockets (modules) */
-	size_t	physchips;	/* Physical chips */
-	size_t	physcoresperchip;	/* Physical cores per chip */
+	size_t	physsockets;	
+	size_t	physchips;	
+	size_t	physcoresperchip;	
 
 	size_t	nthreads_per_core;
 	size_t	ncores_per_socket;
@@ -84,10 +84,10 @@ struct lscpu_cputype {
 	size_t	nbooks_per_drawer;
 	size_t	ndrawers_per_system;
 
-	char	*dynamic_mhz;	/* s390; copy from the first CPU */
-	char	*static_mhz;	/* s390; copy from the first CPU */
+	char	*dynamic_mhz;	
+	char	*static_mhz;	
 
-	/* siblings maps */
+	
 	size_t		ncores;
 	cpu_set_t	**coremaps;
 	size_t		nsockets;
@@ -102,18 +102,18 @@ struct lscpu_cputype {
 			has_polarization : 1,
 			has_addresses : 1;
 
-	size_t nr_socket_on_cluster; /* the number of sockets if the is_cluster is 1 */
+	size_t nr_socket_on_cluster; 
 
-	char	*isa;	/* loongarch */
+	char	*isa;	
 };
 
-/* dispatching modes */
+
 enum {
 	DISP_HORIZONTAL = 0,
 	DISP_VERTICAL	= 1
 };
 
-/* cpu polarization */
+
 enum {
 	POLAR_UNKNOWN	= 0,
 	POLAR_VLOW,
@@ -128,12 +128,12 @@ struct lscpu_cpu {
 
 	int logical_id;
 
-	char	*bogomips;	/* per-CPU bogomips */
-	char	*mhz;		/* freq from cpuinfo */
-	char	*dynamic_mhz;   /* from cpuinf for s390 */
-	char	*static_mhz;	/* from cpuinf for s390 */
-	float	mhz_max_freq;	/* realtime freq from /sys/.../cpuinfo_max_freq */
-	float	mhz_min_freq;	/* realtime freq from /sys/.../cpuinfo_min_freq */
+	char	*bogomips;	
+	char	*mhz;		
+	char	*dynamic_mhz;   
+	char	*static_mhz;	
+	float	mhz_max_freq;	
+	float	mhz_min_freq;	
 	float   mhz_cur_freq;
 
 	int	coreid;
@@ -141,13 +141,13 @@ struct lscpu_cpu {
 	int	bookid;
 	int	drawerid;
 
-	int	polarization;	/* POLAR_* */
-	int	address;	/* physical cpu address */
-	int	configured;	/* cpu configured */
+	int	polarization;	
+	int	address;	
+	int	configured;	
 };
 
 struct lscpu_arch {
-	char	*name;		/* uname() .machine */
+	char	*name;		
 
 	unsigned int	bit32:1,
 			bit64:1;
@@ -158,7 +158,7 @@ struct lscpu_vulnerability {
 	char	*text;
 };
 
-/* virtualization types */
+
 enum {
 	VIRT_TYPE_NONE	= 0,
 	VIRT_TYPE_PARA,
@@ -166,19 +166,19 @@ enum {
 	VIRT_TYPE_CONTAINER
 };
 
-/* hypervisor vendors */
+
 enum {
 	VIRT_VENDOR_NONE	= 0,
 	VIRT_VENDOR_XEN,
 	VIRT_VENDOR_KVM,
 	VIRT_VENDOR_MSHV,
 	VIRT_VENDOR_VMWARE,
-	VIRT_VENDOR_IBM,		/* sys-z powervm */
+	VIRT_VENDOR_IBM,		
 	VIRT_VENDOR_VSERVER,
 	VIRT_VENDOR_UML,
-	VIRT_VENDOR_INNOTEK,		/* VBOX */
+	VIRT_VENDOR_INNOTEK,		
 	VIRT_VENDOR_HITACHI,
-	VIRT_VENDOR_PARALLELS,	/* OpenVZ/VIrtuozzo */
+	VIRT_VENDOR_PARALLELS,	
 	VIRT_VENDOR_VBOX,
 	VIRT_VENDOR_OS400,
 	VIRT_VENDOR_PHYP,
@@ -187,58 +187,58 @@ enum {
 };
 
 struct lscpu_virt {
-	char	*cpuflag;	/* virtualization flag (vmx, svm) */
-	char	*hypervisor;	/* hypervisor software */
-	int	vendor;		/* VIRT_VENDOR_* */
-	int	type;		/* VIRT_TYPE_* ? */
+	char	*cpuflag;	
+	char	*hypervisor;	
+	int	vendor;		
+	int	type;		
 
 };
 
 enum {
-	LSCPU_OUTPUT_SUMMARY = 0,	/* default */
+	LSCPU_OUTPUT_SUMMARY = 0,	
 	LSCPU_OUTPUT_CACHES,
 	LSCPU_OUTPUT_PARSABLE,
 	LSCPU_OUTPUT_READABLE
 };
 
 struct lscpu_cxt {
-	int maxcpus;		/* size in bits of kernel cpu mask */
+	int maxcpus;		
 	size_t setsize;
-	const char *prefix;	/* path to /sys and /proc snapshot or NULL */
+	const char *prefix;	
 
-	struct path_cxt	*syscpu; /* _PATH_SYS_CPU path handler */
-	struct path_cxt *procfs; /* /proc path handler */
-	struct path_cxt *rootfs; /* / path handler */
+	struct path_cxt	*syscpu; 
+	struct path_cxt *procfs; 
+	struct path_cxt *rootfs; 
 
 	size_t ncputypes;
 	struct lscpu_cputype **cputypes;
 
-	size_t npossibles;	/* number of possible CPUs */
-	struct lscpu_cpu **cpus; /* possible CPUs, contains gaps (cups[n]=NULL) */
+	size_t npossibles;	
+	struct lscpu_cpu **cpus; 
 
 	size_t npresents;
-	cpu_set_t *present;	/* mask with present CPUs */
+	cpu_set_t *present;	
 
-	size_t nonlines;	/* aka number of trhreads */
-	cpu_set_t *online;	/* mask with online CPUs */
+	size_t nonlines;	
+	cpu_set_t *online;	
 
 	struct lscpu_arch *arch;
 	struct lscpu_virt *virt;
 
-	struct lscpu_vulnerability *vuls;	/* array of CPU vulnerabilities */
-	size_t  nvuls;				/* number of CPU vulnerabilities */
+	struct lscpu_vulnerability *vuls;	
+	size_t  nvuls;				
 
-	struct lscpu_cache *caches;		/* all instances of the all caches from /sys */
+	struct lscpu_cache *caches;		
 	size_t ncaches;
 
 	struct lscpu_cache *ecaches;
-	size_t necaches;		/* extra caches (s390) from /proc/cpuinfo */
+	size_t necaches;		
 
-	size_t nnodes;		/* number of NUMA modes */
-	int *idx2nodenum;	/* Support for discontinuous nodes */
-	cpu_set_t **nodemaps;	/* array with NUMA nodes */
+	size_t nnodes;		
+	int *idx2nodenum;	
+	cpu_set_t **nodemaps;	
 
-	int mode;	/* LSCPU_OUTPUT_* */
+	int mode;	
 
 	unsigned int noalive : 1,
 		     show_online : 1,
@@ -249,7 +249,7 @@ struct lscpu_cxt {
 		     json : 1,
 		     bytes : 1;
 
-	int is_cluster; /* For aarch64 if the machine doesn't have ACPI PPTT */
+	int is_cluster; 
 };
 
 #define is_cpu_online(_cxt, _cpu) \
@@ -320,7 +320,7 @@ struct dmi_info {
 	char *manufacturer;
 	int sockets;
 
-	/* Processor Information */
+	
 	uint16_t processor_family;
 	char *processor_manufacturer;
 	char *processor_version;
@@ -334,4 +334,4 @@ char *dmi_string(const struct lscpu_dmi_header *dm, uint8_t s);
 int parse_dmi_table(uint16_t len, uint16_t num, uint8_t *data, struct dmi_info *di);
 size_t get_number_of_physical_sockets_from_dmi(void);
 int dmi_decode_cputype(struct lscpu_cputype *);
-#endif /* LSCPU_H */
+#endif 

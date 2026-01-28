@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __SPI_CAVIUM_H
 #define __SPI_CAVIUM_H
 
@@ -31,7 +31,7 @@ struct octeon_spi {
 int octeon_spi_transfer_one_message(struct spi_master *master,
 				    struct spi_message *msg);
 
-/* MPI register descriptions */
+
 
 #define CVMX_MPI_CFG (CVMX_ADD_IO_SEG(0x0001070000001000ull))
 #define CVMX_MPI_DATX(offset) (CVMX_ADD_IO_SEG(0x0001070000001080ull) + ((offset) & 15) * 8)
@@ -330,4 +330,4 @@ union cvmx_mpi_tx {
 	struct cvmx_mpi_tx_cn61xx cnf71xx;
 };
 
-#endif /* __SPI_CAVIUM_H */
+#endif 

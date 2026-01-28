@@ -1,23 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+
 
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
@@ -34,12 +15,7 @@
 #include <linux/tracepoint.h>
 #include <sys/types.h>
 
-/*
- * Generic support for single argument tracepoints of the form:
- *
- * DTRACE_PROBE1(...,
- *     taskq_ent_t *, ...);
- */
+
 DECLARE_EVENT_CLASS(zfs_taskq_ent_class,
     TP_PROTO(taskq_ent_t *taskq_ent),
     TP_ARGS(taskq_ent),
@@ -58,7 +34,7 @@ DEFINE_TASKQ_EVENT(zfs_taskq_ent__birth);
 DEFINE_TASKQ_EVENT(zfs_taskq_ent__start);
 DEFINE_TASKQ_EVENT(zfs_taskq_ent__finish);
 
-#endif /* _TRACE_TASKQ_H */
+#endif 
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
@@ -68,16 +44,11 @@ DEFINE_TASKQ_EVENT(zfs_taskq_ent__finish);
 
 #else
 
-/*
- * When tracepoints are not available, a DEFINE_DTRACE_PROBE* macro is
- * needed for each DTRACE_PROBE.  These will be used to generate stub
- * tracing functions and prototypes for those functions.  See
- * include/os/linux/spl/sys/trace.h.
- */
+
 
 DEFINE_DTRACE_PROBE1(taskq_ent__birth);
 DEFINE_DTRACE_PROBE1(taskq_ent__start);
 DEFINE_DTRACE_PROBE1(taskq_ent__finish);
 
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif 
+#endif 

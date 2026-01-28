@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 mxc-clk-objs += clk.o
 mxc-clk-objs += clk-busy.o

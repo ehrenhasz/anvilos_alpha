@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM intel-sst
 
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
+
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR intel_sst
 
@@ -150,7 +147,7 @@ DEFINE_EVENT(sst_ipc_mailbox_info, sst_ipc_outbox_write,
 
 );
 
-#endif /* _TRACE_SST_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

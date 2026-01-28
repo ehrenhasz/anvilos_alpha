@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OMAP GPIO handling defines and functions
- *
- * Copyright (C) 2003-2005 Nokia Corporation
- *
- * Written by Juha Yrjölä <juha.yrjola@nokia.com>
- */
+
+
 
 #ifndef __ASM_ARCH_OMAP_GPIO_H
 #define __ASM_ARCH_OMAP_GPIO_H
@@ -17,10 +11,7 @@
 
 #define OMAP1_MPUIO_BASE			0xfffb5000
 
-/*
- * These are the omap15xx/16xx offsets. The omap7xx offset are
- * OMAP_MPUIO_ / 2 offsets below.
- */
+
 #define OMAP_MPUIO_INPUT_LATCH		0x00
 #define OMAP_MPUIO_OUTPUT		0x04
 #define OMAP_MPUIO_IO_CNTL		0x08
@@ -37,9 +28,7 @@
 
 #define OMAP34XX_NR_GPIOS		6
 
-/*
- * OMAP1510 GPIO registers
- */
+
 #define OMAP1510_GPIO_DATA_INPUT	0x00
 #define OMAP1510_GPIO_DATA_OUTPUT	0x04
 #define OMAP1510_GPIO_DIR_CONTROL	0x08
@@ -50,9 +39,7 @@
 
 #define OMAP1510_IH_GPIO_BASE		64
 
-/*
- * OMAP1610 specific GPIO registers
- */
+
 #define OMAP1610_GPIO_REVISION		0x0000
 #define OMAP1610_GPIO_SYSCONFIG		0x0010
 #define OMAP1610_GPIO_SYSSTATUS		0x0014
@@ -71,9 +58,7 @@
 #define OMAP1610_GPIO_SET_WAKEUPENA	0x00e8
 #define OMAP1610_GPIO_SET_DATAOUT	0x00f0
 
-/*
- * OMAP7XX specific GPIO registers
- */
+
 #define OMAP7XX_GPIO_DATA_INPUT		0x00
 #define OMAP7XX_GPIO_DATA_OUTPUT	0x04
 #define OMAP7XX_GPIO_DIR_CONTROL	0x08
@@ -81,9 +66,7 @@
 #define OMAP7XX_GPIO_INT_MASK		0x10
 #define OMAP7XX_GPIO_INT_STATUS		0x14
 
-/*
- * omap2+ specific GPIO registers
- */
+
 #define OMAP24XX_GPIO_REVISION		0x0000
 #define OMAP24XX_GPIO_SYSCONFIG		0x0010
 #define OMAP24XX_GPIO_IRQSTATUS1	0x0018
@@ -182,19 +165,19 @@ struct omap_gpio_reg_offs {
 
 struct omap_gpio_platform_data {
 	int bank_type;
-	int bank_width;		/* GPIO bank width */
-	int bank_stride;	/* Only needed for omap1 MPUIO */
-	bool dbck_flag;		/* dbck required or not - True for OMAP3&4 */
-	bool loses_context;	/* whether the bank would ever lose context */
-	bool is_mpuio;		/* whether the bank is of type MPUIO */
+	int bank_width;		
+	int bank_stride;	
+	bool dbck_flag;		
+	bool loses_context;	
+	bool is_mpuio;		
 	u32 non_wakeup_gpios;
 
 	const struct omap_gpio_reg_offs *regs;
 
-	/* Return context loss count due to PM states changing */
+	
 	int (*get_context_loss_count)(struct device *dev);
 };
 
-#endif /* __ASSEMBLER__ */
+#endif 
 
 #endif

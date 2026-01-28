@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2019 Google, Inc.
- *
- * Authors:
- * Sean Paul <seanpaul@chromium.org>
- */
+
+
 #ifndef DRM_SELF_REFRESH_HELPER_H_
 #define DRM_SELF_REFRESH_HELPER_H_
 

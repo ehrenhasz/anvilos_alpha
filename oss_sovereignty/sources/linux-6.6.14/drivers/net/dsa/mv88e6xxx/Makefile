@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 obj-$(CONFIG_NET_DSA_MV88E6XXX) += mv88e6xxx.o
 mv88e6xxx-objs := chip.o
 mv88e6xxx-objs += devlink.o
@@ -21,5 +21,5 @@ mv88e6xxx-objs += smi.o
 mv88e6xxx-objs += switchdev.o
 mv88e6xxx-objs += trace.o
 
-# for tracing framework to find trace.h
+
 CFLAGS_trace.o := -I$(src)

@@ -1,30 +1,26 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_SBQ_CMD_H_
 #define _ICE_SBQ_CMD_H_
 
-/* This header file defines the Sideband Queue commands, error codes and
- * descriptor format. It is shared between Firmware and Software.
- */
 
-/* Sideband Queue command structure and opcodes */
+
+
 enum ice_sbq_opc {
-	/* Sideband Queue commands */
+	
 	ice_sbq_opc_neigh_dev_req			= 0x0C00,
 	ice_sbq_opc_neigh_dev_ev			= 0x0C01
 };
 
-/* Sideband Queue descriptor. Indirect command
- * and non posted
- */
+
 struct ice_sbq_cmd_desc {
 	__le16 flags;
 	__le16 opcode;
 	__le16 datalen;
 	__le16 cmd_retval;
 
-	/* Opaque message data */
+	
 	__le32 cookie_high;
 	__le32 cookie_low;
 
@@ -81,7 +77,7 @@ struct ice_sbq_msg_cmpl {
 	__le32 data;
 };
 
-/* Internal struct */
+
 struct ice_sbq_msg_input {
 	u8 dest_dev;
 	u8 opcode;
@@ -89,4 +85,4 @@ struct ice_sbq_msg_input {
 	u32 msg_addr_high;
 	u32 data;
 };
-#endif /* _ICE_SBQ_CMD_H_ */
+#endif 

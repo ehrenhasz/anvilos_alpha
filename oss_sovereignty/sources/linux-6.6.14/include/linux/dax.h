@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_DAX_H
 #define _LINUX_DAX_H
 
@@ -20,37 +20,21 @@ enum dax_access_mode {
 };
 
 struct dax_operations {
-	/*
-	 * direct_access: translate a device-relative
-	 * logical-page-offset into an absolute physical pfn. Return the
-	 * number of pages available for DAX at that pfn.
-	 */
+	
 	long (*direct_access)(struct dax_device *, pgoff_t, long,
 			enum dax_access_mode, void **, pfn_t *);
-	/*
-	 * Validate whether this device is usable as an fsdax backing
-	 * device.
-	 */
+	
 	bool (*dax_supported)(struct dax_device *, struct block_device *, int,
 			sector_t, sector_t);
-	/* zero_page_range: required operation. Zero page range   */
+	
 	int (*zero_page_range)(struct dax_device *, pgoff_t, size_t);
-	/*
-	 * recovery_write: recover a poisoned range by DAX device driver
-	 * capable of clearing poison.
-	 */
+	
 	size_t (*recovery_write)(struct dax_device *dax_dev, pgoff_t pgoff,
 			void *addr, size_t bytes, struct iov_iter *iter);
 };
 
 struct dax_holder_operations {
-	/*
-	 * notify_failure - notify memory failure into inner holder device
-	 * @dax_dev: the dax device which contains the holder
-	 * @offset: offset on this dax device where memory failure occurs
-	 * @len: length of this memory failure event
-	 * @flags: action flags for memory failure handler
-	 */
+	
 	int (*notify_failure)(struct dax_device *dax_dev, u64 offset,
 			u64 len, int mf_flags);
 };
@@ -66,9 +50,7 @@ bool dax_synchronous(struct dax_device *dax_dev);
 void set_dax_synchronous(struct dax_device *dax_dev);
 size_t dax_recovery_write(struct dax_device *dax_dev, pgoff_t pgoff,
 		void *addr, size_t bytes, struct iov_iter *i);
-/*
- * Check if given mapping is supported by the file / underlying device.
- */
+
 static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
 					     struct dax_device *dax_dev)
 {
@@ -86,10 +68,7 @@ static inline void *dax_holder(struct dax_device *dax_dev)
 static inline struct dax_device *alloc_dax(void *private,
 		const struct dax_operations *ops)
 {
-	/*
-	 * Callers should check IS_ENABLED(CONFIG_DAX) to know if this
-	 * NULL is an error or expected.
-	 */
+	
 	return NULL;
 }
 static inline void put_dax(struct dax_device *dax_dev)
@@ -151,7 +130,7 @@ static inline struct dax_device *fs_dax_get_by_bdev(struct block_device *bdev,
 static inline void fs_put_dax(struct dax_device *dax_dev, void *holder)
 {
 }
-#endif /* CONFIG_BLOCK && CONFIG_FS_DAX */
+#endif 
 
 #if IS_ENABLED(CONFIG_FS_DAX)
 int dax_writeback_mapping_range(struct address_space *mapping,
@@ -224,7 +203,7 @@ static inline int dax_read_lock(void)
 static inline void dax_read_unlock(int id)
 {
 }
-#endif /* CONFIG_DAX */
+#endif 
 bool dax_alive(struct dax_device *dax_dev);
 void *dax_get_private(struct dax_device *dax_dev);
 long dax_direct_access(struct dax_device *dax_dev, pgoff_t pgoff, long nr_pages,
@@ -261,14 +240,7 @@ static inline bool dax_mapping(struct address_space *mapping)
 	return mapping->host && IS_DAX(mapping->host);
 }
 
-/*
- * Due to dax's memory and block duo personalities, hwpoison reporting
- * takes into consideration which personality is presently visible.
- * When dax acts like a block device, such as in block IO, an encounter of
- * dax hwpoison is reported as -EIO.
- * When dax acts like memory, such as in page fault, a detection of hwpoison
- * is reported as -EHWPOISON which leads to VM_FAULT_HWPOISON.
- */
+
 static inline int dax_mem2blk_err(int err)
 {
 	return (err == -EHWPOISON) ? -EIO : err;

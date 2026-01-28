@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Ltd. All rights reserved.
- */
+
+
 #ifndef __QCOM_PMIC_PDPHY_H__
 #define __QCOM_PMIC_PDPHY_H__
 
@@ -13,7 +10,7 @@
 #define USB_PDPHY_MAX_DATA_OBJ_LEN	28
 #define USB_PDPHY_MSG_HDR_LEN		2
 
-/* PD PHY register offsets and bit fields */
+
 #define USB_PDPHY_MSG_CONFIG_REG	0x40
 #define MSG_CONFIG_PORT_DATA_ROLE	BIT(3)
 #define MSG_CONFIG_PORT_POWER_ROLE	BIT(2)
@@ -55,19 +52,19 @@
 
 #define USB_PDPHY_RX_BUFFER_REG		0x80
 
-/* VDD regulator */
-#define VDD_PDPHY_VOL_MIN		2800000	/* uV */
-#define VDD_PDPHY_VOL_MAX		3300000	/* uV */
-#define VDD_PDPHY_HPM_LOAD		3000	/* uA */
 
-/* Message Spec Rev field */
+#define VDD_PDPHY_VOL_MIN		2800000	
+#define VDD_PDPHY_VOL_MAX		3300000	
+#define VDD_PDPHY_HPM_LOAD		3000	
+
+
 #define PD_MSG_HDR_REV(hdr)		(((hdr) >> 6) & 3)
 
-/* timers */
-#define RECEIVER_RESPONSE_TIME		15	/* tReceiverResponse */
-#define HARD_RESET_COMPLETE_TIME	5	/* tHardResetComplete */
 
-/* Interrupt numbers */
+#define RECEIVER_RESPONSE_TIME		15	
+#define HARD_RESET_COMPLETE_TIME	5	
+
+
 #define PMIC_PDPHY_SIG_TX_IRQ		0x0
 #define PMIC_PDPHY_SIG_RX_IRQ		0x1
 #define PMIC_PDPHY_MSG_TX_IRQ		0x2
@@ -77,7 +74,7 @@
 #define PMIC_PDPHY_MSG_RX_DISCARD_IRQ	0x6
 #define PMIC_PDPHY_FR_SWAP_IRQ		0x7
 
-/* Resources */
+
 #define PMIC_PDPHY_MAX_IRQS		0x08
 
 struct pmic_typec_pdphy_irq_params {
@@ -90,7 +87,7 @@ struct pmic_typec_pdphy_resources {
 	struct pmic_typec_pdphy_irq_params	irq_params[PMIC_PDPHY_MAX_IRQS];
 };
 
-/* API */
+
 struct pmic_typec_pdphy;
 
 struct pmic_typec_pdphy *qcom_pmic_typec_pdphy_alloc(struct device *dev);
@@ -116,4 +113,4 @@ int qcom_pmic_typec_pdphy_pd_transmit(struct pmic_typec_pdphy *pmic_typec_pdphy,
 				      const struct pd_message *msg,
 				      unsigned int negotiated_rev);
 
-#endif /* __QCOM_PMIC_TYPEC_PDPHY_H__ */
+#endif 

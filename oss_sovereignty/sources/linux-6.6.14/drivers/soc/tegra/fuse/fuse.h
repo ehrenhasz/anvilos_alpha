@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2010 Google, Inc.
- * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author:
- *	Colin Cross <ccross@android.com>
- */
+
+
 
 #ifndef __DRIVERS_MISC_TEGRA_FUSE_H
 #define __DRIVERS_MISC_TEGRA_FUSE_H
@@ -53,7 +47,7 @@ struct tegra_fuse {
 	u32 (*read)(struct tegra_fuse *fuse, unsigned int offset);
 	const struct tegra_fuse_soc *soc;
 
-	/* APBDMA on Tegra20 */
+	
 	struct {
 		struct mutex lock;
 		struct completion wait;

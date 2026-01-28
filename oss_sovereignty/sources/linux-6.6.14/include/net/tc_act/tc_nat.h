@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_TC_NAT_H
 #define __NET_TC_NAT_H
 
@@ -20,4 +20,4 @@ struct tcf_nat {
 
 #define to_tcf_nat(a) ((struct tcf_nat *)a)
 
-#endif /* __NET_TC_NAT_H */
+#endif 

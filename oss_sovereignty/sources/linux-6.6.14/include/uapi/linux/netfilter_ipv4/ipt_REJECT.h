@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _IPT_REJECT_H
 #define _IPT_REJECT_H
 
@@ -15,7 +15,7 @@ enum ipt_reject_with {
 };
 
 struct ipt_reject_info {
-	enum ipt_reject_with with;      /* reject type */
+	enum ipt_reject_with with;      
 };
 
-#endif /*_IPT_REJECT_H*/
+#endif 

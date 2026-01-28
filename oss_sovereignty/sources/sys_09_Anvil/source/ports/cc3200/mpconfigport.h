@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2015 Daniel Campora
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #include <stdint.h>
 
@@ -32,7 +7,7 @@
 #include "semphr.h"
 #endif
 
-// options to control how MicroPython is built
+
 
 #define MICROPY_GC_STACK_ENTRY_TYPE                 uint16_t
 #define MICROPY_ALLOC_PATH_MAX                      (128)
@@ -54,16 +29,16 @@
 #define MICROPY_FLOAT_IMPL                          (MICROPY_FLOAT_IMPL_NONE)
 #define MICROPY_OPT_COMPUTED_GOTO                   (0)
 #define MICROPY_READER_VFS                          (1)
-#ifndef DEBUG // we need ram on the launchxl while debugging
+#ifndef DEBUG 
 #define MICROPY_CPYTHON_COMPAT                      (1)
 #else
 #define MICROPY_CPYTHON_COMPAT                      (0)
 #endif
 
-// fatfs configuration used in ffconf.h
+
 #define MICROPY_FATFS_ENABLE_LFN                    (2)
 #define MICROPY_FATFS_MAX_LFN                       (MICROPY_ALLOC_PATH_MAX)
-#define MICROPY_FATFS_LFN_CODE_PAGE                 437 // 1=SFN/ANSI 437=LFN/U.S.(OEM)
+#define MICROPY_FATFS_LFN_CODE_PAGE                 437 
 #define MICROPY_FATFS_RPATH                         (2)
 #define MICROPY_FATFS_REENTRANT                     (1)
 #define MICROPY_FATFS_TIMEOUT                       (2500)
@@ -137,7 +112,7 @@
 #define MICROPY_EMERGENCY_EXCEPTION_BUF_SIZE        (0)
 #define MICROPY_KBD_EXCEPTION                       (1)
 
-// We define our own list of errno constants to include in errno module
+
 #define MICROPY_PY_ERRNO_LIST \
     X(EPERM) \
     X(EIO) \
@@ -145,29 +120,29 @@
     X(EINVAL) \
     X(ETIMEDOUT) \
 
-// extra constants
+
 #define MICROPY_PORT_CONSTANTS \
     { MP_ROM_QSTR(MP_QSTR_machine),     MP_ROM_PTR(&mp_module_machine) },  \
 
 #define MP_STATE_PORT MP_STATE_VM
 
-// type definitions for the specific machine
+
 #define MICROPY_MAKE_POINTER_CALLABLE(p)            ((void *)((mp_uint_t)(p) | 1))
 #define MP_SSIZE_MAX                                (0x7FFFFFFF)
 
 #define UINT_FMT                                    "%u"
 #define INT_FMT                                     "%d"
 
-typedef int32_t mp_int_t;                           // must be pointer size
-typedef unsigned int mp_uint_t;                     // must be pointer size
+typedef int32_t mp_int_t;                           
+typedef unsigned int mp_uint_t;                     
 typedef long mp_off_t;
 
 #define MICROPY_EVENT_POLL_HOOK                     __WFI();
 
-// We need to provide a declaration/definition of alloca()
+
 #include <alloca.h>
 
-// Include board specific configuration
+
 #include "mpconfigboard.h"
 
 #define MICROPY_MPHALPORT_H                         "cc3200_hal.h"

@@ -1,17 +1,4 @@
-/*
- * Atmel AT91 common AIC (Advanced Interrupt Controller) header file
- *
- *  Copyright (C) 2004 SAN People
- *  Copyright (C) 2004 ATMEL
- *  Copyright (C) Rick Bronson
- *  Copyright (C) 2014 Free Electrons
- *
- *  Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+
 
 #ifndef __IRQ_ATMEL_AIC_COMMON_H
 #define __IRQ_ATMEL_AIC_COMMON_H
@@ -37,4 +24,4 @@ void __init aic_common_rtc_irq_fixup(void);
 
 void __init aic_common_rtt_irq_fixup(void);
 
-#endif /* __IRQ_ATMEL_AIC_COMMON_H */
+#endif 

@@ -11,19 +11,19 @@ test -f .config || { echo "No .config file"; exit 1; }
 cfg="`cat .config`"
 allno="$cfg"
 for app in $apps; do
-	allno="`echo "$allno" | sed "s/^CONFIG_${app}=y\$/# CONFIG_${app} is not set/"`"
+	allno="`echo "$allno" | sed "s/^CONFIG_${app}=y\$/
 done
-allno="`echo "$allno" | sed "s/^CONFIG_BUSYBOX=y\$/# CONFIG_BUSYBOX is not set/"`"
-allno="`echo "$allno" | sed "s/^\(CONFIG_.*_DEPENDENCIES\)=y\$/# \1 is not set/"`"
+allno="`echo "$allno" | sed "s/^CONFIG_BUSYBOX=y\$/
+allno="`echo "$allno" | sed "s/^\(CONFIG_.*_DEPENDENCIES\)=y\$/
 trap 'test -f .config.SV && mv .config.SV .config && touch .config' EXIT
-test $# = 0 && set -- $apps
+test $
 fail=0
 for app; do
 	{ echo "$cfg" | grep -q "^CONFIG_${app}=y\$"; } || continue
 	echo "Making ${app}..."
 	mv .config .config.SV
 	echo "CONFIG_${app}=y" >.config
-	echo "$allno" | sed "/^# CONFIG_${app} is not set\$/d" >>.config
+	echo "$allno" | sed "/^
 	if test x"${app}" != x"SH_IS_ASH" && test x"${app}" != x"SH_IS_HUSH"; then
 		sed '/CONFIG_SH_IS_NONE/d' -i .config
 		echo "CONFIG_SH_IS_NONE=y" >>.config
@@ -37,7 +37,7 @@ for app; do
 		grep -i -e error: -e warning: busybox_make_${app}.log
 		echo "Build error for ${app}"
 		mv .config busybox_config_${app}
-	elif ! grep -q '^#define NUM_APPLETS 1$' include/NUM_APPLETS.h; then
+	elif ! grep -q '^
 		grep -i -e error: -e warning: busybox_make_${app}.log
 		mv busybox busybox_${app}
 		fail=$((fail+1))
@@ -57,6 +57,6 @@ for app; do
 	fi
 	mv .config.SV .config
 done
-touch .config # or else next "make" can be confused
+touch .config 
 echo "Failures: $fail"
-test $fail = 0 # set exitcode
+test $fail = 0 

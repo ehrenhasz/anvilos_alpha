@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM target
 
@@ -11,7 +11,7 @@
 #include <scsi/scsi_tcq.h>
 #include <target/target_core_base.h>
 
-/* cribbed verbatim from <trace/event/scsi.h> */
+
 #define scsi_opcode_name(opcode)	{ opcode, #opcode }
 #define show_opcode_name(val)					\
 	__print_symbolic(val,					\
@@ -214,7 +214,7 @@ TRACE_EVENT(target_cmd_complete,
 	)
 );
 
-#endif /*  _TRACE_TARGET_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

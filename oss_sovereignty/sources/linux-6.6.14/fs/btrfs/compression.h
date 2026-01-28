@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- */
+
+
 
 #ifndef BTRFS_COMPRESSION_H
 #define BTRFS_COMPRESSION_H
@@ -12,55 +10,47 @@
 struct btrfs_inode;
 struct btrfs_ordered_extent;
 
-/*
- * We want to make sure that amount of RAM required to uncompress an extent is
- * reasonable, so we limit the total size in ram of a compressed extent to
- * 128k.  This is a crucial number because it also controls how easily we can
- * spread reads across cpus for decompression.
- *
- * We also want to make sure the amount of IO required to do a random read is
- * reasonably small, so we limit the size of a compressed extent to 128k.
- */
 
-/* Maximum length of compressed data stored on disk */
+
+
 #define BTRFS_MAX_COMPRESSED		(SZ_128K)
 #define BTRFS_MAX_COMPRESSED_PAGES	(BTRFS_MAX_COMPRESSED / PAGE_SIZE)
 static_assert((BTRFS_MAX_COMPRESSED % PAGE_SIZE) == 0);
 
-/* Maximum size of data before compression */
+
 #define BTRFS_MAX_UNCOMPRESSED		(SZ_128K)
 
 #define	BTRFS_ZLIB_DEFAULT_LEVEL		3
 
 struct compressed_bio {
-	/* Number of compressed pages in the array */
+	
 	unsigned int nr_pages;
 
-	/* the pages with the compressed data on them */
+	
 	struct page **compressed_pages;
 
-	/* starting offset in the inode for our pages */
+	
 	u64 start;
 
-	/* Number of bytes in the inode we're working on */
+	
 	unsigned int len;
 
-	/* Number of bytes on disk */
+	
 	unsigned int compressed_len;
 
-	/* The compression algorithm for this bio */
+	
 	u8 compress_type;
 
-	/* Whether this is a write for writeback. */
+	
 	bool writeback;
 
 	union {
-		/* For reads, this is the bio we are copying the data into */
+		
 		struct btrfs_bio *orig_bbio;
 		struct work_struct write_end_work;
 	};
 
-	/* Must be last. */
+	
 	struct btrfs_bio bbio;
 };
 
@@ -107,11 +97,11 @@ enum btrfs_compression_type {
 struct workspace_manager {
 	struct list_head idle_ws;
 	spinlock_t ws_lock;
-	/* Number of free workspaces */
+	
 	int free_ws;
-	/* Total number of allocated workspaces */
+	
 	atomic_t total_ws;
-	/* Waiters for a free workspace */
+	
 	wait_queue_head_t ws_wait;
 };
 
@@ -120,12 +110,12 @@ void btrfs_put_workspace(int type, struct list_head *ws);
 
 struct btrfs_compress_op {
 	struct workspace_manager *workspace_manager;
-	/* Maximum level supported by the compression algorithm */
+	
 	unsigned int max_level;
 	unsigned int default_level;
 };
 
-/* The heuristic workspaces are managed via the 0th workspace manager */
+
 #define BTRFS_NR_WORKSPACE_MANAGERS	BTRFS_NR_COMPRESS_TYPES
 
 extern const struct btrfs_compress_op btrfs_heuristic_compress;

@@ -75,35 +75,35 @@ class BaseMouse(base.UHIDTestDevice):
         return [r]
 class ButtonMouse(BaseMouse):
     report_descriptor = [
-        0x05, 0x01,  # .Usage Page (Generic Desktop)        0
-        0x09, 0x02,  # .Usage (Mouse)                       2
-        0xa1, 0x01,  # .Collection (Application)            4
-        0x09, 0x02,  # ..Usage (Mouse)                      6
-        0xa1, 0x02,  # ..Collection (Logical)               8
-        0x09, 0x01,  # ...Usage (Pointer)                   10
-        0xa1, 0x00,  # ...Collection (Physical)             12
-        0x05, 0x09,  # ....Usage Page (Button)              14
-        0x19, 0x01,  # ....Usage Minimum (1)                16
-        0x29, 0x03,  # ....Usage Maximum (3)                18
-        0x15, 0x00,  # ....Logical Minimum (0)              20
-        0x25, 0x01,  # ....Logical Maximum (1)              22
-        0x75, 0x01,  # ....Report Size (1)                  24
-        0x95, 0x03,  # ....Report Count (3)                 26
-        0x81, 0x02,  # ....Input (Data,Var,Abs)             28
-        0x75, 0x05,  # ....Report Size (5)                  30
-        0x95, 0x01,  # ....Report Count (1)                 32
-        0x81, 0x03,  # ....Input (Cnst,Var,Abs)             34
-        0x05, 0x01,  # ....Usage Page (Generic Desktop)     36
-        0x09, 0x30,  # ....Usage (X)                        38
-        0x09, 0x31,  # ....Usage (Y)                        40
-        0x15, 0x81,  # ....Logical Minimum (-127)           42
-        0x25, 0x7f,  # ....Logical Maximum (127)            44
-        0x75, 0x08,  # ....Report Size (8)                  46
-        0x95, 0x02,  # ....Report Count (2)                 48
-        0x81, 0x06,  # ....Input (Data,Var,Rel)             50
-        0xc0,        # ...End Collection                    52
-        0xc0,        # ..End Collection                     53
-        0xc0,        # .End Collection                      54
+        0x05, 0x01,  
+        0x09, 0x02,  
+        0xa1, 0x01,  
+        0x09, 0x02,  
+        0xa1, 0x02,  
+        0x09, 0x01,  
+        0xa1, 0x00,  
+        0x05, 0x09,  
+        0x19, 0x01,  
+        0x29, 0x03,  
+        0x15, 0x00,  
+        0x25, 0x01,  
+        0x75, 0x01,  
+        0x95, 0x03,  
+        0x81, 0x02,  
+        0x75, 0x05,  
+        0x95, 0x01,  
+        0x81, 0x03,  
+        0x05, 0x01,  
+        0x09, 0x30,  
+        0x09, 0x31,  
+        0x15, 0x81,  
+        0x25, 0x7f,  
+        0x75, 0x08,  
+        0x95, 0x02,  
+        0x81, 0x06,  
+        0xc0,        
+        0xc0,        
+        0xc0,        
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
@@ -128,150 +128,150 @@ class ButtonMouse(BaseMouse):
         return [button_mask, x, y]
 class WheelMouse(ButtonMouse):
     report_descriptor = [
-        0x05, 0x01,  # Usage Page (Generic Desktop)        0
-        0x09, 0x02,  # Usage (Mouse)                       2
-        0xa1, 0x01,  # Collection (Application)            4
-        0x05, 0x09,  # .Usage Page (Button)                6
-        0x19, 0x01,  # .Usage Minimum (1)                  8
-        0x29, 0x03,  # .Usage Maximum (3)                  10
-        0x15, 0x00,  # .Logical Minimum (0)                12
-        0x25, 0x01,  # .Logical Maximum (1)                14
-        0x95, 0x03,  # .Report Count (3)                   16
-        0x75, 0x01,  # .Report Size (1)                    18
-        0x81, 0x02,  # .Input (Data,Var,Abs)               20
-        0x95, 0x01,  # .Report Count (1)                   22
-        0x75, 0x05,  # .Report Size (5)                    24
-        0x81, 0x03,  # .Input (Cnst,Var,Abs)               26
-        0x05, 0x01,  # .Usage Page (Generic Desktop)       28
-        0x09, 0x01,  # .Usage (Pointer)                    30
-        0xa1, 0x00,  # .Collection (Physical)              32
-        0x09, 0x30,  # ..Usage (X)                         34
-        0x09, 0x31,  # ..Usage (Y)                         36
-        0x15, 0x81,  # ..Logical Minimum (-127)            38
-        0x25, 0x7f,  # ..Logical Maximum (127)             40
-        0x75, 0x08,  # ..Report Size (8)                   42
-        0x95, 0x02,  # ..Report Count (2)                  44
-        0x81, 0x06,  # ..Input (Data,Var,Rel)              46
-        0xc0,        # .End Collection                     48
-        0x09, 0x38,  # .Usage (Wheel)                      49
-        0x15, 0x81,  # .Logical Minimum (-127)             51
-        0x25, 0x7f,  # .Logical Maximum (127)              53
-        0x75, 0x08,  # .Report Size (8)                    55
-        0x95, 0x01,  # .Report Count (1)                   57
-        0x81, 0x06,  # .Input (Data,Var,Rel)               59
-        0xc0,        # End Collection                      61
+        0x05, 0x01,  
+        0x09, 0x02,  
+        0xa1, 0x01,  
+        0x05, 0x09,  
+        0x19, 0x01,  
+        0x29, 0x03,  
+        0x15, 0x00,  
+        0x25, 0x01,  
+        0x95, 0x03,  
+        0x75, 0x01,  
+        0x81, 0x02,  
+        0x95, 0x01,  
+        0x75, 0x05,  
+        0x81, 0x03,  
+        0x05, 0x01,  
+        0x09, 0x01,  
+        0xa1, 0x00,  
+        0x09, 0x30,  
+        0x09, 0x31,  
+        0x15, 0x81,  
+        0x25, 0x7f,  
+        0x75, 0x08,  
+        0x95, 0x02,  
+        0x81, 0x06,  
+        0xc0,        
+        0x09, 0x38,  
+        0x15, 0x81,  
+        0x25, 0x7f,  
+        0x75, 0x08,  
+        0x95, 0x01,  
+        0x81, 0x06,  
+        0xc0,        
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
         self.wheel_multiplier = 1
 class TwoWheelMouse(WheelMouse):
     report_descriptor = [
-        0x05, 0x01,        # Usage Page (Generic Desktop)        0
-        0x09, 0x02,        # Usage (Mouse)                       2
-        0xa1, 0x01,        # Collection (Application)            4
-        0x09, 0x01,        # .Usage (Pointer)                    6
-        0xa1, 0x00,        # .Collection (Physical)              8
-        0x05, 0x09,        # ..Usage Page (Button)               10
-        0x19, 0x01,        # ..Usage Minimum (1)                 12
-        0x29, 0x10,        # ..Usage Maximum (16)                14
-        0x15, 0x00,        # ..Logical Minimum (0)               16
-        0x25, 0x01,        # ..Logical Maximum (1)               18
-        0x95, 0x10,        # ..Report Count (16)                 20
-        0x75, 0x01,        # ..Report Size (1)                   22
-        0x81, 0x02,        # ..Input (Data,Var,Abs)              24
-        0x05, 0x01,        # ..Usage Page (Generic Desktop)      26
-        0x16, 0x01, 0x80,  # ..Logical Minimum (-32767)          28
-        0x26, 0xff, 0x7f,  # ..Logical Maximum (32767)           31
-        0x75, 0x10,        # ..Report Size (16)                  34
-        0x95, 0x02,        # ..Report Count (2)                  36
-        0x09, 0x30,        # ..Usage (X)                         38
-        0x09, 0x31,        # ..Usage (Y)                         40
-        0x81, 0x06,        # ..Input (Data,Var,Rel)              42
-        0x15, 0x81,        # ..Logical Minimum (-127)            44
-        0x25, 0x7f,        # ..Logical Maximum (127)             46
-        0x75, 0x08,        # ..Report Size (8)                   48
-        0x95, 0x01,        # ..Report Count (1)                  50
-        0x09, 0x38,        # ..Usage (Wheel)                     52
-        0x81, 0x06,        # ..Input (Data,Var,Rel)              54
-        0x05, 0x0c,        # ..Usage Page (Consumer Devices)     56
-        0x0a, 0x38, 0x02,  # ..Usage (AC Pan)                    58
-        0x95, 0x01,        # ..Report Count (1)                  61
-        0x81, 0x06,        # ..Input (Data,Var,Rel)              63
-        0xc0,              # .End Collection                     65
-        0xc0,              # End Collection                      66
+        0x05, 0x01,        
+        0x09, 0x02,        
+        0xa1, 0x01,        
+        0x09, 0x01,        
+        0xa1, 0x00,        
+        0x05, 0x09,        
+        0x19, 0x01,        
+        0x29, 0x10,        
+        0x15, 0x00,        
+        0x25, 0x01,        
+        0x95, 0x10,        
+        0x75, 0x01,        
+        0x81, 0x02,        
+        0x05, 0x01,        
+        0x16, 0x01, 0x80,  
+        0x26, 0xff, 0x7f,  
+        0x75, 0x10,        
+        0x95, 0x02,        
+        0x09, 0x30,        
+        0x09, 0x31,        
+        0x81, 0x06,        
+        0x15, 0x81,        
+        0x25, 0x7f,        
+        0x75, 0x08,        
+        0x95, 0x01,        
+        0x09, 0x38,        
+        0x81, 0x06,        
+        0x05, 0x0c,        
+        0x0a, 0x38, 0x02,  
+        0x95, 0x01,        
+        0x81, 0x06,        
+        0xc0,              
+        0xc0,              
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
         self.hwheel_multiplier = 1
 class MIDongleMIWirelessMouse(TwoWheelMouse):
     report_descriptor = [
-        0x05, 0x01,         # Usage Page (Generic Desktop)
-        0x09, 0x02,         # Usage (Mouse)
-        0xa1, 0x01,         # Collection (Application)
-        0x85, 0x01,         # .Report ID (1)
-        0x09, 0x01,         # .Usage (Pointer)
-        0xa1, 0x00,         # .Collection (Physical)
-        0x95, 0x05,         # ..Report Count (5)
-        0x75, 0x01,         # ..Report Size (1)
-        0x05, 0x09,         # ..Usage Page (Button)
-        0x19, 0x01,         # ..Usage Minimum (1)
-        0x29, 0x05,         # ..Usage Maximum (5)
-        0x15, 0x00,         # ..Logical Minimum (0)
-        0x25, 0x01,         # ..Logical Maximum (1)
-        0x81, 0x02,         # ..Input (Data,Var,Abs)
-        0x95, 0x01,         # ..Report Count (1)
-        0x75, 0x03,         # ..Report Size (3)
-        0x81, 0x01,         # ..Input (Cnst,Arr,Abs)
-        0x75, 0x08,         # ..Report Size (8)
-        0x95, 0x01,         # ..Report Count (1)
-        0x05, 0x01,         # ..Usage Page (Generic Desktop)
-        0x09, 0x38,         # ..Usage (Wheel)
-        0x15, 0x81,         # ..Logical Minimum (-127)
-        0x25, 0x7f,         # ..Logical Maximum (127)
-        0x81, 0x06,         # ..Input (Data,Var,Rel)
-        0x05, 0x0c,         # ..Usage Page (Consumer Devices)
-        0x0a, 0x38, 0x02,   # ..Usage (AC Pan)
-        0x95, 0x01,         # ..Report Count (1)
-        0x81, 0x06,         # ..Input (Data,Var,Rel)
-        0xc0,               # .End Collection
-        0x85, 0x02,         # .Report ID (2)
-        0x09, 0x01,         # .Usage (Consumer Control)
-        0xa1, 0x00,         # .Collection (Physical)
-        0x75, 0x0c,         # ..Report Size (12)
-        0x95, 0x02,         # ..Report Count (2)
-        0x05, 0x01,         # ..Usage Page (Generic Desktop)
-        0x09, 0x30,         # ..Usage (X)
-        0x09, 0x31,         # ..Usage (Y)
-        0x16, 0x01, 0xf8,   # ..Logical Minimum (-2047)
-        0x26, 0xff, 0x07,   # ..Logical Maximum (2047)
-        0x81, 0x06,         # ..Input (Data,Var,Rel)
-        0xc0,               # .End Collection
-        0xc0,               # End Collection
-        0x05, 0x0c,         # Usage Page (Consumer Devices)
-        0x09, 0x01,         # Usage (Consumer Control)
-        0xa1, 0x01,         # Collection (Application)
-        0x85, 0x03,         # .Report ID (3)
-        0x15, 0x00,         # .Logical Minimum (0)
-        0x25, 0x01,         # .Logical Maximum (1)
-        0x75, 0x01,         # .Report Size (1)
-        0x95, 0x01,         # .Report Count (1)
-        0x09, 0xcd,         # .Usage (Play/Pause)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x0a, 0x83, 0x01,   # .Usage (AL Consumer Control Config)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x09, 0xb5,         # .Usage (Scan Next Track)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x09, 0xb6,         # .Usage (Scan Previous Track)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x09, 0xea,         # .Usage (Volume Down)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x09, 0xe9,         # .Usage (Volume Up)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x0a, 0x25, 0x02,   # .Usage (AC Forward)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0x0a, 0x24, 0x02,   # .Usage (AC Back)
-        0x81, 0x06,         # .Input (Data,Var,Rel)
-        0xc0,               # End Collection
+        0x05, 0x01,         
+        0x09, 0x02,         
+        0xa1, 0x01,         
+        0x85, 0x01,         
+        0x09, 0x01,         
+        0xa1, 0x00,         
+        0x95, 0x05,         
+        0x75, 0x01,         
+        0x05, 0x09,         
+        0x19, 0x01,         
+        0x29, 0x05,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x81, 0x02,         
+        0x95, 0x01,         
+        0x75, 0x03,         
+        0x81, 0x01,         
+        0x75, 0x08,         
+        0x95, 0x01,         
+        0x05, 0x01,         
+        0x09, 0x38,         
+        0x15, 0x81,         
+        0x25, 0x7f,         
+        0x81, 0x06,         
+        0x05, 0x0c,         
+        0x0a, 0x38, 0x02,   
+        0x95, 0x01,         
+        0x81, 0x06,         
+        0xc0,               
+        0x85, 0x02,         
+        0x09, 0x01,         
+        0xa1, 0x00,         
+        0x75, 0x0c,         
+        0x95, 0x02,         
+        0x05, 0x01,         
+        0x09, 0x30,         
+        0x09, 0x31,         
+        0x16, 0x01, 0xf8,   
+        0x26, 0xff, 0x07,   
+        0x81, 0x06,         
+        0xc0,               
+        0xc0,               
+        0x05, 0x0c,         
+        0x09, 0x01,         
+        0xa1, 0x01,         
+        0x85, 0x03,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x75, 0x01,         
+        0x95, 0x01,         
+        0x09, 0xcd,         
+        0x81, 0x06,         
+        0x0a, 0x83, 0x01,   
+        0x81, 0x06,         
+        0x09, 0xb5,         
+        0x81, 0x06,         
+        0x09, 0xb6,         
+        0x81, 0x06,         
+        0x09, 0xea,         
+        0x81, 0x06,         
+        0x09, 0xe9,         
+        0x81, 0x06,         
+        0x0a, 0x25, 0x02,   
+        0x81, 0x06,         
+        0x0a, 0x24, 0x02,   
+        0x81, 0x06,         
+        0xc0,               
     ]
     device_input_info = (BusType.USB, 0x2717, 0x003B)
     device_name = "uhid test MI Dongle MI Wireless Mouse"
@@ -290,64 +290,64 @@ class MIDongleMIWirelessMouse(TwoWheelMouse):
         return rs
 class ResolutionMultiplierMouse(TwoWheelMouse):
     report_descriptor = [
-        0x05, 0x01,        # Usage Page (Generic Desktop)        83
-        0x09, 0x02,        # Usage (Mouse)                       85
-        0xa1, 0x01,        # Collection (Application)            87
-        0x05, 0x01,        # .Usage Page (Generic Desktop)       89
-        0x09, 0x02,        # .Usage (Mouse)                      91
-        0xa1, 0x02,        # .Collection (Logical)               93
-        0x85, 0x11,        # ..Report ID (17)                    95
-        0x09, 0x01,        # ..Usage (Pointer)                   97
-        0xa1, 0x00,        # ..Collection (Physical)             99
-        0x05, 0x09,        # ...Usage Page (Button)              101
-        0x19, 0x01,        # ...Usage Minimum (1)                103
-        0x29, 0x03,        # ...Usage Maximum (3)                105
-        0x95, 0x03,        # ...Report Count (3)                 107
-        0x75, 0x01,        # ...Report Size (1)                  109
-        0x25, 0x01,        # ...Logical Maximum (1)              111
-        0x81, 0x02,        # ...Input (Data,Var,Abs)             113
-        0x95, 0x01,        # ...Report Count (1)                 115
-        0x81, 0x01,        # ...Input (Cnst,Arr,Abs)             117
-        0x09, 0x05,        # ...Usage (Vendor Usage 0x05)        119
-        0x81, 0x02,        # ...Input (Data,Var,Abs)             121
-        0x95, 0x03,        # ...Report Count (3)                 123
-        0x81, 0x01,        # ...Input (Cnst,Arr,Abs)             125
-        0x05, 0x01,        # ...Usage Page (Generic Desktop)     127
-        0x09, 0x30,        # ...Usage (X)                        129
-        0x09, 0x31,        # ...Usage (Y)                        131
-        0x95, 0x02,        # ...Report Count (2)                 133
-        0x75, 0x08,        # ...Report Size (8)                  135
-        0x15, 0x81,        # ...Logical Minimum (-127)           137
-        0x25, 0x7f,        # ...Logical Maximum (127)            139
-        0x81, 0x06,        # ...Input (Data,Var,Rel)             141
-        0xa1, 0x02,        # ...Collection (Logical)             143
-        0x85, 0x12,        # ....Report ID (18)                  145
-        0x09, 0x48,        # ....Usage (Resolution Multiplier)   147
-        0x95, 0x01,        # ....Report Count (1)                149
-        0x75, 0x02,        # ....Report Size (2)                 151
-        0x15, 0x00,        # ....Logical Minimum (0)             153
-        0x25, 0x01,        # ....Logical Maximum (1)             155
-        0x35, 0x01,        # ....Physical Minimum (1)            157
-        0x45, 0x04,        # ....Physical Maximum (4)            159
-        0xb1, 0x02,        # ....Feature (Data,Var,Abs)          161
-        0x35, 0x00,        # ....Physical Minimum (0)            163
-        0x45, 0x00,        # ....Physical Maximum (0)            165
-        0x75, 0x06,        # ....Report Size (6)                 167
-        0xb1, 0x01,        # ....Feature (Cnst,Arr,Abs)          169
-        0x85, 0x11,        # ....Report ID (17)                  171
-        0x09, 0x38,        # ....Usage (Wheel)                   173
-        0x15, 0x81,        # ....Logical Minimum (-127)          175
-        0x25, 0x7f,        # ....Logical Maximum (127)           177
-        0x75, 0x08,        # ....Report Size (8)                 179
-        0x81, 0x06,        # ....Input (Data,Var,Rel)            181
-        0xc0,              # ...End Collection                   183
-        0x05, 0x0c,        # ...Usage Page (Consumer Devices)    184
-        0x75, 0x08,        # ...Report Size (8)                  186
-        0x0a, 0x38, 0x02,  # ...Usage (AC Pan)                   188
-        0x81, 0x06,        # ...Input (Data,Var,Rel)             191
-        0xc0,              # ..End Collection                    193
-        0xc0,              # .End Collection                     194
-        0xc0,              # End Collection                      195
+        0x05, 0x01,        
+        0x09, 0x02,        
+        0xa1, 0x01,        
+        0x05, 0x01,        
+        0x09, 0x02,        
+        0xa1, 0x02,        
+        0x85, 0x11,        
+        0x09, 0x01,        
+        0xa1, 0x00,        
+        0x05, 0x09,        
+        0x19, 0x01,        
+        0x29, 0x03,        
+        0x95, 0x03,        
+        0x75, 0x01,        
+        0x25, 0x01,        
+        0x81, 0x02,        
+        0x95, 0x01,        
+        0x81, 0x01,        
+        0x09, 0x05,        
+        0x81, 0x02,        
+        0x95, 0x03,        
+        0x81, 0x01,        
+        0x05, 0x01,        
+        0x09, 0x30,        
+        0x09, 0x31,        
+        0x95, 0x02,        
+        0x75, 0x08,        
+        0x15, 0x81,        
+        0x25, 0x7f,        
+        0x81, 0x06,        
+        0xa1, 0x02,        
+        0x85, 0x12,        
+        0x09, 0x48,        
+        0x95, 0x01,        
+        0x75, 0x02,        
+        0x15, 0x00,        
+        0x25, 0x01,        
+        0x35, 0x01,        
+        0x45, 0x04,        
+        0xb1, 0x02,        
+        0x35, 0x00,        
+        0x45, 0x00,        
+        0x75, 0x06,        
+        0xb1, 0x01,        
+        0x85, 0x11,        
+        0x09, 0x38,        
+        0x15, 0x81,        
+        0x25, 0x7f,        
+        0x75, 0x08,        
+        0x81, 0x06,        
+        0xc0,              
+        0x05, 0x0c,        
+        0x75, 0x08,        
+        0x0a, 0x38, 0x02,  
+        0x81, 0x06,        
+        0xc0,              
+        0xc0,              
+        0xc0,              
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)
@@ -369,82 +369,82 @@ class BadResolutionMultiplierMouse(ResolutionMultiplierMouse):
         super().set_report(req, rnum, rtype, data)
         self.wheel_multiplier = 1
         self.hwheel_multiplier = 1
-        return 32  # EPIPE
+        return 32  
 class ResolutionMultiplierHWheelMouse(TwoWheelMouse):
     report_descriptor = [
-        0x05, 0x01,         # Usage Page (Generic Desktop)        0
-        0x09, 0x02,         # Usage (Mouse)                       2
-        0xa1, 0x01,         # Collection (Application)            4
-        0x05, 0x01,         # .Usage Page (Generic Desktop)       6
-        0x09, 0x02,         # .Usage (Mouse)                      8
-        0xa1, 0x02,         # .Collection (Logical)               10
-        0x85, 0x1a,         # ..Report ID (26)                    12
-        0x09, 0x01,         # ..Usage (Pointer)                   14
-        0xa1, 0x00,         # ..Collection (Physical)             16
-        0x05, 0x09,         # ...Usage Page (Button)              18
-        0x19, 0x01,         # ...Usage Minimum (1)                20
-        0x29, 0x05,         # ...Usage Maximum (5)                22
-        0x95, 0x05,         # ...Report Count (5)                 24
-        0x75, 0x01,         # ...Report Size (1)                  26
-        0x15, 0x00,         # ...Logical Minimum (0)              28
-        0x25, 0x01,         # ...Logical Maximum (1)              30
-        0x81, 0x02,         # ...Input (Data,Var,Abs)             32
-        0x75, 0x03,         # ...Report Size (3)                  34
-        0x95, 0x01,         # ...Report Count (1)                 36
-        0x81, 0x01,         # ...Input (Cnst,Arr,Abs)             38
-        0x05, 0x01,         # ...Usage Page (Generic Desktop)     40
-        0x09, 0x30,         # ...Usage (X)                        42
-        0x09, 0x31,         # ...Usage (Y)                        44
-        0x95, 0x02,         # ...Report Count (2)                 46
-        0x75, 0x10,         # ...Report Size (16)                 48
-        0x16, 0x01, 0x80,   # ...Logical Minimum (-32767)         50
-        0x26, 0xff, 0x7f,   # ...Logical Maximum (32767)          53
-        0x81, 0x06,         # ...Input (Data,Var,Rel)             56
-        0xa1, 0x02,         # ...Collection (Logical)             58
-        0x85, 0x12,         # ....Report ID (18)                  60
-        0x09, 0x48,         # ....Usage (Resolution Multiplier)   62
-        0x95, 0x01,         # ....Report Count (1)                64
-        0x75, 0x02,         # ....Report Size (2)                 66
-        0x15, 0x00,         # ....Logical Minimum (0)             68
-        0x25, 0x01,         # ....Logical Maximum (1)             70
-        0x35, 0x01,         # ....Physical Minimum (1)            72
-        0x45, 0x0c,         # ....Physical Maximum (12)           74
-        0xb1, 0x02,         # ....Feature (Data,Var,Abs)          76
-        0x85, 0x1a,         # ....Report ID (26)                  78
-        0x09, 0x38,         # ....Usage (Wheel)                   80
-        0x35, 0x00,         # ....Physical Minimum (0)            82
-        0x45, 0x00,         # ....Physical Maximum (0)            84
-        0x95, 0x01,         # ....Report Count (1)                86
-        0x75, 0x10,         # ....Report Size (16)                88
-        0x16, 0x01, 0x80,   # ....Logical Minimum (-32767)        90
-        0x26, 0xff, 0x7f,   # ....Logical Maximum (32767)         93
-        0x81, 0x06,         # ....Input (Data,Var,Rel)            96
-        0xc0,               # ...End Collection                   98
-        0xa1, 0x02,         # ...Collection (Logical)             99
-        0x85, 0x12,         # ....Report ID (18)                  101
-        0x09, 0x48,         # ....Usage (Resolution Multiplier)   103
-        0x75, 0x02,         # ....Report Size (2)                 105
-        0x15, 0x00,         # ....Logical Minimum (0)             107
-        0x25, 0x01,         # ....Logical Maximum (1)             109
-        0x35, 0x01,         # ....Physical Minimum (1)            111
-        0x45, 0x0c,         # ....Physical Maximum (12)           113
-        0xb1, 0x02,         # ....Feature (Data,Var,Abs)          115
-        0x35, 0x00,         # ....Physical Minimum (0)            117
-        0x45, 0x00,         # ....Physical Maximum (0)            119
-        0x75, 0x04,         # ....Report Size (4)                 121
-        0xb1, 0x01,         # ....Feature (Cnst,Arr,Abs)          123
-        0x85, 0x1a,         # ....Report ID (26)                  125
-        0x05, 0x0c,         # ....Usage Page (Consumer Devices)   127
-        0x95, 0x01,         # ....Report Count (1)                129
-        0x75, 0x10,         # ....Report Size (16)                131
-        0x16, 0x01, 0x80,   # ....Logical Minimum (-32767)        133
-        0x26, 0xff, 0x7f,   # ....Logical Maximum (32767)         136
-        0x0a, 0x38, 0x02,   # ....Usage (AC Pan)                  139
-        0x81, 0x06,         # ....Input (Data,Var,Rel)            142
-        0xc0,               # ...End Collection                   144
-        0xc0,               # ..End Collection                    145
-        0xc0,               # .End Collection                     146
-        0xc0,               # End Collection                      147
+        0x05, 0x01,         
+        0x09, 0x02,         
+        0xa1, 0x01,         
+        0x05, 0x01,         
+        0x09, 0x02,         
+        0xa1, 0x02,         
+        0x85, 0x1a,         
+        0x09, 0x01,         
+        0xa1, 0x00,         
+        0x05, 0x09,         
+        0x19, 0x01,         
+        0x29, 0x05,         
+        0x95, 0x05,         
+        0x75, 0x01,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x81, 0x02,         
+        0x75, 0x03,         
+        0x95, 0x01,         
+        0x81, 0x01,         
+        0x05, 0x01,         
+        0x09, 0x30,         
+        0x09, 0x31,         
+        0x95, 0x02,         
+        0x75, 0x10,         
+        0x16, 0x01, 0x80,   
+        0x26, 0xff, 0x7f,   
+        0x81, 0x06,         
+        0xa1, 0x02,         
+        0x85, 0x12,         
+        0x09, 0x48,         
+        0x95, 0x01,         
+        0x75, 0x02,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x35, 0x01,         
+        0x45, 0x0c,         
+        0xb1, 0x02,         
+        0x85, 0x1a,         
+        0x09, 0x38,         
+        0x35, 0x00,         
+        0x45, 0x00,         
+        0x95, 0x01,         
+        0x75, 0x10,         
+        0x16, 0x01, 0x80,   
+        0x26, 0xff, 0x7f,   
+        0x81, 0x06,         
+        0xc0,               
+        0xa1, 0x02,         
+        0x85, 0x12,         
+        0x09, 0x48,         
+        0x75, 0x02,         
+        0x15, 0x00,         
+        0x25, 0x01,         
+        0x35, 0x01,         
+        0x45, 0x0c,         
+        0xb1, 0x02,         
+        0x35, 0x00,         
+        0x45, 0x00,         
+        0x75, 0x04,         
+        0xb1, 0x01,         
+        0x85, 0x1a,         
+        0x05, 0x0c,         
+        0x95, 0x01,         
+        0x75, 0x10,         
+        0x16, 0x01, 0x80,   
+        0x26, 0xff, 0x7f,   
+        0x0a, 0x38, 0x02,   
+        0x81, 0x06,         
+        0xc0,               
+        0xc0,               
+        0xc0,               
+        0xc0,               
     ]
     def __init__(self, rdesc=report_descriptor, name=None, input_info=None):
         super().__init__(rdesc, name, input_info)

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2019 TDK-InvenSense, Inc.
- */
+
+
 
 #ifndef INV_MPU_MAGN_H_
 #define INV_MPU_MAGN_H_
@@ -10,17 +8,12 @@
 
 #include "inv_mpu_iio.h"
 
-/* Magnetometer maximum frequency */
+
 #define INV_MPU_MAGN_FREQ_HZ_MAX	50
 
 int inv_mpu_magn_probe(struct inv_mpu6050_state *st);
 
-/**
- * inv_mpu_magn_get_scale() - get magnetometer scale value
- * @st: driver internal state
- *
- * Returns IIO data format.
- */
+
 static inline int inv_mpu_magn_get_scale(const struct inv_mpu6050_state *st,
 					 const struct iio_chan_spec *chan,
 					 int *val, int *val2)
@@ -36,4 +29,4 @@ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st);
 
 int inv_mpu_magn_read(struct inv_mpu6050_state *st, int axis, int *val);
 
-#endif		/* INV_MPU_MAGN_H_ */
+#endif		

@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Linux System Utilities"
 
@@ -80,16 +80,16 @@ config FEATURE_DMESG_PRETTY
 	help
 	If you wish to scrub the syslog level from the output, say 'Y' here.
 	The syslog level is a string prefixed to every line with the form
-	"<#>".
+	"<
 
 	With this option you will see:
-		# dmesg
+		
 		Linux version 2.6.17.4 .....
 		BIOS-provided physical RAM map:
 		 BIOS-e820: 0000000000000000 - 000000000009f000 (usable)
 
 	Without this option you will see:
-		# dmesg
+		
 		<5>Linux version 2.6.17.4 .....
 		<6>BIOS-provided physical RAM map:
 		<6> BIOS-e820: 0000000000000000 - 000000000009f000 (usable)
@@ -161,7 +161,7 @@ config FDISK_SUPPORT_LARGE_DISKS
 	bool "Support over 4GB disks"
 	default y
 	depends on FDISK
-	depends on !LFS   # with LFS no special code is needed
+	depends on !LFS   
 
 config FEATURE_FDISK_WRITABLE
 	bool "Write support"
@@ -321,7 +321,7 @@ config HWCLOCK
 
 config FEATURE_HWCLOCK_ADJTIME_FHS
 	bool "Use FHS /var/lib/hwclock/adjtime"
-	default n  # util-linux-ng in Fedora 13 still uses /etc/adjtime
+	default n  
 	depends on HWCLOCK
 	help
 	Starting with FHS 2.3, the adjtime state file is supposed to exist
@@ -329,7 +329,7 @@ config FEATURE_HWCLOCK_ADJTIME_FHS
 	to use the FHS behavior, answer Y here, otherwise answer N for the
 	classic /etc/adjtime path.
 
-	pathname.com/fhs/pub/fhs-2.3.html#VARLIBHWCLOCKSTATEDIRECTORYFORHWCLO
+	pathname.com/fhs/pub/fhs-2.3.html
 config IONICE
 	bool "ionice (3.8 kb)"
 	default y
@@ -575,7 +575,7 @@ config FEATURE_MOUNT_HELPERS
 	depends on MOUNT
 	help
 	Enable mounting of virtual file systems via external helpers.
-	E.g. "mount obexfs#-b00.11.22.33.44.55 /mnt" will in effect call
+	E.g. "mount obexfs
 	"obexfs -b00.11.22.33.44.55 /mnt"
 	Also "mount -t sometype [-o opts] fs /mnt" will try
 	"sometype [-o opts] fs /mnt" if simple mount syscall fails.
@@ -647,7 +647,7 @@ config NOLOGIN
 
 config NOLOGIN_DEPENDENCIES
 	bool "Enable dependencies for nologin"
-	default n  # Y default makes it harder to select single-applet test
+	default n  
 	depends on NOLOGIN
 	select CAT
 	select ECHO

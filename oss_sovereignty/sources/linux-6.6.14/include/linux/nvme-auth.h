@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 Hannes Reinecke, SUSE Software Solutions
- */
+
+
 
 #ifndef _NVME_AUTH_H
 #define _NVME_AUTH_H
@@ -38,4 +36,4 @@ int nvme_auth_gen_shared_secret(struct crypto_kpp *dh_tfm,
 				u8 *ctrl_key, size_t ctrl_key_len,
 				u8 *sess_key, size_t sess_key_len);
 
-#endif /* _NVME_AUTH_H */
+#endif 

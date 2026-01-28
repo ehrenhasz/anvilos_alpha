@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# S/390 network devices
-#
+
+
+
+
 
 ctcm-y += ctcm_main.o ctcm_fsms.o ctcm_mpc.o ctcm_sysfs.o ctcm_dbug.o
 obj-$(CONFIG_CTCM) += ctcm.o fsm.o

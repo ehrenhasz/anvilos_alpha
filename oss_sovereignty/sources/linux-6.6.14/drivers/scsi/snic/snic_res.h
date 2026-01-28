@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2014 Cisco Systems, Inc.  All rights reserved. */
+
+
 
 #ifndef __SNIC_RES_H
 #define __SNIC_RES_H
@@ -39,7 +39,7 @@ snic_itmf_init(struct snic_host_req *req, u32 cmnd_id, u32 host_id, ulong ctx,
 
 	req->u.itmf.tm_type = tm_type;
 	req->u.itmf.flags = cpu_to_le16(flags);
-	/* req_id valid only in abort, clear task */
+	
 	req->u.itmf.req_id = cpu_to_le32(req_id);
 	req->u.itmf.tgt_id = cpu_to_le64(tgt_id);
 	memcpy(&req->u.itmf.lun_id, lun, LUN_ADDR_LEN);
@@ -59,15 +59,15 @@ snic_queue_wq_eth_desc(struct vnic_wq *wq,
 	wq_enet_desc_enc(desc,
 			(u64)dma_addr | VNIC_PADDR_TARGET,
 			(u16)len,
-			0, /* mss_or_csum_offset */
-			0, /* fc_eof */
-			0, /* offload mode */
-			1, /* eop */
+			0, 
+			0, 
+			0, 
+			1, 
 			(u8)cq_entry,
-			0, /* fcoe_encap */
+			0, 
 			(u8)vlan_tag_insert,
 			(u16)vlan_tag,
-			0 /* loopback */);
+			0 );
 
 	svnic_wq_post(wq, os_buf, dma_addr, len, 1, 1);
 }
@@ -80,4 +80,4 @@ void snic_free_vnic_res(struct snic *);
 void snic_get_res_counts(struct snic *);
 void snic_log_q_error(struct snic *);
 int snic_get_vnic_resources_size(struct snic *);
-#endif /* __SNIC_RES_H */
+#endif 

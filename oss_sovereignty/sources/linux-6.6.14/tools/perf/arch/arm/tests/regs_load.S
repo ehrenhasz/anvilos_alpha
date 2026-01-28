@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/linkage.h>
 
 #define R0 0x00
@@ -18,22 +18,7 @@
 #define LR 0x70
 #define PC 0x78
 
-/*
- * Implementation of void perf_regs_load(u64 *regs);
- *
- * This functions fills in the 'regs' buffer from the actual registers values,
- * in the way the perf built-in unwinding test expects them:
- * - the PC at the time at the call to this function. Since this function
- *   is called using a bl instruction, the PC value is taken from LR.
- * The built-in unwinding test then unwinds the call stack from the dwarf
- * information in unwind__get_entries.
- *
- * Notes:
- * - the 8 bytes stride in the registers offsets comes from the fact
- * that the registers are stored in an u64 array (u64 *regs),
- * - the regs buffer needs to be zeroed before the call to this function,
- * in this case using a calloc in dwarf-unwind.c.
- */
+
 
 .text
 .type perf_regs_load,%function
@@ -53,7 +38,7 @@ SYM_FUNC_START(perf_regs_load)
 	str ip, [r0, #IP]
 	str sp, [r0, #SP]
 	str lr, [r0, #LR]
-	str lr, [r0, #PC]	// store pc as lr in order to skip the call
-	                        //  to this function
+	str lr, [r0, #PC]	
+	                        
 	mov pc, lr
 SYM_FUNC_END(perf_regs_load)

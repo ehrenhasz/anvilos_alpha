@@ -123,7 +123,7 @@ def main():
     except KeyError:
         err('Can\'t find the memory cgroup')
     cfg = detect_kernel_config()
-    print('# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab>'
+    print('
           ' : tunables <limit> <batchcount> <sharedfactor>'
           ' : slabdata <active_slabs> <num_slabs> <sharedavail>')
     if cfg['shared_slab_pages']:

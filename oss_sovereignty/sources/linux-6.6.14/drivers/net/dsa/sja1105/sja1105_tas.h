@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+
 #ifndef _SJA1105_TAS_H
 #define _SJA1105_TAS_H
 
@@ -68,7 +67,7 @@ int sja1105_init_scheduling(struct sja1105_private *priv);
 
 #else
 
-/* C doesn't allow empty structures, bah! */
+
 struct sja1105_tas_data {
 	u8 dummy;
 };
@@ -99,6 +98,6 @@ static inline int sja1105_init_scheduling(struct sja1105_private *priv)
 	return 0;
 }
 
-#endif /* IS_ENABLED(CONFIG_NET_DSA_SJA1105_TAS) */
+#endif 
 
-#endif /* _SJA1105_TAS_H */
+#endif 

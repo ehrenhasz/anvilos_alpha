@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  ideapad-laptop.h - Lenovo IdeaPad ACPI Extras
- *
- *  Copyright © 2010 Intel Corporation
- *  Copyright © 2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+
 
 #ifndef _IDEAPAD_LAPTOP_H_
 #define _IDEAPAD_LAPTOP_H_
@@ -31,7 +26,7 @@ enum {
 	VPCCMD_W_CAMERA,
 	VPCCMD_R_3G,
 	VPCCMD_W_3G,
-	VPCCMD_R_ODD, /* 0x21 */
+	VPCCMD_R_ODD, 
 	VPCCMD_W_FAN,
 	VPCCMD_R_RF,
 	VPCCMD_W_RF,
@@ -88,7 +83,7 @@ static inline int eval_vpcw(acpi_handle handle, unsigned long cmd, unsigned long
 	return 0;
 }
 
-#define IDEAPAD_EC_TIMEOUT 200 /* in ms */
+#define IDEAPAD_EC_TIMEOUT 200 
 
 static inline int read_ec_data(acpi_handle handle, unsigned long cmd, unsigned long *data)
 {
@@ -149,4 +144,4 @@ static inline int write_ec_cmd(acpi_handle handle, unsigned long cmd, unsigned l
 }
 
 #undef IDEAPAD_EC_TIMEOUT
-#endif /* !_IDEAPAD_LAPTOP_H_ */
+#endif 

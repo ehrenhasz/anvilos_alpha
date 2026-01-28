@@ -101,7 +101,7 @@ switch_create()
 	pg1_size=$_100KB
 	setup_wait_dev_with_timeout $swp4
 	lanes_swp4=$(ethtool $swp4 | grep 'Lanes:')
-	lanes_swp4=${lanes_swp4#*"Lanes: "}
+	lanes_swp4=${lanes_swp4
 	if [[ $lanes_swp4 -eq 8 ]]; then
 		pg1_size=$((pg1_size * 2))
 	fi

@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+
 #ifndef _SJA1105_PTP_H
 #define _SJA1105_PTP_H
 
@@ -8,9 +7,7 @@
 
 #if IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP)
 
-/* Timestamps are in units of 8 ns clock ticks (equivalent to
- * a fixed 125 MHz clock).
- */
+
 #define SJA1105_TICK_NS			8
 
 static inline s64 ns_to_sja1105_ticks(s64 ns)
@@ -23,19 +20,7 @@ static inline s64 sja1105_ticks_to_ns(s64 ticks)
 	return ticks * SJA1105_TICK_NS;
 }
 
-/* Calculate the first base_time in the future that satisfies this
- * relationship:
- *
- * future_base_time = base_time + N x cycle_time >= now, or
- *
- *      now - base_time
- * N >= ---------------
- *         cycle_time
- *
- * Because N is an integer, the ceiling value of the above "a / b" ratio
- * is in fact precisely the floor value of "(a + b - 1) / b", which is
- * easier to calculate only having integer division tools.
- */
+
 static inline s64 future_base_time(s64 base_time, s64 cycle_time, s64 now)
 {
 	s64 a, b, n;
@@ -50,9 +35,7 @@ static inline s64 future_base_time(s64 base_time, s64 cycle_time, s64 now)
 	return base_time + n * cycle_time;
 }
 
-/* This is not a preprocessor macro because the "ns" argument may or may not be
- * s64 at caller side. This ensures it is properly type-cast before div_s64.
- */
+
 static inline s64 ns_to_sja1105_delta(s64 ns)
 {
 	return div_s64(ns, 200);
@@ -64,27 +47,25 @@ static inline s64 sja1105_delta_to_ns(s64 delta)
 }
 
 struct sja1105_ptp_cmd {
-	u64 startptpcp;		/* start toggling PTP_CLK pin */
-	u64 stopptpcp;		/* stop toggling PTP_CLK pin */
-	u64 ptpstrtsch;		/* start schedule */
-	u64 ptpstopsch;		/* stop schedule */
-	u64 resptp;		/* reset */
-	u64 corrclk4ts;		/* use the corrected clock for timestamps */
-	u64 ptpclkadd;		/* enum sja1105_ptp_clk_mode */
+	u64 startptpcp;		
+	u64 stopptpcp;		
+	u64 ptpstrtsch;		
+	u64 ptpstopsch;		
+	u64 resptp;		
+	u64 corrclk4ts;		
+	u64 ptpclkadd;		
 };
 
 struct sja1105_ptp_data {
 	struct timer_list extts_timer;
-	/* Used only on SJA1105 to reconstruct partial timestamps */
+	
 	struct sk_buff_head skb_rxtstamp_queue;
-	/* Used on SJA1110 where meta frames are generated only for
-	 * 2-step TX timestamps
-	 */
+	
 	struct sk_buff_head skb_txtstamp_queue;
 	struct ptp_clock_info caps;
 	struct ptp_clock *clock;
 	struct sja1105_ptp_cmd cmd;
-	/* Serializes all operations on the PTP hardware clock */
+	
 	struct mutex lock;
 	bool extts_enabled;
 	u64 ptpsyncts;
@@ -138,10 +119,7 @@ void sja1110_process_meta_tstamp(struct dsa_switch *ds, int port, u8 ts_id,
 
 struct sja1105_ptp_cmd;
 
-/* Structures cannot be empty in C. Bah!
- * Keep the mutex as the only element, which is a bit more difficult to
- * refactor out of sja1105_main.c anyway.
- */
+
 struct sja1105_ptp_data {
 	struct mutex lock;
 };
@@ -202,6 +180,6 @@ static inline int sja1105_ptp_commit(struct dsa_switch *ds,
 
 #define sja1110_process_meta_tstamp NULL
 
-#endif /* IS_ENABLED(CONFIG_NET_DSA_SJA1105_PTP) */
+#endif 
 
-#endif /* _SJA1105_PTP_H */
+#endif 

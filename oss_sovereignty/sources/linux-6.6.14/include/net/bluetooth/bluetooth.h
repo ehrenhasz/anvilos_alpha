@@ -1,27 +1,4 @@
-/*
-   BlueZ - Bluetooth protocol stack for Linux
-   Copyright (C) 2000-2001 Qualcomm Incorporated
-   Copyright 2023 NXP
 
-   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation;
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-   SOFTWARE IS DISCLAIMED.
-*/
 
 #ifndef __BLUETOOTH_H
 #define __BLUETOOTH_H
@@ -38,14 +15,14 @@
 #define PF_BLUETOOTH	AF_BLUETOOTH
 #endif
 
-/* Bluetooth versions */
+
 #define BLUETOOTH_VER_1_1	1
 #define BLUETOOTH_VER_1_2	2
 #define BLUETOOTH_VER_2_0	3
 #define BLUETOOTH_VER_2_1	4
 #define BLUETOOTH_VER_4_0	6
 
-/* Reserv for core and drivers use */
+
 #define BT_SKB_RESERVE	8
 
 #define BTPROTO_L2CAP	0
@@ -91,29 +68,13 @@ struct bt_power {
 
 #define BT_CHANNEL_POLICY	10
 
-/* BR/EDR only (default policy)
- *   AMP controllers cannot be used.
- *   Channel move requests from the remote device are denied.
- *   If the L2CAP channel is currently using AMP, move the channel to BR/EDR.
- */
+
 #define BT_CHANNEL_POLICY_BREDR_ONLY		0
 
-/* BR/EDR Preferred
- *   Allow use of AMP controllers.
- *   If the L2CAP channel is currently on AMP, move it to BR/EDR.
- *   Channel move requests from the remote device are allowed.
- */
+
 #define BT_CHANNEL_POLICY_BREDR_PREFERRED	1
 
-/* AMP Preferred
- *   Allow use of AMP controllers
- *   If the L2CAP channel is currently on BR/EDR and AMP controller
- *     resources are available, initiate a channel move to AMP.
- *   Channel move requests from the remote device are allowed.
- *   If the L2CAP socket has not been connected yet, try to create
- *     and configure the channel directly on an AMP controller rather
- *     than BR/EDR.
- */
+
 #define BT_CHANNEL_POLICY_AMP_PREFERRED		2
 
 #define BT_VOICE		11
@@ -282,9 +243,9 @@ void bt_err_ratelimited(const char *fmt, ...);
 #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
 	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
 
-/* Connection and socket states */
+
 enum {
-	BT_CONNECTED = 1, /* Equal to TCP_ESTABLISHED to make net code happy */
+	BT_CONNECTED = 1, 
 	BT_OPEN,
 	BT_BOUND,
 	BT_LISTEN,
@@ -295,7 +256,7 @@ enum {
 	BT_CLOSED
 };
 
-/* If unused will be removed by compiler */
+
 static inline const char *state_to_string(int state)
 {
 	switch (state) {
@@ -322,12 +283,12 @@ static inline const char *state_to_string(int state)
 	return "invalid state";
 }
 
-/* BD Address */
+
 typedef struct {
 	__u8 b[6];
 } __packed bdaddr_t;
 
-/* BD Address type */
+
 #define BDADDR_BREDR		0x00
 #define BDADDR_LE_PUBLIC	0x01
 #define BDADDR_LE_RANDOM	0x02
@@ -358,7 +319,7 @@ static inline bool bdaddr_type_is_le(u8 type)
 #define BDADDR_ANY  (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
 #define BDADDR_NONE (&(bdaddr_t) {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}})
 
-/* Copy, swap, convert BD Address */
+
 static inline int bacmp(const bdaddr_t *ba1, const bdaddr_t *ba2)
 {
 	return memcmp(ba1, ba2, sizeof(bdaddr_t));
@@ -370,7 +331,7 @@ static inline void bacpy(bdaddr_t *dst, const bdaddr_t *src)
 
 void baswap(bdaddr_t *dst, const bdaddr_t *src);
 
-/* Common socket structures and functions */
+
 
 #define bt_sk(__sk) ((struct bt_sock *) __sk)
 
@@ -416,7 +377,7 @@ void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh);
 void bt_accept_unlink(struct sock *sk);
 struct sock *bt_accept_dequeue(struct sock *parent, struct socket *newsock);
 
-/* Skb helpers */
+
 struct l2cap_ctrl {
 	u8	sframe:1,
 		poll:1,
@@ -518,7 +479,7 @@ out:
 	return NULL;
 }
 
-/* Shall not be called with lock_sock held */
+
 static inline struct sk_buff *bt_skb_sendmsg(struct sock *sk,
 					     struct msghdr *msg,
 					     size_t len, size_t mtu,
@@ -546,9 +507,7 @@ static inline struct sk_buff *bt_skb_sendmsg(struct sock *sk,
 	return skb;
 }
 
-/* Similar to bt_skb_sendmsg but can split the msg into multiple fragments
- * accourding to the MTU.
- */
+
 static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
 					      struct msghdr *msg,
 					      size_t len, size_t mtu,
@@ -564,7 +523,7 @@ static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
 	if (!len)
 		return skb;
 
-	/* Add remaining data over MTU as continuation fragments */
+	
 	frag = &skb_shinfo(skb)->frag_list;
 	while (len) {
 		struct sk_buff *tmp;
@@ -649,4 +608,4 @@ void mgmt_cleanup(struct sock *sk);
 
 void bt_sock_reclassify_lock(struct sock *sk, int proto);
 
-#endif /* __BLUETOOTH_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_INTERNAL_TESTS_H
 #define __LIBPERF_INTERNAL_TESTS_H
 
@@ -64,4 +64,4 @@ do {									\
 	}								\
 } while (0)
 
-#endif /* __LIBPERF_INTERNAL_TESTS_H */
+#endif 

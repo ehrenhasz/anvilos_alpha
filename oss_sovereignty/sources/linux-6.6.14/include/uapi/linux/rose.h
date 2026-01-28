@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * These are the public elements of the Linux kernel Rose implementation.
- * For kernel AX.25 see the file ax25.h. This file requires ax25.h for the
- * definition of the ax25_address structure.
- */
+
+
 
 #ifndef	ROSE_KERNEL_H
 #define	ROSE_KERNEL_H

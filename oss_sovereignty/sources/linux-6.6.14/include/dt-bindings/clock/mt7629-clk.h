@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 MediaTek Inc.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT7629_H
 #define _DT_BINDINGS_CLK_MT7629_H
 
-/* TOPCKGEN */
+
 #define CLK_TOP_TO_U2_PHY		0
 #define CLK_TOP_TO_U2_PHY_1P		1
 #define CLK_TOP_PCIE0_PIPE_EN		2
@@ -117,7 +115,7 @@
 #define CLK_TOP_10M_SEL			107
 #define CLK_TOP_NR_CLK			108
 
-/* INFRACFG */
+
 #define CLK_INFRA_MUX1_SEL		0
 #define CLK_INFRA_DBGCLK_PD		1
 #define CLK_INFRA_TRNG_PD		2
@@ -126,7 +124,7 @@
 #define CLK_INFRA_SEJ_PD		5
 #define CLK_INFRA_NR_CLK		6
 
-/* PERICFG */
+
 #define CLK_PERIBUS_SEL			0
 #define CLK_PERI_PWM1_PD		1
 #define CLK_PERI_PWM2_PD		2
@@ -151,7 +149,7 @@
 #define CLK_PERI_FLASH_PD		21
 #define CLK_PERI_NR_CLK			22
 
-/* APMIXEDSYS */
+
 #define CLK_APMIXED_ARMPLL		0
 #define CLK_APMIXED_MAINPLL		1
 #define CLK_APMIXED_UNIV2PLL		2
@@ -161,7 +159,7 @@
 #define CLK_APMIXED_MAIN_CORE_EN	6
 #define CLK_APMIXED_NR_CLK		7
 
-/* SSUSBSYS */
+
 #define CLK_SSUSB_U2_PHY_1P_EN		0
 #define CLK_SSUSB_U2_PHY_EN		1
 #define CLK_SSUSB_REF_EN		2
@@ -170,7 +168,7 @@
 #define CLK_SSUSB_DMA_EN		5
 #define CLK_SSUSB_NR_CLK		6
 
-/* PCIESYS */
+
 #define CLK_PCIE_P1_AUX_EN		0
 #define CLK_PCIE_P1_OBFF_EN		1
 #define CLK_PCIE_P1_AHB_EN		2
@@ -185,7 +183,7 @@
 #define CLK_PCIE_P0_PIPE_EN		11
 #define CLK_PCIE_NR_CLK			12
 
-/* ETHSYS */
+
 #define CLK_ETH_FE_EN			0
 #define CLK_ETH_GP2_EN			1
 #define CLK_ETH_GP1_EN			2
@@ -193,11 +191,11 @@
 #define CLK_ETH_ESW_EN			4
 #define CLK_ETH_NR_CLK			5
 
-/* SGMIISYS */
+
 #define CLK_SGMII_TX_EN			0
 #define CLK_SGMII_RX_EN			1
 #define CLK_SGMII_CDR_REF		2
 #define CLK_SGMII_CDR_FB		3
 #define CLK_SGMII_NR_CLK		4
 
-#endif /* _DT_BINDINGS_CLK_MT7629_H */
+#endif 

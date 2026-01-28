@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- **/
+
 #ifndef UTIL_LINUX_FILEUTILS
 #define UTIL_LINUX_FILEUTILS
 
@@ -67,7 +64,7 @@ extern unsigned int get_fd_tabsize(void);
 extern int ul_mkdir_p(const char *path, mode_t mode);
 extern char *stripoff_last_component(char *path);
 
-/* This is readdir()-like function, but skips "." and ".." directory entries */
+
 static inline struct dirent *xreaddir(DIR *dp)
 {
 	struct dirent *d;
@@ -92,7 +89,7 @@ static inline int close_range(unsigned int first, unsigned int last, int flags)
 	return syscall(SYS_close_range, first, last, flags);
 }
 #  define HAVE_CLOSE_RANGE 1
-# endif	/* SYS_close_range */
+# endif	
 
 # if !defined(HAVE_STATX) && defined(HAVE_STRUCT_STATX) && defined(SYS_statx)
 static inline int statx(int fd, const char *restrict path, int flags,
@@ -101,9 +98,9 @@ static inline int statx(int fd, const char *restrict path, int flags,
 	return syscall(SYS_statx, fd, path, flags, mask, stx);
 }
 #  define HAVE_STATX 1
-# endif /* SYS_statx */
+# endif 
 
-#endif	/* HAVE_SYS_SYSCALL_H */
+#endif	
 
 
 extern void ul_close_all_fds(unsigned int first, unsigned int last);
@@ -115,4 +112,4 @@ int ul_copy_file(int from, int to);
 
 extern int ul_reopen(int fd, int flags);
 
-#endif /* UTIL_LINUX_FILEUTILS */
+#endif 

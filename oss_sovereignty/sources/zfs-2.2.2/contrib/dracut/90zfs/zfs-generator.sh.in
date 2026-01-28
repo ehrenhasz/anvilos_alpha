@@ -1,5 +1,5 @@
-#!/bin/sh
-# shellcheck disable=SC2016,SC1004,SC2154
+
+
 
 grep -wq debug /proc/cmdline && debug=1
 [ -n "$debug" ] && echo "zfs-generator: starting" >> /dev/kmsg
@@ -10,7 +10,7 @@ GENERATOR_DIR="$1"
     exit 1
 }
 
-# shellcheck source=zfs-lib.sh.in
+
 . /lib/dracut-zfs-lib.sh
 decode_root_args || exit 0
 

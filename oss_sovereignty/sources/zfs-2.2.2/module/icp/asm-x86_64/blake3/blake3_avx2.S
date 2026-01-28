@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
 
-/*
- * Based on BLAKE3 v1.3.1, https://github.com/BLAKE3-team/BLAKE3
- * Copyright (c) 2019-2020 Samuel Neves
- * Copyright (c) 2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+
+
 
 #if defined(HAVE_AVX2)
 
@@ -1821,7 +1798,7 @@ CMP_MSB_MASK:
         .long  0x80000000, 0x80000000, 0x80000000, 0x80000000
 BLAKE3_IV:
         .long  0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A
-#endif	/* HAVE_AVX2 */
+#endif	
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",%progbits

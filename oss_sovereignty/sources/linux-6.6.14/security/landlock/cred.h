@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Landlock LSM - Credential hooks
- *
- * Copyright © 2019-2020 Mickaël Salaün <mic@digikod.net>
- * Copyright © 2019-2020 ANSSI
- */
+
+
 
 #ifndef _SECURITY_LANDLOCK_CRED_H
 #define _SECURITY_LANDLOCK_CRED_H
@@ -31,9 +26,7 @@ static inline const struct landlock_ruleset *landlock_get_current_domain(void)
 	return landlock_cred(current_cred())->domain;
 }
 
-/*
- * The call needs to come from an RCU read-side critical section.
- */
+
 static inline const struct landlock_ruleset *
 landlock_get_task_domain(const struct task_struct *const task)
 {
@@ -55,4 +48,4 @@ static inline bool landlocked(const struct task_struct *const task)
 
 __init void landlock_add_cred_hooks(void);
 
-#endif /* _SECURITY_LANDLOCK_CRED_H */
+#endif 

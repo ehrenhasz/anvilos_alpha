@@ -1,21 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+
 #ifndef _SJA1105_DYNAMIC_CONFIG_H
 #define _SJA1105_DYNAMIC_CONFIG_H
 
 #include "sja1105.h"
 #include <linux/packing.h>
 
-/* Special index that can be used for sja1105_dynamic_config_read */
+
 #define SJA1105_SEARCH		-1
 
 struct sja1105_dyn_cmd;
 
 struct sja1105_dynamic_table_ops {
-	/* This returns size_t just to keep same prototype as the
-	 * static config ops, of which we are reusing some functions.
-	 */
+	
 	size_t (*entry_packing)(void *buf, void *entry_ptr, enum packing_op op);
 	void (*cmd_packing)(void *buf, struct sja1105_dyn_cmd *cmd,
 			    enum packing_op op);

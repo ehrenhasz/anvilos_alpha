@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_V5_5NM_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_V5_5NM_H_
 
-/* Only for QMP V5 5NM PHY - TX registers */
+
 #define QSERDES_V5_5NM_TX_BIST_MODE_LANENO			0x00
 #define QSERDES_V5_5NM_TX_BIST_INVERT				0x04
 #define QSERDES_V5_5NM_TX_CLKBUF_ENABLE				0x08
@@ -72,7 +70,7 @@
 #define QSERDES_V5_5NM_TX_DEBUG_BUS3				0xf8
 #define QSERDES_V5_5NM_TX_TX_BKUP_RO_BUS			0xfc
 
-/* Only for QMP V5 5NM PHY - RX registers */
+
 #define QSERDES_V5_5NM_RX_UCDR_FASTLOCK_FO_GAIN_RATE0		0x000
 #define QSERDES_V5_5NM_RX_UCDR_FASTLOCK_FO_GAIN_RATE1		0x004
 #define QSERDES_V5_5NM_RX_UCDR_FASTLOCK_FO_GAIN_RATE2		0x008

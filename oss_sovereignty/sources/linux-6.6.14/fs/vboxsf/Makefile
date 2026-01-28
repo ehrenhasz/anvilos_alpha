@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+
 
 obj-$(CONFIG_VBOXSF_FS) += vboxsf.o
 

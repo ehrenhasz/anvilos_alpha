@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 1999 - 2018 Intel Corporation. */
 
-/* Linux PRO/1000 Ethernet Driver main header file */
+
+
+
 
 #ifndef _E1000_H_
 #define _E1000_H_
@@ -38,12 +38,12 @@ struct e1000_info;
 #define e_notice(format, arg...) \
 	netdev_notice(adapter->netdev, format, ## arg)
 
-/* Interrupt modes, as used by the IntMode parameter */
+
 #define E1000E_INT_MODE_LEGACY		0
 #define E1000E_INT_MODE_MSI		1
 #define E1000E_INT_MODE_MSIX		2
 
-/* Tx/Rx descriptor defines */
+
 #define E1000_DEFAULT_TXD		256
 #define E1000_MAX_TXD			4096
 #define E1000_MIN_TXD			64
@@ -52,14 +52,14 @@ struct e1000_info;
 #define E1000_MAX_RXD			4096
 #define E1000_MIN_RXD			64
 
-#define E1000_MIN_ITR_USECS		10 /* 100000 irq/sec */
-#define E1000_MAX_ITR_USECS		10000 /* 100    irq/sec */
+#define E1000_MIN_ITR_USECS		10 
+#define E1000_MAX_ITR_USECS		10000 
 
-#define E1000_FC_PAUSE_TIME		0x0680 /* 858 usec */
+#define E1000_FC_PAUSE_TIME		0x0680 
 
-/* How many Tx Descriptors do we need to call netif_wake_queue ? */
-/* How many Rx Buffers do we bundle into one write to the hardware ? */
-#define E1000_RX_BUFFER_WRITE		16 /* Must be power of 2 */
+
+
+#define E1000_RX_BUFFER_WRITE		16 
 
 #define AUTO_ALL_MODES			0
 #define E1000_EEPROM_APME		0x0400
@@ -68,34 +68,28 @@ struct e1000_info;
 
 #define DEFAULT_JUMBO			9234
 
-/* Time to wait before putting the device into D3 if there's no link (in ms). */
+
 #define LINK_TIMEOUT		100
 
-/* Count for polling __E1000_RESET condition every 10-20msec.
- * Experimentation has shown the reset can take approximately 210msec.
- */
+
 #define E1000_CHECK_RESET_COUNT		25
 
 #define PCICFG_DESC_RING_STATUS		0xe4
 #define FLUSH_DESC_REQUIRED		0x100
 
-/* in the case of WTHRESH, it appears at least the 82571/2 hardware
- * writes back 4 descriptors when WTHRESH=5, and 3 descriptors when
- * WTHRESH=4, so a setting of 5 gives the most efficient bus
- * utilization but to avoid possible Tx stalls, set it to 1
- */
+
 #define E1000_TXDCTL_DMA_BURST_ENABLE                          \
-	(E1000_TXDCTL_GRAN | /* set descriptor granularity */  \
+	(E1000_TXDCTL_GRAN |   \
 	 E1000_TXDCTL_COUNT_DESC |                             \
-	 (1u << 16) | /* wthresh must be +1 more than desired */\
-	 (1u << 8)  | /* hthresh */                             \
-	 0x1f)        /* pthresh */
+	 (1u << 16) | \
+	 (1u << 8)  |                              \
+	 0x1f)        
 
 #define E1000_RXDCTL_DMA_BURST_ENABLE                          \
-	(0x01000000 | /* set descriptor granularity */         \
-	 (4u << 16) | /* set writeback threshold    */         \
-	 (4u << 8)  | /* set prefetch threshold     */         \
-	 0x20)        /* set hthresh                */
+	(0x01000000 |          \
+	 (4u << 16) |          \
+	 (4u << 8)  |          \
+	 0x20)        
 
 #define E1000_TIDV_FPD BIT(31)
 #define E1000_RDTR_FPD BIT(31)
@@ -122,17 +116,15 @@ enum e1000_boards {
 
 struct e1000_ps_page {
 	struct page *page;
-	u64 dma; /* must be u64 - written to hw */
+	u64 dma; 
 };
 
-/* wrappers around a pointer to a socket buffer,
- * so a DMA handle can be stored along with the buffer
- */
+
 struct e1000_buffer {
 	dma_addr_t dma;
 	struct sk_buff *skb;
 	union {
-		/* Tx */
+		
 		struct {
 			unsigned long time_stamp;
 			u16 length;
@@ -141,9 +133,9 @@ struct e1000_buffer {
 			unsigned int bytecount;
 			u16 mapped_as_page;
 		};
-		/* Rx */
+		
 		struct {
-			/* arrays of page information for packet split */
+			
 			struct e1000_ps_page *ps_pages;
 			struct page *page;
 		};
@@ -151,11 +143,11 @@ struct e1000_buffer {
 };
 
 struct e1000_ring {
-	struct e1000_adapter *adapter;	/* back pointer to adapter */
-	void *desc;			/* pointer to ring memory  */
-	dma_addr_t dma;			/* phys address of ring    */
-	unsigned int size;		/* length of ring in bytes */
-	unsigned int count;		/* number of desc. in ring */
+	struct e1000_adapter *adapter;	
+	void *desc;			
+	dma_addr_t dma;			
+	unsigned int size;		
+	unsigned int count;		
 
 	u16 next_to_use;
 	u16 next_to_clean;
@@ -163,7 +155,7 @@ struct e1000_ring {
 	void __iomem *head;
 	void __iomem *tail;
 
-	/* array of buffer information structs */
+	
 	struct e1000_buffer *buffer_info;
 
 	char name[IFNAMSIZ + 5];
@@ -175,19 +167,19 @@ struct e1000_ring {
 	struct sk_buff *rx_skb_top;
 };
 
-/* PHY register snapshot values */
+
 struct e1000_phy_regs {
-	u16 bmcr;		/* basic mode control register    */
-	u16 bmsr;		/* basic mode status register     */
-	u16 advertise;		/* auto-negotiation advertisement */
-	u16 lpa;		/* link partner ability register  */
-	u16 expansion;		/* auto-negotiation expansion reg */
-	u16 ctrl1000;		/* 1000BASE-T control register    */
-	u16 stat1000;		/* 1000BASE-T status register     */
-	u16 estatus;		/* extended status register       */
+	u16 bmcr;		
+	u16 bmsr;		
+	u16 advertise;		
+	u16 lpa;		
+	u16 expansion;		
+	u16 ctrl1000;		
+	u16 stat1000;		
+	u16 estatus;		
 };
 
-/* board specific private data structure */
+
 struct e1000_adapter {
 	struct timer_list watchdog_timer;
 	struct timer_list phy_info_timer;
@@ -206,23 +198,23 @@ struct e1000_adapter {
 	u16 link_duplex;
 	u16 eeprom_vers;
 
-	/* track device up/down/testing state */
+	
 	unsigned long state;
 
-	/* Interrupt Throttle Rate */
+	
 	u32 itr;
 	u32 itr_setting;
 	u16 tx_itr;
 	u16 rx_itr;
 
-	/* Tx - one ring per active queue */
+	
 	struct e1000_ring *tx_ring ____cacheline_aligned_in_smp;
 	u32 tx_fifo_limit;
 
 	struct napi_struct napi;
 
-	unsigned int uncorr_errors;	/* uncorrectable ECC errors */
-	unsigned int corr_errors;	/* correctable ECC errors */
+	unsigned int uncorr_errors;	
+	unsigned int corr_errors;	
 	unsigned int restart_queue;
 	u32 txd_cmd;
 
@@ -238,7 +230,7 @@ struct e1000_adapter {
 	unsigned int total_rx_bytes;
 	unsigned int total_rx_packets;
 
-	/* Tx stats */
+	
 	u64 tpt_old;
 	u64 colc_old;
 	u32 gotc;
@@ -251,7 +243,7 @@ struct e1000_adapter {
 	u32 tx_hwtstamp_timeouts;
 	u32 tx_hwtstamp_skipped;
 
-	/* Rx */
+	
 	bool (*clean_rx)(struct e1000_ring *ring, int *work_done,
 			 int work_to_do) ____cacheline_aligned_in_smp;
 	void (*alloc_rx_buf)(struct e1000_ring *ring, int cleaned_count,
@@ -261,7 +253,7 @@ struct e1000_adapter {
 	u32 rx_int_delay;
 	u32 rx_abs_int_delay;
 
-	/* Rx stats */
+	
 	u64 hw_csum_err;
 	u64 hw_csum_good;
 	u64 rx_hdr_split;
@@ -276,19 +268,19 @@ struct e1000_adapter {
 	u32 max_frame_size;
 	u32 min_frame_size;
 
-	/* OS defined structs */
+	
 	struct net_device *netdev;
 	struct pci_dev *pdev;
 
-	/* structs defined in e1000_hw.h */
+	
 	struct e1000_hw hw;
 
-	spinlock_t stats64_lock;	/* protects statistics counters */
+	spinlock_t stats64_lock;	
 	struct e1000_hw_stats stats;
 	struct e1000_phy_info phy_info;
 	struct e1000_phy_stats phy_stats;
 
-	/* Snapshot of PHY registers */
+	
 	struct e1000_phy_regs phy_regs;
 
 	struct e1000_ring test_tx_ring;
@@ -324,7 +316,7 @@ struct e1000_adapter {
 	struct sk_buff *tx_hwtstamp_skb;
 	unsigned long tx_hwtstamp_start;
 	struct work_struct tx_hwtstamp_work;
-	spinlock_t systim_lock;	/* protects SYSTIML/H regsters */
+	spinlock_t systim_lock;	
 	struct cyclecounter cc;
 	struct timecounter tc;
 	struct ptp_clock *ptp_clock;
@@ -349,18 +341,7 @@ struct e1000_info {
 
 s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
 
-/* The system time is maintained by a 64-bit counter comprised of the 32-bit
- * SYSTIMH and SYSTIML registers.  How the counter increments (and therefore
- * its resolution) is based on the contents of the TIMINCA register - it
- * increments every incperiod (bits 31:24) clock ticks by incvalue (bits 23:0).
- * For the best accuracy, the incperiod should be as small as possible.  The
- * incvalue is scaled by a factor as large as possible (while still fitting
- * in bits 23:0) so that relatively small clock corrections can be made.
- *
- * As a result, a shift of INCVALUE_SHIFT_n is used to fit a value of
- * INCVALUE_n into the TIMINCA register allowing 32+8+(24-INCVALUE_SHIFT_n)
- * bits to count nanoseconds leaving the rest for fractional nonseconds.
- */
+
 #define INCVALUE_96MHZ		125
 #define INCVALUE_SHIFT_96MHZ	17
 #define INCPERIOD_SHIFT_96MHZ	2
@@ -378,25 +359,17 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
 #define INCVALUE_SHIFT_38400KHZ	19
 #define INCPERIOD_38400KHZ	1
 
-/* Another drawback of scaling the incvalue by a large factor is the
- * 64-bit SYSTIM register overflows more quickly.  This is dealt with
- * by simply reading the clock before it overflows.
- *
- * Clock	ns bits	Overflows after
- * ~~~~~~	~~~~~~~	~~~~~~~~~~~~~~~
- * 96MHz	47-bit	2^(47-INCPERIOD_SHIFT_96MHz) / 10^9 / 3600 = 9.77 hrs
- * 25MHz	46-bit	2^46 / 10^9 / 3600 = 19.55 hours
- */
+
 #define E1000_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 60 * 4)
 #define E1000_MAX_82574_SYSTIM_REREADS	50
 #define E1000_82574_SYSTIM_EPSILON	(1ULL << 35ULL)
 
-/* hardware capability, feature, and workaround flags */
+
 #define FLAG_HAS_AMT                      BIT(0)
 #define FLAG_HAS_FLASH                    BIT(1)
 #define FLAG_HAS_HW_VLAN_FILTER           BIT(2)
 #define FLAG_HAS_WOL                      BIT(3)
-/* reserved BIT(4) */
+
 #define FLAG_HAS_CTRLEXT_ON_LOAD          BIT(5)
 #define FLAG_HAS_SWSM_ON_LOAD             BIT(6)
 #define FLAG_HAS_JUMBO_FRAMES             BIT(7)
@@ -420,7 +393,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
 #define FLAG_LSC_GIG_SPEED_DROP           BIT(25)
 #define FLAG_SMART_POWER_DOWN             BIT(26)
 #define FLAG_MSI_ENABLED                  BIT(27)
-/* reserved BIT(28) */
+
 #define FLAG_TSO_FORCE                    BIT(29)
 #define FLAG_RESTART_NOW                  BIT(30)
 #define FLAG_MSI_TEST_FAILED              BIT(31)
@@ -595,4 +568,4 @@ void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val);
 #define E1000_READ_REG_ARRAY(a, reg, offset) \
 	(readl((a)->hw_addr + reg + ((offset) << 2)))
 
-#endif /* _E1000_H_ */
+#endif 

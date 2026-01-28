@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * SGI PCI Xtalk Bridge
- */
+
+
 
 #ifndef PLATFORM_DATA_XTALK_BRIDGE_H
 #define PLATFORM_DATA_XTALK_BRIDGE_H
@@ -19,4 +17,4 @@ struct xtalk_bridge_platform_data {
 	int	masterwid;
 };
 
-#endif /* PLATFORM_DATA_XTALK_BRIDGE_H */
+#endif 

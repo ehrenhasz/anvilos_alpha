@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+
 
 #ifndef __MLX5E_FLOW_STEER_H__
 #define __MLX5E_FLOW_STEER_H__
@@ -39,7 +39,7 @@ struct mlx5e_promisc_table {
 	struct mlx5_flow_handle	*rule;
 };
 
-/* Forward declaration and APIs to get private fields of vlan_table */
+
 struct mlx5e_vlan_table;
 unsigned long *mlx5e_vlan_get_active_svlans(struct mlx5e_vlan_table *vlan);
 struct mlx5_flow_table *mlx5e_vlan_get_flowtable(struct mlx5e_vlan_table *vlan);
@@ -68,7 +68,7 @@ struct mlx5e_l2_table {
 				 MLX5_HASH_FIELD_SEL_DST_IP   |\
 				 MLX5_HASH_FIELD_SEL_IPSEC_SPI)
 
-/* NIC prio FTS */
+
 enum {
 	MLX5E_PROMISC_FT_LEVEL,
 	MLX5E_VLAN_FT_LEVEL,
@@ -205,5 +205,5 @@ struct dentry *mlx5e_fs_get_debugfs_root(struct mlx5e_flow_steering *fs);
 #define fs_warn_once(fs, fmt, ...) \
 	mlx5_core_warn_once(mlx5e_fs_get_mdev(fs), fmt, ##__VA_ARGS__)
 
-#endif /* __MLX5E_FLOW_STEER_H__ */
+#endif 
 

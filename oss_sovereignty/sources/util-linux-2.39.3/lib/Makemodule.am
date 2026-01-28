@@ -1,14 +1,14 @@
-#
-# Use only LGPL or Public domain (preferred) code in libcommon, otherwise add
-# your lib/file.c directly to the _SOURCES= of the target binary.
-#
-# THIS LIBRARY IS NOT DISTRIBUTED!
-#
-# It's just ar(1) archive used by build-system to keep things simple.
-#
-# Note that you need "make install-strip" (or proper rpm / Debian build)
-# to generate binaries with only relevant stuff.
-#
+
+
+
+
+
+
+
+
+
+
+
 EXTRA_LTLIBRARIES += libcommon.la
 libcommon_la_CFLAGS = $(AM_CFLAGS)
 libcommon_la_SOURCES = \
@@ -67,7 +67,7 @@ EXTRA_LTLIBRARIES += libtcolors.la
 libtcolors_la_CFLAGS = $(AM_CFLAGS)
 libtcolors_la_SOURCES = lib/colors.c lib/color-names.c include/colors.h include/color-names.h
 libtcolors_la_LIBADD =
-# tinfo or ncurses are optional
+
 if HAVE_TINFO
 libtcolors_la_LIBADD += $(TINFO_LIBS)
 libtcolors_la_CFLAGS += $(TINFO_CFLAGS)
@@ -76,7 +76,7 @@ if HAVE_NCURSES
 libtcolors_la_LIBADD += $(NCURSES_LIBS)
 libtcolors_la_CFLAGS += $(NCURSES_CFLAGS)
 endif
-endif # !HAVE_TINFO
+endif 
 
 MANPAGES += lib/terminal-colors.d.5
 dist_noinst_DATA += lib/terminal-colors.d.5.adoc

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Free Electrons
- * Copyright (C) 2014 Atmel
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- */
+
+
 
 #ifndef __LINUX_MFD_HLCDC_H
 #define __LINUX_MFD_HLCDC_H
@@ -54,15 +49,7 @@
 #define ATMEL_HLCDC_FIFOERR		BIT(4)
 #define ATMEL_HLCDC_LAYER_STATUS(x)	BIT((x) + 8)
 
-/**
- * Structure shared by the MFD device and its subdevices.
- *
- * @regmap: register map used to access HLCDC IP registers
- * @periph_clk: the hlcdc peripheral clock
- * @sys_clk: the hlcdc system clock
- * @slow_clk: the system slow clk
- * @irq: the hlcdc irq
- */
+
 struct atmel_hlcdc {
 	struct regmap *regmap;
 	struct clk *periph_clk;
@@ -71,4 +58,4 @@ struct atmel_hlcdc {
 	int irq;
 };
 
-#endif /* __LINUX_MFD_HLCDC_H */
+#endif 

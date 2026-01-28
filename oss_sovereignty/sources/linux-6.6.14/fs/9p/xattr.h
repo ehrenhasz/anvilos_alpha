@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- * Copyright IBM Corporation, 2010
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- */
+
+
 #ifndef FS_9P_XATTR_H
 #define FS_9P_XATTR_H
 
@@ -22,4 +19,4 @@ int v9fs_xattr_set(struct dentry *dentry, const char *name,
 		   const void *value, size_t value_len, int flags);
 ssize_t v9fs_listxattr(struct dentry *dentry, char *buffer,
 		       size_t buffer_size);
-#endif /* FS_9P_XATTR_H */
+#endif 

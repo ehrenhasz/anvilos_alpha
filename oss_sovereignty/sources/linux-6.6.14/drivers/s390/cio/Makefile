@@ -1,9 +1,9 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for the S/390 common i/o drivers
-#
 
-# The following is required for define_trace.h to find ./trace.h
+
+
+
+
+
 CFLAGS_trace.o := -I$(src)
 CFLAGS_vfio_ccw_trace.o := -I$(src)
 

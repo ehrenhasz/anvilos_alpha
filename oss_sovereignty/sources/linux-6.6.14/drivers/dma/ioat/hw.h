@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
- */
+
+
 #ifndef _IOAT_HW_H_
 #define _IOAT_HW_H_
 
-/* PCI Configuration Space Values */
+
 #define IOAT_MMIO_BAR		0
 
-/* CB device ID's */
+
 #define PCI_DEVICE_ID_INTEL_IOAT_IVB0	0x0e20
 #define PCI_DEVICE_ID_INTEL_IOAT_IVB1	0x0e21
 #define PCI_DEVICE_ID_INTEL_IOAT_IVB2	0x0e22
@@ -56,12 +54,12 @@
 
 #define PCI_DEVICE_ID_INTEL_IOAT_ICX	0x0b00
 
-#define IOAT_VER_1_2            0x12    /* Version 1.2 */
-#define IOAT_VER_2_0            0x20    /* Version 2.0 */
-#define IOAT_VER_3_0            0x30    /* Version 3.0 */
-#define IOAT_VER_3_2            0x32    /* Version 3.2 */
-#define IOAT_VER_3_3            0x33    /* Version 3.3 */
-#define IOAT_VER_3_4		0x34	/* Version 3.4 */
+#define IOAT_VER_1_2            0x12    
+#define IOAT_VER_2_0            0x20    
+#define IOAT_VER_3_0            0x30    
+#define IOAT_VER_3_2            0x32    
+#define IOAT_VER_3_3            0x33    
+#define IOAT_VER_3_4		0x34	
 
 
 int system_has_dca_enabled(struct pci_dev *pdev);
@@ -94,7 +92,7 @@ struct ioat_dma_descriptor {
 	uint64_t	next;
 	uint64_t	rsv1;
 	uint64_t	rsv2;
-	/* store some driver data in an unused portion of the descriptor */
+	
 	union {
 		uint64_t	user1;
 		uint64_t	tx_cnt;

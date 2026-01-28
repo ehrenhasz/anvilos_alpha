@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #ifndef __LINUX_RWLOCK_RT_H
 #define __LINUX_RWLOCK_RT_H
 
@@ -147,4 +147,4 @@ static __always_inline void write_unlock_irqrestore(rwlock_t *rwlock,
 
 #define rwlock_is_contended(lock)		(((void)(lock), 0))
 
-#endif /* __LINUX_RWLOCK_RT_H */
+#endif 

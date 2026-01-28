@@ -145,7 +145,7 @@ a new image by passing "-i" to the script
 EOF
 		exit 1
 	fi
-	sudo bash -c "echo '#!/bin/bash' > ${init_script}"
+	sudo bash -c "echo '
 	if [[ "${command}" != "" ]]; then
 		sudo bash -c "cat >>${init_script}" <<EOF
 echo "130" > "/root/${EXIT_STATUS_FILE}"
@@ -294,7 +294,7 @@ main()
 	done
 	shift $((OPTIND -1))
 	trap 'catch "$?"' EXIT
-	if [[ $# -eq 0  && "${debug_shell}" == "no" ]]; then
+	if [[ $
 		echo "No command specified, will run ${DEFAULT_COMMAND} in the vm"
 	else
 		command="$@"

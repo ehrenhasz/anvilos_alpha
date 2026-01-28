@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __ASM_GENERIC_UACCESS_H
 #define __ASM_GENERIC_UACCESS_H
 
-/*
- * User space memory access functions, these should work
- * on any machine that has kernel and user data in the same
- * address space, e.g. all NOMMU machines.
- */
+
 #include <linux/string.h>
 #include <asm-generic/access_ok.h>
 
@@ -67,14 +63,14 @@ __put_user_fn(size_t size, void __user *to, void *from)
 #define __get_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	*((type *)dst) = get_unaligned((type *)(src));			\
-	if (0) /* make sure the label looks used to the compiler */	\
+	if (0) 	\
 		goto err_label;						\
 } while (0)
 
 #define __put_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	put_unaligned(*((type *)src), (type *)(dst));			\
-	if (0) /* make sure the label looks used to the compiler */	\
+	if (0) 	\
 		goto err_label;						\
 } while (0)
 
@@ -93,14 +89,9 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 }
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
-#endif /* CONFIG_UACCESS_MEMCPY */
+#endif 
 
-/*
- * These are the main single-value transfer routines.  They automatically
- * use the right size if we just have the right pointer type.
- * This version just falls back to copy_{from,to}_user, which should
- * provide a fast-path for small values.
- */
+
 #define __put_user(x, ptr) \
 ({								\
 	__typeof__(*(ptr)) __x = (x);				\
@@ -204,9 +195,7 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 
 extern int __get_user_bad(void) __attribute__((noreturn));
 
-/*
- * Zero Userspace
- */
+
 #ifndef __clear_user
 static inline __must_check unsigned long
 __clear_user(void __user *to, unsigned long n)
@@ -232,4 +221,4 @@ __must_check long strncpy_from_user(char *dst, const char __user *src,
 				    long count);
 __must_check long strnlen_user(const char __user *src, long n);
 
-#endif /* __ASM_GENERIC_UACCESS_H */
+#endif 

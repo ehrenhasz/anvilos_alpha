@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+
 
 #ifndef IMAGES_H
 #define IMAGES_H
@@ -30,4 +28,4 @@ extern const char * const xpm_void[];
 }
 #endif
 
-#endif /* IMAGES_H */
+#endif 

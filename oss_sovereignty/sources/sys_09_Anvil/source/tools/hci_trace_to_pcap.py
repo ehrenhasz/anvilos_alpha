@@ -1,7 +1,7 @@
 import re
 import sys
 import struct
-_LINKTYPE_BLUETOOTH_HCI_H4_WITH_PHDR = 201  # "!I" direction, followed by data
+_LINKTYPE_BLUETOOTH_HCI_H4_WITH_PHDR = 201  
 sys.stdout.buffer.write(
     struct.pack("!IHHiIII", 0xA1B2C3D4, 2, 4, 0, 0, 65535, _LINKTYPE_BLUETOOTH_HCI_H4_WITH_PHDR)
 )

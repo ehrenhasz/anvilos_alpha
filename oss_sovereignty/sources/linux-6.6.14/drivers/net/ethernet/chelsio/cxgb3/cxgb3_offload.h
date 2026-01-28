@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2006-2008 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 #ifndef _CXGB3_OFFLOAD_H
 #define _CXGB3_OFFLOAD_H
 
@@ -53,12 +23,7 @@ void cxgb3_set_dummy_ops(struct t3cdev *dev);
 
 struct t3cdev *dev2t3cdev(struct net_device *dev);
 
-/*
- * Client registration.  Users of T3 driver must register themselves.
- * The T3 driver will call the add function of every client for each T3
- * adapter activated, passing up the t3cdev ptr.  Each client fills out an
- * array of callback functions to process CPL messages.
- */
+
 
 void cxgb3_register_client(struct cxgb3_client *client);
 void cxgb3_unregister_client(struct cxgb3_client *client);
@@ -90,9 +55,7 @@ struct cxgb3_client {
 	void (*event_handler)(struct t3cdev *tdev, u32 event, u32 port);
 };
 
-/*
- * TID allocation services.
- */
+
 int cxgb3_alloc_atid(struct t3cdev *dev, struct cxgb3_client *client,
 		     void *ctx);
 int cxgb3_alloc_stid(struct t3cdev *dev, struct cxgb3_client *client,
@@ -109,29 +72,26 @@ struct t3c_tid_entry {
 	void *ctx;
 };
 
-/* CPL message priority levels */
+
 enum {
-	CPL_PRIORITY_DATA = 0,	/* data messages */
-	CPL_PRIORITY_SETUP = 1,	/* connection setup messages */
-	CPL_PRIORITY_TEARDOWN = 0,	/* connection teardown messages */
-	CPL_PRIORITY_LISTEN = 1,	/* listen start/stop messages */
-	CPL_PRIORITY_ACK = 1,	/* RX ACK messages */
-	CPL_PRIORITY_CONTROL = 1	/* offload control messages */
+	CPL_PRIORITY_DATA = 0,	
+	CPL_PRIORITY_SETUP = 1,	
+	CPL_PRIORITY_TEARDOWN = 0,	
+	CPL_PRIORITY_LISTEN = 1,	
+	CPL_PRIORITY_ACK = 1,	
+	CPL_PRIORITY_CONTROL = 1	
 };
 
-/* Flags for return value of CPL message handlers */
+
 enum {
-	CPL_RET_BUF_DONE = 1, /* buffer processing done, buffer may be freed */
-	CPL_RET_BAD_MSG = 2,  /* bad CPL message (e.g., unknown opcode) */
-	CPL_RET_UNKNOWN_TID = 4	/* unexpected unknown TID */
+	CPL_RET_BUF_DONE = 1, 
+	CPL_RET_BAD_MSG = 2,  
+	CPL_RET_UNKNOWN_TID = 4	
 };
 
 typedef int (*cpl_handler_func)(struct t3cdev *dev, struct sk_buff *skb);
 
-/*
- * Returns a pointer to the first byte of the CPL header in an sk_buff that
- * contains a CPL message.
- */
+
 static inline void *cplhdr(struct sk_buff *skb)
 {
 	return skb->data;
@@ -149,11 +109,7 @@ union active_open_entry {
 	union active_open_entry *next;
 };
 
-/*
- * Holds the size, base address, free list start, etc of the TID, server TID,
- * and active-open TID tables for a offload device.
- * The tables themselves are allocated dynamically.
- */
+
 struct tid_info {
 	struct t3c_tid_entry *tid_tab;
 	unsigned int ntids;
@@ -167,14 +123,7 @@ struct tid_info {
 	unsigned int natids;
 	unsigned int atid_base;
 
-	/*
-	 * The following members are accessed R/W so we put them in their own
-	 * cache lines.
-	 *
-	 * XXX We could combine the atid fields above with the lock here since
-	 * atids are use once (unlike other tids).  OTOH the above fields are
-	 * usually in cache due to tid_tab.
-	 */
+	
 	spinlock_t atid_lock ____cacheline_aligned_in_smp;
 	union active_open_entry *afree;
 	unsigned int atids_in_use;
@@ -187,8 +136,8 @@ struct tid_info {
 struct t3c_data {
 	struct list_head list_node;
 	struct t3cdev *dev;
-	unsigned int tx_max_chunk;	/* max payload for TX_DATA */
-	unsigned int max_wrs;	/* max in-flight WRs per connection */
+	unsigned int tx_max_chunk;	
+	unsigned int max_wrs;	
 	unsigned int nmtus;
 	const unsigned short *mtus;
 	struct tid_info tid_maps;
@@ -201,9 +150,7 @@ struct t3c_data {
 	unsigned int release_list_incomplete;
 };
 
-/*
- * t3cdev -> t3c_data accessor
- */
+
 #define T3C_DATA(dev) (*(struct t3c_data **)&(dev)->l4opt)
 
 #endif

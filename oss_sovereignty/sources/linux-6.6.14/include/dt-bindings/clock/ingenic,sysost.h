@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides clock numbers for the Ingenic OST DT binding.
- */
+
+
 
 #ifndef __DT_BINDINGS_CLOCK_INGENIC_OST_H__
 #define __DT_BINDINGS_CLOCK_INGENIC_OST_H__
@@ -32,4 +30,4 @@
 #define OST_CLK_EVENT_TIMER14	14
 #define OST_CLK_EVENT_TIMER15	15
 
-#endif /* __DT_BINDINGS_CLOCK_INGENIC_OST_H__ */
+#endif 

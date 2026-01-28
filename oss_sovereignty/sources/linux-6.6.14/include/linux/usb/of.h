@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OF helpers for usb devices.
- */
+
+
 
 #ifndef __LINUX_USB_OF_H
 #define __LINUX_USB_OF_H
@@ -67,4 +65,4 @@ static inline enum usb_phy_interface of_usb_get_phy_mode(struct device_node *np)
 
 #endif
 
-#endif /* __LINUX_USB_OF_H */
+#endif 

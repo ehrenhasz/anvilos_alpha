@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies. */
+
+
 
 #ifndef __ML5_ESW_CHAINS_H__
 #define __ML5_ESW_CHAINS_H__
@@ -72,7 +72,7 @@ mlx5_chains_set_end_ft(struct mlx5_fs_chains *chains,
 void
 mlx5_chains_print_info(struct mlx5_fs_chains *chains);
 
-#else /* CONFIG_MLX5_CLS_ACT */
+#else 
 
 static inline bool
 mlx5_chains_ignore_flow_level_supported(struct mlx5_fs_chains *chains)
@@ -96,6 +96,6 @@ mlx5_chains_destroy(struct mlx5_fs_chains *chains) {}
 static inline void
 mlx5_chains_print_info(struct mlx5_fs_chains *chains) {}
 
-#endif /* CONFIG_MLX5_CLS_ACT */
+#endif 
 
-#endif /* __ML5_ESW_CHAINS_H__ */
+#endif 

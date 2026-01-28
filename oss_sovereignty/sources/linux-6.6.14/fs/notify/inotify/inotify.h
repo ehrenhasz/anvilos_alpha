@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #include <linux/fsnotify_backend.h>
 #include <linux/inotify.h>
-#include <linux/slab.h> /* struct kmem_cache */
+#include <linux/slab.h> 
 
 struct inotify_event_info {
 	struct fsnotify_event fse;
@@ -22,11 +22,7 @@ static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
 	return container_of(fse, struct inotify_event_info, fse);
 }
 
-/*
- * INOTIFY_USER_FLAGS represents all of the mask bits that we expose to
- * userspace.  There is at least one bit (FS_EVENT_ON_CHILD) which is
- * used only internally to the kernel.
- */
+
 #define INOTIFY_USER_MASK (IN_ALL_EVENTS)
 
 static inline __u32 inotify_mark_user_mask(struct fsnotify_mark *fsn_mark)

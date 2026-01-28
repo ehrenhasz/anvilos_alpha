@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for Jasmine adapter
-#
+
+
+
+
 
 obj-$(CONFIG_SERIAL_JSM) += jsm.o
 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    ebcdic keycode functions for s390 console drivers
- *
- *    Copyright IBM Corp. 2003
- *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
- */
+
+
 
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
@@ -27,9 +22,7 @@ extern unsigned short ebc_plain_map[NR_KEYS];
 
 typedef void (fn_handler_fn)(struct kbd_data *);
 
-/*
- * FIXME: explain key_maps tricks.
- */
+
 
 struct kbd_data {
 	struct tty_port *port;
@@ -49,9 +42,7 @@ void kbd_ascebc(struct kbd_data *, unsigned char *);
 void kbd_keycode(struct kbd_data *, unsigned int);
 int kbd_ioctl(struct kbd_data *, unsigned int, unsigned long);
 
-/*
- * Helper Functions.
- */
+
 static inline void
 kbd_put_queue(struct tty_port *port, int ch)
 {

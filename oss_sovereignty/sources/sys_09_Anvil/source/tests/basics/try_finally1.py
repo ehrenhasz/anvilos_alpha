@@ -48,7 +48,7 @@ finally:
     print("finally1")
 print()
 print("exc-except-finally-finally")
-try:  # top-level catch-all except to not fail script
+try:  
     try:
         print("try1")
         try:

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_BLK_INTEGRITY_H
 #define _LINUX_BLK_INTEGRITY_H
 
@@ -77,16 +77,7 @@ queue_max_integrity_segments(const struct request_queue *q)
 	return q->limits.max_integrity_segments;
 }
 
-/**
- * bio_integrity_intervals - Return number of integrity intervals for a bio
- * @bi:		blk_integrity profile for device
- * @sectors:	Size of the bio in 512-byte sectors
- *
- * Description: The block layer calculates everything in 512 byte
- * sectors but integrity metadata is done in terms of the data integrity
- * interval size of the storage device.  Convert the block layer sectors
- * to the appropriate number of integrity intervals.
- */
+
 static inline unsigned int bio_integrity_intervals(struct blk_integrity *bi,
 						   unsigned int sectors)
 {
@@ -104,17 +95,14 @@ static inline bool blk_integrity_rq(struct request *rq)
 	return rq->cmd_flags & REQ_INTEGRITY;
 }
 
-/*
- * Return the first bvec that contains integrity data.  Only drivers that are
- * limited to a single integrity segment should use this helper.
- */
+
 static inline struct bio_vec *rq_integrity_vec(struct request *rq)
 {
 	if (WARN_ON_ONCE(queue_max_integrity_segments(rq->q) > 1))
 		return NULL;
 	return rq->bio->bi_integrity->bip_vec;
 }
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else 
 static inline int blk_rq_count_integrity_sg(struct request_queue *q,
 					    struct bio *b)
 {
@@ -180,5 +168,5 @@ static inline struct bio_vec *rq_integrity_vec(struct request *rq)
 {
 	return NULL;
 }
-#endif /* CONFIG_BLK_DEV_INTEGRITY */
-#endif /* _LINUX_BLK_INTEGRITY_H */
+#endif 
+#endif 

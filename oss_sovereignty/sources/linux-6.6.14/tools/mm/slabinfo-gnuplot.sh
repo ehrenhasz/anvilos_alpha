@@ -183,7 +183,7 @@ parse_args()
 parse_opts "$@"
 argstart=$?
 parse_args "${@:$argstart}"
-if [ ${#files[@]} -eq 0 ] && [ ${#t_files[@]} -eq 0 ]; then
+if [ ${
 	usage
 	exit 1
 fi

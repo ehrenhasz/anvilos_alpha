@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 obj-$(CONFIG_EXYNOS_ASV_ARM)	+= exynos5422-asv.o
 obj-$(CONFIG_EXYNOS_CHIPID)	+= exynos_chipid.o

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR MIT) */
-/*
- * Copyright (C) 2022 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+
 
 #ifndef __DT_BINDINGS_MEDIA_VIDEO_INTERFACES_H__
 #define __DT_BINDINGS_MEDIA_VIDEO_INTERFACES_H__
@@ -13,4 +11,4 @@
 #define MEDIA_BUS_TYPE_PARALLEL			5
 #define MEDIA_BUS_TYPE_BT656			6
 
-#endif /* __DT_BINDINGS_MEDIA_VIDEO_INTERFACES_H__ */
+#endif 

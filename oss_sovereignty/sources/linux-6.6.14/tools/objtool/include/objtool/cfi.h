@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015-2017 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+
 
 #ifndef _OBJTOOL_CFI_H
 #define _OBJTOOL_CFI_H
@@ -25,7 +23,7 @@ struct cfi_init_state {
 };
 
 struct cfi_state {
-	struct hlist_node hash; /* must be first, cficmp() */
+	struct hlist_node hash; 
 	struct cfi_reg regs[CFI_NUM_REGS];
 	struct cfi_reg vals[CFI_NUM_REGS];
 	struct cfi_reg cfa;
@@ -39,4 +37,4 @@ struct cfi_state {
 	bool force_undefined;
 };
 
-#endif /* _OBJTOOL_CFI_H */
+#endif 

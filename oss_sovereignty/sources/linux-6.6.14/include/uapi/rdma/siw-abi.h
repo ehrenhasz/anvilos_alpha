@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) or BSD-3-Clause */
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
+
+
+
 
 #ifndef _SIW_USER_H
 #define _SIW_USER_H
@@ -59,34 +59,27 @@ enum siw_opcode {
 	SIW_OP_SEND_WITH_IMM,
 	SIW_OP_SEND_REMOTE_INV,
 
-	/* Unsupported */
+	
 	SIW_OP_FETCH_AND_ADD,
 	SIW_OP_COMP_AND_SWAP,
 
 	SIW_OP_RECEIVE,
-	/* provider internal SQE */
+	
 	SIW_OP_READ_RESPONSE,
-	/*
-	 * below opcodes valid for
-	 * in-kernel clients only
-	 */
+	
 	SIW_OP_INVAL_STAG,
 	SIW_OP_REG_MR,
 	SIW_NUM_OPCODES
 };
 
-/* Keep it same as ibv_sge to allow for memcpy */
+
 struct siw_sge {
 	__aligned_u64 laddr;
 	__u32 length;
 	__u32 lkey;
 };
 
-/*
- * Inline data are kept within the work request itself occupying
- * the space of sge[1] .. sge[n]. Therefore, inline data cannot be
- * supported if SIW_MAX_SGE is below 2 elements.
- */
+
 #define SIW_MAX_INLINE (sizeof(struct siw_sge) * (SIW_MAX_SGE - 1))
 
 #if SIW_MAX_SGE < 2
@@ -103,12 +96,12 @@ enum siw_wqe_flags {
 	SIW_WQE_COMPLETED = (1 << 6)
 };
 
-/* Send Queue Element */
+
 struct siw_sqe {
 	__aligned_u64 id;
 	__u16 flags;
 	__u8 num_sge;
-	/* Contains enum siw_opcode values */
+	
 	__u8 opcode;
 	__u32 rkey;
 	union {
@@ -121,15 +114,12 @@ struct siw_sqe {
 	};
 };
 
-/* Receive Queue Element */
+
 struct siw_rqe {
 	__aligned_u64 id;
 	__u16 flags;
 	__u8 num_sge;
-	/*
-	 * only used by kernel driver,
-	 * ignored if set by user
-	 */
+	
 	__u8 opcode;
 	__u32 unused;
 	struct siw_sge sge[SIW_MAX_SGE];
@@ -168,17 +158,14 @@ struct siw_cqe {
 		__aligned_u64 imm_data;
 		__u32 inval_stag;
 	};
-	/* QP number or QP pointer */
+	
 	union {
 		struct ib_qp *base_qp;
 		__aligned_u64 qp_id;
 	};
 };
 
-/*
- * Shared structure between user and kernel
- * to control CQ arming.
- */
+
 struct siw_cq_ctrl {
 	__u32 flags;
 	__u32 pad;

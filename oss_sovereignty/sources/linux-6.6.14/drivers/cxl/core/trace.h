@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2022 Intel Corporation. All rights reserved. */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cxl
 
@@ -65,10 +65,7 @@ TRACE_EVENT(cxl_aer_uncorrectable_error,
 		__entry->serial = cxlmd->cxlds->serial;
 		__entry->status = status;
 		__entry->first_error = fe;
-		/*
-		 * Embed the 512B headerlog data for user app retrieval and
-		 * parsing, but no need to print this in the trace buffer.
-		 */
+		
 		memcpy(__entry->header_log, hl, CXL_HEADERLOG_SIZE);
 	),
 	TP_printk("memdev=%s host=%s serial=%lld: status: '%s' first_error: '%s'",
@@ -158,10 +155,7 @@ TRACE_EVENT(cxl_overflow,
 
 );
 
-/*
- * Common Event Record Format
- * CXL 3.0 section 8.2.9.2.1; Table 8-42
- */
+
 #define CXL_EVENT_RECORD_FLAG_PERMANENT		BIT(2)
 #define CXL_EVENT_RECORD_FLAG_MAINT_NEEDED	BIT(3)
 #define CXL_EVENT_RECORD_FLAG_PERF_DEGRADED	BIT(4)
@@ -173,18 +167,7 @@ TRACE_EVENT(cxl_overflow,
 	{ CXL_EVENT_RECORD_FLAG_HW_REPLACE,	"HARDWARE_REPLACEMENT_NEEDED"	}  \
 )
 
-/*
- * Define macros for the common header of each CXL event.
- *
- * Tracepoints using these macros must do 3 things:
- *
- *	1) Add CXL_EVT_TP_entry to TP_STRUCT__entry
- *	2) Use CXL_EVT_TP_fast_assign within TP_fast_assign;
- *	   pass the dev, log, and CXL event header
- *	3) Use CXL_EVT_TP_printk() instead of TP_printk()
- *
- * See the generic_event tracepoint as an example.
- */
+
 #define CXL_EVT_TP_entry					\
 	__string(memdev, dev_name(&cxlmd->dev))			\
 	__string(host, dev_name(cxlmd->dev.parent))		\
@@ -243,15 +226,7 @@ TRACE_EVENT(cxl_generic_event,
 		__print_hex(__entry->data, CXL_EVENT_RECORD_DATA_LENGTH))
 );
 
-/*
- * Physical Address field masks
- *
- * General Media Event Record
- * CXL rev 3.0 Section 8.2.9.2.1.1; Table 8-43
- *
- * DRAM Event Record
- * CXL rev 3.0 section 8.2.9.2.1.2; Table 8-44
- */
+
 #define CXL_DPA_FLAGS_MASK			0x3F
 #define CXL_DPA_MASK				(~CXL_DPA_FLAGS_MASK)
 
@@ -262,10 +237,7 @@ TRACE_EVENT(cxl_generic_event,
 	{ CXL_DPA_NOT_REPAIRABLE,		"NOT_REPAIRABLE"	}  \
 )
 
-/*
- * General Media Event Record - GMER
- * CXL rev 3.0 Section 8.2.9.2.1.1; Table 8-43
- */
+
 #define CXL_GMER_EVT_DESC_UNCORECTABLE_EVENT		BIT(0)
 #define CXL_GMER_EVT_DESC_THRESHOLD_EVENT		BIT(1)
 #define CXL_GMER_EVT_DESC_POISON_LIST_OVERFLOW		BIT(2)
@@ -321,7 +293,7 @@ TRACE_EVENT(cxl_general_media,
 
 	TP_STRUCT__entry(
 		CXL_EVT_TP_entry
-		/* General Media */
+		
 		__field(u64, dpa)
 		__field(u8, descriptor)
 		__field(u8, type)
@@ -330,7 +302,7 @@ TRACE_EVENT(cxl_general_media,
 		__field(u32, device)
 		__array(u8, comp_id, CXL_EVENT_GEN_MED_COMP_ID_SIZE)
 		__field(u16, validity_flags)
-		/* Following are out of order to pack trace record */
+		
 		__field(u8, rank)
 		__field(u8, dpa_flags)
 	),
@@ -338,10 +310,10 @@ TRACE_EVENT(cxl_general_media,
 	TP_fast_assign(
 		CXL_EVT_TP_fast_assign(cxlmd, log, rec->hdr);
 
-		/* General Media */
+		
 		__entry->dpa = le64_to_cpu(rec->phys_addr);
 		__entry->dpa_flags = __entry->dpa & CXL_DPA_FLAGS_MASK;
-		/* Mask after flags have been parsed */
+		
 		__entry->dpa &= CXL_DPA_MASK;
 		__entry->descriptor = rec->descriptor;
 		__entry->type = rec->type;
@@ -367,15 +339,8 @@ TRACE_EVENT(cxl_general_media,
 	)
 );
 
-/*
- * DRAM Event Record - DER
- *
- * CXL rev 3.0 section 8.2.9.2.1.2; Table 8-44
- */
-/*
- * DRAM Event Record defines many fields the same as the General Media Event
- * Record.  Reuse those definitions as appropriate.
- */
+
+
 #define CXL_DER_VALID_CHANNEL				BIT(0)
 #define CXL_DER_VALID_RANK				BIT(1)
 #define CXL_DER_VALID_NIBBLE				BIT(2)
@@ -404,27 +369,27 @@ TRACE_EVENT(cxl_dram,
 
 	TP_STRUCT__entry(
 		CXL_EVT_TP_entry
-		/* DRAM */
+		
 		__field(u64, dpa)
 		__field(u8, descriptor)
 		__field(u8, type)
 		__field(u8, transaction_type)
 		__field(u8, channel)
 		__field(u16, validity_flags)
-		__field(u16, column)	/* Out of order to pack trace record */
+		__field(u16, column)	
 		__field(u32, nibble_mask)
 		__field(u32, row)
 		__array(u8, cor_mask, CXL_EVENT_DER_CORRECTION_MASK_SIZE)
-		__field(u8, rank)	/* Out of order to pack trace record */
-		__field(u8, bank_group)	/* Out of order to pack trace record */
-		__field(u8, bank)	/* Out of order to pack trace record */
-		__field(u8, dpa_flags)	/* Out of order to pack trace record */
+		__field(u8, rank)	
+		__field(u8, bank_group)	
+		__field(u8, bank)	
+		__field(u8, dpa_flags)	
 	),
 
 	TP_fast_assign(
 		CXL_EVT_TP_fast_assign(cxlmd, log, rec->hdr);
 
-		/* DRAM */
+		
 		__entry->dpa = le64_to_cpu(rec->phys_addr);
 		__entry->dpa_flags = __entry->dpa & CXL_DPA_FLAGS_MASK;
 		__entry->dpa &= CXL_DPA_MASK;
@@ -459,11 +424,7 @@ TRACE_EVENT(cxl_dram,
 	)
 );
 
-/*
- * Memory Module Event Record - MMER
- *
- * CXL res 3.0 section 8.2.9.2.1.3; Table 8-45
- */
+
 #define CXL_MMER_HEALTH_STATUS_CHANGE		0x00
 #define CXL_MMER_MEDIA_STATUS_CHANGE		0x01
 #define CXL_MMER_LIFE_USED_CHANGE		0x02
@@ -479,11 +440,7 @@ TRACE_EVENT(cxl_dram,
 	{ CXL_MMER_LSA_ERROR,			"LSA Error"		}  \
 )
 
-/*
- * Device Health Information - DHI
- *
- * CXL res 3.0 section 8.2.9.8.3.1; Table 8-100
- */
+
 #define CXL_DHI_HS_MAINTENANCE_NEEDED				BIT(0)
 #define CXL_DHI_HS_PERFORMANCE_DEGRADED				BIT(1)
 #define CXL_DHI_HS_HW_REPLACEMENT_NEEDED			BIT(2)
@@ -554,10 +511,10 @@ TRACE_EVENT(cxl_memory_module,
 	TP_STRUCT__entry(
 		CXL_EVT_TP_entry
 
-		/* Memory Module Event */
+		
 		__field(u8, event_type)
 
-		/* Device Health Info */
+		
 		__field(u8, health_status)
 		__field(u8, media_status)
 		__field(u8, life_used)
@@ -571,10 +528,10 @@ TRACE_EVENT(cxl_memory_module,
 	TP_fast_assign(
 		CXL_EVT_TP_fast_assign(cxlmd, log, rec->hdr);
 
-		/* Memory Module Event */
+		
 		__entry->event_type = rec->event_type;
 
-		/* Device Health Info */
+		
 		__entry->health_status = rec->info.health_status;
 		__entry->media_status = rec->info.media_status;
 		__entry->life_used = rec->info.life_used;
@@ -703,7 +660,7 @@ TRACE_EVENT(cxl_poison,
 	)
 );
 
-#endif /* _CXL_EVENTS_H */
+#endif 
 
 #define TRACE_INCLUDE_FILE trace
 #include <trace/define_trace.h>

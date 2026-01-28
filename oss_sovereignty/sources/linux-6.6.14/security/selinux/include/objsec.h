@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Security-Enhanced Linux (SELinux) security module
- *
- *  This file contains the SELinux security data structures for kernel objects.
- *
- *  Author(s):  Stephen Smalley, <stephen.smalley.work@gmail.com>
- *		Chris Vance, <cvance@nai.com>
- *		Wayne Salamon, <wsalamon@nai.com>
- *		James Morris <jmorris@redhat.com>
- *
- *  Copyright (C) 2001,2002 Networks Associates Technology, Inc.
- *  Copyright (C) 2003 Red Hat, Inc., James Morris <jmorris@redhat.com>
- *  Copyright (C) 2016 Mellanox Technologies
- */
+
+
 #ifndef _SELINUX_OBJSEC_H_
 #define _SELINUX_OBJSEC_H_
 
@@ -29,122 +16,122 @@
 #include "avc.h"
 
 struct task_security_struct {
-	u32 osid;		/* SID prior to last execve */
-	u32 sid;		/* current SID */
-	u32 exec_sid;		/* exec SID */
-	u32 create_sid;		/* fscreate SID */
-	u32 keycreate_sid;	/* keycreate SID */
-	u32 sockcreate_sid;	/* fscreate SID */
+	u32 osid;		
+	u32 sid;		
+	u32 exec_sid;		
+	u32 create_sid;		
+	u32 keycreate_sid;	
+	u32 sockcreate_sid;	
 } __randomize_layout;
 
 enum label_initialized {
-	LABEL_INVALID,		/* invalid or not initialized */
-	LABEL_INITIALIZED,	/* initialized */
+	LABEL_INVALID,		
+	LABEL_INITIALIZED,	
 	LABEL_PENDING
 };
 
 struct inode_security_struct {
-	struct inode *inode;	/* back pointer to inode object */
-	struct list_head list;	/* list of inode_security_struct */
-	u32 task_sid;		/* SID of creating task */
-	u32 sid;		/* SID of this object */
-	u16 sclass;		/* security class of this object */
-	unsigned char initialized;	/* initialization flag */
+	struct inode *inode;	
+	struct list_head list;	
+	u32 task_sid;		
+	u32 sid;		
+	u16 sclass;		
+	unsigned char initialized;	
 	spinlock_t lock;
 };
 
 struct file_security_struct {
-	u32 sid;		/* SID of open file description */
-	u32 fown_sid;		/* SID of file owner (for SIGIO) */
-	u32 isid;		/* SID of inode at the time of file open */
-	u32 pseqno;		/* Policy seqno at the time of file open */
+	u32 sid;		
+	u32 fown_sid;		
+	u32 isid;		
+	u32 pseqno;		
 };
 
 struct superblock_security_struct {
-	u32 sid;			/* SID of file system superblock */
-	u32 def_sid;			/* default SID for labeling */
-	u32 mntpoint_sid;		/* SECURITY_FS_USE_MNTPOINT context for files */
-	unsigned short behavior;	/* labeling behavior */
-	unsigned short flags;		/* which mount options were specified */
+	u32 sid;			
+	u32 def_sid;			
+	u32 mntpoint_sid;		
+	unsigned short behavior;	
+	unsigned short flags;		
 	struct mutex lock;
 	struct list_head isec_head;
 	spinlock_t isec_lock;
 };
 
 struct msg_security_struct {
-	u32 sid;	/* SID of message */
+	u32 sid;	
 };
 
 struct ipc_security_struct {
-	u16 sclass;	/* security class of this object */
-	u32 sid;	/* SID of IPC resource */
+	u16 sclass;	
+	u32 sid;	
 };
 
 struct netif_security_struct {
-	struct net *ns;			/* network namespace */
-	int ifindex;			/* device index */
-	u32 sid;			/* SID for this interface */
+	struct net *ns;			
+	int ifindex;			
+	u32 sid;			
 };
 
 struct netnode_security_struct {
 	union {
-		__be32 ipv4;		/* IPv4 node address */
-		struct in6_addr ipv6;	/* IPv6 node address */
+		__be32 ipv4;		
+		struct in6_addr ipv6;	
 	} addr;
-	u32 sid;			/* SID for this node */
-	u16 family;			/* address family */
+	u32 sid;			
+	u16 family;			
 };
 
 struct netport_security_struct {
-	u32 sid;			/* SID for this node */
-	u16 port;			/* port number */
-	u8 protocol;			/* transport protocol */
+	u32 sid;			
+	u16 port;			
+	u8 protocol;			
 };
 
 struct sk_security_struct {
 #ifdef CONFIG_NETLABEL
-	enum {				/* NetLabel state */
+	enum {				
 		NLBL_UNSET = 0,
 		NLBL_REQUIRE,
 		NLBL_LABELED,
 		NLBL_REQSKB,
 		NLBL_CONNLABELED,
 	} nlbl_state;
-	struct netlbl_lsm_secattr *nlbl_secattr; /* NetLabel sec attributes */
+	struct netlbl_lsm_secattr *nlbl_secattr; 
 #endif
-	u32 sid;			/* SID of this object */
-	u32 peer_sid;			/* SID of peer */
-	u16 sclass;			/* sock security class */
-	enum {				/* SCTP association state */
+	u32 sid;			
+	u32 peer_sid;			
+	u16 sclass;			
+	enum {				
 		SCTP_ASSOC_UNSET = 0,
 		SCTP_ASSOC_SET,
 	} sctp_assoc_state;
 };
 
 struct tun_security_struct {
-	u32 sid;			/* SID for the tun device sockets */
+	u32 sid;			
 };
 
 struct key_security_struct {
-	u32 sid;	/* SID of key */
+	u32 sid;	
 };
 
 struct ib_security_struct {
-	u32 sid;        /* SID of the queue pair or MAD agent */
+	u32 sid;        
 };
 
 struct pkey_security_struct {
-	u64	subnet_prefix; /* Port subnet prefix */
-	u16	pkey;	/* PKey number */
-	u32	sid;	/* SID of pkey */
+	u64	subnet_prefix; 
+	u16	pkey;	
+	u32	sid;	
 };
 
 struct bpf_security_struct {
-	u32 sid;  /* SID of bpf obj creator */
+	u32 sid;  
 };
 
 struct perf_event_security_struct {
-	u32 sid;  /* SID of perf_event obj creator */
+	u32 sid;  
 };
 
 extern struct lsm_blob_sizes selinux_blob_sizes;
@@ -178,9 +165,7 @@ static inline struct ipc_security_struct *selinux_ipc(
 	return ipc->security + selinux_blob_sizes.lbs_ipc;
 }
 
-/*
- * get the subjective security ID of the current task
- */
+
 static inline u32 current_sid(void)
 {
 	const struct task_security_struct *tsec = selinux_cred(current_cred());
@@ -194,4 +179,4 @@ static inline struct superblock_security_struct *selinux_superblock(
 	return superblock->s_security + selinux_blob_sizes.lbs_superblock;
 }
 
-#endif /* _SELINUX_OBJSEC_H_ */
+#endif 

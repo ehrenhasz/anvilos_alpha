@@ -1,5 +1,0 @@
-#ifndef __LOONGSON_MODULE_H__
-#define __LOONGSON_MODULE_H__
-extern int loongson_vblank;
-extern struct pci_driver lsdc_pci_driver;
-#endif

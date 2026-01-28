@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2019 Chelsio Communications.  All rights reserved. */
+
+
 
 #ifndef __CXGB4_TC_MQPRIO_H__
 #define __CXGB4_TC_MQPRIO_H__
@@ -25,16 +25,16 @@ enum cxgb4_mqprio_state {
 };
 
 struct cxgb4_tc_port_mqprio {
-	enum cxgb4_mqprio_state state; /* Current MQPRIO offload state */
-	struct tc_mqprio_qopt_offload mqprio; /* MQPRIO offload params */
-	struct sge_eosw_txq *eosw_txq; /* Netdev SW Tx queue array */
-	u8 tc_hwtc_map[TC_QOPT_MAX_QUEUE]; /* MQPRIO tc to hardware tc map */
+	enum cxgb4_mqprio_state state; 
+	struct tc_mqprio_qopt_offload mqprio; 
+	struct sge_eosw_txq *eosw_txq; 
+	u8 tc_hwtc_map[TC_QOPT_MAX_QUEUE]; 
 };
 
 struct cxgb4_tc_mqprio {
-	refcount_t refcnt; /* Refcount for adapter-wide resources */
-	struct mutex mqprio_mutex; /* Lock for accessing MQPRIO info */
-	struct cxgb4_tc_port_mqprio *port_mqprio; /* Per port MQPRIO info */
+	refcount_t refcnt; 
+	struct mutex mqprio_mutex; 
+	struct cxgb4_tc_port_mqprio *port_mqprio; 
 };
 
 int cxgb4_setup_tc_mqprio(struct net_device *dev,
@@ -42,4 +42,4 @@ int cxgb4_setup_tc_mqprio(struct net_device *dev,
 void cxgb4_mqprio_stop_offload(struct adapter *adap);
 int cxgb4_init_tc_mqprio(struct adapter *adap);
 void cxgb4_cleanup_tc_mqprio(struct adapter *adap);
-#endif /* __CXGB4_TC_MQPRIO_H__ */
+#endif 

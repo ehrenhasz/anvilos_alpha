@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * HiSilicon Clock and Reset Driver Header
- *
- * Copyright (c) 2016 HiSilicon Limited.
- */
+
+
 
 #ifndef __HISI_CRG_H
 #define __HISI_CRG_H
@@ -22,4 +18,4 @@ struct hisi_crg_dev {
 	const struct hisi_crg_funcs *funcs;
 };
 
-#endif	/* __HISI_CRG_H */
+#endif	

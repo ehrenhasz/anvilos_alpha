@@ -194,7 +194,7 @@ continue_if()
 }
 skip_test()
 {
-	if [ "${#only_tests_ids[@]}" -eq 0 ] && [ "${#only_tests_names[@]}" -eq 0 ]; then
+	if [ "${
 		return 1
 	fi
 	local i
@@ -442,7 +442,7 @@ link_failure()
 }
 is_v6()
 {
-	[ -z "${1##*:*}" ]
+	[ -z "${1
 }
 wait_local_port_listen()
 {
@@ -2292,8 +2292,8 @@ backup_tests()
 		chk_prio_nr 1 1
 	fi
 }
-LISTENER_CREATED=15 #MPTCP_EVENT_LISTENER_CREATED
-LISTENER_CLOSED=16  #MPTCP_EVENT_LISTENER_CLOSED
+LISTENER_CREATED=15 
+LISTENER_CLOSED=16  
 AF_INET=2
 AF_INET6=10
 verify_listener_events()
@@ -2913,7 +2913,7 @@ all_tests_args=""
 all_tests_names=()
 for subtests in "${all_tests_sorted[@]}"; do
 	key="${subtests%@*}"
-	value="${subtests#*@}"
+	value="${subtests
 	all_tests_args+="${key}"
 	all_tests_names+=("${value}")
 	all_tests[${key}]="${value}"
@@ -2949,7 +2949,7 @@ for arg in "${@}"; do
 		only_tests_names+=("${arg}")
 	fi
 done
-if [ ${#tests[@]} -eq 0 ]; then
+if [ ${
 	tests=("${all_tests_names[@]}")
 fi
 for subtests in "${tests[@]}"; do
@@ -2957,7 +2957,7 @@ for subtests in "${tests[@]}"; do
 done
 if [ ${ret} -ne 0 ]; then
 	echo
-	echo "${#failed_tests[@]} failure(s) has(ve) been detected:"
+	echo "${
 	for i in $(get_failed_tests_ids); do
 		echo -e "\t- ${i}: ${failed_tests[${i}]}"
 	done

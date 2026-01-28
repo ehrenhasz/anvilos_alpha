@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * TSA management
- *
- * Copyright 2022 CS GROUP France
- *
- * Author: Herve Codina <herve.codina@bootlin.com>
- */
+
+
 #ifndef __SOC_FSL_TSA_H__
 #define __SOC_FSL_TSA_H__
 
@@ -22,11 +16,11 @@ struct tsa_serial *devm_tsa_serial_get_byphandle(struct device *dev,
 						 struct device_node *np,
 						 const char *phandle_name);
 
-/* Connect and disconnect the TSA serial */
+
 int tsa_serial_connect(struct tsa_serial *tsa_serial);
 int tsa_serial_disconnect(struct tsa_serial *tsa_serial);
 
-/* Cell information */
+
 struct tsa_serial_info {
 	unsigned long rx_fs_rate;
 	unsigned long rx_bit_rate;
@@ -36,7 +30,7 @@ struct tsa_serial_info {
 	u8 nb_tx_ts;
 };
 
-/* Get information */
+
 int tsa_serial_get_info(struct tsa_serial *tsa_serial, struct tsa_serial_info *info);
 
-#endif /* __SOC_FSL_TSA_H__ */
+#endif 

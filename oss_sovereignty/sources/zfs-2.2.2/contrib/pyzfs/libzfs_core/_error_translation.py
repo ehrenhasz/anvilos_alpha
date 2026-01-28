@@ -641,16 +641,16 @@ def _pool_name(name):
     Extract a pool name from the given dataset or bookmark name.
     '/' separates dataset name components.
     '@' separates a snapshot name from the rest of the dataset name.
-    '#' separates a bookmark name from the rest of the dataset name.
+    '
     '''
-    return re.split(b'[/@#]', name, 1)[0]
+    return re.split(b'[/@
 def _fs_name(name):
     '''
     Extract a dataset name from the given snapshot or bookmark name.
     '@' separates a snapshot name from the rest of the dataset name.
-    '#' separates a bookmark name from the rest of the dataset name.
+    '
     '''
-    return re.split(b'[@#]', name, 1)[0]
+    return re.split(b'[@
 def _is_valid_name_component(component):
     allowed = string.ascii_letters + string.digits + u'-_.: '
     return component and all(x in allowed.encode() for x in component)
@@ -661,7 +661,7 @@ def _is_valid_snap_name(name):
     return (len(parts) == 2 and _is_valid_fs_name(parts[0]) and
             _is_valid_name_component(parts[1]))
 def _is_valid_bmark_name(name):
-    parts = name.split(b'#')
+    parts = name.split(b'
     return (len(parts) == 2 and _is_valid_fs_name(parts[0]) and
             _is_valid_name_component(parts[1]))
 def _validate_fs_name(name):

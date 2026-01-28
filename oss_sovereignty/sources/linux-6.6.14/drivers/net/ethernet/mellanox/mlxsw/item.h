@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXSW_ITEM_H
 #define _MLXSW_ITEM_H
@@ -9,11 +9,11 @@
 #include <linux/bitops.h>
 
 struct mlxsw_item {
-	unsigned short	offset;		/* bytes in container */
-	short		step;		/* step in bytes for indexed items */
-	unsigned short	in_step_offset; /* offset within one step */
-	unsigned char	shift;		/* shift in bits */
-	unsigned char	element_size;	/* size of element in bit array */
+	unsigned short	offset;		
+	short		step;		
+	unsigned short	in_step_offset; 
+	unsigned char	shift;		
+	unsigned char	element_size;	
 	bool		no_real_shift;
 	union {
 		unsigned char	bits;
@@ -206,7 +206,7 @@ __mlxsw_item_bit_array_offset(const struct mlxsw_item *item,
 			      u16 index, u8 *shift)
 {
 	u16 max_index, be_index;
-	u16 offset;		/* byte offset inside the array */
+	u16 offset;		
 	u8 in_byte_index;
 
 	BUG_ON(index && !item->element_size);
@@ -258,10 +258,7 @@ static inline void __mlxsw_item_bit_array_set(char *buf,
 #define __ITEM_NAME(_type, _cname, _iname)					\
 	mlxsw_##_type##_##_cname##_##_iname##_item
 
-/* _type: cmd_mbox, reg, etc.
- * _cname: containter name (e.g. command name, register name)
- * _iname: item name within the container
- */
+
 
 #define MLXSW_ITEM8(_type, _cname, _iname, _offset, _shift, _sizebits)		\
 static struct mlxsw_item __ITEM_NAME(_type, _cname, _iname) = {			\

@@ -1,6 +1,0 @@
-/ {
-	rt1015p: rt1015p {
-		compatible = "realtek,rt1015p";
-		sdb-gpios = <&pio 175 0>;
-	};
-};

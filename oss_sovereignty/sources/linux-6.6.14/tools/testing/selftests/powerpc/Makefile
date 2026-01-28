@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-# Makefile for powerpc selftests
 
-# ARCH can be overridden by the user for cross compiling
+
+
+
 ARCH ?= $(shell uname -m)
 ARCH := $(shell echo $(ARCH) | sed -e s/ppc.*/powerpc/)
 

@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Type definitions for the multi-level security (MLS) policy.
- *
- * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
- */
-/*
- * Updated: Trusted Computer Solutions, Inc. <dgoeddel@trustedcs.com>
- *
- *	Support for enhanced MLS infrastructure.
- *
- * Copyright (C) 2004-2005 Trusted Computer Solutions, Inc.
- */
+
+
+
 
 #ifndef _SS_MLS_TYPES_H_
 #define _SS_MLS_TYPES_H_
@@ -19,12 +9,12 @@
 #include "ebitmap.h"
 
 struct mls_level {
-	u32 sens;		/* sensitivity */
-	struct ebitmap cat;	/* category set */
+	u32 sens;		
+	struct ebitmap cat;	
 };
 
 struct mls_range {
-	struct mls_level level[2]; /* low == level[0], high == level[1] */
+	struct mls_level level[2]; 
 };
 
 static inline int mls_level_eq(const struct mls_level *l1, const struct mls_level *l2)
@@ -49,4 +39,4 @@ static inline int mls_level_dom(const struct mls_level *l1, const struct mls_lev
 (mls_level_dom(&(r2).level[0], &(r1).level[0]) && \
  mls_level_dom(&(r1).level[1], &(r2).level[1]))
 
-#endif	/* _SS_MLS_TYPES_H_ */
+#endif	

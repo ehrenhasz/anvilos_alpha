@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_ENV_H
 #define UTIL_LINUX_ENV_H
 
@@ -36,4 +33,4 @@ static inline int remote_entry(char **argv, int remove, int last)
 	return last - 1;
 }
 
-#endif /* UTIL_LINUX_ENV_H */
+#endif 

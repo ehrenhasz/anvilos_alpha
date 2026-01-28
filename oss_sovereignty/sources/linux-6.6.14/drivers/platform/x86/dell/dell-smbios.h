@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Common functions for kernel modules using Dell SMBIOS
- *
- *  Copyright (c) Red Hat <mjg@redhat.com>
- *  Copyright (c) 2014 Gabriele Mazzotta <gabriele.mzt@gmail.com>
- *  Copyright (c) 2014 Pali Rohár <pali@kernel.org>
- *
- *  Based on documentation in the libsmbios package:
- *  Copyright (C) 2005-2014 Dell Inc.
- */
+
+
 
 #ifndef _DELL_SMBIOS_H_
 #define _DELL_SMBIOS_H_
@@ -16,13 +7,11 @@
 #include <linux/device.h>
 #include <uapi/linux/wmi.h>
 
-/* Classes and selects used only in kernel drivers */
+
 #define CLASS_KBD_BACKLIGHT 4
 #define SELECT_KBD_BACKLIGHT 11
 
-/* Tokens used in kernel drivers, any of these
- * should be filtered from userspace access
- */
+
 #define BRIGHTNESS_TOKEN	0x007d
 #define KBD_LED_AC_TOKEN	0x0451
 #define KBD_LED_OFF_TOKEN	0x01E1
@@ -74,29 +63,29 @@ int dell_laptop_register_notifier(struct notifier_block *nb);
 int dell_laptop_unregister_notifier(struct notifier_block *nb);
 void dell_laptop_call_notifier(unsigned long action, void *data);
 
-/* for the supported backends */
+
 #ifdef CONFIG_DELL_SMBIOS_WMI
 int init_dell_smbios_wmi(void);
 void exit_dell_smbios_wmi(void);
-#else /* CONFIG_DELL_SMBIOS_WMI */
+#else 
 static inline int init_dell_smbios_wmi(void)
 {
 	return -ENODEV;
 }
 static inline void exit_dell_smbios_wmi(void)
 {}
-#endif /* CONFIG_DELL_SMBIOS_WMI */
+#endif 
 
 #ifdef CONFIG_DELL_SMBIOS_SMM
 int init_dell_smbios_smm(void);
 void exit_dell_smbios_smm(void);
-#else /* CONFIG_DELL_SMBIOS_SMM */
+#else 
 static inline int init_dell_smbios_smm(void)
 {
 	return -ENODEV;
 }
 static inline void exit_dell_smbios_smm(void)
 {}
-#endif /* CONFIG_DELL_SMBIOS_SMM */
+#endif 
 
-#endif /* _DELL_SMBIOS_H_ */
+#endif 

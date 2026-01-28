@@ -112,13 +112,13 @@ class TestBpftool(unittest.TestCase):
     def test_feature_macros(self):
         expected_patterns = [
             r"/\*\*\* System call availability \*\*\*/",
-            r"#define HAVE_BPF_SYSCALL",
+            r"
             r"/\*\*\* eBPF program types \*\*\*/",
-            r"#define HAVE.*PROG_TYPE",
+            r"
             r"/\*\*\* eBPF map types \*\*\*/",
-            r"#define HAVE.*MAP_TYPE",
+            r"
             r"/\*\*\* eBPF helper functions \*\*\*/",
-            r"#define HAVE.*HELPER",
+            r"
             r"/\*\*\* eBPF misc features \*\*\*/",
         ]
         res = bpftool(["feature", "probe", "macros"])

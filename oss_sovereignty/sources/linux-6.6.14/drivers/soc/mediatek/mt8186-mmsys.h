@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __SOC_MEDIATEK_MT8186_MMSYS_H
 #define __SOC_MEDIATEK_MT8186_MMSYS_H
 
-/* Values for DPI configuration in MMSYS address space */
+
 #define MT8186_MMSYS_DPI_OUTPUT_FORMAT		0x400
 #define MT8186_DPI_FORMAT_MASK				GENMASK(1, 0)
 #define MT8186_DPI_RGB888_SDR_CON			0
@@ -120,4 +120,4 @@ static const struct mtk_mmsys_routes mmsys_mt8186_routing_table[] = {
 	},
 };
 
-#endif /* __SOC_MEDIATEK_MT8186_MMSYS_H */
+#endif 

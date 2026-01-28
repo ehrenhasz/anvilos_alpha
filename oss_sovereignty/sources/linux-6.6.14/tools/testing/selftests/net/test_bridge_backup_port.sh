@@ -469,7 +469,7 @@ backup_nhid_torture()
 usage()
 {
 	cat <<EOF
-usage: ${0##*/} OPTS
+usage: ${0
         -t <test>   Test(s) to run (default: all)
                     (options: $TESTS)
         -p          Pause on fail

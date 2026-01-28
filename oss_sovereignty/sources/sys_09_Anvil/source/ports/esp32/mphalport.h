@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * Development of the code in this file was sponsored by Microbric Pty Ltd
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef INCLUDED_MPHALPORT_H
 #define INCLUDED_MPHALPORT_H
@@ -39,11 +13,11 @@
 
 #define MICROPY_PLATFORM_VERSION "IDF" IDF_VER
 
-// The core that the MicroPython task(s) are pinned to.
-// Now that we have IDF 4.2.0+, we are once again able to pin to core 1
-// and avoid the Wifi/BLE timing problems on the same core.
-// Best effort here to remain backwards compatible in rare version edge cases...
-// See https://github.com/micropython/micropython/issues/5489 for history
+
+
+
+
+
 #if CONFIG_FREERTOS_UNICORE
 #define MP_TASK_COREID (0)
 #else
@@ -54,7 +28,7 @@ extern TaskHandle_t mp_main_task_handle;
 
 extern ringbuf_t stdin_ringbuf;
 
-// Check the ESP-IDF error code and raise an OSError if it's not ESP_OK.
+
 #if MICROPY_ERROR_REPORTING <= MICROPY_ERROR_REPORTING_NORMAL
 #define check_esp_err(code) check_esp_err_(code)
 void check_esp_err_(esp_err_t code);
@@ -63,9 +37,9 @@ void check_esp_err_(esp_err_t code);
 void check_esp_err_(esp_err_t code, const char *func, const int line, const char *file);
 #endif
 
-// Note: these "critical nested" macros do not ensure cross-CPU exclusion,
-// the only disable interrupts on the current CPU.  To full manage exclusion
-// one should use portENTER_CRITICAL/portEXIT_CRITICAL instead.
+
+
+
 #include "freertos/FreeRTOS.h"
 #define MICROPY_BEGIN_ATOMIC_SECTION() portSET_INTERRUPT_MASK_FROM_ISR()
 #define MICROPY_END_ATOMIC_SECTION(state) portCLEAR_INTERRUPT_MASK_FROM_ISR(state)
@@ -74,7 +48,7 @@ uint32_t mp_hal_ticks_us(void);
 __attribute__((always_inline)) static inline uint32_t mp_hal_ticks_cpu(void) {
     uint32_t ccount;
     #if CONFIG_IDF_TARGET_ESP32C3
-    __asm__ __volatile__ ("csrr %0, 0x7E2" : "=r" (ccount)); // Machine Performance Counter Value
+    __asm__ __volatile__ ("csrr %0, 0x7E2" : "=r" (ccount)); 
     #else
     __asm__ __volatile__ ("rsr %0,ccount" : "=a" (ccount));
     #endif
@@ -89,11 +63,11 @@ uint32_t mp_hal_get_cpu_freq(void);
 #define mp_hal_quiet_timing_enter() MICROPY_BEGIN_ATOMIC_SECTION()
 #define mp_hal_quiet_timing_exit(irq_state) MICROPY_END_ATOMIC_SECTION(irq_state)
 
-// Wake up the main task if it is sleeping
+
 void mp_hal_wake_main_task(void);
 void mp_hal_wake_main_task_from_isr(void);
 
-// C-level pin HAL
+
 #include "py/obj.h"
 #include "driver/gpio.h"
 #define MP_HAL_PIN_FMT "%u"
@@ -128,4 +102,4 @@ static inline void mp_hal_pin_write(mp_hal_pin_obj_t pin, int v) {
 
 spi_host_device_t machine_hw_spi_get_host(mp_obj_t in);
 
-#endif // INCLUDED_MPHALPORT_H
+#endif 

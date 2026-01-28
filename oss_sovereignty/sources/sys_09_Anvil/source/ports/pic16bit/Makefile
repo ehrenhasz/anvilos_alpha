@@ -1,9 +1,9 @@
 include ../../py/mkenv.mk
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# include py core make definitions
+
 include $(TOP)/py/py.mk
 include $(TOP)/extmod/extmod.mk
 
@@ -23,7 +23,7 @@ INC += -I$(XC16)/support/$(PARTFAMILY)/h
 CFLAGS_PIC16BIT = -mcpu=$(PART) -mlarge-code
 CFLAGS += $(INC) -Wall -Werror -std=gnu99 -nostdlib $(CFLAGS_PIC16BIT) $(COPT)
 
-#Debugging/Optimization
+
 ifeq ($(DEBUG), 1)
 CFLAGS += -O0 -ggdb
 else
@@ -45,11 +45,11 @@ SRC_C = \
 	shared/readline/readline.c \
 
 SRC_S = \
-#	gchelper.s \
+
 
 OBJ = $(PY_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o) $(SRC_S:.s=.o))
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C)
 
 all: $(BUILD)/firmware.hex

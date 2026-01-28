@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef PERF_UTIL_BPF_FILTER_H
 #define PERF_UTIL_BPF_FILTER_H
 
@@ -26,7 +26,7 @@ int perf_bpf_filter__prepare(struct evsel *evsel);
 int perf_bpf_filter__destroy(struct evsel *evsel);
 u64 perf_bpf_filter__lost_count(struct evsel *evsel);
 
-#else /* !HAVE_BPF_SKEL */
+#else 
 
 static inline int perf_bpf_filter__parse(struct list_head *expr_head __maybe_unused,
 					 const char *str __maybe_unused)
@@ -45,5 +45,5 @@ static inline u64 perf_bpf_filter__lost_count(struct evsel *evsel __maybe_unused
 {
 	return 0;
 }
-#endif /* HAVE_BPF_SKEL*/
-#endif /* PERF_UTIL_BPF_FILTER_H */
+#endif 
+#endif 

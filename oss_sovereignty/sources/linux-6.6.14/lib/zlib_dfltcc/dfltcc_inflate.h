@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: Zlib
+
 #ifndef DFLTCC_INFLATE_H
 #define DFLTCC_INFLATE_H
 
 #include "dfltcc.h"
 
-/* External functions */
+
 void dfltcc_reset_inflate_state(z_streamp strm);
 int dfltcc_can_inflate(z_streamp strm);
 typedef enum {
@@ -34,4 +34,4 @@ dfltcc_inflate_action dfltcc_inflate(z_streamp strm,
 
 #define INFLATE_NEED_UPDATEWINDOW(strm) (!dfltcc_can_inflate((strm)))
 
-#endif /* DFLTCC_DEFLATE_H */
+#endif 

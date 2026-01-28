@@ -1,7 +1,7 @@
 EVALUATE_ONLY=0
 ksft_skip=4
 if ! uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ | grep -q x86; then
-	echo "$0 # Skipped: Test can only run on x86 architectures."
+	echo "$0 
 	exit $ksft_skip
 fi
 msg="skip all tests:"

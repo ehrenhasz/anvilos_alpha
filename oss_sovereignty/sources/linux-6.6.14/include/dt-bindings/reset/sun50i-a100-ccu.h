@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2020 Yangtao Li <frank@allwinnertech.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_RESET_SUN50I_A100_H_
 #define _DT_BINDINGS_RESET_SUN50I_A100_H_
@@ -65,4 +63,4 @@
 #define RST_BUS_CSI		56
 #define RST_BUS_CSI_ISP		57
 
-#endif /* _DT_BINDINGS_RESET_SUN50I_A100_H_ */
+#endif 

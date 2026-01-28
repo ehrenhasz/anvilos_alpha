@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
@@ -104,9 +104,9 @@ TRACE_EVENT(mlx5e_tc_update_neigh_used_value,
 		      )
 );
 
-#endif /* _MLX5_TC_TP_ */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ./diag
 #undef TRACE_INCLUDE_FILE

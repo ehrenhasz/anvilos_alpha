@@ -1,10 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SIGNAL_TYPES_H
 #define _LINUX_SIGNAL_TYPES_H
 
-/*
- * Basic signal handling related data type definitions:
- */
+
 
 #include <linux/list.h>
 #include <uapi/linux/signal.h>
@@ -15,9 +13,7 @@ typedef struct kernel_siginfo {
 
 struct ucounts;
 
-/*
- * Real Time signals may be queued.
- */
+
 
 struct sigqueue {
 	struct list_head list;
@@ -26,7 +22,7 @@ struct sigqueue {
 	struct ucounts *ucounts;
 };
 
-/* flags values. */
+
 #define SIGQUEUE_PREALLOC	1
 
 struct sigpending {
@@ -45,7 +41,7 @@ struct sigaction {
 #ifdef __ARCH_HAS_SA_RESTORER
 	__sigrestore_t sa_restorer;
 #endif
-	sigset_t	sa_mask;	/* mask last for extensibility */
+	sigset_t	sa_mask;	
 };
 
 struct k_sigaction {
@@ -70,7 +66,7 @@ struct ksignal {
 	int sig;
 };
 
-/* Used to kill the race between sigaction and forced signals */
+
 #define SA_IMMUTABLE		0x00800000
 
 #ifndef __ARCH_UAPI_SA_FLAGS
@@ -85,4 +81,4 @@ struct ksignal {
 	(SA_NOCLDSTOP | SA_NOCLDWAIT | SA_SIGINFO | SA_ONSTACK | SA_RESTART |  \
 	 SA_NODEFER | SA_RESETHAND | SA_EXPOSE_TAGBITS | __ARCH_UAPI_SA_FLAGS)
 
-#endif /* _LINUX_SIGNAL_TYPES_H */
+#endif 

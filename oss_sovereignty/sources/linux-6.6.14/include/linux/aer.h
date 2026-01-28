@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2006 Intel Corp.
- *     Tom Long Nguyen (tom.l.nguyen@intel.com)
- *     Zhang Yanmin (yanmin.zhang@intel.com)
- */
+
+
 
 #ifndef _AER_H_
 #define _AER_H_
@@ -56,5 +52,5 @@ void cper_print_aer(struct pci_dev *dev, int aer_severity,
 int cper_severity_to_aer(int cper_severity);
 void aer_recover_queue(int domain, unsigned int bus, unsigned int devfn,
 		       int severity, struct aer_capability_regs *aer_regs);
-#endif //_AER_H_
+#endif 
 

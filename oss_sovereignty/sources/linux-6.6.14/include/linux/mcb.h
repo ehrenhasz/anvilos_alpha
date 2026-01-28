@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MEN Chameleon Bus.
- *
- * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
- * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
- */
+
+
 #ifndef _LINUX_MCB_H
 #define _LINUX_MCB_H
 
@@ -17,17 +12,7 @@
 struct mcb_driver;
 struct mcb_device;
 
-/**
- * struct mcb_bus - MEN Chameleon Bus
- *
- * @dev: bus device
- * @carrier: pointer to carrier device
- * @bus_nr: mcb bus number
- * @get_irq: callback to get IRQ number
- * @revision: the FPGA's revision number
- * @model: the FPGA's model number
- * @filename: the FPGA's name
- */
+
 struct mcb_bus {
 	struct device dev;
 	struct device *carrier;
@@ -44,22 +29,7 @@ static inline struct mcb_bus *to_mcb_bus(struct device *dev)
 	return container_of(dev, struct mcb_bus, dev);
 }
 
-/**
- * struct mcb_device - MEN Chameleon Bus device
- *
- * @dev: device in kernel representation
- * @bus: mcb bus the device is plugged to
- * @is_added: flag to check if device is added to bus
- * @driver: associated mcb_driver
- * @id: mcb device id
- * @inst: instance in Chameleon table
- * @group: group in Chameleon table
- * @var: variant in Chameleon table
- * @bar: BAR in Chameleon table
- * @rev: revision in Chameleon table
- * @irq: IRQ resource
- * @memory: memory resource
- */
+
 struct mcb_device {
 	struct device dev;
 	struct mcb_bus *bus;
@@ -77,15 +47,7 @@ struct mcb_device {
 
 #define to_mcb_device(__dev)	container_of_const(__dev, struct mcb_device, dev)
 
-/**
- * struct mcb_driver - MEN Chameleon Bus device driver
- *
- * @driver: device_driver
- * @id_table: mcb id table
- * @probe: probe callback
- * @remove: remove callback
- * @shutdown: shutdown callback
- */
+
 struct mcb_driver {
 	struct device_driver driver;
 	const struct mcb_device_id *id_table;
@@ -132,4 +94,4 @@ extern int mcb_get_irq(struct mcb_device *dev);
 extern struct resource *mcb_get_resource(struct mcb_device *dev,
 					 unsigned int type);
 
-#endif /* _LINUX_MCB_H */
+#endif 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM asoc
 
@@ -266,7 +266,7 @@ TRACE_EVENT(snd_soc_jack_notify,
 	TP_printk("jack=%s %x", __get_str(name), (int)__entry->val)
 );
 
-#endif /* _TRACE_ASOC_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* A pointer that can point to either kernel or userspace memory. */
+
+
 #ifndef _LINUX_BPFPTR_H
 #define _LINUX_BPFPTR_H
 
@@ -85,4 +85,4 @@ static inline long strncpy_from_bpfptr(char *dst, bpfptr_t src, size_t count)
 	return strncpy_from_user(dst, src.user, count);
 }
 
-#endif /* _LINUX_BPFPTR_H */
+#endif 

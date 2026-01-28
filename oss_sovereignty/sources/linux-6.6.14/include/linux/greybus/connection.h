@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Greybus connections
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+
 
 #ifndef __CONNECTION_H
 #define __CONNECTION_H
@@ -128,4 +123,4 @@ static inline void gb_connection_set_data(struct gb_connection *connection,
 	connection->private = data;
 }
 
-#endif /* __CONNECTION_H */
+#endif 

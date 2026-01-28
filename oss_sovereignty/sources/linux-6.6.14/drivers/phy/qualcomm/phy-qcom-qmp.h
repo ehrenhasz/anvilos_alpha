@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_H_
 #define QCOM_PHY_QMP_H_
@@ -44,7 +42,7 @@
 
 #include "phy-qcom-qmp-pcs-v6_20.h"
 
-/* Only for QMP V3 & V4 PHY - DP COM registers */
+
 #define QPHY_V3_DP_COM_PHY_MODE_CTRL			0x00
 #define QPHY_V3_DP_COM_SW_RESET				0x04
 #define QPHY_V3_DP_COM_POWER_DOWN_CTRL			0x08
@@ -53,7 +51,7 @@
 #define QPHY_V3_DP_COM_TYPEC_PWRDN_CTRL			0x14
 #define QPHY_V3_DP_COM_RESET_OVRD_CTRL			0x1c
 
-/* QSERDES V3 COM bits */
+
 # define QSERDES_V3_COM_BIAS_EN				0x0001
 # define QSERDES_V3_COM_BIAS_EN_MUX			0x0002
 # define QSERDES_V3_COM_CLKBUF_R_EN			0x0004
@@ -62,13 +60,13 @@
 # define QSERDES_V3_COM_CLKBUF_RX_DRIVE_L		0x0020
 # define QSERDES_V3_COM_CLKBUF_RX_DRIVE_R		0x0040
 
-/* QSERDES V3 TX bits */
+
 # define DP_PHY_TXn_TX_EMP_POST1_LVL_MASK		0x001f
 # define DP_PHY_TXn_TX_EMP_POST1_LVL_MUX_EN		0x0020
 # define DP_PHY_TXn_TX_DRV_LVL_MASK			0x001f
 # define DP_PHY_TXn_TX_DRV_LVL_MUX_EN			0x0020
 
-/* QMP PHY - DP PHY registers */
+
 #define QSERDES_DP_PHY_REVISION_ID0			0x000
 #define QSERDES_DP_PHY_REVISION_ID1			0x004
 #define QSERDES_DP_PHY_REVISION_ID2			0x008
@@ -94,7 +92,7 @@
 #define QSERDES_DP_PHY_AUX_CFG8				0x040
 #define QSERDES_DP_PHY_AUX_CFG9				0x044
 
-/* Only for QMP V3 PHY - DP PHY registers */
+
 #define QSERDES_V3_DP_PHY_AUX_INTERRUPT_MASK		0x048
 # define PHY_AUX_STOP_ERR_MASK				0x01
 # define PHY_AUX_DEC_ERR_MASK				0x02
@@ -115,7 +113,7 @@
 
 #define QSERDES_V3_DP_PHY_STATUS			0x0c0
 
-/* Only for QMP V4 PHY - DP PHY registers */
+
 #define QSERDES_V4_DP_PHY_CFG_1				0x014
 #define QSERDES_V4_DP_PHY_AUX_INTERRUPT_MASK		0x054
 #define QSERDES_V4_DP_PHY_AUX_INTERRUPT_CLEAR		0x058
@@ -126,7 +124,7 @@
 #define QSERDES_V4_DP_PHY_AUX_INTERRUPT_STATUS		0x0d8
 #define QSERDES_V4_DP_PHY_STATUS			0x0dc
 
-/* Only for QMP V4 PHY - PCS_MISC registers */
+
 #define QPHY_V4_PCS_MISC_TYPEC_CTRL			0x00
 #define QPHY_V4_PCS_MISC_TYPEC_PWRDN_CTRL		0x04
 #define QPHY_V4_PCS_MISC_PCS_MISC_CONFIG1		0x08
@@ -136,7 +134,7 @@
 
 #define QSERDES_V5_DP_PHY_STATUS			0x0dc
 
-/* Only for QMP V6 PHY - DP PHY registers */
+
 #define QSERDES_V6_DP_PHY_AUX_INTERRUPT_STATUS		0x0e0
 #define QSERDES_V6_DP_PHY_STATUS			0x0e4
 

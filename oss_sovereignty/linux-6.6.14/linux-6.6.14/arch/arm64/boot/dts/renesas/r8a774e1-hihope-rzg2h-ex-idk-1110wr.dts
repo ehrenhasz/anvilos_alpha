@@ -1,6 +1,0 @@
-#include "r8a774e1-hihope-rzg2h-ex.dts"
-#include "hihope-rzg2-ex-lvds.dtsi"
-#include "rzg2-advantech-idk-1110wr-panel.dtsi"
-&lvds0 {
-	status = "okay";
-};

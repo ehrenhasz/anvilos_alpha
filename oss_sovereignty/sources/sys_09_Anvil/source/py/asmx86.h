@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 #ifndef MICROPY_INCLUDED_PY_ASMX86_H
 #define MICROPY_INCLUDED_PY_ASMX86_H
 
@@ -30,18 +6,18 @@
 #include "py/misc.h"
 #include "py/asmbase.h"
 
-// x86 cdecl calling convention is:
-//  - args passed on the stack in reverse order
-//  - return value in EAX
-//  - caller cleans up the stack after a call
-//  - stack must be aligned to 16-byte boundary before all calls
-//  - EAX, ECX, EDX are caller-save
-//  - EBX, ESI, EDI, EBP, ESP, EIP are callee-save
 
-// In the functions below, argument order follows x86 docs and generally
-// the destination is the first argument.
-// NOTE: this is a change from the old convention used in this file and
-// some functions still use the old (reverse) convention.
+
+
+
+
+
+
+
+
+
+
+
 
 #define ASM_X86_REG_EAX (0)
 #define ASM_X86_REG_ECX (1)
@@ -52,28 +28,28 @@
 #define ASM_X86_REG_ESI (6)
 #define ASM_X86_REG_EDI (7)
 
-// x86 passes values on the stack, but the emitter is register based, so we need
-// to define registers that can temporarily hold the function arguments.  They
-// need to be defined here so that asm_x86_call_ind can push them onto the stack
-// before the call.
+
+
+
+
 #define ASM_X86_REG_ARG_1 ASM_X86_REG_EAX
 #define ASM_X86_REG_ARG_2 ASM_X86_REG_ECX
 #define ASM_X86_REG_ARG_3 ASM_X86_REG_EDX
 #define ASM_X86_REG_ARG_4 ASM_X86_REG_EBX
 
-// condition codes, used for jcc and setcc (despite their j-name!)
-#define ASM_X86_CC_JB  (0x2) // below, unsigned
-#define ASM_X86_CC_JAE (0x3) // above or equal, unsigned
+
+#define ASM_X86_CC_JB  (0x2) 
+#define ASM_X86_CC_JAE (0x3) 
 #define ASM_X86_CC_JZ  (0x4)
 #define ASM_X86_CC_JE  (0x4)
 #define ASM_X86_CC_JNZ (0x5)
 #define ASM_X86_CC_JNE (0x5)
-#define ASM_X86_CC_JBE (0x6) // below or equal, unsigned
-#define ASM_X86_CC_JA  (0x7) // above, unsigned
-#define ASM_X86_CC_JL  (0xc) // less, signed
-#define ASM_X86_CC_JGE (0xd) // greater or equal, signed
-#define ASM_X86_CC_JLE (0xe) // less or equal, signed
-#define ASM_X86_CC_JG  (0xf) // greater, signed
+#define ASM_X86_CC_JBE (0x6) 
+#define ASM_X86_CC_JA  (0x7) 
+#define ASM_X86_CC_JL  (0xc) 
+#define ASM_X86_CC_JGE (0xd) 
+#define ASM_X86_CC_JLE (0xe) 
+#define ASM_X86_CC_JG  (0xf) 
 
 typedef struct _asm_x86_t {
     mp_asm_base_t base;
@@ -119,13 +95,13 @@ void asm_x86_mov_local_addr_to_r32(asm_x86_t *as, int local_num, int dest_r32);
 void asm_x86_mov_reg_pcrel(asm_x86_t *as, int dest_r64, mp_uint_t label);
 void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r32);
 
-// Holds a pointer to mp_fun_table
+
 #define ASM_X86_REG_FUN_TABLE ASM_X86_REG_EBP
 
 #if GENERIC_ASM_API
 
-// The following macros provide a (mostly) arch-independent API to
-// generate native code, and are used by the native emitter.
+
+
 
 #define ASM_WORD_SIZE (4)
 
@@ -135,18 +111,18 @@ void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r
 #define REG_ARG_3 ASM_X86_REG_ARG_3
 #define REG_ARG_4 ASM_X86_REG_ARG_4
 
-// caller-save, so can be used as temporaries
+
 #define REG_TEMP0 ASM_X86_REG_EAX
 #define REG_TEMP1 ASM_X86_REG_ECX
 #define REG_TEMP2 ASM_X86_REG_EDX
 
-// callee-save, so can be used as locals
+
 #define REG_LOCAL_1 ASM_X86_REG_EBX
 #define REG_LOCAL_2 ASM_X86_REG_ESI
 #define REG_LOCAL_3 ASM_X86_REG_EDI
 #define REG_LOCAL_NUM (3)
 
-// Holds a pointer to mp_fun_table
+
 #define REG_FUN_TABLE ASM_X86_REG_FUN_TABLE
 
 #define ASM_T               asm_x86_t
@@ -213,6 +189,6 @@ void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r
 #define ASM_STORE16_REG_REG(as, reg_src, reg_base) asm_x86_mov_r16_to_mem16((as), (reg_src), (reg_base), 0)
 #define ASM_STORE32_REG_REG(as, reg_src, reg_base) asm_x86_mov_r32_to_mem32((as), (reg_src), (reg_base), 0)
 
-#endif // GENERIC_ASM_API
+#endif 
 
-#endif // MICROPY_INCLUDED_PY_ASMX86_H
+#endif 

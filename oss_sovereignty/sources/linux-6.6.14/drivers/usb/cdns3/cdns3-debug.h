@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence USBSS DRD Driver.
- * Debug header file.
- *
- * Copyright (C) 2018-2019 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
+
+
 #ifndef __LINUX_CDNS3_DEBUG
 #define __LINUX_CDNS3_DEBUG
 
@@ -101,12 +94,7 @@ static inline char *cdns3_decode_ep0_irq(char *str,
 				   dir ? "ep0IN" : "ep0OUT");
 }
 
-/**
- * Debug a transfer ring.
- *
- * Prints out all TRBs in the endpoint ring, even those after the Link TRB.
- *.
- */
+
 static inline char *cdns3_dbg_ring(struct cdns3_endpoint *priv_ep, char *str)
 {
 	dma_addr_t addr = priv_ep->trb_pool_dma;
@@ -154,4 +142,4 @@ static inline char *cdns3_dbg_ring(struct cdns3_endpoint *priv_ep, char *str)
 	return str;
 }
 
-#endif /*__LINUX_CDNS3_DEBUG*/
+#endif 

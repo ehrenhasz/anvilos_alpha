@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __LIBPERF_INTERNAL_XYARRAY_H
 #define __LIBPERF_INTERNAL_XYARRAY_H
 
@@ -40,4 +40,4 @@ static inline int xyarray__max_x(struct xyarray *xy)
 	return xy->max_x;
 }
 
-#endif /* __LIBPERF_INTERNAL_XYARRAY_H */
+#endif 

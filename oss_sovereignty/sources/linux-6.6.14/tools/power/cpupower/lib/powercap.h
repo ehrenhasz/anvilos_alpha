@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  (C) 2016 SUSE Software Solutions GmbH
- *           Thomas Renninger <trenn@suse.de>
- */
+
+
 
 #ifndef __CPUPOWER_RAPL_H__
 #define __CPUPOWER_RAPL_H__
@@ -21,15 +18,12 @@
 
 struct powercap_zone {
 	char name[MAX_LINE_LEN];
-	/*
-	 * sys_name relative to PATH_TO_POWERCAP,
-	 * do not forget the / in between
-	 */
+	
 	char sys_name[SYSFS_PATH_MAX];
 	int tree_depth;
 	struct powercap_zone *parent;
 	struct powercap_zone *children[POWERCAP_MAX_CHILD_ZONES];
-	/* More possible caps or attributes to be added? */
+	
 	uint32_t has_power_uw:1,
 		 has_energy_uj:1;
 
@@ -51,4 +45,4 @@ int powercap_zone_get_enabled(struct powercap_zone *zone, int *mode);
 int powercap_zone_set_enabled(struct powercap_zone *zone, int mode);
 
 
-#endif /* __CPUPOWER_RAPL_H__ */
+#endif 

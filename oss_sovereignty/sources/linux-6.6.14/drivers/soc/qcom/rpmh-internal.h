@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- */
+
+
 
 
 #ifndef __RPM_INTERNAL_H__
@@ -19,28 +17,7 @@
 
 struct rsc_drv;
 
-/**
- * struct tcs_group: group of Trigger Command Sets (TCS) to send state requests
- * to the controller
- *
- * @drv:       The controller.
- * @type:      Type of the TCS in this group - active, sleep, wake.
- * @mask:      Mask of the TCSes relative to all the TCSes in the RSC.
- * @offset:    Start of the TCS group relative to the TCSes in the RSC.
- * @num_tcs:   Number of TCSes in this type.
- * @ncpt:      Number of commands in each TCS.
- * @req:       Requests that are sent from the TCS; only used for ACTIVE_ONLY
- *             transfers (could be on a wake/sleep TCS if we are borrowing for
- *             an ACTIVE_ONLY transfer).
- *             Start: grab drv->lock, set req, set tcs_in_use, drop drv->lock,
- *                    trigger
- *             End: get irq, access req,
- *                  grab drv->lock, clear tcs_in_use, drop drv->lock
- * @slots:     Indicates which of @cmd_addr are occupied; only used for
- *             SLEEP / WAKE TCSs.  Things are tightly packed in the
- *             case that (ncpt < MAX_CMDS_PER_TCS).  That is if ncpt = 2 and
- *             MAX_CMDS_PER_TCS = 16 then bit[2] = the first bit in 2nd TCS.
- */
+
 struct tcs_group {
 	struct rsc_drv *drv;
 	int type;
@@ -52,15 +29,7 @@ struct tcs_group {
 	DECLARE_BITMAP(slots, MAX_TCS_SLOTS);
 };
 
-/**
- * struct rpmh_request: the message to be sent to rpmh-rsc
- *
- * @msg: the request
- * @cmd: the payload that will be part of the @msg
- * @completion: triggered when request is done
- * @dev: the device making the request
- * @needs_free: check to free dynamically allocated request object
- */
+
 struct rpmh_request {
 	struct tcs_request msg;
 	struct tcs_cmd cmd[MAX_RPMH_PAYLOAD];
@@ -69,14 +38,7 @@ struct rpmh_request {
 	bool needs_free;
 };
 
-/**
- * struct rpmh_ctrlr: our representation of the controller
- *
- * @cache: the list of cached requests
- * @cache_lock: synchronize access to the cache data
- * @dirty: was the cache updated since flush
- * @batch_cache: Cache sleep and wake requests sent as batch
- */
+
 struct rpmh_ctrlr {
 	struct list_head cache;
 	spinlock_t cache_lock;
@@ -89,34 +51,7 @@ struct rsc_ver {
 	u32 minor;
 };
 
-/**
- * struct rsc_drv: the Direct Resource Voter (DRV) of the
- * Resource State Coordinator controller (RSC)
- *
- * @name:               Controller identifier.
- * @base:               Start address of the DRV registers in this controller.
- * @tcs_base:           Start address of the TCS registers in this controller.
- * @id:                 Instance id in the controller (Direct Resource Voter).
- * @num_tcs:            Number of TCSes in this DRV.
- * @rsc_pm:             CPU PM notifier for controller.
- *                      Used when solver mode is not present.
- * @cpus_in_pm:         Number of CPUs not in idle power collapse.
- *                      Used when solver mode and "power-domains" is not present.
- * @genpd_nb:           PM Domain notifier for cluster genpd notifications.
- * @tcs:                TCS groups.
- * @tcs_in_use:         S/W state of the TCS; only set for ACTIVE_ONLY
- *                      transfers, but might show a sleep/wake TCS in use if
- *                      it was borrowed for an active_only transfer.  You
- *                      must hold the lock in this struct (AKA drv->lock) in
- *                      order to update this.
- * @lock:               Synchronize state of the controller.  If RPMH's cache
- *                      lock will also be held, the order is: drv->lock then
- *                      cache_lock.
- * @tcs_wait:           Wait queue used to wait for @tcs_in_use to free up a
- *                      slot
- * @client:             Handle to the DRV's client.
- * @dev:                RSC device.
- */
+
 struct rsc_drv {
 	const char *name;
 	void __iomem *base;
@@ -145,4 +80,4 @@ void rpmh_rsc_write_next_wakeup(struct rsc_drv *drv);
 void rpmh_tx_done(const struct tcs_request *msg);
 int rpmh_flush(struct rpmh_ctrlr *ctrlr);
 
-#endif /* __RPM_INTERNAL_H__ */
+#endif 

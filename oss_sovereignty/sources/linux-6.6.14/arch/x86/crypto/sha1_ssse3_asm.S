@@ -1,35 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * This is a SIMD SHA-1 implementation. It requires the Intel(R) Supplemental
- * SSE3 instruction set extensions introduced in Intel Core Microarchitecture
- * processors. CPUs supporting Intel(R) AVX extensions will get an additional
- * boost.
- *
- * This work was inspired by the vectorized implementation of Dean Gaudet.
- * Additional information on it can be found at:
- *    http://www.arctic.org/~dean/crypto/sha1.html
- *
- * It was improved upon with more efficient vectorization of the message
- * scheduling. This implementation has also been optimized for all current and
- * several future generations of Intel CPUs.
- *
- * See this article for more information about the implementation details:
- *   http://software.intel.com/en-us/articles/improving-the-performance-of-the-secure-hash-algorithm-1/
- *
- * Copyright (C) 2010, Intel Corp.
- *   Authors: Maxim Locktyukhin <maxim.locktyukhin@intel.com>
- *            Ronen Zohar <ronen.zohar@intel.com>
- *
- * Converted to AT&T syntax and adapted for inclusion in the Linux kernel:
- *   Author: Mathias Krause <minipli@googlemail.com>
- */
+
+
 
 #include <linux/linkage.h>
 #include <linux/cfi_types.h>
 
-#define CTX	%rdi	// arg1
-#define BUF	%rsi	// arg2
-#define CNT	%rdx	// arg3
+#define CTX	%rdi	
+#define BUF	%rsi	
+#define CNT	%rdx	
 
 #define REG_A	%ecx
 #define REG_B	%esi
@@ -59,14 +36,11 @@
 
 #define XMM_SHUFB_BSWAP	%xmm10
 
-/* we keep window of 64 w[i]+K pre-calculated values in a circular buffer */
+
 #define WK(t)	(((t) & 15) * 4)(%rsp)
 #define W_PRECALC_AHEAD	16
 
-/*
- * This macro implements the SHA-1 function's body for single 64-byte block
- * param: function's name
- */
+
 .macro SHA1_VECTOR_ASM  name
 	SYM_TYPED_FUNC_START(\name)
 
@@ -105,9 +79,7 @@
 	SYM_FUNC_END(\name)
 .endm
 
-/*
- * This macro implements 80 rounds of SHA-1 for one 64-byte block
- */
+
 .macro SHA1_PIPELINED_MAIN_BODY
 	INIT_REGALLOC
 
@@ -246,17 +218,7 @@
 	mov	\val, \hash
 .endm
 
-/*
- * RR does two rounds of SHA-1 back to back with W[] pre-calc
- *   t1 = F(b, c, d);   e += w(i)
- *   e += t1;           b <<= 30;   d  += w(i+1);
- *   t1 = F(a, b, c);
- *   d += t1;           a <<= 5;
- *   e += a;
- *   t1 = e;            a >>= 7;
- *   t1 <<= 5;
- *   d += t1;
- */
+
 .macro RR  F, a, b, c, d, e, round
 	add	WK(\round), \e
 	\F   \b, \c, \d		# t1 = F(b, c, d);
@@ -303,7 +265,7 @@
 	W_PRECALC_00_15
   .elseif (i<32)
 	W_PRECALC_16_31
-  .elseif (i < 80)   // rounds 32-79
+  .elseif (i < 80)   
 	W_PRECALC_32_79
   .endif
 .endm
@@ -344,7 +306,7 @@
 	W_PRECALC_32_79_SSSE3
 .endm
 
-/* message scheduling pre-compute for rounds 0-15 */
+
 .macro W_PRECALC_00_15_SSSE3
   .if ((i & 3) == 0)
 	movdqu	(i*4)(BUFFER_PTR), W_TMP1
@@ -359,15 +321,7 @@
   .endif
 .endm
 
-/* message scheduling pre-compute for rounds 16-31
- *
- * - calculating last 32 w[i] values in 8 XMM registers
- * - pre-calculate K+w[i] values and store to mem, for later load by ALU add
- *   instruction
- *
- * some "heavy-lifting" vectorization for rounds 16-31 due to w[i]->w[i-3]
- * dependency, but improves for 32-79
- */
+
 .macro W_PRECALC_16_31_SSSE3
   # blended scheduling of vector and scalar instruction streams, one 4-wide
   # vector iteration / 4 scalar rounds
@@ -400,12 +354,7 @@
   .endif
 .endm
 
-/* message scheduling pre-compute for rounds 32-79
- *
- * in SHA-1 specification: w[i] = (w[i-3] ^ w[i-8]  ^ w[i-14] ^ w[i-16]) rol 1
- * instead we do equal:    w[i] = (w[i-6] ^ w[i-16] ^ w[i-28] ^ w[i-32]) rol 2
- * allows more efficient vectorization since w[i]=>w[i-3] dependency is broken
- */
+
 .macro W_PRECALC_32_79_SSSE3
   .if ((i & 3) == 0)
 	movdqa	W_minus_04, W_TMP1
@@ -427,7 +376,7 @@
   .endif
 .endm
 
-.endm		// W_PRECALC_SSSE3
+.endm		
 
 
 #define K1	0x5a827999
@@ -458,14 +407,7 @@ W_PRECALC_SSSE3
 	movdqu	\a,\b
 .endm
 
-/*
- * SSSE3 optimized implementation:
- *
- * extern "C" void sha1_transform_ssse3(struct sha1_state *state,
- *					const u8 *data, int blocks);
- *
- * Note that struct sha1_state is assumed to begin with u32 state[5].
- */
+
 SHA1_VECTOR_ASM     sha1_transform_ssse3
 
 .macro W_PRECALC_AVX
@@ -538,7 +480,7 @@ SHA1_VECTOR_ASM     sha1_transform_ssse3
   .endif
 .endm
 
-.endm    // W_PRECALC_AVX
+.endm    
 
 W_PRECALC_AVX
 .purgem xmm_mov
@@ -547,8 +489,5 @@ W_PRECALC_AVX
 .endm
 
 
-/* AVX optimized implementation:
- *  extern "C" void sha1_transform_avx(struct sha1_state *state,
- *				       const u8 *data, int blocks);
- */
+
 SHA1_VECTOR_ASM     sha1_transform_avx

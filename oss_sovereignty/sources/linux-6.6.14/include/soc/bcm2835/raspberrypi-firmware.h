@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright © 2015 Broadcom
- */
+
+
 
 #ifndef __SOC_RASPBERRY_FIRMWARE_H__
 #define __SOC_RASPBERRY_FIRMWARE_H__
@@ -17,16 +15,7 @@ enum rpi_firmware_property_status {
 	RPI_FIRMWARE_STATUS_ERROR =   0x80000001,
 };
 
-/**
- * struct rpi_firmware_property_tag_header - Firmware property tag header
- * @tag:		One of enum_mbox_property_tag.
- * @buf_size:		The number of bytes in the value buffer following this
- *			struct.
- * @req_resp_size:	On submit, the length of the request (though it doesn't
- *			appear to be currently used by the firmware).  On return,
- *			the length of the response (always 4 byte aligned), with
- *			the low bit set.
- */
+
 struct rpi_firmware_property_tag_header {
 	u32 tag;
 	u32 buf_size;
@@ -93,7 +82,7 @@ enum rpi_firmware_property_tag {
 	RPI_FIRMWARE_NOTIFY_XHCI_RESET =                      0x00030058,
 	RPI_FIRMWARE_NOTIFY_DISPLAY_DONE =                    0x00030066,
 
-	/* Dispmanx TAGS */
+	
 	RPI_FIRMWARE_FRAMEBUFFER_ALLOCATE =                   0x00040001,
 	RPI_FIRMWARE_FRAMEBUFFER_BLANK =                      0x00040002,
 	RPI_FIRMWARE_FRAMEBUFFER_GET_PHYSICAL_WIDTH_HEIGHT =  0x00040003,
@@ -155,14 +144,7 @@ enum rpi_firmware_clk_id {
 	RPI_FIRMWARE_NUM_CLK_ID,
 };
 
-/**
- * struct rpi_firmware_clk_rate_request - Firmware Request for a rate
- * @id:	ID of the clock being queried
- * @rate: Rate in Hertz. Set by the firmware.
- *
- * Used by @RPI_FIRMWARE_GET_CLOCK_RATE, @RPI_FIRMWARE_GET_CLOCK_MEASURED,
- * @RPI_FIRMWARE_GET_MAX_CLOCK_RATE and @RPI_FIRMWARE_GET_MIN_CLOCK_RATE.
- */
+
 struct rpi_firmware_clk_rate_request {
 	__le32 id;
 	__le32 rate;
@@ -223,4 +205,4 @@ static inline struct rpi_firmware *devm_rpi_firmware_get(struct device *dev,
 }
 #endif
 
-#endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
+#endif 

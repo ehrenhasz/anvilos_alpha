@@ -1,4 +1,0 @@
-#include "rtd16xx.dtsi"
-/ {
-	compatible = "realtek,rtd1619";
-};

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+
 
 #ifndef __IVPU_HW_40XX_REG_H__
 #define __IVPU_HW_40XX_REG_H__
@@ -266,4 +264,4 @@
 
 #define VPU_40XX_CPU_SS_DOORBELL_1					0x01301000u
 
-#endif /* __IVPU_HW_40XX_REG_H__ */
+#endif 

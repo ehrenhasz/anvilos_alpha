@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NFOSF_H
 #define _NFOSF_H
 
 #include <uapi/linux/netfilter/nfnetlink_osf.h>
 
 enum osf_fmatch_states {
-	/* Packet does not match the fingerprint */
+	
 	FMATCH_WRONG = 0,
-	/* Packet matches the fingerprint */
+	
 	FMATCH_OK,
-	/* Options do not match the fingerprint, but header does */
+	
 	FMATCH_OPT_WRONG,
 };
 
@@ -35,4 +35,4 @@ bool nf_osf_find(const struct sk_buff *skb,
 		 const struct list_head *nf_osf_fingers,
 		 const int ttl_check, struct nf_osf_data *data);
 
-#endif /* _NFOSF_H */
+#endif 

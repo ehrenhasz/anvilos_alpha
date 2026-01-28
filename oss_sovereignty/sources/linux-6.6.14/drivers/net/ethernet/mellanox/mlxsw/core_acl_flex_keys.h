@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXSW_CORE_ACL_FLEX_KEYS_H
 #define _MLXSW_CORE_ACL_FLEX_KEYS_H
@@ -46,9 +46,9 @@ enum mlxsw_afk_element_type {
 };
 
 struct mlxsw_afk_element_info {
-	enum mlxsw_afk_element element; /* element ID */
+	enum mlxsw_afk_element element; 
 	enum mlxsw_afk_element_type type;
-	struct mlxsw_item item; /* element geometry in internal storage */
+	struct mlxsw_item item; 
 };
 
 #define MLXSW_AFK_ELEMENT_INFO(_type, _element, _offset, _shift, _size)		\
@@ -73,13 +73,11 @@ struct mlxsw_afk_element_info {
 
 #define MLXSW_AFK_ELEMENT_STORAGE_SIZE 0x44
 
-struct mlxsw_afk_element_inst { /* element instance in actual block */
+struct mlxsw_afk_element_inst { 
 	enum mlxsw_afk_element element;
 	enum mlxsw_afk_element_type type;
-	struct mlxsw_item item; /* element geometry in block */
-	int u32_key_diff; /* in case value needs to be adjusted before write
-			   * this diff is here to handle that
-			   */
+	struct mlxsw_item item; 
+	int u32_key_diff; 
 	bool avoid_size_check;
 };
 
@@ -114,7 +112,7 @@ struct mlxsw_afk_element_inst { /* element instance in actual block */
 			       _element, _offset, 0, _size, 0, false)
 
 struct mlxsw_afk_block {
-	u16 encoding; /* block ID */
+	u16 encoding; 
 	struct mlxsw_afk_element_inst *instances;
 	unsigned int instances_count;
 };

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2009 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2011-2012 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef __QCA8K_H
 #define __QCA8K_H
@@ -38,7 +34,7 @@
 
 #define QCA8K_PORT_VID_DEF				1
 
-/* Global control registers */
+
 #define QCA8K_REG_MASK_CTRL				0x000
 #define   QCA8K_MASK_CTRL_REV_ID_MASK			GENMASK(7, 0)
 #define   QCA8K_MASK_CTRL_REV_ID(x)			FIELD_GET(QCA8K_MASK_CTRL_REV_ID_MASK, x)
@@ -60,9 +56,7 @@
 #define   QCA8K_PORT_PAD_SGMII_EN			BIT(7)
 #define QCA8K_REG_PWS					0x010
 #define   QCA8K_PWS_POWER_ON_SEL			BIT(31)
-/* This reg is only valid for QCA832x and toggle the package
- * type from 176 pin (by default) to 148 pin used on QCA8327
- */
+
 #define   QCA8327_PWS_PACKAGE148_EN			BIT(30)
 #define   QCA8K_PWS_LED_OPEN_EN_CSR			BIT(24)
 #define   QCA8K_PWS_SERDES_AEN_DIS			BIT(7)
@@ -87,7 +81,7 @@
 #define   QCA8K_MDIO_MASTER_MAX_PORTS			5
 #define   QCA8K_MDIO_MASTER_MAX_REG			32
 
-/* LED control register */
+
 #define QCA8K_LED_PORT_COUNT				3
 #define QCA8K_LED_COUNT					((QCA8K_NUM_PORTS - QCA8K_NUM_CPU_PORTS) * QCA8K_LED_PORT_COUNT)
 #define QCA8K_LED_RULE_COUNT				6
@@ -166,16 +160,16 @@
 #define   QCA8K_SGMII_MODE_CTRL_PHY			QCA8K_SGMII_MODE_CTRL(0x1)
 #define   QCA8K_SGMII_MODE_CTRL_MAC			QCA8K_SGMII_MODE_CTRL(0x2)
 
-/* MAC_PWR_SEL registers */
+
 #define QCA8K_REG_MAC_PWR_SEL				0x0e4
 #define   QCA8K_MAC_PWR_RGMII1_1_8V			BIT(18)
 #define   QCA8K_MAC_PWR_RGMII0_1_8V			BIT(19)
 
-/* EEE control registers */
+
 #define QCA8K_REG_EEE_CTRL				0x100
 #define  QCA8K_REG_EEE_CTRL_LPI_EN(_i)			((_i + 1) * 2)
 
-/* TRUNK_HASH_EN registers */
+
 #define QCA8K_TRUNK_HASH_EN_CTRL			0x270
 #define   QCA8K_TRUNK_HASH_SIP_EN			BIT(3)
 #define   QCA8K_TRUNK_HASH_DIP_EN			BIT(2)
@@ -183,7 +177,7 @@
 #define   QCA8K_TRUNK_HASH_DA_EN			BIT(0)
 #define   QCA8K_TRUNK_HASH_MASK				GENMASK(3, 0)
 
-/* ACL registers */
+
 #define QCA8K_REG_PORT_VLAN_CTRL0(_i)			(0x420 + (_i * 8))
 #define   QCA8K_PORT_VLAN_CVID_MASK			GENMASK(27, 16)
 #define   QCA8K_PORT_VLAN_CVID(x)			FIELD_PREP(QCA8K_PORT_VLAN_CVID_MASK, x)
@@ -193,8 +187,8 @@
 #define QCA8K_REG_IPV4_PRI_BASE_ADDR			0x470
 #define QCA8K_REG_IPV4_PRI_ADDR_MASK			0x474
 
-/* Lookup registers */
-#define QCA8K_ATU_TABLE_SIZE				3 /* 12 bytes wide table / sizeof(u32) */
+
+#define QCA8K_ATU_TABLE_SIZE				3 
 
 #define QCA8K_REG_ATU_DATA0				0x600
 #define   QCA8K_ATU_ADDR2_MASK				GENMASK(31, 24)
@@ -218,11 +212,7 @@
 #define QCA8K_REG_VTU_FUNC0				0x610
 #define   QCA8K_VTU_FUNC0_VALID				BIT(20)
 #define   QCA8K_VTU_FUNC0_IVL_EN			BIT(19)
-/*        QCA8K_VTU_FUNC0_EG_MODE_MASK			GENMASK(17, 4)
- *          It does contain VLAN_MODE for each port [5:4] for port0,
- *          [7:6] for port1 ... [17:16] for port6. Use virtual port
- *          define to handle this.
- */
+
 #define   QCA8K_VTU_FUNC0_EG_MODE_PORT_SHIFT(_i)	(4 + (_i) * 2)
 #define   QCA8K_VTU_FUNC0_EG_MODE_MASK			GENMASK(1, 0)
 #define   QCA8K_VTU_FUNC0_EG_MODE_PORT_MASK(_i)		(GENMASK(1, 0) << QCA8K_VTU_FUNC0_EG_MODE_PORT_SHIFT(_i))
@@ -268,23 +258,20 @@
 #define   QCA8K_PORT_LOOKUP_ING_MIRROR_EN		BIT(25)
 
 #define QCA8K_REG_GOL_TRUNK_CTRL0			0x700
-/* 4 max trunk first
- * first 6 bit for member bitmap
- * 7th bit is to enable trunk port
- */
+
 #define QCA8K_REG_GOL_TRUNK_SHIFT(_i)			((_i) * 8)
 #define QCA8K_REG_GOL_TRUNK_EN_MASK			BIT(7)
 #define QCA8K_REG_GOL_TRUNK_EN(_i)			(QCA8K_REG_GOL_TRUNK_EN_MASK << QCA8K_REG_GOL_TRUNK_SHIFT(_i))
 #define QCA8K_REG_GOL_TRUNK_MEMBER_MASK			GENMASK(6, 0)
 #define QCA8K_REG_GOL_TRUNK_MEMBER(_i)			(QCA8K_REG_GOL_TRUNK_MEMBER_MASK << QCA8K_REG_GOL_TRUNK_SHIFT(_i))
-/* 0x704 for TRUNK 0-1 --- 0x708 for TRUNK 2-3 */
+
 #define QCA8K_REG_GOL_TRUNK_CTRL(_i)			(0x704 + (((_i) / 2) * 4))
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_MASK		GENMASK(3, 0)
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK		BIT(3)
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK		GENMASK(2, 0)
 #define QCA8K_REG_GOL_TRUNK_ID_SHIFT(_i)		(((_i) / 2) * 16)
 #define QCA8K_REG_GOL_MEM_ID_SHIFT(_i)			((_i) * 4)
-/* Complex shift: FIRST shift for port THEN shift for trunk */
+
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j)	(QCA8K_REG_GOL_MEM_ID_SHIFT(_j) + QCA8K_REG_GOL_TRUNK_ID_SHIFT(_i))
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN(_i, _j)	(QCA8K_REG_GOL_TRUNK_ID_MEM_ID_EN_MASK << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j))
 #define QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT(_i, _j)	(QCA8K_REG_GOL_TRUNK_ID_MEM_ID_PORT_MASK << QCA8K_REG_GOL_TRUNK_ID_MEM_ID_SHIFT(_i, _j))
@@ -319,13 +306,13 @@
 #define   QCA8K_PORT_HOL_CTRL1_WRED_EN			BIT(8)
 #define   QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN		BIT(16)
 
-/* Pkt edit registers */
+
 #define QCA8K_EGREES_VLAN_PORT_SHIFT(_i)		(16 * ((_i) % 2))
 #define QCA8K_EGREES_VLAN_PORT_MASK(_i)			(GENMASK(11, 0) << QCA8K_EGREES_VLAN_PORT_SHIFT(_i))
 #define QCA8K_EGREES_VLAN_PORT(_i, x)			((x) << QCA8K_EGREES_VLAN_PORT_SHIFT(_i))
 #define QCA8K_EGRESS_VLAN(x)				(0x0c70 + (4 * (x / 2)))
 
-/* L3 registers */
+
 #define QCA8K_HROUTER_CONTROL				0xe00
 #define   QCA8K_HROUTER_CONTROL_GLB_LOCKTIME_M		GENMASK(17, 16)
 #define   QCA8K_HROUTER_CONTROL_GLB_LOCKTIME_S		16
@@ -334,10 +321,10 @@
 #define QCA8K_HROUTER_PBASED_CONTROL2			0xe0c
 #define QCA8K_HNAT_CONTROL				0xe38
 
-/* MIB registers */
+
 #define QCA8K_PORT_MIB_COUNTER(_i)			(0x1000 + (_i) * 0x100)
 
-/* QCA specific MII registers */
+
 #define MII_ATH_MMD_ADDR				0x0d
 #define MII_ATH_MMD_DATA				0x0e
 
@@ -392,7 +379,7 @@ enum {
 
 struct qca8k_mgmt_eth_data {
 	struct completion rw_done;
-	struct mutex mutex; /* Enforce one mdio read/write at time */
+	struct mutex mutex; 
 	bool ack;
 	u32 seq;
 	u32 data[4];
@@ -400,25 +387,22 @@ struct qca8k_mgmt_eth_data {
 
 struct qca8k_mib_eth_data {
 	struct completion rw_done;
-	struct mutex mutex; /* Process one command at time */
-	refcount_t port_parsed; /* Counter to track parsed port */
+	struct mutex mutex; 
+	refcount_t port_parsed; 
 	u8 req_port;
-	u64 *data; /* pointer to ethtool data */
+	u64 *data; 
 };
 
 struct qca8k_ports_config {
 	bool sgmii_rx_clk_falling_edge;
 	bool sgmii_tx_clk_falling_edge;
 	bool sgmii_enable_pll;
-	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
-	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; 
+	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; 
 };
 
 struct qca8k_mdio_cache {
-/* The 32bit switch registers are accessed indirectly. To achieve this we need
- * to set the page of the register. Track the last page that was set to reduce
- * mdio writes
- */
+
 	u16 page;
 };
 
@@ -447,9 +431,7 @@ struct qca8k_priv {
 	u8 mirror_rx;
 	u8 mirror_tx;
 	u8 lag_hash_mode;
-	/* Each bit correspond to a port. This switch can support a max of 7 port.
-	 * Bit 1: port enabled. Bit 0: port disabled.
-	 */
+	
 	u8 port_enabled_map;
 	struct qca8k_ports_config ports_config;
 	struct regmap *regmap;
@@ -458,7 +440,7 @@ struct qca8k_priv {
 	struct mutex reg_mutex;
 	struct device *dev;
 	struct gpio_desc *reset_gpio;
-	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+	struct net_device *mgmt_master; 
 	struct qca8k_mgmt_eth_data mgmt_eth_data;
 	struct qca8k_mib_eth_data mib_eth_data;
 	struct qca8k_mdio_cache mdio_cache;
@@ -483,44 +465,37 @@ struct qca8k_fdb {
 
 static inline u32 qca8k_port_to_phy(int port)
 {
-	/* From Andrew Lunn:
-	 * Port 0 has no internal phy.
-	 * Port 1 has an internal PHY at MDIO address 0.
-	 * Port 2 has an internal PHY at MDIO address 1.
-	 * ...
-	 * Port 5 has an internal PHY at MDIO address 4.
-	 * Port 6 has no internal PHY.
-	 */
+	
 
 	return port - 1;
 }
 
-/* Common setup function */
+
 extern const struct qca8k_mib_desc ar8327_mib[];
 extern const struct regmap_access_table qca8k_readable_table;
 int qca8k_mib_init(struct qca8k_priv *priv);
 void qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable);
 int qca8k_read_switch_id(struct qca8k_priv *priv);
 
-/* Common read/write/rmw function */
+
 int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
 int qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val);
 int qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val);
 
-/* Common ops function */
+
 void qca8k_fdb_flush(struct qca8k_priv *priv);
 
-/* Common ethtool stats function */
+
 void qca8k_get_strings(struct dsa_switch *ds, int port, u32 stringset, uint8_t *data);
 void qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
 			     uint64_t *data);
 int qca8k_get_sset_count(struct dsa_switch *ds, int port, int sset);
 
-/* Common eee function */
+
 int qca8k_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *eee);
 int qca8k_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e);
 
-/* Common bridge function */
+
 void qca8k_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
 int qca8k_port_pre_bridge_flags(struct dsa_switch *ds, int port,
 				struct switchdev_brport_flags flags,
@@ -535,20 +510,20 @@ int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
 void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
 			     struct dsa_bridge bridge);
 
-/* Common port enable/disable function */
+
 int qca8k_port_enable(struct dsa_switch *ds, int port,
 		      struct phy_device *phy);
 void qca8k_port_disable(struct dsa_switch *ds, int port);
 
-/* Common MTU function */
+
 int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu);
 int qca8k_port_max_mtu(struct dsa_switch *ds, int port);
 
-/* Common fast age function */
+
 void qca8k_port_fast_age(struct dsa_switch *ds, int port);
 int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs);
 
-/* Common FDB function */
+
 int qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
 			  u16 port_mask, u16 vid);
 int qca8k_port_fdb_add(struct dsa_switch *ds, int port,
@@ -560,7 +535,7 @@ int qca8k_port_fdb_del(struct dsa_switch *ds, int port,
 int qca8k_port_fdb_dump(struct dsa_switch *ds, int port,
 			dsa_fdb_dump_cb_t *cb, void *data);
 
-/* Common MDB function */
+
 int qca8k_port_mdb_add(struct dsa_switch *ds, int port,
 		       const struct switchdev_obj_port_mdb *mdb,
 		       struct dsa_db db);
@@ -568,14 +543,14 @@ int qca8k_port_mdb_del(struct dsa_switch *ds, int port,
 		       const struct switchdev_obj_port_mdb *mdb,
 		       struct dsa_db db);
 
-/* Common port mirror function */
+
 int qca8k_port_mirror_add(struct dsa_switch *ds, int port,
 			  struct dsa_mall_mirror_tc_entry *mirror,
 			  bool ingress, struct netlink_ext_ack *extack);
 void qca8k_port_mirror_del(struct dsa_switch *ds, int port,
 			   struct dsa_mall_mirror_tc_entry *mirror);
 
-/* Common port VLAN function */
+
 int qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
 			      struct netlink_ext_ack *extack);
 int qca8k_port_vlan_add(struct dsa_switch *ds, int port,
@@ -584,11 +559,11 @@ int qca8k_port_vlan_add(struct dsa_switch *ds, int port,
 int qca8k_port_vlan_del(struct dsa_switch *ds, int port,
 			const struct switchdev_obj_port_vlan *vlan);
 
-/* Common port LAG function */
+
 int qca8k_port_lag_join(struct dsa_switch *ds, int port, struct dsa_lag lag,
 			struct netdev_lag_upper_info *info,
 			struct netlink_ext_ack *extack);
 int qca8k_port_lag_leave(struct dsa_switch *ds, int port,
 			 struct dsa_lag lag);
 
-#endif /* __QCA8K_H */
+#endif 

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- *  IPv6 IOAM Generic Netlink API
- *
- *  Author:
- *  Justin Iurman <justin.iurman@uliege.be>
- */
+
+
 
 #ifndef _UAPI_LINUX_IOAM6_GENL_H
 #define _UAPI_LINUX_IOAM6_GENL_H
@@ -15,14 +10,14 @@
 enum {
 	IOAM6_ATTR_UNSPEC,
 
-	IOAM6_ATTR_NS_ID,	/* u16 */
-	IOAM6_ATTR_NS_DATA,	/* u32 */
-	IOAM6_ATTR_NS_DATA_WIDE,/* u64 */
+	IOAM6_ATTR_NS_ID,	
+	IOAM6_ATTR_NS_DATA,	
+	IOAM6_ATTR_NS_DATA_WIDE,
 
 #define IOAM6_MAX_SCHEMA_DATA_LEN (255 * 4)
-	IOAM6_ATTR_SC_ID,	/* u32 */
-	IOAM6_ATTR_SC_DATA,	/* Binary */
-	IOAM6_ATTR_SC_NONE,	/* Flag */
+	IOAM6_ATTR_SC_ID,	
+	IOAM6_ATTR_SC_DATA,	
+	IOAM6_ATTR_SC_NONE,	
 
 	IOAM6_ATTR_PAD,
 
@@ -49,4 +44,4 @@ enum {
 
 #define IOAM6_CMD_MAX (__IOAM6_CMD_MAX - 1)
 
-#endif /* _UAPI_LINUX_IOAM6_GENL_H */
+#endif 

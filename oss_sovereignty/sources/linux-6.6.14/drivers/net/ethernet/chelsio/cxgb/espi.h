@@ -1,30 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*****************************************************************************
- *                                                                           *
- * File: espi.h                                                              *
- * $Revision: 1.7 $                                                          *
- * $Date: 2005/06/21 18:29:47 $                                              *
- * Description:                                                              *
- *  part of the Chelsio 10Gb Ethernet Driver.                                *
- *                                                                           *
- *                                                                           *
- * http://www.chelsio.com                                                    *
- *                                                                           *
- * Copyright (c) 2003 - 2005 Chelsio Communications, Inc.                    *
- * All rights reserved.                                                      *
- *                                                                           *
- * Maintainers: maintainers@chelsio.com                                      *
- *                                                                           *
- * Authors: Dimitrios Michailidis   <dm@chelsio.com>                         *
- *          Tina Yang               <tainay@chelsio.com>                     *
- *          Felix Marti             <felix@chelsio.com>                      *
- *          Scott Bardone           <sbardone@chelsio.com>                   *
- *          Kurt Ottaway            <kottaway@chelsio.com>                   *
- *          Frank DiMambro          <frank@chelsio.com>                      *
- *                                                                           *
- * History:                                                                  *
- *                                                                           *
- ****************************************************************************/
+
+
 
 #ifndef _CXGB_ESPI_H_
 #define _CXGB_ESPI_H_
@@ -55,4 +30,4 @@ const struct espi_intr_counts *t1_espi_get_intr_counts(struct peespi *espi);
 u32 t1_espi_get_mon(adapter_t *adapter, u32 addr, u8 wait);
 int t1_espi_get_mon_t204(adapter_t *, u32 *, u8);
 
-#endif /* _CXGB_ESPI_H_ */
+#endif 

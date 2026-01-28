@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+
 
 #ifndef __MLX5_EN_TC_INT_PORT_H__
 #define __MLX5_EN_TC_INT_PORT_H__
@@ -40,7 +40,7 @@ mlx5e_tc_int_port_put(struct mlx5e_tc_int_port_priv *priv,
 u32 mlx5e_tc_int_port_get_metadata(struct mlx5e_tc_int_port *int_port);
 u32 mlx5e_tc_int_port_get_metadata_for_match(struct mlx5e_tc_int_port *int_port);
 int mlx5e_tc_int_port_get_flow_source(struct mlx5e_tc_int_port *int_port);
-#else /* CONFIG_MLX5_CLS_ACT */
+#else 
 static inline u32
 mlx5e_tc_int_port_get_metadata_for_match(struct mlx5e_tc_int_port *int_port)
 {
@@ -61,5 +61,5 @@ static inline bool mlx5e_tc_int_port_supported(const struct mlx5_eswitch *esw)
 static inline void mlx5e_tc_int_port_init_rep_rx(struct mlx5e_priv *priv) {}
 static inline void mlx5e_tc_int_port_cleanup_rep_rx(struct mlx5e_priv *priv) {}
 
-#endif /* CONFIG_MLX5_CLS_ACT */
-#endif /* __MLX5_EN_TC_INT_PORT_H__ */
+#endif 
+#endif 

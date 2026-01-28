@@ -6,7 +6,7 @@ ALL_TESTS="
 	blackhole_ipv6
 "
 NUM_NETIFS=4
-: ${TIMEOUT:=20000} # ms
+: ${TIMEOUT:=20000} 
 source $lib_dir/tc_common.sh
 source $lib_dir/lib.sh
 h1_create()

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef _NF_CONNTRACK_ACT_CT_H
 #define _NF_CONNTRACK_ACT_CT_H
@@ -51,4 +51,4 @@ nf_conn_act_ct_ext *nf_conn_act_ct_ext_add(struct sk_buff *skb,
 #endif
 }
 
-#endif /* _NF_CONNTRACK_ACT_CT_H */
+#endif 

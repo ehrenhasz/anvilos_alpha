@@ -7,6 +7,6 @@ class C:
         print('__getattr__', attr)
         return None
 c = C()
-c.add # should call __getattr__
-c.__add__() # should load __add__ instance directly
-c + 1 # should call __add__ method directly
+c.add 
+c.__add__() 
+c + 1 

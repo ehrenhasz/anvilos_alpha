@@ -7,7 +7,7 @@ coverage:
 
 comment: false
 
-# Files not run by tests
+
 ignore:
   - "src/dosinst.c"
   - "src/dosinst.h"

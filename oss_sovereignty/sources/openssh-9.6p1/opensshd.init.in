@@ -1,7 +1,7 @@
-#!@STARTUP_SCRIPT_SHELL@
-# Donated code that was put under PD license.
-#
-# Stripped PRNGd out of it for the time being.
+
+
+
+
 
 umask 022
 
@@ -30,13 +30,13 @@ stop_service() {
 }
 
 start_service() {
-    # XXX We really should check if the service is already going, but
-    # XXX we will opt out at this time. - Bal
+    
+    
 
-    # Check to see if we have keys that need to be made
+    
     ${SSH_KEYGEN} -A
 
-    # Start SSHD
+    
     echo "starting $SSHD... \c"         ; $SSHD
 
     sshd_rc=$?

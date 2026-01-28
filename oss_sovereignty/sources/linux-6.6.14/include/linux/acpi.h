@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * acpi.h - ACPI Interface
- *
- * Copyright (C) 2001 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- */
+
+
 
 #ifndef _LINUX_ACPI_H
 #define _LINUX_ACPI_H
 
 #include <linux/errno.h>
-#include <linux/ioport.h>	/* for struct resource */
+#include <linux/ioport.h>	
 #include <linux/resource_ext.h>
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -118,7 +114,7 @@ enum acpi_address_range_id {
 };
 
 
-/* Table Handlers */
+
 union acpi_subtable_headers {
 	struct acpi_subtable_header common;
 	struct acpi_hmat_structure hmat;
@@ -134,7 +130,7 @@ typedef int (*acpi_tbl_entry_handler)(union acpi_subtable_headers *header,
 typedef int (*acpi_tbl_entry_handler_arg)(union acpi_subtable_headers *header,
 					  void *arg, const unsigned long end);
 
-/* Debugger support */
+
 
 struct acpi_debugger_ops {
 	int (*create_thread)(acpi_osd_exec_callback function, void *context);
@@ -256,7 +252,7 @@ acpi_table_parse_cedt(enum acpi_cedt_type id,
 int acpi_parse_mcfg (struct acpi_table_header *header);
 void acpi_table_print_madt_entry (struct acpi_subtable_header *madt);
 
-/* the following numa functions are architecture-dependent */
+
 void acpi_numa_slit_init (struct acpi_table_slit *slit);
 
 #if defined(CONFIG_X86) || defined(CONFIG_IA64) || defined(CONFIG_LOONGARCH)
@@ -298,9 +294,9 @@ static inline bool invalid_phys_cpuid(phys_cpuid_t phys_id)
 	return phys_id == PHYS_CPUID_INVALID;
 }
 
-/* Validate the processor object's proc_id */
+
 bool acpi_duplicate_processor_id(int proc_id);
-/* Processor _CTS control */
+
 struct acpi_processor_power;
 
 #ifdef CONFIG_ACPI_PROCESSOR_CSTATE
@@ -317,11 +313,11 @@ static inline int acpi_processor_evaluate_cst(acpi_handle handle, u32 cpu,
 #endif
 
 #ifdef CONFIG_ACPI_HOTPLUG_CPU
-/* Arch dependent functions for cpu hotplug support */
+
 int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id,
 		 int *pcpu);
 int acpi_unmap_cpu(int cpu);
-#endif /* CONFIG_ACPI_HOTPLUG_CPU */
+#endif 
 
 #ifdef CONFIG_ACPI_HOTPLUG_IOAPIC
 int acpi_get_ioapic_id(acpi_handle handle, u32 gsi_base, u64 *phys_addr);
@@ -366,11 +362,7 @@ static inline int acpi_get_override_irq(u32 gsi, int *trigger, int *polarity)
 	return -1;
 }
 #endif
-/*
- * This function undoes the effect of one call to acpi_register_gsi().
- * If this matches the last registration, any IRQ resources for gsi
- * are freed.
- */
+
 void acpi_unregister_gsi (u32 gsi);
 
 struct pci_dev;
@@ -418,7 +410,7 @@ extern acpi_status wmi_get_event_data(u32 event, struct acpi_buffer *out);
 extern bool wmi_has_guid(const char *guid);
 extern char *wmi_get_acpi_device_uid(const char *guid);
 
-#endif	/* CONFIG_ACPI_WMI */
+#endif	
 
 #define ACPI_VIDEO_OUTPUT_SWITCHING			0x0001
 #define ACPI_VIDEO_DEVICE_POSTING			0x0002
@@ -443,20 +435,7 @@ extern bool acpi_osi_is_win8(void);
 int acpi_map_pxm_to_node(int pxm);
 int acpi_get_node(acpi_handle handle);
 
-/**
- * pxm_to_online_node - Map proximity ID to online node
- * @pxm: ACPI proximity ID
- *
- * This is similar to pxm_to_node(), but always returns an online
- * node.  When the mapped node from a given proximity ID is offline, it
- * looks up the node distance table and returns the nearest online node.
- *
- * ACPI device drivers, which are called after the NUMA initialization has
- * completed in the kernel, can call this interface to obtain their device
- * NUMA topology from ACPI tables.  Such drivers do not have to deal with
- * offline nodes.  A node may be offline when SRAT memory entry does not exist,
- * or NUMA is disabled, ex. "numa=off" on x86.
- */
+
 static inline int pxm_to_online_node(int pxm)
 {
 	int node = pxm_to_node(pxm);
@@ -526,7 +505,7 @@ void __init acpi_old_suspend_ordering(void);
 void __init acpi_nvs_nosave(void);
 void __init acpi_nvs_nosave_s3(void);
 void __init acpi_sleep_no_blacklist(void);
-#endif /* CONFIG_PM_SLEEP */
+#endif 
 
 int acpi_register_wakeup_handler(
 	int wake_irq, bool (*wakeup)(void *context), void *context);
@@ -534,33 +513,33 @@ void acpi_unregister_wakeup_handler(
 	bool (*wakeup)(void *context), void *context);
 
 struct acpi_osc_context {
-	char *uuid_str;			/* UUID string */
+	char *uuid_str;			
 	int rev;
-	struct acpi_buffer cap;		/* list of DWORD capabilities */
-	struct acpi_buffer ret;		/* free by caller if success */
+	struct acpi_buffer cap;		
+	struct acpi_buffer ret;		
 };
 
 acpi_status acpi_run_osc(acpi_handle handle, struct acpi_osc_context *context);
 
-/* Number of _OSC capability DWORDS depends on bridge type */
+
 #define OSC_PCI_CAPABILITY_DWORDS		3
 #define OSC_CXL_CAPABILITY_DWORDS		5
 
-/* Indexes into _OSC Capabilities Buffer (DWORDs 2 to 5 are device-specific) */
-#define OSC_QUERY_DWORD				0	/* DWORD 1 */
-#define OSC_SUPPORT_DWORD			1	/* DWORD 2 */
-#define OSC_CONTROL_DWORD			2	/* DWORD 3 */
-#define OSC_EXT_SUPPORT_DWORD			3	/* DWORD 4 */
-#define OSC_EXT_CONTROL_DWORD			4	/* DWORD 5 */
 
-/* _OSC Capabilities DWORD 1: Query/Control and Error Returns (generic) */
-#define OSC_QUERY_ENABLE			0x00000001  /* input */
-#define OSC_REQUEST_ERROR			0x00000002  /* return */
-#define OSC_INVALID_UUID_ERROR			0x00000004  /* return */
-#define OSC_INVALID_REVISION_ERROR		0x00000008  /* return */
-#define OSC_CAPABILITIES_MASK_ERROR		0x00000010  /* return */
+#define OSC_QUERY_DWORD				0	
+#define OSC_SUPPORT_DWORD			1	
+#define OSC_CONTROL_DWORD			2	
+#define OSC_EXT_SUPPORT_DWORD			3	
+#define OSC_EXT_CONTROL_DWORD			4	
 
-/* Platform-Wide Capabilities _OSC: Capabilities DWORD 2: Support Field */
+
+#define OSC_QUERY_ENABLE			0x00000001  
+#define OSC_REQUEST_ERROR			0x00000002  
+#define OSC_INVALID_UUID_ERROR			0x00000004  
+#define OSC_INVALID_REVISION_ERROR		0x00000008  
+#define OSC_CAPABILITIES_MASK_ERROR		0x00000010  
+
+
 #define OSC_SB_PAD_SUPPORT			0x00000001
 #define OSC_SB_PPC_OST_SUPPORT			0x00000002
 #define OSC_SB_PR3_SUPPORT			0x00000004
@@ -583,7 +562,7 @@ extern bool osc_sb_native_usb4_support_confirmed;
 extern bool osc_sb_cppc2_support_acked;
 extern bool osc_cpc_flexible_adr_space_confirmed;
 
-/* USB4 Capabilities */
+
 #define OSC_USB_USB3_TUNNELING			0x00000001
 #define OSC_USB_DP_TUNNELING			0x00000002
 #define OSC_USB_PCIE_TUNNELING			0x00000004
@@ -591,7 +570,7 @@ extern bool osc_cpc_flexible_adr_space_confirmed;
 
 extern u32 osc_sb_native_usb4_control;
 
-/* PCI Host Bridge _OSC: Capabilities DWORD 2: Support Field */
+
 #define OSC_PCI_EXT_CONFIG_SUPPORT		0x00000001
 #define OSC_PCI_ASPM_SUPPORT			0x00000002
 #define OSC_PCI_CLOCK_PM_SUPPORT		0x00000004
@@ -600,7 +579,7 @@ extern u32 osc_sb_native_usb4_control;
 #define OSC_PCI_EDR_SUPPORT			0x00000080
 #define OSC_PCI_HPX_TYPE_3_SUPPORT		0x00000100
 
-/* PCI Host Bridge _OSC: Capabilities DWORD 3: Control Field */
+
 #define OSC_PCI_EXPRESS_NATIVE_HP_CONTROL	0x00000001
 #define OSC_PCI_SHPC_NATIVE_HP_CONTROL		0x00000002
 #define OSC_PCI_EXPRESS_PME_CONTROL		0x00000004
@@ -609,13 +588,13 @@ extern u32 osc_sb_native_usb4_control;
 #define OSC_PCI_EXPRESS_LTR_CONTROL		0x00000020
 #define OSC_PCI_EXPRESS_DPC_CONTROL		0x00000080
 
-/* CXL _OSC: Capabilities DWORD 4: Support Field */
+
 #define OSC_CXL_1_1_PORT_REG_ACCESS_SUPPORT	0x00000001
 #define OSC_CXL_2_0_PORT_DEV_REG_ACCESS_SUPPORT	0x00000002
 #define OSC_CXL_PROTOCOL_ERR_REPORTING_SUPPORT	0x00000004
 #define OSC_CXL_NATIVE_HP_SUPPORT		0x00000008
 
-/* CXL _OSC: Capabilities DWORD 5: Control Field */
+
 #define OSC_CXL_ERROR_REPORTING_CONTROL		0x00000001
 
 static inline u32 acpi_osc_ctx_get_pci_control(struct acpi_osc_context *context)
@@ -643,37 +622,37 @@ static inline u32 acpi_osc_ctx_get_cxl_control(struct acpi_osc_context *context)
 #define ACPI_GSB_ACCESS_ATTRIB_RAW_BYTES	0x0000000E
 #define ACPI_GSB_ACCESS_ATTRIB_RAW_PROCESS	0x0000000F
 
-/* Enable _OST when all relevant hotplug operations are enabled */
+
 #if defined(CONFIG_ACPI_HOTPLUG_CPU) &&			\
 	defined(CONFIG_ACPI_HOTPLUG_MEMORY) &&		\
 	defined(CONFIG_ACPI_CONTAINER)
 #define ACPI_HOTPLUG_OST
 #endif
 
-/* _OST Source Event Code (OSPM Action) */
+
 #define ACPI_OST_EC_OSPM_SHUTDOWN		0x100
 #define ACPI_OST_EC_OSPM_EJECT			0x103
 #define ACPI_OST_EC_OSPM_INSERTION		0x200
 
-/* _OST General Processing Status Code */
+
 #define ACPI_OST_SC_SUCCESS			0x0
 #define ACPI_OST_SC_NON_SPECIFIC_FAILURE	0x1
 #define ACPI_OST_SC_UNRECOGNIZED_NOTIFY		0x2
 
-/* _OST OS Shutdown Processing (0x100) Status Code */
+
 #define ACPI_OST_SC_OS_SHUTDOWN_DENIED		0x80
 #define ACPI_OST_SC_OS_SHUTDOWN_IN_PROGRESS	0x81
 #define ACPI_OST_SC_OS_SHUTDOWN_COMPLETED	0x82
 #define ACPI_OST_SC_OS_SHUTDOWN_NOT_SUPPORTED	0x83
 
-/* _OST Ejection Request (0x3, 0x103) Status Code */
+
 #define ACPI_OST_SC_EJECT_NOT_SUPPORTED		0x80
 #define ACPI_OST_SC_DEVICE_IN_USE		0x81
 #define ACPI_OST_SC_DEVICE_BUSY			0x82
 #define ACPI_OST_SC_EJECT_DEPENDENCY_BUSY	0x83
 #define ACPI_OST_SC_EJECT_IN_PROGRESS		0x84
 
-/* _OST Insertion Request (0x200) Status Code */
+
 #define ACPI_OST_SC_INSERT_IN_PROGRESS		0x80
 #define ACPI_OST_SC_DRIVER_LOAD_FAILURE		0x81
 #define ACPI_OST_SC_INSERT_NOT_SUPPORTED	0x82
@@ -685,7 +664,7 @@ enum acpi_predicate {
 	greater_than_or_equal,
 };
 
-/* Table must be terminted by a NULL entry */
+
 struct acpi_platform_list {
 	char	oem_id[ACPI_OEM_ID_SIZE+1];
 	char	oem_table_id[ACPI_OEM_TABLE_ID_SIZE+1];
@@ -762,7 +741,7 @@ static inline u64 acpi_arch_get_root_pointer(void)
 int acpi_get_local_address(acpi_handle handle, u32 *addr);
 const char *acpi_get_subsystem_id(acpi_handle handle);
 
-#else	/* !CONFIG_ACPI */
+#else	
 
 #define acpi_disabled 1
 
@@ -1076,7 +1055,7 @@ static inline bool acpi_sleep_state_supported(u8 sleep_state)
 	return false;
 }
 
-#endif	/* !CONFIG_ACPI */
+#endif	
 
 extern void arch_post_acpi_subsys_init(void);
 
@@ -1108,12 +1087,12 @@ struct acpi_s2idle_dev_ops {
 int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg);
 void acpi_unregister_lps0_dev(struct acpi_s2idle_dev_ops *arg);
 int acpi_get_lps0_constraint(struct acpi_device *adev);
-#else /* CONFIG_SUSPEND && CONFIG_X86 */
+#else 
 static inline int acpi_get_lps0_constraint(struct device *dev)
 {
 	return ACPI_STATE_UNKNOWN;
 }
-#endif /* CONFIG_SUSPEND && CONFIG_X86 */
+#endif 
 #ifndef CONFIG_IA64
 void arch_reserve_mem_area(acpi_physical_address addr, size_t size);
 #else
@@ -1121,7 +1100,7 @@ static inline void arch_reserve_mem_area(acpi_physical_address addr,
 					  size_t size)
 {
 }
-#endif /* CONFIG_X86 */
+#endif 
 #else
 #define acpi_os_set_prepare_sleep(func, pm1a_ctrl, pm1b_ctrl) do { } while (0)
 #endif
@@ -1181,25 +1160,20 @@ void acpi_handle_printk(const char *level, acpi_handle handle,
 			const char *fmt, ...);
 void acpi_evaluation_failure_warn(acpi_handle handle, const char *name,
 				  acpi_status status);
-#else	/* !CONFIG_ACPI */
+#else	
 static inline __printf(3, 4) void
 acpi_handle_printk(const char *level, void *handle, const char *fmt, ...) {}
 static inline void acpi_evaluation_failure_warn(acpi_handle handle,
 						const char *name,
 						acpi_status status) {}
-#endif	/* !CONFIG_ACPI */
+#endif	
 
 #if defined(CONFIG_ACPI) && defined(CONFIG_DYNAMIC_DEBUG)
 __printf(3, 4)
 void __acpi_handle_debug(struct _ddebug *descriptor, acpi_handle handle, const char *fmt, ...);
 #endif
 
-/*
- * acpi_handle_<level>: Print message with ACPI prefix and object path
- *
- * These interfaces acquire the global namespace mutex to obtain an object
- * path.  In interrupt context, it shows the object path as <n/a>.
- */
+
 #define acpi_handle_emerg(handle, fmt, ...)				\
 	acpi_handle_printk(KERN_EMERG, handle, fmt, ##__VA_ARGS__)
 #define acpi_handle_alert(handle, fmt, ...)				\
@@ -1275,7 +1249,7 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
 	return acpi_dev_gpio_irq_wake_get_by(adev, NULL, index, NULL);
 }
 
-/* Device properties */
+
 
 #ifdef CONFIG_ACPI
 int acpi_dev_get_property(const struct acpi_device *adev, const char *name,
@@ -1314,19 +1288,7 @@ typedef bool (*acpi_probe_entry_validate_subtbl)(struct acpi_subtable_header *,
 
 #define ACPI_TABLE_ID_LEN	5
 
-/**
- * struct acpi_probe_entry - boot-time probing entry
- * @id:			ACPI table name
- * @type:		Optional subtable type to match
- *			(if @id contains subtables)
- * @subtable_valid:	Optional callback to check the validity of
- *			the subtable
- * @probe_table:	Callback to the driver being probed when table
- *			match is successful
- * @probe_subtbl:	Callback to the driver being probed when table and
- *			subtable match (and optional callback is successful)
- * @driver_data:	Sideband data provided back to the driver
- */
+
 struct acpi_probe_entry {
 	__u8 id[ACPI_TABLE_ID_LEN];
 	__u8 type;
@@ -1487,7 +1449,7 @@ static inline unsigned int arch_get_idle_state_flags(u32 arch_flags)
 	return 0;
 }
 #endif
-#endif /* CONFIG_ACPI_PROCESSOR_IDLE */
+#endif 
 
 #ifdef CONFIG_ACPI_PPTT
 int acpi_pptt_cpu_is_thread(unsigned int cpu);
@@ -1548,4 +1510,4 @@ static inline void acpi_device_notify(struct device *dev) { }
 static inline void acpi_device_notify_remove(struct device *dev) { }
 #endif
 
-#endif	/*_LINUX_ACPI_H*/
+#endif	

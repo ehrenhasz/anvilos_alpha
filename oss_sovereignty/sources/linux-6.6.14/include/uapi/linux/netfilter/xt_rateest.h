@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_RATEEST_MATCH_H
 #define _XT_RATEEST_MATCH_H
 
@@ -31,9 +31,9 @@ struct xt_rateest_match_info {
 	__u32		bps2;
 	__u32		pps2;
 
-	/* Used internally by the kernel */
+	
 	struct xt_rateest	*est1 __attribute__((aligned(8)));
 	struct xt_rateest	*est2 __attribute__((aligned(8)));
 };
 
-#endif /* _XT_RATEEST_MATCH_H */
+#endif 

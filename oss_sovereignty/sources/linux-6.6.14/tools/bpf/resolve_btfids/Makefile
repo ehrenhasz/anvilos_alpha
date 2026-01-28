@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 include ../../scripts/Makefile.include
 include ../../scripts/Makefile.arch
 
@@ -17,7 +17,7 @@ else
   MAKEFLAGS=--no-print-directory
 endif
 
-# Overrides for the prepare step libraries.
+
 HOST_OVERRIDES := AR="$(HOSTAR)" CC="$(HOSTCC)" LD="$(HOSTLD)" ARCH="$(HOSTARCH)" \
 		  CROSS_COMPILE="" EXTRA_CFLAGS="$(HOSTCFLAGS)"
 

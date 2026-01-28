@@ -22,9 +22,9 @@ class RAMBDevSparse:
                 self.data[s] = bytearray(self.SEC_SIZE)
             self.data[s][:] = mv[off : off + self.SEC_SIZE]
     def ioctl(self, op, arg):
-        if op == 4:  # MP_BLOCKDEV_IOCTL_BLOCK_COUNT
+        if op == 4:  
             return self.blocks
-        if op == 5:  # MP_BLOCKDEV_IOCTL_BLOCK_SIZE
+        if op == 5:  
             return self.SEC_SIZE
 try:
     bdev = RAMBDevSparse(4 * 1024 * 1024 * 1024 // RAMBDevSparse.SEC_SIZE)

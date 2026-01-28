@@ -21,9 +21,9 @@ def print_timer(rb_node, idx):
     softexpires = timer['_softexpires']
     expires = timer['node']['expires']
     now = ktime_get()
-    text = " #{}: <{}>, {}, ".format(idx, timer, function)
+    text = " 
     text += "S:{:02x}\n".format(int(timer['state']))
-    text += " # expires at {}-{} nsecs [in {} to {} nsecs]\n".format(
+    text += " 
             softexpires, expires, softexpires - now, expires - now)
     return text
 def print_active_timers(base):
@@ -132,7 +132,7 @@ def pr_cpumask(mask):
             chunks.append(',')
     extra = nr_cpu_ids % 8
     if 0 < extra <= 4:
-        chunks[0] = chunks[0][0]  # Cut off the first 0
+        chunks[0] = chunks[0][0]  
     return "".join(str(chunks))
 class LxTimerList(gdb.Command):
     """Print /proc/timer_list"""

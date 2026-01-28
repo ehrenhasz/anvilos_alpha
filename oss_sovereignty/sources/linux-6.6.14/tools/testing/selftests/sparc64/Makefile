@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 uname_M := $(shell uname -m 2>/dev/null || echo not)
 ARCH ?= $(shell echo $(uname_M) | sed -e s/x86_64/x86/)
 
@@ -22,7 +22,7 @@ all:
 		BUILD_TARGET=$(OUTPUT)/$$DIR;	\
 		mkdir $$BUILD_TARGET  -p;	\
 		make OUTPUT=$$BUILD_TARGET -C $$DIR $@;\
-		#SUBDIR test prog name should be in the form: SUBDIR_test.sh \
+		
 		TEST=$$DIR"_test.sh"; \
 		if [ -e $$DIR/$$TEST ]; then \
 			rsync -a $$DIR/$$TEST $$BUILD_TARGET/; \

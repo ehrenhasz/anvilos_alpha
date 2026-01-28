@@ -1,27 +1,4 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2020-2021 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- */
+
 #ifndef MICROPY_INCLUDED_RP2_MPHALPORT_H
 #define MICROPY_INCLUDED_RP2_MPHALPORT_H
 
@@ -30,13 +7,13 @@
 #include "pico/time.h"
 #include "hardware/clocks.h"
 #include "hardware/structs/systick.h"
-#include "RP2040.h" // cmsis, for __WFI
+#include "RP2040.h" 
 #include "pendsv.h"
 
 #define SYSTICK_MAX (0xffffff)
 #define MICROPY_HW_USB_CDC_TX_TIMEOUT (500)
 
-// Entering a critical section.
+
 #if MICROPY_PY_THREAD
 #define MICROPY_BEGIN_ATOMIC_SECTION()     mp_thread_begin_atomic_section()
 #define MICROPY_END_ATOMIC_SECTION(state)  mp_thread_end_atomic_section(state)
@@ -48,15 +25,15 @@
 #define MICROPY_PY_PENDSV_ENTER   pendsv_suspend()
 #define MICROPY_PY_PENDSV_EXIT    pendsv_resume()
 
-// Prevent the "lwIP task" from running when unsafe to do so.
+
 #define MICROPY_PY_LWIP_ENTER   lwip_lock_acquire();
 #define MICROPY_PY_LWIP_REENTER lwip_lock_acquire();
 #define MICROPY_PY_LWIP_EXIT    lwip_lock_release();
 
-// Port level Wait-for-Event macro
-//
-// Do not use this macro directly, include py/runtime.h and
-// call mp_event_wait_indefinite() or mp_event_wait_ms(timeout)
+
+
+
+
 #define MICROPY_INTERNAL_WFE(TIMEOUT_MS) \
     do {                                 \
         if ((TIMEOUT_MS) < 0) { \
@@ -95,8 +72,8 @@ static inline mp_uint_t mp_hal_ticks_ms(void) {
 }
 
 static inline mp_uint_t mp_hal_ticks_cpu(void) {
-    // ticks_cpu() is defined as using the highest-resolution timing source
-    // in the system. This is usually a CPU clock, but doesn't have to be.
+    
+    
     return time_us_32();
 }
 
@@ -104,7 +81,7 @@ static inline mp_uint_t mp_hal_get_cpu_freq(void) {
     return clock_get_hz(clk_sys);
 }
 
-// C-level pin HAL
+
 
 #include "py/obj.h"
 #include "hardware/gpio.h"
@@ -205,4 +182,4 @@ void mp_hal_get_mac(int idx, uint8_t buf[6]);
 void mp_hal_get_mac_ascii(int idx, size_t chr_off, size_t chr_len, char *dest);
 void mp_hal_generate_laa_mac(int idx, uint8_t buf[6]);
 
-#endif // MICROPY_INCLUDED_RP2_MPHALPORT_H
+#endif 

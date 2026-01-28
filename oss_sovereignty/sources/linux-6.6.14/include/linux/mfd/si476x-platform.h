@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * include/media/si476x-platform.h -- Platform data specific definitions
- *
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+
 
 #ifndef __SI476X_PLATFORM_H__
 #define __SI476X_PLATFORM_H__
 
-/* It is possible to select one of the four adresses using pins A0
- * and A1 on SI476x */
+
 #define SI476X_I2C_ADDR_1	0x60
 #define SI476X_I2C_ADDR_2	0x61
 #define SI476X_I2C_ADDR_3	0x62
@@ -181,28 +174,7 @@ enum si476x_func {
 };
 
 
-/**
- * @xcload: Selects the amount of additional on-chip capacitance to
- *          be connected between XTAL1 and gnd and between XTAL2 and
- *          GND. One half of the capacitance value shown here is the
- *          additional load capacitance presented to the xtal. The
- *          minimum step size is 0.277 pF. Recommended value is 0x28
- *          but it will be layout dependent. Range is 0–0x3F i.e.
- *          (0–16.33 pF)
- * @ctsien: enable CTSINT(interrupt request when CTS condition
- *          arises) when set
- * @intsel: when set A1 pin becomes the interrupt pin; otherwise,
- *          INTB is the interrupt pin
- * @func:   selects the boot function of the device. I.e.
- *          SI476X_BOOTLOADER  - Boot loader
- *          SI476X_FM_RECEIVER - FM receiver
- *          SI476X_AM_RECEIVER - AM receiver
- *          SI476X_WB_RECEIVER - Weatherband receiver
- * @freq:   oscillator's crystal frequency:
- *          SI476X_XTAL_37P209375_MHZ - 37.209375 Mhz
- *          SI476X_XTAL_36P4_MHZ      - 36.4 Mhz
- *          SI476X_XTAL_37P8_MHZ      - 37.8 Mhz
- */
+
 struct si476x_power_up_args {
 	enum si476x_ibias6x ibias6x;
 	enum si476x_xstart  xstart;
@@ -216,23 +188,7 @@ struct si476x_power_up_args {
 };
 
 
-/**
- * enum si476x_phase_diversity_mode - possbile phase diversity modes
- * for SI4764/5/6/7 chips.
- *
- * @SI476X_PHDIV_DISABLED:		Phase diversity feature is
- *					disabled.
- * @SI476X_PHDIV_PRIMARY_COMBINING:	Tuner works as a primary tuner
- *					in combination with a
- *					secondary one.
- * @SI476X_PHDIV_PRIMARY_ANTENNA:	Tuner works as a primary tuner
- *					using only its own antenna.
- * @SI476X_PHDIV_SECONDARY_ANTENNA:	Tuner works as a primary tuner
- *					usning seconary tuner's antenna.
- * @SI476X_PHDIV_SECONDARY_COMBINING:	Tuner works as a secondary
- *					tuner in combination with the
- *					primary one.
- */
+
 enum si476x_phase_diversity_mode {
 	SI476X_PHDIV_DISABLED			= 0,
 	SI476X_PHDIV_PRIMARY_COMBINING		= 1,
@@ -242,11 +198,9 @@ enum si476x_phase_diversity_mode {
 };
 
 
-/*
- * Platform dependent definition
- */
+
 struct si476x_platform_data {
-	int gpio_reset; /* < 0 if not used */
+	int gpio_reset; 
 
 	struct si476x_power_up_args power_up_parameters;
 	enum si476x_phase_diversity_mode diversity_mode;
@@ -255,4 +209,4 @@ struct si476x_platform_data {
 };
 
 
-#endif /* __SI476X_PLATFORM_H__ */
+#endif 

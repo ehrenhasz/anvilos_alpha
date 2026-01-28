@@ -49,7 +49,7 @@ def fixup_c(filename):
         dedent_stack = []
         while lines:
             l = lines.pop(0)
-            m = re.match(r"( +)#(if |ifdef |ifndef |elif |else|endif)", l)
+            m = re.match(r"( +)
             if m:
                 indent = len(m.group(1))
                 directive = m.group(2)
@@ -90,7 +90,7 @@ def main():
         if args.f:
             files = set(os.path.abspath(f) for f in files)
             all_files = set(list_files(PATHS, EXCLUSIONS, TOP))
-            if args.v:  # In verbose mode, log any files we're skipping
+            if args.v:  
                 for f in files - all_files:
                     print("Not checking: {}".format(f))
             files = list(files & all_files)

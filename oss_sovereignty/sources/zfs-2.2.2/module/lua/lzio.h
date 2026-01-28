@@ -1,8 +1,4 @@
-/*
-** $Id: lzio.h,v 1.26.1.1 2013/04/12 18:48:47 roberto Exp $
-** Buffered streams
-** See Copyright Notice in lua.h
-*/
+
 
 
 #ifndef lzio_h
@@ -13,7 +9,7 @@
 #include "lmem.h"
 
 
-#define EOZ	(-1)			/* end of stream */
+#define EOZ	(-1)			
 
 typedef struct Zio ZIO;
 
@@ -45,18 +41,18 @@ typedef struct Mbuffer {
 LUAI_FUNC char *luaZ_openspace (lua_State *L, Mbuffer *buff, size_t n);
 LUAI_FUNC void luaZ_init (lua_State *L, ZIO *z, lua_Reader reader,
                                         void *data);
-LUAI_FUNC size_t luaZ_read (ZIO* z, void* b, size_t n);	/* read next n bytes */
+LUAI_FUNC size_t luaZ_read (ZIO* z, void* b, size_t n);	
 
 
 
-/* --------- Private Part ------------------ */
+
 
 struct Zio {
-  size_t n;			/* bytes still unread */
-  const char *p;		/* current position in buffer */
-  lua_Reader reader;		/* reader function */
-  void* data;			/* additional data */
-  lua_State *L;			/* Lua state (for reader) */
+  size_t n;			
+  const char *p;		
+  lua_Reader reader;		
+  void* data;			
+  lua_State *L;			
 };
 
 

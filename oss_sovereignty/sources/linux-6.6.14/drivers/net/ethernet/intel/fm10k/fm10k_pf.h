@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+
 
 #ifndef _FM10K_PF_H_
 #define _FM10K_PF_H_
@@ -12,7 +12,7 @@ u16 fm10k_queues_per_pool(struct fm10k_hw *hw);
 u16 fm10k_vf_queue_index(struct fm10k_hw *hw, u16 vf_idx);
 
 enum fm10k_pf_tlv_msg_id_v1 {
-	FM10K_PF_MSG_ID_TEST			= 0x000, /* msg ID reserved */
+	FM10K_PF_MSG_ID_TEST			= 0x000, 
 	FM10K_PF_MSG_ID_XCAST_MODES		= 0x001,
 	FM10K_PF_MSG_ID_UPDATE_MAC_FWD_RULE	= 0x002,
 	FM10K_PF_MSG_ID_LPORT_MAP		= 0x100,
@@ -56,10 +56,7 @@ enum fm10k_pf_tlv_attr_id_v1 {
 
 #define FM10K_MSG_ERR_PEP_NOT_SCHEDULED	280
 
-/* The following data structures are overlayed directly onto TLV mailbox
- * messages, and must not break 4 byte alignment. Ensure the structures line
- * up correctly as per their TLV definition.
- */
+
 
 struct fm10k_mac_update {
 	__le32	mac_lower;
@@ -105,4 +102,4 @@ s32 fm10k_iov_msg_lport_state_pf(struct fm10k_hw *, u32 **,
 				 struct fm10k_mbx_info *);
 
 extern const struct fm10k_info fm10k_pf_info;
-#endif /* _FM10K_PF_H */
+#endif 

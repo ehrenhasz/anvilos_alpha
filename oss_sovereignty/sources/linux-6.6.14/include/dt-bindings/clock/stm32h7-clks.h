@@ -1,4 +1,4 @@
-/* SYS, CORE AND BUS CLOCKS */
+
 #define SYS_D1CPRE 0
 #define HCLK 1
 #define PCLK1 2
@@ -15,7 +15,7 @@
 #define RTC_CK 13
 #define CPU_SYSTICK 14
 
-/* OSCILLATOR BANK */
+
 #define OSC_BANK 18
 #define HSI_CK 18
 #define HSI_KER_CK 19
@@ -24,14 +24,14 @@
 #define RC48_CK 22
 #define LSI_CK 23
 
-/* MCLOCK BANK */
+
 #define MCLK_BANK 28
 #define PER_CK 28
 #define PLLSRC 29
 #define SYS_CK 30
 #define TRACEIN_CK 31
 
-/* ODF BANK */
+
 #define ODF_BANK 32
 #define PLL1_P 32
 #define PLL1_Q 33
@@ -43,12 +43,12 @@
 #define PLL3_Q 39
 #define PLL3_R 40
 
-/* MCO BANK */
+
 #define MCO_BANK 41
 #define MCO1 41
 #define MCO2 42
 
-/* PERIF BANK */
+
 #define PERIF_BANK 50
 #define D1SRAM1_CK 50
 #define ITCM_CK 51
@@ -113,7 +113,7 @@
 #define COMP12_CK 110
 #define SYSCFG_CK 111
 
-/* KERNEL BANK */
+
 #define KERN_BANK 120
 #define SDMMC1_CK 120
 #define QUADSPI_CK 121

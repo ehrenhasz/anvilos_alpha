@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018, NVIDIA CORPORATION.
- */
+
+
 
 #ifndef __FIRMWARE_TEGRA_BPMP_PRIVATE_H
 #define __FIRMWARE_TEGRA_BPMP_PRIVATE_H

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_FB_H
 #define _ASM_X86_FB_H
 
@@ -14,4 +14,4 @@ int fb_is_primary_device(struct fb_info *info);
 
 #include <asm-generic/fb.h>
 
-#endif /* _ASM_X86_FB_H */
+#endif 

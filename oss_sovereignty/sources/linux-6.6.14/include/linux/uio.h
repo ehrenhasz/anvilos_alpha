@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	Berkeley style UIO structures	-	Alan Cox 1994.
- */
+
+
 #ifndef __LINUX_UIO_H
 #define __LINUX_UIO_H
 
@@ -15,12 +13,12 @@ struct page;
 typedef unsigned int __bitwise iov_iter_extraction_t;
 
 struct kvec {
-	void *iov_base; /* and that should *never* hold a userland pointer */
+	void *iov_base; 
 	size_t iov_len;
 };
 
 enum iter_type {
-	/* iter types */
+	
 	ITER_IOVEC,
 	ITER_KVEC,
 	ITER_BVEC,
@@ -29,8 +27,8 @@ enum iter_type {
 	ITER_UBUF,
 };
 
-#define ITER_SOURCE	1	// == WRITE
-#define ITER_DEST	0	// == READ
+#define ITER_SOURCE	1	
+#define ITER_DEST	0	
 
 struct iov_iter_state {
 	size_t iov_offset;
@@ -48,26 +46,13 @@ struct iov_iter {
 		size_t iov_offset;
 		int last_offset;
 	};
-	/*
-	 * Hack alert: overlay ubuf_iovec with iovec + count, so
-	 * that the members resolve correctly regardless of the type
-	 * of iterator used. This means that you can use:
-	 *
-	 * &iter->__ubuf_iovec or iter->__iov
-	 *
-	 * interchangably for the user_backed cases, hence simplifying
-	 * some of the cases that need to deal with both.
-	 */
+	
 	union {
-		/*
-		 * This really should be a const, but we cannot do that without
-		 * also modifying any of the zero-filling iter init functions.
-		 * Leave it non-const for now, but it should be treated as such.
-		 */
+		
 		struct iovec __ubuf_iovec;
 		struct {
 			union {
-				/* use iter_iov() to get the current vec */
+				
 				const struct iovec *__iov;
 				const struct kvec *kvec;
 				const struct bio_vec *bvec;
@@ -146,13 +131,7 @@ static inline bool user_backed_iter(const struct iov_iter *i)
 	return i->user_backed;
 }
 
-/*
- * Total number of bytes covered by an iovec.
- *
- * NOTE that it is not safe to use this function until all the iovec's
- * segment lengths have been validated.  Because the individual lengths can
- * overflow a size_t when added together.
- */
+
 static inline size_t iov_length(const struct iovec *iov, unsigned long nr_segs)
 {
 	unsigned long seg;
@@ -239,12 +218,7 @@ bool copy_from_iter_full_nocache(void *addr, size_t bytes, struct iov_iter *i)
 }
 
 #ifdef CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE
-/*
- * Note, users like pmem that depend on the stricter semantics of
- * _copy_from_iter_flushcache() than _copy_from_iter_nocache() must check for
- * IS_ENABLED(CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE) before assuming that the
- * destination is flushed from the cache on return.
- */
+
 size_t _copy_from_iter_flushcache(void *addr, size_t bytes, struct iov_iter *i);
 #else
 #define _copy_from_iter_flushcache _copy_from_iter_nocache
@@ -298,28 +272,15 @@ static inline size_t iov_iter_count(const struct iov_iter *i)
 	return i->count;
 }
 
-/*
- * Cap the iov_iter by given limit; note that the second argument is
- * *not* the new size - it's upper limit for such.  Passing it a value
- * greater than the amount of data in iov_iter is fine - it'll just do
- * nothing in that case.
- */
+
 static inline void iov_iter_truncate(struct iov_iter *i, u64 count)
 {
-	/*
-	 * count doesn't have to fit in size_t - comparison extends both
-	 * operands to u64 here and any value that would be truncated by
-	 * conversion in assignement is by definition greater than all
-	 * values of size_t, including old i->count.
-	 */
+	
 	if (i->count > count)
 		i->count = count;
 }
 
-/*
- * reexpand a previously truncated iterator; count must be no more than how much
- * we had shrunk it.
- */
+
 static inline void iov_iter_reexpand(struct iov_iter *i, size_t count)
 {
 	i->count = count;
@@ -390,8 +351,8 @@ static inline void iov_iter_ubuf(struct iov_iter *i, unsigned int direction,
 		.nr_segs = 1
 	};
 }
-/* Flags for iov_iter_get/extract_pages*() */
-/* Allow P2PDMA on the extracted pages */
+
+
 #define ITER_ALLOW_P2PDMA	((__force iov_iter_extraction_t)0x01)
 
 ssize_t iov_iter_extract_pages(struct iov_iter *i, struct page ***pages,
@@ -399,22 +360,7 @@ ssize_t iov_iter_extract_pages(struct iov_iter *i, struct page ***pages,
 			       iov_iter_extraction_t extraction_flags,
 			       size_t *offset0);
 
-/**
- * iov_iter_extract_will_pin - Indicate how pages from the iterator will be retained
- * @iter: The iterator
- *
- * Examine the iterator and indicate by returning true or false as to how, if
- * at all, pages extracted from the iterator will be retained by the extraction
- * function.
- *
- * %true indicates that the pages will have a pin placed in them that the
- * caller must unpin.  This is must be done for DMA/async DIO to force fork()
- * to forcibly copy a page for the child (the parent must retain the original
- * page).
- *
- * %false indicates that no measures are taken and that it's up to the caller
- * to retain the pages.
- */
+
 static inline bool iov_iter_extract_will_pin(const struct iov_iter *iter)
 {
 	return user_backed_iter(iter);

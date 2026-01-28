@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * tmon.h contains data structures and constants used by TMON
- *
- * Copyright (C) 2012 Intel Corporation. All rights reserved.
- *
- * Author Name Jacob Pan <jacob.jun.pan@linux.intel.com>
- */
+
+
 
 #ifndef TMON_H
 #define TMON_H
@@ -16,13 +10,9 @@
 #define MAX_NR_TZONE 16
 #define MAX_NR_CDEV 32
 #define MAX_NR_TRIP 16
-#define MAX_NR_CDEV_TRIP 12 /* number of cooling devices that can bind
-			     * to a thermal zone trip.
-			     */
+#define MAX_NR_CDEV_TRIP 12 
 #define MAX_TEMP_KC 140000
-/* starting char position to draw sensor data, such as tz names
- * trip point list, etc.
- */
+
 #define DATA_LEFT_ALIGN 10
 #define NR_LINES_TZDATA 1
 #define TMON_LOG_FILE "/var/tmp/tmon.log"
@@ -38,9 +28,7 @@ extern char ctrl_cdev[];
 extern pthread_mutex_t input_lock;
 extern int tmon_exit;
 extern int target_thermal_zone;
-/* use fixed size record to simplify data processing and transfer
- * TBD: more info to be added, e.g. programmable trip point data.
-*/
+
 struct thermal_data_record {
 	struct timeval tv;
 	unsigned long temp[MAX_NR_TZONE];
@@ -67,28 +55,26 @@ struct trip_point {
 	enum trip_type type;
 	unsigned long temp;
 	unsigned long hysteresis;
-	int attribute; /* programmability etc. */
+	int attribute; 
 };
 
-/* thermal zone configuration information, binding with cooling devices could
- * change at runtime.
- */
+
 struct tz_info {
-	char type[256]; /* e.g. acpitz */
+	char type[256]; 
 	int instance;
-	int passive; /* active zone has passive node to force passive mode */
-	int nr_cdev; /* number of cooling device binded */
+	int passive; 
+	int nr_cdev; 
 	int nr_trip_pts;
 	struct trip_point tp[MAX_NR_TRIP];
-	unsigned long cdev_binding; /* bitmap for attached cdevs */
-	/* cdev bind trip points, allow one cdev bind to multiple trips */
+	unsigned long cdev_binding; 
+	
 	unsigned long trip_binding[MAX_NR_CDEV];
 };
 
 struct tmon_platform_data {
 	int nr_tz_sensor;
 	int nr_cooling_dev;
-	/* keep track of instance ids since there might be gaps */
+	
 	int max_tz_instance;
 	int max_cdev_instance;
 	struct tz_info *tzi;
@@ -108,24 +94,21 @@ enum cdev_types {
 	CDEV_TYPE_NR,
 };
 
-/* REVISIT: the idea is to group sensors if possible, e.g. on intel mid
- * we have "skin0", "skin1", "sys", "msicdie"
- * on DPTF enabled systems, we might have PCH, TSKN, TAMB, etc.
- */
+
 enum tzone_types {
 	TZONE_TYPE_ACPI,
 	TZONE_TYPE_PCH,
 	TZONE_TYPE_NR,
 };
 
-/* limit the output of PID controller adjustment */
+
 #define LIMIT_HIGH (95)
 #define LIMIT_LOW  (2)
 
 struct pid_params {
-	double kp;  /* Controller gain from Dialog Box */
-	double ki;  /* Time-constant for I action from Dialog Box */
-	double kd;  /* Time-constant for D action from Dialog Box */
+	double kp;  
+	double ki;  
+	double kd;  
 	double ts;
 	double k_lpf;
 
@@ -140,7 +123,7 @@ extern struct tmon_platform_data ptdata;
 extern struct pid_params p_param;
 
 extern FILE *tmon_log;
-extern int cur_thermal_record; /* index to the trec array */
+extern int cur_thermal_record; 
 extern struct thermal_data_record trec[];
 extern const char *trip_type_name[];
 extern unsigned long no_control;
@@ -178,21 +161,17 @@ extern void close_windows(void);
 #define PT_COLOR_BRIGHT     7
 #define PT_COLOR_BLUE	    8
 
-/* each thermal zone uses 12 chars, 8 for name, 2 for instance, 2 space
- * also used to list trip points in forms of AAAC, which represents
- * A: Active
- * C: Critical
- */
+
 #define TZONE_RECORD_SIZE 12
 #define TZ_LEFT_ALIGN 32
 #define CDEV_NAME_SIZE 20
 #define CDEV_FLAG_IN_CONTROL (1 << 0)
 
-/* dialogue box starts */
+
 #define DIAG_X 48
 #define DIAG_Y 8
 #define THERMAL_SYSFS "/sys/class/thermal"
 #define CDEV "cooling_device"
 #define TZONE "thermal_zone"
 #define TDATA_LEFT 16
-#endif /* TMON_H */
+#endif 

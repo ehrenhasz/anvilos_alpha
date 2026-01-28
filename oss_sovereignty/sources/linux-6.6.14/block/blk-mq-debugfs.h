@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef INT_BLK_MQ_DEBUGFS_H
 #define INT_BLK_MQ_DEBUGFS_H
 
@@ -13,7 +13,7 @@ struct blk_mq_debugfs_attr {
 	umode_t mode;
 	int (*show)(void *, struct seq_file *);
 	ssize_t (*write)(void *, const char __user *, size_t, loff_t *);
-	/* Set either .show or .seq_ops. */
+	
 	const struct seq_operations *seq_ops;
 };
 

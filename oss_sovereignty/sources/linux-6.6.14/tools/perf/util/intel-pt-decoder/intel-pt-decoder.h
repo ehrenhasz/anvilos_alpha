@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt_decoder.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+
 
 #ifndef INCLUDE__INTEL_PT_DECODER_H__
 #define INCLUDE__INTEL_PT_DECODER_H__
@@ -63,10 +60,7 @@ enum {
 };
 
 enum intel_pt_param_flags {
-	/*
-	 * FUP packet can contain next linear instruction pointer instead of
-	 * current linear instruction pointer.
-	 */
+	
 	INTEL_PT_FUP_WITH_NLIP	= 1 << 0,
 };
 
@@ -81,10 +75,7 @@ enum intel_pt_blk_type {
 	INTEL_PT_BLK_TYPE_MAX
 };
 
-/*
- * The block type numbers are not sequential but here they are given sequential
- * positions to avoid wasting space for array placement.
- */
+
 enum intel_pt_blk_type_pos {
 	INTEL_PT_GP_REGS_POS,
 	INTEL_PT_PEBS_BASIC_POS,
@@ -96,7 +87,7 @@ enum intel_pt_blk_type_pos {
 	INTEL_PT_BLK_TYPE_CNT
 };
 
-/* Get the array position for a block type */
+
 static inline int intel_pt_blk_type_pos(enum intel_pt_blk_type blk_type)
 {
 #define BLK_TYPE(bt) [INTEL_PT_##bt] = INTEL_PT_##bt##_POS + 1
@@ -116,11 +107,7 @@ static inline int intel_pt_blk_type_pos(enum intel_pt_blk_type blk_type)
 
 #define INTEL_PT_BLK_ITEM_ID_CNT	32
 
-/*
- * Use unions so that the block items can be accessed by name or by array index.
- * There is an array of 32-bit masks for each block type, which indicate which
- * values are present. Then arrays of 32 64-bit values for each block type.
- */
+
 struct intel_pt_blk_items {
 	union {
 		uint32_t mask[INTEL_PT_BLK_TYPE_CNT];
@@ -213,13 +200,10 @@ struct intel_pt_vmcs_info {
 	bool error_printed;
 };
 
-/*
- * Maximum number of event trace data in one go, assuming at most 1 per type
- * and 6-bits of type in the EVD packet.
- */
+
 #define INTEL_PT_MAX_EVDS 64
 
-/* Event trace data from EVD packet */
+
 struct intel_pt_evd {
 	int type;
 	uint64_t payload;

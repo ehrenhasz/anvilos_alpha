@@ -61,7 +61,7 @@ nexthop_bucket_nhid_count_check()
 	local count
 	local nhid
 	local ret
-	while (($# > 0)); do
+	while (($
 		nhid=$1; shift
 		expected=$1; shift
 		count=$($IP nexthop bucket show id $group_id nhid $nhid |

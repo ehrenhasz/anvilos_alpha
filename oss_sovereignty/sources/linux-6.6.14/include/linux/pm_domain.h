@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * pm_domain.h - Definitions and headers related to device power domains.
- *
- * Copyright (C) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Renesas Electronics Corp.
- */
+
+
 
 #ifndef _LINUX_PM_DOMAIN_H
 #define _LINUX_PM_DOMAIN_H
@@ -19,49 +15,7 @@
 #include <linux/cpumask.h>
 #include <linux/time64.h>
 
-/*
- * Flags to control the behaviour of a genpd.
- *
- * These flags may be set in the struct generic_pm_domain's flags field by a
- * genpd backend driver. The flags must be set before it calls pm_genpd_init(),
- * which initializes a genpd.
- *
- * GENPD_FLAG_PM_CLK:		Instructs genpd to use the PM clk framework,
- *				while powering on/off attached devices.
- *
- * GENPD_FLAG_IRQ_SAFE:		This informs genpd that its backend callbacks,
- *				->power_on|off(), doesn't sleep. Hence, these
- *				can be invoked from within atomic context, which
- *				enables genpd to power on/off the PM domain,
- *				even when pm_runtime_is_irq_safe() returns true,
- *				for any of its attached devices. Note that, a
- *				genpd having this flag set, requires its
- *				masterdomains to also have it set.
- *
- * GENPD_FLAG_ALWAYS_ON:	Instructs genpd to always keep the PM domain
- *				powered on.
- *
- * GENPD_FLAG_ACTIVE_WAKEUP:	Instructs genpd to keep the PM domain powered
- *				on, in case any of its attached devices is used
- *				in the wakeup path to serve system wakeups.
- *
- * GENPD_FLAG_CPU_DOMAIN:	Instructs genpd that it should expect to get
- *				devices attached, which may belong to CPUs or
- *				possibly have subdomains with CPUs attached.
- *				This flag enables the genpd backend driver to
- *				deploy idle power management support for CPUs
- *				and groups of CPUs. Note that, the backend
- *				driver must then comply with the so called,
- *				last-man-standing algorithm, for the CPUs in the
- *				PM domain.
- *
- * GENPD_FLAG_RPM_ALWAYS_ON:	Instructs genpd to always keep the PM domain
- *				powered on except for system suspend.
- *
- * GENPD_FLAG_MIN_RESIDENCY:	Enable the genpd governor to consider its
- *				components' next wakeup when determining the
- *				optimal idle state.
- */
+
 #define GENPD_FLAG_PM_CLK	 (1U << 0)
 #define GENPD_FLAG_IRQ_SAFE	 (1U << 1)
 #define GENPD_FLAG_ALWAYS_ON	 (1U << 2)
@@ -71,8 +25,8 @@
 #define GENPD_FLAG_MIN_RESIDENCY (1U << 6)
 
 enum gpd_status {
-	GENPD_STATE_ON = 0,	/* PM domain is on */
-	GENPD_STATE_OFF,	/* PM domain is off */
+	GENPD_STATE_ON = 0,	
+	GENPD_STATE_OFF,	
 };
 
 enum genpd_notication {
@@ -118,29 +72,29 @@ struct opp_table;
 
 struct generic_pm_domain {
 	struct device dev;
-	struct dev_pm_domain domain;	/* PM domain operations */
-	struct list_head gpd_list_node;	/* Node in the global PM domains list */
-	struct list_head parent_links;	/* Links with PM domain as a parent */
-	struct list_head child_links;	/* Links with PM domain as a child */
-	struct list_head dev_list;	/* List of devices */
+	struct dev_pm_domain domain;	
+	struct list_head gpd_list_node;	
+	struct list_head parent_links;	
+	struct list_head child_links;	
+	struct list_head dev_list;	
 	struct dev_power_governor *gov;
-	struct genpd_governor_data *gd;	/* Data used by a genpd governor. */
+	struct genpd_governor_data *gd;	
 	struct work_struct power_off_work;
-	struct fwnode_handle *provider;	/* Identity of the domain provider */
+	struct fwnode_handle *provider;	
 	bool has_provider;
 	const char *name;
-	atomic_t sd_count;	/* Number of subdomains with power "on" */
-	enum gpd_status status;	/* Current state of the domain */
-	unsigned int device_count;	/* Number of devices */
-	unsigned int suspended_count;	/* System suspend device counter */
-	unsigned int prepared_count;	/* Suspend counter of prepared devices */
-	unsigned int performance_state;	/* Aggregated max performance state */
-	cpumask_var_t cpus;		/* A cpumask of the attached CPUs */
-	bool synced_poweroff;		/* A consumer needs a synced poweroff */
+	atomic_t sd_count;	
+	enum gpd_status status;	
+	unsigned int device_count;	
+	unsigned int suspended_count;	
+	unsigned int prepared_count;	
+	unsigned int performance_state;	
+	cpumask_var_t cpus;		
+	bool synced_poweroff;		
 	int (*power_off)(struct generic_pm_domain *domain);
 	int (*power_on)(struct generic_pm_domain *domain);
-	struct raw_notifier_head power_notifiers; /* Power on/off notifiers */
-	struct opp_table *opp_table;	/* OPP table of the genpd */
+	struct raw_notifier_head power_notifiers; 
+	struct opp_table *opp_table;	
 	unsigned int (*opp_to_performance_state)(struct generic_pm_domain *genpd,
 						 struct dev_pm_opp *opp);
 	int (*set_performance_state)(struct generic_pm_domain *genpd,
@@ -150,12 +104,12 @@ struct generic_pm_domain {
 			  struct device *dev);
 	void (*detach_dev)(struct generic_pm_domain *domain,
 			   struct device *dev);
-	unsigned int flags;		/* Bit field of configs for genpd */
+	unsigned int flags;		
 	struct genpd_power_state *states;
 	void (*free_states)(struct genpd_power_state *states,
 			    unsigned int state_count);
-	unsigned int state_count; /* number of states */
-	unsigned int state_idx; /* state that genpd will go to when off */
+	unsigned int state_count; 
+	unsigned int state_idx; 
 	u64 on_time;
 	u64 accounting_time;
 	const struct genpd_lock_ops *lock_ops;
@@ -180,7 +134,7 @@ struct gpd_link {
 	struct generic_pm_domain *child;
 	struct list_head child_node;
 
-	/* Sub-domain's per-master domain performance state */
+	
 	unsigned int performance_state;
 	unsigned int prev_performance_state;
 };
@@ -317,7 +271,7 @@ static inline void dev_pm_genpd_suspend(struct device *dev) {}
 static inline void dev_pm_genpd_resume(struct device *dev) {}
 #endif
 
-/* OF PM domain providers */
+
 struct of_device_id;
 
 typedef struct generic_pm_domain *(*genpd_xlate_t)(struct of_phandle_args *args,
@@ -351,7 +305,7 @@ struct device *genpd_dev_pm_attach_by_id(struct device *dev,
 					 unsigned int index);
 struct device *genpd_dev_pm_attach_by_name(struct device *dev,
 					   const char *name);
-#else /* !CONFIG_PM_GENERIC_DOMAINS_OF */
+#else 
 static inline int of_genpd_add_provider_simple(struct device_node *np,
 					struct generic_pm_domain *genpd)
 {
@@ -419,7 +373,7 @@ struct generic_pm_domain *of_genpd_remove_last(struct device_node *np)
 {
 	return ERR_PTR(-EOPNOTSUPP);
 }
-#endif /* CONFIG_PM_GENERIC_DOMAINS_OF */
+#endif 
 
 #ifdef CONFIG_PM
 int dev_pm_domain_attach(struct device *dev, bool power_on);
@@ -454,4 +408,4 @@ static inline void dev_pm_domain_set(struct device *dev,
 				     struct dev_pm_domain *pd) {}
 #endif
 
-#endif /* _LINUX_PM_DOMAIN_H */
+#endif 

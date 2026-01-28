@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+
 
 #ifndef _HW_CHANNEL_H
 #define _HW_CHANNEL_H
@@ -27,9 +27,7 @@
 
 #define HW_CHANNEL_WAIT_RESOURCE_TIMEOUT_MS 30000
 
-/* Structures labeled with "HW DATA" are exchanged with the hardware. All of
- * them are naturally aligned and hence don't need __packed.
- */
+
 
 union hwc_init_eq_id_db {
 	u32 as_uint32;
@@ -38,7 +36,7 @@ union hwc_init_eq_id_db {
 		u32 eq_id	: 16;
 		u32 doorbell	: 16;
 	};
-}; /* HW DATA */
+}; 
 
 union hwc_init_type_data {
 	u32 as_uint32;
@@ -47,7 +45,7 @@ union hwc_init_type_data {
 		u32 value	: 24;
 		u32 type	:  8;
 	};
-}; /* HW DATA */
+}; 
 
 struct hwc_rx_oob {
 	u32 type	: 6;
@@ -75,7 +73,7 @@ struct hwc_rx_oob {
 
 	u32 chunk_offset	: 21;
 	u32 reserved4		: 11;
-}; /* HW DATA */
+}; 
 
 struct hwc_tx_oob {
 	u32 reserved1;
@@ -96,7 +94,7 @@ struct hwc_tx_oob {
 
 	u32 vsq_id	: 24;
 	u32 reserved5	: 8;
-}; /* HW DATA */
+}; 
 
 struct hwc_work_request {
 	void *buf_va;
@@ -110,11 +108,7 @@ struct hwc_work_request {
 	struct gdma_sge sge;
 };
 
-/* hwc_dma_buf represents the array of in-flight WQEs.
- * mem_info as know as the GDMA mapped memory is partitioned and used by
- * in-flight WQEs.
- * The number of WQEs is determined by the number of in-flight messages.
- */
+
 struct hwc_dma_buf {
 	struct gdma_mem_info mem_info;
 
@@ -160,7 +154,7 @@ struct hwc_caller_ctx {
 	void *output_buf;
 	u32 output_buflen;
 
-	u32 error; /* Linux error code */
+	u32 error; 
 	u32 status_code;
 };
 
@@ -197,4 +191,4 @@ void mana_hwc_destroy_channel(struct gdma_context *gc);
 int mana_hwc_send_request(struct hw_channel_context *hwc, u32 req_len,
 			  const void *req, u32 resp_len, void *resp);
 
-#endif /* _HW_CHANNEL_H */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AEAD: Authenticated Encryption with Associated Data
- * 
- * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+
 
 #ifndef _CRYPTO_INTERNAL_AEAD_H
 #define _CRYPTO_INTERNAL_AEAD_H
@@ -141,17 +137,7 @@ static inline unsigned int crypto_aead_alg_chunksize(struct aead_alg *alg)
 	return alg->chunksize;
 }
 
-/**
- * crypto_aead_chunksize() - obtain chunk size
- * @tfm: cipher handle
- *
- * The block size is set to one for ciphers such as CCM.  However,
- * you still need to provide incremental updates in multiples of
- * the underlying block size as the IV does not have sub-block
- * granularity.  This is known in this API as the chunk size.
- *
- * Return: chunk size in bytes
- */
+
 static inline unsigned int crypto_aead_chunksize(struct crypto_aead *tfm)
 {
 	return crypto_aead_alg_chunksize(crypto_aead_alg(tfm));
@@ -164,5 +150,5 @@ void crypto_unregister_aeads(struct aead_alg *algs, int count);
 int aead_register_instance(struct crypto_template *tmpl,
 			   struct aead_instance *inst);
 
-#endif	/* _CRYPTO_INTERNAL_AEAD_H */
+#endif	
 

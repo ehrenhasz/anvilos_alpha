@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
+
+
 
 #ifndef _MLXSW_IPIP_H_
 #define _MLXSW_IPIP_H_
@@ -37,7 +37,7 @@ struct mlxsw_sp_ipip_parms {
 
 struct mlxsw_sp_ipip_entry {
 	enum mlxsw_sp_ipip_type ipipt;
-	struct net_device *ol_dev; /* Overlay. */
+	struct net_device *ol_dev; 
 	struct mlxsw_sp_rif_ipip_lb *ol_lb;
 	struct mlxsw_sp_fib_entry *decap_fib_entry;
 	struct list_head ipip_list_node;
@@ -47,7 +47,7 @@ struct mlxsw_sp_ipip_entry {
 
 struct mlxsw_sp_ipip_ops {
 	int dev_type;
-	enum mlxsw_sp_l3proto ul_proto; /* Underlay. */
+	enum mlxsw_sp_l3proto ul_proto; 
 	bool inc_parsing_depth;
 	bool double_rif_entry;
 
@@ -61,7 +61,7 @@ struct mlxsw_sp_ipip_ops {
 	bool (*can_offload)(const struct mlxsw_sp *mlxsw_sp,
 			    const struct net_device *ol_dev);
 
-	/* Return a configuration for creating an overlay loopback RIF. */
+	
 	struct mlxsw_sp_rif_ipip_lb_config
 	(*ol_loopback_config)(struct mlxsw_sp *mlxsw_sp,
 			      const struct net_device *ol_dev);
@@ -82,4 +82,4 @@ struct mlxsw_sp_ipip_ops {
 extern const struct mlxsw_sp_ipip_ops *mlxsw_sp1_ipip_ops_arr[];
 extern const struct mlxsw_sp_ipip_ops *mlxsw_sp2_ipip_ops_arr[];
 
-#endif /* _MLXSW_IPIP_H_*/
+#endif 

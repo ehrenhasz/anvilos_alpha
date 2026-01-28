@@ -1,11 +1,11 @@
-# Makefile for the Vim tutor.
-#
-# The Japanese tutor exists in three encodings.  Use the UTF-8 version as the
-# original and create the others with conversion.
-#
-# Similarly for Russian and Korean
 
-# Common components
+
+
+
+
+
+
+
 include Make_all.mak
 
 all: $(CONVERTED)
@@ -67,7 +67,7 @@ tutor.nl: tutor.nl.utf-8
 tutor.no.utf-8: tutor.no
 	iconv -f ISO-8859-1 -t UTF-8 tutor.no > tutor.no.utf-8
 
-# nb is an alias for no
+
 tutor.nb: tutor.no
 	cp tutor.no tutor.nb
 

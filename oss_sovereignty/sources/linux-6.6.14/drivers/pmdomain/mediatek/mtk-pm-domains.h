@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __SOC_MEDIATEK_MTK_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MTK_PM_DOMAINS_H
@@ -8,7 +8,7 @@
 #define MTK_SCPD_SRAM_ISO		BIT(2)
 #define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(3)
 #define MTK_SCPD_DOMAIN_SUPPLY		BIT(4)
-/* can't set MTK_SCPD_KEEP_DEFAULT_OFF at the same time */
+
 #define MTK_SCPD_ALWAYS_ON		BIT(5)
 #define MTK_SCPD_EXT_BUCK_ISO		BIT(6)
 #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
@@ -75,19 +75,7 @@ struct scpsys_bus_prot_data {
 	bool ignore_clr_ack;
 };
 
-/**
- * struct scpsys_domain_data - scp domain data for power on/off flow
- * @name: The name of the power domain.
- * @sta_mask: The mask for power on/off status bit.
- * @ctl_offs: The offset for main power control register.
- * @sram_pdn_bits: The mask for sram power control bits.
- * @sram_pdn_ack_bits: The mask for sram power control acked bits.
- * @ext_buck_iso_offs: The offset for external buck isolation
- * @ext_buck_iso_mask: The mask for external buck isolation
- * @caps: The flag for active wake-up action.
- * @bp_infracfg: bus protection for infracfg subsystem
- * @bp_smi: bus protection for smi subsystem
- */
+
 struct scpsys_domain_data {
 	const char *name;
 	u32 sta_mask;
@@ -108,4 +96,4 @@ struct scpsys_soc_data {
 	int num_domains;
 };
 
-#endif /* __SOC_MEDIATEK_MTK_PM_DOMAINS_H */
+#endif 

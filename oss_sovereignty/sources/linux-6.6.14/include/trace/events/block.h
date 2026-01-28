@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM block
 
@@ -37,12 +37,7 @@ DECLARE_EVENT_CLASS(block_buffer,
 	)
 );
 
-/**
- * block_touch_buffer - mark a buffer accessed
- * @bh: buffer_head being touched
- *
- * Called from touch_buffer().
- */
+
 DEFINE_EVENT(block_buffer, block_touch_buffer,
 
 	TP_PROTO(struct buffer_head *bh),
@@ -50,28 +45,16 @@ DEFINE_EVENT(block_buffer, block_touch_buffer,
 	TP_ARGS(bh)
 );
 
-/**
- * block_dirty_buffer - mark a buffer dirty
- * @bh: buffer_head being dirtied
- *
- * Called from mark_buffer_dirty().
- */
+
 DEFINE_EVENT(block_buffer, block_dirty_buffer,
 
 	TP_PROTO(struct buffer_head *bh),
 
 	TP_ARGS(bh)
 );
-#endif /* CONFIG_BUFFER_HEAD */
+#endif 
 
-/**
- * block_rq_requeue - place block IO request back on a queue
- * @rq: block IO operation request
- *
- * The block operation request @rq is being placed back into queue
- * @q.  For some reason the request was not completed and needs to be
- * put back in the queue.
- */
+
 TRACE_EVENT(block_rq_requeue,
 
 	TP_PROTO(struct request *rq),
@@ -134,18 +117,7 @@ DECLARE_EVENT_CLASS(block_rq_completion,
 		  __entry->nr_sector, __entry->error)
 );
 
-/**
- * block_rq_complete - block IO operation completed by device driver
- * @rq: block operations request
- * @error: status code
- * @nr_bytes: number of completed bytes
- *
- * The block_rq_complete tracepoint event indicates that some portion
- * of operation request has been completed by the device driver.  If
- * the @rq->bio is %NULL, then there is absolutely no additional work to
- * do for the request. If @rq->bio is non-NULL then there is
- * additional work required to complete the request.
- */
+
 DEFINE_EVENT(block_rq_completion, block_rq_complete,
 
 	TP_PROTO(struct request *rq, blk_status_t error, unsigned int nr_bytes),
@@ -153,15 +125,7 @@ DEFINE_EVENT(block_rq_completion, block_rq_complete,
 	TP_ARGS(rq, error, nr_bytes)
 );
 
-/**
- * block_rq_error - block IO operation error reported by device driver
- * @rq: block operations request
- * @error: status code
- * @nr_bytes: number of completed bytes
- *
- * The block_rq_error tracepoint event indicates that some portion
- * of operation request has failed as reported by the device driver.
- */
+
 DEFINE_EVENT(block_rq_completion, block_rq_error,
 
 	TP_PROTO(struct request *rq, blk_status_t error, unsigned int nr_bytes),
@@ -203,15 +167,7 @@ DECLARE_EVENT_CLASS(block_rq,
 		  __entry->nr_sector, __entry->comm)
 );
 
-/**
- * block_rq_insert - insert block operation request into queue
- * @rq: block IO operation request
- *
- * Called immediately before block operation request @rq is inserted
- * into queue @q.  The fields in the operation request @rq struct can
- * be examined to determine which device and sectors the pending
- * operation would access.
- */
+
 DEFINE_EVENT(block_rq, block_rq_insert,
 
 	TP_PROTO(struct request *rq),
@@ -219,13 +175,7 @@ DEFINE_EVENT(block_rq, block_rq_insert,
 	TP_ARGS(rq)
 );
 
-/**
- * block_rq_issue - issue pending block IO request operation to device driver
- * @rq: block IO operation request
- *
- * Called when block operation request @rq from queue @q is sent to a
- * device driver for processing.
- */
+
 DEFINE_EVENT(block_rq, block_rq_issue,
 
 	TP_PROTO(struct request *rq),
@@ -233,13 +183,7 @@ DEFINE_EVENT(block_rq, block_rq_issue,
 	TP_ARGS(rq)
 );
 
-/**
- * block_rq_merge - merge request with another one in the elevator
- * @rq: block IO operation request
- *
- * Called when block operation request @rq from queue @q is merged to another
- * request queued in the elevator.
- */
+
 DEFINE_EVENT(block_rq, block_rq_merge,
 
 	TP_PROTO(struct request *rq),
@@ -247,12 +191,7 @@ DEFINE_EVENT(block_rq, block_rq_merge,
 	TP_ARGS(rq)
 );
 
-/**
- * block_io_start - insert a request for execution
- * @rq: block IO operation request
- *
- * Called when block operation request @rq is queued for execution
- */
+
 DEFINE_EVENT(block_rq, block_io_start,
 
 	TP_PROTO(struct request *rq),
@@ -260,12 +199,7 @@ DEFINE_EVENT(block_rq, block_io_start,
 	TP_ARGS(rq)
 );
 
-/**
- * block_io_done - block IO operation request completed
- * @rq: block IO operation request
- *
- * Called when block operation request @rq is completed
- */
+
 DEFINE_EVENT(block_rq, block_io_done,
 
 	TP_PROTO(struct request *rq),
@@ -273,14 +207,7 @@ DEFINE_EVENT(block_rq, block_io_done,
 	TP_ARGS(rq)
 );
 
-/**
- * block_bio_complete - completed all work on the block operation
- * @q: queue holding the block operation
- * @bio: block operation completed
- *
- * This tracepoint indicates there is no further work to do on this
- * block IO operation @bio.
- */
+
 TRACE_EVENT(block_bio_complete,
 
 	TP_PROTO(struct request_queue *q, struct bio *bio),
@@ -337,73 +264,37 @@ DECLARE_EVENT_CLASS(block_bio,
 		  __entry->nr_sector, __entry->comm)
 );
 
-/**
- * block_bio_bounce - used bounce buffer when processing block operation
- * @bio: block operation
- *
- * A bounce buffer was used to handle the block operation @bio in @q.
- * This occurs when hardware limitations prevent a direct transfer of
- * data between the @bio data memory area and the IO device.  Use of a
- * bounce buffer requires extra copying of data and decreases
- * performance.
- */
+
 DEFINE_EVENT(block_bio, block_bio_bounce,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
 );
 
-/**
- * block_bio_backmerge - merging block operation to the end of an existing operation
- * @bio: new block operation to merge
- *
- * Merging block request @bio to the end of an existing block request.
- */
+
 DEFINE_EVENT(block_bio, block_bio_backmerge,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
 );
 
-/**
- * block_bio_frontmerge - merging block operation to the beginning of an existing operation
- * @bio: new block operation to merge
- *
- * Merging block IO operation @bio to the beginning of an existing block request.
- */
+
 DEFINE_EVENT(block_bio, block_bio_frontmerge,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
 );
 
-/**
- * block_bio_queue - putting new block IO operation in queue
- * @bio: new block operation
- *
- * About to place the block IO operation @bio into queue @q.
- */
+
 DEFINE_EVENT(block_bio, block_bio_queue,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
 );
 
-/**
- * block_getrq - get a free request entry in queue for block IO operations
- * @bio: pending block IO operation (can be %NULL)
- *
- * A request struct has been allocated to handle the block IO operation @bio.
- */
+
 DEFINE_EVENT(block_bio, block_getrq,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
 );
 
-/**
- * block_plug - keep operations requests in request queue
- * @q: request queue to plug
- *
- * Plug the request queue @q.  Do not allow block operation requests
- * to be sent to the device driver. Instead, accumulate requests in
- * the queue to improve throughput performance of the block device.
- */
+
 TRACE_EVENT(block_plug,
 
 	TP_PROTO(struct request_queue *q),
@@ -440,15 +331,7 @@ DECLARE_EVENT_CLASS(block_unplug,
 	TP_printk("[%s] %d", __entry->comm, __entry->nr_rq)
 );
 
-/**
- * block_unplug - release of operations requests in request queue
- * @q: request queue to unplug
- * @depth: number of requests just added to the queue
- * @explicit: whether this was an explicit unplug, or one from schedule()
- *
- * Unplug request queue @q because device driver is scheduled to work
- * on elements in the request queue.
- */
+
 DEFINE_EVENT(block_unplug, block_unplug,
 
 	TP_PROTO(struct request_queue *q, unsigned int depth, bool explicit),
@@ -456,16 +339,7 @@ DEFINE_EVENT(block_unplug, block_unplug,
 	TP_ARGS(q, depth, explicit)
 );
 
-/**
- * block_split - split a single bio struct into two bio structs
- * @bio: block operation being split
- * @new_sector: The starting sector for the new bio
- *
- * The bio request @bio needs to be split into two bio requests.  The newly
- * created @bio request starts at @new_sector. This split may be required due to
- * hardware limitations such as operation crossing device boundaries in a RAID
- * system.
- */
+
 TRACE_EVENT(block_split,
 
 	TP_PROTO(struct bio *bio, unsigned int new_sector),
@@ -495,15 +369,7 @@ TRACE_EVENT(block_split,
 		  __entry->comm)
 );
 
-/**
- * block_bio_remap - map request for a logical device to the raw device
- * @bio: revised operation
- * @dev: original device for the operation
- * @from: original sector for the operation
- *
- * An operation for a logical device has been mapped to the
- * raw block device.
- */
+
 TRACE_EVENT(block_bio_remap,
 
 	TP_PROTO(struct bio *bio, dev_t dev, sector_t from),
@@ -536,16 +402,7 @@ TRACE_EVENT(block_bio_remap,
 		  (unsigned long long)__entry->old_sector)
 );
 
-/**
- * block_rq_remap - map request for a block operation request
- * @rq: block IO operation request
- * @dev: device for the operation
- * @from: original sector for the operation
- *
- * The block operation request @rq in @q has been remapped.  The block
- * operation request @rq holds the current information and @from hold
- * the original sector.
- */
+
 TRACE_EVENT(block_rq_remap,
 
 	TP_PROTO(struct request *rq, dev_t dev, sector_t from),
@@ -580,8 +437,8 @@ TRACE_EVENT(block_rq_remap,
 		  (unsigned long long)__entry->old_sector, __entry->nr_bios)
 );
 
-#endif /* _TRACE_BLOCK_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>
 

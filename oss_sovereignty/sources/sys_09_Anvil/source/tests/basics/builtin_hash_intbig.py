@@ -1,5 +1,5 @@
-print({1 << 66:1}) # hash big int
-print({-(1 << 66):2}) # hash negative big int
+print({1 << 66:1}) 
+print({-(1 << 66):2}) 
 class F:
     def __hash__(self):
         return 1 << 70 | 1

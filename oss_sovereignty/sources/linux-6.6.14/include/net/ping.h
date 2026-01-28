@@ -1,24 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the "ping" module.
- */
+
+
 #ifndef _PING_H
 #define _PING_H
 
 #include <net/icmp.h>
 #include <net/netns/hash.h>
 
-/* PING_HTABLE_SIZE must be power of 2 */
+
 #define PING_HTABLE_SIZE 	64
 #define PING_HTABLE_MASK 	(PING_HTABLE_SIZE-1)
 
 #define GID_T_MAX (((gid_t)~0U) - 1)
 
-/* Compatibility glue so we can support IPv6 when it's compiled as a module */
+
 struct pingv6_ops {
 	int (*ipv6_recv_error)(struct sock *sk, struct msghdr *msg, int len,
 			       int *addr_len);
@@ -84,4 +78,4 @@ void __init ping_init(void);
 int  __init pingv6_init(void);
 void pingv6_exit(void);
 
-#endif /* _PING_H */
+#endif 

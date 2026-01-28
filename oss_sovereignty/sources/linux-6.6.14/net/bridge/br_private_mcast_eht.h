@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later
- * Copyright (c) 2020, Nikolay Aleksandrov <nikolay@nvidia.com>
- */
+
 #ifndef _BR_PRIVATE_MCAST_EHT_H_
 #define _BR_PRIVATE_MCAST_EHT_H_
 
@@ -13,7 +11,7 @@ union net_bridge_eht_addr {
 #endif
 };
 
-/* single host's list of set entries and filter_mode */
+
 struct net_bridge_group_eht_host {
 	struct rb_node			rb_node;
 
@@ -24,7 +22,7 @@ struct net_bridge_group_eht_host {
 	struct net_bridge_port_group	*pg;
 };
 
-/* (host, src entry) added to a per-src set and host's list */
+
 struct net_bridge_group_eht_set_entry {
 	struct rb_node			rb_node;
 	struct hlist_node		host_list;
@@ -37,7 +35,7 @@ struct net_bridge_group_eht_set_entry {
 	struct net_bridge_mcast_gc	mcast_gc;
 };
 
-/* per-src set */
+
 struct net_bridge_group_eht_set {
 	struct rb_node			rb_node;
 
@@ -89,6 +87,6 @@ static inline void br_multicast_eht_hosts_dec(struct net_bridge_port_group *pg)
 
 	p->multicast_eht_hosts_cnt--;
 }
-#endif /* CONFIG_BRIDGE_IGMP_SNOOPING */
+#endif 
 
-#endif /* _BR_PRIVATE_MCAST_EHT_H_ */
+#endif 

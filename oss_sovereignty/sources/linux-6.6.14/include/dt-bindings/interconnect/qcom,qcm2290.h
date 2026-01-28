@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* QCM2290 interconnect IDs */
+
+
 
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_QCM2290_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_QCM2290_H
 
-/* BIMC */
+
 #define MASTER_APPSS_PROC		0
 #define MASTER_SNOC_BIMC_RT		1
 #define MASTER_SNOC_BIMC_NRT		2
@@ -14,7 +14,7 @@
 #define SLAVE_EBI1			6
 #define SLAVE_BIMC_SNOC			7
 
-/* CNOC */
+
 #define MASTER_SNOC_CNOC		0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_BIMC_CFG			2
@@ -51,7 +51,7 @@
 #define SLAVE_VSENSE_CTRL_CFG		33
 #define SLAVE_SERVICE_CNOC		34
 
-/* SNOC */
+
 #define MASTER_CRYPTO_CORE0		0
 #define MASTER_SNOC_CFG			1
 #define MASTER_TIC			2
@@ -76,17 +76,17 @@
 #define SLAVE_TCU			21
 #define SLAVE_ANOC_SNOC			22
 
-/* QUP Virtual */
+
 #define MASTER_QUP_CORE_0		0
 #define SLAVE_QUP_CORE_0		1
 
-/* MMNRT Virtual */
+
 #define MASTER_CAMNOC_SF		0
 #define MASTER_VIDEO_P0			1
 #define MASTER_VIDEO_PROC		2
 #define SLAVE_SNOC_BIMC_NRT		3
 
-/* MMRT Virtual */
+
 #define MASTER_CAMNOC_HF		0
 #define MASTER_MDP0			1
 #define SLAVE_SNOC_BIMC_RT		2

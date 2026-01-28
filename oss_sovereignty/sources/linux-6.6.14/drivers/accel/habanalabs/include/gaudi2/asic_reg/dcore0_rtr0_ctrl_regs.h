@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_DCORE0_RTR0_CTRL_REGS_H_
 #define ASIC_REG_DCORE0_RTR0_CTRL_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_RTR0_CTRL
- *   (Prototype: RTR_CTRL)
- *****************************************
- */
+
 
 #define mmDCORE0_RTR0_CTRL_MEM_NUM 0x4140100
 
@@ -288,4 +275,4 @@
 
 #define mmDCORE0_RTR0_CTRL_RGL_MEM_DEC_TOKEN_1 0x4140BC4
 
-#endif /* ASIC_REG_DCORE0_RTR0_CTRL_REGS_H_ */
+#endif 

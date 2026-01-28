@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Makefile for RTC class/drivers.
-#
+
+
+
+
 
 ccflags-$(CONFIG_RTC_DEBUG)	:= -DDEBUG
 
@@ -17,7 +17,7 @@ rtc-core-$(CONFIG_RTC_INTF_SYSFS)	+= sysfs.o
 
 obj-$(CONFIG_RTC_LIB_KUNIT_TEST)	+= lib_test.o
 
-# Keep the list ordered.
+
 
 obj-$(CONFIG_RTC_DRV_88PM80X)	+= rtc-88pm80x.o
 obj-$(CONFIG_RTC_DRV_88PM860X)	+= rtc-88pm860x.o

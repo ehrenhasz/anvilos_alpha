@@ -1,42 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+
 
 #include <ppc-asm.h>
 #include "reg.h"
 
 
-/* ppc-asm.h defines most of the reg aliases, but not r1/r2. */
+
 #define r1 1
 #define r2 2
 
 #define RFEBB   .long 0x4c000924
 
-/* Stack layout:
- *
- *                   ^
- *  User stack       |
- *  Back chain ------+	<- r1		<-------+
- *  ...						|
- *  Red zone / ABI Gap				|
- *  ...						|
- *  vr63	<+				|
- *  vr0		 |				|
- *  VSCR	 |				|
- *  FSCR	 |				|
- *  r31		 | Save area			|
- *  r0		 |				|
- *  XER		 |				|
- *  CTR		 |				|
- *  LR		 |				|
- *  CCR		<+				|
- *  ...		<+				|
- *  LR		 | Caller frame			|
- *  CCR		 |				|
- *  Back chain	<+	<- updated r1	--------+
- *
- */
+
 
 #if defined(_CALL_ELF) && _CALL_ELF == 2
 #define ABIGAP		512
@@ -84,7 +59,7 @@
 	FUNC_NAME(name):
 
 #define RESTORE_TOC(name)	\
-	/* Restore our TOC pointer using our entry point */	\
+		\
 	LOAD_REG_IMMEDIATE(r12, name)				\
 0:	addis	r2,r12,(.TOC.-0b)@ha;				\
 	addi	r2,r2,(.TOC.-0b)@l;
@@ -92,7 +67,7 @@
 #else
 #define ENTRY_POINT(name) FUNC_START(name)
 #define RESTORE_TOC(name)	\
-	/* Restore our TOC pointer via our opd entry */	\
+		\
 	LOAD_REG_IMMEDIATE(r2, name)			\
 	ld      r2,8(r2);
 #endif
@@ -241,16 +216,12 @@ ENTRY_POINT(ebb_handler)
 
     RESTORE_TOC(ebb_handler)
 
-    /*
-     * r13 is our TLS pointer. We leave whatever value was in there when the
-     * EBB fired. That seems to be OK because once set the TLS pointer is not
-     * changed - but presumably that could change in future.
-     */
+    
 
     bl      ebb_hook
     nop
 
-    /* r2 may be changed here but we don't care */
+    
 
     lfd      f0, FSCR_SAVE(r1)
     mtfsf    0xff,f0

@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0+
-#
-# Makefile for the HISILICON network device drivers.
-#
+
+
+
+
 
 ccflags-y += -I$(srctree)/$(src)
 ccflags-y += -I$(srctree)/drivers/net/ethernet/hisilicon/hns3/hns3pf

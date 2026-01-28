@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+
 #ifndef _WG_NOISE_H
 #define _WG_NOISE_H
 
@@ -83,9 +81,7 @@ struct noise_handshake {
 	u8 latest_timestamp[NOISE_TIMESTAMP_LEN];
 	__le32 remote_index;
 
-	/* Protects all members except the immutable (after noise_handshake_
-	 * init): remote_static, precomputed_static_static, static_identity.
-	 */
+	
 	struct rw_semaphore lock;
 };
 
@@ -132,4 +128,4 @@ wg_noise_handshake_consume_response(struct message_handshake_response *src,
 bool wg_noise_handshake_begin_session(struct noise_handshake *handshake,
 				      struct noise_keypairs *keypairs);
 
-#endif /* _WG_NOISE_H */
+#endif 

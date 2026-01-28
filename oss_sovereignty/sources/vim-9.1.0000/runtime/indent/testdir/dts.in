@@ -2,9 +2,9 @@
 
 /* START_INDENT */
 /dts-v1/;
-#include <dt-bindings/pinctrl/pinctrl-imx6q.h>
-	#include "imx6qdl.dtsi"
-#include "imx6qdl-someboard.dtsi"
+
+	
+
 
 	/delete-node/ &{/memory@10000000};
 

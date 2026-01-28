@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+
 
 #ifndef HW_ATL2_INTERNAL_H
 #define HW_ATL2_INTERNAL_H
@@ -22,7 +20,7 @@
 #define HW_ATL2_MAC_MIN  1U
 #define HW_ATL2_MAC_MAX  38U
 
-/* interrupts */
+
 #define HW_ATL2_ERR_INT 8U
 #define HW_ATL2_INT_MASK  (0xFFFFFFFFU)
 
@@ -124,4 +122,4 @@ struct hw_atl2_priv {
 	unsigned int art_base_index;
 };
 
-#endif /* HW_ATL2_INTERNAL_H */
+#endif 

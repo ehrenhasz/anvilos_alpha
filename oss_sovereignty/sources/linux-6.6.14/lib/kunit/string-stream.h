@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * C++ stream style string builder used in KUnit for building messages.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+
 
 #ifndef _KUNIT_STRING_STREAM_H
 #define _KUNIT_STRING_STREAM_H
@@ -21,7 +16,7 @@ struct string_stream_fragment {
 struct string_stream {
 	size_t length;
 	struct list_head fragments;
-	/* length and fragments are protected by this lock */
+	
 	spinlock_t lock;
 	struct kunit *test;
 	gfp_t gfp;
@@ -47,4 +42,4 @@ bool string_stream_is_empty(struct string_stream *stream);
 
 void string_stream_destroy(struct string_stream *stream);
 
-#endif /* _KUNIT_STRING_STREAM_H */
+#endif 

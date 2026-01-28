@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_MME1_CTRL_REGS_H_
 #define ASIC_REG_MME1_CTRL_REGS_H_
 
-/*
- *****************************************
- *   MME1_CTRL (Prototype: MME)
- *****************************************
- */
+
 
 #define mmMME1_CTRL_ARCH_STATUS                                      0xE0000
 
@@ -1453,4 +1441,4 @@
 
 #define mmMME1_CTRL_SHADOW_3_DESC_DUMMY                              0xE0DA4
 
-#endif /* ASIC_REG_MME1_CTRL_REGS_H_ */
+#endif 

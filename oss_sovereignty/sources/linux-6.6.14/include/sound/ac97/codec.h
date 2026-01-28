@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- *  Copyright (C) 2016 Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
 
 #ifndef __SOUND_AC97_CODEC2_H
 #define __SOUND_AC97_CODEC2_H
@@ -18,32 +15,14 @@
 struct ac97_controller;
 struct clk;
 
-/**
- * struct ac97_id - matches a codec device and driver on an ac97 bus
- * @id: The significant bits if the codec vendor ID1 and ID2
- * @mask: Bitmask specifying which bits of the id field are significant when
- *	  matching. A driver binds to a device when :
- *        ((vendorID1 << 8 | vendorID2) & (mask_id1 << 8 | mask_id2)) == id.
- * @data: Private data used by the driver.
- */
+
 struct ac97_id {
 	unsigned int		id;
 	unsigned int		mask;
 	void			*data;
 };
 
-/**
- * ac97_codec_device - a ac97 codec
- * @dev: the core device
- * @vendor_id: the vendor_id of the codec, as sensed on the AC-link
- * @num: the codec number, 0 is primary, 1 is first slave, etc ...
- * @clk: the clock BIT_CLK provided by the codec
- * @ac97_ctrl: ac97 digital controller on the same AC-link
- *
- * This is the device instantiated for each codec living on a AC-link. There are
- * normally 0 to 4 codec devices per AC-link, and all of them are controlled by
- * an AC97 digital controller.
- */
+
 struct ac97_codec_device {
 	struct device		dev;
 	unsigned int		vendor_id;
@@ -52,14 +31,7 @@ struct ac97_codec_device {
 	struct ac97_controller	*ac97_ctrl;
 };
 
-/**
- * ac97_codec_driver - a ac97 codec driver
- * @driver: the device driver structure
- * @probe: the function called when a ac97_codec_device is matched
- * @remove: the function called when the device is unbound/removed
- * @shutdown: shutdown function (might be NULL)
- * @id_table: ac97 vendor_id match table, { } member terminated
- */
+
 struct ac97_codec_driver {
 	struct device_driver	driver;
 	int			(*probe)(struct ac97_codec_device *);

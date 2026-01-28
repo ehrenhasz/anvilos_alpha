@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright (C) 2018 ROHM Semiconductors */
+
+
 
 #ifndef __LINUX_MFD_ROHM_H__
 #define __LINUX_MFD_ROHM_H__
@@ -32,28 +32,7 @@ struct rohm_regmap_dev {
 #define ROHM_DVS_LEVEL_VALID_AMOUNT	5
 #define ROHM_DVS_LEVEL_UNKNOWN		0
 
-/**
- * struct rohm_dvs_config - dynamic voltage scaling register descriptions
- *
- * @level_map:		bitmap representing supported run-levels for this
- *			regulator
- * @run_reg:		register address for regulator config at 'run' state
- * @run_mask:		value mask for regulator voltages at 'run' state
- * @run_on_mask:	enable mask for regulator at 'run' state
- * @idle_reg:		register address for regulator config at 'idle' state
- * @idle_mask:		value mask for regulator voltages at 'idle' state
- * @idle_on_mask:	enable mask for regulator at 'idle' state
- * @suspend_reg:	register address for regulator config at 'suspend' state
- * @suspend_mask:	value mask for regulator voltages at 'suspend' state
- * @suspend_on_mask:	enable mask for regulator at 'suspend' state
- * @lpsr_reg:		register address for regulator config at 'lpsr' state
- * @lpsr_mask:		value mask for regulator voltages at 'lpsr' state
- * @lpsr_on_mask:	enable mask for regulator at 'lpsr' state
- *
- * Description of ROHM PMICs voltage configuration registers for different
- * system states. This is used to correctly configure the PMIC at startup
- * based on values read from DT.
- */
+
 struct rohm_dvs_config {
 	uint64_t level_map;
 	unsigned int run_reg;

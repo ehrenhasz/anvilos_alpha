@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2019 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __VFS_CACHE_H__
 #define __VFS_CACHE_H__
@@ -15,7 +13,7 @@
 
 #include "vfs.h"
 
-/* Windows style file permissions for extended response */
+
 #define	FILE_GENERIC_ALL	0x1F01FF
 #define	FILE_GENERIC_READ	0x120089
 #define	FILE_GENERIC_WRITE	0x120116
@@ -49,7 +47,7 @@ struct ksmbd_inode {
 	rwlock_t			m_lock;
 	atomic_t			m_count;
 	atomic_t			op_count;
-	/* opinfo count for streams */
+	
 	atomic_t			sop_count;
 	struct dentry			*m_de;
 	unsigned int			m_flags;
@@ -101,7 +99,7 @@ struct ksmbd_file {
 
 	int				durable_timeout;
 
-	/* if ls is happening on directory, below is valid*/
+	
 	struct ksmbd_readdir_data	readdir_data;
 	int				dot_dotdot[2];
 	unsigned int			f_state;
@@ -155,9 +153,7 @@ void ksmbd_set_fd_limit(unsigned long limit);
 void ksmbd_update_fstate(struct ksmbd_file_table *ft, struct ksmbd_file *fp,
 			 unsigned int state);
 
-/*
- * INODE hash
- */
+
 int __init ksmbd_inode_hash_init(void);
 void ksmbd_release_inode_hash(void);
 
@@ -175,4 +171,4 @@ void ksmbd_fd_set_delete_on_close(struct ksmbd_file *fp,
 				  int file_info);
 int ksmbd_init_file_cache(void);
 void ksmbd_exit_file_cache(void);
-#endif /* __VFS_CACHE_H__ */
+#endif 

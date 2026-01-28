@@ -1,27 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides macros for the common LEDs device tree bindings.
- *
- * Copyright (C) 2015, Samsung Electronics Co., Ltd.
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- *
- * Copyright (C) 2019 Jacek Anaszewski <jacek.anaszewski@gmail.com>
- * Copyright (C) 2020 Pavel Machek <pavel@ucw.cz>
- */
+
+
 
 #ifndef __DT_BINDINGS_LEDS_H
 #define __DT_BINDINGS_LEDS_H
 
-/* External trigger type */
+
 #define LEDS_TRIG_TYPE_EDGE	0
 #define LEDS_TRIG_TYPE_LEVEL	1
 
-/* Boost modes */
+
 #define LEDS_BOOST_OFF		0
 #define LEDS_BOOST_ADAPTIVE	1
 #define LEDS_BOOST_FIXED	2
 
-/* Standard LED colors */
+
 #define LED_COLOR_ID_WHITE	0
 #define LED_COLOR_ID_RED	1
 #define LED_COLOR_ID_GREEN	2
@@ -30,9 +22,8 @@
 #define LED_COLOR_ID_VIOLET	5
 #define LED_COLOR_ID_YELLOW	6
 #define LED_COLOR_ID_IR		7
-#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
-#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
-					   so this would include RGBW and similar */
+#define LED_COLOR_ID_MULTI	8	
+#define LED_COLOR_ID_RGB	9	
 #define LED_COLOR_ID_PURPLE	10
 #define LED_COLOR_ID_ORANGE	11
 #define LED_COLOR_ID_PINK	12
@@ -40,39 +31,35 @@
 #define LED_COLOR_ID_LIME	14
 #define LED_COLOR_ID_MAX	15
 
-/* Standard LED functions */
-/* Keyboard LEDs, usually it would be input4::capslock etc. */
-/*   Obsolete equivalent: "shift-key-light" */
+
+
+
 #define LED_FUNCTION_CAPSLOCK "capslock"
 #define LED_FUNCTION_SCROLLLOCK "scrolllock"
 #define LED_FUNCTION_NUMLOCK "numlock"
-/*   Obsolete equivalents: "tpacpi::thinklight" (IBM/Lenovo Thinkpads),
-     "lp5523:kb{1,2,3,4,5,6}" (Nokia N900) */
+
 #define LED_FUNCTION_KBD_BACKLIGHT "kbd_backlight"
 
-/* System LEDs, usually found on system body.
-   platform::mute (etc) is sometimes seen, :mute would be better */
+
 #define LED_FUNCTION_POWER "power"
 #define LED_FUNCTION_DISK "disk"
 
-/*   Obsolete: "platform:*:charging" (allwinner sun50i) */
+
 #define LED_FUNCTION_CHARGING "charging"
-/*   Used RGB notification LEDs common on phones.
-     Obsolete equivalents: "status-led:{red,green,blue}" (Motorola Droid 4),
-     "lp5523:{r,g,b}" (Nokia N900) */
+
 #define LED_FUNCTION_STATUS "status"
 
 #define LED_FUNCTION_MICMUTE "micmute"
 #define LED_FUNCTION_MUTE "mute"
 
-/* Used for player LEDs as found on game controllers from e.g. Nintendo, Sony. */
+
 #define LED_FUNCTION_PLAYER1 "player-1"
 #define LED_FUNCTION_PLAYER2 "player-2"
 #define LED_FUNCTION_PLAYER3 "player-3"
 #define LED_FUNCTION_PLAYER4 "player-4"
 #define LED_FUNCTION_PLAYER5 "player-5"
 
-/* Miscelleaus functions. Use functions above if you can. */
+
 #define LED_FUNCTION_ACTIVITY "activity"
 #define LED_FUNCTION_ALARM "alarm"
 #define LED_FUNCTION_BACKLIGHT "backlight"
@@ -103,4 +90,4 @@
 #define LED_FUNCTION_WLAN "wlan"
 #define LED_FUNCTION_WPS "wps"
 
-#endif /* __DT_BINDINGS_LEDS_H */
+#endif 

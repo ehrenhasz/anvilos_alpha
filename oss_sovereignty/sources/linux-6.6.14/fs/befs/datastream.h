@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * datastream.h
- *
- */
+
+
 
 struct buffer_head *befs_read_datastream(struct super_block *sb,
 					 const befs_data_stream *ds,

@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- */
+
+
 
 #ifndef __MFD_MT6357_REGISTERS_H__
 #define __MFD_MT6357_REGISTERS_H__
 
-/* PMIC Registers */
+
 #define MT6357_TOP0_ID                       0x0
 #define MT6357_TOP0_REV0                     0x2
 #define MT6357_TOP0_DSN_DBI                  0x4
@@ -1571,4 +1569,4 @@
 #define MT6357_ACCDET_CON27                  0x233e
 #define MT6357_ACCDET_CON28                  0x2340
 
-#endif /* __MFD_MT6357_REGISTERS_H__ */
+#endif 

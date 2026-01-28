@@ -1,75 +1,9 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 Glenn Ruben Bakke
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+
 
 #ifndef UBLUEPY_H__
 #define UBLUEPY_H__
 
-/* Examples:
 
-Advertisement:
-
-from ubluepy import Peripheral
-p = Peripheral()
-p.advertise(device_name="MicroPython")
-
-DB setup:
-
-from ubluepy import Service, Characteristic, UUID, Peripheral, constants
-from board import LED
-
-def event_handler(id, handle, data):
-    print("BLE event:", id, "handle:", handle)
-    print(data)
-
-    if id == constants.EVT_GAP_CONNECTED:
-        # connected
-        LED(2).on()
-    elif id == constants.EVT_GAP_DISCONNECTED:
-        # disconnect
-        LED(2).off()
-    elif id == 80:
-        print("id 80, data:", data)
-
-# u0 = UUID("0x180D") # HRM service
-# u1 = UUID("0x2A37") # HRM measurement
-
-u0 = UUID("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-u1 = UUID("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-u2 = UUID("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
-s = Service(u0)
-c0 = Characteristic(u1, props = Characteristic.PROP_WRITE | Characteristic.PROP_WRITE_WO_RESP)
-c1 = Characteristic(u2, props = Characteristic.PROP_NOTIFY, attrs = Characteristic.ATTR_CCCD)
-s.addCharacteristic(c0)
-s.addCharacteristic(c1)
-p = Peripheral()
-p.addService(s)
-p.setConnectionHandler(event_handler)
-p.advertise(device_name="micr", services=[s])
-
-*/
 
 #include "py/obj.h"
 
@@ -197,4 +131,4 @@ typedef enum _ubluepy_attr_t {
     UBLUEPY_ATTR_SCCD           = 0x02,
 } ubluepy_attr_t;
 
-#endif // UBLUEPY_H__
+#endif 

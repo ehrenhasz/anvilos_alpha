@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2022 Lorenzo Bianconi <lorenzo@kernel.org>  */
+
+
 
 #ifndef __MTK_WED_WO_H
 #define __MTK_WED_WO_H
@@ -10,19 +10,19 @@
 struct mtk_wed_hw;
 
 struct mtk_wed_mcu_hdr {
-	/* DW0 */
+	
 	u8 version;
 	u8 cmd;
 	__le16 length;
 
-	/* DW1 */
+	
 	__le16 seq;
 	__le16 flag;
 
-	/* DW2 */
+	
 	__le32 status;
 
-	/* DW3 */
+	
 	u8 rsv[20];
 };
 
@@ -40,8 +40,8 @@ enum mtk_wed_wo_event {
 };
 
 #define MTK_WED_MODULE_ID_WO		1
-#define MTK_FW_DL_TIMEOUT		4000000 /* us */
-#define MTK_WOCPU_TIMEOUT		2000000 /* us */
+#define MTK_FW_DL_TIMEOUT		4000000 
+#define MTK_WOCPU_TIMEOUT		2000000 
 
 enum {
 	MTK_WED_WARP_CMD_FLAG_RSP		= BIT(0),
@@ -279,4 +279,4 @@ void mtk_wed_wo_deinit(struct mtk_wed_hw *hw);
 int mtk_wed_wo_queue_tx_skb(struct mtk_wed_wo *dev, struct mtk_wed_wo_queue *q,
 			    struct sk_buff *skb);
 
-#endif /* __MTK_WED_WO_H */
+#endif 

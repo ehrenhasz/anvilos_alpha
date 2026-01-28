@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright 2015-2020 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+
 #ifndef _ENA_REGS_H_
 #define _ENA_REGS_H_
 
@@ -23,9 +21,9 @@ enum ena_regs_reset_reason_types {
 	ENA_REGS_RESET_MISS_INTERRUPT               = 14,
 };
 
-/* ena_registers offsets */
 
-/* 0 base */
+
+
 #define ENA_REGS_VERSION_OFF                                0x0
 #define ENA_REGS_CONTROLLER_VERSION_OFF                     0x4
 #define ENA_REGS_CAPS_OFF                                   0x8
@@ -51,12 +49,12 @@ enum ena_regs_reset_reason_types {
 #define ENA_REGS_MMIO_RESP_HI_OFF                           0x64
 #define ENA_REGS_RSS_IND_ENTRY_UPDATE_OFF                   0x68
 
-/* version register */
+
 #define ENA_REGS_VERSION_MINOR_VERSION_MASK                 0xff
 #define ENA_REGS_VERSION_MAJOR_VERSION_SHIFT                8
 #define ENA_REGS_VERSION_MAJOR_VERSION_MASK                 0xff00
 
-/* controller_version register */
+
 #define ENA_REGS_CONTROLLER_VERSION_SUBMINOR_VERSION_MASK   0xff
 #define ENA_REGS_CONTROLLER_VERSION_MINOR_VERSION_SHIFT     8
 #define ENA_REGS_CONTROLLER_VERSION_MINOR_VERSION_MASK      0xff00
@@ -65,7 +63,7 @@ enum ena_regs_reset_reason_types {
 #define ENA_REGS_CONTROLLER_VERSION_IMPL_ID_SHIFT           24
 #define ENA_REGS_CONTROLLER_VERSION_IMPL_ID_MASK            0xff000000
 
-/* caps register */
+
 #define ENA_REGS_CAPS_CONTIGUOUS_QUEUE_REQUIRED_MASK        0x1
 #define ENA_REGS_CAPS_RESET_TIMEOUT_SHIFT                   1
 #define ENA_REGS_CAPS_RESET_TIMEOUT_MASK                    0x3e
@@ -74,22 +72,22 @@ enum ena_regs_reset_reason_types {
 #define ENA_REGS_CAPS_ADMIN_CMD_TO_SHIFT                    16
 #define ENA_REGS_CAPS_ADMIN_CMD_TO_MASK                     0xf0000
 
-/* aq_caps register */
+
 #define ENA_REGS_AQ_CAPS_AQ_DEPTH_MASK                      0xffff
 #define ENA_REGS_AQ_CAPS_AQ_ENTRY_SIZE_SHIFT                16
 #define ENA_REGS_AQ_CAPS_AQ_ENTRY_SIZE_MASK                 0xffff0000
 
-/* acq_caps register */
+
 #define ENA_REGS_ACQ_CAPS_ACQ_DEPTH_MASK                    0xffff
 #define ENA_REGS_ACQ_CAPS_ACQ_ENTRY_SIZE_SHIFT              16
 #define ENA_REGS_ACQ_CAPS_ACQ_ENTRY_SIZE_MASK               0xffff0000
 
-/* aenq_caps register */
+
 #define ENA_REGS_AENQ_CAPS_AENQ_DEPTH_MASK                  0xffff
 #define ENA_REGS_AENQ_CAPS_AENQ_ENTRY_SIZE_SHIFT            16
 #define ENA_REGS_AENQ_CAPS_AENQ_ENTRY_SIZE_MASK             0xffff0000
 
-/* dev_ctl register */
+
 #define ENA_REGS_DEV_CTL_DEV_RESET_MASK                     0x1
 #define ENA_REGS_DEV_CTL_AQ_RESTART_SHIFT                   1
 #define ENA_REGS_DEV_CTL_AQ_RESTART_MASK                    0x2
@@ -100,7 +98,7 @@ enum ena_regs_reset_reason_types {
 #define ENA_REGS_DEV_CTL_RESET_REASON_SHIFT                 28
 #define ENA_REGS_DEV_CTL_RESET_REASON_MASK                  0xf0000000
 
-/* dev_sts register */
+
 #define ENA_REGS_DEV_STS_READY_MASK                         0x1
 #define ENA_REGS_DEV_STS_AQ_RESTART_IN_PROGRESS_SHIFT       1
 #define ENA_REGS_DEV_STS_AQ_RESTART_IN_PROGRESS_MASK        0x2
@@ -117,14 +115,14 @@ enum ena_regs_reset_reason_types {
 #define ENA_REGS_DEV_STS_QUIESCENT_STATE_ACHIEVED_SHIFT     7
 #define ENA_REGS_DEV_STS_QUIESCENT_STATE_ACHIEVED_MASK      0x80
 
-/* mmio_reg_read register */
+
 #define ENA_REGS_MMIO_REG_READ_REQ_ID_MASK                  0xffff
 #define ENA_REGS_MMIO_REG_READ_REG_OFF_SHIFT                16
 #define ENA_REGS_MMIO_REG_READ_REG_OFF_MASK                 0xffff0000
 
-/* rss_ind_entry_update register */
+
 #define ENA_REGS_RSS_IND_ENTRY_UPDATE_INDEX_MASK            0xffff
 #define ENA_REGS_RSS_IND_ENTRY_UPDATE_CQ_IDX_SHIFT          16
 #define ENA_REGS_RSS_IND_ENTRY_UPDATE_CQ_IDX_MASK           0xffff0000
 
-#endif /* _ENA_REGS_H_ */
+#endif 

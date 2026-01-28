@@ -1,42 +1,11 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2013 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+
 
 #ifndef __CSIO_HW_CHIP_H__
 #define __CSIO_HW_CHIP_H__
 
 #include "csio_defs.h"
 
-/* Define MACRO values */
+
 #define CSIO_HW_T5				0x5000
 #define CSIO_T5_FCOE_ASIC			0x5600
 #define CSIO_HW_T6				0x6000
@@ -78,7 +47,7 @@ static inline int csio_is_t6(uint16_t chip)
 	return (chip == CSIO_HW_T6);
 }
 
-/* Define MACRO DEFINITIONS */
+
 #define CSIO_DEVICE(devid, idx)						\
 	{ PCI_VENDOR_ID_CHELSIO, (devid), PCI_ANY_ID, PCI_ANY_ID, 0, 0, (idx) }
 
@@ -99,7 +68,7 @@ struct fw_info {
 	struct fw_hdr fw_hdr;
 };
 
-/* Declare ENUMS */
+
 enum { MEM_EDC0, MEM_EDC1, MEM_MC, MEM_MC0 = MEM_MC, MEM_MC1 };
 
 enum {
@@ -107,15 +76,15 @@ enum {
 	MEMWIN_BASE     = 0x1b800,
 };
 
-/* Slow path handlers */
+
 struct intr_info {
-	unsigned int mask;       /* bits to check in interrupt status */
-	const char *msg;         /* message to print or NULL */
-	short stat_idx;          /* stat counter to increment or -1 */
-	unsigned short fatal;    /* whether the condition reported is fatal */
+	unsigned int mask;       
+	const char *msg;         
+	short stat_idx;          
+	unsigned short fatal;    
 };
 
-/* T4/T5 Chip specific ops */
+
 struct csio_hw;
 struct csio_hw_chip_ops {
 	int (*chip_set_mem_win)(struct csio_hw *, uint32_t);
@@ -132,4 +101,4 @@ struct csio_hw_chip_ops {
 
 extern struct csio_hw_chip_ops t5_ops;
 
-#endif /* #ifndef __CSIO_HW_CHIP_H__ */
+#endif 

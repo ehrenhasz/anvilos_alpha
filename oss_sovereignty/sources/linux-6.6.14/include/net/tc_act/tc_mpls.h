@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+
 
 #ifndef __NET_TC_MPLS_H
 #define __NET_TC_MPLS_H
@@ -102,4 +102,4 @@ static inline u8 tcf_mpls_ttl(const struct tc_action *a)
 	return tcfm_ttl;
 }
 
-#endif /* __NET_TC_MPLS_H */
+#endif 

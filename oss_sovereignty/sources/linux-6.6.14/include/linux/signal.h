@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_SIGNAL_H
 #define _LINUX_SIGNAL_H
 
@@ -8,7 +8,7 @@
 
 struct task_struct;
 
-/* for sysctl */
+
 extern int print_fatal_signals;
 
 static inline void copy_siginfo(kernel_siginfo_t *to,
@@ -52,15 +52,12 @@ enum siginfo_layout {
 
 enum siginfo_layout siginfo_layout(unsigned sig, int si_code);
 
-/*
- * Define some primitives to manipulate sigset_t.
- */
+
 
 #ifndef __HAVE_ARCH_SIG_BITOPS
 #include <linux/bitops.h>
 
-/* We don't use <linux/bitops.h> for these because there is no need to
-   be atomic.  */
+
 static inline void sigaddset(sigset_t *set, int _sig)
 {
 	unsigned long sig = _sig - 1;
@@ -88,7 +85,7 @@ static inline int sigismember(sigset_t *set, int _sig)
 		return 1 & (set->sig[sig / _NSIG_BPW] >> (sig % _NSIG_BPW));
 }
 
-#endif /* __HAVE_ARCH_SIG_BITOPS */
+#endif 
 
 static inline int sigisemptyset(sigset_t *set)
 {
@@ -214,7 +211,7 @@ static inline void sigfillset(sigset_t *set)
 	}
 }
 
-/* Some extensions for manipulating the low 32 signals in particular.  */
+
 
 static inline void sigaddsetmask(sigset_t *set, unsigned long mask)
 {
@@ -257,7 +254,7 @@ static inline void siginitsetinv(sigset_t *set, unsigned long mask)
 	}
 }
 
-#endif /* __HAVE_ARCH_SIG_SETOPS */
+#endif 
 
 static inline void init_sigpending(struct sigpending *sig)
 {
@@ -267,7 +264,7 @@ static inline void init_sigpending(struct sigpending *sig)
 
 extern void flush_sigqueue(struct sigpending *queue);
 
-/* Test if 'sig' is valid signal. Use this instead of testing _NSIG directly */
+
 static inline int valid_signal(unsigned long sig)
 {
 	return sig <= _NSIG ? 1 : 0;
@@ -299,21 +296,13 @@ extern void kernel_sigaction(int, __sighandler_t);
 
 static inline void allow_signal(int sig)
 {
-	/*
-	 * Kernel threads handle their own signals. Let the signal code
-	 * know it'll be handled, so that they don't get converted to
-	 * SIGKILL or just silently dropped.
-	 */
+	
 	kernel_sigaction(sig, SIG_KTHREAD);
 }
 
 static inline void allow_kernel_signal(int sig)
 {
-	/*
-	 * Kernel threads handle their own signals. Let the signal code
-	 * know signals sent by the kernel will be handled, so that they
-	 * don't get silently dropped.
-	 */
+	
 	kernel_sigaction(sig, SIG_KTHREAD_KERNEL);
 }
 
@@ -326,79 +315,7 @@ extern struct kmem_cache *sighand_cachep;
 
 extern bool unhandled_signal(struct task_struct *tsk, int sig);
 
-/*
- * In POSIX a signal is sent either to a specific thread (Linux task)
- * or to the process as a whole (Linux thread group).  How the signal
- * is sent determines whether it's to one thread or the whole group,
- * which determines which signal mask(s) are involved in blocking it
- * from being delivered until later.  When the signal is delivered,
- * either it's caught or ignored by a user handler or it has a default
- * effect that applies to the whole thread group (POSIX process).
- *
- * The possible effects an unblocked signal set to SIG_DFL can have are:
- *   ignore	- Nothing Happens
- *   terminate	- kill the process, i.e. all threads in the group,
- * 		  similar to exit_group.  The group leader (only) reports
- *		  WIFSIGNALED status to its parent.
- *   coredump	- write a core dump file describing all threads using
- *		  the same mm and then kill all those threads
- *   stop 	- stop all the threads in the group, i.e. TASK_STOPPED state
- *
- * SIGKILL and SIGSTOP cannot be caught, blocked, or ignored.
- * Other signals when not blocked and set to SIG_DFL behaves as follows.
- * The job control signals also have other special effects.
- *
- *	+--------------------+------------------+
- *	|  POSIX signal      |  default action  |
- *	+--------------------+------------------+
- *	|  SIGHUP            |  terminate	|
- *	|  SIGINT            |	terminate	|
- *	|  SIGQUIT           |	coredump 	|
- *	|  SIGILL            |	coredump 	|
- *	|  SIGTRAP           |	coredump 	|
- *	|  SIGABRT/SIGIOT    |	coredump 	|
- *	|  SIGBUS            |	coredump 	|
- *	|  SIGFPE            |	coredump 	|
- *	|  SIGKILL           |	terminate(+)	|
- *	|  SIGUSR1           |	terminate	|
- *	|  SIGSEGV           |	coredump 	|
- *	|  SIGUSR2           |	terminate	|
- *	|  SIGPIPE           |	terminate	|
- *	|  SIGALRM           |	terminate	|
- *	|  SIGTERM           |	terminate	|
- *	|  SIGCHLD           |	ignore   	|
- *	|  SIGCONT           |	ignore(*)	|
- *	|  SIGSTOP           |	stop(*)(+)  	|
- *	|  SIGTSTP           |	stop(*)  	|
- *	|  SIGTTIN           |	stop(*)  	|
- *	|  SIGTTOU           |	stop(*)  	|
- *	|  SIGURG            |	ignore   	|
- *	|  SIGXCPU           |	coredump 	|
- *	|  SIGXFSZ           |	coredump 	|
- *	|  SIGVTALRM         |	terminate	|
- *	|  SIGPROF           |	terminate	|
- *	|  SIGPOLL/SIGIO     |	terminate	|
- *	|  SIGSYS/SIGUNUSED  |	coredump 	|
- *	|  SIGSTKFLT         |	terminate	|
- *	|  SIGWINCH          |	ignore   	|
- *	|  SIGPWR            |	terminate	|
- *	|  SIGRTMIN-SIGRTMAX |	terminate       |
- *	+--------------------+------------------+
- *	|  non-POSIX signal  |  default action  |
- *	+--------------------+------------------+
- *	|  SIGEMT            |  coredump	|
- *	+--------------------+------------------+
- *
- * (+) For SIGKILL and SIGSTOP the action is "always", not just "default".
- * (*) Special job control effects:
- * When SIGCONT is sent, it resumes the process (all threads in the group)
- * from TASK_STOPPED state and also clears any pending/queued stop signals
- * (any of those marked with "stop(*)").  This happens regardless of blocking,
- * catching, or ignoring SIGCONT.  When any stop signal is sent, it clears
- * any pending/queued SIGCONT signals; this happens regardless of blocking,
- * catching, or ignored the stop signal, though (except for SIGSTOP) the
- * default action of stopping the process may happen later or never.
- */
+
 
 #ifdef SIGEMT
 #define SIGEMT_MASK	rt_sigmask(SIGEMT)
@@ -468,7 +385,7 @@ int __save_altstack(stack_t __user *, unsigned long);
 bool sigaltstack_size_valid(size_t ss_size);
 #else
 static inline bool sigaltstack_size_valid(size_t size) { return true; }
-#endif /* !CONFIG_DYNAMIC_SIGFRAME */
+#endif 
 
 #ifdef CONFIG_PROC_FS
 struct seq_file;
@@ -476,11 +393,7 @@ extern void render_sigset_t(struct seq_file *, const char *, sigset_t *);
 #endif
 
 #ifndef arch_untagged_si_addr
-/*
- * Given a fault address and a signal and si_code which correspond to the
- * _sigfault union member, returns the address that must appear in si_addr if
- * the signal handler does not have SA_EXPOSE_TAGBITS enabled in sa_flags.
- */
+
 static inline void __user *arch_untagged_si_addr(void __user *addr,
 						 unsigned long sig,
 						 unsigned long si_code)
@@ -489,4 +402,4 @@ static inline void __user *arch_untagged_si_addr(void __user *addr,
 }
 #endif
 
-#endif /* _LINUX_SIGNAL_H */
+#endif 

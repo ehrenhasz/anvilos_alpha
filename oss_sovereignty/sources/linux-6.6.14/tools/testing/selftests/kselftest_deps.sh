@@ -35,7 +35,7 @@ while getopts "p" arg; do
 	shift;;
 	esac
 done
-if [ $# -eq 0 ]
+if [ $
 then
 	usage
 fi
@@ -60,7 +60,7 @@ pass_libs=()
 pass_cnt=0
 targets=$(grep -E "^TARGETS +|^TARGETS =" Makefile | cut -d "=" -f2)
 filter="\$(VAR_LDLIBS)\|pkg-config\|PKG_CONFIG\|IOURING_EXTRA_LIBS"
-if [ $# -eq 2 ]
+if [ $
 then
 	test=$2/Makefile
 	l1_test $test

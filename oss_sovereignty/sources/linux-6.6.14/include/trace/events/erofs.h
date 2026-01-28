@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM erofs
 
@@ -255,7 +255,7 @@ TRACE_EVENT(erofs_destroy_inode,
 	TP_printk("dev = (%d,%d), nid = %llu", show_dev_nid(__entry))
 );
 
-#endif /* _TRACE_EROFS_H */
+#endif 
 
- /* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

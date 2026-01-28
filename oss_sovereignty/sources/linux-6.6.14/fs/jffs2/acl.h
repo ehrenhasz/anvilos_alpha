@@ -1,13 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2006  NEC Corporation
- *
- * Created by KaiGai Kohei <kaigai@ak.jp.nec.com>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+
 
 struct jffs2_acl_entry {
 	jint16_t	e_tag;
@@ -40,4 +31,4 @@ extern int jffs2_init_acl_post(struct inode *);
 #define jffs2_init_acl_pre(dir_i,inode,mode)	(0)
 #define jffs2_init_acl_post(inode)		(0)
 
-#endif	/* CONFIG_JFFS2_FS_POSIX_ACL */
+#endif	

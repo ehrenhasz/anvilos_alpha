@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef LINUX_HARDIRQ_H
 #define LINUX_HARDIRQ_H
 
@@ -25,12 +25,7 @@ static __always_inline void rcu_irq_enter_check_tick(void)
 		__rcu_irq_enter_check_tick();
 }
 
-/*
- * It is safe to do non-atomic ops on ->hardirq_context,
- * because NMI handlers may not preempt and the ops are
- * always balanced, so the interrupted value of ->hardirq_context
- * will always be restored.
- */
+
 #define __irq_enter()					\
 	do {						\
 		preempt_count_add(HARDIRQ_OFFSET);	\
@@ -38,29 +33,19 @@ static __always_inline void rcu_irq_enter_check_tick(void)
 		account_hardirq_enter(current);		\
 	} while (0)
 
-/*
- * Like __irq_enter() without time accounting for fast
- * interrupts, e.g. reschedule IPI where time accounting
- * is more expensive than the actual interrupt.
- */
+
 #define __irq_enter_raw()				\
 	do {						\
 		preempt_count_add(HARDIRQ_OFFSET);	\
 		lockdep_hardirq_enter();		\
 	} while (0)
 
-/*
- * Enter irq context (on NO_HZ, update jiffies):
- */
+
 void irq_enter(void);
-/*
- * Like irq_enter(), but RCU is already watching.
- */
+
 void irq_enter_rcu(void);
 
-/*
- * Exit irq context without processing softirqs:
- */
+
 #define __irq_exit()					\
 	do {						\
 		account_hardirq_exit(current);		\
@@ -68,23 +53,17 @@ void irq_enter_rcu(void);
 		preempt_count_sub(HARDIRQ_OFFSET);	\
 	} while (0)
 
-/*
- * Like __irq_exit() without time accounting
- */
+
 #define __irq_exit_raw()				\
 	do {						\
 		lockdep_hardirq_exit();			\
 		preempt_count_sub(HARDIRQ_OFFSET);	\
 	} while (0)
 
-/*
- * Exit irq context and process softirqs if needed:
- */
+
 void irq_exit(void);
 
-/*
- * Like irq_exit(), but return with RCU watching.
- */
+
 void irq_exit_rcu(void);
 
 #ifndef arch_nmi_enter
@@ -92,18 +71,9 @@ void irq_exit_rcu(void);
 #define arch_nmi_exit()		do { } while (0)
 #endif
 
-/*
- * NMI vs Tracing
- * --------------
- *
- * We must not land in a tracer until (or after) we've changed preempt_count
- * such that in_nmi() becomes true. To that effect all NMI C entry points must
- * be marked 'notrace' and call nmi_enter() as soon as possible.
- */
 
-/*
- * nmi_enter() can nest up to 15 times; see NMI_BITS.
- */
+
+
 #define __nmi_enter()						\
 	do {							\
 		lockdep_off();					\
@@ -140,4 +110,4 @@ void irq_exit_rcu(void);
 		__nmi_exit();					\
 	} while (0)
 
-#endif /* LINUX_HARDIRQ_H */
+#endif 

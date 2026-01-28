@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip KSZ8XXX series register access
- *
- * Copyright (C) 2020 Pengutronix, Michael Grzeschik <kernel@pengutronix.de>
- */
+
+
 
 #ifndef __KSZ8XXX_H
 #define __KSZ8XXX_H

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for the Qualcomm PMIC GPIO binding.
- */
+
+
 
 #ifndef _DT_BINDINGS_PINCTRL_QCOM_PMIC_GPIO_H
 #define _DT_BINDINGS_PINCTRL_QCOM_PMIC_GPIO_H
@@ -16,10 +14,7 @@
 #define PMIC_GPIO_STRENGTH_MED		2
 #define PMIC_GPIO_STRENGTH_LOW		3
 
-/*
- * Note: PM8018 GPIO3 and GPIO4 are supporting
- * only S3 and L2 options (1.8V)
- */
+
 #define PM8018_GPIO_L6			0
 #define PM8018_GPIO_L5			1
 #define PM8018_GPIO_S3			2
@@ -28,10 +23,7 @@
 #define PM8018_GPIO_L4			5
 #define PM8018_GPIO_VDD			6
 
-/*
- * Note: PM8038 GPIO7 and GPIO8 are supporting
- * only L11 and L4 options (1.8V)
- */
+
 #define PM8038_GPIO_VPH			0
 #define PM8038_GPIO_BB			1
 #define PM8038_GPIO_L11			2
@@ -49,10 +41,7 @@
 #define PM8058_GPIO_L5			6
 #define PM8058_GPIO_L2			7
 
-/*
- * Note: PM8916 GPIO1 and GPIO2 are supporting
- * only L2(1.15V) and L5(1.8V) options
- */
+
 #define PM8916_GPIO_VPH			0
 #define PM8916_GPIO_L2			2
 #define PM8916_GPIO_L5			3
@@ -72,19 +61,13 @@
 #define PM8921_GPIO_L3			5
 #define PM8921_GPIO_L17			6
 
-/*
- * Note: PM8941 gpios from 15 to 18 are supporting
- * only S3 and L6 options (1.8V)
- */
+
 #define PM8941_GPIO_VPH			0
 #define PM8941_GPIO_L1			1
 #define PM8941_GPIO_S3			2
 #define PM8941_GPIO_L6			3
 
-/*
- * Note: PMA8084 gpios from 15 to 18 are supporting
- * only S4 and L6 options (1.8V)
- */
+
 #define PMA8084_GPIO_VPH		0
 #define PMA8084_GPIO_L1			1
 #define PMA8084_GPIO_S4			2
@@ -94,7 +77,7 @@
 #define PM8994_GPIO_S4			2
 #define PM8994_GPIO_L12			3
 
-/* To be used with "function" */
+
 #define PMIC_GPIO_FUNC_NORMAL		"normal"
 #define PMIC_GPIO_FUNC_PAIRED		"paired"
 #define PMIC_GPIO_FUNC_FUNC1		"func1"

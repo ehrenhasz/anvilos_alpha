@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_PCS_PCIE_V4_H_
 #define QCOM_PHY_QMP_PCS_PCIE_V4_H_
 
-/* Only for QMP V4 PHY - PCS_PCIE registers (same as PCS_MISC?) */
+
 #define QPHY_V4_PCS_PCIE_INT_AUX_CLK_STATUS		0x00
 #define QPHY_V4_PCS_PCIE_OSC_DTCT_STATUS		0x04
 #define QPHY_V4_PCS_PCIE_POWER_STATE_CONFIG1		0x08

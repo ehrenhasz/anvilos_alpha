@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * NFS internal definitions
- */
+
+
 
 #include "nfs4_fs.h"
 #include <linux/fs_context.h>
@@ -52,15 +50,10 @@ static inline fmode_t flags_to_mode(int flags)
 	return res;
 }
 
-/*
- * Note: RFC 1813 doesn't limit the number of auth flavors that
- * a server can return, so make something up.
- */
+
 #define NFS_MAX_SECFLAVORS	(12)
 
-/*
- * Value used if the user did not specify a port value.
- */
+
 #define NFS_UNSPEC_PORT		(-1)
 
 #define NFS_UNSPEC_RETRANS	(UINT_MAX)
@@ -68,10 +61,10 @@ static inline fmode_t flags_to_mode(int flags)
 
 struct nfs_client_initdata {
 	unsigned long init_flags;
-	const char *hostname;			/* Hostname of the server */
-	const struct sockaddr_storage *addr;	/* Address of the server */
-	const char *nodename;			/* Hostname of the client */
-	const char *ip_addr;			/* IP address of the client */
+	const char *hostname;			
+	const struct sockaddr_storage *addr;	
+	const char *nodename;			
+	const char *ip_addr;			
 	size_t addrlen;
 	struct nfs_subversion *nfs_mod;
 	int proto;
@@ -86,15 +79,13 @@ struct nfs_client_initdata {
 	unsigned long reconnect_timeout;
 };
 
-/*
- * In-kernel mount arguments
- */
+
 struct nfs_fs_context {
 	bool			internal;
 	bool			skip_reconfig_option_check;
 	bool			need_mount;
 	bool			sloppy;
-	unsigned int		flags;		/* NFS{,4}_MOUNT_* flags */
+	unsigned int		flags;		
 	unsigned int		rsize, wsize;
 	unsigned int		timeo, retrans;
 	unsigned int		acregmin, acregmax;
@@ -144,7 +135,7 @@ struct nfs_fs_context {
 	struct nfs_server	*server;
 	struct nfs_subversion	*nfs_mod;
 
-	/* Information for a cloned mount. */
+	
 	struct nfs_clone_mount {
 		struct super_block	*sb;
 		struct dentry		*dentry;
@@ -182,7 +173,7 @@ static inline struct nfs_fs_context *nfs_fc2context(const struct fs_context *fc)
 	return fc->fs_private;
 }
 
-/* mount_clnt.c */
+
 struct nfs_mount_request {
 	struct sockaddr_storage	*sap;
 	size_t			salen;
@@ -200,7 +191,7 @@ struct nfs_mount_request {
 extern int nfs_mount(struct nfs_mount_request *info, int timeo, int retrans);
 extern void nfs_umount(const struct nfs_mount_request *info);
 
-/* client.c */
+
 extern const struct rpc_program nfs_program;
 extern void nfs_clients_init(struct net *net);
 extern void nfs_clients_exit(struct net *net);
@@ -272,14 +263,14 @@ static inline void nfs_fs_proc_exit(void)
 }
 #endif
 
-/* callback_xdr.c */
+
 extern const struct svc_version nfs4_callback_version1;
 extern const struct svc_version nfs4_callback_version4;
 
-/* fs_context.c */
+
 extern struct file_system_type nfs_fs_type;
 
-/* pagelist.c */
+
 extern int __init nfs_init_nfspagecache(void);
 extern void nfs_destroy_nfspagecache(void);
 extern int __init nfs_init_readpagecache(void);
@@ -312,17 +303,17 @@ static inline bool nfs_match_open_context(const struct nfs_open_context *ctx1,
 	return cred_fscmp(ctx1->cred, ctx2->cred) == 0 && ctx1->state == ctx2->state;
 }
 
-/* nfs2xdr.c */
+
 extern const struct rpc_procinfo nfs_procedures[];
 extern int nfs2_decode_dirent(struct xdr_stream *,
 				struct nfs_entry *, bool);
 
-/* nfs3xdr.c */
+
 extern const struct rpc_procinfo nfs3_procedures[];
 extern int nfs3_decode_dirent(struct xdr_stream *,
 				struct nfs_entry *, bool);
 
-/* nfs4xdr.c */
+
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern int nfs4_decode_dirent(struct xdr_stream *,
 				struct nfs_entry *, bool);
@@ -333,7 +324,7 @@ extern const u32 nfs41_maxwrite_overhead;
 extern const u32 nfs41_maxgetdevinfo_overhead;
 #endif
 
-/* nfs4proc.c */
+
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern const struct rpc_procinfo nfs4_procedures[];
 #endif
@@ -372,14 +363,14 @@ nfs4_label_copy(struct nfs4_label *dst, struct nfs4_label *src)
 {
 	return NULL;
 }
-#endif /* CONFIG_NFS_V4_SECURITY_LABEL */
+#endif 
 
-/* proc.c */
+
 void nfs_close_context(struct nfs_open_context *ctx, int is_sync);
 extern struct nfs_client *nfs_init_client(struct nfs_client *clp,
 			   const struct nfs_client_initdata *);
 
-/* dir.c */
+
 extern void nfs_readdir_record_entry_cache_hit(struct inode *dir);
 extern void nfs_readdir_record_entry_cache_miss(struct inode *dir);
 extern unsigned long nfs_access_cache_count(struct shrinker *shrink,
@@ -416,7 +407,7 @@ static inline __u32 nfs_access_xattr_mask(const struct nfs_server *server)
 }
 #endif
 
-/* file.c */
+
 int nfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync);
 loff_t nfs_file_llseek(struct file *, loff_t, int);
 ssize_t nfs_file_read(struct kiocb *, struct iov_iter *);
@@ -429,7 +420,7 @@ int nfs_lock(struct file *, int, struct file_lock *);
 int nfs_flock(struct file *, int, struct file_lock *);
 int nfs_check_flags(int);
 
-/* inode.c */
+
 extern struct workqueue_struct *nfsiod_workqueue;
 extern struct inode *nfs_alloc_inode(struct super_block *sb);
 extern void nfs_free_inode(struct inode *);
@@ -442,7 +433,7 @@ extern void nfs_set_cache_invalid(struct inode *inode, unsigned long flags);
 extern bool nfs_check_cache_invalid(struct inode *, unsigned long);
 extern int nfs_wait_bit_killable(struct wait_bit_key *key, int mode);
 
-/* super.c */
+
 extern const struct super_operations nfs_sops;
 bool nfs_auth_info_match(const struct nfs_auth_info *, rpc_authflavor_t);
 int nfs_try_get_tree(struct fs_context *);
@@ -462,7 +453,7 @@ extern int nfs_client_for_each_server(struct nfs_client *clp,
 extern const struct netfs_request_ops nfs_netfs_ops;
 #endif
 
-/* io.c */
+
 extern void nfs_start_io_read(struct inode *inode);
 extern void nfs_end_io_read(struct inode *inode);
 extern void nfs_start_io_write(struct inode *inode);
@@ -475,7 +466,7 @@ static inline bool nfs_file_io_is_buffered(struct nfs_inode *nfsi)
 	return test_bit(NFS_INO_ODIRECT, &nfsi->flags) == 0;
 }
 
-/* namespace.c */
+
 #define NFS_PATH_CANONICAL 1
 extern char *nfs_path(char **p, struct dentry *dentry,
 		      char *buffer, ssize_t buflen, unsigned flags);
@@ -483,14 +474,14 @@ extern struct vfsmount *nfs_d_automount(struct path *path);
 int nfs_submount(struct fs_context *, struct nfs_server *);
 int nfs_do_submount(struct fs_context *);
 
-/* getroot.c */
+
 extern int nfs_get_root(struct super_block *s, struct fs_context *fc);
 #if IS_ENABLED(CONFIG_NFS_V4)
 extern int nfs4_get_rootfh(struct nfs_server *server, struct nfs_fh *mntfh, bool);
 #endif
 
 struct nfs_pgio_completion_ops;
-/* read.c */
+
 extern const struct nfs_pgio_completion_ops nfs_async_read_completion_ops;
 extern void nfs_pageio_init_read(struct nfs_pageio_descriptor *pgio,
 			struct inode *inode, bool force_mds,
@@ -503,7 +494,7 @@ extern void nfs_pageio_complete_read(struct nfs_pageio_descriptor *pgio);
 extern void nfs_read_prepare(struct rpc_task *task, void *calldata);
 extern void nfs_pageio_reset_read_mds(struct nfs_pageio_descriptor *pgio);
 
-/* super.c */
+
 void nfs_umount_begin(struct super_block *);
 int  nfs_statfs(struct dentry *, struct kstatfs *);
 int  nfs_show_options(struct seq_file *, struct dentry *);
@@ -512,7 +503,7 @@ int  nfs_show_path(struct seq_file *, struct dentry *);
 int  nfs_show_stats(struct seq_file *, struct dentry *);
 int  nfs_reconfigure(struct fs_context *);
 
-/* write.c */
+
 extern void nfs_pageio_init_write(struct nfs_pageio_descriptor *pgio,
 			struct inode *inode, int ioflags, bool force_mds,
 			const struct nfs_pgio_completion_ops *compl_ops);
@@ -620,22 +611,17 @@ static inline gfp_t nfs_io_gfp_mask(void)
 	return GFP_KERNEL;
 }
 
-/*
- * Special version of should_remove_suid() that ignores capabilities.
- */
+
 static inline int nfs_should_remove_suid(const struct inode *inode)
 {
 	umode_t mode = inode->i_mode;
 	int kill = 0;
 
-	/* suid always must be killed */
+	
 	if (unlikely(mode & S_ISUID))
 		kill = ATTR_KILL_SUID;
 
-	/*
-	 * sgid without any exec bits is just a mandatory locking mark; leave
-	 * it alone.  If some exec bits are set, it's a real sgid; kill it.
-	 */
+	
 	if (unlikely((mode & S_ISGID) && (mode & S_IXGRP)))
 		kill |= ATTR_KILL_SGID;
 
@@ -645,19 +631,19 @@ static inline int nfs_should_remove_suid(const struct inode *inode)
 	return 0;
 }
 
-/* unlink.c */
+
 extern struct rpc_task *
 nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
 		 struct dentry *old_dentry, struct dentry *new_dentry,
 		 void (*complete)(struct rpc_task *, struct nfs_renamedata *));
 extern int nfs_sillyrename(struct inode *dir, struct dentry *dentry);
 
-/* direct.c */
+
 void nfs_init_cinfo_from_dreq(struct nfs_commit_info *cinfo,
 			      struct nfs_direct_req *dreq);
 extern ssize_t nfs_dreq_bytes_left(struct nfs_direct_req *dreq, loff_t offset);
 
-/* nfs4proc.c */
+
 extern struct nfs_client *nfs4_init_client(struct nfs_client *clp,
 			    const struct nfs_client_initdata *);
 extern int nfs40_walk_client_list(struct nfs_client *clp,
@@ -692,9 +678,7 @@ static inline void nfs_iput_and_deactive(struct inode *inode)
 	}
 }
 
-/*
- * Determine the device name as a string
- */
+
 static inline char *nfs_devname(struct dentry *dentry,
 				char *buffer, ssize_t buflen)
 {
@@ -702,13 +686,11 @@ static inline char *nfs_devname(struct dentry *dentry,
 	return nfs_path(&dummy, dentry, buffer, buflen, NFS_PATH_CANONICAL);
 }
 
-/*
- * Determine the actual block size (and log2 thereof)
- */
+
 static inline
 unsigned long nfs_block_bits(unsigned long bsize, unsigned char *nrbitsp)
 {
-	/* make sure blocksize is a power of two */
+	
 	if ((bsize & (bsize - 1)) || nrbitsp) {
 		unsigned char	nrbits;
 
@@ -722,18 +704,14 @@ unsigned long nfs_block_bits(unsigned long bsize, unsigned char *nrbitsp)
 	return bsize;
 }
 
-/*
- * Calculate the number of 512byte blocks used.
- */
+
 static inline blkcnt_t nfs_calc_block_size(u64 tsize)
 {
 	blkcnt_t used = (tsize + 511) >> 9;
 	return (used > ULONG_MAX) ? ULONG_MAX : used;
 }
 
-/*
- * Compute and set NFS server blocksize
- */
+
 static inline
 unsigned long nfs_block_size(unsigned long bsize, unsigned char *nrbitsp)
 {
@@ -745,9 +723,7 @@ unsigned long nfs_block_size(unsigned long bsize, unsigned char *nrbitsp)
 	return nfs_block_bits(bsize, nrbitsp);
 }
 
-/*
- * Compute and set NFS server rsize / wsize
- */
+
 static inline
 unsigned long nfs_io_size(unsigned long iosize, enum xprt_transports proto)
 {
@@ -761,9 +737,7 @@ unsigned long nfs_io_size(unsigned long iosize, enum xprt_transports proto)
 	return iosize & PAGE_MASK;
 }
 
-/*
- * Determine the maximum file size for a superblock
- */
+
 static inline
 void nfs_super_set_maxbytes(struct super_block *sb, __u64 maxfilesize)
 {
@@ -772,10 +746,7 @@ void nfs_super_set_maxbytes(struct super_block *sb, __u64 maxfilesize)
 		sb->s_maxbytes = MAX_LFS_FILESIZE;
 }
 
-/*
- * Record the page as unstable (an extra writeback period) and mark its
- * inode as dirty.
- */
+
 static inline void nfs_folio_mark_unstable(struct folio *folio,
 					   struct nfs_commit_info *cinfo)
 {
@@ -783,18 +754,14 @@ static inline void nfs_folio_mark_unstable(struct folio *folio,
 		struct inode *inode = folio_file_mapping(folio)->host;
 		long nr = folio_nr_pages(folio);
 
-		/* This page is really still in write-back - just that the
-		 * writeback is happening on the server now.
-		 */
+		
 		node_stat_mod_folio(folio, NR_WRITEBACK, nr);
 		wb_stat_mod(&inode_to_bdi(inode)->wb, WB_WRITEBACK, nr);
 		__mark_inode_dirty(inode, I_DIRTY_DATASYNC);
 	}
 }
 
-/*
- * Determine the number of bytes of data the page contains
- */
+
 static inline
 unsigned int nfs_page_length(struct page *page)
 {
@@ -811,9 +778,7 @@ unsigned int nfs_page_length(struct page *page)
 	return 0;
 }
 
-/*
- * Determine the number of bytes of data the page contains
- */
+
 static inline size_t nfs_folio_length(struct folio *folio)
 {
 	loff_t i_size = i_size_read(folio_file_mapping(folio)->host);
@@ -829,32 +794,21 @@ static inline size_t nfs_folio_length(struct folio *folio)
 	return 0;
 }
 
-/*
- * Convert a umode to a dirent->d_type
- */
+
 static inline
 unsigned char nfs_umode_to_dtype(umode_t mode)
 {
 	return (mode >> 12) & 15;
 }
 
-/*
- * Determine the number of pages in an array of length 'len' and
- * with a base offset of 'base'
- */
+
 static inline unsigned int nfs_page_array_len(unsigned int base, size_t len)
 {
 	return ((unsigned long)len + (unsigned long)base + PAGE_SIZE - 1) >>
 	       PAGE_SHIFT;
 }
 
-/*
- * Convert a struct timespec64 into a 64-bit change attribute
- *
- * This does approximately the same thing as timespec64_to_ns(),
- * but for calculation efficiency, we multiply the seconds by
- * 1024*1024*1024.
- */
+
 static inline
 u64 nfs_timespec_to_change_attr(const struct timespec64 *ts)
 {
@@ -907,10 +861,7 @@ static inline bool nfs_error_is_fatal_on_server(int err)
 	return nfs_error_is_fatal(err);
 }
 
-/*
- * Select between a default port value and a user-specified port value.
- * If a zero value is set, then autobind will be used.
- */
+
 static inline void nfs_set_port(struct sockaddr_storage *sap, int *port,
 				const unsigned short default_port)
 {
@@ -921,34 +872,34 @@ static inline void nfs_set_port(struct sockaddr_storage *sap, int *port,
 }
 
 struct nfs_direct_req {
-	struct kref		kref;		/* release manager */
+	struct kref		kref;		
 
-	/* I/O parameters */
-	struct nfs_open_context	*ctx;		/* file open context info */
-	struct nfs_lock_context *l_ctx;		/* Lock context info */
-	struct kiocb *		iocb;		/* controlling i/o request */
-	struct inode *		inode;		/* target file of i/o */
+	
+	struct nfs_open_context	*ctx;		
+	struct nfs_lock_context *l_ctx;		
+	struct kiocb *		iocb;		
+	struct inode *		inode;		
 
-	/* completion state */
-	atomic_t		io_count;	/* i/os we're waiting for */
-	spinlock_t		lock;		/* protect completion state */
+	
+	atomic_t		io_count;	
+	spinlock_t		lock;		
 
-	loff_t			io_start;	/* Start offset for I/O */
-	ssize_t			count,		/* bytes actually processed */
-				max_count,	/* max expected count */
-				bytes_left,	/* bytes left to be sent */
-				error;		/* any reported error */
-	struct completion	completion;	/* wait for i/o completion */
+	loff_t			io_start;	
+	ssize_t			count,		
+				max_count,	
+				bytes_left,	
+				error;		
+	struct completion	completion;	
 
-	/* commit state */
-	struct nfs_mds_commit_info mds_cinfo;	/* Storage for cinfo */
-	struct pnfs_ds_commit_info ds_cinfo;	/* Storage for cinfo */
+	
+	struct nfs_mds_commit_info mds_cinfo;	
+	struct pnfs_ds_commit_info ds_cinfo;	
 	struct work_struct	work;
 	int			flags;
-	/* for write */
-#define NFS_ODIRECT_DO_COMMIT		(1)	/* an unstable reply was received */
-#define NFS_ODIRECT_RESCHED_WRITES	(2)	/* write verification failed */
-	/* for read */
-#define NFS_ODIRECT_SHOULD_DIRTY	(3)	/* dirty user-space page after read */
-#define NFS_ODIRECT_DONE		INT_MAX	/* write verification failed */
+	
+#define NFS_ODIRECT_DO_COMMIT		(1)	
+#define NFS_ODIRECT_RESCHED_WRITES	(2)	
+	
+#define NFS_ODIRECT_SHOULD_DIRTY	(3)	
+#define NFS_ODIRECT_DONE		INT_MAX	
 };

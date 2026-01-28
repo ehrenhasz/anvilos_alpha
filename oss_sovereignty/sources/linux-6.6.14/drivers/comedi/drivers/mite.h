@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * module/mite.h
- * Hardware driver for NI Mite PCI interface chip
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999 David A. Schleef <ds@schleef.org>
- */
+
+
 
 #ifndef _MITE_H_
 #define _MITE_H_
@@ -47,7 +41,7 @@ struct mite {
 	struct mite_channel channels[MAX_MITE_DMA_CHANNELS];
 	int num_channels;
 	unsigned int fifo_size;
-	/* protects mite_channel from being released by the driver */
+	
 	spinlock_t lock;
 };
 
@@ -82,12 +76,10 @@ void mite_free_ring(struct mite_ring *ring);
 struct mite *mite_attach(struct comedi_device *dev, bool use_win1);
 void mite_detach(struct mite *mite);
 
-/*
- * Mite registers (used outside of the mite driver)
- */
-#define MITE_IODWBSR		0xc0	/* IO Device Window Base Size */
-#define MITE_IODWBSR_1		0xc4	/* IO Device Window1 Base Size */
-#define WENAB			BIT(7)	/* window enable */
+
+#define MITE_IODWBSR		0xc0	
+#define MITE_IODWBSR_1		0xc4	
+#define WENAB			BIT(7)	
 #define MITE_IODWCR_1		0xf4
 
 #endif

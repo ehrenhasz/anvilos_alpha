@@ -1,35 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*****************************************************************************
- *                                                                           *
- * File: regs.h                                                              *
- * $Revision: 1.8 $                                                          *
- * $Date: 2005/06/21 18:29:48 $                                              *
- * Description:                                                              *
- *  part of the Chelsio 10Gb Ethernet Driver.                                *
- *                                                                           *
- *                                                                           *
- * http://www.chelsio.com                                                    *
- *                                                                           *
- * Copyright (c) 2003 - 2005 Chelsio Communications, Inc.                    *
- * All rights reserved.                                                      *
- *                                                                           *
- * Maintainers: maintainers@chelsio.com                                      *
- *                                                                           *
- * Authors: Dimitrios Michailidis   <dm@chelsio.com>                         *
- *          Tina Yang               <tainay@chelsio.com>                     *
- *          Felix Marti             <felix@chelsio.com>                      *
- *          Scott Bardone           <sbardone@chelsio.com>                   *
- *          Kurt Ottaway            <kottaway@chelsio.com>                   *
- *          Frank DiMambro          <frank@chelsio.com>                      *
- *                                                                           *
- * History:                                                                  *
- *                                                                           *
- ****************************************************************************/
+
+
 
 #ifndef _CXGB_REGS_H_
 #define _CXGB_REGS_H_
 
-/* SGE registers */
+
 #define A_SG_CONTROL 0x0
 
 #define S_CMDQ0_ENABLE    0
@@ -241,7 +216,7 @@
 #define A_SG_INT_CAUSE 0xbc
 #define A_SG_RESPACCUTIMER 0xc0
 
-/* MC3 registers */
+
 #define A_MC3_CFG 0x100
 
 #define S_CLK_ENABLE    0
@@ -489,7 +464,7 @@
 
 #define A_MC3_INT_CAUSE 0x17c
 
-/* MC4 registers */
+
 #define A_MC4_CFG 0x180
 
 #define S_POWER_UP    0
@@ -597,7 +572,7 @@
 
 #define A_MC4_INT_CAUSE 0x1fc
 
-/* TPI registers */
+
 #define A_TPI_ADDR 0x280
 
 #define S_TPI_ADDRESS    0
@@ -629,7 +604,7 @@
 #define G_TPIPAR(x) (((x) >> S_TPIPAR) & M_TPIPAR)
 
 
-/* TP registers */
+
 #define A_TP_IN_CONFIG 0x300
 
 #define S_TP_IN_CSPI_TUNNEL    0
@@ -1250,7 +1225,7 @@
 
 #define A_TP_TX_DROP_COUNT 0x4bc
 
-/* RAT registers */
+
 #define A_RAT_ROUTE_CONTROL 0x580
 
 #define S_USE_ROUTE_TABLE    0
@@ -1300,7 +1275,7 @@
 
 #define A_RAT_INTR_CAUSE 0x594
 
-/* CSPI registers */
+
 #define A_CSPI_RX_AE_WM 0x810
 #define A_CSPI_RX_AF_WM 0x814
 #define A_CSPI_CALENDAR_LEN 0x818
@@ -1364,7 +1339,7 @@
 
 #define A_CSPI_INTR_ENABLE 0x84c
 
-/* ESPI registers */
+
 #define A_ESPI_SCH_TOKEN0 0x880
 
 #define S_SCHTOKEN0    0
@@ -1676,7 +1651,7 @@
 #define G_TRANSACTION_TIMER(x) (((x) >> S_TRANSACTION_TIMER) & M_TRANSACTION_TIMER)
 
 
-/* ULP registers */
+
 #define A_ULP_ULIMIT 0x980
 #define A_ULP_TAGMASK 0x984
 #define A_ULP_HREG_INDEX 0x988
@@ -1731,7 +1706,7 @@
 
 #define A_ULP_PIO_CTRL 0x998
 
-/* PL registers */
+
 #define A_PL_ENABLE 0xa00
 
 #define S_PL_INTR_SGE_ERR    0
@@ -1784,7 +1759,7 @@
 
 #define A_PL_CAUSE 0xa04
 
-/* MC5 registers */
+
 #define A_MC5_CONFIG 0xc04
 
 #define S_MODE    0
@@ -2071,7 +2046,7 @@
 #define A_MC5_DATA_READ_CMD 0xcf8
 #define A_MC5_MASK_WRITE_CMD 0xcfc
 
-/* PCICFG registers */
+
 #define A_PCICFG_PM_CSR 0x44
 #define A_PCICFG_VPD_ADDR 0x4a
 
@@ -2155,4 +2130,4 @@
 #define V_PCI_MODE_CLK(x) ((x) << S_PCI_MODE_CLK)
 #define G_PCI_MODE_CLK(x) (((x) >> S_PCI_MODE_CLK) & M_PCI_MODE_CLK)
 
-#endif /* _CXGB_REGS_H_ */
+#endif 

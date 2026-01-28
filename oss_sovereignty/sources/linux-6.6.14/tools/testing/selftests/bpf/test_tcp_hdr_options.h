@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2020 Facebook */
+
+
 
 #ifndef _TEST_TCP_HDR_OPTIONS_H
 #define _TEST_TCP_HDR_OPTIONS_H
@@ -25,12 +25,12 @@ enum {
 #define TEST_OPTION_FLAGS(flags, option) (1 & ((flags) >> (option)))
 #define SET_OPTION_FLAGS(flags, option)	((flags) |= (1 << (option)))
 
-/* Store in bpf_sk_storage */
+
 struct hdr_stg {
 	bool active;
-	bool resend_syn; /* active side only */
-	bool syncookie;  /* passive side only */
-	bool fastopen;	/* passive side only */
+	bool resend_syn; 
+	bool syncookie;  
+	bool fastopen;	
 };
 
 struct linum_err {
@@ -148,6 +148,6 @@ set_parse_all_hdr_cb_flags(struct bpf_sock_ops *skops)
 	return CG_ERR;							\
 })
 
-#endif /* BPF_PROG_TEST_TCP_HDR_OPTIONS */
+#endif 
 
-#endif /* _TEST_TCP_HDR_OPTIONS_H */
+#endif 

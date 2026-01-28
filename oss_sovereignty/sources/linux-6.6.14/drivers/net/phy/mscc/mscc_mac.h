@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Copyright (c) 2020 Microsemi Corporation
- */
+
+
 
 #ifndef _MSCC_PHY_LINE_MAC_H_
 #define _MSCC_PHY_LINE_MAC_H_
@@ -156,4 +152,4 @@
 #define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
 #define MSCC_PROC_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
 
-#endif /* _MSCC_PHY_LINE_MAC_H_ */
+#endif 

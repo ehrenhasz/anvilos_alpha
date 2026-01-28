@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * The canonical list of T10 Additional Sense Codes is available at:
- * http://www.t10.org/lists/asc-num.txt [most recent: 20200817]
- */
+
+
 
 SENSE_CODE(0x0000, "No additional sense information")
 SENSE_CODE(0x0001, "Filemark detected")
@@ -530,12 +527,7 @@ SENSE_CODE(0x3F18, "Bind completed")
 SENSE_CODE(0x3F19, "Bind redirected")
 SENSE_CODE(0x3F1A, "Subsidiary binding changed")
 
-/*
- *	SENSE_CODE(0x40NN, "Ram failure")
- *	SENSE_CODE(0x40NN, "Diagnostic failure on component nn")
- *	SENSE_CODE(0x41NN, "Data path failure")
- *	SENSE_CODE(0x42NN, "Power-on or self-test failure")
- */
+
 SENSE_CODE(0x4300, "Message error")
 
 SENSE_CODE(0x4400, "Internal target failure")
@@ -585,9 +577,7 @@ SENSE_CODE(0x4B14, "PCIe acs violation")
 SENSE_CODE(0x4B15, "PCIe tlp prefix blocked")
 
 SENSE_CODE(0x4C00, "Logical unit failed self-configuration")
-/*
- *	SENSE_CODE(0x4DNN, "Tagged overlapped commands (nn = queue tag)")
- */
+
 SENSE_CODE(0x4E00, "Overlapped commands attempted")
 
 SENSE_CODE(0x5000, "Write append error")
@@ -824,9 +814,7 @@ SENSE_CODE(0x6F08, "Insufficient permission")
 SENSE_CODE(0x6F09, "Invalid drive-host pairing server")
 SENSE_CODE(0x6F0A, "Drive-host pairing suspended")
 
-/*
- *	SENSE_CODE(0x70NN, "Decompression exception short algorithm id of nn")
- */
+
 SENSE_CODE(0x7100, "Decompression exception long algorithm id")
 
 SENSE_CODE(0x7200, "Session fixation error")

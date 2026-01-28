@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef ISCSI_TARGET_DATAIN_VALUES_H
 #define ISCSI_TARGET_DATAIN_VALUES_H
 
@@ -13,4 +13,4 @@ extern struct iscsi_datain_req *iscsit_get_datain_req(struct iscsit_cmd *);
 extern struct iscsi_datain_req *iscsit_get_datain_values(struct iscsit_cmd *,
 			struct iscsi_datain *);
 
-#endif   /*** ISCSI_TARGET_DATAIN_VALUES_H ***/
+#endif   

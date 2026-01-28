@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 
 #ifndef __SOC_MEDIATEK_MT8365_MMSYS_H
 #define __SOC_MEDIATEK_MT8365_MMSYS_H
@@ -79,4 +79,4 @@ static const struct mtk_mmsys_routes mt8365_mmsys_routing_table[] = {
 	},
 };
 
-#endif /* __SOC_MEDIATEK_MT8365_MMSYS_H */
+#endif 

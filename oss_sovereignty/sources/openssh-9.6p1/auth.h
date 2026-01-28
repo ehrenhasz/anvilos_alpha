@@ -1,29 +1,6 @@
-/* $OpenBSD: auth.h,v 1.106 2022/06/15 16:08:25 djm Exp $ */
 
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+
+
 
 #ifndef AUTH_H
 #define AUTH_H
@@ -54,23 +31,23 @@ typedef struct KbdintDevice KbdintDevice;
 
 struct Authctxt {
 	sig_atomic_t	 success;
-	int		 authenticated;	/* authenticated and alarms cancelled */
-	int		 postponed;	/* authentication needs another step */
-	int		 valid;		/* user exists and is allowed to login */
+	int		 authenticated;	
+	int		 postponed;	
+	int		 valid;		
 	int		 attempt;
 	int		 failures;
 	int		 server_caused_failure;
 	int		 force_pwchange;
-	char		*user;		/* username sent by the client */
+	char		*user;		
 	char		*service;
-	struct passwd	*pw;		/* set if 'valid' */
+	struct passwd	*pw;		
 	char		*style;
 
-	/* Method lists for multiple authentication */
-	char		**auth_methods;	/* modified from server config */
+	
+	char		**auth_methods;	
 	u_int		 num_auth_methods;
 
-	/* Authentication method-specific data */
+	
 	void		*methoddata;
 	void		*kbdintctxt;
 #ifdef BSD_AUTH
@@ -85,24 +62,19 @@ struct Authctxt {
 #endif
 	struct sshbuf	*loginmsg;
 
-	/* Authentication keys already used; these will be refused henceforth */
+	
 	struct sshkey	**prev_keys;
 	u_int		 nprev_keys;
 
-	/* Last used key and ancillary information from active auth method */
+	
 	struct sshkey	*auth_method_key;
 	char		*auth_method_info;
 
-	/* Information exposed to session */
-	struct sshbuf	*session_info;	/* Auth info for environment */
+	
+	struct sshbuf	*session_info;	
 };
 
-/*
- * Every authentication method has to handle authentication requests for
- * non-existing users, or for users that are not allowed to login. In this
- * case 'valid' is set to 0, but 'user' points to the username requested by
- * the client.
- */
+
 
 struct Authmethod {
 	char	*name;
@@ -111,13 +83,7 @@ struct Authmethod {
 	int	*enabled;
 };
 
-/*
- * Keyboard interactive device:
- * init_ctx	returns: non NULL upon success
- * query	returns: 0 - success, otherwise failure
- * respond	returns: 0 - success, 1 - need further interaction,
- *		otherwise - failure
- */
+
 struct KbdintDevice
 {
 	const char *name;
@@ -139,10 +105,7 @@ int	 user_key_allowed(struct ssh *ssh, struct passwd *, struct sshkey *,
     int, struct sshauthopt **);
 int	 auth2_key_already_used(Authctxt *, const struct sshkey *);
 
-/*
- * Handling auth method-specific information for logging and prevention
- * of key reuse during multiple authentication.
- */
+
 void	 auth2_authctxt_reset_info(Authctxt *);
 void	 auth2_record_key(Authctxt *, int, const struct sshkey *);
 void	 auth2_record_info(Authctxt *authctxt, const char *, ...)
@@ -155,7 +118,7 @@ int	auth_krb5(Authctxt *authctxt, krb5_data *auth, char **client, krb5_data *);
 int	auth_krb5_tgt(Authctxt *authctxt, krb5_data *tgt);
 int	auth_krb5_password(Authctxt *authctxt, const char *password);
 void	krb5_cleanup_proc(Authctxt *authctxt);
-#endif /* KRB5 */
+#endif 
 
 #if defined(USE_SHADOW) && defined(HAS_SHADOW_EXPIRE)
 #include <shadow.h>
@@ -201,7 +164,7 @@ HostStatus
 check_key_in_hostfiles(struct passwd *, struct sshkey *, const char *,
     const char *, const char *);
 
-/* hostkey handling */
+
 struct sshkey	*get_hostkey_by_index(int);
 struct sshkey	*get_hostkey_public_by_index(int, struct ssh *);
 struct sshkey	*get_hostkey_public_by_type(int, int, struct ssh *);
@@ -210,13 +173,13 @@ int	 get_hostkey_index(struct sshkey *, int, struct ssh *);
 int	 sshd_hostkey_sign(struct ssh *, struct sshkey *, struct sshkey *,
     u_char **, size_t *, const u_char *, size_t, const char *);
 
-/* Key / cert options linkage to auth layer */
+
 const struct sshauthopt *auth_options(struct ssh *);
 int	 auth_activate_options(struct ssh *, struct sshauthopt *);
 void	 auth_restrict_session(struct ssh *);
 void	 auth_log_authopts(const char *, const struct sshauthopt *, int);
 
-/* debug messages during authentication */
+
 void	 auth_debug_add(const char *fmt,...)
     __attribute__((format(printf, 1, 2)));
 void	 auth_debug_send(struct ssh *);
@@ -224,7 +187,7 @@ void	 auth_debug_reset(void);
 
 struct passwd *fakepw(void);
 
-/* auth2-pubkeyfile.c */
+
 int	 auth_authorise_keyopts(struct passwd *, struct sshauthopt *, int,
     const char *, const char *, const char *);
 int	 auth_check_principals_line(char *, const struct sshkey_cert *,
@@ -244,4 +207,4 @@ int	 sys_auth_passwd(struct ssh *, const char *);
 krb5_error_code ssh_krb5_cc_gen(krb5_context, krb5_ccache *);
 #endif
 
-#endif /* AUTH_H */
+#endif 

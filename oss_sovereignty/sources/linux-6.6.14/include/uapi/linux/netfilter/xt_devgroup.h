@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_DEVGROUP_H
 #define _XT_DEVGROUP_H
 
@@ -19,4 +19,4 @@ struct xt_devgroup_info {
 	__u32	dst_mask;
 };
 
-#endif /* _XT_DEVGROUP_H */
+#endif 

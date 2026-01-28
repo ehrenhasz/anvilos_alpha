@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _SELFTESTS_POWERPC_BASIC_ASM_H
 #define _SELFTESTS_POWERPC_BASIC_ASM_H
 
@@ -22,14 +22,10 @@
 	oris	reg, reg, (expr)@high;	\
 	ori	reg, reg, (expr)@l;
 
-/*
- * Note: These macros assume that variables being stored on the stack are
- * sizeof(long), while this is usually the case it may not always be the
- * case for each use case.
- */
+
 #ifdef  __powerpc64__
 
-// ABIv2
+
 #if defined(_CALL_ELF) && _CALL_ELF == 2
 #define STACK_FRAME_MIN_SIZE 32
 #define STACK_FRAME_TOC_POS  24
@@ -37,26 +33,23 @@
 #define __STACK_FRAME_LOCAL(_num_params, _var_num)  \
 	((STACK_FRAME_PARAM(_num_params)) + ((_var_num)*8))
 
-#else // ABIv1 below
+#else 
 #define STACK_FRAME_MIN_SIZE 112
 #define STACK_FRAME_TOC_POS  40
 #define __STACK_FRAME_PARAM(i)  (48 + ((i)*8))
 
-/*
- * Caveat: if a function passed more than 8 doublewords, the caller will have
- * made more space... which would render the 112 incorrect.
- */
+
 #define __STACK_FRAME_LOCAL(_num_params, _var_num)  \
 	(112 + ((_var_num)*8))
 
 
-#endif // ABIv2
+#endif 
 
-// Common 64-bit
+
 #define STACK_FRAME_LR_POS   16
 #define STACK_FRAME_CR_POS   8
 
-#else // 32-bit below
+#else 
 
 #define STACK_FRAME_MIN_SIZE 16
 #define STACK_FRAME_LR_POS   4
@@ -65,25 +58,16 @@
 #define __STACK_FRAME_LOCAL(_num_params, _var_num)  \
 	((STACK_FRAME_PARAM(_num_params)) + ((_var_num)*4))
 
-#endif // __powerpc64__
+#endif 
 
-/* Parameter x saved to the stack */
+
 #define STACK_FRAME_PARAM(var)    __STACK_FRAME_PARAM(var)
 
-/* Local variable x saved to the stack after x parameters */
+
 #define STACK_FRAME_LOCAL(num_params, var)    \
 	__STACK_FRAME_LOCAL(num_params, var)
 
-/*
- * It is very important to note here that _extra is the extra amount of
- * stack space needed. This space can be accessed using STACK_FRAME_PARAM()
- * or STACK_FRAME_LOCAL() macros.
- *
- * r1 and r2 are not defined in ppc-asm.h (instead they are defined as sp
- * and toc). Kernel programmers tend to prefer rX even for r1 and r2, hence
- * %1 and %r2. r0 is defined in ppc-asm.h and therefore %r0 gets
- * preprocessed incorrectly, hence r0.
- */
+
 #define PUSH_BASIC_STACK(_extra) \
 	mflr	 r0; \
 	PPC_STL	 r0, STACK_FRAME_LR_POS(%r1); \
@@ -102,4 +86,4 @@
 	.endr
 .endm
 
-#endif /* _SELFTESTS_POWERPC_BASIC_ASM_H */
+#endif 

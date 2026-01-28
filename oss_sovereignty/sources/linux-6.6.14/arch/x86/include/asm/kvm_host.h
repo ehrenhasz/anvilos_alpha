@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Kernel-based Virtual Machine driver for Linux
- *
- * This header defines architecture specific interfaces, x86 version
- */
+
+
 
 #ifndef _ASM_X86_KVM_HOST_H
 #define _ASM_X86_KVM_HOST_H
@@ -41,19 +37,11 @@
 
 #define KVM_MAX_VCPUS 1024
 
-/*
- * In x86, the VCPU ID corresponds to the APIC ID, and APIC IDs
- * might be larger than the actual number of VCPUs because the
- * APIC ID encodes CPU topology information.
- *
- * In the worst case, we'll need less than one extra bit for the
- * Core ID, and less than one extra bit for the Package (Die) ID,
- * so ratio of 4 should be enough.
- */
+
 #define KVM_VCPU_ID_RATIO 4
 #define KVM_MAX_VCPU_IDS (KVM_MAX_VCPUS * KVM_VCPU_ID_RATIO)
 
-/* memory slots that are not exposed to userspace */
+
 #define KVM_INTERNAL_MEM_SLOTS 3
 
 #define KVM_HALT_POLL_NS_DEFAULT 200000
@@ -69,7 +57,7 @@
 #define KVM_X86_NOTIFY_VMEXIT_VALID_BITS	(KVM_X86_NOTIFY_VMEXIT_ENABLED | \
 						 KVM_X86_NOTIFY_VMEXIT_USER)
 
-/* x86-specific vcpu->requests bit members */
+
 #define KVM_REQ_MIGRATE_TIMER		KVM_ARCH_REQ(0)
 #define KVM_REQ_REPORT_TPR_ACCESS	KVM_ARCH_REQ(1)
 #define KVM_REQ_TRIPLE_FAULT		KVM_ARCH_REQ(2)
@@ -134,7 +122,7 @@
 #define INVALID_PAGE (~(hpa_t)0)
 #define VALID_PAGE(x) ((x) != INVALID_PAGE)
 
-/* KVM Hugepage definitions for x86 */
+
 #define KVM_MAX_HUGEPAGE_LEVEL	PG_LEVEL_1G
 #define KVM_NR_PAGE_SIZES	(KVM_MAX_HUGEPAGE_LEVEL - PG_LEVEL_4K + 1)
 #define KVM_HPAGE_GFN_SHIFT(x)	(((x) - 1) * 9)
@@ -218,14 +206,7 @@ enum x86_intercept_stage;
 #define DR6_BS		(1 << 14)
 #define DR6_BT		(1 << 15)
 #define DR6_RTM		(1 << 16)
-/*
- * DR6_ACTIVE_LOW combines fixed-1 and active-low bits.
- * We can regard all the bits in DR6_FIXED_1 as active_low bits;
- * they will never be 0 for now, but when they are defined
- * in the future it will require no code change.
- *
- * DR6_ACTIVE_LOW is also used as the init/reset value for DR6.
- */
+
 #define DR6_ACTIVE_LOW	0xffff0ff0
 #define DR6_VOLATILE	0x0001e80f
 #define DR6_FIXED_1	(DR6_ACTIVE_LOW & ~DR6_VOLATILE)
@@ -272,56 +253,14 @@ enum x86_intercept_stage;
 				 PFERR_WRITE_MASK |		\
 				 PFERR_PRESENT_MASK)
 
-/* apic attention bits */
+
 #define KVM_APIC_CHECK_VAPIC	0
-/*
- * The following bit is set with PV-EOI, unset on EOI.
- * We detect PV-EOI changes by guest by comparing
- * this bit with PV-EOI in guest memory.
- * See the implementation in apic_update_pv_eoi.
- */
+
 #define KVM_APIC_PV_EOI_PENDING	1
 
 struct kvm_kernel_irq_routing_entry;
 
-/*
- * kvm_mmu_page_role tracks the properties of a shadow page (where shadow page
- * also includes TDP pages) to determine whether or not a page can be used in
- * the given MMU context.  This is a subset of the overall kvm_cpu_role to
- * minimize the size of kvm_memory_slot.arch.gfn_write_track, i.e. allows
- * allocating 2 bytes per gfn instead of 4 bytes per gfn.
- *
- * Upper-level shadow pages having gptes are tracked for write-protection via
- * gfn_write_track.  As above, gfn_write_track is a 16 bit counter, so KVM must
- * not create more than 2^16-1 upper-level shadow pages at a single gfn,
- * otherwise gfn_write_track will overflow and explosions will ensue.
- *
- * A unique shadow page (SP) for a gfn is created if and only if an existing SP
- * cannot be reused.  The ability to reuse a SP is tracked by its role, which
- * incorporates various mode bits and properties of the SP.  Roughly speaking,
- * the number of unique SPs that can theoretically be created is 2^n, where n
- * is the number of bits that are used to compute the role.
- *
- * But, even though there are 19 bits in the mask below, not all combinations
- * of modes and flags are possible:
- *
- *   - invalid shadow pages are not accounted, so the bits are effectively 18
- *
- *   - quadrant will only be used if has_4_byte_gpte=1 (non-PAE paging);
- *     execonly and ad_disabled are only used for nested EPT which has
- *     has_4_byte_gpte=0.  Therefore, 2 bits are always unused.
- *
- *   - the 4 bits of level are effectively limited to the values 2/3/4/5,
- *     as 4k SPs are not tracked (allowed to go unsync).  In addition non-PAE
- *     paging has exactly one upper level, making level completely redundant
- *     when has_4_byte_gpte=1.
- *
- *   - on top of this, smep_andnot_wp and smap_andnot_wp are only set if
- *     cr0_wp=0, therefore these three bits only give rise to 5 possibilities.
- *
- * Therefore, the maximum number of possible upper-level shadow pages for a
- * single gfn is a bit less than 2^13.
- */
+
 union kvm_mmu_page_role {
 	u32 word;
 	struct {
@@ -340,35 +279,12 @@ union kvm_mmu_page_role {
 		unsigned passthrough:1;
 		unsigned :5;
 
-		/*
-		 * This is left at the top of the word so that
-		 * kvm_memslots_for_spte_role can extract it with a
-		 * simple shift.  While there is room, give it a whole
-		 * byte so it is also faster to load it from memory.
-		 */
+		
 		unsigned smm:8;
 	};
 };
 
-/*
- * kvm_mmu_extended_role complements kvm_mmu_page_role, tracking properties
- * relevant to the current MMU configuration.   When loading CR0, CR4, or EFER,
- * including on nested transitions, if nothing in the full role changes then
- * MMU re-configuration can be skipped. @valid bit is set on first usage so we
- * don't treat all-zero structure as valid data.
- *
- * The properties that are tracked in the extended role but not the page role
- * are for things that either (a) do not affect the validity of the shadow page
- * or (b) are indirectly reflected in the shadow page's role.  For example,
- * CR4.PKE only affects permission checks for software walks of the guest page
- * tables (because KVM doesn't support Protection Keys with shadow paging), and
- * CR0.PG, CR4.PAE, and CR4.PSE are indirectly reflected in role.level.
- *
- * Note, SMEP and SMAP are not redundant with sm*p_andnot_wp in the page role.
- * If CR0.WP=1, KVM can reuse shadow pages for the guest regardless of SMEP and
- * SMAP, but the MMU's permission checks for software walks need to be SMEP and
- * SMAP aware regardless of CR0.WP.
- */
+
 union kvm_mmu_extended_role {
 	u32 word;
 	struct {
@@ -429,11 +345,7 @@ struct kvm_mmu_root_info {
 struct kvm_mmu_page;
 struct kvm_page_fault;
 
-/*
- * x86 supports 4 paging modes (5-level 64-bit, 4-level 64-bit, 3-level 32-bit,
- * and 2-level 32-bit).  The kvm_mmu structure abstracts the details of the
- * current mmu mode.
- */
+
 struct kvm_mmu {
 	unsigned long (*get_guest_pgd)(struct kvm_vcpu *vcpu);
 	u64 (*get_pdptr)(struct kvm_vcpu *vcpu, int index);
@@ -449,37 +361,24 @@ struct kvm_mmu {
 	union kvm_cpu_role cpu_role;
 	union kvm_mmu_page_role root_role;
 
-	/*
-	* The pkru_mask indicates if protection key checks are needed.  It
-	* consists of 16 domains indexed by page fault error code bits [4:1],
-	* with PFEC.RSVD replaced by ACC_USER_MASK from the page tables.
-	* Each domain has 2 bits which are ANDed with AD and WD from PKRU.
-	*/
+	
 	u32 pkru_mask;
 
 	struct kvm_mmu_root_info prev_roots[KVM_MMU_NUM_PREV_ROOTS];
 
-	/*
-	 * Bitmap; bit set = permission fault
-	 * Byte index: page fault error code [4:1]
-	 * Bit index: pte permissions in ACC_* format
-	 */
+	
 	u8 permissions[16];
 
 	u64 *pae_root;
 	u64 *pml4_root;
 	u64 *pml5_root;
 
-	/*
-	 * check zero bits on shadow page table entries, these
-	 * bits include not only hardware reserved bits but also
-	 * the bits spte never used.
-	 */
+	
 	struct rsvd_bits_validate shadow_zero_check;
 
 	struct rsvd_bits_validate guest_rsvd_check;
 
-	u64 pdptrs[4]; /* pae */
+	u64 pdptrs[4]; 
 };
 
 enum pmc_type {
@@ -497,15 +396,11 @@ struct kvm_pmc {
 	u64 eventsel;
 	struct perf_event *perf_event;
 	struct kvm_vcpu *vcpu;
-	/*
-	 * only for creating or reusing perf_event,
-	 * eventsel value for general purpose counters,
-	 * ctrl value for fixed counters.
-	 */
+	
 	u64 current_config;
 };
 
-/* More counters may conflict with other existing Architectural MSRs */
+
 #define KVM_INTEL_PMC_MAX_GENERIC	8
 #define MSR_ARCH_PERFMON_PERFCTR_MAX	(MSR_ARCH_PERFMON_PERFCTR0 + KVM_INTEL_PMC_MAX_GENERIC - 1)
 #define MSR_ARCH_PERFMON_EVENTSEL_MAX	(MSR_ARCH_PERFMON_EVENTSEL0 + KVM_INTEL_PMC_MAX_GENERIC - 1)
@@ -529,11 +424,7 @@ struct kvm_pmu {
 	struct kvm_pmc gp_counters[KVM_INTEL_PMC_MAX_GENERIC];
 	struct kvm_pmc fixed_counters[KVM_PMC_MAX_FIXED];
 
-	/*
-	 * Overlay the bitmap with a 64-bit atomic so that all bits can be
-	 * set in a single access, e.g. to reprogram all counters when the PMU
-	 * filter changes.
-	 */
+	
 	union {
 		DECLARE_BITMAP(reprogram_pmi, X86_PMC_IDX_MAX);
 		atomic64_t __reprogram_pmi;
@@ -547,25 +438,13 @@ struct kvm_pmu {
 	u64 pebs_data_cfg;
 	u64 pebs_data_cfg_mask;
 
-	/*
-	 * If a guest counter is cross-mapped to host counter with different
-	 * index, its PEBS capability will be temporarily disabled.
-	 *
-	 * The user should make sure that this mask is updated
-	 * after disabling interrupts and before perf_guest_get_msrs();
-	 */
+	
 	u64 host_cross_mapped_mask;
 
-	/*
-	 * The gate to release perf_events not marked in
-	 * pmc_in_use only once in a vcpu time slice.
-	 */
+	
 	bool need_cleanup;
 
-	/*
-	 * The total number of programmed perf_events and it helps to avoid
-	 * redundant check before cleanup if guest don't use vPMU at all.
-	 */
+	
 	u8 event_count;
 };
 
@@ -590,7 +469,7 @@ struct kvm_mtrr {
 	struct list_head head;
 };
 
-/* Hyper-V SynIC timer */
+
 struct kvm_vcpu_hv_stimer {
 	struct hrtimer timer;
 	int index;
@@ -601,7 +480,7 @@ struct kvm_vcpu_hv_stimer {
 	bool msg_pending;
 };
 
-/* Hyper-V synthetic interrupt controller (SynIC)*/
+
 struct kvm_vcpu_hv_synic {
 	u64 version;
 	u64 control;
@@ -615,16 +494,9 @@ struct kvm_vcpu_hv_synic {
 	bool dont_zero_synic_pages;
 };
 
-/* The maximum number of entries on the TLB flush fifo. */
+
 #define KVM_HV_TLB_FLUSH_FIFO_SIZE (16)
-/*
- * Note: the following 'magic' entry is made up by KVM to avoid putting
- * anything besides GVA on the TLB flush fifo. It is theoretically possible
- * to observe a request to flush 4095 PFNs starting from 0xfffffffffffff000
- * which will look identical. KVM's action to 'flush everything' instead of
- * flushing these particular addresses is, however, fully legitimate as
- * flushing more than requested is always OK.
- */
+
 #define KVM_HV_TLB_FLUSHALL_ENTRY  ((u64)-1)
 
 enum hv_tlb_flush_fifos {
@@ -638,7 +510,7 @@ struct kvm_vcpu_hv_tlb_flush_fifo {
 	DECLARE_KFIFO(entries, u64, KVM_HV_TLB_FLUSH_FIFO_SIZE);
 };
 
-/* Hyper-V per vcpu emulation context */
+
 struct kvm_vcpu_hv {
 	struct kvm_vcpu *vcpu;
 	u32 vp_index;
@@ -650,19 +522,19 @@ struct kvm_vcpu_hv {
 	DECLARE_BITMAP(stimer_pending_bitmap, HV_SYNIC_STIMER_COUNT);
 	bool enforce_cpuid;
 	struct {
-		u32 features_eax; /* HYPERV_CPUID_FEATURES.EAX */
-		u32 features_ebx; /* HYPERV_CPUID_FEATURES.EBX */
-		u32 features_edx; /* HYPERV_CPUID_FEATURES.EDX */
-		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
-		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
-		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
-		u32 nested_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
-		u32 nested_ebx; /* HYPERV_CPUID_NESTED_FEATURES.EBX */
+		u32 features_eax; 
+		u32 features_ebx; 
+		u32 features_edx; 
+		u32 enlightenments_eax; 
+		u32 enlightenments_ebx; 
+		u32 syndbg_cap_eax; 
+		u32 nested_eax; 
+		u32 nested_ebx; 
 	} cpuid_cache;
 
 	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
 
-	/* Preallocated buffer for handling hypercalls passing sparse vCPU set */
+	
 	u64 sparse_banks[HV_MAX_SPARSE_VCPU_BANKS];
 
 	struct hv_vp_assist_page vp_assist_page;
@@ -679,7 +551,7 @@ struct kvm_hypervisor_cpuid {
 	u32 limit;
 };
 
-/* Xen HVM per vcpu emulation context */
+
 struct kvm_vcpu_xen {
 	u64 hypercall_rip;
 	u32 current_runstate;
@@ -692,9 +564,9 @@ struct kvm_vcpu_xen {
 	u64 runstate_entry_time;
 	u64 runstate_times[4];
 	unsigned long evtchn_pending_sel;
-	u32 vcpu_id; /* The Xen / ACPI vCPU ID */
+	u32 vcpu_id; 
 	u32 timer_virq;
-	u64 timer_expires; /* In guest epoch */
+	u64 timer_expires; 
 	atomic_t timer_pending;
 	struct hrtimer timer;
 	int poll_evtchn;
@@ -713,10 +585,7 @@ struct kvm_queued_exception {
 };
 
 struct kvm_vcpu_arch {
-	/*
-	 * rip and regs accesses must go through
-	 * kvm_{register,rip}_{read,write} functions.
-	 */
+	
 	unsigned long regs[NR_VCPU_REGS];
 	u32 regs_avail;
 	u32 regs_dirty;
@@ -734,7 +603,7 @@ struct kvm_vcpu_arch {
 	u32 hflags;
 	u64 efer;
 	u64 apic_base;
-	struct kvm_lapic *apic;    /* kernel irqchip context */
+	struct kvm_lapic *apic;    
 	bool load_eoi_exitmap_pending;
 	DECLARE_BITMAP(ioapic_handled_vectors, 256);
 	unsigned long apic_attention;
@@ -751,35 +620,19 @@ struct kvm_vcpu_arch {
 	u64 arch_capabilities;
 	u64 perf_capabilities;
 
-	/*
-	 * Paging state of the vcpu
-	 *
-	 * If the vcpu runs in guest mode with two level paging this still saves
-	 * the paging mode of the l1 guest. This context is always used to
-	 * handle faults.
-	 */
+	
 	struct kvm_mmu *mmu;
 
-	/* Non-nested MMU for L1 */
+	
 	struct kvm_mmu root_mmu;
 
-	/* L1 MMU when running nested */
+	
 	struct kvm_mmu guest_mmu;
 
-	/*
-	 * Paging state of an L2 guest (used for nested npt)
-	 *
-	 * This context will save all necessary information to walk page tables
-	 * of an L2 guest. This context is only initialized for page table
-	 * walking and not for faulting since we never handle l2 page faults on
-	 * the host.
-	 */
+	
 	struct kvm_mmu nested_mmu;
 
-	/*
-	 * Pointer to the mmu context currently used for
-	 * gva_to_gpa translations.
-	 */
+	
 	struct kvm_mmu *walk_mmu;
 
 	struct kvm_mmu_memory_cache mmu_pte_list_desc_cache;
@@ -787,17 +640,7 @@ struct kvm_vcpu_arch {
 	struct kvm_mmu_memory_cache mmu_shadowed_info_cache;
 	struct kvm_mmu_memory_cache mmu_page_header_cache;
 
-	/*
-	 * QEMU userspace and the guest each have their own FPU state.
-	 * In vcpu_run, we switch between the user and guest FPU contexts.
-	 * While running a VCPU, the VCPU thread will have the guest FPU
-	 * context.
-	 *
-	 * Note that while the PKRU state lives inside the fpu registers,
-	 * it is switched out separately at VMENTER and VMEXIT time. The
-	 * "guest_fpstate" state here contains the guest FPU context, with the
-	 * host PRKU bits.
-	 */
+	
 	struct fpu_guest guest_fpu;
 
 	u64 xcr0;
@@ -812,9 +655,9 @@ struct kvm_vcpu_arch {
 
 	bool exception_from_userspace;
 
-	/* Exceptions to be injected to the guest. */
+	
 	struct kvm_queued_exception exception;
-	/* Exception VM-Exits to be synthesized to L1. */
+	
 	struct kvm_queued_exception exception_vmexit;
 
 	struct kvm_queued_interrupt {
@@ -823,27 +666,16 @@ struct kvm_vcpu_arch {
 		u8 nr;
 	} interrupt;
 
-	int halt_request; /* real mode on Intel only */
+	int halt_request; 
 
 	int cpuid_nent;
 	struct kvm_cpuid_entry2 *cpuid_entries;
 	struct kvm_hypervisor_cpuid kvm_cpuid;
 
-	/*
-	 * FIXME: Drop this macro and use KVM_NR_GOVERNED_FEATURES directly
-	 * when "struct kvm_vcpu_arch" is no longer defined in an
-	 * arch/x86/include/asm header.  The max is mostly arbitrary, i.e.
-	 * can be increased as necessary.
-	 */
+	
 #define KVM_MAX_NR_GOVERNED_FEATURES BITS_PER_LONG
 
-	/*
-	 * Track whether or not the guest is allowed to use features that are
-	 * governed by KVM, where "governed" means KVM needs to manage state
-	 * and/or explicitly enable the feature in hardware.  Typically, but
-	 * not always, governed features can be used by the guest if and only
-	 * if both KVM and userspace want to expose the feature to the guest.
-	 */
+	
 	struct {
 		DECLARE_BITMAP(enabled, KVM_MAX_NR_GOVERNED_FEATURES);
 	} governed_features;
@@ -851,7 +683,7 @@ struct kvm_vcpu_arch {
 	u64 reserved_gpa_bits;
 	int maxphyaddr;
 
-	/* emulate context */
+	
 
 	struct x86_emulate_ctxt *emulate_ctxt;
 	bool emulate_regs_need_sync_to_vcpu;
@@ -862,7 +694,7 @@ struct kvm_vcpu_arch {
 	struct pvclock_vcpu_time_info hv_clock;
 	unsigned int hw_tsc_khz;
 	struct gfn_to_pfn_cache pv_time;
-	/* set guest stopped flag in pvclock flags field */
+	
 	bool pvclock_set_guest_stopped_request;
 
 	struct {
@@ -873,7 +705,7 @@ struct kvm_vcpu_arch {
 	} st;
 
 	u64 l1_tsc_offset;
-	u64 tsc_offset; /* current tsc offset */
+	u64 tsc_offset; 
 	u64 last_guest_tsc;
 	u64 last_host_tsc;
 	u64 tsc_offset_adjustment;
@@ -888,13 +720,13 @@ struct kvm_vcpu_arch {
 	s64 ia32_tsc_adjust_msr;
 	u64 msr_ia32_power_ctl;
 	u64 l1_tsc_scaling_ratio;
-	u64 tsc_scaling_ratio; /* current scaling ratio */
+	u64 tsc_scaling_ratio; 
 
-	atomic_t nmi_queued;  /* unprocessed asynchronous NMIs */
-	/* Number of NMIs pending injection, not including hardware vNMIs. */
+	atomic_t nmi_queued;  
+	
 	unsigned int nmi_pending;
-	bool nmi_injected;    /* Trying to inject an NMI this entry */
-	bool smi_pending;    /* SMI queued after currently running handler */
+	bool nmi_injected;    
+	bool smi_pending;    
 	u8 handling_intr_from_guest;
 
 	struct kvm_mtrr mtrr_state;
@@ -916,7 +748,7 @@ struct kvm_vcpu_arch {
 	u64 *mce_banks;
 	u64 *mci_ctl2_banks;
 
-	/* Cache MMIO info */
+	
 	u64 mmio_gva;
 	unsigned mmio_access;
 	gfn_t mmio_gfn;
@@ -924,7 +756,7 @@ struct kvm_vcpu_arch {
 
 	struct kvm_pmu pmu;
 
-	/* used for guest single stepping over the given code position */
+	
 	unsigned long singlestep_rip;
 
 	bool hyperv_enabled;
@@ -940,8 +772,8 @@ struct kvm_vcpu_arch {
 		bool halted;
 		gfn_t gfns[ASYNC_PF_PER_VCPU];
 		struct gfn_to_hva_cache data;
-		u64 msr_en_val; /* MSR_KVM_ASYNC_PF_EN */
-		u64 msr_int_val; /* MSR_KVM_ASYNC_PF_INT */
+		u64 msr_en_val; 
+		u64 msr_int_val; 
 		u16 vec;
 		u32 id;
 		bool send_user_only;
@@ -950,7 +782,7 @@ struct kvm_vcpu_arch {
 		bool pageready_pending;
 	} apf;
 
-	/* OSVW MSRs (AMD only) */
+	
 	struct {
 		u64 length;
 		u64 status;
@@ -963,10 +795,10 @@ struct kvm_vcpu_arch {
 
 	u64 msr_kvm_poll_control;
 
-	/* set at EPT violation at this point */
+	
 	unsigned long exit_qualification;
 
-	/* pv related host specific info */
+	
 	struct {
 		bool pv_unhalted;
 	} pv;
@@ -974,40 +806,31 @@ struct kvm_vcpu_arch {
 	int pending_ioapic_eoi;
 	int pending_external_vector;
 
-	/* be preempted when it's in kernel-mode(cpl=0) */
+	
 	bool preempted_in_kernel;
 
-	/* Flush the L1 Data cache for L1TF mitigation on VMENTER */
+	
 	bool l1tf_flush_l1d;
 
-	/* Host CPU on which VM-entry was most recently attempted */
+	
 	int last_vmentry_cpu;
 
-	/* AMD MSRC001_0015 Hardware Configuration */
+	
 	u64 msr_hwcr;
 
-	/* pv related cpuid info */
+	
 	struct {
-		/*
-		 * value of the eax register in the KVM_CPUID_FEATURES CPUID
-		 * leaf.
-		 */
+		
 		u32 features;
 
-		/*
-		 * indicates whether pv emulation should be disabled if features
-		 * are not present in the guest's cpuid
-		 */
+		
 		bool enforce;
 	} pv_cpuid;
 
-	/* Protected Guests */
+	
 	bool guest_state_protected;
 
-	/*
-	 * Set when PDPTS were loaded directly by the userspace without
-	 * reading the guest memory
-	 */
+	
 	bool pdptrs_from_userspace;
 
 #if IS_ENABLED(CONFIG_HYPERV)
@@ -1025,25 +848,17 @@ struct kvm_arch_memory_slot {
 	unsigned short *gfn_write_track;
 };
 
-/*
- * Track the mode of the optimized logical map, as the rules for decoding the
- * destination vary per mode.  Enabling the optimized logical map requires all
- * software-enabled local APIs to be in the same mode, each addressable APIC to
- * be mapped to only one MDA, and each MDA to map to at most one APIC.
- */
+
 enum kvm_apic_logical_mode {
-	/* All local APICs are software disabled. */
+	
 	KVM_APIC_MODE_SW_DISABLED,
-	/* All software enabled local APICs in xAPIC cluster addressing mode. */
+	
 	KVM_APIC_MODE_XAPIC_CLUSTER,
-	/* All software enabled local APICs in xAPIC flat addressing mode. */
+	
 	KVM_APIC_MODE_XAPIC_FLAT,
-	/* All software enabled local APICs in x2APIC mode. */
+	
 	KVM_APIC_MODE_X2APIC,
-	/*
-	 * Optimized map disabled, e.g. not all local APICs in the same logical
-	 * mode, same logical ID assigned to multiple APICs, etc.
-	 */
+	
 	KVM_APIC_MODE_MAP_DISABLED,
 };
 
@@ -1058,7 +873,7 @@ struct kvm_apic_map {
 	struct kvm_lapic *phys_map[];
 };
 
-/* Hyper-V synthetic debugger (SynDbg)*/
+
 struct kvm_hv_syndbg {
 	struct {
 		u64 control;
@@ -1070,21 +885,21 @@ struct kvm_hv_syndbg {
 	u64 options;
 };
 
-/* Current state of Hyper-V TSC page clocksource */
+
 enum hv_tsc_page_status {
-	/* TSC page was not set up or disabled */
+	
 	HV_TSC_PAGE_UNSET = 0,
-	/* TSC page MSR was written by the guest, update pending */
+	
 	HV_TSC_PAGE_GUEST_CHANGED,
-	/* TSC page update was triggered from the host side */
+	
 	HV_TSC_PAGE_HOST_CHANGED,
-	/* TSC page was properly set up and is currently active  */
+	
 	HV_TSC_PAGE_SET,
-	/* TSC page was set up with an inaccessible GPA */
+	
 	HV_TSC_PAGE_BROKEN,
 };
 
-/* Hyper-V emulation context */
+
 struct kvm_hv {
 	struct mutex hv_lock;
 	u64 hv_guest_os_id;
@@ -1092,7 +907,7 @@ struct kvm_hv {
 	u64 hv_tsc_page;
 	enum hv_tsc_page_status hv_tsc_page_status;
 
-	/* Hyper-v based guest crash (NT kernel bugcheck) parameters */
+	
 	u64 hv_crash_param[HV_X64_MSR_CRASH_PARAMS];
 	u64 hv_crash_ctl;
 
@@ -1105,13 +920,10 @@ struct kvm_hv {
 	u64 hv_tsc_emulation_status;
 	u64 hv_invtsc_control;
 
-	/* How many vCPUs have VP index != vCPU index */
+	
 	atomic_t num_mismatched_vp_indexes;
 
-	/*
-	 * How many SynICs use 'AutoEOI' feature
-	 * (protected by arch.apicv_update_lock)
-	 */
+	
 	unsigned int synic_auto_eoi_used;
 
 	struct hv_partition_assist_pg *hv_pa_pg;
@@ -1125,7 +937,7 @@ struct msr_bitmap_range {
 	unsigned long *bitmap;
 };
 
-/* Xen emulation context */
+
 struct kvm_xen {
 	struct mutex xen_lock;
 	u32 xen_version;
@@ -1139,8 +951,8 @@ struct kvm_xen {
 
 enum kvm_irqchip_mode {
 	KVM_IRQCHIP_NONE,
-	KVM_IRQCHIP_KERNEL,       /* created with KVM_CREATE_IRQCHIP */
-	KVM_IRQCHIP_SPLIT,        /* created with KVM_CAP_SPLIT_IRQCHIP */
+	KVM_IRQCHIP_KERNEL,       
+	KVM_IRQCHIP_SPLIT,        
 };
 
 struct kvm_x86_msr_filter {
@@ -1163,83 +975,46 @@ struct kvm_x86_pmu_event_filter {
 
 enum kvm_apicv_inhibit {
 
-	/********************************************************************/
-	/* INHIBITs that are relevant to both Intel's APICv and AMD's AVIC. */
-	/********************************************************************/
+	
+	
+	
 
-	/*
-	 * APIC acceleration is disabled by a module parameter
-	 * and/or not supported in hardware.
-	 */
+	
 	APICV_INHIBIT_REASON_DISABLE,
 
-	/*
-	 * APIC acceleration is inhibited because AutoEOI feature is
-	 * being used by a HyperV guest.
-	 */
+	
 	APICV_INHIBIT_REASON_HYPERV,
 
-	/*
-	 * APIC acceleration is inhibited because the userspace didn't yet
-	 * enable the kernel/split irqchip.
-	 */
+	
 	APICV_INHIBIT_REASON_ABSENT,
 
-	/* APIC acceleration is inhibited because KVM_GUESTDBG_BLOCKIRQ
-	 * (out of band, debug measure of blocking all interrupts on this vCPU)
-	 * was enabled, to avoid AVIC/APICv bypassing it.
-	 */
+	
 	APICV_INHIBIT_REASON_BLOCKIRQ,
 
-	/*
-	 * APICv is disabled because not all vCPUs have a 1:1 mapping between
-	 * APIC ID and vCPU, _and_ KVM is not applying its x2APIC hotplug hack.
-	 */
+	
 	APICV_INHIBIT_REASON_PHYSICAL_ID_ALIASED,
 
-	/*
-	 * For simplicity, the APIC acceleration is inhibited
-	 * first time either APIC ID or APIC base are changed by the guest
-	 * from their reset values.
-	 */
+	
 	APICV_INHIBIT_REASON_APIC_ID_MODIFIED,
 	APICV_INHIBIT_REASON_APIC_BASE_MODIFIED,
 
-	/******************************************************/
-	/* INHIBITs that are relevant only to the AMD's AVIC. */
-	/******************************************************/
+	
+	
+	
 
-	/*
-	 * AVIC is inhibited on a vCPU because it runs a nested guest.
-	 *
-	 * This is needed because unlike APICv, the peers of this vCPU
-	 * cannot use the doorbell mechanism to signal interrupts via AVIC when
-	 * a vCPU runs nested.
-	 */
+	
 	APICV_INHIBIT_REASON_NESTED,
 
-	/*
-	 * On SVM, the wait for the IRQ window is implemented with pending vIRQ,
-	 * which cannot be injected when the AVIC is enabled, thus AVIC
-	 * is inhibited while KVM waits for IRQ window.
-	 */
+	
 	APICV_INHIBIT_REASON_IRQWIN,
 
-	/*
-	 * PIT (i8254) 're-inject' mode, relies on EOI intercept,
-	 * which AVIC doesn't support for edge triggered interrupts.
-	 */
+	
 	APICV_INHIBIT_REASON_PIT_REINJ,
 
-	/*
-	 * AVIC is disabled because SEV doesn't support it.
-	 */
+	
 	APICV_INHIBIT_REASON_SEV,
 
-	/*
-	 * AVIC is disabled because not all vCPUs with a valid LDR have a 1:1
-	 * mapping between logical ID and vCPU.
-	 */
+	
 	APICV_INHIBIT_REASON_LOGICAL_ID_ALIASED,
 };
 
@@ -1252,27 +1027,12 @@ struct kvm_arch {
 	struct hlist_head mmu_page_hash[KVM_NUM_MMU_PAGES];
 	struct list_head active_mmu_pages;
 	struct list_head zapped_obsolete_pages;
-	/*
-	 * A list of kvm_mmu_page structs that, if zapped, could possibly be
-	 * replaced by an NX huge page.  A shadow page is on this list if its
-	 * existence disallows an NX huge page (nx_huge_page_disallowed is set)
-	 * and there are no other conditions that prevent a huge page, e.g.
-	 * the backing host page is huge, dirtly logging is not enabled for its
-	 * memslot, etc...  Note, zapping shadow pages on this list doesn't
-	 * guarantee an NX huge page will be created in its stead, e.g. if the
-	 * guest attempts to execute from the region then KVM obviously can't
-	 * create an NX huge page (without hanging the guest).
-	 */
+	
 	struct list_head possible_nx_huge_pages;
 #ifdef CONFIG_KVM_EXTERNAL_WRITE_TRACKING
 	struct kvm_page_track_notifier_head track_notifier_head;
 #endif
-	/*
-	 * Protects marking pages unsync during page faults, as TDP MMU page
-	 * faults only take mmu_lock for read.  For simplicity, the unsync
-	 * pages lock is always taken when marking pages unsync regardless of
-	 * whether mmu_lock is held for read or write.
-	 */
+	
 	spinlock_t mmu_unsync_pages_lock;
 
 	struct list_head assigned_dev_head;
@@ -1293,7 +1053,7 @@ struct kvm_arch {
 	bool apic_access_memslot_enabled;
 	bool apic_access_memslot_inhibited;
 
-	/* Protects apicv_inhibit_reasons */
+	
 	struct rw_semaphore apicv_update_lock;
 	unsigned long apicv_inhibit_reasons;
 
@@ -1307,10 +1067,7 @@ struct kvm_arch {
 	unsigned long irq_sources_bitmap;
 	s64 kvmclock_offset;
 
-	/*
-	 * This also protects nr_vcpus_matched_tsc which is read from a
-	 * preemption-disabled region, so it must be a raw spinlock.
-	 */
+	
 	raw_spinlock_t tsc_write_lock;
 	u64 last_tsc_nsec;
 	u64 last_tsc_write;
@@ -1333,7 +1090,7 @@ struct kvm_arch {
 
 	struct kvm_xen_hvm_config xen_hvm_config;
 
-	/* reads protected by irq_srcu, writes by irq_lock */
+	
 	struct hlist_head mask_notifier_list;
 
 	struct kvm_hv hyperv;
@@ -1363,102 +1120,49 @@ struct kvm_arch {
 
 	u32 notify_window;
 	u32 notify_vmexit_flags;
-	/*
-	 * If exit_on_emulation_error is set, and the in-kernel instruction
-	 * emulator fails to emulate an instruction, allow userspace
-	 * the opportunity to look at it.
-	 */
+	
 	bool exit_on_emulation_error;
 
-	/* Deflect RDMSR and WRMSR to user space when they trigger a #GP */
+	
 	u32 user_space_msr_mask;
 	struct kvm_x86_msr_filter __rcu *msr_filter;
 
 	u32 hypercall_exit_enabled;
 
-	/* Guest can access the SGX PROVISIONKEY. */
+	
 	bool sgx_provisioning_allowed;
 
 	struct kvm_x86_pmu_event_filter __rcu *pmu_event_filter;
 	struct task_struct *nx_huge_page_recovery_thread;
 
 #ifdef CONFIG_X86_64
-	/* The number of TDP MMU pages across all roots. */
+	
 	atomic64_t tdp_mmu_pages;
 
-	/*
-	 * List of struct kvm_mmu_pages being used as roots.
-	 * All struct kvm_mmu_pages in the list should have
-	 * tdp_mmu_page set.
-	 *
-	 * For reads, this list is protected by:
-	 *	the MMU lock in read mode + RCU or
-	 *	the MMU lock in write mode
-	 *
-	 * For writes, this list is protected by:
-	 *	the MMU lock in read mode + the tdp_mmu_pages_lock or
-	 *	the MMU lock in write mode
-	 *
-	 * Roots will remain in the list until their tdp_mmu_root_count
-	 * drops to zero, at which point the thread that decremented the
-	 * count to zero should removed the root from the list and clean
-	 * it up, freeing the root after an RCU grace period.
-	 */
+	
 	struct list_head tdp_mmu_roots;
 
-	/*
-	 * Protects accesses to the following fields when the MMU lock
-	 * is held in read mode:
-	 *  - tdp_mmu_roots (above)
-	 *  - the link field of kvm_mmu_page structs used by the TDP MMU
-	 *  - possible_nx_huge_pages;
-	 *  - the possible_nx_huge_page_link field of kvm_mmu_page structs used
-	 *    by the TDP MMU
-	 * It is acceptable, but not necessary, to acquire this lock when
-	 * the thread holds the MMU lock in write mode.
-	 */
+	
 	spinlock_t tdp_mmu_pages_lock;
-#endif /* CONFIG_X86_64 */
+#endif 
 
-	/*
-	 * If set, at least one shadow root has been allocated. This flag
-	 * is used as one input when determining whether certain memslot
-	 * related allocations are necessary.
-	 */
+	
 	bool shadow_root_allocated;
 
 #if IS_ENABLED(CONFIG_HYPERV)
 	hpa_t	hv_root_tdp;
 	spinlock_t hv_root_tdp_lock;
 #endif
-	/*
-	 * VM-scope maximum vCPU ID. Used to determine the size of structures
-	 * that increase along with the maximum vCPU ID, in which case, using
-	 * the global KVM_MAX_VCPU_IDS may lead to significant memory waste.
-	 */
+	
 	u32 max_vcpu_ids;
 
 	bool disable_nx_huge_pages;
 
-	/*
-	 * Memory caches used to allocate shadow pages when performing eager
-	 * page splitting. No need for a shadowed_info_cache since eager page
-	 * splitting only allocates direct shadow pages.
-	 *
-	 * Protected by kvm->slots_lock.
-	 */
+	
 	struct kvm_mmu_memory_cache split_shadow_page_cache;
 	struct kvm_mmu_memory_cache split_page_header_cache;
 
-	/*
-	 * Memory cache used to allocate pte_list_desc structs while splitting
-	 * huge pages. In the worst case, to split one huge page, 512
-	 * pte_list_desc structs are needed to add each lower level leaf sptep
-	 * to the rmap plus 1 to extend the parent_ptes rmap of the lower level
-	 * page table.
-	 *
-	 * Protected by kvm->slots_lock.
-	 */
+	
 #define SPLIT_DESC_CACHE_MIN_NR_OBJECTS (SPTE_ENT_PER_PAGE + 1)
 	struct kvm_mmu_memory_cache split_desc_cache;
 };
@@ -1563,7 +1267,7 @@ struct kvm_x86_ops {
 	int (*vm_init)(struct kvm *kvm);
 	void (*vm_destroy)(struct kvm *kvm);
 
-	/* Create, but do not attach this VCPU */
+	
 	int (*vcpu_precreate)(struct kvm *kvm);
 	int (*vcpu_create)(struct kvm_vcpu *vcpu);
 	void (*vcpu_free)(struct kvm_vcpu *vcpu);
@@ -1606,18 +1310,10 @@ struct kvm_x86_ops {
 	int  (*flush_remote_tlbs_range)(struct kvm *kvm, gfn_t gfn,
 					gfn_t nr_pages);
 
-	/*
-	 * Flush any TLB entries associated with the given GVA.
-	 * Does not need to flush GPA->HPA mappings.
-	 * Can potentially get non-canonical addresses through INVLPGs, which
-	 * the implementation may choose to ignore if appropriate.
-	 */
+	
 	void (*flush_tlb_gva)(struct kvm_vcpu *vcpu, gva_t addr);
 
-	/*
-	 * Flush any TLB entries created by the guest.  Like tlb_flush_gva(),
-	 * does not need to flush GPA->HPA mappings.
-	 */
+	
 	void (*flush_tlb_guest)(struct kvm_vcpu *vcpu);
 
 	int (*vcpu_pre_run)(struct kvm_vcpu *vcpu);
@@ -1638,12 +1334,9 @@ struct kvm_x86_ops {
 	int (*nmi_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
 	bool (*get_nmi_mask)(struct kvm_vcpu *vcpu);
 	void (*set_nmi_mask)(struct kvm_vcpu *vcpu, bool masked);
-	/* Whether or not a virtual NMI is pending in hardware. */
+	
 	bool (*is_vnmi_pending)(struct kvm_vcpu *vcpu);
-	/*
-	 * Attempt to pend a virtual NMI in harware.  Returns %true on success
-	 * to allow using static_call_ret0 as the fallback.
-	 */
+	
 	bool (*set_vnmi_pending)(struct kvm_vcpu *vcpu);
 	void (*enable_nmi_window)(struct kvm_vcpu *vcpu);
 	void (*enable_irq_window)(struct kvm_vcpu *vcpu);
@@ -1675,10 +1368,7 @@ struct kvm_x86_ops {
 	void (*write_tsc_offset)(struct kvm_vcpu *vcpu);
 	void (*write_tsc_multiplier)(struct kvm_vcpu *vcpu);
 
-	/*
-	 * Retrieve somewhat arbitrary exit information.  Intended to
-	 * be used only from within tracepoints or error paths.
-	 */
+	
 	void (*get_exit_info)(struct kvm_vcpu *vcpu, u32 *reason,
 			      u64 *info1, u64 *info2,
 			      u32 *exit_int_info, u32 *exit_int_info_err_code);
@@ -1693,10 +1383,7 @@ struct kvm_x86_ops {
 
 	void (*sched_in)(struct kvm_vcpu *kvm, int cpu);
 
-	/*
-	 * Size of the CPU's dirty log buffer, i.e. VMX's PML buffer.  A zero
-	 * value indicates CPU dirty logging is unsupported or disabled.
-	 */
+	
 	int cpu_dirty_log_size;
 	void (*update_cpu_dirty_logging)(struct kvm_vcpu *vcpu);
 
@@ -1746,9 +1433,7 @@ struct kvm_x86_ops {
 
 	void (*vcpu_deliver_sipi_vector)(struct kvm_vcpu *vcpu, u8 vector);
 
-	/*
-	 * Returns vCPU specific APICv inhibit reasons
-	 */
+	
 	unsigned long (*vcpu_get_apicv_inhibit_reasons)(struct kvm_vcpu *vcpu);
 };
 
@@ -1878,64 +1563,7 @@ extern bool tdp_enabled;
 
 u64 vcpu_tsc_khz(struct kvm_vcpu *vcpu);
 
-/*
- * EMULTYPE_NO_DECODE - Set when re-emulating an instruction (after completing
- *			userspace I/O) to indicate that the emulation context
- *			should be reused as is, i.e. skip initialization of
- *			emulation context, instruction fetch and decode.
- *
- * EMULTYPE_TRAP_UD - Set when emulating an intercepted #UD from hardware.
- *		      Indicates that only select instructions (tagged with
- *		      EmulateOnUD) should be emulated (to minimize the emulator
- *		      attack surface).  See also EMULTYPE_TRAP_UD_FORCED.
- *
- * EMULTYPE_SKIP - Set when emulating solely to skip an instruction, i.e. to
- *		   decode the instruction length.  For use *only* by
- *		   kvm_x86_ops.skip_emulated_instruction() implementations if
- *		   EMULTYPE_COMPLETE_USER_EXIT is not set.
- *
- * EMULTYPE_ALLOW_RETRY_PF - Set when the emulator should resume the guest to
- *			     retry native execution under certain conditions,
- *			     Can only be set in conjunction with EMULTYPE_PF.
- *
- * EMULTYPE_TRAP_UD_FORCED - Set when emulating an intercepted #UD that was
- *			     triggered by KVM's magic "force emulation" prefix,
- *			     which is opt in via module param (off by default).
- *			     Bypasses EmulateOnUD restriction despite emulating
- *			     due to an intercepted #UD (see EMULTYPE_TRAP_UD).
- *			     Used to test the full emulator from userspace.
- *
- * EMULTYPE_VMWARE_GP - Set when emulating an intercepted #GP for VMware
- *			backdoor emulation, which is opt in via module param.
- *			VMware backdoor emulation handles select instructions
- *			and reinjects the #GP for all other cases.
- *
- * EMULTYPE_PF - Set when emulating MMIO by way of an intercepted #PF, in which
- *		 case the CR2/GPA value pass on the stack is valid.
- *
- * EMULTYPE_COMPLETE_USER_EXIT - Set when the emulator should update interruptibility
- *				 state and inject single-step #DBs after skipping
- *				 an instruction (after completing userspace I/O).
- *
- * EMULTYPE_WRITE_PF_TO_SP - Set when emulating an intercepted page fault that
- *			     is attempting to write a gfn that contains one or
- *			     more of the PTEs used to translate the write itself,
- *			     and the owning page table is being shadowed by KVM.
- *			     If emulation of the faulting instruction fails and
- *			     this flag is set, KVM will exit to userspace instead
- *			     of retrying emulation as KVM cannot make forward
- *			     progress.
- *
- *			     If emulation fails for a write to guest page tables,
- *			     KVM unprotects (zaps) the shadow page for the target
- *			     gfn and resumes the guest to retry the non-emulatable
- *			     instruction (on hardware).  Unprotecting the gfn
- *			     doesn't allow forward progress for a self-changing
- *			     access because doing so also zaps the translation for
- *			     the gfn, i.e. retrying the instruction will hit a
- *			     !PRESENT fault, which results in a new shadow page
- *			     and sends KVM back to square one.
- */
+
 #define EMULTYPE_NO_DECODE	    (1 << 0)
 #define EMULTYPE_TRAP_UD	    (1 << 1)
 #define EMULTYPE_SKIP		    (1 << 2)
@@ -2014,7 +1642,7 @@ bool kvm_require_dr(struct kvm_vcpu *vcpu, int dr);
 static inline int __kvm_irq_line_state(unsigned long *irq_state,
 				       int irq_source_id, int level)
 {
-	/* Logical OR for level trig interrupt */
+	
 	if (level)
 		__set_bit(irq_source_id, irq_state);
 	else
@@ -2116,7 +1744,7 @@ enum {
 	TASK_SWITCH_GATE = 3,
 };
 
-#define HF_GUEST_MASK		(1 << 0) /* VCPU is in guest-mode */
+#define HF_GUEST_MASK		(1 << 0) 
 
 #ifdef CONFIG_KVM_SMM
 #define HF_SMM_MASK		(1 << 1)
@@ -2191,7 +1819,7 @@ void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
 
 static inline bool kvm_irq_is_postable(struct kvm_lapic_irq *irq)
 {
-	/* We can only post Fixed and LowPrio IRQs */
+	
 	return (irq->delivery_mode == APIC_DM_FIXED ||
 		irq->delivery_mode == APIC_DM_LOWEST);
 }
@@ -2230,11 +1858,7 @@ int memslot_rmap_alloc(struct kvm_memory_slot *slot, unsigned long npages);
 	 KVM_X86_QUIRK_FIX_HYPERCALL_INSN |	\
 	 KVM_X86_QUIRK_MWAIT_NEVER_UD_FAULTS)
 
-/*
- * KVM previously used a u32 field in kvm_run to indicate the hypercall was
- * initiated from long mode. KVM now sets bit 0 to indicate long mode, but the
- * remaining 31 lower bits must be 0 to preserve ABI.
- */
+
 #define KVM_EXIT_HYPERCALL_MBZ		GENMASK_ULL(31, 1)
 
-#endif /* _ASM_X86_KVM_HOST_H */
+#endif 

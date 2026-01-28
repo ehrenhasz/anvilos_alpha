@@ -48,13 +48,13 @@ def get_version_info_from_mpconfig(repo_path):
     )
     with open(os.path.join(repo_path, "py", "mpconfig.h")) as f:
         for line in f:
-            if line.startswith("#define MICROPY_VERSION_MAJOR "):
+            if line.startswith("
                 ver_major = int(line.strip().split()[2])
-            elif line.startswith("#define MICROPY_VERSION_MINOR "):
+            elif line.startswith("
                 ver_minor = int(line.strip().split()[2])
-            elif line.startswith("#define MICROPY_VERSION_MICRO "):
+            elif line.startswith("
                 ver_micro = int(line.strip().split()[2])
-            elif line.startswith("#define MICROPY_VERSION_PRERELEASE "):
+            elif line.startswith("
                 ver_prerelease = int(line.strip().split()[2])
                 git_tag = "v%d.%d.%d%s" % (
                     ver_major,

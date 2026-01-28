@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Stubs for the Network PHY library
- */
+
+
 
 #include <linux/rtnetlink.h>
 
@@ -24,9 +22,7 @@ struct phylib_stubs {
 static inline int phy_hwtstamp_get(struct phy_device *phydev,
 				   struct kernel_hwtstamp_config *config)
 {
-	/* phylib_register_stubs() and phylib_unregister_stubs()
-	 * also run under rtnl_lock().
-	 */
+	
 	ASSERT_RTNL();
 
 	if (!phylib_stubs)
@@ -39,9 +35,7 @@ static inline int phy_hwtstamp_set(struct phy_device *phydev,
 				   struct kernel_hwtstamp_config *config,
 				   struct netlink_ext_ack *extack)
 {
-	/* phylib_register_stubs() and phylib_unregister_stubs()
-	 * also run under rtnl_lock().
-	 */
+	
 	ASSERT_RTNL();
 
 	if (!phylib_stubs)

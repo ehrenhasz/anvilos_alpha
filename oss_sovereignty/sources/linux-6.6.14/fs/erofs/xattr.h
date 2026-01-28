@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- */
+
+
 #ifndef __EROFS_XATTR_H
 #define __EROFS_XATTR_H
 
@@ -10,7 +7,7 @@
 #include <linux/posix_acl_xattr.h>
 #include <linux/xattr.h>
 
-/* Attribute not found */
+
 #define ENOATTR         ENODATA
 
 #ifdef CONFIG_EROFS_FS_XATTR
@@ -62,7 +59,7 @@ static inline int erofs_getxattr(struct inode *inode, int index,
 
 #define erofs_listxattr (NULL)
 #define erofs_xattr_handlers (NULL)
-#endif	/* !CONFIG_EROFS_FS_XATTR */
+#endif	
 
 #ifdef CONFIG_EROFS_FS_POSIX_ACL
 struct posix_acl *erofs_get_acl(struct inode *inode, int type, bool rcu);

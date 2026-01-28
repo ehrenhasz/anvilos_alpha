@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+
 
 #ifndef _FUN_QEUEUE_H
 #define _FUN_QEUEUE_H
@@ -20,7 +20,7 @@ struct fun_rq_info {
 	struct page *page;
 };
 
-/* A queue group consisting of an SQ, a CQ, and an optional RQ. */
+
 struct fun_queue {
 	struct fun_dev *fdev;
 	spinlock_t sq_lock;
@@ -68,7 +68,7 @@ struct fun_queue {
 	u16 sq_flags;
 	u16 rq_flags;
 
-	/* SQ head writeback */
+	
 	u16 sq_comp;
 
 	volatile __be64 *sq_head;
@@ -81,7 +81,7 @@ struct fun_queue {
 	s16 cq_vector;
 	u8 cq_phase;
 
-	/* I/O q index */
+	
 	u16 qid;
 
 	char irqname[24];
@@ -172,4 +172,4 @@ int fun_request_irq(struct fun_queue *funq, const char *devname,
 unsigned int __fun_process_cq(struct fun_queue *funq, unsigned int max);
 unsigned int fun_process_cq(struct fun_queue *funq, unsigned int max);
 
-#endif /* _FUN_QEUEUE_H */
+#endif 

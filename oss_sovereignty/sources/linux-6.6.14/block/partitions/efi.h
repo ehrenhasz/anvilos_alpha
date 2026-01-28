@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/************************************************************
- * EFI GUID Partition Table
- * Per Intel EFI Specification v1.02
- * http://developer.intel.com/technology/efi/efi.htm
- *
- * By Matt Domsch <Matt_Domsch@dell.com>  Fri Sep 22 22:15:56 CDT 2000  
- *   Copyright 2000,2001 Dell Inc.
- ************************************************************/
+
+
 
 #ifndef FS_PART_EFI_H_INCLUDED
 #define FS_PART_EFI_H_INCLUDED
@@ -68,11 +61,7 @@ typedef struct _gpt_header {
 	__le32 sizeof_partition_entry;
 	__le32 partition_entry_array_crc32;
 
-	/* The rest of the logical block is reserved by UEFI and must be zero.
-	 * EFI standard handles this by:
-	 *
-	 * uint8_t		reserved2[ BlockSize - 92 ];
-	 */
+	
 } __packed gpt_header;
 
 typedef struct _gpt_entry_attributes {
@@ -91,16 +80,16 @@ typedef struct _gpt_entry {
 } __packed gpt_entry;
 
 typedef struct _gpt_mbr_record {
-	u8	boot_indicator; /* unused by EFI, set to 0x80 for bootable */
-	u8	start_head;     /* unused by EFI, pt start in CHS */
-	u8	start_sector;   /* unused by EFI, pt start in CHS */
+	u8	boot_indicator; 
+	u8	start_head;     
+	u8	start_sector;   
 	u8	start_track;
-	u8	os_type;        /* EFI and legacy non-EFI OS types */
-	u8	end_head;       /* unused by EFI, pt end in CHS */
-	u8	end_sector;     /* unused by EFI, pt end in CHS */
-	u8	end_track;      /* unused by EFI, pt end in CHS */
-	__le32	starting_lba;   /* used by EFI - start addr of the on disk pt */
-	__le32	size_in_lba;    /* used by EFI - size of pt in LBA */
+	u8	os_type;        
+	u8	end_head;       
+	u8	end_sector;     
+	u8	end_track;      
+	__le32	starting_lba;   
+	__le32	size_in_lba;    
 } __packed gpt_mbr_record;
 
 

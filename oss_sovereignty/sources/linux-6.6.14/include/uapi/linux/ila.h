@@ -1,24 +1,24 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* ila.h - ILA Interface */
+
+
 
 #ifndef _UAPI_LINUX_ILA_H
 #define _UAPI_LINUX_ILA_H
 
-/* NETLINK_GENERIC related info */
+
 #define ILA_GENL_NAME		"ila"
 #define ILA_GENL_VERSION	0x1
 
 enum {
 	ILA_ATTR_UNSPEC,
-	ILA_ATTR_LOCATOR,			/* u64 */
-	ILA_ATTR_IDENTIFIER,			/* u64 */
-	ILA_ATTR_LOCATOR_MATCH,			/* u64 */
-	ILA_ATTR_IFINDEX,			/* s32 */
-	ILA_ATTR_DIR,				/* u32 */
+	ILA_ATTR_LOCATOR,			
+	ILA_ATTR_IDENTIFIER,			
+	ILA_ATTR_LOCATOR_MATCH,			
+	ILA_ATTR_IFINDEX,			
+	ILA_ATTR_DIR,				
 	ILA_ATTR_PAD,
-	ILA_ATTR_CSUM_MODE,			/* u8 */
-	ILA_ATTR_IDENT_TYPE,			/* u8 */
-	ILA_ATTR_HOOK_TYPE,			/* u8 */
+	ILA_ATTR_CSUM_MODE,			
+	ILA_ATTR_IDENT_TYPE,			
+	ILA_ATTR_HOOK_TYPE,			
 
 	__ILA_ATTR_MAX,
 };
@@ -57,7 +57,7 @@ enum {
 	ILA_ATYPE_RSVD_1,
 	ILA_ATYPE_RSVD_2,
 
-	ILA_ATYPE_USE_FORMAT = 32, /* Get type from type field in identifier */
+	ILA_ATYPE_USE_FORMAT = 32, 
 };
 
 enum {
@@ -65,4 +65,4 @@ enum {
 	ILA_HOOK_ROUTE_INPUT,
 };
 
-#endif /* _UAPI_LINUX_ILA_H */
+#endif 

@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+
+
 
 #ifndef ASIC_REG_TPC0_CFG_REGS_H_
 #define ASIC_REG_TPC0_CFG_REGS_H_
 
-/*
- *****************************************
- *   TPC0_CFG (Prototype: TPC)
- *****************************************
- */
+
 
 #define mmTPC0_CFG_KERNEL_TENSOR_0_BASE_ADDR_LOW                     0xE06400
 
@@ -1223,4 +1211,4 @@
 
 #define mmTPC0_CFG_QM_SRF_31                                         0xE06E3C
 
-#endif /* ASIC_REG_TPC0_CFG_REGS_H_ */
+#endif 

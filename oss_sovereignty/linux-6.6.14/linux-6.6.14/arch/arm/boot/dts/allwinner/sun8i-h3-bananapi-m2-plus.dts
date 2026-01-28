@@ -1,7 +1,0 @@
-/dts-v1/;
-#include "sun8i-h3.dtsi"
-#include "sunxi-bananapi-m2-plus.dtsi"
-/ {
-	model = "Banana Pi BPI-M2-Plus H3";
-	compatible = "sinovoip,bpi-m2-plus", "allwinner,sun8i-h3";
-};

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2016-2023 Broadcom Inc. All rights reserved.
- */
+
+
 #ifndef MPI30_SAS_H
 #define MPI30_SAS_H     1
 #define MPI3_SAS_DEVICE_INFO_SSP_TARGET             (0x00000100)

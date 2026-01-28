@@ -1,4 +1,4 @@
-if test $# -ne 1; then
+if test $
 	echo "Usage: $0 <kernelrelease>" >&2
 	exit 1
 fi

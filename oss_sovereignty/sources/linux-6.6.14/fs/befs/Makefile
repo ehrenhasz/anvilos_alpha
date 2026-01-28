@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the linux BeOS filesystem routines.
-#
+
+
+
+
  
 obj-$(CONFIG_BEFS_FS) += befs.o
 ccflags-$(CONFIG_BEFS_DEBUG)    += -DDEBUG

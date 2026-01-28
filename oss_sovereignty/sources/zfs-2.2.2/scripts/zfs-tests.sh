@@ -52,7 +52,7 @@ cleanup_freebsd_loopback() {
 }
 cleanup_linux_loopback() {
 	for TEST_LOOPBACK in ${LOOPBACKS}; do
-		LOOP_DEV="${TEST_LOOPBACK##*/}"
+		LOOP_DEV="${TEST_LOOPBACK
 		DM_DEV=$(sudo "${DMSETUP}" ls 2>/dev/null | \
 		    awk -v l="${LOOP_DEV}" '$0 ~ l {print $1}')
 		if [ -n "$DM_DEV" ]; then
@@ -142,7 +142,7 @@ create_links() {
 		[ ! -e "$STF_PATH/$i" ] && \
 		    STF_MISSING_BIN="$STF_MISSING_BIN $i"
 	done
-	STF_MISSING_BIN=${STF_MISSING_BIN# }
+	STF_MISSING_BIN=${STF_MISSING_BIN
 }
 constrain_path() {
 	. "$STF_SUITE/include/commands.cfg"
@@ -317,10 +317,10 @@ outputdir = /var/tmp/test_results
 EOF
 	SINGLETESTDIR="${SINGLETEST%/*}"
 	SETUPDIR="$SINGLETESTDIR"
-	[ "${SETUPDIR#/}" = "$SETUPDIR" ] && SETUPDIR="$STF_SUITE/$SINGLETESTDIR"
+	[ "${SETUPDIR
 	[ -x "$SETUPDIR/setup.ksh"   ] && SETUPSCRIPT="setup"     || SETUPSCRIPT=
 	[ -x "$SETUPDIR/cleanup.ksh" ] && CLEANUPSCRIPT="cleanup" || CLEANUPSCRIPT=
-	SINGLETESTFILE="${SINGLETEST##*/}"
+	SINGLETESTFILE="${SINGLETEST
 	cat >>"${RUNFILE_DIR}/${RUNFILES}" << EOF
 [$SINGLETESTDIR]
 tests = ['$SINGLETESTFILE']
@@ -344,7 +344,7 @@ for RUNFILE in $RUNFILES; do
 	fi
 done
 unset IFS
-RUNFILES=${R#,}
+RUNFILES=${R
 if [ "$(id -u)" = "0" ]; then
 	fail "This script must not be run as root."
 fi
@@ -396,13 +396,13 @@ if [ -z "${DISKS}" ]; then
 			else
 				TEST_LOOPBACK=$(sudo "${LOSETUP}" --show -f "${TEST_FILE}") ||
 				    fail "Failed: ${TEST_FILE} -> ${TEST_LOOPBACK}"
-				BASELOOPBACK="${TEST_LOOPBACK##*/}"
+				BASELOOPBACK="${TEST_LOOPBACK
 				DISKS="$DISKS $BASELOOPBACK"
 				LOOPBACKS="$LOOPBACKS $TEST_LOOPBACK"
 			fi
 		done
-		DISKS=${DISKS# }
-		LOOPBACKS=${LOOPBACKS# }
+		DISKS=${DISKS
+		LOOPBACKS=${LOOPBACKS
 	else
 		DISKS="$FILES"
 	fi

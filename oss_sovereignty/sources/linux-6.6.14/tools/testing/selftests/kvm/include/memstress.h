@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * tools/testing/selftests/kvm/include/memstress.h
- *
- * Copyright (C) 2020, Google LLC.
- */
+
+
 
 #ifndef SELFTEST_KVM_MEMSTRESS_H
 #define SELFTEST_KVM_MEMSTRESS_H
@@ -12,10 +8,10 @@
 
 #include "kvm_util.h"
 
-/* Default guest test virtual memory offset */
+
 #define DEFAULT_GUEST_TEST_MEM		0xc0000000
 
-#define DEFAULT_PER_VCPU_MEM_SIZE	(1 << 30) /* 1G */
+#define DEFAULT_PER_VCPU_MEM_SIZE	(1 << 30) 
 
 #define MEMSTRESS_MEM_SLOT_INDEX	1
 
@@ -24,30 +20,30 @@ struct memstress_vcpu_args {
 	uint64_t gva;
 	uint64_t pages;
 
-	/* Only used by the host userspace part of the vCPU thread */
+	
 	struct kvm_vcpu *vcpu;
 	int vcpu_idx;
 };
 
 struct memstress_args {
 	struct kvm_vm *vm;
-	/* The starting address and size of the guest test region. */
+	
 	uint64_t gpa;
 	uint64_t size;
 	uint64_t guest_page_size;
 	uint32_t random_seed;
 	uint32_t write_percent;
 
-	/* Run vCPUs in L2 instead of L1, if the architecture supports it. */
+	
 	bool nested;
-	/* Randomize which pages are accessed by the guest. */
+	
 	bool random_access;
-	/* True if all vCPUs are pinned to pCPUs */
+	
 	bool pin_vcpus;
-	/* The vCPU=>pCPU pinning map. Only valid if pin_vcpus is true. */
+	
 	uint32_t vcpu_to_pcpu[KVM_MAX_VCPUS];
 
- 	/* Test is done, stop running vCPUs. */
+ 	
  	bool stop_vcpus;
 
 	struct memstress_vcpu_args vcpu_args[KVM_MAX_VCPUS];
@@ -80,4 +76,4 @@ void memstress_clear_dirty_log(struct kvm_vm *vm, unsigned long *bitmaps[],
 unsigned long **memstress_alloc_bitmaps(int slots, uint64_t pages_per_slot);
 void memstress_free_bitmaps(unsigned long *bitmaps[], int slots);
 
-#endif /* SELFTEST_KVM_MEMSTRESS_H */
+#endif 

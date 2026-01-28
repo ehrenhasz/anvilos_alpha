@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/fs/befs/endian.h
- *
- * Copyright (C) 2001 Will Dyson <will_dyson@pobox.com>
- *
- * Partially based on similar funtions in the sysv driver.
- */
+
+
 
 #ifndef LINUX_BEFS_ENDIAN
 #define LINUX_BEFS_ENDIAN
@@ -66,7 +60,7 @@ cpu_to_fs16(const struct super_block *sb, u16 n)
 		return (__force fs16)cpu_to_be16(n);
 }
 
-/* Composite types below here */
+
 
 static inline befs_block_run
 fsrun_to_cpu(const struct super_block *sb, befs_disk_block_run n)
@@ -123,4 +117,4 @@ fsds_to_cpu(const struct super_block *sb, const befs_disk_data_stream *n)
 	return data;
 }
 
-#endif				//LINUX_BEFS_ENDIAN
+#endif				

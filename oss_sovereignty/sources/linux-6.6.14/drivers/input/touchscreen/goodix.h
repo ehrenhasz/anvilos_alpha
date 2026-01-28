@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+
 #ifndef __GOODIX_H__
 #define __GOODIX_H__
 
@@ -9,7 +9,7 @@
 #include <linux/input/touchscreen.h>
 #include <linux/regulator/consumer.h>
 
-/* Register defines */
+
 #define GOODIX_REG_MISCTL_DSP_CTL		0x4010
 #define GOODIX_REG_MISCTL_SRAM_BANK		0x4048
 #define GOODIX_REG_MISCTL_MEM_CD_EN		0x4049
@@ -38,10 +38,7 @@
 #define GOODIX_RQST_BAK_REF			0x02
 #define GOODIX_RQST_RESET			0x03
 #define GOODIX_RQST_MAIN_CLOCK			0x04
-/*
- * Unknown request which gets send by the controller aprox.
- * every 34 seconds once it is up and running.
- */
+
 #define GOODIX_RQST_UNKNOWN			0x06
 #define GOODIX_RQST_IDLE			0xFF
 

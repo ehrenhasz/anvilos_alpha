@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/* Copyright(c) 2015-2022 Intel Corporation. */
+
+
 
 #ifndef __SDW_INTEL_AUXDEVICE_H
 #define __SDW_INTEL_AUXDEVICE_H
@@ -15,4 +15,4 @@ struct sdw_intel_link_dev {
 #define auxiliary_dev_to_sdw_intel_link_dev(auxiliary_dev) \
 	container_of(auxiliary_dev, struct sdw_intel_link_dev, auxdev)
 
-#endif /* __SDW_INTEL_AUXDEVICE_H */
+#endif 

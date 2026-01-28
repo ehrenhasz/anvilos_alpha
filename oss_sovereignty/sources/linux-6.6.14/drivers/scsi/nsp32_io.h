@@ -1,10 +1,4 @@
-/*
- * Workbit NinjaSCSI-32Bi/UDE PCI/CardBus SCSI Host Bus Adapter driver
- * I/O routine
- *
- * This software may be used and distributed according to the terms of
- * the GNU General Public License.
- */
+
 
 #ifndef _NSP32_IO_H
 #define _NSP32_IO_H
@@ -48,7 +42,7 @@ static inline unsigned long nsp32_read4(unsigned int base,
 	return inl(base + index);
 }
 
-/*==============================================*/
+
 
 static inline void nsp32_mmio_write1(unsigned long base,
 				     unsigned int  index,
@@ -113,7 +107,7 @@ static inline unsigned long nsp32_mmio_read4(unsigned long base,
 	return le32_to_cpu(readl(ptr));
 }
 
-/*==============================================*/
+
 
 static inline unsigned char nsp32_index_read1(unsigned int base,
 					      unsigned int reg)
@@ -171,7 +165,7 @@ static inline void nsp32_index_write4(unsigned int  base,
 	outw(h,   base + DATA_REG_HI );
 }
 
-/*==============================================*/
+
 
 static inline unsigned char nsp32_mmio_index_read1(unsigned long base,
 						   unsigned int reg)
@@ -223,7 +217,7 @@ static inline void nsp32_mmio_index_write2(unsigned long  base,
 	writew(cpu_to_le16(val), data_ptr );
 }
 
-/*==============================================*/
+
 
 static inline void nsp32_multi_read4(unsigned int   base,
 				     unsigned int   reg,
@@ -255,5 +249,5 @@ static inline void nsp32_fifo_write(unsigned int   base,
 	nsp32_multi_write4(base, FIFO_DATA_LOW, buf, count);
 }
 
-#endif /* _NSP32_IO_H */
-/* end */
+#endif 
+

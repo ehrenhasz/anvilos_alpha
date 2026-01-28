@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _COMEDI_INTERNAL_H
 #define _COMEDI_INTERNAL_H
 
 #include <linux/compiler.h>
 #include <linux/types.h>
 
-/*
- * various internal comedi stuff
- */
+
 
 struct comedi_buf_map;
 struct comedi_devconfig;
@@ -42,7 +40,7 @@ bool comedi_can_auto_free_spriv(struct comedi_subdevice *s);
 extern unsigned int comedi_default_buf_size_kb;
 extern unsigned int comedi_default_buf_maxsize_kb;
 
-/* drivers.c */
+
 
 extern struct comedi_driver *comedi_drivers;
 extern struct mutex comedi_drivers_list_lock;
@@ -56,7 +54,7 @@ int comedi_device_attach(struct comedi_device *dev,
 
 #ifdef CONFIG_PROC_FS
 
-/* proc.c */
+
 
 void comedi_proc_init(void);
 void comedi_proc_cleanup(void);
@@ -70,4 +68,4 @@ static inline void comedi_proc_cleanup(void)
 }
 #endif
 
-#endif /* _COMEDI_INTERNAL_H */
+#endif 

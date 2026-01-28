@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Renesas SuperH DMA Engine support
- *
- * Copyright (C) 2009 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
- * Copyright (C) 2009 Renesas Solutions, Inc. All rights reserved.
- *
- */
+
+
 #ifndef __DMA_SHDMA_H
 #define __DMA_SHDMA_H
 
@@ -16,16 +10,16 @@
 #include <linux/list.h>
 
 #define SH_DMAE_MAX_CHANNELS 20
-#define SH_DMAE_TCR_MAX 0x00FFFFFF	/* 16MB */
+#define SH_DMAE_TCR_MAX 0x00FFFFFF	
 
 struct device;
 
 struct sh_dmae_chan {
 	struct shdma_chan shdma_chan;
-	const struct sh_dmae_slave_config *config; /* Slave DMA configuration */
-	int xmit_shift;			/* log_2(bytes_per_xfer) */
+	const struct sh_dmae_slave_config *config; 
+	int xmit_shift;			
 	void __iomem *base;
-	char dev_id[16];		/* unique name per DMAC of channel */
+	char dev_id[16];		
 	int pm_error;
 	dma_addr_t slave_addr;
 };
@@ -42,9 +36,9 @@ struct sh_dmae_device {
 };
 
 struct sh_dmae_regs {
-	u32 sar; /* SAR / source address */
-	u32 dar; /* DAR / destination address */
-	u32 tcr; /* TCR / transfer count */
+	u32 sar; 
+	u32 dar; 
+	u32 tcr; 
 };
 
 struct sh_dmae_desc {
@@ -58,4 +52,4 @@ struct sh_dmae_desc {
 #define to_sh_dev(chan) container_of(chan->shdma_chan.dma_chan.device,\
 				     struct sh_dmae_device, shdma_dev.dma_dev)
 
-#endif	/* __DMA_SHDMA_H */
+#endif	

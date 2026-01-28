@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for hmc5843 driver
- *
- * Split from hmc5843.c
- * Copyright (C) Josef Gajdusek <atx@atx.name>
- */
+
+
 
 #ifndef HMC5843_CORE_H
 #define HMC5843_CORE_H
@@ -27,15 +22,7 @@ enum hmc5843_ids {
 	HMC5983_ID,
 };
 
-/**
- * struct hmc5843_data	- device specific data
- * @dev:		actual device
- * @lock:		update and read regmap data
- * @regmap:		hardware access register maps
- * @variant:		describe chip variants
- * @scan:		buffer to pack data for passing to
- *			iio_push_to_buffers_with_timestamp()
- */
+
 struct hmc5843_data {
 	struct device *dev;
 	struct mutex lock;
@@ -53,4 +40,4 @@ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
 void hmc5843_common_remove(struct device *dev);
 
 extern const struct dev_pm_ops hmc5843_pm_ops;
-#endif /* HMC5843_CORE_H */
+#endif 

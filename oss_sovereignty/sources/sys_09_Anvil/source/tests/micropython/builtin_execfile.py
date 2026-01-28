@@ -25,7 +25,7 @@ class Filesystem:
     def open(self, file, mode):
         print("open", file, mode)
         if file not in self.files:
-            raise OSError(2)  # ENOENT
+            raise OSError(2)  
         return File(self.files[file])
 try:
     vfs.umount("/")

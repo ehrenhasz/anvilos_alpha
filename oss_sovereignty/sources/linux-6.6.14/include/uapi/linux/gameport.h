@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  Copyright (c) 1999-2002 Vojtech Pavlik
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
+
+
 #ifndef _UAPI_GAMEPORT_H
 #define _UAPI_GAMEPORT_H
 
@@ -26,4 +20,4 @@
 #define GAMEPORT_ID_VENDOR_GRAVIS	0x0009
 #define GAMEPORT_ID_VENDOR_GUILLEMOT	0x000a
 
-#endif /* _UAPI_GAMEPORT_H */
+#endif 

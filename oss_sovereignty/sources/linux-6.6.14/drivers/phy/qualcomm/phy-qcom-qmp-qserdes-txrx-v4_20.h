@@ -1,19 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+
 
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_V4_20_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_V4_20_H_
 
-/* Only for QMP V4_20 PHY - TX registers */
+
 #define QSERDES_V4_20_TX_LANE_MODE_1			0x88
 #define QSERDES_V4_20_TX_LANE_MODE_2			0x8c
 #define QSERDES_V4_20_TX_LANE_MODE_3			0x90
 #define QSERDES_V4_20_TX_VMODE_CTRL1			0xc4
 #define QSERDES_V4_20_TX_PI_QEC_CTRL			0xe0
 
-/* Only for QMP V4_20 PHY - RX registers */
+
 #define QSERDES_V4_20_RX_FO_GAIN_RATE2			0x008
 #define QSERDES_V4_20_RX_UCDR_PI_CONTROLS		0x058
 #define QSERDES_V4_20_RX_AUX_DATA_TCOARSE_TFINE		0x0ac

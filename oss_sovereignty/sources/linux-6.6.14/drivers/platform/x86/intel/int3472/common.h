@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Author: Dan Scally <djrscally@gmail.com> */
+
+
 
 #ifndef _INTEL_SKL_INT3472_H
 #define _INTEL_SKL_INT3472_H
@@ -11,12 +11,12 @@
 #include <linux/regulator/machine.h>
 #include <linux/types.h>
 
-/* FIXME drop this once the I2C_DEV_NAME_FORMAT macro has been added to include/linux/i2c.h */
+
 #ifndef I2C_DEV_NAME_FORMAT
 #define I2C_DEV_NAME_FORMAT					"i2c-%s"
 #endif
 
-/* PMIC GPIO Types */
+
 #define INT3472_GPIO_TYPE_RESET					0x00
 #define INT3472_GPIO_TYPE_POWERDOWN				0x01
 #define INT3472_GPIO_TYPE_POWER_ENABLE				0x0b
@@ -55,13 +55,7 @@ struct platform_device;
 
 struct int3472_cldb {
 	u8 version;
-	/*
-	 * control logic type
-	 * 0: UNKNOWN
-	 * 1: DISCRETE(CRD-D)
-	 * 2: PMIC TPS68470
-	 * 3: PMIC uP6641
-	 */
+	
 	u8 control_logic_type;
 	u8 control_logic_id;
 	u8 sensor_card_sku;
@@ -79,7 +73,7 @@ struct int3472_discrete_device {
 	const struct int3472_sensor_config *sensor_config;
 
 	struct int3472_gpio_regulator {
-		/* SUPPLY_MAP_COUNT * 2 to make room for second sensor mappings */
+		
 		struct regulator_consumer_supply supply_map[GPIO_REGULATOR_SUPPLY_MAP_COUNT * 2];
 		char regulator_name[GPIO_REGULATOR_NAME_LENGTH];
 		char supply_name[GPIO_REGULATOR_SUPPLY_NAME_LENGTH];
@@ -104,8 +98,8 @@ struct int3472_discrete_device {
 		struct gpio_desc *gpio;
 	} pled;
 
-	unsigned int ngpios; /* how many GPIOs have we seen */
-	unsigned int n_sensor_gpios; /* how many have we mapped to sensor */
+	unsigned int ngpios; 
+	unsigned int n_sensor_gpios; 
 	struct gpiod_lookup_table gpios;
 };
 

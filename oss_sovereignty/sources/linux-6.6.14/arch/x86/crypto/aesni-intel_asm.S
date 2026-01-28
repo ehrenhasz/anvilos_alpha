@@ -1,42 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Implement AES algorithm in Intel AES-NI instructions.
- *
- * The white paper of AES-NI instructions can be downloaded from:
- *   http://softwarecommunity.intel.com/isn/downloads/intelavx/AES-Instructions-Set_WP.pdf
- *
- * Copyright (C) 2008, Intel Corp.
- *    Author: Huang Ying <ying.huang@intel.com>
- *            Vinodh Gopal <vinodh.gopal@intel.com>
- *            Kahraman Akdemir
- *
- * Added RFC4106 AES-GCM support for 128-bit keys under the AEAD
- * interface for 64-bit kernels.
- *    Authors: Erdinc Ozturk (erdinc.ozturk@intel.com)
- *             Aidan O'Mahony (aidan.o.mahony@intel.com)
- *             Adrian Hoban <adrian.hoban@intel.com>
- *             James Guilford (james.guilford@intel.com)
- *             Gabriele Paoloni <gabriele.paoloni@intel.com>
- *             Tadeusz Struk (tadeusz.struk@intel.com)
- *             Wajdi Feghali (wajdi.k.feghali@intel.com)
- *    Copyright (c) 2010, Intel Corporation.
- *
- * Ported x86_64 version to x86:
- *    Author: Mathias Krause <minipli@googlemail.com>
- */
+
+
 
 #include <linux/linkage.h>
 #include <asm/frame.h>
 #include <asm/nospec-branch.h>
 
-/*
- * The following macros are used to move an (un)aligned 16 byte value to/from
- * an XMM register.  This can done for either FP or integer values, for FP use
- * movaps (move aligned packed single) or integer use movdqa (move double quad
- * aligned).  It doesn't make a performance difference which instruction is used
- * since Nehalem (original Core i7) was released.  However, the movaps is a byte
- * shorter, so that is the one we'll use for now. (same for unaligned).
- */
+
 #define MOVADQ	movaps
 #define MOVUDQ	movups
 
@@ -93,22 +62,22 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 #define OrigIV 16*3
 #define CurCount 16*4
 #define PBlockLen 16*5
-#define	HashKey		16*6	// store HashKey <<1 mod poly here
-#define	HashKey_2	16*7	// store HashKey^2 <<1 mod poly here
-#define	HashKey_3	16*8	// store HashKey^3 <<1 mod poly here
-#define	HashKey_4	16*9	// store HashKey^4 <<1 mod poly here
-#define	HashKey_k	16*10	// store XOR of High 64 bits and Low 64
-				// bits of  HashKey <<1 mod poly here
-				//(for Karatsuba purposes)
-#define	HashKey_2_k	16*11	// store XOR of High 64 bits and Low 64
-				// bits of  HashKey^2 <<1 mod poly here
-				// (for Karatsuba purposes)
-#define	HashKey_3_k	16*12	// store XOR of High 64 bits and Low 64
-				// bits of  HashKey^3 <<1 mod poly here
-				// (for Karatsuba purposes)
-#define	HashKey_4_k	16*13	// store XOR of High 64 bits and Low 64
-				// bits of  HashKey^4 <<1 mod poly here
-				// (for Karatsuba purposes)
+#define	HashKey		16*6	
+#define	HashKey_2	16*7	
+#define	HashKey_3	16*8	
+#define	HashKey_4	16*9	
+#define	HashKey_k	16*10	
+				
+				
+#define	HashKey_2_k	16*11	
+				
+				
+#define	HashKey_3_k	16*12	
+				
+				
+#define	HashKey_4_k	16*13	
+				
+				
 
 #define arg1 rdi
 #define arg2 rsi
@@ -498,15 +467,7 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 .endm
 
 #ifdef __x86_64__
-/* GHASH_MUL MACRO to implement: Data*HashKey mod (128,127,126,121,0)
-*
-*
-* Input: A and B (128-bits each, bit-reflected)
-* Output: C = A*B*x mod poly, (i.e. >>1 )
-* To compute GH = GH*HashKey mod poly, give HK = HashKey<<1 mod poly as input
-* GH = GH * HK * x mod poly which is equivalent to GH*HashKey mod poly.
-*
-*/
+
 .macro GHASH_MUL GH HK TMP1 TMP2 TMP3 TMP4 TMP5
 	movdqa	  \GH, \TMP1
 	pshufd	  $78, \GH, \TMP2
@@ -613,7 +574,7 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 
 	movdqu	   \TMP6, \TMP7
 
-	/* read the last <16B of AAD */
+	
 .L_get_AAD_rest\@:
 	test	   %r11, %r11
 	je	   .L_get_AAD_done\@
@@ -772,16 +733,7 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 .L_partial_block_done_\@:
 .endm # PARTIAL_BLOCK
 
-/*
-* if a = number of total plaintext bytes
-* b = floor(a/16)
-* num_initial_blocks = b mod 4
-* encrypt the initial num_initial_blocks blocks and apply ghash on
-* the ciphertext
-* %r10, %r11, %r12, %rax, %xmm5, %xmm6, %xmm7, %xmm8, %xmm9 registers
-* are clobbered
-* arg1, %arg2, %arg3 are used as a pointer only, not modified
-*/
+
 
 
 .macro INITIAL_BLOCKS_ENC_DEC TMP1 TMP2 TMP3 TMP4 TMP5 XMM0 XMM1 \
@@ -863,11 +815,7 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 	cmp	   $64, %r13
 	jl	.L_initial_blocks_done\@
 	# no need for precomputed values
-/*
-*
-* Precomputations for HashKey parallel with encryption of first 4 blocks.
-* Haskey_i_k holds XORed values of the low and high parts of the Haskey_i
-*/
+
 	MOVADQ	   ONE(%RIP),\TMP1
 	paddd	   \TMP1, \XMM0              # INCR Y0
 	MOVADQ	   \XMM0, \XMM1
@@ -967,12 +915,7 @@ ALL_F:      .octa 0xffffffffffffffffffffffffffffffff
 
 .endm
 
-/*
-* encrypt 4 blocks at a time
-* ghash the 4 previously encrypted ciphertext blocks
-* arg1, %arg3, %arg4 are used as pointers only, not modified
-* %r11 is the data offset value
-*/
+
 .macro GHASH_4_ENCRYPT_4_PARALLEL_enc TMP1 TMP2 TMP3 TMP4 TMP5 \
 TMP6 XMM0 XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 operation
 
@@ -1175,12 +1118,7 @@ TMP6 XMM0 XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 operation
 	pxor	  \XMM5, \XMM1
 .endm
 
-/*
-* decrypt 4 blocks at a time
-* ghash the 4 previously decrypted ciphertext blocks
-* arg1, %arg3, %arg4 are used as pointers only, not modified
-* %r11 is the data offset value
-*/
+
 .macro GHASH_4_ENCRYPT_4_PARALLEL_dec TMP1 TMP2 TMP3 TMP4 TMP5 \
 TMP6 XMM0 XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 operation
 
@@ -1387,7 +1325,7 @@ TMP6 XMM0 XMM1 XMM2 XMM3 XMM4 XMM5 XMM6 XMM7 XMM8 operation
 	pxor	  \XMM5, \XMM1
 .endm
 
-/* GHASH the last 4 ciphertext blocks. */
+
 .macro	GHASH_LAST_4 TMP1 TMP2 TMP3 TMP4 TMP5 TMP6 \
 TMP7 XMM1 XMM2 XMM3 XMM4 XMMDst
 
@@ -1485,9 +1423,7 @@ TMP7 XMM1 XMM2 XMM3 XMM4 XMMDst
 .endm
 
 
-/* Encryption of a single block
-* uses eax & r10
-*/
+
 
 .macro ENCRYPT_SINGLE_BLOCK XMM0 TMP1
 
@@ -1507,86 +1443,7 @@ _esb_loop_\@:
 	MOVADQ		(%r10),\TMP1
 	aesenclast	\TMP1,\XMM0
 .endm
-/*****************************************************************************
-* void aesni_gcm_dec(void *aes_ctx,    // AES Key schedule. Starts on a 16 byte boundary.
-*                   struct gcm_context_data *data
-*                                      // Context data
-*                   u8 *out,           // Plaintext output. Encrypt in-place is allowed.
-*                   const u8 *in,      // Ciphertext input
-*                   u64 plaintext_len, // Length of data in bytes for decryption.
-*                   u8 *iv,            // Pre-counter block j0: 4 byte salt (from Security Association)
-*                                      // concatenated with 8 byte Initialisation Vector (from IPSec ESP Payload)
-*                                      // concatenated with 0x00000001. 16-byte aligned pointer.
-*                   u8 *hash_subkey,   // H, the Hash sub key input. Data starts on a 16-byte boundary.
-*                   const u8 *aad,     // Additional Authentication Data (AAD)
-*                   u64 aad_len,       // Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 bytes
-*                   u8  *auth_tag,     // Authenticated Tag output. The driver will compare this to the
-*                                      // given authentication tag and only return the plaintext if they match.
-*                   u64 auth_tag_len); // Authenticated Tag Length in bytes. Valid values are 16
-*                                      // (most likely), 12 or 8.
-*
-* Assumptions:
-*
-* keys:
-*       keys are pre-expanded and aligned to 16 bytes. we are using the first
-*       set of 11 keys in the data structure void *aes_ctx
-*
-* iv:
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                             Salt  (From the SA)               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                     Initialization Vector                     |
-*       |         (This is the sequence number from IPSec header)       |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x1                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*
-*
-* AAD:
-*       AAD padded to 128 bits with 0
-*       for example, assume AAD is a u32 vector
-*
-*       if AAD is 8 bytes:
-*       AAD[3] = {A0, A1};
-*       padded AAD in xmm register = {A1 A0 0 0}
-*
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                               SPI (A1)                        |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                     32-bit Sequence Number (A0)               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x0                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*                                       AAD Format with 32-bit Sequence Number
-*
-*       if AAD is 12 bytes:
-*       AAD[3] = {A0, A1, A2};
-*       padded AAD in xmm register = {A2 A1 A0 0}
-*
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                               SPI (A2)                        |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                 64-bit Extended Sequence Number {A1,A0}       |
-*       |                                                               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x0                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*                        AAD Format with 64-bit Extended Sequence Number
-*
-* poly = x^128 + x^127 + x^126 + x^121 + 1
-*
-*****************************************************************************/
+
 SYM_FUNC_START(aesni_gcm_dec)
 	FUNC_SAVE
 
@@ -1598,83 +1455,7 @@ SYM_FUNC_START(aesni_gcm_dec)
 SYM_FUNC_END(aesni_gcm_dec)
 
 
-/*****************************************************************************
-* void aesni_gcm_enc(void *aes_ctx,      // AES Key schedule. Starts on a 16 byte boundary.
-*                    struct gcm_context_data *data
-*                                        // Context data
-*                    u8 *out,            // Ciphertext output. Encrypt in-place is allowed.
-*                    const u8 *in,       // Plaintext input
-*                    u64 plaintext_len,  // Length of data in bytes for encryption.
-*                    u8 *iv,             // Pre-counter block j0: 4 byte salt (from Security Association)
-*                                        // concatenated with 8 byte Initialisation Vector (from IPSec ESP Payload)
-*                                        // concatenated with 0x00000001. 16-byte aligned pointer.
-*                    u8 *hash_subkey,    // H, the Hash sub key input. Data starts on a 16-byte boundary.
-*                    const u8 *aad,      // Additional Authentication Data (AAD)
-*                    u64 aad_len,        // Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 bytes
-*                    u8 *auth_tag,       // Authenticated Tag output.
-*                    u64 auth_tag_len);  // Authenticated Tag Length in bytes. Valid values are 16 (most likely),
-*                                        // 12 or 8.
-*
-* Assumptions:
-*
-* keys:
-*       keys are pre-expanded and aligned to 16 bytes. we are using the
-*       first set of 11 keys in the data structure void *aes_ctx
-*
-*
-* iv:
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                             Salt  (From the SA)               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                     Initialization Vector                     |
-*       |         (This is the sequence number from IPSec header)       |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x1                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*
-*
-* AAD:
-*       AAD padded to 128 bits with 0
-*       for example, assume AAD is a u32 vector
-*
-*       if AAD is 8 bytes:
-*       AAD[3] = {A0, A1};
-*       padded AAD in xmm register = {A1 A0 0 0}
-*
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                               SPI (A1)                        |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                     32-bit Sequence Number (A0)               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x0                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*                                 AAD Format with 32-bit Sequence Number
-*
-*       if AAD is 12 bytes:
-*       AAD[3] = {A0, A1, A2};
-*       padded AAD in xmm register = {A2 A1 A0 0}
-*
-*       0                   1                   2                   3
-*       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                               SPI (A2)                        |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                 64-bit Extended Sequence Number {A1,A0}       |
-*       |                                                               |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*       |                              0x0                              |
-*       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-*
-*                         AAD Format with 64-bit Extended Sequence Number
-*
-* poly = x^128 + x^127 + x^126 + x^121 + 1
-***************************************************************************/
+
 SYM_FUNC_START(aesni_gcm_enc)
 	FUNC_SAVE
 
@@ -1686,17 +1467,7 @@ SYM_FUNC_START(aesni_gcm_enc)
 	RET
 SYM_FUNC_END(aesni_gcm_enc)
 
-/*****************************************************************************
-* void aesni_gcm_init(void *aes_ctx,      // AES Key schedule. Starts on a 16 byte boundary.
-*                     struct gcm_context_data *data,
-*                                         // context data
-*                     u8 *iv,             // Pre-counter block j0: 4 byte salt (from Security Association)
-*                                         // concatenated with 8 byte Initialisation Vector (from IPSec ESP Payload)
-*                                         // concatenated with 0x00000001. 16-byte aligned pointer.
-*                     u8 *hash_subkey,    // H, the Hash sub key input. Data starts on a 16-byte boundary.
-*                     const u8 *aad,      // Additional Authentication Data (AAD)
-*                     u64 aad_len)        // Length of AAD in bytes.
-*/
+
 SYM_FUNC_START(aesni_gcm_init)
 	FUNC_SAVE
 	GCM_INIT %arg3, %arg4,%arg5, %arg6
@@ -1704,14 +1475,7 @@ SYM_FUNC_START(aesni_gcm_init)
 	RET
 SYM_FUNC_END(aesni_gcm_init)
 
-/*****************************************************************************
-* void aesni_gcm_enc_update(void *aes_ctx,      // AES Key schedule. Starts on a 16 byte boundary.
-*                    struct gcm_context_data *data,
-*                                        // context data
-*                    u8 *out,            // Ciphertext output. Encrypt in-place is allowed.
-*                    const u8 *in,       // Plaintext input
-*                    u64 plaintext_len,  // Length of data in bytes for encryption.
-*/
+
 SYM_FUNC_START(aesni_gcm_enc_update)
 	FUNC_SAVE
 	GCM_ENC_DEC enc
@@ -1719,14 +1483,7 @@ SYM_FUNC_START(aesni_gcm_enc_update)
 	RET
 SYM_FUNC_END(aesni_gcm_enc_update)
 
-/*****************************************************************************
-* void aesni_gcm_dec_update(void *aes_ctx,      // AES Key schedule. Starts on a 16 byte boundary.
-*                    struct gcm_context_data *data,
-*                                        // context data
-*                    u8 *out,            // Ciphertext output. Encrypt in-place is allowed.
-*                    const u8 *in,       // Plaintext input
-*                    u64 plaintext_len,  // Length of data in bytes for encryption.
-*/
+
 SYM_FUNC_START(aesni_gcm_dec_update)
 	FUNC_SAVE
 	GCM_ENC_DEC dec
@@ -1734,14 +1491,7 @@ SYM_FUNC_START(aesni_gcm_dec_update)
 	RET
 SYM_FUNC_END(aesni_gcm_dec_update)
 
-/*****************************************************************************
-* void aesni_gcm_finalize(void *aes_ctx,      // AES Key schedule. Starts on a 16 byte boundary.
-*                    struct gcm_context_data *data,
-*                                        // context data
-*                    u8 *auth_tag,       // Authenticated Tag output.
-*                    u64 auth_tag_len);  // Authenticated Tag Length in bytes. Valid values are 16 (most likely),
-*                                        // 12 or 8.
-*/
+
 SYM_FUNC_START(aesni_gcm_finalize)
 	FUNC_SAVE
 	GCM_COMPLETE %arg3 %arg4
@@ -1819,10 +1569,7 @@ SYM_FUNC_START_LOCAL(_key_expansion_256b)
 	RET
 SYM_FUNC_END(_key_expansion_256b)
 
-/*
- * int aesni_set_key(struct crypto_aes_ctx *ctx, const u8 *in_key,
- *                   unsigned int key_len)
- */
+
 SYM_FUNC_START(aesni_set_key)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -1934,9 +1681,7 @@ SYM_FUNC_START(aesni_set_key)
 	RET
 SYM_FUNC_END(aesni_set_key)
 
-/*
- * void aesni_enc(const void *ctx, u8 *dst, const u8 *src)
- */
+
 SYM_FUNC_START(aesni_enc)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -1958,18 +1703,7 @@ SYM_FUNC_START(aesni_enc)
 	RET
 SYM_FUNC_END(aesni_enc)
 
-/*
- * _aesni_enc1:		internal ABI
- * input:
- *	KEYP:		key struct pointer
- *	KLEN:		round count
- *	STATE:		initial state (input)
- * output:
- *	STATE:		finial state (output)
- * changed:
- *	KEY
- *	TKEYP (T1)
- */
+
 SYM_FUNC_START_LOCAL(_aesni_enc1)
 	movaps (KEYP), KEY		# key
 	mov KEYP, TKEYP
@@ -2015,24 +1749,7 @@ SYM_FUNC_START_LOCAL(_aesni_enc1)
 	RET
 SYM_FUNC_END(_aesni_enc1)
 
-/*
- * _aesni_enc4:	internal ABI
- * input:
- *	KEYP:		key struct pointer
- *	KLEN:		round count
- *	STATE1:		initial state (input)
- *	STATE2
- *	STATE3
- *	STATE4
- * output:
- *	STATE1:		finial state (output)
- *	STATE2
- *	STATE3
- *	STATE4
- * changed:
- *	KEY
- *	TKEYP (T1)
- */
+
 SYM_FUNC_START_LOCAL(_aesni_enc4)
 	movaps (KEYP), KEY		# key
 	mov KEYP, TKEYP
@@ -2123,9 +1840,7 @@ SYM_FUNC_START_LOCAL(_aesni_enc4)
 	RET
 SYM_FUNC_END(_aesni_enc4)
 
-/*
- * void aesni_dec (const void *ctx, u8 *dst, const u8 *src)
- */
+
 SYM_FUNC_START(aesni_dec)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2148,18 +1863,7 @@ SYM_FUNC_START(aesni_dec)
 	RET
 SYM_FUNC_END(aesni_dec)
 
-/*
- * _aesni_dec1:		internal ABI
- * input:
- *	KEYP:		key struct pointer
- *	KLEN:		key length
- *	STATE:		initial state (input)
- * output:
- *	STATE:		finial state (output)
- * changed:
- *	KEY
- *	TKEYP (T1)
- */
+
 SYM_FUNC_START_LOCAL(_aesni_dec1)
 	movaps (KEYP), KEY		# key
 	mov KEYP, TKEYP
@@ -2205,24 +1909,7 @@ SYM_FUNC_START_LOCAL(_aesni_dec1)
 	RET
 SYM_FUNC_END(_aesni_dec1)
 
-/*
- * _aesni_dec4:	internal ABI
- * input:
- *	KEYP:		key struct pointer
- *	KLEN:		key length
- *	STATE1:		initial state (input)
- *	STATE2
- *	STATE3
- *	STATE4
- * output:
- *	STATE1:		finial state (output)
- *	STATE2
- *	STATE3
- *	STATE4
- * changed:
- *	KEY
- *	TKEYP (T1)
- */
+
 SYM_FUNC_START_LOCAL(_aesni_dec4)
 	movaps (KEYP), KEY		# key
 	mov KEYP, TKEYP
@@ -2313,10 +2000,7 @@ SYM_FUNC_START_LOCAL(_aesni_dec4)
 	RET
 SYM_FUNC_END(_aesni_dec4)
 
-/*
- * void aesni_ecb_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *		      size_t len)
- */
+
 SYM_FUNC_START(aesni_ecb_enc)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2373,10 +2057,7 @@ SYM_FUNC_START(aesni_ecb_enc)
 	RET
 SYM_FUNC_END(aesni_ecb_enc)
 
-/*
- * void aesni_ecb_dec(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *		      size_t len);
- */
+
 SYM_FUNC_START(aesni_ecb_dec)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2434,10 +2115,7 @@ SYM_FUNC_START(aesni_ecb_dec)
 	RET
 SYM_FUNC_END(aesni_ecb_dec)
 
-/*
- * void aesni_cbc_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *		      size_t len, u8 *iv)
- */
+
 SYM_FUNC_START(aesni_cbc_enc)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2478,10 +2156,7 @@ SYM_FUNC_START(aesni_cbc_enc)
 	RET
 SYM_FUNC_END(aesni_cbc_enc)
 
-/*
- * void aesni_cbc_dec(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *		      size_t len, u8 *iv)
- */
+
 SYM_FUNC_START(aesni_cbc_dec)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2571,10 +2246,7 @@ SYM_FUNC_START(aesni_cbc_dec)
 	RET
 SYM_FUNC_END(aesni_cbc_dec)
 
-/*
- * void aesni_cts_cbc_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *			  size_t len, u8 *iv)
- */
+
 SYM_FUNC_START(aesni_cts_cbc_enc)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2628,10 +2300,7 @@ SYM_FUNC_START(aesni_cts_cbc_enc)
 	RET
 SYM_FUNC_END(aesni_cts_cbc_enc)
 
-/*
- * void aesni_cts_cbc_dec(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *			  size_t len, u8 *iv)
- */
+
 SYM_FUNC_START(aesni_cts_cbc_dec)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2705,17 +2374,7 @@ SYM_FUNC_END(aesni_cts_cbc_dec)
 .popsection
 
 #ifdef __x86_64__
-/*
- * _aesni_inc_init:	internal ABI
- *	setup registers used by _aesni_inc
- * input:
- *	IV
- * output:
- *	CTR:	== IV, in little endian
- *	TCTR_LOW: == lower qword of CTR
- *	INC:	== 1, in little endian
- *	BSWAP_MASK == endian swapping mask
- */
+
 SYM_FUNC_START_LOCAL(_aesni_inc_init)
 	movaps .Lbswap_mask(%rip), BSWAP_MASK
 	movaps IV, CTR
@@ -2726,21 +2385,7 @@ SYM_FUNC_START_LOCAL(_aesni_inc_init)
 	RET
 SYM_FUNC_END(_aesni_inc_init)
 
-/*
- * _aesni_inc:		internal ABI
- *	Increase IV by 1, IV is in big endian
- * input:
- *	IV
- *	CTR:	== IV, in little endian
- *	TCTR_LOW: == lower qword of CTR
- *	INC:	== 1, in little endian
- *	BSWAP_MASK == endian swapping mask
- * output:
- *	IV:	Increase by 1
- * changed:
- *	CTR:	== output IV, in little endian
- *	TCTR_LOW: == lower qword of CTR
- */
+
 SYM_FUNC_START_LOCAL(_aesni_inc)
 	paddq INC, CTR
 	add $1, TCTR_LOW
@@ -2754,10 +2399,7 @@ SYM_FUNC_START_LOCAL(_aesni_inc)
 	RET
 SYM_FUNC_END(_aesni_inc)
 
-/*
- * void aesni_ctr_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
- *		      size_t len, u8 *iv)
- */
+
 SYM_FUNC_START(aesni_ctr_enc)
 	FRAME_BEGIN
 	cmp $16, LEN
@@ -2825,17 +2467,7 @@ SYM_FUNC_END(aesni_ctr_enc)
 	.octa 0x00000000000000010000000000000087
 .previous
 
-/*
- * _aesni_gf128mul_x_ble:		internal ABI
- *	Multiply in GF(2^128) for XTS IVs
- * input:
- *	IV:	current IV
- *	GF128MUL_MASK == mask with 0x87 and 0x01
- * output:
- *	IV:	next IV
- * changed:
- *	CTR:	== temporary value
- */
+
 #define _aesni_gf128mul_x_ble() \
 	pshufd $0x13, IV, KEY; \
 	paddq IV, IV; \
@@ -2843,10 +2475,7 @@ SYM_FUNC_END(aesni_ctr_enc)
 	pand GF128MUL_MASK, KEY; \
 	pxor KEY, IV;
 
-/*
- * void aesni_xts_encrypt(const struct crypto_aes_ctx *ctx, u8 *dst,
- *			  const u8 *src, unsigned int len, le128 *iv)
- */
+
 SYM_FUNC_START(aesni_xts_encrypt)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -2970,8 +2599,8 @@ SYM_FUNC_START(aesni_xts_encrypt)
 #else
 	lea .Lcts_permute_table(%rip), T1
 #endif
-	add LEN, INP		/* rewind input pointer */
-	add $16, LEN		/* # bytes in final block */
+	add LEN, INP		
+	add $16, LEN		
 	movups (INP), IN1
 
 	mov T1, IVP
@@ -2998,10 +2627,7 @@ SYM_FUNC_START(aesni_xts_encrypt)
 	jmp .Lxts_enc_ret
 SYM_FUNC_END(aesni_xts_encrypt)
 
-/*
- * void aesni_xts_decrypt(const struct crypto_aes_ctx *ctx, u8 *dst,
- *			  const u8 *src, unsigned int len, le128 *iv)
- */
+
 SYM_FUNC_START(aesni_xts_decrypt)
 	FRAME_BEGIN
 #ifndef __x86_64__
@@ -3132,8 +2758,8 @@ SYM_FUNC_START(aesni_xts_decrypt)
 #else
 	lea .Lcts_permute_table(%rip), T1
 #endif
-	add LEN, INP		/* rewind input pointer */
-	add $16, LEN		/* # bytes in final block */
+	add LEN, INP		
+	add $16, LEN		
 	movups (INP), IN1
 
 	mov T1, IVP

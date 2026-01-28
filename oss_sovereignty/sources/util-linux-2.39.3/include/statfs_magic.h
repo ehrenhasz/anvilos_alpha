@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_STATFS_MAGIC_H
 #define UTIL_LINUX_STATFS_MAGIC_H
 
@@ -9,22 +6,14 @@
 # include <sys/statfs.h>
 #endif
 
-/*
- * If possible then don't depend on internal libc __SWORD_TYPE type.
- */
+
 #ifdef __GNUC__
 #define F_TYPE_EQUAL(a, b) (a == (__typeof__(a)) b)
 #else
 #define F_TYPE_EQUAL(a, b) (a == (__SWORD_TYPE) b)
 #endif
 
-/*
- *  Unfortunately, Linux kernel header file <linux/magic.h> is incomplete
- *  mess and kernel returns by statfs f_type many numbers that are nowhere
- *  specified (in API).
- *
- *  This is collection of the magic numbers.
- */
+
 #define STATFS_ADFS_MAGIC	0xadf5
 #define STATFS_AFFS_MAGIC	0xadff
 #define STATFS_AFS_MAGIC	0x5346414F
@@ -102,5 +91,5 @@
 #define STATFS_XENFS_MAGIC	0xabba1974
 #define STATFS_XFS_MAGIC	0x58465342
 
-#endif /* UTIL_LINUX_STATFS_MAGIC_H */
+#endif 
 

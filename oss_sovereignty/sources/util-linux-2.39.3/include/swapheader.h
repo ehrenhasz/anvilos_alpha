@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef _SWAPHEADER_H
 #define _SWAPHEADER_H
 
@@ -14,7 +11,7 @@
 #include <stdint.h>
 
 struct swap_header_v1_2 {
-	char	      bootbits[1024];    /* Space for disklabel etc. */
+	char	      bootbits[1024];    
 	uint32_t      version;
 	uint32_t      last_page;
 	uint32_t      nr_badpages;
@@ -24,4 +21,4 @@ struct swap_header_v1_2 {
 	uint32_t      badpages[1];
 };
 
-#endif /* _SWAPHEADER_H */
+#endif 

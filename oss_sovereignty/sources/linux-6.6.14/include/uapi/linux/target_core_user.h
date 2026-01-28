@@ -1,52 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef __TARGET_CORE_USER_H
 #define __TARGET_CORE_USER_H
 
-/* This header will be used by application too */
+
 
 #include <linux/types.h>
 #include <linux/uio.h>
 
 #define TCMU_VERSION "2.0"
 
-/**
- * DOC: Ring Design
- * Ring Design
- * -----------
- *
- * The mmaped area is divided into three parts:
- * 1) The mailbox (struct tcmu_mailbox, below);
- * 2) The command ring;
- * 3) Everything beyond the command ring (data).
- *
- * The mailbox tells userspace the offset of the command ring from the
- * start of the shared memory region, and how big the command ring is.
- *
- * The kernel passes SCSI commands to userspace by putting a struct
- * tcmu_cmd_entry in the ring, updating mailbox->cmd_head, and poking
- * userspace via UIO's interrupt mechanism.
- *
- * tcmu_cmd_entry contains a header. If the header type is PAD,
- * userspace should skip hdr->length bytes (mod cmdr_size) to find the
- * next cmd_entry.
- *
- * Otherwise, the entry will contain offsets into the mmaped area that
- * contain the cdb and data buffers -- the latter accessible via the
- * iov array. iov addresses are also offsets into the shared area.
- *
- * When userspace is completed handling the command, set
- * entry->rsp.scsi_status, fill in rsp.sense_buffer if appropriate,
- * and also set mailbox->cmd_tail equal to the old cmd_tail plus
- * hdr->length, mod cmdr_size. If cmd_tail doesn't equal cmd_head, it
- * should process the next packet the same way, and so on.
- */
+
 
 #define TCMU_MAILBOX_VERSION 2
-#define ALIGN_SIZE 64 /* Should be enough for most CPUs */
-#define TCMU_MAILBOX_FLAG_CAP_OOOC (1 << 0) /* Out-of-order completions */
-#define TCMU_MAILBOX_FLAG_CAP_READ_LEN (1 << 1) /* Read data length */
-#define TCMU_MAILBOX_FLAG_CAP_TMR (1 << 2) /* TMR notifications */
-#define TCMU_MAILBOX_FLAG_CAP_KEEP_BUF (1<<3) /* Keep buf after cmd completion */
+#define ALIGN_SIZE 64 
+#define TCMU_MAILBOX_FLAG_CAP_OOOC (1 << 0) 
+#define TCMU_MAILBOX_FLAG_CAP_READ_LEN (1 << 1) 
+#define TCMU_MAILBOX_FLAG_CAP_TMR (1 << 2) 
+#define TCMU_MAILBOX_FLAG_CAP_KEEP_BUF (1<<3) 
 
 struct tcmu_mailbox {
 	__u16 version;
@@ -56,7 +26,7 @@ struct tcmu_mailbox {
 
 	__u32 cmd_head;
 
-	/* Updated by user. On its own cacheline */
+	
 	__u32 cmd_tail __attribute__((__aligned__(ALIGN_SIZE)));
 
 } __packed;
@@ -67,9 +37,7 @@ enum tcmu_opcode {
 	TCMU_OP_TMR,
 };
 
-/*
- * Only a few opcodes, and length is 8-byte aligned, so use low bits for opcode.
- */
+
 struct tcmu_cmd_entry_hdr {
 	__u32 len_op;
 	__u16 cmd_id;
@@ -105,7 +73,7 @@ static inline void tcmu_hdr_set_len(__u32 *len_op, __u32 len)
 	*len_op |= len;
 }
 
-/* Currently the same as SCSI_SENSE_BUFFERSIZE */
+
 #define TCMU_SENSE_BUFFERSIZE 96
 
 struct tcmu_cmd_entry {
@@ -143,7 +111,7 @@ struct tcmu_tmr_entry {
 #define TCMU_TMR_LUN_RESET		5
 #define TCMU_TMR_TARGET_WARM_RESET	6
 #define TCMU_TMR_TARGET_COLD_RESET	7
-/* Pseudo reset due to received PR OUT */
+
 #define TCMU_TMR_LUN_RESET_PRO		128
 	__u8 tmr_type;
 

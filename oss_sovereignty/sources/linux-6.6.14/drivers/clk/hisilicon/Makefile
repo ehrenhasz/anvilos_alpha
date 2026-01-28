@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Hisilicon Clock specific Makefile
-#
+
+
+
+
 
 obj-y	+= clk.o clkgate-separated.o clkdivider-hi6220.o clk-hisi-phase.o
 

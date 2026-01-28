@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2019, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
+
+
 #ifndef __PERF_EVSWITCH_H
 #define __PERF_EVSWITCH_H 1
 
@@ -28,4 +28,4 @@ bool evswitch__discard(struct evswitch *evswitch, struct evsel *evsel);
 	OPT_BOOLEAN(0, "show-on-off-events", &(evswitch)->show_on_off_events,		  \
 		    "Show the on/off switch events, used with --switch-on and --switch-off")
 
-#endif /* __PERF_EVSWITCH_H */
+#endif 

@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef LINUX_VERSION_H
 #define LINUX_VERSION_H
 
@@ -15,4 +12,4 @@
 
 int get_linux_version(void);
 
-#endif /* LINUX_VERSION_H */
+#endif 

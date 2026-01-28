@@ -1,16 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+
 #ifndef __SOUND_HDSPM_H
 #define __SOUND_HDSPM_H
-/*
- *   Copyright (C) 2003 Winfried Ritsch (IEM)
- *   based on hdsp.h from Thomas Charbonnel (thomas@undata.org)
- */
+
 
 #ifdef __linux__
 #include <linux/types.h>
 #endif
 
-/* Maximum channels is 64 even on 56Mode you have 64playbacks to matrix */
+
 #define HDSPM_MAX_CHANNELS      64
 
 enum hdspm_io_type {
@@ -27,7 +24,7 @@ enum hdspm_speed {
 	qs
 };
 
-/* -------------------- IOCTL Peak/RMS Meters -------------------- */
+
 
 struct hdspm_peak_rms {
 	__u32 input_peaks[64];
@@ -38,14 +35,14 @@ struct hdspm_peak_rms {
 	__u64 playback_rms[64];
 	__u64 output_rms[64];
 
-	__u8 speed; /* enum {ss, ds, qs} */
+	__u8 speed; 
 	int status2;
 };
 
 #define SNDRV_HDSPM_IOCTL_GET_PEAK_RMS \
 	_IOR('H', 0x42, struct hdspm_peak_rms)
 
-/* ------------ CONFIG block IOCTL ---------------------- */
+
 
 struct hdspm_config {
 	unsigned char pref_sync_ref;
@@ -64,14 +61,7 @@ struct hdspm_config {
 #define SNDRV_HDSPM_IOCTL_GET_CONFIG \
 	_IOR('H', 0x41, struct hdspm_config)
 
-/*
- * If there's a TCO (TimeCode Option) board installed,
- * there are further options and status data available.
- * The hdspm_ltc structure contains the current SMPTE
- * timecode and some status information and can be
- * obtained via SNDRV_HDSPM_IOCTL_GET_LTC or in the
- * hdspm_status struct.
- */
+
 
 enum hdspm_ltc_format {
 	format_invalid,
@@ -103,11 +93,7 @@ struct hdspm_ltc {
 
 #define SNDRV_HDSPM_IOCTL_GET_LTC _IOR('H', 0x46, struct hdspm_ltc)
 
-/*
- * The status data reflects the device's current state
- * as determined by the card's configuration and
- * connection status.
- */
+
 
 enum hdspm_sync {
 	hdspm_sync_no_lock = 0,
@@ -139,7 +125,7 @@ enum hdspm_syncsource {
 };
 
 struct hdspm_status {
-	__u8 card_type; /* enum hdspm_io_type */
+	__u8 card_type; 
 	enum hdspm_syncsource autosync_source;
 
 	__u64 card_clock;
@@ -147,13 +133,13 @@ struct hdspm_status {
 
 	union {
 		struct {
-			__u8 sync_wc; /* enum hdspm_sync */
-			__u8 sync_madi; /* enum hdspm_sync */
-			__u8 sync_tco; /* enum hdspm_sync */
-			__u8 sync_in; /* enum hdspm_sync */
-			__u8 madi_input; /* enum hdspm_madi_input */
-			__u8 channel_format; /* enum hdspm_madi_channel_format */
-			__u8 frame_format; /* enum hdspm_madi_frame_format */
+			__u8 sync_wc; 
+			__u8 sync_madi; 
+			__u8 sync_tco; 
+			__u8 sync_in; 
+			__u8 madi_input; 
+			__u8 channel_format; 
+			__u8 frame_format; 
 		} madi;
 	} card_specific;
 };
@@ -161,14 +147,12 @@ struct hdspm_status {
 #define SNDRV_HDSPM_IOCTL_GET_STATUS \
 	_IOR('H', 0x47, struct hdspm_status)
 
-/*
- * Get information about the card and its add-ons.
- */
+
 
 #define HDSPM_ADDON_TCO 1
 
 struct hdspm_version {
-	__u8 card_type; /* enum hdspm_io_type */
+	__u8 card_type; 
 	char cardname[20];
 	unsigned int serial;
 	unsigned short firmware_rev;
@@ -177,18 +161,13 @@ struct hdspm_version {
 
 #define SNDRV_HDSPM_IOCTL_GET_VERSION _IOR('H', 0x48, struct hdspm_version)
 
-/* ------------- get Matrix Mixer IOCTL --------------- */
 
-/* MADI mixer: 64inputs+64playback in 64outputs = 8192 => *4Byte =
- * 32768 Bytes
- */
 
-/* organisation is 64 channelfader in a continuous memory block */
-/* equivalent to hardware definition, maybe for future feature of mmap of
- * them
- */
-/* each of 64 outputs has 64 infader and 64 outfader:
-   Ins to Outs mixer[out].in[in], Outstreams to Outs mixer[out].pb[pb] */
+
+
+
+
+
 
 #define HDSPM_MIXER_CHANNELS HDSPM_MAX_CHANNELS
 
@@ -205,7 +184,7 @@ struct hdspm_mixer_ioctl {
 	struct hdspm_mixer *mixer;
 };
 
-/* use indirect access due to the limit of ioctl bit size */
+
 #define SNDRV_HDSPM_IOCTL_GET_MIXER _IOR('H', 0x44, struct hdspm_mixer_ioctl)
 
 #endif

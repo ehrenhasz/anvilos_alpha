@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
+
 ifeq ($(CONFIG_ARM),y)
 obj-$(CONFIG_ARCH_MXC) += soc-imx.o
 endif

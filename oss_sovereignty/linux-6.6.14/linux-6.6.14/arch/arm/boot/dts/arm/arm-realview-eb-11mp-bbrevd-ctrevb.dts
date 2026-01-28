@@ -1,5 +1,0 @@
-#include "arm-realview-eb-11mp-ctrevb.dts"
-#include "arm-realview-eb-bbrevd.dtsi"
-/ {
-	model = "ARM RealView Emulation Baseboard Rev D with ARM11MPCore Core Tile Rev B";
-};

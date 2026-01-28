@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __PERF_EVSEL_CONFIG_H
 #define __PERF_EVSEL_CONFIG_H 1
 
 #include <linux/types.h>
 #include <stdbool.h>
 
-/*
- * The 'struct evsel_config_term' is used to pass event
- * specific configuration data to evsel__config routine.
- * It is allocated within event parsing and attached to
- * evsel::config_terms list head.
-*/
+
 enum evsel_term_type {
 	EVSEL__CONFIG_TERM_PERIOD,
 	EVSEL__CONFIG_TERM_FREQ,
@@ -58,4 +53,4 @@ struct evsel_config_term *__evsel__get_config_term(struct evsel *evsel, enum evs
 #define evsel__get_config_term(evsel, type) \
 	__evsel__get_config_term(evsel, EVSEL__CONFIG_TERM_ ## type)
 
-#endif // __PERF_EVSEL_CONFIG_H
+#endif 

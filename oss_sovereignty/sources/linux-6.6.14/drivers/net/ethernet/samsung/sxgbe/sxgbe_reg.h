@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+
 #ifndef __SXGBE_REGMAP_H__
 #define __SXGBE_REGMAP_H__
 
-/* SXGBE MAC Registers */
+
 #define SXGBE_CORE_TX_CONFIG_REG	0x0000
 #define SXGBE_CORE_RX_CONFIG_REG	0x0004
 #define SXGBE_CORE_PKT_FILTER_REG	0x0008
@@ -23,18 +17,18 @@
 #define SXGBE_CORE_HASH_TABLE_REG6	0x0028
 #define SXGBE_CORE_HASH_TABLE_REG7	0x002C
 
-/* EEE-LPI Registers */
+
 #define SXGBE_CORE_LPI_CTRL_STATUS	0x00D0
 #define SXGBE_CORE_LPI_TIMER_CTRL	0x00D4
 
-/* VLAN Specific Registers */
+
 #define SXGBE_CORE_VLAN_TAG_REG		0x0050
 #define SXGBE_CORE_VLAN_HASHTAB_REG	0x0058
 #define SXGBE_CORE_VLAN_INSCTL_REG	0x0060
 #define SXGBE_CORE_VLAN_INNERCTL_REG	0x0064
 #define SXGBE_CORE_RX_ETHTYPE_MATCH_REG 0x006C
 
-/* Flow Contol Registers */
+
 #define SXGBE_CORE_TX_Q0_FLOWCTL_REG	0x0070
 #define SXGBE_CORE_TX_Q1_FLOWCTL_REG	0x0074
 #define SXGBE_CORE_TX_Q2_FLOWCTL_REG	0x0078
@@ -53,7 +47,7 @@
 #define SXGBE_CORE_RXQ_ENABLE		0x0002
 #define SXGBE_CORE_RXQ_DISABLE		0x0000
 
-/* Interrupt Registers */
+
 #define SXGBE_CORE_INT_STATUS_REG	0x00B0
 #define SXGBE_CORE_INT_ENABLE_REG	0x00B4
 #define SXGBE_CORE_RXTX_ERR_STATUS_REG	0x00B8
@@ -63,7 +57,7 @@
 #define SXGBE_CORE_DEBUG_REG		0x0114
 #define SXGBE_CORE_HW_FEA_REG(index)	(0x011C + index * 4)
 
-/* SMA(MDIO) module registers */
+
 #define SXGBE_MDIO_SCMD_ADD_REG		0x0200
 #define SXGBE_MDIO_SCMD_DATA_REG	0x0204
 #define SXGBE_MDIO_CCMD_WADD_REG	0x0208
@@ -74,7 +68,7 @@
 #define SXGBE_MDIO_PORT_CONDCON_REG	0x021C
 #define SXGBE_MDIO_CLAUSE22_PORT_REG	0x0220
 
-/* port specific, addr = 0-3 */
+
 #define SXGBE_MDIO_DEV_BASE_REG		0x0230
 #define SXGBE_MDIO_PORT_DEV_REG(addr)			\
 	(SXGBE_MDIO_DEV_BASE_REG + (0x10 * addr) + 0x0)
@@ -86,23 +80,23 @@
 #define SXGBE_CORE_GPIO_CTL_REG		0x0278
 #define SXGBE_CORE_GPIO_STATUS_REG	0x027C
 
-/* Address registers for filtering */
+
 #define SXGBE_CORE_ADD_BASE_REG		0x0300
 
-/* addr = 0-31 */
+
 #define SXGBE_CORE_ADD_HIGHOFFSET(addr)			\
 	(SXGBE_CORE_ADD_BASE_REG + (0x8 * addr) + 0x0)
 #define SXGBE_CORE_ADD_LOWOFFSET(addr)			\
 	(SXGBE_CORE_ADD_BASE_REG + (0x8 * addr) + 0x4)
 
-/* SXGBE MMC registers */
+
 #define SXGBE_MMC_CTL_REG		0x0800
 #define SXGBE_MMC_RXINT_STATUS_REG	0x0804
 #define SXGBE_MMC_TXINT_STATUS_REG	0x0808
 #define SXGBE_MMC_RXINT_ENABLE_REG	0x080C
 #define SXGBE_MMC_TXINT_ENABLE_REG	0x0810
 
-/* TX specific counters */
+
 #define SXGBE_MMC_TXOCTETHI_GBCNT_REG	0x0814
 #define SXGBE_MMC_TXOCTETLO_GBCNT_REG	0x0818
 #define SXGBE_MMC_TXFRAMELO_GBCNT_REG	0x081C
@@ -140,7 +134,7 @@
 #define SXGBE_MMC_TXVLANLO_GCNT_REG	0x089C
 #define SXGBE_MMC_TXVLANHI_GCNT_REG	0x08A0
 
-/* RX specific counters */
+
 #define SXGBE_MMC_RXFRAMELO_GBCNT_REG	0x0900
 #define SXGBE_MMC_RXFRAMEHI_GBCNT_REG	0x0904
 #define SXGBE_MMC_RXOCTETLO_GBCNT_REG	0x0908
@@ -183,25 +177,25 @@
 #define SXGBE_MMC_RXVLANHI_GBCNT_REG		0x099C
 #define SXGBE_MMC_RXWATCHDOG_ERR_REG		0x09A0
 
-/* L3/L4 function registers */
+
 #define SXGBE_CORE_L34_ADDCTL_REG	0x0C00
 #define SXGBE_CORE_L34_DATA_REG		0x0C04
 
-/* ARP registers */
+
 #define SXGBE_CORE_ARP_ADD_REG		0x0C10
 
-/* RSS registers */
+
 #define SXGBE_CORE_RSS_CTL_REG		0x0C80
 #define SXGBE_CORE_RSS_ADD_REG		0x0C88
 #define SXGBE_CORE_RSS_DATA_REG		0x0C8C
 
-/* RSS control register bits */
+
 #define SXGBE_CORE_RSS_CTL_UDP4TE	BIT(3)
 #define SXGBE_CORE_RSS_CTL_TCP4TE	BIT(2)
 #define SXGBE_CORE_RSS_CTL_IP2TE	BIT(1)
 #define SXGBE_CORE_RSS_CTL_RSSE		BIT(0)
 
-/* IEEE 1588 registers */
+
 #define SXGBE_CORE_TSTAMP_CTL_REG	0x0D00
 #define SXGBE_CORE_SUBSEC_INC_REG	0x0D04
 #define SXGBE_CORE_SYSTIME_SEC_REG	0x0D0C
@@ -213,7 +207,7 @@
 #define SXGBE_CORE_TXTIME_STATUSNSEC_REG 0x0D30
 #define SXGBE_CORE_TXTIME_STATUSSEC_REG	0x0D34
 
-/* Auxiliary registers */
+
 #define SXGBE_CORE_AUX_CTL_REG			 0x0D40
 #define SXGBE_CORE_AUX_TSTAMP_NSEC_REG		 0x0D48
 #define SXGBE_CORE_AUX_TSTAMP_SEC_REG		 0x0D4C
@@ -224,11 +218,11 @@
 #define SXGBE_CORE_AUX_TSTAMP_ENGCOR_NSEC_REG	 0x0D60
 #define SXGBE_CORE_AUX_TSTAMP_ENGCOR_SUBNSEC_REG 0x0D64
 
-/* PPS registers */
+
 #define SXGBE_CORE_PPS_CTL_REG		0x0D70
 #define SXGBE_CORE_PPS_BASE			0x0D80
 
-/* addr = 0 - 3 */
+
 #define SXGBE_CORE_PPS_TTIME_SEC_REG(addr)		\
 	(SXGBE_CORE_PPS_BASE + (0x10 * addr) + 0x0)
 #define SXGBE_CORE_PPS_TTIME_NSEC_REG(addr)		\
@@ -243,7 +237,7 @@
 #define SXGBE_CORE_SRCPORT_ITY2_REG	0x0DCC
 #define SXGBE_CORE_LOGMSG_LEVEL_REG	0x0DD0
 
-/* SXGBE MTL Registers */
+
 #define SXGBE_MTL_BASE_REG		0x1000
 #define SXGBE_MTL_OP_MODE_REG		(SXGBE_MTL_BASE_REG + 0x0000)
 #define SXGBE_MTL_DEBUG_CTL_REG		(SXGBE_MTL_BASE_REG + 0x0008)
@@ -256,7 +250,7 @@
 #define SXGBE_MTL_TX_PRTYMAP0_REG	(SXGBE_MTL_BASE_REG + 0x0040)
 #define SXGBE_MTL_TX_PRTYMAP1_REG	(SXGBE_MTL_BASE_REG + 0x0044)
 
-/* TC/Queue registers, qnum=0-15 */
+
 #define SXGBE_MTL_TC_TXBASE_REG		(SXGBE_MTL_BASE_REG + 0x0100)
 #define SXGBE_MTL_TXQ_OPMODE_REG(qnum)				\
 	(SXGBE_MTL_TC_TXBASE_REG + (qnum * 0x80) + 0x00)
@@ -289,7 +283,7 @@
 #define SXGBE_MTL_RXQ_INTSTATUS_REG(qnum)			\
 	(SXGBE_MTL_TC_RXBASE_REG + (qnum * 0x80) + 0x34)
 
-/* SXGBE DMA Registers */
+
 #define SXGBE_DMA_BASE_REG		0x3000
 #define SXGBE_DMA_MODE_REG		(SXGBE_DMA_BASE_REG + 0x0000)
 #define SXGBE_DMA_SOFT_RESET		BIT(0)
@@ -306,7 +300,7 @@
 #define SXGBE_DMA_DEBUG_STATUS4_REG	(SXGBE_DMA_BASE_REG + 0x0030)
 #define SXGBE_DMA_DEBUG_STATUS5_REG	(SXGBE_DMA_BASE_REG + 0x0034)
 
-/* Channel Registers, cha_num = 0-15 */
+
 #define SXGBE_DMA_CHA_BASE_REG			\
 	(SXGBE_DMA_BASE_REG + 0x0100)
 #define SXGBE_DMA_CHA_CTL_REG(cha_num)				\
@@ -352,10 +346,10 @@
 #define SXGBE_DMA_CHA_STATUS_REG(cha_num)			\
 	(SXGBE_DMA_CHA_BASE_REG + (cha_num * 0x80) + 0x60)
 
-/* TX DMA control register specific */
+
 #define SXGBE_TX_START_DMA	BIT(0)
 
-/* sxgbe tx configuration register bitfields */
+
 #define SXGBE_SPEED_10G		0x0
 #define SXGBE_SPEED_2_5G	0x1
 #define SXGBE_SPEED_1G		0x2
@@ -365,7 +359,7 @@
 #define SXGBE_TX_DISDIC_ALGO	BIT(1)
 #define SXGBE_TX_JABBER_DISABLE	BIT(16)
 
-/* sxgbe rx configuration register bitfields */
+
 #define SXGBE_RX_ENABLE		BIT(0)
 #define SXGBE_RX_ACS_ENABLE		BIT(1)
 #define SXGBE_RX_WATCHDOG_DISABLE	BIT(7)
@@ -374,15 +368,12 @@
 #define SXGBE_RX_LOOPBACK_ENABLE	BIT(10)
 #define SXGBE_RX_ARPOFFLOAD_ENABLE	BIT(31)
 
-/* sxgbe vlan Tag Register bitfields */
+
 #define SXGBE_VLAN_SVLAN_ENABLE		BIT(18)
 #define SXGBE_VLAN_DOUBLEVLAN_ENABLE	BIT(26)
 #define SXGBE_VLAN_INNERVLAN_ENABLE	BIT(27)
 
-/* XMAC VLAN Tag Inclusion Register(0x0060) bitfields
- * Below fields same for  Inner VLAN Tag Inclusion
- * Register(0x0064) register
- */
+
 enum vlan_tag_ctl_tx {
 	VLAN_TAG_TX_NOP,
 	VLAN_TAG_TX_DEL,
@@ -392,20 +383,20 @@ enum vlan_tag_ctl_tx {
 #define SXGBE_VLAN_PRTY_CTL	BIT(18)
 #define SXGBE_VLAN_CSVL_CTL	BIT(19)
 
-/* SXGBE TX Q Flow Control Register bitfields */
+
 #define SXGBE_TX_FLOW_CTL_FCB	BIT(0)
 #define SXGBE_TX_FLOW_CTL_TFB	BIT(1)
 
-/* SXGBE RX Q Flow Control Register bitfields */
+
 #define SXGBE_RX_FLOW_CTL_ENABLE	BIT(0)
 #define SXGBE_RX_UNICAST_DETECT		BIT(1)
 #define SXGBE_RX_PRTYFLOW_CTL_ENABLE	BIT(8)
 
-/* sxgbe rx Q control0 register bitfields */
+
 #define SXGBE_RX_Q_ENABLE	0x2
 
-/* SXGBE hardware features bitfield specific */
-/* Capability Register 0 */
+
+
 #define SXGBE_HW_FEAT_GMII(cap)			((cap & 0x00000002) >> 1)
 #define SXGBE_HW_FEAT_VLAN_HASH_FILTER(cap)	((cap & 0x00000010) >> 4)
 #define SXGBE_HW_FEAT_SMA(cap)			((cap & 0x00000020) >> 5)
@@ -421,7 +412,7 @@ enum vlan_tag_ctl_tx {
 #define SXGBE_HW_FEAT_TSTMAP_SRC(cap)		((cap & 0x06000000) >> 25)
 #define SXGBE_HW_FEAT_SRCADDR_VLAN(cap)		((cap & 0x08000000) >> 27)
 
-/* Capability Register 1 */
+
 #define SXGBE_HW_FEAT_RX_FIFO_SIZE(cap)		((cap & 0x0000001F))
 #define SXGBE_HW_FEAT_TX_FIFO_SIZE(cap)		((cap & 0x000007C0) >> 6)
 #define SXGBE_HW_FEAT_IEEE1588_HWORD(cap)	((cap & 0x00002000) >> 13)
@@ -433,7 +424,7 @@ enum vlan_tag_ctl_tx {
 #define SXGBE_HW_FEAT_HASH_TABLE_SIZE(cap)	((cap & 0x03000000) >> 24)
 #define SXGBE_HW_FEAT_L3L4_FILTER_NUM(cap)	((cap & 0x78000000) >> 27)
 
-/* Capability Register 2 */
+
 #define SXGBE_HW_FEAT_RX_MTL_QUEUES(cap)	((cap & 0x0000000F))
 #define SXGBE_HW_FEAT_TX_MTL_QUEUES(cap)	((cap & 0x000003C0) >> 6)
 #define SXGBE_HW_FEAT_RX_DMA_CHANNELS(cap)	((cap & 0x0000F000) >> 12)
@@ -441,24 +432,24 @@ enum vlan_tag_ctl_tx {
 #define SXGBE_HW_FEAT_PPS_OUTPUTS(cap)		((cap & 0x07000000) >> 24)
 #define SXGBE_HW_FEAT_AUX_SNAPSHOTS(cap)	((cap & 0x70000000) >> 28)
 
-/* DMAchannel interrupt enable specific */
-/* DMA Normal interrupt */
-#define SXGBE_DMA_INT_ENA_NIE	BIT(16)	/* Normal Summary */
-#define SXGBE_DMA_INT_ENA_TIE	BIT(0)	/* Transmit Interrupt */
-#define SXGBE_DMA_INT_ENA_TUE	BIT(2)	/* Transmit Buffer Unavailable */
-#define SXGBE_DMA_INT_ENA_RIE	BIT(6)	/* Receive Interrupt */
+
+
+#define SXGBE_DMA_INT_ENA_NIE	BIT(16)	
+#define SXGBE_DMA_INT_ENA_TIE	BIT(0)	
+#define SXGBE_DMA_INT_ENA_TUE	BIT(2)	
+#define SXGBE_DMA_INT_ENA_RIE	BIT(6)	
 
 #define SXGBE_DMA_INT_NORMAL					\
 	(SXGBE_DMA_INT_ENA_NIE | SXGBE_DMA_INT_ENA_RIE |	\
 	 SXGBE_DMA_INT_ENA_TIE | SXGBE_DMA_INT_ENA_TUE)
 
-/* DMA Abnormal interrupt */
-#define SXGBE_DMA_INT_ENA_AIE	BIT(15)	/* Abnormal Summary */
-#define SXGBE_DMA_INT_ENA_TSE	BIT(1)	/* Transmit Stopped */
-#define SXGBE_DMA_INT_ENA_RUE	BIT(7)	/* Receive Buffer Unavailable */
-#define SXGBE_DMA_INT_ENA_RSE	BIT(8)	/* Receive Stopped */
-#define SXGBE_DMA_INT_ENA_FBE	BIT(12)	/* Fatal Bus Error */
-#define SXGBE_DMA_INT_ENA_CDEE	BIT(13)	/* Context Descriptor Error */
+
+#define SXGBE_DMA_INT_ENA_AIE	BIT(15)	
+#define SXGBE_DMA_INT_ENA_TSE	BIT(1)	
+#define SXGBE_DMA_INT_ENA_RUE	BIT(7)	
+#define SXGBE_DMA_INT_ENA_RSE	BIT(8)	
+#define SXGBE_DMA_INT_ENA_FBE	BIT(12)	
+#define SXGBE_DMA_INT_ENA_CDEE	BIT(13)	
 
 #define SXGBE_DMA_INT_ABNORMAL					\
 	(SXGBE_DMA_INT_ENA_AIE | SXGBE_DMA_INT_ENA_TSE |	\
@@ -467,7 +458,7 @@ enum vlan_tag_ctl_tx {
 
 #define SXGBE_DMA_ENA_INT	(SXGBE_DMA_INT_NORMAL | SXGBE_DMA_INT_ABNORMAL)
 
-/* DMA channel interrupt status specific */
+
 #define	SXGBE_DMA_INT_STATUS_REB2	BIT(21)
 #define	SXGBE_DMA_INT_STATUS_REB1	BIT(20)
 #define	SXGBE_DMA_INT_STATUS_REB0	BIT(19)
@@ -485,4 +476,4 @@ enum vlan_tag_ctl_tx {
 #define SXGBE_DMA_INT_STATUS_TPS	BIT(1)
 #define SXGBE_DMA_INT_STATUS_TI		BIT(0)
 
-#endif /* __SXGBE_REGMAP_H__ */
+#endif 

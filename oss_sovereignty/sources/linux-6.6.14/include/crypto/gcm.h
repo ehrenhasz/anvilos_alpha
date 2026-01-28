@@ -10,9 +10,7 @@
 #define GCM_RFC4106_IV_SIZE 8
 #define GCM_RFC4543_IV_SIZE 8
 
-/*
- * validate authentication tag for GCM
- */
+
 static inline int crypto_gcm_check_authsize(unsigned int authsize)
 {
 	switch (authsize) {
@@ -31,9 +29,7 @@ static inline int crypto_gcm_check_authsize(unsigned int authsize)
 	return 0;
 }
 
-/*
- * validate authentication tag for RFC4106
- */
+
 static inline int crypto_rfc4106_check_authsize(unsigned int authsize)
 {
 	switch (authsize) {
@@ -48,9 +44,7 @@ static inline int crypto_rfc4106_check_authsize(unsigned int authsize)
 	return 0;
 }
 
-/*
- * validate assoclen for RFC4106/RFC4543
- */
+
 static inline int crypto_ipsec_check_assoclen(unsigned int assoclen)
 {
 	switch (assoclen) {

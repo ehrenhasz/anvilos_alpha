@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the RMNET module
-#
+
+
+
+
 
 rmnet-y		 := rmnet_config.o
 rmnet-y		 += rmnet_vnd.o

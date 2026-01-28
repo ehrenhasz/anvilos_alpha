@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Data Object Exchange
- *	PCIe r6.0, sec 6.30 DOE
- *
- * Copyright (C) 2021 Huawei
- *     Jonathan Cameron <Jonathan.Cameron@huawei.com>
- *
- * Copyright (C) 2022 Intel Corporation
- *	Ira Weiny <ira.weiny@intel.com>
- */
+
+
 
 #ifndef LINUX_PCI_DOE_H
 #define LINUX_PCI_DOE_H

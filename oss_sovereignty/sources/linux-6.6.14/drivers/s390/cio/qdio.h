@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright IBM Corp. 2000, 2009
- * Author(s): Utz Bacher <utz.bacher@de.ibm.com>
- *	      Jan Glauber <jang@linux.vnet.ibm.com>
- */
+
+
 #ifndef _CIO_QDIO_H
 #define _CIO_QDIO_H
 
@@ -12,9 +8,9 @@
 #include <asm/debug.h>
 #include "chsc.h"
 
-#define QDIO_BUSY_BIT_PATIENCE		(100 << 12)	/* 100 microseconds */
-#define QDIO_BUSY_BIT_RETRY_DELAY	10		/* 10 milliseconds */
-#define QDIO_BUSY_BIT_RETRIES		1000		/* = 10s retry time */
+#define QDIO_BUSY_BIT_PATIENCE		(100 << 12)	
+#define QDIO_BUSY_BIT_RETRY_DELAY	10		
+#define QDIO_BUSY_BIT_RETRIES		1000		
 
 enum qdio_irq_states {
 	QDIO_IRQ_STATE_INACTIVE,
@@ -26,7 +22,7 @@ enum qdio_irq_states {
 	NR_QDIO_IRQ_STATES,
 };
 
-/* used as intparm in do_IO */
+
 #define QDIO_DOING_ESTABLISH	1
 #define QDIO_DOING_ACTIVATE	2
 #define QDIO_DOING_CLEANUP	3
@@ -43,41 +39,41 @@ enum qdio_irq_states {
 #define SLSB_OWNER_CU		0x40
 
 #define SLSB_P_INPUT_NOT_INIT	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_NOT_INIT)  /* 0x80 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_NOT_INIT)  
 #define SLSB_P_INPUT_ACK	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_EMPTY)	   /* 0x81 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_EMPTY)	   
 #define SLSB_CU_INPUT_EMPTY	\
-	(SLSB_OWNER_CU | SLSB_TYPE_INPUT | SLSB_STATE_EMPTY)	   /* 0x41 */
+	(SLSB_OWNER_CU | SLSB_TYPE_INPUT | SLSB_STATE_EMPTY)	   
 #define SLSB_P_INPUT_PRIMED	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_PRIMED)	   /* 0x82 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_PRIMED)	   
 #define SLSB_P_INPUT_HALTED	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_HALTED)	   /* 0x8e */
+	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_HALTED)	   
 #define SLSB_P_INPUT_ERROR	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_ERROR)	   /* 0x8f */
+	(SLSB_OWNER_PROG | SLSB_TYPE_INPUT | SLSB_STATE_ERROR)	   
 #define SLSB_P_OUTPUT_NOT_INIT	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_NOT_INIT) /* 0xa0 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_NOT_INIT) 
 #define SLSB_P_OUTPUT_EMPTY	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_EMPTY)	   /* 0xa1 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_EMPTY)	   
 #define SLSB_P_OUTPUT_PENDING \
-	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_PENDING)  /* 0xa3 */
+	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_PENDING)  
 #define SLSB_CU_OUTPUT_PRIMED	\
-	(SLSB_OWNER_CU | SLSB_TYPE_OUTPUT | SLSB_STATE_PRIMED)	   /* 0x62 */
+	(SLSB_OWNER_CU | SLSB_TYPE_OUTPUT | SLSB_STATE_PRIMED)	   
 #define SLSB_P_OUTPUT_HALTED	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_HALTED)   /* 0xae */
+	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_HALTED)   
 #define SLSB_P_OUTPUT_ERROR	\
-	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_ERROR)	   /* 0xaf */
+	(SLSB_OWNER_PROG | SLSB_TYPE_OUTPUT | SLSB_STATE_ERROR)	   
 
 #define SLSB_ERROR_DURING_LOOKUP  0xff
 
-/* additional CIWs returned by extended Sense-ID */
-#define CIW_TYPE_EQUEUE			0x3 /* establish QDIO queues */
-#define CIW_TYPE_AQUEUE			0x4 /* activate QDIO queues */
 
-/* flags for st qdio sch data */
+#define CIW_TYPE_EQUEUE			0x3 
+#define CIW_TYPE_AQUEUE			0x4 
+
+
 #define CHSC_FLAG_QDIO_CAPABILITY	0x80
 #define CHSC_FLAG_VALIDITY		0x40
 
-/* SIGA flags */
+
 #define QDIO_SIGA_WRITE		0x00
 #define QDIO_SIGA_READ		0x01
 #define QDIO_SIGA_SYNC		0x02
@@ -149,7 +145,7 @@ struct qdio_dev_perf_stat {
 } ____cacheline_aligned;
 
 struct qdio_queue_perf_stat {
-	/* Sorted into order-2 buckets: 1, 2-3, 4-7, ... 64-127, 128. */
+	
 	unsigned int nr_sbals[8];
 	unsigned int nr_sbal_error;
 	unsigned int nr_sbal_nop;
@@ -161,7 +157,7 @@ enum qdio_irq_poll_states {
 };
 
 struct qdio_input_q {
-	/* Batch of SBALs that we processed while polling the queue: */
+	
 	unsigned int batch_start;
 	unsigned int batch_count;
 };
@@ -169,10 +165,7 @@ struct qdio_input_q {
 struct qdio_output_q {
 };
 
-/*
- * Note on cache alignment: grouped slsb and write mostly data at the beginning
- * sbal[] is read-only and starts on a new cacheline followed by read mostly.
- */
+
 struct qdio_q {
 	struct slsb slsb;
 
@@ -181,54 +174,48 @@ struct qdio_q {
 		struct qdio_output_q out;
 	} u;
 
-	/*
-	 * inbound: next buffer the program should check for
-	 * outbound: next buffer to check if adapter processed it
-	 */
+	
 	int first_to_check;
 
-	/* number of buffers in use by the adapter */
+	
 	atomic_t nr_buf_used;
 
-	/* last scan of the queue */
+	
 	u64 timestamp;
 
 	struct qdio_queue_perf_stat q_stats;
 
 	struct qdio_buffer *sbal[QDIO_MAX_BUFFERS_PER_Q] ____cacheline_aligned;
 
-	/* queue number */
+	
 	int nr;
 
-	/* bitmask of queue number */
+	
 	int mask;
 
-	/* input or output queue */
+	
 	int is_input_q;
 
-	/* upper-layer program handler */
+	
 	qdio_handler_t (*handler);
 
 	struct qdio_irq *irq_ptr;
 	struct sl *sl;
-	/*
-	 * A page is allocated under this pointer and used for slib and sl.
-	 * slib is 2048 bytes big and sl points to offset PAGE_SIZE / 2.
-	 */
+	
 	struct slib *slib;
 } __attribute__ ((aligned(256)));
 
 struct qdio_irq {
 	struct qib qib;
-	u32 *dsci;		/* address of device state change indicator */
+	u32 *dsci;		
 	struct ccw_device *cdev;
-	struct list_head entry;		/* list of thinint devices */
+	struct list_head entry;		
 	struct dentry *debugfs_dev;
 	u64 last_data_irq_time;
 
 	unsigned long int_parm;
 	struct subchannel_id schid;
-	unsigned long sch_token;	/* QEBSM facility */
+	unsigned long sch_token;	
 
 	enum qdio_irq_states state;
 	u8 qdioac1;
@@ -260,7 +247,7 @@ struct qdio_irq {
 	struct qdio_dev_perf_stat perf_stat;
 };
 
-/* helper functions */
+
 #define queue_type(q)	q->irq_ptr->qib.qfmt
 #define SCH_NO(q)	(q->irq_ptr->schid.sch_no)
 
@@ -285,7 +272,7 @@ static inline void account_sbals_error(struct qdio_q *q, int count)
 	q->q_stats.nr_sbal_total += count;
 }
 
-/* the highest iqdio queue is used for multicast */
+
 static inline int multicast_outbound(struct qdio_q *q)
 {
 	return (q->irq_ptr->nr_output_qs > 1) &&
@@ -321,14 +308,14 @@ static inline void qdio_deliver_irq(struct qdio_irq *irq)
 
 extern u64 last_ai_time;
 
-/* prototypes for thin interrupt */
+
 int qdio_establish_thinint(struct qdio_irq *irq_ptr);
 void qdio_shutdown_thinint(struct qdio_irq *irq_ptr);
 int qdio_thinint_init(void);
 void qdio_thinint_exit(void);
 int test_nonshared_ind(struct qdio_irq *);
 
-/* prototypes for setup */
+
 void qdio_int_handler(struct ccw_device *cdev, unsigned long intparm,
 		      struct irb *irb);
 int qdio_allocate_qs(struct qdio_irq *irq_ptr, int nr_input_qs,
@@ -346,4 +333,4 @@ void qdio_setup_exit(void);
 
 int debug_get_buf_state(struct qdio_q *q, unsigned int bufnr,
 			unsigned char *state);
-#endif /* _CIO_QDIO_H */
+#endif 

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver for the NXP ISP1761 device controller
- *
- * Copyright 2021 Linaro, Rui Miguel Silva
- * Copyright 2014 Ideas on Board Oy
- *
- * Contacts:
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	Rui Miguel Silva <rui.silva@linaro.org>
- */
+
+
 
 #ifndef _ISP1760_UDC_H_
 #define _ISP1760_UDC_H_
@@ -25,10 +16,10 @@ struct isp1760_device;
 struct isp1760_udc;
 
 enum isp1760_ctrl_state {
-	ISP1760_CTRL_SETUP,		/* Waiting for a SETUP transaction */
-	ISP1760_CTRL_DATA_IN,		/* Setup received, data IN stage */
-	ISP1760_CTRL_DATA_OUT,		/* Setup received, data OUT stage */
-	ISP1760_CTRL_STATUS,		/* 0-length request in status stage */
+	ISP1760_CTRL_SETUP,		
+	ISP1760_CTRL_DATA_IN,		
+	ISP1760_CTRL_DATA_OUT,		
+	ISP1760_CTRL_STATUS,		
 };
 
 struct isp1760_ep {
@@ -48,20 +39,7 @@ struct isp1760_ep {
 	bool wedged;
 };
 
-/**
- * struct isp1760_udc - UDC state information
- * irq: IRQ number
- * irqname: IRQ name (as passed to request_irq)
- * regs: regmap for UDC registers
- * driver: Gadget driver
- * gadget: Gadget device
- * lock: Protects driver, vbus_timer, ep, ep0_*, DC_EPINDEX register
- * ep: Array of endpoints
- * ep0_state: Control request state for endpoint 0
- * ep0_dir: Direction of the current control request
- * ep0_length: Length of the current control request
- * connected: Tracks gadget driver bus connection state
- */
+
 struct isp1760_udc {
 	struct isp1760_device *isp;
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* I2C message transfer tracepoints
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i2c
 
@@ -13,15 +9,11 @@
 #include <linux/i2c.h>
 #include <linux/tracepoint.h>
 
-/*
- * drivers/i2c/i2c-core-base.c
- */
+
 extern int i2c_transfer_trace_reg(void);
 extern void i2c_transfer_trace_unreg(void);
 
-/*
- * __i2c_transfer() write request
- */
+
 TRACE_EVENT_FN(i2c_write,
 	       TP_PROTO(const struct i2c_adapter *adap, const struct i2c_msg *msg,
 			int num),
@@ -52,9 +44,7 @@ TRACE_EVENT_FN(i2c_write,
 	       i2c_transfer_trace_reg,
 	       i2c_transfer_trace_unreg);
 
-/*
- * __i2c_transfer() read request
- */
+
 TRACE_EVENT_FN(i2c_read,
 	       TP_PROTO(const struct i2c_adapter *adap, const struct i2c_msg *msg,
 			int num),
@@ -83,9 +73,7 @@ TRACE_EVENT_FN(i2c_read,
 	       i2c_transfer_trace_reg,
 		       i2c_transfer_trace_unreg);
 
-/*
- * __i2c_transfer() read reply
- */
+
 TRACE_EVENT_FN(i2c_reply,
 	       TP_PROTO(const struct i2c_adapter *adap, const struct i2c_msg *msg,
 			int num),
@@ -116,9 +104,7 @@ TRACE_EVENT_FN(i2c_reply,
 	       i2c_transfer_trace_reg,
 	       i2c_transfer_trace_unreg);
 
-/*
- * __i2c_transfer() result
- */
+
 TRACE_EVENT_FN(i2c_result,
 	       TP_PROTO(const struct i2c_adapter *adap, int num, int ret),
 	       TP_ARGS(adap, num, ret),
@@ -140,7 +126,7 @@ TRACE_EVENT_FN(i2c_result,
 	       i2c_transfer_trace_reg,
 	       i2c_transfer_trace_unreg);
 
-#endif /* _TRACE_I2C_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

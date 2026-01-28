@@ -1,7 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- */
+
 #ifndef UTIL_LINUX_STRUTILS
 #define UTIL_LINUX_STRUTILS
 
@@ -16,7 +13,7 @@
 
 #include "c.h"
 
-/* initialize a custom exit code for all *_or_err functions */
+
 extern void strutils_set_exitcode(int exit_code);
 
 extern int parse_size(const char *str, uintmax_t *res, int *power);
@@ -78,7 +75,7 @@ extern char *strndup(const char *s, size_t n);
 extern char *strnchr(const char *s, size_t maxlen, int c);
 #endif
 
-/* caller guarantees n > 0 */
+
 static inline void xstrncpy(char *dest, const char *src, size_t n)
 {
 	size_t len = src ? strlen(src) : 0;
@@ -90,13 +87,7 @@ static inline void xstrncpy(char *dest, const char *src, size_t n)
 	dest[len] = 0;
 }
 
-/* This is like strncpy(), but based on memcpy(), so compilers and static
- * analyzers do not complain when sizeof(destination) is the same as 'n' and
- * result is not terminated by zero.
- *
- * Use this function to copy string to logs with fixed sizes (wtmp/utmp. ...)
- * where string terminator is optional.
- */
+
 static inline void * __attribute__((nonnull (1)))
 str2memcpy(void *dest, const char *src, size_t n)
 {
@@ -120,9 +111,7 @@ mem2strcpy(char *dest, const void *src, size_t n, size_t nmax)
 	return dest;
 }
 
-/* Reallocate @str according to @newstr and copy @newstr to @str; returns new @str.
- * The @str is not modified if reallocation failed (like classic realloc()).
- */
+
 static inline char * __attribute__((warn_unused_result))
 strrealloc(char *str, const char *newstr)
 {
@@ -143,7 +132,7 @@ strrealloc(char *str, const char *newstr)
 	return str;
 }
 
-/* Copy string @str to struct @stru to member addressed by @offset */
+
 static inline int strdup_to_offset(void *stru, size_t offset, const char *str)
 {
 	char **o;
@@ -164,11 +153,11 @@ static inline int strdup_to_offset(void *stru, size_t offset, const char *str)
 	return 0;
 }
 
-/* Copy string __str to struct member _m of the struct _s */
+
 #define strdup_to_struct_member(_s, _m, _str) \
 		strdup_to_offset((void *) _s, offsetof(__typeof__(*(_s)), _m), _str)
 
-/* Copy string addressed by @offset between two structs */
+
 static inline int strdup_between_offsets(void *stru_dst, void *stru_src, size_t offset)
 {
 	char **src;
@@ -192,15 +181,14 @@ static inline int strdup_between_offsets(void *stru_dst, void *stru_src, size_t 
 	return 0;
 }
 
-/* Copy string addressed by struct member between two instances of the same
- * struct type */
+
 #define strdup_between_structs(_dst, _src, _m) \
 		strdup_between_offsets((void *)_dst, (void *)_src, offsetof(__typeof__(*(_src)), _m))
 
 
 extern char *xstrmode(mode_t mode, char *str);
 
-/* Options for size_to_human_string() */
+
 enum
 {
 	SIZE_SUFFIX_1LETTER  = 0,
@@ -228,9 +216,7 @@ extern int parse_range(const char *str, int *lower, int *upper, int def);
 
 extern int streq_paths(const char *a, const char *b);
 
-/*
- * Match string beginning.
- */
+
 static inline const char *startswith(const char *s, const char *prefix)
 {
 	size_t sz = prefix ? strlen(prefix) : 0;
@@ -240,9 +226,7 @@ static inline const char *startswith(const char *s, const char *prefix)
 	return NULL;
 }
 
-/*
- * Case insensitive match string beginning.
- */
+
 static inline const char *startswith_no_case(const char *s, const char *prefix)
 {
 	size_t sz = prefix ? strlen(prefix) : 0;
@@ -252,9 +236,7 @@ static inline const char *startswith_no_case(const char *s, const char *prefix)
 	return NULL;
 }
 
-/*
- * Match string ending.
- */
+
 static inline const char *endswith(const char *s, const char *postfix)
 {
 	size_t sl = s ? strlen(s) : 0;
@@ -269,9 +251,7 @@ static inline const char *endswith(const char *s, const char *postfix)
 	return s + sl - pl;
 }
 
-/*
- * Skip leading white space.
- */
+
 static inline const char *skip_space(const char *p)
 {
 	while (isspace(*p))
@@ -287,11 +267,7 @@ static inline const char *skip_blank(const char *p)
 }
 
 
-/* Removes whitespace from the right-hand side of a string (trailing
- * whitespace).
- *
- * Returns size of the new string (without \0).
- */
+
 static inline size_t rtrim_whitespace(unsigned char *str)
 {
 	size_t i;
@@ -310,10 +286,7 @@ static inline size_t rtrim_whitespace(unsigned char *str)
 	return i;
 }
 
-/* Removes whitespace from the left-hand side of a string.
- *
- * Returns size of the new string (without \0).
- */
+
 static inline size_t ltrim_whitespace(unsigned char *str)
 {
 	size_t len;
@@ -331,8 +304,7 @@ static inline size_t ltrim_whitespace(unsigned char *str)
 	return len;
 }
 
-/* Removes left-hand, right-hand and repeating whitespaces.
- */
+
 static inline size_t __normalize_whitespace(
 				const unsigned char *src,
 				size_t sz,
@@ -356,7 +328,7 @@ static inline size_t __normalize_whitespace(
 		else
 			dst[x++] = src[i++];
 	}
-	if (nsp && x > 0)		/* tailing space */
+	if (nsp && x > 0)		
 		x--;
 done:
 	dst[x] = '\0';

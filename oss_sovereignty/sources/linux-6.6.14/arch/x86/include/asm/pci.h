@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_X86_PCI_H
 #define _ASM_X86_PCI_H
 
-#include <linux/mm.h> /* for struct page */
+#include <linux/mm.h> 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -13,19 +13,19 @@
 #include <asm/x86_init.h>
 
 struct pci_sysdata {
-	int		domain;		/* PCI domain */
-	int		node;		/* NUMA node */
+	int		domain;		
+	int		node;		
 #ifdef CONFIG_ACPI
-	struct acpi_device *companion;	/* ACPI companion device */
+	struct acpi_device *companion;	
 #endif
 #ifdef CONFIG_X86_64
-	void		*iommu;		/* IOMMU private data */
+	void		*iommu;		
 #endif
 #ifdef CONFIG_PCI_MSI
-	void		*fwnode;	/* IRQ domain for MSI assignment */
+	void		*fwnode;	
 #endif
 #if IS_ENABLED(CONFIG_VMD)
-	struct pci_dev	*vmd_dev;	/* VMD Device if in Intel VMD domain */
+	struct pci_dev	*vmd_dev;	
 #endif
 };
 
@@ -68,11 +68,9 @@ static inline bool is_vmd(struct pci_bus *bus)
 }
 #else
 #define is_vmd(bus)		false
-#endif /* CONFIG_VMD */
+#endif 
 
-/* Can be used to override the logic in pci_scan_bus for skipping
-   already-configured bus numbers - to be used for buggy BIOSes
-   or architectures with incomplete PCI setup by the loader */
+
 
 extern unsigned int pcibios_assign_all_busses(void);
 extern int pci_legacy_init(void);
@@ -107,7 +105,7 @@ static inline void early_quirks(void) { }
 extern void pci_iommu_alloc(void);
 
 #ifdef CONFIG_NUMA
-/* Returns the node based on pci bus */
+
 static inline int __pcibus_to_node(const struct pci_bus *bus)
 {
 	return to_pci_sysdata(bus)->node;
@@ -136,4 +134,4 @@ struct pci_setup_rom {
 	uint8_t romdata[];
 };
 
-#endif /* _ASM_X86_PCI_H */
+#endif 

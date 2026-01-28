@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+
 #ifndef ADF_ACCEL_DEVICES_H_
 #define ADF_ACCEL_DEVICES_H_
 #include <linux/interrupt.h>
@@ -238,11 +238,11 @@ struct adf_hw_device_data {
 	u32 num_hb_ctrs;
 };
 
-/* CSR write macro */
+
 #define ADF_CSR_WR(csr_base, csr_offset, val) \
 	__raw_writel(val, csr_base + csr_offset)
 
-/* CSR read macro */
+
 #define ADF_CSR_RD(csr_base, csr_offset) __raw_readl(csr_base + csr_offset)
 
 #define ADF_CFG_NUM_SERVICES	4
@@ -279,7 +279,7 @@ struct adf_fw_loader_data {
 
 struct adf_accel_vf_info {
 	struct adf_accel_dev *accel_dev;
-	struct mutex pf2vf_lock; /* protect CSR access for PF2VF messages */
+	struct mutex pf2vf_lock; 
 	struct ratelimit_state vf2pf_ratelimit;
 	u32 vf_nr;
 	bool init;
@@ -312,22 +312,22 @@ struct adf_accel_dev {
 	struct adf_heartbeat *heartbeat;
 	union {
 		struct {
-			/* protects VF2PF interrupts access */
+			
 			spinlock_t vf2pf_ints_lock;
-			/* vf_info is non-zero when SR-IOV is init'ed */
+			
 			struct adf_accel_vf_info *vf_info;
 		} pf;
 		struct {
 			bool irq_enabled;
 			char irq_name[ADF_MAX_MSIX_VECTOR_NAME];
 			struct tasklet_struct pf2vf_bh_tasklet;
-			struct mutex vf2pf_lock; /* protect CSR access */
+			struct mutex vf2pf_lock; 
 			struct completion msg_received;
-			struct pfvf_message response; /* temp field holding pf2vf response */
+			struct pfvf_message response; 
 			u8 pf_compat_ver;
 		} vf;
 	};
-	struct mutex state_lock; /* protect state of the device */
+	struct mutex state_lock; 
 	bool is_vf;
 	u32 accel_id;
 };

@@ -1,48 +1,39 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Module Name: amlresrc.h - AML resource descriptors
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
 
-/* acpisrc:struct_defs -- for acpisrc conversion */
+
+
+
 
 #ifndef __AMLRESRC_H
 #define __AMLRESRC_H
 
-/*
- * Resource descriptor tags, as defined in the ACPI specification.
- * Used to symbolically reference fields within a descriptor.
- */
+
 #define ACPI_RESTAG_ADDRESS                     "_ADR"
 #define ACPI_RESTAG_ALIGNMENT                   "_ALN"
 #define ACPI_RESTAG_ADDRESSSPACE                "_ASI"
 #define ACPI_RESTAG_ACCESSSIZE                  "_ASZ"
 #define ACPI_RESTAG_TYPESPECIFICATTRIBUTES      "_ATT"
 #define ACPI_RESTAG_BASEADDRESS                 "_BAS"
-#define ACPI_RESTAG_BUSMASTER                   "_BM_"	/* Master(1), Slave(0) */
+#define ACPI_RESTAG_BUSMASTER                   "_BM_"	
 #define ACPI_RESTAG_DEBOUNCETIME                "_DBT"
 #define ACPI_RESTAG_DECODE                      "_DEC"
 #define ACPI_RESTAG_DEVICEPOLARITY              "_DPL"
 #define ACPI_RESTAG_DMA                         "_DMA"
-#define ACPI_RESTAG_DMATYPE                     "_TYP"	/* Compatible(0), A(1), B(2), F(3) */
+#define ACPI_RESTAG_DMATYPE                     "_TYP"	
 #define ACPI_RESTAG_DRIVESTRENGTH               "_DRS"
 #define ACPI_RESTAG_ENDIANNESS                  "_END"
 #define ACPI_RESTAG_FLOWCONTROL                 "_FLC"
 #define ACPI_RESTAG_FUNCTION                    "_FUN"
 #define ACPI_RESTAG_GRANULARITY                 "_GRA"
 #define ACPI_RESTAG_INTERRUPT                   "_INT"
-#define ACPI_RESTAG_INTERRUPTLEVEL              "_LL_"	/* active_lo(1), active_hi(0) */
-#define ACPI_RESTAG_INTERRUPTSHARE              "_SHR"	/* Shareable(1), no_share(0) */
-#define ACPI_RESTAG_INTERRUPTTYPE               "_HE_"	/* Edge(1), Level(0) */
+#define ACPI_RESTAG_INTERRUPTLEVEL              "_LL_"	
+#define ACPI_RESTAG_INTERRUPTSHARE              "_SHR"	
+#define ACPI_RESTAG_INTERRUPTTYPE               "_HE_"	
 #define ACPI_RESTAG_IORESTRICTION               "_IOR"
 #define ACPI_RESTAG_LENGTH                      "_LEN"
 #define ACPI_RESTAG_LINE                        "_LIN"
 #define ACPI_RESTAG_LOCALPORT                   "_PRT"
-#define ACPI_RESTAG_MEMATTRIBUTES               "_MTP"	/* Memory(0), Reserved(1), ACPI(2), NVS(3) */
-#define ACPI_RESTAG_MEMTYPE                     "_MEM"	/* non_cache(0), Cacheable(1) Cache+combine(2), Cache+prefetch(3) */
+#define ACPI_RESTAG_MEMATTRIBUTES               "_MTP"	
+#define ACPI_RESTAG_MEMTYPE                     "_MEM"	
 #define ACPI_RESTAG_MAXADDR                     "_MAX"
 #define ACPI_RESTAG_MINADDR                     "_MIN"
 #define ACPI_RESTAG_MAXTYPE                     "_MAF"
@@ -59,21 +50,21 @@
 #define ACPI_RESTAG_REGISTERBITOFFSET           "_RBO"
 #define ACPI_RESTAG_REGISTERBITWIDTH            "_RBW"
 #define ACPI_RESTAG_RANGETYPE                   "_RNG"
-#define ACPI_RESTAG_READWRITETYPE               "_RW_"	/* read_only(0), Writeable (1) */
+#define ACPI_RESTAG_READWRITETYPE               "_RW_"	
 #define ACPI_RESTAG_LENGTH_RX                   "_RXL"
 #define ACPI_RESTAG_LENGTH_TX                   "_TXL"
 #define ACPI_RESTAG_SLAVEMODE                   "_SLV"
 #define ACPI_RESTAG_SPEED                       "_SPE"
 #define ACPI_RESTAG_STOPBITS                    "_STB"
 #define ACPI_RESTAG_TRANSLATION                 "_TRA"
-#define ACPI_RESTAG_TRANSTYPE                   "_TRS"	/* Sparse(1), Dense(0) */
-#define ACPI_RESTAG_TYPE                        "_TTP"	/* Translation(1), Static (0) */
-#define ACPI_RESTAG_XFERTYPE                    "_SIZ"	/* 8(0), 8And16(1), 16(2) */
+#define ACPI_RESTAG_TRANSTYPE                   "_TRS"	
+#define ACPI_RESTAG_TYPE                        "_TTP"	
+#define ACPI_RESTAG_XFERTYPE                    "_SIZ"	
 #define ACPI_RESTAG_VENDORDATA                  "_VEN"
 #define ACPI_RESTAG_FQN                         "_FQN"
 #define ACPI_RESTAG_FQD                         "_FQD"
 
-/* Default sizes for "small" resource descriptors */
+
 
 #define ASL_RDESC_IRQ_SIZE                      0x02
 #define ASL_RDESC_DMA_SIZE                      0x02
@@ -91,27 +82,20 @@ struct asl_resource_node {
 };
 
 struct asl_resource_info {
-	union acpi_parse_object *descriptor_type_op;	/* Resource descriptor parse node */
-	union acpi_parse_object *mapping_op;	/* Used for mapfile support */
-	u32 current_byte_offset;	/* Offset in resource template */
+	union acpi_parse_object *descriptor_type_op;	
+	union acpi_parse_object *mapping_op;	
+	u32 current_byte_offset;	
 };
 
-/* Macros used to generate AML resource length fields */
+
 
 #define ACPI_AML_SIZE_LARGE(r)      (sizeof (r) - sizeof (struct aml_resource_large_header))
 #define ACPI_AML_SIZE_SMALL(r)      (sizeof (r) - sizeof (struct aml_resource_small_header))
 
-/*
- * Resource descriptors defined in the ACPI specification.
- *
- * Packing/alignment must be BYTE because these descriptors
- * are used to overlay the raw AML byte stream.
- */
+
 #pragma pack(1)
 
-/*
- * SMALL descriptors
- */
+
 #define AML_RESOURCE_SMALL_HEADER_COMMON \
 	u8                              descriptor_type;
 
@@ -168,9 +152,7 @@ struct aml_resource_fixed_dma {
 	u8 width;
 };
 
-/*
- * LARGE descriptors
- */
+
 #define AML_RESOURCE_LARGE_HEADER_COMMON \
 	u8                              descriptor_type;\
 	u16                             resource_length;
@@ -178,7 +160,7 @@ struct aml_resource_fixed_dma {
 struct aml_resource_large_header {
 AML_RESOURCE_LARGE_HEADER_COMMON};
 
-/* General Flags for address space resource descriptors */
+
 
 #define ACPI_RESOURCE_FLAG_DEC      2
 #define ACPI_RESOURCE_FLAG_MIF      4
@@ -229,7 +211,7 @@ struct aml_resource_extended_address64 {
 	u64 type_specific;
 };
 
-#define AML_RESOURCE_EXTENDED_ADDRESS_REVISION          1	/* ACPI 3.0 */
+#define AML_RESOURCE_EXTENDED_ADDRESS_REVISION          1	
 
 struct aml_resource_address64 {
 	AML_RESOURCE_LARGE_HEADER_COMMON
@@ -265,18 +247,18 @@ struct aml_resource_extended_irq {
 		u32 interrupt;
 		 ACPI_FLEX_ARRAY(u32, interrupts);
 	};
-	/* res_source_index, res_source optional fields follow */
+	
 };
 
 struct aml_resource_generic_register {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 address_space_id;
 	u8 bit_width;
 	u8 bit_offset;
-	u8 access_size;		/* ACPI 3.0, was previously Reserved */
+	u8 access_size;		
 	u64 address;
 };
 
-/* Common descriptor for gpio_int and gpio_io (ACPI 5.0) */
+
 
 struct aml_resource_gpio {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
@@ -291,23 +273,18 @@ struct aml_resource_gpio {
 	u16 res_source_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) PIN list (Words)
-	 * 2) Resource Source String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_GPIO_REVISION              1	/* ACPI 5.0 */
+#define AML_RESOURCE_GPIO_REVISION              1	
 
-/* Values for connection_type above */
+
 
 #define AML_RESOURCE_GPIO_TYPE_INT              0
 #define AML_RESOURCE_GPIO_TYPE_IO               1
 #define AML_RESOURCE_MAX_GPIOTYPE               1
 
-/* Common preamble for all serial descriptors (ACPI 5.0) */
+
 
 #define AML_RESOURCE_SERIAL_COMMON \
 	u8                              revision_id; \
@@ -318,44 +295,36 @@ struct aml_resource_gpio {
 	u8                              type_revision_id; \
 	u16                             type_data_length; \
 
-/* Values for the type field above */
+
 
 #define AML_RESOURCE_I2C_SERIALBUSTYPE          1
 #define AML_RESOURCE_SPI_SERIALBUSTYPE          2
 #define AML_RESOURCE_UART_SERIALBUSTYPE         3
 #define AML_RESOURCE_CSI2_SERIALBUSTYPE         4
 #define AML_RESOURCE_MAX_SERIALBUSTYPE          4
-#define AML_RESOURCE_VENDOR_SERIALBUSTYPE       192	/* Vendor defined is 0xC0-0xFF (NOT SUPPORTED) */
+#define AML_RESOURCE_VENDOR_SERIALBUSTYPE       192	
 
 struct aml_resource_common_serialbus {
 AML_RESOURCE_LARGE_HEADER_COMMON AML_RESOURCE_SERIAL_COMMON};
 
 struct aml_resource_csi2_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON AML_RESOURCE_SERIAL_COMMON
-	    /*
-	     * Optional fields follow immediately:
-	     * 1) Vendor Data bytes
-	     * 2) Resource Source String
-	     */
+	    
 };
 
-#define AML_RESOURCE_CSI2_REVISION              1	/* ACPI 6.4 */
-#define AML_RESOURCE_CSI2_TYPE_REVISION         1	/* ACPI 6.4 */
-#define AML_RESOURCE_CSI2_MIN_DATA_LEN          0	/* ACPI 6.4 */
+#define AML_RESOURCE_CSI2_REVISION              1	
+#define AML_RESOURCE_CSI2_TYPE_REVISION         1	
+#define AML_RESOURCE_CSI2_MIN_DATA_LEN          0	
 
 struct aml_resource_i2c_serialbus {
 	AML_RESOURCE_LARGE_HEADER_COMMON
 	    AML_RESOURCE_SERIAL_COMMON u32 connection_speed;
 	u16 slave_address;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Vendor Data bytes
-	 * 2) Resource Source String
-	 */
+	
 };
 
-#define AML_RESOURCE_I2C_REVISION               1	/* ACPI 5.0 */
-#define AML_RESOURCE_I2C_TYPE_REVISION          1	/* ACPI 5.0 */
+#define AML_RESOURCE_I2C_REVISION               1	
+#define AML_RESOURCE_I2C_TYPE_REVISION          1	
 #define AML_RESOURCE_I2C_MIN_DATA_LEN           6
 
 struct aml_resource_spi_serialbus {
@@ -365,15 +334,11 @@ struct aml_resource_spi_serialbus {
 	u8 clock_phase;
 	u8 clock_polarity;
 	u16 device_selection;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Vendor Data bytes
-	 * 2) Resource Source String
-	 */
+	
 };
 
-#define AML_RESOURCE_SPI_REVISION               1	/* ACPI 5.0 */
-#define AML_RESOURCE_SPI_TYPE_REVISION          1	/* ACPI 5.0 */
+#define AML_RESOURCE_SPI_REVISION               1	
+#define AML_RESOURCE_SPI_TYPE_REVISION          1	
 #define AML_RESOURCE_SPI_MIN_DATA_LEN           9
 
 struct aml_resource_uart_serialbus {
@@ -383,15 +348,11 @@ struct aml_resource_uart_serialbus {
 	u16 tx_fifo_size;
 	u8 parity;
 	u8 lines_enabled;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Vendor Data bytes
-	 * 2) Resource Source String
-	 */
+	
 };
 
-#define AML_RESOURCE_UART_REVISION              1	/* ACPI 5.0 */
-#define AML_RESOURCE_UART_TYPE_REVISION         1	/* ACPI 5.0 */
+#define AML_RESOURCE_UART_REVISION              1	
+#define AML_RESOURCE_UART_TYPE_REVISION         1	
 #define AML_RESOURCE_UART_MIN_DATA_LEN          10
 
 struct aml_resource_pin_function {
@@ -404,15 +365,10 @@ struct aml_resource_pin_function {
 	u16 res_source_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) PIN list (Words)
-	 * 2) Resource Source String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_PIN_FUNCTION_REVISION      1	/* ACPI 6.2 */
+#define AML_RESOURCE_PIN_FUNCTION_REVISION      1	
 
 struct aml_resource_pin_config {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
@@ -424,29 +380,20 @@ struct aml_resource_pin_config {
 	u16 res_source_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) PIN list (Words)
-	 * 2) Resource Source String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_CLOCK_INPUT_REVISION      1	/* ACPI 6.5 */
+#define AML_RESOURCE_CLOCK_INPUT_REVISION      1	
 
 struct aml_resource_clock_input {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
 	u16 flags;
 	u16 frequency_divisor;
 	u32 frequency_numerator;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Resource Source index
-	 * 2) Resource Source String
-	 */
+	
 };
 
-#define AML_RESOURCE_PIN_CONFIG_REVISION      1	/* ACPI 6.2 */
+#define AML_RESOURCE_PIN_CONFIG_REVISION      1	
 
 struct aml_resource_pin_group {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
@@ -455,15 +402,10 @@ struct aml_resource_pin_group {
 	u16 label_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) PIN list (Words)
-	 * 2) Resource Label String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_PIN_GROUP_REVISION      1	/* ACPI 6.2 */
+#define AML_RESOURCE_PIN_GROUP_REVISION      1	
 
 struct aml_resource_pin_group_function {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
@@ -474,15 +416,10 @@ struct aml_resource_pin_group_function {
 	u16 res_source_label_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Resource Source String
-	 * 2) Resource Source Label String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_PIN_GROUP_FUNCTION_REVISION    1	/* ACPI 6.2 */
+#define AML_RESOURCE_PIN_GROUP_FUNCTION_REVISION    1	
 
 struct aml_resource_pin_group_config {
 	AML_RESOURCE_LARGE_HEADER_COMMON u8 revision_id;
@@ -494,30 +431,25 @@ struct aml_resource_pin_group_config {
 	u16 res_source_label_offset;
 	u16 vendor_offset;
 	u16 vendor_length;
-	/*
-	 * Optional fields follow immediately:
-	 * 1) Resource Source String
-	 * 2) Resource Source Label String
-	 * 3) Vendor Data bytes
-	 */
+	
 };
 
-#define AML_RESOURCE_PIN_GROUP_CONFIG_REVISION    1	/* ACPI 6.2 */
+#define AML_RESOURCE_PIN_GROUP_CONFIG_REVISION    1	
 
-/* restore default alignment */
+
 
 #pragma pack()
 
-/* Union of all resource descriptors, so we can allocate the worst case */
+
 
 union aml_resource {
-	/* Descriptor headers */
+	
 
 	u8 descriptor_type;
 	struct aml_resource_small_header small_header;
 	struct aml_resource_large_header large_header;
 
-	/* Small resource descriptors */
+	
 
 	struct aml_resource_irq irq;
 	struct aml_resource_dma dma;
@@ -529,7 +461,7 @@ union aml_resource {
 	struct aml_resource_vendor_small vendor_small;
 	struct aml_resource_end_tag end_tag;
 
-	/* Large resource descriptors */
+	
 
 	struct aml_resource_memory24 memory24;
 	struct aml_resource_generic_register generic_reg;
@@ -554,7 +486,7 @@ union aml_resource {
 	struct aml_resource_pin_group_config pin_group_config;
 	struct aml_resource_clock_input clock_input;
 
-	/* Utility overlays */
+	
 
 	struct aml_resource_address address;
 	u32 dword_item;
@@ -562,7 +494,7 @@ union aml_resource {
 	u8 byte_item;
 };
 
-/* Interfaces used by both the disassembler and compiler */
+
 
 void
 mp_save_gpio_info(union acpi_parse_object *op,

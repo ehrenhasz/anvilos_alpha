@@ -1,31 +1,29 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* IPv4-specific defines for netfilter. 
- * (C)1998 Rusty Russell -- This code is GPL.
- */
+
+
 #ifndef _UAPI__LINUX_IP_NETFILTER_H
 #define _UAPI__LINUX_IP_NETFILTER_H
 
 
 #include <linux/netfilter.h>
 
-/* only for userspace compatibility */
+
 #ifndef __KERNEL__
 
-#include <limits.h> /* for INT_MIN, INT_MAX */
+#include <limits.h> 
 
-/* IP Hooks */
-/* After promisc drops, checksum checks. */
+
+
 #define NF_IP_PRE_ROUTING	0
-/* If the packet is destined for this box. */
+
 #define NF_IP_LOCAL_IN		1
-/* If the packet is destined for another interface. */
+
 #define NF_IP_FORWARD		2
-/* Packets coming from a local process. */
+
 #define NF_IP_LOCAL_OUT		3
-/* Packets about to hit the wire. */
+
 #define NF_IP_POST_ROUTING	4
 #define NF_IP_NUMHOOKS		5
-#endif /* ! __KERNEL__ */
+#endif 
 
 enum nf_ip_hook_priorities {
 	NF_IP_PRI_FIRST = INT_MIN,
@@ -45,11 +43,11 @@ enum nf_ip_hook_priorities {
 	NF_IP_PRI_LAST = INT_MAX,
 };
 
-/* Arguments for setsockopt SOL_IP: */
-/* 2.0 firewalling went from 64 through 71 (and +256, +512, etc). */
-/* 2.2 firewalling (+ masq) went from 64 through 76 */
-/* 2.4 firewalling went 64 through 67. */
+
+
+
+
 #define SO_ORIGINAL_DST 80
 
 
-#endif /* _UAPI__LINUX_IP_NETFILTER_H */
+#endif 

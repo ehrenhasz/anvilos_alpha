@@ -1,10 +1,10 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
-#
-# Copyright (c) 2019 Oracle.
-# All Rights Reserved.
-#
 
-ccflags-y += -I $(srctree)/$(src)		# needed for trace events
+
+
+
+
+
+ccflags-y += -I $(srctree)/$(src)		
 
 obj-$(CONFIG_FS_IOMAP)		+= iomap.o
 

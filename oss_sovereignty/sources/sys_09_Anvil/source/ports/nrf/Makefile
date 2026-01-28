@@ -1,10 +1,10 @@
-# Select the board to build for:
+
 ifdef BOARD_DIR
-# Custom board path - remove trailing slash and get the final component of
-# the path as the board name.
+
+
 BOARD ?= $(notdir $(BOARD_DIR:/=))
 else
-# If not given on the command line, then default to PCA10040.
+
 BOARD ?= PCA10040
 BOARD_DIR ?= boards/$(BOARD)
 endif
@@ -13,20 +13,20 @@ ifeq ($(wildcard $(BOARD_DIR)/.),)
 $(error Invalid BOARD specified: $(BOARD_DIR))
 endif
 
-# If SoftDevice is selected, try to use that one.
+
 SD ?=
 SD_LOWER = $(shell echo $(SD) | tr '[:upper:]' '[:lower:]')
 
-# TODO: Verify that it is a valid target.
+
 
 include $(BOARD_DIR)/mpconfigboard.mk
 
 ifeq ($(SD), )
-	# If the build directory is not given, make it reflect the board name.
+	
 	BUILD ?= build-$(BOARD)
 	include ../../py/mkenv.mk
 else
-	# If the build directory is not given, make it reflect the board name.
+	
 	BUILD ?= build-$(BOARD)-$(SD_LOWER)
 	include ../../py/mkenv.mk
 
@@ -36,7 +36,7 @@ endif
 
 ifneq ($(BOOTLOADER),)
 	BOOTLOADER_UPPER = $(shell echo $(BOOTLOADER) | tr '[:lower:]' '[:upper:]')
-	# Use additional bootloader linker script
+	
 	LD_FILES += boards/$(MCU_SUB_VARIANT)_$(BOOTLOADER)_$(BOOTLOADER_VERSION_MAJOR).$(BOOTLOADER_VERSION_MINOR).x.ld
 	CFLAGS += -DBOOTLOADER_$(BOOTLOADER_UPPER)_VERSION=$(BOOTLOADER_MAJOR)$(BOOTLOADER_MINOR)
 endif
@@ -44,23 +44,23 @@ endif
 LD_FILES += boards/memory.ld boards/common.ld
 
 ifneq ($(LD_FILE),)
-	# Use custom LD file
+	
 	LD_FILES = $(LD_FILE)
 endif
 
 -include $(BOARD_DIR)/modules/boardmodules.mk
 
-# qstr definitions (must come before including py.mk)
+
 QSTR_DEFS = qstrdefsport.h
 
-# MicroPython feature configurations
+
 ifeq ($(DEBUG), 0)
 MICROPY_ROM_TEXT_COMPRESSION ?= 1
 endif
 
 FROZEN_MANIFEST ?= modules/manifest.py
 
-# include py core make definitions
+
 include ../../py/py.mk
 include ../../extmod/extmod.mk
 
@@ -93,7 +93,7 @@ INC += -I../../lib/nrfx/drivers/src/
 MCU_VARIANT_UPPER = $(shell echo $(MCU_VARIANT) | tr '[:lower:]' '[:upper:]')
 MCU_SUB_VARIANT_UPPER = $(shell echo $(MCU_SUB_VARIANT) | tr '[:lower:]' '[:upper:]')
 
-# Figure out correct system file to use base on chip sub-variant name.
+
 SYSTEM_C_SRC :=
 ifeq ($(MCU_SUB_VARIANT),nrf51822)
 	SYSTEM_C_SRC += $(addprefix lib/nrfx/mdk/, system_nrf51.c)
@@ -103,7 +103,7 @@ else ifeq ($(MCU_SUB_VARIANT),nrf52832)
         NRF_DEFINES += -D$(MCU_VARIANT_UPPER)
 else ifeq ($(MCU_SUB_VARIANT),nrf52840)
 	SYSTEM_C_SRC += $(addprefix lib/nrfx/mdk/, system_nrf52840.c)
-	# Do not pass MCU_VARIANT_UPPER flag, as NRF52 defines NRF52832 only.
+	
 else ifeq ($(MCU_SUB_VARIANT),nrf9160)
         SYSTEM_C_SRC += $(addprefix lib/nrfx/mdk/, system_nrf9160.c)
         NRF_DEFINES += -D$(MCU_VARIANT_UPPER)
@@ -150,14 +150,14 @@ ifneq ($(FS_SIZE),)
 LDFLAGS += -Wl,'--defsym=_fs_size=$(FS_SIZE)'
 endif
 
-#Debugging/Optimization
+
 ifeq ($(DEBUG), 1)
-#ASMFLAGS += -g -gtabs+
+
 CFLAGS += -g -O0
 LDFLAGS += -O0
 else
 ifneq ($(LTO), 1)
-CFLAGS += -g  # always include debug info in the ELF, unless LTO is on
+CFLAGS += -g  
 endif
 CFLAGS += -Os -DNDEBUG
 LDFLAGS += -Os
@@ -239,9 +239,9 @@ INC += -I./drivers/usb
 INC += -I../../lib/tinyusb/src
 
 
-# If SoftDevice is selected.
+
 ifneq ($(SD), )
-# For external tinyusb drivers to enable SoftDevice mode.
+
 CFLAGS += -DSOFTDEVICE_PRESENT
 endif
 
@@ -288,8 +288,8 @@ DRIVERS_SRC_C += $(addprefix modules/,\
 	nrf/flashbdev.c \
 	)
 
-# Custom micropython startup file with smaller interrupt vector table
-# than the file provided in nrfx.
+
+
 SRC_C += \
 	device/startup_$(MCU_SUB_VARIANT).c \
 
@@ -319,13 +319,13 @@ endif
 
 OUTPUT_FILENAME = firmware
 
-## Create binary .bin file from the .out file
+
 binary: $(BUILD)/$(OUTPUT_FILENAME).bin
 
 $(BUILD)/$(OUTPUT_FILENAME).bin: $(BUILD)/$(OUTPUT_FILENAME).elf
 	$(OBJCOPY) -O binary $< $@
 
-## Create binary .hex file from the .out file
+
 hex: $(BUILD)/$(OUTPUT_FILENAME).hex
 
 $(BUILD)/$(OUTPUT_FILENAME).hex: $(BUILD)/$(OUTPUT_FILENAME).elf
@@ -436,7 +436,7 @@ endif
 .PHONY: nrfutil_dfu_sd nrfutil_dfu_deploy
 .NOTPARALLEL: nrfutil_dfu_sd nrfutil_dfu_deploy
 
-# DFU both SD and app in case of target "sd"
+
 sd: nrfutil_dfu_sd nrfutil_dfu_deploy
 
 nrfutil_dfu_sd: $(BUILD)/$(OUTPUT_FILENAME).hex
@@ -467,18 +467,18 @@ $(BUILD)/$(OUTPUT_FILENAME).elf: $(OBJ)
 	$(Q)$(CC) $(LDFLAGS) -o $@ $(OBJ) $(LIBS)
 	$(Q)$(SIZE) $@
 
-# List of sources for qstr extraction
+
 SRC_QSTR += $(SRC_C) $(SRC_SHARED_C) $(DRIVERS_SRC_C) $(SRC_BOARD_MODULES) $(GEN_PINS_SRC)
 
-# Making OBJ use an order-only dependency on the generated pins.h file
-# has the side effect of making the pins.h file before we actually compile
-# any of the objects. The normal dependency generation will deal with the
-# case when pins.h is modified. But when it doesn't exist, we don't know
-# which source files might need it.
+
+
+
+
+
 $(OBJ): | $(HEADER_BUILD)/pins.h
 
-# Use a pattern rule here so that make will only call make-pins.py once to make
-# both pins_gen.c and pins.h
+
+
 $(BUILD)/%_gen.c $(HEADER_BUILD)/%.h $(HEADER_BUILD)/%_af_const.h: $(BOARD_DIR)/%.csv $(MAKE_PINS) $(AF_FILE) $(PREFIX_FILE) | $(HEADER_BUILD)
 	$(ECHO) "Create $@"
 	$(Q)$(PYTHON) $(MAKE_PINS) --board-csv $(BOARD_PINS) --af-csv $(AF_FILE) --prefix $(PREFIX_FILE) \

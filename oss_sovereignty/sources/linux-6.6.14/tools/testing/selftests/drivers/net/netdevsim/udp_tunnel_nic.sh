@@ -109,7 +109,7 @@ function check_table {
     local -n expected=$2
     local last=$3
     read -a have < $path
-    if [ ${#expected[@]} -ne ${#have[@]} ]; then
+    if [ ${
 	echo "check_table: BAD NUMBER OF ITEMS"
 	return 0
     fi
@@ -266,7 +266,7 @@ echo 1000 > $NSIM_DEV_DFS/udp_ports_sleep
 echo 0 > $NSIM_DEV_SYS/new_port
 NSIM_NETDEV=`get_netdev_name old_netdevs`
 msg="create VxLANs"
-exp0=( 0 0 0 0 ) # sleep is longer than out wait
+exp0=( 0 0 0 0 ) 
 new_vxlan vxlan0 10000 $NSIM_NETDEV
 modprobe -r vxlan
 modprobe -r udp_tunnel
@@ -274,7 +274,7 @@ msg="remove tunnels"
 exp0=( 0 0 0 0 )
 check_tables
 msg="create VxLANs"
-exp0=( 0 0 0 0 ) # sleep is longer than out wait
+exp0=( 0 0 0 0 ) 
 new_vxlan vxlan0 10000 $NSIM_NETDEV
 exp0=( 0 0 0 0 )
 modprobe -r netdevsim

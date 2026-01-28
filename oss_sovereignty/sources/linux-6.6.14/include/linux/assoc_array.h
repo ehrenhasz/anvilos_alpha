@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Generic associative array implementation.
- *
- * See Documentation/core-api/assoc_array.rst for information.
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+
 
 #ifndef _LINUX_ASSOC_ARRAY_H
 #define _LINUX_ASSOC_ARRAY_H
@@ -14,41 +8,33 @@
 
 #include <linux/types.h>
 
-#define ASSOC_ARRAY_KEY_CHUNK_SIZE BITS_PER_LONG /* Key data retrieved in chunks of this size */
+#define ASSOC_ARRAY_KEY_CHUNK_SIZE BITS_PER_LONG 
 
-/*
- * Generic associative array.
- */
+
 struct assoc_array {
-	struct assoc_array_ptr	*root;		/* The node at the root of the tree */
+	struct assoc_array_ptr	*root;		
 	unsigned long		nr_leaves_on_tree;
 };
 
-/*
- * Operations on objects and index keys for use by array manipulation routines.
- */
+
 struct assoc_array_ops {
-	/* Method to get a chunk of an index key from caller-supplied data */
+	
 	unsigned long (*get_key_chunk)(const void *index_key, int level);
 
-	/* Method to get a piece of an object's index key */
+	
 	unsigned long (*get_object_key_chunk)(const void *object, int level);
 
-	/* Is this the object we're looking for? */
+	
 	bool (*compare_object)(const void *object, const void *index_key);
 
-	/* How different is an object from an index key, to a bit position in
-	 * their keys? (or -1 if they're the same)
-	 */
+	
 	int (*diff_objects)(const void *object, const void *index_key);
 
-	/* Method to free an object. */
+	
 	void (*free_object)(void *object);
 };
 
-/*
- * Access and manipulation functions.
- */
+
 struct assoc_array_edit;
 
 static inline void assoc_array_init(struct assoc_array *array)
@@ -84,5 +70,5 @@ extern int assoc_array_gc(struct assoc_array *array,
 			  bool (*iterator)(void *object, void *iterator_data),
 			  void *iterator_data);
 
-#endif /* CONFIG_ASSOCIATIVE_ARRAY */
-#endif /* _LINUX_ASSOC_ARRAY_H */
+#endif 
+#endif 

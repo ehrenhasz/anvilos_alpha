@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_MISCDEVICE_H
 #define _LINUX_MISCDEVICE_H
 #include <linux/major.h>
@@ -6,45 +6,41 @@
 #include <linux/types.h>
 #include <linux/device.h>
 
-/*
- *	These allocations are managed by device@lanana.org. If you need
- *	an entry that is not assigned here, it can be moved and
- *	reassigned or dynamically set if a fixed value is not justified.
- */
+
 
 #define PSMOUSE_MINOR		1
-#define MS_BUSMOUSE_MINOR	2	/* unused */
-#define ATIXL_BUSMOUSE_MINOR	3	/* unused */
-/*#define AMIGAMOUSE_MINOR	4	FIXME OBSOLETE */
-#define ATARIMOUSE_MINOR	5	/* unused */
-#define SUN_MOUSE_MINOR		6	/* unused */
-#define APOLLO_MOUSE_MINOR	7	/* unused */
-#define PC110PAD_MINOR		9	/* unused */
-/*#define ADB_MOUSE_MINOR	10	FIXME OBSOLETE */
-#define WATCHDOG_MINOR		130	/* Watchdog timer     */
-#define TEMP_MINOR		131	/* Temperature Sensor */
+#define MS_BUSMOUSE_MINOR	2	
+#define ATIXL_BUSMOUSE_MINOR	3	
+
+#define ATARIMOUSE_MINOR	5	
+#define SUN_MOUSE_MINOR		6	
+#define APOLLO_MOUSE_MINOR	7	
+#define PC110PAD_MINOR		9	
+
+#define WATCHDOG_MINOR		130	
+#define TEMP_MINOR		131	
 #define APM_MINOR_DEV		134
 #define RTC_MINOR		135
-/*#define EFI_RTC_MINOR		136	was EFI Time services */
+
 #define VHCI_MINOR		137
 #define SUN_OPENPROM_MINOR	139
-#define DMAPI_MINOR		140	/* unused */
+#define DMAPI_MINOR		140	
 #define NVRAM_MINOR		144
 #define SBUS_FLASH_MINOR	152
 #define SGI_MMTIMER		153
 #define PMU_MINOR		154
-#define STORE_QUEUE_MINOR	155	/* unused */
+#define STORE_QUEUE_MINOR	155	
 #define LCD_MINOR		156
 #define AC_MINOR		157
-#define BUTTON_MINOR		158	/* Major 10, Minor 158, /dev/nwbutton */
-#define NWFLASH_MINOR		160	/* MAJOR is 10 - miscdevice */
+#define BUTTON_MINOR		158	
+#define NWFLASH_MINOR		160	
 #define ENVCTRL_MINOR		162
 #define I2O_MINOR		166
 #define UCTRL_MINOR		174
 #define AGPGART_MINOR		175
 #define TOSH_MINOR_DEV		181
 #define HWRNG_MINOR		183
-/*#define MICROCODE_MINOR	184	unused */
+
 #define KEYPAD_MINOR		185
 #define IRNET_MINOR		187
 #define D7S_MINOR		193
@@ -52,7 +48,7 @@
 #define PXA3XX_GCU_MINOR	197
 #define TUN_MINOR		200
 #define CUSE_MINOR		203
-#define MWAVE_MINOR		219	/* ACP/Mwave Modem */
+#define MWAVE_MINOR		219	
 #define MPT_MINOR		220
 #define MPT2SAS_MINOR		221
 #define MPT3SAS_MINOR		222
@@ -91,17 +87,11 @@ struct miscdevice  {
 extern int misc_register(struct miscdevice *misc);
 extern void misc_deregister(struct miscdevice *misc);
 
-/*
- * Helper macro for drivers that don't do anything special in the initcall.
- * This helps to eliminate boilerplate code.
- */
+
 #define builtin_misc_device(__misc_device) \
 	builtin_driver(__misc_device, misc_register)
 
-/*
- * Helper macro for drivers that don't do anything special in module init / exit
- * call. This helps to eliminate boilerplate code.
- */
+
 #define module_misc_device(__misc_device) \
 	module_driver(__misc_device, misc_register, misc_deregister)
 

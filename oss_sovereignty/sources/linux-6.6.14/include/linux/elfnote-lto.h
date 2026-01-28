@@ -11,4 +11,4 @@
 #define BUILD_LTO_INFO	ELFNOTE32("Linux", LINUX_ELFNOTE_LTO_INFO, 0)
 #endif
 
-#endif /* __ELFNOTE_LTO_H */
+#endif 

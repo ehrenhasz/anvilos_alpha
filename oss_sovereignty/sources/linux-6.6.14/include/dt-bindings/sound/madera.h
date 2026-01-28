@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Device Tree defines for Madera codecs
- *
- * Copyright (C) 2016-2017 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+
 
 #ifndef DT_BINDINGS_SOUND_MADERA_H
 #define DT_BINDINGS_SOUND_MADERA_H

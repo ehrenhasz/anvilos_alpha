@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * SharpSL NAND support
- *
- * Copyright (C) 2008 Dmitry Baryshkov
- */
+
+
 
 #ifndef _MTD_SHARPSL_H
 #define _MTD_SHARPSL_H
@@ -19,4 +15,4 @@ struct sharpsl_nand_platform_data {
 	const char *const	*part_parsers;
 };
 
-#endif /* _MTD_SHARPSL_H */
+#endif 

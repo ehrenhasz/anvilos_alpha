@@ -52,9 +52,9 @@ def do_help(state, _args=None):
     print("\nList of commands:")
     print_commands_help(
         _COMMANDS, lambda x: x[1]().description
-    )  # extract description from argparse
+    )  
     print("\nList of shortcuts:")
-    print_commands_help(_command_expansions, lambda x: x[2])  # (args, sub, help_message)
+    print_commands_help(_command_expansions, lambda x: x[2])  
     sys.exit(0)
 def do_version(state, _args=None):
     from . import __version__

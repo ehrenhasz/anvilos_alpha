@@ -406,7 +406,7 @@ class BaseTest:
                     p.y -= 1
                     events = self.post(uhdev, p)
                     self.validate_transitions(cur_state, p, evdev, events)
-                    assert len(events) >= 3  # X, Y, SYN
+                    assert len(events) >= 3  
                 p.move_to(state)
                 if scribble and state != PenState.PEN_IS_OUT_OF_RANGE:
                     p.x += 1
@@ -516,7 +516,7 @@ class BaseTest:
             p.x += 1
             p.y -= 1
             events = self.post(uhdev, p)
-            assert len(events) == 3  # X, Y, SYN
+            assert len(events) == 3  
             assert libevdev.InputEvent(libevdev.EV_ABS.ABS_X, 51) in events
             assert libevdev.InputEvent(libevdev.EV_ABS.ABS_Y, 59) in events
             p.barrelswitch = False
@@ -558,7 +558,7 @@ class BaseTest:
             p.x += 1
             p.y -= 1
             events = self.post(uhdev, p)
-            assert len(events) == 3  # X, Y, SYN
+            assert len(events) == 3  
             assert libevdev.InputEvent(libevdev.EV_ABS.ABS_X, 51) in events
             assert libevdev.InputEvent(libevdev.EV_ABS.ABS_Y, 59) in events
             p.tipswitch = False

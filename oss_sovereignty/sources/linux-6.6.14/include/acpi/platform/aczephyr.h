@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Module Name: aczephyr.h - OS specific defines, etc.
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+
 
 #ifndef __ACZEPHYR_H__
 #define __ACZEPHYR_H__
@@ -29,17 +23,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/__assert.h>
 
-/******************************************************************************
- *
- * FUNCTION:    acpi_enable_dbg_print
- *
- * PARAMETERS:  Enable, 	            - Enable/Disable debug print
- *
- * RETURN:      None
- *
- * DESCRIPTION: Enable/disable debug print
- *
- *****************************************************************************/
+
 
 void acpi_enable_dbg_print(bool enable);
 #endif

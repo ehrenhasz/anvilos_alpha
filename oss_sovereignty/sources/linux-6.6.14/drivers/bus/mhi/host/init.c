@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
- *
- */
+
+
 
 #include <linux/bitfield.h>
 #include <linux/debugfs.h>
@@ -128,7 +125,7 @@ static struct attribute *mhi_dev_attrs[] = {
 };
 ATTRIBUTE_GROUPS(mhi_dev);
 
-/* MHI protocol requires the transfer ring to be aligned with ring length */
+
 static int mhi_alloc_aligned_ring(struct mhi_controller *mhi_cntrl,
 				  struct mhi_ring *ring,
 				  u64 len)
@@ -167,22 +164,18 @@ int mhi_init_irq_setup(struct mhi_controller *mhi_cntrl)
 	unsigned long irq_flags = IRQF_SHARED | IRQF_NO_SUSPEND;
 	int i, ret;
 
-	/* if controller driver has set irq_flags, use it */
+	
 	if (mhi_cntrl->irq_flags)
 		irq_flags = mhi_cntrl->irq_flags;
 
-	/* Setup BHI_INTVEC IRQ */
+	
 	ret = request_threaded_irq(mhi_cntrl->irq[0], mhi_intvec_handler,
 				   mhi_intvec_threaded_handler,
 				   irq_flags,
 				   "bhi", mhi_cntrl);
 	if (ret)
 		return ret;
-	/*
-	 * IRQs should be enabled during mhi_async_power_up(), so disable them explicitly here.
-	 * Due to the use of IRQF_SHARED flag as default while requesting IRQs, we assume that
-	 * IRQ_NOAUTOEN is not applicable.
-	 */
+	
 	disable_irq(mhi_cntrl->irq[0]);
 
 	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
@@ -287,7 +280,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 	if (!mhi_ctxt)
 		return -ENOMEM;
 
-	/* Setup channel ctxt */
+	
 	mhi_ctxt->chan_ctxt = dma_alloc_coherent(mhi_cntrl->cntrl_dev,
 						 sizeof(*mhi_ctxt->chan_ctxt) *
 						 mhi_cntrl->max_chan,
@@ -299,7 +292,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 	mhi_chan = mhi_cntrl->mhi_chan;
 	chan_ctxt = mhi_ctxt->chan_ctxt;
 	for (i = 0; i < mhi_cntrl->max_chan; i++, chan_ctxt++, mhi_chan++) {
-		/* Skip if it is an offload channel */
+		
 		if (mhi_chan->offload_ch)
 			continue;
 
@@ -319,7 +312,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 		mhi_chan->tre_ring.db_addr = (void __iomem *)&chan_ctxt->wp;
 	}
 
-	/* Setup event context */
+	
 	mhi_ctxt->er_ctxt = dma_alloc_coherent(mhi_cntrl->cntrl_dev,
 					       sizeof(*mhi_ctxt->er_ctxt) *
 					       mhi_cntrl->total_ev_rings,
@@ -334,7 +327,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 		     mhi_event++) {
 		struct mhi_ring *ring = &mhi_event->ring;
 
-		/* Skip if it is an offload event */
+		
 		if (mhi_event->offload_ev)
 			continue;
 
@@ -354,10 +347,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 		if (ret)
 			goto error_alloc_er;
 
-		/*
-		 * If the read pointer equals to the write pointer, then the
-		 * ring is empty
-		 */
+		
 		ring->rp = ring->wp = ring->base;
 		er_ctxt->rbase = cpu_to_le64(ring->iommu_base);
 		er_ctxt->rp = er_ctxt->wp = er_ctxt->rbase;
@@ -365,7 +355,7 @@ int mhi_init_dev_ctxt(struct mhi_controller *mhi_cntrl)
 		ring->ctxt_wp = &er_ctxt->wp;
 	}
 
-	/* Setup cmd context */
+	
 	ret = -ENOMEM;
 	mhi_ctxt->cmd_ctxt = dma_alloc_coherent(mhi_cntrl->cntrl_dev,
 						sizeof(*mhi_ctxt->cmd_ctxt) *
@@ -509,7 +499,7 @@ int mhi_init_mmio(struct mhi_controller *mhi_cntrl)
 
 	dev_dbg(dev, "Initializing MHI registers\n");
 
-	/* Read channel db offset */
+	
 	ret = mhi_read_reg(mhi_cntrl, base, CHDBOFF, &val);
 	if (ret) {
 		dev_err(dev, "Unable to read CHDBOFF register\n");
@@ -522,16 +512,16 @@ int mhi_init_mmio(struct mhi_controller *mhi_cntrl)
 		return -ERANGE;
 	}
 
-	/* Setup wake db */
+	
 	mhi_cntrl->wake_db = base + val + (8 * MHI_DEV_WAKE_DB);
 	mhi_cntrl->wake_set = false;
 
-	/* Setup channel db address for each channel in tre_ring */
+	
 	mhi_chan = mhi_cntrl->mhi_chan;
 	for (i = 0; i < mhi_cntrl->max_chan; i++, val += 8, mhi_chan++)
 		mhi_chan->tre_ring.db_addr = base + val;
 
-	/* Read event ring db offset */
+	
 	ret = mhi_read_reg(mhi_cntrl, base, ERDBOFF, &val);
 	if (ret) {
 		dev_err(dev, "Unable to read ERDBOFF register\n");
@@ -544,7 +534,7 @@ int mhi_init_mmio(struct mhi_controller *mhi_cntrl)
 		return -ERANGE;
 	}
 
-	/* Setup event db address for each ev_ring */
+	
 	mhi_event = mhi_cntrl->mhi_event;
 	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, val += 8, mhi_event++) {
 		if (mhi_event->offload_ev)
@@ -553,10 +543,10 @@ int mhi_init_mmio(struct mhi_controller *mhi_cntrl)
 		mhi_event->ring.db_addr = base + val;
 	}
 
-	/* Setup DB register for primary CMD rings */
+	
 	mhi_cntrl->mhi_cmd[PRIMARY_CMD_RING].ring.db_addr = base + CRDB_LOWER;
 
-	/* Write to MMIO registers */
+	
 	for (i = 0; reg_info[i].offset; i++)
 		mhi_write_reg(mhi_cntrl, base, reg_info[i].offset,
 			      reg_info[i].val);
@@ -590,7 +580,7 @@ void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
 	tre_ring = &mhi_chan->tre_ring;
 	chan_ctxt = &mhi_cntrl->mhi_ctxt->chan_ctxt[mhi_chan->chan];
 
-	if (!chan_ctxt->rbase) /* Already uninitialized */
+	if (!chan_ctxt->rbase) 
 		return;
 
 	dma_free_coherent(mhi_cntrl->cntrl_dev, tre_ring->alloc_size,
@@ -609,7 +599,7 @@ void mhi_deinit_chan_ctxt(struct mhi_controller *mhi_cntrl,
 	tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_DISABLED);
 	chan_ctxt->chcfg = cpu_to_le32(tmp);
 
-	/* Update to all cores */
+	
 	smp_wmb();
 }
 
@@ -655,7 +645,7 @@ int mhi_init_chan_ctxt(struct mhi_controller *mhi_cntrl,
 	buf_ring->rp = buf_ring->wp = buf_ring->base;
 	mhi_chan->db_cfg.db_mode = 1;
 
-	/* Update to all cores */
+	
 	smp_wmb();
 
 	return 0;
@@ -676,7 +666,7 @@ static int parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 	if (!mhi_cntrl->mhi_event)
 		return -ENOMEM;
 
-	/* Populate event ring */
+	
 	mhi_event = mhi_cntrl->mhi_event;
 	for (i = 0; i < num; i++) {
 		event_cfg = &config->event_cfg[i];
@@ -687,7 +677,7 @@ static int parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 		mhi_event->irq = event_cfg->irq;
 
 		if (event_cfg->channel != U32_MAX) {
-			/* This event ring has a dedicated channel */
+			
 			mhi_event->chan = event_cfg->channel;
 			if (mhi_event->chan >= mhi_cntrl->max_chan) {
 				dev_err(dev,
@@ -699,7 +689,7 @@ static int parse_ev_cfg(struct mhi_controller *mhi_cntrl,
 				&mhi_cntrl->mhi_chan[mhi_event->chan];
 		}
 
-		/* Priority is fixed to 1 for now */
+		
 		mhi_event->priority = 1;
 
 		mhi_event->db_cfg.brstmode = event_cfg->mode;
@@ -754,11 +744,7 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 
 	mhi_cntrl->max_chan = config->max_channels;
 
-	/*
-	 * The allocation of MHI channels can exceed 32KB in some scenarios,
-	 * so to avoid any memory possible allocation failures, vzalloc is
-	 * used here
-	 */
+	
 	mhi_cntrl->mhi_chan = vcalloc(mhi_cntrl->max_chan,
 				      sizeof(*mhi_cntrl->mhi_chan));
 	if (!mhi_cntrl->mhi_chan)
@@ -766,7 +752,7 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 
 	INIT_LIST_HEAD(&mhi_cntrl->lpm_chans);
 
-	/* Populate channel configurations */
+	
 	for (i = 0; i < config->num_channels; i++) {
 		struct mhi_chan *mhi_chan;
 
@@ -786,24 +772,14 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 		if (!mhi_chan->tre_ring.elements)
 			goto error_chan_cfg;
 
-		/*
-		 * For some channels, local ring length should be bigger than
-		 * the transfer ring length due to internal logical channels
-		 * in device. So host can queue much more buffers than transfer
-		 * ring length. Example, RSC channels should have a larger local
-		 * channel length than transfer ring length.
-		 */
+		
 		mhi_chan->buf_ring.elements = ch_cfg->local_elements;
 		if (!mhi_chan->buf_ring.elements)
 			mhi_chan->buf_ring.elements = mhi_chan->tre_ring.elements;
 		mhi_chan->er_index = ch_cfg->event_ring;
 		mhi_chan->dir = ch_cfg->dir;
 
-		/*
-		 * For most channels, chtype is identical to channel directions.
-		 * So, if it is not defined then assign channel direction to
-		 * chtype
-		 */
+		
 		mhi_chan->type = ch_cfg->type;
 		if (!mhi_chan->type)
 			mhi_chan->type = (enum mhi_ch_type)mhi_chan->dir;
@@ -816,19 +792,13 @@ static int parse_ch_cfg(struct mhi_controller *mhi_cntrl,
 		mhi_chan->pre_alloc = ch_cfg->auto_queue;
 		mhi_chan->wake_capable = ch_cfg->wake_capable;
 
-		/*
-		 * If MHI host allocates buffers, then the channel direction
-		 * should be DMA_FROM_DEVICE
-		 */
+		
 		if (mhi_chan->pre_alloc && mhi_chan->dir != DMA_FROM_DEVICE) {
 			dev_err(dev, "Invalid channel configuration\n");
 			goto error_chan_cfg;
 		}
 
-		/*
-		 * Bi-directional and direction less channel must be an
-		 * offload channel
-		 */
+		
 		if ((mhi_chan->dir == DMA_BIDIRECTIONAL ||
 		     mhi_chan->dir == DMA_NONE) && !mhi_chan->offload_ch) {
 			dev_err(dev, "Invalid channel configuration\n");
@@ -867,12 +837,12 @@ static int parse_config(struct mhi_controller *mhi_cntrl,
 {
 	int ret;
 
-	/* Parse MHI channel configuration */
+	
 	ret = parse_ch_cfg(mhi_cntrl, config);
 	if (ret)
 		return ret;
 
-	/* Parse MHI event configuration */
+	
 	ret = parse_ev_cfg(mhi_cntrl, config);
 	if (ret)
 		goto error_ev_cfg;
@@ -886,7 +856,7 @@ static int parse_config(struct mhi_controller *mhi_cntrl,
 	if (!mhi_cntrl->buffer_len)
 		mhi_cntrl->buffer_len = MHI_MAX_MTU;
 
-	/* By default, host is allowed to ring DB in both M0 and M2 states */
+	
 	mhi_cntrl->db_access = MHI_PM_M0 | MHI_PM_M2;
 	if (config->m2_no_db)
 		mhi_cntrl->db_access &= ~MHI_PM_M2;
@@ -948,7 +918,7 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
 
 	mhi_event = mhi_cntrl->mhi_event;
 	for (i = 0; i < mhi_cntrl->total_ev_rings; i++, mhi_event++) {
-		/* Skip for offload events */
+		
 		if (mhi_event->offload_ev)
 			continue;
 
@@ -968,7 +938,7 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
 		init_completion(&mhi_chan->completion);
 		rwlock_init(&mhi_chan->lock);
 
-		/* used in setting bei field of TRE */
+		
 		mhi_event = &mhi_cntrl->mhi_event[mhi_chan->er_index];
 		mhi_chan->intmod = mhi_event->intmod;
 	}
@@ -981,7 +951,7 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
 		mhi_cntrl->unmap_single = mhi_unmap_single_no_bb;
 	}
 
-	/* Read the MHI device info */
+	
 	ret = mhi_read_reg(mhi_cntrl, mhi_cntrl->regs,
 			   SOC_HW_VERSION_OFFS, &soc_info);
 	if (ret)
@@ -1002,7 +972,7 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
 	if (ret)
 		goto err_ida_free;
 
-	/* Register controller with MHI bus */
+	
 	mhi_dev = mhi_alloc_device(mhi_cntrl);
 	if (IS_ERR(mhi_dev)) {
 		dev_err(mhi_cntrl->cntrl_dev, "Failed to allocate MHI device\n");
@@ -1015,7 +985,7 @@ int mhi_register_controller(struct mhi_controller *mhi_cntrl,
 	dev_set_name(&mhi_dev->dev, "mhi%d", mhi_cntrl->index);
 	mhi_dev->name = dev_name(&mhi_dev->dev);
 
-	/* Init wakeup source */
+	
 	device_init_wakeup(&mhi_dev->dev, true);
 
 	ret = device_add(&mhi_dev->dev);
@@ -1059,7 +1029,7 @@ void mhi_unregister_controller(struct mhi_controller *mhi_cntrl)
 	kfree(mhi_cntrl->mhi_cmd);
 	kfree(mhi_cntrl->mhi_event);
 
-	/* Drop the references to MHI devices created for channels */
+	
 	for (i = 0; i < mhi_cntrl->max_chan; i++, mhi_chan++) {
 		if (!mhi_chan->mhi_dev)
 			continue;
@@ -1136,16 +1106,11 @@ int mhi_prepare_for_power_up(struct mhi_controller *mhi_cntrl)
 	}
 
 	if (mhi_cntrl->rddm_size) {
-		/*
-		 * This controller supports RDDM, so we need to manually clear
-		 * BHIE RX registers since POR values are undefined.
-		 */
+		
 		memset_io(mhi_cntrl->bhie + BHIE_RXVECADDR_LOW_OFFS,
 			  0, BHIE_RXVECSTATUS_OFFS - BHIE_RXVECADDR_LOW_OFFS +
 			  4);
-		/*
-		 * Allocate RDDM table for debugging purpose if specified
-		 */
+		
 		mhi_alloc_bhie_table(mhi_cntrl, &mhi_cntrl->rddm_image,
 				     mhi_cntrl->rddm_size);
 		if (mhi_cntrl->rddm_image) {
@@ -1196,12 +1161,7 @@ static void mhi_release_device(struct device *dev)
 {
 	struct mhi_device *mhi_dev = to_mhi_device(dev);
 
-	/*
-	 * We need to set the mhi_chan->mhi_dev to NULL here since the MHI
-	 * devices for the channels will only get created if the mhi_dev
-	 * associated with it is NULL. This scenario will happen during the
-	 * controller suspend and resume.
-	 */
+	
 	if (mhi_dev->ul_chan)
 		mhi_dev->ul_chan->mhi_dev = NULL;
 
@@ -1226,10 +1186,10 @@ struct mhi_device *mhi_alloc_device(struct mhi_controller *mhi_cntrl)
 	dev->release = mhi_release_device;
 
 	if (mhi_cntrl->mhi_dev) {
-		/* for MHI client devices, parent is the MHI controller device */
+		
 		dev->parent = &mhi_cntrl->mhi_dev->dev;
 	} else {
-		/* for MHI controller device, parent is the bus device (e.g. pci device) */
+		
 		dev->parent = mhi_cntrl->cntrl_dev;
 	}
 
@@ -1250,7 +1210,7 @@ static int mhi_driver_probe(struct device *dev)
 	struct mhi_chan *dl_chan = mhi_dev->dl_chan;
 	int ret;
 
-	/* Bring device out of LPM */
+	
 	ret = mhi_device_get_sync(mhi_dev);
 	if (ret)
 		return ret;
@@ -1258,14 +1218,11 @@ static int mhi_driver_probe(struct device *dev)
 	ret = -EINVAL;
 
 	if (ul_chan) {
-		/*
-		 * If channel supports LPM notifications then status_cb should
-		 * be provided
-		 */
+		
 		if (ul_chan->lpm_notify && !mhi_drv->status_cb)
 			goto exit_probe;
 
-		/* For non-offload channels then xfer_cb should be provided */
+		
 		if (!ul_chan->offload_ch && !mhi_drv->ul_xfer_cb)
 			goto exit_probe;
 
@@ -1274,31 +1231,24 @@ static int mhi_driver_probe(struct device *dev)
 
 	ret = -EINVAL;
 	if (dl_chan) {
-		/*
-		 * If channel supports LPM notifications then status_cb should
-		 * be provided
-		 */
+		
 		if (dl_chan->lpm_notify && !mhi_drv->status_cb)
 			goto exit_probe;
 
-		/* For non-offload channels then xfer_cb should be provided */
+		
 		if (!dl_chan->offload_ch && !mhi_drv->dl_xfer_cb)
 			goto exit_probe;
 
 		mhi_event = &mhi_cntrl->mhi_event[dl_chan->er_index];
 
-		/*
-		 * If the channel event ring is managed by client, then
-		 * status_cb must be provided so that the framework can
-		 * notify pending data
-		 */
+		
 		if (mhi_event->cl_manage && !mhi_drv->status_cb)
 			goto exit_probe;
 
 		dl_chan->xfer_cb = mhi_drv->dl_xfer_cb;
 	}
 
-	/* Call the user provided probe function */
+	
 	ret = mhi_drv->probe(mhi_dev, mhi_dev->id);
 	if (ret)
 		goto exit_probe;
@@ -1327,31 +1277,31 @@ static int mhi_driver_remove(struct device *dev)
 	};
 	int dir;
 
-	/* Skip if it is a controller device */
+	
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		return 0;
 
-	/* Reset both channels */
+	
 	for (dir = 0; dir < 2; dir++) {
 		mhi_chan = dir ? mhi_dev->ul_chan : mhi_dev->dl_chan;
 
 		if (!mhi_chan)
 			continue;
 
-		/* Wake all threads waiting for completion */
+		
 		write_lock_irq(&mhi_chan->lock);
 		mhi_chan->ccs = MHI_EV_CC_INVALID;
 		complete_all(&mhi_chan->completion);
 		write_unlock_irq(&mhi_chan->lock);
 
-		/* Set the channel state to disabled */
+		
 		mutex_lock(&mhi_chan->mutex);
 		write_lock_irq(&mhi_chan->lock);
 		ch_state[dir] = mhi_chan->ch_state;
 		mhi_chan->ch_state = MHI_CH_STATE_SUSPENDED;
 		write_unlock_irq(&mhi_chan->lock);
 
-		/* Reset the non-offload channel */
+		
 		if (!mhi_chan->offload_ch)
 			mhi_reset_chan(mhi_cntrl, mhi_chan);
 
@@ -1360,7 +1310,7 @@ static int mhi_driver_remove(struct device *dev)
 
 	mhi_drv->remove(mhi_dev);
 
-	/* De-init channel if it was enabled */
+	
 	for (dir = 0; dir < 2; dir++) {
 		mhi_chan = dir ? mhi_dev->ul_chan : mhi_dev->dl_chan;
 
@@ -1421,10 +1371,7 @@ static int mhi_match(struct device *dev, struct device_driver *drv)
 	struct mhi_driver *mhi_drv = to_mhi_driver(drv);
 	const struct mhi_device_id *id;
 
-	/*
-	 * If the device is a controller type then there is no client driver
-	 * associated with it
-	 */
+	
 	if (mhi_dev->dev_type == MHI_DEVICE_CONTROLLER)
 		return 0;
 

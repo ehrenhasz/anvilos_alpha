@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# The loops are all 64-bit code
+
+
 CFLAGS += -I$(CURDIR)
 
 EXTRA_SOURCES := ../harness.c

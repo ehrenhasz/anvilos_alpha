@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Atlantic Network Driver
- *
- * Copyright (C) 2018-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
+
+
 
 #ifndef AQ_PHY_H
 #define AQ_PHY_H
@@ -33,4 +29,4 @@ bool aq_phy_init(struct aq_hw_s *aq_hw);
 
 void aq_phy_disable_ptp(struct aq_hw_s *aq_hw);
 
-#endif /* AQ_PHY_H */
+#endif 

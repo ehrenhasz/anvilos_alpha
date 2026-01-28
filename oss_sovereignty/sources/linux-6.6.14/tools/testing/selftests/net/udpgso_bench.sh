@@ -1,7 +1,7 @@
 readonly GREEN='\033[0;92m'
 readonly YELLOW='\033[0;33m'
 readonly RED='\033[0;31m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m' 
 readonly TESTPORT=8000
 readonly KSFT_PASS=0
 readonly KSFT_FAIL=1
@@ -98,7 +98,7 @@ run_all() {
 	run_tcp "${ipv6_args}"
 	run_udp "${ipv6_args}"
 }
-if [[ $# -eq 0 ]]; then
+if [[ $
 	run_all
 	kselftest_exit
 elif [[ $1 == "__subprocess" ]]; then

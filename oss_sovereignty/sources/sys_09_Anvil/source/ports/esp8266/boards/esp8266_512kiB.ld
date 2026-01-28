@@ -1,10 +1,4 @@
-/* GNU linker script for ESP8266 with 512K flash
 
-   Flash layout:
-    0x40200000 36k  header + iram/dram init
-    0x40209000 456k firmware (irom0)
-    0x4027b000 20k  SDK parameters
-*/
 
 MEMORY
 {
@@ -14,5 +8,5 @@ MEMORY
     irom0_0_seg :  org = 0x40209000, len = 512K - 36K - 20K
 }
 
-/* define common sections and symbols */
+
 INCLUDE boards/esp8266_common.ld

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * u_uac1.h -- interface to USB gadget "ALSA AUDIO" utilities
- *
- * Copyright (C) 2008 Bryan Wu <cooloney@kernel.org>
- * Copyright (C) 2008 Analog Devices, Inc
- */
+
+
 
 #ifndef __U_UAC1_LEGACY_H
 #define __U_UAC1_LEGACY_H
@@ -26,10 +21,7 @@
 #define UAC1_REQ_COUNT			256
 #define UAC1_AUDIO_BUF_SIZE		48000
 
-/*
- * This represents the USB side of an audio card device, managed by a USB
- * function which provides control and stream interfaces.
- */
+
 
 struct gaudio_snd_dev {
 	struct gaudio			*card;
@@ -45,12 +37,12 @@ struct gaudio {
 	struct usb_function		func;
 	struct usb_gadget		*gadget;
 
-	/* ALSA sound device interfaces */
+	
 	struct gaudio_snd_dev		control;
 	struct gaudio_snd_dev		playback;
 	struct gaudio_snd_dev		capture;
 
-	/* TODO */
+	
 };
 
 struct f_uac1_legacy_opts {
@@ -76,4 +68,4 @@ size_t u_audio_playback(struct gaudio *card, void *buf, size_t count);
 int u_audio_get_playback_channels(struct gaudio *card);
 int u_audio_get_playback_rate(struct gaudio *card);
 
-#endif /* __U_UAC1_LEGACY_H */
+#endif 

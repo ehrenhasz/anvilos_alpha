@@ -1,7 +1,0 @@
-spi@7000 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	compatible = "fsl,mpc8536-espi";
-	reg = <0x7000 0x1000>;
-	interrupts = <59 0x2 0 0>;
-};

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Core driver interface to access RICOH_RC5T583 power management chip.
- *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * Based on code
- *      Copyright (C) 2011 RICOH COMPANY,LTD
- */
+
+
 
 #ifndef __LINUX_MFD_RC5T583_H
 #define __LINUX_MFD_RC5T583_H
@@ -16,13 +8,13 @@
 #include <linux/types.h>
 #include <linux/regmap.h>
 
-/* Maximum number of main interrupts */
+
 #define MAX_MAIN_INTERRUPT		5
 #define RC5T583_MAX_GPEDGE_REG		2
 #define RC5T583_MAX_INTERRUPT_EN_REGS	8
 #define RC5T583_MAX_INTERRUPT_MASK_REGS	9
 
-/* Interrupt enable register */
+
 #define RC5T583_INT_EN_SYS1	0x19
 #define RC5T583_INT_EN_SYS2	0x1D
 #define RC5T583_INT_EN_DCDC	0x41
@@ -31,7 +23,7 @@
 #define RC5T583_INT_EN_ADC2	0x91
 #define RC5T583_INT_EN_ADC3	0x92
 
-/* Interrupt status registers (monitor regs in Ricoh)*/
+
 #define RC5T583_INTC_INTPOL	0xAD
 #define RC5T583_INTC_INTEN	0xAE
 #define RC5T583_INTC_INTMON	0xAF
@@ -42,7 +34,7 @@
 #define RC5T583_INT_MON_DCDC	0x43
 #define RC5T583_INT_MON_RTC	0xEE
 
-/* Interrupt clearing registers */
+
 #define RC5T583_INT_IR_SYS1	0x1A
 #define RC5T583_INT_IR_SYS2	0x1E
 #define RC5T583_INT_IR_DCDC	0x42
@@ -53,7 +45,7 @@
 #define RC5T583_INT_IR_GPIOR	0xA9
 #define RC5T583_INT_IR_GPIOF	0xAA
 
-/* Sleep sequence registers */
+
 #define RC5T583_SLPSEQ1		0x21
 #define RC5T583_SLPSEQ2		0x22
 #define RC5T583_SLPSEQ3		0x23
@@ -66,7 +58,7 @@
 #define RC5T583_SLPSEQ10	0x2A
 #define RC5T583_SLPSEQ11	0x2B
 
-/* Regulator registers */
+
 #define RC5T583_REG_DC0CTL	0x30
 #define RC5T583_REG_DC0DAC	0x31
 #define RC5T583_REG_DC0LATCTL	0x32
@@ -120,7 +112,7 @@
 #define RC5T583_REG_LDO8DAC_DS	0x6C
 #define RC5T583_REG_LDO9DAC_DS	0x6D
 
-/* GPIO register base address */
+
 #define RC5T583_GPIO_IOSEL	0xA0
 #define RC5T583_GPIO_PDEN	0xA1
 #define RC5T583_GPIO_IOOUT	0xA2
@@ -133,7 +125,7 @@
 #define RC5T583_GPIO_MON_IOIN	0xAB
 #define RC5T583_GPIO_GPOFUNC	0xAC
 
-/* RTC registers */
+
 #define RC5T583_RTC_SEC		0xE0
 #define RC5T583_RTC_MIN		0xE1
 #define RC5T583_RTC_HOUR	0xE2
@@ -158,7 +150,7 @@
 #define RC5T583_MAX_REG		0xF7
 #define RC5T583_NUM_REGS	(RC5T583_MAX_REG + 1)
 
-/* RICOH_RC5T583 IRQ definitions */
+
 enum {
 	RC5T583_IRQ_ONKEY,
 	RC5T583_IRQ_ACOK,
@@ -204,11 +196,11 @@ enum {
 	RC5T583_IRQ_GPIO6,
 	RC5T583_IRQ_GPIO7,
 
-	/* Should be last entry */
+	
 	RC5T583_MAX_IRQS,
 };
 
-/* Ricoh583 gpio definitions */
+
 enum {
 	RC5T583_GPIO0,
 	RC5T583_GPIO1,
@@ -219,7 +211,7 @@ enum {
 	RC5T583_GPIO6,
 	RC5T583_GPIO7,
 
-	/* Should be last entry */
+	
 	RC5T583_MAX_GPIO,
 };
 
@@ -248,15 +240,11 @@ enum {
 	RC5T583_DS_PSO6,
 	RC5T583_DS_PSO7,
 
-	/* Should be last entry */
+	
 	RC5T583_DS_MAX,
 };
 
-/*
- * Ricoh pmic RC5T583 supports sleep through two external controls.
- * The output of gpios and regulator can be enable/disable through
- * this external signals.
- */
+
 enum {
 	RC5T583_EXT_PWRREQ1_CONTROL = 0x1,
 	RC5T583_EXT_PWRREQ2_CONTROL = 0x2,
@@ -278,7 +266,7 @@ enum {
 	RC5T583_REGULATOR_LDO8,
 	RC5T583_REGULATOR_LDO9,
 
-	/* Should be last entry */
+	
 	RC5T583_REGULATOR_MAX,
 };
 
@@ -290,29 +278,17 @@ struct rc5t583 {
 	struct mutex	irq_lock;
 	unsigned long	group_irq_en[MAX_MAIN_INTERRUPT];
 
-	/* For main interrupt bits in INTC */
+	
 	uint8_t		intc_inten_reg;
 
-	/* For group interrupt bits and address */
+	
 	uint8_t		irq_en_reg[RC5T583_MAX_INTERRUPT_EN_REGS];
 
-	/* For gpio edge */
+	
 	uint8_t		gpedge_reg[RC5T583_MAX_GPEDGE_REG];
 };
 
-/*
- * rc5t583_platform_data: Platform data for ricoh rc5t583 pmu.
- * The board specific data is provided through this structure.
- * @irq_base: Irq base number on which this device registers their interrupts.
- * @gpio_base: GPIO base from which gpio of this device will start.
- * @enable_shutdown: Enable shutdown through the input pin "shutdown".
- * @regulator_deepsleep_slot: The slot number on which device goes to sleep
- *		in device sleep mode.
- * @regulator_ext_pwr_control: External power request regulator control. The
- *		regulator output enable/disable is controlled by the external
- *		power request input state.
- * @reg_init_data: Regulator init data.
- */
+
 
 struct rc5t583_platform_data {
 	int		irq_base;

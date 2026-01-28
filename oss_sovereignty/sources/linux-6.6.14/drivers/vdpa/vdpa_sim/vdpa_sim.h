@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, Red Hat Inc. All rights reserved.
- */
+
+
 
 #ifndef _VDPA_SIM_H
 #define _VDPA_SIM_H
@@ -53,7 +51,7 @@ struct vdpasim_dev_attr {
 	void (*free)(struct vdpasim *vdpasim);
 };
 
-/* State of each vdpasim device */
+
 struct vdpasim {
 	struct vdpa_device vdpa;
 	struct vdpasim_virtqueue *vqs;
@@ -61,9 +59,9 @@ struct vdpasim {
 	struct kthread_work work;
 	struct mm_struct *mm_bound;
 	struct vdpasim_dev_attr dev_attr;
-	/* mutex to synchronize virtqueue state */
+	
 	struct mutex mutex;
-	/* virtio config according to device type */
+	
 	void *config;
 	struct vhost_iotlb *iommu;
 	bool *iommu_pt;
@@ -73,7 +71,7 @@ struct vdpasim {
 	u32 groups;
 	bool running;
 	bool pending_kick;
-	/* spinlock to synchronize iommu table */
+	
 	spinlock_t iommu_lock;
 };
 
@@ -81,7 +79,7 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *attr,
 			       const struct vdpa_dev_set_config *config);
 void vdpasim_schedule_work(struct vdpasim *vdpasim);
 
-/* TODO: cross-endian support */
+
 static inline bool vdpasim_is_little_endian(struct vdpasim *vdpasim)
 {
 	return virtio_legacy_is_little_endian() ||

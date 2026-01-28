@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _LINUX_KERNEL_VTIME_H
 #define _LINUX_KERNEL_VTIME_H
 
@@ -9,13 +9,11 @@
 #include <asm/vtime.h>
 #endif
 
-/*
- * Common vtime APIs
- */
+
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING
 extern void vtime_account_kernel(struct task_struct *tsk);
 extern void vtime_account_idle(struct task_struct *tsk);
-#endif /* !CONFIG_VIRT_CPU_ACCOUNTING */
+#endif 
 
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
 extern void arch_vtime_task_switch(struct task_struct *tsk);
@@ -24,7 +22,7 @@ extern void vtime_user_exit(struct task_struct *tsk);
 extern void vtime_guest_enter(struct task_struct *tsk);
 extern void vtime_guest_exit(struct task_struct *tsk);
 extern void vtime_init_idle(struct task_struct *tsk, int cpu);
-#else /* !CONFIG_VIRT_CPU_ACCOUNTING_GEN  */
+#else 
 static inline void vtime_user_enter(struct task_struct *tsk) { }
 static inline void vtime_user_exit(struct task_struct *tsk) { }
 static inline void vtime_guest_enter(struct task_struct *tsk) { }
@@ -37,16 +35,14 @@ extern void vtime_account_irq(struct task_struct *tsk, unsigned int offset);
 extern void vtime_account_softirq(struct task_struct *tsk);
 extern void vtime_account_hardirq(struct task_struct *tsk);
 extern void vtime_flush(struct task_struct *tsk);
-#else /* !CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */
+#else 
 static inline void vtime_account_irq(struct task_struct *tsk, unsigned int offset) { }
 static inline void vtime_account_softirq(struct task_struct *tsk) { }
 static inline void vtime_account_hardirq(struct task_struct *tsk) { }
 static inline void vtime_flush(struct task_struct *tsk) { }
 #endif
 
-/*
- * vtime_accounting_enabled_this_cpu() definitions/declarations
- */
+
 #if defined(CONFIG_VIRT_CPU_ACCOUNTING_NATIVE)
 
 static inline bool vtime_accounting_enabled_this_cpu(void) { return true; }
@@ -66,12 +62,7 @@ static __always_inline void vtime_account_guest_exit(void)
 
 #elif defined(CONFIG_VIRT_CPU_ACCOUNTING_GEN)
 
-/*
- * Checks if vtime is enabled on some CPU. Cputime readers want to be careful
- * in that case and compute the tickless cputime.
- * For now vtime state is tied to context tracking. We might want to decouple
- * those later if necessary.
- */
+
 static inline bool vtime_accounting_enabled(void)
 {
 	return context_tracking_enabled();
@@ -111,7 +102,7 @@ static __always_inline void vtime_account_guest_exit(void)
 		current->flags &= ~PF_VCPU;
 }
 
-#else /* !CONFIG_VIRT_CPU_ACCOUNTING */
+#else 
 
 static inline bool vtime_accounting_enabled_this_cpu(void) { return false; }
 static inline void vtime_task_switch(struct task_struct *prev) { }
@@ -159,4 +150,4 @@ static inline void account_hardirq_exit(struct task_struct *tsk)
 	irqtime_account_irq(tsk, 0);
 }
 
-#endif /* _LINUX_KERNEL_VTIME_H */
+#endif 

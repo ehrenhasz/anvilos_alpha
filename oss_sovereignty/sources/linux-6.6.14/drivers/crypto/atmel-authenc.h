@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * API for Atmel Secure Protocol Layers Improved Performances (SPLIP)
- *
- * Copyright (C) 2016 Atmel Corporation
- *
- * Author: Cyrille Pitchen <cyrille.pitchen@atmel.com>
- *
- * This driver is based on drivers/mtd/spi-nor/fsl-quadspi.c from Freescale.
- */
+
+
 
 #ifndef __ATMEL_AUTHENC_H__
 #define __ATMEL_AUTHENC_H__
@@ -48,6 +40,6 @@ int atmel_sha_authenc_final(struct ahash_request *req,
 			    struct atmel_aes_dev *dd);
 void  atmel_sha_authenc_abort(struct ahash_request *req);
 
-#endif /* CONFIG_CRYPTO_DEV_ATMEL_AUTHENC */
+#endif 
 
-#endif /* __ATMEL_AUTHENC_H__ */
+#endif 

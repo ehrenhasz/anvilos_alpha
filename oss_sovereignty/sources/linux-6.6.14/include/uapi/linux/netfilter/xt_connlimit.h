@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
 #ifndef _XT_CONNLIMIT_H
 #define _XT_CONNLIMIT_H
 
@@ -23,11 +23,11 @@ struct xt_connlimit_info {
 #endif
 	};
 	unsigned int limit;
-	/* revision 1 */
+	
 	__u32 flags;
 
-	/* Used internally by the kernel */
+	
 	struct nf_conncount_data *data __attribute__((aligned(8)));
 };
 
-#endif /* _XT_CONNLIMIT_H */
+#endif 

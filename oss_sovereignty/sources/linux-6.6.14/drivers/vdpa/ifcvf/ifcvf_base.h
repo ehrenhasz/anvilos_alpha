@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel IFC VF NIC driver for virtio dataplane offloading
- *
- * Copyright (C) 2020 Intel Corporation.
- *
- * Author: Zhu Lingshan <lingshan.zhu@intel.com>
- *
- */
+
+
 
 #ifndef _IFCVF_H_
 #define _IFCVF_H_
@@ -33,11 +26,11 @@
 #define IFCVF_DBG(pdev, fmt, ...)	dev_dbg(&pdev->dev, fmt, ##__VA_ARGS__)
 #define IFCVF_INFO(pdev, fmt, ...)	dev_info(&pdev->dev, fmt, ##__VA_ARGS__)
 
-/* all vqs and config interrupt has its own vector */
+
 #define MSIX_VECTOR_PER_VQ_AND_CONFIG		1
-/* all vqs share a vector, and config interrupt has a separate vector */
+
 #define MSIX_VECTOR_SHARED_VQ_AND_CONFIG	2
-/* all vqs and config interrupt share a vector */
+
 #define MSIX_VECTOR_DEV_SHARED			3
 
 struct vring_info {
@@ -59,20 +52,20 @@ struct ifcvf_lm_cfg {
 
 struct ifcvf_hw {
 	u8 __iomem *isr;
-	/* Live migration */
+	
 	struct ifcvf_lm_cfg  __iomem *lm_cfg;
-	/* Notification bar number */
+	
 	u8 notify_bar;
 	u8 msix_vector_status;
-	/* virtio-net or virtio-blk device config size */
+	
 	u32 config_size;
-	/* Notificaiton bar address */
+	
 	void __iomem *notify_base;
 	phys_addr_t notify_base_pa;
 	u32 notify_off_multiplier;
 	u32 dev_type;
 	u64 hw_features;
-	/* provisioned device features */
+	
 	u64 dev_features;
 	struct virtio_pci_common_cfg __iomem *common_cfg;
 	void __iomem *dev_cfg;
@@ -83,7 +76,7 @@ struct ifcvf_hw {
 	int config_irq;
 	int vqs_reused_irq;
 	u16 nr_vring;
-	/* VIRTIO_PCI_CAP_DEVICE_CFG size */
+	
 	u32 num_msix_vectors;
 	u32 cap_dev_config_size;
 	struct pci_dev *pdev;
@@ -131,4 +124,4 @@ void ifcvf_set_vq_ready(struct ifcvf_hw *hw, u16 qid, bool ready);
 void ifcvf_set_driver_features(struct ifcvf_hw *hw, u64 features);
 u64 ifcvf_get_driver_features(struct ifcvf_hw *hw);
 u16 ifcvf_get_max_vq_size(struct ifcvf_hw *hw);
-#endif /* _IFCVF_H_ */
+#endif 

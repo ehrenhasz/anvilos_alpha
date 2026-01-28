@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- */
+
+
 
 #include "basic_asm.h"
 
-/*
- * Careful this will 'clobber' vsx (by design), VSX are always
- * volatile though so unlike vmx this isn't so much of an issue
- * Still should avoid calling from C
- */
+
 FUNC_START(load_vsx)
 	li	r5,0
 	lxvd2x	vs20,r5,r3

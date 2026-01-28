@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AT86RF230/RF231 driver
- *
- * Copyright (C) 2009-2012 Siemens AG
- *
- * Written by:
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+
 
 #ifndef _AT86RF230_H
 #define _AT86RF230_H
@@ -185,17 +177,17 @@
 #define IRQ_ACTIVE_HIGH	0
 #define IRQ_ACTIVE_LOW	1
 
-#define STATE_P_ON		0x00	/* BUSY */
+#define STATE_P_ON		0x00	
 #define STATE_BUSY_RX		0x01
 #define STATE_BUSY_TX		0x02
 #define STATE_FORCE_TRX_OFF	0x03
-#define STATE_FORCE_TX_ON	0x04	/* IDLE */
-/* 0x05 */				/* INVALID_PARAMETER */
+#define STATE_FORCE_TX_ON	0x04	
+				
 #define STATE_RX_ON		0x06
-/* 0x07 */				/* SUCCESS */
+				
 #define STATE_TRX_OFF		0x08
 #define STATE_TX_ON		0x09
-/* 0x0a - 0x0e */			/* 0x0a - UNSUPPORTED_ATTRIBUTE */
+			
 #define STATE_SLEEP		0x0F
 #define STATE_PREP_DEEP_SLEEP	0x10
 #define STATE_BUSY_RX_AACK	0x11
@@ -217,4 +209,4 @@
 #define TRAC_NO_ACK			5
 #define TRAC_INVALID			7
 
-#endif /* !_AT86RF230_H */
+#endif 

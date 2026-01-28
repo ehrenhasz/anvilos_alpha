@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __PERF_ANNOTATE_H
 #define __PERF_ANNOTATE_H
 
@@ -153,7 +153,7 @@ struct disasm_line {
 	struct ins		 ins;
 	struct ins_operands	 ops;
 
-	/* This needs to be at the end. */
+	
 	struct annotation_line	 al;
 };
 
@@ -183,19 +183,13 @@ static inline struct disasm_line *disasm_line(struct annotation_line *al)
 	return al ? container_of(al, struct disasm_line, al) : NULL;
 }
 
-/*
- * Is this offset in the same function as the line it is used?
- * asm functions jump to other functions, for instance.
- */
+
 static inline bool disasm_line__has_local_offset(const struct disasm_line *dl)
 {
 	return dl->ops.target.offset_avail && !dl->ops.target.outside;
 }
 
-/*
- * Can we draw an arrow from the jump to its target, for instance? I.e.
- * is the jump and its target in the same function?
- */
+
 bool disasm_line__is_valid_local_jump(struct disasm_line *dl, struct symbol *sym);
 
 void disasm_line__free(struct disasm_line *dl);
@@ -242,27 +236,11 @@ struct cyc_hist {
 	u32	num;
 	u32	num_aggr;
 	u8	have_start;
-	/* 1 byte padding */
+	
 	u16	reset;
 };
 
-/** struct annotated_source - symbols with hits have this attached as in sannotation
- *
- * @histograms: Array of addr hit histograms per event being monitored
- * nr_histograms: This may not be the same as evsel->evlist->core.nr_entries if
- * 		  we have more than a group in a evlist, where we will want
- * 		  to see each group separately, that is why symbol__annotate2()
- * 		  sets src->nr_histograms to evsel->nr_members.
- * @lines: If 'print_lines' is specified, per source code line percentages
- * @source: source parsed from a disassembler like objdump -dS
- * @cyc_hist: Average cycles per basic block
- *
- * lines is allocated, percentages calculated and all sorted by percentage
- * when the annotation is about to be presented, so the percentages are for
- * one of the entries in the histogram array, i.e. for the event/counter being
- * presented. It is deallocated right after symbol__{tui,tty,etc}_annotate
- * returns.
- */
+
 struct annotated_source {
 	struct list_head   source;
 	int    		   nr_histograms;
@@ -371,13 +349,7 @@ int symbol__annotate2(struct map_symbol *ms,
 enum symbol_disassemble_errno {
 	SYMBOL_ANNOTATE_ERRNO__SUCCESS		= 0,
 
-	/*
-	 * Choose an arbitrary negative big number not to clash with standard
-	 * errno since SUS requires the errno has distinct positive values.
-	 * See 'Issue 6' in the link below.
-	 *
-	 * http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/errno.h.html
-	 */
+	
 	__SYMBOL_ANNOTATE_ERRNO__START		= -10000,
 
 	SYMBOL_ANNOTATE_ERRNO__NO_VMLINUX	= __SYMBOL_ANNOTATE_ERRNO__START,
@@ -431,4 +403,4 @@ int annotate_parse_percent_type(const struct option *opt, const char *_str,
 
 int annotate_check_args(struct annotation_options *args);
 
-#endif	/* __PERF_ANNOTATE_H */
+#endif	

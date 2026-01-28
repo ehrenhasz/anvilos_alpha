@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2009-2016 Cavium, Inc.
- */
+
+
 
 enum cavium_mdiobus_mode {
 	UNINIT = 0,

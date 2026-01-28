@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019-2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_VLAN_H_
 #define _ICE_VLAN_H_
@@ -15,4 +15,4 @@ struct ice_vlan {
 
 #define ICE_VLAN(tpid, vid, prio) ((struct ice_vlan){ tpid, vid, prio })
 
-#endif /* _ICE_VLAN_H_ */
+#endif 

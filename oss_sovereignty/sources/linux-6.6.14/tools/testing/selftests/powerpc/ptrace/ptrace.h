@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Ptrace interface test helper functions
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+
 
 #define __SANE_USERSPACE_TYPES__
 
@@ -60,7 +56,7 @@ struct tm_spr_regs {
 #define NT_PPC_TM_CDSCR	0x10f
 #endif
 
-/* Basic ptrace operations */
+
 int start_trace(pid_t child)
 {
 	int ret;
@@ -140,7 +136,7 @@ long ptrace_write_regs(pid_t child, unsigned long type, unsigned long regs[],
 	return ret;
 }
 
-/* TAR, PPR, DSCR */
+
 int show_tar_registers(pid_t child, unsigned long *out)
 {
 	struct iovec iov;
@@ -321,7 +317,7 @@ fail:
 	return TEST_FAIL;
 }
 
-/* FPR */
+
 int show_fpr(pid_t child, __u64 *fpr)
 {
 	struct fpr_regs *regs;
@@ -415,7 +411,7 @@ int write_ckpt_fpr(pid_t child, unsigned long val)
 	return TEST_PASS;
 }
 
-/* GPR */
+
 int show_gpr(pid_t child, unsigned long *gpr)
 {
 	struct pt_regs *regs;
@@ -446,7 +442,7 @@ long sys_ptrace(enum __ptrace_request request, pid_t pid, unsigned long addr, un
 	return syscall(__NR_ptrace, request, pid, (void *)addr, data);
 }
 
-// 33 because of FPSCR
+
 #define PT_NUM_FPRS	(33 * (sizeof(__u64) / sizeof(unsigned long)))
 
 __u64 *peek_fprs(pid_t child)
@@ -593,7 +589,7 @@ int write_ckpt_gpr(pid_t child, unsigned long val)
 	return TEST_PASS;
 }
 
-/* VMX */
+
 int show_vmx(pid_t child, unsigned long vmx[][2])
 {
 	int ret;
@@ -653,7 +649,7 @@ int write_vmx_ckpt(pid_t child, unsigned long vmx[][2])
 	return TEST_PASS;
 }
 
-/* VSX */
+
 int show_vsx(pid_t child, unsigned long *vsx)
 {
 	int ret;
@@ -712,7 +708,7 @@ int write_vsx_ckpt(pid_t child, unsigned long *vsx)
 	return TEST_PASS;
 }
 
-/* TM SPR */
+
 int show_tm_spr(pid_t child, struct tm_spr_regs *out)
 {
 	struct tm_spr_regs *regs;
@@ -742,7 +738,7 @@ int show_tm_spr(pid_t child, struct tm_spr_regs *out)
 
 
 
-/* Analyse TEXASR after TM failure */
+
 inline unsigned long get_tfiar(void)
 {
 	return mfspr(SPRN_TFIAR);

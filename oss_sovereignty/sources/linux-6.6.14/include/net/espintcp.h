@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _NET_ESPINTCP_H
 #define _NET_ESPINTCP_H
 
@@ -34,7 +34,7 @@ static inline struct espintcp_ctx *espintcp_getctx(const struct sock *sk)
 {
 	struct inet_connection_sock *icsk = inet_csk(sk);
 
-	/* RCU is only needed for diag */
+	
 	return (__force void *)icsk->icsk_ulp_data;
 }
 #endif

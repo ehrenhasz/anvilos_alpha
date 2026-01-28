@@ -26,7 +26,7 @@ install() {
 		{ dfatal "Failed to install essential binaries"; exit 1; }
 	if ! ldd "$(command -v zpool)" | grep -qF 'libgcc_s.so' && ldconfig -p 2> /dev/null | grep -qF 'libc.so.6' ; then
 		if command -v gcc-config >/dev/null; then
-			inst_simple "/usr/lib/gcc/$(s=$(gcc-config -c); echo "${s%-*}/${s##*-}")/libgcc_s.so.1" ||
+			inst_simple "/usr/lib/gcc/$(s=$(gcc-config -c); echo "${s%-*}/${s
 				{ dfatal "Unable to install libgcc_s.so"; exit 1; }
 		elif ! inst_libdir_file "libgcc_s.so*"; then
 			inst_simple /usr/lib/gcc/*/*/libgcc_s.so* ||

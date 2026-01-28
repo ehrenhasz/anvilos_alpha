@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * local MTRR defines.
- */
+
+
 
 #include <linux/types.h>
 #include <linux/stddef.h>
@@ -37,7 +35,7 @@ extern const struct mtrr_ops generic_mtrr_ops;
 
 extern int positive_have_wrcomb(void);
 
-/* library functions for processor-specific routines */
+
 struct set_mtrr_context {
 	unsigned long	flags;
 	unsigned long	cr4val;
@@ -75,7 +73,7 @@ static inline void mtrr_register_syscore(void) { }
 void mtrr_build_map(void);
 void mtrr_copy_map(void);
 
-/* CPU specific mtrr_ops vectors. */
+
 extern const struct mtrr_ops amd_mtrr_ops;
 extern const struct mtrr_ops cyrix_mtrr_ops;
 extern const struct mtrr_ops centaur_mtrr_ops;
@@ -83,10 +81,7 @@ extern const struct mtrr_ops centaur_mtrr_ops;
 extern int changed_by_mtrr_cleanup;
 extern int mtrr_cleanup(void);
 
-/*
- * Must be used by code which uses mtrr_if to call platform-specific
- * MTRR manipulation functions.
- */
+
 static inline bool mtrr_enabled(void)
 {
 	return !!mtrr_if;

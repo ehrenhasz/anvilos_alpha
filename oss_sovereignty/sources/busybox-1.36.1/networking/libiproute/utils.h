@@ -1,4 +1,4 @@
-/* vi: set sw=4 ts=4: */
+
 #ifndef UTILS_H
 #define UTILS_H 1
 
@@ -9,10 +9,10 @@
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
 
 extern family_t preferred_family;
-extern smallint show_stats;    /* UNUSED */
-extern smallint show_details;  /* UNUSED */
-extern smallint show_raw;      /* UNUSED */
-extern smallint resolve_hosts; /* UNUSED */
+extern smallint show_stats;    
+extern smallint show_details;  
+extern smallint show_raw;      
+extern smallint resolve_hosts; 
 extern smallint oneline;
 extern char _SL_;
 
@@ -57,7 +57,7 @@ char** next_arg(char **argv) FAST_FUNC;
 
 uint32_t get_addr32(char *name) FAST_FUNC;
 int get_addr_1(inet_prefix *dst, char *arg, int family) FAST_FUNC;
-/*void get_prefix_1(inet_prefix *dst, char *arg, int family) FAST_FUNC;*/
+
 int get_addr(inet_prefix *dst, char *arg, int family) FAST_FUNC;
 void get_prefix(inet_prefix *dst, char *arg, int family) FAST_FUNC;
 
@@ -79,11 +79,11 @@ void duparg2(const char *, const char *) FAST_FUNC NORETURN;
 
 int inet_addr_match(const inet_prefix *a, const inet_prefix *b, int bits) FAST_FUNC;
 
-//const char *dnet_ntop(int af, const void *addr, char *str, size_t len);
-//int dnet_pton(int af, const char *src, void *addr);
 
-//const char *ipx_ntop(int af, const void *addr, char *str, size_t len);
-//int ipx_pton(int af, const char *src, void *addr);
+
+
+
+
 
 unsigned get_hz(void) FAST_FUNC;
 

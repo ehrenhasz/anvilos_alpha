@@ -32,10 +32,10 @@ function commachecker()
 	while read line
 	do
 		x=${line:0:1}
-		[ "$x" = "#" ] && continue
+		[ "$x" = "
 		[ "$line" = "" ] && continue
 		x=$(echo $line | tr -d -c $csv_sep)
-		cnt="${#x}"
+		cnt="${
 		[[ ! "$cnt" =~ $exp ]] && {
 			echo "wrong number of fields. expected $exp in $line" 1>&2
 			exit 1;

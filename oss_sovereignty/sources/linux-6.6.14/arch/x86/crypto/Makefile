@@ -1,6 +1,6 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# x86 crypto algorithms
+
+
+
 
 obj-$(CONFIG_CRYPTO_TWOFISH_586) += twofish-i586.o
 twofish-i586-y := twofish-i586-asm_32.o twofish_glue.o
@@ -114,5 +114,5 @@ quiet_cmd_perlasm = PERLASM $@
 $(obj)/%.S: $(src)/%.pl FORCE
 	$(call if_changed,perlasm)
 
-# Disable GCOV in odd or sensitive code
+
 GCOV_PROFILE_curve25519-x86_64.o := n

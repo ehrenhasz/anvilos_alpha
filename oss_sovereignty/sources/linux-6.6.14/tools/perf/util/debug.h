@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* For debugging general purposes */
+
+
 #ifndef __PERF_DEBUG_H
 #define __PERF_DEBUG_H
 
@@ -39,7 +39,7 @@ extern int debug_data_convert;
 #define pr_debug3(fmt, ...) pr_debugN(3, pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_debug4(fmt, ...) pr_debugN(4, pr_fmt(fmt), ##__VA_ARGS__)
 
-/* Special macro to print perf_event_open arguments/return value. */
+
 #define pr_debug2_peo(fmt, ...) {				\
 	if (debug_peo_args)						\
 		pr_debugN(0, pr_fmt(fmt), ##__VA_ARGS__);	\
@@ -53,7 +53,7 @@ extern int debug_data_convert;
 #define pr_oe_time(t, fmt, ...)  pr_time_N(1, debug_ordered_events, t, pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_oe_time2(t, fmt, ...) pr_time_N(2, debug_ordered_events, t, pr_fmt(fmt), ##__VA_ARGS__)
 
-#define STRERR_BUFSIZE	128	/* For the buffer size of str_error_r */
+#define STRERR_BUFSIZE	128	
 
 union perf_event;
 
@@ -85,4 +85,4 @@ int perf_quiet_option(void);
 void dump_stack(void);
 void sighandler_dump_stack(int sig);
 
-#endif	/* __PERF_DEBUG_H */
+#endif	

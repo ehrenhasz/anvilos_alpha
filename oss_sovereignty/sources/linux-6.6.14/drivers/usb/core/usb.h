@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Released under the GPLv2 only.
- */
+
+
 
 #include <linux/pm.h>
 #include <linux/acpi.h>
@@ -9,7 +7,7 @@
 struct usb_hub_descriptor;
 struct usb_dev_state;
 
-/* Functions local to drivers/usb/core/ */
+
 
 extern int usb_create_sysfs_dev_files(struct usb_device *dev);
 extern void usb_remove_sysfs_dev_files(struct usb_device *dev);
@@ -60,7 +58,7 @@ extern int usb_generic_driver_resume(struct usb_device *udev,
 static inline unsigned usb_get_max_power(struct usb_device *udev,
 		struct usb_host_config *c)
 {
-	/* SuperSpeed power is in 8 mA units; others are in 2 mA units */
+	
 	unsigned mul = (udev->speed >= USB_SPEED_SUPER ? 8 : 2);
 
 	return c->desc.bMaxPower * mul;
@@ -175,7 +173,7 @@ static inline int is_root_hub(struct usb_device *udev)
 	return (udev->parent == NULL);
 }
 
-/* Do the same for device drivers and interface drivers. */
+
 
 static inline int is_usb_device_driver(struct device_driver *drv)
 {
@@ -183,14 +181,14 @@ static inline int is_usb_device_driver(struct device_driver *drv)
 			for_devices;
 }
 
-/* for labeling diagnostics */
+
 extern const char *usbcore_name;
 
-/* sysfs stuff */
+
 extern const struct attribute_group *usb_device_groups[];
 extern const struct attribute_group *usb_interface_groups[];
 
-/* usbfs stuff */
+
 extern struct usb_driver usbfs_driver;
 extern const struct file_operations usbfs_devices_fops;
 extern const struct file_operations usbdev_file_operations;
@@ -198,13 +196,10 @@ extern const struct file_operations usbdev_file_operations;
 extern int usb_devio_init(void);
 extern void usb_devio_cleanup(void);
 
-/*
- * Firmware specific cookie identifying a port's location. '0' == no location
- * data available
- */
+
 typedef u32 usb_port_location_t;
 
-/* internal notify stuff */
+
 extern void usb_notify_add_device(struct usb_device *udev);
 extern void usb_notify_remove_device(struct usb_device *udev);
 extern void usb_notify_add_bus(struct usb_bus *ubus);

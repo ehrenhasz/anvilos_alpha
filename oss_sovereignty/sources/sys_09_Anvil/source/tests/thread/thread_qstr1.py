@@ -13,7 +13,7 @@ lock = _thread.allocate_lock()
 n_thread = 0
 n_thread_max = 4
 n_finished = 0
-n_qstr_per_thread = 100  # make 1000 for a more stressful test (uses more heap)
+n_qstr_per_thread = 100  
 for _ in range(n_thread_max):
     try:
         _thread.start_new_thread(th, (n_thread * n_qstr_per_thread, n_qstr_per_thread))

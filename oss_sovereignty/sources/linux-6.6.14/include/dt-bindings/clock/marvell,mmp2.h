@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DTS_MARVELL_MMP2_CLOCK_H
 #define __DTS_MARVELL_MMP2_CLOCK_H
 
-/* fixed clocks and plls */
+
 #define MMP2_CLK_CLK32			1
 #define MMP2_CLK_VCTCXO			2
 #define MMP2_CLK_PLL1			3
@@ -32,7 +32,7 @@
 #define MMP2_CLK_I2S0			31
 #define MMP2_CLK_I2S1			32
 
-/* apb peripherals */
+
 #define MMP2_CLK_TWSI0			60
 #define MMP2_CLK_TWSI1			61
 #define MMP2_CLK_TWSI2			62
@@ -60,7 +60,7 @@
 #define MMP3_CLK_THERMAL2		84
 #define MMP3_CLK_THERMAL3		85
 
-/* axi peripherals */
+
 #define MMP2_CLK_SDH0			101
 #define MMP2_CLK_SDH1			102
 #define MMP2_CLK_SDH2			103

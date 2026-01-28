@@ -10,9 +10,9 @@ typedef struct _microbit_display_obj_t {
     uint8_t image_buffer[5][5];
     uint8_t previous_brightness;
     bool    active;
-    /* Current row for strobing */
+    
     uint8_t strobe_row;
-    /* boolean histogram of brightness in buffer */
+    
     uint16_t brightnesses;
     uint16_t pins_for_brightness[MAX_BRIGHTNESS+1];
 } microbit_display_obj_t;
@@ -42,4 +42,4 @@ void microbit_display_tick(void);
 
 bool microbit_display_active_animation(void);
 
-#endif // __MICROPY_INCLUDED_MICROBIT_DISPLAY_H__
+#endif 

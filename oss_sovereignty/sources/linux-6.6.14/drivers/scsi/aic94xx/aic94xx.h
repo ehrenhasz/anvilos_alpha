@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Aic94xx SAS/SATA driver header file.
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- *
- * $Id: //depot/aic94xx/aic94xx.h#31 $
- */
+
+
 
 #ifndef _AIC94XX_H_
 #define _AIC94XX_H_
@@ -36,7 +29,7 @@
 #define ASD_DPRINTK(fmt, ...) no_printk(fmt, ##__VA_ARGS__)
 #endif
 
-/* 2*ITNL timeout + 1 second */
+
 #define AIC94XX_SCB_TIMEOUT  (5*HZ)
 
 extern struct kmem_cache *asd_dma_token_cache;
@@ -57,7 +50,7 @@ int  asd_execute_task(struct sas_task *task, gfp_t gfp_flags);
 
 void asd_set_dmamode(struct domain_device *dev);
 
-/* ---------- TMFs ---------- */
+
 int  asd_abort_task(struct sas_task *);
 int  asd_abort_task_set(struct domain_device *, u8 *lun);
 int  asd_clear_task_set(struct domain_device *, u8 *lun);
@@ -65,11 +58,11 @@ int  asd_lu_reset(struct domain_device *, u8 *lun);
 int  asd_I_T_nexus_reset(struct domain_device *dev);
 int  asd_query_task(struct sas_task *);
 
-/* ---------- Adapter and Port management ---------- */
+
 int  asd_clear_nexus_port(struct asd_sas_port *port);
 int  asd_clear_nexus_ha(struct sas_ha_struct *sas_ha);
 
-/* ---------- Phy Management ---------- */
+
 int  asd_control_phy(struct asd_sas_phy *phy, enum phy_func func, void *arg);
 
 #endif

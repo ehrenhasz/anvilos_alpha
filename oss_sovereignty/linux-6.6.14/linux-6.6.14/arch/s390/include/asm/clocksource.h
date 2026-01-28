@@ -1,3 +1,0 @@
-#ifndef _ASM_S390_CLOCKSOURCE_H
-#define _ASM_S390_CLOCKSOURCE_H
-#endif  

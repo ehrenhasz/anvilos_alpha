@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+
 #define GPR_1	1
 #define GPR_2	2
 #define GPR_3	3
@@ -17,7 +15,7 @@
 #define FPR_3_REP 0x3f689374bc6a7efaull
 #define FPR_4_REP 0x3f70624dd2f1a9fcull
 
-/* Buffer must have 18 elements */
+
 int validate_gpr(unsigned long *gpr, unsigned long val)
 {
 	int i, found = 1;
@@ -35,7 +33,7 @@ int validate_gpr(unsigned long *gpr, unsigned long val)
 	return TEST_PASS;
 }
 
-/* Buffer must have 32 elements */
+
 int validate_fpr(__u64 *fpr, __u64 val)
 {
 	int i, found = 1;
@@ -52,7 +50,7 @@ int validate_fpr(__u64 *fpr, __u64 val)
 	return TEST_PASS;
 }
 
-/* Buffer must have 32 elements */
+
 int validate_fpr_double(double *fpr, double val)
 {
 	int i, found = 1;

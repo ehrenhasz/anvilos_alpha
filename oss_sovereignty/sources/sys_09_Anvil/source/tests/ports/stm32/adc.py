@@ -1,7 +1,7 @@
 from pyb import ADC, Timer
-adct = ADC(16)  # Temperature 930 -> 20C
+adct = ADC(16)  
 print(str(adct)[:19])
-adcv = ADC(17)  # Voltage 1500 -> 3.3V
+adcv = ADC(17)  
 print(adcv)
 val = adcv.read()
 assert val > 1000 and val < 2000

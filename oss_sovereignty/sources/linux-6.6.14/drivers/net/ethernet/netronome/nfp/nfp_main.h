@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_main.h
- * Author: Jason McMullan <jason.mcmullan@netronome.com>
- */
+
+
+
 
 #ifndef NFP_MAIN_H
 #define NFP_MAIN_H
@@ -33,60 +30,13 @@ struct nfp_rtsym;
 struct nfp_rtsym_table;
 struct nfp_shared_buf;
 
-/**
- * struct nfp_dumpspec - NFP FW dump specification structure
- * @size:	Size of the data
- * @data:	Sequence of TLVs, each being an instruction to dump some data
- *		from FW
- */
+
 struct nfp_dumpspec {
 	u32 size;
 	u8 data[];
 };
 
-/**
- * struct nfp_pf - NFP PF-specific device structure
- * @pdev:		Backpointer to PCI device
- * @dev_info:		NFP ASIC params
- * @cpp:		Pointer to the CPP handle
- * @app:		Pointer to the APP handle
- * @data_vnic_bar:	Pointer to the CPP area for the data vNICs' BARs
- * @ctrl_vnic_bar:	Pointer to the CPP area for the ctrl vNIC's BAR
- * @qc_area:		Pointer to the CPP area for the queues
- * @mac_stats_bar:	Pointer to the CPP area for the MAC stats
- * @mac_stats_mem:	Pointer to mapped MAC stats area
- * @vf_cfg_bar:		Pointer to the CPP area for the VF configuration BAR
- * @vf_cfg_mem:		Pointer to mapped VF configuration area
- * @vfcfg_tbl2_area:	Pointer to the CPP area for the VF config table
- * @vfcfg_tbl2:		Pointer to mapped VF config table
- * @mbox:		RTSym of per-PCI PF mailbox (under devlink lock)
- * @irq_entries:	Array of MSI-X entries for all vNICs
- * @limit_vfs:		Number of VFs supported by firmware (~0 for PCI limit)
- * @num_vfs:		Number of SR-IOV VFs enabled
- * @fw_loaded:		Is the firmware loaded?
- * @unload_fw_on_remove:Do we need to unload firmware on driver removal?
- * @ctrl_vnic:		Pointer to the control vNIC if available
- * @mip:		MIP handle
- * @rtbl:		RTsym table
- * @hwinfo:		HWInfo table
- * @dumpspec:		Debug dump specification
- * @dump_flag:		Store dump flag between set_dump and get_dump_flag
- * @dump_len:		Store dump length between set_dump and get_dump_flag
- * @eth_tbl:		NSP ETH table
- * @nspi:		NSP identification info
- * @hwmon_dev:		pointer to hwmon device
- * @ddir:		Per-device debugfs directory
- * @max_data_vnics:	Number of data vNICs app firmware supports
- * @num_vnics:		Number of vNICs spawned
- * @vnics:		Linked list of vNIC structures (struct nfp_net)
- * @ports:		Linked list of port structures (struct nfp_port)
- * @wq:			Workqueue for running works which need to grab @lock
- * @port_refresh_work:	Work entry for taking netdevs out
- * @shared_bufs:	Array of shared buffer structures if FW has any SBs
- * @num_shared_bufs:	Number of elements in @shared_bufs
- *
- * Fields which may change after proble are protected by devlink instance lock.
- */
+
 struct nfp_pf {
 	struct pci_dev *pdev;
 	const struct nfp_dev_info *dev_info;
@@ -194,4 +144,4 @@ void nfp_devlink_params_unregister(struct nfp_pf *pf);
 
 unsigned int nfp_net_lr2speed(unsigned int linkrate);
 unsigned int nfp_net_speed2lr(unsigned int speed);
-#endif /* NFP_MAIN_H */
+#endif 

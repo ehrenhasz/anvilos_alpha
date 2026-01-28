@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef BME680_H_
 #define BME680_H_
 
@@ -32,7 +32,7 @@
 #define   BME680_FILTER_MASK			GENMASK(4, 2)
 #define     BME680_FILTER_COEFF_VAL		BIT(1)
 
-/* TEMP/PRESS/HUMID reading skipped */
+
 #define BME680_MEAS_SKIPPED			0x8000
 
 #define BME680_MAX_OVERFLOW_VAL			0x40000000
@@ -56,7 +56,7 @@
 #define BME680_REG_MEAS_STAT_0			0x1D
 #define   BME680_GAS_MEAS_BIT			BIT(6)
 
-/* Calibration Parameters */
+
 #define BME680_T2_LSB_REG	0x8A
 #define BME680_T3_REG		0x8C
 #define BME680_P1_LSB_REG	0x8E
@@ -88,4 +88,4 @@ extern const struct regmap_config bme680_regmap_config;
 int bme680_core_probe(struct device *dev, struct regmap *regmap,
 		      const char *name);
 
-#endif  /* BME680_H_ */
+#endif  

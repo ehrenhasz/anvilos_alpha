@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+
 
 #ifndef _IAVF_H_
 #define _IAVF_H_
@@ -47,14 +47,14 @@
 int iavf_status_to_errno(enum iavf_status status);
 int virtchnl_status_to_errno(enum virtchnl_status_code v_status);
 
-/* VSI state flags shared with common code */
+
 enum iavf_vsi_state_t {
 	__IAVF_VSI_DOWN,
-	/* This must be last as it determines the size of the BITMAP */
+	
 	__IAVF_VSI_STATE_SIZE__,
 };
 
-/* dummy struct to make common code less painful */
+
 struct iavf_vsi {
 	struct iavf_adapter *back;
 	struct net_device *netdev;
@@ -63,11 +63,11 @@ struct iavf_vsi {
 	DECLARE_BITMAP(state, __IAVF_VSI_STATE_SIZE__);
 	int base_vector;
 	u16 qs_handle;
-	void *priv;     /* client driver data reference. */
+	void *priv;     
 };
 
-/* How many Rx Buffers do we bundle into one write to the hardware ? */
-#define IAVF_RX_BUFFER_WRITE	16	/* Must be power of 2 */
+
+#define IAVF_RX_BUFFER_WRITE	16	
 #define IAVF_DEFAULT_TXD	512
 #define IAVF_DEFAULT_RXD	512
 #define IAVF_MAX_TXD		4096
@@ -77,7 +77,7 @@ struct iavf_vsi {
 #define IAVF_REQ_DESCRIPTOR_MULTIPLE	32
 #define IAVF_MAX_AQ_BUF_SIZE	4096
 #define IAVF_AQ_LEN		32
-#define IAVF_AQ_MAX_ERR	20 /* times to try before resetting AQ */
+#define IAVF_AQ_MAX_ERR	20 
 
 #define MAXIMUM_ETHERNET_VLAN_SIZE (VLAN_ETH_FRAME_LEN + ETH_FCS_LEN)
 
@@ -89,16 +89,14 @@ struct iavf_vsi {
 
 #define IAVF_HKEY_ARRAY_SIZE ((IAVF_VFQF_HKEY_MAX_INDEX + 1) * 4)
 #define IAVF_HLUT_ARRAY_SIZE ((IAVF_VFQF_HLUT_MAX_INDEX + 1) * 4)
-#define IAVF_MBPS_DIVISOR	125000 /* divisor to convert to Mbps */
+#define IAVF_MBPS_DIVISOR	125000 
 #define IAVF_MBPS_QUANTA	50
 
 #define IAVF_VIRTCHNL_VF_RESOURCE_SIZE					\
 	virtchnl_struct_size((struct virtchnl_vf_resource *)NULL,	\
 			     vsi_res, IAVF_MAX_VF_VSI)
 
-/* MAX_MSIX_Q_VECTORS of these are allocated,
- * but we only use one per queue-specific vector.
- */
+
 struct iavf_q_vector {
 	struct iavf_adapter *adapter;
 	struct iavf_vsi *vsi;
@@ -106,20 +104,17 @@ struct iavf_q_vector {
 	struct iavf_ring_container rx;
 	struct iavf_ring_container tx;
 	u32 ring_mask;
-	u8 itr_countdown;	/* when 0 should adjust adaptive ITR */
-	u8 num_ringpairs;	/* total number of ring pairs in vector */
-	u16 v_idx;		/* index in the vsi->q_vector array. */
-	u16 reg_idx;		/* register index of the interrupt */
+	u8 itr_countdown;	
+	u8 num_ringpairs;	
+	u16 v_idx;		
+	u16 reg_idx;		
 	char name[IFNAMSIZ + 15];
 	bool arm_wb_state;
 	cpumask_t affinity_mask;
 	struct irq_affinity_notify affinity_notify;
 };
 
-/* Helper macros to switch between ints/sec and what the register uses.
- * And yes, it's the same math going both ways.  The lowest value
- * supported by all of the iavf hardware is 8.
- */
+
 #define EITR_INTS_PER_SEC_TO_REG(_eitr) \
 	((_eitr) ? (1000000000 / ((_eitr) * 256)) : 8)
 #define EITR_REG_TO_INTS_PER_SEC EITR_INTS_PER_SEC_TO_REG
@@ -140,11 +135,11 @@ struct iavf_mac_filter {
 	struct list_head list;
 	u8 macaddr[ETH_ALEN];
 	struct {
-		u8 is_new_mac:1;    /* filter is new, wait for PF decision */
-		u8 remove:1;        /* filter needs to be removed */
-		u8 add:1;           /* filter needs to be added */
-		u8 is_primary:1;    /* filter is a default VF MAC */
-		u8 add_handled:1;   /* received response for filter add */
+		u8 is_new_mac:1;    
+		u8 remove:1;        
+		u8 add:1;           
+		u8 is_primary:1;    
+		u8 add_handled:1;   
 		u8 padding:3;
 	};
 };
@@ -157,12 +152,12 @@ struct iavf_vlan {
 
 enum iavf_vlan_state_t {
 	IAVF_VLAN_INVALID,
-	IAVF_VLAN_ADD,		/* filter needs to be added */
-	IAVF_VLAN_IS_NEW,	/* filter is new, wait for PF answer */
-	IAVF_VLAN_ACTIVE,	/* filter is accepted by PF */
-	IAVF_VLAN_DISABLE,	/* filter needs to be deleted by PF, then marked INACTIVE */
-	IAVF_VLAN_INACTIVE,	/* filter is inactive, we are in IFF_DOWN */
-	IAVF_VLAN_REMOVE,	/* filter needs to be removed from list */
+	IAVF_VLAN_ADD,		
+	IAVF_VLAN_IS_NEW,	
+	IAVF_VLAN_ACTIVE,	
+	IAVF_VLAN_DISABLE,	
+	IAVF_VLAN_INACTIVE,	
+	IAVF_VLAN_REMOVE,	
 };
 
 struct iavf_vlan_filter {
@@ -172,48 +167,48 @@ struct iavf_vlan_filter {
 };
 
 #define IAVF_MAX_TRAFFIC_CLASS	4
-/* State of traffic class creation */
+
 enum iavf_tc_state_t {
-	__IAVF_TC_INVALID, /* no traffic class, default state */
-	__IAVF_TC_RUNNING, /* traffic classes have been created */
+	__IAVF_TC_INVALID, 
+	__IAVF_TC_RUNNING, 
 };
 
-/* channel info */
+
 struct iavf_channel_config {
 	struct virtchnl_channel_info ch_info[IAVF_MAX_TRAFFIC_CLASS];
 	enum iavf_tc_state_t state;
 	u8 total_qps;
 };
 
-/* State of cloud filter */
+
 enum iavf_cloud_filter_state_t {
-	__IAVF_CF_INVALID,	 /* cloud filter not added */
-	__IAVF_CF_ADD_PENDING, /* cloud filter pending add by the PF */
-	__IAVF_CF_DEL_PENDING, /* cloud filter pending del by the PF */
-	__IAVF_CF_ACTIVE,	 /* cloud filter is active */
+	__IAVF_CF_INVALID,	 
+	__IAVF_CF_ADD_PENDING, 
+	__IAVF_CF_DEL_PENDING, 
+	__IAVF_CF_ACTIVE,	 
 };
 
-/* Driver state. The order of these is important! */
+
 enum iavf_state_t {
-	__IAVF_STARTUP,		/* driver loaded, probe complete */
-	__IAVF_REMOVE,		/* driver is being unloaded */
-	__IAVF_INIT_VERSION_CHECK,	/* aq msg sent, awaiting reply */
-	__IAVF_INIT_GET_RESOURCES,	/* aq msg sent, awaiting reply */
-	__IAVF_INIT_EXTENDED_CAPS,	/* process extended caps which require aq msg exchange */
+	__IAVF_STARTUP,		
+	__IAVF_REMOVE,		
+	__IAVF_INIT_VERSION_CHECK,	
+	__IAVF_INIT_GET_RESOURCES,	
+	__IAVF_INIT_EXTENDED_CAPS,	
 	__IAVF_INIT_CONFIG_ADAPTER,
-	__IAVF_INIT_SW,		/* got resources, setting up structs */
-	__IAVF_INIT_FAILED,	/* init failed, restarting procedure */
-	__IAVF_RESETTING,		/* in reset */
-	__IAVF_COMM_FAILED,		/* communication with PF failed */
-	/* Below here, watchdog is running */
-	__IAVF_DOWN,			/* ready, can be opened */
-	__IAVF_DOWN_PENDING,		/* descending, waiting for watchdog */
-	__IAVF_TESTING,		/* in ethtool self-test */
-	__IAVF_RUNNING,		/* opened, working */
+	__IAVF_INIT_SW,		
+	__IAVF_INIT_FAILED,	
+	__IAVF_RESETTING,		
+	__IAVF_COMM_FAILED,		
+	
+	__IAVF_DOWN,			
+	__IAVF_DOWN_PENDING,		
+	__IAVF_TESTING,		
+	__IAVF_RUNNING,		
 };
 
 enum iavf_critical_section_t {
-	__IAVF_IN_REMOVE_TASK,	/* device being removed */
+	__IAVF_IN_REMOVE_TASK,	
 };
 
 #define IAVF_CLOUD_FIELD_OMAC		0x01
@@ -236,21 +231,21 @@ enum iavf_critical_section_t {
 						 IAVF_CLOUD_FIELD_TEN_ID)
 #define IAVF_CF_FLAGS_IIP	IAVF_CLOUD_FIELD_IIP
 
-/* bookkeeping of cloud filters */
+
 struct iavf_cloud_filter {
 	enum iavf_cloud_filter_state_t state;
 	struct list_head list;
 	struct virtchnl_filter f;
 	unsigned long cookie;
-	bool del;		/* filter needs to be deleted */
-	bool add;		/* filter needs to be added */
+	bool del;		
+	bool add;		
 };
 
 #define IAVF_RESET_WAIT_MS 10
 #define IAVF_RESET_WAIT_DETECTED_COUNT 500
 #define IAVF_RESET_WAIT_COMPLETE_COUNT 2000
 
-/* board specific private data structure */
+
 struct iavf_adapter {
 	struct workqueue_struct *wq;
 	struct work_struct reset_task;
@@ -266,18 +261,18 @@ struct iavf_adapter {
 	struct list_head mac_filter_list;
 	struct mutex crit_lock;
 	struct mutex client_lock;
-	/* Lock to protect accesses to MAC and VLAN lists */
+	
 	spinlock_t mac_vlan_list_lock;
 	char misc_vector_name[IFNAMSIZ + 9];
 	int num_active_queues;
 	int num_req_queues;
 
-	/* TX */
+	
 	struct iavf_ring *tx_rings;
 	u32 tx_timeout_count;
 	u32 tx_desc_count;
 
-	/* RX */
+	
 	struct iavf_ring *rx_rings;
 	u64 hw_csum_rx_error;
 	u32 rx_desc_count;
@@ -304,9 +299,9 @@ struct iavf_adapter {
 #define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
 #define IAVF_FLAG_REINIT_MSIX_NEEDED		BIT(20)
 #define IAVF_FLAG_FDIR_ENABLED			BIT(21)
-/* duplicates for common code */
+
 #define IAVF_FLAG_DCB_ENABLED			0
-	/* flags for admin queue service task */
+	
 	u64 aq_required;
 #define IAVF_FLAG_AQ_ENABLE_QUEUES		BIT_ULL(0)
 #define IAVF_FLAG_AQ_DISABLE_QUEUES		BIT_ULL(1)
@@ -317,9 +312,9 @@ struct iavf_adapter {
 #define IAVF_FLAG_AQ_CONFIGURE_QUEUES		BIT_ULL(6)
 #define IAVF_FLAG_AQ_MAP_VECTORS		BIT_ULL(7)
 #define IAVF_FLAG_AQ_HANDLE_RESET		BIT_ULL(8)
-#define IAVF_FLAG_AQ_CONFIGURE_RSS		BIT_ULL(9) /* direct AQ config */
+#define IAVF_FLAG_AQ_CONFIGURE_RSS		BIT_ULL(9) 
 #define IAVF_FLAG_AQ_GET_CONFIG			BIT_ULL(10)
-/* Newer style, RSS done by the PF so we can ignore hardware vagaries. */
+
 #define IAVF_FLAG_AQ_GET_HENA			BIT_ULL(11)
 #define IAVF_FLAG_AQ_SET_HENA			BIT_ULL(12)
 #define IAVF_FLAG_AQ_SET_RSS_KEY		BIT_ULL(13)
@@ -346,13 +341,7 @@ struct iavf_adapter {
 #define IAVF_FLAG_AQ_ENABLE_STAG_VLAN_INSERTION		BIT_ULL(37)
 #define IAVF_FLAG_AQ_DISABLE_STAG_VLAN_INSERTION	BIT_ULL(38)
 
-	/* flags for processing extended capability messages during
-	 * __IAVF_INIT_EXTENDED_CAPS. Each capability exchange requires
-	 * both a SEND and a RECV step, which must be processed in sequence.
-	 *
-	 * During the __IAVF_INIT_EXTENDED_CAPS state, the driver will
-	 * process one flag at a time during each state loop.
-	 */
+	
 	u64 extended_caps;
 #define IAVF_EXTENDED_CAP_SEND_VLAN_V2			BIT_ULL(0)
 #define IAVF_EXTENDED_CAP_RECV_VLAN_V2			BIT_ULL(1)
@@ -361,17 +350,15 @@ struct iavf_adapter {
 	(IAVF_EXTENDED_CAP_SEND_VLAN_V2 |		\
 	 IAVF_EXTENDED_CAP_RECV_VLAN_V2)
 
-	/* Lock to prevent possible clobbering of
-	 * current_netdev_promisc_flags
-	 */
+	
 	spinlock_t current_netdev_promisc_flags_lock;
 	netdev_features_t current_netdev_promisc_flags;
 
-	/* OS defined structs */
+	
 	struct net_device *netdev;
 	struct pci_dev *pdev;
 
-	struct iavf_hw hw; /* defined in iavf_type.h */
+	struct iavf_hw hw; 
 
 	enum iavf_state_t state;
 	enum iavf_state_t last_state;
@@ -381,12 +368,7 @@ struct iavf_adapter {
 	bool netdev_registered;
 	bool link_up;
 	enum virtchnl_link_speed link_speed;
-	/* This is only populated if the VIRTCHNL_VF_CAP_ADV_LINK_SPEED is set
-	 * in vf_res->vf_cap_flags. Use ADV_LINK_SUPPORT macro to determine if
-	 * this field is valid. This field should be used going forward and the
-	 * enum virtchnl_link_speed above should be considered the legacy way of
-	 * storing/communicating link speeds.
-	 */
+	
 	u32 link_speed_mbps;
 
 	enum virtchnl_ops current_op;
@@ -395,7 +377,7 @@ struct iavf_adapter {
 				VIRTCHNL_VF_OFFLOAD_RDMA : \
 			    0)
 #define CLIENT_ENABLED(_a) ((_a)->cinst)
-/* RSS by the PF should be preferred over RSS via other methods. */
+
 #define RSS_PF(_a) ((_a)->vf_res->vf_cap_flags & \
 		    VIRTCHNL_VF_OFFLOAD_RSS_PF)
 #define RSS_AQ(_a) ((_a)->vf_res->vf_cap_flags & \
@@ -419,8 +401,8 @@ struct iavf_adapter {
 			       VIRTCHNL_VF_OFFLOAD_FDIR_PF)
 #define ADV_RSS_SUPPORT(_a) ((_a)->vf_res->vf_cap_flags & \
 			     VIRTCHNL_VF_OFFLOAD_ADV_RSS_PF)
-	struct virtchnl_vf_resource *vf_res; /* incl. all VSIs */
-	struct virtchnl_vsi_resource *vsi_res; /* our LAN VSI */
+	struct virtchnl_vf_resource *vf_res; 
+	struct virtchnl_vsi_resource *vsi_res; 
 	struct virtchnl_version_info pf_version;
 #define PF_IS_V11(_a) (((_a)->pf_version.major == 1) && \
 		       ((_a)->pf_version.minor == 1))
@@ -429,44 +411,41 @@ struct iavf_adapter {
 	struct iavf_eth_stats current_stats;
 	struct iavf_vsi vsi;
 	u32 aq_wait_count;
-	/* RSS stuff */
+	
 	u64 hena;
 	u16 rss_key_size;
 	u16 rss_lut_size;
 	u8 *rss_key;
 	u8 *rss_lut;
-	/* ADQ related members */
+	
 	struct iavf_channel_config ch_config;
 	u8 num_tc;
 	struct list_head cloud_filter_list;
-	/* lock to protect access to the cloud filter list */
+	
 	spinlock_t cloud_filter_list_lock;
 	u16 num_cloud_filters;
-	/* snapshot of "num_active_queues" before setup_tc for qdisc add
-	 * is invoked. This information is useful during qdisc del flow,
-	 * to restore correct number of queues
-	 */
+	
 	int orig_num_active_queues;
 
-#define IAVF_MAX_FDIR_FILTERS 128	/* max allowed Flow Director filters */
+#define IAVF_MAX_FDIR_FILTERS 128	
 	u16 fdir_active_fltr;
 	struct list_head fdir_list_head;
-	spinlock_t fdir_fltr_lock;	/* protect the Flow Director filter list */
+	spinlock_t fdir_fltr_lock;	
 
 	struct list_head adv_rss_list_head;
-	spinlock_t adv_rss_lock;	/* protect the RSS management list */
+	spinlock_t adv_rss_lock;	
 };
 
 
-/* Ethtool Private Flags */
 
-/* lan device, used by client interface */
+
+
 struct iavf_device {
 	struct list_head list;
 	struct iavf_adapter *vf;
 };
 
-/* needed by iavf_ethtool.c */
+
 extern char iavf_driver_name[];
 
 static inline const char *iavf_state_str(enum iavf_state_t state)
@@ -589,4 +568,4 @@ void iavf_del_adv_rss_cfg(struct iavf_adapter *adapter);
 struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
 					const u8 *macaddr);
 int iavf_wait_for_reset(struct iavf_adapter *adapter);
-#endif /* _IAVF_H_ */
+#endif 

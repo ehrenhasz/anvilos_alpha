@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+
 
 #ifndef __DSA_TAG_8021Q_H
 #define __DSA_TAG_8021Q_H

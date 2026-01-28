@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2015-2017 Google, Inc
- *
- * USB Type-C Port Controller Interface.
- */
+
+
 
 #ifndef __LINUX_USB_TCPCI_H
 #define __LINUX_USB_TCPCI_H
@@ -143,7 +139,7 @@
 #define TCPC_RX_BUF_FRAME_TYPE		0x31
 #define TCPC_RX_BUF_FRAME_TYPE_SOP	0
 #define TCPC_RX_HDR			0x32
-#define TCPC_RX_DATA			0x34 /* through 0x4f */
+#define TCPC_RX_DATA			0x34 
 
 #define TCPC_TRANSMIT			0x50
 #define TCPC_TRANSMIT_RETRY_SHIFT	4
@@ -153,7 +149,7 @@
 
 #define TCPC_TX_BYTE_CNT		0x51
 #define TCPC_TX_HDR			0x52
-#define TCPC_TX_DATA			0x54 /* through 0x6f */
+#define TCPC_TX_DATA			0x54 
 
 #define TCPC_VBUS_VOLTAGE			0x70
 #define TCPC_VBUS_VOLTAGE_MASK			0x3ff
@@ -165,7 +161,7 @@
 #define TCPC_VBUS_VOLTAGE_ALARM_HI_CFG		0x76
 #define TCPC_VBUS_VOLTAGE_ALARM_LO_CFG		0x78
 
-/* I2C_WRITE_BYTE_COUNT + 1 when TX_BUF_BYTE_x is only accessible I2C_WRITE_BYTE_COUNT */
+
 #define TCPC_TRANSMIT_BUFFER_MAX_LEN		31
 
 #define tcpc_presenting_rd(reg, cc) \
@@ -175,27 +171,7 @@
 
 struct tcpci;
 
-/*
- * @TX_BUF_BYTE_x_hidden:
- *		optional; Set when TX_BUF_BYTE_x can only be accessed through I2C_WRITE_BYTE_COUNT.
- * @frs_sourcing_vbus:
- *		Optional; Callback to perform chip specific operations when FRS
- *		is sourcing vbus.
- * @auto_discharge_disconnect:
- *		Optional; Enables TCPC to autonously discharge vbus on disconnect.
- * @vbus_vsafe0v:
- *		optional; Set when TCPC can detect whether vbus is at VSAFE0V.
- * @set_partner_usb_comm_capable:
- *		Optional; The USB Communications Capable bit indicates if port
- *		partner is capable of communication over the USB data lines
- *		(e.g. D+/- or SS Tx/Rx). Called to notify the status of the bit.
- * @check_contaminant:
- *		Optional; The callback is invoked when chiplevel drivers indicated
- *		that the USB port needs to be checked for contaminant presence.
- *		Chip level drivers are expected to check for contaminant and call
- *		tcpm_clean_port when the port is clean to put the port back into
- *		toggling state.
- */
+
 struct tcpci_data {
 	struct regmap *regmap;
 	unsigned char TX_BUF_BYTE_x_hidden:1;
@@ -237,4 +213,4 @@ static inline enum typec_cc_status tcpci_to_typec_cc(unsigned int cc, bool sink)
 		return TYPEC_CC_OPEN;
 	}
 }
-#endif /* __LINUX_USB_TCPCI_H */
+#endif 

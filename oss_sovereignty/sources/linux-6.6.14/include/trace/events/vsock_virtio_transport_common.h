@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM vsock
 
@@ -139,10 +139,10 @@ TRACE_EVENT(virtio_transport_recv_pkt,
 		  __entry->fwd_cnt)
 );
 
-#endif /* _TRACE_VSOCK_VIRTIO_TRANSPORT_COMMON_H */
+#endif 
 
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE vsock_virtio_transport_common
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

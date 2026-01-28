@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/*
- * PERFCFGOFF_REG, PERFFRZOFF_REG
- * PERFOVFOFF_REG, PERFCNTROFF_REG
- */
+
+
 #define IOMMU_PMU_NUM_OFF_REGS			4
 #define IOMMU_PMU_OFF_REGS_STEP			4
 
@@ -61,4 +58,4 @@ static inline void
 iommu_pmu_unregister(struct intel_iommu *iommu)
 {
 }
-#endif /* CONFIG_INTEL_IOMMU_PERF_EVENTS */
+#endif 

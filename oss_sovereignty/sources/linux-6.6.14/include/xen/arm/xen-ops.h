@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef _ASM_ARM_XEN_OPS_H
 #define _ASM_ARM_XEN_OPS_H
 
@@ -13,4 +13,4 @@ static inline void xen_setup_dma_ops(struct device *dev)
 #endif
 }
 
-#endif /* _ASM_ARM_XEN_OPS_H */
+#endif 

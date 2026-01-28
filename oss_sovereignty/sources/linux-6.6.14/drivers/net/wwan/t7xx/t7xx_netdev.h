@@ -1,17 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- */
+
 
 #ifndef __T7XX_NETDEV_H__
 #define __T7XX_NETDEV_H__
@@ -57,4 +44,4 @@ struct t7xx_ccmni_ctrl {
 int t7xx_ccmni_init(struct t7xx_pci_dev *t7xx_dev);
 void t7xx_ccmni_exit(struct t7xx_pci_dev *t7xx_dev);
 
-#endif /* __T7XX_NETDEV_H__ */
+#endif 

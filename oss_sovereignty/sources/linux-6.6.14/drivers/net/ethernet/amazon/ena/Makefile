@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for the Elastic Network Adapter (ENA) device drivers.
-#
+
+
+
+
 
 obj-$(CONFIG_ENA_ETHERNET) += ena.o
 

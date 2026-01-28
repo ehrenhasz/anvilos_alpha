@@ -1,7 +1,7 @@
-// This board is confirmed to operate using stlink and openocd.
-// REPL is on UART(1) and is available through the stlink USB-UART device.
-// To use openocd run "OPENOCD_CONFIG=boards/openocd_stm32f7.cfg" in
-// the make command.
+
+
+
+
 #define MICROPY_HW_BOARD_NAME       "F769DISC"
 #define MICROPY_HW_MCU_NAME         "STM32F769"
 
@@ -16,18 +16,18 @@
 #define MICROPY_BOARD_EARLY_INIT    board_early_init
 void board_early_init(void);
 
-// HSE is 25MHz
-// VCOClock = HSE * PLLN / PLLM = 25 MHz * 432 / 25 = 432 MHz
-// SYSCLK = VCOClock / PLLP = 432 MHz / 2 = 216 MHz
-// USB/SDMMC/RNG Clock = VCOClock / PLLQ = 432 MHz / 9 = 48 MHz
+
+
+
+
 #define MICROPY_HW_CLK_PLLM (25)
 #define MICROPY_HW_CLK_PLLN (432)
 #define MICROPY_HW_CLK_PLLP (RCC_PLLP_DIV2)
 #define MICROPY_HW_CLK_PLLQ (9)
 
-#define MICROPY_HW_FLASH_LATENCY    FLASH_LATENCY_7 // 210-216 MHz needs 7 wait states
+#define MICROPY_HW_FLASH_LATENCY    FLASH_LATENCY_7 
 
-// 512MBit external QSPI flash, used for either the filesystem or XIP memory mapped
+
 #define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (29)
 #define MICROPY_HW_QSPIFLASH_CS     (pin_B6)
 #define MICROPY_HW_QSPIFLASH_SCK    (pin_B2)
@@ -36,7 +36,7 @@ void board_early_init(void);
 #define MICROPY_HW_QSPIFLASH_IO2    (pin_E2)
 #define MICROPY_HW_QSPIFLASH_IO3    (pin_D13)
 
-// SPI flash, block device config (when used as the filesystem)
+
 extern const struct _mp_spiflash_config_t spiflash_config;
 extern struct _spi_bdev_t spi_bdev;
 #if !USE_QSPI_XIP
@@ -45,10 +45,10 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_BDEV_SPIFLASH    (&spi_bdev)
 #define MICROPY_HW_BDEV_SPIFLASH_CONFIG (&spiflash_config)
 #define MICROPY_HW_BDEV_SPIFLASH_SIZE_BYTES ((1 << MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2) / 8)
-#define MICROPY_HW_BDEV_SPIFLASH_EXTENDED (&spi_bdev) // for extended block protocol
+#define MICROPY_HW_BDEV_SPIFLASH_EXTENDED (&spi_bdev) 
 #endif
 
-// UART config
+
 #define MICROPY_HW_UART1_TX         (pin_A9)
 #define MICROPY_HW_UART1_RX         (pin_A10)
 #define MICROPY_HW_UART5_TX         (pin_C12)
@@ -56,38 +56,38 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_UART_REPL        PYB_UART_1
 #define MICROPY_HW_UART_REPL_BAUD   115200
 
-// I2C buses
+
 #define MICROPY_HW_I2C1_SCL         (pin_B8)
 #define MICROPY_HW_I2C1_SDA         (pin_B9)
 #define MICROPY_HW_I2C3_SCL         (pin_H7)
 #define MICROPY_HW_I2C3_SDA         (pin_H8)
 
-// SPI buses
+
 #define MICROPY_HW_SPI2_NSS         (pin_A11)
 #define MICROPY_HW_SPI2_SCK         (pin_A12)
 #define MICROPY_HW_SPI2_MISO        (pin_B14)
 #define MICROPY_HW_SPI2_MOSI        (pin_B15)
 
-// CAN buses
+
 #define MICROPY_HW_CAN1_TX          (pin_B9)
 #define MICROPY_HW_CAN1_RX          (pin_B8)
 #define MICROPY_HW_CAN2_TX          (pin_B13)
 #define MICROPY_HW_CAN2_RX          (pin_B12)
 
-// USRSW is pulled low. Pressing the button makes the input go high.
+
 #define MICROPY_HW_USRSW_PIN        (pin_A0)
 #define MICROPY_HW_USRSW_PULL       (GPIO_NOPULL)
 #define MICROPY_HW_USRSW_EXTI_MODE  (GPIO_MODE_IT_RISING)
 #define MICROPY_HW_USRSW_PRESSED    (1)
 
-// LEDs
-#define MICROPY_HW_LED1             (pin_J13) // red
-#define MICROPY_HW_LED2             (pin_J5) // green
-#define MICROPY_HW_LED3             (pin_A12) // green
+
+#define MICROPY_HW_LED1             (pin_J13) 
+#define MICROPY_HW_LED2             (pin_J5) 
+#define MICROPY_HW_LED3             (pin_A12) 
 #define MICROPY_HW_LED_ON(pin)      (mp_hal_pin_high(pin))
 #define MICROPY_HW_LED_OFF(pin)     (mp_hal_pin_low(pin))
 
-// SD card
+
 #define MICROPY_HW_SDCARD_SDMMC             (2)
 #define MICROPY_HW_SDCARD_CK                (pin_D6)
 #define MICROPY_HW_SDCARD_CMD               (pin_D7)
@@ -99,12 +99,12 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_SDCARD_DETECT_PULL       (GPIO_PULLUP)
 #define MICROPY_HW_SDCARD_DETECT_PRESENT    (GPIO_PIN_RESET)
 
-// USB config (CN15 - USB OTG HS with external PHY)
+
 #define MICROPY_HW_USB_HS (1)
 #define MICROPY_HW_USB_HS_ULPI_NXT  (pin_H4)
 #define MICROPY_HW_USB_HS_ULPI_DIR  (pin_I11)
 
-// Ethernet via RMII
+
 #define MICROPY_HW_ETH_MDC          (pin_C1)
 #define MICROPY_HW_ETH_MDIO         (pin_A2)
 #define MICROPY_HW_ETH_RMII_REF_CLK (pin_A1)
@@ -116,20 +116,20 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_ETH_RMII_TXD1    (pin_G14)
 
 #if 0
-// Optional SDRAM configuration.
 
-// Note: This requires SYSCLK <= 200MHz. 192MHz example below:
-// #define MICROPY_HW_CLK_PLLM (25)
-// #define MICROPY_HW_CLK_PLLN (384)
-// #define MICROPY_HW_CLK_PLLP (RCC_PLLP_DIV2)
-// #define MICROPY_HW_CLK_PLLQ (8)
 
-#define MICROPY_HW_SDRAM_SIZE (128 * 1024 * 1024 / 8) // 128 Mbit
+
+
+
+
+
+
+#define MICROPY_HW_SDRAM_SIZE (128 * 1024 * 1024 / 8) 
 #define MICROPY_HW_SDRAM_STARTUP_TEST (0)
 #define MICROPY_HEAP_START sdram_start()
 #define MICROPY_HEAP_END sdram_end()
 
-// Timing configuration for 90 Mhz (11.90ns) of SD clock frequency (180Mhz/2)
+
 #define MICROPY_HW_SDRAM_TIMING_TMRD        (2)
 #define MICROPY_HW_SDRAM_TIMING_TXSR        (7)
 #define MICROPY_HW_SDRAM_TIMING_TRAS        (4)
@@ -137,7 +137,7 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_SDRAM_TIMING_TWR         (2)
 #define MICROPY_HW_SDRAM_TIMING_TRP         (2)
 #define MICROPY_HW_SDRAM_TIMING_TRCD        (2)
-#define MICROPY_HW_SDRAM_REFRESH_RATE       (64) // ms
+#define MICROPY_HW_SDRAM_REFRESH_RATE       (64) 
 
 #define MICROPY_HW_SDRAM_BURST_LENGTH       1
 #define MICROPY_HW_SDRAM_CAS_LATENCY        2
@@ -151,7 +151,7 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_SDRAM_WRITE_PROTECTION   (0)
 #define MICROPY_HW_SDRAM_AUTOREFRESH_NUM    (8)
 
-// See pins.csv for CPU pin mapping
+
 #define MICROPY_HW_FMC_SDCKE0  (pyb_pin_FMC_SDCKE0)
 #define MICROPY_HW_FMC_SDNE0   (pyb_pin_FMC_SDNE0)
 #define MICROPY_HW_FMC_SDCLK   (pyb_pin_FMC_SDCLK)
@@ -211,13 +211,13 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_FMC_D31     (pyb_pin_FMC_D31)
 #endif
 
-/******************************************************************************/
-// Bootloader configuration
 
-// Give Mboot access to the external QSPI flash
+
+
+
 #define MBOOT_SPIFLASH_ADDR                     (0x90000000)
 #define MBOOT_SPIFLASH_BYTE_SIZE                (512 * 128 * 1024)
 #define MBOOT_SPIFLASH_LAYOUT                   "/0x90000000/512*128Kg"
-#define MBOOT_SPIFLASH_ERASE_BLOCKS_PER_PAGE    (128 / 4) // 128k page, 4k erase block
+#define MBOOT_SPIFLASH_ERASE_BLOCKS_PER_PAGE    (128 / 4) 
 #define MBOOT_SPIFLASH_CONFIG                   (&spiflash_config)
 #define MBOOT_SPIFLASH_SPIFLASH                 (&spi_bdev.spiflash)

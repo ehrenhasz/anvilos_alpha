@@ -1,48 +1,48 @@
-//*****************************************************************************
-//
-//  rom_map.h
-//
-//  Macros to facilitate calling functions in the ROM when they are
-//  available and in flash otherwise.
-//
-//  Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
-//
-//
-//  Redistribution and use in source and binary forms, with or without
-//  modification, are permitted provided that the following conditions
-//  are met:
-//
-//    Redistributions of source code must retain the above copyright
-//    notice, this list of conditions and the following disclaimer.
-//
-//    Redistributions in binary form must reproduce the above copyright
-//    notice, this list of conditions and the following disclaimer in the
-//    documentation and/or other materials provided with the
-//    distribution.
-//
-//    Neither the name of Texas Instruments Incorporated nor the names of
-//    its contributors may be used to endorse or promote products derived
-//    from this software without specific prior written permission.
-//
-//  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
-//*****************************************************************************
 
-//*****************************************************************************
-//
-// THIS IS AN AUTO-GENERATED FILE.  DO NOT EDIT BY HAND.
-//
-//*****************************************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #ifndef __ROM_MAP_H__
 #define __ROM_MAP_H__
@@ -51,11 +51,11 @@
 #endif
 #include "rom_patch.h"
 
-//*****************************************************************************
-//
-// Macros for the Interrupt API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_IntEnable
 #define MAP_IntEnable \
         ROM_IntEnable
@@ -162,11 +162,11 @@
         IntVTableBaseSet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the Timer API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_TimerEnable
 #define MAP_TimerEnable \
         ROM_TimerEnable
@@ -329,11 +329,11 @@
         TimerDMAEventGet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the UART API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_UARTParityModeSet
 #define MAP_UARTParityModeSet \
         ROM_UARTParityModeSet
@@ -587,11 +587,11 @@
         UARTTxIntModeGet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the uDMA API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_uDMAChannelTransferSet
 #define MAP_uDMAChannelTransferSet \
         ROM_uDMAChannelTransferSet
@@ -761,11 +761,11 @@
         uDMAIntUnregister
 #endif
 
-//*****************************************************************************
-//
-// Macros for the Watchdog API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_WatchdogIntClear
 #define MAP_WatchdogIntClear \
         ROM_WatchdogIntClear
@@ -865,11 +865,11 @@
         WatchdogIntUnregister
 #endif
 
-//*****************************************************************************
-//
-// Macros for the I2C API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_I2CIntRegister
 #define MAP_I2CIntRegister \
         ROM_I2CIntRegister
@@ -1242,11 +1242,11 @@
         I2CMasterInitExpClk
 #endif
 
-//*****************************************************************************
-//
-// Macros for the SPI API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_SPIEnable
 #define MAP_SPIEnable \
         ROM_SPIEnable
@@ -1416,11 +1416,11 @@
         SPITransfer
 #endif
 
-//*****************************************************************************
-//
-// Macros for the CAM API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_CameraReset
 #define MAP_CameraReset \
         ROM_CameraReset
@@ -1534,11 +1534,11 @@
         CameraBufferRead
 #endif
 
-//*****************************************************************************
-//
-// Macros for the FLASH API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_FlashDisable
 #define MAP_FlashDisable \
         ROM_FlashDisable
@@ -1638,11 +1638,11 @@
         FlashProtectGet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the Pin API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_PinModeSet
 #define MAP_PinModeSet \
         ROM_PinModeSet
@@ -1749,11 +1749,11 @@
         PinTypeSDHost
 #endif
 
-//*****************************************************************************
-//
-// Macros for the SYSTICK API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_SysTickEnable
 #define MAP_SysTickEnable \
         ROM_SysTickEnable
@@ -1818,11 +1818,11 @@
         SysTickValueGet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the UTILS API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_UtilsDelay
 #define MAP_UtilsDelay \
         ROM_UtilsDelay
@@ -1831,11 +1831,11 @@
         UtilsDelay
 #endif
 
-//*****************************************************************************
-//
-// Macros for the I2S API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_I2SEnable
 #define MAP_I2SEnable \
         ROM_I2SEnable
@@ -1977,11 +1977,11 @@
         I2SIntUnregister
 #endif
 
-//*****************************************************************************
-//
-// Macros for the GPIO API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_GPIODirModeSet
 #define MAP_GPIODirModeSet \
         ROM_GPIODirModeSet
@@ -2081,11 +2081,11 @@
         GPIOPinWrite
 #endif
 
-//*****************************************************************************
-//
-// Macros for the AES API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_AESConfigSet
 #define MAP_AESConfigSet \
         ROM_AESConfigSet
@@ -2248,11 +2248,11 @@
         AESDMADisable
 #endif
 
-//*****************************************************************************
-//
-// Macros for the DES API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_DESConfigSet
 #define MAP_DESConfigSet \
         ROM_DESConfigSet
@@ -2373,11 +2373,11 @@
         DESDataLengthSet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the SHAMD5 API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_SHAMD5ConfigSet
 #define MAP_SHAMD5ConfigSet \
         ROM_SHAMD5ConfigSet
@@ -2505,11 +2505,11 @@
         SHAMD5ResultRead
 #endif
 
-//*****************************************************************************
-//
-// Macros for the CRC API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_CRCConfigSet
 #define MAP_CRCConfigSet \
         ROM_CRCConfigSet
@@ -2546,11 +2546,11 @@
         CRCSeedSet
 #endif
 
-//*****************************************************************************
-//
-// Macros for the SDHOST API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_SDHostCmdReset
 #define MAP_SDHostCmdReset \
         ROM_SDHostCmdReset
@@ -2678,11 +2678,11 @@
         SDHostSetExpClk
 #endif
 
-//*****************************************************************************
-//
-// Macros for the PRCM API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_PRCMMCUReset
 #define MAP_PRCMMCUReset \
         ROM_PRCMMCUReset
@@ -2987,11 +2987,11 @@
         PRCMHIBRegWrite
 #endif
 
-//*****************************************************************************
-//
-// Macros for the HWSPINLOCK API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_HwSpinLockAcquire
 #define MAP_HwSpinLockAcquire \
         ROM_HwSpinLockAcquire
@@ -3021,11 +3021,11 @@
         HwSpinLockTest
 #endif
 
-//*****************************************************************************
-//
-// Macros for the ADC API.
-//
-//*****************************************************************************
+
+
+
+
+
 #ifdef ROM_ADCEnable
 #define MAP_ADCEnable \
         ROM_ADCEnable
@@ -3174,4 +3174,4 @@
         ADCFIFORead
 #endif
 
-#endif // __ROM_MAP_H__
+#endif 

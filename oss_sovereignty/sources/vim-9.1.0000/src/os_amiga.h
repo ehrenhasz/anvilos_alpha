@@ -1,18 +1,10 @@
-/* vi:set ts=8 sts=4 sw=4 noet:
- *
- * VIM - Vi IMproved	by Bram Moolenaar
- *
- * Do ":help uganda"  in Vim to read copying and usage conditions.
- * Do ":help credits" in Vim to see a list of people who contributed.
- */
 
-/*
- * Amiga Machine-dependent things
- */
 
-#define CASE_INSENSITIVE_FILENAME   // ignore case when comparing file names
+
+
+#define CASE_INSENSITIVE_FILENAME   
 #define SPACE_IN_FILENAME
-#define USE_FNAME_CASE		    // adjust case of file names
+#define USE_FNAME_CASE		    
 #define USE_TERM_CONSOLE
 #define HAVE_AVAIL_MEM
 
@@ -26,7 +18,7 @@
 # define HAVE_STRCSPN
 # define HAVE_STRICMP
 # define HAVE_STRNICMP
-# define HAVE_STRFTIME	    // guessed
+# define HAVE_STRFTIME	    
 # define HAVE_SETENV
 # define HAVE_MEMSET
 # define HAVE_QSORT
@@ -34,10 +26,10 @@
 #  define HAVE_DATE_TIME
 # endif
 
-#endif // HAVE_CONFIG_H
+#endif 
 
 #ifndef	DFLT_ERRORFILE
-# define DFLT_ERRORFILE		"AztecC.Err"	// Should this change?
+# define DFLT_ERRORFILE		"AztecC.Err"	
 #endif
 
 #ifndef	DFLT_RUNTIMEPATH
@@ -48,7 +40,7 @@
 #endif
 
 #ifndef	BASENAMELEN
-# define BASENAMELEN	26	// Amiga
+# define BASENAMELEN	26	
 #endif
 
 #ifndef	TEMPNAME
@@ -56,33 +48,31 @@
 # define TEMPNAMELEN	12
 #endif
 
-// cproto fails on missing include files
+
 #ifndef PROTO
 
 #include <exec/types.h>
 #include <libraries/dos.h>
 #include <libraries/dosextens.h>
 
-// Currently, all Amiga compilers except AZTEC C have these...
+
 #ifndef AZTEC_C
 # include <proto/exec.h>
 # include <proto/dos.h>
 # include <proto/intuition.h>
 #endif
 
-#endif // PROTO
+#endif 
 
-#define FNAME_ILLEGAL ";*?`#%" // illegal characters in a file name
+#define FNAME_ILLEGAL ";*?`#%" 
 
-/*
- * Manx doesn't have off_t, define it here.
- */
+
 #ifdef AZTEC_C
 typedef long off_t;
 #endif
 
 #ifdef LATTICE
-# define USE_TMPNAM	// use tmpnam() instead of mktemp()
+# define USE_TMPNAM	
 #endif
 
 #ifdef __GNUC__
@@ -95,28 +85,20 @@ typedef long off_t;
 # include <dirent.h>
 #endif
 
-#include <time.h>	// for strftime() and others
+#include <time.h>	
 
 #ifndef PROTO
-/*
- * arpbase.h must be included before functions.h
- */
+
 #ifdef FEAT_ARP
 # include <libraries/arpbase.h>
 #endif
 
-#endif // PROTO
+#endif 
 
-/*
- * This won't be needed if you have a version of Lattice 4.01 without broken
- * break signal handling.
- */
+
 #include <signal.h>
 
-/*
- * Names for the EXRC, HELP and temporary files.
- * Some of these may have been defined in the makefile.
- */
+
 #ifndef SYS_VIMRC_FILE
 # define SYS_VIMRC_FILE "$VIM/vimrc"
 #endif
@@ -191,22 +173,22 @@ typedef long off_t;
 #endif
 
 #ifndef DFLT_BDIR
-# define DFLT_BDIR	".,t:"		// default for 'backupdir'
+# define DFLT_BDIR	".,t:"		
 #endif
 
 #ifndef DFLT_DIR
-# define DFLT_DIR	".,t:"		// default for 'directory'
+# define DFLT_DIR	".,t:"		
 #endif
 
 #ifndef DFLT_VDIR
-# define DFLT_VDIR	"home:vimfiles/view"	// default for 'viewdir'
+# define DFLT_VDIR	"home:vimfiles/view"	
 #endif
 
 #ifndef DFLT_MAXMEM
-# define DFLT_MAXMEM	256		// use up to 256Kbyte for buffer
+# define DFLT_MAXMEM	256		
 #endif
 #ifndef DFLT_MAXMEMTOT
-# define DFLT_MAXMEMTOT	0		// decide in set_init
+# define DFLT_MAXMEMTOT	0		
 #endif
 
 #if defined(SASC)

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM dccp
 
@@ -18,7 +18,7 @@ TRACE_EVENT(dccp_probe,
 	TP_ARGS(sk, size),
 
 	TP_STRUCT__entry(
-		/* sockaddr_in6 is always bigger than sockaddr_in */
+		
 		__array(__u8, saddr, sizeof(struct sockaddr_in6))
 		__array(__u8, daddr, sizeof(struct sockaddr_in6))
 		__field(__u16, sport)
@@ -45,7 +45,7 @@ TRACE_EVENT(dccp_probe,
 
 		TP_STORE_ADDR_PORTS(__entry, inet, sk);
 
-		/* For filtering use */
+		
 		__entry->sport = ntohs(inet->inet_sport);
 		__entry->dport = ntohs(inet->inet_dport);
 
@@ -72,9 +72,9 @@ TRACE_EVENT(dccp_probe,
 		  __entry->tx_t_ipi)
 );
 
-#endif /* _TRACE_TCP_H */
+#endif 
 
-/* This part must be outside protection */
+
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

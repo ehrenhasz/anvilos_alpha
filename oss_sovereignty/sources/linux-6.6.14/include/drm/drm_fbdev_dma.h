@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+
 
 #ifndef DRM_FBDEV_DMA_H
 #define DRM_FBDEV_DMA_H

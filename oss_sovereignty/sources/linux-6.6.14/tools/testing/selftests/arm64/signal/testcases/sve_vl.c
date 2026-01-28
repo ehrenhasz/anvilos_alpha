@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Check that the SVE vector length reported in signal contexts is the
- * expected one.
- */
+
+
 
 #include <signal.h>
 #include <ucontext.h>
@@ -33,7 +28,7 @@ static int sve_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc)
 	struct _aarch64_ctx *head = GET_SF_RESV_HEAD(sf);
 	struct sve_context *sve;
 
-	/* Get a signal context which should have a SVE frame in it */
+	
 	if (!get_current_context(td, &sf.uc, sizeof(sf.uc)))
 		return 1;
 

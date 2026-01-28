@@ -18,7 +18,7 @@ data_gzip = b'\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x03\xcb\xcdL.\xca/\xa8,\xc9\x
 data_wbits_5 = b"\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08\x88\x95\xcfH\xcd\xc9\xc9\x07\x00"
 data_wbits_6 = b"\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08\x88\xd5\x9f\x91\x9a\x93\x93\x0f\x00"
 data_wbits_8 = b"\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08\x88\xf5\x7fFjNN>\x00"
-data_wbits_10 = b"\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08Fz\x18\x00\xc3`\xa4'\x03`2\x18\xe99\x01\x98\x13Fz\xfe\x07\xe6\xff\x91\x9e\xff\x81\xf9\x7f\xa4\xe7\x7f`\xfe\x1f\xba\xf9?#5''\x1f\x00"
+data_wbits_10 = b"\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08Fz\x18\x00\xc3`\xa4'\x03`2\x18\xe99\x01\x98\x13Fz\xfe\x07\xe6\xff\x91\x9e\xff\x81\xf9\x7f\xa4\xe7\x7f`\xfe\x1f\xba\xf9?
 def decompress(data, *args):
     buf = io.BytesIO(data)
     with deflate.DeflateIO(buf, *args) as g:
@@ -35,9 +35,9 @@ def decompress_error(data, *args):
 print(decompress(data_raw, deflate.RAW))
 print(decompress(data_zlib, deflate.ZLIB))
 print(decompress(data_gzip, deflate.GZIP))
-print(decompress(data_zlib))  # detect zlib/gzip.
-print(decompress(data_gzip))  # detect zlib/gzip.
-decompress_error(data_raw)  # cannot detect zlib/gzip from raw stream
+print(decompress(data_zlib))  
+print(decompress(data_gzip))  
+decompress_error(data_raw)  
 decompress_error(data_raw, deflate.ZLIB)
 decompress_error(data_raw, deflate.GZIP)
 decompress_error(data_zlib, deflate.RAW)
@@ -49,9 +49,9 @@ decompress_error(b"\x07", deflate.RAW)
 decompress_error(data_raw[:10], deflate.RAW)
 buf = io.BytesIO(data_zlib)
 with deflate.DeflateIO(buf) as g:
-    print(buf.seek(0, 1))  # verify stream is not read until first read of the DeflateIO stream.
+    print(buf.seek(0, 1))  
     print(g.read(1))
-    print(buf.seek(0, 1))  # verify that only the minimal amount is read from the source
+    print(buf.seek(0, 1))  
     print(g.read(1))
     print(buf.seek(0, 1))
     print(g.read(2))
@@ -91,7 +91,7 @@ PATTERNS_ZLIB = [
         bytes(range(64)),
         b"x\x9cc`dbfaec\xe7\xe0\xe4\xe2\xe6\xe1\xe5\xe3\x17\x10\x14\x12\x16\x11\x15\x13\x97\x90\x94\x92\x96\x91\x95\x93WPTRVQUS\xd7\xd0\xd4\xd2\xd6\xd1\xd5\xd370426153\xb7\xb0\xb4\xb2\xb6\xb1\xb5\xb3\x07\x00\xaa\xe0\x07\xe1",
     ),
-    (b"hello", b"x\x01\x01\x05\x00\xfa\xffhello\x06,\x02\x15"),  # compression level 0
+    (b"hello", b"x\x01\x01\x05\x00\xfa\xffhello\x06,\x02\x15"),  
     (
         b"13371813150|13764518736|12345678901",
         b"x\x9c\x05\xc1\x81\x01\x000\x04\x04\xb1\x95\\\x1f\xcfn\x86o\x82d\x06Qq\xc8\x9d\xc5X}<e\xb5g\x83\x0f\x89X\x07\xab",
@@ -124,7 +124,7 @@ print(len(decompress(data_wbits_8, deflate.RAW, 9)))
 decompress_error(data_wbits_10, deflate.RAW)
 decompress_error(data_wbits_10, deflate.RAW, 9)
 print(len(decompress(data_wbits_10, deflate.RAW, 10)))
-data_wbits_10_zlib = b"(\x91\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08Fz\x18\x00\xc3`\xa4'\x03`2\x18\xe99\x01\x98\x13Fz\xfe\x07\xe6\xff\x91\x9e\xff\x81\xf9\x7f\xa4\xe7\x7f`\xfe\x1f\xba\xf9?#5''\x1f\x00[\xbc\x04)"
+data_wbits_10_zlib = b"(\x91\xcbH\xcd\xc9\xc9g\x18\xe9\x00\x08Fz\x18\x00\xc3`\xa4'\x03`2\x18\xe99\x01\x98\x13Fz\xfe\x07\xe6\xff\x91\x9e\xff\x81\xf9\x7f\xa4\xe7\x7f`\xfe\x1f\xba\xf9?
 print(len(decompress(data_wbits_10_zlib, deflate.ZLIB)))
 decompress_error(data_wbits_10_zlib, deflate.ZLIB, 9)
 print(len(decompress(data_wbits_10_zlib, deflate.ZLIB, 10)))

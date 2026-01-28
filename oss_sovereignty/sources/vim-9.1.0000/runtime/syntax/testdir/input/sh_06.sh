@@ -20,10 +20,10 @@ Options List:
         -v              The current version of '$ScriptName'
         -h  | -H | ?    Display this list
 "
-} # End of Usage
-ExecuteFbackup () { # TESTING
+} 
+ExecuteFbackup () { 
 [ "$DebugScript" ]    && set -x || set +x
 cd $cwd
-} # End of ExecuteFbackup
+} 
 Usage
 Exit $Result

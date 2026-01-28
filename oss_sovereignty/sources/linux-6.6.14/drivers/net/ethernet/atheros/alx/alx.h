@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2013 Johannes Berg <johannes@sipsolutions.net>
- *
- *  This file is free software: you may copy, redistribute and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation, either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  This file is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+
 
 #ifndef _ALX_H_
 #define _ALX_H_
@@ -107,10 +75,10 @@ struct alx_priv {
 
 	struct alx_hw hw;
 
-	/* msi-x vectors */
+	
 	int num_vec;
 
-	/* all descriptor memory */
+	
 	struct {
 		dma_addr_t dma;
 		void *virt;
@@ -122,7 +90,7 @@ struct alx_priv {
 	int num_rxq;
 	int num_napi;
 
-	/* protect int_mask updates */
+	
 	spinlock_t irq_lock;
 	u32 int_mask;
 
@@ -135,7 +103,7 @@ struct alx_priv {
 
 	u16 msg_enable;
 
-	/* protects hw.stats */
+	
 	spinlock_t stats_lock;
 
 	struct mutex mtx;

@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-# Most of this file is copied from tools/lib/traceevent/Makefile
+
+
 
 RM ?= rm
 srctree = $(abs_srctree)
@@ -13,23 +13,23 @@ LIBBPF_MINOR_VERSION := $(word 2,$(subst ., ,$(LIBBPF_VERSION)))
 
 MAKEFLAGS += --no-print-directory
 
-# This will work when bpf is built in tools env. where srctree
-# isn't set and when invoked from selftests build, where srctree
-# is a ".". building_out_of_srctree is undefined for in srctree
-# builds
+
+
+
+
 ifndef building_out_of_srctree
 srctree := $(patsubst %/,%,$(dir $(CURDIR)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
 srctree := $(patsubst %/,%,$(dir $(srctree)))
-#$(info Determined 'srctree' to be $(srctree))
+
 endif
 
 INSTALL = install
 
-# Use DESTDIR for installing into a different root directory.
-# This is useful for building a package. The program will be
-# installed in this directory as if it was the root directory.
-# Then the build tool can move it later.
+
+
+
+
 DESTDIR ?=
 DESTDIR_SQ = '$(subst ','\'',$(DESTDIR))'
 
@@ -51,7 +51,7 @@ export DESTDIR DESTDIR_SQ
 
 include $(srctree)/tools/scripts/Makefile.include
 
-# copy a bit from Linux kbuild
+
 
 ifeq ("$(origin V)", "command line")
   VERBOSE = $(V)
@@ -65,7 +65,7 @@ INCLUDES = -I$(or $(OUTPUT),.) \
 
 export prefix libdir src obj
 
-# Shell quotes
+
 libdir_SQ = $(subst ','\'',$(libdir))
 libdir_relative_SQ = $(subst ','\'',$(libdir_relative))
 
@@ -76,14 +76,14 @@ LIB_TARGET	= libbpf.a libbpf.so.$(LIBBPF_VERSION)
 LIB_FILE	= libbpf.a libbpf.so*
 PC_FILE		= libbpf.pc
 
-# Set compile option CFLAGS
+
 ifdef EXTRA_CFLAGS
   CFLAGS := $(EXTRA_CFLAGS)
 else
   CFLAGS := -g -O2
 endif
 
-# Append required CFLAGS
+
 override CFLAGS += -std=gnu89
 override CFLAGS += $(EXTRA_WARNINGS) -Wno-switch-enum
 override CFLAGS += -Werror -Wall
@@ -92,7 +92,7 @@ override CFLAGS += -fvisibility=hidden
 override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 override CFLAGS += $(CLANG_CROSS_FLAGS)
 
-# flags specific for shared library
+
 SHLIB_FLAGS := -DSHARED -fPIC
 
 ifeq ($(VERBOSE),1)
@@ -101,9 +101,9 @@ else
   Q = @
 endif
 
-# Disable command line variables (CFLAGS) override from top
-# level Makefile (perf), otherwise build Makefile will get
-# the same command line setup.
+
+
+
 MAKEOVERRIDES=
 
 all:
@@ -281,11 +281,11 @@ tags:
 	$(RM) -f TAGS tags
 	ls *.c *.h | xargs $(TAGS_PROG) -a
 
-# Declare the contents of the .PHONY variable as phony.  We keep that
-# information in a variable so we can use it in if_changed and friends.
+
+
 .PHONY: $(PHONY)
 
-# Delete partially updated (corrupted) files on error
+
 .DELETE_ON_ERROR:
 
 help:

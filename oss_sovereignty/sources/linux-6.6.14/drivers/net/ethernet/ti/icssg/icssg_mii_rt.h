@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 
-/* PRU-ICSS MII_RT register definitions
- *
- * Copyright (C) 2015-2022 Texas Instruments Incorporated - https://www.ti.com
- */
+
+
 
 #ifndef __NET_PRUSS_MII_RT_H__
 #define __NET_PRUSS_MII_RT_H__
@@ -11,7 +8,7 @@
 #include <linux/if_ether.h>
 #include <linux/phy.h>
 
-/* PRUSS_MII_RT Registers */
+
 #define PRUSS_MII_RT_RXCFG0		0x0
 #define PRUSS_MII_RT_RXCFG1		0x4
 #define PRUSS_MII_RT_TXCFG0		0x10
@@ -29,7 +26,7 @@
 #define PRUSS_MII_RT_RX_ERR0		0x50
 #define PRUSS_MII_RT_RX_ERR1		0x54
 
-/* PRUSS_MII_RT_RXCFG0/1 bits */
+
 #define PRUSS_MII_RT_RXCFG_RX_ENABLE		BIT(0)
 #define PRUSS_MII_RT_RXCFG_RX_DATA_RDY_MODE_DIS	BIT(1)
 #define PRUSS_MII_RT_RXCFG_RX_CUT_PREAMBLE	BIT(2)
@@ -39,7 +36,7 @@
 #define PRUSS_MII_RT_RXCFG_RX_AUTO_FWD_PRE	BIT(6)
 #define PRUSS_MII_RT_RXCFG_RX_L2_EOF_SCLR_DIS	BIT(9)
 
-/* PRUSS_MII_RT_TXCFG0/1 bits */
+
 #define PRUSS_MII_RT_TXCFG_TX_ENABLE		BIT(0)
 #define PRUSS_MII_RT_TXCFG_TX_AUTO_PREAMBLE	BIT(1)
 #define PRUSS_MII_RT_TXCFG_TX_EN_MODE		BIT(2)
@@ -48,7 +45,7 @@
 #define PRUSS_MII_RT_TXCFG_PRE_TX_AUTO_SEQUENCE	BIT(9)
 #define PRUSS_MII_RT_TXCFG_PRE_TX_AUTO_ESC_ERR	BIT(10)
 #define PRUSS_MII_RT_TXCFG_TX_32_MODE_EN	BIT(11)
-#define PRUSS_MII_RT_TXCFG_TX_IPG_WIRE_CLK_EN	BIT(12)	/* SR2.0 onwards */
+#define PRUSS_MII_RT_TXCFG_TX_IPG_WIRE_CLK_EN	BIT(12)	
 
 #define PRUSS_MII_RT_TXCFG_TX_START_DELAY_SHIFT	16
 #define PRUSS_MII_RT_TXCFG_TX_START_DELAY_MASK	GENMASK(25, 16)
@@ -56,37 +53,37 @@
 #define PRUSS_MII_RT_TXCFG_TX_CLK_DELAY_SHIFT	28
 #define PRUSS_MII_RT_TXCFG_TX_CLK_DELAY_MASK	GENMASK(30, 28)
 
-/* PRUSS_MII_RT_TX_IPG0/1 bits */
+
 #define PRUSS_MII_RT_TX_IPG_IPG_SHIFT	0
 #define PRUSS_MII_RT_TX_IPG_IPG_MASK	GENMASK(9, 0)
 
-/* PRUSS_MII_RT_PRS0/1 bits */
+
 #define PRUSS_MII_RT_PRS_COL	BIT(0)
 #define PRUSS_MII_RT_PRS_CRS	BIT(1)
 
-/* PRUSS_MII_RT_RX_FRMS0/1 bits */
+
 #define PRUSS_MII_RT_RX_FRMS_MIN_FRM_SHIFT	0
 #define PRUSS_MII_RT_RX_FRMS_MIN_FRM_MASK	GENMASK(15, 0)
 
 #define PRUSS_MII_RT_RX_FRMS_MAX_FRM_SHIFT	16
 #define PRUSS_MII_RT_RX_FRMS_MAX_FRM_MASK	GENMASK(31, 16)
 
-/* Min/Max in MII_RT_RX_FRMS */
-/* For EMAC and Switch */
+
+
 #define PRUSS_MII_RT_RX_FRMS_MAX	(VLAN_ETH_FRAME_LEN + ETH_FCS_LEN)
 #define PRUSS_MII_RT_RX_FRMS_MIN_FRM	(64)
 
-/* for HSR and PRP */
+
 #define PRUSS_MII_RT_RX_FRMS_MAX_FRM_LRE	(PRUSS_MII_RT_RX_FRMS_MAX + \
 						 ICSS_LRE_TAG_RCT_SIZE)
-/* PRUSS_MII_RT_RX_PCNT0/1 bits */
+
 #define PRUSS_MII_RT_RX_PCNT_MIN_PCNT_SHIFT	0
 #define PRUSS_MII_RT_RX_PCNT_MIN_PCNT_MASK	GENMASK(3, 0)
 
 #define PRUSS_MII_RT_RX_PCNT_MAX_PCNT_SHIFT	4
 #define PRUSS_MII_RT_RX_PCNT_MAX_PCNT_MASK	GENMASK(7, 4)
 
-/* PRUSS_MII_RT_RX_ERR0/1 bits */
+
 #define PRUSS_MII_RT_RX_ERR_MIN_PCNT_ERR	BIT(0)
 #define PRUSS_MII_RT_RX_ERR_MAX_PCNT_ERR	BIT(1)
 #define PRUSS_MII_RT_RX_ERR_MIN_FRM_ERR		BIT(2)
@@ -95,11 +92,11 @@
 #define ICSSG_CFG_OFFSET	0
 #define RGMII_CFG_OFFSET	4
 
-/* Constant to choose between MII0 and MII1 */
+
 #define ICSS_MII0	0
 #define ICSS_MII1	1
 
-/* ICSSG_CFG Register bits */
+
 #define ICSSG_CFG_SGMII_MODE	BIT(16)
 #define ICSSG_CFG_TX_PRU_EN	BIT(11)
 #define ICSSG_CFG_RX_SFD_TX_SOF_EN	BIT(10)
@@ -118,7 +115,7 @@ enum mii_mode {
 	MII_MODE_RGMII
 };
 
-/* RGMII CFG Register bits */
+
 #define RGMII_CFG_INBAND_EN_MII0	BIT(16)
 #define RGMII_CFG_GIG_EN_MII0	BIT(17)
 #define RGMII_CFG_INBAND_EN_MII1	BIT(20)
@@ -148,4 +145,4 @@ u32 icssg_rgmii_get_speed(struct regmap *miig_rt, int mii);
 u32 icssg_rgmii_get_fullduplex(struct regmap *miig_rt, int mii);
 void icssg_miig_set_interface_mode(struct regmap *miig_rt, int mii, phy_interface_t phy_if);
 
-#endif /* __NET_PRUSS_MII_RT_H__ */
+#endif 

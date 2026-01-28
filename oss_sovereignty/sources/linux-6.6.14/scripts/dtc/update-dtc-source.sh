@@ -26,8 +26,8 @@ for f in $LIBFDT_SOURCE; do
        cp ${DTC_UPSTREAM_PATH}/libfdt/${f} libfdt/${f}
        git add libfdt/${f}
 done
-sed -i -- 's/#include <libfdt_env.h>/#include "libfdt_env.h"/g' ./libfdt/libfdt.h
-sed -i -- 's/#include <fdt.h>/#include "fdt.h"/g' ./libfdt/libfdt.h
+sed -i -- 's/
+sed -i -- 's/
 git add ./libfdt/libfdt.h
 commit_msg=$(cat << EOF
 scripts/dtc: Update to upstream version ${dtc_version}

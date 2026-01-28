@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2006-2010 Red Hat, Inc.  All rights reserved.
- */
+
+
 
 #ifndef __USER_DOT_H__
 #define __USER_DOT_H__

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+
 #define TAR_1   10
 #define TAR_2   20
 #define TAR_3   30
@@ -14,10 +12,10 @@
 #define DSCR_4  400
 #define DSCR_5  500
 
-#define PPR_1   0x4000000000000         /* or 31,31,31*/
-#define PPR_2   0x8000000000000         /* or 1,1,1 */
-#define PPR_3   0xc000000000000         /* or 6,6,6 */
-#define PPR_4   0x10000000000000        /* or 2,2,2 */
+#define PPR_1   0x4000000000000         
+#define PPR_2   0x8000000000000         
+#define PPR_3   0xc000000000000         
+#define PPR_4   0x10000000000000        
 
 char *user_read = "[User Read (Running)]";
 char *user_write = "[User Write (Running)]";

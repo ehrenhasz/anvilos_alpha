@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-// Generate lwip's internal types from stdint
+
 
 typedef uint8_t u8_t;
 typedef int8_t s8_t;
@@ -32,10 +32,10 @@ typedef u32_t mem_ptr_t;
 #define LWIP_PLATFORM_DIAG(x)
 #define LWIP_PLATFORM_ASSERT(x)  { assert(1); }
 
-//#define PACK_STRUCT_FIELD(x) x __attribute__((packed))
+
 #define PACK_STRUCT_FIELD(x) x
 #define PACK_STRUCT_STRUCT __attribute__((packed))
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_END
 
-#endif // MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_ARCH_CC_H
+#endif 

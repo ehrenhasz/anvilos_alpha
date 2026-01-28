@@ -1,5 +1,5 @@
-# SPDX-License-Identifier: GPL-2.0
-# Samsung pin control drivers
+
+
 
 obj-$(CONFIG_PINCTRL_SAMSUNG)	+= pinctrl-samsung.o
 obj-$(CONFIG_PINCTRL_EXYNOS)	+= pinctrl-exynos.o

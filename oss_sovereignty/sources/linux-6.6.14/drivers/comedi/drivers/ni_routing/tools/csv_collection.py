@@ -10,7 +10,7 @@ class CSVCollection(dict):
   def __init__(self, pattern, skip_commented_lines=True, strip_lines=True):
     super(CSVCollection, self).__init__()
     self.pattern = pattern
-    C = '#' if skip_commented_lines else 'blahblahblah'
+    C = '
     if strip_lines:
       strip = lambda s:s.strip()
     else:

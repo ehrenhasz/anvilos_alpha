@@ -1,5 +1,5 @@
 trap 'rm -f "$stdout_file" "$stderr_file" "$result_file"' EXIT
-if [ "$#" -eq 0 ]; then
+if [ "$
     echo "Usage: $0 manpage-directory..."
     exit 1
 fi

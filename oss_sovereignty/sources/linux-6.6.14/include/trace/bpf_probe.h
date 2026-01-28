@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #undef TRACE_SYSTEM_VAR
 
@@ -14,7 +14,7 @@
 
 #include <linux/args.h>
 
-/* cast any integer, pointer, or small struct to u64 */
+
 #define UINTTYPE(size) \
 	__typeof__(__builtin_choose_expr(size == 1,  (u8)1, \
 		   __builtin_choose_expr(size == 2, (u16)2, \
@@ -39,7 +39,7 @@
 #define __CAST10(a,...) __CAST_TO_U64(a), __CAST9(__VA_ARGS__)
 #define __CAST11(a,...) __CAST_TO_U64(a), __CAST10(__VA_ARGS__)
 #define __CAST12(a,...) __CAST_TO_U64(a), __CAST11(__VA_ARGS__)
-/* tracepoints with more than 12 arguments will hit build error */
+
 #define CAST_TO_U64(...) CONCATENATE(__CAST, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 #define __BPF_DECLARE_TRACE(call, proto, args)				\
@@ -54,11 +54,7 @@ __bpf_trace_##call(void *__data, proto)					\
 #define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
 	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))
 
-/*
- * This part is compiled out, it is only here as a build time check
- * to make sure that if the tracepoint handling changes, the
- * bpf probe will fail to compile unless it too is updated.
- */
+
 #define __DEFINE_EVENT(template, call, proto, args, size)		\
 static inline void bpf_test_probe_##call(void)				\
 {									\
@@ -83,10 +79,7 @@ __section("__bpf_raw_tp_map") = {					\
 #define __CHECK_WRITABLE_BUF_SIZE(call, proto, args, size)		\
 static inline void bpf_test_buffer_##call(void)				\
 {									\
-	/* BUILD_BUG_ON() is ignored if the code is completely eliminated, but \
-	 * BUILD_BUG_ON_ZERO() uses a different mechanism that is not	\
-	 * dead-code-eliminated.					\
-	 */								\
+									\
 	FIRST(proto);							\
 	(void)BUILD_BUG_ON_ZERO(size != sizeof(*FIRST(args)));		\
 }
@@ -123,4 +116,4 @@ static inline void bpf_test_buffer_##call(void)				\
 #undef __DEFINE_EVENT
 #undef FIRST
 
-#endif /* CONFIG_BPF_EVENTS */
+#endif 

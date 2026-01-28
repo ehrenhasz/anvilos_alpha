@@ -1,21 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * omap_control_phy.h - Header file for the PHY part of control module.
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+
 
 #ifndef __OMAP_CONTROL_PHY_H__
 #define __OMAP_CONTROL_PHY_H__
 
 enum omap_control_phy_type {
-	OMAP_CTRL_TYPE_OTGHS = 1,	/* Mailbox OTGHS_CONTROL */
-	OMAP_CTRL_TYPE_USB2,	/* USB2_PHY, power down in CONTROL_DEV_CONF */
-	OMAP_CTRL_TYPE_PIPE3,	/* PIPE3 PHY, DPLL & seperate Rx/Tx power */
-	OMAP_CTRL_TYPE_PCIE,	/* RX TX control of ACSPCIE */
-	OMAP_CTRL_TYPE_DRA7USB2, /* USB2 PHY, power and power_aux e.g. DRA7 */
-	OMAP_CTRL_TYPE_AM437USB2, /* USB2 PHY, power e.g. AM437x */
+	OMAP_CTRL_TYPE_OTGHS = 1,	
+	OMAP_CTRL_TYPE_USB2,	
+	OMAP_CTRL_TYPE_PIPE3,	
+	OMAP_CTRL_TYPE_PCIE,	
+	OMAP_CTRL_TYPE_DRA7USB2, 
+	OMAP_CTRL_TYPE_AM437USB2, 
 };
 
 struct omap_control_phy {
@@ -86,4 +81,4 @@ static inline void omap_control_pcie_pcs(struct device *dev, u8 delay)
 }
 #endif
 
-#endif	/* __OMAP_CONTROL_PHY_H__ */
+#endif	

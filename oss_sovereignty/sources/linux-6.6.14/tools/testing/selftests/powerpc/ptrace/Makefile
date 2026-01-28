@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0
+
 
 TM_TESTS := ptrace-tm-gpr
 TM_TESTS += ptrace-tm-spd-gpr

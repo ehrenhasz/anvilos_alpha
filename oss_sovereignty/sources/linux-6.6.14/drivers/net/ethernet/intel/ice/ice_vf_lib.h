@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018-2021, Intel Corporation. */
+
+
 
 #ifndef _ICE_VF_LIB_H_
 #define _ICE_VF_LIB_H_
@@ -17,23 +17,23 @@
 
 #define ICE_MAX_SRIOV_VFS		256
 
-/* VF resource constraints */
+
 #define ICE_MAX_RSS_QS_PER_VF	16
 
 struct ice_pf;
 struct ice_vf;
 struct ice_virtchnl_ops;
 
-/* VF capabilities */
+
 enum ice_virtchnl_cap {
 	ICE_VIRTCHNL_VF_CAP_PRIVILEGE = 0,
 };
 
-/* Specific VF states */
+
 enum ice_vf_states {
-	ICE_VF_STATE_INIT = 0,		/* PF is initializing VF */
-	ICE_VF_STATE_ACTIVE,		/* VF resources are allocated for use */
-	ICE_VF_STATE_QS_ENA,		/* VF queue(s) enabled */
+	ICE_VF_STATE_INIT = 0,		
+	ICE_VF_STATE_ACTIVE,		
+	ICE_VF_STATE_QS_ENA,		
 	ICE_VF_STATE_DIS,
 	ICE_VF_STATE_MC_PROMISC,
 	ICE_VF_STATE_UC_PROMISC,
@@ -45,14 +45,14 @@ struct ice_time_mac {
 	u8 addr[ETH_ALEN];
 };
 
-/* VF MDD events print structure */
+
 struct ice_mdd_vf_events {
-	u16 count;			/* total count of Rx|Tx events */
-	/* count number of the last printed event */
+	u16 count;			
+	
 	u16 last_printed;
 };
 
-/* VF operations */
+
 struct ice_vf_ops {
 	enum ice_disq_rst_src reset_type;
 	void (*free)(struct ice_vf *vf);
@@ -66,63 +66,58 @@ struct ice_vf_ops {
 	void (*post_vsi_rebuild)(struct ice_vf *vf);
 };
 
-/* Virtchnl/SR-IOV config info */
+
 struct ice_vfs {
-	DECLARE_HASHTABLE(table, 8);	/* table of VF entries */
-	struct mutex table_lock;	/* Lock for protecting the hash table */
-	u16 num_supported;		/* max supported VFs on this PF */
-	u16 num_qps_per;		/* number of queue pairs per VF */
-	u16 num_msix_per;		/* number of MSI-X vectors per VF */
-	unsigned long last_printed_mdd_jiffies;	/* MDD message rate limit */
+	DECLARE_HASHTABLE(table, 8);	
+	struct mutex table_lock;	
+	u16 num_supported;		
+	u16 num_qps_per;		
+	u16 num_msix_per;		
+	unsigned long last_printed_mdd_jiffies;	
 };
 
-/* VF information structure */
+
 struct ice_vf {
 	struct hlist_node entry;
 	struct rcu_head rcu;
 	struct kref refcnt;
 	struct ice_pf *pf;
 
-	/* Used during virtchnl message handling and NDO ops against the VF
-	 * that will trigger a VFR
-	 */
+	
 	struct mutex cfg_lock;
 
-	u16 vf_id;			/* VF ID in the PF space */
-	u16 lan_vsi_idx;		/* index into PF struct */
+	u16 vf_id;			
+	u16 lan_vsi_idx;		
 	u16 ctrl_vsi_idx;
 	struct ice_vf_fdir fdir;
-	/* first vector index of this VF in the PF space */
+	
 	int first_vector_idx;
-	struct ice_sw *vf_sw_id;	/* switch ID the VF VSIs connect to */
+	struct ice_sw *vf_sw_id;	
 	struct virtchnl_version_info vf_ver;
-	u32 driver_caps;		/* reported by VF driver */
+	u32 driver_caps;		
 	u8 dev_lan_addr[ETH_ALEN];
 	u8 hw_lan_addr[ETH_ALEN];
 	struct ice_time_mac legacy_last_added_umac;
 	DECLARE_BITMAP(txq_ena, ICE_MAX_RSS_QS_PER_VF);
 	DECLARE_BITMAP(rxq_ena, ICE_MAX_RSS_QS_PER_VF);
-	struct ice_vlan port_vlan_info;	/* Port VLAN ID, QoS, and TPID */
+	struct ice_vlan port_vlan_info;	
 	struct virtchnl_vlan_caps vlan_v2_caps;
 	struct ice_mbx_vf_info mbx_info;
-	u8 pf_set_mac:1;		/* VF MAC address set by VMM admin */
+	u8 pf_set_mac:1;		
 	u8 trusted:1;
 	u8 spoofchk:1;
 	u8 link_forced:1;
-	u8 link_up:1;			/* only valid if VF link is forced */
-	/* VSI indices - actual VSI pointers are maintained in the PF structure
-	 * When assigned, these will be non-zero, because VSI 0 is always
-	 * the main LAN VSI for the PF.
-	 */
-	u16 lan_vsi_num;		/* ID as used by firmware */
-	unsigned int min_tx_rate;	/* Minimum Tx bandwidth limit in Mbps */
-	unsigned int max_tx_rate;	/* Maximum Tx bandwidth limit in Mbps */
-	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	/* VF runtime states */
+	u8 link_up:1;			
+	
+	u16 lan_vsi_num;		
+	unsigned int min_tx_rate;	
+	unsigned int max_tx_rate;	
+	DECLARE_BITMAP(vf_states, ICE_VF_STATES_NBITS);	
 
-	unsigned long vf_caps;		/* VF's adv. capabilities */
-	u8 num_req_qs;			/* num of queue pairs requested by VF */
+	unsigned long vf_caps;		
+	u8 num_req_qs;			
 	u16 num_mac;
-	u16 num_vf_qs;			/* num of queue configured per VF */
+	u16 num_vf_qs;			
 	struct ice_mdd_vf_events mdd_rx_events;
 	struct ice_mdd_vf_events mdd_tx_events;
 	DECLARE_BITMAP(opcodes_allowlist, VIRTCHNL_OP_MAX);
@@ -131,15 +126,15 @@ struct ice_vf {
 	const struct ice_virtchnl_ops *virtchnl_ops;
 	const struct ice_vf_ops *vf_ops;
 
-	/* devlink port data */
+	
 	struct devlink_port devlink_port;
 };
 
-/* Flags for controlling behavior of ice_reset_vf */
+
 enum ice_vf_reset_flags {
-	ICE_VF_RESET_VFLR = BIT(0), /* Indicate a VFLR reset */
-	ICE_VF_RESET_NOTIFY = BIT(1), /* Notify VF prior to reset */
-	ICE_VF_RESET_LOCK = BIT(2), /* Acquire the VF cfg_lock */
+	ICE_VF_RESET_VFLR = BIT(0), 
+	ICE_VF_RESET_NOTIFY = BIT(1), 
+	ICE_VF_RESET_LOCK = BIT(2), 
 };
 
 static inline u16 ice_vf_get_port_vlan_id(struct ice_vf *vf)
@@ -162,48 +157,13 @@ static inline u16 ice_vf_get_port_vlan_tpid(struct ice_vf *vf)
 	return vf->port_vlan_info.tpid;
 }
 
-/* VF Hash Table access functions
- *
- * These functions provide abstraction for interacting with the VF hash table.
- * In general, direct access to the hash table should be avoided outside of
- * these functions where possible.
- *
- * The VF entries in the hash table are protected by reference counting to
- * track lifetime of accesses from the table. The ice_get_vf_by_id() function
- * obtains a reference to the VF structure which must be dropped by using
- * ice_put_vf().
- */
 
-/**
- * ice_for_each_vf - Iterate over each VF entry
- * @pf: pointer to the PF private structure
- * @bkt: bucket index used for iteration
- * @vf: pointer to the VF entry currently being processed in the loop
- *
- * The bkt variable is an unsigned integer iterator used to traverse the VF
- * entries. It is *not* guaranteed to be the VF's vf_id. Do not assume it is.
- * Use vf->vf_id to get the id number if needed.
- *
- * The caller is expected to be under the table_lock mutex for the entire
- * loop. Use this iterator if your loop is long or if it might sleep.
- */
+
+
 #define ice_for_each_vf(pf, bkt, vf) \
 	hash_for_each((pf)->vfs.table, (bkt), (vf), entry)
 
-/**
- * ice_for_each_vf_rcu - Iterate over each VF entry protected by RCU
- * @pf: pointer to the PF private structure
- * @bkt: bucket index used for iteration
- * @vf: pointer to the VF entry currently being processed in the loop
- *
- * The bkt variable is an unsigned integer iterator used to traverse the VF
- * entries. It is *not* guaranteed to be the VF's vf_id. Do not assume it is.
- * Use vf->vf_id to get the id number if needed.
- *
- * The caller is expected to be under rcu_read_lock() for the entire loop.
- * Only use this iterator if your loop is short and you can guarantee it does
- * not sleep.
- */
+
 #define ice_for_each_vf_rcu(pf, bkt, vf) \
 	hash_for_each_rcu((pf)->vfs.table, (bkt), (vf), entry)
 
@@ -227,7 +187,7 @@ ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
 int ice_reset_vf(struct ice_vf *vf, u32 flags);
 void ice_reset_all_vfs(struct ice_pf *pf);
 struct ice_vsi *ice_get_vf_ctrl_vsi(struct ice_pf *pf, struct ice_vsi *vsi);
-#else /* CONFIG_PCI_IOV */
+#else 
 static inline struct ice_vf *ice_get_vf_by_id(struct ice_pf *pf, u16 vf_id)
 {
 	return NULL;
@@ -297,6 +257,6 @@ ice_get_vf_ctrl_vsi(struct ice_pf *pf, struct ice_vsi *vsi)
 {
 	return NULL;
 }
-#endif /* !CONFIG_PCI_IOV */
+#endif 
 
-#endif /* _ICE_VF_LIB_H_ */
+#endif 

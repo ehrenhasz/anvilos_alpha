@@ -64,7 +64,7 @@ verify_data() {
 	fi
 }
 set -e
-if [[ "$#" -eq "0" ]]; then
+if [[ "$
 	echo "ipip"
 	$0 ipv4 ipip none 100
 	echo "ipip6"
@@ -98,7 +98,7 @@ if [[ "$#" -eq "0" ]]; then
 	echo "OK. All tests passed"
 	exit 0
 fi
-if [[ "$#" -ne "4" ]]; then
+if [[ "$
 	echo "Usage: $0"
 	echo "   or: $0 <ipv4|ipv6> <tuntype> <none|mpls|eth> <data_len>"
 	exit 1

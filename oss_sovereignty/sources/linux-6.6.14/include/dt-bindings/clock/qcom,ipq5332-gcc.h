@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_IPQ5332_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_IPQ5332_H

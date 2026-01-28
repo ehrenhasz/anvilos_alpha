@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM swiotlb
 
@@ -35,7 +35,7 @@ TRACE_EVENT(swiotlb_bounced,
 		__entry->force ? "FORCE" : "NORMAL")
 );
 
-#endif /*  _TRACE_SWIOTLB_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __DTS_MT7623_PINFUNC_H
 #define __DTS_MT7623_PINFUNC_H
 
@@ -648,4 +648,4 @@
 #define MT7623_PIN_278_JTAG_RESET_FUNC_GPIO278 (MTK_PIN_NO(278) | 0)
 #define MT7623_PIN_278_JTAG_RESET_FUNC_JTAG_RESET (MTK_PIN_NO(278) | 1)
 
-#endif /* __DTS_MT7623_PINFUNC_H */
+#endif 

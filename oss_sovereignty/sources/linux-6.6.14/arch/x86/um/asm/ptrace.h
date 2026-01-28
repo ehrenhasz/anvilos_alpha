@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __UM_X86_PTRACE_H
 #define __UM_X86_PTRACE_H
 
 #include <linux/compiler.h>
 #ifndef CONFIG_X86_32
-#define __FRAME_OFFSETS /* Needed to get the R* macros */
+#define __FRAME_OFFSETS 
 #endif
 #include <asm/ptrace-generic.h>
 
@@ -40,10 +40,7 @@ static inline long regs_return_value(struct pt_regs *regs)
 	return PT_REGS_AX(regs);
 }
 
-/*
- * Forward declaration to avoid including sysdep/tls.h, which causes a
- * circular include, and compilation failures.
- */
+
 struct user_desc;
 
 #ifdef CONFIG_X86_32
@@ -84,4 +81,4 @@ extern long arch_prctl(struct task_struct *task, int option,
 
 #endif
 #define user_stack_pointer(regs) PT_REGS_SP(regs)
-#endif /* __UM_X86_PTRACE_H */
+#endif 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1-only OR MIT */
-/*
- * rseq-ppc-thread-pointer.h
- *
- * (C) Copyright 2021 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- */
+
+
 
 #ifndef _RSEQ_PPC_THREAD_POINTER
 #define _RSEQ_PPC_THREAD_POINTER

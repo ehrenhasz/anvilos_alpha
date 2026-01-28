@@ -1,7 +1,7 @@
-set -e		# exit on errors
-set -o pipefail	# exit if pipe writer fails
-set -u		# disallow usage of unset variables
-set -C		# disallow redirection file overwriting
+set -e		
+set -o pipefail	
+set -u		
+set -C		
 SCRIPT_INVOCATION_SHORT_NAME=$(basename ${0})
 trap 'echo "${SCRIPT_INVOCATION_SHORT_NAME}: exit on error"; exit 1' ERR
 usage() {
@@ -23,7 +23,7 @@ declare -A ADOCS_LIST BIN_LIST
 remove_repeats()
 {
 	set +u
-	for KN in ${KNOWN_REPEATS[${I##*/}]}; do
+	for KN in ${KNOWN_REPEATS[${I
 		if [ "${KN}" = "${REPEATS[$1]}" ]; then
 			if $VERBOSE; then
 				echo "info: ${I} removing repeat: ${REPEATS[$1]}"
@@ -37,7 +37,7 @@ cd $(git rev-parse --show-toplevel)
 for I in $(
 	find . -type f -name '*[[:alpha:]].[1-8].adoc' |grep -v "autom4te.cache\|\.libs/\|\.git"
 ); do
-	ADOCS_FILE=${I##*/}
+	ADOCS_FILE=${I
 	ADOCS_LIST[${ADOCS_FILE%%.[0-9].adoc}]=1
 done
 for I in $(find $(git rev-parse --show-toplevel) -name 'Make*.am' | xargs awk '

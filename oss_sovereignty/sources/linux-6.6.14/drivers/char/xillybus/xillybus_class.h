@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2021 Xillybus Ltd, http://www.xillybus.com
- *
- * Header file for the Xillybus class
- */
+
+
 
 #ifndef __XILLYBUS_CLASS_H
 #define __XILLYBUS_CLASS_H
@@ -27,4 +23,4 @@ void xillybus_cleanup_chrdev(void *private_data,
 int xillybus_find_inode(struct inode *inode,
 			void **private_data, int *index);
 
-#endif /* __XILLYBUS_CLASS_H */
+#endif 

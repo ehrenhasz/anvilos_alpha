@@ -1,20 +1,20 @@
 NAME	:=	rv
-# Follow the kernel version
+
 VERSION :=	$(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
 
-# From libtracefs:
-# Makefiles suck: This macro sets a default value of $(2) for the
-# variable named by $(1), unless the variable has been set by
-# environment or command line. This is necessary for CC and AR
-# because make sets default values, so the simpler ?= approach
-# won't work as expected.
+
+
+
+
+
+
 define allow-override
   $(if $(or $(findstring environment,$(origin $(1))),\
             $(findstring command line,$(origin $(1)))),,\
     $(eval $(1) = $(2)))
 endef
 
-# Allow setting CC and AR, or setting CROSS_COMPILE as a prefix.
+
 $(call allow-override,CC,$(CROSS_COMPILE)gcc)
 $(call allow-override,AR,$(CROSS_COMPILE)ar)
 $(call allow-override,STRIP,$(CROSS_COMPILE)strip)
@@ -49,9 +49,9 @@ MANDIR	:=	$(DATADIR)/man
 LICDIR	:=	$(DATADIR)/licenses
 SRCTREE	:=	$(or $(BUILD_SRC),$(CURDIR))
 
-# If running from the tarball, man pages are stored in the Documentation
-# dir. If running from the kernel source, man pages are stored in
-# Documentation/tools/rv/.
+
+
+
 ifneq ($(wildcard Documentation/.*),)
 DOCSRC	=	Documentation/
 else

@@ -1,8 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* atm_tcp.h - Driver-specific declarations of the ATMTCP driver (for use by
-	       driver-specific utilities) */
 
-/* Written 1997-2000 by Werner Almesberger, EPFL LRC/ICA */
+
+
+
 
 #ifndef LINUX_ATM_TCP_H
 #define LINUX_ATM_TCP_H

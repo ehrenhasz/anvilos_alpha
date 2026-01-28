@@ -1,9 +1,4 @@
-/*
- * No copyright is claimed.  This code is in the public domain; do with
- * it what you wish.
- *
- * Copyright (C) 2021 Karel Zak <kzak@redhat.com>
- */
+
 #ifndef UTIL_LINUX_PROCFS_H
 #define UTIL_LINUX_PROCFS_H
 
@@ -64,4 +59,4 @@ extern int fd_is_procfs(int fd);
 extern char *pid_get_cmdname(pid_t pid);
 extern char *pid_get_cmdline(pid_t pid);
 
-#endif /* UTIL_LINUX_PROCFS_H */
+#endif 

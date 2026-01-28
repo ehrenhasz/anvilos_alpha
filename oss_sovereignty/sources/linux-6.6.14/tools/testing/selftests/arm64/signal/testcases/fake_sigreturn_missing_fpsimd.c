@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 ARM Limited
- *
- * Place a fake sigframe on the stack missing the mandatory FPSIMD
- * record: on sigreturn Kernel must spot this attempt and the test
- * case is expected to be terminated via SEGV.
- */
+
+
 
 #include <stdio.h>
 #include <signal.h>
@@ -22,7 +16,7 @@ static int fake_sigreturn_missing_fpsimd_run(struct tdescr *td,
 	size_t resv_sz, offset;
 	struct _aarch64_ctx *head = GET_SF_RESV_HEAD(sf);
 
-	/* just to fill the ucontext_t with something real */
+	
 	if (!get_current_context(td, &sf.uc, sizeof(sf.uc)))
 		return 1;
 
@@ -31,7 +25,7 @@ static int fake_sigreturn_missing_fpsimd_run(struct tdescr *td,
 	if (head && resv_sz - offset >= HDR_SZ) {
 		fprintf(stderr, "Mangling template header. Spare space:%zd\n",
 			resv_sz - offset);
-		/* Just overwrite fpsmid_context */
+		
 		write_terminator_record(head);
 
 		ASSERT_BAD_CONTEXT(&sf.uc);

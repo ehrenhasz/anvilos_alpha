@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) Linaro Ltd 2020
- *  Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- */
+
+
 
 struct thermal_genl_cpu_caps {
 	int cpu;
@@ -10,7 +7,7 @@ struct thermal_genl_cpu_caps {
 	int efficiency;
 };
 
-/* Netlink notification function */
+
 #ifdef CONFIG_THERMAL_NETLINK
 int __init thermal_netlink_init(void);
 void __init thermal_netlink_exit(void);
@@ -118,4 +115,4 @@ static inline int thermal_genl_cpu_capability_event(int count, struct thermal_ge
 
 static inline void __init thermal_netlink_exit(void) {}
 
-#endif /* CONFIG_THERMAL_NETLINK */
+#endif 

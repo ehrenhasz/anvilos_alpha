@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+
 
 #ifndef __KSMBD_OPLOCK_H
 #define __KSMBD_OPLOCK_H
@@ -11,14 +8,14 @@
 
 #define OPLOCK_WAIT_TIME	(35 * HZ)
 
-/* SMB2 Oplock levels */
+
 #define SMB2_OPLOCK_LEVEL_NONE          0x00
 #define SMB2_OPLOCK_LEVEL_II            0x01
 #define SMB2_OPLOCK_LEVEL_EXCLUSIVE     0x08
 #define SMB2_OPLOCK_LEVEL_BATCH         0x09
 #define SMB2_OPLOCK_LEVEL_LEASE         0xFF
 
-/* Oplock states */
+
 #define OPLOCK_STATE_NONE	0x00
 #define OPLOCK_ACK_WAIT		0x01
 #define OPLOCK_CLOSING		0x02
@@ -72,13 +69,13 @@ struct oplock_info {
 	atomic_t		refcount;
 	__u16                   Tid;
 	bool			is_lease;
-	bool			open_trunc;	/* truncate on open */
+	bool			open_trunc;	
 	struct lease		*o_lease;
 	struct list_head        interim_list;
 	struct list_head        op_entry;
 	struct list_head        lease_entry;
-	wait_queue_head_t oplock_q; /* Other server threads */
-	wait_queue_head_t oplock_brk; /* oplock breaking wait */
+	wait_queue_head_t oplock_q; 
+	wait_queue_head_t oplock_brk; 
 	struct rcu_head		rcu_head;
 };
 
@@ -109,13 +106,13 @@ void smb_break_all_oplock(struct ksmbd_work *work, struct ksmbd_file *fp);
 struct oplock_info *opinfo_get(struct ksmbd_file *fp);
 void opinfo_put(struct oplock_info *opinfo);
 
-/* Lease related functions */
+
 void create_lease_buf(u8 *rbuf, struct lease *lease);
 struct lease_ctx_info *parse_lease_state(void *open_req, bool is_dir);
 __u8 smb2_map_lease_to_oplock(__le32 lease_state);
 int lease_read_to_write(struct oplock_info *opinfo);
 
-/* Durable related functions */
+
 void create_durable_rsp_buf(char *cc);
 void create_durable_v2_rsp_buf(char *cc, struct ksmbd_file *fp);
 void create_mxac_rsp_buf(char *cc, int maximal_access);
@@ -130,4 +127,4 @@ void destroy_lease_table(struct ksmbd_conn *conn);
 void smb_send_parent_lease_break_noti(struct ksmbd_file *fp,
 				      struct lease_ctx_info *lctx);
 void smb_lazy_parent_lease_break_close(struct ksmbd_file *fp);
-#endif /* __KSMBD_OPLOCK_H */
+#endif 

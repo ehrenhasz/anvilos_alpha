@@ -1,14 +1,7 @@
 #ifndef _ASM_X86_DISABLED_FEATURES_H
 #define _ASM_X86_DISABLED_FEATURES_H
 
-/* These features, although they might be available in a CPU
- * will not be used because the compile options to support
- * them are not present.
- *
- * This code allows them to be checked and disabled at
- * compile time without an explicit #ifdef.  Use
- * cpu_feature_enabled().
- */
+
 
 #ifdef CONFIG_X86_UMIP
 # define DISABLE_UMIP	0
@@ -28,7 +21,7 @@
 # define DISABLE_CYRIX_ARR	0
 # define DISABLE_CENTAUR_MCR	0
 # define DISABLE_PCID		(1<<(X86_FEATURE_PCID & 31))
-#endif /* CONFIG_X86_64 */
+#endif 
 
 #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
 # define DISABLE_PKU		0
@@ -36,7 +29,7 @@
 #else
 # define DISABLE_PKU		(1<<(X86_FEATURE_PKU & 31))
 # define DISABLE_OSPKE		(1<<(X86_FEATURE_OSPKE & 31))
-#endif /* CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS */
+#endif 
 
 #ifdef CONFIG_X86_5LEVEL
 # define DISABLE_LA57	0
@@ -105,9 +98,7 @@
 # define DISABLE_TDX_GUEST	(1 << (X86_FEATURE_TDX_GUEST & 31))
 #endif
 
-/*
- * Make sure to add features to the correct mask
- */
+
 #define DISABLED_MASK0	(DISABLE_VME)
 #define DISABLED_MASK1	0
 #define DISABLED_MASK2	0
@@ -133,4 +124,4 @@
 #define DISABLED_MASK20	0
 #define DISABLED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 21)
 
-#endif /* _ASM_X86_DISABLED_FEATURES_H */
+#endif 

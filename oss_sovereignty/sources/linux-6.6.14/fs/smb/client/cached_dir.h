@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Functions to handle the cached directory entries
- *
- *  Copyright (c) 2022, Ronnie Sahlberg <lsahlber@redhat.com>
- */
+
+
 
 #ifndef _CACHED_DIR_H
 #define _CACHED_DIR_H
@@ -21,12 +17,9 @@ struct cached_dirent {
 struct cached_dirents {
 	bool is_valid:1;
 	bool is_failed:1;
-	struct dir_context *ctx; /*
-				  * Only used to make sure we only take entries
-				  * from a single context. Never dereferenced.
-				  */
+	struct dir_context *ctx; 
 	struct mutex de_mutex;
-	int pos;		 /* Expected ctx->pos */
+	int pos;		 
 	struct list_head entries;
 };
 
@@ -38,7 +31,7 @@ struct cached_fid {
 	bool is_open:1;
 	bool on_list:1;
 	bool file_all_info_is_valid:1;
-	unsigned long time; /* jiffies of when lease was taken */
+	unsigned long time; 
 	struct kref refcount;
 	struct cifs_fid fid;
 	spinlock_t fid_lock;
@@ -49,11 +42,9 @@ struct cached_fid {
 	struct cached_dirents dirents;
 };
 
-/* default MAX_CACHED_FIDS is 16 */
+
 struct cached_fids {
-	/* Must be held when:
-	 * - accessing the cfids->entries list
-	 */
+	
 	spinlock_t cfid_list_lock;
 	int num_entries;
 	struct list_head entries;
@@ -78,4 +69,4 @@ extern void close_all_cached_dirs(struct cifs_sb_info *cifs_sb);
 extern void invalidate_all_cached_dirs(struct cifs_tcon *tcon);
 extern int cached_dir_lease_break(struct cifs_tcon *tcon, __u8 lease_key[16]);
 
-#endif			/* _CACHED_DIR_H */
+#endif			

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __NET_GENEVE_H
 #define __NET_GENEVE_H  1
 
@@ -6,22 +6,7 @@
 
 #define GENEVE_UDP_PORT		6081
 
-/* Geneve Header:
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |Ver|  Opt Len  |O|C|    Rsvd.  |          Protocol Type        |
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |        Virtual Network Identifier (VNI)       |    Reserved   |
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |                    Variable Length Options                    |
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * Option Header:
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |          Option Class         |      Type     |R|R|R| Length  |
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *  |                      Variable Option Data                     |
- *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+
 
 struct geneve_opt {
 	__be16	opt_class;
@@ -71,6 +56,6 @@ static inline bool netif_is_geneve(const struct net_device *dev)
 #ifdef CONFIG_INET
 struct net_device *geneve_dev_create_fb(struct net *net, const char *name,
 					u8 name_assign_type, u16 dst_port);
-#endif /*ifdef CONFIG_INET */
+#endif 
 
-#endif /*ifdef__NET_GENEVE_H */
+#endif 

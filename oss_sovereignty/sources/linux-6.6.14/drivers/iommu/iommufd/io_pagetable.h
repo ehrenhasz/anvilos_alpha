@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES.
- *
- */
+
+
 #ifndef __IO_PAGETABLE_H
 #define __IO_PAGETABLE_H
 
@@ -14,37 +12,16 @@
 
 struct iommu_domain;
 
-/*
- * Each io_pagetable is composed of intervals of areas which cover regions of
- * the iova that are backed by something. iova not covered by areas is not
- * populated in the page table. Each area is fully populated with pages.
- *
- * iovas are in byte units, but must be iopt->iova_alignment aligned.
- *
- * pages can be NULL, this means some other thread is still working on setting
- * up or tearing down the area. When observed under the write side of the
- * domain_rwsem a NULL pages must mean the area is still being setup and no
- * domains are filled.
- *
- * storage_domain points at an arbitrary iommu_domain that is holding the PFNs
- * for this area. It is locked by the pages->mutex. This simplifies the locking
- * as the pages code can rely on the storage_domain without having to get the
- * iopt->domains_rwsem.
- *
- * The io_pagetable::iova_rwsem protects node
- * The iopt_pages::mutex protects pages_node
- * iopt and iommu_prot are immutable
- * The pages::mutex protects num_accesses
- */
+
 struct iopt_area {
 	struct interval_tree_node node;
 	struct interval_tree_node pages_node;
 	struct io_pagetable *iopt;
 	struct iopt_pages *pages;
 	struct iommu_domain *storage_domain;
-	/* How many bytes into the first page the area starts */
+	
 	unsigned int page_offset;
-	/* IOMMU_READ, IOMMU_WRITE, etc */
+	
 	int iommu_prot;
 	bool prevent_access : 1;
 	unsigned int num_accesses;
@@ -93,11 +70,7 @@ static inline size_t iopt_area_length(struct iopt_area *area)
 	return (area->node.last - area->node.start) + 1;
 }
 
-/*
- * Number of bytes from the start of the iopt_pages that the iova begins.
- * iopt_area_start_byte() / PAGE_SIZE encodes the starting page index
- * iopt_area_start_byte() % PAGE_SIZE encodes the offset within that page
- */
+
 static inline unsigned long iopt_area_start_byte(struct iopt_area *area,
 						 unsigned long iova)
 {
@@ -160,11 +133,7 @@ static inline bool iopt_area_contig_done(struct iopt_area_contig_iter *iter)
 	return iter->area && iter->last_iova <= iopt_area_last_iova(iter->area);
 }
 
-/*
- * Iterate over a contiguous list of areas that span the iova,last_iova range.
- * The caller must check iopt_area_contig_done() after the loop to see if
- * contiguous areas existed.
- */
+
 #define iopt_for_each_contig_area(iter, area, iopt, iova, last_iova)          \
 	for (area = iopt_area_contig_init(iter, iopt, iova, last_iova); area; \
 	     area = iopt_area_contig_next(iter))
@@ -175,17 +144,7 @@ enum {
 	IOPT_PAGES_ACCOUNT_MM = 2,
 };
 
-/*
- * This holds a pinned page list for multiple areas of IO address space. The
- * pages always originate from a linear chunk of userspace VA. Multiple
- * io_pagetable's, through their iopt_area's, can share a single iopt_pages
- * which avoids multi-pinning and double accounting of page consumption.
- *
- * indexes in this structure are measured in PAGE_SIZE units, are 0 based from
- * the start of the uptr and extend to npages. pages are pinned dynamically
- * according to the intervals in the access_itree and domains_itree, npinned
- * records the current number of pages pinned.
- */
+
 struct iopt_pages {
 	struct kref kref;
 	struct mutex mutex;
@@ -200,9 +159,9 @@ struct iopt_pages {
 	u8 account_mode;
 
 	struct xarray pinned_pfns;
-	/* Of iopt_pages_access::node */
+	
 	struct rb_root_cached access_itree;
-	/* Of iopt_area::pages_node */
+	
 	struct rb_root_cached domains_itree;
 };
 
@@ -229,10 +188,7 @@ void iopt_area_remove_access(struct iopt_area *area, unsigned long start,
 int iopt_pages_rw_access(struct iopt_pages *pages, unsigned long start_byte,
 			 void *data, unsigned long length, unsigned int flags);
 
-/*
- * Each interval represents an active iopt_access_pages(), it acts as an
- * interval lock that keeps the PFNs pinned and stored in the xarray.
- */
+
 struct iopt_pages_access {
 	struct interval_tree_node node;
 	unsigned int users;

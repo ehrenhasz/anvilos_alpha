@@ -19,11 +19,11 @@ const pyb_pin_obj_t pyb_pin_obj[16 + 1];
 
 #define GPIO_MODE_INPUT (0)
 #define GPIO_MODE_OUTPUT (1)
-#define GPIO_MODE_OPEN_DRAIN (2) // synthesised
+#define GPIO_MODE_OPEN_DRAIN (2) 
 #define GPIO_PULL_NONE (0)
 #define GPIO_PULL_UP (1)
-// Removed in SDK 1.1.0
-// #define GPIO_PULL_DOWN (2)
+
+
 
 extern uint8_t pin_mode[16 + 1];
 
@@ -41,4 +41,4 @@ void pyb_rtc_set_us_since_epoch(uint64_t nowus);
 uint64_t pyb_rtc_get_us_since_epoch();
 void rtc_prepare_deepsleep(uint64_t sleep_us);
 
-#endif // MICROPY_INCLUDED_ESP8266_MODMACHINE_H
+#endif 

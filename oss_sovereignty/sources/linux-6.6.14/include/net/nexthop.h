@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generic nexthop implementation
- *
- * Copyright (c) 2017-19 Cumulus Networks
- * Copyright (c) 2017-19 David Ahern <dsa@cumulusnetworks.com>
- */
+
+
 
 #ifndef __LINUX_NEXTHOP_H
 #define __LINUX_NEXTHOP_H
@@ -55,7 +50,7 @@ struct nh_config {
 };
 
 struct nh_info {
-	struct hlist_node	dev_hash;    /* entry on netns devhash */
+	struct hlist_node	dev_hash;    
 	struct nexthop		*nh_parent;
 
 	u8			family;
@@ -82,9 +77,7 @@ struct nh_res_table {
 	u32			nhg_id;
 	struct delayed_work	upkeep_dw;
 
-	/* List of NHGEs that have too few buckets ("uw" for underweight).
-	 * Reclaimed buckets will be given to entries in this list.
-	 */
+	
 	struct list_head	uw_nh_entries;
 	unsigned long		unbalanced_since;
 
@@ -104,7 +97,7 @@ struct nh_grp_entry {
 			atomic_t	upper_bound;
 		} hthr;
 		struct {
-			/* Member on uw_nh_entries. */
+			
 			struct list_head	uw_nh_entry;
 
 			u16			count_buckets;
@@ -113,11 +106,11 @@ struct nh_grp_entry {
 	};
 
 	struct list_head nh_list;
-	struct nexthop	*nh_parent;  /* nexthop of group with this entry */
+	struct nexthop	*nh_parent;  
 };
 
 struct nh_group {
-	struct nh_group		*spare; /* spare group for removals */
+	struct nh_group		*spare; 
 	u16			num_nh;
 	bool			is_multipath;
 	bool			hash_threshold;
@@ -130,16 +123,16 @@ struct nh_group {
 };
 
 struct nexthop {
-	struct rb_node		rb_node;    /* entry on netns rbtree */
-	struct list_head	fi_list;    /* v4 entries using nh */
-	struct list_head	f6i_list;   /* v6 entries using nh */
-	struct list_head        fdb_list;   /* fdb entries using this nh */
-	struct list_head	grp_list;   /* nh group entries using this nh */
+	struct rb_node		rb_node;    
+	struct list_head	fi_list;    
+	struct list_head	f6i_list;   
+	struct list_head        fdb_list;   
+	struct list_head	grp_list;   
 	struct net		*net;
 
 	u32			id;
 
-	u8			protocol;   /* app managing this nh */
+	u8			protocol;   
 	u8			nh_flags;
 	bool			is_group;
 
@@ -225,7 +218,7 @@ void nexthop_bucket_set_hw_flags(struct net *net, u32 id, u16 bucket_index,
 void nexthop_res_grp_activity_update(struct net *net, u32 id, u16 num_buckets,
 				     unsigned long *activity);
 
-/* caller is holding rcu or rtnl; no reference taken to nexthop */
+
 struct nexthop *nexthop_find_by_id(struct net *net, u32 id);
 void nexthop_free_rcu(struct rcu_head *head);
 
@@ -303,9 +296,7 @@ static inline unsigned int nexthop_num_path(const struct nexthop *nh)
 static inline
 struct nexthop *nexthop_mpath_select(const struct nh_group *nhg, int nhsel)
 {
-	/* for_nexthops macros in fib_semantics.c grabs a pointer to
-	 * the nexthop before checking nhsel
-	 */
+	
 	if (nhsel >= nhg->num_nh)
 		return NULL;
 
@@ -332,7 +323,7 @@ int nexthop_mpath_fill_node(struct sk_buff *skb, struct nexthop *nh,
 	return 0;
 }
 
-/* called with rcu lock */
+
 static inline bool nexthop_is_blackhole(const struct nexthop *nh)
 {
 	const struct nh_info *nhi;
@@ -361,7 +352,7 @@ static inline void nexthop_path_fib_result(struct fib_result *res, int hash)
 	res->nhc = &nhi->fib_nhc;
 }
 
-/* called with rcu read lock or rtnl held */
+
 static inline
 struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
 {
@@ -385,7 +376,7 @@ struct fib_nh_common *nexthop_fib_nhc(struct nexthop *nh, int nhsel)
 	return &nhi->fib_nhc;
 }
 
-/* called from fib_table_lookup with rcu_lock */
+
 static inline
 struct fib_nh_common *nexthop_get_nhc_lookup(const struct nexthop *nh,
 					     int fib_flags,
@@ -462,7 +453,7 @@ static inline struct fib_nh_common *fib_info_nhc(struct fib_info *fi, int nhsel)
 	return &fi->fib_nh[nhsel].nh_common;
 }
 
-/* only used when fib_nh is built into fib_info */
+
 static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
 {
 	WARN_ON(fi->nh);
@@ -470,13 +461,11 @@ static inline struct fib_nh *fib_info_nh(struct fib_info *fi, int nhsel)
 	return &fi->fib_nh[nhsel];
 }
 
-/*
- * IPv6 variants
- */
+
 int fib6_check_nexthop(struct nexthop *nh, struct fib6_config *cfg,
 		       struct netlink_ext_ack *extack);
 
-/* Caller should either hold rcu_read_lock(), or RTNL. */
+
 static inline struct fib6_nh *nexthop_fib6_nh(struct nexthop *nh)
 {
 	struct nh_info *nhi;

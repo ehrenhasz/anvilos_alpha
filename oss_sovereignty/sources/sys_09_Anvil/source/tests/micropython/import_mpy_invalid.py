@@ -30,9 +30,9 @@ class UserFS:
     def open(self, path, mode):
         return UserFile(self.files[path])
 user_files = {
-    "/mod0.mpy": b"",  # empty file
-    "/mod1.mpy": b"M",  # too short header
-    "/mod2.mpy": b"M\x00\x00\x00",  # bad version
+    "/mod0.mpy": b"",  
+    "/mod1.mpy": b"M",  
+    "/mod2.mpy": b"M\x00\x00\x00",  
 }
 vfs.mount(UserFS(user_files), "/userfs")
 sys.path.append("/userfs")

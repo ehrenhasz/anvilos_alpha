@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Copyright (C) 2016 National Instruments Corp.
- */
+
+
 #ifndef __PHY_LED_TRIGGERS
 #define __PHY_LED_TRIGGERS
 

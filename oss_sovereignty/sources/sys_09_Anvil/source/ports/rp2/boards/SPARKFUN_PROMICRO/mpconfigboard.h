@@ -1,4 +1,4 @@
-// https://www.sparkfun.com/products/17717
+
 
 #define MICROPY_HW_BOARD_NAME          "SparkFun Pro Micro RP2040"
 #define MICROPY_HW_FLASH_STORAGE_BYTES (15 * 1024 * 1024)
@@ -11,4 +11,4 @@
 #define MICROPY_HW_UART1_CTS (10)
 #define MICROPY_HW_UART1_RTS (11)
 
-// NeoPixel data GPIO25, power not toggleable
+

@@ -3,7 +3,7 @@ ERR_CODE=0
 . ./zram_lib.sh
 dev_num=1
 zram_max_streams="2"
-zram_sizes="2097152" # 2MB
+zram_sizes="2097152" 
 zram_mem_limits="2M"
 zram_filesystems="ext4"
 zram_algs="lzo"

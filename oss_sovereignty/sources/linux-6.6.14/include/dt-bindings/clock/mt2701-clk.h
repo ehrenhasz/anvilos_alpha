@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Shunli Wang <shunli.wang@mediatek.com>
- */
+
+
 
 #ifndef _DT_BINDINGS_CLK_MT2701_H
 #define _DT_BINDINGS_CLK_MT2701_H
 
-/* TOPCKGEN */
+
 #define CLK_TOP_SYSPLL				1
 #define CLK_TOP_SYSPLL_D2			2
 #define CLK_TOP_SYSPLL_D3			3
@@ -170,7 +167,7 @@
 #define CLK_TOP_AXISEL_D4			158
 #define CLK_TOP_NR				159
 
-/* APMIXEDSYS */
+
 
 #define CLK_APMIXED_ARMPLL			1
 #define CLK_APMIXED_MAINPLL			2
@@ -188,12 +185,12 @@
 #define CLK_APMIXED_HDMI_REF			14
 #define CLK_APMIXED_NR				15
 
-/* DDRPHY */
+
 
 #define CLK_DDRPHY_VENCPLL			1
 #define CLK_DDRPHY_NR				2
 
-/* INFRACFG */
+
 
 #define CLK_INFRA_DBG				1
 #define CLK_INFRA_SMI				2
@@ -217,7 +214,7 @@
 #define CLK_INFRA_CPUSEL                        20
 #define CLK_INFRA_NR				21
 
-/* PERICFG */
+
 
 #define CLK_PERI_NFI				1
 #define CLK_PERI_THERM				2
@@ -271,7 +268,7 @@
 #define CLK_PERI_UART3_SEL			48
 #define CLK_PERI_NR				49
 
-/* AUDIO */
+
 
 #define CLK_AUD_AFE				1
 #define CLK_AUD_LRCK_DETECT			2
@@ -348,7 +345,7 @@
 #define CLK_AUD_ASRC_BRG			70
 #define CLK_AUD_NR				71
 
-/* MMSYS */
+
 
 #define CLK_MM_SMI_COMMON			1
 #define CLK_MM_SMI_LARB0			2
@@ -387,7 +384,7 @@
 #define CLK_MM_TVE_FMM				34
 #define CLK_MM_NR				35
 
-/* IMGSYS */
+
 
 #define CLK_IMG_SMI_COMM			1
 #define CLK_IMG_RESZ				2
@@ -397,13 +394,13 @@
 #define CLK_IMG_VENC				6
 #define CLK_IMG_NR				7
 
-/* VDEC */
+
 
 #define CLK_VDEC_CKGEN				1
 #define CLK_VDEC_LARB				2
 #define CLK_VDEC_NR				3
 
-/* HIFSYS */
+
 
 #define CLK_HIFSYS_USB0PHY			1
 #define CLK_HIFSYS_USB1PHY			2
@@ -412,7 +409,7 @@
 #define CLK_HIFSYS_PCIE2			5
 #define CLK_HIFSYS_NR				6
 
-/* ETHSYS */
+
 #define CLK_ETHSYS_HSDMA			1
 #define CLK_ETHSYS_ESW				2
 #define CLK_ETHSYS_GP2				3
@@ -423,11 +420,11 @@
 #define CLK_ETHSYS_CRYPTO			8
 #define CLK_ETHSYS_NR				9
 
-/* G3DSYS */
+
 #define CLK_G3DSYS_CORE				1
 #define CLK_G3DSYS_NR				2
 
-/* BDP */
+
 
 #define CLK_BDP_BRG_BA				1
 #define CLK_BDP_BRG_DRAM			2
@@ -481,4 +478,4 @@
 #define CLK_BDP_HDMI_MON			49
 #define CLK_BDP_NR				50
 
-#endif /* _DT_BINDINGS_CLK_MT2701_H */
+#endif 

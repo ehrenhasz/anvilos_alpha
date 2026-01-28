@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __UDF_DECL_H
 #define __UDF_DECL_H
 
@@ -62,7 +62,7 @@ static inline size_t udf_ext0_offset(struct inode *inode)
 		return 0;
 }
 
-/* computes tag checksum */
+
 u8 udf_tag_checksum(const struct tag *t);
 
 typedef uint32_t udf_pblk_t;
@@ -83,21 +83,16 @@ extern const struct address_space_operations udf_aops;
 extern const struct address_space_operations udf_symlink_aops;
 
 struct udf_fileident_iter {
-	struct inode *dir;		/* Directory we are working with */
-	loff_t pos;			/* Logical position in a dir */
-	struct buffer_head *bh[2];	/* Buffer containing 'pos' and possibly
-					 * next buffer if entry straddles
-					 * blocks */
-	struct kernel_lb_addr eloc;	/* Start of extent containing 'pos' */
-	uint32_t elen;			/* Length of extent containing 'pos' */
-	sector_t loffset;		/* Block offset of 'pos' within above
-					 * extent */
-	struct extent_position epos;	/* Position after the above extent */
-	struct fileIdentDesc fi;	/* Copied directory entry */
-	uint8_t *name;			/* Pointer to entry name */
-	uint8_t *namebuf;		/* Storage for entry name in case
-					 * the name is split between two blocks
-					 */
+	struct inode *dir;		
+	loff_t pos;			
+	struct buffer_head *bh[2];	
+	struct kernel_lb_addr eloc;	
+	uint32_t elen;			
+	sector_t loffset;		
+	struct extent_position epos;	
+	struct fileIdentDesc fi;	
+	uint8_t *name;			
+	uint8_t *namebuf;		
 };
 
 struct udf_vds_record {
@@ -111,7 +106,7 @@ struct generic_desc {
 };
 
 
-/* super.c */
+
 
 static inline void udf_updated_lvid(struct super_block *sb)
 {
@@ -127,7 +122,7 @@ extern u64 lvid_get_unique_id(struct super_block *sb);
 struct inode *udf_find_metadata_inode_efe(struct super_block *sb,
 					u32 meta_file_loc, u32 partition_num);
 
-/* namei.c */
+
 static inline unsigned int udf_dir_entry_len(struct fileIdentDesc *cfi)
 {
 	return ALIGN(sizeof(struct fileIdentDesc) +
@@ -135,10 +130,10 @@ static inline unsigned int udf_dir_entry_len(struct fileIdentDesc *cfi)
 		UDF_NAME_PAD);
 }
 
-/* file.c */
+
 extern long udf_ioctl(struct file *, unsigned int, unsigned long);
 
-/* inode.c */
+
 extern struct inode *__udf_iget(struct super_block *, struct kernel_lb_addr *,
 				bool hidden_inode);
 static inline struct inode *udf_iget_special(struct super_block *sb,
@@ -175,7 +170,7 @@ extern int8_t udf_current_aext(struct inode *, struct extent_position *,
 			       struct kernel_lb_addr *, uint32_t *, int);
 extern void udf_update_extra_perms(struct inode *inode, umode_t mode);
 
-/* misc.c */
+
 extern struct genericFormat *udf_add_extendedattr(struct inode *, uint32_t,
 						  uint32_t, uint8_t);
 extern struct genericFormat *udf_get_extendedattr(struct inode *, uint32_t,
@@ -188,11 +183,11 @@ extern struct buffer_head *udf_read_ptagged(struct super_block *,
 extern void udf_update_tag(char *, int);
 extern void udf_new_tag(char *, uint16_t, uint16_t, uint16_t, uint32_t, int);
 
-/* lowlevel.c */
+
 extern unsigned int udf_get_last_session(struct super_block *);
 udf_pblk_t udf_get_last_block(struct super_block *);
 
-/* partition.c */
+
 extern uint32_t udf_get_pblock(struct super_block *, uint32_t, uint16_t,
 			       uint32_t);
 extern uint32_t udf_get_pblock_virt15(struct super_block *, uint32_t, uint16_t,
@@ -213,7 +208,7 @@ udf_get_lb_pblock(struct super_block *sb, struct kernel_lb_addr *loc,
 			loc->partitionReferenceNum, offset);
 }
 
-/* unicode.c */
+
 extern int udf_get_filename(struct super_block *, const uint8_t *, int,
 			    uint8_t *, int);
 extern int udf_put_filename(struct super_block *, const uint8_t *, int,
@@ -221,16 +216,16 @@ extern int udf_put_filename(struct super_block *, const uint8_t *, int,
 extern int udf_dstrCS0toChar(struct super_block *, uint8_t *, int,
 			     const uint8_t *, int);
 
-/* ialloc.c */
+
 extern void udf_free_inode(struct inode *);
 extern struct inode *udf_new_inode(struct inode *, umode_t);
 
-/* truncate.c */
+
 extern void udf_truncate_tail_extent(struct inode *);
 extern void udf_discard_prealloc(struct inode *);
 extern int udf_truncate_extents(struct inode *);
 
-/* balloc.c */
+
 extern void udf_free_blocks(struct super_block *, struct inode *,
 			    struct kernel_lb_addr *, uint32_t, uint32_t);
 extern int udf_prealloc_blocks(struct super_block *, struct inode *, uint16_t,
@@ -238,7 +233,7 @@ extern int udf_prealloc_blocks(struct super_block *, struct inode *, uint16_t,
 extern udf_pblk_t udf_new_block(struct super_block *sb, struct inode *inode,
 				 uint16_t partition, uint32_t goal, int *err);
 
-/* directory.c */
+
 int udf_fiiter_init(struct udf_fileident_iter *iter, struct inode *dir,
 		    loff_t pos);
 int udf_fiiter_advance(struct udf_fileident_iter *iter);
@@ -249,9 +244,9 @@ int udf_fiiter_append_blk(struct udf_fileident_iter *iter);
 extern struct long_ad *udf_get_filelongad(uint8_t *, int, uint32_t *, int);
 extern struct short_ad *udf_get_fileshortad(uint8_t *, int, uint32_t *, int);
 
-/* udftime.c */
+
 extern void udf_disk_stamp_to_time(struct timespec64 *dest,
 						struct timestamp src);
 extern void udf_time_to_disk_stamp(struct timestamp *dest, struct timespec64 src);
 
-#endif				/* __UDF_DECL_H */
+#endif				

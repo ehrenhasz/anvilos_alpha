@@ -7,7 +7,7 @@ numskipped=0
 numfailed=0
 nameskipped=
 namefailed=
-if [ $# -eq 0 ]
+if [ $
 then
     tests="basics/*.py micropython/*.py float/*.py import/*.py io/*.py misc/*.py unicode/*.py extmod/*.py unix/*.py"
 else

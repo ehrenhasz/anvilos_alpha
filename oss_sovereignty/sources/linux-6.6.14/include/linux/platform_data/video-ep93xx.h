@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #ifndef __VIDEO_EP93XX_H
 #define __VIDEO_EP93XX_H
 
 struct platform_device;
 struct fb_info;
 
-/* VideoAttributes flags */
+
 #define EP93XXFB_STATE_MACHINE_ENABLE	(1 << 0)
 #define EP93XXFB_PIXEL_CLOCK_ENABLE	(1 << 1)
 #define EP93XXFB_VSYNC_ENABLE		(1 << 2)
@@ -42,4 +42,4 @@ struct ep93xxfb_mach_info {
 	void	(*blank)(int blank_mode, struct fb_info *info);
 };
 
-#endif /* __VIDEO_EP93XX_H */
+#endif 

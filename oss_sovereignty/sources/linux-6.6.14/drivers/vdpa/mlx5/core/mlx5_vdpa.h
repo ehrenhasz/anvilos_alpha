@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2020 Mellanox Technologies Ltd. */
+
+
 
 #ifndef __MLX5_VDPA_H__
 #define __MLX5_VDPA_H__
@@ -27,14 +27,14 @@ struct mlx5_vdpa_direct_mr {
 struct mlx5_vdpa_mr {
 	u32 mkey;
 
-	/* list of direct MRs descendants of this indirect mr */
+	
 	struct list_head head;
 	unsigned long num_directs;
 	unsigned long num_klms;
-	/* state of dvq mr */
+	
 	bool initialized;
 
-	/* serialize mkey creation and destruction */
+	
 	struct mutex mkey_mtx;
 	bool user_mr;
 };
@@ -51,7 +51,7 @@ struct mlx5_vdpa_resources {
 
 struct mlx5_control_vq {
 	struct vhost_iotlb *iotlb;
-	/* spinlock to synchronize iommu table */
+	
 	spinlock_t iommu_lock;
 	struct vringh vring;
 	bool ready;
@@ -133,4 +133,4 @@ void mlx5_vdpa_destroy_mr_asid(struct mlx5_vdpa_dev *mvdev, unsigned int asid);
 	dev_debug((__dev)->mdev->device, "%s:%d:(pid %d): " format, __func__, __LINE__,            \
 		  current->pid, ##__VA_ARGS__)
 
-#endif /* __MLX5_VDPA_H__ */
+#endif 

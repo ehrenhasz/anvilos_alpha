@@ -1,8 +1,8 @@
-# DO NOT EDIT. This file is generated from Config.src
-#
-# For a description of the syntax of this configuration file,
-# see docs/Kconfig-language.txt.
-#
+
+
+
+
+
 
 menu "Networking Utilities"
 
@@ -283,7 +283,7 @@ config FEATURE_HTTPD_ENCODE_URL_STR
 	This option allows html encoding of arbitrary strings for display
 	by the browser. Output goes to stdout.
 	For example, httpd -e "<Hello World>" produces
-	"&#60Hello&#32World&#62".
+	"&
 
 config FEATURE_HTTPD_ERROR_PAGES
 	bool "Support custom error pages"
@@ -554,7 +554,7 @@ config FEATURE_INETD_SUPPORT_BUILTIN_CHARGEN
 
 config FEATURE_INETD_RPC
 	bool "Support RPC services"
-	default n  # very rarely used, and needs Sun RPC support in libc
+	default n  
 	depends on INETD
 	help
 	Support Sun-RPC based services
@@ -706,7 +706,7 @@ config NAMEIF
 	Maximum interface name length: IFNAMSIZ = 16
 	File fields are separated by space or tab.
 	File format:
-		# Comment
+		
 		new_interface_name  XX:XX:XX:XX:XX:XX
 
 config FEATURE_NAMEIF_EXTENDED
@@ -1062,7 +1062,7 @@ config TFTP_DEBUG
 	Make tftp[d] print debugging messages on stderr.
 	This is useful if you are diagnosing a bug in tftp[d].
 config TLS
-	bool #No description makes it a hidden option
+	bool 
 	default n
 config TRACEROUTE
 	bool "traceroute (11 kb)"

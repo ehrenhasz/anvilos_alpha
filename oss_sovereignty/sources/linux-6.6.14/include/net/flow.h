@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- *	Generic internet FLOW.
- *
- */
+
+
 
 #ifndef _NET_FLOW_H
 #define _NET_FLOW_H
@@ -15,11 +11,7 @@
 
 struct flow_keys;
 
-/*
- * ifindex generation is per-net namespace, and loopback is
- * always the 1st device in ns (see net_dev_init), thus any
- * loopback device should get ifindex 1
- */
+
 
 #define LOOPBACK_IFINDEX	1
 
@@ -77,7 +69,7 @@ struct flowi4 {
 #define flowi4_uid		__fl_common.flowic_uid
 #define flowi4_multipath_hash	__fl_common.flowic_multipath_hash
 
-	/* (saddr,daddr) must be grouped, same order as in IP header */
+	
 	__be32			saddr;
 	__be32			daddr;
 
@@ -115,7 +107,7 @@ static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
 	fl4->flowi4_multipath_hash = 0;
 }
 
-/* Reset some input parameters after previous lookup */
+
 static inline void flowi4_update_output(struct flowi4 *fl4, int oif,
 					__be32 daddr, __be32 saddr)
 {
@@ -139,7 +131,7 @@ struct flowi6 {
 #define flowi6_uid		__fl_common.flowic_uid
 	struct in6_addr		daddr;
 	struct in6_addr		saddr;
-	/* Note: flowi6_tos is encoded in flowlabel, too. */
+	
 	__be32			flowlabel;
 	union flowi_uli		uli;
 #define fl6_sport		uli.ports.sport

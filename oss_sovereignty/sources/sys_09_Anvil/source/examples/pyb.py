@@ -19,7 +19,7 @@ class LCD:
             for x in range(self.width):
                 self.buf1[y][x] = self.buf2[y][x] = value
     def show(self):
-        print("")  # blank line to separate frames
+        print("")  
         for y in range(self.height):
             for x in range(self.width):
                 self.buf1[y][x] = self.buf2[y][x]

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright (C) 2015 ARM Limited
- */
+
+
 
 #ifndef __LINUX_PSCI_H
 #define __LINUX_PSCI_H
@@ -59,4 +56,4 @@ static inline bool acpi_psci_present(void) { return false; }
 static inline bool acpi_psci_use_hvc(void) {return false; }
 #endif
 
-#endif /* __LINUX_PSCI_H */
+#endif 

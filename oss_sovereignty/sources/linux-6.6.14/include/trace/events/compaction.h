@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM compaction
 
@@ -325,10 +325,7 @@ DECLARE_EVENT_CLASS(kcompactd_wake_template,
 		__entry->highest_zoneidx = highest_zoneidx;
 	),
 
-	/*
-	 * classzone_idx is previous name of the highest_zoneidx.
-	 * Reason not to change it is the ABI requirement of the tracepoint.
-	 */
+	
 	TP_printk("nid=%d order=%d classzone_idx=%-8s",
 		__entry->nid,
 		__entry->order,
@@ -350,7 +347,7 @@ DEFINE_EVENT(kcompactd_wake_template, mm_compaction_kcompactd_wake,
 );
 #endif
 
-#endif /* _TRACE_COMPACTION_H */
+#endif 
 
-/* This part must be outside protection */
+
 #include <trace/define_trace.h>

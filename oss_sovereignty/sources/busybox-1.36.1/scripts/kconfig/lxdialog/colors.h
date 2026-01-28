@@ -1,30 +1,6 @@
-/*
- *  colors.h -- color attribute definitions
- *
- *  AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
 
-/*
- *   Default color definitions
- *
- *   *_FG = foreground
- *   *_BG = background
- *   *_HL = highlight?
- */
+
+
 #define SCREEN_FG                    COLOR_CYAN
 #define SCREEN_BG                    COLOR_BLUE
 #define SCREEN_HL                    TRUE
@@ -141,14 +117,12 @@
 #define DARROW_BG                    COLOR_WHITE
 #define DARROW_HL                    TRUE
 
-/* End of default color definitions */
+
 
 #define C_ATTR(x,y)                  ((x ? A_BOLD : 0) | COLOR_PAIR((y)))
 #define COLOR_NAME_LEN               10
 #define COLOR_COUNT                  8
 
-/*
- * Global variables
- */
+
 
 extern int color_table[][3];

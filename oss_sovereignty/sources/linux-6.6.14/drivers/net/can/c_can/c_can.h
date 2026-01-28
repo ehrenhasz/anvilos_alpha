@@ -1,23 +1,4 @@
-/*
- * CAN bus driver for Bosch C_CAN controller
- *
- * Copyright (C) 2010 ST Microelectronics
- * Bhupesh Sharma <bhupesh.sharma@st.com>
- *
- * Borrowed heavily from the C_CAN driver originally written by:
- * Copyright (C) 2007
- * - Sascha Hauer, Marc Kleine-Budde, Pengutronix <s.hauer@pengutronix.de>
- * - Simon Kallweit, intefo AG <simon.kallweit@intefo.ch>
- *
- * Bosch C_CAN controller is compliant to CAN protocol version 2.0 part A and B.
- * Bosch C_CAN user manual can be obtained from:
- * http://www.semiconductors.bosch.de/media/en/pdf/ipmodules_1/c_can/
- * users_manual_c_can.pdf
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+
 
 #ifndef C_CAN_H
 #define C_CAN_H
@@ -162,30 +143,30 @@ struct c_can_driver_data {
 	enum c_can_dev_id id;
 	unsigned int msg_obj_num;
 
-	/* RAMINIT register description. Optional. */
-	const struct raminit_bits *raminit_bits; /* Array of START/DONE bit positions */
-	u8 raminit_num;		/* Number of CAN instances on the SoC */
-	bool raminit_pulse;	/* If set, sets and clears START bit (pulse) */
+	
+	const struct raminit_bits *raminit_bits; 
+	u8 raminit_num;		
+	bool raminit_pulse;	
 };
 
-/* Out of band RAMINIT register access via syscon regmap */
+
 struct c_can_raminit {
-	struct regmap *syscon;	/* for raminit ctrl. reg. access */
-	unsigned int reg;	/* register index within syscon */
+	struct regmap *syscon;	
+	unsigned int reg;	
 	struct raminit_bits bits;
 	bool needs_pulse;
 };
 
-/* c_can tx ring structure */
+
 struct c_can_tx_ring {
 	unsigned int head;
 	unsigned int tail;
 	unsigned int obj_num;
 };
 
-/* c_can private data structure */
+
 struct c_can_priv {
-	struct can_priv can;	/* must be the first member */
+	struct can_priv can;	
 	struct napi_struct napi;
 	struct net_device *dev;
 	struct device *device;
@@ -208,7 +189,7 @@ struct c_can_priv {
 	void __iomem *base;
 	const u16 *regs;
 	enum c_can_dev_id type;
-	struct c_can_raminit raminit_sys;	/* RAMINIT via syscon regmap */
+	struct c_can_raminit raminit_sys;	
 	void (*raminit)(const struct c_can_priv *priv, bool enable);
 	u32 comm_rcv_high;
 };
@@ -244,13 +225,11 @@ static inline u8 c_can_get_tx_free(const struct c_can_priv *priv,
 	if (priv->type == BOSCH_D_CAN)
 		return ring->obj_num - (ring->head - ring->tail);
 
-	/* This is not a FIFO. C/D_CAN sends out the buffers
-	 * prioritized. The lowest buffer number wins.
-	 */
+	
 	if (head < tail)
 		return 0;
 
 	return ring->obj_num - head;
 }
 
-#endif /* C_CAN_H */
+#endif 

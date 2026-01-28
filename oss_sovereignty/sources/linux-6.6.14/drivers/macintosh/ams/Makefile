@@ -1,7 +1,7 @@
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Makefile for Apple Motion Sensor driver
-#
+
+
+
+
 
 ams-y					:= ams-core.o ams-input.o
 ams-$(CONFIG_SENSORS_AMS_PMU)		+= ams-pmu.o
