@@ -82,8 +82,8 @@ while true; do
             fi
             ;;
         3)
-            status_msg "Executing: git push $REMOTE $BRANCH"
-            attempt_push "git push $REMOTE $BRANCH"
+            status_msg "Executing: git push -u $REMOTE $BRANCH"
+            attempt_push "git push -u $REMOTE $BRANCH"
             ;;
         4)
             status_msg "Executing: git push $REMOTE $BRANCH --force"
