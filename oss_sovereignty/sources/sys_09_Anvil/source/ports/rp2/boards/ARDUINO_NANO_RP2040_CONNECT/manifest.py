@@ -1,0 +1,8 @@
+include("$(PORT_DIR)/boards/manifest.py")
+require("bundle-networking")
+require("lsm6dsox")
+require("espflash")
+require("time")
+require("senml")
+require("logging")
+require("aioble")

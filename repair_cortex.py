@@ -1,12 +1,9 @@
 import sqlite3
 import os
-
 DB_PATH = "data/cortex.db"
-
 def repair_db():
     print(f"Repairing {DB_PATH}...")
     with sqlite3.connect(DB_PATH) as conn:
-        # 1. Chat Inbox/Outbox (Dashboard Server)
         conn.execute("""
             CREATE TABLE IF NOT EXISTS chat_inbox (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,8 +20,6 @@ def repair_db():
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
-        
-        # 2. Mainframe Client Tables
         conn.execute("""
             CREATE TABLE IF NOT EXISTS sys_jobs (
                 correlation_id TEXT PRIMARY KEY,
@@ -46,8 +41,6 @@ def repair_db():
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
-        
-        # 3. Ensure Card Stack & Goals exist (Mainframe Init)
         conn.execute("""
             CREATE TABLE IF NOT EXISTS card_stack (
                 id TEXT PRIMARY KEY,
@@ -70,8 +63,6 @@ def repair_db():
                 timestamp REAL
             )
         """)
-        
         print("Schema repair complete.")
-
 if __name__ == "__main__":
     repair_db()

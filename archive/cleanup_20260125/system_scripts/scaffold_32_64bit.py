@@ -1,9 +1,7 @@
 import os
 import json
 from datetime import datetime
-
 ROOT = "oss_sovereignty"
-
 SYSTEMS = {
     "sys_17_32Bit_Era": {
         "description": "THE 32-BIT ERA: Consoles, Computers, and Toolchains.",
@@ -37,35 +35,28 @@ SYSTEMS = {
         }
     }
 }
-
 def scaffold_32_64bit():
     print(">> SCAFFOLDING 32-BIT AND 64-BIT SYSTEMS...")
-    
     for sys_name, sys_data in SYSTEMS.items():
         sys_path = os.path.join(ROOT, sys_name)
-        
         if not os.path.exists(sys_path):
             os.makedirs(sys_path)
-            
         with open(os.path.join(sys_path, "metadata.json"), "w") as f:
             json.dump({
                 "description": sys_data["description"],
                 "created_at": datetime.now().isoformat(),
                 "status": "scaffolded"
             }, f, indent=2)
-
         for cat, items in sys_data["categories"].items():
             cat_path = os.path.join(sys_path, cat)
             if not os.path.exists(cat_path):
                 os.makedirs(cat_path)
-                
             for item in items:
                 item_path = os.path.join(cat_path, item)
                 if not os.path.exists(item_path):
                     os.makedirs(item_path)
                     os.makedirs(os.path.join(item_path, "source"))
                     os.makedirs(os.path.join(item_path, "build"))
-                    
                     with open(os.path.join(item_path, "metadata.json"), "w") as f:
                         json.dump({
                             "id": f"{sys_name}.{item}",
@@ -73,8 +64,6 @@ def scaffold_32_64bit():
                             "category": cat,
                             "mandate": "PRESERVE AND REIMPLEMENT"
                         }, f, indent=2)
-                        
     print(">> SCAFFOLDING COMPLETE.")
-
 if __name__ == "__main__":
     scaffold_32_64bit()

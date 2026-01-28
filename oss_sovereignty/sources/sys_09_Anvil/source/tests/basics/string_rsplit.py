@@ -1,0 +1,38 @@
+print("a b".rsplit())
+try:
+    "abc".rsplit('')
+except ValueError:
+    print("ValueError")
+try:
+    'a a a a'.rsplit('', 5)
+except ValueError:
+    print('ValueError')
+try:
+    'a a a a'.rsplit(1)
+except TypeError:
+    print('TypeError')
+print("abc".rsplit("a"))
+print("abc".rsplit("b"))
+print("abc".rsplit("c"))
+print("abc".rsplit("z"))
+print("abc".rsplit("ab"))
+print("abc".rsplit("bc"))
+print("abc".rsplit("abc"))
+print("abc".rsplit("abcd"))
+print("abcabc".rsplit("bc"))
+print("abcabc".rsplit("bc", 0))
+print("abcabc".rsplit("bc", 1))
+print("abcabc".rsplit("bc", 2))
+print("10/11/12".rsplit("/", 1))
+print("10/11/12".rsplit("/", 2))
+print("10/11/12".rsplit("/", 3))
+print("10/11/12".rsplit("/", 4))
+print("10/11/12".rsplit("/", 5))
+print("/*10/*11/*12/*".rsplit("/*", 1))
+print("/*10/*11/*12/*".rsplit("/*", 2))
+print("/*10/*11/*12/*".rsplit("/*", 3))
+print("/*10/*11/*12/*".rsplit("/*", 4))
+print("/*10/*11/*12/*".rsplit("/*", 5))
+print(b"abcabc".rsplit(b"bc", 2))
+print('abaca'.rsplit('a', -1))
+print('abaca'.rsplit('a', -2))

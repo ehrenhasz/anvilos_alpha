@@ -1,9 +1,6 @@
-# Recipe: Fetch Linux Kernel Source
 import os
 import subprocess
-
 KERNEL_VERSION = "6.9.3"
-
 def run():
     print("Starting kernel fetch recipe...")
     os.system(f"mkdir -p /mnt/anvil_temp/ascii_oss/src")
@@ -25,7 +22,6 @@ def run():
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     print(f"mv output: {result.stdout}")
     print(f"mv errors: {result.stderr}")
-
 print("Running recipe...")
 run()
 print("Recipe finished.")

@@ -2,11 +2,8 @@ import os
 import json
 import uuid
 from datetime import datetime
-
 OSS_DIR = "oss_sovereignty"
 QUEUE_DIR = "/mnt/anvil_temp/cards/queue"
-
-# Map folders to Git URLs
 REPO_MAP = {
     "bld_01_GCC": "https://gcc.gnu.org/git/gcc.git",
     "bld_02_Musl_Libc": "https://git.musl-libc.org/git/musl",
@@ -34,41 +31,31 @@ REPO_MAP = {
     "sys_07_Btop": "https://github.com/aristocratos/btop.git",
     "sys_08_Aerc": "https://git.sr.ht/~rjarry/aerc"
 }
-
 def get_directories(path):
     if not os.path.exists(path):
         return []
     return [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
-
 def create_card(folder, url):
     card_id = str(uuid.uuid4())[:8]
-    
-    # Task Description:
-    # 1. Clone repo into the specific folder (assumes empty).
-    # 2. Remove the .git directory to sever ties.
     description = (
         f"CLONE_AND_SEVER: Target '{OSS_DIR}/{folder}'. "
         f"1. GIT CLONE: Clone '{url}' into '{OSS_DIR}/{folder}'. "
         f"2. SEVER: Remove '{OSS_DIR}/{folder}/.git' directory. "
         f"3. VERIFY: Ensure files exist."
     )
-    
     card = {
         "id": card_id,
         "description": description,
         "status": "todo",
         "created_at": datetime.now().isoformat()
     }
-    
     filename = os.path.join(QUEUE_DIR, f"{card_id}.json")
     with open(filename, 'w') as f:
         json.dump(card, f, indent=2)
     print(f"Created card {card_id} for {folder}")
-
 def main():
     dirs = get_directories(OSS_DIR)
     print(f"Found {len(dirs)} directories in {OSS_DIR}")
-    
     count = 0
     for d in dirs:
         if d in REPO_MAP:
@@ -76,8 +63,6 @@ def main():
             count += 1
         else:
             print(f"Skipping {d}: No repo URL mapped.")
-            
     print(f"Successfully generated {count} clone cards.")
-
 if __name__ == "__main__":
     main()

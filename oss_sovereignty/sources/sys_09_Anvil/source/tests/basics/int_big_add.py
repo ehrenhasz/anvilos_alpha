@@ -1,0 +1,9 @@
+i = 0x3fffffff
+print(i + i)
+print(-i + -i)
+i = 0x3fffffffffff
+print(i + i)
+print(-i + -i)
+i = 0x3fffffffffffffff
+print(i + i)
+print(-i + -i)

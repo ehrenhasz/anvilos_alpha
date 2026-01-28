@@ -1,0 +1,5 @@
+print(1_000.1_8)
+print("%.2g" % 1e1_2)
+print(float("1_2_3"))
+print(float("1_2_3.4"))
+print("%.2g" % float("1e1_3"))

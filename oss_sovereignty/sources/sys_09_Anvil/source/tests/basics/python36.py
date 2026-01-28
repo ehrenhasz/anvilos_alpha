@@ -1,0 +1,5 @@
+print(100_000)
+print(0b1010_0101)
+print(0xff_ff)
+print(int('1_2_3'))
+print(int('0o1_2_3', 8))

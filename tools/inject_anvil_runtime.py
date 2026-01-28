@@ -1,26 +1,14 @@
-#!/usr/bin/env python3
 import os
 import sys
 import uuid
 import json
-
-# --- CONFIG ---
 PROJECT_ROOT = os.getcwd()
 DB_PATH = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-
-# --- MAINFRAME ACCESS ---
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 from anvilos.mainframe_client import MainframeClient
-
 def inject_anvil_runtime():
     client = MainframeClient(DB_PATH)
     print("... Injecting Anvil Runtime (Phase 2.5) ...")
-
-    # 1. BUILD ANVIL (STATIC)
-    # Note: We disable specific modules that might need dynamic libs or complex deps not present statically
-    # We use -static to ensure it runs in the busybox/musl initramfs
-    # We rename 'micropython' to 'anvil'
-    
     build_cmd = (
         "cd oss_sovereignty/sys_09_Anvil/source/ports/unix && "
         "make -j$(nproc) "
@@ -33,11 +21,8 @@ def inject_anvil_runtime():
         "mkdir -p ../../../../../build_artifacts/rootfs_stage/usr/local/bin && "
         "cp build-standard/micropython ../../../../../build_artifacts/rootfs_stage/usr/local/bin/anvil"
     )
-    
     print(f"-> Card 600: BUILD_ANVIL_RUNTIME")
     client.inject_card("SYS_CMD", {"cmd": build_cmd, "desc": "6. ANVIL: BUILD_RUNTIME_STATIC"}, seq=600)
-
-    # 2. CREATE INIT.PY (THE SOVEREIGN BOOT SCRIPT)
     init_py_content = (
         "import sys\n"
         "import os\n"
@@ -70,25 +55,17 @@ def inject_anvil_runtime():
         "if __name__ == '__main__':\n"
         "    main()\n"
     )
-    
     print(f"-> Card 601: WRITE_INIT_PY")
     client.inject_card("FILE_WRITE", {
         "path": "build_artifacts/rootfs_stage/init.py",
         "content": init_py_content
     }, seq=601)
-
-    # 3. UPDATE /INIT TO EXEC ANVIL
-    # We replace the /bin/sh exec with /usr/local/bin/anvil
     init_sh_update = (
         "sed -i 's|exec /bin/sh|exec /usr/local/bin/anvil /init.py|' build_artifacts/rootfs_stage/init && "
         "chmod +x build_artifacts/rootfs_stage/usr/local/bin/anvil"
     )
-    
     print(f"-> Card 602: LINK_INIT_TO_ANVIL")
     client.inject_card("SYS_CMD", {"cmd": init_sh_update, "desc": "6. ANVIL: LINK_INIT"}, seq=602)
-
-    # 4. REPACK INITRAMFS & ISO
-    # Reuse previous logic
     repack_cmd = (
         "cd build_artifacts/rootfs_stage && "
         "find . | cpio -o -H newc | gzip > ../iso/boot/initramfs.cpio.gz && "
@@ -99,11 +76,8 @@ def inject_anvil_runtime():
         "-no-emul-boot -boot-load-size 4 -boot-info-table "
         "build_artifacts/iso"
     )
-
     print(f"-> Card 603: REPACK_ISO_ANVIL")
     client.inject_card("SYS_CMD", {"cmd": repack_cmd, "desc": "6. ANVIL: REPACK_ISO"}, seq=603)
-
     print("Done. Anvil Runtime Injection Queued.")
-
 if __name__ == "__main__":
     inject_anvil_runtime()

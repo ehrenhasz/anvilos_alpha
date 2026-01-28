@@ -1,0 +1,30 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0060
+# TITLE: MASSIVE GRANULARITY PROTOCOL (ONE FILE, ONE CARD)
+# CLASSIFICATION: FORGE // AUDIT // PURITY
+# AUTHOR: AIMEAT (VICE-CHAIR) // OPERATOR
+# STATUS: DRAFT (AWAITING TAPE)
+
+---
+
+## 1. ABSTRACT
+This protocol establishes the absolute minimum unit of work for the AnvilOS Forge during the Phase 2 build cycle. It mandates that every individual source file residing within the `oss_sovereignty` tree must be processed as a discrete, verifiable "Punch Card" (Task) in the Mainframe.
+
+## 2. THE MANDATE
+
+### 2.1 ATOMIC INGESTION
+Every file discovered during the pre-build scan (currently 41,521 unique entries) must generate exactly one Card in the `forge_directives.py` manifest. 
+
+### 2.2 FORGE VERIFICATION
+Before any compilation or linking occurs, the Forge MUST:
+1.  Verify the existence of the file path.
+2.  Validate the file against the Stripping Mandate (No comments, no whitespace).
+3.  PUNCH the card to record the file as "Authenticated Artifact".
+
+### 2.3 RATIONALE
+Absolute accounting. By forcing the Forge to "touch" every file individually, we ensure that no "silent junk" or "host-contaminated" blobs enter the final monolith without explicit AI-mediated authorization.
+
+## 3. THE PROPHECY (BETA BUILD ESCALATION)
+This protocol serves as the structural prototype for the **COBOL-to-ANV Transmutation** phase. In future iterations, granularity will escalate from **ONE FILE, ONE CARD** to **ONE LINE, ONE CARD** for every piece of recovered tape asset. Every instruction will be a transaction; every line will be Law.
+
+---
+ANVIL IS LAW. THE HOLD.
