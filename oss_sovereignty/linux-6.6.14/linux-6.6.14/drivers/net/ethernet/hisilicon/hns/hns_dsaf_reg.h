@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
-
 #ifndef _DSAF_REG_H_
 #define _DSAF_REG_H_
-
 #include <linux/regmap.h>
 #define HNS_DEBUG_RING_IRQ_IDX		0
 #define HNS_SERVICE_RING_IRQ_IDX	59
 #define HNSV2_SERVICE_RING_IRQ_IDX	25
-
 #define DSAF_MAX_PORT_NUM	6
 #define DSAF_MAX_VM_NUM		128
-
 #define DSAF_COMM_DEV_NUM	1
 #define DSAF_PPE_INODE_BASE	6
 #define DSAF_DEBUG_NW_NUM	2
@@ -29,20 +21,15 @@
 #define DSAFV2_SBM_XGE_CHN    6
 #define DSAFV2_SBM_PPE_CHN    1
 #define DASFV2_ROCEE_CRD_NUM  1
-
 #define DSAF_VOQ_NUM		DSAF_NODE_NUM
 #define DSAF_INODE_NUM		DSAF_NODE_NUM
 #define DSAF_XOD_NUM		8
 #define DSAF_TBL_NUM		8
 #define DSAF_SW_PORT_NUM	8
 #define DSAF_TOTAL_QUEUE_NUM	129
-
-/* reserved a tcam entry for each port to support promisc by fuzzy match */
 #define DSAFV2_MAC_FUZZY_TCAM_NUM    DSAF_MAX_PORT_NUM
-
 #define DSAF_TCAM_SUM		512
 #define DSAF_LINE_SUM		(2048 * 14)
-
 #define DSAF_SUB_SC_NT_SRAM_CLK_SEL_REG			0x100
 #define DSAF_SUB_SC_HILINK3_CRG_CTRL0_REG		0x180
 #define DSAF_SUB_SC_HILINK3_CRG_CTRL1_REG		0x184
@@ -99,8 +86,6 @@
 #define DSAF_SUB_SC_GE_RESET_ST1_REG			0x5A10
 #define DSAF_SUB_SC_PPE_RESET_ST_REG			0x5A24
 #define DSAF_SUB_SC_RCB_PPE_COM_RESET_ST_REG		0x5A44
-
-/*serdes offset**/
 #define HNS_MAC_HILINK3_REG DSAF_SUB_SC_HILINK3_CRG_CTRL0_REG
 #define HNS_MAC_HILINK4_REG DSAF_SUB_SC_HILINK4_CRG_CTRL0_REG
 #define HNS_MAC_HILINK3V2_REG DSAF_SUB_SC_HILINK3_CRG_CTRL1_REG
@@ -113,9 +98,7 @@
 #define HNS_MAC_LANE1_STATE_REG 0x000BFFC4ULL
 #define HNS_MAC_LANE2_STATE_REG 0x000BFFB4ULL
 #define HNS_MAC_LANE3_STATE_REG 0x000BFFA4ULL
-
 #define HILINK_RESET_TIMOUT 10000
-
 #define DSAF_SRAM_INIT_OVER_0_REG	0x0
 #define DSAF_CFG_0_REG			0x4
 #define DSAF_ECC_ERR_INVERT_0_REG	0x8
@@ -146,7 +129,6 @@
 #define DSAF_MIX_DEF_QID_0_REG		0x360
 #define DSAF_PORT_DEF_VLAN_0_REG	0x380
 #define DSAF_VM_DEF_VLAN_0_REG		0x400
-
 #define DSAF_INODE_CUT_THROUGH_CFG_0_REG	0x1000
 #define DSAF_INODE_ECC_INVERT_EN_0_REG		0x1008
 #define DSAF_INODE_ECC_ERR_ADDR_0_REG		0x100C
@@ -176,7 +158,6 @@
 #define DSAF_INODE_IN_PRIO_PAUSE_BASE_REG	0x1C00
 #define DSAF_INODE_IN_PRIO_PAUSE_BASE_OFFSET	0x100
 #define DSAF_INODE_IN_PRIO_PAUSE_OFFSET		0x50
-
 #define DSAF_SBM_CFG_REG_0_REG			0x2000
 #define DSAF_SBM_BP_CFG_0_XGE_REG_0_REG		0x2004
 #define DSAF_SBM_BP_CFG_0_PPE_REG_0_REG		0x2304
@@ -210,7 +191,6 @@
 #define DSAF_SBM_LNK_RELS_CNT_0_REG		0x2060
 #define DSAF_SBM_BP_CFG_3_REG_0_REG		0x2068
 #define DSAF_SBM_BP_CFG_4_REG_0_REG		0x206C
-
 #define DSAF_XOD_ETS_TSA_TC0_TC3_CFG_0_REG	0x3000
 #define DSAF_XOD_ETS_TSA_TC4_TC7_CFG_0_REG	0x3004
 #define DSAF_XOD_ETS_BW_TC0_TC3_CFG_0_REG	0x3008
@@ -245,7 +225,6 @@
 #define DSAF_XOD_FIFO_STATUS_0_REG		0x307C
 #define DSAF_XOD_XGE_PFC_PRIO_CNT_BASE_REG	0x3A00
 #define DSAF_XOD_XGE_PFC_PRIO_CNT_OFFSET	0x4
-
 #define DSAF_VOQ_ECC_INVERT_EN_0_REG		0x4004
 #define DSAF_VOQ_SRAM_PKT_NUM_0_REG		0x4008
 #define DSAF_VOQ_IN_PKT_NUM_0_REG		0x400C
@@ -258,7 +237,6 @@
 #define DSAF_VOQ_PPE_XOD_REQ_0_REG		0x402C
 #define DSAF_VOQ_ROCEE_XOD_REQ_0_REG		0x4030
 #define DSAF_VOQ_BP_ALL_THRD_0_REG		0x4034
-
 #define DSAF_TBL_CTRL_0_REG			0x5000
 #define DSAF_TBL_INT_MSK_0_REG			0x5004
 #define DSAF_TBL_INT_SRC_0_REG			0x5008
@@ -298,14 +276,12 @@
 #define DSAF_TBL_UCAST_BCAST_MIS_INFO_0_0_REG	0x510C
 #define DSAF_TBL_TCAM_MATCH_CFG_H_REG		0x5130
 #define DSAF_TBL_TCAM_MATCH_CFG_L_REG		0x5134
-
 #define DSAF_INODE_FIFO_WL_0_REG		0x6000
 #define DSAF_ONODE_FIFO_WL_0_REG		0x6020
 #define DSAF_XGE_GE_WORK_MODE_0_REG		0x6040
 #define DSAF_XGE_APP_RX_LINK_UP_0_REG		0x6080
 #define DSAF_NETPORT_CTRL_SIG_0_REG		0x60A0
 #define DSAF_XGE_CTRL_SIG_CFG_0_REG		0x60C0
-
 #define PPE_COM_CFG_QID_MODE_REG		0x0
 #define PPE_COM_INTEN_REG			0x110
 #define PPE_COM_RINT_REG			0x114
@@ -315,7 +291,6 @@
 #define PPE_COM_HIS_TX_PKT_QID_ERR_CNT_REG	0x900
 #define PPE_COM_HIS_TX_PKT_QID_OK_CNT_REG	0xC00
 #define PPE_COM_COMMON_CNT_CLR_CE_REG		0x1120
-
 #define PPE_CFG_TX_FIFO_THRSLD_REG		0x0
 #define PPE_CFG_RX_FIFO_THRSLD_REG		0x4
 #define PPE_CFG_RX_FIFO_PAUSE_THRSLD_REG	0x8
@@ -367,7 +342,6 @@
 #define PPE_ECO2_REG				0x334
 #define PPEV2_INDRECTION_TBL_REG		0x800
 #define PPEV2_RSS_KEY_REG			0x900
-
 #define RCB_COM_CFG_ENDIAN_REG			0x0
 #define RCB_COM_CFG_SYS_FSH_REG			0xC
 #define RCB_COM_CFG_INIT_FLAG_REG		0x10
@@ -379,7 +353,6 @@
 #define RCB_COM_CFG_PPE_TNL_CLKEN_REG		0x44
 #define RCBV2_COM_CFG_USER_REG			0x30
 #define RCBV2_COM_CFG_TSO_MODE_REG		0x50
-
 #define RCB_COM_INTMSK_TX_PKT_REG		0x3A0
 #define RCB_COM_RINT_TX_PKT_REG			0x3A8
 #define RCB_COM_INTMASK_ECC_ERR_REG		0x400
@@ -399,7 +372,6 @@
 #define RCB_ECC_ERR_ADDR3_REG			0x45C
 #define RCB_ECC_ERR_ADDR4_REG			0x460
 #define RCB_ECC_ERR_ADDR5_REG			0x464
-
 #define RCB_COM_SF_CFG_INTMASK_RING		0x470
 #define RCB_COM_SF_CFG_RING_STS			0x474
 #define RCB_COM_SF_CFG_RING			0x478
@@ -410,16 +382,13 @@
 #define RCB_COM_AXI_WR_ERR_INTMASK		0x498
 #define RCB_COM_AXI_ERR_STS			0x49C
 #define RCB_COM_CHK_TX_FBD_NUM_REG		0x4a0
-
 #define RCB_CFG_BD_NUM_REG			0x9000
 #define RCB_CFG_PKTLINE_REG			0x9050
-
 #define RCB_CFG_OVERTIME_REG			0x9300
 #define RCB_CFG_PKTLINE_INT_NUM_REG		0x9304
 #define RCB_CFG_OVERTIME_INT_NUM_REG		0x9308
 #define RCB_PORT_INT_GAPTIME_REG		0x9400
 #define RCB_PORT_CFG_OVERTIME_REG		0x9430
-
 #define RCB_RING_RX_RING_BASEADDR_L_REG		0x00000
 #define RCB_RING_RX_RING_BASEADDR_H_REG		0x00004
 #define RCB_RING_RX_RING_BD_NUM_REG		0x00008
@@ -429,7 +398,6 @@
 #define RCB_RING_RX_RING_HEAD_REG		0x0001C
 #define RCB_RING_RX_RING_FBDNUM_REG		0x00020
 #define RCB_RING_RX_RING_PKTNUM_RECORD_REG	0x0002C
-
 #define RCB_RING_TX_RING_BASEADDR_L_REG		0x00040
 #define RCB_RING_TX_RING_BASEADDR_H_REG		0x00044
 #define RCB_RING_TX_RING_BD_NUM_REG		0x00048
@@ -440,7 +408,6 @@
 #define RCB_RING_TX_RING_FBDNUM_REG		0x00060
 #define RCB_RING_TX_RING_OFFSET_REG		0x00064
 #define RCB_RING_TX_RING_PKTNUM_RECORD_REG	0x0006C
-
 #define RCB_RING_PREFETCH_EN_REG		0x0007C
 #define RCB_RING_CFG_VF_NUM_REG			0x00080
 #define RCB_RING_ASID_REG			0x0008C
@@ -448,7 +415,6 @@
 #define RCB_RING_T0_BE_RST			0x00094
 #define RCB_RING_COULD_BE_RST			0x00098
 #define RCB_RING_WRR_WEIGHT_REG			0x0009c
-
 #define RCB_RING_INTMSK_RXWL_REG		0x000A0
 #define RCB_RING_INTSTS_RX_RING_REG		0x000A4
 #define RCBV2_RX_RING_INT_STS_REG		0x000A8
@@ -459,7 +425,6 @@
 #define RCB_RING_INTSTS_RX_OVERTIME_REG		0x000BC
 #define RCB_RING_INTMSK_TX_OVERTIME_REG		0x000C4
 #define RCB_RING_INTSTS_TX_OVERTIME_REG		0x000C8
-
 #define GMAC_FIFO_STATE_REG			0x0000UL
 #define GMAC_DUPLEX_TYPE_REG			0x0008UL
 #define GMAC_FD_FC_TYPE_REG			0x000CUL
@@ -479,7 +444,6 @@
 #define GMAC_TRANSMIT_CONTROL_REG		0x0060UL
 #define GMAC_REC_FILT_CONTROL_REG		0x0064UL
 #define GMAC_PTP_CONFIG_REG			0x0074UL
-
 #define GMAC_RX_OCTETS_TOTAL_OK_REG		0x0080UL
 #define GMAC_RX_OCTETS_BAD_REG			0x0084UL
 #define GMAC_RX_UC_PKTS_REG			0x0088UL
@@ -553,7 +517,6 @@
 #define GMAC_STATION_ADDR_HIGH_MSK_1_REG	0x023CUL
 #define GMAC_MAC_SKIP_LEN_REG			0x0240UL
 #define GMAC_TX_LOOP_PKT_PRI_REG		0x0378UL
-
 #define XGMAC_INT_STATUS_REG			0x0
 #define XGMAC_INT_ENABLE_REG			0x4
 #define XGMAC_INT_SET_REG			0x8
@@ -567,7 +530,6 @@
 #define XGMAC_LINK_STATUS_REG			0x54
 #define XGMAC_SPARE_REG				0xC0
 #define XGMAC_SPARE_CNT_REG			0xC4
-
 #define XGMAC_MAC_ENABLE_REG			0x100
 #define XGMAC_MAC_CONTROL_REG			0x104
 #define XGMAC_MAC_IPG_REG			0x120
@@ -606,7 +568,6 @@
 #define XGMAC_MAC_RX_ERR_EFD_CNT_REG		0x1D8
 #define XGMAC_MAC_ERR_INFO_REG			0x1DC
 #define XGMAC_MAC_DBG_INFO_REG			0x1E0
-
 #define XGMAC_PCS_BASER_SYNC_THD_REG		0x330
 #define XGMAC_PCS_STATUS1_REG			0x404
 #define XGMAC_PCS_BASER_STATUS1_REG		0x410
@@ -621,7 +582,6 @@
 #define XGMAC_PCS_DBG_INFO1_REG			0x4C4
 #define XGMAC_PCS_DBG_INFO2_REG			0x4C8
 #define XGMAC_PCS_DBG_INFO3_REG			0x4CC
-
 #define XGMAC_PMA_ENABLE_REG			0x700
 #define XGMAC_PMA_CONTROL_REG			0x704
 #define XGMAC_PMA_SIGNAL_STATUS_REG		0x708
@@ -630,7 +590,6 @@
 #define XGMAC_PMA_FEC_CONTROL_REG		0x744
 #define XGMAC_PMA_FEC_CORR_BLOCK_CNT__REG	0x750
 #define XGMAC_PMA_FEC_UNCORR_BLOCK_CNT__REG	0x760
-
 #define XGMAC_TX_PKTS_FRAGMENT			0x0000
 #define XGMAC_TX_PKTS_UNDERSIZE			0x0008
 #define XGMAC_TX_PKTS_UNDERMIN			0x0010
@@ -665,7 +624,6 @@
 #define XGMAC_RX_FROMAPPGOODPKTS		0x00f8
 #define XGMAC_RX_FROMAPPBADPKTS			0x0100
 #define XGMAC_TX_ERRALLPKTS			0x0108
-
 #define XGMAC_RX_PKTS_FRAGMENT			0x0110
 #define XGMAC_RX_PKTSUNDERSIZE			0x0118
 #define XGMAC_RX_PKTS_UNDERMIN			0x0120
@@ -700,11 +658,9 @@
 #define XGMAC_RX_1731PKTS			0x0208
 #define XGMAC_RX_SYMBOLERRPKTS			0x0210
 #define XGMAC_RX_FCSERRPKTS			0x0218
-
 #define DSAF_SRAM_INIT_OVER_M 0xff
 #define DSAFV2_SRAM_INIT_OVER_M 0x3ff
 #define DSAF_SRAM_INIT_OVER_S 0
-
 #define DSAF_CFG_EN_S 0
 #define DSAF_CFG_TC_MODE_S 1
 #define DSAF_CFG_CRC_EN_S 2
@@ -713,30 +669,22 @@
 #define DSAF_CFG_STP_MODE_S 5
 #define DSAF_CFG_LOCA_ADDR_EN_S 6
 #define DSAFV2_CFG_VLAN_TAG_MODE_S 17
-
 #define DSAF_CNT_CLR_CE_S 0
 #define DSAF_SNAP_EN_S 1
-
 #define HNS_DSAF_PFC_UNIT_CNT_FOR_XGE 41
 #define HNS_DSAF_PFC_UNIT_CNT_FOR_GE_1000 410
 #define HNS_DSAF_PFC_UNIT_CNT_FOR_GE_2500 103
-
 #define DSAF_PFC_UNINT_CNT_M ((1ULL << 9) - 1)
 #define DSAF_PFC_UNINT_CNT_S 0
-
 #define DSAF_MAC_PAUSE_RX_EN_B 2
 #define DSAF_PFC_PAUSE_RX_EN_B 1
 #define DSAF_PFC_PAUSE_TX_EN_B 0
-
 #define DSAF_PPE_QID_CFG_M 0xFF
 #define DSAF_PPE_QID_CFG_S 0
-
 #define DSAF_SW_PORT_TYPE_M 3
 #define DSAF_SW_PORT_TYPE_S 0
-
 #define DSAF_STP_PORT_TYPE_M 7
 #define DSAF_STP_PORT_TYPE_S 0
-
 #define DSAF_INODE_IN_PORT_NUM_M 7
 #define DSAF_INODE_IN_PORT_NUM_S 0
 #define DSAFV2_INODE_IN_PORT1_NUM_M (7ULL << 3)
@@ -749,64 +697,52 @@
 #define DSAFV2_INODE_IN_PORT4_NUM_S 12
 #define DSAFV2_INODE_IN_PORT5_NUM_M (7ULL << 15)
 #define DSAFV2_INODE_IN_PORT5_NUM_S 15
-
 #define HNS_DSAF_I4TC_CFG 0x18688688
 #define HNS_DSAF_I8TC_CFG 0x18FAC688
-
 #define DSAF_SBM_CFG_SHCUT_EN_S 0
 #define DSAF_SBM_CFG_EN_S 1
 #define DSAF_SBM_CFG_MIB_EN_S 2
 #define DSAF_SBM_CFG_ECC_INVERT_EN_S 3
-
 #define DSAF_SBM_CFG0_VC1_MAX_BUF_NUM_S 0
 #define DSAF_SBM_CFG0_VC1_MAX_BUF_NUM_M (((1ULL << 10) - 1) << 0)
 #define DSAF_SBM_CFG0_VC0_MAX_BUF_NUM_S 10
 #define DSAF_SBM_CFG0_VC0_MAX_BUF_NUM_M (((1ULL << 10) - 1) << 10)
 #define DSAF_SBM_CFG0_COM_MAX_BUF_NUM_S 20
 #define DSAF_SBM_CFG0_COM_MAX_BUF_NUM_M (((1ULL << 11) - 1) << 20)
-
 #define DSAF_SBM_CFG1_TC4_MAX_BUF_NUM_S 0
 #define DSAF_SBM_CFG1_TC4_MAX_BUF_NUM_M (((1ULL << 10) - 1) << 0)
 #define DSAF_SBM_CFG1_TC0_MAX_BUF_NUM_S 10
 #define DSAF_SBM_CFG1_TC0_MAX_BUF_NUM_M (((1ULL << 10) - 1) << 10)
-
 #define DSAF_SBM_CFG2_SET_BUF_NUM_S 0
 #define DSAF_SBM_CFG2_SET_BUF_NUM_M (((1ULL << 10) - 1) << 0)
 #define DSAF_SBM_CFG2_RESET_BUF_NUM_S 10
 #define DSAF_SBM_CFG2_RESET_BUF_NUM_M (((1ULL << 10) - 1) << 10)
-
 #define DSAF_SBM_CFG3_SET_BUF_NUM_NO_PFC_S 0
 #define DSAF_SBM_CFG3_SET_BUF_NUM_NO_PFC_M (((1ULL << 10) - 1) << 0)
 #define DSAF_SBM_CFG3_RESET_BUF_NUM_NO_PFC_S 10
 #define DSAF_SBM_CFG3_RESET_BUF_NUM_NO_PFC_M (((1ULL << 10) - 1) << 10)
-
 #define DSAFV2_SBM_CFG0_VC1_MAX_BUF_NUM_S 0
 #define DSAFV2_SBM_CFG0_VC1_MAX_BUF_NUM_M (((1ULL << 9) - 1) << 0)
 #define DSAFV2_SBM_CFG0_VC0_MAX_BUF_NUM_S 9
 #define DSAFV2_SBM_CFG0_VC0_MAX_BUF_NUM_M (((1ULL << 9) - 1) << 9)
 #define DSAFV2_SBM_CFG0_COM_MAX_BUF_NUM_S 18
 #define DSAFV2_SBM_CFG0_COM_MAX_BUF_NUM_M (((1ULL << 10) - 1) << 18)
-
 #define DSAFV2_SBM_CFG1_TC4_MAX_BUF_NUM_S 0
 #define DSAFV2_SBM_CFG1_TC4_MAX_BUF_NUM_M (((1ULL << 9) - 1) << 0)
 #define DSAFV2_SBM_CFG1_TC0_MAX_BUF_NUM_S 9
 #define DSAFV2_SBM_CFG1_TC0_MAX_BUF_NUM_M (((1ULL << 9) - 1) << 9)
-
 #define DSAFV2_SBM_CFG2_SET_BUF_NUM_S 0
 #define DSAFV2_SBM_CFG2_SET_BUF_NUM_M (((1ULL << 9) - 1) << 0)
 #define DSAFV2_SBM_CFG2_RESET_BUF_NUM_S 9
 #define DSAFV2_SBM_CFG2_RESET_BUF_NUM_M (((1ULL << 9) - 1) << 9)
-
 #define DSAFV2_SBM_CFG3_SET_BUF_NUM_NO_PFC_S 0
 #define DSAFV2_SBM_CFG3_SET_BUF_NUM_NO_PFC_M (((1ULL << 9) - 1) << 0)
 #define DSAFV2_SBM_CFG3_RESET_BUF_NUM_NO_PFC_S 9
 #define DSAFV2_SBM_CFG3_RESET_BUF_NUM_NO_PFC_M (((1ULL << 9) - 1) << 9)
-
 #define DSAFV2_SBM_CFG4_SET_BUF_NUM_NO_PFC_S 0
 #define DSAFV2_SBM_CFG4_SET_BUF_NUM_NO_PFC_M (((1ULL << 9) - 1) << 0)
 #define DSAFV2_SBM_CFG4_RESET_BUF_NUM_NO_PFC_S 9
 #define DSAFV2_SBM_CFG4_RESET_BUF_NUM_NO_PFC_M (((1ULL << 9) - 1) << 9)
-
 #define DSAF_CHNS_MASK			0x3f000
 #define DSAF_SBM_ROCEE_CFG_CRD_EN_B	2
 #define SRST_TIME_INTERVAL		20
@@ -814,42 +750,34 @@
 #define DSAFV2_SBM_CFG2_ROCEE_SET_BUF_NUM_M (((1ULL << 8) - 1) << 0)
 #define DSAFV2_SBM_CFG2_ROCEE_RESET_BUF_NUM_S 8
 #define DSAFV2_SBM_CFG2_ROCEE_RESET_BUF_NUM_M (((1ULL << 8) - 1) << 8)
-
 #define DSAFV2_SBM_CFG2_PPE_SET_BUF_NUM_S (0)
 #define DSAFV2_SBM_CFG2_PPE_SET_BUF_NUM_M (((1ULL << 6) - 1) << 0)
 #define DSAFV2_SBM_CFG2_PPE_RESET_BUF_NUM_S (6)
 #define DSAFV2_SBM_CFG2_PPE_RESET_BUF_NUM_M (((1ULL << 6) - 1) << 6)
 #define DSAFV2_SBM_CFG2_PPE_CFG_USEFUL_NUM_S (12)
 #define DSAFV2_SBM_CFG2_PPE_CFG_USEFUL_NUM_M (((1ULL << 6) - 1) << 12)
-
 #define DSAF_TBL_TCAM_ADDR_S 0
 #define DSAF_TBL_TCAM_ADDR_M ((1ULL << 9) - 1)
-
 #define DSAF_TBL_LINE_ADDR_S 0
 #define DSAF_TBL_LINE_ADDR_M ((1ULL << 15) - 1)
-
 #define DSAF_TBL_MCAST_CFG4_VM128_112_S 0
 #define DSAF_TBL_MCAST_CFG4_VM128_112_M (((1ULL << 7) - 1) << 0)
 #define DSAF_TBL_MCAST_CFG4_ITEM_VLD_S 7
 #define DSAF_TBL_MCAST_CFG4_OLD_EN_S 8
-
 #define DSAF_TBL_MCAST_CFG0_XGE5_0_S 0
 #define DSAF_TBL_MCAST_CFG0_XGE5_0_M (((1ULL << 6) - 1) << 0)
 #define DSAF_TBL_MCAST_CFG0_VM25_0_S 6
 #define DSAF_TBL_MCAST_CFG0_VM25_0_M (((1ULL << 26) - 1) << 6)
-
 #define DSAF_TBL_UCAST_CFG1_OUT_PORT_S 0
 #define DSAF_TBL_UCAST_CFG1_OUT_PORT_M (((1ULL << 8) - 1) << 0)
 #define DSAF_TBL_UCAST_CFG1_DVC_S 8
 #define DSAF_TBL_UCAST_CFG1_MAC_DISCARD_S 9
 #define DSAF_TBL_UCAST_CFG1_ITEM_VLD_S 10
 #define DSAF_TBL_UCAST_CFG1_OLD_EN_S 11
-
 #define DSAF_TBL_LINE_CFG_OUT_PORT_S 0
 #define DSAF_TBL_LINE_CFG_OUT_PORT_M (((1ULL << 8) - 1) << 0)
 #define DSAF_TBL_LINE_CFG_DVC_S 8
 #define DSAF_TBL_LINE_CFG_MAC_DISCARD_S 9
-
 #define DSAF_TBL_PUL_OLD_RSLT_RE_S 0
 #define DSAF_TBL_PUL_MCAST_VLD_S 1
 #define DSAF_TBL_PUL_TCAM_DATA_VLD_S 2
@@ -857,136 +785,99 @@
 #define DSAF_TBL_PUL_LINE_VLD_S 4
 #define DSAF_TBL_PUL_TCAM_LOAD_S 5
 #define DSAF_TBL_PUL_LINE_LOAD_S 6
-
 #define DSAF_TBL_DFX_LINE_LKUP_NUM_EN_S 0
 #define DSAF_TBL_DFX_UC_LKUP_NUM_EN_S 1
 #define DSAF_TBL_DFX_MC_LKUP_NUM_EN_S 2
 #define DSAF_TBL_DFX_BC_LKUP_NUM_EN_S 3
 #define DSAF_TBL_DFX_RAM_ERR_INJECT_EN_S 4
-
 #define DSAF_VOQ_BP_ALL_DOWNTHRD_S 0
 #define DSAF_VOQ_BP_ALL_DOWNTHRD_M (((1ULL << 10) - 1) << 0)
 #define DSAF_VOQ_BP_ALL_UPTHRD_S 10
 #define DSAF_VOQ_BP_ALL_UPTHRD_M (((1ULL << 10) - 1) << 10)
-
 #define DSAF_XGE_GE_WORK_MODE_S 0
 #define DSAF_XGE_GE_LOOPBACK_S 1
-
 #define DSAF_FC_XGE_TX_PAUSE_S 0
 #define DSAF_REGS_XGE_CNT_CAR_S 1
-
 #define PPE_CFG_QID_MODE_DEF_QID_S	0
 #define PPE_CFG_QID_MODE_DEF_QID_M	(0xff << PPE_CFG_QID_MODE_DEF_QID_S)
-
 #define PPE_CFG_QID_MODE_CF_QID_MODE_S	8
 #define PPE_CFG_QID_MODE_CF_QID_MODE_M	(0x7 << PPE_CFG_QID_MODE_CF_QID_MODE_S)
-
 #define PPEV2_CFG_RSS_TBL_4N0_S	0
 #define PPEV2_CFG_RSS_TBL_4N0_M	(((1UL << 5) - 1) << PPEV2_CFG_RSS_TBL_4N0_S)
-
 #define PPEV2_CFG_RSS_TBL_4N1_S	8
 #define PPEV2_CFG_RSS_TBL_4N1_M	(((1UL << 5) - 1) << PPEV2_CFG_RSS_TBL_4N1_S)
-
 #define PPEV2_CFG_RSS_TBL_4N2_S	16
 #define PPEV2_CFG_RSS_TBL_4N2_M	(((1UL << 5) - 1) << PPEV2_CFG_RSS_TBL_4N2_S)
-
 #define PPEV2_CFG_RSS_TBL_4N3_S	24
 #define PPEV2_CFG_RSS_TBL_4N3_M	(((1UL << 5) - 1) << PPEV2_CFG_RSS_TBL_4N3_S)
-
 #define DSAFV2_SERDES_LBK_EN_B  8
 #define DSAFV2_SERDES_LBK_QID_S 0
 #define DSAFV2_SERDES_LBK_QID_M	(((1UL << 8) - 1) << DSAFV2_SERDES_LBK_QID_S)
-
 #define PPE_CNT_CLR_CE_B	0
 #define PPE_CNT_CLR_SNAP_EN_B	1
-
 #define PPE_INT_GAPTIME_B	0
 #define PPE_INT_GAPTIME_M	0x3ff
-
 #define PPE_COMMON_CNT_CLR_CE_B	0
 #define PPE_COMMON_CNT_CLR_SNAP_EN_B	1
 #define RCB_COM_TSO_MODE_B	0
 #define RCB_COM_CFG_FNA_B	1
 #define RCB_COM_CFG_FA_B	0
-
 #define GMAC_DUPLEX_TYPE_B 0
-
 #define GMAC_TX_WATER_LINE_MASK		((1UL << 8) - 1)
 #define GMAC_TX_WATER_LINE_SHIFT	0
-
 #define GMAC_FC_TX_TIMER_S 0
 #define GMAC_FC_TX_TIMER_M 0xffff
-
 #define GMAC_MAX_FRM_SIZE_S 0
 #define GMAC_MAX_FRM_SIZE_M 0xffff
-
 #define GMAC_PORT_MODE_S	0
 #define GMAC_PORT_MODE_M	0xf
-
 #define GMAC_RGMII_1000M_DELAY_B	4
 #define GMAC_MII_TX_EDGE_SEL_B		5
 #define GMAC_FIFO_ERR_AUTO_RST_B	6
 #define GMAC_DBG_CLK_LOS_MSK_B		7
-
 #define GMAC_PORT_RX_EN_B	1
 #define GMAC_PORT_TX_EN_B	2
-
 #define GMAC_PAUSE_EN_RX_FDFC_B 0
 #define GMAC_PAUSE_EN_TX_FDFC_B 1
 #define GMAC_PAUSE_EN_TX_HDFC_B 2
-
 #define GMAC_SHORT_RUNTS_THR_S 0
 #define GMAC_SHORT_RUNTS_THR_M 0x1f
-
 #define GMAC_AN_NEG_STAT_FD_B		5
 #define GMAC_AN_NEG_STAT_HD_B		6
 #define GMAC_AN_NEG_STAT_RF1_DUPLIEX_B	12
 #define GMAC_AN_NEG_STAT_RF2_B		13
-
 #define GMAC_AN_NEG_STAT_NP_LNK_OK_B	15
 #define GMAC_AN_NEG_STAT_RX_SYNC_OK_B	20
 #define GMAC_AN_NEG_STAT_AN_DONE_B	21
-
 #define GMAC_AN_NEG_STAT_PS_S		7
 #define GMAC_AN_NEG_STAT_PS_M		(0x3 << GMAC_AN_NEG_STAT_PS_S)
-
 #define GMAC_AN_NEG_STAT_SPEED_S	10
 #define GMAC_AN_NEG_STAT_SPEED_M	(0x3 << GMAC_AN_NEG_STAT_SPEED_S)
-
 #define GMAC_TX_AN_EN_B		5
 #define GMAC_TX_CRC_ADD_B	6
 #define GMAC_TX_PAD_EN_B	7
-
 #define GMAC_LINE_LOOPBACK_B	0
-
 #define GMAC_LP_REG_CF_EXT_DRV_LP_B	1
 #define GMAC_LP_REG_CF2MI_LP_EN_B	2
-
 #define GMAC_MODE_CHANGE_EB_B	0
 #define GMAC_UC_MATCH_EN_B	0
 #define GMAC_ADDR_EN_B		16
-
 #define GMAC_RECV_CTRL_STRIP_PAD_EN_B	3
 #define GMAC_RECV_CTRL_RUNT_PKT_EN_B	4
-
 #define GMAC_TX_LOOP_PKT_HIG_PRI_B	0
 #define GMAC_TX_LOOP_PKT_EN_B		1
-
 #define XGMAC_PORT_MODE_TX_S		0x0
 #define XGMAC_PORT_MODE_TX_M		(0x3 << XGMAC_PORT_MODE_TX_S)
 #define XGMAC_PORT_MODE_TX_40G_B	0x3
 #define XGMAC_PORT_MODE_RX_S		0x4
 #define XGMAC_PORT_MODE_RX_M		(0x3 << XGMAC_PORT_MODE_RX_S)
 #define XGMAC_PORT_MODE_RX_40G_B	0x7
-
 #define XGMAC_ENABLE_TX_B		0
 #define XGMAC_ENABLE_RX_B		1
-
 #define XGMAC_UNIDIR_EN_B		0
 #define XGMAC_RF_TX_EN_B		1
 #define XGMAC_LF_RF_INSERT_S		2
 #define XGMAC_LF_RF_INSERT_M		(0x3 << XGMAC_LF_RF_INSERT_S)
-
 #define XGMAC_CTL_TX_FCS_B		0
 #define XGMAC_CTL_TX_PAD_B		1
 #define XGMAC_CTL_TX_PREAMBLE_TRANS_B	3
@@ -1003,93 +894,70 @@
 #define XGMAC_CTL_RX_1588_B		24
 #define XGMAC_CTL_RX_1731_B		25
 #define XGMAC_CTL_RX_PFC_B		26
-
 #define XGMAC_PMA_FEC_CTL_TX_B		0
 #define XGMAC_PMA_FEC_CTL_RX_B		1
 #define XGMAC_PMA_FEC_CTL_ERR_EN	2
 #define XGMAC_PMA_FEC_CTL_ERR_SH	3
-
 #define XGMAC_PAUSE_CTL_TX_B		0
 #define XGMAC_PAUSE_CTL_RX_B		1
 #define XGMAC_PAUSE_CTL_RSP_MODE_B	2
 #define XGMAC_PAUSE_CTL_TX_XOFF_B	3
-
 static inline void dsaf_write_reg(u8 __iomem *base, u32 reg, u32 value)
 {
 	writel(value, base + reg);
 }
-
 #define dsaf_write_dev(a, reg, value) \
 	dsaf_write_reg((a)->io_base, (reg), (value))
-
 static inline u32 dsaf_read_reg(u8 __iomem *base, u32 reg)
 {
 	return readl(base + reg);
 }
-
 static inline void dsaf_write_syscon(struct regmap *base, u32 reg, u32 value)
 {
 	regmap_write(base, reg, value);
 }
-
 static inline int dsaf_read_syscon(struct regmap *base, u32 reg, u32 *val)
 {
 	return regmap_read(base, reg, val);
 }
-
 #define dsaf_read_dev(a, reg) \
 	dsaf_read_reg((a)->io_base, (reg))
-
 #define dsaf_set_field(origin, mask, shift, val) \
 	do { \
 		(origin) &= (~(mask)); \
 		(origin) |= (((val) << (shift)) & (mask)); \
 	} while (0)
-
 #define dsaf_set_bit(origin, shift, val) \
 	dsaf_set_field((origin), (1ull << (shift)), (shift), (val))
-
 static inline void dsaf_set_reg_field(u8 __iomem *base, u32 reg, u32 mask,
 				      u32 shift, u32 val)
 {
 	u32 origin = dsaf_read_reg(base, reg);
-
 	dsaf_set_field(origin, mask, shift, val);
 	dsaf_write_reg(base, reg, origin);
 }
-
 #define dsaf_set_dev_field(dev, reg, mask, shift, val) \
 	dsaf_set_reg_field((dev)->io_base, (reg), (mask), (shift), (val))
-
 #define dsaf_set_dev_bit(dev, reg, bit, val) \
 	dsaf_set_reg_field((dev)->io_base, (reg), (1ull << (bit)), (bit), (val))
-
 #define dsaf_get_field(origin, mask, shift) (((origin) & (mask)) >> (shift))
-
 #define dsaf_get_bit(origin, shift) \
 	dsaf_get_field((origin), (1ull << (shift)), (shift))
-
 static inline u32 dsaf_get_reg_field(u8 __iomem *base, u32 reg, u32 mask,
 				     u32 shift)
 {
 	u32 origin;
-
 	origin = dsaf_read_reg(base, reg);
 	return dsaf_get_field(origin, mask, shift);
 }
-
 #define dsaf_get_dev_field(dev, reg, mask, shift) \
 	dsaf_get_reg_field((dev)->io_base, (reg), (mask), (shift))
-
 #define dsaf_get_dev_bit(dev, reg, bit) \
 	dsaf_get_reg_field((dev)->io_base, (reg), (1ull << (bit)), (bit))
-
 #define dsaf_write_b(addr, data)\
 	writeb((data), (__iomem u8 *)(addr))
 #define dsaf_read_b(addr)\
 	readb((__iomem u8 *)(addr))
-
 #define hns_mac_reg_read64(drv, offset) \
 	readq((__iomem void *)(((drv)->io_base + 0xc00 + (offset))))
-
-#endif	/* _DSAF_REG_H */
+#endif	 

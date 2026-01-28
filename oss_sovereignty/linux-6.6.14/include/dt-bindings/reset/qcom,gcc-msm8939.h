@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2020 Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_RESET_MSM_GCC_8939_H
 #define _DT_BINDINGS_RESET_MSM_GCC_8939_H
-
 #define GCC_BLSP1_BCR			0
 #define GCC_BLSP1_QUP1_BCR		1
 #define GCC_BLSP1_UART1_BCR		2
@@ -106,5 +100,4 @@
 #define GCC_CAMSS_MCLK2_BCR		97
 #define GCC_CPP_TBU_BCR			98
 #define GCC_MDP_RT_TBU_BCR		99
-
 #endif

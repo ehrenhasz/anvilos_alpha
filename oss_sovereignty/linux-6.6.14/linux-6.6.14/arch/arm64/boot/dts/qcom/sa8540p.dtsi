@@ -1,19 +1,10 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
-
 #include "sc8280xp.dtsi"
-
 /delete-node/ &cpu0_opp_table;
 /delete-node/ &cpu4_opp_table;
-
 / {
 	cpu0_opp_table: opp-table-cpu0 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-300000000 {
 			opp-hz = /bits/ 64 <300000000>;
 			opp-peak-kBps = <(300000 * 32)>;
@@ -91,11 +82,9 @@
 			opp-peak-kBps = <(1708800 * 32)>;
 		};
 	};
-
 	cpu4_opp_table: opp-table-cpu4 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-825600000 {
 			opp-hz = /bits/ 64 <825600000>;
 			opp-peak-kBps = <(300000 * 32)>;
@@ -166,33 +155,24 @@
 		};
 	};
 };
-
 &gpucc {
 	status = "disabled";
 };
-
 &gpu_smmu {
 	status = "disabled";
 };
-
 &pcie2a {
 	compatible = "qcom,pcie-sa8540p";
-
 	linux,pci-domain = <0>;
-
 	interrupts = <GIC_SPI 440 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "msi";
 };
-
 &pcie2b {
 	compatible = "qcom,pcie-sa8540p";
-
 	linux,pci-domain = <1>;
-
 	interrupts = <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "msi";
 };
-
 &pcie3a {
 	compatible = "qcom,pcie-sa8540p";
 	reg = <0x0 0x01c10000 0x0 0x3000>,
@@ -201,39 +181,28 @@
 	      <0x0 0x40001000 0x0 0x1000>,
 	      <0x0 0x40100000 0x0 0x100000>;
 	reg-names = "parf", "dbi", "elbi", "atu", "config";
-
 	ranges = <0x01000000 0x0 0x40200000 0x0 0x40200000 0x0 0x100000>,
 		 <0x02000000 0x0 0x40300000 0x0 0x40300000 0x0 0x1d00000>;
-
 	linux,pci-domain = <2>;
-
 	interrupts = <GIC_SPI 567 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "msi";
-
 	interrupt-map = <0 0 0 1 &intc 0 0 GIC_SPI 541 IRQ_TYPE_LEVEL_HIGH>,
 			<0 0 0 2 &intc 0 0 GIC_SPI 542 IRQ_TYPE_LEVEL_HIGH>,
 			<0 0 0 3 &intc 0 0 GIC_SPI 543 IRQ_TYPE_LEVEL_HIGH>,
 			<0 0 0 4 &intc 0 0 GIC_SPI 544 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &pcie3b {
 	compatible = "qcom,pcie-sa8540p";
-
 	linux,pci-domain = <3>;
-
 	interrupts = <GIC_SPI 565 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "msi";
 };
-
 &pcie4 {
 	compatible = "qcom,pcie-sa8540p";
-
 	linux,pci-domain = <4>;
-
 	interrupts = <GIC_SPI 518 IRQ_TYPE_LEVEL_HIGH>;
 	interrupt-names = "msi";
 };
-
 &rpmhpd {
 	compatible = "qcom,sa8540p-rpmhpd";
 };

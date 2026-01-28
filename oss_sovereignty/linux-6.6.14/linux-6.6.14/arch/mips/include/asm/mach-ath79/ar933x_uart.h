@@ -1,26 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Atheros AR933X UART defines
- *
- *  Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
- */
-
 #ifndef __AR933X_UART_H
 #define __AR933X_UART_H
-
 #define AR933X_UART_REGS_SIZE		20
 #define AR933X_UART_FIFO_SIZE		16
-
 #define AR933X_UART_DATA_REG		0x00
 #define AR933X_UART_CS_REG		0x04
 #define AR933X_UART_CLOCK_REG		0x08
 #define AR933X_UART_INT_REG		0x0c
 #define AR933X_UART_INT_EN_REG		0x10
-
 #define AR933X_UART_DATA_TX_RX_MASK	0xff
 #define AR933X_UART_DATA_RX_CSR		BIT(8)
 #define AR933X_UART_DATA_TX_CSR		BIT(9)
-
 #define AR933X_UART_CS_PARITY_S		0
 #define AR933X_UART_CS_PARITY_M		0x3
 #define	  AR933X_UART_CS_PARITY_NONE	0
@@ -43,12 +32,10 @@
 #define AR933X_UART_CS_HOST_INT_EN	BIT(13)
 #define AR933X_UART_CS_TX_BUSY		BIT(14)
 #define AR933X_UART_CS_RX_BUSY		BIT(15)
-
 #define AR933X_UART_CLOCK_STEP_M	0xffff
 #define AR933X_UART_CLOCK_SCALE_M	0xfff
 #define AR933X_UART_CLOCK_SCALE_S	16
 #define AR933X_UART_CLOCK_STEP_M	0xffff
-
 #define AR933X_UART_INT_RX_VALID	BIT(0)
 #define AR933X_UART_INT_TX_READY	BIT(1)
 #define AR933X_UART_INT_RX_FRAMING_ERR	BIT(2)
@@ -60,5 +47,4 @@
 #define AR933X_UART_INT_RX_FULL		BIT(8)
 #define AR933X_UART_INT_TX_EMPTY	BIT(9)
 #define AR933X_UART_INT_ALLINTS		0x3ff
-
-#endif /* __AR933X_UART_H */
+#endif  

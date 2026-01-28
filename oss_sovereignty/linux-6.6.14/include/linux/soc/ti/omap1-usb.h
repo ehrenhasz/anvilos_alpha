@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SOC_TI_OMAP1_USB
 #define __SOC_TI_OMAP1_USB
-/*
- * Constants in this file are used all over the place, in platform
- * code, as well as the udc, phy and ohci drivers.
- * This is not a great design, but unlikely to get fixed after
- * such a long time. Don't do this elsewhere.
- */
-
 #define OMAP1_OTG_BASE			0xfffb0400
 #define OMAP1_UDC_BASE			0xfffb4000
-
 #define OMAP2_UDC_BASE			0x4805e200
 #define OMAP2_OTG_BASE			0x4805e300
 #define OTG_BASE			OMAP1_OTG_BASE
 #define UDC_BASE			OMAP1_UDC_BASE
-
-/*
- * OTG and transceiver registers, for OMAPs starting with ARM926
- */
 #define OTG_REV				(OTG_BASE + 0x00)
 #define OTG_SYSCON_1			(OTG_BASE + 0x04)
 #	define	 USB2_TRX_MODE(w)	(((w)>>24)&0x07)
@@ -74,7 +61,7 @@
 #	define	 OTG_PD_VBUS		(1 << 2)
 #	define	 OTG_PU_VBUS		(1 << 1)
 #	define	 OTG_PU_ID		(1 << 0)
-#define OTG_IRQ_EN			(OTG_BASE + 0x10)	/* 16-bit */
+#define OTG_IRQ_EN			(OTG_BASE + 0x10)	 
 #	define	 DRIVER_SWITCH		(1 << 15)
 #	define	 A_VBUS_ERR		(1 << 13)
 #	define	 A_REQ_TMROUT		(1 << 12)
@@ -84,9 +71,8 @@
 #	define	 B_SRP_DONE		(1 << 8)
 #	define	 B_SRP_STARTED		(1 << 7)
 #	define	 OPRT_CHG		(1 << 0)
-#define OTG_IRQ_SRC			(OTG_BASE + 0x14)	/* 16-bit */
-	// same bits as in IRQ_EN
-#define OTG_OUTCTRL			(OTG_BASE + 0x18)	/* 16-bit */
+#define OTG_IRQ_SRC			(OTG_BASE + 0x14)	 
+#define OTG_OUTCTRL			(OTG_BASE + 0x18)	 
 #	define	 OTGVPD			(1 << 14)
 #	define	 OTGVPU			(1 << 13)
 #	define	 OTGPUID		(1 << 12)
@@ -99,12 +85,8 @@
 #	define	 USB0VDR		(1 << 2)
 #	define	 USB0PDEN		(1 << 1)
 #	define	 USB0PUEN		(1 << 0)
-#define OTG_TEST			(OTG_BASE + 0x20)	/* 16-bit */
-#define OTG_VENDOR_CODE			(OTG_BASE + 0xfc)	/* 16-bit */
-
-/*-------------------------------------------------------------------------*/
-
-/* OMAP1 */
+#define OTG_TEST			(OTG_BASE + 0x20)	 
+#define OTG_VENDOR_CODE			(OTG_BASE + 0xfc)	 
 #define	USB_TRANSCEIVER_CTRL		(0xfffe1000 + 0x0064)
 #	define	CONF_USB2_UNI_R		(1 << 8)
 #	define	CONF_USB1_UNI_R		(1 << 7)
@@ -112,5 +94,4 @@
 #	define	CONF_USB0_ISOLATE_R	(1 << 3)
 #	define	CONF_USB_PWRDN_DM_R	(1 << 2)
 #	define	CONF_USB_PWRDN_DP_R	(1 << 1)
-
 #endif

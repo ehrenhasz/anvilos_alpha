@@ -1,19 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*:
- * Address mappings and base address for OMAP4 interconnects
- * and peripherals.
- *
- * Copyright (C) 2009 Texas Instruments
- *
- * Author: Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
 #ifndef __ASM_ARCH_OMAP44XX_H
 #define __ASM_ARCH_OMAP44XX_H
-
-/*
- * Please place only base defines here and put the rest in device
- * specific headers.
- */
 #define L4_44XX_BASE			0x4a000000
 #define L4_WK_44XX_BASE			0x4a300000
 #define L4_PER_44XX_BASE		0x48000000
@@ -42,17 +28,12 @@
 #define OMAP44XX_WKUPGEN_BASE		0x48281000
 #define OMAP44XX_MCPDM_BASE		0x40132000
 #define OMAP44XX_SAR_RAM_BASE		0x4a326000
-
 #define OMAP44XX_MAILBOX_BASE		(L4_44XX_BASE + 0xF4000)
 #define OMAP44XX_HSUSB_OTG_BASE		(L4_44XX_BASE + 0xAB000)
-
 #define OMAP4_MMU1_BASE			0x55082000
 #define OMAP4_MMU2_BASE			0x4A066000
-
 #define OMAP44XX_USBTLL_BASE		(L4_44XX_BASE + 0x62000)
 #define OMAP44XX_UHH_CONFIG_BASE	(L4_44XX_BASE + 0x64000)
 #define OMAP44XX_HSUSB_OHCI_BASE	(L4_44XX_BASE + 0x64800)
 #define OMAP44XX_HSUSB_EHCI_BASE	(L4_44XX_BASE + 0x64C00)
-
-#endif /* __ASM_ARCH_OMAP44XX_H */
-
+#endif  

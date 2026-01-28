@@ -1,13 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * FP/SIMD state saving and restoring macros
- *
- * Copyright (C) 2012 ARM Ltd.
- * Author: Catalin Marinas <catalin.marinas@arm.com>
- */
-
 #include <asm/assembler.h>
-
 .macro fpsimd_save state, tmpnr
 	stp	q0, q1, [\state, #16 * 0]
 	stp	q2, q3, [\state, #16 * 2]
@@ -30,20 +21,13 @@
 	mrs	x\tmpnr, fpcr
 	str	w\tmpnr, [\state, #16 * 2 + 4]
 .endm
-
 .macro fpsimd_restore_fpcr state, tmp
-	/*
-	 * Writes to fpcr may be self-synchronising, so avoid restoring
-	 * the register if it hasn't changed.
-	 */
 	mrs	\tmp, fpcr
 	cmp	\tmp, \state
 	b.eq	9999f
 	msr	fpcr, \state
 9999:
 .endm
-
-/* Clobbers \state */
 .macro fpsimd_restore state, tmpnr
 	ldp	q0, q1, [\state, #16 * 0]
 	ldp	q2, q3, [\state, #16 * 2]
@@ -66,43 +50,31 @@
 	ldr	w\tmpnr, [\state, #16 * 2 + 4]
 	fpsimd_restore_fpcr x\tmpnr, \state
 .endm
-
-/* Sanity-check macros to help avoid encoding garbage instructions */
-
 .macro _check_general_reg nr
 	.if (\nr) < 0 || (\nr) > 30
 		.error "Bad register number \nr."
 	.endif
 .endm
-
 .macro _sve_check_zreg znr
 	.if (\znr) < 0 || (\znr) > 31
 		.error "Bad Scalable Vector Extension vector register number \znr."
 	.endif
 .endm
-
 .macro _sve_check_preg pnr
 	.if (\pnr) < 0 || (\pnr) > 15
 		.error "Bad Scalable Vector Extension predicate register number \pnr."
 	.endif
 .endm
-
 .macro _check_num n, min, max
 	.if (\n) < (\min) || (\n) > (\max)
 		.error "Number \n out of range [\min,\max]"
 	.endif
 .endm
-
 .macro _sme_check_wv v
 	.if (\v) < 12 || (\v) > 15
 		.error "Bad vector select register \v."
 	.endif
 .endm
-
-/* SVE instruction encodings for non-SVE-capable assemblers */
-/* (pre binutils 2.28, all kernel capable clang versions support SVE) */
-
-/* STR (vector): STR Z\nz, [X\nxbase, #\offset, MUL VL] */
 .macro _sve_str_v nz, nxbase, offset=0
 	_sve_check_zreg \nz
 	_check_general_reg \nxbase
@@ -113,8 +85,6 @@
 		| (((\offset) & 7) << 10)	\
 		| (((\offset) & 0x1f8) << 13)
 .endm
-
-/* LDR (vector): LDR Z\nz, [X\nxbase, #\offset, MUL VL] */
 .macro _sve_ldr_v nz, nxbase, offset=0
 	_sve_check_zreg \nz
 	_check_general_reg \nxbase
@@ -125,8 +95,6 @@
 		| (((\offset) & 7) << 10)	\
 		| (((\offset) & 0x1f8) << 13)
 .endm
-
-/* STR (predicate): STR P\np, [X\nxbase, #\offset, MUL VL] */
 .macro _sve_str_p np, nxbase, offset=0
 	_sve_check_preg \np
 	_check_general_reg \nxbase
@@ -137,8 +105,6 @@
 		| (((\offset) & 7) << 10)	\
 		| (((\offset) & 0x1f8) << 13)
 .endm
-
-/* LDR (predicate): LDR P\np, [X\nxbase, #\offset, MUL VL] */
 .macro _sve_ldr_p np, nxbase, offset=0
 	_sve_check_preg \np
 	_check_general_reg \nxbase
@@ -149,8 +115,6 @@
 		| (((\offset) & 7) << 10)	\
 		| (((\offset) & 0x1f8) << 13)
 .endm
-
-/* RDVL X\nx, #\imm */
 .macro _sve_rdvl nx, imm
 	_check_general_reg \nx
 	_check_num (\imm), -0x20, 0x1f
@@ -158,32 +122,21 @@
 		| (\nx)				\
 		| (((\imm) & 0x3f) << 5)
 .endm
-
-/* RDFFR (unpredicated): RDFFR P\np.B */
 .macro _sve_rdffr np
 	_sve_check_preg \np
 	.inst	0x2519f000			\
 		| (\np)
 .endm
-
-/* WRFFR P\np.B */
 .macro _sve_wrffr np
 	_sve_check_preg \np
 	.inst	0x25289000			\
 		| ((\np) << 5)
 .endm
-
-/* PFALSE P\np.B */
 .macro _sve_pfalse np
 	_sve_check_preg \np
 	.inst	0x2518e400			\
 		| (\np)
 .endm
-
-/* SME instruction encodings for non-SME-capable assemblers */
-/* (pre binutils 2.38/LLVM 13) */
-
-/* RDSVL X\nx, #\imm */
 .macro _sme_rdsvl nx, imm
 	_check_general_reg \nx
 	_check_num (\imm), -0x20, 0x1f
@@ -191,11 +144,6 @@
 		| (\nx)				\
 		| (((\imm) & 0x3f) << 5)
 .endm
-
-/*
- * STR (vector from ZA array):
- *	STR ZA[\nw, #\offset], [X\nxbase, #\offset, MUL VL]
- */
 .macro _sme_str_zav nw, nxbase, offset=0
 	_sme_check_wv \nw
 	_check_general_reg \nxbase
@@ -205,11 +153,6 @@
 		| ((\nxbase) << 5)		\
 		| ((\offset) & 7)
 .endm
-
-/*
- * LDR (vector to ZA array):
- *	LDR ZA[\nw, #\offset], [X\nxbase, #\offset, MUL VL]
- */
 .macro _sme_ldr_zav nw, nxbase, offset=0
 	_sme_check_wv \nw
 	_check_general_reg \nxbase
@@ -219,37 +162,19 @@
 		| ((\nxbase) << 5)		\
 		| ((\offset) & 7)
 .endm
-
-/*
- * LDR (ZT0)
- *
- *	LDR ZT0, nx
- */
 .macro _ldr_zt nx
 	_check_general_reg \nx
 	.inst	0xe11f8000	\
 		 | (\nx << 5)
 .endm
-
-/*
- * STR (ZT0)
- *
- *	STR ZT0, nx
- */
 .macro _str_zt nx
 	_check_general_reg \nx
 	.inst	0xe13f8000		\
 		| (\nx << 5)
 .endm
-
-/*
- * Zero the entire ZA array
- *	ZERO ZA
- */
 .macro zero_za
 	.inst 0xc00800ff
 .endm
-
 .macro __for from:req, to:req
 	.if (\from) == (\to)
 		_for__body %\from
@@ -258,49 +183,39 @@
 		__for %((\from) + ((\to) - (\from)) / 2 + 1), %\to
 	.endif
 .endm
-
 .macro _for var:req, from:req, to:req, insn:vararg
 	.macro _for__body \var:req
 		.noaltmacro
 		\insn
 		.altmacro
 	.endm
-
 	.altmacro
 	__for \from, \to
 	.noaltmacro
-
 	.purgem _for__body
 .endm
-
-/* Update ZCR_EL1.LEN with the new VQ */
 .macro sve_load_vq xvqminus1, xtmp, xtmp2
 		mrs_s		\xtmp, SYS_ZCR_EL1
 		bic		\xtmp2, \xtmp, ZCR_ELx_LEN_MASK
 		orr		\xtmp2, \xtmp2, \xvqminus1
 		cmp		\xtmp2, \xtmp
 		b.eq		921f
-		msr_s		SYS_ZCR_EL1, \xtmp2	//self-synchronising
+		msr_s		SYS_ZCR_EL1, \xtmp2	 
 921:
 .endm
-
-/* Update SMCR_EL1.LEN with the new VQ */
 .macro sme_load_vq xvqminus1, xtmp, xtmp2
 		mrs_s		\xtmp, SYS_SMCR_EL1
 		bic		\xtmp2, \xtmp, SMCR_ELx_LEN_MASK
 		orr		\xtmp2, \xtmp2, \xvqminus1
 		cmp		\xtmp2, \xtmp
 		b.eq		921f
-		msr_s		SYS_SMCR_EL1, \xtmp2	//self-synchronising
+		msr_s		SYS_SMCR_EL1, \xtmp2	 
 921:
 .endm
-
-/* Preserve the first 128-bits of Znz and zero the rest. */
 .macro _sve_flush_z nz
 	_sve_check_zreg \nz
 	mov	v\nz\().16b, v\nz\().16b
 .endm
-
 .macro sve_flush_z
  _for n, 0, 31, _sve_flush_z	\n
 .endm
@@ -310,7 +225,6 @@
 .macro sve_flush_ffr
 		_sve_wrffr	0
 .endm
-
 .macro sve_save nxbase, xpfpsr, save_ffr, nxtmp
  _for n, 0, 31,	_sve_str_v	\n, \nxbase, \n - 34
  _for n, 0, 15,	_sve_str_p	\n, \nxbase, \n - 16
@@ -318,7 +232,7 @@
 		_sve_rdffr	0
 		b		922f
 921:
-		_sve_pfalse	0			// Zero out FFR
+		_sve_pfalse	0			 
 922:
 		_sve_str_p	0, \nxbase
 		_sve_ldr_p	0, \nxbase, -16
@@ -327,7 +241,6 @@
 		mrs		x\nxtmp, fpcr
 		str		w\nxtmp, [\xpfpsr, #4]
 .endm
-
 .macro sve_load nxbase, xpfpsr, restore_ffr, nxtmp
  _for n, 0, 31,	_sve_ldr_v	\n, \nxbase, \n - 34
 		cbz		\restore_ffr, 921f
@@ -335,16 +248,13 @@
 		_sve_wrffr	0
 921:
  _for n, 0, 15,	_sve_ldr_p	\n, \nxbase, \n - 16
-
 		ldr		w\nxtmp, [\xpfpsr]
 		msr		fpsr, x\nxtmp
 		ldr		w\nxtmp, [\xpfpsr, #4]
 		msr		fpcr, x\nxtmp
 .endm
-
 .macro sme_save_za nxbase, xvl, nw
 	mov	w\nw, #0
-
 423:
 	_sme_str_zav \nw, \nxbase
 	add	x\nxbase, x\nxbase, \xvl
@@ -352,10 +262,8 @@
 	cmp	\xvl, x\nw
 	bne	423b
 .endm
-
 .macro sme_load_za nxbase, xvl, nw
 	mov	w\nw, #0
-
 423:
 	_sme_ldr_zav \nw, \nxbase
 	add	x\nxbase, x\nxbase, \xvl

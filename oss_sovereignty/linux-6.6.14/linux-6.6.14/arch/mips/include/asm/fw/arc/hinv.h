@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ARCS hardware/memory inventory/configuration and system ID definitions.
- */
 #ifndef _ASM_ARC_HINV_H
 #define _ASM_ARC_HINV_H
-
 #include <asm/sgidefs.h>
 #include <asm/fw/arc/types.h>
-
-/* configuration query defines */
 typedef enum configclass {
 	SystemClass,
 	ProcessorClass,
@@ -18,14 +11,13 @@ typedef enum configclass {
 	AdapterClass,
 	ControllerClass,
 	PeripheralClass
-#else	/* _NT_PROM */
+#else	 
 	AdapterClass,
 	ControllerClass,
 	PeripheralClass,
 	MemoryClass
-#endif	/* _NT_PROM */
+#endif	 
 } CONFIGCLASS;
-
 typedef enum configtype {
 	ARC,
 	CPU,
@@ -70,19 +62,12 @@ typedef enum configtype {
 	Memory,
 #endif
 	OtherPeripheral,
-
-	/* new stuff for IP30 */
-	/* added without moving anything */
-	/* except ANONYMOUS. */
-
 	XTalkAdapter,
 	PCIAdapter,
 	GIOAdapter,
 	TPUAdapter,
-
 	Anonymous
 } CONFIGTYPE;
-
 typedef enum {
 	Failed = 1,
 	ReadOnly = 2,
@@ -92,34 +77,30 @@ typedef enum {
 	Input = 32,
 	Output = 64
 } IDENTIFIERFLAG;
-
-#ifndef NULL			/* for GetChild(NULL); */
+#ifndef NULL			 
 #define NULL	0
 #endif
-
 union key_u {
 	struct {
 #ifdef	_MIPSEB
-		unsigned char  c_bsize;		/* block size in lines */
-		unsigned char  c_lsize;		/* line size in bytes/tag */
-		unsigned short c_size;		/* cache size in 4K pages */
-#else	/* _MIPSEL */
-		unsigned short c_size;		/* cache size in 4K pages */
-		unsigned char  c_lsize;		/* line size in bytes/tag */
-		unsigned char  c_bsize;		/* block size in lines */
-#endif	/* _MIPSEL */
+		unsigned char  c_bsize;		 
+		unsigned char  c_lsize;		 
+		unsigned short c_size;		 
+#else	 
+		unsigned short c_size;		 
+		unsigned char  c_lsize;		 
+		unsigned char  c_bsize;		 
+#endif	 
 	} cache;
 	ULONG FullKey;
 };
-
 #if _MIPS_SIM == _MIPS_SIM_ABI64
-#define SGI_ARCS_VERS	64			/* sgi 64-bit version */
-#define SGI_ARCS_REV	0			/* rev .00 */
+#define SGI_ARCS_VERS	64			 
+#define SGI_ARCS_REV	0			 
 #else
-#define SGI_ARCS_VERS	1			/* first version */
-#define SGI_ARCS_REV	10			/* rev .10, 3/04/92 */
+#define SGI_ARCS_VERS	1			 
+#define SGI_ARCS_REV	10			 
 #endif
-
 typedef struct {
 	CONFIGCLASS	Class;
 	CONFIGTYPE	Type;
@@ -132,24 +113,18 @@ typedef struct {
 	ULONG		IdentifierLength;
 	char		*Identifier;
 } COMPONENT;
-
-/* internal structure that holds pathname parsing data */
 struct cfgdata {
-	char *name;			/* full name */
-	int minlen;			/* minimum length to match */
-	CONFIGTYPE type;		/* type of token */
+	char *name;			 
+	int minlen;			 
+	CONFIGTYPE type;		 
 };
-
-/* System ID */
 typedef struct {
 	CHAR VendorId[8];
 	CHAR ProductId[8];
 } SYSTEMID;
-
-/* memory query functions */
 typedef enum memorytype {
 	ExceptionBlock,
-	SPBPage,			/* ARCS == SystemParameterBlock */
+	SPBPage,			 
 #ifndef _NT_PROM
 	FreeContiguous,
 	FreeMemory,
@@ -157,20 +132,18 @@ typedef enum memorytype {
 	LoadedProgram,
 	FirmwareTemporary,
 	FirmwarePermanent
-#else	/* _NT_PROM */
+#else	 
 	FreeMemory,
 	BadMemory,
 	LoadedProgram,
 	FirmwareTemporary,
 	FirmwarePermanent,
 	FreeContiguous
-#endif	/* _NT_PROM */
+#endif	 
 } MEMORYTYPE;
-
 typedef struct {
 	MEMORYTYPE	Type;
 	LONG		BasePage;
 	LONG		PageCount;
 } MEMORYDESCRIPTOR;
-
-#endif /* _ASM_ARC_HINV_H */
+#endif  

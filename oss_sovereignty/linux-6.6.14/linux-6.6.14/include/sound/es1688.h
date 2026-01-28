@@ -1,47 +1,31 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __SOUND_ES1688_H
 #define __SOUND_ES1688_H
-
-/*
- *  Header file for ES488/ES1688
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
-
 #include <sound/control.h>
 #include <sound/pcm.h>
 #include <linux/interrupt.h>
-
 #define ES1688_HW_AUTO		0x0000
 #define ES1688_HW_688		0x0001
 #define ES1688_HW_1688		0x0002
 #define ES1688_HW_UNDEF	0x0003
-
 struct snd_es1688 {
-	unsigned long port;		/* port of ESS chip */
+	unsigned long port;		 
 	struct resource *res_port;
-	unsigned long mpu_port;		/* MPU-401 port of ESS chip */
-	int irq;			/* IRQ number of ESS chip */
-	int mpu_irq;			/* MPU IRQ */
-	int dma8;			/* 8-bit DMA */
-	unsigned short version;		/* version of ESS chip */
-	unsigned short hardware;	/* see to ES1688_HW_XXXX */
-
+	unsigned long mpu_port;		 
+	int irq;			 
+	int mpu_irq;			 
+	int dma8;			 
+	unsigned short version;		 
+	unsigned short hardware;	 
 	unsigned short trigger_value;
 	unsigned char pad;
 	unsigned int dma_size;
-
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *playback_substream;
 	struct snd_pcm_substream *capture_substream;
-
 	spinlock_t reg_lock;
 	spinlock_t mixer_lock;
 };
-
-/* I/O ports */
-
 #define ES1688P(codec, x) ((codec)->port + e_s_s_ESS1688##x)
-
 #define e_s_s_ESS1688RESET	0x6
 #define e_s_s_ESS1688READ	0xa
 #define e_s_s_ESS1688WRITE	0xc
@@ -58,12 +42,10 @@ struct snd_es1688 {
 #define e_s_s_ESS1688ENABLE1	0x9
 #define e_s_s_ESS1688ENABLE2	0xb
 #define e_s_s_ESS1688INIT1	0x7
-
 #define ES1688_DSP_CMD_DMAOFF	0xd0
 #define ES1688_DSP_CMD_SPKON	0xd1
 #define ES1688_DSP_CMD_SPKOFF	0xd3
 #define ES1688_DSP_CMD_DMAON	0xd4
-
 #define ES1688_PCM_DEV		0x14
 #define ES1688_MIC_DEV		0x1a
 #define ES1688_REC_DEV		0x1c
@@ -74,7 +56,6 @@ struct snd_es1688 {
 #define ES1688_SPEAKER_DEV	0x3c
 #define ES1688_LINE_DEV		0x3e
 #define ES1688_RECLEV_DEV	0xb4
-
 #define ES1688_MIXS_MASK	0x17
 #define ES1688_MIXS_MIC		0x00
 #define ES1688_MIXS_MIC_MASTER	0x01
@@ -85,13 +66,7 @@ struct snd_es1688 {
 #define ES1688_MIXS_LINE	0x06
 #define ES1688_MIXS_MASTER	0x07
 #define ES1688_MIXS_MUTE	0x10
-
-/*
-
- */
-
 void snd_es1688_mixer_write(struct snd_es1688 *chip, unsigned char reg, unsigned char data);
-
 int snd_es1688_create(struct snd_card *card,
 		      struct snd_es1688 *chip,
 		      unsigned long port,
@@ -103,5 +78,4 @@ int snd_es1688_create(struct snd_card *card,
 int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device);
 int snd_es1688_mixer(struct snd_card *card, struct snd_es1688 *chip);
 int snd_es1688_reset(struct snd_es1688 *chip);
-
-#endif /* __SOUND_ES1688_H */
+#endif  

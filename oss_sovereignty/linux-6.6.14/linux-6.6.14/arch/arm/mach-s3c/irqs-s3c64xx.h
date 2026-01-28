@@ -1,40 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* linux/arch/arm/mach-s3c64xx/include/mach/irqs.h
- *
- * Copyright 2008 Openmoko, Inc.
- * Copyright 2008 Simtec Electronics
- *      Ben Dooks <ben@simtec.co.uk>
- *      http://armlinux.simtec.co.uk/
- *
- * S3C64XX - IRQ support
- */
-
 #ifndef __ASM_MACH_S3C64XX_IRQS_H
 #define __ASM_MACH_S3C64XX_IRQS_H __FILE__
-
-/* we keep the first set of CPU IRQs out of the range of
- * the ISA space, so that the PC104 has them to itself
- * and we don't end up having to do horrible things to the
- * standard ISA drivers....
- *
- * note, since we're using the VICs, our start must be a
- * mulitple of 32 to allow the common code to work
- */
-
 #define S3C_IRQ_OFFSET	(32)
-
 #define S3C_IRQ(x)	((x) + S3C_IRQ_OFFSET)
-
 #define IRQ_VIC0_BASE	S3C_IRQ(0)
 #define IRQ_VIC1_BASE	S3C_IRQ(32)
-
-/* VIC based IRQs */
-
 #define S3C64XX_IRQ_VIC0(x)	(IRQ_VIC0_BASE + (x))
 #define S3C64XX_IRQ_VIC1(x)	(IRQ_VIC1_BASE + (x))
-
-/* VIC0 */
-
 #define IRQ_EINT0_3		S3C64XX_IRQ_VIC0(0)
 #define IRQ_EINT4_11		S3C64XX_IRQ_VIC0(1)
 #define IRQ_RTC_TIC		S3C64XX_IRQ_VIC0(2)
@@ -70,9 +41,6 @@
 #define IRQ_LCD_FIFO		S3C64XX_IRQ_VIC0(29)
 #define IRQ_LCD_VSYNC		S3C64XX_IRQ_VIC0(30)
 #define IRQ_LCD_SYSTEM		S3C64XX_IRQ_VIC0(31)
-
-/* VIC1 */
-
 #define IRQ_EINT12_19		S3C64XX_IRQ_VIC1(0)
 #define IRQ_EINT20_27		S3C64XX_IRQ_VIC1(1)
 #define IRQ_PCM0		S3C64XX_IRQ_VIC1(2)
@@ -99,7 +67,7 @@
 #define IRQ_HOSTIF		S3C64XX_IRQ_VIC1(23)
 #define IRQ_HSMMC0		S3C64XX_IRQ_VIC1(24)
 #define IRQ_HSMMC1		S3C64XX_IRQ_VIC1(25)
-#define IRQ_HSMMC2		IRQ_SPI1	/* shared with SPI1 */
+#define IRQ_HSMMC2		IRQ_SPI1	 
 #define IRQ_OTG			S3C64XX_IRQ_VIC1(26)
 #define IRQ_IRDA		S3C64XX_IRQ_VIC1(27)
 #define IRQ_RTC_ALARM		S3C64XX_IRQ_VIC1(28)
@@ -107,33 +75,11 @@
 #define IRQ_PENDN		S3C64XX_IRQ_VIC1(30)
 #define IRQ_TC			IRQ_PENDN
 #define IRQ_ADC			S3C64XX_IRQ_VIC1(31)
-
-/* compatibility for device defines */
-
 #define IRQ_IIC1		IRQ_S3C6410_IIC1
-
-/* Since the IRQ_EINT(x) are a linear mapping on current s3c64xx series
- * we just defined them as an IRQ_EINT(x) macro from S3C_IRQ_EINT_BASE
- * which we place after the pair of VICs. */
-
 #define S3C_IRQ_EINT_BASE	S3C_IRQ(64+5)
-
 #define S3C_EINT(x)		((x) + S3C_IRQ_EINT_BASE)
 #define IRQ_EINT(x)		S3C_EINT(x)
 #define IRQ_EINT_BIT(x)		((x) - S3C_EINT(0))
-
-/* Next the external interrupt groups. These are similar to the IRQ_EINT(x)
- * that they are sourced from the GPIO pins but with a different scheme for
- * priority and source indication.
- *
- * The IRQ_EINT(x) can be thought of as 'group 0' of the available GPIO
- * interrupts, but for historical reasons they are kept apart from these
- * next interrupts.
- *
- * Use IRQ_EINT_GROUP(group, offset) to get the number for use in the
- * machine specific support files.
- */
-
 #define IRQ_EINT_GROUP1_NR	(15)
 #define IRQ_EINT_GROUP2_NR	(8)
 #define IRQ_EINT_GROUP3_NR	(5)
@@ -143,7 +89,6 @@
 #define IRQ_EINT_GROUP7_NR	(16)
 #define IRQ_EINT_GROUP8_NR	(15)
 #define IRQ_EINT_GROUP9_NR	(9)
-
 #define IRQ_EINT_GROUP_BASE	S3C_EINT(28)
 #define IRQ_EINT_GROUP1_BASE	(IRQ_EINT_GROUP_BASE + 0x00)
 #define IRQ_EINT_GROUP2_BASE	(IRQ_EINT_GROUP1_BASE + IRQ_EINT_GROUP1_NR)
@@ -154,19 +99,9 @@
 #define IRQ_EINT_GROUP7_BASE	(IRQ_EINT_GROUP6_BASE + IRQ_EINT_GROUP6_NR)
 #define IRQ_EINT_GROUP8_BASE	(IRQ_EINT_GROUP7_BASE + IRQ_EINT_GROUP7_NR)
 #define IRQ_EINT_GROUP9_BASE	(IRQ_EINT_GROUP8_BASE + IRQ_EINT_GROUP8_NR)
-
 #define IRQ_EINT_GROUP(group, no)	(IRQ_EINT_GROUP##group##_BASE + (no))
-
-/* Some boards have their own IRQs behind this */
 #define IRQ_BOARD_START (IRQ_EINT_GROUP9_BASE + IRQ_EINT_GROUP9_NR + 1)
-
-/* Set the default nr_irqs, boards can override if necessary */
 #define S3C64XX_NR_IRQS	IRQ_BOARD_START
-
-/* Compatibility */
-
 #define IRQ_ONENAND	IRQ_ONENAND0
 #define IRQ_I2S0	IRQ_S3C6410_IIS
-
-#endif /* __ASM_MACH_S3C64XX_IRQS_H */
-
+#endif  

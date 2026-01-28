@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-
 #ifndef _ASM_CSKY_PERF_REGS_H
 #define _ASM_CSKY_PERF_REGS_H
-
-/* Index of struct pt_regs */
 enum perf_event_csky_regs {
 	PERF_REG_CSKY_TLS,
 	PERF_REG_CSKY_LR,
@@ -47,4 +43,4 @@ enum perf_event_csky_regs {
 #endif
 	PERF_REG_CSKY_MAX,
 };
-#endif /* _ASM_CSKY_PERF_REGS_H */
+#endif  

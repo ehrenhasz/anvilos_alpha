@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 1993-2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _cl507c_h_
 #define _cl507c_h_
-
 #define NV_DISP_BASE_NOTIFIER_1                                                      0x00000000
 #define NV_DISP_BASE_NOTIFIER_1_SIZEOF                                               0x00000004
 #define NV_DISP_BASE_NOTIFIER_1__0                                                   0x00000000
@@ -33,9 +9,6 @@
 #define NV_DISP_BASE_NOTIFIER_1__0_STATUS_NOT_BEGUN                                  0x00000000
 #define NV_DISP_BASE_NOTIFIER_1__0_STATUS_BEGUN                                      0x00000001
 #define NV_DISP_BASE_NOTIFIER_1__0_STATUS_FINISHED                                   0x00000002
-
-
-// dma opcode instructions
 #define NV507C_DMA                                     0x00000000
 #define NV507C_DMA_OPCODE                                   31:29
 #define NV507C_DMA_OPCODE_METHOD                       0x00000000
@@ -55,8 +28,6 @@
 #define NV507C_DMA_OPCODE                                   31:29
 #define NV507C_DMA_OPCODE_SET_SUBDEVICE_MASK           0x00000003
 #define NV507C_DMA_SET_SUBDEVICE_MASK_VALUE                  11:0
-
-// class methods
 #define NV507C_PUT                                                              (0x00000000)
 #define NV507C_PUT_PTR                                                          11:2
 #define NV507C_GET                                                              (0x00000004)
@@ -106,7 +77,6 @@
 #define NV507C_SET_CONVERSION                                                   (0x00000114)
 #define NV507C_SET_CONVERSION_GAIN                                              15:0
 #define NV507C_SET_CONVERSION_OFS                                               31:16
-
 #define NV507C_SURFACE_SET_OFFSET(a,b)                                          (0x00000800 + (a)*0x00000020 + (b)*0x00000004)
 #define NV507C_SURFACE_SET_OFFSET_ORIGIN                                        31:0
 #define NV507C_SURFACE_SET_SIZE(a)                                              (0x00000808 + (a)*0x00000020)
@@ -162,4 +132,4 @@
 #define NV507C_SURFACE_SET_PARAMS_PART_STRIDE                                   24:24
 #define NV507C_SURFACE_SET_PARAMS_PART_STRIDE_PARTSTRIDE_256                    (0x00000000)
 #define NV507C_SURFACE_SET_PARAMS_PART_STRIDE_PARTSTRIDE_1024                   (0x00000001)
-#endif // _cl507c_h
+#endif  

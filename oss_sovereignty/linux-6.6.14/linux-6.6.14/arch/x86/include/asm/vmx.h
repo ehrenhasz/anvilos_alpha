@@ -1,29 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vmx.h: VMX Architecture related definitions
- * Copyright (c) 2004, Intel Corporation.
- *
- * A few random additions are:
- * Copyright (C) 2006 Qumranet
- *    Avi Kivity <avi@qumranet.com>
- *    Yaniv Kamay <yaniv@qumranet.com>
- */
 #ifndef VMX_H
 #define VMX_H
-
-
 #include <linux/bitops.h>
 #include <linux/bug.h>
 #include <linux/types.h>
-
 #include <uapi/asm/vmx.h>
 #include <asm/vmxfeatures.h>
-
 #define VMCS_CONTROL_BIT(x)	BIT(VMX_FEATURE_##x & 0x1f)
-
-/*
- * Definitions of Primary Processor-Based VM-Execution Controls.
- */
 #define CPU_BASED_INTR_WINDOW_EXITING           VMCS_CONTROL_BIT(INTR_WINDOW_EXITING)
 #define CPU_BASED_USE_TSC_OFFSETTING            VMCS_CONTROL_BIT(USE_TSC_OFFSETTING)
 #define CPU_BASED_HLT_EXITING                   VMCS_CONTROL_BIT(HLT_EXITING)
@@ -46,12 +28,7 @@
 #define CPU_BASED_MONITOR_EXITING               VMCS_CONTROL_BIT(MONITOR_EXITING)
 #define CPU_BASED_PAUSE_EXITING                 VMCS_CONTROL_BIT(PAUSE_EXITING)
 #define CPU_BASED_ACTIVATE_SECONDARY_CONTROLS   VMCS_CONTROL_BIT(SEC_CONTROLS)
-
 #define CPU_BASED_ALWAYSON_WITHOUT_TRUE_MSR	0x0401e172
-
-/*
- * Definitions of Secondary Processor-Based VM-Execution Controls.
- */
 #define SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES VMCS_CONTROL_BIT(VIRT_APIC_ACCESSES)
 #define SECONDARY_EXEC_ENABLE_EPT               VMCS_CONTROL_BIT(EPT)
 #define SECONDARY_EXEC_DESC			VMCS_CONTROL_BIT(DESC_EXITING)
@@ -78,20 +55,13 @@
 #define SECONDARY_EXEC_ENABLE_USR_WAIT_PAUSE	VMCS_CONTROL_BIT(USR_WAIT_PAUSE)
 #define SECONDARY_EXEC_BUS_LOCK_DETECTION	VMCS_CONTROL_BIT(BUS_LOCK_DETECTION)
 #define SECONDARY_EXEC_NOTIFY_VM_EXITING	VMCS_CONTROL_BIT(NOTIFY_VM_EXITING)
-
-/*
- * Definitions of Tertiary Processor-Based VM-Execution Controls.
- */
 #define TERTIARY_EXEC_IPI_VIRT			VMCS_CONTROL_BIT(IPI_VIRT)
-
 #define PIN_BASED_EXT_INTR_MASK                 VMCS_CONTROL_BIT(INTR_EXITING)
 #define PIN_BASED_NMI_EXITING                   VMCS_CONTROL_BIT(NMI_EXITING)
 #define PIN_BASED_VIRTUAL_NMIS                  VMCS_CONTROL_BIT(VIRTUAL_NMIS)
 #define PIN_BASED_VMX_PREEMPTION_TIMER          VMCS_CONTROL_BIT(PREEMPTION_TIMER)
 #define PIN_BASED_POSTED_INTR                   VMCS_CONTROL_BIT(POSTED_INTR)
-
 #define PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR	0x00000016
-
 #define VM_EXIT_SAVE_DEBUG_CONTROLS             0x00000004
 #define VM_EXIT_HOST_ADDR_SPACE_SIZE            0x00000200
 #define VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL      0x00001000
@@ -104,9 +74,7 @@
 #define VM_EXIT_CLEAR_BNDCFGS                   0x00800000
 #define VM_EXIT_PT_CONCEAL_PIP			0x01000000
 #define VM_EXIT_CLEAR_IA32_RTIT_CTL		0x02000000
-
 #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
-
 #define VM_ENTRY_LOAD_DEBUG_CONTROLS            0x00000004
 #define VM_ENTRY_IA32E_MODE                     0x00000200
 #define VM_ENTRY_SMM                            0x00000400
@@ -117,53 +85,40 @@
 #define VM_ENTRY_LOAD_BNDCFGS                   0x00010000
 #define VM_ENTRY_PT_CONCEAL_PIP			0x00020000
 #define VM_ENTRY_LOAD_IA32_RTIT_CTL		0x00040000
-
 #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
-
 #define VMX_MISC_PREEMPTION_TIMER_RATE_MASK	0x0000001f
 #define VMX_MISC_SAVE_EFER_LMA			0x00000020
 #define VMX_MISC_ACTIVITY_HLT			0x00000040
 #define VMX_MISC_ACTIVITY_WAIT_SIPI		0x00000100
 #define VMX_MISC_ZERO_LEN_INS			0x40000000
 #define VMX_MISC_MSR_LIST_MULTIPLIER		512
-
-/* VMFUNC functions */
 #define VMFUNC_CONTROL_BIT(x)	BIT((VMX_FEATURE_##x & 0x1f) - 28)
-
 #define VMX_VMFUNC_EPTP_SWITCHING               VMFUNC_CONTROL_BIT(EPTP_SWITCHING)
 #define VMFUNC_EPTP_ENTRIES  512
-
 static inline u32 vmx_basic_vmcs_revision_id(u64 vmx_basic)
 {
 	return vmx_basic & GENMASK_ULL(30, 0);
 }
-
 static inline u32 vmx_basic_vmcs_size(u64 vmx_basic)
 {
 	return (vmx_basic & GENMASK_ULL(44, 32)) >> 32;
 }
-
 static inline int vmx_misc_preemption_timer_rate(u64 vmx_misc)
 {
 	return vmx_misc & VMX_MISC_PREEMPTION_TIMER_RATE_MASK;
 }
-
 static inline int vmx_misc_cr3_count(u64 vmx_misc)
 {
 	return (vmx_misc & GENMASK_ULL(24, 16)) >> 16;
 }
-
 static inline int vmx_misc_max_msr(u64 vmx_misc)
 {
 	return (vmx_misc & GENMASK_ULL(27, 25)) >> 25;
 }
-
 static inline int vmx_misc_mseg_revid(u64 vmx_misc)
 {
 	return (vmx_misc & GENMASK_ULL(63, 32)) >> 32;
 }
-
-/* VMCS Encodings */
 enum vmcs_field {
 	VIRTUAL_PROCESSOR_ID            = 0x00000000,
 	POSTED_INTR_NV                  = 0x00000002,
@@ -358,52 +313,38 @@ enum vmcs_field {
 	HOST_RSP                        = 0x00006c14,
 	HOST_RIP                        = 0x00006c16,
 };
-
-/*
- * Interruption-information format
- */
-#define INTR_INFO_VECTOR_MASK           0xff            /* 7:0 */
-#define INTR_INFO_INTR_TYPE_MASK        0x700           /* 10:8 */
-#define INTR_INFO_DELIVER_CODE_MASK     0x800           /* 11 */
-#define INTR_INFO_UNBLOCK_NMI		0x1000		/* 12 */
-#define INTR_INFO_VALID_MASK            0x80000000      /* 31 */
+#define INTR_INFO_VECTOR_MASK           0xff             
+#define INTR_INFO_INTR_TYPE_MASK        0x700            
+#define INTR_INFO_DELIVER_CODE_MASK     0x800            
+#define INTR_INFO_UNBLOCK_NMI		0x1000		 
+#define INTR_INFO_VALID_MASK            0x80000000       
 #define INTR_INFO_RESVD_BITS_MASK       0x7ffff000
-
 #define VECTORING_INFO_VECTOR_MASK           	INTR_INFO_VECTOR_MASK
 #define VECTORING_INFO_TYPE_MASK        	INTR_INFO_INTR_TYPE_MASK
 #define VECTORING_INFO_DELIVER_CODE_MASK    	INTR_INFO_DELIVER_CODE_MASK
 #define VECTORING_INFO_VALID_MASK       	INTR_INFO_VALID_MASK
-
-#define INTR_TYPE_EXT_INTR              (0 << 8) /* external interrupt */
-#define INTR_TYPE_RESERVED              (1 << 8) /* reserved */
-#define INTR_TYPE_NMI_INTR		(2 << 8) /* NMI */
-#define INTR_TYPE_HARD_EXCEPTION	(3 << 8) /* processor exception */
-#define INTR_TYPE_SOFT_INTR             (4 << 8) /* software interrupt */
-#define INTR_TYPE_PRIV_SW_EXCEPTION	(5 << 8) /* ICE breakpoint - undocumented */
-#define INTR_TYPE_SOFT_EXCEPTION	(6 << 8) /* software exception */
-#define INTR_TYPE_OTHER_EVENT           (7 << 8) /* other event */
-
-/* GUEST_INTERRUPTIBILITY_INFO flags. */
+#define INTR_TYPE_EXT_INTR              (0 << 8)  
+#define INTR_TYPE_RESERVED              (1 << 8)  
+#define INTR_TYPE_NMI_INTR		(2 << 8)  
+#define INTR_TYPE_HARD_EXCEPTION	(3 << 8)  
+#define INTR_TYPE_SOFT_INTR             (4 << 8)  
+#define INTR_TYPE_PRIV_SW_EXCEPTION	(5 << 8)  
+#define INTR_TYPE_SOFT_EXCEPTION	(6 << 8)  
+#define INTR_TYPE_OTHER_EVENT           (7 << 8)  
 #define GUEST_INTR_STATE_STI		0x00000001
 #define GUEST_INTR_STATE_MOV_SS		0x00000002
 #define GUEST_INTR_STATE_SMI		0x00000004
 #define GUEST_INTR_STATE_NMI		0x00000008
 #define GUEST_INTR_STATE_ENCLAVE_INTR	0x00000010
-
-/* GUEST_ACTIVITY_STATE flags */
 #define GUEST_ACTIVITY_ACTIVE		0
 #define GUEST_ACTIVITY_HLT		1
 #define GUEST_ACTIVITY_SHUTDOWN		2
 #define GUEST_ACTIVITY_WAIT_SIPI	3
-
-/*
- * Exit Qualifications for MOV for Control Register Access
- */
-#define CONTROL_REG_ACCESS_NUM          0x7     /* 2:0, number of control reg.*/
-#define CONTROL_REG_ACCESS_TYPE         0x30    /* 5:4, access type */
-#define CONTROL_REG_ACCESS_REG          0xf00   /* 10:8, general purpose reg. */
+#define CONTROL_REG_ACCESS_NUM          0x7      
+#define CONTROL_REG_ACCESS_TYPE         0x30     
+#define CONTROL_REG_ACCESS_REG          0xf00    
 #define LMSW_SOURCE_DATA_SHIFT 16
-#define LMSW_SOURCE_DATA  (0xFFFF << LMSW_SOURCE_DATA_SHIFT) /* 16:31 lmsw source */
+#define LMSW_SOURCE_DATA  (0xFFFF << LMSW_SOURCE_DATA_SHIFT)  
 #define REG_EAX                         (0 << 8)
 #define REG_ECX                         (1 << 8)
 #define REG_EDX                         (2 << 8)
@@ -420,32 +361,20 @@ enum vmcs_field {
 #define REG_R13                        (13 << 8)
 #define REG_R14                        (14 << 8)
 #define REG_R15                        (15 << 8)
-
-/*
- * Exit Qualifications for MOV for Debug Register Access
- */
-#define DEBUG_REG_ACCESS_NUM            0x7     /* 2:0, number of debug reg. */
-#define DEBUG_REG_ACCESS_TYPE           0x10    /* 4, direction of access */
+#define DEBUG_REG_ACCESS_NUM            0x7      
+#define DEBUG_REG_ACCESS_TYPE           0x10     
 #define TYPE_MOV_TO_DR                  (0 << 4)
 #define TYPE_MOV_FROM_DR                (1 << 4)
-#define DEBUG_REG_ACCESS_REG(eq)        (((eq) >> 8) & 0xf) /* 11:8, general purpose reg. */
-
-
-/*
- * Exit Qualifications for APIC-Access
- */
-#define APIC_ACCESS_OFFSET              0xfff   /* 11:0, offset within the APIC page */
-#define APIC_ACCESS_TYPE                0xf000  /* 15:12, access type */
+#define DEBUG_REG_ACCESS_REG(eq)        (((eq) >> 8) & 0xf)  
+#define APIC_ACCESS_OFFSET              0xfff    
+#define APIC_ACCESS_TYPE                0xf000   
 #define TYPE_LINEAR_APIC_INST_READ      (0 << 12)
 #define TYPE_LINEAR_APIC_INST_WRITE     (1 << 12)
 #define TYPE_LINEAR_APIC_INST_FETCH     (2 << 12)
 #define TYPE_LINEAR_APIC_EVENT          (3 << 12)
 #define TYPE_PHYSICAL_APIC_EVENT        (10 << 12)
 #define TYPE_PHYSICAL_APIC_INST         (15 << 12)
-
-/* segment AR in VMCS -- these are different from what LAR reports */
 #define VMX_SEGMENT_AR_L_MASK (1 << 13)
-
 #define VMX_AR_TYPE_ACCESSES_MASK 1
 #define VMX_AR_TYPE_READABLE_MASK (1 << 1)
 #define VMX_AR_TYPE_WRITEABLE_MASK (1 << 2)
@@ -455,7 +384,6 @@ enum vmcs_field {
 #define VMX_AR_TYPE_BUSY_32_TSS 11
 #define VMX_AR_TYPE_BUSY_16_TSS 3
 #define VMX_AR_TYPE_LDT 2
-
 #define VMX_AR_UNUSABLE_MASK (1 << 16)
 #define VMX_AR_S_MASK (1 << 4)
 #define VMX_AR_P_MASK (1 << 7)
@@ -464,23 +392,18 @@ enum vmcs_field {
 #define VMX_AR_G_MASK (1 << 15)
 #define VMX_AR_DPL_SHIFT 5
 #define VMX_AR_DPL(ar) (((ar) >> VMX_AR_DPL_SHIFT) & 3)
-
 #define VMX_AR_RESERVD_MASK 0xfffe0f00
-
 #define TSS_PRIVATE_MEMSLOT			(KVM_USER_MEM_SLOTS + 0)
 #define APIC_ACCESS_PAGE_PRIVATE_MEMSLOT	(KVM_USER_MEM_SLOTS + 1)
 #define IDENTITY_PAGETABLE_PRIVATE_MEMSLOT	(KVM_USER_MEM_SLOTS + 2)
-
 #define VMX_NR_VPIDS				(1 << 16)
 #define VMX_VPID_EXTENT_INDIVIDUAL_ADDR		0
 #define VMX_VPID_EXTENT_SINGLE_CONTEXT		1
 #define VMX_VPID_EXTENT_ALL_CONTEXT		2
 #define VMX_VPID_EXTENT_SINGLE_NON_GLOBAL	3
-
 #define VMX_EPT_EXTENT_CONTEXT			1
 #define VMX_EPT_EXTENT_GLOBAL			2
 #define VMX_EPT_EXTENT_SHIFT			24
-
 #define VMX_EPT_EXECUTE_ONLY_BIT		(1ull)
 #define VMX_EPT_PAGE_WALK_4_BIT			(1ull << 6)
 #define VMX_EPT_PAGE_WALK_5_BIT			(1ull << 7)
@@ -492,13 +415,11 @@ enum vmcs_field {
 #define VMX_EPT_AD_BIT				    (1ull << 21)
 #define VMX_EPT_EXTENT_CONTEXT_BIT		(1ull << 25)
 #define VMX_EPT_EXTENT_GLOBAL_BIT		(1ull << 26)
-
-#define VMX_VPID_INVVPID_BIT                    (1ull << 0) /* (32 - 32) */
-#define VMX_VPID_EXTENT_INDIVIDUAL_ADDR_BIT     (1ull << 8) /* (40 - 32) */
-#define VMX_VPID_EXTENT_SINGLE_CONTEXT_BIT      (1ull << 9) /* (41 - 32) */
-#define VMX_VPID_EXTENT_GLOBAL_CONTEXT_BIT      (1ull << 10) /* (42 - 32) */
-#define VMX_VPID_EXTENT_SINGLE_NON_GLOBAL_BIT   (1ull << 11) /* (43 - 32) */
-
+#define VMX_VPID_INVVPID_BIT                    (1ull << 0)  
+#define VMX_VPID_EXTENT_INDIVIDUAL_ADDR_BIT     (1ull << 8)  
+#define VMX_VPID_EXTENT_SINGLE_CONTEXT_BIT      (1ull << 9)  
+#define VMX_VPID_EXTENT_GLOBAL_CONTEXT_BIT      (1ull << 10)  
+#define VMX_VPID_EXTENT_SINGLE_NON_GLOBAL_BIT   (1ull << 11)  
 #define VMX_EPT_MT_EPTE_SHIFT			3
 #define VMX_EPTP_PWL_MASK			0x38ull
 #define VMX_EPTP_PWL_4				0x18ull
@@ -517,44 +438,28 @@ enum vmcs_field {
 						 VMX_EPT_WRITABLE_MASK |       \
 						 VMX_EPT_EXECUTABLE_MASK)
 #define VMX_EPT_MT_MASK				(7ull << VMX_EPT_MT_EPTE_SHIFT)
-
 static inline u8 vmx_eptp_page_walk_level(u64 eptp)
 {
 	u64 encoded_level = eptp & VMX_EPTP_PWL_MASK;
-
 	if (encoded_level == VMX_EPTP_PWL_5)
 		return 5;
-
-	/* @eptp must be pre-validated by the caller. */
 	WARN_ON_ONCE(encoded_level != VMX_EPTP_PWL_4);
 	return 4;
 }
-
-/* The mask to use to trigger an EPT Misconfiguration in order to track MMIO */
 #define VMX_EPT_MISCONFIG_WX_VALUE		(VMX_EPT_WRITABLE_MASK |       \
 						 VMX_EPT_EXECUTABLE_MASK)
-
 #define VMX_EPT_IDENTITY_PAGETABLE_ADDR		0xfffbc000ul
-
 struct vmx_msr_entry {
 	u32 index;
 	u32 reserved;
 	u64 value;
 } __aligned(16);
-
-/*
- * Exit Qualifications for entry failure during or after loading guest state
- */
 enum vm_entry_failure_code {
 	ENTRY_FAIL_DEFAULT		= 0,
 	ENTRY_FAIL_PDPTE		= 2,
 	ENTRY_FAIL_NMI			= 3,
 	ENTRY_FAIL_VMCS_LINK_PTR	= 4,
 };
-
-/*
- * Exit Qualifications for EPT Violations
- */
 #define EPT_VIOLATION_ACC_READ_BIT	0
 #define EPT_VIOLATION_ACC_WRITE_BIT	1
 #define EPT_VIOLATION_ACC_INSTR_BIT	2
@@ -567,15 +472,7 @@ enum vm_entry_failure_code {
 #define EPT_VIOLATION_RWX_MASK		(VMX_EPT_RWX_MASK << EPT_VIOLATION_RWX_SHIFT)
 #define EPT_VIOLATION_GVA_IS_VALID	(1 << EPT_VIOLATION_GVA_IS_VALID_BIT)
 #define EPT_VIOLATION_GVA_TRANSLATED	(1 << EPT_VIOLATION_GVA_TRANSLATED_BIT)
-
-/*
- * Exit Qualifications for NOTIFY VM EXIT
- */
 #define NOTIFY_VM_CONTEXT_INVALID     BIT(0)
-
-/*
- * VM-instruction error numbers
- */
 enum vm_instruction_error_number {
 	VMXERR_VMCALL_IN_VMX_ROOT_OPERATION = 1,
 	VMXERR_VMCLEAR_INVALID_ADDRESS = 2,
@@ -603,13 +500,6 @@ enum vm_instruction_error_number {
 	VMXERR_ENTRY_EVENTS_BLOCKED_BY_MOV_SS = 26,
 	VMXERR_INVALID_OPERAND_TO_INVEPT_INVVPID = 28,
 };
-
-/*
- * VM-instruction errors that can be encountered on VM-Enter, used to trace
- * nested VM-Enter failures reported by hardware.  Errors unique to VM-Enter
- * from a SMI Transfer Monitor are not included as things have gone seriously
- * sideways if we get one of those...
- */
 #define VMX_VMENTER_INSTRUCTION_ERRORS \
 	{ VMXERR_VMLAUNCH_NONCLEAR_VMCS,		"VMLAUNCH_NONCLEAR_VMCS" }, \
 	{ VMXERR_VMRESUME_NONLAUNCHED_VMCS,		"VMRESUME_NONLAUNCHED_VMCS" }, \
@@ -617,7 +507,6 @@ enum vm_instruction_error_number {
 	{ VMXERR_ENTRY_INVALID_CONTROL_FIELD,		"VMENTRY_INVALID_CONTROL_FIELD" }, \
 	{ VMXERR_ENTRY_INVALID_HOST_STATE_FIELD,	"VMENTRY_INVALID_HOST_STATE_FIELD" }, \
 	{ VMXERR_ENTRY_EVENTS_BLOCKED_BY_MOV_SS,	"VMENTRY_EVENTS_BLOCKED_BY_MOV_SS" }
-
 enum vmx_l1d_flush_state {
 	VMENTER_L1D_FLUSH_AUTO,
 	VMENTER_L1D_FLUSH_NEVER,
@@ -626,7 +515,5 @@ enum vmx_l1d_flush_state {
 	VMENTER_L1D_FLUSH_EPT_DISABLED,
 	VMENTER_L1D_FLUSH_NOT_REQUIRED,
 };
-
 extern enum vmx_l1d_flush_state l1tf_vmx_mitigation;
-
 #endif

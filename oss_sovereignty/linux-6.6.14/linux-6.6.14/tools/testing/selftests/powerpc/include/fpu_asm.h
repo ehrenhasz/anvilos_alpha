@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- */
-
 #ifndef _SELFTESTS_POWERPC_FPU_ASM_H
 #define _SELFTESTS_POWERPC_FPU_ASM_H
 #include "basic_asm.h"
-
 #define PUSH_FPU(stack_size) \
 	stfd	f31,(stack_size + STACK_FRAME_MIN_SIZE)(%r1); \
 	stfd	f30,(stack_size + STACK_FRAME_MIN_SIZE - 8)(%r1); \
@@ -26,7 +20,6 @@
 	stfd	f16,(stack_size + STACK_FRAME_MIN_SIZE - 120)(%r1); \
 	stfd	f15,(stack_size + STACK_FRAME_MIN_SIZE - 128)(%r1); \
 	stfd	f14,(stack_size + STACK_FRAME_MIN_SIZE - 136)(%r1);
-
 #define POP_FPU(stack_size) \
 	lfd	f31,(stack_size + STACK_FRAME_MIN_SIZE)(%r1); \
 	lfd	f30,(stack_size + STACK_FRAME_MIN_SIZE - 8)(%r1); \
@@ -46,11 +39,6 @@
 	lfd	f16,(stack_size + STACK_FRAME_MIN_SIZE - 120)(%r1); \
 	lfd	f15,(stack_size + STACK_FRAME_MIN_SIZE - 128)(%r1); \
 	lfd	f14,(stack_size + STACK_FRAME_MIN_SIZE - 136)(%r1);
-
-/*
- * Careful calling this, it will 'clobber' fpu (by design)
- * Don't call this from C
- */
 FUNC_START(load_fpu)
 	lfd	f14,0(r3)
 	lfd	f15,8(r3)
@@ -72,5 +60,4 @@ FUNC_START(load_fpu)
 	lfd	f31,136(r3)
 	blr
 FUNC_END(load_fpu)
-
-#endif /* _SELFTESTS_POWERPC_FPU_ASM_H */
+#endif  

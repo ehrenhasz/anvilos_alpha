@@ -1,22 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ASM_COMPAT_H
 #define __ASM_COMPAT_H
-
 #define COMPAT_UTS_MACHINE	"riscv\0\0"
-
-/*
- * Architecture specific compatibility types
- */
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/sched/task_stack.h>
 #include <asm-generic/compat.h>
-
 static inline int is_compat_task(void)
 {
 	return test_thread_flag(TIF_32BIT);
 }
-
 struct compat_user_regs_struct {
 	compat_ulong_t pc;
 	compat_ulong_t ra;
@@ -51,7 +43,6 @@ struct compat_user_regs_struct {
 	compat_ulong_t t5;
 	compat_ulong_t t6;
 };
-
 static inline void regs_to_cregs(struct compat_user_regs_struct *cregs,
 				 struct pt_regs *regs)
 {
@@ -88,7 +79,6 @@ static inline void regs_to_cregs(struct compat_user_regs_struct *cregs,
 	cregs->t5	= (compat_ulong_t) regs->t5;
 	cregs->t6	= (compat_ulong_t) regs->t6;
 };
-
 static inline void cregs_to_regs(struct compat_user_regs_struct *cregs,
 				 struct pt_regs *regs)
 {
@@ -125,5 +115,4 @@ static inline void cregs_to_regs(struct compat_user_regs_struct *cregs,
 	regs->t5	= (unsigned long) cregs->t5;
 	regs->t6	= (unsigned long) cregs->t6;
 };
-
-#endif /* __ASM_COMPAT_H */
+#endif  

@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_IOB_DEFS_H__
 #define __CVMX_IOB_DEFS_H__
-
 #define CVMX_IOB_BIST_STATUS (CVMX_ADD_IO_SEG(0x00011800F00007F8ull))
 #define CVMX_IOB_CTL_STATUS (CVMX_ADD_IO_SEG(0x00011800F0000050ull))
 #define CVMX_IOB_DWB_PRI_CNT (CVMX_ADD_IO_SEG(0x00011800F0000028ull))
@@ -62,7 +34,6 @@
 #define CVMX_IOB_TO_NCB_DID_79_CREDITS (CVMX_ADD_IO_SEG(0x00011800F0000A78ull))
 #define CVMX_IOB_TO_NCB_DID_96_CREDITS (CVMX_ADD_IO_SEG(0x00011800F0000B00ull))
 #define CVMX_IOB_TO_NCB_DID_98_CREDITS (CVMX_ADD_IO_SEG(0x00011800F0000B10ull))
-
 union cvmx_iob_bist_status {
 	uint64_t u64;
 	struct cvmx_iob_bist_status_s {
@@ -216,7 +187,6 @@ union cvmx_iob_bist_status {
 #endif
 	} cn68xx;
 };
-
 union cvmx_iob_ctl_status {
 	uint64_t u64;
 	struct cvmx_iob_ctl_status_s {
@@ -346,7 +316,6 @@ union cvmx_iob_ctl_status {
 #endif
 	} cn68xx;
 };
-
 union cvmx_iob_dwb_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_dwb_pri_cnt_s {
@@ -361,7 +330,6 @@ union cvmx_iob_dwb_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_fau_timeout {
 	uint64_t u64;
 	struct cvmx_iob_fau_timeout_s {
@@ -376,7 +344,6 @@ union cvmx_iob_fau_timeout {
 #endif
 	} s;
 };
-
 union cvmx_iob_i2c_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_i2c_pri_cnt_s {
@@ -391,7 +358,6 @@ union cvmx_iob_i2c_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_inb_control_match {
 	uint64_t u64;
 	struct cvmx_iob_inb_control_match_s {
@@ -410,7 +376,6 @@ union cvmx_iob_inb_control_match {
 #endif
 	} s;
 };
-
 union cvmx_iob_inb_control_match_enb {
 	uint64_t u64;
 	struct cvmx_iob_inb_control_match_enb_s {
@@ -429,7 +394,6 @@ union cvmx_iob_inb_control_match_enb {
 #endif
 	} s;
 };
-
 union cvmx_iob_inb_data_match {
 	uint64_t u64;
 	struct cvmx_iob_inb_data_match_s {
@@ -440,7 +404,6 @@ union cvmx_iob_inb_data_match {
 #endif
 	} s;
 };
-
 union cvmx_iob_inb_data_match_enb {
 	uint64_t u64;
 	struct cvmx_iob_inb_data_match_enb_s {
@@ -451,7 +414,6 @@ union cvmx_iob_inb_data_match_enb {
 #endif
 	} s;
 };
-
 union cvmx_iob_int_enb {
 	uint64_t u64;
 	struct cvmx_iob_int_enb_s {
@@ -496,7 +458,6 @@ union cvmx_iob_int_enb {
 #endif
 	} cn68xx;
 };
-
 union cvmx_iob_int_sum {
 	uint64_t u64;
 	struct cvmx_iob_int_sum_s {
@@ -541,7 +502,6 @@ union cvmx_iob_int_sum {
 #endif
 	} cn68xx;
 };
-
 union cvmx_iob_n2c_l2c_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_n2c_l2c_pri_cnt_s {
@@ -556,7 +516,6 @@ union cvmx_iob_n2c_l2c_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_n2c_rsp_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_n2c_rsp_pri_cnt_s {
@@ -571,7 +530,6 @@ union cvmx_iob_n2c_rsp_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_com_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_outb_com_pri_cnt_s {
@@ -586,7 +544,6 @@ union cvmx_iob_outb_com_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_control_match {
 	uint64_t u64;
 	struct cvmx_iob_outb_control_match_s {
@@ -605,7 +562,6 @@ union cvmx_iob_outb_control_match {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_control_match_enb {
 	uint64_t u64;
 	struct cvmx_iob_outb_control_match_enb_s {
@@ -624,7 +580,6 @@ union cvmx_iob_outb_control_match_enb {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_data_match {
 	uint64_t u64;
 	struct cvmx_iob_outb_data_match_s {
@@ -635,7 +590,6 @@ union cvmx_iob_outb_data_match {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_data_match_enb {
 	uint64_t u64;
 	struct cvmx_iob_outb_data_match_enb_s {
@@ -646,7 +600,6 @@ union cvmx_iob_outb_data_match_enb {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_fpa_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_outb_fpa_pri_cnt_s {
@@ -661,7 +614,6 @@ union cvmx_iob_outb_fpa_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_outb_req_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_outb_req_pri_cnt_s {
@@ -676,7 +628,6 @@ union cvmx_iob_outb_req_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_p2c_req_pri_cnt {
 	uint64_t u64;
 	struct cvmx_iob_p2c_req_pri_cnt_s {
@@ -691,7 +642,6 @@ union cvmx_iob_p2c_req_pri_cnt {
 #endif
 	} s;
 };
-
 union cvmx_iob_pkt_err {
 	uint64_t u64;
 	struct cvmx_iob_pkt_err_s {
@@ -715,7 +665,6 @@ union cvmx_iob_pkt_err {
 #endif
 	} cn30xx;
 };
-
 union cvmx_iob_to_cmb_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_cmb_credits_s {
@@ -756,7 +705,6 @@ union cvmx_iob_to_cmb_credits {
 #endif
 	} cn68xx;
 };
-
 union cvmx_iob_to_ncb_did_00_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_00_credits_s {
@@ -769,7 +717,6 @@ union cvmx_iob_to_ncb_did_00_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_111_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_111_credits_s {
@@ -782,7 +729,6 @@ union cvmx_iob_to_ncb_did_111_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_223_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_223_credits_s {
@@ -795,7 +741,6 @@ union cvmx_iob_to_ncb_did_223_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_24_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_24_credits_s {
@@ -808,7 +753,6 @@ union cvmx_iob_to_ncb_did_24_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_32_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_32_credits_s {
@@ -821,7 +765,6 @@ union cvmx_iob_to_ncb_did_32_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_40_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_40_credits_s {
@@ -834,7 +777,6 @@ union cvmx_iob_to_ncb_did_40_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_55_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_55_credits_s {
@@ -847,7 +789,6 @@ union cvmx_iob_to_ncb_did_55_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_64_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_64_credits_s {
@@ -860,7 +801,6 @@ union cvmx_iob_to_ncb_did_64_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_79_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_79_credits_s {
@@ -873,7 +813,6 @@ union cvmx_iob_to_ncb_did_79_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_96_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_96_credits_s {
@@ -886,7 +825,6 @@ union cvmx_iob_to_ncb_did_96_credits {
 #endif
 	} s;
 };
-
 union cvmx_iob_to_ncb_did_98_credits {
 	uint64_t u64;
 	struct cvmx_iob_to_ncb_did_98_credits_s {
@@ -899,5 +837,4 @@ union cvmx_iob_to_ncb_did_98_credits {
 #endif
 	} s;
 };
-
 #endif

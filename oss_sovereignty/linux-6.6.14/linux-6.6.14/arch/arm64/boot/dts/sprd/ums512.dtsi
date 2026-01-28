@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Unisoc UMS512 SoC DTS file
- *
- * Copyright (C) 2021, Unisoc Inc.
- */
-
 #include <dt-bindings/clock/sprd,ums512-clk.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -45,7 +35,6 @@
 				};
 			};
 		};
-
 		CPU0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -53,7 +42,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU1: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -61,7 +49,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU2: cpu@200 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -69,7 +56,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU3: cpu@300 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -77,7 +63,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU4: cpu@400 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -85,7 +70,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU5: cpu@500 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -93,7 +77,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU6: cpu@600 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -101,7 +84,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD>;
 		};
-
 		CPU7: cpu@700 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -110,7 +92,6 @@
 			cpu-idle-states = <&CORE_PD>;
 		};
 	};
-
 	idle-states {
 		entry-method = "psci";
 		CORE_PD: core-pd {
@@ -122,20 +103,17 @@
 			arm,psci-suspend-param = <0x00010000>;
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
-		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>, /* Physical Secure PPI */
-			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>, /* Physical Non-Secure PPI */
-			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>, /* Virtual PPI */
-			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>; /* Hipervisor PPI */
+		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,  
+			     <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>,  
+			     <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,  
+			     <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;  
 	};
-
 	pmu {
 		compatible = "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>,
@@ -147,27 +125,24 @@
 			     <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		gic: interrupt-controller@12000000 {
 			compatible = "arm,gic-v3";
-			reg = <0x0 0x12000000 0 0x20000>,	/* GICD */
-			      <0x0 0x12040000 0 0x100000>;	/* GICR */
+			reg = <0x0 0x12000000 0 0x20000>,	 
+			      <0x0 0x12040000 0 0x100000>;	 
 			#interrupt-cells = <3>;
 			#address-cells = <2>;
 			#size-cells = <2>;
 			ranges;
-			redistributor-stride = <0x0 0x20000>;	/* 128KB stride */
+			redistributor-stride = <0x0 0x20000>;	 
 			#redistributor-regions = <1>;
 			interrupt-controller;
 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		ap_ahb_regs: syscon@20100000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -175,7 +150,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x20100000 0x4000>;
-
 			apahb_gate: clock-controller@0 {
 				compatible = "sprd,ums512-apahb-gate";
 				reg = <0x0 0x3000>;
@@ -184,55 +158,46 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		pub_apb_regs: syscon@31050000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x31050000 0 0x9000>;
 		};
-
 		top_dvfs_apb_regs: syscon@322a0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x322a0000 0 0x8000>;
 		};
-
 		ap_intc0_regs: syscon@32310000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32310000 0 0x1000>;
 		};
-
 		ap_intc1_regs: syscon@32320000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32320000 0 0x1000>;
 		};
-
 		ap_intc2_regs: syscon@32330000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32330000 0 0x1000>;
 		};
-
 		ap_intc3_regs: syscon@32340000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32340000 0 0x1000>;
 		};
-
 		ap_intc4_regs: syscon@32350000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32350000 0 0x1000>;
 		};
-
 		ap_intc5_regs: syscon@32360000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x32360000 0 0x1000>;
 		};
-
 		anlg_phy_g0_regs: syscon@32390000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -240,14 +205,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x32390000 0x3000>;
-
 			dpll0: clock-controller@0 {
 				compatible = "sprd,ums512-g0-pll";
 				reg = <0x0 0x100>;
 				#clock-cells = <1>;
 			};
 		};
-
 		anlg_phy_g2_regs: syscon@323b0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -255,14 +218,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x323b0000 0x3000>;
-
 			mpll1: clock-controller@0 {
 				compatible = "sprd,ums512-g2-pll";
 				reg = <0x0 0x100>;
 				#clock-cells = <1>;
 			};
 		};
-
 		anlg_phy_g3_regs: syscon@323c0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -270,7 +231,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x323c0000 0x3000>;
-
 			pll1: clock-controller@0 {
 				compatible = "sprd,ums512-g3-pll";
 				reg = <0x0 0x3000>;
@@ -279,7 +239,6 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		anlg_phy_gc_regs: syscon@323e0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -287,7 +246,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x323e0000 0x3000>;
-
 			pll2: clock-controller@0 {
 				compatible = "sprd,ums512-gc-pll";
 				reg = <0x0 0x100>;
@@ -295,13 +253,11 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		anlg_phy_g10_regs: syscon@323f0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x323f0000 0 0x3000>;
 		};
-
 		aon_apb_regs: syscon@327d0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -309,7 +265,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x327d0000 0x3000>;
-
 			aonapb_gate: clock-controller@0 {
 				compatible = "sprd,ums512-aon-gate";
 				reg = <0x0 0x3000>;
@@ -318,7 +273,6 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		pmu_apb_regs: syscon@327e0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -326,7 +280,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x327e0000 0x3000>;
-
 			pmu_gate: clock-controller@0 {
 				compatible = "sprd,ums512-pmu-gate";
 				reg = <0x0 0x3000>;
@@ -335,7 +288,6 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		audcp_apb_regs: syscon@3350d000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -343,14 +295,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x3350d000 0x1000>;
-
 			audcpapb_gate: clock-controller@0 {
 				compatible = "sprd,ums512-audcpapb-gate";
 				reg = <0x0 0x300>;
 				#clock-cells = <1>;
 			};
 		};
-
 		audcp_ahb_regs: syscon@335e0000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -358,14 +308,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x335e0000 0x1000>;
-
 			audcpahb_gate: clock-controller@0 {
 				compatible = "sprd,ums512-audcpahb-gate";
 				reg = <0x0 0x300>;
 				#clock-cells = <1>;
 			};
 		};
-
 		gpu_apb_regs: syscon@60100000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -373,7 +321,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x60100000 0x3000>;
-
 			gpu_clk: clock-controller@0 {
 				compatible = "sprd,ums512-gpu-clk";
 				clocks = <&ext_26m>;
@@ -382,13 +329,11 @@
 				#clock-cells = <1>;
 			};
 		};
-
 		gpu_dvfs_apb_regs: syscon@60110000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
 			reg = <0 0x60110000 0 0x3000>;
 		};
-
 		mm_ahb_regs: syscon@62200000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -396,14 +341,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x62200000 0x3000>;
-
 			mm_gate: clock-controller@0 {
 				compatible = "sprd,ums512-mm-gate-clk";
 				reg = <0x0 0x3000>;
 				#clock-cells = <1>;
 			};
 		};
-
 		ap_apb_regs: syscon@71000000 {
 			compatible = "sprd,ums512-glbregs", "syscon",
 				     "simple-mfd";
@@ -411,14 +354,12 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0 0x71000000 0x3000>;
-
 			apapb_gate: clock-controller@0 {
 				compatible = "sprd,ums512-apapb-gate";
 				reg = <0x0 0x3000>;
 				#clock-cells = <1>;
 			};
 		};
-
 		ap_clk: clock-controller@20200000 {
 			compatible = "sprd,ums512-ap-clk";
 			reg = <0 0x20200000 0 0x1000>;
@@ -426,7 +367,6 @@
 			clock-names = "ext-26m";
 			#clock-cells = <1>;
 		};
-
 		aon_clk: clock-controller@32080000 {
 			compatible = "sprd,ums512-aonapb-clk";
 			reg = <0 0x32080000 0 0x1000>;
@@ -436,7 +376,6 @@
 				      "ext-4m", "rco-100m";
 			#clock-cells = <1>;
 		};
-
 		mm_clk: clock-controller@62100000 {
 			compatible = "sprd,ums512-mm-clk";
 			reg = <0 0x62100000 0 0x1000>;
@@ -444,14 +383,11 @@
 			clock-names = "ext-26m";
 			#clock-cells = <1>;
 		};
-
-		/* SoC Funnel */
 		funnel@3c002000 {
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x3c002000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					funnel_soc_out_port: endpoint {
@@ -459,11 +395,9 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					reg = <1>;
 					funnel_soc_in_port: endpoint {
@@ -473,14 +407,11 @@
 				};
 			};
 		};
-
-		/* SoC ETF */
 		soc_etb: etb@3c003000 {
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x3c003000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			in-ports {
 				port {
 					etb_in: endpoint {
@@ -490,14 +421,11 @@
 				};
 			};
 		};
-
-		/* AP-CPU Funnel for core3/4/5/7 */
 		funnel@3e001000 {
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x3e001000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					funnel_corinth_lit_out_port: endpoint {
@@ -506,32 +434,27 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					funnel_core_in_port3: endpoint {
 						remote-endpoint = <&etm3_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					funnel_core_in_port4: endpoint {
 						remote-endpoint = <&etm4_out>;
 					};
 				};
-
 				port@2 {
 					reg = <2>;
 					funnel_core_in_port5: endpoint {
 						remote-endpoint = <&etm5_out>;
 					};
 				};
-
 				port@3 {
 					reg = <3>;
 					funnel_core_in_port7: endpoint {
@@ -540,14 +463,11 @@
 				};
 			};
 		};
-
-		/* AP-CPU ETF for little cores */
 		etf@3e002000 {
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x3e002000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					corinth_etf_lit_out: endpoint {
@@ -556,7 +476,6 @@
 					};
 				};
 			};
-
 			in-ports {
 				port {
 					corinth_etf_lit_in: endpoint {
@@ -566,14 +485,11 @@
 				};
 			};
 		};
-
-		/* AP-CPU ETF for big cores */
 		etf@3e003000 {
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x3e003000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					corinth_etf_big_out: endpoint {
@@ -582,7 +498,6 @@
 					};
 				};
 			};
-
 			in-ports {
 				port {
 					corinth_etf_big_in: endpoint {
@@ -592,14 +507,11 @@
 				};
 			};
 		};
-
-		/* Funnel to SoC */
 		funnel@3e004000 {
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x3e004000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					funnel_corinth_out_port: endpoint {
@@ -608,18 +520,15 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					funnel_corinth_from_lit_in_port: endpoint {
 						remote-endpoint = <&corinth_etf_lit_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					funnel_corinth_from_big_in_port: endpoint {
@@ -628,14 +537,11 @@
 				};
 			};
 		};
-
-		/* AP-CPU Funnel for core0/1/2/6 */
 		funnel@3e005000 {
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x3e005000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					funnel_corinth_big_out_port: endpoint {
@@ -643,32 +549,27 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					funnel_core_in_port0: endpoint {
 						remote-endpoint = <&etm0_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					funnel_core_in_port1: endpoint {
 						remote-endpoint = <&etm1_out>;
 					};
 				};
-
 				port@2 {
 					reg = <2>;
 					funnel_core_in_port2: endpoint {
 						remote-endpoint = <&etm2_out>;
 					};
 				};
-
 				port@3 {
 					reg = <3>;
 					funnel_core_in_port6: endpoint {
@@ -677,14 +578,12 @@
 				};
 			};
 		};
-
 		etm0: etm@3f040000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f040000 0 0x1000>;
 			cpu = <&CPU0>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm0_out: endpoint {
@@ -694,14 +593,12 @@
 				};
 			};
 		};
-
 		etm1: etm@3f140000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f140000 0 0x1000>;
 			cpu = <&CPU1>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm1_out: endpoint {
@@ -711,14 +608,12 @@
 				};
 			};
 		};
-
 		etm2: etm@3f240000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f240000 0 0x1000>;
 			cpu = <&CPU2>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm2_out: endpoint {
@@ -728,14 +623,12 @@
 				};
 			};
 		};
-
 		etm3: etm@3f340000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f340000 0 0x1000>;
 			cpu = <&CPU3>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm3_out: endpoint {
@@ -745,14 +638,12 @@
 				};
 			};
 		};
-
 		etm4: etm@3f440000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f440000 0 0x1000>;
 			cpu = <&CPU4>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm4_out: endpoint {
@@ -762,14 +653,12 @@
 				};
 			};
 		};
-
 		etm5: etm@3f540000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f540000 0 0x1000>;
 			cpu = <&CPU5>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm5_out: endpoint {
@@ -779,14 +668,12 @@
 				};
 			};
 		};
-
 		etm6: etm@3f640000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f640000 0 0x1000>;
 			cpu = <&CPU6>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm6_out: endpoint {
@@ -796,14 +683,12 @@
 				};
 			};
 		};
-
 		etm7: etm@3f740000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x3f740000 0 0x1000>;
 			cpu = <&CPU7>;
 			clocks = <&ext_26m>, <&aon_clk CLK_CSSYS>, <&pll2 CLK_TWPLL_512M>;
 			clock-names = "apb_pclk", "clk_cs", "cs_src";
-
 			out-ports {
 				port {
 					etm7_out: endpoint {
@@ -813,13 +698,11 @@
 				};
 			};
 		};
-
 		apb@70000000 {
 			compatible = "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x0 0x70000000 0x10000000>;
-
 			uart0: serial@0 {
 				compatible = "sprd,ums512-uart",
 					     "sprd,sc9836-uart";
@@ -828,7 +711,6 @@
 				clocks = <&ext_26m>;
 				status = "disabled";
 			};
-
 			uart1: serial@100000 {
 				compatible = "sprd,ums512-uart",
 					     "sprd,sc9836-uart";
@@ -837,7 +719,6 @@
 				clocks = <&ext_26m>;
 				status = "disabled";
 			};
-
 			sdio0: mmc@1100000 {
 				compatible = "sprd,sdhci-r11";
 				reg = <0x1100000 0x1000>;
@@ -849,7 +730,6 @@
 				assigned-clock-parents = <&pll1 CLK_RPLL>;
 				status = "disabled";
 			};
-
 			sdio3: mmc@1400000 {
 				compatible = "sprd,sdhci-r11";
 				reg = <0x1400000 0x1000>;
@@ -862,13 +742,11 @@
 				status = "disabled";
 			};
 		};
-
 		aon: bus@32000000 {
 			compatible = "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x0 0x32000000 0x1000000>;
-
 			adi_bus: spi@100000 {
 				compatible = "sprd,ums512-adi";
 				reg = <0x100000 0x100000>;
@@ -880,28 +758,24 @@
 			};
 		};
 	};
-
 	ext_26m: clk-26m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "ext-26m";
 	};
-
 	ext_32k: clk-32k {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 		clock-output-names = "ext-32k";
 	};
-
 	ext_4m: clk-4m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <4000000>;
 		clock-output-names = "ext-4m";
 	};
-
 	rco_100m: clk-100m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;

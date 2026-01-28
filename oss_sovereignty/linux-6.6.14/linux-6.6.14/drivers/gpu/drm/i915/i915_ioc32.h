@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
-
 #ifndef __I915_IOC32_H__
 #define __I915_IOC32_H__
-
 #ifdef CONFIG_COMPAT
 struct file;
 long i915_ioc32_compat_ioctl(struct file *filp, unsigned int cmd,
@@ -13,5 +7,4 @@ long i915_ioc32_compat_ioctl(struct file *filp, unsigned int cmd,
 #else
 #define i915_ioc32_compat_ioctl NULL
 #endif
-
-#endif /* __I915_IOC32_H__ */
+#endif  

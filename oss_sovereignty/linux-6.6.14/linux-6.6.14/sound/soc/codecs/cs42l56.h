@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cs42l52.h -- CS42L56 ALSA SoC audio driver
- *
- * Copyright 2014 CirrusLogic, Inc.
- *
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
-
 #ifndef __CS42L56_H__
 #define __CS42L56_H__
-
 #define CS42L56_CHIP_ID_1		0x01
 #define CS42L56_CHIP_ID_2		0x02
 #define CS42L56_PWRCTL_1		0x03
@@ -56,14 +46,10 @@
 #define CS42L56_LIM_THRESHOLD_CTL	0x2c
 #define CS42L56_LIM_CTL_RELEASE_RATE	0x2d
 #define CS42L56_LIM_ATTACK_RATE		0x2e
-
-/* Device ID and Rev ID Masks */
 #define CS42L56_DEVID			0x56
 #define CS42L56_CHIP_ID_MASK		0xff
 #define CS42L56_AREV_MASK		0x1c
 #define CS42L56_MTLREV_MASK		0x03
-
-/* Power bit masks */
 #define CS42L56_PDN_ALL_MASK		0x01
 #define CS42L56_PDN_ADCA_MASK		0x02
 #define CS42L56_PDN_ADCB_MASK		0x04
@@ -74,8 +60,6 @@
 #define CS42L56_PDN_LOB_MASK		0x0c
 #define CS42L56_PDN_HPA_MASK		0x30
 #define CS42L56_PDN_HPB_MASK		0xc0
-
-/* serial port and clk masks */
 #define CS42L56_MASTER_MODE		0x40
 #define CS42L56_SLAVE_MODE		0
 #define CS42L56_MS_MODE_MASK		0x40
@@ -92,8 +76,6 @@
 #define CS42L56_DIG_FMT_I2S		0
 #define CS42L56_DIG_FMT_LEFT_J		0x08
 #define CS42L56_DIG_FMT_MASK		0x08
-
-/* Class H and misc ctl masks */
 #define CS42L56_ADAPT_PWR_MASK		0xc0
 #define CS42L56_CHRG_FREQ_MASK		0x0f
 #define CS42L56_DIG_MUX_MASK		0x80
@@ -108,8 +90,6 @@
 #define CS42L56_AIN2A_REF_MASK		0x40
 #define CS42L56_AIN1B_REF_MASK		0x20
 #define CS42L56_AIN2B_REF_MASK		0x80
-
-/* Playback Capture ctl masks */
 #define CS42L56_PDN_DSP_MASK		0x80
 #define CS42L56_DEEMPH_MASK		0x40
 #define CS42L56_PLYBCK_GANG_MASK	0x10
@@ -126,8 +106,6 @@
 #define CS42L56_ADCB_MUTE_MASK		0x02
 #define CS42L56_HP_MUTE_MASK		0x80
 #define CS42L56_LO_MUTE_MASK		0x80
-
-/* Beep masks */
 #define CS42L56_BEEP_FREQ_MASK		0xf0
 #define CS42L56_BEEP_ONTIME_MASK	0x0f
 #define CS42L56_BEEP_OFFTIME_MASK	0xe0
@@ -137,9 +115,6 @@
 #define CS42L56_BEEP_TCEN_MASK		0x01
 #define CS42L56_BEEP_RATE_SHIFT		4
 #define CS42L56_BEEP_EN_MASK		0x3f
-
-
-/* Supported MCLKS */
 #define CS42L56_MCLK_5P6448MHZ		5644800
 #define CS42L56_MCLK_6MHZ		6000000
 #define CS42L56_MCLK_6P144MHZ		6144000
@@ -149,8 +124,6 @@
 #define CS42L56_MCLK_22P5792MHZ		22579200
 #define CS42L56_MCLK_24MHZ		24000000
 #define CS42L56_MCLK_24P576MHZ		24576000
-
-/* Clock ratios */
 #define CS42L56_MCLK_LRCLK_128		0x08
 #define CS42L56_MCLK_LRCLK_125		0x09
 #define CS42L56_MCLK_LRCLK_136		0x0b
@@ -166,8 +139,5 @@
 #define CS42L56_MCLK_LRCLK_544		0x1b
 #define CS42L56_MCLK_LRCLK_750		0x1c
 #define CS42L56_MCLK_LRCLK_768		0x1d
-
-
 #define CS42L56_MAX_REGISTER		0x34
-
 #endif

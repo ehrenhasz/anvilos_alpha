@@ -1,28 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_ASM_IA64_CMPXCHG_H
 #define _UAPI_ASM_IA64_CMPXCHG_H
-
-/*
- * Compare/Exchange, forked from asm/intrinsics.h
- * which was:
- *
- *	Copyright (C) 2002-2003 Hewlett-Packard Co
- *	David Mosberger-Tang <davidm@hpl.hp.com>
- */
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
-/* include compiler specific intrinsics */
 #include <asm/ia64regs.h>
 #include <asm/gcc_intrin.h>
-
-/*
- * This function doesn't exist, so you'll get a linker error if
- * something tries to do an invalid xchg().
- */
 extern void ia64_xchg_called_with_bad_pointer(void);
-
 #define __arch_xchg(x, ptr, size)					\
 ({									\
 	unsigned long __xchg_result;					\
@@ -48,24 +30,11 @@ extern void ia64_xchg_called_with_bad_pointer(void);
 	}								\
 	(__typeof__ (*(ptr)) __force) __xchg_result;			\
 })
-
 #ifndef __KERNEL__
 #define xchg(ptr, x)							\
 ({(__typeof__(*(ptr))) __arch_xchg((unsigned long) (x), (ptr), sizeof(*(ptr)));})
 #endif
-
-/*
- * Atomic compare and exchange.  Compare OLD with MEM, if identical,
- * store NEW in MEM.  Return the initial value in MEM.  Success is
- * indicated by comparing RETURN with OLD.
- */
-
-/*
- * This function doesn't exist, so you'll get a linker error
- * if something tries to do an invalid cmpxchg().
- */
 extern long ia64_cmpxchg_called_with_bad_pointer(void);
-
 #define ia64_cmpxchg(sem, ptr, old, new, size)				\
 ({									\
 	__u64 _o_, _r_;							\
@@ -109,30 +78,15 @@ extern long ia64_cmpxchg_called_with_bad_pointer(void);
 	}								\
 	(__typeof__(old) __force) _r_;					\
 })
-
 #define cmpxchg_acq(ptr, o, n)	\
 	ia64_cmpxchg(acq, (ptr), (o), (n), sizeof(*(ptr)))
 #define cmpxchg_rel(ptr, o, n)	\
 	ia64_cmpxchg(rel, (ptr), (o), (n), sizeof(*(ptr)))
-
-/*
- * Worse still - early processor implementations actually just ignored
- * the acquire/release and did a full fence all the time.  Unfortunately
- * this meant a lot of badly written code that used .acq when they really
- * wanted .rel became legacy out in the wild - so when we made a cpu
- * that strictly did the .acq or .rel ... all that code started breaking - so
- * we had to back-pedal and keep the "legacy" behavior of a full fence :-(
- */
-
 #ifndef __KERNEL__
-/* for compatibility with other platforms: */
 #define cmpxchg(ptr, o, n)	cmpxchg_acq((ptr), (o), (n))
 #define cmpxchg64(ptr, o, n)	cmpxchg_acq((ptr), (o), (n))
-
 #define cmpxchg_local		cmpxchg
 #define cmpxchg64_local		cmpxchg64
 #endif
-
-#endif /* !__ASSEMBLY__ */
-
-#endif /* _UAPI_ASM_IA64_CMPXCHG_H */
+#endif  
+#endif  

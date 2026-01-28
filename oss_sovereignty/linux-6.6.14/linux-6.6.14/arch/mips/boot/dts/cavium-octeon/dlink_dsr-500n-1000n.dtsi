@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device tree source for D-Link DSR-500N/1000N (common parts).
- *
- * Written by: Aaro Koskinen <aaro.koskinen@iki.fi>
- */
-
 /include/ "octeon_3xxx.dtsi"
-
 / {
 	soc@0 {
 		smi0: mdio@1180000001800 {
@@ -15,7 +7,6 @@
 				compatible = "ethernet-phy-ieee802.3-c22";
 			};
 		};
-
 		pip: pip@11800a0000000 {
 			interface@0 {
 				ethernet@0 {
@@ -35,20 +26,17 @@
 				};
 			};
 		};
-
 		twsi0: i2c@1180000001000 {
 			rtc@68 {
 				compatible = "dallas,ds1337";
 				reg = <0x68>;
 			};
 		};
-
 		usbn: usbn@1180068000000 {
 			refclk-frequency = <12000000>;
 			refclk-type = "crystal";
 		};
 	};
-
 	aliases {
 		pip = &pip;
 	};

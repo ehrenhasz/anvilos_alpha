@@ -1,29 +1,5 @@
-/*
- * SMU_7_0_1 Register documentation
- *
- * Copyright (C) 2014  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef SMU_7_0_1_SH_MASK_H
 #define SMU_7_0_1_SH_MASK_H
-
 #define GCK_SMC_IND_INDEX__SMC_IND_ADDR_MASK 0xffffffff
 #define GCK_SMC_IND_INDEX__SMC_IND_ADDR__SHIFT 0x0
 #define GCK_SMC_IND_DATA__SMC_IND_DATA_MASK 0xffffffff
@@ -5458,5 +5434,4 @@
 #define CURRENT_PG_STATUS__UVD_PG_STATUS_MASK 0x00000004
 #define SMC_SYSCON_MISC_CNTL__pre_fetcher_en_MASK  0x1
 #define SMC_SYSCON_MISC_CNTL__pre_fetcher_en__SHIFT 0
-
-#endif /* SMU_7_0_1_SH_MASK_H */
+#endif  

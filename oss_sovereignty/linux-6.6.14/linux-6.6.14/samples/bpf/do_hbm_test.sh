@@ -1,12 +1,3 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (c) 2019 Facebook
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of version 2 of the GNU General Public
-# License as published by the Free Software Foundation.
-
 Usage() {
   echo "Script for testing HBM (Host Bandwidth Manager) framework."
   echo "It creates a cgroup to use for testing and load a BPF program to limit"
@@ -64,9 +55,6 @@ Usage() {
   echo " "
   exit
 }
-
-#set -x
-
 debug_flag=0
 args="$@"
 name="$0"
@@ -90,7 +78,6 @@ server=""
 qdisc=""
 flags=""
 do_stats=0
-
 BPFFS=/sys/fs/bpf
 function config_bpffs () {
 	if mount | grep $BPFFS > /dev/null; then
@@ -100,7 +87,6 @@ function config_bpffs () {
 		mount -t bpf none $BPFFS
 	fi
 }
-
 function start_hbm () {
   rm -f hbm.out
   echo "./hbm $dir -n $id -r $rate -t $dur $flags $dbg $prog" > hbm.out
@@ -108,15 +94,9 @@ function start_hbm () {
   ./hbm $dir -n $id -r $rate -t $dur $flags $dbg $prog >> hbm.out 2>&1  &
   echo $!
 }
-
 processArgs () {
   for i in $args ; do
     case $i in
-    # Support for upcomming ingress rate limiting
-    #in)         # support for upcoming ingress rate limiting
-    #  dir="-i"
-    #  dir_name="in"
-    #  ;;
     out)
       dir="-o"
       dir_name="out"
@@ -200,38 +180,29 @@ processArgs () {
     esac
   done
 }
-
 processArgs
 config_bpffs
-
 if [ $debug_flag -eq 1 ] ; then
   rm -f hbm_out.log
 fi
-
 hbm_pid=$(start_hbm)
 usleep 100000
-
 host=`hostname`
 cg_base_dir=/sys/fs/cgroup/unified
 cg_dir="$cg_base_dir/cgroup-test-work-dir/hbm$id"
-
 echo $$ >> $cg_dir/cgroup.procs
-
 ulimit -l unlimited
-
 rm -f ss.out
 rm -f hbm.[0-9]*.$dir_name
 if [ $ecn -ne 0 ] ; then
   sysctl -w -q -n net.ipv4.tcp_ecn=1
 fi
-
 if [ $use_netperf -eq 0 ] ; then
   cur_cc=`sysctl -n net.ipv4.tcp_congestion_control`
   if [ "$cc" != "x" ] ; then
     sysctl -w -q -n net.ipv4.tcp_congestion_control=$cc
   fi
 fi
-
 if [ "$netem" -ne "0" ] ; then
   if [ "$qdisc" != "" ] ; then
     echo "WARNING: Ignoring -q options because -d option used"
@@ -242,7 +213,6 @@ elif [ "$qdisc" != "" ] ; then
   tc qdisc del dev eth0 root > /dev/null 2>&1
   tc qdisc add dev eth0 root $qdisc > /dev/null 2>&1
 fi
-
 n=0
 m=$[$dur * 5]
 hn="::1"
@@ -251,9 +221,7 @@ if [ $use_netperf -ne 0 ] ; then
     hn=$server
   fi
 fi
-
 ( ping6 -i 0.2 -c $m $hn > ping.out 2>&1 ) &
-
 if [ $use_netperf -ne 0 ] ; then
   begNetserverPid=`ps ax | grep netserver | grep --invert-match "grep" | \
                    awk '{ print $1 }'`
@@ -295,17 +263,12 @@ if [ $use_netperf -ne 0 ] ; then
     fi
     flow_cnt=$[flow_cnt+1]
   done
-
-# sleep for duration of test (plus some buffer)
   n=$[dur+2]
   sleep $n
-
-# force graceful termination of netperf
   pids=`pgrep netperf`
   for p in $pids ; do
     kill -SIGALRM $p
   done
-
   flow_cnt=1
   rate=0
   if [ $details -ne 0 ] ; then
@@ -346,7 +309,6 @@ elif [ $multi_iperf -eq 0 ] ; then
   iperf3 -c $host -p $port -i 0 -P $flows -f m -t $dur > iperf.$id
   rates=`grep receiver iperf.$id | grep -o "[0-9.]* Mbits" | grep -o "^[0-9]*"`
   rate=`echo $rates | grep -o "[0-9]*$"`
-
   if [ $details -ne 0 ] ; then
     echo ""
     echo "Details for HBM in cgroup $id"
@@ -382,10 +344,8 @@ else
       fi
     fi
   fi
-
   while [ $flow_cnt -le $flows ] ; do
     r=`cat iperf3.$id.$flow_cnt`
-#    echo "rate for flow $flow_cnt: $r"
   if [ $details -ne 0 ] ; then
     echo "Rate for cgroup $id, flow $flow_cnt LOCAL_SEND_THROUGHPUT=$r"
   fi
@@ -400,7 +360,6 @@ else
     echo $rate
   fi
 fi
-
 if [ $use_netperf -eq 0 ] ; then
   sysctl -w -q -n net.ipv4.tcp_congestion_control=$cur_cc
 fi
@@ -414,17 +373,12 @@ if [ "$qdisc" != "" ] ; then
   tc qdisc del dev eth0 root > /dev/null 2>&1
 fi
 sleep 2
-
 hbmPid=`ps ax | grep "hbm " | grep --invert-match "grep" | awk '{ print $1 }'`
 if [ "$hbmPid" == "$hbm_pid" ] ; then
   kill $hbm_pid
 fi
-
 sleep 1
-
-# Detach any pinned BPF programs that may have lingered
 rm -rf $BPFFS/hbm*
-
 if [ $use_netperf -ne 0 ] ; then
   if [ "$server" == "" ] ; then
     if [ "$begNetserverPid" == "" ] ; then

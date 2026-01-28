@@ -1,36 +1,8 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MCIF_WB_DCN30_H__
 #define __DC_MCIF_WB_DCN30_H__
-
 #include "dcn20/dcn20_mmhubbub.h"
-
 #define TO_DCN30_MMHUBBUB(mcif_wb_base) \
 	container_of(mcif_wb_base, struct dcn30_mmhubbub, base)
-
 #define MCIF_WB_COMMON_REG_LIST_DCN3_0(inst) \
 	SRI(MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB, inst),\
 	SRI(MCIF_WB_BUFMGR_STATUS, MCIF_WB, inst),\
@@ -81,7 +53,6 @@
 	SRI2(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB, inst),\
 	SRI2(MMHUBBUB_WARMUP_P_VMID, MMHUBBUB, inst),\
 	SRI(MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, MCIF_WB, inst)
-
 #define MCIF_WB_COMMON_REG_LIST_DCN30(inst) \
 	SRI2(MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB, inst),\
 	SRI2(MCIF_WB_BUFMGR_STATUS, MCIF_WB, inst),\
@@ -131,7 +102,6 @@
 	SRI2(MMHUBBUB_WARMUP_BASE_ADDR_LOW, MMHUBBUB, inst),\
 	SRI2(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB, inst),\
 	SRI2(MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, MCIF_WB, inst)
-
 #define MCIF_WB_COMMON_MASK_SH_LIST_DCN3_0(mask_sh) \
 	SF(MCIF_WB0_MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_ENABLE, mask_sh),\
 	SF(MCIF_WB0_MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_SW_INT_EN, mask_sh),\
@@ -262,8 +232,6 @@
 	SF(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB_WARMUP_INC_ADDR, mask_sh),\
 	SF(MMHUBBUB_WARMUP_P_VMID, MMHUBBUB_WARMUP_P_VMID, mask_sh),\
 	SF(MCIF_WB0_MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, mask_sh)
-
-
 #define MCIF_WB_COMMON_MASK_SH_LIST_DCN30(mask_sh) \
 	SF(MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_ENABLE, mask_sh),\
 	SF(MCIF_WB_BUFMGR_SW_CONTROL, MCIF_WB_BUFMGR_SW_INT_EN, mask_sh),\
@@ -392,8 +360,6 @@
 	SF(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB_WARMUP_SW_INT_ACK, mask_sh),\
 	SF(MMHUBBUB_WARMUP_CONTROL_STATUS, MMHUBBUB_WARMUP_INC_ADDR, mask_sh),\
 	SF(MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI, mask_sh)
-
-
 #define MCIF_WB_REG_FIELD_LIST_DCN3_0(type) \
 	MCIF_WB_REG_FIELD_LIST_DCN2_0(type);\
 	type WBIF_WHOLE_BUF_MODE;\
@@ -407,7 +373,6 @@
 	type MMHUBBUB_WARMUP_INC_ADDR;\
 	type MMHUBBUB_WARMUP_P_VMID;\
 	type MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI
-
 #define MCIF_WB_REG_VARIABLE_LIST_DCN3_0 \
 	MCIF_WB_REG_VARIABLE_LIST_DCN2_0; \
 	uint32_t MMHUBBUB_MEM_PWR_CNTL;\
@@ -417,32 +382,25 @@
 	uint32_t MMHUBBUB_WARMUP_CONTROL_STATUS;\
 	uint32_t MMHUBBUB_WARMUP_P_VMID;\
 	uint32_t MCIF_WB_DRAM_SPEED_CHANGE_DURATION_VBI
-
 struct dcn30_mmhubbub_registers {
 	MCIF_WB_REG_VARIABLE_LIST_DCN3_0;
 };
-
-
 struct dcn30_mmhubbub_mask {
 	MCIF_WB_REG_FIELD_LIST_DCN3_0(uint32_t);
 };
-
 struct dcn30_mmhubbub_shift {
 	MCIF_WB_REG_FIELD_LIST_DCN3_0(uint8_t);
 };
-
 struct dcn30_mmhubbub {
 	struct mcif_wb base;
 	const struct dcn30_mmhubbub_registers *mcif_wb_regs;
 	const struct dcn30_mmhubbub_shift *mcif_wb_shift;
 	const struct dcn30_mmhubbub_mask *mcif_wb_mask;
 };
-
 void dcn30_mmhubbub_construct(struct dcn30_mmhubbub *mcif_wb30,
 	struct dc_context *ctx,
 	const struct dcn30_mmhubbub_registers *mcif_wb_regs,
 	const struct dcn30_mmhubbub_shift *mcif_wb_shift,
 	const struct dcn30_mmhubbub_mask *mcif_wb_mask,
 	int inst);
-
 #endif

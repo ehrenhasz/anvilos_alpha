@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _M68K_DIV64_H
 #define _M68K_DIV64_H
-
 #ifdef CONFIG_CPU_HAS_NO_MULDIV64
 #include <asm-generic/div64.h>
 #else
-
 #include <linux/types.h>
-
-/* n = n / base; return rem; */
-
 #define do_div(n, base) ({					\
 	union {							\
 		unsigned long n32[2];				\
@@ -30,10 +24,6 @@
 	(n) = __n.n64;						\
 	__rem;							\
 })
-
-/* defining this stops the unused helper function from being built */
 #define __div64_32 __div64_32
-
-#endif /* CONFIG_CPU_HAS_NO_MULDIV64 */
-
-#endif /* _M68K_DIV64_H */
+#endif  
+#endif  

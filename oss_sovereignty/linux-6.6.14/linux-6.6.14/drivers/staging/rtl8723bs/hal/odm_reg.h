@@ -1,30 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*  File Name: odm_reg.h */
-/*  Description: */
-/*  This file is for general register definition. */
 #ifndef	__HAL_ODM_REG_H__
 #define __HAL_ODM_REG_H__
-
-/*  Register Definition */
-
-/* MAC REG */
 #define	ODM_BB_RESET				0x002
 #define	ODM_DUMMY				0x4fe
 #define	RF_T_METER_OLD				0x24
 #define	RF_T_METER_NEW				0x42
-
 #define	ODM_EDCA_VO_PARAM			0x500
 #define	ODM_EDCA_VI_PARAM			0x504
 #define	ODM_EDCA_BE_PARAM			0x508
 #define	ODM_EDCA_BK_PARAM			0x50C
 #define	ODM_TXPAUSE				0x522
-
-/* BB REG */
 #define	ODM_FPGA_PHY0_PAGE8			0x800
 #define	ODM_PSD_SETTING				0x808
 #define	ODM_AFE_SETTING				0x818
@@ -69,23 +53,11 @@
 #define	ODM_TXAGC_A_1_MCS32			0xe08
 #define	ODM_TXAGC_A_MCS0_MCS3			0xe10
 #define	ODM_TXAGC_A_MCS4_MCS7			0xe14
-
-/* RF REG */
 #define	ODM_GAIN_SETTING			0x00
 #define	ODM_CHANNEL				0x18
-
-/* Ant Detect Reg */
 #define	ODM_DPDT				0x300
-
-/* PSD Init */
 #define	ODM_PSDREG				0x808
-
-/* 92D Path Div */
 #define	PATHDIV_REG				0xB30
 #define	PATHDIV_TRI				0xBA0
-
-/*  Bitmap Definition */
-
 #define	BIT_FA_RESET				BIT0
-
 #endif

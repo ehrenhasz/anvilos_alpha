@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_IMX51_PINFUNC_H
 #define __DTS_IMX51_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX51_PAD_EIM_D16__AUD4_RXFS			0x05c 0x3f0 0x000 0x5 0x0
 #define MX51_PAD_EIM_D16__AUD5_TXD			0x05c 0x3f0 0x8d8 0x7 0x0
 #define MX51_PAD_EIM_D16__EIM_D16			0x05c 0x3f0 0x000 0x0 0x0
@@ -764,5 +754,4 @@
 #define MX51_PAD_GPIO1_9__GPIO1_9			0x3ec 0x818 0x000 0x0 0x0
 #define MX51_PAD_GPIO1_9__SD2_LCTL			0x3ec 0x818 0x000 0x6 0x0
 #define MX51_PAD_GPIO1_9__USBH3_OC			0x3ec 0x818 0x000 0x1 0x0
-
-#endif /* __DTS_IMX51_PINFUNC_H */
+#endif  

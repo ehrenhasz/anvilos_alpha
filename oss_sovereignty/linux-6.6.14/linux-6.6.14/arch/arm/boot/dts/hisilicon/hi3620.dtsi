@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon Ltd. Hi3620 SoC
- *
- * Copyright (C) 2012-2013 HiSilicon Ltd.
- * Copyright (C) 2012-2013 Linaro Ltd.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- */
-
 #include <dt-bindings/clock/hi3620-clock.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		serial0 = &uart0;
 		serial1 = &uart1;
@@ -21,40 +9,34 @@
 		serial3 = &uart3;
 		serial4 = &uart4;
 	};
-
 	pclk: clk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "apb_pclk";
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		enable-method = "hisilicon,hi3620-smp";
-
 		cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
 			reg = <0x0>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu@1 {
 			compatible = "arm,cortex-a9";
 			device_type = "cpu";
 			reg = <1>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu@2 {
 			compatible = "arm,cortex-a9";
 			device_type = "cpu";
 			reg = <2>;
 			next-level-cache = <&L2>;
 		};
-
 		cpu@3 {
 			compatible = "arm,cortex-a9";
 			device_type = "cpu";
@@ -62,15 +44,12 @@
 			next-level-cache = <&L2>;
 		};
 	};
-
 	amba-bus {
-
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		ranges = <0 0xfc000000 0x2000000>;
-
 		L2: cache-controller {
 			compatible = "arm,pl310-cache";
 			reg = <0x100000 0x100000>;
@@ -78,38 +57,31 @@
 			cache-unified;
 			cache-level = <2>;
 		};
-
 		gic: interrupt-controller@1000 {
 			compatible = "arm,cortex-a9-gic";
 			#interrupt-cells = <3>;
 			#address-cells = <0>;
 			interrupt-controller;
-			/* gic dist base, gic cpu base */
 			reg = <0x1000 0x1000>, <0x100 0x100>;
 		};
-
 		sysctrl: system-controller@802000 {
 			compatible = "hisilicon,sysctrl", "syscon";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x802000 0x1000>;
 			reg = <0x802000 0x1000>;
-
 			smp-offset = <0x31c>;
 			resume-offset = <0x308>;
 			reboot-offset = <0x4>;
-
 			clock: clock@0 {
 				compatible = "hisilicon,hi3620-clock";
 				reg = <0 0x10000>;
 				#clock-cells = <1>;
 			};
 		};
-
 		dual_timer0: dual_timer@800000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x800000 0x1000>;
-			/* timer00 & timer01 */
 			interrupts = <0 0 4>, <0 1 4>;
 			clocks = <&clock HI3620_TIMER0_MUX>,
 				 <&clock HI3620_TIMER1_MUX>,
@@ -117,11 +89,9 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		dual_timer1: dual_timer@801000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0x801000 0x1000>;
-			/* timer10 & timer11 */
 			interrupts = <0 2 4>, <0 3 4>;
 			clocks = <&clock HI3620_TIMER2_MUX>,
 				 <&clock HI3620_TIMER3_MUX>,
@@ -129,11 +99,9 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		dual_timer2: dual_timer@a01000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xa01000 0x1000>;
-			/* timer20 & timer21 */
 			interrupts = <0 4 4>, <0 5 4>;
 			clocks = <&clock HI3620_TIMER4_MUX>,
 				 <&clock HI3620_TIMER5_MUX>,
@@ -141,11 +109,9 @@
 			clock-names = "timer0lck", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		dual_timer3: dual_timer@a02000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xa02000 0x1000>;
-			/* timer30 & timer31 */
 			interrupts = <0 6 4>, <0 7 4>;
 			clocks = <&clock HI3620_TIMER6_MUX>,
 				 <&clock HI3620_TIMER7_MUX>,
@@ -153,11 +119,9 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		dual_timer4: dual_timer@a03000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xa03000 0x1000>;
-			/* timer40 & timer41 */
 			interrupts = <0 96 4>, <0 97 4>;
 			clocks = <&clock HI3620_TIMER8_MUX>,
 				 <&clock HI3620_TIMER9_MUX>,
@@ -165,13 +129,11 @@
 			clock-names = "timer0clk", "timer1clk", "apb_pclk";
 			status = "disabled";
 		};
-
 		timer5: timer@600 {
 			compatible = "arm,cortex-a9-twd-timer";
 			reg = <0x600 0x20>;
 			interrupts = <1 13 0xf01>;
 		};
-
 		uart0: serial@b00000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xb00000 0x1000>;
@@ -180,7 +142,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		uart1: serial@b01000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xb01000 0x1000>;
@@ -189,7 +150,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		uart2: serial@b02000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xb02000 0x1000>;
@@ -198,7 +158,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		uart3: serial@b03000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xb03000 0x1000>;
@@ -207,7 +166,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		uart4: serial@b04000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xb04000 0x1000>;
@@ -216,7 +174,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio0: gpio@806000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x806000 0x1000>;
@@ -230,7 +187,6 @@
 			clocks = <&clock HI3620_GPIOCLK0>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio1: gpio@807000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x807000 0x1000>;
@@ -245,7 +201,6 @@
 			clocks = <&clock HI3620_GPIOCLK1>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio2: gpio@808000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x808000 0x1000>;
@@ -260,7 +215,6 @@
 			clocks = <&clock HI3620_GPIOCLK2>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio3: gpio@809000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x809000 0x1000>;
@@ -275,7 +229,6 @@
 			clocks = <&clock HI3620_GPIOCLK3>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio4: gpio@80a000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80a000 0x1000>;
@@ -290,7 +243,6 @@
 			clocks = <&clock HI3620_GPIOCLK4>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio5: gpio@80b000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80b000 0x1000>;
@@ -305,7 +257,6 @@
 			clocks = <&clock HI3620_GPIOCLK5>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio6: gpio@80c000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80c000 0x1000>;
@@ -320,7 +271,6 @@
 			clocks = <&clock HI3620_GPIOCLK6>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio7: gpio@80d000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80d000 0x1000>;
@@ -335,7 +285,6 @@
 			clocks = <&clock HI3620_GPIOCLK7>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio8: gpio@80e000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80e000 0x1000>;
@@ -350,7 +299,6 @@
 			clocks = <&clock HI3620_GPIOCLK8>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio9: gpio@80f000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x80f000 0x1000>;
@@ -365,7 +313,6 @@
 			clocks = <&clock HI3620_GPIOCLK9>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio10: gpio@810000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x810000 0x1000>;
@@ -379,7 +326,6 @@
 			clocks = <&clock HI3620_GPIOCLK10>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio11: gpio@811000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x811000 0x1000>;
@@ -394,7 +340,6 @@
 			clocks = <&clock HI3620_GPIOCLK11>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio12: gpio@812000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x812000 0x1000>;
@@ -409,7 +354,6 @@
 			clocks = <&clock HI3620_GPIOCLK12>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio13: gpio@813000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x813000 0x1000>;
@@ -424,7 +368,6 @@
 			clocks = <&clock HI3620_GPIOCLK13>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio14: gpio@814000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x814000 0x1000>;
@@ -439,7 +382,6 @@
 			clocks = <&clock HI3620_GPIOCLK14>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio15: gpio@815000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x815000 0x1000>;
@@ -454,7 +396,6 @@
 			clocks = <&clock HI3620_GPIOCLK15>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio16: gpio@816000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x816000 0x1000>;
@@ -469,7 +410,6 @@
 			clocks = <&clock HI3620_GPIOCLK16>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio17: gpio@817000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x817000 0x1000>;
@@ -484,7 +424,6 @@
 			clocks = <&clock HI3620_GPIOCLK17>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio18: gpio@818000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x818000 0x1000>;
@@ -499,7 +438,6 @@
 			clocks = <&clock HI3620_GPIOCLK18>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio19: gpio@819000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x819000 0x1000>;
@@ -513,7 +451,6 @@
 			clocks = <&clock HI3620_GPIOCLK19>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio20: gpio@81a000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x81a000 0x1000>;
@@ -527,7 +464,6 @@
 			clocks = <&clock HI3620_GPIOCLK20>;
 			clock-names = "apb_pclk";
 		};
-
 		gpio21: gpio@81b000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x81b000 0x1000>;
@@ -540,7 +476,6 @@
 			clocks = <&clock HI3620_GPIOCLK21>;
 			clock-names = "apb_pclk";
 		};
-
 		pmx0: pinmux@803000 {
 			compatible = "pinctrl-single";
 			reg = <0x803000 0x188>;
@@ -548,27 +483,22 @@
 			#size-cells = <0>;
 			#pinctrl-cells = <1>;
 			#gpio-range-cells = <3>;
-
 			pinctrl-single,register-width = <32>;
 			pinctrl-single,function-mask = <7>;
-			/* pin base, nr pins & gpio function */
 			pinctrl-single,gpio-range = <&range 0 3 0 &range 3 9 1
 						&range 12 1 0 &range 13 29 1
 						&range 43 1 0 &range 44 49 1
 						&range 94 1 1 &range 96 2 1>;
-
 			range: gpio-range {
 				#pinctrl-single,gpio-range-cells = <3>;
 			};
 		};
-
 		pmx1: pinmux@803800 {
 			compatible = "pinconf-single";
 			reg = <0x803800 0x2dc>;
 			#address-cells = <1>;
 			#size-cells = <0>;
 			#pinctrl-cells = <1>;
-
 			pinctrl-single,register-width = <32>;
 		};
 	};

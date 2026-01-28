@@ -1,18 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __SOUND_MIXER_OSS_H
 #define __SOUND_MIXER_OSS_H
-
-/*
- *  OSS MIXER API
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
-
 #if IS_ENABLED(CONFIG_SND_MIXER_OSS)
-
 #define SNDRV_OSS_MAX_MIXERS	32
-
 struct snd_mixer_oss_file;
-
 struct snd_mixer_oss_slot {
 	int number;
 	unsigned int stereo: 1;
@@ -33,13 +23,12 @@ struct snd_mixer_oss_slot {
 	void (*private_free)(struct snd_mixer_oss_slot *slot);
 	int volume[2];
 };
-
 struct snd_mixer_oss {
 	struct snd_card *card;
 	char id[16];
 	char name[32];
-	struct snd_mixer_oss_slot slots[SNDRV_OSS_MAX_MIXERS]; /* OSS mixer slots */
-	unsigned int mask_recsrc;		/* exclusive recsrc mask */
+	struct snd_mixer_oss_slot slots[SNDRV_OSS_MAX_MIXERS];  
+	unsigned int mask_recsrc;		 
 	int (*get_recsrc)(struct snd_mixer_oss_file *fmixer,
 			  unsigned int *active_index);
 	int (*put_recsrc)(struct snd_mixer_oss_file *fmixer,
@@ -49,18 +38,13 @@ struct snd_mixer_oss {
 	struct mutex reg_mutex;
 	struct snd_info_entry *proc_entry;
 	int oss_dev_alloc;
-	/* --- */
 	int oss_recsrc;
 };
-
 struct snd_mixer_oss_file {
 	struct snd_card *card;
 	struct snd_mixer_oss *mixer;
 };
-
 int snd_mixer_oss_ioctl_card(struct snd_card *card,
 			     unsigned int cmd, unsigned long arg);
-
-#endif /* CONFIG_SND_MIXER_OSS */
-
-#endif /* __SOUND_MIXER_OSS_H */
+#endif  
+#endif  

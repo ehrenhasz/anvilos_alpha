@@ -1,28 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
-
 #ifndef __REALTEK_RTSX_SCSI_H
 #define __REALTEK_RTSX_SCSI_H
-
 #include "rtsx.h"
 #include "rtsx_chip.h"
-
 #define MS_SP_CMND		0xFA
 #define MS_FORMAT		0xA0
 #define GET_MS_INFORMATION	0xB0
-
 #define VENDOR_CMND		0xF0
-
 #define READ_STATUS		0x09
-
 #define READ_EEPROM		0x04
 #define WRITE_EEPROM		0x05
 #define READ_MEM		0x0D
@@ -31,9 +15,7 @@
 #define GET_SD_CSD		0x14
 #define TOGGLE_GPIO		0x15
 #define TRACE_MSG		0x18
-
 #define SCSI_APP_CMD		0x10
-
 #define PP_READ10		0x1A
 #define PP_WRITE10		0x0A
 #define READ_HOST_REG		0x1D
@@ -54,9 +36,7 @@
 #define READ_EFUSE		0x14
 #define WRITE_CFG		0x0E
 #define READ_CFG		0x1E
-
 #define SPI_VENDOR_COMMAND		0x1C
-
 #define	SCSI_SPI_GETSTATUS		0x00
 #define	SCSI_SPI_SETPARAMETER		0x01
 #define	SCSI_SPI_READFALSHID		0x02
@@ -64,41 +44,30 @@
 #define	SCSI_SPI_WRITEFLASH		0x04
 #define	SCSI_SPI_WRITEFLASHSTATUS	0x05
 #define	SCSI_SPI_ERASEFLASH		0x06
-
 #define INIT_BATCHCMD		0x41
 #define ADD_BATCHCMD		0x42
 #define SEND_BATCHCMD		0x43
 #define GET_BATCHRSP		0x44
-
 #define CHIP_NORMALMODE		0x00
 #define CHIP_DEBUGMODE		0x01
-
-/* SD Pass Through Command Extension */
 #define SD_PASS_THRU_MODE	0xD0
 #define SD_EXECUTE_NO_DATA	0xD1
 #define SD_EXECUTE_READ		0xD2
 #define SD_EXECUTE_WRITE	0xD3
 #define SD_GET_RSP		0xD4
 #define SD_HW_RST		0xD6
-
 #ifdef SUPPORT_MAGIC_GATE
-#define CMD_MSPRO_MG_RKEY	0xA4   /* Report Key Command */
-#define CMD_MSPRO_MG_SKEY	0xA3   /* Send Key Command */
-
-/* CBWCB field: key class */
-#define KC_MG_R_PRO		0xBE   /* MG-R PRO*/
-
-/* CBWCB field: key format */
-#define KF_SET_LEAF_ID		0x31   /* Set Leaf ID */
-#define KF_GET_LOC_EKB		0x32   /* Get Local EKB */
-#define KF_CHG_HOST		0x33   /* Challenge (host) */
-#define KF_RSP_CHG		0x34   /* Response and Challenge (device)  */
-#define KF_RSP_HOST		0x35   /* Response (host) */
-#define KF_GET_ICV		0x36   /* Get ICV */
-#define KF_SET_ICV		0x37   /* SSet ICV */
+#define CMD_MSPRO_MG_RKEY	0xA4    
+#define CMD_MSPRO_MG_SKEY	0xA3    
+#define KC_MG_R_PRO		0xBE    
+#define KF_SET_LEAF_ID		0x31    
+#define KF_GET_LOC_EKB		0x32    
+#define KF_CHG_HOST		0x33    
+#define KF_RSP_CHG		0x34    
+#define KF_RSP_HOST		0x35    
+#define KF_GET_ICV		0x36    
+#define KF_SET_ICV		0x37    
 #endif
-
-/* Sense type */
 #define	SENSE_TYPE_NO_SENSE				0
 #define	SENSE_TYPE_MEDIA_CHANGE				1
 #define	SENSE_TYPE_MEDIA_NOT_PRESENT			2
@@ -117,15 +86,12 @@
 #define SENSE_TYPE_MG_WRITE_ERR				0x0e
 #endif
 #ifdef SUPPORT_SD_LOCK
-/* FOR Locked SD card*/
 #define SENSE_TYPE_MEDIA_READ_FORBIDDEN			0x10
 #endif
-
 void scsi_show_command(struct rtsx_chip *chip);
 void set_sense_type(struct rtsx_chip *chip, unsigned int lun, int sense_type);
 void set_sense_data(struct rtsx_chip *chip, unsigned int lun, u8 err_code,
 		    u8 sense_key, u32 info, u8 asc, u8 ascq,
 		    u8 sns_key_info0, u16 sns_key_info1);
 int rtsx_scsi_handler(struct scsi_cmnd *srb, struct rtsx_chip *chip);
-
-#endif   /* __REALTEK_RTSX_SCSI_H */
+#endif    

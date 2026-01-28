@@ -1,30 +1,5 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _gc_11_0_0_DEFAULT_HEADER
 #define _gc_11_0_0_DEFAULT_HEADER
-
-
-// addressBlock: gc_sdma0_sdma0dec
 #define regSDMA0_DEC_START_DEFAULT                                                0x00000000
 #define regSDMA0_F32_MISC_CNTL_DEFAULT                                            0x00000000
 #define regSDMA0_GLOBAL_TIMESTAMP_LO_DEFAULT                                      0x00000000
@@ -449,9 +424,6 @@
 #define regSDMA0_QUEUE7_MIDCMD_DATA9_DEFAULT                                      0x00000000
 #define regSDMA0_QUEUE7_MIDCMD_DATA10_DEFAULT                                     0x00000000
 #define regSDMA0_QUEUE7_MIDCMD_CNTL_DEFAULT                                       0x00000000
-
-
-// addressBlock: gc_sdma0_sdma1dec
 #define regSDMA1_DEC_START_DEFAULT                                                0x00000000
 #define regSDMA1_F32_MISC_CNTL_DEFAULT                                            0x00000000
 #define regSDMA1_GLOBAL_TIMESTAMP_LO_DEFAULT                                      0x00000000
@@ -876,9 +848,6 @@
 #define regSDMA1_QUEUE7_MIDCMD_DATA9_DEFAULT                                      0x00000000
 #define regSDMA1_QUEUE7_MIDCMD_DATA10_DEFAULT                                     0x00000000
 #define regSDMA1_QUEUE7_MIDCMD_CNTL_DEFAULT                                       0x00000000
-
-
-// addressBlock: gc_grbmdec
 #define regGRBM_CNTL_DEFAULT                                                      0x00000018
 #define regGRBM_SKEW_CNTL_DEFAULT                                                 0x00000020
 #define regGRBM_STATUS2_DEFAULT                                                   0x00000000
@@ -921,9 +890,6 @@
 #define regGRBM_SCRATCH_REG6_DEFAULT                                              0x00000000
 #define regGRBM_SCRATCH_REG7_DEFAULT                                              0x00000000
 #define regVIOLATION_DATA_ASYNC_VF_PROG_DEFAULT                                   0x00000000
-
-
-// addressBlock: gc_cpdec
 #define regCP_CPC_DEBUG_CNTL_DEFAULT                                              0x00000000
 #define regCP_CPC_DEBUG_DATA_DEFAULT                                              0x00000000
 #define regCP_CPC_STATUS_DEFAULT                                                  0x00000000
@@ -983,9 +949,6 @@
 #define regCP_DEBUG_CNTL_DEFAULT                                                  0x00000000
 #define regCP_DEBUG_DATA_DEFAULT                                                  0x00000000
 #define regCP_PRIV_VIOLATION_ADDR_DEFAULT                                         0x00000000
-
-
-// addressBlock: gc_padec
 #define regVGT_DMA_DATA_FIFO_DEPTH_DEFAULT                                        0x00000200
 #define regVGT_DMA_REQ_FIFO_DEPTH_DEFAULT                                         0x00000020
 #define regVGT_DRAW_INIT_FIFO_DEPTH_DEFAULT                                       0x00000020
@@ -1014,9 +977,6 @@
 #define regPA_CL_ENHANCE_DEFAULT                                                  0x00080007
 #define regPA_SU_CNTL_STATUS_DEFAULT                                              0x00000000
 #define regPA_SC_FIFO_DEPTH_CNTL_DEFAULT                                          0x00000034
-
-
-// addressBlock: gc_sqdec
 #define regSQ_CONFIG_DEFAULT                                                      0x00180000
 #define regSQC_CONFIG_DEFAULT                                                     0x00028800
 #define regLDS_CONFIG_DEFAULT                                                     0x00000000
@@ -1049,9 +1009,6 @@
 #define regSQ_IND_INDEX_DEFAULT                                                   0x00000000
 #define regSQ_IND_DATA_DEFAULT                                                    0x00000000
 #define regSQ_CMD_DEFAULT                                                         0x00000000
-
-
-// addressBlock: gc_shsdec
 #define regSX_DEBUG_1_DEFAULT                                                     0x00000020
 #define regSPI_PS_MAX_WAVE_ID_DEFAULT                                             0x020000ff
 #define regSPI_GFX_CNTL_DEFAULT                                                   0x00000000
@@ -1105,9 +1062,6 @@
 #define regSPI_P1_TRAP_SCREEN_PSMA_LO_DEFAULT                                     0x00000000
 #define regSPI_P1_TRAP_SCREEN_PSMA_HI_DEFAULT                                     0x00000000
 #define regSPI_P1_TRAP_SCREEN_GPR_MIN_DEFAULT                                     0x00000000
-
-
-// addressBlock: gc_tpdec
 #define regTD_STATUS_DEFAULT                                                      0x00000000
 #define regTD_DSM_CNTL_DEFAULT                                                    0x00000000
 #define regTD_DSM_CNTL2_DEFAULT                                                   0x00000000
@@ -1117,9 +1071,6 @@
 #define regTA_CNTL2_DEFAULT                                                       0x00000000
 #define regTA_STATUS_DEFAULT                                                      0x00000000
 #define regTA_SCRATCH_DEFAULT                                                     0x00000000
-
-
-// addressBlock: gc_gdsdec
 #define regGDS_CONFIG_DEFAULT                                                     0x00000000
 #define regGDS_CNTL_STATUS_DEFAULT                                                0x00000000
 #define regGDS_ENHANCE_DEFAULT                                                    0x00000000
@@ -1132,9 +1083,6 @@
 #define regGDS_EDC_OA_PHY_CNT_DEFAULT                                             0x00000000
 #define regGDS_EDC_OA_PIPE_CNT_DEFAULT                                            0x00000000
 #define regGDS_DSM_CNTL2_DEFAULT                                                  0x00000000
-
-
-// addressBlock: gc_rbdec
 #define regDB_DEBUG_DEFAULT                                                       0x00000000
 #define regDB_DEBUG2_DEFAULT                                                      0x00000420
 #define regDB_DEBUG3_DEFAULT                                                      0x00000000
@@ -1179,9 +1127,6 @@
 #define regCB_DCC_CONFIG2_DEFAULT                                                 0x00000000
 #define regCHICKEN_BITS_DEFAULT                                                   0x00000000
 #define regCB_CACHE_EVICT_POINTS_DEFAULT                                          0x0410051a
-
-
-// addressBlock: gc_gceadec2
 #define regGCEA_MISC_DEFAULT                                                      0x0de8bff0
 #define regGCEA_LATENCY_SAMPLING_DEFAULT                                          0x00000000
 #define regGCEA_MAM_CTRL2_DEFAULT                                                 0x0002ba00
@@ -1200,33 +1145,18 @@
 #define regGCEA_PROBE_MAP_DEFAULT                                                 0x0000aaaa
 #define regGCEA_ERR_STATUS_DEFAULT                                                0x00000300
 #define regGCEA_MISC2_DEFAULT                                                     0x00000000
-
-
-// addressBlock: gc_spipdec2
 #define regSPI_PQEV_CTRL_DEFAULT                                                  0x00ff1008
 #define regSPI_EXP_THROTTLE_CTRL_DEFAULT                                          0x08782e2e
-
-
-// addressBlock: gc_gceadec3
 #define regGCEA_RRET_MEM_RESERVE_DEFAULT                                          0x00000000
 #define regGCEA_EDC_CNT3_DEFAULT                                                  0x00000000
 #define regGCEA_SDP_ENABLE_DEFAULT                                                0x00000000
-
-
-// addressBlock: gc_pmmdec
 #define regGCR_PIO_CNTL_DEFAULT                                                   0x80000000
 #define regGCR_PIO_DATA_DEFAULT                                                   0x00000000
 #define regPMM_CNTL_DEFAULT                                                       0x00000040
 #define regPMM_STATUS_DEFAULT                                                     0x00000000
-
-
-// addressBlock: gc_utcl1dec
 #define regUTCL1_CTRL_1_DEFAULT                                                   0x00000000
 #define regUTCL1_ALOG_DEFAULT                                                     0x00186482
 #define regUTCL1_STATUS_DEFAULT                                                   0x00000000
-
-
-// addressBlock: gc_gcvmsharedpfdec
 #define regGCMC_VM_NB_TOP_OF_DRAM_SLOT1_DEFAULT                                   0x00000000
 #define regGCMC_VM_NB_LOWER_TOP_OF_DRAM2_DEFAULT                                  0x00000000
 #define regGCMC_VM_NB_UPPER_TOP_OF_DRAM2_DEFAULT                                  0x00000000
@@ -1248,9 +1178,6 @@
 #define regGCMC_VM_FB_NOALLOC_CNTL_DEFAULT                                        0x00000010
 #define regGCUTCL2_HARVEST_BYPASS_GROUPS_DEFAULT                                  0x00000000
 #define regGCUTCL2_GROUP_RET_FAULT_STATUS_DEFAULT                                 0x00000000
-
-
-// addressBlock: gc_gcvml2pfdec
 #define regGCVM_L2_CNTL_DEFAULT                                                   0x00080602
 #define regGCVM_L2_CNTL2_DEFAULT                                                  0x00000000
 #define regGCVM_L2_CNTL3_DEFAULT                                                  0x80120007
@@ -1299,9 +1226,6 @@
 #define regGCUTCL2_CREDIT_SAFETY_GROUP_CLIENTS_INVREQ_NOCDC_DEFAULT               0x00000000
 #define regGCVML2_CREDIT_SAFETY_IH_FAULT_INTERRUPT_DEFAULT                        0x00000000
 #define regGCVML2_WALKER_CREDIT_SAFETY_FETCH_RDREQ_DEFAULT                        0x00000000
-
-
-// addressBlock: gc_gcvmsharedvcdec
 #define regGCMC_VM_FB_LOCATION_BASE_DEFAULT                                       0x00000000
 #define regGCMC_VM_FB_LOCATION_TOP_DEFAULT                                        0x00000000
 #define regGCMC_VM_AGP_TOP_DEFAULT                                                0x00000000
@@ -1310,9 +1234,6 @@
 #define regGCMC_VM_SYSTEM_APERTURE_LOW_ADDR_DEFAULT                               0x00000000
 #define regGCMC_VM_SYSTEM_APERTURE_HIGH_ADDR_DEFAULT                              0x00000000
 #define regGCMC_VM_MX_L1_TLB_CNTL_DEFAULT                                         0x00000501
-
-
-// addressBlock: gc_gcvml2vcdec
 #define regGCVM_CONTEXT0_CNTL_DEFAULT                                             0x01fffe00
 #define regGCVM_CONTEXT1_CNTL_DEFAULT                                             0x01fffe00
 #define regGCVM_CONTEXT2_CNTL_DEFAULT                                             0x01fffe00
@@ -1533,9 +1454,6 @@
 #define regGCVM_L2_CONTEXT13_PER_PFVF_PTE_CACHE_FRAGMENT_SIZES_DEFAULT            0x00001c80
 #define regGCVM_L2_CONTEXT14_PER_PFVF_PTE_CACHE_FRAGMENT_SIZES_DEFAULT            0x00001c80
 #define regGCVM_L2_CONTEXT15_PER_PFVF_PTE_CACHE_FRAGMENT_SIZES_DEFAULT            0x00001c80
-
-
-// addressBlock: gc_gceadec
 #define regGCEA_DRAM_RD_CLI2GRP_MAP0_DEFAULT                                      0xa9503aaa
 #define regGCEA_DRAM_RD_CLI2GRP_MAP1_DEFAULT                                      0xa9503aaa
 #define regGCEA_DRAM_WR_CLI2GRP_MAP0_DEFAULT                                      0xa9503aaa
@@ -1591,9 +1509,6 @@
 #define regGCEA_SDP_TAG_RESERVE1_DEFAULT                                          0x00000000
 #define regGCEA_SDP_VCC_RESERVE0_DEFAULT                                          0x00000000
 #define regGCEA_SDP_VCC_RESERVE1_DEFAULT                                          0x00000000
-
-
-// addressBlock: gc_shdec
 #define regSPI_SHADER_PGM_RSRC4_PS_DEFAULT                                        0x00000000
 #define regSPI_SHADER_PGM_CHKSUM_PS_DEFAULT                                       0x00000000
 #define regSPI_SHADER_PGM_RSRC3_PS_DEFAULT                                        0x00000000
@@ -1816,9 +1731,6 @@
 #define regCOMPUTE_NOWHERE_DEFAULT                                                0x00000000
 #define regSH_RESERVED_REG0_DEFAULT                                               0x00000000
 #define regSH_RESERVED_REG1_DEFAULT                                               0x00000000
-
-
-// addressBlock: gc_cppdec
 #define regCP_CU_MASK_ADDR_LO_DEFAULT                                             0x00000000
 #define regCP_CU_MASK_ADDR_HI_DEFAULT                                             0x00000000
 #define regCP_CU_MASK_CNTL_DEFAULT                                                0x00000000
@@ -2052,9 +1964,6 @@
 #define regCP_SD_CNTL_DEFAULT                                                     0x0000046f
 #define regCP_SOFT_RESET_CNTL_DEFAULT                                             0x00000000
 #define regCP_CPC_GFX_CNTL_DEFAULT                                                0x00000000
-
-
-// addressBlock: gc_spipdec
 #define regSPI_ARB_PRIORITY_DEFAULT                                               0x00000000
 #define regSPI_ARB_CYCLES_0_DEFAULT                                               0x00000000
 #define regSPI_ARB_CYCLES_1_DEFAULT                                               0x00000000
@@ -2072,9 +1981,6 @@
 #define regSPI_GDBG_PER_VMID_CNTL_DEFAULT                                         0x00000000
 #define regSPI_COMPUTE_QUEUE_RESET_DEFAULT                                        0x00000000
 #define regSPI_COMPUTE_WF_CTX_SAVE_DEFAULT                                        0x00000000
-
-
-// addressBlock: gc_cpphqddec
 #define regCP_HPD_UTCL1_CNTL_DEFAULT                                              0x00000000
 #define regCP_HPD_UTCL1_ERROR_DEFAULT                                             0x00000000
 #define regCP_HPD_UTCL1_ERROR_ADDR_DEFAULT                                        0x00000000
@@ -2144,9 +2050,6 @@
 #define regCP_HQD_DDID_INFLIGHT_COUNT_DEFAULT                                     0x00000000
 #define regCP_HQD_DDID_DELTA_RPT_COUNT_DEFAULT                                    0x00000000
 #define regCP_HQD_DEQUEUE_STATUS_DEFAULT                                          0x00000000
-
-
-// addressBlock: gc_tcpdec
 #define regTCP_WATCH0_ADDR_H_DEFAULT                                              0x00000000
 #define regTCP_WATCH0_ADDR_L_DEFAULT                                              0x00000000
 #define regTCP_WATCH0_CNTL_DEFAULT                                                0x00000000
@@ -2159,9 +2062,6 @@
 #define regTCP_WATCH3_ADDR_H_DEFAULT                                              0x00000000
 #define regTCP_WATCH3_ADDR_L_DEFAULT                                              0x00000000
 #define regTCP_WATCH3_CNTL_DEFAULT                                                0x00000000
-
-
-// addressBlock: gc_gdspdec
 #define regGDS_VMID0_BASE_DEFAULT                                                 0x00000000
 #define regGDS_VMID0_SIZE_DEFAULT                                                 0x00001000
 #define regGDS_VMID1_BASE_DEFAULT                                                 0x00000000
@@ -2248,9 +2148,6 @@
 #define regGDS_GS_CTXSW_CNT2_DEFAULT                                              0x00000000
 #define regGDS_GS_CTXSW_CNT3_DEFAULT                                              0x00000000
 #define regGDS_MEMORY_CLEAN_DEFAULT                                               0x00000000
-
-
-// addressBlock: gc_gfxdec0
 #define regDB_RENDER_CONTROL_DEFAULT                                              0x00000000
 #define regDB_COUNT_CONTROL_DEFAULT                                               0x00000000
 #define regDB_DEPTH_VIEW_DEFAULT                                                  0x00000000
@@ -2770,21 +2667,12 @@
 #define regCB_COLOR5_ATTRIB3_DEFAULT                                              0x00000000
 #define regCB_COLOR6_ATTRIB3_DEFAULT                                              0x00000000
 #define regCB_COLOR7_ATTRIB3_DEFAULT                                              0x00000000
-
-
-// addressBlock: gc_pfvf_cpdec
 #define regCONFIG_RESERVED_REG0_DEFAULT                                           0x00000000
 #define regCONFIG_RESERVED_REG1_DEFAULT                                           0x00000000
 #define regCP_MEC_CNTL_DEFAULT                                                    0x50000000
 #define regCP_ME_CNTL_DEFAULT                                                     0x15000000
-
-
-// addressBlock: gc_pfvf_grbmdec
 #define regGRBM_GFX_CNTL_DEFAULT                                                  0x00000000
 #define regGRBM_NOWHERE_DEFAULT                                                   0x00000000
-
-
-// addressBlock: gc_pfvf_padec
 #define regPA_SC_VRS_SURFACE_CNTL_DEFAULT                                         0x42000000
 #define regPA_SC_ENHANCE_DEFAULT                                                  0x08000009
 #define regPA_SC_ENHANCE_1_DEFAULT                                                0x040c2000
@@ -2815,9 +2703,6 @@
 #define regPA_PH_INTERFACE_FIFO_SIZE_DEFAULT                                      0x00000034
 #define regPA_PH_ENHANCE_DEFAULT                                                  0x00001000
 #define regPA_SC_VRS_SURFACE_CNTL_1_DEFAULT                                       0x55488100
-
-
-// addressBlock: gc_pfvfdec_rlc
 #define regRLC_SAFE_MODE_DEFAULT                                                  0x00000000
 #define regRLC_SPM_SAMPLE_CNT_DEFAULT                                             0x00000000
 #define regRLC_SPM_MC_CNTL_DEFAULT                                                0x00000000
@@ -2837,9 +2722,6 @@
 #define regRLC_PACE_SPARE_INT_DEFAULT                                             0x00000000
 #define regRLC_PACE_SPARE_INT_1_DEFAULT                                           0x00000000
 #define regRLC_RLCV_SPARE_INT_1_DEFAULT                                           0x00000000
-
-
-// addressBlock: gc_pfvf_sqdec
 #define regSQ_RUNTIME_CONFIG_DEFAULT                                              0x00000000
 #define regSQ_DEBUG_STS_GLOBAL_DEFAULT                                            0x00000000
 #define regSQ_DEBUG_STS_GLOBAL2_DEFAULT                                           0x00000000
@@ -2850,20 +2732,11 @@
 #define regSQ_SHADER_TBA_HI_DEFAULT                                               0x00000000
 #define regSQ_SHADER_TMA_LO_DEFAULT                                               0x00000000
 #define regSQ_SHADER_TMA_HI_DEFAULT                                               0x00000000
-
-
-// addressBlock: gc_pfonly_cpdec
 #define regCP_DEBUG_2_DEFAULT                                                     0x00000000
 #define regCP_FETCHER_SOURCE_DEFAULT                                              0x00000000
-
-
-// addressBlock: gc_pfonly_cpphqddec
 #define regCP_HPD_MES_ROQ_OFFSETS_DEFAULT                                         0x00400000
 #define regCP_HPD_ROQ_OFFSETS_DEFAULT                                             0x00200604
 #define regCP_HPD_STATUS0_DEFAULT                                                 0x01000000
-
-
-// addressBlock: gc_rmi_rmidec
 #define regRMI_GENERAL_CNTL_DEFAULT                                               0x01e00000
 #define regRMI_GENERAL_CNTL1_DEFAULT                                              0x00000201
 #define regRMI_GENERAL_STATUS_DEFAULT                                             0x00000000
@@ -2893,9 +2766,6 @@
 #define regRMI_SPARE_1_DEFAULT                                                    0x00000a00
 #define regRMI_SPARE_2_DEFAULT                                                    0x00000000
 #define regCC_RMI_REDUNDANCY_DEFAULT                                              0x00000010
-
-
-// addressBlock: gc_pfonly_didtdec
 #define regDIDT_INDEX_AUTO_INCR_EN_DEFAULT                                        0x00000001
 #define regDIDT_EDC_CTRL_DEFAULT                                                  0x00003800
 #define regDIDT_EDC_THROTTLE_CTRL_DEFAULT                                         0x00000010
@@ -2910,9 +2780,6 @@
 #define regDIDT_EDC_ROLLING_POWER_DELTA_DEFAULT                                   0x00000000
 #define regDIDT_IND_INDEX_DEFAULT                                                 0x00000000
 #define regDIDT_IND_DATA_DEFAULT                                                  0x00000000
-
-
-// addressBlock: gc_pfonly_spidec
 #define regSPI_GDBG_WAVE_CNTL_DEFAULT                                             0x00000000
 #define regSPI_GDBG_TRAP_CONFIG_DEFAULT                                           0x00000000
 #define regSPI_GDBG_WAVE_CNTL3_DEFAULT                                            0x00000000
@@ -2920,9 +2787,6 @@
 #define regSPI_FEATURE_CTRL_DEFAULT                                               0x000013e0
 #define regSPI_SHADER_RSRC_LIMIT_CTRL_DEFAULT                                     0x00000000
 #define regSPI_COMPUTE_WF_CTX_SAVE_STATUS_DEFAULT                                 0x00000000
-
-
-// addressBlock: gc_pfonly_utcl1dec
 #define regUTCL1_CTRL_0_DEFAULT                                                   0x00001168
 #define regUTCL1_UTCL0_INVREQ_DISABLE_DEFAULT                                     0x00000000
 #define regUTCL1_CTRL_2_DEFAULT                                                   0x0000060f
@@ -2930,33 +2794,18 @@
 #define regGCRD_SA0_TARGETS_DISABLE_DEFAULT                                       0x00000000
 #define regGCRD_SA1_TARGETS_DISABLE_DEFAULT                                       0x00000000
 #define regGCRD_CREDIT_SAFE_DEFAULT                                               0x00000044
-
-
-// addressBlock: gc_pfonly_pmmdec
 #define regGCR_GENERAL_CNTL_DEFAULT                                               0x00f00400
 #define regGCR_CMD_STATUS_DEFAULT                                                 0x00000000
 #define regGCR_SPARE_DEFAULT                                                      0x00482d00
 #define regPMM_CNTL2_DEFAULT                                                      0x60000000
-
-
-// addressBlock: gc_pfonly_tcpdec
 #define regTCP_INVALIDATE_DEFAULT                                                 0x00000000
 #define regTCP_STATUS_DEFAULT                                                     0x00000000
 #define regTCP_CNTL2_DEFAULT                                                      0x0000200a
 #define regTCP_DEBUG_INDEX_DEFAULT                                                0x00000000
 #define regTCP_DEBUG_DATA_DEFAULT                                                 0x00000000
-
-
-// addressBlock: gc_pfonly_gdsdec
 #define regGDS_ENHANCE2_DEFAULT                                                   0x00000000
 #define regGDS_OA_CGPG_RESTORE_DEFAULT                                            0x00000000
-
-
-// addressBlock: gc_sedcdec
 #define regSEDC_GL1_GL2_OVERRIDES_DEFAULT                                         0x00002828
-
-
-// addressBlock: gc_pfonly_gccacdec
 #define regGC_CAC_CTRL_1_DEFAULT                                                  0x00000108
 #define regGC_CAC_CTRL_2_DEFAULT                                                  0x00007fc4
 #define regGC_CAC_AGGR_LOWER_DEFAULT                                              0x00000000
@@ -3130,9 +2979,6 @@
 #define regSE_CAC_WINDOW_GFXCLK_CYCLE_DEFAULT                                     0x00000000
 #define regSE_CAC_IND_INDEX_DEFAULT                                               0x00000000
 #define regSE_CAC_IND_DATA_DEFAULT                                                0x00000000
-
-
-// addressBlock: gc_pfonly2_spidec
 #define regSPI_RESOURCE_RESERVE_CU_0_DEFAULT                                      0x00000000
 #define regSPI_RESOURCE_RESERVE_CU_1_DEFAULT                                      0x00000000
 #define regSPI_RESOURCE_RESERVE_CU_2_DEFAULT                                      0x00000000
@@ -3165,9 +3011,6 @@
 #define regSPI_RESOURCE_RESERVE_EN_CU_13_DEFAULT                                  0x00000000
 #define regSPI_RESOURCE_RESERVE_EN_CU_14_DEFAULT                                  0x00000000
 #define regSPI_RESOURCE_RESERVE_EN_CU_15_DEFAULT                                  0x00000000
-
-
-// addressBlock: gc_gfxudec
 #define regCP_EOP_DONE_ADDR_LO_DEFAULT                                            0x00000000
 #define regCP_EOP_DONE_ADDR_HI_DEFAULT                                            0x00000000
 #define regCP_EOP_DONE_DATA_LO_DEFAULT                                            0x00000000
@@ -3456,9 +3299,6 @@
 #define regSPI_GS_THROTTLE_CNTL2_DEFAULT                                          0x0001544d
 #define regSPI_ATTRIBUTE_RING_BASE_DEFAULT                                        0x00000000
 #define regSPI_ATTRIBUTE_RING_SIZE_DEFAULT                                        0x00020000
-
-
-// addressBlock: gc_cprs64dec
 #define regCP_MES_PRGRM_CNTR_START_DEFAULT                                        0x00000800
 #define regCP_MES_INTR_ROUTINE_START_DEFAULT                                      0x00000000
 #define regCP_MES_MTVEC_LO_DEFAULT                                                0x00000000
@@ -3896,9 +3736,6 @@
 #define regCP_GFX_RS64_DC_APERTURE15_MASK1_DEFAULT                                0x00000000
 #define regCP_GFX_RS64_DC_APERTURE15_CNTL1_DEFAULT                                0x0000001f
 #define regCP_GFX_RS64_INTERRUPT1_DEFAULT                                         0x00000000
-
-
-// addressBlock: gc_gusdec
 #define regGUS_IO_RD_COMBINE_FLUSH_DEFAULT                                        0x00000000
 #define regGUS_IO_WR_COMBINE_FLUSH_DEFAULT                                        0x01000000
 #define regGUS_IO_RD_PRI_AGE_RATE_DEFAULT                                         0x00000000
@@ -4002,9 +3839,6 @@
 #define regGUS_L1_SA3_DATA_U_OUT_DEFAULT                                          0x00000000
 #define regGUS_MISC3_DEFAULT                                                      0x00000000
 #define regGUS_WRRSP_FIFO_CNTL_DEFAULT                                            0x0000000a
-
-
-// addressBlock: gc_gl1dec
 #define regGL1_DRAM_BURST_MASK_DEFAULT                                            0x000000cf
 #define regGL1_ARB_STATUS_DEFAULT                                                 0x00000000
 #define regGL1I_GL1R_REP_FGCG_OVERRIDE_DEFAULT                                    0x00000000
@@ -4012,9 +3846,6 @@
 #define regGL1C_UTCL0_CNTL2_DEFAULT                                               0x00000010
 #define regGL1C_UTCL0_STATUS_DEFAULT                                              0x00000000
 #define regGL1C_UTCL0_RETRY_DEFAULT                                               0x00000040
-
-
-// addressBlock: gc_chdec
 #define regCH_ARB_CTRL_DEFAULT                                                    0x00001e02
 #define regCH_DRAM_BURST_MASK_DEFAULT                                             0x000000cf
 #define regCH_ARB_STATUS_DEFAULT                                                  0x00000000
@@ -4027,9 +3858,6 @@
 #define regCHC_STATUS_DEFAULT                                                     0x00000000
 #define regCHCG_CTRL_DEFAULT                                                      0x001830ff
 #define regCHCG_STATUS_DEFAULT                                                    0x00000000
-
-
-// addressBlock: gc_gl2dec
 #define regGL2C_CTRL_DEFAULT                                                      0xf37fff7f
 #define regGL2C_CTRL2_DEFAULT                                                     0x0402002f
 #define regGL2C_ADDR_MATCH_MASK_DEFAULT                                           0xffffffff
@@ -4054,17 +3882,11 @@
 #define regGL2A_ADDR_MATCH_SIZE_DEFAULT                                           0x00000007
 #define regGL2A_PRIORITY_CTRL_DEFAULT                                             0x00000000
 #define regGL2A_RESP_THROTTLE_CTRL_DEFAULT                                        0x00000000
-
-
-// addressBlock: gc_gl1hdec
 #define regGL1H_ARB_CTRL_DEFAULT                                                  0x00000000
 #define regGL1H_GL1_CREDITS_DEFAULT                                               0x00000000
 #define regGL1H_BURST_MASK_DEFAULT                                                0x000000cf
 #define regGL1H_BURST_CTRL_DEFAULT                                                0x00000007
 #define regGL1H_ARB_STATUS_DEFAULT                                                0x00000000
-
-
-// addressBlock: gc_perfddec
 #define regCPG_PERFCOUNTER1_LO_DEFAULT                                            0x00000000
 #define regCPG_PERFCOUNTER1_HI_DEFAULT                                            0x00000000
 #define regCPG_PERFCOUNTER0_LO_DEFAULT                                            0x00000000
@@ -4353,41 +4175,26 @@
 #define regGUS_PERFCOUNTER2_HI_DEFAULT                                            0x00000000
 #define regGUS_PERFCOUNTER_LO_DEFAULT                                             0x00000000
 #define regGUS_PERFCOUNTER_HI_DEFAULT                                             0x00000000
-
-
-// addressBlock: gc_gcvml2perfddec
 #define regGCVML2_PERFCOUNTER2_0_LO_DEFAULT                                       0x00000000
 #define regGCVML2_PERFCOUNTER2_1_LO_DEFAULT                                       0x00000000
 #define regGCVML2_PERFCOUNTER2_0_HI_DEFAULT                                       0x00000000
 #define regGCVML2_PERFCOUNTER2_1_HI_DEFAULT                                       0x00000000
-
-
-// addressBlock: gc_gcvml2prdec
 #define regGCMC_VM_L2_PERFCOUNTER_LO_DEFAULT                                      0x00000000
 #define regGCMC_VM_L2_PERFCOUNTER_HI_DEFAULT                                      0x00000000
 #define regGCUTCL2_PERFCOUNTER_LO_DEFAULT                                         0x00000000
 #define regGCUTCL2_PERFCOUNTER_HI_DEFAULT                                         0x00000000
-
-
-// addressBlock: gc_sdma0_sdma0perfddec
 #define regSDMA0_PERFCNT_PERFCOUNTER_LO_DEFAULT                                   0x00000000
 #define regSDMA0_PERFCNT_PERFCOUNTER_HI_DEFAULT                                   0x00000000
 #define regSDMA0_PERFCOUNTER0_LO_DEFAULT                                          0x00000000
 #define regSDMA0_PERFCOUNTER0_HI_DEFAULT                                          0x00000000
 #define regSDMA0_PERFCOUNTER1_LO_DEFAULT                                          0x00000000
 #define regSDMA0_PERFCOUNTER1_HI_DEFAULT                                          0x00000000
-
-
-// addressBlock: gc_sdma0_sdma1perfddec
 #define regSDMA1_PERFCNT_PERFCOUNTER_LO_DEFAULT                                   0x00000000
 #define regSDMA1_PERFCNT_PERFCOUNTER_HI_DEFAULT                                   0x00000000
 #define regSDMA1_PERFCOUNTER0_LO_DEFAULT                                          0x00000000
 #define regSDMA1_PERFCOUNTER0_HI_DEFAULT                                          0x00000000
 #define regSDMA1_PERFCOUNTER1_LO_DEFAULT                                          0x00000000
 #define regSDMA1_PERFCOUNTER1_HI_DEFAULT                                          0x00000000
-
-
-// addressBlock: gc_perfsdec
 #define regCPG_PERFCOUNTER1_SELECT_DEFAULT                                        0x000003ff
 #define regCPG_PERFCOUNTER0_SELECT1_DEFAULT                                       0x000fffff
 #define regCPG_PERFCOUNTER0_SELECT_DEFAULT                                        0x000fffff
@@ -4695,18 +4502,12 @@
 #define regGUS_PERFCOUNTER0_CFG_DEFAULT                                           0x00000000
 #define regGUS_PERFCOUNTER1_CFG_DEFAULT                                           0x00000000
 #define regGUS_PERFCOUNTER_RSLT_CNTL_DEFAULT                                      0x04000000
-
-
-// addressBlock: gc_gcvml2perfsdec
 #define regGCVML2_PERFCOUNTER2_0_SELECT_DEFAULT                                   0x000fffff
 #define regGCVML2_PERFCOUNTER2_1_SELECT_DEFAULT                                   0x000fffff
 #define regGCVML2_PERFCOUNTER2_0_SELECT1_DEFAULT                                  0x000fffff
 #define regGCVML2_PERFCOUNTER2_1_SELECT1_DEFAULT                                  0x000fffff
 #define regGCVML2_PERFCOUNTER2_0_MODE_DEFAULT                                     0x00000000
 #define regGCVML2_PERFCOUNTER2_1_MODE_DEFAULT                                     0x00000000
-
-
-// addressBlock: gc_gcvml2pldec
 #define regGCMC_VM_L2_PERFCOUNTER0_CFG_DEFAULT                                    0x00000000
 #define regGCMC_VM_L2_PERFCOUNTER1_CFG_DEFAULT                                    0x00000000
 #define regGCMC_VM_L2_PERFCOUNTER2_CFG_DEFAULT                                    0x00000000
@@ -4721,9 +4522,6 @@
 #define regGCUTCL2_PERFCOUNTER2_CFG_DEFAULT                                       0x00000000
 #define regGCUTCL2_PERFCOUNTER3_CFG_DEFAULT                                       0x00000000
 #define regGCUTCL2_PERFCOUNTER_RSLT_CNTL_DEFAULT                                  0x04000000
-
-
-// addressBlock: gc_sdma0_sdma0perfsdec
 #define regSDMA0_PERFCNT_PERFCOUNTER0_CFG_DEFAULT                                 0x0000ffff
 #define regSDMA0_PERFCNT_PERFCOUNTER1_CFG_DEFAULT                                 0x0000ffff
 #define regSDMA0_PERFCNT_PERFCOUNTER_RSLT_CNTL_DEFAULT                            0x04000000
@@ -4732,9 +4530,6 @@
 #define regSDMA0_PERFCOUNTER0_SELECT1_DEFAULT                                     0x000fffff
 #define regSDMA0_PERFCOUNTER1_SELECT_DEFAULT                                      0x000fffff
 #define regSDMA0_PERFCOUNTER1_SELECT1_DEFAULT                                     0x000fffff
-
-
-// addressBlock: gc_sdma0_sdma1perfsdec
 #define regSDMA1_PERFCNT_PERFCOUNTER0_CFG_DEFAULT                                 0x0000ffff
 #define regSDMA1_PERFCNT_PERFCOUNTER1_CFG_DEFAULT                                 0x0000ffff
 #define regSDMA1_PERFCNT_PERFCOUNTER_RSLT_CNTL_DEFAULT                            0x04000000
@@ -4743,9 +4538,6 @@
 #define regSDMA1_PERFCOUNTER0_SELECT1_DEFAULT                                     0x000fffff
 #define regSDMA1_PERFCOUNTER1_SELECT_DEFAULT                                      0x000fffff
 #define regSDMA1_PERFCOUNTER1_SELECT1_DEFAULT                                     0x000fffff
-
-
-// addressBlock: gc_gfx_imu_gfx_imudec
 #define regGFX_IMU_C2PMSG_0_DEFAULT                                               0x00000000
 #define regGFX_IMU_C2PMSG_1_DEFAULT                                               0x00000000
 #define regGFX_IMU_C2PMSG_2_DEFAULT                                               0x00000000
@@ -4917,19 +4709,10 @@
 #define regGFX_IMU_D_RAM_ADDR_DEFAULT                                             0x00000000
 #define regGFX_IMU_D_RAM_DATA_DEFAULT                                             0x00000000
 #define regGFX_IMU_GFX_IH_GASKET_CTRL_DEFAULT                                     0x00000001
-
-
-// addressBlock: gc_gdfll_gdfll_dec
 #define regGDFLL_EDC_HYSTERESIS_CNTL_DEFAULT                                      0x00000001
 #define regGDFLL_EDC_HYSTERESIS_STAT_DEFAULT                                      0x00000000
-
-
-// addressBlock: gc_gdfll_se_gdfll_dec
 #define regGDFLL_SE_EDC_HYSTERESIS_CNTL_DEFAULT                                   0x00000001
 #define regGDFLL_SE_EDC_HYSTERESIS_STAT_DEFAULT                                   0x00000000
-
-
-// addressBlock: gc_grtavfs_grtavfs_dec
 #define regGRTAVFS_RTAVFS_REG_ADDR_DEFAULT                                        0x00000000
 #define regGRTAVFS_RTAVFS_WR_DATA_DEFAULT                                         0x00000000
 #define regGRTAVFS_GENERAL_0_DEFAULT                                              0x00000000
@@ -4941,14 +4724,8 @@
 #define regGRTAVFS_SOFT_RESET_DEFAULT                                             0x00000001
 #define regGRTAVFS_PSM_CNTL_DEFAULT                                               0x00000000
 #define regGRTAVFS_CLK_CNTL_DEFAULT                                               0x00000003
-
-
-// addressBlock: gc_grtavfsdec
 #define regRTAVFS_RTAVFS_REG_ADDR_DEFAULT                                         0x00000000
 #define regRTAVFS_RTAVFS_WR_DATA_DEFAULT                                          0x00000000
-
-
-// addressBlock: gc_grtavfs_se_grtavfs_dec
 #define regGRTAVFS_SE_RTAVFS_REG_ADDR_DEFAULT                                     0x00000000
 #define regGRTAVFS_SE_RTAVFS_WR_DATA_DEFAULT                                      0x00000000
 #define regGRTAVFS_SE_GENERAL_0_DEFAULT                                           0x00000000
@@ -4960,9 +4737,6 @@
 #define regGRTAVFS_SE_SOFT_RESET_DEFAULT                                          0x00000001
 #define regGRTAVFS_SE_PSM_CNTL_DEFAULT                                            0x00000000
 #define regGRTAVFS_SE_CLK_CNTL_DEFAULT                                            0x00000003
-
-
-// addressBlock: gc_rlcdec
 #define regRLC_CNTL_DEFAULT                                                       0x00000001
 #define regRLC_F32_UCODE_VERSION_DEFAULT                                          0x00000000
 #define regRLC_STAT_DEFAULT                                                       0x00000000
@@ -5235,9 +5009,6 @@
 #define regRLC_IMU_BOOTLOAD_SIZE_DEFAULT                                          0x00000000
 #define regRLC_IMU_MISC_DEFAULT                                                   0x00000000
 #define regRLC_IMU_RESET_VECTOR_DEFAULT                                           0x00000000
-
-
-// addressBlock: gc_rlcsdec
 #define regRLC_RLCS_DEC_START_DEFAULT                                             0x00000000
 #define regRLC_RLCS_DEC_DUMP_ADDR_DEFAULT                                         0x00000000
 #define regRLC_RLCS_EXCEPTION_REG_1_DEFAULT                                       0x0003b984
@@ -5349,9 +5120,6 @@
 #define regRLC_RLCS_GFX_MEM_POWER_CTRL_LO_DEFAULT                                 0x00000000
 #define regRLC_RLCS_GFX_RM_CNTL_DEFAULT                                           0x00000000
 #define regRLC_RLCS_DEC_END_DEFAULT                                               0x00000000
-
-
-// addressBlock: gc_pwrdec
 #define regCGTS_TCC_DISABLE_DEFAULT                                               0x00000000
 #define regCGTT_GS_NGG_CLK_CTRL_DEFAULT                                           0x00018000
 #define regCGTT_PA_CLK_CTRL_DEFAULT                                               0x00000000
@@ -5389,9 +5157,6 @@
 #define regICG_LDS_CLK_CTRL_DEFAULT                                               0x00000000
 #define regICG_CHC_CLK_CTRL_DEFAULT                                               0x00000000
 #define regICG_CHCG_CLK_CTRL_DEFAULT                                              0x00000000
-
-
-// addressBlock: gc_cphypdec
 #define regCP_HYP_PFP_UCODE_ADDR_DEFAULT                                          0x00000000
 #define regCP_PFP_UCODE_ADDR_DEFAULT                                              0x00000000
 #define regCP_HYP_PFP_UCODE_DATA_DEFAULT                                          0x00000000
@@ -5447,9 +5212,6 @@
 #define regCP_MEC_MIBOUND_HI_DEFAULT                                              0x00000000
 #define regCP_MEC_MDBOUND_LO_DEFAULT                                              0x0000ffff
 #define regCP_MEC_MDBOUND_HI_DEFAULT                                              0x0000ffff
-
-
-// addressBlock: gc_hypdec
 #define regGFX_PIPE_PRIORITY_DEFAULT                                              0x00000001
 #define regGRBM_GFX_INDEX_SR_SELECT_DEFAULT                                       0x00000000
 #define regGRBM_GFX_INDEX_SR_DATA_DEFAULT                                         0xe0000000
@@ -5564,27 +5326,18 @@
 #define regRLC_GPU_IOV_SDMA5_BUSY_STATUS_DEFAULT                                  0x00000000
 #define regRLC_GPU_IOV_SDMA6_BUSY_STATUS_DEFAULT                                  0x00000000
 #define regRLC_GPU_IOV_SDMA7_BUSY_STATUS_DEFAULT                                  0x00000000
-
-
-// addressBlock: gc_sdma0_sdma0hypdec
 #define regSDMA0_UCODE_ADDR_DEFAULT                                               0x00000000
 #define regSDMA0_UCODE_DATA_DEFAULT                                               0x00000000
 #define regSDMA0_UCODE_SELFLOAD_CONTROL_DEFAULT                                   0x00000223
 #define regSDMA0_BROADCAST_UCODE_ADDR_DEFAULT                                     0x00000000
 #define regSDMA0_BROADCAST_UCODE_DATA_DEFAULT                                     0x00000000
 #define regSDMA0_F32_CNTL_DEFAULT                                                 0x08084001
-
-
-// addressBlock: gc_sdma0_sdma1hypdec
 #define regSDMA1_UCODE_ADDR_DEFAULT                                               0x00000000
 #define regSDMA1_UCODE_DATA_DEFAULT                                               0x00000000
 #define regSDMA1_UCODE_SELFLOAD_CONTROL_DEFAULT                                   0x00000223
 #define regSDMA1_BROADCAST_UCODE_ADDR_DEFAULT                                     0x00000000
 #define regSDMA1_BROADCAST_UCODE_DATA_DEFAULT                                     0x00000000
 #define regSDMA1_F32_CNTL_DEFAULT                                                 0x08084001
-
-
-// addressBlock: gc_gcvmsharedhvdec
 #define regGCMC_VM_FB_SIZE_OFFSET_VF0_DEFAULT                                     0x00000000
 #define regGCMC_VM_FB_SIZE_OFFSET_VF1_DEFAULT                                     0x00000000
 #define regGCMC_VM_FB_SIZE_OFFSET_VF2_DEFAULT                                     0x00000000
@@ -5601,9 +5354,6 @@
 #define regGCMC_VM_FB_SIZE_OFFSET_VF13_DEFAULT                                    0x00000000
 #define regGCMC_VM_FB_SIZE_OFFSET_VF14_DEFAULT                                    0x00000000
 #define regGCMC_VM_FB_SIZE_OFFSET_VF15_DEFAULT                                    0x00000000
-
-
-// addressBlock: gc_pspdec
 #define regCP_MES_DM_INDEX_ADDR_DEFAULT                                           0x00000000
 #define regCP_MES_DM_INDEX_DATA_DEFAULT                                           0x00000000
 #define regCP_MEC_DM_INDEX_ADDR_DEFAULT                                           0x00000000
@@ -5620,9 +5370,6 @@
 #define regGRBM_CAM_DATA_UPPER_DEFAULT                                            0x00000000
 #define regGRBM_HYP_CAM_DATA_UPPER_DEFAULT                                        0x00000000
 #define regRLC_FWL_FIRST_VIOL_ADDR_DEFAULT                                        0x00000000
-
-
-// addressBlock: gc_gcvml2pspdec
 #define regGCUTCL2_TRANSLATION_BYPASS_BY_VMID_DEFAULT                             0x00000000
 #define regGCUTC_GPUVA_VMID_TRANSLATION_ASSIST_CNTL_DEFAULT                       0x00000000
 #define regGCMC_VM_MARC_BASE_LO_0_DEFAULT                                         0x00000000
@@ -5739,17 +5486,11 @@
 #define regGCMC_VM_MARC_PFVF_MAPPING_15_DEFAULT                                   0x0001ffff
 #define regGCUTC_TRANSLATION_FAULT_CNTL0_DEFAULT                                  0x00000000
 #define regGCUTC_TRANSLATION_FAULT_CNTL1_DEFAULT                                  0x00000000
-
-
-// addressBlock: gc_gfx_imu_gfx_imu_pspdec
 #define regGFX_IMU_RLC_BOOTLOADER_ADDR_HI_DEFAULT                                 0x00000000
 #define regGFX_IMU_RLC_BOOTLOADER_ADDR_LO_DEFAULT                                 0x00000000
 #define regGFX_IMU_RLC_BOOTLOADER_SIZE_DEFAULT                                    0x00000000
 #define regGFX_IMU_I_RAM_ADDR_DEFAULT                                             0x00000000
 #define regGFX_IMU_I_RAM_DATA_DEFAULT                                             0x00000000
-
-
-// addressBlock: gccacind
 #define ixGC_CAC_ID_DEFAULT                                                      0x00000000
 #define ixGC_CAC_CNTL_DEFAULT                                                    0x000000ff
 #define ixGC_CAC_ACC_CP0_DEFAULT                                                 0x00000000
@@ -5863,14 +5604,8 @@
 #define ixFIXED_PATTERN_PERF_COUNTER_9_DEFAULT                                   0x00000000
 #define ixFIXED_PATTERN_PERF_COUNTER_10_DEFAULT                                  0x00000000
 #define ixHW_LUT_UPDATE_STATUS_DEFAULT                                           0x00000000
-
-
-// addressBlock: secacind
 #define ixSE_CAC_ID_DEFAULT                                                      0x00000000
 #define ixSE_CAC_CNTL_DEFAULT                                                    0x000000ff
-
-
-// addressBlock: grtavfsind
 #define ixRTAVFS_REG0_DEFAULT                                                    0x01000000
 #define ixRTAVFS_REG1_DEFAULT                                                    0x01000000
 #define ixRTAVFS_REG2_DEFAULT                                                    0x01000000
@@ -6066,9 +5801,6 @@
 #define ixRTAVFS_REG192_DEFAULT                                                  0x00000000
 #define ixRTAVFS_REG193_DEFAULT                                                  0x00000001
 #define ixRTAVFS_REG194_DEFAULT                                                  0x00000000
-
-
-// addressBlock: sqind
 #define ixSQ_DEBUG_STS_LOCAL_DEFAULT                                             0x00000000
 #define ixSQ_DEBUG_CTRL_LOCAL_DEFAULT                                            0x00000000
 #define ixSQ_WAVE_ACTIVE_DEFAULT                                                 0x00000000
@@ -6109,6 +5841,4 @@
 #define ixSQ_WAVE_M0_DEFAULT                                                     0x00000000
 #define ixSQ_WAVE_EXEC_LO_DEFAULT                                                0x00000000
 #define ixSQ_WAVE_EXEC_HI_DEFAULT                                                0x00000000
-
-
 #endif

@@ -1,23 +1,7 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (C) 2018 Uladzislau Rezki (Sony) <urezki@gmail.com>
-#
-# This is a test script for the kernel test driver to analyse vmalloc
-# allocator. Therefore it is just a kernel module loader. You can specify
-# and pass different parameters in order to:
-#     a) analyse performance of vmalloc allocations;
-#     b) stressing and stability check of vmalloc subsystem.
-
 TEST_NAME="test_hmm"
 DRIVER="test_hmm"
-
-# 1 if fails
 exitcode=1
-
-# Kselftest framework requirement - SKIP code is 4.
 ksft_skip=4
-
 check_test_requirements()
 {
 	uid=$(id -u)
@@ -25,25 +9,22 @@ check_test_requirements()
 		echo "$0: Must be run as root"
 		exit $ksft_skip
 	fi
-
 	if ! which modprobe > /dev/null 2>&1; then
 		echo "$0: You need modprobe installed"
 		exit $ksft_skip
 	fi
-
 	if ! modinfo $DRIVER > /dev/null 2>&1; then
 		echo "$0: You must have the following enabled in your kernel:"
 		echo "CONFIG_TEST_HMM=m"
 		exit $ksft_skip
 	fi
 }
-
 load_driver()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		modprobe $DRIVER > /dev/null 2>&1
 	else
-		if [ $# -eq 2 ]; then
+		if [ $
 			modprobe $DRIVER spm_addr_dev0=$1 spm_addr_dev1=$2
 				> /dev/null 2>&1
 		else
@@ -53,21 +34,17 @@ load_driver()
 		fi
 	fi
 }
-
 unload_driver()
 {
 	modprobe -r $DRIVER > /dev/null 2>&1
 }
-
 run_smoke()
 {
 	echo "Running smoke test. Note, this test provides basic coverage."
-
 	load_driver $1 $2
 	$(dirname "${BASH_SOURCE[0]}")/hmm-tests
 	unload_driver
 }
-
 usage()
 {
 	echo -n "Usage: $0"
@@ -85,10 +62,9 @@ usage()
 	echo
 	exit 0
 }
-
 function run_test()
 {
-	if [ $# -eq 0 ]; then
+	if [ $
 		usage
 	else
 		if [ "$1" = "smoke" ]; then
@@ -98,8 +74,6 @@ function run_test()
 		fi
 	fi
 }
-
 check_test_requirements
 run_test $@
-
 exit 0

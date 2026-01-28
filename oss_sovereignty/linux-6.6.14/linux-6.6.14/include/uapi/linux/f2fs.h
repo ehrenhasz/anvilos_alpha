@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-
 #ifndef _UAPI_LINUX_F2FS_H
 #define _UAPI_LINUX_F2FS_H
 #include <linux/types.h>
 #include <linux/ioctl.h>
-
-/*
- * f2fs-specific ioctl commands
- */
 #define F2FS_IOCTL_MAGIC		0xf5
 #define F2FS_IOC_START_ATOMIC_WRITE	_IO(F2FS_IOCTL_MAGIC, 1)
 #define F2FS_IOC_COMMIT_ATOMIC_WRITE	_IO(F2FS_IOCTL_MAGIC, 2)
@@ -43,57 +37,41 @@
 #define F2FS_IOC_DECOMPRESS_FILE	_IO(F2FS_IOCTL_MAGIC, 23)
 #define F2FS_IOC_COMPRESS_FILE		_IO(F2FS_IOCTL_MAGIC, 24)
 #define F2FS_IOC_START_ATOMIC_REPLACE	_IO(F2FS_IOCTL_MAGIC, 25)
-
-/*
- * should be same as XFS_IOC_GOINGDOWN.
- * Flags for going down operation used by FS_IOC_GOINGDOWN
- */
-#define F2FS_IOC_SHUTDOWN	_IOR('X', 125, __u32)	/* Shutdown */
-#define F2FS_GOING_DOWN_FULLSYNC	0x0	/* going down with full sync */
-#define F2FS_GOING_DOWN_METASYNC	0x1	/* going down with metadata */
-#define F2FS_GOING_DOWN_NOSYNC		0x2	/* going down */
-#define F2FS_GOING_DOWN_METAFLUSH	0x3	/* going down with meta flush */
-#define F2FS_GOING_DOWN_NEED_FSCK	0x4	/* going down to trigger fsck */
-
-/*
- * Flags used by F2FS_IOC_SEC_TRIM_FILE
- */
-#define F2FS_TRIM_FILE_DISCARD		0x1	/* send discard command */
-#define F2FS_TRIM_FILE_ZEROOUT		0x2	/* zero out */
+#define F2FS_IOC_SHUTDOWN	_IOR('X', 125, __u32)	 
+#define F2FS_GOING_DOWN_FULLSYNC	0x0	 
+#define F2FS_GOING_DOWN_METASYNC	0x1	 
+#define F2FS_GOING_DOWN_NOSYNC		0x2	 
+#define F2FS_GOING_DOWN_METAFLUSH	0x3	 
+#define F2FS_GOING_DOWN_NEED_FSCK	0x4	 
+#define F2FS_TRIM_FILE_DISCARD		0x1	 
+#define F2FS_TRIM_FILE_ZEROOUT		0x2	 
 #define F2FS_TRIM_FILE_MASK		0x3
-
 struct f2fs_gc_range {
 	__u32 sync;
 	__u64 start;
 	__u64 len;
 };
-
 struct f2fs_defragment {
 	__u64 start;
 	__u64 len;
 };
-
 struct f2fs_move_range {
-	__u32 dst_fd;		/* destination fd */
-	__u64 pos_in;		/* start position in src_fd */
-	__u64 pos_out;		/* start position in dst_fd */
-	__u64 len;		/* size to move */
+	__u32 dst_fd;		 
+	__u64 pos_in;		 
+	__u64 pos_out;		 
+	__u64 len;		 
 };
-
 struct f2fs_flush_device {
-	__u32 dev_num;		/* device number to flush */
-	__u32 segments;		/* # of segments to flush */
+	__u32 dev_num;		 
+	__u32 segments;		 
 };
-
 struct f2fs_sectrim_range {
 	__u64 start;
 	__u64 len;
 	__u64 flags;
 };
-
 struct f2fs_comp_option {
 	__u8 algorithm;
 	__u8 log_cluster_size;
 };
-
-#endif /* _UAPI_LINUX_F2FS_H */
+#endif  

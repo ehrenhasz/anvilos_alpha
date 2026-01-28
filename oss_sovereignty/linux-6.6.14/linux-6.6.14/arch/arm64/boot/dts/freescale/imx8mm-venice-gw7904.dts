@@ -1,60 +1,44 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2022 Gateworks Corporation
- */
-
 /dts-v1/;
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/linux-event-codes.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/phy/phy-imx8-pcie.h>
-
 #include "imx8mm.dtsi"
-
 / {
 	model = "Gateworks Venice GW7904 i.MX8MM board";
 	compatible = "gateworks,imx8mm-gw7904", "fsl,imx8mm";
-
 	chosen {
 		stdout-path = &uart2;
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x0 0x40000000 0 0x80000000>;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		key-0 {
 			label = "user_pb";
 			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
 			linux,code = <BTN_0>;
 		};
-
 		key-1 {
 			label = "user_pb1x";
 			linux,code = <BTN_1>;
 			interrupt-parent = <&gsc>;
 			interrupts = <0>;
 		};
-
 		key-2 {
 			label = "key_erased";
 			linux,code = <BTN_2>;
 			interrupt-parent = <&gsc>;
 			interrupts = <1>;
 		};
-
 		key-3 {
 			label = "eeprom_wp";
 			linux,code = <BTN_3>;
 			interrupt-parent = <&gsc>;
 			interrupts = <2>;
 		};
-
 		key-4 {
 			label = "switch_hold";
 			linux,code = <BTN_5>;
@@ -62,12 +46,10 @@
 			interrupts = <7>;
 		};
 	};
-
 	led-controller {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_leds>;
-
 		led-0 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -75,7 +57,6 @@
 			gpios = <&gpioled 0 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-1 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -83,7 +64,6 @@
 			gpios = <&gpioled 1 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-2 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -91,7 +71,6 @@
 			gpios = <&gpioled 2 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-3 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -99,7 +78,6 @@
 			gpios = <&gpioled 3 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-4 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -107,7 +85,6 @@
 			gpios = <&gpioled 4 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-5 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -115,7 +92,6 @@
 			gpios = <&gpioled 5 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-6 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -123,7 +99,6 @@
 			gpios = <&gpioled 6 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-7 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -131,7 +106,6 @@
 			gpios = <&gpioled 7 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-8 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -139,7 +113,6 @@
 			gpios = <&gpioled 8 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-9 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -147,7 +120,6 @@
 			gpios = <&gpioled 9 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-10 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -155,7 +127,6 @@
 			gpios = <&gpio1 8 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-11 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_RED>;
@@ -163,7 +134,6 @@
 			gpios = <&gpio1 9 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-12 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -171,7 +141,6 @@
 			gpios = <&gpio1 10 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-13 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_RED>;
@@ -179,7 +148,6 @@
 			gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-14 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -187,7 +155,6 @@
 			gpios = <&gpioled 10 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-15 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -195,7 +162,6 @@
 			gpios = <&gpioled 11 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-16 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -203,7 +169,6 @@
 			gpios = <&gpioled 12 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-17 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -211,7 +176,6 @@
 			gpios = <&gpioled 13 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-18 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_GREEN>;
@@ -219,7 +183,6 @@
 			gpios = <&gpioled 14 GPIO_ACTIVE_LOW>;
 			default-state = "off";
 		};
-
 		led-19 {
 			function = LED_FUNCTION_STATUS;
 			color = <LED_COLOR_ID_YELLOW>;
@@ -228,13 +191,11 @@
 			default-state = "off";
 		};
 	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -243,43 +204,33 @@
 		regulator-always-on;
 	};
 };
-
 &A53_0 {
 	cpu-supply = <&buck2>;
 };
-
 &A53_1 {
 	cpu-supply = <&buck2>;
 };
-
 &A53_2 {
 	cpu-supply = <&buck2>;
 };
-
 &A53_3 {
 	cpu-supply = <&buck2>;
 };
-
 &ddrc {
 	operating-points-v2 = <&ddrc_opp_table>;
-
 	ddrc_opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp-25000000 {
 			opp-hz = /bits/ 64 <25000000>;
 		};
-
 		opp-100000000 {
 			opp-hz = /bits/ 64 <100000000>;
 		};
-
 		opp-750000000 {
 			opp-hz = /bits/ 64 <750000000>;
 		};
 	};
 };
-
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
@@ -287,32 +238,27 @@
 	phy-handle = <&ethphy0>;
 	local-mac-address = [00 00 00 00 00 00];
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
 		};
 	};
 };
-
 &gpio1 {
 	gpio-line-names = "", "", "", "", "", "", "", "",
 		"", "", "", "", "rs232_en#", "", "", "",
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "";
 };
-
 &gpio5 {
 	gpio-line-names = "", "", "", "", "", "", "", "",
 		"", "", "", "", "pci_wdis#", "", "", "",
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "";
 };
-
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default", "gpio";
@@ -321,7 +267,6 @@
 	scl-gpios = <&gpio5 14 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	gsc: gsc@20 {
 		compatible = "gw,gsc";
 		reg = <0x20>;
@@ -330,18 +275,15 @@
 		interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
 		interrupt-controller;
 		#interrupt-cells = <1>;
-
 		adc {
 			compatible = "gw,gsc-adc";
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			channel@6 {
 				gw,mode = <0>;
 				reg = <0x06>;
 				label = "temp";
 			};
-
 			channel@82 {
 				gw,mode = <2>;
 				reg = <0x82>;
@@ -349,51 +291,43 @@
 				gw,voltage-divider-ohms = <22100 1000>;
 				gw,voltage-offset-microvolt = <700000>;
 			};
-
 			channel@84 {
 				gw,mode = <2>;
 				reg = <0x84>;
 				label = "vdd_5p0";
 				gw,voltage-divider-ohms = <10000 10000>;
 			};
-
 			channel@86 {
 				gw,mode = <2>;
 				reg = <0x86>;
 				label = "vdd_3p3";
 				gw,voltage-divider-ohms = <10000 10000>;
 			};
-
 			channel@88 {
 				gw,mode = <2>;
 				reg = <0x88>;
 				label = "vdd_0p9";
 			};
-
 			channel@8c {
 				gw,mode = <2>;
 				reg = <0x8c>;
 				label = "vdd_soc";
 			};
-
 			channel@8e {
 				gw,mode = <2>;
 				reg = <0x8e>;
 				label = "vdd_arm";
 			};
-
 			channel@90 {
 				gw,mode = <2>;
 				reg = <0x90>;
 				label = "vdd_1p8";
 			};
-
 			channel@92 {
 				gw,mode = <2>;
 				reg = <0x92>;
 				label = "vdd_dram";
 			};
-
 			channel@a2 {
 				gw,mode = <2>;
 				reg = <0xa2>;
@@ -402,7 +336,6 @@
 			};
 		};
 	};
-
 	gpio: gpio@23 {
 		compatible = "nxp,pca9555";
 		reg = <0x23>;
@@ -411,37 +344,31 @@
 		interrupt-parent = <&gsc>;
 		interrupts = <4>;
 	};
-
 	eeprom@50 {
 		compatible = "atmel,24c02";
 		reg = <0x50>;
 		pagesize = <16>;
 	};
-
 	eeprom@51 {
 		compatible = "atmel,24c02";
 		reg = <0x51>;
 		pagesize = <16>;
 	};
-
 	eeprom@52 {
 		compatible = "atmel,24c02";
 		reg = <0x52>;
 		pagesize = <16>;
 	};
-
 	eeprom@53 {
 		compatible = "atmel,24c02";
 		reg = <0x53>;
 		pagesize = <16>;
 	};
-
 	rtc@68 {
 		compatible = "dallas,ds1672";
 		reg = <0x68>;
 	};
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -450,7 +377,6 @@
 	scl-gpios = <&gpio5 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	pmic@4b {
 		compatible = "rohm,bd71847";
 		reg = <0x4b>;
@@ -462,9 +388,7 @@
 		#clock-cells = <0>;
 		clocks = <&osc_32k>;
 		clock-output-names = "clk-32k-out";
-
 		regulators {
-			/* vdd_soc: 0.805-0.900V (typ=0.8V) */
 			BUCK1 {
 				regulator-name = "buck1";
 				regulator-min-microvolt = <700000>;
@@ -473,8 +397,6 @@
 				regulator-always-on;
 				regulator-ramp-delay = <1250>;
 			};
-
-			/* vdd_arm: 0.805-1.0V (typ=0.9V) */
 			buck2: BUCK2 {
 				regulator-name = "buck2";
 				regulator-min-microvolt = <700000>;
@@ -485,8 +407,6 @@
 				rohm,dvs-run-voltage = <1000000>;
 				rohm,dvs-idle-voltage = <900000>;
 			};
-
-			/* vdd_0p9: 0.805-1.0V (typ=0.9V) */
 			BUCK3 {
 				regulator-name = "buck3";
 				regulator-min-microvolt = <700000>;
@@ -494,8 +414,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* vdd_3p3 */
 			BUCK4 {
 				regulator-name = "buck4";
 				regulator-min-microvolt = <3000000>;
@@ -503,8 +421,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* vdd_1p8 */
 			BUCK5 {
 				regulator-name = "buck5";
 				regulator-min-microvolt = <1605000>;
@@ -512,8 +428,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* vdd_dram */
 			BUCK6 {
 				regulator-name = "buck6";
 				regulator-min-microvolt = <800000>;
@@ -521,8 +435,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* nvcc_snvs_1p8 */
 			LDO1 {
 				regulator-name = "ldo1";
 				regulator-min-microvolt = <1600000>;
@@ -530,8 +442,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* vdd_snvs_0p8 */
 			LDO2 {
 				regulator-name = "ldo2";
 				regulator-min-microvolt = <800000>;
@@ -539,8 +449,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* vdda_1p8 */
 			LDO3 {
 				regulator-name = "ldo3";
 				regulator-min-microvolt = <1800000>;
@@ -548,7 +456,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			LDO4 {
 				regulator-name = "ldo4";
 				regulator-min-microvolt = <900000>;
@@ -556,7 +463,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			LDO6 {
 				regulator-name = "ldo6";
 				regulator-min-microvolt = <900000>;
@@ -567,7 +473,6 @@
 		};
 	};
 };
-
 &i2c3 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -576,7 +481,6 @@
 	scl-gpios = <&gpio5 18 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	accelerometer@19 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_accel>;
@@ -588,7 +492,6 @@
 		interrupt-names = "INT1";
 	};
 };
-
 &i2c4 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -597,7 +500,6 @@
 	scl-gpios = <&gpio5 20 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 21 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
-
 	gpioled: gpio@27 {
 		compatible = "nxp,pca9555";
 		reg = <0x27>;
@@ -605,7 +507,6 @@
 		#gpio-cells = <2>;
 	};
 };
-
 &pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
 	fsl,clkreq-unsupported;
@@ -613,7 +514,6 @@
 	clock-names = "ref";
 	status = "okay";
 };
-
 &pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
@@ -627,16 +527,12 @@
 				 <&clk IMX8MM_SYS_PLL2_250M>;
 	status = "okay";
 };
-
 &disp_blk_ctrl {
 	status = "disabled";
 };
-
 &pgc_mipi {
 	status = "disabled";
 };
-
-/* off-board RS232 */
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -644,21 +540,16 @@
 	rts-gpios = <&gpio5 27 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
-/* console */
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &usbotg1 {
 	dr_mode = "host";
 	disable-over-current;
 	status = "okay";
 };
-
-/* microSD */
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
@@ -669,8 +560,6 @@
 	vmmc-supply = <&reg_3p3v>;
 	status = "okay";
 };
-
-/* eMMC */
 &usdhc3 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc3>;
@@ -680,31 +569,26 @@
 	non-removable;
 	status = "okay";
 };
-
 &wdog1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wdog>;
 	fsl,ext-reset-output;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	pinctrl_hog: hoggrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_GPIO1_IO12_GPIO1_IO12	0x40000041 /* RS232# */
-			MX8MM_IOMUXC_ECSPI2_MISO_GPIO5_IO12	0x40000041 /* PCI_WDIS# */
+			MX8MM_IOMUXC_GPIO1_IO12_GPIO1_IO12	0x40000041  
+			MX8MM_IOMUXC_ECSPI2_MISO_GPIO5_IO12	0x40000041  
 		>;
 	};
-
 	pinctrl_accel: accelgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO15_GPIO1_IO15	0x159
 		>;
 	};
-
 	pinctrl_fec1: fec1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_ENET_MDC_ENET1_MDC			0x3
@@ -721,11 +605,10 @@
 			MX8MM_IOMUXC_ENET_RXC_ENET1_RGMII_RXC		0x91
 			MX8MM_IOMUXC_ENET_RX_CTL_ENET1_RGMII_RX_CTL	0x91
 			MX8MM_IOMUXC_ENET_TX_CTL_ENET1_RGMII_TX_CTL	0x1f
-			MX8MM_IOMUXC_SAI2_TXFS_GPIO4_IO24		0x19 /* IRQ# */
-			MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25		0x19 /* RST# */
+			MX8MM_IOMUXC_SAI2_TXFS_GPIO4_IO24		0x19  
+			MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25		0x19  
 		>;
 	};
-
 	pinctrl_gpio_leds: gpioledsgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO08_GPIO1_IO8	0x40000019
@@ -734,97 +617,83 @@
 			MX8MM_IOMUXC_GPIO1_IO11_GPIO1_IO11	0x40000019
 		>;
 	};
-
 	pinctrl_gsc: gscgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI2_TXD0_GPIO4_IO26	0x159
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C1_SCL_I2C1_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_i2c1_gpio: i2c1gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C1_SCL_GPIO5_IO14	0x400001c3
 			MX8MM_IOMUXC_I2C1_SDA_GPIO5_IO15	0x400001c3
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C2_SCL_I2C2_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C2_SDA_I2C2_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_i2c2_gpio: i2c2gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C2_SCL_GPIO5_IO16	0x400001c3
 			MX8MM_IOMUXC_I2C2_SDA_GPIO5_IO17	0x400001c3
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_i2c3_gpio: i2c3gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_GPIO5_IO18	0x400001c3
 			MX8MM_IOMUXC_I2C3_SDA_GPIO5_IO19	0x400001c3
 		>;
 	};
-
 	pinctrl_i2c4: i2c4grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SCL_I2C4_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C4_SDA_I2C4_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_i2c4_gpio: i2c4gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SCL_GPIO5_IO20	0x400001c3
 			MX8MM_IOMUXC_I2C4_SDA_GPIO5_IO21	0x400001c3
 		>;
 	};
-
 	pinctrl_pcie0: pciegrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_ECSPI2_MOSI_GPIO5_IO11	0x41
 		>;
 	};
-
 	pinctrl_pmic: pmicgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_DATA02_GPIO3_IO8	0x41
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART1_RXD_UART1_DCE_RX	0x140
 			MX8MM_IOMUXC_UART1_TXD_UART1_DCE_TX	0x140
-			MX8MM_IOMUXC_UART3_RXD_GPIO5_IO26	0x140 /* CTS# in */
-			MX8MM_IOMUXC_UART3_TXD_GPIO5_IO27	0x140 /* RTS# out */
+			MX8MM_IOMUXC_UART3_RXD_GPIO5_IO26	0x140  
+			MX8MM_IOMUXC_UART3_TXD_GPIO5_IO27	0x140  
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
 			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX	0x140
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x190
@@ -835,7 +704,6 @@
 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d0
 		>;
 	};
-
 	pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x194
@@ -846,7 +714,6 @@
 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d4
 		>;
 	};
-
 	pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x196
@@ -857,14 +724,12 @@
 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d6
 		>;
 	};
-
 	pinctrl_usdhc2_gpio: usdhc2-gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12	0x1c4
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT  0x1d0
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x190
@@ -880,7 +745,6 @@
 			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x190
 		>;
 	};
-
 	pinctrl_usdhc3_100mhz: usdhc3-100mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x194
@@ -896,7 +760,6 @@
 			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x194
 		>;
 	};
-
 	pinctrl_usdhc3_200mhz: usdhc3-200mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x196
@@ -912,7 +775,6 @@
 			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x196
 		>;
 	};
-
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	0xc6

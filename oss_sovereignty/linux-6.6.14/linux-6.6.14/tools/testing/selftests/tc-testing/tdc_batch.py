@@ -1,13 +1,8 @@
-#!/usr/bin/env python3
-
 """
 tdc_batch.py - a script to generate TC batch file
-
 Copyright (C) 2017 Chris Mi <chrism@mellanox.com>
 """
-
 import argparse
-
 parser = argparse.ArgumentParser(description='TC batch file generator')
 parser.add_argument("device", help="device name")
 parser.add_argument("file", help="batch file name")
@@ -44,58 +39,43 @@ parser.add_argument(
     help="third byte of source MAC address of flower filter"
     "(default: 0)")
 args = parser.parse_args()
-
 device = args.device
 file = open(args.file, 'w')
-
 number = 1
 if args.number:
     number = args.number
-
 handle_start = args.handle_start
-
 skip = "skip_hw"
 if args.skip_sw:
     skip = "skip_sw"
-
 share_action = ""
 if args.share_action:
     share_action = "index 1"
-
 prio = "prio 1"
 if args.prio:
     prio = ""
     if number > 0x4000:
         number = 0x4000
-
 mac_prefix = args.mac_prefix
-
 def format_add_filter(device, prio, handle, skip, src_mac, dst_mac,
                       share_action):
     return ("filter add dev {} {} protocol ip ingress handle {} "
             " flower {} src_mac {} dst_mac {} action drop {}".format(
                 device, prio, handle, skip, src_mac, dst_mac, share_action))
-
-
 def format_rep_filter(device, prio, handle, skip, src_mac, dst_mac,
                       share_action):
     return ("filter replace dev {} {} protocol ip ingress handle {} "
             " flower {} src_mac {} dst_mac {} action drop {}".format(
                 device, prio, handle, skip, src_mac, dst_mac, share_action))
-
-
 def format_del_filter(device, prio, handle, skip, src_mac, dst_mac,
                       share_action):
     return ("filter del dev {} {} protocol ip ingress handle {} "
             "flower".format(device, prio, handle))
-
-
 formatter = format_add_filter
 if args.operation == "del":
     formatter = format_del_filter
 elif args.operation == "replace":
     formatter = format_rep_filter
-
 index = 0
 for i in range(0x100):
     for j in range(0x100):

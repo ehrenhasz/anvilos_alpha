@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STRATO AG 2012.  All rights reserved.
- */
-
 #ifndef BTRFS_DEV_REPLACE_H
 #define BTRFS_DEV_REPLACE_H
-
 struct btrfs_ioctl_dev_replace_args;
 struct btrfs_fs_info;
 struct btrfs_trans_handle;
 struct btrfs_dev_replace;
 struct btrfs_block_group;
-
 int btrfs_init_dev_replace(struct btrfs_fs_info *fs_info);
 int btrfs_run_dev_replace(struct btrfs_trans_handle *trans);
 int btrfs_dev_replace_by_ioctl(struct btrfs_fs_info *fs_info,
@@ -27,11 +20,8 @@ bool btrfs_finish_block_group_to_copy(struct btrfs_device *srcdev,
 				      u64 physical);
 void btrfs_bio_counter_inc_blocked(struct btrfs_fs_info *fs_info);
 void btrfs_bio_counter_sub(struct btrfs_fs_info *fs_info, s64 amount);
-
 static inline void btrfs_bio_counter_dec(struct btrfs_fs_info *fs_info)
 {
 	btrfs_bio_counter_sub(fs_info, 1);
 }
-
-
 #endif

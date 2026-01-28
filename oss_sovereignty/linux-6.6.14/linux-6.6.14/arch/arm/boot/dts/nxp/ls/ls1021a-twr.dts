@@ -1,28 +1,18 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2013-2014 Freescale Semiconductor, Inc.
- * Copyright 2018 NXP
- */
-
 /dts-v1/;
 #include "ls1021a.dtsi"
-
 / {
 	model = "LS1021A TWR Board";
 	compatible = "fsl,ls1021a-twr", "fsl,ls1021a";
-
 	aliases {
 		enet2_rgmii_phy = &rgmii_phy1;
 		enet0_sgmii_phy = &sgmii_phy2;
 		enet1_sgmii_phy = &sgmii_phy0;
 	};
-
 	sys_mclk: clock-mclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <24576000>;
 	};
-
 	reg_3p3v: regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -30,7 +20,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	sound {
 		compatible = "simple-audio-card";
 		simple-audio-card,format = "i2s";
@@ -45,23 +34,19 @@
 			"LINE_IN", "Line In Jack",
 			"Headphone Jack", "HP_OUT",
 			"Speaker Ext", "LINE_OUT";
-
 		simple-audio-card,cpu {
 			sound-dai = <&sai1>;
 			frame-master;
 			bitclock-master;
 		};
-
 		simple-audio-card,codec {
 			sound-dai = <&codec>;
 			frame-master;
 			bitclock-master;
 		};
 	};
-
 	panel: panel {
 		compatible = "nec,nl4827hc19-05b";
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&dcu_out>;
@@ -69,21 +54,17 @@
 		};
 	};
 };
-
 &dcu {
 	status = "okay";
-
 	port {
 		dcu_out: endpoint {
 			remote-endpoint = <&panel_in>;
 		};
 	};
 };
-
 &dspi1 {
 	bus-num = <0>;
 	status = "okay";
-
 	dspiflash: s25fl064k@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -94,44 +75,36 @@
 		reg = <0>;
 	};
 };
-
 &enet0 {
 	tbi-handle = <&tbi0>;
 	phy-handle = <&sgmii_phy2>;
 	phy-connection-type = "sgmii";
 	status = "okay";
 };
-
 &enet1 {
 	tbi-handle = <&tbi1>;
 	phy-handle = <&sgmii_phy0>;
 	phy-connection-type = "sgmii";
 	status = "okay";
 };
-
 &enet2 {
 	phy-handle = <&rgmii_phy1>;
 	phy-connection-type = "rgmii-id";
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
-
 	ina220@40 {
 		compatible = "ti,ina220";
 		reg = <0x40>;
 		shunt-resistor = <1000>;
 	};
-
 	ina220@41 {
 		compatible = "ti,ina220";
 		reg = <0x41>;
 		shunt-resistor = <1000>;
 	};
-
 };
-
 &i2c1 {
 	status = "okay";
 	codec: sgtl5000@a {
@@ -143,14 +116,11 @@
 		clocks = <&sys_mclk>;
 	};
 };
-
 &ifc {
 	#address-cells = <2>;
 	#size-cells = <1>;
-	/* NOR Flash on board */
 	ranges = <0x0 0x0 0x0 0x60000000 0x08000000>;
 	status = "okay";
-
 	nor@0,0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -161,11 +131,9 @@
 		device-width = <1>;
 	};
 };
-
 &lpuart0 {
 	status = "okay";
 };
-
 &mdio0 {
 	sgmii_phy0: ethernet-phy@0 {
 		reg = <0x0>;
@@ -181,21 +149,17 @@
 		device_type = "tbi-phy";
 	};
 };
-
 &mdio1 {
 	tbi1: tbi-phy@1f {
 		reg = <0x1f>;
 		device_type = "tbi-phy";
 	};
 };
-
 &esdhc {
         status = "okay";
 };
-
 &qspi {
 	status = "okay";
-
 	n25q128a130: flash@0 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
@@ -206,35 +170,27 @@
 		spi-tx-bus-width = <4>;
 	};
 };
-
 &sai1 {
 	status = "okay";
 };
-
 &sata {
 	status = "okay";
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &can0 {
 	status = "okay";
 };
-
 &can1 {
 	status = "okay";
 };
-
 &can2 {
 	status = "disabled";
 };
-
 &can3 {
 	status = "disabled";
 };

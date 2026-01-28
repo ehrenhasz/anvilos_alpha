@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ABI_CSKY_PTRACE_H
 #define __ABI_CSKY_PTRACE_H
-
 struct switch_stack {
 #ifdef CONFIG_CPU_HAS_HILO
 	unsigned long rhi;
@@ -18,7 +15,6 @@ struct switch_stack {
 	unsigned long r9;
 	unsigned long r10;
 	unsigned long r11;
-
 	unsigned long r15;
 	unsigned long r16;
 	unsigned long r17;
@@ -28,4 +24,4 @@ struct switch_stack {
 	unsigned long r29;
 	unsigned long r30;
 };
-#endif /* __ABI_CSKY_PTRACE_H */
+#endif  

@@ -1,16 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Quanta Computer lnc. Fran.Hsu@quantatw.com
-
 /dts-v1/;
 #include "nuvoton-npcm730.dtsi"
 #include "nuvoton-npcm730-gsj-gpio.dtsi"
-
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	model = "Quanta GSJ Board (Device Tree v12)";
 	compatible = "nuvoton,npcm750";
-
 	aliases {
 		ethernet1 = &gmac0;
 		serial3 = &serial3;
@@ -26,122 +20,98 @@
 		i2c15 = &i2c15;
 		fiu0 = &fiu0;
 	};
-
 	chosen {
 		stdout-path = &serial3;
 	};
-
 	memory {
 		reg = <0 0x40000000>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		led-bmc-live {
 			gpios = <&gpio4 15 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
 		};
-
 		LED_U2_0_LOCATE {
 			gpios = <&gpio0 0 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_1_LOCATE {
 			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_2_LOCATE {
 			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_3_LOCATE {
 			gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_4_LOCATE {
 			gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_5_LOCATE {
 			gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_BMC_TRAY_PWRGD {
 			gpios = <&gpio0 19 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_7_FAULT {
 			gpios = <&gpio6 8 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_6_LOCATE {
 			gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_7_LOCATE {
 			gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_0_FAULT {
 			gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_1_FAULT {
 			gpios = <&gpio2 21 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_2_FAULT {
 			gpios = <&gpio2 22 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_3_FAULT {
 			gpios = <&gpio2 23 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_4_FAULT {
 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_5_FAULT {
 			gpios = <&gpio2 25 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		LED_U2_6_FAULT {
 			gpios = <&gpio2 26 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
 	};
 };
-
 &fiu0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0cs1_pins>;
 	status = "okay";
-
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		reg = <0>;
 		spi-rx-bus-width = <2>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
@@ -178,180 +148,142 @@
 		};
 	};
 };
-
 &gmac0 {
 	phy-mode = "rgmii-id";
 	status = "okay";
 };
-
 &ehci1 {
 	status = "okay";
 };
-
 &watchdog1 {
 	status = "okay";
 };
-
 &rng {
 	status = "okay";
 };
-
 &serial0 {
 	status = "okay";
 };
-
 &serial1 {
 	status = "okay";
 };
-
 &serial2 {
 	status = "okay";
 };
-
 &serial3 {
 	status = "okay";
 };
-
 &adc {
 	status = "okay";
 };
-
 &i2c1 {
 	status = "okay";
-
 	lm75@5c {
 		compatible = "maxim,max31725";
 		reg = <0x5c>;
 		status = "okay";
 	};
 };
-
 &i2c2 {
 	status = "okay";
-
 	lm75@5c {
 		compatible = "maxim,max31725";
 		reg = <0x5c>;
 		status = "okay";
 	};
 };
-
 &i2c3 {
 	status = "okay";
-
 	lm75@5c {
 		compatible = "maxim,max31725";
 		reg = <0x5c>;
 	};
 };
-
 &i2c4 {
 	status = "okay";
-
 	lm75@5c {
 		compatible = "maxim,max31725";
 		reg = <0x5c>;
 	};
 };
-
 &i2c8 {
 	status = "okay";
 };
-
 &i2c9 {
 	status = "okay";
-
 	eeprom@55 {
 		compatible = "atmel,24c64";
 		reg = <0x55>;
 	};
 };
-
 &i2c10 {
 	status = "okay";
-
 	eeprom@55 {
 		compatible = "atmel,24c64";
 		reg = <0x55>;
 	};
 };
-
 &i2c11 {
 	status = "okay";
-
-	/* P12V Quarter Brick DC/DC Power Module Q54SH12050 @60 */
 	power-brick@36 {
 		compatible = "delta,dps800";
 		reg = <0x36>;
 	};
-
 	hotswap@15 {
 		compatible = "ti,lm5066i";
 		reg = <0x15>;
 	};
 };
-
 &i2c12 {
 	status = "okay";
-
 	ucd90160@6b {
 		compatible = "ti,ucd90160";
 		reg = <0x6b>;
 	};
 };
-
 &i2c15 {
 	status = "okay";
-
 	i2c-mux@75 {
 		compatible = "nxp,pca9548";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <0x75>;
 		i2c-mux-idle-disconnect;
-
 		i2c_u20: i2c@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
 		};
-
 		i2c_u21: i2c@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
 		};
-
 		i2c_u22: i2c@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
 		};
-
 		i2c_u23: i2c@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
 		};
-
 		i2c_u24: i2c@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
 		};
-
 		i2c_u25: i2c@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
 		};
-
 		i2c_u26: i2c@6 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
 		};
-
 		i2c_u27: i2c@7 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -359,7 +291,6 @@
 		};
 	};
 };
-
 &pwm_fan {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pwm0_pins &pwm1_pins &pwm2_pins
@@ -367,30 +298,25 @@
 			&fanin2_pins &fanin3_pins
 			&fanin4_pins &fanin5_pins>;
 	status = "okay";
-
 	fan@0 {
 		reg = <0x00>;
 		fan-tach-ch = /bits/ 8 <0x00 0x01>;
 		cooling-levels = <127 255>;
 	};
-
 	fan@1 {
 		reg = <0x01>;
 		fan-tach-ch = /bits/ 8 <0x02 0x03>;
 		cooling-levels = /bits/ 8 <127 255>;
 	};
-
 	fan@2 {
 		reg = <0x02>;
 		fan-tach-ch = /bits/ 8 <0x04 0x05>;
 		cooling-levels = /bits/ 8 <127 255>;
 	};
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <
-			/* GPI pins*/
 			&gpio8_pins
 			&gpio9_pins
 			&gpio12_pins
@@ -434,7 +360,6 @@
 			&gpio191_pins
 			&gpio192_pins
 			&gpio203_pins
-			/* GPO pins*/
 			&gpio0pp_pins
 			&gpio1pp_pins
 			&gpio2pp_pins

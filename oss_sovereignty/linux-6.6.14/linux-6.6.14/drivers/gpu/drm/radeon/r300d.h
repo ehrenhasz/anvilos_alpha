@@ -1,33 +1,5 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
 #ifndef __R300D_H__
 #define __R300D_H__
-
 #define CP_PACKET0			0x00000000
 #define		PACKET0_BASE_INDEX_SHIFT	0
 #define		PACKET0_BASE_INDEX_MASK		(0x1ffff << 0)
@@ -42,7 +14,6 @@
 #define		PACKET3_IT_OPCODE_MASK		(0xff << 8)
 #define		PACKET3_COUNT_SHIFT		16
 #define		PACKET3_COUNT_MASK		(0x3fff << 16)
-/* PACKET3 op code */
 #define		PACKET3_NOP			0x10
 #define		PACKET3_3D_DRAW_VBUF		0x28
 #define		PACKET3_3D_DRAW_IMMD		0x29
@@ -56,7 +27,6 @@
 #define		PACKET3_3D_CLEAR_HIZ		0x37
 #define		PACKET3_3D_CLEAR_CMASK		0x38
 #define		PACKET3_BITBLT_MULTI		0x9B
-
 #define PACKET0(reg, n)	(CP_PACKET0 |					\
 			 REG_SET(PACKET0_BASE_INDEX, (reg) >> 2) |	\
 			 REG_SET(PACKET0_COUNT, (n)))
@@ -64,8 +34,6 @@
 #define PACKET3(op, n)	(CP_PACKET3 |					\
 			 REG_SET(PACKET3_IT_OPCODE, (op)) |		\
 			 REG_SET(PACKET3_COUNT, (n)))
-
-/* Registers */
 #define R_000148_MC_FB_LOCATION                      0x000148
 #define   S_000148_MC_FB_START(x)                      (((x) & 0xFFFF) << 0)
 #define   G_000148_MC_FB_START(x)                      (((x) >> 0) & 0xFFFF)
@@ -247,7 +215,6 @@
 #define   S_0000F0_SOFT_RESET_IDCT(x)                  (((x) & 0x1) << 14)
 #define   G_0000F0_SOFT_RESET_IDCT(x)                  (((x) >> 14) & 0x1)
 #define   C_0000F0_SOFT_RESET_IDCT                     0xFFFFBFFF
-
 #define R_00000D_SCLK_CNTL                           0x00000D
 #define   S_00000D_SCLK_SRC_SEL(x)                     (((x) & 0x7) << 0)
 #define   G_00000D_SCLK_SRC_SEL(x)                     (((x) >> 0) & 0x7)
@@ -339,5 +306,4 @@
 #define   S_00000D_FORCE_OV0(x)                        (((x) & 0x1) << 31)
 #define   G_00000D_FORCE_OV0(x)                        (((x) >> 31) & 0x1)
 #define   C_00000D_FORCE_OV0                           0x7FFFFFFF
-
 #endif

@@ -1,43 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * An interface between IEEE802.15.4 device and rest of the kernel.
- *
- * Copyright (C) 2007-2012 Siemens AG
- *
- * Written by:
- * Pavel Smolenskiy <pavel.smolenskiy@gmail.com>
- * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
- * Maxim Osipov <maxim.osipov@siemens.com>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
-
 #ifndef IEEE802154_NETDEVICE_H
 #define IEEE802154_NETDEVICE_H
-
 #define IEEE802154_REQUIRED_SIZE(struct_type, member) \
 	(offsetof(typeof(struct_type), member) + \
 	sizeof(((typeof(struct_type) *)(NULL))->member))
-
 #define IEEE802154_ADDR_OFFSET \
 	offsetof(typeof(struct sockaddr_ieee802154), addr)
-
 #define IEEE802154_MIN_NAMELEN (IEEE802154_ADDR_OFFSET + \
 	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, addr_type))
-
 #define IEEE802154_NAMELEN_SHORT (IEEE802154_ADDR_OFFSET + \
 	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, short_addr))
-
 #define IEEE802154_NAMELEN_LONG (IEEE802154_ADDR_OFFSET + \
 	IEEE802154_REQUIRED_SIZE(struct ieee802154_addr_sa, hwaddr))
-
 #include <net/af_ieee802154.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/ieee802154.h>
-
 #include <net/cfg802154.h>
-
 struct ieee802154_beacon_hdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	u16 beacon_order:4,
@@ -73,11 +51,9 @@ struct ieee802154_beacon_hdr {
 #error	"Please fix <asm/byteorder.h>"
 #endif
 } __packed;
-
 struct ieee802154_mac_cmd_pl {
 	u8  cmd_id;
 } __packed;
-
 struct ieee802154_sechdr {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	u8 level:3,
@@ -97,7 +73,6 @@ struct ieee802154_sechdr {
 		__le64 extended_src;
 	};
 };
-
 struct ieee802154_hdr_fc {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	u16 type:3,
@@ -124,7 +99,6 @@ struct ieee802154_hdr_fc {
 #error	"Please fix <asm/byteorder.h>"
 #endif
 };
-
 enum ieee802154_frame_version {
 	IEEE802154_2003_STD,
 	IEEE802154_2006_STD,
@@ -132,14 +106,12 @@ enum ieee802154_frame_version {
 	IEEE802154_RESERVED_STD,
 	IEEE802154_MULTIPURPOSE_STD = IEEE802154_2003_STD,
 };
-
 enum ieee802154_addressing_mode {
 	IEEE802154_NO_ADDRESSING,
 	IEEE802154_RESERVED,
 	IEEE802154_SHORT_ADDRESSING,
 	IEEE802154_EXTENDED_ADDRESSING,
 };
-
 struct ieee802154_hdr {
 	struct ieee802154_hdr_fc fc;
 	u8 seq;
@@ -147,57 +119,30 @@ struct ieee802154_hdr {
 	struct ieee802154_addr dest;
 	struct ieee802154_sechdr sec;
 };
-
 struct ieee802154_beacon_frame {
 	struct ieee802154_hdr mhr;
 	struct ieee802154_beacon_hdr mac_pl;
 };
-
 struct ieee802154_mac_cmd_frame {
 	struct ieee802154_hdr mhr;
 	struct ieee802154_mac_cmd_pl mac_pl;
 };
-
 struct ieee802154_beacon_req_frame {
 	struct ieee802154_hdr mhr;
 	struct ieee802154_mac_cmd_pl mac_pl;
 };
-
-/* pushes hdr onto the skb. fields of hdr->fc that can be calculated from
- * the contents of hdr will be, and the actual value of those bits in
- * hdr->fc will be ignored. this includes the INTRA_PAN bit and the frame
- * version, if SECEN is set.
- */
 int ieee802154_hdr_push(struct sk_buff *skb, struct ieee802154_hdr *hdr);
-
-/* pulls the entire 802.15.4 header off of the skb, including the security
- * header, and performs pan id decompression
- */
 int ieee802154_hdr_pull(struct sk_buff *skb, struct ieee802154_hdr *hdr);
-
-/* parses the frame control, sequence number of address fields in a given skb
- * and stores them into hdr, performing pan id decompression and length checks
- * to be suitable for use in header_ops.parse
- */
 int ieee802154_hdr_peek_addrs(const struct sk_buff *skb,
 			      struct ieee802154_hdr *hdr);
-
-/* parses the full 802.15.4 header a given skb and stores them into hdr,
- * performing pan id decompression and length checks to be suitable for use in
- * header_ops.parse
- */
 int ieee802154_hdr_peek(const struct sk_buff *skb, struct ieee802154_hdr *hdr);
-
-/* pushes/pulls various frame types into/from an skb */
 int ieee802154_beacon_push(struct sk_buff *skb,
 			   struct ieee802154_beacon_frame *beacon);
 int ieee802154_mac_cmd_push(struct sk_buff *skb, void *frame,
 			    const void *pl, unsigned int pl_len);
 int ieee802154_mac_cmd_pl_pull(struct sk_buff *skb,
 			       struct ieee802154_mac_cmd_pl *mac_pl);
-
 int ieee802154_max_payload(const struct ieee802154_hdr *hdr);
-
 static inline int
 ieee802154_sechdr_authtag_len(const struct ieee802154_sechdr *sec)
 {
@@ -217,54 +162,42 @@ ieee802154_sechdr_authtag_len(const struct ieee802154_sechdr *sec)
 		return 0;
 	}
 }
-
 static inline int ieee802154_hdr_length(struct sk_buff *skb)
 {
 	struct ieee802154_hdr hdr;
 	int len = ieee802154_hdr_pull(skb, &hdr);
-
 	if (len > 0)
 		skb_push(skb, len);
-
 	return len;
 }
-
 static inline bool ieee802154_addr_equal(const struct ieee802154_addr *a1,
 					 const struct ieee802154_addr *a2)
 {
 	if (a1->pan_id != a2->pan_id || a1->mode != a2->mode)
 		return false;
-
 	if ((a1->mode == IEEE802154_ADDR_LONG &&
 	     a1->extended_addr != a2->extended_addr) ||
 	    (a1->mode == IEEE802154_ADDR_SHORT &&
 	     a1->short_addr != a2->short_addr))
 		return false;
-
 	return true;
 }
-
 static inline __le64 ieee802154_devaddr_from_raw(const void *raw)
 {
 	u64 temp;
-
 	memcpy(&temp, raw, IEEE802154_ADDR_LEN);
 	return (__force __le64)swab64(temp);
 }
-
 static inline void ieee802154_devaddr_to_raw(void *raw, __le64 addr)
 {
 	u64 temp = swab64((__force u64)addr);
-
 	memcpy(raw, &temp, IEEE802154_ADDR_LEN);
 }
-
 static inline int
 ieee802154_sockaddr_check_size(struct sockaddr_ieee802154 *daddr, int len)
 {
 	struct ieee802154_addr_sa *sa;
 	int ret = 0;
-
 	sa = &daddr->addr;
 	if (len < IEEE802154_MIN_NAMELEN)
 		return -EINVAL;
@@ -285,13 +218,11 @@ ieee802154_sockaddr_check_size(struct sockaddr_ieee802154 *daddr, int len)
 	}
 	return ret;
 }
-
 static inline void ieee802154_addr_from_sa(struct ieee802154_addr *a,
 					   const struct ieee802154_addr_sa *sa)
 {
 	a->mode = sa->addr_type;
 	a->pan_id = cpu_to_le16(sa->pan_id);
-
 	switch (a->mode) {
 	case IEEE802154_ADDR_SHORT:
 		a->short_addr = cpu_to_le16(sa->short_addr);
@@ -301,13 +232,11 @@ static inline void ieee802154_addr_from_sa(struct ieee802154_addr *a,
 		break;
 	}
 }
-
 static inline void ieee802154_addr_to_sa(struct ieee802154_addr_sa *sa,
 					 const struct ieee802154_addr *a)
 {
 	sa->addr_type = a->mode;
 	sa->pan_id = le16_to_cpu(a->pan_id);
-
 	switch (a->mode) {
 	case IEEE802154_ADDR_SHORT:
 		sa->short_addr = le16_to_cpu(a->short_addr);
@@ -317,11 +246,6 @@ static inline void ieee802154_addr_to_sa(struct ieee802154_addr_sa *sa,
 		break;
 	}
 }
-
-/*
- * A control block of skb passed between the ARPHRD_IEEE802154 device
- * and other stack parts.
- */
 struct ieee802154_mac_cb {
 	u8 lqi;
 	u8 type;
@@ -333,47 +257,37 @@ struct ieee802154_mac_cb {
 	struct ieee802154_addr source;
 	struct ieee802154_addr dest;
 };
-
 static inline struct ieee802154_mac_cb *mac_cb(struct sk_buff *skb)
 {
 	return (struct ieee802154_mac_cb *)skb->cb;
 }
-
 static inline struct ieee802154_mac_cb *mac_cb_init(struct sk_buff *skb)
 {
 	BUILD_BUG_ON(sizeof(struct ieee802154_mac_cb) > sizeof(skb->cb));
-
 	memset(skb->cb, 0, sizeof(struct ieee802154_mac_cb));
 	return mac_cb(skb);
 }
-
 enum {
 	IEEE802154_LLSEC_DEVKEY_IGNORE,
 	IEEE802154_LLSEC_DEVKEY_RESTRICT,
 	IEEE802154_LLSEC_DEVKEY_RECORD,
-
 	__IEEE802154_LLSEC_DEVKEY_MAX,
 };
-
 #define IEEE802154_MAC_SCAN_ED		0
 #define IEEE802154_MAC_SCAN_ACTIVE	1
 #define IEEE802154_MAC_SCAN_PASSIVE	2
 #define IEEE802154_MAC_SCAN_ORPHAN	3
-
 struct ieee802154_mac_params {
 	s8 transmit_power;
 	u8 min_be;
 	u8 max_be;
 	u8 csma_retries;
 	s8 frame_retries;
-
 	bool lbt;
 	struct wpan_phy_cca cca;
 	s32 cca_ed_level;
 };
-
 struct wpan_phy;
-
 enum {
 	IEEE802154_LLSEC_PARAM_ENABLED		= BIT(0),
 	IEEE802154_LLSEC_PARAM_FRAME_COUNTER	= BIT(1),
@@ -385,50 +299,36 @@ enum {
 	IEEE802154_LLSEC_PARAM_COORD_HWADDR	= BIT(7),
 	IEEE802154_LLSEC_PARAM_COORD_SHORTADDR	= BIT(8),
 };
-
 struct ieee802154_llsec_ops {
 	int (*get_params)(struct net_device *dev,
 			  struct ieee802154_llsec_params *params);
 	int (*set_params)(struct net_device *dev,
 			  const struct ieee802154_llsec_params *params,
 			  int changed);
-
 	int (*add_key)(struct net_device *dev,
 		       const struct ieee802154_llsec_key_id *id,
 		       const struct ieee802154_llsec_key *key);
 	int (*del_key)(struct net_device *dev,
 		       const struct ieee802154_llsec_key_id *id);
-
 	int (*add_dev)(struct net_device *dev,
 		       const struct ieee802154_llsec_device *llsec_dev);
 	int (*del_dev)(struct net_device *dev, __le64 dev_addr);
-
 	int (*add_devkey)(struct net_device *dev,
 			  __le64 device_addr,
 			  const struct ieee802154_llsec_device_key *key);
 	int (*del_devkey)(struct net_device *dev,
 			  __le64 device_addr,
 			  const struct ieee802154_llsec_device_key *key);
-
 	int (*add_seclevel)(struct net_device *dev,
 			    const struct ieee802154_llsec_seclevel *sl);
 	int (*del_seclevel)(struct net_device *dev,
 			    const struct ieee802154_llsec_seclevel *sl);
-
 	void (*lock_table)(struct net_device *dev);
 	void (*get_table)(struct net_device *dev,
 			  struct ieee802154_llsec_table **t);
 	void (*unlock_table)(struct net_device *dev);
 };
-/*
- * This should be located at net_device->ml_priv
- *
- * get_phy should increment the reference counting on returned phy.
- * Use wpan_wpy_put to put that reference.
- */
 struct ieee802154_mlme_ops {
-	/* The following fields are optional (can be NULL). */
-
 	int (*assoc_req)(struct net_device *dev,
 			struct ieee802154_addr *addr,
 			u8 channel, u8 page, u8 cap);
@@ -444,19 +344,15 @@ struct ieee802154_mlme_ops {
 			u8 pan_coord, u8 blx, u8 coord_realign);
 	int (*scan_req)(struct net_device *dev,
 			u8 type, u32 channels, u8 page, u8 duration);
-
 	int (*set_mac_params)(struct net_device *dev,
 			      const struct ieee802154_mac_params *params);
 	void (*get_mac_params)(struct net_device *dev,
 			       struct ieee802154_mac_params *params);
-
 	const struct ieee802154_llsec_ops *llsec;
 };
-
 static inline struct ieee802154_mlme_ops *
 ieee802154_mlme_ops(const struct net_device *dev)
 {
 	return dev->ml_priv;
 }
-
 #endif

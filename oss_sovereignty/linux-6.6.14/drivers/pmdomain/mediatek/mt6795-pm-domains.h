@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __SOC_MEDIATEK_MT6795_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT6795_PM_DOMAINS_H
-
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mt6795-power.h>
-
-/*
- * MT6795 power domain support
- */
-
 static const struct scpsys_domain_data scpsys_domain_data_mt6795[] = {
 	[MT6795_POWER_DOMAIN_VDEC] = {
 		.name = "vdec",
@@ -103,10 +95,8 @@ static const struct scpsys_domain_data scpsys_domain_data_mt6795[] = {
 		},
 	},
 };
-
 static const struct scpsys_soc_data mt6795_scpsys_data = {
 	.domains_data = scpsys_domain_data_mt6795,
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt6795),
 };
-
-#endif /* __SOC_MEDIATEK_MT6795_PM_DOMAINS_H */
+#endif  

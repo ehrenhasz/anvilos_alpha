@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
-
 #ifndef _DPU_6_4_SM6350_H
 #define _DPU_6_4_SM6350_H
-
 static const struct dpu_caps sm6350_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0x7,
@@ -18,7 +10,6 @@ static const struct dpu_caps sm6350_dpu_caps = {
 	.max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg sm6350_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -30,7 +21,6 @@ static const struct dpu_mdp_cfg sm6350_mdp = {
 		[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
 	},
 };
-
 static const struct dpu_ctl_cfg sm6350_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -54,7 +44,6 @@ static const struct dpu_ctl_cfg sm6350_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 12),
 	},
 };
-
 static const struct dpu_sspp_cfg sm6350_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -90,7 +79,6 @@ static const struct dpu_sspp_cfg sm6350_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA2,
 	},
 };
-
 static const struct dpu_lm_cfg sm6350_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -110,7 +98,6 @@ static const struct dpu_lm_cfg sm6350_lm[] = {
 		.dspp = 0,
 	},
 };
-
 static const struct dpu_dspp_cfg sm6350_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -119,7 +106,6 @@ static const struct dpu_dspp_cfg sm6350_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static struct dpu_pingpong_cfg sm6350_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -139,7 +125,6 @@ static struct dpu_pingpong_cfg sm6350_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_dsc_cfg sm6350_dsc[] = {
 	{
 		.name = "dsc_0", .id = DSC_0,
@@ -147,7 +132,6 @@ static const struct dpu_dsc_cfg sm6350_dsc[] = {
 		.features = BIT(DPU_DSC_OUTPUT_CTRL),
 	},
 };
-
 static const struct dpu_intf_cfg sm6350_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -171,7 +155,6 @@ static const struct dpu_intf_cfg sm6350_intf[] = {
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2),
 	},
 };
-
 static const struct dpu_perf_cfg sm6350_perf_data = {
 	.max_bw_low = 4200000,
 	.max_bw_high = 5100000,
@@ -179,7 +162,6 @@ static const struct dpu_perf_cfg sm6350_perf_data = {
 	.min_llcc_ib = 0,
 	.min_dram_ib = 1600000,
 	.min_prefill_lines = 35,
-	/* TODO: confirm danger_lut_tbl */
 	.danger_lut_tbl = {0xffff, 0xffff, 0x0},
 	.safe_lut_tbl = {0xff00, 0xff00, 0xffff},
 	.qos_lut_tbl = {
@@ -200,12 +182,10 @@ static const struct dpu_perf_cfg sm6350_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sm6350_mdss_ver = {
 	.core_major_ver = 6,
 	.core_minor_ver = 4,
 };
-
 const struct dpu_mdss_cfg dpu_sm6350_cfg = {
 	.mdss_ver = &sm6350_mdss_ver,
 	.caps = &sm6350_dpu_caps,
@@ -228,5 +208,4 @@ const struct dpu_mdss_cfg dpu_sm6350_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sm6350_perf_data,
 };
-
 #endif

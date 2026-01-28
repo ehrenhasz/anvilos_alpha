@@ -1,25 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-
 #ifndef _CRYPTO_BLAKE2B_H
 #define _CRYPTO_BLAKE2B_H
-
 #include <linux/bug.h>
 #include <linux/types.h>
 #include <linux/string.h>
-
 enum blake2b_lengths {
 	BLAKE2B_BLOCK_SIZE = 128,
 	BLAKE2B_HASH_SIZE = 64,
 	BLAKE2B_KEY_SIZE = 64,
-
 	BLAKE2B_160_HASH_SIZE = 20,
 	BLAKE2B_256_HASH_SIZE = 32,
 	BLAKE2B_384_HASH_SIZE = 48,
 	BLAKE2B_512_HASH_SIZE = 64,
 };
-
 struct blake2b_state {
-	/* 'h', 't', and 'f' are used in assembly code, so keep them as-is. */
 	u64 h[8];
 	u64 t[2];
 	u64 f[2];
@@ -27,7 +20,6 @@ struct blake2b_state {
 	unsigned int buflen;
 	unsigned int outlen;
 };
-
 enum blake2b_iv {
 	BLAKE2B_IV0 = 0x6A09E667F3BCC908ULL,
 	BLAKE2B_IV1 = 0xBB67AE8584CAA73BULL,
@@ -38,7 +30,6 @@ enum blake2b_iv {
 	BLAKE2B_IV6 = 0x1F83D9ABFB41BD6BULL,
 	BLAKE2B_IV7 = 0x5BE0CD19137E2179ULL,
 };
-
 static inline void __blake2b_init(struct blake2b_state *state, size_t outlen,
 				  const void *key, size_t keylen)
 {
@@ -62,5 +53,4 @@ static inline void __blake2b_init(struct blake2b_state *state, size_t outlen,
 		state->buflen = BLAKE2B_BLOCK_SIZE;
 	}
 }
-
-#endif /* _CRYPTO_BLAKE2B_H */
+#endif  

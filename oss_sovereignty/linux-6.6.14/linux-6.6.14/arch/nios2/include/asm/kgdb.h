@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Altera Corporation
- * Copyright (C) 2011 Tobias Klauser <tklauser@distanz.ch>
- *
- * Based on the code posted by Kazuyasu on the Altera Forum at:
- * http://www.alteraforum.com/forum/showpost.php?p=77003&postcount=20
- */
-
 #ifndef _ASM_NIOS2_KGDB_H
 #define _ASM_NIOS2_KGDB_H
-
 #define CACHE_FLUSH_IS_SAFE	1
 #define BUFMAX			2048
-
 enum regnames {
 	GDB_R0 = 0,
 	GDB_AT,
@@ -63,18 +52,14 @@ enum regnames {
 	GDB_CONFIG,
 	GDB_MPUBASE,
 	GDB_MPUACC,
-	/* do not change the last entry or anything below! */
-	GDB_NUMREGBYTES		/* number of registers */
+	GDB_NUMREGBYTES		 
 };
-
 #define GDB_SIZEOF_REG		sizeof(u32)
 #define DBG_MAX_REG_NUM	(49)
 #define NUMREGBYTES		(DBG_MAX_REG_NUM * sizeof(GDB_SIZEOF_REG))
-
 #define BREAK_INSTR_SIZE	4
 static inline void arch_kgdb_breakpoint(void)
 {
 	__asm__ __volatile__("trap 30\n");
 }
-
-#endif /* _ASM_NIOS2_KGDB_H */
+#endif  

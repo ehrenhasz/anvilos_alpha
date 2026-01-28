@@ -1,25 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the ov9650 sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
-
 #ifndef M5602_OV9650_H_
 #define M5602_OV9650_H_
-
 #include <linux/dmi.h>
 #include "m5602_sensor.h"
-
-/*****************************************************************************/
-
 #define OV9650_GAIN			0x00
 #define OV9650_BLUE			0x01
 #define OV9650_RED			0x02
@@ -88,7 +70,6 @@
 #define OV9650_COM26			0xa5
 #define OV9650_ACOMA8			0xa8
 #define OV9650_ACOMA9			0xa9
-
 #define OV9650_REGISTER_RESET		(1 << 7)
 #define OV9650_VGA_SELECT		(1 << 6)
 #define OV9650_CIF_SELECT		(1 << 5)
@@ -96,50 +77,36 @@
 #define OV9650_QCIF_SELECT		(1 << 3)
 #define OV9650_RGB_SELECT		(1 << 2)
 #define OV9650_RAW_RGB_SELECT		(1 << 0)
-
 #define OV9650_FAST_AGC_AEC		(1 << 7)
 #define OV9650_AEC_UNLIM_STEP_SIZE	(1 << 6)
 #define OV9650_BANDING			(1 << 5)
 #define OV9650_AGC_EN			(1 << 2)
 #define OV9650_AWB_EN			(1 << 1)
 #define OV9650_AEC_EN			(1 << 0)
-
 #define OV9650_VARIOPIXEL		(1 << 2)
 #define OV9650_SYSTEM_CLK_SEL		(1 << 7)
 #define OV9650_SLAM_MODE		(1 << 4)
-
 #define OV9650_QVGA_VARIOPIXEL		(1 << 7)
-
 #define OV9650_VFLIP			(1 << 4)
 #define OV9650_HFLIP			(1 << 5)
-
 #define OV9650_SOFT_SLEEP		(1 << 4)
 #define OV9650_OUTPUT_DRIVE_2X		(1 << 0)
-
 #define OV9650_DENOISE_ENABLE		(1 << 5)
 #define OV9650_WHITE_PIXEL_ENABLE	(1 << 1)
 #define OV9650_WHITE_PIXEL_OPTION	(1 << 0)
-
 #define OV9650_LEFT_OFFSET		0x62
-
 #define GAIN_DEFAULT			0x14
 #define RED_GAIN_DEFAULT		0x70
 #define BLUE_GAIN_DEFAULT		0x20
 #define EXPOSURE_DEFAULT		0x1ff
-
-/*****************************************************************************/
-
-/* Kernel module parameters */
 extern int force_sensor;
 extern bool dump_sensor;
-
 int ov9650_probe(struct sd *sd);
 int ov9650_init(struct sd *sd);
 int ov9650_init_controls(struct sd *sd);
 int ov9650_start(struct sd *sd);
 int ov9650_stop(struct sd *sd);
 void ov9650_disconnect(struct sd *sd);
-
 static const struct m5602_sensor ov9650 = {
 	.name = "OV9650",
 	.i2c_slave_id = 0x60,
@@ -151,5 +118,4 @@ static const struct m5602_sensor ov9650 = {
 	.stop = ov9650_stop,
 	.disconnect = ov9650_disconnect,
 };
-
 #endif

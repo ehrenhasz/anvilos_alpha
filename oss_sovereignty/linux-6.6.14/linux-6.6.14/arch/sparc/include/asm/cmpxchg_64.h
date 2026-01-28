@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* 64-bit atomic xchg() and cmpxchg() definitions.
- *
- * Copyright (C) 1996, 1997, 2000 David S. Miller (davem@redhat.com)
- */
-
 #ifndef __ARCH_SPARC64_CMPXCHG__
 #define __ARCH_SPARC64_CMPXCHG__
-
 static inline unsigned long
 __cmpxchg_u32(volatile int *m, int old, int new)
 {
@@ -14,14 +7,11 @@ __cmpxchg_u32(volatile int *m, int old, int new)
 			     : "=&r" (new)
 			     : "0" (new), "r" (m), "r" (old)
 			     : "memory");
-
 	return new;
 }
-
 static inline unsigned long xchg32(__volatile__ unsigned int *m, unsigned int val)
 {
 	unsigned long tmp1, tmp2;
-
 	__asm__ __volatile__(
 "	mov		%0, %1\n"
 "1:	lduw		[%4], %2\n"
@@ -34,11 +24,9 @@ static inline unsigned long xchg32(__volatile__ unsigned int *m, unsigned int va
 	: "cc", "memory");
 	return val;
 }
-
 static inline unsigned long xchg64(__volatile__ unsigned long *m, unsigned long val)
 {
 	unsigned long tmp1, tmp2;
-
 	__asm__ __volatile__(
 "	mov		%0, %1\n"
 "1:	ldx		[%4], %2\n"
@@ -51,21 +39,13 @@ static inline unsigned long xchg64(__volatile__ unsigned long *m, unsigned long 
 	: "cc", "memory");
 	return val;
 }
-
 #define arch_xchg(ptr,x)							\
 ({	__typeof__(*(ptr)) __ret;					\
 	__ret = (__typeof__(*(ptr)))					\
 		__arch_xchg((unsigned long)(x), (ptr), sizeof(*(ptr)));	\
 	__ret;								\
 })
-
 void __xchg_called_with_bad_pointer(void);
-
-/*
- * Use 4 byte cas instruction to achieve 2 byte xchg. Main logic
- * here is to get the bit shift of the byte we are interested in.
- * The XOR is handy for reversing the bits for big-endian byte order.
- */
 static inline unsigned long
 xchg16(__volatile__ unsigned short *m, unsigned short val)
 {
@@ -74,19 +54,14 @@ xchg16(__volatile__ unsigned short *m, unsigned short val)
 	unsigned int mask = 0xffff << bit_shift;
 	unsigned int *ptr = (unsigned int  *) (maddr & ~2);
 	unsigned int old32, new32, load32;
-
-	/* Read the old value */
 	load32 = *ptr;
-
 	do {
 		old32 = load32;
 		new32 = (load32 & (~mask)) | val << bit_shift;
 		load32 = __cmpxchg_u32(ptr, old32, new32);
 	} while (load32 != old32);
-
 	return (load32 & mask) >> bit_shift;
 }
-
 static __always_inline unsigned long
 __arch_xchg(unsigned long x, __volatile__ void * ptr, int size)
 {
@@ -101,16 +76,7 @@ __arch_xchg(unsigned long x, __volatile__ void * ptr, int size)
 	__xchg_called_with_bad_pointer();
 	return x;
 }
-
-/*
- * Atomic compare and exchange.  Compare OLD with MEM, if identical,
- * store NEW in MEM.  Return the initial value in MEM.  Success is
- * indicated by comparing RETURN with OLD.
- */
-
 #include <asm-generic/cmpxchg-local.h>
-
-
 static inline unsigned long
 __cmpxchg_u64(volatile long *m, unsigned long old, unsigned long new)
 {
@@ -118,15 +84,8 @@ __cmpxchg_u64(volatile long *m, unsigned long old, unsigned long new)
 			     : "=&r" (new)
 			     : "0" (new), "r" (m), "r" (old)
 			     : "memory");
-
 	return new;
 }
-
-/*
- * Use 4 byte cas instruction to achieve 1 byte cmpxchg. Main logic
- * here is to get the bit shift of the byte we are interested in.
- * The XOR is handy for reversing the bits for big-endian byte order
- */
 static inline unsigned long
 __cmpxchg_u8(volatile unsigned char *m, unsigned char old, unsigned char new)
 {
@@ -136,7 +95,6 @@ __cmpxchg_u8(volatile unsigned char *m, unsigned char old, unsigned char new)
 	unsigned int *ptr = (unsigned int *) (maddr & ~3);
 	unsigned int old32, new32, load;
 	unsigned int load32 = *ptr;
-
 	do {
 		new32 = (load32 & ~mask) | (new << bit_shift);
 		old32 = (load32 & ~mask) | (old << bit_shift);
@@ -145,14 +103,9 @@ __cmpxchg_u8(volatile unsigned char *m, unsigned char old, unsigned char new)
 			return old;
 		load = (load32 & mask) >> bit_shift;
 	} while (load == old);
-
 	return load;
 }
-
-/* This function doesn't exist, so you'll get a linker error
-   if something tries to do an invalid cmpxchg().  */
 void __cmpxchg_called_with_bad_pointer(void);
-
 static inline unsigned long
 __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 {
@@ -167,7 +120,6 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 	__cmpxchg_called_with_bad_pointer();
 	return old;
 }
-
 #define arch_cmpxchg(ptr,o,n)						 \
   ({									 \
      __typeof__(*(ptr)) _o_ = (o);					 \
@@ -175,12 +127,6 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
      (__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long)_o_,		 \
 				    (unsigned long)_n_, sizeof(*(ptr))); \
   })
-
-/*
- * cmpxchg_local and cmpxchg64_local are atomic wrt current CPU. Always make
- * them available.
- */
-
 static inline unsigned long __cmpxchg_local(volatile void *ptr,
 				      unsigned long old,
 				      unsigned long new, int size)
@@ -191,10 +137,8 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	default:
 		return __generic_cmpxchg_local(ptr, old, new, size);
 	}
-
 	return old;
 }
-
 #define arch_cmpxchg_local(ptr, o, n)				  	\
 	((__typeof__(*(ptr)))__cmpxchg_local((ptr), (unsigned long)(o),	\
 			(unsigned long)(n), sizeof(*(ptr))))
@@ -204,5 +148,4 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	arch_cmpxchg_local((ptr), (o), (n));					\
   })
 #define arch_cmpxchg64(ptr, o, n)	arch_cmpxchg64_local((ptr), (o), (n))
-
-#endif /* __ARCH_SPARC64_CMPXCHG__ */
+#endif  

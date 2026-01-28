@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree Include file for Marvell Armada 390 SoC.
- *
- * Copyright (C) 2015 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
-
 #include "armada-39x.dtsi"
-
 / {
 	compatible = "marvell,armada390";
-
 	soc {
 		internal-regs {
 			pinctrl@18000 {

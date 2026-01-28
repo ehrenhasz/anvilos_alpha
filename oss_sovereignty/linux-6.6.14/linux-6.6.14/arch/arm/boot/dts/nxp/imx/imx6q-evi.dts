@@ -1,60 +1,14 @@
-/*
- * Copyright 2016 United Western Technologies.
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This file is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 /dts-v1/;
 #include "imx6q.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	model = "Uniwest Evi";
 	compatible = "uniwest,imx6q-evi", "fsl,imx6q";
-
 	memory@10000000 {
 		device_type = "memory";
 		reg = <0x10000000 0x40000000>;
 	};
-
 	reg_usbh1_vbus: regulator-usbhubreset {
 		compatible = "regulator-fixed";
 		regulator-name = "usbh1_vbus";
@@ -66,7 +20,6 @@
 		pinctrl-0 = <&pinctrl_usbh1_hubreset>;
 		gpio = <&gpio7 12 GPIO_ACTIVE_HIGH>;
 	};
-
 	reg_usb_otg_vbus: regulator-usbotgvbus {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_otg_vbus";
@@ -78,10 +31,8 @@
 		enable-active-high;
 		regulator-always-on;
 	};
-
 	panel {
 		compatible = "sharp,lq101k1ly04";
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&lvds0_out>;
@@ -89,13 +40,11 @@
 		};
 	};
 };
-
 &ecspi1 {
 	cs-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1 &pinctrl_ecspi1cs>;
 	status = "okay";
-
 	fpga: fpga@0 {
 		compatible = "altr,fpga-passive-serial";
 		spi-max-frequency = <20000000>;
@@ -105,7 +54,6 @@
 		nstat-gpios = <&gpio4 11 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &ecspi3 {
 	cs-gpios = <&gpio4 24 GPIO_ACTIVE_LOW>,
 		<&gpio4 25 GPIO_ACTIVE_LOW>,
@@ -114,7 +62,6 @@
 	pinctrl-0 = <&pinctrl_ecspi3 &pinctrl_ecspi3cs>;
 	status = "okay";
 };
-
 &ecspi5 {
 	cs-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>,
 		<&gpio1 13 GPIO_ACTIVE_LOW>,
@@ -123,7 +70,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi5 &pinctrl_ecspi5cs>;
 	status = "okay";
-
 	eeprom: m95m02@1 {
 		compatible = "st,m95m02", "atmel,at25";
 		size = <262144>;
@@ -132,7 +78,6 @@
 		spi-max-frequency = <5000000>;
 		reg = <1>;
 	};
-
 	pb_rtc: rtc@3 {
 		compatible = "nxp,rtc-pcf2123";
 		spi-max-frequency = <2450000>;
@@ -140,7 +85,6 @@
 		reg = <3>;
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -152,20 +96,17 @@
 	fsl,err006687-workaround-present;
 	status = "okay";
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpminand>;
 	status = "okay";
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	clock-frequency = <100000>;
 	status = "okay";
 };
-
 &i2c3 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
@@ -174,7 +115,6 @@
 	scl-gpios = <&gpio1 5 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio7 11 GPIO_ACTIVE_HIGH>;
 	status = "okay";
-
 	battery: sbs-battery@b {
 		compatible = "sbs,sbs-battery";
 		reg = <0x0b>;
@@ -182,13 +122,10 @@
 		sbs,i2c-retry-count = <100>;
 	};
 };
-
 &ldb {
 	status = "okay";
-
 	lvds0: lvds-channel@0 {
 		status = "okay";
-
 		port@4 {
 			reg = <4>;
 			lvds0_out: endpoint {
@@ -197,23 +134,19 @@
 		};
 	};
 };
-
 &ssi1 {
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &usbh1 {
 	vbus-supply = <&reg_usbh1_vbus>;
 	pinctrl-names = "default";
@@ -222,7 +155,6 @@
 	disable-over-current;
 	status = "okay";
 };
-
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
@@ -231,34 +163,27 @@
 	dr_mode = "otg";
 	status = "okay";
 };
-
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1>;
 	non-removable;
 	status = "okay";
 };
-
 &weim {
 	ranges = <0 0 0x08000000 0x08000000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_weimfpga &pinctrl_weimcs>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	pinctrl_hog: hoggrp {
 		fsl,pins = <
-			/* pwr mcu alert irq */
 			MX6QDL_PAD_SD4_DAT2__GPIO2_IO10 0x1b0b0
-			/* remainder ???? */
 			MX6QDL_PAD_CSI0_MCLK__GPIO5_IO19 0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL1__ECSPI1_MISO 0x100b1
@@ -266,13 +191,11 @@
 			MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK 0x100b1
 		>;
 	};
-
 	pinctrl_ecspi1cs: ecspi1csgrp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL2__GPIO4_IO10 0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi3: ecspi3grp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT0__ECSPI3_SCLK 0x10068
@@ -280,7 +203,6 @@
 			MX6QDL_PAD_DISP0_DAT2__ECSPI3_MISO 0x1f068
 		>;
 	};
-
 	pinctrl_ecspi3cs: ecspi3csgrp {
 		fsl,pins = <
 			MX6QDL_PAD_DISP0_DAT3__GPIO4_IO24 0x1b0b0
@@ -289,7 +211,6 @@
 			MX6QDL_PAD_DISP0_DAT6__GPIO4_IO27 0x1b0b0
 		>;
 	};
-
 	pinctrl_ecspi5: ecspi5grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD2_CLK__ECSPI5_SCLK 0x100b1
@@ -297,7 +218,6 @@
 			MX6QDL_PAD_SD2_DAT0__ECSPI5_MISO 0x100b1
 		>;
 	};
-
 	pinctrl_ecspi5cs: ecspi5csgrp {
 		fsl,pins = <
 			MX6QDL_PAD_SD2_DAT1__GPIO1_IO14 0x1b0b0
@@ -306,7 +226,6 @@
 			MX6QDL_PAD_SD4_DAT1__GPIO2_IO09 0x1b0b0
 		>;
 	};
-
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_MDIO__ENET_MDIO 0x1b0b0
@@ -329,14 +248,12 @@
 			MX6QDL_PAD_GPIO_6__ENET_IRQ 0x000b1
 		>;
 	};
-
 	pinctrl_fpgaspi: fpgaspigrp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_ROW1__GPIO4_IO09 0x1b0b0
 			MX6QDL_PAD_KEY_ROW2__GPIO4_IO11 0x1b0b0
 		>;
 	};
-
 	pinctrl_gpminand: gpminandgrp {
 		fsl,pins = <
 			MX6QDL_PAD_NANDF_CLE__NAND_CLE 0xb0b1
@@ -358,38 +275,32 @@
 			MX6QDL_PAD_SD4_DAT0__NAND_DQS 0x00b1
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_ROW3__I2C2_SDA 0x4001b8b1
 			MX6QDL_PAD_KEY_COL3__I2C2_SCL 0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_5__I2C3_SCL 0x4001b8b1
 			MX6QDL_PAD_GPIO_16__I2C3_SDA 0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c3_gpio: i2c3gpiogrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x4001b8b1
 			MX6QDL_PAD_GPIO_16__GPIO7_IO11 0x4001b8b1
 		>;
 	};
-
 	pinctrl_weimcs: weimcsgrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_CS0__EIM_CS0_B 0xb0b1
 			MX6QDL_PAD_EIM_CS1__EIM_CS1_B 0xb0b1
 		>;
 	};
-
 	pinctrl_weimfpga: weimfpgagrp {
 		fsl,pins = <
-			/* weim misc */
 			MX6QDL_PAD_EIM_OE__EIM_OE_B 0xb0b1
 			MX6QDL_PAD_EIM_RW__EIM_RW 0xb0b1
 			MX6QDL_PAD_EIM_WAIT__EIM_WAIT_B 0xb060
@@ -399,7 +310,6 @@
 			MX6QDL_PAD_EIM_EB1__EIM_EB1_B 0xb0b1
 			MX6QDL_PAD_EIM_EB2__EIM_EB2_B 0xb0b1
 			MX6QDL_PAD_EIM_EB3__EIM_EB3_B 0xb0b1
-			/* weim data */
 			MX6QDL_PAD_CSI0_DATA_EN__EIM_DATA00 0x1b0b0
 			MX6QDL_PAD_CSI0_VSYNC__EIM_DATA01 0x1b0b0
 			MX6QDL_PAD_CSI0_DAT4__EIM_DATA02 0x1b0b0
@@ -432,7 +342,6 @@
 			MX6QDL_PAD_EIM_D29__EIM_DATA29 0x1b0b0
 			MX6QDL_PAD_EIM_D30__EIM_DATA30 0x1b0b0
 			MX6QDL_PAD_EIM_D31__EIM_DATA31 0x1b0b0
-			/* weim address */
 			MX6QDL_PAD_EIM_A25__EIM_ADDR25 0xb0b1
 			MX6QDL_PAD_EIM_A24__EIM_ADDR24 0xb0b1
 			MX6QDL_PAD_EIM_A23__EIM_ADDR23 0xb0b1
@@ -461,14 +370,12 @@
 			MX6QDL_PAD_EIM_DA0__EIM_AD00 0xb0b1
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA 0x1b0b1
 			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA 0x1b0b1
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_DAT5__UART2_TX_DATA 0x1b0b1
@@ -477,34 +384,28 @@
 			MX6QDL_PAD_SD3_CMD__UART2_CTS_B 0x1b0b1
 		>;
 	};
-
 	pinctrl_usbh1: usbh1grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_3__USB_H1_OC 0x1b0b0
-			/* usbh1_b OC */
 			MX6QDL_PAD_GPIO_0__GPIO1_IO00 0x1b0b0
 		>;
 	};
-
 	pinctrl_usbh1_hubreset: usbh1hubresetgrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_17__GPIO7_IO12 0x1b0b0
 		>;
 	};
-
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_1__USB_OTG_ID 0x17059
 			MX6QDL_PAD_KEY_COL4__USB_OTG_OC 0x1b0b0
 		>;
 	};
-
 	pinctrl_usbotgvbus: usbotgvbusgrp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_ROW4__GPIO4_IO15 0x000b0
 		>;
 	};
-
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD1_CMD__SD1_CMD 0x17059

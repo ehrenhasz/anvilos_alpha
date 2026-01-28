@@ -1,44 +1,27 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
-
 #ifndef _ROCKCHIP_DRM_VOP2_H
 #define _ROCKCHIP_DRM_VOP2_H
-
 #include "rockchip_drm_vop.h"
-
 #include <linux/regmap.h>
 #include <drm/drm_modes.h>
-
 #define VOP_FEATURE_OUTPUT_10BIT        BIT(0)
-
 #define WIN_FEATURE_AFBDC		BIT(0)
 #define WIN_FEATURE_CLUSTER		BIT(1)
-
-/*
- *  the delay number of a window in different mode.
- */
 enum win_dly_mode {
-	VOP2_DLY_MODE_DEFAULT,   /**< default mode */
-	VOP2_DLY_MODE_HISO_S,    /** HDR in SDR out mode, as a SDR window */
-	VOP2_DLY_MODE_HIHO_H,    /** HDR in HDR out mode, as a HDR window */
+	VOP2_DLY_MODE_DEFAULT,    
+	VOP2_DLY_MODE_HISO_S,     
+	VOP2_DLY_MODE_HIHO_H,     
 	VOP2_DLY_MODE_MAX,
 };
-
 enum vop2_scale_up_mode {
 	VOP2_SCALE_UP_NRST_NBOR,
 	VOP2_SCALE_UP_BIL,
 	VOP2_SCALE_UP_BIC,
 };
-
 enum vop2_scale_down_mode {
 	VOP2_SCALE_DOWN_NRST_NBOR,
 	VOP2_SCALE_DOWN_BIL,
 	VOP2_SCALE_DOWN_AVG,
 };
-
 enum vop2_win_regs {
 	VOP2_WIN_ENABLE,
 	VOP2_WIN_FORMAT,
@@ -60,8 +43,6 @@ enum vop2_win_regs {
 	VOP2_WIN_COLOR_KEY,
 	VOP2_WIN_COLOR_KEY_EN,
 	VOP2_WIN_DITHER_UP,
-
-	/* scale regs */
 	VOP2_WIN_SCALE_YRGB_X,
 	VOP2_WIN_SCALE_YRGB_Y,
 	VOP2_WIN_SCALE_CBCR_X,
@@ -79,13 +60,9 @@ enum vop2_win_regs {
 	VOP2_WIN_VSD_YRGB_GT2,
 	VOP2_WIN_VSD_YRGB_GT4,
 	VOP2_WIN_BIC_COE_SEL,
-
-	/* cluster regs */
 	VOP2_WIN_CLUSTER_ENABLE,
 	VOP2_WIN_AFBC_ENABLE,
 	VOP2_WIN_CLUSTER_LB_MODE,
-
-	/* afbc regs */
 	VOP2_WIN_AFBC_FORMAT,
 	VOP2_WIN_AFBC_RB_SWAP,
 	VOP2_WIN_AFBC_UV_SWAP,
@@ -103,30 +80,21 @@ enum vop2_win_regs {
 	VOP2_WIN_AFBC_ROTATE_90,
 	VOP2_WIN_MAX_REG,
 };
-
 struct vop2_win_data {
 	const char *name;
 	unsigned int phys_id;
-
 	u32 base;
 	enum drm_plane_type type;
-
 	u32 nformats;
 	const u32 *formats;
 	const uint64_t *format_modifiers;
 	const unsigned int supported_rotations;
-
-	/**
-	 * @layer_sel_id: defined by register OVERLAY_LAYER_SEL of VOP2
-	 */
 	unsigned int layer_sel_id;
 	uint64_t feature;
-
 	unsigned int max_upscale_factor;
 	unsigned int max_downscale_factor;
 	const u8 dly[VOP2_DLY_MODE_MAX];
 };
-
 struct vop2_video_port_data {
 	unsigned int id;
 	u32 feature;
@@ -137,7 +105,6 @@ struct vop2_video_port_data {
 	const struct vop2_video_port_regs *regs;
 	unsigned int offset;
 };
-
 struct vop2_data {
 	u8 nr_vps;
 	const struct vop2_ctrl *ctrl;
@@ -146,12 +113,9 @@ struct vop2_data {
 	const struct vop_csc_table *csc_table;
 	struct vop_rect max_input;
 	struct vop_rect max_output;
-
 	unsigned int win_size;
 	unsigned int soc_id;
 };
-
-/* interrupt define */
 #define FS_NEW_INTR			BIT(4)
 #define ADDR_SAME_INTR			BIT(5)
 #define LINE_FLAG1_INTR			BIT(6)
@@ -168,10 +132,6 @@ struct vop2_data {
 #define WB_UV_FIFO_FULL_INTR		BIT(17)
 #define WB_YRGB_FIFO_FULL_INTR		BIT(18)
 #define WB_COMPLETE_INTR		BIT(19)
-
-/*
- * display output interface supported by rockchip lcdc
- */
 #define ROCKCHIP_OUT_MODE_P888		0
 #define ROCKCHIP_OUT_MODE_BT1120	0
 #define ROCKCHIP_OUT_MODE_P666		1
@@ -180,16 +140,13 @@ struct vop2_data {
 #define ROCKCHIP_OUT_MODE_S888		8
 #define ROCKCHIP_OUT_MODE_S888_DUMMY	12
 #define ROCKCHIP_OUT_MODE_YUV420	14
-/* for use special outface */
 #define ROCKCHIP_OUT_MODE_AAAA		15
-
 enum vop_csc_format {
 	CSC_BT601L,
 	CSC_BT709L,
 	CSC_BT601F,
 	CSC_BT2020,
 };
-
 enum src_factor_mode {
 	SRC_FAC_ALPHA_ZERO,
 	SRC_FAC_ALPHA_ONE,
@@ -198,7 +155,6 @@ enum src_factor_mode {
 	SRC_FAC_ALPHA_SRC,
 	SRC_FAC_ALPHA_SRC_GLOBAL,
 };
-
 enum dst_factor_mode {
 	DST_FAC_ALPHA_ZERO,
 	DST_FAC_ALPHA_ONE,
@@ -207,9 +163,7 @@ enum dst_factor_mode {
 	DST_FAC_ALPHA_DST,
 	DST_FAC_ALPHA_DST_GLOBAL,
 };
-
 #define RK3568_GRF_VO_CON1			0x0364
-/* System registers definition */
 #define RK3568_REG_CFG_DONE			0x000
 #define RK3568_VERSION_INFO			0x004
 #define RK3568_SYS_AUTO_GATING_CTRL		0x008
@@ -235,8 +189,6 @@ enum dst_factor_mode {
 #define RK3568_VP_INT_CLR(vp)			(0xA4 + (vp) * 0x10)
 #define RK3568_VP_INT_STATUS(vp)		(0xA8 + (vp) * 0x10)
 #define RK3568_VP_INT_RAW_STATUS(vp)		(0xAC + (vp) * 0x10)
-
-/* Video Port registers definition */
 #define RK3568_VP_DSP_CTRL			0x00
 #define RK3568_VP_MIPI_CTRL			0x04
 #define RK3568_VP_COLOR_BAR_CTRL		0x08
@@ -259,8 +211,6 @@ enum dst_factor_mode {
 #define RK3568_VP_BCSH_BCS			0x64
 #define RK3568_VP_BCSH_H			0x68
 #define RK3568_VP_BCSH_COLOR_BAR		0x6C
-
-/* Overlay registers definition    */
 #define RK3568_OVL_CTRL				0x600
 #define RK3568_OVL_LAYER_SEL			0x604
 #define RK3568_OVL_PORT_SEL			0x608
@@ -279,8 +229,6 @@ enum dst_factor_mode {
 #define RK3568_VP_BG_MIX_CTRL(vp)		(0x6E0 + (vp) * 4)
 #define RK3568_CLUSTER_DLY_NUM			0x6F0
 #define RK3568_SMART_DLY_NUM			0x6F8
-
-/* Cluster register definition, offset relative to window base */
 #define RK3568_CLUSTER_WIN_CTRL0		0x00
 #define RK3568_CLUSTER_WIN_CTRL1		0x04
 #define RK3568_CLUSTER_WIN_YRGB_MST		0x10
@@ -299,10 +247,7 @@ enum dst_factor_mode {
 #define RK3568_CLUSTER_WIN_AFBCD_PIC_OFFSET	0x64
 #define RK3568_CLUSTER_WIN_AFBCD_DSP_OFFSET	0x68
 #define RK3568_CLUSTER_WIN_AFBCD_CTRL		0x6C
-
 #define RK3568_CLUSTER_CTRL			0x100
-
-/* (E)smart register definition, offset relative to window base */
 #define RK3568_SMART_CTRL0			0x00
 #define RK3568_SMART_CTRL1			0x04
 #define RK3568_SMART_REGION0_CTRL		0x10
@@ -350,8 +295,6 @@ enum dst_factor_mode {
 #define RK3568_SMART_REGION3_SCL_FACTOR_CBR	0xC8
 #define RK3568_SMART_REGION3_SCL_OFFSET		0xCC
 #define RK3568_SMART_COLOR_KEY_CTRL		0xD0
-
-/* HDR register definition */
 #define RK3568_HDR_LUT_CTRL			0x2000
 #define RK3568_HDR_LUT_MST			0x2004
 #define RK3568_SDR2HDR_CTRL			0x2010
@@ -365,9 +308,7 @@ enum dst_factor_mode {
 #define RK3568_HDR_EOTF_OETF_Y0			0x20F0
 #define RK3568_HDR_OETF_DX_POW1			0x2200
 #define RK3568_HDR_OETF_XN1			0x2300
-
 #define RK3568_REG_CFG_DONE__GLB_CFG_DONE_EN		BIT(15)
-
 #define RK3568_VP_DSP_CTRL__STANDBY			BIT(31)
 #define RK3568_VP_DSP_CTRL__DITHER_DOWN_MODE		BIT(20)
 #define RK3568_VP_DSP_CTRL__DITHER_DOWN_SEL		GENMASK(19, 18)
@@ -380,10 +321,8 @@ enum dst_factor_mode {
 #define RK3568_VP_DSP_CTRL__P2I_EN			BIT(5)
 #define RK3568_VP_DSP_CTRL__CORE_DCLK_DIV		BIT(4)
 #define RK3568_VP_DSP_CTRL__OUT_MODE			GENMASK(3, 0)
-
 #define RK3568_VP_POST_SCL_CTRL__VSCALEDOWN		BIT(1)
 #define RK3568_VP_POST_SCL_CTRL__HSCALEDOWN		BIT(0)
-
 #define RK3568_SYS_DSP_INFACE_EN_LVDS1_MUX		GENMASK(26, 25)
 #define RK3568_SYS_DSP_INFACE_EN_LVDS1			BIT(24)
 #define RK3568_SYS_DSP_INFACE_EN_MIPI1_MUX		GENMASK(22, 21)
@@ -398,29 +337,19 @@ enum dst_factor_mode {
 #define RK3568_SYS_DSP_INFACE_EN_EDP			BIT(3)
 #define RK3568_SYS_DSP_INFACE_EN_HDMI			BIT(1)
 #define RK3568_SYS_DSP_INFACE_EN_RGB			BIT(0)
-
 #define RK3568_DSP_IF_POL__MIPI_PIN_POL			GENMASK(19, 16)
 #define RK3568_DSP_IF_POL__EDP_PIN_POL			GENMASK(15, 12)
 #define RK3568_DSP_IF_POL__HDMI_PIN_POL			GENMASK(7, 4)
 #define RK3568_DSP_IF_POL__RGB_LVDS_PIN_POL		GENMASK(3, 0)
-
 #define RK3568_VP0_MIPI_CTRL__DCLK_DIV2_PHASE_LOCK	BIT(5)
 #define RK3568_VP0_MIPI_CTRL__DCLK_DIV2			BIT(4)
-
 #define RK3568_SYS_AUTO_GATING_CTRL__AUTO_GATING_EN	BIT(31)
-
 #define RK3568_DSP_IF_POL__CFG_DONE_IMD			BIT(28)
-
 #define VOP2_SYS_AXI_BUS_NUM				2
-
 #define VOP2_CLUSTER_YUV444_10				0x12
-
 #define VOP2_COLOR_KEY_MASK				BIT(31)
-
 #define RK3568_OVL_CTRL__LAYERSEL_REGDONE_IMD		BIT(28)
-
 #define RK3568_VP_BG_MIX_CTRL__BG_DLY			GENMASK(31, 24)
-
 #define RK3568_OVL_PORT_SEL__SEL_PORT			GENMASK(31, 16)
 #define RK3568_OVL_PORT_SEL__SMART1			GENMASK(31, 30)
 #define RK3568_OVL_PORT_SEL__SMART0			GENMASK(29, 28)
@@ -432,17 +361,14 @@ enum dst_factor_mode {
 #define RK3568_OVL_PORT_SET__PORT1_MUX			GENMASK(7, 4)
 #define RK3568_OVL_PORT_SET__PORT0_MUX			GENMASK(3, 0)
 #define RK3568_OVL_LAYER_SEL__LAYER(layer, x)		((x) << ((layer) * 4))
-
 #define RK3568_CLUSTER_DLY_NUM__CLUSTER1_1		GENMASK(31, 24)
 #define RK3568_CLUSTER_DLY_NUM__CLUSTER1_0		GENMASK(23, 16)
 #define RK3568_CLUSTER_DLY_NUM__CLUSTER0_1		GENMASK(15, 8)
 #define RK3568_CLUSTER_DLY_NUM__CLUSTER0_0		GENMASK(7, 0)
-
 #define RK3568_SMART_DLY_NUM__SMART1			GENMASK(31, 24)
 #define RK3568_SMART_DLY_NUM__SMART0			GENMASK(23, 16)
 #define RK3568_SMART_DLY_NUM__ESMART1			GENMASK(15, 8)
 #define RK3568_SMART_DLY_NUM__ESMART0			GENMASK(7, 0)
-
 #define VP_INT_DSP_HOLD_VALID	BIT(6)
 #define VP_INT_FS_FIELD		BIT(5)
 #define VP_INT_POST_BUF_EMPTY	BIT(4)
@@ -450,9 +376,7 @@ enum dst_factor_mode {
 #define VP_INT_LINE_FLAG0	BIT(2)
 #define VOP2_INT_BUS_ERRPR	BIT(1)
 #define VP_INT_FS		BIT(0)
-
 #define POLFLAG_DCLK_INV	BIT(3)
-
 enum vop2_layer_phy_id {
 	ROCKCHIP_VOP2_CLUSTER0 = 0,
 	ROCKCHIP_VOP2_CLUSTER1,
@@ -466,7 +390,5 @@ enum vop2_layer_phy_id {
 	ROCKCHIP_VOP2_ESMART3,
 	ROCKCHIP_VOP2_PHY_ID_INVALID = -1,
 };
-
 extern const struct component_ops vop2_component_ops;
-
-#endif /* _ROCKCHIP_DRM_VOP2_H */
+#endif  

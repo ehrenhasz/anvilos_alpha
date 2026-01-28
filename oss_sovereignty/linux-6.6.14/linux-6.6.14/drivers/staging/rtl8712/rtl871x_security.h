@@ -1,40 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
 #ifndef __RTL871X_SECURITY_H_
 #define __RTL871X_SECURITY_H_
-
 #include "osdep_service.h"
 #include "drv_types.h"
-
 #define _NO_PRIVACY_	0x0
 #define _WEP40_		0x1
 #define _TKIP_		0x2
 #define _TKIP_WTMIC_	0x3
 #define _AES_		0x4
 #define _WEP104_	0x5
-
 #define _WPA_IE_ID_	0xdd
 #define _WPA2_IE_ID_	0x30
-
 #ifndef Ndis802_11AuthModeWPA2
 #define Ndis802_11AuthModeWPA2 (Ndis802_11AuthModeWPANone + 1)
 #endif
-
 #ifndef Ndis802_11AuthModeWPA2PSK
 #define Ndis802_11AuthModeWPA2PSK (Ndis802_11AuthModeWPANone + 2)
 #endif
-
 union pn48 {
 	u64 val;
 #if defined(__BIG_ENDIAN)
@@ -61,12 +42,10 @@ union pn48 {
 	} _byte_;
 #endif
 };
-
 union Keytype {
 	u8 skey[16];
 	u32 lkey[4];
 };
-
 struct RT_PMKID_LIST {
 	u8 bUsed;
 	u8 Bssid[6];
@@ -75,32 +54,21 @@ struct RT_PMKID_LIST {
 	u8 *ssid_octet;
 	u16 ssid_length;
 };
-
 struct security_priv {
-	u32 AuthAlgrthm;		/* 802.11 auth, could be open, shared,
-					 * 8021x and authswitch
-					 */
-	u32 PrivacyAlgrthm;		/* This specify the privacy for shared
-					 * auth. algorithm.
-					 */
-	u32 PrivacyKeyIndex;		/* this is only valid for legendary
-					 * wep, 0~3 for key id.
-					 */
-	union Keytype DefKey[4];	/* this is only valid for def. key */
+	u32 AuthAlgrthm;		 
+	u32 PrivacyAlgrthm;		 
+	u32 PrivacyKeyIndex;		 
+	union Keytype DefKey[4];	 
 	u32 DefKeylen[4];
-	u32 XGrpPrivacy;		/* This specify the privacy algthm.
-					 * used for Grp key
-					 */
-	u32 XGrpKeyid;			/* key id used for Grp Key */
-	union Keytype	XGrpKey[2];	/* 802.1x Group Key, for
-					 * inx0 and inx1
-					 */
+	u32 XGrpPrivacy;		 
+	u32 XGrpKeyid;			 
+	union Keytype	XGrpKey[2];	 
 	union Keytype	XGrptxmickey[2];
 	union Keytype	XGrprxmickey[2];
-	union pn48 Grptxpn;		/* PN48 used for Grp Key xmit. */
-	union pn48 Grprxpn;		/* PN48 used for Grp Key recv. */
-	u8 wps_hw_pbc_pressed;/*for hw pbc pressed*/
-	u8 wps_phase;/*for wps*/
+	union pn48 Grptxpn;		 
+	union pn48 Grprxpn;		 
+	u8 wps_hw_pbc_pressed; 
+	u8 wps_phase; 
 	u8 wps_ie[MAX_WPA_IE_LEN << 2];
 	int wps_ie_len;
 	u8	binstallGrpkey;
@@ -108,35 +76,25 @@ struct security_priv {
 	struct timer_list tkip_timer;
 	u8	bcheck_grpkey;
 	u8	bgrpkey_handshake;
-	s32	sw_encrypt;	/* from registry_priv */
-	s32	sw_decrypt;	/* from registry_priv */
-	s32	hw_decrypted;	/* if the rx packets is hw_decrypted==false,
-				 * it means the hw has not been ready.
-				 */
-	u32 ndisauthtype;	/* keeps the auth_type & enc_status from upper
-				 * layer ioctl(wpa_supplicant or wzc)
-				 */
+	s32	sw_encrypt;	 
+	s32	sw_decrypt;	 
+	s32	hw_decrypted;	 
+	u32 ndisauthtype;	 
 	u32 ndisencryptstatus;
-	struct wlan_bssid_ex sec_bss;  /* for joinbss (h2c buffer) usage */
+	struct wlan_bssid_ex sec_bss;   
 	struct NDIS_802_11_WEP ndiswep;
 	u8 assoc_info[600];
-	u8 szofcapability[256]; /* for wpa2 usage */
-	u8 oidassociation[512]; /* for wpa/wpa2 usage */
-	u8 authenticator_ie[256];  /* store ap security information element */
-	u8 supplicant_ie[256];  /* store sta security information element */
-	/* for tkip countermeasure */
+	u8 szofcapability[256];  
+	u8 oidassociation[512];  
+	u8 authenticator_ie[256];   
+	u8 supplicant_ie[256];   
 	u32 last_mic_err_time;
 	u8	btkip_countermeasure;
 	u8	btkip_wait_report;
 	u32 btkip_countermeasure_time;
-	/*-------------------------------------------------------------------
-	 * For WPA2 Pre-Authentication.
-	 *------------------------------------------------------------------
-	 **/
 	struct RT_PMKID_LIST		PMKIDList[NUM_PMKID_CACHE];
 	u8				PMKIDIndex;
 };
-
 #define GET_ENCRY_ALGO(psecuritypriv, psta, encry_algo, bmcst) \
 do { \
 	switch (psecuritypriv->AuthAlgrthm) { \
@@ -184,17 +142,14 @@ do {\
 	txpn._byte_.TSC4 = iv[6];\
 	txpn._byte_.TSC5 = iv[7];\
 } while (0)
-
 #define ROL32(A, n) (((A) << (n)) | (((A) >> (32 - (n)))  & ((1UL << (n)) - 1)))
 #define ROR32(A, n) ROL32((A), 32 - (n))
-
 struct mic_data {
-	u32  K0, K1;         /* Key */
-	u32  L, R;           /* Current state */
-	u32  M;              /* Message accumulator (single word) */
-	u32  nBytesInM;      /* # bytes in M */
+	u32  K0, K1;          
+	u32  L, R;            
+	u32  M;               
+	u32  nBytesInM;       
 };
-
 void seccalctkipmic(
 	u8  *key,
 	u8  *header,
@@ -202,7 +157,6 @@ void seccalctkipmic(
 	u32  data_len,
 	u8  *Miccode,
 	u8   priority);
-
 void r8712_secmicsetkey(struct mic_data *pmicdata, u8 *key);
 void r8712_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nBytes);
 void r8712_secgetmic(struct mic_data *pmicdata, u8 *dst);
@@ -213,6 +167,4 @@ void r8712_aes_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_tkip_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_wep_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_use_tkipkey_handler(struct timer_list *t);
-
-#endif	/*__RTL871X_SECURITY_H_ */
-
+#endif	 

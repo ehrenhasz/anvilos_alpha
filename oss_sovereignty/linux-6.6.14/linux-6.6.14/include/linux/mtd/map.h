@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org> et al.
- */
-
-/* Overhauled routines for dealing with different mmap regions of flash */
-
 #ifndef __LINUX_MTD_MAP_H__
 #define __LINUX_MTD_MAP_H__
-
 #include <linux/types.h>
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/io.h>
-
 #include <asm/unaligned.h>
 #include <asm/barrier.h>
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_1
 #define map_bankwidth(map) 1
 #define map_bankwidth_is_1(map) (map_bankwidth(map) == 1)
@@ -27,7 +17,6 @@
 #else
 #define map_bankwidth_is_1(map) (0)
 #endif
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_2
 # ifdef map_bankwidth
 #  undef map_bankwidth
@@ -43,7 +32,6 @@
 #else
 #define map_bankwidth_is_2(map) (0)
 #endif
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_4
 # ifdef map_bankwidth
 #  undef map_bankwidth
@@ -59,12 +47,7 @@
 #else
 #define map_bankwidth_is_4(map) (0)
 #endif
-
-/* ensure we never evaluate anything shorted than an unsigned long
- * to zero, and ensure we'll never miss the end of an comparison (bjd) */
-
 #define map_calc_words(map) ((map_bankwidth(map) + (sizeof(unsigned long)-1)) / sizeof(unsigned long))
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_8
 # ifdef map_bankwidth
 #  undef map_bankwidth
@@ -86,7 +69,6 @@
 #else
 #define map_bankwidth_is_8(map) (0)
 #endif
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_16
 # ifdef map_bankwidth
 #  undef map_bankwidth
@@ -106,9 +88,7 @@
 #else
 #define map_bankwidth_is_16(map) (0)
 #endif
-
 #ifdef CONFIG_MTD_MAP_BANK_WIDTH_32
-/* always use indirect access for 256-bit to preserve kernel stack */
 # undef map_bankwidth
 # define map_bankwidth(map) ((map)->bankwidth)
 # undef map_bankwidth_is_large
@@ -121,7 +101,6 @@
 #else
 #define map_bankwidth_is_32(map) (0)
 #endif
-
 #ifndef map_bankwidth
 #ifdef CONFIG_MTD
 #warning "No CONFIG_MTD_MAP_BANK_WIDTH_xx selected. No NOR chip support can work"
@@ -135,7 +114,6 @@ static inline int map_bankwidth(void *map)
 #define map_words(map) (0)
 #define MAX_MAP_BANKWIDTH 1
 #endif
-
 static inline int map_bankwidth_supported(int w)
 {
 	switch (w) {
@@ -158,76 +136,31 @@ static inline int map_bankwidth_supported(int w)
 	case 32:
 #endif
 		return 1;
-
 	default:
 		return 0;
 	}
 }
-
 #define MAX_MAP_LONGS (((MAX_MAP_BANKWIDTH * 8) + BITS_PER_LONG - 1) / BITS_PER_LONG)
-
 typedef union {
 	unsigned long x[MAX_MAP_LONGS];
 } map_word;
-
-/* The map stuff is very simple. You fill in your struct map_info with
-   a handful of routines for accessing the device, making sure they handle
-   paging etc. correctly if your device needs it. Then you pass it off
-   to a chip probe routine -- either JEDEC or CFI probe or both -- via
-   do_map_probe(). If a chip is recognised, the probe code will invoke the
-   appropriate chip driver (if present) and return a struct mtd_info.
-   At which point, you fill in the mtd->module with your own module
-   address, and register it with the MTD core code. Or you could partition
-   it and register the partitions instead, or keep it for your own private
-   use; whatever.
-
-   The mtd->priv field will point to the struct map_info, and any further
-   private data required by the chip driver is linked from the
-   mtd->priv->fldrv_priv field. This allows the map driver to get at
-   the destructor function map->fldrv_destroy() when it's tired
-   of living.
-*/
-
 struct map_info {
 	const char *name;
 	unsigned long size;
 	resource_size_t phys;
 #define NO_XIP (-1UL)
-
 	void __iomem *virt;
 	void *cached;
-
-	int swap; /* this mapping's byte-swapping requirement */
-	int bankwidth; /* in octets. This isn't necessarily the width
-		       of actual bus cycles -- it's the repeat interval
-		      in bytes, before you are talking to the first chip again.
-		      */
-
+	int swap;  
+	int bankwidth;  
 #ifdef CONFIG_MTD_COMPLEX_MAPPINGS
 	map_word (*read)(struct map_info *, unsigned long);
 	void (*copy_from)(struct map_info *, void *, unsigned long, ssize_t);
-
 	void (*write)(struct map_info *, const map_word, unsigned long);
 	void (*copy_to)(struct map_info *, unsigned long, const void *, ssize_t);
-
-	/* We can perhaps put in 'point' and 'unpoint' methods, if we really
-	   want to enable XIP for non-linear mappings. Not yet though. */
 #endif
-	/* It's possible for the map driver to use cached memory in its
-	   copy_from implementation (and _only_ with copy_from).  However,
-	   when the chip driver knows some flash area has changed contents,
-	   it will signal it to the map driver through this routine to let
-	   the map driver invalidate the corresponding cache as needed.
-	   If there is no cache to care about this can be set to NULL. */
 	void (*inval_cache)(struct map_info *, unsigned long, ssize_t);
-
-	/* This will be called with 1 as parameter when the first map user
-	 * needs VPP, and called with 0 when the last user exits. The map
-	 * core maintains a reference counter, and assumes that VPP is a
-	 * global resource applying to all mapped flash chips on the system.
-	 */
 	void (*set_vpp)(struct map_info *, int);
-
 	unsigned long pfow_base;
 	unsigned long map_priv_1;
 	unsigned long map_priv_2;
@@ -235,7 +168,6 @@ struct map_info {
 	void *fldrv_priv;
 	struct mtd_chip_driver *fldrv;
 };
-
 struct mtd_chip_driver {
 	struct mtd_info *(*probe)(struct map_info *map);
 	void (*destroy)(struct mtd_info *);
@@ -243,19 +175,14 @@ struct mtd_chip_driver {
 	char *name;
 	struct list_head list;
 };
-
 void register_mtd_chip_driver(struct mtd_chip_driver *);
 void unregister_mtd_chip_driver(struct mtd_chip_driver *);
-
 struct mtd_info *do_map_probe(const char *name, struct map_info *map);
 void map_destroy(struct mtd_info *mtd);
-
 #define ENABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 1); } while (0)
 #define DISABLE_VPP(map) do { if (map->set_vpp) map->set_vpp(map, 0); } while (0)
-
 #define INVALIDATE_CACHED_RANGE(map, from, size) \
 	do { if (map->inval_cache) map->inval_cache(map, from, size); } while (0)
-
 #define map_word_equal(map, val1, val2)					\
 ({									\
 	int i, ret = 1;							\
@@ -266,7 +193,6 @@ void map_destroy(struct mtd_info *mtd);
 		}							\
 	ret;								\
 })
-
 #define map_word_and(map, val1, val2)					\
 ({									\
 	map_word r;							\
@@ -275,7 +201,6 @@ void map_destroy(struct mtd_info *mtd);
 		r.x[i] = (val1).x[i] & (val2).x[i];			\
 	r;								\
 })
-
 #define map_word_clr(map, val1, val2)					\
 ({									\
 	map_word r;							\
@@ -284,7 +209,6 @@ void map_destroy(struct mtd_info *mtd);
 		r.x[i] = (val1).x[i] & ~(val2).x[i];			\
 	r;								\
 })
-
 #define map_word_or(map, val1, val2)					\
 ({									\
 	map_word r;							\
@@ -293,7 +217,6 @@ void map_destroy(struct mtd_info *mtd);
 		r.x[i] = (val1).x[i] | (val2).x[i];			\
 	r;								\
 })
-
 #define map_word_andequal(map, val1, val2, val3)			\
 ({									\
 	int i, ret = 1;							\
@@ -305,7 +228,6 @@ void map_destroy(struct mtd_info *mtd);
 	}								\
 	ret;								\
 })
-
 #define map_word_bitsset(map, val1, val2)				\
 ({									\
 	int i, ret = 0;							\
@@ -317,11 +239,9 @@ void map_destroy(struct mtd_info *mtd);
 	}								\
 	ret;								\
 })
-
 static inline map_word map_word_load(struct map_info *map, const void *ptr)
 {
 	map_word r;
-
 	if (map_bankwidth_is_1(map))
 		r.x[0] = *(unsigned char *)ptr;
 	else if (map_bankwidth_is_2(map))
@@ -336,25 +256,20 @@ static inline map_word map_word_load(struct map_info *map, const void *ptr)
 		memcpy(r.x, ptr, map->bankwidth);
 	else
 		BUG();
-
 	return r;
 }
-
 static inline map_word map_word_load_partial(struct map_info *map, map_word orig, const unsigned char *buf, int start, int len)
 {
 	int i;
-
 	if (map_bankwidth_is_large(map)) {
 		char *dest = (char *)&orig;
-
 		memcpy(dest+start, buf, len);
 	} else {
 		for (i = start; i < start+len; i++) {
 			int bitpos;
-
 #ifdef __LITTLE_ENDIAN
 			bitpos = i * 8;
-#else /* __BIG_ENDIAN */
+#else  
 			bitpos = (map_bankwidth(map) - 1 - i) * 8;
 #endif
 			orig.x[0] &= ~(0xff << bitpos);
@@ -363,21 +278,17 @@ static inline map_word map_word_load_partial(struct map_info *map, map_word orig
 	}
 	return orig;
 }
-
 #if BITS_PER_LONG < 64
 #define MAP_FF_LIMIT 4
 #else
 #define MAP_FF_LIMIT 8
 #endif
-
 static inline map_word map_word_ff(struct map_info *map)
 {
 	map_word r;
 	int i;
-
 	if (map_bankwidth(map) < MAP_FF_LIMIT) {
 		int bw = 8 * map_bankwidth(map);
-
 		r.x[0] = (1UL << bw) - 1;
 	} else {
 		for (i = 0; i < map_words(map); i++)
@@ -385,11 +296,9 @@ static inline map_word map_word_ff(struct map_info *map)
 	}
 	return r;
 }
-
 static inline map_word inline_map_read(struct map_info *map, unsigned long ofs)
 {
 	map_word r;
-
 	if (map_bankwidth_is_1(map))
 		r.x[0] = __raw_readb(map->virt + ofs);
 	else if (map_bankwidth_is_2(map))
@@ -404,10 +313,8 @@ static inline map_word inline_map_read(struct map_info *map, unsigned long ofs)
 		memcpy_fromio(r.x, map->virt + ofs, map->bankwidth);
 	else
 		BUG();
-
 	return r;
 }
-
 static inline void inline_map_write(struct map_info *map, const map_word datum, unsigned long ofs)
 {
 	if (map_bankwidth_is_1(map))
@@ -426,7 +333,6 @@ static inline void inline_map_write(struct map_info *map, const map_word datum, 
 		BUG();
 	mb();
 }
-
 static inline void inline_map_copy_from(struct map_info *map, void *to, unsigned long from, ssize_t len)
 {
 	if (map->cached)
@@ -434,31 +340,23 @@ static inline void inline_map_copy_from(struct map_info *map, void *to, unsigned
 	else
 		memcpy_fromio(to, map->virt + from, len);
 }
-
 static inline void inline_map_copy_to(struct map_info *map, unsigned long to, const void *from, ssize_t len)
 {
 	memcpy_toio(map->virt + to, from, len);
 }
-
 #ifdef CONFIG_MTD_COMPLEX_MAPPINGS
 #define map_read(map, ofs) (map)->read(map, ofs)
 #define map_copy_from(map, to, from, len) (map)->copy_from(map, to, from, len)
 #define map_write(map, datum, ofs) (map)->write(map, datum, ofs)
 #define map_copy_to(map, to, from, len) (map)->copy_to(map, to, from, len)
-
 extern void simple_map_init(struct map_info *);
 #define map_is_linear(map) (map->phys != NO_XIP)
-
 #else
 #define map_read(map, ofs) inline_map_read(map, ofs)
 #define map_copy_from(map, to, from, len) inline_map_copy_from(map, to, from, len)
 #define map_write(map, datum, ofs) inline_map_write(map, datum, ofs)
 #define map_copy_to(map, to, from, len) inline_map_copy_to(map, to, from, len)
-
-
 #define simple_map_init(map) BUG_ON(!map_bankwidth_supported((map)->bankwidth))
 #define map_is_linear(map) ({ (void)(map); 1; })
-
-#endif /* !CONFIG_MTD_COMPLEX_MAPPINGS */
-
-#endif /* __LINUX_MTD_MAP_H__ */
+#endif  
+#endif  

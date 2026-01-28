@@ -1,21 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- */
-
 #ifndef MLX5_VFIO_CMD_H
 #define MLX5_VFIO_CMD_H
-
 #include <linux/kernel.h>
 #include <linux/vfio_pci_core.h>
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/vport.h>
 #include <linux/mlx5/cq.h>
 #include <linux/mlx5/qp.h>
-
 #define MLX5VF_PRE_COPY_SUPP(mvdev) \
 	((mvdev)->core_device.vdev.migration_flags & VFIO_MIGRATION_PRE_COPY)
-
 enum mlx5_vf_migf_state {
 	MLX5_MIGF_STATE_ERROR = 1,
 	MLX5_MIGF_STATE_PRE_COPY_ERROR,
@@ -23,7 +15,6 @@ enum mlx5_vf_migf_state {
 	MLX5_MIGF_STATE_SAVE_LAST,
 	MLX5_MIGF_STATE_COMPLETE,
 };
-
 enum mlx5_vf_load_state {
 	MLX5_VF_LOAD_STATE_READ_IMAGE_NO_HEADER,
 	MLX5_VF_LOAD_STATE_READ_HEADER,
@@ -33,29 +24,23 @@ enum mlx5_vf_load_state {
 	MLX5_VF_LOAD_STATE_READ_IMAGE,
 	MLX5_VF_LOAD_STATE_LOAD_IMAGE,
 };
-
 struct mlx5_vf_migration_tag_stop_copy_data {
 	__le64 stop_copy_size;
 };
-
 enum mlx5_vf_migf_header_flags {
 	MLX5_MIGF_HEADER_FLAGS_TAG_MANDATORY = 0,
 	MLX5_MIGF_HEADER_FLAGS_TAG_OPTIONAL = 1 << 0,
 };
-
 enum mlx5_vf_migf_header_tag {
 	MLX5_MIGF_HEADER_TAG_FW_DATA = 0,
 	MLX5_MIGF_HEADER_TAG_STOP_COPY_SIZE = 1 << 0,
 };
-
 struct mlx5_vf_migration_header {
 	__le64 record_size;
-	/* For future use in case we may need to change the kernel protocol */
-	__le32 flags; /* Use mlx5_vf_migf_header_flags */
-	__le32 tag; /* Use mlx5_vf_migf_header_tag */
-	__u8 data[]; /* Its size is given in the record_size */
+	__le32 flags;  
+	__le32 tag;  
+	__u8 data[];  
 };
-
 struct mlx5_vhca_data_buffer {
 	struct sg_append_table table;
 	loff_t start_pos;
@@ -66,12 +51,10 @@ struct mlx5_vhca_data_buffer {
 	u8 dmaed:1;
 	struct list_head buf_elm;
 	struct mlx5_vf_migration_file *migf;
-	/* Optimize mlx5vf_get_migration_page() for sequential access */
 	struct scatterlist *last_offset_sg;
 	unsigned int sg_last_entry;
 	unsigned long last_offset;
 };
-
 struct mlx5vf_async_data {
 	struct mlx5_async_work cb_work;
 	struct work_struct work;
@@ -81,12 +64,10 @@ struct mlx5vf_async_data {
 	u8 last_chunk:1;
 	void *out;
 };
-
 struct mlx5_vf_migration_file {
 	struct file *filp;
 	struct mutex lock;
 	enum mlx5_vf_migf_state state;
-
 	enum mlx5_vf_load_state load_state;
 	u32 pdn;
 	loff_t max_pos;
@@ -105,21 +86,18 @@ struct mlx5_vf_migration_file {
 	struct mlx5_async_ctx async_ctx;
 	struct mlx5vf_async_data async_data;
 };
-
 struct mlx5_vhca_cq_buf {
 	struct mlx5_frag_buf_ctrl fbc;
 	struct mlx5_frag_buf frag_buf;
 	int cqe_size;
 	int nent;
 };
-
 struct mlx5_vhca_cq {
 	struct mlx5_vhca_cq_buf buf;
 	struct mlx5_db db;
 	struct mlx5_core_cq mcq;
 	size_t ncqe;
 };
-
 struct mlx5_vhca_recv_buf {
 	u32 npages;
 	struct page **page_list;
@@ -127,7 +105,6 @@ struct mlx5_vhca_recv_buf {
 	u32 next_rq_offset;
 	u32 mkey;
 };
-
 struct mlx5_vhca_qp {
 	struct mlx5_frag_buf buf;
 	struct mlx5_db db;
@@ -143,7 +120,6 @@ struct mlx5_vhca_qp {
 		struct mlx5_frag_buf_ctrl fbc;
 	} rq;
 };
-
 struct mlx5_vhca_page_tracker {
 	u32 id;
 	u32 pdn;
@@ -155,7 +131,6 @@ struct mlx5_vhca_page_tracker {
 	struct mlx5_nb nb;
 	int status;
 };
-
 struct mlx5vf_pci_core_device {
 	struct vfio_pci_core_device core_device;
 	int vf_id;
@@ -165,10 +140,8 @@ struct mlx5vf_pci_core_device {
 	u8 mdev_detach:1;
 	u8 log_active:1;
 	struct completion tracker_comp;
-	/* protect migration state */
 	struct mutex state_mutex;
 	enum vfio_device_mig_state mig_state;
-	/* protect the reset_done flow */
 	spinlock_t reset_lock;
 	struct mlx5_vf_migration_file *resuming_migf;
 	struct mlx5_vf_migration_file *saving_migf;
@@ -177,12 +150,10 @@ struct mlx5vf_pci_core_device {
 	struct notifier_block nb;
 	struct mlx5_core_dev *mdev;
 };
-
 enum {
 	MLX5VF_QUERY_INC = (1UL << 0),
 	MLX5VF_QUERY_FINAL = (1UL << 1),
 };
-
 int mlx5vf_cmd_suspend_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
 int mlx5vf_cmd_resume_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
 int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
@@ -222,4 +193,4 @@ int mlx5vf_start_page_tracker(struct vfio_device *vdev,
 int mlx5vf_stop_page_tracker(struct vfio_device *vdev);
 int mlx5vf_tracker_read_and_clear(struct vfio_device *vdev, unsigned long iova,
 			unsigned long length, struct iova_bitmap *dirty);
-#endif /* MLX5_VFIO_CMD_H */
+#endif  

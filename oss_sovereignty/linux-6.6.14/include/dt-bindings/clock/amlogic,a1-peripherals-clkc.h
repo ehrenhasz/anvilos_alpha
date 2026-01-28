@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Author: Jian Hu <jian.hu@amlogic.com>
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- * Author: Dmitry Rokosov <ddrokosov@sberdevices.ru>
- */
-
 #ifndef __A1_PERIPHERALS_CLKC_H
 #define __A1_PERIPHERALS_CLKC_H
-
 #define CLKID_XTAL_IN		0
 #define CLKID_FIXPLL_IN		1
 #define CLKID_USB_PHY_IN	2
@@ -164,5 +154,4 @@
 #define CLKID_DMC_SEL		151
 #define CLKID_DMC_DIV		152
 #define CLKID_DMC_SEL2		153
-
-#endif /* __A1_PERIPHERALS_CLKC_H */
+#endif  

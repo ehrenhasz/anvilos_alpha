@@ -1,20 +1,6 @@
-/*
- * Header file for the ST Microelectronics SPEAr3xx pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
 #ifndef __PINMUX_SPEAR3XX_H__
 #define __PINMUX_SPEAR3XX_H__
-
 #include "pinctrl-spear.h"
-
-/* pad mux declarations */
 #define PMX_PWM_MASK		(1 << 16)
 #define PMX_FIRDA_MASK		(1 << 14)
 #define PMX_I2C_MASK		(1 << 13)
@@ -31,7 +17,6 @@
 #define PMX_UART0_MASK		(1 << 2)
 #define PMX_TIMER_2_3_MASK	(1 << 1)
 #define PMX_TIMER_0_1_MASK	(1 << 0)
-
 extern struct spear_pingroup spear3xx_firda_pingroup;
 extern struct spear_pingroup spear3xx_gpio0_pin0_pingroup;
 extern struct spear_pingroup spear3xx_gpio0_pin1_pingroup;
@@ -47,7 +32,6 @@ extern struct spear_pingroup spear3xx_timer_0_1_pingroup;
 extern struct spear_pingroup spear3xx_timer_2_3_pingroup;
 extern struct spear_pingroup spear3xx_uart0_ext_pingroup;
 extern struct spear_pingroup spear3xx_uart0_pingroup;
-
 #define SPEAR3XX_COMMON_PINGROUPS		\
 	&spear3xx_firda_pingroup,		\
 	&spear3xx_gpio0_pin0_pingroup,		\
@@ -64,7 +48,6 @@ extern struct spear_pingroup spear3xx_uart0_pingroup;
 	&spear3xx_timer_2_3_pingroup,		\
 	&spear3xx_uart0_ext_pingroup,		\
 	&spear3xx_uart0_pingroup
-
 extern struct spear_function spear3xx_firda_function;
 extern struct spear_function spear3xx_gpio0_function;
 extern struct spear_function spear3xx_i2c_function;
@@ -75,7 +58,6 @@ extern struct spear_function spear3xx_timer_0_1_function;
 extern struct spear_function spear3xx_timer_2_3_function;
 extern struct spear_function spear3xx_uart0_ext_function;
 extern struct spear_function spear3xx_uart0_function;
-
 #define SPEAR3XX_COMMON_FUNCTIONS		\
 	&spear3xx_firda_function,		\
 	&spear3xx_gpio0_function,		\
@@ -87,7 +69,5 @@ extern struct spear_function spear3xx_uart0_function;
 	&spear3xx_timer_2_3_function,		\
 	&spear3xx_uart0_ext_function,		\
 	&spear3xx_uart0_function
-
 extern struct spear_pinctrl_machdata spear3xx_machdata;
-
-#endif /* __PINMUX_SPEAR3XX_H__ */
+#endif  

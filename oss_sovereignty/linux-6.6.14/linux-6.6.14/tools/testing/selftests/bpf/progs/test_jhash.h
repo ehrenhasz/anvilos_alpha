@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
 #include <features.h>
-
 typedef unsigned int u32;
-
 static __always_inline u32 rol32(u32 word, unsigned int shift)
 {
 	return (word << shift) | (word >> ((-shift) & 31));
 }
-
 #define __jhash_mix(a, b, c)			\
 {						\
 	a -= c;  a ^= rol32(c, 4);  c += b;	\
@@ -18,7 +13,6 @@ static __always_inline u32 rol32(u32 word, unsigned int shift)
 	b -= a;  b ^= rol32(a, 19); a += c;	\
 	c -= b;  c ^= rol32(b, 4);  b += a;	\
 }
-
 #define __jhash_final(a, b, c)			\
 {						\
 	c ^= b; c -= rol32(b, 14);		\
@@ -29,17 +23,13 @@ static __always_inline u32 rol32(u32 word, unsigned int shift)
 	b ^= a; b -= rol32(a, 14);		\
 	c ^= b; c -= rol32(b, 24);		\
 }
-
 #define JHASH_INITVAL		0xdeadbeef
-
 static ATTR
 u32 jhash(const void *key, u32 length, u32 initval)
 {
 	u32 a, b, c;
 	const unsigned char *k = key;
-
 	a = b = c = JHASH_INITVAL + length + initval;
-
 	while (length > 12) {
 		a += *(volatile u32 *)(k);
 		b += *(volatile u32 *)(k + 4);
@@ -63,9 +53,8 @@ u32 jhash(const void *key, u32 length, u32 initval)
 	case 1:  a += k[0];
 		 c ^= a;
 		 __jhash_final(a, b, c);
-	case 0: /* Nothing left to add */
+	case 0:  
 		break;
 	}
-
 	return c;
 }

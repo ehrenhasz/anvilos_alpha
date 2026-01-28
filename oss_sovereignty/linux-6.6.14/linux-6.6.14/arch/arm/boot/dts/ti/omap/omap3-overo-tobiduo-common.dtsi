@@ -1,27 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Ash Charles, Gumstix, Inc.
- */
-
-/*
- * TobiDuo expansion board is manufactured by Gumstix Inc.
- */
-
 #include "omap3-overo-common-peripherals.dtsi"
-
 #include "omap-gpmc-smsc9221.dtsi"
-
 &gpmc {
 	smsc1: ethernet@gpmc {
 		reg = <5 0 0xff>;
 		interrupt-parent = <&gpio6>;
-		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;	/* GPIO 176 */
+		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;	 
 	};
-
 	smsc2: ethernet@4,0 {
 		compatible = "smsc,lan9221","smsc,lan9115";
 		bank-width = <2>;
-
 		gpmc,mux-add-data = <0>;
 		gpmc,cs-on-ns = <0>;
 		gpmc,cs-rd-off-ns = <42>;
@@ -47,13 +34,11 @@
 		vdd33a-supply = <&vdd33a>;
 		reg-io-width = <4>;
 		smsc,save-mac-address;
-
 		reg = <4 0 0xff>;
 		interrupt-parent = <&gpio3>;
-		interrupts = <1 IRQ_TYPE_LEVEL_LOW>;	/* GPIO 65 */
+		interrupts = <1 IRQ_TYPE_LEVEL_LOW>;	 
 	};
 };
-
 &lis33de {
 	status = "disabled";
 };

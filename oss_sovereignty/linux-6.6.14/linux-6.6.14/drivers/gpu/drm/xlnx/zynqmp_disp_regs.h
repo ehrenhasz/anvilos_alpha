@@ -1,20 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ZynqMP Display Controller Driver - Register Definitions
- *
- * Copyright (C) 2017 - 2020 Xilinx, Inc.
- *
- * Authors:
- * - Hyun Woo Kwon <hyun.kwon@xilinx.com>
- * - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
-
 #ifndef _ZYNQMP_DISP_REGS_H_
 #define _ZYNQMP_DISP_REGS_H_
-
 #include <linux/bits.h>
-
-/* Blender registers */
 #define ZYNQMP_DISP_V_BLEND_BG_CLR_0			0x0
 #define ZYNQMP_DISP_V_BLEND_BG_CLR_1			0x4
 #define ZYNQMP_DISP_V_BLEND_BG_CLR_2			0x8
@@ -45,8 +31,6 @@
 #define ZYNQMP_DISP_V_BLEND_CHROMA_KEY_COMP1		0x1d4
 #define ZYNQMP_DISP_V_BLEND_CHROMA_KEY_COMP2		0x1d8
 #define ZYNQMP_DISP_V_BLEND_CHROMA_KEY_COMP3		0x1dc
-
-/* AV buffer manager registers */
 #define ZYNQMP_DISP_AV_BUF_FMT				0x0
 #define ZYNQMP_DISP_AV_BUF_FMT_NL_VID_SHIFT		0
 #define ZYNQMP_DISP_AV_BUF_FMT_NL_VID_MASK		(0x1f << 0)
@@ -172,8 +156,6 @@
 #define ZYNQMP_DISP_AV_BUF_LIVE_CONFIG_FMT_MASK		GENMASK(5, 4)
 #define ZYNQMP_DISP_AV_BUF_LIVE_CONFIG_CB_FIRST		BIT(8)
 #define ZYNQMP_DISP_AV_BUF_PALETTE_MEMORY		0x400
-
-/* Audio registers */
 #define ZYNQMP_DISP_AUD_MIXER_VOLUME			0x0
 #define ZYNQMP_DISP_AUD_MIXER_VOLUME_NO_SCALE		0x20002000
 #define ZYNQMP_DISP_AUD_MIXER_META_DATA			0x4
@@ -197,5 +179,4 @@
 #define ZYNQMP_DISP_AUD_CH_B_DATA5			0x4c
 #define ZYNQMP_DISP_AUD_SOFT_RESET			0xc00
 #define ZYNQMP_DISP_AUD_SOFT_RESET_AUD_SRST		BIT(0)
-
-#endif /* _ZYNQMP_DISP_REGS_H_ */
+#endif  

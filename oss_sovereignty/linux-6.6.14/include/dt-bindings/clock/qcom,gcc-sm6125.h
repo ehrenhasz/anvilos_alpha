@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6125_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM6125_H
-
 #define GPLL0_OUT_AUX2				0
 #define GPLL0_OUT_MAIN				1
 #define GPLL6_OUT_MAIN				2
@@ -215,8 +209,6 @@
 #define GCC_SYS_NOC_COMPUTE_SF_AXI_CLK	206
 #define GCC_BIMC_GPU_AXI_CLK			207
 #define GCC_UFS_MEM_CLKREF_CLK			208
-
-/* GDSCs */
 #define USB30_PRIM_GDSC					0
 #define UFS_PHY_GDSC					1
 #define CAMSS_VFE0_GDSC					2
@@ -227,7 +219,6 @@
 #define HLOS1_VOTE_MM_SNOC_MMU_TBU_RT_GDSC	7
 #define HLOS1_VOTE_MM_SNOC_MMU_TBU_NRT_GDSC	8
 #define HLOS1_VOTE_TURING_MMU_TBU0_GDSC	9
-
 #define GCC_QUSB2PHY_PRIM_BCR			0
 #define GCC_QUSB2PHY_SEC_BCR			1
 #define GCC_UFS_PHY_BCR				2
@@ -236,5 +227,4 @@
 #define GCC_USB3_PHY_PRIM_SP0_BCR		5
 #define GCC_USB3PHY_PHY_PRIM_SP0_BCR		6
 #define GCC_CAMSS_MICRO_BCR			7
-
 #endif

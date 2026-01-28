@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/* Copyright © 2022 Advanced Micro Devices, Inc. All rights reserved. */
-
 #ifndef __DAL_CURSOR_CACHE_H__
 #define __DAL_CURSOR_CACHE_H__
-
 union reg_cursor_control_cfg {
 	struct {
 		uint32_t     cur_enable: 1;
@@ -43,7 +39,6 @@ struct cursor_position_cache_hubp {
 		uint32_t raw;
 	} dst_offset;
 };
-
 struct cursor_attribute_cache_hubp {
 	uint32_t SURFACE_ADDR_HIGH;
 	uint32_t SURFACE_ADDR;
@@ -64,14 +59,12 @@ struct cursor_attribute_cache_hubp {
 		uint32_t raw;
 	} settings;
 };
-
 struct cursor_rect {
 	uint32_t x;
 	uint32_t y;
 	uint32_t w;
 	uint32_t h;
 };
-
 union reg_cur0_control_cfg {
 	struct {
 		uint32_t     cur0_enable: 1;
@@ -86,14 +79,11 @@ union reg_cur0_control_cfg {
 struct cursor_position_cache_dpp {
 	union reg_cur0_control_cfg cur0_ctl;
 };
-
 struct cursor_attribute_cache_dpp {
 	union reg_cur0_control_cfg cur0_ctl;
 };
-
 struct cursor_attributes_cfg {
 	struct  cursor_attribute_cache_hubp aHubp;
 	struct  cursor_attribute_cache_dpp  aDpp;
 };
-
 #endif

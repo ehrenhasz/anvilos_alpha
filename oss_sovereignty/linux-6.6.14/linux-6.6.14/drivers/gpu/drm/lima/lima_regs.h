@@ -1,39 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2010-2017 ARM Limited. All rights reserved.
- * Copyright 2017-2019 Qiang Yu <yuq825@gmail.com>
- */
-
 #ifndef __LIMA_REGS_H__
 #define __LIMA_REGS_H__
-
-/* This file's register definition is collected from the
- * official ARM Mali Utgard GPU kernel driver source code
- */
-
-/* PMU regs */
 #define LIMA_PMU_POWER_UP                  0x00
 #define LIMA_PMU_POWER_DOWN                0x04
 #define   LIMA_PMU_POWER_GP0_MASK          BIT(0)
 #define   LIMA_PMU_POWER_L2_MASK           BIT(1)
 #define   LIMA_PMU_POWER_PP_MASK(i)        BIT(2 + i)
-
-/*
- * On Mali450 each block automatically starts up its corresponding L2
- * and the PPs are not fully independent controllable.
- * Instead PP0, PP1-3 and PP4-7 can be turned on or off.
- */
 #define   LIMA450_PMU_POWER_PP0_MASK       BIT(1)
 #define   LIMA450_PMU_POWER_PP13_MASK      BIT(2)
 #define   LIMA450_PMU_POWER_PP47_MASK      BIT(3)
-
 #define LIMA_PMU_STATUS                    0x08
 #define LIMA_PMU_INT_MASK                  0x0C
 #define LIMA_PMU_INT_RAWSTAT               0x10
 #define LIMA_PMU_INT_CLEAR                 0x18
 #define   LIMA_PMU_INT_CMD_MASK            BIT(0)
 #define LIMA_PMU_SW_DELAY                  0x1C
-
-/* L2 cache regs */
 #define LIMA_L2_CACHE_SIZE                   0x0004
 #define LIMA_L2_CACHE_STATUS                 0x0008
 #define   LIMA_L2_CACHE_STATUS_COMMAND_BUSY  BIT(0)
@@ -49,8 +29,6 @@
 #define LIMA_L2_CACHE_PERFCNT_VAL0           0x0024
 #define LIMA_L2_CACHE_PERFCNT_SRC1           0x0028
 #define LIMA_L2_CACHE_ERFCNT_VAL1            0x002C
-
-/* GP regs */
 #define LIMA_GP_VSCL_START_ADDR                0x00
 #define LIMA_GP_VSCL_END_ADDR                  0x04
 #define LIMA_GP_PLBUCL_START_ADDR              0x08
@@ -106,7 +84,6 @@
 #define LIMA_GP_VSCL_START_ADDR_READ           0x80
 #define LIMA_GP_PLBCL_START_ADDR_READ          0x84
 #define LIMA_GP_CONTR_AXI_BUS_ERROR_STAT       0x94
-
 #define LIMA_GP_IRQ_MASK_ALL		   \
 	(				   \
 	 LIMA_GP_IRQ_VS_END_CMD_LST      | \
@@ -128,7 +105,6 @@
 	 LIMA_GP_IRQ_SEMAPHORE_UNDERFLOW | \
 	 LIMA_GP_IRQ_SEMAPHORE_OVERFLOW  | \
 	 LIMA_GP_IRQ_PTR_ARRAY_OUT_OF_BOUNDS)
-
 #define LIMA_GP_IRQ_MASK_ERROR             \
 	(                                  \
 	 LIMA_GP_IRQ_PLBU_OUT_OF_MEM     | \
@@ -141,14 +117,11 @@
 	 LIMA_GP_IRQ_SEMAPHORE_UNDERFLOW | \
 	 LIMA_GP_IRQ_SEMAPHORE_OVERFLOW  | \
 	 LIMA_GP_IRQ_PTR_ARRAY_OUT_OF_BOUNDS)
-
 #define LIMA_GP_IRQ_MASK_USED		   \
 	(				   \
 	 LIMA_GP_IRQ_VS_END_CMD_LST      | \
 	 LIMA_GP_IRQ_PLBU_END_CMD_LST    | \
 	 LIMA_GP_IRQ_MASK_ERROR)
-
-/* PP regs */
 #define LIMA_PP_FRAME                        0x0000
 #define LIMA_PP_RSW			     0x0004
 #define LIMA_PP_STACK			     0x0030
@@ -157,7 +130,6 @@
 #define LIMA_PP_WB(i)                        (0x0100 * (i + 1))
 #define   LIMA_PP_WB_SOURCE_SELECT           0x0000
 #define	  LIMA_PP_WB_SOURCE_ADDR             0x0004
-
 #define LIMA_PP_VERSION                      0x1000
 #define LIMA_PP_CURRENT_REND_LIST_ADDR       0x1004
 #define LIMA_PP_STATUS                       0x1008
@@ -198,7 +170,6 @@
 #define LIMA_PP_PERF_CNT_1_VALUE             0x10ac
 #define LIMA_PP_PERFMON_CONTR                0x10b0
 #define LIMA_PP_PERFMON_BASE                 0x10b4
-
 #define LIMA_PP_IRQ_MASK_ALL                 \
 	(                                    \
 	 LIMA_PP_IRQ_END_OF_FRAME          | \
@@ -214,7 +185,6 @@
 	 LIMA_PP_IRQ_CALL_STACK_UNDERFLOW  | \
 	 LIMA_PP_IRQ_CALL_STACK_OVERFLOW   | \
 	 LIMA_PP_IRQ_RESET_COMPLETED)
-
 #define LIMA_PP_IRQ_MASK_ERROR               \
 	(                                    \
 	 LIMA_PP_IRQ_FORCE_HANG            | \
@@ -223,13 +193,10 @@
 	 LIMA_PP_IRQ_INVALID_PLIST_COMMAND | \
 	 LIMA_PP_IRQ_CALL_STACK_UNDERFLOW  | \
 	 LIMA_PP_IRQ_CALL_STACK_OVERFLOW)
-
 #define LIMA_PP_IRQ_MASK_USED                \
 	(                                    \
 	 LIMA_PP_IRQ_END_OF_FRAME          | \
 	 LIMA_PP_IRQ_MASK_ERROR)
-
-/* MMU regs */
 #define LIMA_MMU_DTE_ADDR                     0x0000
 #define LIMA_MMU_STATUS                       0x0004
 #define   LIMA_MMU_STATUS_PAGING_ENABLED      BIT(0)
@@ -256,7 +223,6 @@
 #define   LIMA_MMU_INT_PAGE_FAULT             BIT(0)
 #define   LIMA_MMU_INT_READ_BUS_ERROR         BIT(1)
 #define LIMA_MMU_INT_STATUS                   0x0020
-
 #define LIMA_VM_FLAG_PRESENT          BIT(0)
 #define LIMA_VM_FLAG_READ_PERMISSION  BIT(1)
 #define LIMA_VM_FLAG_WRITE_PERMISSION BIT(2)
@@ -267,7 +233,6 @@
 #define LIMA_VM_FLAG_READ_CACHEABLE   BIT(7)
 #define LIMA_VM_FLAG_READ_ALLOCATE    BIT(8)
 #define LIMA_VM_FLAG_MASK             0x1FF
-
 #define LIMA_VM_FLAGS_CACHE (			 \
 		LIMA_VM_FLAG_PRESENT |		 \
 		LIMA_VM_FLAG_READ_PERMISSION |	 \
@@ -277,13 +242,10 @@
 		LIMA_VM_FLAG_WRITE_BUFFERABLE |	 \
 		LIMA_VM_FLAG_READ_CACHEABLE |	 \
 		LIMA_VM_FLAG_READ_ALLOCATE)
-
 #define LIMA_VM_FLAGS_UNCACHE (			\
 		LIMA_VM_FLAG_PRESENT |		\
 		LIMA_VM_FLAG_READ_PERMISSION |	\
 		LIMA_VM_FLAG_WRITE_PERMISSION)
-
-/* DLBU regs */
 #define LIMA_DLBU_MASTER_TLLIST_PHYS_ADDR  0x0000
 #define	LIMA_DLBU_MASTER_TLLIST_VADDR      0x0004
 #define	LIMA_DLBU_TLLIST_VBASEADDR         0x0008
@@ -291,9 +253,6 @@
 #define	LIMA_DLBU_TLLIST_CONF              0x0010
 #define	LIMA_DLBU_START_TILE_POS           0x0014
 #define	LIMA_DLBU_PP_ENABLE_MASK           0x0018
-
-/* BCAST regs */
 #define LIMA_BCAST_BROADCAST_MASK    0x0
 #define LIMA_BCAST_INTERRUPT_MASK    0x4
-
 #endif

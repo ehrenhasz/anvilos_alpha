@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017 NXP
- */
-
 #ifndef __DTS_IMX8MQ_PINFUNC_H
 #define __DTS_IMX8MQ_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
-
 #define MX8MQ_IOMUXC_PMIC_STBY_REQ_CCMSRCGPCMIX_PMIC_STBY_REQ               0x014 0x27C 0x000 0x0 0x0
 #define MX8MQ_IOMUXC_PMIC_ON_REQ_SNVSMIX_PMIC_ON_REQ                        0x018 0x280 0x000 0x0 0x0
 #define MX8MQ_IOMUXC_ONOFF_SNVSMIX_ONOFF                                    0x01C 0x284 0x000 0x0 0x0
@@ -619,5 +607,4 @@
 #define MX8MQ_IOMUXC_JTAG_TCK                                               0x000 0x270 0x000 0x0 0x0
 #define MX8MQ_IOMUXC_JTAG_TDO                                               0x000 0x274 0x000 0x0 0x0
 #define MX8MQ_IOMUXC_RTC                                                    0x000 0x278 0x000 0x0 0x0
-
-#endif /* __DTS_IMX8MQ_PINFUNC_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 MediaTek Inc.
- */
-
 /dts-v1/;
 #include "mt8173-elm-hana.dtsi"
-
 / {
 	model = "Google Hana";
 	chassis-type = "laptop";

@@ -1,11 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sama5d3dm.dtsi - Device Tree file for SAMA5 display module
- *
- *  Copyright (C) 2013 Atmel,
- *                2013 Ludovic Desroches <ludovic.desroches@atmel.com>
- */
-
 / {
 	ahb {
 		apb {
@@ -20,18 +12,16 @@
 					wakeup-source;
 				};
 			};
-
 			adc0: adc@f8018000 {
 				atmel,adc-ts-wires = <4>;
 				atmel,adc-ts-pressure-threshold = <10000>;
 				status = "okay";
 			};
-
 			pinctrl@fffff200 {
 				board {
 					pinctrl_qt1070_irq: qt1070_irq {
 						atmel,pins =
-							<AT91_PIOE 31 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>; /* PE31 GPIO with pull up deglith */
+							<AT91_PIOE 31 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;  
 					};
 				};
 			};

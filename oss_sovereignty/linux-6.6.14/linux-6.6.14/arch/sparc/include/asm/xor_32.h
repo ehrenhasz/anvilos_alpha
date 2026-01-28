@@ -1,23 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/asm/xor.h
- *
- * Optimized RAID-5 checksumming functions for 32-bit Sparc.
- */
-
-/*
- * High speed xor_block operation for RAID4/5 utilizing the
- * ldd/std SPARC instructions.
- *
- * Copyright (C) 1999 Jakub Jelinek (jj@ultra.linux.cz)
- */
-
 static void
 sparc_2(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2)
 {
 	int lines = bytes / (sizeof (long)) / 8;
-
 	do {
 		__asm__ __volatile__(
 		  "ldd [%0 + 0x00], %%g2\n\t"
@@ -49,14 +34,12 @@ sparc_2(unsigned long bytes, unsigned long * __restrict p1,
 		p2 += 8;
 	} while (--lines > 0);
 }
-
 static void
 sparc_3(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
 	const unsigned long * __restrict p3)
 {
 	int lines = bytes / (sizeof (long)) / 8;
-
 	do {
 		__asm__ __volatile__(
 		  "ldd [%0 + 0x00], %%g2\n\t"
@@ -101,7 +84,6 @@ sparc_3(unsigned long bytes, unsigned long * __restrict p1,
 		p3 += 8;
 	} while (--lines > 0);
 }
-
 static void
 sparc_4(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
@@ -109,7 +91,6 @@ sparc_4(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p4)
 {
 	int lines = bytes / (sizeof (long)) / 8;
-
 	do {
 		__asm__ __volatile__(
 		  "ldd [%0 + 0x00], %%g2\n\t"
@@ -167,7 +148,6 @@ sparc_4(unsigned long bytes, unsigned long * __restrict p1,
 		p4 += 8;
 	} while (--lines > 0);
 }
-
 static void
 sparc_5(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
@@ -176,7 +156,6 @@ sparc_5(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p5)
 {
 	int lines = bytes / (sizeof (long)) / 8;
-
 	do {
 		__asm__ __volatile__(
 		  "ldd [%0 + 0x00], %%g2\n\t"
@@ -247,7 +226,6 @@ sparc_5(unsigned long bytes, unsigned long * __restrict p1,
 		p5 += 8;
 	} while (--lines > 0);
 }
-
 static struct xor_block_template xor_block_SPARC = {
 	.name	= "SPARC",
 	.do_2	= sparc_2,
@@ -255,10 +233,7 @@ static struct xor_block_template xor_block_SPARC = {
 	.do_4	= sparc_4,
 	.do_5	= sparc_5,
 };
-
-/* For grins, also test the generic routines.  */
 #include <asm-generic/xor.h>
-
 #undef XOR_TRY_TEMPLATES
 #define XOR_TRY_TEMPLATES				\
 	do {						\

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * NFS protocol definitions
- *
- * This file contains constants for Version 2 of the protocol.
- */
 #ifndef _LINUX_NFS2_H
 #define _LINUX_NFS2_H
-
 #define NFS2_PORT	2049
 #define NFS2_MAXDATA	8192
 #define NFS2_MAXPATHLEN	1024
@@ -23,9 +16,6 @@
 #define NFS2MODE_LNK	0120000
 #define NFS2MODE_SOCK	0140000
 #define NFS2MODE_FIFO	0010000
-
-
-/* NFSv2 file types - beware, these are not the same in NFSv3 */
 enum nfs2_ftype {
 	NF2NON = 0,
 	NF2REG = 1,
@@ -37,14 +27,9 @@ enum nfs2_ftype {
 	NF2BAD = 7,
 	NF2FIFO = 8
 };
-
 struct nfs2_fh {
 	char			data[NFS2_FHSIZE];
 };
-
-/*
- * Procedure numbers for NFSv2
- */
 #define NFS2_VERSION		2
 #define NFSPROC_NULL		0
 #define NFSPROC_GETATTR		1
@@ -64,5 +49,4 @@ struct nfs2_fh {
 #define NFSPROC_RMDIR		15
 #define NFSPROC_READDIR		16
 #define NFSPROC_STATFS		17
-
-#endif /* _LINUX_NFS2_H */
+#endif  

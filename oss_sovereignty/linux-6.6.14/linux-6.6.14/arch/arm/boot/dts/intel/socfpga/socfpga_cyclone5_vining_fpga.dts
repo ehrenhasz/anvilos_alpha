@@ -1,70 +1,50 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR X11)
-/*
- * Copyright (C) 2015 Marek Vasut <marex@denx.de>
- */
-
 #include "socfpga_cyclone5.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-
 / {
 	model = "samtec VIN|ING FPGA";
 	compatible = "samtec,vining", "altr,socfpga-cyclone5", "altr,socfpga";
-
 	chosen {
 		bootargs = "earlyprintk";
 		stdout-path = "serial0:115200n8";
 	};
-
 	memory@0 {
 		name = "memory";
 		device_type = "memory";
-		reg = <0x0 0x40000000>; /* 1GB */
+		reg = <0x0 0x40000000>;  
 	};
-
 	aliases {
-		/*
-		 * This allow the ethaddr uboot environment variable contents
-		 * to be added to the gmac1 device tree blob.
-		 */
 		ethernet0 = &gmac1;
 		ethernet1 = &gmac0;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		hps_temp0 {
-			label = "BTN_0";			/* TEMP_OS */
-			gpios = <&portc 18 GPIO_ACTIVE_LOW>;	/* HPS_GPI5 */
+			label = "BTN_0";			 
+			gpios = <&portc 18 GPIO_ACTIVE_LOW>;	 
 			linux,code = <BTN_0>;
 		};
-
 		hps_hkey0 {
-			label = "GP_SWITCH";			/* GP_SWITCH */
-			gpios = <&portc 19 GPIO_ACTIVE_LOW>;	/* HPS_GPI6 */
+			label = "GP_SWITCH";			 
+			gpios = <&portc 19 GPIO_ACTIVE_LOW>;	 
 			linux,code = <BTN_1>;
 		};
-
 		hps_hkey1 {
-			label = "RESET_SWITCH";			/* RESET_SWITCH */
-			gpios = <&portc 20 GPIO_ACTIVE_LOW>;	/* HPS_GPI7 */
+			label = "RESET_SWITCH";			 
+			gpios = <&portc 20 GPIO_ACTIVE_LOW>;	 
 			linux,code = <BTN_2>;
 		};
-
 		hps_hkey2 {
-			label = "POWER_DOWN";			/* POWER_DOWN */
-			gpios = <&portc 4 GPIO_ACTIVE_LOW>;	/* HPS_GPIO62 */
+			label = "POWER_DOWN";			 
+			gpios = <&portc 4 GPIO_ACTIVE_LOW>;	 
 			linux,code = <KEY_POWER>;
 		};
-
 		hps_hkey3 {
-			label = "SENSE";			/* SENSE */
-			gpios = <&porta 9 GPIO_ACTIVE_LOW>;	/* HPS_GPIO9 */
+			label = "SENSE";			 
+			gpios = <&porta 9 GPIO_ACTIVE_LOW>;	 
 			linux,code = <BTN_3>;
 		};
 	};
-
 	regulator-usb-nrst {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_nrst";
@@ -76,16 +56,13 @@
 		regulator-always-on;
 	};
 };
-
 &gmac1 {
 	status = "okay";
 	phy-mode = "rgmii";
 	phy-handle = <&phy1>;
-
 	snps,reset-gpio = <&porta 0 GPIO_ACTIVE_LOW>;
 	snps,reset-active-low;
 	snps,reset-delays-us = <10000 10000 10000>;
-
 	mdio0 {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -107,83 +84,68 @@
 		};
 	};
 };
-
-&gpio0 {	/* GPIO 0..29 */
+&gpio0 {	 
 	status = "okay";
 };
-
-&gpio1 {	/* GPIO 30..57 */
+&gpio1 {	 
 	status = "okay";
 };
-
-&gpio2 {	/* GPIO 58..66 (HLGPI 0..13 at offset 13) */
+&gpio2 {	 
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
-
 	gpio: pca9557@1f {
 		compatible = "nxp,pca9557";
 		reg = <0x1f>;
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
-
 	temp: lm75@48 {
 		compatible = "lm75";
 		reg = <0x48>;
 	};
-
 	at24@50 {
 		compatible = "atmel,24c01";
 		pagesize = <8>;
 		reg = <0x50>;
 	};
-
 	i2c-mux@70 {
 		compatible = "nxp,pca9548";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		reg = <0x70>;
-
 		i2c@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
 		};
-
 		i2c@1 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
 		};
-
 		i2c@2 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <2>;
 		};
-
 		i2c@3 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <3>;
 		};
-
 		i2c@4 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <4>;
 		};
-
 		i2c@5 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <5>;
 		};
-
-		i2c@6 {	/* Backplane EEPROM */
+		i2c@6 {	 
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <6>;
@@ -193,8 +155,7 @@
 				reg = <0x51>;
 			};
 		};
-
-		i2c@7 {	/* Power board EEPROM */
+		i2c@7 {	 
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <7>;
@@ -206,29 +167,24 @@
 		};
 	};
 };
-
 &i2c1 {
 	status = "okay";
 	clock-frequency = <100000>;
-
 	at24@50 {
 		compatible = "atmel,24c02";
 		pagesize = <8>;
 		reg = <0x50>;
 	};
 };
-
 &qspi {
 	status = "okay";
-
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "micron,n25q128", "jedec,spi-nor";
-		reg = <0>;		/* chip select */
+		reg = <0>;		 
 		spi-max-frequency = <100000000>;
 		m25p,fast-read;
-
 		cdns,page-size = <256>;
 		cdns,block-size = <16>;
 		cdns,read-delay = <4>;
@@ -237,15 +193,13 @@
 		cdns,tchsh-ns = <4>;
 		cdns,tslch-ns = <4>;
 	};
-
 	flash@1 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "micron,mt25qu02g", "jedec,spi-nor";
-		reg = <1>;		/* chip select */
+		reg = <1>;		 
 		spi-max-frequency = <100000000>;
 		m25p,fast-read;
-
 		cdns,page-size = <256>;
 		cdns,block-size = <16>;
 		cdns,read-delay = <4>;
@@ -255,12 +209,10 @@
 		cdns,tslch-ns = <4>;
 	};
 };
-
 &usb0 {
 	dr_mode = "host";
 	status = "okay";
 };
-
 &usb1 {
 	dr_mode = "peripheral";
 	status = "okay";

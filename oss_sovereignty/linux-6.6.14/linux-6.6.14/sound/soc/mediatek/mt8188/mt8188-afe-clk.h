@@ -1,27 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8188-afe-clk.h  --  MediaTek 8188 afe clock ctrl definition
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- *         Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
-
 #ifndef _MT8188_AFE_CLK_H_
 #define _MT8188_AFE_CLK_H_
-
-/* APLL */
 #define APLL1_W_NAME "APLL1"
 #define APLL2_W_NAME "APLL2"
-
 enum {
-	/* xtal */
 	MT8188_CLK_XTAL_26M,
-	/* pll */
 	MT8188_CLK_APMIXED_APLL1,
 	MT8188_CLK_APMIXED_APLL2,
-	/* divider */
 	MT8188_CLK_TOP_APLL1_D4,
 	MT8188_CLK_TOP_APLL2_D4,
 	MT8188_CLK_TOP_APLL12_DIV0,
@@ -30,7 +14,6 @@ enum {
 	MT8188_CLK_TOP_APLL12_DIV3,
 	MT8188_CLK_TOP_APLL12_DIV4,
 	MT8188_CLK_TOP_APLL12_DIV9,
-	/* mux */
 	MT8188_CLK_TOP_A1SYS_HP_SEL,
 	MT8188_CLK_TOP_A2SYS_SEL,
 	MT8188_CLK_TOP_AUD_IEC_SEL,
@@ -42,7 +25,6 @@ enum {
 	MT8188_CLK_TOP_I2SO2_M_SEL,
 	MT8188_CLK_TOP_I2SI1_M_SEL,
 	MT8188_CLK_TOP_I2SI2_M_SEL,
-	/* clock gate */
 	MT8188_CLK_ADSP_AUDIO_26M,
 	MT8188_CLK_AUD_AFE,
 	MT8188_CLK_AUD_APLL1_TUNER,
@@ -83,7 +65,6 @@ enum {
 	MT8188_CLK_AUD_MEMIF_DL11,
 	MT8188_CLK_NUM,
 };
-
 enum {
 	MT8188_AUD_PLL1,
 	MT8188_AUD_PLL2,
@@ -92,7 +73,6 @@ enum {
 	MT8188_AUD_PLL5,
 	MT8188_AUD_PLL_NUM,
 };
-
 enum {
 	MT8188_MCK_SEL_26M,
 	MT8188_MCK_SEL_APLL1,
@@ -102,9 +82,7 @@ enum {
 	MT8188_MCK_SEL_APLL5,
 	MT8188_MCK_SEL_NUM,
 };
-
 struct mtk_base_afe;
-
 int mt8188_afe_get_mclk_source_clk_id(int sel);
 int mt8188_afe_get_mclk_source_rate(struct mtk_base_afe *afe, int apll);
 int mt8188_afe_get_default_mclk_source_by_rate(int rate);
@@ -125,5 +103,4 @@ int mt8188_afe_enable_main_clock(struct mtk_base_afe *afe);
 int mt8188_afe_disable_main_clock(struct mtk_base_afe *afe);
 int mt8188_afe_enable_reg_rw_clk(struct mtk_base_afe *afe);
 int mt8188_afe_disable_reg_rw_clk(struct mtk_base_afe *afe);
-
 #endif

@@ -1,29 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree file for Seagate NAS 4-Bay (Armada 370 SoC).
- *
- * Copyright (C) 2015 Seagate
- *
- * Author: Vincent Donnefort <vdonnefort@gmail.com>
- */
-
-/*
- * Here are some information allowing to identify the device:
- *
- * Product name                 : Seagate NAS 4-Bay
- * Code name (board/PCB)        : Dart 4-Bay
- * Model name (case sticker)    : SRPD40
- * Material desc (product spec) : STCUxxxxxxx
- */
-
 /dts-v1/;
 #include "armada-370-seagate-nas-xbay.dtsi"
 #include <dt-bindings/leds/leds-ns2.h>
-
 / {
 	model = "Seagate NAS 4-Bay (Dart, SRPD40)";
 	compatible = "seagate,dart-4", "marvell,armada370", "marvell,armada-370-xp";
-
 	soc {
 		internal-regs {
 			ethernet@74000 {
@@ -33,9 +13,7 @@
 				phy = <&phy1>;
 				phy-mode = "rgmii-id";
 			};
-
 			i2c@11000 {
-				/* I2C GPIO expander (PCA9554A) */
 				pca9554: pca9554@21 {
 					compatible = "nxp,pca9554";
 					reg = <0x21>;
@@ -45,7 +23,6 @@
 			};
 		};
 	};
-
 	regulator-3 {
 		compatible = "regulator-fixed";
 		regulator-name = "SATA2 power";
@@ -56,7 +33,6 @@
 		regulator-boot-on;
 		gpio = <&pca9554 6 GPIO_ACTIVE_HIGH>;
 	};
-
 	regulator-4 {
 		compatible = "regulator-fixed";
 		regulator-name = "SATA3 power";
@@ -67,7 +43,6 @@
 		regulator-boot-on;
 		gpio = <&pca9554 7 GPIO_ACTIVE_HIGH>;
 	};
-
 	gpio-leds {
 		led-red-sata2 {
 			label = "dart:red:sata2";
@@ -78,10 +53,8 @@
 			gpios = <&pca9554 3 GPIO_ACTIVE_LOW>;
 		};
 	};
-
 	leds-ns2 {
 		compatible = "lacie,ns2-leds";
-
 		white-sata2 {
 			label = "dart:white:sata2";
 			cmd-gpio = <&pca9554 1 GPIO_ACTIVE_HIGH>;
@@ -103,7 +76,6 @@
 				     NS_V2_LED_ON   1 1>;
 		};
 	};
-
 	gpio-fan {
 		gpio-fan,speed-map =
 			<   0 3
@@ -112,17 +84,13 @@
 			  1300 0>;
 	};
 };
-
 &pciec {
-	/* SATA AHCI controller 88SE9170 */
 	pcie@1,0 {
 		status = "okay";
 	};
 };
-
 &mdio {
 	phy1: ethernet-phy@1 {
 		reg = <1>;
 	};
 };
-

@@ -1,36 +1,18 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1996, 1997, 1998, 1999, 2000 by Ralf Baechle
- * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
- *
- * Protected memory access.  Used for everything that might take revenge
- * by sending a DBE error like accessing possibly non-existent memory or
- * devices.
- */
 #ifndef _ASM_PACCESS_H
 #define _ASM_PACCESS_H
-
 #include <linux/errno.h>
-
 #ifdef CONFIG_32BIT
 #define __PA_ADDR	".word"
 #endif
 #ifdef CONFIG_64BIT
 #define __PA_ADDR	".dword"
 #endif
-
 extern asmlinkage void handle_ibe(void);
 extern asmlinkage void handle_dbe(void);
-
 #define put_dbe(x, ptr) __put_dbe((x), (ptr), sizeof(*(ptr)))
 #define get_dbe(x, ptr) __get_dbe((x), (ptr), sizeof(*(ptr)))
-
 struct __large_pstruct { unsigned long buf[100]; };
 #define __mp(x) (*(struct __large_pstruct *)(x))
-
 #define __get_dbe(x, ptr, size)						\
 ({									\
 	long __gu_err;							\
@@ -49,7 +31,6 @@ struct __large_pstruct { unsigned long buf[100]; };
 	x = (__typeof__(*(ptr))) __gu_val;				\
 	__gu_err;							\
 })
-
 #define __get_dbe_asm(insn)						\
 {									\
 	__asm__ __volatile__(						\
@@ -68,9 +49,7 @@ struct __large_pstruct { unsigned long buf[100]; };
 	:"=r" (__gu_err), "=r" (__gu_val)				\
 	:"o" (__mp(__gu_addr)), "i" (-EFAULT));				\
 }
-
 extern void __get_dbe_unknown(void);
-
 #define __put_dbe(x, ptr, size)						\
 ({									\
 	long __pu_err;							\
@@ -88,7 +67,6 @@ extern void __get_dbe_unknown(void);
 	}								\
 	__pu_err;							\
 })
-
 #define __put_dbe_asm(insn)						\
 {									\
 	__asm__ __volatile__(						\
@@ -106,9 +84,6 @@ extern void __get_dbe_unknown(void);
 	: "=r" (__pu_err)						\
 	: "r" (__pu_val), "o" (__mp(__pu_addr)), "i" (-EFAULT));	\
 }
-
 extern void __put_dbe_unknown(void);
-
 extern unsigned long search_dbe_table(unsigned long addr);
-
-#endif /* _ASM_PACCESS_H */
+#endif  

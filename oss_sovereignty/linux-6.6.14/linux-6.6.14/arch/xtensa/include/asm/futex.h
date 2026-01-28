@@ -1,25 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Atomic futex routines
- *
- * Based on the PowerPC implementataion
- *
- * Copyright (C) 2013 TangoTec Ltd.
- *
- * Baruch Siach <baruch@tkos.co.il>
- */
-
 #ifndef _ASM_XTENSA_FUTEX_H
 #define _ASM_XTENSA_FUTEX_H
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <linux/errno.h>
-
 #define arch_futex_atomic_op_inuser arch_futex_atomic_op_inuser
 #define futex_atomic_cmpxchg_inatomic futex_atomic_cmpxchg_inatomic
 #include <asm-generic/futex.h>
-
 #if XCHAL_HAVE_EXCLUSIVE
 #define __futex_atomic_op(insn, ret, old, uaddr, arg)	\
 	__asm__ __volatile(				\
@@ -69,16 +55,13 @@
 	: [oparg] "r" (arg), [fault] "I" (-EFAULT)	\
 	: "memory")
 #endif
-
 static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		u32 __user *uaddr)
 {
 #if XCHAL_HAVE_S32C1I || XCHAL_HAVE_EXCLUSIVE
 	int oldval = 0, ret;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("mov %[newval], %[oparg]",
@@ -103,16 +86,13 @@ static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 #else
 	return futex_atomic_op_inuser_local(op, oparg, oval, uaddr);
 #endif
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
@@ -120,10 +100,8 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 #if XCHAL_HAVE_S32C1I || XCHAL_HAVE_EXCLUSIVE
 	unsigned long tmp;
 	int ret = 0;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	__asm__ __volatile__ (
 	"	# futex_atomic_cmpxchg_inatomic\n"
 #if XCHAL_HAVE_EXCLUSIVE
@@ -157,11 +135,9 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	: [addr] "r" (uaddr), [oldval] "r" (oldval), [uval] "r" (uval),
 	  [fault] "I" (-EFAULT)
 	: "memory");
-
 	return ret;
 #else
 	return futex_atomic_cmpxchg_inatomic_local(uval, uaddr, oldval, newval);
 #endif
 }
-
-#endif /* _ASM_XTENSA_FUTEX_H */
+#endif  

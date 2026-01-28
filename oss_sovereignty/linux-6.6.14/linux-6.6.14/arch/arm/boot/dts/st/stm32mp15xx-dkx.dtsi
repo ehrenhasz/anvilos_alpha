@@ -1,66 +1,50 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright (C) STMicroelectronics 2019 - All Rights Reserved
- * Author: Alexandre Torgue <alexandre.torgue@st.com> for STMicroelectronics.
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/mfd/st,stpmic1.h>
-
 / {
 	aliases {
 		serial0 = &uart4;
 		serial1 = &usart3;
 		serial2 = &uart7;
 	};
-
 	memory@c0000000 {
 		device_type = "memory";
 		reg = <0xc0000000 0x20000000>;
 	};
-
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		mcuram2: mcuram2@10000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10000000 0x40000>;
 			no-map;
 		};
-
 		vdev0vring0: vdev0vring0@10040000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10040000 0x1000>;
 			no-map;
 		};
-
 		vdev0vring1: vdev0vring1@10041000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10041000 0x1000>;
 			no-map;
 		};
-
 		vdev0buffer: vdev0buffer@10042000 {
 			compatible = "shared-dma-pool";
 			reg = <0x10042000 0x4000>;
 			no-map;
 		};
-
 		mcuram: mcuram@30000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x30000000 0x40000>;
 			no-map;
 		};
-
 		retram: retram@38000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x38000000 0x10000>;
 			no-map;
 		};
 	};
-
 	led {
 		compatible = "gpio-leds";
 		led-blue {
@@ -70,7 +54,6 @@
 			default-state = "off";
 		};
 	};
-
 	sound {
 		compatible = "audio-graph-card";
 		label = "STM32MP15-DK";
@@ -81,7 +64,6 @@
 		dais = <&sai2a_port &sai2b_port &i2s2_port>;
 		status = "okay";
 	};
-
 	vin: vin {
 		compatible = "regulator-fixed";
 		regulator-name = "vin";
@@ -90,7 +72,6 @@
 		regulator-always-on;
 	};
 };
-
 &adc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&adc12_usb_cc_pins_a>;
@@ -100,12 +81,6 @@
 	status = "okay";
 	adc1: adc@0 {
 		status = "okay";
-		/*
-		 * Type-C USB_PWR_CC1 & USB_PWR_CC2 on in18 & in19.
-		 * Use at least 5 * RC time, e.g. 5 * (Rp + Rd) * C:
-		 * 5 * (56 + 47kOhms) * 5pF => 2.5us.
-		 * Use arbitrary margin here (e.g. 5us).
-		 */
 		channel@18 {
 			reg = <18>;
 			st,min-sample-time-ns = <5000>;
@@ -117,7 +92,6 @@
 	};
 	adc2: adc@100 {
 		status = "okay";
-		/* USB Type-C CC1 & CC2 */
 		channel@18 {
 			reg = <18>;
 			st,min-sample-time-ns = <5000>;
@@ -128,22 +102,18 @@
 		};
 	};
 };
-
 &cec {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&cec_pins_b>;
 	pinctrl-1 = <&cec_sleep_pins_b>;
 	status = "okay";
 };
-
 &crc1 {
 	status = "okay";
 };
-
 &dts {
 	status = "okay";
 };
-
 &ethernet0 {
 	status = "okay";
 	pinctrl-0 = <&ethernet0_rgmii_pins_a>;
@@ -152,7 +122,6 @@
 	phy-mode = "rgmii-id";
 	max-speed = <1000>;
 	phy-handle = <&phy0>;
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -162,11 +131,9 @@
 		};
 	};
 };
-
 &hash1 {
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c1_pins_a>;
@@ -176,7 +143,6 @@
 	status = "okay";
 	/delete-property/dmas;
 	/delete-property/dma-names;
-
 	hdmi-transmitter@39 {
 		compatible = "sil,sii9022";
 		reg = <0x39>;
@@ -187,18 +153,15 @@
 		interrupt-parent = <&gpiog>;
 		#sound-dai-cells = <0>;
 		status = "okay";
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
 				sii9022_in: endpoint {
 					remote-endpoint = <&ltdc_ep0_out>;
 				};
 			};
-
 			port@3 {
 				reg = <3>;
 				sii9022_tx_endpoint: endpoint {
@@ -207,7 +170,6 @@
 			};
 		};
 	};
-
 	cs42l51: cs42l51@4a {
 		compatible = "cirrus,cs42l51";
 		reg = <0x4a>;
@@ -220,18 +182,15 @@
 		clocks = <&sai2a>;
 		clock-names = "MCLK";
 		status = "okay";
-
 		cs42l51_port: port {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			cs42l51_tx_endpoint: endpoint@0 {
 				reg = <0>;
 				remote-endpoint = <&sai2a_endpoint>;
 				frame-master = <&cs42l51_tx_endpoint>;
 				bitclock-master = <&cs42l51_tx_endpoint>;
 			};
-
 			cs42l51_rx_endpoint: endpoint@1 {
 				reg = <1>;
 				remote-endpoint = <&sai2b_endpoint>;
@@ -241,7 +200,6 @@
 		};
 	};
 };
-
 &i2c4 {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c4_pins_a>;
@@ -250,10 +208,8 @@
 	i2c-scl-falling-time-ns = <20>;
 	clock-frequency = <400000>;
 	status = "okay";
-	/* spare dmas for other usage */
 	/delete-property/dmas;
 	/delete-property/dma-names;
-
 	stusb1600@28 {
 		compatible = "st,stusb1600";
 		reg = <0x28>;
@@ -263,13 +219,11 @@
 		pinctrl-0 = <&stusb1600_pins_a>;
 		status = "okay";
 		vdd-supply = <&vin>;
-
 		connector {
 			compatible = "usb-c-connector";
 			label = "USB-C";
 			power-role = "dual";
 			typec-power-opmode = "default";
-
 			port {
 				con_usbotg_hs_ep: endpoint {
 					remote-endpoint = <&usbotg_hs_ep>;
@@ -277,7 +231,6 @@
 			};
 		};
 	};
-
 	pmic: stpmic@33 {
 		compatible = "st,stpmic1";
 		reg = <0x33>;
@@ -285,7 +238,6 @@
 		interrupt-controller;
 		#interrupt-cells = <2>;
 		status = "okay";
-
 		regulators {
 			compatible = "st,stpmic1-regulators";
 			buck1-supply = <&vin>;
@@ -302,7 +254,6 @@
 			boost-supply = <&vin>;
 			pwr_sw1-supply = <&bst_out>;
 			pwr_sw2-supply = <&bst_out>;
-
 			vddcore: buck1 {
 				regulator-name = "vddcore";
 				regulator-min-microvolt = <1200000>;
@@ -311,7 +262,6 @@
 				regulator-initial-mode = <0>;
 				regulator-over-current-protection;
 			};
-
 			vdd_ddr: buck2 {
 				regulator-name = "vdd_ddr";
 				regulator-min-microvolt = <1350000>;
@@ -320,7 +270,6 @@
 				regulator-initial-mode = <0>;
 				regulator-over-current-protection;
 			};
-
 			vdd: buck3 {
 				regulator-name = "vdd";
 				regulator-min-microvolt = <3300000>;
@@ -330,7 +279,6 @@
 				regulator-initial-mode = <0>;
 				regulator-over-current-protection;
 			};
-
 			v3v3: buck4 {
 				regulator-name = "v3v3";
 				regulator-min-microvolt = <3300000>;
@@ -339,7 +287,6 @@
 				regulator-over-current-protection;
 				regulator-initial-mode = <0>;
 			};
-
 			v1v8_audio: ldo1 {
 				regulator-name = "v1v8_audio";
 				regulator-min-microvolt = <1800000>;
@@ -347,7 +294,6 @@
 				regulator-always-on;
 				interrupts = <IT_CURLIM_LDO1 0>;
 			};
-
 			v3v3_hdmi: ldo2 {
 				regulator-name = "v3v3_hdmi";
 				regulator-min-microvolt = <3300000>;
@@ -355,7 +301,6 @@
 				regulator-always-on;
 				interrupts = <IT_CURLIM_LDO2 0>;
 			};
-
 			vtt_ddr: ldo3 {
 				regulator-name = "vtt_ddr";
 				regulator-min-microvolt = <500000>;
@@ -363,12 +308,10 @@
 				regulator-always-on;
 				regulator-over-current-protection;
 			};
-
 			vdd_usb: ldo4 {
 				regulator-name = "vdd_usb";
 				interrupts = <IT_CURLIM_LDO4 0>;
 			};
-
 			vdda: ldo5 {
 				regulator-name = "vdda";
 				regulator-min-microvolt = <2900000>;
@@ -376,7 +319,6 @@
 				interrupts = <IT_CURLIM_LDO5 0>;
 				regulator-boot-on;
 			};
-
 			v1v2_hdmi: ldo6 {
 				regulator-name = "v1v2_hdmi";
 				regulator-min-microvolt = <1200000>;
@@ -384,29 +326,24 @@
 				regulator-always-on;
 				interrupts = <IT_CURLIM_LDO6 0>;
 			};
-
 			vref_ddr: vref_ddr {
 				regulator-name = "vref_ddr";
 				regulator-always-on;
 			};
-
 			bst_out: boost {
 				regulator-name = "bst_out";
 				interrupts = <IT_OCP_BOOST 0>;
 			};
-
 			vbus_otg: pwr_sw1 {
 				regulator-name = "vbus_otg";
 				interrupts = <IT_OCP_OTG 0>;
 			};
-
 			vbus_sw: pwr_sw2 {
 				regulator-name = "vbus_sw";
 				interrupts = <IT_OCP_SWOUT 0>;
 				regulator-active-discharge = <1>;
 			};
 		};
-
 		onkey {
 			compatible = "st,stpmic1-onkey";
 			interrupts = <IT_PONKEY_F 0>, <IT_PONKEY_R 0>;
@@ -414,14 +351,12 @@
 			power-off-time-sec = <10>;
 			status = "okay";
 		};
-
 		watchdog {
 			compatible = "st,stpmic1-wdt";
 			status = "disabled";
 		};
 	};
 };
-
 &i2c5 {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c5_pins_a>;
@@ -429,12 +364,10 @@
 	i2c-scl-rising-time-ns = <185>;
 	i2c-scl-falling-time-ns = <20>;
 	clock-frequency = <400000>;
-	/* spare dmas for other usage */
 	/delete-property/dmas;
 	/delete-property/dma-names;
 	status = "disabled";
 };
-
 &i2s2 {
 	clocks = <&rcc SPI2>, <&rcc SPI2_K>, <&rcc PLL3_Q>, <&rcc PLL3_R>;
 	clock-names = "pclk", "i2sclk", "x8k", "x11k";
@@ -442,7 +375,6 @@
 	pinctrl-0 = <&i2s2_pins_a>;
 	pinctrl-1 = <&i2s2_sleep_pins_a>;
 	status = "okay";
-
 	i2s2_port: port {
 		i2s2_endpoint: endpoint {
 			remote-endpoint = <&sii9022_tx_endpoint>;
@@ -451,29 +383,24 @@
 		};
 	};
 };
-
 &ipcc {
 	status = "okay";
 };
-
 &iwdg2 {
 	timeout-sec = <32>;
 	status = "okay";
 };
-
 &ltdc {
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&ltdc_pins_a>;
 	pinctrl-1 = <&ltdc_sleep_pins_a>;
 	status = "okay";
-
 	port {
 		ltdc_ep0_out: endpoint {
 			remote-endpoint = <&sii9022_in>;
 		};
 	};
 };
-
 &m4_rproc {
 	memory-region = <&retram>, <&mcuram>, <&mcuram2>, <&vdev0vring0>,
 			<&vdev0vring1>, <&vdev0buffer>;
@@ -483,20 +410,16 @@
 	interrupts = <68 1>;
 	status = "okay";
 };
-
 &pwr_regulators {
 	vdd-supply = <&vdd>;
 	vdd_3v3_usbfs-supply = <&vdd_usb>;
 };
-
 &rng1 {
 	status = "okay";
 };
-
 &rtc {
 	status = "okay";
 };
-
 &sai2 {
 	clocks = <&rcc SAI2>, <&rcc PLL3_Q>, <&rcc PLL3_R>;
 	clock-names = "pclk", "x8k", "x11k";
@@ -504,12 +427,10 @@
 	pinctrl-0 = <&sai2a_pins_a>, <&sai2b_pins_b>;
 	pinctrl-1 = <&sai2a_sleep_pins_a>, <&sai2b_sleep_pins_b>;
 	status = "okay";
-
 	sai2a: audio-controller@4400b004 {
 		#clock-cells = <0>;
 		dma-names = "tx";
 		status = "okay";
-
 		sai2a_port: port {
 			sai2a_endpoint: endpoint {
 				remote-endpoint = <&cs42l51_tx_endpoint>;
@@ -520,14 +441,12 @@
 			};
 		};
 	};
-
 	sai2b: audio-controller@4400b024 {
 		dma-names = "rx";
 		st,sync = <&sai2a 2>;
 		clocks = <&rcc SAI2_K>, <&sai2a>;
 		clock-names = "sai_ck", "MCLK";
 		status = "okay";
-
 		sai2b_port: port {
 			sai2b_endpoint: endpoint {
 				remote-endpoint = <&cs42l51_rx_endpoint>;
@@ -539,7 +458,6 @@
 		};
 	};
 };
-
 &sdmmc1 {
 	pinctrl-names = "default", "opendrain", "sleep";
 	pinctrl-0 = <&sdmmc1_b4_pins_a>;
@@ -552,7 +470,6 @@
 	vmmc-supply = <&v3v3>;
 	status = "okay";
 };
-
 &sdmmc3 {
 	pinctrl-names = "default", "opendrain", "sleep";
 	pinctrl-0 = <&sdmmc3_b4_pins_a>;
@@ -564,9 +481,7 @@
 	vmmc-supply = <&v3v3>;
 	status = "disabled";
 };
-
 &timers1 {
-	/* spare dmas for other usage */
 	/delete-property/dmas;
 	/delete-property/dma-names;
 	status = "disabled";
@@ -580,7 +495,6 @@
 		status = "okay";
 	};
 };
-
 &timers3 {
 	/delete-property/dmas;
 	/delete-property/dma-names;
@@ -595,7 +509,6 @@
 		status = "okay";
 	};
 };
-
 &timers4 {
 	/delete-property/dmas;
 	/delete-property/dma-names;
@@ -610,7 +523,6 @@
 		status = "okay";
 	};
 };
-
 &timers5 {
 	/delete-property/dmas;
 	/delete-property/dma-names;
@@ -625,7 +537,6 @@
 		status = "okay";
 	};
 };
-
 &timers6 {
 	/delete-property/dmas;
 	/delete-property/dma-names;
@@ -634,7 +545,6 @@
 		status = "okay";
 	};
 };
-
 &timers12 {
 	/delete-property/dmas;
 	/delete-property/dma-names;
@@ -649,7 +559,6 @@
 		status = "okay";
 	};
 };
-
 &uart4 {
 	pinctrl-names = "default", "sleep", "idle";
 	pinctrl-0 = <&uart4_pins_a>;
@@ -659,7 +568,6 @@
 	/delete-property/dma-names;
 	status = "okay";
 };
-
 &uart7 {
 	pinctrl-names = "default", "sleep", "idle";
 	pinctrl-0 = <&uart7_pins_c>;
@@ -669,7 +577,6 @@
 	/delete-property/dma-names;
 	status = "disabled";
 };
-
 &usart3 {
 	pinctrl-names = "default", "sleep", "idle";
 	pinctrl-0 = <&usart3_pins_c>;
@@ -678,37 +585,31 @@
 	uart-has-rtscts;
 	status = "disabled";
 };
-
 &usbh_ehci {
 	phys = <&usbphyc_port0>;
 	status = "okay";
 	#address-cells = <1>;
 	#size-cells = <0>;
-	/* onboard HUB */
 	hub@1 {
 		compatible = "usb424,2514";
 		reg = <1>;
 		vdd-supply = <&v3v3>;
 	};
 };
-
 &usbotg_hs {
 	phys = <&usbphyc_port1 0>;
 	phy-names = "usb2-phy";
 	usb-role-switch;
 	status = "okay";
-
 	port {
 		usbotg_hs_ep: endpoint {
 			remote-endpoint = <&con_usbotg_hs_ep>;
 		};
 	};
 };
-
 &usbphyc {
 	status = "okay";
 };
-
 &usbphyc_port0 {
 	phy-supply = <&vdd_usb>;
 	st,tune-hs-dc-level = <2>;
@@ -720,7 +621,6 @@
 	st,tune-hs-rx-offset = <2>;
 	st,no-lsfs-sc;
 };
-
 &usbphyc_port1 {
 	phy-supply = <&vdd_usb>;
 	st,tune-hs-dc-level = <2>;
@@ -732,7 +632,6 @@
 	st,tune-hs-rx-offset = <2>;
 	st,no-lsfs-sc;
 };
-
 &vrefbuf {
 	regulator-min-microvolt = <2500000>;
 	regulator-max-microvolt = <2500000>;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
-
 #ifndef __RTL92E_TABLE__H_
 #define __RTL92E_TABLE__H_
-
 #include <linux/types.h>
 #define RTL8192EE_PHY_REG_ARRAY_LEN	448
 extern u32 RTL8192EE_PHY_REG_ARRAY[];
@@ -17,5 +13,4 @@ extern u32 RTL8192EE_RADIOB_ARRAY[];
 extern u32 RTL8192EE_MAC_ARRAY[];
 #define RTL8192EE_AGC_TAB_ARRAY_LEN	532
 extern u32 RTL8192EE_AGC_TAB_ARRAY[];
-
 #endif

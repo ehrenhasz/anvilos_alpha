@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/drivers/acorn/net/ether3.h
- *
- *  Copyright (C) 1995-2000 Russell King
- *
- *  network driver for Acorn/ANT Ether3 cards
- */
-
 #ifndef _LINUX_ether3_H
 #define _LINUX_ether3_H
-
-/* use 0 for production, 1 for verification, >2 for debug. debug flags: */
 #define DEBUG_TX	 2
 #define DEBUG_RX	 4
 #define DEBUG_INT	 8
@@ -18,10 +7,7 @@
 #ifndef NET_DEBUG
 #define NET_DEBUG 	0
 #endif
-
 #define priv(dev)	((struct dev_priv *)netdev_priv(dev))
-
-/* Command register definitions & bits */
 #define REG_COMMAND		(priv(dev)->seeq + 0x0000)
 #define CMD_ENINTDMA		0x0001
 #define CMD_ENINTRX		0x0002
@@ -39,8 +25,6 @@
 #define CMD_TXOFF		0x2000
 #define CMD_FIFOREAD		0x4000
 #define CMD_FIFOWRITE		0x8000
-
-/* status register */
 #define REG_STATUS		(priv(dev)->seeq + 0x0000)
 #define STAT_ENINTSTAT		0x0001
 #define STAT_ENINTRX		0x0002
@@ -56,8 +40,6 @@
 #define STAT_FIFOFULL		0x2000
 #define STAT_FIFOEMPTY		0x4000
 #define STAT_FIFODIR		0x8000
-
-/* configuration register 1 */
 #define REG_CONFIG1		(priv(dev)->seeq + 0x0040)
 #define CFG1_BUFSELSTAT0	0x0000
 #define CFG1_BUFSELSTAT1	0x0001
@@ -73,8 +55,6 @@
 #define CFG1_RECVSPECBROAD	0x4000
 #define CFG1_RECVSPECBRMULTI	0x8000
 #define CFG1_RECVPROMISC	0xC000
-
-/* The following aren't in 8004 */
 #define CFG1_DMABURSTCONT	0x0000
 #define CFG1_DMABURST800NS	0x0010
 #define CFG1_DMABURST1600NS	0x0020
@@ -89,8 +69,6 @@
 #define CFG1_RECVCOMPSTAT3	0x0800
 #define CFG1_RECVCOMPSTAT4	0x1000
 #define CFG1_RECVCOMPSTAT5	0x2000
-
-/* configuration register 2 */
 #define REG_CONFIG2		(priv(dev)->seeq + 0x0080)
 #define CFG2_BYTESWAP		0x0001
 #define CFG2_ERRENCRC		0x0008
@@ -104,20 +82,11 @@
 #define CFG2_LOOPBACK		0x0800
 #define CFG2_CTRLO		0x1000
 #define CFG2_RESET		0x8000
-
 #define REG_RECVEND		(priv(dev)->seeq + 0x00c0)
-
 #define REG_BUFWIN		(priv(dev)->seeq + 0x0100)
-
 #define REG_RECVPTR		(priv(dev)->seeq + 0x0140)
-
 #define REG_TRANSMITPTR		(priv(dev)->seeq + 0x0180)
-
 #define REG_DMAADDR		(priv(dev)->seeq + 0x01c0)
-
-/*
- * Cards transmit/receive headers
- */
 #define TX_NEXT			(0xffff)
 #define TXHDR_ENBABBLEINT	(1 << 16)
 #define TXHDR_ENCOLLISIONINT	(1 << 17)
@@ -130,7 +99,6 @@
 #define TXSTAT_COLLISION	(1 << 25)
 #define TXSTAT_16COLLISIONS	(1 << 26)
 #define TXSTAT_DONE		(1 << 31)
-
 #define RX_NEXT			(0xffff)
 #define RXHDR_CHAINCONTINUE	(1 << 6)
 #define RXHDR_RECEIVE		(1 << 7)
@@ -139,17 +107,13 @@
 #define RXSTAT_DRIBBLEERROR	(1 << 10)
 #define RXSTAT_SHORTPACKET	(1 << 11)
 #define RXSTAT_DONE		(1 << 15)
-
-
 #define TX_START	0x0000
 #define TX_END		0x6000
 #define RX_START	0x6000
 #define RX_LEN		0xA000
 #define RX_END		0x10000
-/* must be a power of 2 and greater than MAX_TX_BUFFERED */
 #define MAX_TXED	16
 #define MAX_TX_BUFFERED	10
-
 struct dev_priv {
     void __iomem *base;
     void __iomem *seeq;
@@ -158,17 +122,15 @@ struct dev_priv {
 	unsigned int config1;
 	unsigned int config2;
     } regs;
-    unsigned char tx_head;		/* buffer nr to insert next packet	 */
-    unsigned char tx_tail;		/* buffer nr of transmitting packet	 */
-    unsigned int rx_head;		/* address to fetch next packet from	 */
+    unsigned char tx_head;		 
+    unsigned char tx_tail;		 
+    unsigned int rx_head;		 
     struct timer_list timer;
     struct net_device *dev;
-    int broken;				/* 0 = ok, 1 = something went wrong	 */
+    int broken;				 
 };
-
 struct ether3_data {
 	const char name[8];
 	unsigned long base_offset;
 };
-
 #endif

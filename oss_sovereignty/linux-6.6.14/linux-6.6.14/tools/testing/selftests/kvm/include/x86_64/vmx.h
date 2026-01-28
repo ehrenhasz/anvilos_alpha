@@ -1,22 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tools/testing/selftests/kvm/include/x86_64/vmx.h
- *
- * Copyright (C) 2018, Google LLC.
- */
-
 #ifndef SELFTEST_KVM_VMX_H
 #define SELFTEST_KVM_VMX_H
-
 #include <asm/vmx.h>
-
 #include <stdint.h>
 #include "processor.h"
 #include "apic.h"
-
-/*
- * Definitions of Primary Processor-Based VM-Execution Controls.
- */
 #define CPU_BASED_INTR_WINDOW_EXITING		0x00000004
 #define CPU_BASED_USE_TSC_OFFSETTING		0x00000008
 #define CPU_BASED_HLT_EXITING			0x00000080
@@ -38,12 +25,7 @@
 #define CPU_BASED_MONITOR_EXITING		0x20000000
 #define CPU_BASED_PAUSE_EXITING			0x40000000
 #define CPU_BASED_ACTIVATE_SECONDARY_CONTROLS	0x80000000
-
 #define CPU_BASED_ALWAYSON_WITHOUT_TRUE_MSR	0x0401e172
-
-/*
- * Definitions of Secondary Processor-Based VM-Execution Controls.
- */
 #define SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES 0x00000001
 #define SECONDARY_EXEC_ENABLE_EPT		0x00000002
 #define SECONDARY_EXEC_DESC			0x00000004
@@ -64,15 +46,12 @@
 #define SECONDARY_EPT_VE			0x00040000
 #define SECONDARY_ENABLE_XSAV_RESTORE		0x00100000
 #define SECONDARY_EXEC_TSC_SCALING		0x02000000
-
 #define PIN_BASED_EXT_INTR_MASK			0x00000001
 #define PIN_BASED_NMI_EXITING			0x00000008
 #define PIN_BASED_VIRTUAL_NMIS			0x00000020
 #define PIN_BASED_VMX_PREEMPTION_TIMER		0x00000040
 #define PIN_BASED_POSTED_INTR			0x00000080
-
 #define PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR	0x00000016
-
 #define VM_EXIT_SAVE_DEBUG_CONTROLS		0x00000004
 #define VM_EXIT_HOST_ADDR_SPACE_SIZE		0x00000200
 #define VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL	0x00001000
@@ -82,9 +61,7 @@
 #define VM_EXIT_SAVE_IA32_EFER			0x00100000
 #define VM_EXIT_LOAD_IA32_EFER			0x00200000
 #define VM_EXIT_SAVE_VMX_PREEMPTION_TIMER	0x00400000
-
 #define VM_EXIT_ALWAYSON_WITHOUT_TRUE_MSR	0x00036dff
-
 #define VM_ENTRY_LOAD_DEBUG_CONTROLS		0x00000004
 #define VM_ENTRY_IA32E_MODE			0x00000200
 #define VM_ENTRY_SMM				0x00000400
@@ -92,17 +69,12 @@
 #define VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL	0x00002000
 #define VM_ENTRY_LOAD_IA32_PAT			0x00004000
 #define VM_ENTRY_LOAD_IA32_EFER			0x00008000
-
 #define VM_ENTRY_ALWAYSON_WITHOUT_TRUE_MSR	0x000011ff
-
 #define VMX_MISC_PREEMPTION_TIMER_RATE_MASK	0x0000001f
 #define VMX_MISC_SAVE_EFER_LMA			0x00000020
-
 #define VMX_EPT_VPID_CAP_1G_PAGES		0x00020000
 #define VMX_EPT_VPID_CAP_AD_BITS		0x00200000
-
 #define EXIT_REASON_FAILED_VMENTRY	0x80000000
-
 enum vmcs_field {
 	VIRTUAL_PROCESSOR_ID		= 0x00000000,
 	POSTED_INTR_NV			= 0x00000002,
@@ -285,96 +257,68 @@ enum vmcs_field {
 	HOST_RSP			= 0x00006c14,
 	HOST_RIP			= 0x00006c16,
 };
-
 struct vmx_msr_entry {
 	uint32_t index;
 	uint32_t reserved;
 	uint64_t value;
 } __attribute__ ((aligned(16)));
-
 #include "evmcs.h"
-
 static inline int vmxon(uint64_t phys)
 {
 	uint8_t ret;
-
 	__asm__ __volatile__ ("vmxon %[pa]; setna %[ret]"
 		: [ret]"=rm"(ret)
 		: [pa]"m"(phys)
 		: "cc", "memory");
-
 	return ret;
 }
-
 static inline void vmxoff(void)
 {
 	__asm__ __volatile__("vmxoff");
 }
-
 static inline int vmclear(uint64_t vmcs_pa)
 {
 	uint8_t ret;
-
 	__asm__ __volatile__ ("vmclear %[pa]; setna %[ret]"
 		: [ret]"=rm"(ret)
 		: [pa]"m"(vmcs_pa)
 		: "cc", "memory");
-
 	return ret;
 }
-
 static inline int vmptrld(uint64_t vmcs_pa)
 {
 	uint8_t ret;
-
 	if (enable_evmcs)
 		return -1;
-
 	__asm__ __volatile__ ("vmptrld %[pa]; setna %[ret]"
 		: [ret]"=rm"(ret)
 		: [pa]"m"(vmcs_pa)
 		: "cc", "memory");
-
 	return ret;
 }
-
 static inline int vmptrst(uint64_t *value)
 {
 	uint64_t tmp;
 	uint8_t ret;
-
 	if (enable_evmcs)
 		return evmcs_vmptrst(value);
-
 	__asm__ __volatile__("vmptrst %[value]; setna %[ret]"
 		: [value]"=m"(tmp), [ret]"=rm"(ret)
 		: : "cc", "memory");
-
 	*value = tmp;
 	return ret;
 }
-
-/*
- * A wrapper around vmptrst that ignores errors and returns zero if the
- * vmptrst instruction fails.
- */
 static inline uint64_t vmptrstz(void)
 {
 	uint64_t value = 0;
 	vmptrst(&value);
 	return value;
 }
-
-/*
- * No guest state (e.g. GPRs) is established by this vmlaunch.
- */
 static inline int vmlaunch(void)
 {
 	int ret;
-
 	if (enable_evmcs)
 		return evmcs_vmlaunch();
-
 	__asm__ __volatile__("push %%rbp;"
 			     "push %%rcx;"
 			     "push %%rdx;"
@@ -399,17 +343,11 @@ static inline int vmlaunch(void)
 			       "r11", "r12", "r13", "r14", "r15");
 	return ret;
 }
-
-/*
- * No guest state (e.g. GPRs) is established by this vmresume.
- */
 static inline int vmresume(void)
 {
 	int ret;
-
 	if (enable_evmcs)
 		return evmcs_vmresume();
-
 	__asm__ __volatile__("push %%rbp;"
 			     "push %%rcx;"
 			     "push %%rdx;"
@@ -434,103 +372,73 @@ static inline int vmresume(void)
 			       "r11", "r12", "r13", "r14", "r15");
 	return ret;
 }
-
 static inline void vmcall(void)
 {
-	/*
-	 * Stuff RAX and RCX with "safe" values to make sure L0 doesn't handle
-	 * it as a valid hypercall (e.g. Hyper-V L2 TLB flush) as the intended
-	 * use of this function is to exit to L1 from L2.  Clobber all other
-	 * GPRs as L1 doesn't correctly preserve them during vmexits.
-	 */
 	__asm__ __volatile__("push %%rbp; vmcall; pop %%rbp"
 			     : : "a"(0xdeadbeef), "c"(0xbeefdead)
 			     : "rbx", "rdx", "rsi", "rdi", "r8", "r9",
 			       "r10", "r11", "r12", "r13", "r14", "r15");
 }
-
 static inline int vmread(uint64_t encoding, uint64_t *value)
 {
 	uint64_t tmp;
 	uint8_t ret;
-
 	if (enable_evmcs)
 		return evmcs_vmread(encoding, value);
-
 	__asm__ __volatile__("vmread %[encoding], %[value]; setna %[ret]"
 		: [value]"=rm"(tmp), [ret]"=rm"(ret)
 		: [encoding]"r"(encoding)
 		: "cc", "memory");
-
 	*value = tmp;
 	return ret;
 }
-
-/*
- * A wrapper around vmread that ignores errors and returns zero if the
- * vmread instruction fails.
- */
 static inline uint64_t vmreadz(uint64_t encoding)
 {
 	uint64_t value = 0;
 	vmread(encoding, &value);
 	return value;
 }
-
 static inline int vmwrite(uint64_t encoding, uint64_t value)
 {
 	uint8_t ret;
-
 	if (enable_evmcs)
 		return evmcs_vmwrite(encoding, value);
-
 	__asm__ __volatile__ ("vmwrite %[value], %[encoding]; setna %[ret]"
 		: [ret]"=rm"(ret)
 		: [value]"rm"(value), [encoding]"r"(encoding)
 		: "cc", "memory");
-
 	return ret;
 }
-
 static inline uint32_t vmcs_revision(void)
 {
 	return rdmsr(MSR_IA32_VMX_BASIC);
 }
-
 struct vmx_pages {
 	void *vmxon_hva;
 	uint64_t vmxon_gpa;
 	void *vmxon;
-
 	void *vmcs_hva;
 	uint64_t vmcs_gpa;
 	void *vmcs;
-
 	void *msr_hva;
 	uint64_t msr_gpa;
 	void *msr;
-
 	void *shadow_vmcs_hva;
 	uint64_t shadow_vmcs_gpa;
 	void *shadow_vmcs;
-
 	void *vmread_hva;
 	uint64_t vmread_gpa;
 	void *vmread;
-
 	void *vmwrite_hva;
 	uint64_t vmwrite_gpa;
 	void *vmwrite;
-
 	void *eptp_hva;
 	uint64_t eptp_gpa;
 	void *eptp;
-
 	void *apic_access_hva;
 	uint64_t apic_access_gpa;
 	void *apic_access;
 };
-
 union vmx_basic {
 	u64 val;
 	struct {
@@ -546,21 +454,17 @@ union vmx_basic {
 			reserved2:7;
 	};
 };
-
 union vmx_ctrl_msr {
 	u64 val;
 	struct {
 		u32 set, clr;
 	};
 };
-
 struct vmx_pages *vcpu_alloc_vmx(struct kvm_vm *vm, vm_vaddr_t *p_vmx_gva);
 bool prepare_for_vmx_operation(struct vmx_pages *vmx);
 void prepare_vmcs(struct vmx_pages *vmx, void *guest_rip, void *guest_rsp);
 bool load_vmcs(struct vmx_pages *vmx);
-
 bool ept_1g_pages_supported(void);
-
 void nested_pg_map(struct vmx_pages *vmx, struct kvm_vm *vm,
 		   uint64_t nested_paddr, uint64_t paddr);
 void nested_map(struct vmx_pages *vmx, struct kvm_vm *vm,
@@ -573,5 +477,4 @@ bool kvm_cpu_has_ept(void);
 void prepare_eptp(struct vmx_pages *vmx, struct kvm_vm *vm,
 		  uint32_t eptp_memslot);
 void prepare_virtualize_apic_accesses(struct vmx_pages *vmx, struct kvm_vm *vm);
-
-#endif /* SELFTEST_KVM_VMX_H */
+#endif  

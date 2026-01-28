@@ -1,22 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  PS3 hvcall interface.
- *
- *  Copyright (C) 2006 Sony Computer Entertainment Inc.
- *  Copyright 2006 Sony Corp.
- *  Copyright 2003, 2004 (c) MontaVista Software, Inc.
- */
-
 #if !defined(_ASM_POWERPC_LV1CALL_H)
 #define _ASM_POWERPC_LV1CALL_H
-
 #if !defined(__ASSEMBLY__)
-
 #include <linux/types.h>
 #include <linux/export.h>
-
-/* lv1 call declaration macros */
-
 #define LV1_1_IN_ARG_DECL u64 in_1
 #define LV1_2_IN_ARG_DECL LV1_1_IN_ARG_DECL, u64 in_2
 #define LV1_3_IN_ARG_DECL LV1_2_IN_ARG_DECL, u64 in_3
@@ -32,7 +18,6 @@
 #define LV1_5_OUT_ARG_DECL LV1_4_OUT_ARG_DECL, u64 *out_5
 #define LV1_6_OUT_ARG_DECL LV1_5_OUT_ARG_DECL, u64 *out_6
 #define LV1_7_OUT_ARG_DECL LV1_6_OUT_ARG_DECL, u64 *out_7
-
 #define LV1_0_IN_0_OUT_ARG_DECL void
 #define LV1_1_IN_0_OUT_ARG_DECL LV1_1_IN_ARG_DECL
 #define LV1_2_IN_0_OUT_ARG_DECL LV1_2_IN_ARG_DECL
@@ -41,7 +26,6 @@
 #define LV1_5_IN_0_OUT_ARG_DECL LV1_5_IN_ARG_DECL
 #define LV1_6_IN_0_OUT_ARG_DECL LV1_6_IN_ARG_DECL
 #define LV1_7_IN_0_OUT_ARG_DECL LV1_7_IN_ARG_DECL
-
 #define LV1_0_IN_1_OUT_ARG_DECL                    LV1_1_OUT_ARG_DECL
 #define LV1_1_IN_1_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
 #define LV1_2_IN_1_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
@@ -51,7 +35,6 @@
 #define LV1_6_IN_1_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
 #define LV1_7_IN_1_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
 #define LV1_8_IN_1_OUT_ARG_DECL LV1_8_IN_ARG_DECL, LV1_1_OUT_ARG_DECL
-
 #define LV1_0_IN_2_OUT_ARG_DECL                    LV1_2_OUT_ARG_DECL
 #define LV1_1_IN_2_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_2_OUT_ARG_DECL
 #define LV1_2_IN_2_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_2_OUT_ARG_DECL
@@ -60,7 +43,6 @@
 #define LV1_5_IN_2_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_2_OUT_ARG_DECL
 #define LV1_6_IN_2_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_2_OUT_ARG_DECL
 #define LV1_7_IN_2_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_2_OUT_ARG_DECL
-
 #define LV1_0_IN_3_OUT_ARG_DECL                    LV1_3_OUT_ARG_DECL
 #define LV1_1_IN_3_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_3_OUT_ARG_DECL
 #define LV1_2_IN_3_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_3_OUT_ARG_DECL
@@ -69,7 +51,6 @@
 #define LV1_5_IN_3_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_3_OUT_ARG_DECL
 #define LV1_6_IN_3_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_3_OUT_ARG_DECL
 #define LV1_7_IN_3_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_3_OUT_ARG_DECL
-
 #define LV1_0_IN_4_OUT_ARG_DECL                    LV1_4_OUT_ARG_DECL
 #define LV1_1_IN_4_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_4_OUT_ARG_DECL
 #define LV1_2_IN_4_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_4_OUT_ARG_DECL
@@ -78,7 +59,6 @@
 #define LV1_5_IN_4_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_4_OUT_ARG_DECL
 #define LV1_6_IN_4_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_4_OUT_ARG_DECL
 #define LV1_7_IN_4_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_4_OUT_ARG_DECL
-
 #define LV1_0_IN_5_OUT_ARG_DECL                    LV1_5_OUT_ARG_DECL
 #define LV1_1_IN_5_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_5_OUT_ARG_DECL
 #define LV1_2_IN_5_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_5_OUT_ARG_DECL
@@ -87,7 +67,6 @@
 #define LV1_5_IN_5_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_5_OUT_ARG_DECL
 #define LV1_6_IN_5_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_5_OUT_ARG_DECL
 #define LV1_7_IN_5_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_5_OUT_ARG_DECL
-
 #define LV1_0_IN_6_OUT_ARG_DECL                    LV1_6_OUT_ARG_DECL
 #define LV1_1_IN_6_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_6_OUT_ARG_DECL
 #define LV1_2_IN_6_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_6_OUT_ARG_DECL
@@ -96,7 +75,6 @@
 #define LV1_5_IN_6_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_6_OUT_ARG_DECL
 #define LV1_6_IN_6_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_6_OUT_ARG_DECL
 #define LV1_7_IN_6_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_6_OUT_ARG_DECL
-
 #define LV1_0_IN_7_OUT_ARG_DECL                    LV1_7_OUT_ARG_DECL
 #define LV1_1_IN_7_OUT_ARG_DECL LV1_1_IN_ARG_DECL, LV1_7_OUT_ARG_DECL
 #define LV1_2_IN_7_OUT_ARG_DECL LV1_2_IN_ARG_DECL, LV1_7_OUT_ARG_DECL
@@ -105,7 +83,6 @@
 #define LV1_5_IN_7_OUT_ARG_DECL LV1_5_IN_ARG_DECL, LV1_7_OUT_ARG_DECL
 #define LV1_6_IN_7_OUT_ARG_DECL LV1_6_IN_ARG_DECL, LV1_7_OUT_ARG_DECL
 #define LV1_7_IN_7_OUT_ARG_DECL LV1_7_IN_ARG_DECL, LV1_7_OUT_ARG_DECL
-
 #define LV1_1_IN_ARGS in_1
 #define LV1_2_IN_ARGS LV1_1_IN_ARGS, in_2
 #define LV1_3_IN_ARGS LV1_2_IN_ARGS, in_3
@@ -114,7 +91,6 @@
 #define LV1_6_IN_ARGS LV1_5_IN_ARGS, in_6
 #define LV1_7_IN_ARGS LV1_6_IN_ARGS, in_7
 #define LV1_8_IN_ARGS LV1_7_IN_ARGS, in_8
-
 #define LV1_1_OUT_ARGS out_1
 #define LV1_2_OUT_ARGS LV1_1_OUT_ARGS, out_2
 #define LV1_3_OUT_ARGS LV1_2_OUT_ARGS, out_3
@@ -122,7 +98,6 @@
 #define LV1_5_OUT_ARGS LV1_4_OUT_ARGS, out_5
 #define LV1_6_OUT_ARGS LV1_5_OUT_ARGS, out_6
 #define LV1_7_OUT_ARGS LV1_6_OUT_ARGS, out_7
-
 #define LV1_0_IN_0_OUT_ARGS
 #define LV1_1_IN_0_OUT_ARGS LV1_1_IN_ARGS
 #define LV1_2_IN_0_OUT_ARGS LV1_2_IN_ARGS
@@ -131,7 +106,6 @@
 #define LV1_5_IN_0_OUT_ARGS LV1_5_IN_ARGS
 #define LV1_6_IN_0_OUT_ARGS LV1_6_IN_ARGS
 #define LV1_7_IN_0_OUT_ARGS LV1_7_IN_ARGS
-
 #define LV1_0_IN_1_OUT_ARGS                LV1_1_OUT_ARGS
 #define LV1_1_IN_1_OUT_ARGS LV1_1_IN_ARGS, LV1_1_OUT_ARGS
 #define LV1_2_IN_1_OUT_ARGS LV1_2_IN_ARGS, LV1_1_OUT_ARGS
@@ -141,7 +115,6 @@
 #define LV1_6_IN_1_OUT_ARGS LV1_6_IN_ARGS, LV1_1_OUT_ARGS
 #define LV1_7_IN_1_OUT_ARGS LV1_7_IN_ARGS, LV1_1_OUT_ARGS
 #define LV1_8_IN_1_OUT_ARGS LV1_8_IN_ARGS, LV1_1_OUT_ARGS
-
 #define LV1_0_IN_2_OUT_ARGS                LV1_2_OUT_ARGS
 #define LV1_1_IN_2_OUT_ARGS LV1_1_IN_ARGS, LV1_2_OUT_ARGS
 #define LV1_2_IN_2_OUT_ARGS LV1_2_IN_ARGS, LV1_2_OUT_ARGS
@@ -150,7 +123,6 @@
 #define LV1_5_IN_2_OUT_ARGS LV1_5_IN_ARGS, LV1_2_OUT_ARGS
 #define LV1_6_IN_2_OUT_ARGS LV1_6_IN_ARGS, LV1_2_OUT_ARGS
 #define LV1_7_IN_2_OUT_ARGS LV1_7_IN_ARGS, LV1_2_OUT_ARGS
-
 #define LV1_0_IN_3_OUT_ARGS                LV1_3_OUT_ARGS
 #define LV1_1_IN_3_OUT_ARGS LV1_1_IN_ARGS, LV1_3_OUT_ARGS
 #define LV1_2_IN_3_OUT_ARGS LV1_2_IN_ARGS, LV1_3_OUT_ARGS
@@ -159,7 +131,6 @@
 #define LV1_5_IN_3_OUT_ARGS LV1_5_IN_ARGS, LV1_3_OUT_ARGS
 #define LV1_6_IN_3_OUT_ARGS LV1_6_IN_ARGS, LV1_3_OUT_ARGS
 #define LV1_7_IN_3_OUT_ARGS LV1_7_IN_ARGS, LV1_3_OUT_ARGS
-
 #define LV1_0_IN_4_OUT_ARGS                LV1_4_OUT_ARGS
 #define LV1_1_IN_4_OUT_ARGS LV1_1_IN_ARGS, LV1_4_OUT_ARGS
 #define LV1_2_IN_4_OUT_ARGS LV1_2_IN_ARGS, LV1_4_OUT_ARGS
@@ -168,7 +139,6 @@
 #define LV1_5_IN_4_OUT_ARGS LV1_5_IN_ARGS, LV1_4_OUT_ARGS
 #define LV1_6_IN_4_OUT_ARGS LV1_6_IN_ARGS, LV1_4_OUT_ARGS
 #define LV1_7_IN_4_OUT_ARGS LV1_7_IN_ARGS, LV1_4_OUT_ARGS
-
 #define LV1_0_IN_5_OUT_ARGS                LV1_5_OUT_ARGS
 #define LV1_1_IN_5_OUT_ARGS LV1_1_IN_ARGS, LV1_5_OUT_ARGS
 #define LV1_2_IN_5_OUT_ARGS LV1_2_IN_ARGS, LV1_5_OUT_ARGS
@@ -177,7 +147,6 @@
 #define LV1_5_IN_5_OUT_ARGS LV1_5_IN_ARGS, LV1_5_OUT_ARGS
 #define LV1_6_IN_5_OUT_ARGS LV1_6_IN_ARGS, LV1_5_OUT_ARGS
 #define LV1_7_IN_5_OUT_ARGS LV1_7_IN_ARGS, LV1_5_OUT_ARGS
-
 #define LV1_0_IN_6_OUT_ARGS                LV1_6_OUT_ARGS
 #define LV1_1_IN_6_OUT_ARGS LV1_1_IN_ARGS, LV1_6_OUT_ARGS
 #define LV1_2_IN_6_OUT_ARGS LV1_2_IN_ARGS, LV1_6_OUT_ARGS
@@ -186,7 +155,6 @@
 #define LV1_5_IN_6_OUT_ARGS LV1_5_IN_ARGS, LV1_6_OUT_ARGS
 #define LV1_6_IN_6_OUT_ARGS LV1_6_IN_ARGS, LV1_6_OUT_ARGS
 #define LV1_7_IN_6_OUT_ARGS LV1_7_IN_ARGS, LV1_6_OUT_ARGS
-
 #define LV1_0_IN_7_OUT_ARGS                LV1_7_OUT_ARGS
 #define LV1_1_IN_7_OUT_ARGS LV1_1_IN_ARGS, LV1_7_OUT_ARGS
 #define LV1_2_IN_7_OUT_ARGS LV1_2_IN_ARGS, LV1_7_OUT_ARGS
@@ -195,26 +163,13 @@
 #define LV1_5_IN_7_OUT_ARGS LV1_5_IN_ARGS, LV1_7_OUT_ARGS
 #define LV1_6_IN_7_OUT_ARGS LV1_6_IN_ARGS, LV1_7_OUT_ARGS
 #define LV1_7_IN_7_OUT_ARGS LV1_7_IN_ARGS, LV1_7_OUT_ARGS
-
-/*
- * This LV1_CALL() macro is for use by callers.  It expands into an
- * inline call wrapper and an underscored HV call declaration.  The
- * wrapper can be used to instrument the lv1 call interface.  The
- * file lv1call.S defines its own LV1_CALL() macro to expand into
- * the actual underscored call definition.
- */
-
 #if !defined(LV1_CALL)
 #define LV1_CALL(name, in, out, num)                               \
   extern s64 _lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL);      \
   static inline int lv1_##name(LV1_##in##_IN_##out##_OUT_ARG_DECL) \
     {return _lv1_##name(LV1_##in##_IN_##out##_OUT_ARGS);}
 #endif
-
-#endif /* !defined(__ASSEMBLY__) */
-
-/* lv1 call table */
-
+#endif  
 LV1_CALL(allocate_memory,                               4, 2,   0 )
 LV1_CALL(write_htab_entry,                              4, 0,   1 )
 LV1_CALL(construct_virtual_address_space,               3, 2,   2 )
@@ -333,5 +288,4 @@ LV1_CALL(set_lpm_debug_bus_control,                     3, 1, 154 )
 LV1_CALL(set_lpm_counter,                               5, 2, 155 )
 LV1_CALL(set_lpm_signal,                                7, 0, 156 )
 LV1_CALL(set_lpm_spr_trigger,                           2, 0, 157 )
-
 #endif

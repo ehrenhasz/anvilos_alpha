@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-//
-// Spreadtrum SC9860 platform clocks
-//
-// Copyright (C) 2017, Spreadtrum Communications Inc.
-
 #ifndef _DT_BINDINGS_CLK_SC9860_H_
 #define _DT_BINDINGS_CLK_SC9860_H_
-
 #define	CLK_FAC_4M		0
 #define	CLK_FAC_2M		1
 #define	CLK_FAC_1M		2
@@ -30,7 +23,6 @@
 #define	CLK_CPPLL_GATE		20
 #define	CLK_GPLL_GATE		21
 #define CLK_PMU_GATE_NUM	(CLK_GPLL_GATE + 1)
-
 #define	CLK_MPLL0		0
 #define	CLK_MPLL1		1
 #define	CLK_DPLL0		2
@@ -78,8 +70,6 @@
 #define	CLK_M0_39M		44
 #define	CLK_M1_63M		45
 #define CLK_PLL_NUM		(CLK_M1_63M + 1)
-
-
 #define	CLK_AP_APB		0
 #define	CLK_AP_USB3		1
 #define	CLK_UART0		2
@@ -102,7 +92,6 @@
 #define	CLK_IIS2		19
 #define	CLK_IIS3		20
 #define CLK_AP_CLK_NUM		(CLK_IIS3 + 1)
-
 #define	CLK_AON_APB		0
 #define	CLK_AUX0		1
 #define	CLK_AUX1		2
@@ -144,7 +133,6 @@
 #define	CLK_USB3_REF		38
 #define	CLK_AP_AXI		39
 #define CLK_AON_PREDIV_NUM	(CLK_AP_AXI + 1)
-
 #define	CLK_USB3_EB		0
 #define	CLK_USB3_SUSPEND_EB	1
 #define	CLK_USB3_REF_EB		2
@@ -160,7 +148,6 @@
 #define	CLK_CE0_EB		12
 #define	CLK_CE1_EB		13
 #define CLK_APAHB_GATE_NUM	(CLK_CE1_EB + 1)
-
 #define	CLK_AVS_LIT_EB		0
 #define	CLK_AVS_BIG_EB		1
 #define	CLK_AP_INTC5_EB		2
@@ -249,11 +236,9 @@
 #define	CLK_GPU_TS_EB		85
 #define	CLK_RTCDV10_EB		86
 #define	CLK_AON_GATE_NUM	(CLK_RTCDV10_EB + 1)
-
 #define	CLK_LIT_MCU		0
 #define	CLK_BIG_MCU		1
 #define CLK_AONSECURE_NUM	(CLK_BIG_MCU + 1)
-
 #define	CLK_AGCP_IIS0_EB	0
 #define	CLK_AGCP_IIS1_EB	1
 #define	CLK_AGCP_IIS2_EB	2
@@ -273,17 +258,14 @@
 #define	CLK_AGCP_AUD_EB		16
 #define	CLK_AGCP_AUDIF_EB	17
 #define CLK_AGCP_GATE_NUM	(CLK_AGCP_AUDIF_EB + 1)
-
 #define	CLK_GPU			0
 #define CLK_GPU_NUM		(CLK_GPU + 1)
-
 #define	CLK_AHB_VSP		0
 #define	CLK_VSP			1
 #define	CLK_VSP_ENC		2
 #define	CLK_VPP			3
 #define	CLK_VSP_26M		4
 #define CLK_VSP_NUM		(CLK_VSP_26M + 1)
-
 #define	CLK_VSP_DEC_EB		0
 #define	CLK_VSP_CKG_EB		1
 #define	CLK_VSP_MMU_EB		2
@@ -297,7 +279,6 @@
 #define	CLK_VSP_ENC_BM_GATE	10
 #define	CLK_VPP_BM_GATE		11
 #define CLK_VSP_GATE_NUM	(CLK_VPP_BM_GATE + 1)
-
 #define	CLK_AHB_CAM		0
 #define	CLK_SENSOR0		1
 #define	CLK_SENSOR1		2
@@ -305,7 +286,6 @@
 #define	CLK_MIPI_CSI0_EB	4
 #define	CLK_MIPI_CSI1_EB	5
 #define CLK_CAM_NUM		(CLK_MIPI_CSI1_EB + 1)
-
 #define	CLK_DCAM0_EB		0
 #define	CLK_DCAM1_EB		1
 #define	CLK_ISP0_EB		2
@@ -358,12 +338,10 @@
 #define	CLK_IB_IN_I_EN		49
 #define	CLK_IC_IN_I_EN		50
 #define CLK_CAM_GATE_NUM	(CLK_IC_IN_I_EN + 1)
-
 #define	CLK_AHB_DISP		0
 #define	CLK_DISPC0_DPI		1
 #define	CLK_DISPC1_DPI		2
 #define CLK_DISP_NUM		(CLK_DISPC1_DPI + 1)
-
 #define	CLK_DISPC0_EB		0
 #define	CLK_DISPC1_EB		1
 #define	CLK_DISPC_MMU_EB	2
@@ -396,7 +374,6 @@
 #define	CLK_DISPM0IDLE_GATE	29
 #define	CLK_GSPM0IDLE_GATE	30
 #define CLK_DISP_GATE_NUM	(CLK_GSPM0IDLE_GATE + 1)
-
 #define	CLK_SIM0_EB		0
 #define	CLK_IIS0_EB		1
 #define	CLK_IIS1_EB		2
@@ -419,5 +396,4 @@
 #define	CLK_AP_CKG_EB		19
 #define	CLK_SPI3_EB		20
 #define CLK_APAPB_GATE_NUM	(CLK_SPI3_EB + 1)
-
-#endif /* _DT_BINDINGS_CLK_SC9860_H_ */
+#endif  

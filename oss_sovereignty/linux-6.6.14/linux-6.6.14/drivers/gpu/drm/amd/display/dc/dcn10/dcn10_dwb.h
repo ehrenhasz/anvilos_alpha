@@ -1,53 +1,20 @@
-/* Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef __DC_DWBC_DCN10_H__
 #define __DC_DWBC_DCN10_H__
-
-/* DCN */
 #define BASE_INNER(seg) \
 	DCE_BASE__INST0_SEG ## seg
-
 #define BASE(seg) \
 	BASE_INNER(seg)
-
 #define SR(reg_name)\
 		.reg_name = BASE(mm ## reg_name ## _BASE_IDX) +  \
 					mm ## reg_name
-
 #define SRI(reg_name, block, id)\
 	.reg_name = BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 					mm ## block ## id ## _ ## reg_name
-
-
 #define SRII(reg_name, block, id)\
 	.reg_name[id] = BASE(mm ## block ## id ## _ ## reg_name ## _BASE_IDX) + \
 					mm ## block ## id ## _ ## reg_name
-
 #define SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
-
 #define DWBC_COMMON_REG_LIST_DCN1_0(inst) \
 	SRI(WB_ENABLE, CNV, inst),\
 	SRI(WB_EC_CONFIG, CNV, inst),\
@@ -80,7 +47,6 @@
 	SRI(MCIF_WB_WARM_UP_CNTL, MCIF_WB, inst),\
 	SRI(MCIF_WB_BUF_LUMA_SIZE, MCIF_WB, inst),\
 	SRI(MCIF_WB_BUF_CHROMA_SIZE, MCIF_WB, inst)
-
 #define DWBC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh) \
 	SF(CNV0_WB_ENABLE, WB_ENABLE, mask_sh),\
 	SF(CNV0_WB_EC_CONFIG, DISPCLK_R_WB_GATE_DIS, mask_sh),\
@@ -144,7 +110,6 @@
 	SF(MCIF_WB0_MCIF_WB_WARM_UP_CNTL, MCIF_WB_PITCH_SIZE_WARMUP, mask_sh),\
 	SF(MCIF_WB0_MCIF_WB_BUF_LUMA_SIZE, MCIF_WB_BUF_LUMA_SIZE, mask_sh),\
 	SF(MCIF_WB0_MCIF_WB_BUF_CHROMA_SIZE, MCIF_WB_BUF_CHROMA_SIZE, mask_sh)
-
 #define DWBC_REG_FIELD_LIST(type) \
 	type WB_ENABLE;\
 	type DISPCLK_R_WB_GATE_DIS;\
@@ -210,7 +175,6 @@
 	type MCIF_WB_PITCH_SIZE_WARMUP;\
 	type MCIF_WB_BUF_LUMA_SIZE;\
 	type MCIF_WB_BUF_CHROMA_SIZE;\
-
 struct dcn10_dwbc_registers {
 	uint32_t WB_ENABLE;
 	uint32_t WB_EC_CONFIG;
@@ -256,12 +220,10 @@ struct dcn10_dwbc {
 	const struct dcn10_dwbc_shift *dwbc_shift;
 	const struct dcn10_dwbc_mask *dwbc_mask;
 };
-
 void dcn10_dwbc_construct(struct dcn10_dwbc *dwbc10,
 		struct dc_context *ctx,
 		const struct dcn10_dwbc_registers *dwbc_regs,
 		const struct dcn10_dwbc_shift *dwbc_shift,
 		const struct dcn10_dwbc_mask *dwbc_mask,
 		int inst);
-
 #endif

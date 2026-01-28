@@ -1,59 +1,9 @@
-/*
-   3w-9xxx.h -- 3ware 9000 Storage Controller device driver for Linux.
-
-   Written By: Adam Radford <aradford@gmail.com>
-   Modifications By: Tom Couch
-
-   Copyright (C) 2004-2009 Applied Micro Circuits Corporation.
-   Copyright (C) 2010 LSI Corporation.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; version 2 of the License.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   NO WARRANTY
-   THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
-   LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
-   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
-   solely responsible for determining the appropriateness of using and
-   distributing the Program and assumes all risks associated with its
-   exercise of rights under this Agreement, including but not limited to
-   the risks and costs of program errors, damage to or loss of data,
-   programs or equipment, and unavailability or interruption of operations.
-
-   DISCLAIMER OF LIABILITY
-   NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
-   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-   DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
-   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-   TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
-   USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
-   HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-   Bugs/Comments/Suggestions should be mailed to:
-   aradford@gmail.com
-*/
-
 #ifndef _3W_9XXX_H
 #define _3W_9XXX_H
-
-/* AEN string type */
 typedef struct TAG_twa_message_type {
 	unsigned int   code;
 	char           *text;
 } twa_message_type;
-
-/* AEN strings */
 static twa_message_type twa_aen_table[] = {
 	{0x0000, "AEN queue empty"},
 	{0x0001, "Controller reset occurred"},
@@ -127,14 +77,10 @@ static twa_message_type twa_aen_table[] = {
 	{0x00FF, "AEN queue is full"},
 	{0xFFFFFFFF, (char*) 0}
 };
-
-/* AEN severity table */
 static char *twa_aen_severity_table[] =
 {
 	"None", "ERROR", "WARNING", "INFO", "DEBUG", (char*) 0
 };
-
-/* Error strings */
 static twa_message_type twa_error_table[] = {
 	{0x0100, "SGL entry contains zero data"},
 	{0x0101, "Invalid command opcode"},
@@ -250,8 +196,6 @@ static twa_message_type twa_error_table[] = {
 	{0x0260, "SMART attribute exceeded threshold"},
 	{0xFFFFFFFF, (char*) 0}
 };
-
-/* Control register bit definitions */
 #define TW_CONTROL_CLEAR_HOST_INTERRUPT	       0x00080000
 #define TW_CONTROL_CLEAR_ATTENTION_INTERRUPT   0x00040000
 #define TW_CONTROL_MASK_COMMAND_INTERRUPT      0x00020000
@@ -266,8 +210,6 @@ static twa_message_type twa_error_table[] = {
 #define TW_CONTROL_CLEAR_PARITY_ERROR	       0x00800000
 #define TW_CONTROL_CLEAR_QUEUE_ERROR	       0x00400000
 #define TW_CONTROL_CLEAR_PCI_ABORT	       0x00100000
-
-/* Status register bit definitions */
 #define TW_STATUS_MAJOR_VERSION_MASK	       0xF0000000
 #define TW_STATUS_MINOR_VERSION_MASK	       0x0F000000
 #define TW_STATUS_PCI_PARITY_ERROR	       0x00800000
@@ -285,20 +227,14 @@ static twa_message_type twa_error_table[] = {
 #define TW_STATUS_EXPECTED_BITS		       0x00002000
 #define TW_STATUS_UNEXPECTED_BITS	       0x00F00000
 #define TW_STATUS_VALID_INTERRUPT	       0x00DF0000
-
-/* PCI related defines */
 #define TW_PCI_CLEAR_PARITY_ERRORS 0xc100
 #define TW_PCI_CLEAR_PCI_ABORT     0x2000
-
-/* Command packet opcodes used by the driver */
 #define TW_OP_INIT_CONNECTION	0x1
 #define TW_OP_GET_PARAM		0x12
 #define TW_OP_SET_PARAM		0x13
 #define TW_OP_EXECUTE_SCSI	0x10
 #define TW_OP_DOWNLOAD_FIRMWARE 0x16
 #define TW_OP_RESET		0x1C
-
-/* Asynchronous Event Notification (AEN) codes used by the driver */
 #define TW_AEN_QUEUE_EMPTY	0x0000
 #define TW_AEN_SOFT_RESET	0x0001
 #define TW_AEN_SYNC_TIME_WITH_HOST 0x031
@@ -306,25 +242,19 @@ static twa_message_type twa_error_table[] = {
 #define TW_AEN_SEVERITY_DEBUG    0x4
 #define TW_AEN_NOT_RETRIEVED 0x1
 #define TW_AEN_RETRIEVED 0x2
-
-/* Command state defines */
-#define TW_S_INITIAL   0x1  /* Initial state */
-#define TW_S_STARTED   0x2  /* Id in use */
-#define TW_S_POSTED    0x4  /* Posted to the controller */
-#define TW_S_PENDING   0x8  /* Waiting to be posted in isr */
-#define TW_S_COMPLETED 0x10 /* Completed by isr */
-#define TW_S_FINISHED  0x20 /* I/O completely done */
-
-/* Compatibility defines */
+#define TW_S_INITIAL   0x1   
+#define TW_S_STARTED   0x2   
+#define TW_S_POSTED    0x4   
+#define TW_S_PENDING   0x8   
+#define TW_S_COMPLETED 0x10  
+#define TW_S_FINISHED  0x20  
 #define TW_9000_ARCH_ID 0x5
 #define TW_CURRENT_DRIVER_SRL 35
 #define TW_CURRENT_DRIVER_BUILD 0
 #define TW_CURRENT_DRIVER_BRANCH 0
-
-/* Misc defines */
 #define TW_9550SX_DRAIN_COMPLETED	      0xFFFF
 #define TW_SECTOR_SIZE			      512
-#define TW_ALIGNMENT_9000		      4  /* 4 bytes */
+#define TW_ALIGNMENT_9000		      4   
 #define TW_ALIGNMENT_9000_SGL		      0x3
 #define TW_MAX_UNITS			      16
 #define TW_MAX_UNITS_9650SE		      32
@@ -351,13 +281,13 @@ static twa_message_type twa_error_table[] = {
 #define TW_IN_ATTENTION_LOOP		      4
 #define TW_MAX_SECTORS			      256
 #define TW_AEN_WAIT_TIME		      1000
-#define TW_IOCTL_WAIT_TIME		      (1 * HZ) /* 1 second */
+#define TW_IOCTL_WAIT_TIME		      (1 * HZ)  
 #define TW_MAX_CDB_LEN			      16
 #define TW_ISR_DONT_COMPLETE		      2
 #define TW_ISR_DONT_RESULT		      3
-#define TW_IOCTL_CHRDEV_TIMEOUT		      60 /* 60 seconds */
+#define TW_IOCTL_CHRDEV_TIMEOUT		      60  
 #define TW_IOCTL_CHRDEV_FREE		      -1
-#define TW_COMMAND_OFFSET		      128 /* 128 bytes */
+#define TW_COMMAND_OFFSET		      128  
 #define TW_VERSION_TABLE		      0x0402
 #define TW_TIMEKEEP_TABLE		      0x040A
 #define TW_INFORMATION_TABLE		      0x0403
@@ -367,7 +297,7 @@ static twa_message_type twa_error_table[] = {
 #define TW_PARAM_BIOSVER_LENGTH		      16
 #define TW_PARAM_PORTCOUNT		      3
 #define TW_PARAM_PORTCOUNT_LENGTH	      1
-#define TW_MIN_SGL_LENGTH		      0x200 /* 512 bytes */
+#define TW_MIN_SGL_LENGTH		      0x200  
 #define TW_MAX_SENSE_LENGTH		      256
 #define TW_EVENT_SOURCE_AEN		      0x1000
 #define TW_EVENT_SOURCE_COMMAND		      0x1001
@@ -381,18 +311,18 @@ static twa_message_type twa_error_table[] = {
 #define TW_IOCTL_GET_LOCK		      0x106
 #define TW_IOCTL_RELEASE_LOCK		      0x107
 #define TW_IOCTL_FIRMWARE_PASS_THROUGH	      0x108
-#define TW_IOCTL_ERROR_STATUS_NOT_LOCKED      0x1001 // Not locked
-#define TW_IOCTL_ERROR_STATUS_LOCKED	      0x1002 // Already locked
-#define TW_IOCTL_ERROR_STATUS_NO_MORE_EVENTS  0x1003 // No more events
-#define TW_IOCTL_ERROR_STATUS_AEN_CLOBBER     0x1004 // AEN clobber occurred
-#define TW_IOCTL_ERROR_OS_EFAULT	      -EFAULT // Bad address
-#define TW_IOCTL_ERROR_OS_EINTR		      -EINTR  // Interrupted system call
-#define TW_IOCTL_ERROR_OS_EINVAL	      -EINVAL // Invalid argument
-#define TW_IOCTL_ERROR_OS_ENOMEM	      -ENOMEM // Out of memory
-#define TW_IOCTL_ERROR_OS_ERESTARTSYS	      -ERESTARTSYS // Restart system call
-#define TW_IOCTL_ERROR_OS_EIO		      -EIO // I/O error
-#define TW_IOCTL_ERROR_OS_ENOTTY	      -ENOTTY // Not a typewriter
-#define TW_IOCTL_ERROR_OS_ENODEV	      -ENODEV // No such device
+#define TW_IOCTL_ERROR_STATUS_NOT_LOCKED      0x1001  
+#define TW_IOCTL_ERROR_STATUS_LOCKED	      0x1002  
+#define TW_IOCTL_ERROR_STATUS_NO_MORE_EVENTS  0x1003  
+#define TW_IOCTL_ERROR_STATUS_AEN_CLOBBER     0x1004  
+#define TW_IOCTL_ERROR_OS_EFAULT	      -EFAULT  
+#define TW_IOCTL_ERROR_OS_EINTR		      -EINTR   
+#define TW_IOCTL_ERROR_OS_EINVAL	      -EINVAL  
+#define TW_IOCTL_ERROR_OS_ENOMEM	      -ENOMEM  
+#define TW_IOCTL_ERROR_OS_ERESTARTSYS	      -ERESTARTSYS  
+#define TW_IOCTL_ERROR_OS_EIO		      -EIO  
+#define TW_IOCTL_ERROR_OS_ENOTTY	      -ENOTTY  
+#define TW_IOCTL_ERROR_OS_ENODEV	      -ENODEV  
 #define TW_ALLOCATION_LENGTH		      128
 #define TW_SENSE_DATA_LENGTH		      18
 #define TW_STATUS_CHECK_CONDITION	      2
@@ -416,29 +346,15 @@ static twa_message_type twa_error_table[] = {
 #ifndef PCI_DEVICE_ID_3WARE_9690SA
 #define PCI_DEVICE_ID_3WARE_9690SA 0x1005
 #endif
-
-/* Bitmask macros to eliminate bitfields */
-
-/* opcode: 5, reserved: 3 */
 #define TW_OPRES_IN(x,y) ((x << 5) | (y & 0x1f))
 #define TW_OP_OUT(x) (x & 0x1f)
-
-/* opcode: 5, sgloffset: 3 */
 #define TW_OPSGL_IN(x,y) ((x << 5) | (y & 0x1f))
 #define TW_SGL_OUT(x) ((x >> 5) & 0x7)
-
-/* severity: 3, reserved: 5 */
 #define TW_SEV_OUT(x) (x & 0x7)
-
-/* reserved_1: 4, response_id: 8, reserved_2: 20 */
 #define TW_RESID_OUT(x) ((x >> 4) & 0xff)
-
-/* request_id: 12, lun: 4 */
 #define TW_REQ_LUN_IN(lun, request_id)			\
 	cpu_to_le16(((lun << 12) & 0xf000) | (request_id & 0xfff))
 #define TW_LUN_OUT(lun) ((le16_to_cpu(lun) >> 12) & 0xf)
-
-/* Macros */
 #define TW_CONTROL_REG_ADDR(x) (x->base_addr)
 #define TW_STATUS_REG_ADDR(x) ((unsigned char __iomem *)x->base_addr + 0x4)
 #define TW_COMMAND_QUEUE_REG_ADDR(x) \
@@ -483,7 +399,6 @@ printk(KERN_WARNING "3w-9xxx: ERROR: (0x%02X:0x%04X): %s.\n",a,b,c); \
 #define TW_APACHE_MAX_SGL_LENGTH (sizeof(dma_addr_t) > 4 ? 72 : 109)
 #define TW_ESCALADE_MAX_SGL_LENGTH (sizeof(dma_addr_t) > 4 ? 41 : 62)
 #define TW_PADDING_LENGTH (sizeof(dma_addr_t) > 4 ? 8 : 0)
-
 #if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
 typedef __le64 twa_addr_t;
 #define TW_CPU_TO_SGL(x) cpu_to_le64(x)
@@ -491,20 +406,15 @@ typedef __le64 twa_addr_t;
 typedef __le32 twa_addr_t;
 #define TW_CPU_TO_SGL(x) cpu_to_le32(x)
 #endif
-
-/* Scatter Gather List Entry */
 typedef struct TAG_TW_SG_Entry {
 	twa_addr_t	address;
 	__le32		length;
 } __packed TW_SG_Entry;
-
-/* Command Packet */
 typedef struct TW_Command {
 	u8	opcode__sgloffset;
 	u8	size;
 	u8	request_id;
 	u8	unit__hostid;
-	/* Second DWORD */
 	u8	status;
 	u8	flags;
 	union {
@@ -524,8 +434,6 @@ typedef struct TW_Command {
 		} param;
 	} byte8_offset;
 } TW_Command;
-
-/* Command Packet for 9000+ controllers */
 typedef struct TAG_TW_Command_Apache {
 	u8		opcode__reserved;
 	u8		unit;
@@ -537,8 +445,6 @@ typedef struct TAG_TW_Command_Apache {
 	TW_SG_Entry	sg_list[TW_APACHE_MAX_SGL_LENGTH];
 	u8		padding[TW_PADDING_LENGTH];
 } TW_Command_Apache;
-
-/* New command packet header */
 typedef struct TAG_TW_Command_Apache_Header {
 	unsigned char sense_data[TW_SENSE_DATA_LENGTH];
 	struct {
@@ -554,8 +460,6 @@ typedef struct TAG_TW_Command_Apache_Header {
 		u8	size_sense;
 	} header_desc;
 } TW_Command_Apache_Header;
-
-/* This struct is a union of the 2 command packets */
 typedef struct TAG_TW_Command_Full {
 	TW_Command_Apache_Header header;
 	union {
@@ -563,8 +467,6 @@ typedef struct TAG_TW_Command_Full {
 		TW_Command_Apache newcommand;
 	} command;
 } TW_Command_Full;
-
-/* Initconnection structure */
 typedef struct TAG_TW_Initconnect {
 	u8	opcode__reserved;
 	u8	size;
@@ -580,8 +482,6 @@ typedef struct TAG_TW_Initconnect {
 	__le16	fw_build;
 	__le32	result;
 } TW_Initconnect;
-
-/* Event info structure */
 typedef struct TAG_TW_Event
 {
 	unsigned int sequence_id;
@@ -593,7 +493,6 @@ typedef struct TAG_TW_Event
 	unsigned char parameter_len;
 	unsigned char parameter_data[98];
 } TW_Event;
-
 typedef struct TAG_TW_Ioctl_Driver_Command {
 	unsigned int control_code;
 	unsigned int status;
@@ -602,22 +501,17 @@ typedef struct TAG_TW_Ioctl_Driver_Command {
 	unsigned int os_specific;
 	unsigned int buffer_length;
 } TW_Ioctl_Driver_Command;
-
 typedef struct TAG_TW_Ioctl_Apache {
 	TW_Ioctl_Driver_Command driver_command;
 	char padding[488];
 	TW_Command_Full firmware_command;
 	char data_buffer[];
 } TW_Ioctl_Buf_Apache;
-
-/* Lock structure for ioctl get/release lock */
 typedef struct TAG_TW_Lock {
 	unsigned long timeout_msec;
 	unsigned long time_remaining_msec;
 	unsigned long force_flag;
 } TW_Lock;
-
-/* GetParam descriptor */
 typedef struct {
 	__le16	table_id;
 	__le16	parameter_id;
@@ -625,14 +519,10 @@ typedef struct {
 	__le16  actual_parameter_size_bytes;
 	u8	data[];
 } TW_Param_Apache, *PTW_Param_Apache;
-
-/* Response queue */
 typedef union TAG_TW_Response_Queue {
 	u32 response_id;
 	u32 value;
 } TW_Response_Queue;
-
-/* Compatibility information structure */
 typedef struct TAG_TW_Compatibility_Info
 {
 	char driver_version[32];
@@ -649,7 +539,6 @@ typedef struct TAG_TW_Compatibility_Info
 	unsigned short fw_on_ctlr_branch;
 	unsigned short fw_on_ctlr_build;
 } TW_Compatibility_Info;
-
 typedef struct TAG_TW_Device_Extension {
 	u32			__iomem *base_addr;
 	unsigned long		*generic_buffer_virt[TW_Q_LENGTH];
@@ -690,6 +579,4 @@ typedef struct TAG_TW_Device_Extension {
 	char			aen_clobber;
 	TW_Compatibility_Info	tw_compat_info;
 } TW_Device_Extension;
-
-#endif /* _3W_9XXX_H */
-
+#endif  

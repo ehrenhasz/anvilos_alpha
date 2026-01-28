@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * syscalls.h - Linux syscall interfaces (non-arch-specific)
- *
- * Copyright (c) 2004 Randy Dunlap
- * Copyright (c) 2004 Open Source Development Labs
- */
-
 #ifndef _LINUX_SYSCALLS_H
 #define _LINUX_SYSCALLS_H
-
 struct __aio_sigset;
 struct epoll_event;
 struct iattr;
@@ -74,7 +65,6 @@ struct landlock_ruleset_attr;
 enum landlock_rule_type;
 struct cachestat_range;
 struct cachestat;
-
 #include <linux/types.h>
 #include <linux/aio_abi.h>
 #include <linux/capability.h>
@@ -88,27 +78,9 @@ struct cachestat;
 #include <linux/key.h>
 #include <linux/personality.h>
 #include <trace/syscall.h>
-
 #ifdef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
-/*
- * It may be useful for an architecture to override the definitions of the
- * SYSCALL_DEFINE0() and __SYSCALL_DEFINEx() macros, in particular to use a
- * different calling convention for syscalls. To allow for that, the prototypes
- * for the sys_*() functions below will *not* be included if
- * CONFIG_ARCH_HAS_SYSCALL_WRAPPER is enabled.
- */
 #include <asm/syscall_wrapper.h>
-#endif /* CONFIG_ARCH_HAS_SYSCALL_WRAPPER */
-
-/*
- * __MAP - apply a macro to syscall arguments
- * __MAP(n, m, t1, a1, t2, a2, ..., tn, an) will expand to
- *    m(t1, a1), m(t2, a2), ..., m(tn, an)
- * The first argument must be equal to the amount of type/name
- * pairs given.  Note that this list of pairs (i.e. the arguments
- * of __MAP starting at the third one) is in the same format as
- * for SYSCALL_DEFINE<n>/COMPAT_SYSCALL_DEFINE<n>
- */
+#endif  
 #define __MAP0(m,...)
 #define __MAP1(m,t,a,...) m(t,a)
 #define __MAP2(m,t,a,...) m(t,a), __MAP1(m,__VA_ARGS__)
@@ -117,7 +89,6 @@ struct cachestat;
 #define __MAP5(m,t,a,...) m(t,a), __MAP4(m,__VA_ARGS__)
 #define __MAP6(m,t,a,...) m(t,a), __MAP5(m,__VA_ARGS__)
 #define __MAP(n,...) __MAP##n(__VA_ARGS__)
-
 #define __SC_DECL(t, a)	t a
 #define __TYPE_AS(t, v)	__same_type((__force t)0, v)
 #define __TYPE_IS_L(t)	(__TYPE_AS(t, 0L))
@@ -127,16 +98,13 @@ struct cachestat;
 #define __SC_CAST(t, a)	(__force t) a
 #define __SC_ARGS(t, a)	a
 #define __SC_TEST(t, a) (void)BUILD_BUG_ON_ZERO(!__TYPE_IS_LL(t) && sizeof(t) > sizeof(long))
-
 #ifdef CONFIG_FTRACE_SYSCALLS
 #define __SC_STR_ADECL(t, a)	#a
 #define __SC_STR_TDECL(t, a)	#t
-
 extern struct trace_event_class event_class_syscall_enter;
 extern struct trace_event_class event_class_syscall_exit;
 extern struct trace_event_functions enter_syscall_print_funcs;
 extern struct trace_event_functions exit_syscall_print_funcs;
-
 #define SYSCALL_TRACE_ENTER_EVENT(sname)				\
 	static struct syscall_metadata __syscall_meta_##sname;		\
 	static struct trace_event_call __used				\
@@ -152,7 +120,6 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 	static struct trace_event_call __used				\
 	  __section("_ftrace_events")					\
 	 *__event_enter_##sname = &event_enter_##sname;
-
 #define SYSCALL_TRACE_EXIT_EVENT(sname)					\
 	static struct syscall_metadata __syscall_meta_##sname;		\
 	static struct trace_event_call __used				\
@@ -168,7 +135,6 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 	static struct trace_event_call __used				\
 	  __section("_ftrace_events")					\
 	*__event_exit_##sname = &event_exit_##sname;
-
 #define SYSCALL_METADATA(sname, nb, ...)			\
 	static const char *types_##sname[] = {			\
 		__MAP(nb,__SC_STR_TDECL,__VA_ARGS__)		\
@@ -181,7 +147,7 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 	static struct syscall_metadata __used			\
 	  __syscall_meta_##sname = {				\
 		.name 		= "sys"#sname,			\
-		.syscall_nr	= -1,	/* Filled in at boot */	\
+		.syscall_nr	= -1,	 	\
 		.nb_args 	= nb,				\
 		.types		= nb ? types_##sname : NULL,	\
 		.args		= nb ? args_##sname : NULL,	\
@@ -192,50 +158,36 @@ extern struct trace_event_functions exit_syscall_print_funcs;
 	static struct syscall_metadata __used			\
 	  __section("__syscalls_metadata")			\
 	 *__p_syscall_meta_##sname = &__syscall_meta_##sname;
-
 static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
 {
 	return tp_event->class == &event_class_syscall_enter ||
 	       tp_event->class == &event_class_syscall_exit;
 }
-
 #else
 #define SYSCALL_METADATA(sname, nb, ...)
-
 static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
 {
 	return 0;
 }
 #endif
-
 #ifndef SYSCALL_DEFINE0
 #define SYSCALL_DEFINE0(sname)					\
 	SYSCALL_METADATA(_##sname, 0);				\
 	asmlinkage long sys_##sname(void);			\
 	ALLOW_ERROR_INJECTION(sys_##sname, ERRNO);		\
 	asmlinkage long sys_##sname(void)
-#endif /* SYSCALL_DEFINE0 */
-
+#endif  
 #define SYSCALL_DEFINE1(name, ...) SYSCALL_DEFINEx(1, _##name, __VA_ARGS__)
 #define SYSCALL_DEFINE2(name, ...) SYSCALL_DEFINEx(2, _##name, __VA_ARGS__)
 #define SYSCALL_DEFINE3(name, ...) SYSCALL_DEFINEx(3, _##name, __VA_ARGS__)
 #define SYSCALL_DEFINE4(name, ...) SYSCALL_DEFINEx(4, _##name, __VA_ARGS__)
 #define SYSCALL_DEFINE5(name, ...) SYSCALL_DEFINEx(5, _##name, __VA_ARGS__)
 #define SYSCALL_DEFINE6(name, ...) SYSCALL_DEFINEx(6, _##name, __VA_ARGS__)
-
 #define SYSCALL_DEFINE_MAXARGS	6
-
 #define SYSCALL_DEFINEx(x, sname, ...)				\
 	SYSCALL_METADATA(sname, x, __VA_ARGS__)			\
 	__SYSCALL_DEFINEx(x, sname, __VA_ARGS__)
-
 #define __PROTECT(...) asmlinkage_protect(__VA_ARGS__)
-
-/*
- * The asmlinkage stub is aliased to a function named __se_sys_*() which
- * sign-extends 32-bit ints to longs whenever needed. The actual work is
- * done within __do_sys_*().
- */
 #ifndef __SYSCALL_DEFINEx
 #define __SYSCALL_DEFINEx(x, name, ...)					\
 	__diag_push();							\
@@ -255,16 +207,13 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
 	}								\
 	__diag_pop();							\
 	static inline long __do_sys##name(__MAP(x,__SC_DECL,__VA_ARGS__))
-#endif /* __SYSCALL_DEFINEx */
-
-/* For split 64-bit arguments on 32-bit architectures */
+#endif  
 #ifdef __LITTLE_ENDIAN
 #define SC_ARG64(name) u32, name##_lo, u32, name##_hi
 #else
 #define SC_ARG64(name) u32, name##_hi, u32, name##_lo
 #endif
 #define SC_VAL64(type, name) ((type) name##_hi << 32 | name##_lo)
-
 #ifdef CONFIG_COMPAT
 #define SYSCALL32_DEFINE0 COMPAT_SYSCALL_DEFINE0
 #define SYSCALL32_DEFINE1 COMPAT_SYSCALL_DEFINE1
@@ -282,20 +231,6 @@ static inline int is_syscall_trace_event(struct trace_event_call *tp_event)
 #define SYSCALL32_DEFINE5 SYSCALL_DEFINE5
 #define SYSCALL32_DEFINE6 SYSCALL_DEFINE6
 #endif
-
-/*
- * These syscall function prototypes are kept in the same order as
- * include/uapi/asm-generic/unistd.h. Architecture specific entries go below,
- * followed by deprecated or obsolete system calls.
- *
- * Please note that these prototypes here are only provided for information
- * purposes, for static analysis, and for linking from the syscall table.
- * These functions should not be called elsewhere from kernel code.
- *
- * As the syscall calling convention may be different from the default
- * for architectures overriding the syscall calling convention, do not
- * include the prototypes if CONFIG_ARCH_HAS_SYSCALL_WRAPPER is enabled.
- */
 #ifndef CONFIG_ARCH_HAS_SYSCALL_WRAPPER
 asmlinkage long sys_io_setup(unsigned nr_reqs, aio_context_t __user *ctx);
 asmlinkage long sys_io_destroy(aio_context_t ctx);
@@ -545,7 +480,6 @@ asmlinkage long sys_get_robust_list(int pid,
 				    size_t __user *len_ptr);
 asmlinkage long sys_set_robust_list(struct robust_list_head __user *head,
 				    size_t len);
-
 asmlinkage long sys_futex_waitv(struct futex_waitv *waiters,
 				unsigned int nr_futexes, unsigned int flags,
 				struct __kernel_timespec __user *timeout, clockid_t clockid);
@@ -775,15 +709,11 @@ asmlinkage long sys_clone(unsigned long, unsigned long, int __user *,
 	       int __user *, unsigned long);
 #endif
 #endif
-
 asmlinkage long sys_clone3(struct clone_args __user *uargs, size_t size);
-
 asmlinkage long sys_execve(const char __user *filename,
 		const char __user *const __user *argv,
 		const char __user *const __user *envp);
 asmlinkage long sys_fadvise64_64(int fd, loff_t offset, loff_t len, int advice);
-
-/* CONFIG_MMU only */
 asmlinkage long sys_swapon(const char __user *specialfile, int swap_flags);
 asmlinkage long sys_swapoff(const char __user *specialfile);
 asmlinkage long sys_mprotect(unsigned long start, size_t len,
@@ -940,15 +870,7 @@ asmlinkage long sys_cachestat(unsigned int fd,
 		struct cachestat_range __user *cstat_range,
 		struct cachestat __user *cstat, unsigned int flags);
 asmlinkage long sys_map_shadow_stack(unsigned long addr, unsigned long size, unsigned int flags);
-
-/*
- * Architecture-specific system calls
- */
-
-/* x86 */
 asmlinkage long sys_ioperm(unsigned long from, unsigned long num, int on);
-
-/* pciconfig: alpha, arm, arm64, ia64, sparc */
 asmlinkage long sys_pciconfig_read(unsigned long bus, unsigned long dfn,
 				unsigned long off, unsigned long len,
 				void __user *buf);
@@ -956,20 +878,10 @@ asmlinkage long sys_pciconfig_write(unsigned long bus, unsigned long dfn,
 				unsigned long off, unsigned long len,
 				void __user *buf);
 asmlinkage long sys_pciconfig_iobase(long which, unsigned long bus, unsigned long devfn);
-
-/* powerpc */
 asmlinkage long sys_spu_run(int fd, __u32 __user *unpc,
 				 __u32 __user *ustatus);
 asmlinkage long sys_spu_create(const char __user *name,
 		unsigned int flags, umode_t mode, int fd);
-
-
-/*
- * Deprecated system calls which are still defined in
- * include/uapi/asm-generic/unistd.h and wanted by >= 1 arch
- */
-
-/* __ARCH_WANT_SYSCALL_NO_AT */
 asmlinkage long sys_open(const char __user *filename,
 				int flags, umode_t mode);
 asmlinkage long sys_link(const char __user *oldname,
@@ -994,16 +906,12 @@ asmlinkage long sys_stat64(const char __user *filename,
 asmlinkage long sys_lstat64(const char __user *filename,
 				struct stat64 __user *statbuf);
 #endif
-
-/* __ARCH_WANT_SYSCALL_NO_FLAGS */
 asmlinkage long sys_pipe(int __user *fildes);
 asmlinkage long sys_dup2(unsigned int oldfd, unsigned int newfd);
 asmlinkage long sys_epoll_create(int size);
 asmlinkage long sys_inotify_init(void);
 asmlinkage long sys_eventfd(unsigned int count);
 asmlinkage long sys_signalfd(int ufd, sigset_t __user *user_mask, size_t sizemask);
-
-/* __ARCH_WANT_SYSCALL_OFF_T */
 asmlinkage long sys_sendfile(int out_fd, int in_fd,
 			     off_t __user *offset, size_t count);
 asmlinkage long sys_newstat(const char __user *filename,
@@ -1011,8 +919,6 @@ asmlinkage long sys_newstat(const char __user *filename,
 asmlinkage long sys_newlstat(const char __user *filename,
 				struct stat __user *statbuf);
 asmlinkage long sys_fadvise64(int fd, loff_t offset, size_t len, int advice);
-
-/* __ARCH_WANT_SYSCALL_DEPRECATED */
 asmlinkage long sys_alarm(unsigned int seconds);
 asmlinkage long sys_getpgrp(void);
 asmlinkage long sys_pause(void);
@@ -1052,23 +958,17 @@ asmlinkage long sys_uselib(const char __user *library);
 asmlinkage long sys_sysfs(int option,
 				unsigned long arg1, unsigned long arg2);
 asmlinkage long sys_fork(void);
-
-/* obsolete */
 asmlinkage long sys_stime(__kernel_old_time_t __user *tptr);
 asmlinkage long sys_stime32(old_time32_t __user *tptr);
-
-/* obsolete */
 asmlinkage long sys_sigpending(old_sigset_t __user *uset);
 asmlinkage long sys_sigprocmask(int how, old_sigset_t __user *set,
 				old_sigset_t __user *oset);
 #ifdef CONFIG_OLD_SIGSUSPEND
 asmlinkage long sys_sigsuspend(old_sigset_t mask);
 #endif
-
 #ifdef CONFIG_OLD_SIGSUSPEND3
 asmlinkage long sys_sigsuspend(int unused1, int unused2, old_sigset_t mask);
 #endif
-
 #ifdef CONFIG_OLD_SIGACTION
 asmlinkage long sys_sigaction(int, const struct old_sigaction __user *,
 				struct old_sigaction __user *);
@@ -1076,20 +976,12 @@ asmlinkage long sys_sigaction(int, const struct old_sigaction __user *,
 asmlinkage long sys_sgetmask(void);
 asmlinkage long sys_ssetmask(int newmask);
 asmlinkage long sys_signal(int sig, __sighandler_t handler);
-
-/* obsolete */
 asmlinkage long sys_nice(int increment);
-
-/* obsolete */
 asmlinkage long sys_kexec_file_load(int kernel_fd, int initrd_fd,
 				    unsigned long cmdline_len,
 				    const char __user *cmdline_ptr,
 				    unsigned long flags);
-
-/* obsolete */
 asmlinkage long sys_waitpid(pid_t pid, int __user *stat_addr, int options);
-
-/* obsolete */
 #ifdef CONFIG_HAVE_UID16
 asmlinkage long sys_chown16(const char __user *filename,
 				old_uid_t user, old_gid_t group);
@@ -1115,11 +1007,7 @@ asmlinkage long sys_geteuid16(void);
 asmlinkage long sys_getgid16(void);
 asmlinkage long sys_getegid16(void);
 #endif
-
-/* obsolete */
 asmlinkage long sys_socketcall(int call, unsigned long __user *args);
-
-/* obsolete */
 asmlinkage long sys_stat(const char __user *filename,
 			struct __old_kernel_stat __user *statbuf);
 asmlinkage long sys_lstat(const char __user *filename,
@@ -1128,47 +1016,23 @@ asmlinkage long sys_fstat(unsigned int fd,
 			struct __old_kernel_stat __user *statbuf);
 asmlinkage long sys_readlink(const char __user *path,
 				char __user *buf, int bufsiz);
-
-/* obsolete */
 asmlinkage long sys_old_select(struct sel_arg_struct __user *arg);
-
-/* obsolete */
 asmlinkage long sys_old_readdir(unsigned int, struct old_linux_dirent __user *, unsigned int);
-
-/* obsolete */
 asmlinkage long sys_gethostname(char __user *name, int len);
 asmlinkage long sys_uname(struct old_utsname __user *);
 asmlinkage long sys_olduname(struct oldold_utsname __user *);
 #ifdef __ARCH_WANT_SYS_OLD_GETRLIMIT
 asmlinkage long sys_old_getrlimit(unsigned int resource, struct rlimit __user *rlim);
 #endif
-
-/* obsolete */
 asmlinkage long sys_ipc(unsigned int call, int first, unsigned long second,
 		unsigned long third, void __user *ptr, long fifth);
-
-/* obsolete */
 asmlinkage long sys_mmap_pgoff(unsigned long addr, unsigned long len,
 			unsigned long prot, unsigned long flags,
 			unsigned long fd, unsigned long pgoff);
 asmlinkage long sys_old_mmap(struct mmap_arg_struct __user *arg);
-
-
-/*
- * Not a real system call, but a placeholder for syscalls which are
- * not implemented -- see kernel/sys_ni.c
- */
 asmlinkage long sys_ni_syscall(void);
-
-#endif /* CONFIG_ARCH_HAS_SYSCALL_WRAPPER */
-
+#endif  
 asmlinkage long sys_ni_posix_timers(void);
-
-/*
- * Kernel code should not call syscalls (i.e., sys_xyzyyz()) directly.
- * Instead, use one of the functions which work equivalently, such as
- * the ksys_xyzyyz() functions prototyped below.
- */
 ssize_t ksys_write(unsigned int fd, const char __user *buf, size_t count);
 int ksys_fchown(unsigned int fd, uid_t user, gid_t group);
 ssize_t ksys_read(unsigned int fd, char __user *buf, size_t count);
@@ -1199,52 +1063,36 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
 	unsigned long third, void __user * ptr, long fifth);
 int compat_ksys_ipc(u32 call, int first, int second,
 	u32 third, u32 ptr, u32 fifth);
-
-/*
- * The following kernel syscall equivalents are just wrappers to fs-internal
- * functions. Therefore, provide stubs to be inlined at the callsites.
- */
 extern int do_fchownat(int dfd, const char __user *filename, uid_t user,
 		       gid_t group, int flag);
-
 static inline long ksys_chown(const char __user *filename, uid_t user,
 			      gid_t group)
 {
 	return do_fchownat(AT_FDCWD, filename, user, group, 0);
 }
-
 static inline long ksys_lchown(const char __user *filename, uid_t user,
 			       gid_t group)
 {
 	return do_fchownat(AT_FDCWD, filename, user, group,
 			     AT_SYMLINK_NOFOLLOW);
 }
-
 extern long do_sys_ftruncate(unsigned int fd, loff_t length, int small);
-
 static inline long ksys_ftruncate(unsigned int fd, loff_t length)
 {
 	return do_sys_ftruncate(fd, length, 1);
 }
-
 extern long do_sys_truncate(const char __user *pathname, loff_t length);
-
 static inline long ksys_truncate(const char __user *pathname, loff_t length)
 {
 	return do_sys_truncate(pathname, length);
 }
-
 static inline unsigned int ksys_personality(unsigned int personality)
 {
 	unsigned int old = current->personality;
-
 	if (personality != 0xffffffff)
 		set_personality(personality);
-
 	return old;
 }
-
-/* for __ARCH_WANT_SYS_IPC */
 long ksys_semtimedop(int semid, struct sembuf __user *tsops,
 		     unsigned int nsops,
 		     const struct __kernel_timespec __user *timeout);
@@ -1265,7 +1113,6 @@ long compat_ksys_semtimedop(int semid, struct sembuf __user *tsems,
 long __do_semtimedop(int semid, struct sembuf *tsems, unsigned int nsops,
 		     const struct timespec64 *timeout,
 		     struct ipc_namespace *ns);
-
 int __sys_getsockopt(int fd, int level, int optname, char __user *optval,
 		int __user *optlen);
 int __sys_setsockopt(int fd, int level, int optname, char __user *optval,

@@ -1,22 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ngene.h: nGene PCIe bridge driver
- *
- * Copyright (C) 2005-2007 Micronas
- */
-
 #ifndef _NGENE_H_
 #define _NGENE_H_
-
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
 #include <asm/dma.h>
 #include <linux/scatterlist.h>
-
 #include <linux/dvb/frontend.h>
-
 #include <media/dmxdev.h>
 #include <media/dvbdev.h>
 #include <media/dvb_demux.h>
@@ -25,12 +15,9 @@
 #include <media/dvb_ringbuffer.h>
 #include <media/dvb_net.h>
 #include "cxd2099.h"
-
 #define DEVICE_NAME "ngene"
-
 #define NGENE_VID       0x18c3
 #define NGENE_PID       0x0720
-
 #ifndef VIDEO_CAP_VC1
 #define VIDEO_CAP_AVC   128
 #define VIDEO_CAP_H264  128
@@ -38,11 +25,9 @@
 #define VIDEO_CAP_WMV9  256
 #define VIDEO_CAP_MPEG4 512
 #endif
-
 #define DEMOD_TYPE_STV090X	0
 #define DEMOD_TYPE_DRXK		1
 #define DEMOD_TYPE_STV0367	2
-
 #define DEMOD_TYPE_XO2		32
 #define DEMOD_TYPE_STV0910	(DEMOD_TYPE_XO2 + 0)
 #define DEMOD_TYPE_SONY_CT2	(DEMOD_TYPE_XO2 + 1)
@@ -50,20 +35,17 @@
 #define DEMOD_TYPE_SONY_C2T2	(DEMOD_TYPE_XO2 + 3)
 #define DEMOD_TYPE_ST_ATSC	(DEMOD_TYPE_XO2 + 4)
 #define DEMOD_TYPE_SONY_C2T2I	(DEMOD_TYPE_XO2 + 5)
-
 #define NGENE_XO2_TYPE_NONE	0
 #define NGENE_XO2_TYPE_DUOFLEX	1
 #define NGENE_XO2_TYPE_CI	2
-
 enum STREAM {
-	STREAM_VIDEOIN1 = 0,        /* ITU656 or TS Input */
+	STREAM_VIDEOIN1 = 0,         
 	STREAM_VIDEOIN2,
-	STREAM_AUDIOIN1,            /* I2S or SPI Input */
+	STREAM_AUDIOIN1,             
 	STREAM_AUDIOIN2,
 	STREAM_AUDIOOUT,
 	MAX_STREAM
 };
-
 enum SMODE_BITS {
 	SMODE_AUDIO_SPDIF = 0x20,
 	SMODE_AVSYNC = 0x10,
@@ -72,21 +54,18 @@ enum SMODE_BITS {
 	SMODE_VBI_CAPTURE = 0x02,
 	SMODE_VIDEO_CAPTURE = 0x01
 };
-
 enum STREAM_FLAG_BITS {
-	SFLAG_CHROMA_FORMAT_2COMP  = 0x01, /* Chroma Format : 2's complement */
-	SFLAG_CHROMA_FORMAT_OFFSET = 0x00, /* Chroma Format : Binary offset */
-	SFLAG_ORDER_LUMA_CHROMA    = 0x02, /* Byte order: Y,Cb,Y,Cr */
-	SFLAG_ORDER_CHROMA_LUMA    = 0x00, /* Byte order: Cb,Y,Cr,Y */
-	SFLAG_COLORBAR             = 0x04, /* Select colorbar */
+	SFLAG_CHROMA_FORMAT_2COMP  = 0x01,  
+	SFLAG_CHROMA_FORMAT_OFFSET = 0x00,  
+	SFLAG_ORDER_LUMA_CHROMA    = 0x02,  
+	SFLAG_ORDER_CHROMA_LUMA    = 0x00,  
+	SFLAG_COLORBAR             = 0x04,  
 };
-
 #define PROGRAM_ROM     0x0000
 #define PROGRAM_SRAM    0x1000
 #define PERIPHERALS0    0x8000
 #define PERIPHERALS1    0x9000
 #define SHARED_BUFFER   0xC000
-
 #define HOST_TO_NGENE    (SHARED_BUFFER+0x0000)
 #define NGENE_TO_HOST    (SHARED_BUFFER+0x0100)
 #define NGENE_COMMAND    (SHARED_BUFFER+0x0200)
@@ -96,15 +75,12 @@ enum STREAM_FLAG_BITS {
 #define NGENE_EVENT      (SHARED_BUFFER+0x0210)
 #define NGENE_EVENT_HI   (SHARED_BUFFER+0x0214)
 #define VARIABLES        (SHARED_BUFFER+0x0210)
-
 #define NGENE_INT_COUNTS       (SHARED_BUFFER+0x0260)
 #define NGENE_INT_ENABLE       (SHARED_BUFFER+0x0264)
 #define NGENE_VBI_LINE_COUNT   (SHARED_BUFFER+0x0268)
-
 #define BUFFER_GP_XMIT  (SHARED_BUFFER+0x0800)
 #define BUFFER_GP_RECV  (SHARED_BUFFER+0x0900)
 #define EEPROM_AREA     (SHARED_BUFFER+0x0A00)
-
 #define SG_V_IN_1       (SHARED_BUFFER+0x0A80)
 #define SG_VBI_1        (SHARED_BUFFER+0x0B00)
 #define SG_A_IN_1       (SHARED_BUFFER+0x0B80)
@@ -113,26 +89,20 @@ enum STREAM_FLAG_BITS {
 #define SG_A_IN_2       (SHARED_BUFFER+0x0D00)
 #define SG_V_OUT        (SHARED_BUFFER+0x0D80)
 #define SG_A_OUT2       (SHARED_BUFFER+0x0E00)
-
 #define DATA_A_IN_1     (SHARED_BUFFER+0x0E80)
 #define DATA_A_IN_2     (SHARED_BUFFER+0x0F00)
 #define DATA_A_OUT      (SHARED_BUFFER+0x0F80)
 #define DATA_V_IN_1     (SHARED_BUFFER+0x1000)
 #define DATA_V_IN_2     (SHARED_BUFFER+0x2000)
 #define DATA_V_OUT      (SHARED_BUFFER+0x3000)
-
 #define DATA_FIFO_AREA  (SHARED_BUFFER+0x1000)
-
 #define TIMESTAMPS      0xA000
 #define SCRATCHPAD      0xA080
 #define FORCE_INT       0xA088
 #define FORCE_NMI       0xA090
 #define INT_STATUS      0xA0A0
-
 #define DEV_VER         0x9004
-
 #define FW_DEBUG_DEFAULT (PROGRAM_SRAM+0x00FF)
-
 struct SG_ADDR {
 	u64 start;
 	u64 curr;
@@ -140,62 +110,41 @@ struct SG_ADDR {
 	u16 elements;
 	u32 pad[3];
 } __attribute__ ((__packed__));
-
 struct SHARED_MEMORY {
-	/* C000 */
 	u32 HostToNgene[64];
-
-	/* C100 */
 	u32 NgeneToHost[64];
-
-	/* C200 */
 	u64 NgeneCommand;
 	u64 NgeneStatus;
 	u64 NgeneEvent;
-
-	/* C210 */
 	u8 pad1[0xc260 - 0xc218];
-
-	/* C260 */
 	u32 IntCounts;
 	u32 IntEnable;
-
-	/* C268 */
 	u8 pad2[0xd000 - 0xc268];
-
 } __attribute__ ((__packed__));
-
 struct BUFFER_STREAM_RESULTS {
-	u32 Clock;           /* Stream time in 100ns units */
-	u16 RemainingLines;  /* Remaining lines in this field.
-				0 for complete field */
-	u8  FieldCount;      /* Video field number */
-	u8  Flags;           /* Bit 7 = Done, Bit 6 = seen, Bit 5 = overflow,
-				Bit 0 = FieldID */
-	u16 BlockCount;      /* Audio block count (unused) */
+	u32 Clock;            
+	u16 RemainingLines;   
+	u8  FieldCount;       
+	u8  Flags;            
+	u16 BlockCount;       
 	u8  Reserved[2];
 	u32 DTOUpdate;
 } __attribute__ ((__packed__));
-
 struct HW_SCATTER_GATHER_ELEMENT {
 	u64 Address;
 	u32 Length;
 	u32 Reserved;
 } __attribute__ ((__packed__));
-
 struct BUFFER_HEADER {
 	u64    Next;
 	struct BUFFER_STREAM_RESULTS SR;
-
 	u32    Number_of_entries_1;
 	u32    Reserved5;
 	u64    Address_of_first_entry_1;
-
 	u32    Number_of_entries_2;
 	u32    Reserved7;
 	u64    Address_of_first_entry_2;
 } __attribute__ ((__packed__));
-
 struct EVENT_BUFFER {
 	u32    TimeStamp;
 	u8     GPIOStatus;
@@ -204,29 +153,21 @@ struct EVENT_BUFFER {
 	u8     EventStatus;
 	u32    Reserved[2];
 } __attribute__ ((__packed__));
-
-/* Firmware commands. */
-
 enum OPCODES {
 	CMD_NOP = 0,
 	CMD_FWLOAD_PREPARE  = 0x01,
 	CMD_FWLOAD_FINISH   = 0x02,
 	CMD_I2C_READ        = 0x03,
 	CMD_I2C_WRITE       = 0x04,
-
 	CMD_I2C_WRITE_NOSTOP = 0x05,
 	CMD_I2C_CONTINUE_WRITE = 0x06,
 	CMD_I2C_CONTINUE_WRITE_NOSTOP = 0x07,
-
 	CMD_DEBUG_OUTPUT    = 0x09,
-
 	CMD_CONTROL         = 0x10,
 	CMD_CONFIGURE_BUFFER = 0x11,
 	CMD_CONFIGURE_FREE_BUFFER = 0x12,
-
 	CMD_SPI_READ        = 0x13,
 	CMD_SPI_WRITE       = 0x14,
-
 	CMD_MEM_READ        = 0x20,
 	CMD_MEM_WRITE	    = 0x21,
 	CMD_SFR_READ	    = 0x22,
@@ -239,78 +180,46 @@ enum OPCODES {
 	CMD_WRITE_UART      = 0x29,
 	MAX_CMD
 };
-
 enum RESPONSES {
 	OK = 0,
 	ERROR = 1
 };
-
 struct FW_HEADER {
 	u8 Opcode;
 	u8 Length;
 } __attribute__ ((__packed__));
-
 struct FW_I2C_WRITE {
 	struct FW_HEADER hdr;
 	u8 Device;
 	u8 Data[250];
 } __attribute__ ((__packed__));
-
 struct FW_I2C_CONTINUE_WRITE {
 	struct FW_HEADER hdr;
 	u8 Data[250];
 } __attribute__ ((__packed__));
-
 struct FW_I2C_READ {
 	struct FW_HEADER hdr;
 	u8 Device;
-	u8 Data[252];    /* followed by two bytes of read data count */
+	u8 Data[252];     
 } __attribute__ ((__packed__));
-
 struct FW_SPI_WRITE {
 	struct FW_HEADER hdr;
 	u8 ModeSelect;
 	u8 Data[250];
 } __attribute__ ((__packed__));
-
 struct FW_SPI_READ {
 	struct FW_HEADER hdr;
 	u8 ModeSelect;
-	u8 Data[252];    /* followed by two bytes of read data count */
+	u8 Data[252];     
 } __attribute__ ((__packed__));
-
 struct FW_FWLOAD_PREPARE {
 	struct FW_HEADER hdr;
 } __attribute__ ((__packed__));
-
 struct FW_FWLOAD_FINISH {
 	struct FW_HEADER hdr;
-	u16 Address;     /* address of final block */
+	u16 Address;      
 	u16 Length;
 } __attribute__ ((__packed__));
-
-/*
- * Meaning of FW_STREAM_CONTROL::Mode bits:
- *  Bit 7: Loopback PEXin to PEXout using TVOut channel
- *  Bit 6: AVLOOP
- *  Bit 5: Audio select; 0=I2S, 1=SPDIF
- *  Bit 4: AVSYNC
- *  Bit 3: Enable transport stream
- *  Bit 2: Enable audio capture
- *  Bit 1: Enable ITU-Video VBI capture
- *  Bit 0: Enable ITU-Video capture
- *
- * Meaning of FW_STREAM_CONTROL::Control bits (see UVI1_CTL)
- *  Bit 7: continuous capture
- *  Bit 6: capture one field
- *  Bit 5: capture one frame
- *  Bit 4: unused
- *  Bit 3: starting field; 0=odd, 1=even
- *  Bit 2: sample size; 0=8-bit, 1=10-bit
- *  Bit 1: data format; 0=UYVY, 1=YUY2
- *  Bit 0: resets buffer pointers
-*/
-
 enum FSC_MODE_BITS {
 	SMODE_LOOPBACK          = 0x80,
 	SMODE_AVLOOP            = 0x40,
@@ -321,24 +230,14 @@ enum FSC_MODE_BITS {
 	_SMODE_VBI_CAPTURE      = 0x02,
 	_SMODE_VIDEO_CAPTURE    = 0x01
 };
-
-
-/* Meaning of FW_STREAM_CONTROL::Stream bits:
- * Bit 3: Audio sample count:  0 = relative, 1 = absolute
- * Bit 2: color bar select; 1=color bars, 0=CV3 decoder
- * Bits 1-0: stream select, UVI1, UVI2, TVOUT
- */
-
 struct FW_STREAM_CONTROL {
 	struct FW_HEADER hdr;
-	u8     Stream;             /* Stream number (UVI1, UVI2, TVOUT) */
-	u8     Control;            /* Value written to UVI1_CTL */
-	u8     Mode;               /* Controls clock source */
-	u8     SetupDataLen;	   /* Length of setup data, MSB=1 write
-				      backwards */
-	u16    CaptureBlockCount;  /* Blocks (a 256 Bytes) to capture per buffer
-				      for TS and Audio */
-	u64    Buffer_Address;	   /* Address of first buffer header */
+	u8     Stream;              
+	u8     Control;             
+	u8     Mode;                
+	u8     SetupDataLen;	    
+	u16    CaptureBlockCount;   
+	u64    Buffer_Address;	    
 	u16    BytesPerVideoLine;
 	u16    MaxLinesPerField;
 	u16    MinLinesPerField;
@@ -346,65 +245,51 @@ struct FW_STREAM_CONTROL {
 	u16    BytesPerVBILine;
 	u16    MaxVBILinesPerField;
 	u16    MinVBILinesPerField;
-	u16    SetupDataAddr;      /* ngene relative address of setup data */
-	u8     SetupData[32];      /* setup data */
+	u16    SetupDataAddr;       
+	u8     SetupData[32];       
 } __attribute__((__packed__));
-
 #define AUDIO_BLOCK_SIZE    256
 #define TS_BLOCK_SIZE       256
-
 struct FW_MEM_READ {
 	struct FW_HEADER hdr;
 	u16   address;
 } __attribute__ ((__packed__));
-
 struct FW_MEM_WRITE {
 	struct FW_HEADER hdr;
 	u16   address;
 	u8    data;
 } __attribute__ ((__packed__));
-
 struct FW_SFR_IRAM_READ {
 	struct FW_HEADER hdr;
 	u8    address;
 } __attribute__ ((__packed__));
-
 struct FW_SFR_IRAM_WRITE {
 	struct FW_HEADER hdr;
 	u8    address;
 	u8    data;
 } __attribute__ ((__packed__));
-
 struct FW_SET_GPIO_PIN {
 	struct FW_HEADER hdr;
 	u8    select;
 } __attribute__ ((__packed__));
-
 struct FW_SET_GPIO_INT {
 	struct FW_HEADER hdr;
 	u8    select;
 } __attribute__ ((__packed__));
-
 struct FW_SET_DEBUGMODE {
 	struct FW_HEADER hdr;
 	u8   debug_flags;
 } __attribute__ ((__packed__));
-
 struct FW_CONFIGURE_BUFFERS {
 	struct FW_HEADER hdr;
 	u8   config;
 } __attribute__ ((__packed__));
-
 enum _BUFFER_CONFIGS {
-	/* 4k UVI1, 4k UVI2, 2k AUD1, 2k AUD2  (standard usage) */
 	BUFFER_CONFIG_4422 = 0,
-	/* 3k UVI1, 3k UVI2, 3k AUD1, 3k AUD2  (4x TS input usage) */
 	BUFFER_CONFIG_3333 = 1,
-	/* 8k UVI1, 0k UVI2, 2k AUD1, 2k I2SOut  (HDTV decoder usage) */
 	BUFFER_CONFIG_8022 = 2,
-	BUFFER_CONFIG_FW17 = 255, /* Use new FW 17 command */
+	BUFFER_CONFIG_FW17 = 255,  
 };
-
 struct FW_CONFIGURE_FREE_BUFFERS {
 	struct FW_HEADER hdr;
 	struct {
@@ -416,12 +301,10 @@ struct FW_CONFIGURE_FREE_BUFFERS {
 		u8   TVA_BufferLength;
 	} __packed config;
 } __attribute__ ((__packed__));
-
 struct FW_CONFIGURE_UART {
 	struct FW_HEADER hdr;
 	u8 UartControl;
 } __attribute__ ((__packed__));
-
 enum _UART_CONFIG {
 	_UART_BAUDRATE_19200 = 0,
 	_UART_BAUDRATE_9600  = 1,
@@ -430,13 +313,10 @@ enum _UART_CONFIG {
 	_UART_RX_ENABLE      = 0x40,
 	_UART_TX_ENABLE      = 0x80,
 };
-
 struct FW_WRITE_UART {
 	struct FW_HEADER hdr;
 	u8 Data[252];
 } __attribute__ ((__packed__));
-
-
 struct ngene_command {
 	u32 in_len;
 	u32 out_len;
@@ -465,23 +345,17 @@ struct ngene_command {
 		struct FW_WRITE_UART             WriteUart;
 	} cmd;
 } __attribute__ ((__packed__));
-
 #define NGENE_INTERFACE_VERSION 0x103
-#define MAX_VIDEO_BUFFER_SIZE   (417792) /* 288*1440 rounded up to next page */
-#define MAX_AUDIO_BUFFER_SIZE     (8192) /* Gives room for about 23msec@48KHz */
-#define MAX_VBI_BUFFER_SIZE      (28672) /* 1144*18 rounded up to next page */
-#define MAX_TS_BUFFER_SIZE       (98304) /* 512*188 rounded up to next page */
-#define MAX_HDTV_BUFFER_SIZE   (2080768) /* 541*1920*2 rounded up to next page
-					    Max: (1920x1080i60) */
-
+#define MAX_VIDEO_BUFFER_SIZE   (417792)  
+#define MAX_AUDIO_BUFFER_SIZE     (8192)  
+#define MAX_VBI_BUFFER_SIZE      (28672)  
+#define MAX_TS_BUFFER_SIZE       (98304)  
+#define MAX_HDTV_BUFFER_SIZE   (2080768)  
 #define OVERFLOW_BUFFER_SIZE    (8192)
-
 #define RING_SIZE_VIDEO     4
 #define RING_SIZE_AUDIO     8
 #define RING_SIZE_TS        8
-
 #define NUM_SCATTER_GATHER_ENTRIES  8
-
 #define MAX_DMA_LENGTH (((MAX_VIDEO_BUFFER_SIZE + MAX_VBI_BUFFER_SIZE) * \
 			RING_SIZE_VIDEO * 2) + \
 			(MAX_AUDIO_BUFFER_SIZE * RING_SIZE_AUDIO * 2) + \
@@ -490,62 +364,46 @@ struct ngene_command {
 			(RING_SIZE_AUDIO * PAGE_SIZE * 2) + \
 			(RING_SIZE_TS    * PAGE_SIZE * 4) + \
 			 8 * PAGE_SIZE + OVERFLOW_BUFFER_SIZE + PAGE_SIZE)
-
 #define EVENT_QUEUE_SIZE    16
-
-/* Gathers the current state of a single channel. */
-
 struct SBufferHeader {
-	struct BUFFER_HEADER   ngeneBuffer; /* Physical descriptor */
+	struct BUFFER_HEADER   ngeneBuffer;  
 	struct SBufferHeader  *Next;
 	void                  *Buffer1;
 	struct HW_SCATTER_GATHER_ELEMENT *scList1;
 	void                  *Buffer2;
 	struct HW_SCATTER_GATHER_ELEMENT *scList2;
 };
-
-/* Sizeof SBufferHeader aligned to next 64 Bit boundary (hw restriction) */
 #define SIZEOF_SBufferHeader ((sizeof(struct SBufferHeader) + 63) & ~63)
-
 enum HWSTATE {
 	HWSTATE_STOP,
 	HWSTATE_STARTUP,
 	HWSTATE_RUN,
 	HWSTATE_PAUSE,
 };
-
 enum KSSTATE {
 	KSSTATE_STOP,
 	KSSTATE_ACQUIRE,
 	KSSTATE_PAUSE,
 	KSSTATE_RUN,
 };
-
 struct SRingBufferDescriptor {
-	struct SBufferHeader *Head; /* Points to first buffer in ring buffer
-				       structure*/
-	u64   PAHead;         /* Physical address of first buffer */
-	u32   MemSize;        /* Memory size of allocated ring buffers
-				 (needed for freeing) */
-	u32   NumBuffers;     /* Number of buffers in the ring */
-	u32   Buffer1Length;  /* Allocated length of Buffer 1 */
-	u32   Buffer2Length;  /* Allocated length of Buffer 2 */
-	void *SCListMem;      /* Memory to hold scatter gather lists for this
-				 ring */
-	u64   PASCListMem;    /* Physical address  .. */
-	u32   SCListMemSize;  /* Size of this memory */
+	struct SBufferHeader *Head;  
+	u64   PAHead;          
+	u32   MemSize;         
+	u32   NumBuffers;      
+	u32   Buffer1Length;   
+	u32   Buffer2Length;   
+	void *SCListMem;       
+	u64   PASCListMem;     
+	u32   SCListMemSize;   
 };
-
 enum STREAMMODEFLAGS {
-	StreamMode_NONE   = 0, /* Stream not used */
-	StreamMode_ANALOG = 1, /* Analog: Stream 0,1 = Video, 2,3 = Audio */
-	StreamMode_TSIN   = 2, /* Transport stream input (all) */
-	StreamMode_HDTV   = 4, /* HDTV: Maximum 1920x1080p30,1920x1080i60
-				  (only stream 0) */
-	StreamMode_TSOUT  = 8, /* Transport stream output (only stream 3) */
+	StreamMode_NONE   = 0,  
+	StreamMode_ANALOG = 1,  
+	StreamMode_TSIN   = 2,  
+	StreamMode_HDTV   = 4,  
+	StreamMode_TSOUT  = 8,  
 };
-
-
 enum BufferExchangeFlags {
 	BEF_EVEN_FIELD   = 0x00000001,
 	BEF_CONTINUATION = 0x00000002,
@@ -553,12 +411,10 @@ enum BufferExchangeFlags {
 	BEF_OVERFLOW     = 0x00000008,
 	DF_SWAP32        = 0x00010000,
 };
-
 typedef void *(IBufferExchange)(void *, void *, u32, u32, u32);
-
 struct MICI_STREAMINFO {
 	IBufferExchange    *pExchange;
-	IBufferExchange    *pExchangeVBI;     /* Secondary (VBI, ancillary) */
+	IBufferExchange    *pExchangeVBI;      
 	u8  Stream;
 	u8  Flags;
 	u8  Mode;
@@ -567,21 +423,11 @@ struct MICI_STREAMINFO {
 	u16 nBytesPerLineVideo;
 	u16 nLinesVBI;
 	u16 nBytesPerLineVBI;
-	u32 CaptureLength;    /* Used for audio and transport stream */
+	u32 CaptureLength;     
 };
-
-/****************************************************************************/
-/* STRUCTS ******************************************************************/
-/****************************************************************************/
-
-/* sound hardware definition */
 #define MIXER_ADDR_TVTUNER      0
 #define MIXER_ADDR_LAST         0
-
 struct ngene_channel;
-
-/*struct sound chip*/
-
 struct mychip {
 	struct ngene_channel *chan;
 	struct snd_card *card;
@@ -595,13 +441,11 @@ struct mychip {
 	int mixer_volume[MIXER_ADDR_LAST + 1][2];
 	int capture_source[MIXER_ADDR_LAST + 1][2];
 };
-
 struct ngene_channel {
 	struct device         device;
 	struct i2c_adapter    i2c_adapter;
 	struct i2c_client    *i2c_client[1];
 	int                   i2c_client_fe;
-
 	struct ngene         *dev;
 	int                   number;
 	int                   type;
@@ -610,7 +454,6 @@ struct ngene_channel {
 	bool                  has_demux;
 	int                   demod_type;
 	int (*gate_ctrl)(struct dvb_frontend *, int);
-
 	struct dvb_frontend  *fe;
 	struct dvb_frontend  *fe2;
 	struct dmxdev         dmxdev;
@@ -622,7 +465,6 @@ struct ngene_channel {
 	struct video_device  *v4l_dev;
 	struct dvb_device    *ci_dev;
 	struct tasklet_struct demux_tasklet;
-
 	struct SBufferHeader *nextBuffer;
 	enum KSSTATE          State;
 	enum HWSTATE          HWState;
@@ -631,7 +473,6 @@ struct ngene_channel {
 	u8                    Mode;
 	IBufferExchange      *pBufferExchange;
 	IBufferExchange      *pBufferExchange2;
-
 	spinlock_t            state_lock;
 	u16                   nLines;
 	u16                   nBytesPerLine;
@@ -643,17 +484,11 @@ struct ngene_channel {
 	struct SRingBufferDescriptor RingBuffer;
 	struct SRingBufferDescriptor TSRingBuffer;
 	struct SRingBufferDescriptor TSIdleBuffer;
-
 	u32                   DataFormatFlags;
-
 	int                   AudioDTOUpdated;
 	u32                   AudioDTOValue;
-
 	int (*set_tone)(struct dvb_frontend *, enum fe_sec_tone_mode);
 	u8 lnbh;
-
-	/* stuff from analog driver */
-
 	int minor;
 	struct mychip        *mychip;
 	struct snd_card      *soundcard;
@@ -667,44 +502,31 @@ struct ngene_channel {
 	int                   dec_rdy;
 	int                   tun_dec_rdy;
 	int                   lastbufferflag;
-
 	struct ngene_tvnorm  *tvnorms;
 	int                   tvnorm_num;
 	int                   tvnorm;
-
 	int running;
-
 	int tsin_offset;
 	u8  tsin_buffer[188];
 };
-
-
 struct ngene_ci {
 	struct device         device;
 	struct i2c_adapter    i2c_adapter;
-
 	struct ngene         *dev;
 	struct dvb_ca_en50221 *en;
 };
-
 struct ngene;
-
 typedef void (rx_cb_t)(struct ngene *, u32, u8);
 typedef void (tx_cb_t)(struct ngene *, u32);
-
 struct ngene {
 	int                   nr;
 	struct pci_dev       *pci_dev;
 	unsigned char __iomem *iomem;
-
-	/*struct i2c_adapter  i2c_adapter;*/
-
 	u32                   device_version;
 	u32                   fw_interface_version;
 	u32                   icounts;
 	bool                  msi_enabled;
 	bool                  cmd_timeout_workaround;
-
 	u8                   *CmdDoneByte;
 	int                   BootFirmware;
 	void                 *OverflowBuffer;
@@ -713,7 +535,6 @@ struct ngene {
 	dma_addr_t            PAFWInterfaceBuffer;
 	u8                   *ngenetohost;
 	u8                   *hosttongene;
-
 	struct EVENT_BUFFER   EventQueue[EVENT_QUEUE_SIZE];
 	int                   EventQueueOverflowCount;
 	int                   EventQueueOverflowFlag;
@@ -721,7 +542,6 @@ struct ngene {
 	struct EVENT_BUFFER  *EventBuffer;
 	int                   EventQueueWriteIndex;
 	int                   EventQueueReadIndex;
-
 	wait_queue_head_t     cmd_wq;
 	int                   cmd_done;
 	struct mutex          cmd_mutex;
@@ -731,13 +551,10 @@ struct ngene {
 	int                   i2c_current_channel;
 	int                   i2c_current_bus;
 	spinlock_t            cmd_lock;
-
 	struct dvb_adapter    adapter[MAX_STREAM];
-	struct dvb_adapter    *first_adapter; /* "one_adapter" modprobe opt */
+	struct dvb_adapter    *first_adapter;  
 	struct ngene_channel  channel[MAX_STREAM];
-
 	struct ngene_info    *card_info;
-
 	tx_cb_t              *TxEventNotify;
 	rx_cb_t              *RxEventNotify;
 	int                   tx_busy;
@@ -746,32 +563,23 @@ struct ngene {
 #define UART_RBUF_LEN 4096
 	u8                    uart_rbuf[UART_RBUF_LEN];
 	int                   uart_rp, uart_wp;
-
 #define TS_FILLER  0x6f
-
 	u8                   *tsout_buf;
 #define TSOUT_BUF_SIZE (512*188*8)
 	struct dvb_ringbuffer tsout_rbuf;
-
 	u8                   *tsin_buf;
 #define TSIN_BUF_SIZE (512*188*8)
 	struct dvb_ringbuffer tsin_rbuf;
-
 	u8                   *ain_buf;
 #define AIN_BUF_SIZE (128*1024)
 	struct dvb_ringbuffer ain_rbuf;
-
-
 	u8                   *vin_buf;
 #define VIN_BUF_SIZE (4*1920*1080)
 	struct dvb_ringbuffer vin_rbuf;
-
 	unsigned long         exp_val;
 	int prev_cmd;
-
 	struct ngene_ci       ci;
 };
-
 struct ngene_info {
 	int   type;
 #define NGENE_APP        0
@@ -782,11 +590,9 @@ struct ngene_info {
 #define NGENE_PYTHON     5
 #define NGENE_VBOX_V1	 6
 #define NGENE_VBOX_V2	 7
-
 	int   fw_version;
 	bool  msi_supported;
 	char *name;
-
 	int   io_type[MAX_STREAM];
 #define NGENE_IO_NONE    0
 #define NGENE_IO_TV      1
@@ -794,13 +600,10 @@ struct ngene_info {
 #define NGENE_IO_TSIN    4
 #define NGENE_IO_TSOUT   8
 #define NGENE_IO_AIN     16
-
 	void *fe_config[4];
 	void *tuner_config[4];
-
 	int (*demod_attach[4])(struct ngene_channel *);
 	int (*tuner_attach[4])(struct ngene_channel *);
-
 	u8    avf[4];
 	u8    msp[4];
 	u8    demoda[4];
@@ -809,13 +612,9 @@ struct ngene_info {
 	u8    ntsc;
 	u8    tsf[4];
 	u8    i2s[4];
-
 	int (*gate_ctrl)(struct dvb_frontend *, int);
 	int (*switch_ctrl)(struct ngene_channel *, int, int);
 };
-
-
-/* Provided by ngene-core.c */
 int ngene_probe(struct pci_dev *pci_dev, const struct pci_device_id *id);
 void ngene_remove(struct pci_dev *pdev);
 void ngene_shutdown(struct pci_dev *pdev);
@@ -823,14 +622,8 @@ int ngene_command(struct ngene *dev, struct ngene_command *com);
 int ngene_command_gpio_set(struct ngene *dev, u8 select, u8 level);
 void set_transfer(struct ngene_channel *chan, int state);
 void FillTSBuffer(void *Buffer, int Length, u32 Flags);
-
-/* Provided by ngene-cards.c */
 int ngene_port_has_cxd2099(struct i2c_adapter *i2c, u8 *type);
-
-/* Provided by ngene-i2c.c */
 int ngene_i2c_init(struct ngene *dev, int dev_nr);
-
-/* Provided by ngene-dvb.c */
 extern struct dvb_device ngene_dvbdev_ci;
 void *tsout_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags);
 void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags);
@@ -845,8 +638,4 @@ int my_dvb_dmxdev_ts_card_init(struct dmxdev *dmxdev,
 			       struct dmx_frontend *hw_frontend,
 			       struct dmx_frontend *mem_frontend,
 			       struct dvb_adapter *dvb_adapter);
-
 #endif
-
-/*  LocalWords:  Endif
- */

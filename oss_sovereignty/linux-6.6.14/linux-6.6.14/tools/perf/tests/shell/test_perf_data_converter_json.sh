@@ -1,11 +1,5 @@
-#!/bin/bash
-# 'perf data convert --to-json' command test
-# SPDX-License-Identifier: GPL-2.0
-
 set -e
-
 err=0
-
 if [ "$PYTHON" = "" ] ; then
 	if which python3 > /dev/null ; then
 		PYTHON=python3
@@ -16,24 +10,20 @@ if [ "$PYTHON" = "" ] ; then
 		exit 2
 	fi
 fi
-
 perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
 result=$(mktemp /tmp/__perf_test.output.json.XXXXX)
-
 cleanup()
 {
 	rm -f "${perfdata}"
 	rm -f "${result}"
 	trap - exit term int
 }
-
 trap_cleanup()
 {
 	cleanup
 	exit ${err}
 }
 trap trap_cleanup exit term int
-
 test_json_converter_command()
 {
 	echo "Testing Perf Data Convertion Command to JSON"
@@ -47,7 +37,6 @@ test_json_converter_command()
 		exit
 	fi
 }
-
 validate_json_format()
 {
 	echo "Validating Perf Data Converted JSON file"
@@ -65,8 +54,6 @@ validate_json_format()
 		exit
 	fi
 }
-
 test_json_converter_command
 validate_json_format
-
 exit ${err}

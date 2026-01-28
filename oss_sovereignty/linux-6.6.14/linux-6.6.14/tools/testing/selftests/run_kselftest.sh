@@ -1,8 +1,3 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-#
-# Run installed kselftest tests.
-#
 BASE_DIR=$(realpath $(dirname $0))
 cd $BASE_DIR
 TESTS="$BASE_DIR"/kselftest-list.txt
@@ -12,10 +7,8 @@ if [ ! -r "$TESTS" ] ; then
 else
 	available="$(cat "$TESTS")"
 fi
-
 . ./kselftest/runner.sh
 ROOT=$PWD
-
 usage()
 {
 	cat <<EOF
@@ -30,7 +23,6 @@ Usage: $0 [OPTIONS]
 EOF
 	exit $1
 }
-
 COLLECTIONS=""
 TESTS=""
 dryrun=""
@@ -64,8 +56,6 @@ while true; do
 			usage 1 ;;
 	esac
 done
-
-# Add all selected collections to the explicit test list.
 if [ -n "$COLLECTIONS" ]; then
 	for collection in $COLLECTIONS ; do
 		found="$(echo "$available" | grep "^$collection:")"
@@ -76,7 +66,6 @@ if [ -n "$COLLECTIONS" ]; then
 		TESTS="$TESTS $found"
 	done
 fi
-# Replace available test list with explicitly selected tests.
 if [ -n "$TESTS" ]; then
 	valid=""
 	for test in $TESTS ; do
@@ -89,7 +78,6 @@ if [ -n "$TESTS" ]; then
 	done
 	available="$(echo "$valid" | sed -e 's/ /\n/g')"
 fi
-
 collections=$(echo "$available" | cut -d: -f1 | sort | uniq)
 for collection in $collections ; do
 	[ -w /dev/kmsg ] && echo "kselftest: Running tests in $collection" >> /dev/kmsg

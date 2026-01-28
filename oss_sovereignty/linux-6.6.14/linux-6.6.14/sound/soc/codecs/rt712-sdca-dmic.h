@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt712-sdca-dmic.h -- RT712 SDCA DMIC ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT712_SDW_DMIC_H__
 #define __RT712_SDW_DMIC_H__
-
 #include <linux/regmap.h>
 #include <linux/soundwire/sdw_registers.h>
-
 struct  rt712_sdca_dmic_priv {
 	struct regmap *regmap;
 	struct regmap *mbq_regmap;
@@ -22,20 +13,16 @@ struct  rt712_sdca_dmic_priv {
 	bool fu1e_dapm_mute;
 	bool fu1e_mixer_mute[4];
 };
-
 struct rt712_sdca_dmic_kctrl_priv {
 	unsigned int reg_base;
 	unsigned int count;
 	unsigned int max;
 	unsigned int invert;
 };
-
-/* SDCA (Channel) */
 #define CH_01	0x01
 #define CH_02	0x02
 #define CH_03	0x03
 #define CH_04	0x04
-
 static const struct reg_default rt712_sdca_dmic_reg_defaults[] = {
 	{ 0x201a, 0x00 },
 	{ 0x201b, 0x00 },
@@ -80,7 +67,6 @@ static const struct reg_default rt712_sdca_dmic_reg_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_CS1F, RT712_SDCA_CTL_SAMPLE_FREQ_INDEX, 0), 0x09 },
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_CS1C, RT712_SDCA_CTL_SAMPLE_FREQ_INDEX, 0), 0x09 },
 };
-
 static const struct reg_default rt712_sdca_dmic_mbq_defaults[] = {
 	{ 0x0590001e, 0x0020 },
 	{ 0x06100000, 0x0010 },
@@ -103,5 +89,4 @@ static const struct reg_default rt712_sdca_dmic_mbq_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_USER_FU1E, RT712_SDCA_CTL_FU_VOLUME, CH_03), 0x0000 },
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT712_SDCA_ENT_USER_FU1E, RT712_SDCA_CTL_FU_VOLUME, CH_04), 0x0000 },
 };
-
-#endif /* __RT712_SDW_DMIC_H__ */
+#endif  

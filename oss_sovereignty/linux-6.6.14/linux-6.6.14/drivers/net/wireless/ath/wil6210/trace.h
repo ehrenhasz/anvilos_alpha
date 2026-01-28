@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2013-2016 Qualcomm Atheros, Inc.
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM wil6210
 #if !defined(WIL6210_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define WIL6210_TRACE_H
-
 #include <linux/tracepoint.h>
 #include "wil6210.h"
 #include "txrx.h"
-
-/* create empty functions when tracing is disabled */
 #if !defined(CONFIG_WIL6210_TRACING) || defined(__CHECKER__)
-
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, ...) \
 static inline void trace_ ## name(proto) {}
@@ -24,13 +14,10 @@ static inline void trace_ ## name(proto) {}
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(evt_class, name, proto, ...) \
 static inline void trace_ ## name(proto) {}
-#endif /* !CONFIG_WIL6210_TRACING || defined(__CHECKER__) */
-
+#endif  
 DECLARE_EVENT_CLASS(wil6210_wmi,
 	TP_PROTO(struct wmi_cmd_hdr *wmi, void *buf, u16 buf_len),
-
 	TP_ARGS(wmi, buf, buf_len),
-
 	TP_STRUCT__entry(
 		__field(u8, mid)
 		__field(u16, command_id)
@@ -38,7 +25,6 @@ DECLARE_EVENT_CLASS(wil6210_wmi,
 		__field(u16, buf_len)
 		__dynamic_array(u8, buf, buf_len)
 	),
-
 	TP_fast_assign(
 		__entry->mid = wmi->mid;
 		__entry->command_id = le16_to_cpu(wmi->command_id);
@@ -46,26 +32,21 @@ DECLARE_EVENT_CLASS(wil6210_wmi,
 		__entry->buf_len = buf_len;
 		memcpy(__get_dynamic_array(buf), buf, buf_len);
 	),
-
 	TP_printk(
 		"MID %d id 0x%04x len %d timestamp %d",
 		__entry->mid, __entry->command_id, __entry->buf_len,
 		__entry->fw_timestamp
 	)
 );
-
 DEFINE_EVENT(wil6210_wmi, wil6210_wmi_cmd,
 	TP_PROTO(struct wmi_cmd_hdr *wmi, void *buf, u16 buf_len),
 	TP_ARGS(wmi, buf, buf_len)
 );
-
 DEFINE_EVENT(wil6210_wmi, wil6210_wmi_event,
 	TP_PROTO(struct wmi_cmd_hdr *wmi, void *buf, u16 buf_len),
 	TP_ARGS(wmi, buf, buf_len)
 );
-
 #define WIL6210_MSG_MAX (200)
-
 DECLARE_EVENT_CLASS(wil6210_log_event,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf),
@@ -77,27 +58,22 @@ DECLARE_EVENT_CLASS(wil6210_log_event,
 	),
 	TP_printk("%s", __get_str(msg))
 );
-
 DEFINE_EVENT(wil6210_log_event, wil6210_log_err,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf)
 );
-
 DEFINE_EVENT(wil6210_log_event, wil6210_log_info,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf)
 );
-
 DEFINE_EVENT(wil6210_log_event, wil6210_log_dbg,
 	TP_PROTO(struct va_format *vaf),
 	TP_ARGS(vaf)
 );
-
 #define wil_pseudo_irq_cause(x) __print_flags(x, "|",	\
 	{BIT_DMA_PSEUDO_CAUSE_RX,	"Rx" },		\
 	{BIT_DMA_PSEUDO_CAUSE_TX,	"Tx" },		\
 	{BIT_DMA_PSEUDO_CAUSE_MISC,	"Misc" })
-
 TRACE_EVENT(wil6210_irq_pseudo,
 	TP_PROTO(u32 x),
 	TP_ARGS(x),
@@ -110,7 +86,6 @@ TRACE_EVENT(wil6210_irq_pseudo,
 	TP_printk("cause 0x%08x : %s", __entry->x,
 		  wil_pseudo_irq_cause(__entry->x))
 );
-
 DECLARE_EVENT_CLASS(wil6210_irq,
 	TP_PROTO(u32 x),
 	TP_ARGS(x),
@@ -122,27 +97,22 @@ DECLARE_EVENT_CLASS(wil6210_irq,
 	),
 	TP_printk("cause 0x%08x", __entry->x)
 );
-
 DEFINE_EVENT(wil6210_irq, wil6210_irq_rx,
 	TP_PROTO(u32 x),
 	TP_ARGS(x)
 );
-
 DEFINE_EVENT(wil6210_irq, wil6210_irq_tx,
 	TP_PROTO(u32 x),
 	TP_ARGS(x)
 );
-
 DEFINE_EVENT(wil6210_irq, wil6210_irq_misc,
 	TP_PROTO(u32 x),
 	TP_ARGS(x)
 );
-
 DEFINE_EVENT(wil6210_irq, wil6210_irq_misc_thread,
 	TP_PROTO(u32 x),
 	TP_ARGS(x)
 );
-
 TRACE_EVENT(wil6210_rx,
 	TP_PROTO(u16 index, struct vring_rx_desc *d),
 	TP_ARGS(index, d),
@@ -173,7 +143,6 @@ TRACE_EVENT(wil6210_rx,
 		  __entry->mid, __entry->cid, __entry->tid, __entry->mcs,
 		  __entry->seq, __entry->type, __entry->subtype)
 );
-
 TRACE_EVENT(wil6210_rx_status,
 	    TP_PROTO(struct wil6210_priv *wil, u8 use_compressed, u16 buff_id,
 		     void *msg),
@@ -207,7 +176,6 @@ TRACE_EVENT(wil6210_rx_status,
 		      __entry->mid, __entry->cid, __entry->tid, __entry->mcs,
 		      __entry->seq, __entry->type, __entry->subtype)
 );
-
 TRACE_EVENT(wil6210_tx,
 	TP_PROTO(u8 vring, u16 index, unsigned int len, u8 frags),
 	TP_ARGS(vring, index, len, frags),
@@ -226,7 +194,6 @@ TRACE_EVENT(wil6210_tx,
 	TP_printk("vring %d index %d len %d frags %d",
 		  __entry->vring, __entry->index, __entry->len, __entry->frags)
 );
-
 TRACE_EVENT(wil6210_tx_done,
 	TP_PROTO(u8 vring, u16 index, unsigned int len, u8 err),
 	TP_ARGS(vring, index, len, err),
@@ -246,7 +213,6 @@ TRACE_EVENT(wil6210_tx_done,
 		  __entry->vring, __entry->index, __entry->len,
 		  __entry->err)
 );
-
 TRACE_EVENT(wil6210_tx_status,
 	    TP_PROTO(struct wil_ring_tx_status *msg, u16 index,
 		     unsigned int len),
@@ -257,7 +223,6 @@ TRACE_EVENT(wil6210_tx_status,
 			     __field(u8, ring_id)
 			     __field(u8, status)
 			     __field(u8, mcs)
-
 	    ),
 	    TP_fast_assign(__entry->index = index;
 			   __entry->len = len;
@@ -271,16 +236,11 @@ TRACE_EVENT(wil6210_tx_status,
 		      __entry->ring_id, __entry->index, __entry->len,
 		      __entry->num_descs, __entry->status, __entry->mcs)
 );
-
-#endif /* WIL6210_TRACE_H || TRACE_HEADER_MULTI_READ*/
-
+#endif  
 #if defined(CONFIG_WIL6210_TRACING) && !defined(__CHECKER__)
-/* we don't want to use include/trace/events */
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>
-#endif /* defined(CONFIG_WIL6210_TRACING) && !defined(__CHECKER__) */
+#endif  

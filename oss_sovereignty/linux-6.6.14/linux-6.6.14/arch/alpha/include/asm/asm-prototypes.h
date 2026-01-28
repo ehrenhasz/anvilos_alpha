@@ -1,13 +1,10 @@
 #include <linux/spinlock.h>
-
 #include <asm/checksum.h>
 #include <asm/console.h>
 #include <asm/page.h>
 #include <asm/string.h>
 #include <linux/uaccess.h>
-
 #include <asm-generic/asm-prototypes.h>
-
 extern void __divl(void);
 extern void __reml(void);
 extern void __divq(void);

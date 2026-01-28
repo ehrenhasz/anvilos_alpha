@@ -1,34 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/******************************************************************************
- *
- *	(C)Copyright 1998,1999 SysKonnect,
- *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
- *
- *	The information in this file is provided "AS IS" without warranty.
- *
- ******************************************************************************/
-
-/*
- * defines for all SMT attributes
- */
-
-/*
- * this boring file was produced by perl
- * thanks Larry !
- */
 #define	SMT_P0012	0x0012
-
 #define	SMT_P0015	0x0015
 #define	SMT_P0016	0x0016
 #define	SMT_P0017	0x0017
 #define	SMT_P0018	0x0018
 #define	SMT_P0019	0x0019
-
 #define	SMT_P001A	0x001a
 #define	SMT_P001B	0x001b
 #define	SMT_P001C	0x001c
 #define	SMT_P001D	0x001d
-
 #define	SMT_P100A	0x100a
 #define	SMT_P100B	0x100b
 #define	SMT_P100C	0x100c
@@ -104,7 +83,6 @@
 #define	SMT_P1052	0x1052
 #define	SMT_P1053	0x1053
 #define	SMT_P1054	0x1054
-
 #define	SMT_P10F0	0x10f0
 #define	SMT_P10F1	0x10f1
 #ifdef	ESS
@@ -119,7 +97,6 @@
 #define	SMT_P10F8	0x10f8
 #define	SMT_P10F9	0x10f9
 #endif
-
 #define	SMT_P200A	0x200a
 #define	SMT_P200B	0x200b
 #define	SMT_P200C	0x200c
@@ -229,16 +206,13 @@
 #define	SMT_P2074	0x2074
 #define	SMT_P2075	0x2075
 #define	SMT_P2076	0x2076
-
 #define	SMT_P208C	0x208c
 #define	SMT_P208D	0x208d
 #define	SMT_P208E	0x208e
 #define	SMT_P208F	0x208f
 #define	SMT_P2090	0x2090
-
 #define	SMT_P20F0	0x20F0
 #define	SMT_P20F1	0x20F1
-
 #define	SMT_P320A	0x320a
 #define	SMT_P320B	0x320b
 #define	SMT_P320C	0x320c
@@ -253,7 +227,6 @@
 #define	SMT_P3215	0x3215
 #define	SMT_P3216	0x3216
 #define	SMT_P3217	0x3217
-
 #define	SMT_P400A	0x400a
 #define	SMT_P400B	0x400b
 #define	SMT_P400C	0x400c
@@ -315,7 +288,6 @@
 #define	SMT_P4044	0x4044
 #define	SMT_P4045	0x4045
 #define	SMT_P4046	0x4046
-
 #define	SMT_P4050	0x4050
 #define	SMT_P4051	0x4051
 #define	SMT_P4052	0x4052

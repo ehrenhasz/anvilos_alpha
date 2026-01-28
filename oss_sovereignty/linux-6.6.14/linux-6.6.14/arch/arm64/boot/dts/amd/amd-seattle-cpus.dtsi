@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-
 / {
 	cpus {
 		#address-cells = <0x1>;
 		#size-cells = <0x0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -39,13 +36,11 @@
 				};
 			};
 		};
-
 		CPU0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x0>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -53,15 +48,12 @@
 			d-cache-line-size = <64>;
 			d-cache-sets = <256>;
 			l2-cache = <&L2_0>;
-
 		};
-
 		CPU1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x1>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -70,13 +62,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_0>;
 		};
-
 		CPU2: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x100>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -85,13 +75,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_1>;
 		};
-
 		CPU3: cpu@101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x101>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -100,13 +88,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_1>;
 		};
-
 		CPU4: cpu@200 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x200>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -115,13 +101,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_2>;
 		};
-
 		CPU5: cpu@201 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x201>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -130,13 +114,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_2>;
 		};
-
 		CPU6: cpu@300 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x300>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -145,13 +127,11 @@
 			d-cache-sets = <256>;
 			l2-cache = <&L2_3>;
 		};
-
 		CPU7: cpu@301 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
 			reg = <0x301>;
 			enable-method = "psci";
-
 			i-cache-size = <0xC000>;
 			i-cache-line-size = <64>;
 			i-cache-sets = <256>;
@@ -161,7 +141,6 @@
 			l2-cache = <&L2_3>;
 		};
 	};
-
 	L2_0: l2-cache0 {
 		cache-size = <0x100000>;
 		cache-line-size = <64>;
@@ -169,7 +148,6 @@
 		cache-unified;
 		next-level-cache = <&L3>;
 	};
-
 	L2_1: l2-cache1 {
 		cache-size = <0x100000>;
 		cache-line-size = <64>;
@@ -177,7 +155,6 @@
 		cache-unified;
 		next-level-cache = <&L3>;
 	};
-
 	L2_2: l2-cache2 {
 		cache-size = <0x100000>;
 		cache-line-size = <64>;
@@ -185,7 +162,6 @@
 		cache-unified;
 		next-level-cache = <&L3>;
 	};
-
 	L2_3: l2-cache3 {
 		cache-size = <0x100000>;
 		cache-line-size = <64>;
@@ -193,7 +169,6 @@
 		cache-unified;
 		next-level-cache = <&L3>;
 	};
-
 	L3: l3-cache {
 		cache-level = <3>;
 		cache-size = <0x800000>;
@@ -201,7 +176,6 @@
 		cache-sets = <8192>;
 		cache-unified;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a57-pmu";
 		interrupts = <0x0 0x7 0x4>,

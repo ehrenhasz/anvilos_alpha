@@ -1,39 +1,20 @@
-# SPDX-License-Identifier: GPL-2.0
-# intel-pt-events.py: Print Intel PT Events including Power Events and PTWRITE
-# Copyright (c) 2017-2021, Intel Corporation.
-#
-# This program is free software; you can redistribute it and/or modify it
-# under the terms and conditions of the GNU General Public License,
-# version 2, as published by the Free Software Foundation.
-#
-# This program is distributed in the hope it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-# more details.
-
 from __future__ import division, print_function
-
 import io
 import os
 import sys
 import struct
 import argparse
 import contextlib
-
 from libxed import LibXED
 from ctypes import create_string_buffer, addressof
-
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
-
 from perf_trace_context import perf_set_itrace_options, \
 	perf_sample_insn, perf_sample_srccode
-
 try:
 	broken_pipe_exception = BrokenPipeError
 except:
 	broken_pipe_exception = IOError
-
 glb_switch_str		= {}
 glb_insn		= False
 glb_disassembler	= None
@@ -46,32 +27,26 @@ glb_output		= None
 glb_output_pos		= 0
 glb_cpu			= -1
 glb_time		= 0
-
 def get_optional_null(perf_dict, field):
 	if field in perf_dict:
 		return perf_dict[field]
 	return ""
-
 def get_optional_zero(perf_dict, field):
 	if field in perf_dict:
 		return perf_dict[field]
 	return 0
-
 def get_optional_bytes(perf_dict, field):
 	if field in perf_dict:
 		return perf_dict[field]
 	return bytes()
-
 def get_optional(perf_dict, field):
 	if field in perf_dict:
 		return perf_dict[field]
 	return "[unknown]"
-
 def get_offset(perf_dict, field):
 	if field in perf_dict:
 		return "+%#x" % perf_dict[field]
 	return ""
-
 def trace_begin():
 	ap = argparse.ArgumentParser(usage = "", add_help = False)
 	ap.add_argument("--insn-trace", action='store_true')
@@ -100,15 +75,12 @@ def trace_begin():
 	except:
 		glb_disassembler = None
 	perf_set_itrace_options(perf_script_context, itrace)
-
 def trace_end():
 	if glb_args.interleave:
 		flush_stashed_output()
 	print("End")
-
 def trace_unhandled(event_name, context, event_fields_dict):
 		print(' '.join(['%s=%s'%(k,str(v))for k,v in sorted(event_fields_dict.items())]))
-
 def stash_output():
 	global glb_stash_dict
 	global glb_output_pos
@@ -119,12 +91,10 @@ def stash_output():
 		if glb_cpu not in glb_stash_dict:
 			glb_stash_dict[glb_cpu] = []
 		glb_stash_dict[glb_cpu].append(output_str)
-
 def flush_stashed_output():
 	global glb_stash_dict
 	while glb_stash_dict:
 		cpus = list(glb_stash_dict.keys())
-		# Output at most glb_args.interleave output strings per cpu
 		for cpu in cpus:
 			items = glb_stash_dict[cpu]
 			countdown = glb_args.interleave
@@ -134,7 +104,6 @@ def flush_stashed_output():
 				countdown -= 1
 			if not items:
 				del glb_stash_dict[cpu]
-
 def print_ptwrite(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	flags = data[0]
@@ -147,21 +116,18 @@ def print_ptwrite(raw_buf):
 	except:
 		s = ""
 	print("IP: %u payload: %#x" % (exact_ip, payload), s, end=' ')
-
 def print_cbr(raw_buf):
 	data = struct.unpack_from("<BBBBII", raw_buf)
 	cbr = data[0]
 	f = (data[4] + 500) / 1000
 	p = ((cbr * 1000 / data[2]) + 5) / 10
 	print("%3u  freq: %4u MHz  (%3u%%)" % (cbr, f, p), end=' ')
-
 def print_mwait(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
 	hints = payload & 0xff
 	extensions = (payload >> 32) & 0x3
 	print("hints: %#x extensions: %#x" % (hints, extensions), end=' ')
-
 def print_pwre(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -170,13 +136,11 @@ def print_pwre(raw_buf):
 	subcstate = (payload >> 8) & 0xf
 	print("hw: %u cstate: %u sub-cstate: %u" % (hw, cstate, subcstate),
 		end=' ')
-
 def print_exstop(raw_buf):
 	data = struct.unpack_from("<I", raw_buf)
 	flags = data[0]
 	exact_ip = flags & 1
 	print("IP: %u" % (exact_ip), end=' ')
-
 def print_pwrx(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	payload = data[1]
@@ -185,16 +149,13 @@ def print_pwrx(raw_buf):
 	wake_reason = (payload >> 8) & 0xf
 	print("deepest cstate: %u last cstate: %u wake reason: %#x" %
 		(deepest_cstate, last_cstate, wake_reason), end=' ')
-
 def print_psb(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	offset = data[1]
 	print("offset: %#x" % (offset), end=' ')
-
 glb_cfe = ["", "INTR", "IRET", "SMI", "RSM", "SIPI", "INIT", "VMENTRY", "VMEXIT",
 		"VMEXIT_INTR", "SHUTDOWN", "", "UINT", "UIRET"] + [""] * 18
 glb_evd = ["", "PFA", "VMXQ", "VMXR"] + [""] * 60
-
 def print_evt(raw_buf):
 	data = struct.unpack_from("<BBH", raw_buf)
 	typ = data[0] & 0x1f
@@ -215,7 +176,6 @@ def print_evt(raw_buf):
 			print("%s: %#x" % (s, data[1]), end=' ')
 		else:
 			print("EVD_%u: %#x" % (et, data[1]), end=' ')
-
 def print_iflag(raw_buf):
 	data = struct.unpack_from("<IQ", raw_buf)
 	iflag = data[0] & 1
@@ -227,7 +187,6 @@ def print_iflag(raw_buf):
 	else:
 		s = "non"
 	print("IFLAG: %u->%u %s branch" % (old_iflag, iflag, s), end=' ')
-
 def common_start_str(comm, sample):
 	ts = sample["time"]
 	cpu = sample["cpu"]
@@ -239,30 +198,20 @@ def common_start_str(comm, sample):
 		return "VM:%5d VCPU:%03d %16s %5u/%-5u [%03u] %9u.%09u  " % (machine_pid, vcpu, comm, pid, tid, cpu, ts / 1000000000, ts %1000000000)
 	else:
 		return "%16s %5u/%-5u [%03u] %9u.%09u  " % (comm, pid, tid, cpu, ts / 1000000000, ts %1000000000)
-
 def print_common_start(comm, sample, name):
 	flags_disp = get_optional_null(sample, "flags_disp")
-	# Unused fields:
-	# period      = sample["period"]
-	# phys_addr   = sample["phys_addr"]
-	# weight      = sample["weight"]
-	# transaction = sample["transaction"]
-	# cpumode     = get_optional_zero(sample, "cpumode")
 	print(common_start_str(comm, sample) + "%8s  %21s" % (name, flags_disp), end=' ')
-
 def print_instructions_start(comm, sample):
 	if "x" in get_optional_null(sample, "flags"):
 		print(common_start_str(comm, sample) + "x", end=' ')
 	else:
 		print(common_start_str(comm, sample), end='  ')
-
 def disassem(insn, ip):
 	inst = glb_disassembler.Instruction()
-	glb_disassembler.SetMode(inst, 0) # Assume 64-bit
+	glb_disassembler.SetMode(inst, 0) 
 	buf = create_string_buffer(64)
 	buf.value = insn
 	return glb_disassembler.DisassembleOne(inst, addressof(buf), len(insn), ip)
-
 def print_common_ip(param_dict, sample, symbol, dso):
 	ip   = sample["ip"]
 	offs = get_offset(param_dict, "symoff")
@@ -295,7 +244,6 @@ def print_common_ip(param_dict, sample, symbol, dso):
 		print("=> %x %s%s (%s)%s" % (addr, symbol, offs, dso, ipc_str))
 	else:
 		print(ipc_str)
-
 def print_srccode(comm, param_dict, sample, symbol, dso, with_insn):
 	ip = sample["ip"]
 	if symbol == "[unknown]":
@@ -303,17 +251,14 @@ def print_srccode(comm, param_dict, sample, symbol, dso, with_insn):
 	else:
 		offs = get_offset(param_dict, "symoff")
 		start_str = common_start_str(comm, sample) + (symbol + offs).ljust(40)
-
 	if with_insn and glb_insn and glb_disassembler is not None:
 		insn = perf_sample_insn(perf_script_context)
 		if insn and len(insn):
 			cnt, text = disassem(insn, ip)
 		start_str += text.ljust(30)
-
 	global glb_source_file_name
 	global glb_line_number
 	global glb_dso
-
 	source_file_name, line_number, source_line = perf_sample_srccode(perf_script_context)
 	if source_file_name:
 		if glb_line_number == line_number and glb_source_file_name == source_file_name:
@@ -333,32 +278,20 @@ def print_srccode(comm, param_dict, sample, symbol, dso, with_insn):
 	else:
 		src_str = dso
 		glb_dso = dso
-
 	glb_line_number = line_number
 	glb_source_file_name = source_file_name
-
 	print(start_str, src_str)
-
 def do_process_event(param_dict):
 	sample	   = param_dict["sample"]
 	raw_buf	   = param_dict["raw_buf"]
 	comm	   = param_dict["comm"]
 	name	   = param_dict["ev_name"]
-	# Unused fields:
-	# callchain  = param_dict["callchain"]
-	# brstack    = param_dict["brstack"]
-	# brstacksym = param_dict["brstacksym"]
-	# event_attr = param_dict["attr"]
-
-	# Symbol and dso info are not always resolved
 	dso    = get_optional(param_dict, "dso")
 	symbol = get_optional(param_dict, "symbol")
-
 	cpu = sample["cpu"]
 	if cpu in glb_switch_str:
 		print(glb_switch_str[cpu])
 		del glb_switch_str[cpu]
-
 	if name.startswith("instructions"):
 		if glb_src:
 			print_srccode(comm, param_dict, sample, symbol, dso, True)
@@ -410,27 +343,21 @@ def do_process_event(param_dict):
 	else:
 		print_common_start(comm, sample, name)
 		print_common_ip(param_dict, sample, symbol, dso)
-
 def interleave_events(param_dict):
 	global glb_cpu
 	global glb_time
 	global glb_output
 	global glb_output_pos
-
 	sample  = param_dict["sample"]
 	glb_cpu = sample["cpu"]
 	ts      = sample["time"]
-
 	if glb_time != ts:
 		glb_time = ts
 		flush_stashed_output()
-
 	glb_output_pos = 0
 	with contextlib.redirect_stdout(io.StringIO()) as glb_output:
 		do_process_event(param_dict)
-
 	stash_output()
-
 def process_event(param_dict):
 	try:
 		if glb_args.interleave:
@@ -438,10 +365,8 @@ def process_event(param_dict):
 		else:
 			do_process_event(param_dict)
 	except broken_pipe_exception:
-		# Stop python printing broken pipe errors and traceback
 		sys.stdout = open(os.devnull, 'w')
 		sys.exit(1)
-
 def auxtrace_error(typ, code, cpu, pid, tid, ip, ts, msg, cpumode, *x):
 	if glb_args.interleave:
 		flush_stashed_output()
@@ -459,10 +384,8 @@ def auxtrace_error(typ, code, cpu, pid, tid, ip, ts, msg, cpumode, *x):
 			print("%16s %5u/%-5u [%03u] %9u.%09u  error type %u code %u: %s ip 0x%16x" %
 				("Trace error", pid, tid, cpu, ts / 1000000000, ts %1000000000, typ, code, msg, ip))
 	except broken_pipe_exception:
-		# Stop python printing broken pipe errors and traceback
 		sys.stdout = open(os.devnull, 'w')
 		sys.exit(1)
-
 def context_switch(ts, cpu, pid, tid, np_pid, np_tid, machine_pid, out, out_preempt, *x):
 	if glb_args.interleave:
 		flush_stashed_output()

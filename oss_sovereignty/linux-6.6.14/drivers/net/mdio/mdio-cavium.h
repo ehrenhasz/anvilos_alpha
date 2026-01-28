@@ -1,32 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2009-2016 Cavium, Inc.
- */
-
 enum cavium_mdiobus_mode {
 	UNINIT = 0,
 	C22,
 	C45
 };
-
 #define SMI_CMD		0x0
 #define SMI_WR_DAT	0x8
 #define SMI_RD_DAT	0x10
 #define SMI_CLK		0x18
 #define SMI_EN		0x20
-
 #ifdef __BIG_ENDIAN_BITFIELD
 #define OCT_MDIO_BITFIELD_FIELD(field, more)	\
 	field;					\
 	more
-
 #else
 #define OCT_MDIO_BITFIELD_FIELD(field, more)	\
 	more					\
 	field;
-
 #endif
-
 union cvmx_smix_clk {
 	u64 u64;
 	struct cvmx_smix_clk_s {
@@ -43,7 +33,6 @@ union cvmx_smix_clk {
 	  ;))))))))))
 	} s;
 };
-
 union cvmx_smix_cmd {
 	u64 u64;
 	struct cvmx_smix_cmd_s {
@@ -56,7 +45,6 @@ union cvmx_smix_cmd {
 	  ;))))))
 	} s;
 };
-
 union cvmx_smix_en {
 	u64 u64;
 	struct cvmx_smix_en_s {
@@ -65,7 +53,6 @@ union cvmx_smix_en {
 	  ;))
 	} s;
 };
-
 union cvmx_smix_rd_dat {
 	u64 u64;
 	struct cvmx_smix_rd_dat_s {
@@ -76,7 +63,6 @@ union cvmx_smix_rd_dat {
 	  ;))))
 	} s;
 };
-
 union cvmx_smix_wr_dat {
 	u64 u64;
 	struct cvmx_smix_wr_dat_s {
@@ -87,33 +73,26 @@ union cvmx_smix_wr_dat {
 	  ;))))
 	} s;
 };
-
 struct cavium_mdiobus {
 	struct mii_bus *mii_bus;
 	void __iomem *register_base;
 	enum cavium_mdiobus_mode mode;
 };
-
 #ifdef CONFIG_CAVIUM_OCTEON_SOC
-
 #include <asm/octeon/octeon.h>
-
 static inline void oct_mdio_writeq(u64 val, void __iomem *addr)
 {
 	cvmx_write_csr((u64 __force)addr, val);
 }
-
 static inline u64 oct_mdio_readq(void __iomem *addr)
 {
 	return cvmx_read_csr((u64 __force)addr);
 }
 #else
 #include <linux/io-64-nonatomic-lo-hi.h>
-
 #define oct_mdio_writeq(val, addr)	writeq(val, addr)
 #define oct_mdio_readq(addr)		readq(addr)
 #endif
-
 int cavium_mdiobus_read_c22(struct mii_bus *bus, int phy_id, int regnum);
 int cavium_mdiobus_write_c22(struct mii_bus *bus, int phy_id, int regnum,
 			     u16 val);

@@ -1,24 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  The driver for the Cirrus Logic's Sound Fusion CS46XX based soundcards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
-
 #ifndef __CS46XX_LIB_H__
 #define __CS46XX_LIB_H__
-
-/*
- *  constants
- */
-
 #define CS46XX_BA0_SIZE		  0x1000
 #define CS46XX_BA1_DATA0_SIZE 0x3000
 #define CS46XX_BA1_DATA1_SIZE 0x3800
 #define CS46XX_BA1_PRG_SIZE	  0x7000
 #define CS46XX_BA1_REG_SIZE	  0x0100
-
-
-
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 #define CS46XX_MIN_PERIOD_SIZE 64
 #define CS46XX_MAX_PERIOD_SIZE 1024*1024
@@ -26,52 +12,32 @@
 #define CS46XX_MIN_PERIOD_SIZE 2048
 #define CS46XX_MAX_PERIOD_SIZE 2048
 #endif
-
 #define CS46XX_FRAGS 2
-/* #define CS46XX_BUFFER_SIZE CS46XX_MAX_PERIOD_SIZE * CS46XX_FRAGS */
-
 #define SCB_NO_PARENT             0
 #define SCB_ON_PARENT_NEXT_SCB    1
 #define SCB_ON_PARENT_SUBLIST_SCB 2
-
-/* 3*1024 parameter, 3.5*1024 sample, 2*3.5*1024 code */
 #define BA1_DWORD_SIZE		(13 * 1024 + 512)
 #define BA1_MEMORY_COUNT	3
-
-/*
- *  common I/O routines
- */
-
 static inline void snd_cs46xx_poke(struct snd_cs46xx *chip, unsigned long reg, unsigned int val)
 {
 	unsigned int bank = reg >> 16;
 	unsigned int offset = reg & 0xffff;
-
-	/*
-	if (bank == 0)
-		printk(KERN_DEBUG "snd_cs46xx_poke: %04X - %08X\n",
-		       reg >> 2,val);
-	*/
 	writel(val, chip->region.idx[bank+1].remap_addr + offset);
 }
-
 static inline unsigned int snd_cs46xx_peek(struct snd_cs46xx *chip, unsigned long reg)
 {
 	unsigned int bank = reg >> 16;
 	unsigned int offset = reg & 0xffff;
 	return readl(chip->region.idx[bank+1].remap_addr + offset);
 }
-
 static inline void snd_cs46xx_pokeBA0(struct snd_cs46xx *chip, unsigned long offset, unsigned int val)
 {
 	writel(val, chip->region.name.ba0.remap_addr + offset);
 }
-
 static inline unsigned int snd_cs46xx_peekBA0(struct snd_cs46xx *chip, unsigned long offset)
 {
 	return readl(chip->region.name.ba0.remap_addr + offset);
 }
-
 struct dsp_spos_instance *cs46xx_dsp_spos_create (struct snd_cs46xx * chip);
 void cs46xx_dsp_spos_destroy (struct snd_cs46xx * chip);
 int cs46xx_dsp_load_module (struct snd_cs46xx * chip, struct dsp_module_desc * module);
@@ -143,7 +109,6 @@ cs46xx_dsp_create_mix_only_scb(struct snd_cs46xx * chip, char * scb_name,
 			       u16 mix_buffer_addr, u32 dest,
 			       struct dsp_scb_descriptor * parent_scb,
 			       int scb_child_type);
-
 struct dsp_scb_descriptor *
 cs46xx_dsp_create_vari_decimate_scb(struct snd_cs46xx * chip, char * scb_name,
 				    u16 vari_buffer_addr0, u16 vari_buffer_addr1, u32 dest,
@@ -192,4 +157,4 @@ int cs46xx_dsp_pcm_channel_set_period (struct snd_cs46xx * chip,
 int cs46xx_dsp_pcm_ostream_set_period (struct snd_cs46xx * chip, int period_size);
 int cs46xx_dsp_set_dac_volume (struct snd_cs46xx * chip, u16 left, u16 right);
 int cs46xx_dsp_set_iec958_volume (struct snd_cs46xx * chip, u16 left, u16 right);
-#endif /* __CS46XX_LIB_H__ */
+#endif  

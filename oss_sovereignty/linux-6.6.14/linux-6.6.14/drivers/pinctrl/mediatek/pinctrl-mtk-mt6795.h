@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2022 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
-
 #ifndef __PINCTRL_MTK_MT6795_H
 #define __PINCTRL_MTK_MT6795_H
-
 #include "pinctrl-paris.h"
-
 static const struct mtk_pin_desc mtk_pins_mt6795[] = {
 	MTK_PIN(
 		0, "GPIO0",
@@ -1694,5 +1686,4 @@ static const struct mtk_pin_desc mtk_pins_mt6795[] = {
 		MTK_FUNCTION(3, "I2S2_DI_2")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT6795_H */
+#endif  

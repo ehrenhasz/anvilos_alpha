@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * zonefs filesystem driver tracepoints.
- *
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM zonefs
-
 #if !defined(_TRACE_ZONEFS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_ZONEFS_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
 #include <linux/blkdev.h>
-
 #include "zonefs.h"
-
 #define show_dev(dev) MAJOR(dev), MINOR(dev)
-
 TRACE_EVENT(zonefs_zone_mgmt,
 	    TP_PROTO(struct super_block *sb, struct zonefs_zone *z,
 		     enum req_op op),
@@ -44,7 +32,6 @@ TRACE_EVENT(zonefs_zone_mgmt,
 		      __entry->nr_sectors
 	    )
 );
-
 TRACE_EVENT(zonefs_file_dio_append,
 	    TP_PROTO(struct inode *inode, ssize_t size, ssize_t ret),
 	    TP_ARGS(inode, size, ret),
@@ -71,7 +58,6 @@ TRACE_EVENT(zonefs_file_dio_append,
 		      __entry->ret
 	    )
 );
-
 TRACE_EVENT(zonefs_iomap_begin,
 	    TP_PROTO(struct inode *inode, struct iomap *iomap),
 	    TP_ARGS(inode, iomap),
@@ -94,13 +80,9 @@ TRACE_EVENT(zonefs_iomap_begin,
 		      __entry->addr, __entry->offset, __entry->length
 	    )
 );
-
-#endif /* _TRACE_ZONEFS_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

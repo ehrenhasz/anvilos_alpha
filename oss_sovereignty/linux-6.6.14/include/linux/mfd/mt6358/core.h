@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- */
-
 #ifndef __MFD_MT6358_CORE_H__
 #define __MFD_MT6358_CORE_H__
-
 struct irq_top_t {
 	int hwirq_base;
 	unsigned int num_int_regs;
@@ -15,7 +9,6 @@ struct irq_top_t {
 	unsigned int sta_reg_shift;
 	unsigned int top_offset;
 };
-
 struct pmic_irq_data {
 	unsigned int num_top;
 	unsigned int num_pmic_irqs;
@@ -24,7 +17,6 @@ struct pmic_irq_data {
 	bool *cache_hwirq;
 	const struct irq_top_t *pmic_ints;
 };
-
 enum mt6358_irq_top_status_shift {
 	MT6358_BUCK_TOP = 0,
 	MT6358_LDO_TOP,
@@ -35,7 +27,6 @@ enum mt6358_irq_top_status_shift {
 	MT6358_AUD_TOP,
 	MT6358_MISC_TOP,
 };
-
 enum mt6358_irq_numbers {
 	MT6358_IRQ_VPROC11_OC = 0,
 	MT6358_IRQ_VPROC12_OC,
@@ -120,7 +111,6 @@ enum mt6358_irq_numbers {
 	MT6358_IRQ_SPI_CMD_ALERT = 144,
 	MT6358_IRQ_NR,
 };
-
 #define MT6358_IRQ_BUCK_BASE MT6358_IRQ_VPROC11_OC
 #define MT6358_IRQ_LDO_BASE MT6358_IRQ_VFE28_OC
 #define MT6358_IRQ_PSC_BASE MT6358_IRQ_PWRKEY
@@ -129,7 +119,6 @@ enum mt6358_irq_numbers {
 #define MT6358_IRQ_HK_BASE MT6358_IRQ_BAT_H
 #define MT6358_IRQ_AUD_BASE MT6358_IRQ_AUDIO
 #define MT6358_IRQ_MISC_BASE MT6358_IRQ_SPI_CMD_ALERT
-
 #define MT6358_IRQ_BUCK_BITS (MT6358_IRQ_VCORE_PREOC - MT6358_IRQ_BUCK_BASE + 1)
 #define MT6358_IRQ_LDO_BITS (MT6358_IRQ_VBIF28_OC - MT6358_IRQ_LDO_BASE + 1)
 #define MT6358_IRQ_PSC_BITS (MT6358_IRQ_VCDT_HV_DET - MT6358_IRQ_PSC_BASE + 1)
@@ -139,7 +128,6 @@ enum mt6358_irq_numbers {
 #define MT6358_IRQ_AUD_BITS (MT6358_IRQ_ACCDET_EINT1 - MT6358_IRQ_AUD_BASE + 1)
 #define MT6358_IRQ_MISC_BITS	\
 	(MT6358_IRQ_SPI_CMD_ALERT - MT6358_IRQ_MISC_BASE + 1)
-
 #define MT6358_TOP_GEN(sp)	\
 {	\
 	.hwirq_base = MT6358_IRQ_##sp##_BASE,	\
@@ -152,5 +140,4 @@ enum mt6358_irq_numbers {
 	.sta_reg_shift = 0x2,	\
 	.top_offset = MT6358_##sp##_TOP,	\
 }
-
-#endif /* __MFD_MT6358_CORE_H__ */
+#endif  

@@ -1,102 +1,75 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2018 Marvell.
- *
- */
-
 #ifndef MBOX_H
 #define MBOX_H
-
 #include <linux/etherdevice.h>
 #include <linux/sizes.h>
-
 #include "rvu_struct.h"
 #include "common.h"
-
 #define MBOX_SIZE		SZ_64K
-
-/* AF/PF: PF initiated, PF/VF VF initiated */
 #define MBOX_DOWN_RX_START	0
 #define MBOX_DOWN_RX_SIZE	(46 * SZ_1K)
 #define MBOX_DOWN_TX_START	(MBOX_DOWN_RX_START + MBOX_DOWN_RX_SIZE)
 #define MBOX_DOWN_TX_SIZE	(16 * SZ_1K)
-/* AF/PF: AF initiated, PF/VF PF initiated */
 #define MBOX_UP_RX_START	(MBOX_DOWN_TX_START + MBOX_DOWN_TX_SIZE)
 #define MBOX_UP_RX_SIZE		SZ_1K
 #define MBOX_UP_TX_START	(MBOX_UP_RX_START + MBOX_UP_RX_SIZE)
 #define MBOX_UP_TX_SIZE		SZ_1K
-
 #if MBOX_UP_TX_SIZE + MBOX_UP_TX_START != MBOX_SIZE
 # error "incorrect mailbox area sizes"
 #endif
-
 #define INTR_MASK(pfvfs) ((pfvfs < 64) ? (BIT_ULL(pfvfs) - 1) : (~0ull))
-
-#define MBOX_RSP_TIMEOUT	6000 /* Time(ms) to wait for mbox response */
-
-#define MBOX_MSG_ALIGN		16  /* Align mbox msg start to 16bytes */
-
-/* Mailbox directions */
-#define MBOX_DIR_AFPF		0  /* AF replies to PF */
-#define MBOX_DIR_PFAF		1  /* PF sends messages to AF */
-#define MBOX_DIR_PFVF		2  /* PF replies to VF */
-#define MBOX_DIR_VFPF		3  /* VF sends messages to PF */
-#define MBOX_DIR_AFPF_UP	4  /* AF sends messages to PF */
-#define MBOX_DIR_PFAF_UP	5  /* PF replies to AF */
-#define MBOX_DIR_PFVF_UP	6  /* PF sends messages to VF */
-#define MBOX_DIR_VFPF_UP	7  /* VF replies to PF */
-
+#define MBOX_RSP_TIMEOUT	6000  
+#define MBOX_MSG_ALIGN		16   
+#define MBOX_DIR_AFPF		0   
+#define MBOX_DIR_PFAF		1   
+#define MBOX_DIR_PFVF		2   
+#define MBOX_DIR_VFPF		3   
+#define MBOX_DIR_AFPF_UP	4   
+#define MBOX_DIR_PFAF_UP	5   
+#define MBOX_DIR_PFVF_UP	6   
+#define MBOX_DIR_VFPF_UP	7   
 struct otx2_mbox_dev {
-	void	    *mbase;   /* This dev's mbox region */
+	void	    *mbase;    
 	void	    *hwbase;
 	spinlock_t  mbox_lock;
-	u16         msg_size; /* Total msg size to be sent */
-	u16         rsp_size; /* Total rsp size to be sure the reply is ok */
-	u16         num_msgs; /* No of msgs sent or waiting for response */
-	u16         msgs_acked; /* No of msgs for which response is received */
+	u16         msg_size;  
+	u16         rsp_size;  
+	u16         num_msgs;  
+	u16         msgs_acked;  
 };
-
 struct otx2_mbox {
 	struct pci_dev *pdev;
-	void   *hwbase;  /* Mbox region advertised by HW */
-	void   *reg_base;/* CSR base for this dev */
-	u64    trigger;  /* Trigger mbox notification */
-	u16    tr_shift; /* Mbox trigger shift */
-	u64    rx_start; /* Offset of Rx region in mbox memory */
-	u64    tx_start; /* Offset of Tx region in mbox memory */
-	u16    rx_size;  /* Size of Rx region */
-	u16    tx_size;  /* Size of Tx region */
-	u16    ndevs;    /* The number of peers */
+	void   *hwbase;   
+	void   *reg_base; 
+	u64    trigger;   
+	u16    tr_shift;  
+	u64    rx_start;  
+	u64    tx_start;  
+	u16    rx_size;   
+	u16    tx_size;   
+	u16    ndevs;     
 	struct otx2_mbox_dev *dev;
 };
-
-/* Header which precedes all mbox messages */
 struct mbox_hdr {
-	u64 msg_size;	/* Total msgs size embedded */
-	u16  num_msgs;   /* No of msgs embedded */
+	u64 msg_size;	 
+	u16  num_msgs;    
 };
-
-/* Header which precedes every msg and is also part of it */
 struct mbox_msghdr {
-	u16 pcifunc;     /* Who's sending this msg */
-	u16 id;          /* Mbox message ID */
+	u16 pcifunc;      
+	u16 id;           
 #define OTX2_MBOX_REQ_SIG (0xdead)
 #define OTX2_MBOX_RSP_SIG (0xbeef)
-	u16 sig;         /* Signature, for validating corrupted msgs */
+	u16 sig;          
 #define OTX2_MBOX_VERSION (0x000a)
-	u16 ver;         /* Version of msg's structure for this ID */
-	u16 next_msgoff; /* Offset of next msg within mailbox region */
-	int rc;          /* Msg process'ed response code */
+	u16 ver;          
+	u16 next_msgoff;  
+	int rc;           
 };
-
 void otx2_mbox_reset(struct otx2_mbox *mbox, int devid);
 void __otx2_mbox_reset(struct otx2_mbox *mbox, int devid);
 void otx2_mbox_destroy(struct otx2_mbox *mbox);
 int otx2_mbox_init(struct otx2_mbox *mbox, void __force *hwbase,
 		   struct pci_dev *pdev, void __force *reg_base,
 		   int direction, int ndevs);
-
 int otx2_mbox_regions_init(struct otx2_mbox *mbox, void __force **hwbase,
 			   struct pci_dev *pdev, void __force *reg_base,
 			   int direction, int ndevs, unsigned long *bmap);
@@ -117,14 +90,11 @@ static inline struct mbox_msghdr *otx2_mbox_alloc_msg(struct otx2_mbox *mbox,
 {
 	return otx2_mbox_alloc_msg_rsp(mbox, devid, size, 0);
 }
-
-/* Mailbox message types */
 #define MBOX_MSG_MASK				0xFFFF
 #define MBOX_MSG_INVALID			0xFFFE
 #define MBOX_MSG_MAX				0xFFFF
-
 #define MBOX_MESSAGES							\
-/* Generic mbox IDs (range 0x000 - 0x1FF) */				\
+ 				\
 M(READY,		0x001, ready, msg_req, ready_msg_rsp)		\
 M(ATTACH_RESOURCES,	0x002, attach_resources, rsrc_attach, msg_rsp)	\
 M(DETACH_RESOURCES,	0x003, detach_resources, rsrc_detach, msg_rsp)	\
@@ -137,7 +107,7 @@ M(LMTST_TBL_SETUP,	0x00a, lmtst_tbl_setup, lmtst_tbl_setup_req,    \
 				msg_rsp)				\
 M(SET_VF_PERM,		0x00b, set_vf_perm, set_vf_perm, msg_rsp)	\
 M(PTP_GET_CAP,		0x00c, ptp_get_cap, msg_req, ptp_get_cap_rsp)	\
-/* CGX mbox IDs (range 0x200 - 0x3FF) */				\
+ 				\
 M(CGX_START_RXTX,	0x200, cgx_start_rxtx, msg_req, msg_rsp)	\
 M(CGX_STOP_RXTX,	0x201, cgx_stop_rxtx, msg_req, msg_rsp)		\
 M(CGX_STATS,		0x202, cgx_stats, msg_req, cgx_stats_rsp)	\
@@ -177,15 +147,15 @@ M(CGX_MAC_ADDR_UPDATE,	0x21E, cgx_mac_addr_update, cgx_mac_addr_update_req, \
 						    cgx_mac_addr_update_rsp) \
 M(CGX_PRIO_FLOW_CTRL_CFG, 0x21F, cgx_prio_flow_ctrl_cfg, cgx_pfc_cfg,  \
 				 cgx_pfc_rsp)                               \
-/* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+ 				\
 M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
 				npa_lf_alloc_req, npa_lf_alloc_rsp)	\
 M(NPA_LF_FREE,		0x401, npa_lf_free, msg_req, msg_rsp)		\
 M(NPA_AQ_ENQ,		0x402, npa_aq_enq, npa_aq_enq_req, npa_aq_enq_rsp)   \
 M(NPA_HWCTX_DISABLE,	0x403, npa_hwctx_disable, hwctx_disable_req, msg_rsp)\
-/* SSO/SSOW mbox IDs (range 0x600 - 0x7FF) */				\
-/* TIM mbox IDs (range 0x800 - 0x9FF) */				\
-/* CPT mbox IDs (range 0xA00 - 0xBFF) */				\
+ 				\
+ 				\
+ 				\
 M(CPT_LF_ALLOC,		0xA00, cpt_lf_alloc, cpt_lf_alloc_req_msg,	\
 			       msg_rsp)					\
 M(CPT_LF_FREE,		0xA01, cpt_lf_free, msg_req, msg_rsp)		\
@@ -200,10 +170,10 @@ M(CPT_CTX_CACHE_SYNC,   0xA07, cpt_ctx_cache_sync, msg_req, msg_rsp)    \
 M(CPT_LF_RESET,         0xA08, cpt_lf_reset, cpt_lf_rst_req, msg_rsp)	\
 M(CPT_FLT_ENG_INFO,     0xA09, cpt_flt_eng_info, cpt_flt_eng_info_req,	\
 			       cpt_flt_eng_info_rsp)			\
-/* SDP mbox IDs (range 0x1000 - 0x11FF) */				\
+ 				\
 M(SET_SDP_CHAN_INFO, 0x1000, set_sdp_chan_info, sdp_chan_info_msg, msg_rsp) \
 M(GET_SDP_CHAN_INFO, 0x1001, get_sdp_chan_info, msg_req, sdp_get_chan_info_msg) \
-/* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
+ 				\
 M(NPC_MCAM_ALLOC_ENTRY,	0x6000, npc_mcam_alloc_entry, npc_mcam_alloc_entry_req,\
 				npc_mcam_alloc_entry_rsp)		\
 M(NPC_MCAM_FREE_ENTRY,	0x6001, npc_mcam_free_entry,			\
@@ -253,7 +223,7 @@ M(NPC_GET_FIELD_HASH_INFO, 0x6013, npc_get_field_hash_info,                     
 M(NPC_GET_FIELD_STATUS, 0x6014, npc_get_field_status,                     \
 				   npc_get_field_status_req,              \
 				   npc_get_field_status_rsp)              \
-/* NIX mbox IDs (range 0x8000 - 0xFFFF) */				\
+ 				\
 M(NIX_LF_ALLOC,		0x8000, nix_lf_alloc,				\
 				 nix_lf_alloc_req, nix_lf_alloc_rsp)	\
 M(NIX_LF_FREE,		0x8001, nix_lf_free, nix_lf_free_req, msg_rsp)	\
@@ -304,7 +274,7 @@ M(NIX_BANDPROF_GET_HWINFO, 0x801f, nix_bandprof_get_hwinfo, msg_req,		\
 				nix_bandprof_get_hwinfo_rsp)		    \
 M(NIX_READ_INLINE_IPSEC_CFG, 0x8023, nix_read_inline_ipsec_cfg,		\
 				msg_req, nix_inline_ipsec_cfg)		\
-/* MCS mbox IDs (range 0xA000 - 0xBFFF) */					\
+ 					\
 M(MCS_ALLOC_RESOURCES,	0xa000, mcs_alloc_resources, mcs_alloc_rsrc_req,	\
 				mcs_alloc_rsrc_rsp)				\
 M(MCS_FREE_RESOURCES,	0xa001, mcs_free_resources, mcs_free_rsrc_req, msg_rsp) \
@@ -354,17 +324,12 @@ M(MCS_PORT_CFG_GET,	0xa020, mcs_port_cfg_get, mcs_port_cfg_get_req,		\
 M(MCS_CUSTOM_TAG_CFG_GET, 0xa021, mcs_custom_tag_cfg_get,			\
 				  mcs_custom_tag_cfg_get_req,			\
 				  mcs_custom_tag_cfg_get_rsp)
-
-/* Messages initiated by AF (range 0xC00 - 0xEFF) */
 #define MBOX_UP_CGX_MESSAGES						\
 M(CGX_LINK_EVENT,	0xC00, cgx_link_event, cgx_link_info_msg, msg_rsp)
-
 #define MBOX_UP_CPT_MESSAGES						\
 M(CPT_INST_LMTST,	0xD00, cpt_inst_lmtst, cpt_inst_lmtst_req, msg_rsp)
-
 #define MBOX_UP_MCS_MESSAGES						\
 M(MCS_INTR_NOTIFY,	0xE00, mcs_intr_notify, mcs_intr_info, msg_rsp)
-
 enum {
 #define M(_name, _id, _1, _2, _3) MBOX_MSG_ ## _name = _id,
 MBOX_MESSAGES
@@ -373,55 +338,21 @@ MBOX_UP_CPT_MESSAGES
 MBOX_UP_MCS_MESSAGES
 #undef M
 };
-
-/* Mailbox message formats */
-
 #define RVU_DEFAULT_PF_FUNC     0xFFFF
-
-/* Generic request msg used for those mbox messages which
- * don't send any data in the request.
- */
 struct msg_req {
 	struct mbox_msghdr hdr;
 };
-
-/* Generic response msg used an ack or response for those mbox
- * messages which don't have a specific rsp msg format.
- */
 struct msg_rsp {
 	struct mbox_msghdr hdr;
 };
-
-/* RVU mailbox error codes
- * Range 256 - 300.
- */
 enum rvu_af_status {
 	RVU_INVALID_VF_ID           = -256,
 };
-
 struct ready_msg_rsp {
 	struct mbox_msghdr hdr;
-	u16    sclk_freq;	/* SCLK frequency (in MHz) */
-	u16    rclk_freq;	/* RCLK frequency (in MHz) */
+	u16    sclk_freq;	 
+	u16    rclk_freq;	 
 };
-
-/* Structure for requesting resource provisioning.
- * 'modify' flag to be used when either requesting more
- * or to detach partial of a certain resource type.
- * Rest of the fields specify how many of what type to
- * be attached.
- * To request LFs from two blocks of same type this mailbox
- * can be sent twice as below:
- *      struct rsrc_attach *attach;
- *       .. Allocate memory for message ..
- *       attach->cptlfs = 3; <3 LFs from CPT0>
- *       .. Send message ..
- *       .. Allocate memory for message ..
- *       attach->modify = 1;
- *       attach->cpt_blkaddr = BLKADDR_CPT1;
- *       attach->cptlfs = 2; <2 LFs from CPT1>
- *       .. Send message ..
- */
 struct rsrc_attach {
 	struct mbox_msghdr hdr;
 	u8   modify:1;
@@ -431,14 +362,8 @@ struct rsrc_attach {
 	u16  ssow;
 	u16  timlfs;
 	u16  cptlfs;
-	int  cpt_blkaddr; /* BLKADDR_CPT0/BLKADDR_CPT1 or 0 for BLKADDR_CPT0 */
+	int  cpt_blkaddr;  
 };
-
-/* Structure for relinquishing resources.
- * 'partial' flag to be used when relinquishing all resources
- * but only of a certain type. If not set, all resources of all
- * types provisioned to the RVU function will be detached.
- */
 struct rsrc_detach {
 	struct mbox_msghdr hdr;
 	u8 partial:1;
@@ -449,10 +374,6 @@ struct rsrc_detach {
 	u8 timlfs:1;
 	u8 cptlfs:1;
 };
-
-/* Number of resources available to the caller.
- * In reply to MBOX_MSG_FREE_RSRC_CNT.
- */
 struct free_rsrcs_rsp {
 	struct mbox_msghdr hdr;
 	u16 schq[NIX_TXSCH_LVL_CNT];
@@ -468,10 +389,8 @@ struct free_rsrcs_rsp {
 	u8   ree0;
 	u8   ree1;
 };
-
 #define MSIX_VECTOR_INVALID	0xFFFF
 #define MAX_RVU_BLKLF_CNT	256
-
 struct msix_offset_rsp {
 	struct mbox_msghdr hdr;
 	u16  npa_msixoff;
@@ -491,16 +410,12 @@ struct msix_offset_rsp {
 	u16  ree0_lf_msixoff[MAX_RVU_BLKLF_CNT];
 	u16  ree1_lf_msixoff[MAX_RVU_BLKLF_CNT];
 };
-
 struct get_hw_cap_rsp {
 	struct mbox_msghdr hdr;
-	u8 nix_fixed_txschq_mapping; /* Schq mapping fixed or flexible */
-	u8 nix_shaping;		     /* Is shaping and coloring supported */
-	u8 npc_hash_extract;	/* Is hash extract supported */
+	u8 nix_fixed_txschq_mapping;  
+	u8 nix_shaping;		      
+	u8 npc_hash_extract;	 
 };
-
-/* CGX mbox message formats */
-
 struct cgx_stats_rsp {
 	struct mbox_msghdr hdr;
 #define CGX_RX_STATS_COUNT	9
@@ -508,78 +423,52 @@ struct cgx_stats_rsp {
 	u64 rx_stats[CGX_RX_STATS_COUNT];
 	u64 tx_stats[CGX_TX_STATS_COUNT];
 };
-
 struct cgx_fec_stats_rsp {
 	struct mbox_msghdr hdr;
 	u64 fec_corr_blks;
 	u64 fec_uncorr_blks;
 };
-/* Structure for requesting the operation for
- * setting/getting mac address in the CGX interface
- */
 struct cgx_mac_addr_set_or_get {
 	struct mbox_msghdr hdr;
 	u8 mac_addr[ETH_ALEN];
 	u32 index;
 };
-
-/* Structure for requesting the operation to
- * add DMAC filter entry into CGX interface
- */
 struct cgx_mac_addr_add_req {
 	struct mbox_msghdr hdr;
 	u8 mac_addr[ETH_ALEN];
 };
-
-/* Structure for response against the operation to
- * add DMAC filter entry into CGX interface
- */
 struct cgx_mac_addr_add_rsp {
 	struct mbox_msghdr hdr;
 	u32 index;
 };
-
-/* Structure for requesting the operation to
- * delete DMAC filter entry from CGX interface
- */
 struct cgx_mac_addr_del_req {
 	struct mbox_msghdr hdr;
 	u32 index;
 };
-
-/* Structure for response against the operation to
- * get maximum supported DMAC filter entries
- */
 struct cgx_max_dmac_entries_get_rsp {
 	struct mbox_msghdr hdr;
 	u32 max_dmac_filters;
 };
-
 struct cgx_link_user_info {
 	uint64_t link_up:1;
 	uint64_t full_duplex:1;
 	uint64_t lmac_type_id:4;
-	uint64_t speed:20; /* speed in Mbps */
-	uint64_t an:1;		/* AN supported or not */
-	uint64_t fec:2;	 /* FEC type if enabled else 0 */
+	uint64_t speed:20;  
+	uint64_t an:1;		 
+	uint64_t fec:2;	  
 #define LMACTYPE_STR_LEN 16
 	char lmac_type[LMACTYPE_STR_LEN];
 };
-
 struct cgx_link_info_msg {
 	struct mbox_msghdr hdr;
 	struct cgx_link_user_info link_info;
 };
-
 struct cgx_pause_frm_cfg {
 	struct mbox_msghdr hdr;
 	u8 set;
-	/* set = 1 if the request is to config pause frames */
-	/* set = 0 if the request is to fetch pause frames config */
 	u8 rx_pause;
 	u8 tx_pause;
 };
-
 enum fec_type {
 	OTX2_FEC_NONE,
 	OTX2_FEC_BASER,
@@ -587,19 +476,16 @@ enum fec_type {
 	OTX2_FEC_STATS_CNT = 2,
 	OTX2_FEC_OFF,
 };
-
 struct fec_mode {
 	struct mbox_msghdr hdr;
 	int fec;
 };
-
 struct sfp_eeprom_s {
 #define SFP_EEPROM_SIZE 256
 	u16 sff_id;
 	u8 buf[SFP_EEPROM_SIZE];
 	u64 reserved;
 };
-
 struct phy_s {
 	struct {
 		u64 can_change_mod_type:1;
@@ -613,27 +499,22 @@ struct phy_s {
 		u32 brfec_uncorr_blks;
 	} fec_stats;
 };
-
 struct cgx_lmac_fwdata_s {
 	u16 rw_valid;
 	u64 supported_fec;
 	u64 supported_an;
 	u64 supported_link_modes;
-	/* only applicable if AN is supported */
 	u64 advertised_fec;
 	u64 advertised_link_modes;
-	/* Only applicable if SFP/QSFP slot is present */
 	struct sfp_eeprom_s sfp_eeprom;
 	struct phy_s phy;
 #define LMAC_FWDATA_RESERVED_MEM 1021
 	u64 reserved[LMAC_FWDATA_RESERVED_MEM];
 };
-
 struct cgx_fw_data {
 	struct mbox_msghdr hdr;
 	struct cgx_lmac_fwdata_s fwdata;
 };
-
 struct cgx_set_link_mode_args {
 	u32 speed;
 	u8 duplex;
@@ -641,48 +522,39 @@ struct cgx_set_link_mode_args {
 	u8 ports;
 	u64 mode;
 };
-
 struct cgx_set_link_mode_req {
 #define AUTONEG_UNKNOWN		0xff
 	struct mbox_msghdr hdr;
 	struct cgx_set_link_mode_args args;
 };
-
 struct cgx_set_link_mode_rsp {
 	struct mbox_msghdr hdr;
 	int status;
 };
-
 struct cgx_mac_addr_reset_req {
 	struct mbox_msghdr hdr;
 	u32 index;
 };
-
 struct cgx_mac_addr_update_req {
 	struct mbox_msghdr hdr;
 	u8 mac_addr[ETH_ALEN];
 	u32 index;
 };
-
 struct cgx_mac_addr_update_rsp {
 	struct mbox_msghdr hdr;
 	u32 index;
 };
-
-#define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
+#define RVU_LMAC_FEAT_FC		BIT_ULL(0)  
 #define	RVU_LMAC_FEAT_HIGIG2		BIT_ULL(1)
-			/* flow control from physical link higig2 messages */
-#define RVU_LMAC_FEAT_PTP		BIT_ULL(2) /* precison time protocol */
-#define RVU_LMAC_FEAT_DMACF		BIT_ULL(3) /* DMAC FILTER */
+#define RVU_LMAC_FEAT_PTP		BIT_ULL(2)  
+#define RVU_LMAC_FEAT_DMACF		BIT_ULL(3)  
 #define RVU_MAC_VERSION			BIT_ULL(4)
 #define RVU_MAC_CGX			BIT_ULL(5)
 #define RVU_MAC_RPM			BIT_ULL(6)
-
 struct cgx_features_info_msg {
 	struct mbox_msghdr hdr;
 	u64    lmac_features;
 };
-
 struct rpm_stats_rsp {
 	struct mbox_msghdr hdr;
 #define RPM_RX_STATS_COUNT		43
@@ -690,22 +562,17 @@ struct rpm_stats_rsp {
 	u64 rx_stats[RPM_RX_STATS_COUNT];
 	u64 tx_stats[RPM_TX_STATS_COUNT];
 };
-
 struct cgx_pfc_cfg {
 	struct mbox_msghdr hdr;
 	u8 rx_pause;
 	u8 tx_pause;
-	u16 pfc_en; /*  bitmap indicating pfc enabled traffic classes */
+	u16 pfc_en;  
 };
-
 struct cgx_pfc_rsp {
 	struct mbox_msghdr hdr;
 	u8 rx_pause;
 	u8 tx_pause;
 };
-
- /* NPA mbox message formats */
-
 struct npc_set_pkind {
 	struct mbox_msghdr hdr;
 #define OTX2_PRIV_FLAGS_DEFAULT  BIT_ULL(0)
@@ -714,19 +581,11 @@ struct npc_set_pkind {
 #define PKIND_TX		BIT_ULL(0)
 #define PKIND_RX		BIT_ULL(1)
 	u8 dir;
-	u8 pkind; /* valid only in case custom flag */
-	u8 var_len_off; /* Offset of custom header length field.
-			 * Valid only for pkind NPC_RX_CUSTOM_PRE_L2_PKIND
-			 */
-	u8 var_len_off_mask; /* Mask for length with in offset */
-	u8 shift_dir; /* shift direction to get length of the header at var_len_off */
+	u8 pkind;  
+	u8 var_len_off;  
+	u8 var_len_off_mask;  
+	u8 shift_dir;  
 };
-
-/* NPA mbox message formats */
-
-/* NPA mailbox error codes
- * Range 301 - 400.
- */
 enum npa_af_status {
 	NPA_AF_ERR_PARAM            = -301,
 	NPA_AF_ERR_AQ_FULL          = -302,
@@ -735,69 +594,45 @@ enum npa_af_status {
 	NPA_AF_ERR_AF_LF_ALLOC      = -305,
 	NPA_AF_ERR_LF_RESET         = -306,
 };
-
-/* For NPA LF context alloc and init */
 struct npa_lf_alloc_req {
 	struct mbox_msghdr hdr;
 	int node;
-	int aura_sz;  /* No of auras */
-	u32 nr_pools; /* No of pools */
+	int aura_sz;   
+	u32 nr_pools;  
 	u64 way_mask;
 };
-
 struct npa_lf_alloc_rsp {
 	struct mbox_msghdr hdr;
-	u32 stack_pg_ptrs;  /* No of ptrs per stack page */
-	u32 stack_pg_bytes; /* Size of stack page */
-	u16 qints; /* NPA_AF_CONST::QINTS */
-	u8 cache_lines; /*BATCH ALLOC DMA */
+	u32 stack_pg_ptrs;   
+	u32 stack_pg_bytes;  
+	u16 qints;  
+	u8 cache_lines;  
 };
-
-/* NPA AQ enqueue msg */
 struct npa_aq_enq_req {
 	struct mbox_msghdr hdr;
 	u32 aura_id;
 	u8 ctype;
 	u8 op;
 	union {
-		/* Valid when op == WRITE/INIT and ctype == AURA.
-		 * LF fills the pool_id in aura.pool_addr. AF will translate
-		 * the pool_id to pool context pointer.
-		 */
 		struct npa_aura_s aura;
-		/* Valid when op == WRITE/INIT and ctype == POOL */
 		struct npa_pool_s pool;
 	};
-	/* Mask data when op == WRITE (1=write, 0=don't write) */
 	union {
-		/* Valid when op == WRITE and ctype == AURA */
 		struct npa_aura_s aura_mask;
-		/* Valid when op == WRITE and ctype == POOL */
 		struct npa_pool_s pool_mask;
 	};
 };
-
 struct npa_aq_enq_rsp {
 	struct mbox_msghdr hdr;
 	union {
-		/* Valid when op == READ and ctype == AURA */
 		struct npa_aura_s aura;
-		/* Valid when op == READ and ctype == POOL */
 		struct npa_pool_s pool;
 	};
 };
-
-/* Disable all contexts of type 'ctype' */
 struct hwctx_disable_req {
 	struct mbox_msghdr hdr;
 	u8 ctype;
 };
-
-/* NIX mbox message formats */
-
-/* NIX mailbox error codes
- * Range 401 - 500.
- */
 enum nix_af_status {
 	NIX_AF_ERR_PARAM            = -401,
 	NIX_AF_ERR_AQ_FULL          = -402,
@@ -831,10 +666,8 @@ enum nix_af_status {
 	NIX_AF_ERR_AQ_CTX_RETRY_WRITE  = -430,
 	NIX_AF_ERR_LINK_CREDITS  = -431,
 };
-
-/* For NIX RX vtag action  */
 enum nix_rx_vtag0_type {
-	NIX_AF_LFX_RX_VTAG_TYPE0, /* reserved for rx vlan offload */
+	NIX_AF_LFX_RX_VTAG_TYPE0,  
 	NIX_AF_LFX_RX_VTAG_TYPE1,
 	NIX_AF_LFX_RX_VTAG_TYPE2,
 	NIX_AF_LFX_RX_VTAG_TYPE3,
@@ -843,54 +676,48 @@ enum nix_rx_vtag0_type {
 	NIX_AF_LFX_RX_VTAG_TYPE6,
 	NIX_AF_LFX_RX_VTAG_TYPE7,
 };
-
-/* For NIX LF context alloc and init */
 struct nix_lf_alloc_req {
 	struct mbox_msghdr hdr;
 	int node;
-	u32 rq_cnt;   /* No of receive queues */
-	u32 sq_cnt;   /* No of send queues */
-	u32 cq_cnt;   /* No of completion queues */
+	u32 rq_cnt;    
+	u32 sq_cnt;    
+	u32 cq_cnt;    
 	u8  xqe_sz;
 	u16 rss_sz;
 	u8  rss_grps;
 	u16 npa_func;
 	u16 sso_func;
-	u64 rx_cfg;   /* See NIX_AF_LF(0..127)_RX_CFG */
+	u64 rx_cfg;    
 	u64 way_mask;
 #define NIX_LF_RSS_TAG_LSB_AS_ADDER BIT_ULL(0)
 #define NIX_LF_LBK_BLK_SEL	    BIT_ULL(1)
 	u64 flags;
 };
-
 struct nix_lf_alloc_rsp {
 	struct mbox_msghdr hdr;
 	u16	sqb_size;
 	u16	rx_chan_base;
 	u16	tx_chan_base;
-	u8      rx_chan_cnt; /* total number of RX channels */
-	u8      tx_chan_cnt; /* total number of TX channels */
+	u8      rx_chan_cnt;  
+	u8      tx_chan_cnt;  
 	u8	lso_tsov4_idx;
 	u8	lso_tsov6_idx;
 	u8      mac_addr[ETH_ALEN];
-	u8	lf_rx_stats; /* NIX_AF_CONST1::LF_RX_STATS */
-	u8	lf_tx_stats; /* NIX_AF_CONST1::LF_TX_STATS */
-	u16	cints; /* NIX_AF_CONST2::CINTS */
-	u16	qints; /* NIX_AF_CONST2::QINTS */
-	u8	cgx_links;  /* No. of CGX links present in HW */
-	u8	lbk_links;  /* No. of LBK links present in HW */
-	u8	sdp_links;  /* No. of SDP links present in HW */
-	u8	tx_link;    /* Transmit channel link number */
+	u8	lf_rx_stats;  
+	u8	lf_tx_stats;  
+	u16	cints;  
+	u16	qints;  
+	u8	cgx_links;   
+	u8	lbk_links;   
+	u8	sdp_links;   
+	u8	tx_link;     
 };
-
 struct nix_lf_free_req {
 	struct mbox_msghdr hdr;
 #define NIX_LF_DISABLE_FLOWS		BIT_ULL(0)
 #define NIX_LF_DONT_FREE_TX_VTAG	BIT_ULL(1)
 	u64 flags;
 };
-
-/* CN10K NIX AQ enqueue msg */
 struct nix_cn10k_aq_enq_req {
 	struct mbox_msghdr hdr;
 	u32  qidx;
@@ -913,7 +740,6 @@ struct nix_cn10k_aq_enq_req {
 		struct nix_bandprof_s prof_mask;
 	};
 };
-
 struct nix_cn10k_aq_enq_rsp {
 	struct mbox_msghdr hdr;
 	union {
@@ -925,8 +751,6 @@ struct nix_cn10k_aq_enq_rsp {
 		struct nix_bandprof_s prof;
 	};
 };
-
-/* NIX AQ enqueue msg */
 struct nix_aq_enq_req {
 	struct mbox_msghdr hdr;
 	u32  qidx;
@@ -949,7 +773,6 @@ struct nix_aq_enq_req {
 		struct nix_bandprof_s prof_mask;
 	};
 };
-
 struct nix_aq_enq_rsp {
 	struct mbox_msghdr hdr;
 	union {
@@ -961,44 +784,32 @@ struct nix_aq_enq_rsp {
 		struct nix_bandprof_s prof;
 	};
 };
-
-/* Tx scheduler/shaper mailbox messages */
-
 #define MAX_TXSCHQ_PER_FUNC		128
-
 struct nix_txsch_alloc_req {
 	struct mbox_msghdr hdr;
-	/* Scheduler queue count request at each level */
-	u16 schq_contig[NIX_TXSCH_LVL_CNT]; /* No of contiguous queues */
-	u16 schq[NIX_TXSCH_LVL_CNT]; /* No of non-contiguous queues */
+	u16 schq_contig[NIX_TXSCH_LVL_CNT];  
+	u16 schq[NIX_TXSCH_LVL_CNT];  
 };
-
 struct nix_txsch_alloc_rsp {
 	struct mbox_msghdr hdr;
-	/* Scheduler queue count allocated at each level */
 	u16 schq_contig[NIX_TXSCH_LVL_CNT];
 	u16 schq[NIX_TXSCH_LVL_CNT];
-	/* Scheduler queue list allocated at each level */
 	u16 schq_contig_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
 	u16 schq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
-	u8  aggr_level; /* Traffic aggregation scheduler level */
-	u8  aggr_lvl_rr_prio; /* Aggregation lvl's RR_PRIO config */
-	u8  link_cfg_lvl; /* LINKX_CFG CSRs mapped to TL3 or TL2's index ? */
+	u8  aggr_level;  
+	u8  aggr_lvl_rr_prio;  
+	u8  link_cfg_lvl;  
 };
-
 struct nix_txsch_free_req {
 	struct mbox_msghdr hdr;
 #define TXSCHQ_FREE_ALL BIT_ULL(0)
 	u16 flags;
-	/* Scheduler queue level to be freed */
 	u16 schq_lvl;
-	/* List of scheduler queues to be freed */
 	u16 schq;
 };
-
 struct nix_txschq_config {
 	struct mbox_msghdr hdr;
-	u8 lvl;	/* SMQ/MDQ/TL4/TL3/TL2/TL1 */
+	u8 lvl;	 
 	u8 read;
 #define TXSCHQ_IDX_SHIFT	16
 #define TXSCHQ_IDX_MASK		(BIT_ULL(10) - 1)
@@ -1007,85 +818,39 @@ struct nix_txschq_config {
 #define MAX_REGS_PER_MBOX_MSG	20
 	u64 reg[MAX_REGS_PER_MBOX_MSG];
 	u64 regval[MAX_REGS_PER_MBOX_MSG];
-	/* All 0's => overwrite with new value */
 	u64 regval_mask[MAX_REGS_PER_MBOX_MSG];
 };
-
 struct nix_vtag_config {
 	struct mbox_msghdr hdr;
-	/* '0' for 4 octet VTAG, '1' for 8 octet VTAG */
 	u8 vtag_size;
-	/* cfg_type is '0' for tx vlan cfg
-	 * cfg_type is '1' for rx vlan cfg
-	 */
 	u8 cfg_type;
 	union {
-		/* valid when cfg_type is '0' */
 		struct {
 			u64 vtag0;
 			u64 vtag1;
-
-			/* cfg_vtag0 & cfg_vtag1 fields are valid
-			 * when free_vtag0 & free_vtag1 are '0's.
-			 */
-			/* cfg_vtag0 = 1 to configure vtag0 */
 			u8 cfg_vtag0 :1;
-			/* cfg_vtag1 = 1 to configure vtag1 */
 			u8 cfg_vtag1 :1;
-
-			/* vtag0_idx & vtag1_idx are only valid when
-			 * both cfg_vtag0 & cfg_vtag1 are '0's,
-			 * these fields are used along with free_vtag0
-			 * & free_vtag1 to free the nix lf's tx_vlan
-			 * configuration.
-			 *
-			 * Denotes the indices of tx_vtag def registers
-			 * that needs to be cleared and freed.
-			 */
 			int vtag0_idx;
 			int vtag1_idx;
-
-			/* free_vtag0 & free_vtag1 fields are valid
-			 * when cfg_vtag0 & cfg_vtag1 are '0's.
-			 */
-			/* free_vtag0 = 1 clears vtag0 configuration
-			 * vtag0_idx denotes the index to be cleared.
-			 */
 			u8 free_vtag0 :1;
-			/* free_vtag1 = 1 clears vtag1 configuration
-			 * vtag1_idx denotes the index to be cleared.
-			 */
 			u8 free_vtag1 :1;
 		} tx;
-
-		/* valid when cfg_type is '1' */
 		struct {
-			/* rx vtag type index, valid values are in 0..7 range */
 			u8 vtag_type;
-			/* rx vtag strip */
 			u8 strip_vtag :1;
-			/* rx vtag capture */
 			u8 capture_vtag :1;
 		} rx;
 	};
 };
-
 struct nix_vtag_config_rsp {
 	struct mbox_msghdr hdr;
 	int vtag0_idx;
 	int vtag1_idx;
-	/* Indices of tx_vtag def registers used to configure
-	 * tx vtag0 & vtag1 headers, these indices are valid
-	 * when nix_vtag_config mbox requested for vtag0 and/
-	 * or vtag1 configuration.
-	 */
 };
-
 #define NIX_FLOW_KEY_TYPE_L3_L4_MASK (~(0xf << 28))
-
 struct nix_rss_flowkey_cfg {
 	struct mbox_msghdr hdr;
-	int	mcam_index;  /* MCAM entry index to modify */
+	int	mcam_index;   
 #define NIX_FLOW_KEY_TYPE_PORT	BIT(0)
 #define NIX_FLOW_KEY_TYPE_IPV4	BIT(1)
 #define NIX_FLOW_KEY_TYPE_IPV6	BIT(2)
@@ -1112,25 +877,21 @@ struct nix_rss_flowkey_cfg {
 #define NIX_FLOW_KEY_TYPE_L4_SRC_ONLY BIT(29)
 #define NIX_FLOW_KEY_TYPE_L3_DST_ONLY BIT(30)
 #define NIX_FLOW_KEY_TYPE_L3_SRC_ONLY BIT(31)
-	u32	flowkey_cfg; /* Flowkey types selected */
-	u8	group;       /* RSS context or group */
+	u32	flowkey_cfg;  
+	u8	group;        
 };
-
 struct nix_rss_flowkey_cfg_rsp {
 	struct mbox_msghdr hdr;
-	u8	alg_idx; /* Selected algo index */
+	u8	alg_idx;  
 };
-
 struct nix_set_mac_addr {
 	struct mbox_msghdr hdr;
-	u8 mac_addr[ETH_ALEN]; /* MAC address to be set for this pcifunc */
+	u8 mac_addr[ETH_ALEN];  
 };
-
 struct nix_get_mac_addr_rsp {
 	struct mbox_msghdr hdr;
 	u8 mac_addr[ETH_ALEN];
 };
-
 struct nix_mark_format_cfg {
 	struct mbox_msghdr hdr;
 	u8 offset;
@@ -1139,12 +900,10 @@ struct nix_mark_format_cfg {
 	u8 r_mask;
 	u8 r_val;
 };
-
 struct nix_mark_format_cfg_rsp {
 	struct mbox_msghdr hdr;
 	u8 mark_format_idx;
 };
-
 struct nix_rx_mode {
 	struct mbox_msghdr hdr;
 #define NIX_RX_MODE_UCAST	BIT(0)
@@ -1153,58 +912,45 @@ struct nix_rx_mode {
 #define NIX_RX_MODE_USE_MCE	BIT(3)
 	u16	mode;
 };
-
 struct nix_rx_cfg {
 	struct mbox_msghdr hdr;
 #define NIX_RX_OL3_VERIFY   BIT(0)
 #define NIX_RX_OL4_VERIFY   BIT(1)
 #define NIX_RX_DROP_RE      BIT(2)
-	u8 len_verify; /* Outer L3/L4 len check */
+	u8 len_verify;  
 #define NIX_RX_CSUM_OL4_VERIFY  BIT(0)
-	u8 csum_verify; /* Outer L4 checksum verification */
+	u8 csum_verify;  
 };
-
 struct nix_frs_cfg {
 	struct mbox_msghdr hdr;
-	u8	update_smq;    /* Update SMQ's min/max lens */
-	u8	update_minlen; /* Set minlen also */
-	u8	sdp_link;      /* Set SDP RX link */
+	u8	update_smq;     
+	u8	update_minlen;  
+	u8	sdp_link;       
 	u16	maxlen;
 	u16	minlen;
 };
-
 struct nix_lso_format_cfg {
 	struct mbox_msghdr hdr;
 	u64 field_mask;
 #define NIX_LSO_FIELD_MAX	8
 	u64 fields[NIX_LSO_FIELD_MAX];
 };
-
 struct nix_lso_format_cfg_rsp {
 	struct mbox_msghdr hdr;
 	u8 lso_format_idx;
 };
-
 struct nix_bp_cfg_req {
 	struct mbox_msghdr hdr;
-	u16	chan_base; /* Starting channel number */
-	u8	chan_cnt; /* Number of channels */
+	u16	chan_base;  
+	u8	chan_cnt;  
 	u8	bpid_per_chan;
-	/* bpid_per_chan = 0 assigns single bp id for range of channels */
-	/* bpid_per_chan = 1 assigns separate bp id for each channel */
 };
-
-/* PF can be mapped to either CGX or LBK interface,
- * so maximum 64 channels are possible.
- */
 #define NIX_MAX_BPID_CHAN	64
 struct nix_bp_cfg_rsp {
 	struct mbox_msghdr hdr;
-	u16	chan_bpid[NIX_MAX_BPID_CHAN]; /* Channel and bpid mapping */
-	u8	chan_cnt; /* Number of channel for which bpids are assigned */
+	u16	chan_bpid[NIX_MAX_BPID_CHAN];  
+	u8	chan_cnt;  
 };
-
-/* Global NIX inline IPSec configuration */
 struct nix_inline_ipsec_cfg {
 	struct mbox_msghdr hdr;
 	u32 cpt_credit;
@@ -1222,8 +968,6 @@ struct nix_inline_ipsec_cfg {
 	u16 bpid;
 	u32 credit_th;
 };
-
-/* Per NIX LF inline IPSec configuration */
 struct nix_inline_ipsec_lf_cfg {
 	struct mbox_msghdr hdr;
 	u64 sa_base_addr;
@@ -1239,7 +983,6 @@ struct nix_inline_ipsec_lf_cfg {
 	} ipsec_cfg1;
 	u8 enable;
 };
-
 struct nix_hw_info {
 	struct mbox_msghdr hdr;
 	u16 rsvs16;
@@ -1249,48 +992,31 @@ struct nix_hw_info {
 	u32 sdp_dwrr_mtu;
 	u32 lbk_dwrr_mtu;
 	u32 rsvd32[1];
-	u64 rsvd[15]; /* Add reserved fields for future expansion */
+	u64 rsvd[15];  
 };
-
 struct nix_bandprof_alloc_req {
 	struct mbox_msghdr hdr;
-	/* Count of profiles needed per layer */
 	u16 prof_count[BAND_PROF_NUM_LAYERS];
 };
-
 struct nix_bandprof_alloc_rsp {
 	struct mbox_msghdr hdr;
 	u16 prof_count[BAND_PROF_NUM_LAYERS];
-
-	/* There is no need to allocate morethan 1 bandwidth profile
-	 * per RQ of a PF_FUNC's NIXLF. So limit the maximum
-	 * profiles to 64 per PF_FUNC.
-	 */
 #define MAX_BANDPROF_PER_PFFUNC	64
 	u16 prof_idx[BAND_PROF_NUM_LAYERS][MAX_BANDPROF_PER_PFFUNC];
 };
-
 struct nix_bandprof_free_req {
 	struct mbox_msghdr hdr;
 	u8 free_all;
 	u16 prof_count[BAND_PROF_NUM_LAYERS];
 	u16 prof_idx[BAND_PROF_NUM_LAYERS][MAX_BANDPROF_PER_PFFUNC];
 };
-
 struct nix_bandprof_get_hwinfo_rsp {
 	struct mbox_msghdr hdr;
 	u16 prof_count[BAND_PROF_NUM_LAYERS];
 	u32 policer_timeunit;
 };
-
-/* NPC mbox message structs */
-
 #define NPC_MCAM_ENTRY_INVALID	0xFFFF
 #define NPC_MCAM_INVALID_MAP	0xFFFF
-
-/* NPC mailbox error codes
- * Range 701 - 800.
- */
 enum npc_af_status {
 	NPC_MCAM_INVALID_REQ	= -701,
 	NPC_MCAM_ALLOC_DENIED	= -702,
@@ -1304,146 +1030,120 @@ enum npc_af_status {
 	NPC_FLOW_VF_NOT_INIT	= -712,
 	NPC_FLOW_VF_OVERLAP	= -713,
 };
-
 struct npc_mcam_alloc_entry_req {
 	struct mbox_msghdr hdr;
 #define NPC_MAX_NONCONTIG_ENTRIES	256
-	u8  contig;   /* Contiguous entries ? */
+	u8  contig;    
 #define NPC_MCAM_ANY_PRIO		0
 #define NPC_MCAM_LOWER_PRIO		1
 #define NPC_MCAM_HIGHER_PRIO		2
-	u8  priority; /* Lower or higher w.r.t ref_entry */
+	u8  priority;  
 	u16 ref_entry;
-	u16 count;    /* Number of entries requested */
+	u16 count;     
 };
-
 struct npc_mcam_alloc_entry_rsp {
 	struct mbox_msghdr hdr;
-	u16 entry; /* Entry allocated or start index if contiguous.
-		    * Invalid incase of non-contiguous.
-		    */
-	u16 count; /* Number of entries allocated */
-	u16 free_count; /* Number of entries available */
+	u16 entry;  
+	u16 count;  
+	u16 free_count;  
 	u16 entry_list[NPC_MAX_NONCONTIG_ENTRIES];
 };
-
 struct npc_mcam_free_entry_req {
 	struct mbox_msghdr hdr;
-	u16 entry; /* Entry index to be freed */
-	u8  all;   /* If all entries allocated to this PFVF to be freed */
+	u16 entry;  
+	u8  all;    
 };
-
 struct mcam_entry {
-#define NPC_MAX_KWS_IN_KEY	7 /* Number of keywords in max keywidth */
+#define NPC_MAX_KWS_IN_KEY	7  
 	u64	kw[NPC_MAX_KWS_IN_KEY];
 	u64	kw_mask[NPC_MAX_KWS_IN_KEY];
 	u64	action;
 	u64	vtag_action;
 };
-
 struct npc_mcam_write_entry_req {
 	struct mbox_msghdr hdr;
 	struct mcam_entry entry_data;
-	u16 entry;	 /* MCAM entry to write this match key */
-	u16 cntr;	 /* Counter for this MCAM entry */
-	u8  intf;	 /* Rx or Tx interface */
-	u8  enable_entry;/* Enable this MCAM entry ? */
-	u8  set_cntr;    /* Set counter for this entry ? */
+	u16 entry;	  
+	u16 cntr;	  
+	u8  intf;	  
+	u8  enable_entry; 
+	u8  set_cntr;     
 };
-
-/* Enable/Disable a given entry */
 struct npc_mcam_ena_dis_entry_req {
 	struct mbox_msghdr hdr;
 	u16 entry;
 };
-
 struct npc_mcam_shift_entry_req {
 	struct mbox_msghdr hdr;
 #define NPC_MCAM_MAX_SHIFTS	64
 	u16 curr_entry[NPC_MCAM_MAX_SHIFTS];
 	u16 new_entry[NPC_MCAM_MAX_SHIFTS];
-	u16 shift_count; /* Number of entries to shift */
+	u16 shift_count;  
 };
-
 struct npc_mcam_shift_entry_rsp {
 	struct mbox_msghdr hdr;
-	u16 failed_entry_idx; /* Index in 'curr_entry', not entry itself */
+	u16 failed_entry_idx;  
 };
-
 struct npc_mcam_alloc_counter_req {
 	struct mbox_msghdr hdr;
-	u8  contig;	/* Contiguous counters ? */
+	u8  contig;	 
 #define NPC_MAX_NONCONTIG_COUNTERS       64
-	u16 count;	/* Number of counters requested */
+	u16 count;	 
 };
-
 struct npc_mcam_alloc_counter_rsp {
 	struct mbox_msghdr hdr;
-	u16 cntr;   /* Counter allocated or start index if contiguous.
-		     * Invalid incase of non-contiguous.
-		     */
-	u16 count;  /* Number of counters allocated */
+	u16 cntr;    
+	u16 count;   
 	u16 cntr_list[NPC_MAX_NONCONTIG_COUNTERS];
 };
-
 struct npc_mcam_oper_counter_req {
 	struct mbox_msghdr hdr;
-	u16 cntr;   /* Free a counter or clear/fetch it's stats */
+	u16 cntr;    
 };
-
 struct npc_mcam_oper_counter_rsp {
 	struct mbox_msghdr hdr;
-	u64 stat;  /* valid only while fetching counter's stats */
+	u64 stat;   
 };
-
 struct npc_mcam_unmap_counter_req {
 	struct mbox_msghdr hdr;
 	u16 cntr;
-	u16 entry; /* Entry and counter to be unmapped */
-	u8  all;   /* Unmap all entries using this counter ? */
+	u16 entry;  
+	u8  all;    
 };
-
 struct npc_mcam_alloc_and_write_entry_req {
 	struct mbox_msghdr hdr;
 	struct mcam_entry entry_data;
 	u16 ref_entry;
-	u8  priority;    /* Lower or higher w.r.t ref_entry */
-	u8  intf;	 /* Rx or Tx interface */
-	u8  enable_entry;/* Enable this MCAM entry ? */
-	u8  alloc_cntr;  /* Allocate counter and map ? */
+	u8  priority;     
+	u8  intf;	  
+	u8  enable_entry; 
+	u8  alloc_cntr;   
 };
-
 struct npc_mcam_alloc_and_write_entry_rsp {
 	struct mbox_msghdr hdr;
 	u16 entry;
 	u16 cntr;
 };
-
 struct npc_get_kex_cfg_rsp {
 	struct mbox_msghdr hdr;
-	u64 rx_keyx_cfg;   /* NPC_AF_INTF(0)_KEX_CFG */
-	u64 tx_keyx_cfg;   /* NPC_AF_INTF(1)_KEX_CFG */
+	u64 rx_keyx_cfg;    
+	u64 tx_keyx_cfg;    
 #define NPC_MAX_INTF	2
 #define NPC_MAX_LID	8
 #define NPC_MAX_LT	16
 #define NPC_MAX_LD	2
 #define NPC_MAX_LFL	16
-	/* NPC_AF_KEX_LDATA(0..1)_FLAGS_CFG */
 	u64 kex_ld_flags[NPC_MAX_LD];
-	/* NPC_AF_INTF(0..1)_LID(0..7)_LT(0..15)_LD(0..1)_CFG */
 	u64 intf_lid_lt_ld[NPC_MAX_INTF][NPC_MAX_LID][NPC_MAX_LT][NPC_MAX_LD];
-	/* NPC_AF_INTF(0..1)_LDATA(0..1)_FLAGS(0..15)_CFG */
 	u64 intf_ld_flags[NPC_MAX_INTF][NPC_MAX_LD][NPC_MAX_LFL];
 #define MKEX_NAME_LEN 128
 	u8 mkex_pfl_name[MKEX_NAME_LEN];
 };
-
 struct ptp_get_cap_rsp {
 	struct mbox_msghdr hdr;
 #define        PTP_CAP_HW_ATOMIC_UPDATE BIT_ULL(0)
 	u64 cap;
 };
-
 struct flow_msg {
 	unsigned char dmac[6];
 	unsigned char smac[6];
@@ -1461,7 +1161,6 @@ struct flow_msg {
 	union {
 		__be32 spi;
 	};
-
 	u8 tos;
 	u8 ip_ver;
 	u8 ip_proto;
@@ -1474,7 +1173,6 @@ struct flow_msg {
 	};
 	__be16 vlan_itci;
 };
-
 struct npc_install_flow_req {
 	struct mbox_msghdr hdr;
 	struct flow_msg packet;
@@ -1484,91 +1182,74 @@ struct npc_install_flow_req {
 	u16 channel;
 	u16 chan_mask;
 	u8 intf;
-	u8 set_cntr; /* If counter is available set counter for this entry ? */
+	u8 set_cntr;  
 	u8 default_rule;
-	u8 append; /* overwrite(0) or append(1) flow to default rule? */
+	u8 append;  
 	u16 vf;
-	/* action */
 	u32 index;
 	u16 match_id;
 	u8 flow_key_alg;
 	u8 op;
-	/* vtag rx action */
 	u8 vtag0_type;
 	u8 vtag0_valid;
 	u8 vtag1_type;
 	u8 vtag1_valid;
-	/* vtag tx action */
 	u16 vtag0_def;
 	u8  vtag0_op;
 	u16 vtag1_def;
 	u8  vtag1_op;
-	/* old counter value */
 	u16 cntr_val;
 };
-
 struct npc_install_flow_rsp {
 	struct mbox_msghdr hdr;
-	int counter; /* negative if no counter else counter number */
+	int counter;  
 };
-
 struct npc_delete_flow_req {
 	struct mbox_msghdr hdr;
 	u16 entry;
-	u16 start;/*Disable range of entries */
+	u16 start; 
 	u16 end;
-	u8 all; /* PF + VFs */
+	u8 all;  
 };
-
 struct npc_delete_flow_rsp {
 	struct mbox_msghdr hdr;
 	u16 cntr_val;
 };
-
 struct npc_mcam_read_entry_req {
 	struct mbox_msghdr hdr;
-	u16 entry;	 /* MCAM entry to read */
+	u16 entry;	  
 };
-
 struct npc_mcam_read_entry_rsp {
 	struct mbox_msghdr hdr;
 	struct mcam_entry entry_data;
 	u8 intf;
 	u8 enable;
 };
-
 struct npc_mcam_read_base_rule_rsp {
 	struct mbox_msghdr hdr;
 	struct mcam_entry entry;
 };
-
 struct npc_mcam_get_stats_req {
 	struct mbox_msghdr hdr;
-	u16 entry; /* mcam entry */
+	u16 entry;  
 };
-
 struct npc_mcam_get_stats_rsp {
 	struct mbox_msghdr hdr;
-	u64 stat;  /* counter stats */
-	u8 stat_ena; /* enabled */
+	u64 stat;   
+	u8 stat_ena;  
 };
-
 struct npc_get_field_hash_info_req {
 	struct mbox_msghdr hdr;
 	u8 intf;
 };
-
 struct npc_get_field_hash_info_rsp {
 	struct mbox_msghdr hdr;
 	u64 secret_key[3];
 #define NPC_MAX_HASH 2
 #define NPC_MAX_HASH_MASK 2
-	/* NPC_AF_INTF(0..1)_HASH(0..1)_MASK(0..1) */
 	u64 hash_mask[NPC_MAX_INTF][NPC_MAX_HASH][NPC_MAX_HASH_MASK];
-	/* NPC_AF_INTF(0..1)_HASH(0..1)_RESULT_CTRL */
 	u64 hash_ctrl[NPC_MAX_INTF][NPC_MAX_HASH];
 };
-
 enum ptp_op {
 	PTP_OP_ADJFINE = 0,
 	PTP_OP_GET_CLOCK = 1,
@@ -1578,7 +1259,6 @@ enum ptp_op {
 	PTP_OP_ADJTIME = 5,
 	PTP_OP_SET_CLOCK = 6,
 };
-
 struct ptp_req {
 	struct mbox_msghdr hdr;
 	u8 op;
@@ -1588,24 +1268,20 @@ struct ptp_req {
 	s64 delta;
 	u64 clk;
 };
-
 struct ptp_rsp {
 	struct mbox_msghdr hdr;
 	u64 clk;
 	u64 tsc;
 };
-
 struct npc_get_field_status_req {
 	struct mbox_msghdr hdr;
 	u8 intf;
 	u8 field;
 };
-
 struct npc_get_field_status_rsp {
 	struct mbox_msghdr hdr;
 	u8 enable;
 };
-
 struct set_vf_perm  {
 	struct  mbox_msghdr hdr;
 	u16	vf;
@@ -1613,7 +1289,6 @@ struct set_vf_perm  {
 #define	VF_TRUSTED		BIT_ULL(1)
 	u64	flags;
 };
-
 struct lmtst_tbl_setup_req {
 	struct mbox_msghdr hdr;
 	u64 dis_sched_early_comp :1;
@@ -1625,10 +1300,6 @@ struct lmtst_tbl_setup_req {
 	u64 lmt_iova;
 	u64 rsvd[4];
 };
-
-/* CPT mailbox error codes
- * Range 901 - 1000.
- */
 enum cpt_af_status {
 	CPT_AF_ERR_PARAM		= -901,
 	CPT_AF_ERR_GRP_INVALID		= -902,
@@ -1639,8 +1310,6 @@ enum cpt_af_status {
 	CPT_AF_ERR_INLINE_IPSEC_INB_ENA	= -907,
 	CPT_AF_ERR_INLINE_IPSEC_OUT_ENA	= -908
 };
-
-/* CPT mbox message formats */
 struct cpt_rd_wr_reg_msg {
 	struct mbox_msghdr hdr;
 	u64 reg_offset;
@@ -1649,7 +1318,6 @@ struct cpt_rd_wr_reg_msg {
 	u8 is_write;
 	int blkaddr;
 };
-
 struct cpt_lf_alloc_req_msg {
 	struct mbox_msghdr hdr;
 	u16 nix_pf_func;
@@ -1659,29 +1327,21 @@ struct cpt_lf_alloc_req_msg {
 	u8 ctx_ilen_valid : 1;
 	u8 ctx_ilen : 7;
 };
-
 #define CPT_INLINE_INBOUND      0
 #define CPT_INLINE_OUTBOUND     1
-
-/* Mailbox message request format for CPT IPsec
- * inline inbound and outbound configuration.
- */
 struct cpt_inline_ipsec_cfg_msg {
 	struct mbox_msghdr hdr;
 	u8 enable;
 	u8 slot;
 	u8 dir;
 	u8 sso_pf_func_ovrd;
-	u16 sso_pf_func; /* inbound path SSO_PF_FUNC */
-	u16 nix_pf_func; /* outbound path NIX_PF_FUNC */
+	u16 sso_pf_func;  
+	u16 nix_pf_func;  
 };
-
-/* Mailbox message request and response format for CPT stats. */
 struct cpt_sts_req {
 	struct mbox_msghdr hdr;
 	u8 blkaddr;
 };
-
 struct cpt_sts_rsp {
 	struct mbox_msghdr hdr;
 	u64 inst_req_pc;
@@ -1722,8 +1382,6 @@ struct cpt_sts_rsp {
 	u64 x2p_link_cfg0;
 	u64 x2p_link_cfg1;
 };
-
-/* Mailbox message request format to configure reassembly timeout. */
 struct cpt_rxc_time_cfg_req {
 	struct mbox_msghdr hdr;
 	int blkaddr;
@@ -1733,38 +1391,29 @@ struct cpt_rxc_time_cfg_req {
 	u16 active_thres;
 	u16 active_limit;
 };
-
-/* Mailbox message request format to request for CPT_INST_S lmtst. */
 struct cpt_inst_lmtst_req {
 	struct mbox_msghdr hdr;
 	u64 inst[8];
 	u64 rsvd;
 };
-
-/* Mailbox message format to request for CPT LF reset */
 struct cpt_lf_rst_req {
 	struct mbox_msghdr hdr;
 	u32 slot;
 	u32 rsvd;
 };
-
-/* Mailbox message format to request for CPT faulted engines */
 struct cpt_flt_eng_info_req {
 	struct mbox_msghdr hdr;
 	int blkaddr;
 	bool reset;
 	u32 rsvd;
 };
-
 struct cpt_flt_eng_info_rsp {
 	struct mbox_msghdr hdr;
 	u64 flt_eng_map[CPT_10K_AF_INT_VEC_RVU];
 	u64 rcvrd_eng_map[CPT_10K_AF_INT_VEC_RVU];
 	u64 rsvd;
 };
-
 struct sdp_node_info {
-	/* Node to which this PF belons to */
 	u8 node_id;
 	u8 max_vfs;
 	u8 num_pf_rings;
@@ -1772,21 +1421,15 @@ struct sdp_node_info {
 #define SDP_MAX_VFS	128
 	u8 vf_rings[SDP_MAX_VFS];
 };
-
 struct sdp_chan_info_msg {
 	struct mbox_msghdr hdr;
 	struct sdp_node_info info;
 };
-
 struct sdp_get_chan_info_msg {
 	struct mbox_msghdr hdr;
 	u16 chan_base;
 	u16 num_chan;
 };
-
-/* CGX mailbox error codes
- * Range 1101 - 1200.
- */
 enum cgx_af_status {
 	LMAC_AF_ERR_INVALID_PARAM	= -1101,
 	LMAC_AF_ERR_PF_NOT_MAPPED	= -1102,
@@ -1799,68 +1442,61 @@ enum cgx_af_status {
 	LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED = -1109,
 	LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED = -1110,
 };
-
 enum mcs_direction {
 	MCS_RX,
 	MCS_TX,
 };
-
 enum mcs_rsrc_type {
 	MCS_RSRC_TYPE_FLOWID,
 	MCS_RSRC_TYPE_SECY,
 	MCS_RSRC_TYPE_SC,
 	MCS_RSRC_TYPE_SA,
 };
-
 struct mcs_alloc_rsrc_req {
 	struct mbox_msghdr hdr;
 	u8 rsrc_type;
-	u8 rsrc_cnt;	/* Resources count */
-	u8 mcs_id;	/* MCS block ID	*/
-	u8 dir;		/* Macsec ingress or egress side */
-	u8 all;		/* Allocate all resource type one each */
+	u8 rsrc_cnt;	 
+	u8 mcs_id;	 
+	u8 dir;		 
+	u8 all;		 
 	u64 rsvd;
 };
-
 struct mcs_alloc_rsrc_rsp {
 	struct mbox_msghdr hdr;
-	u8 flow_ids[128];	/* Index of reserved entries */
+	u8 flow_ids[128];	 
 	u8 secy_ids[128];
 	u8 sc_ids[128];
 	u8 sa_ids[256];
 	u8 rsrc_type;
-	u8 rsrc_cnt;		/* No of entries reserved */
+	u8 rsrc_cnt;		 
 	u8 mcs_id;
 	u8 dir;
 	u8 all;
-	u8 rsvd[256];		/* reserved fields for future expansion */
+	u8 rsvd[256];		 
 };
-
 struct mcs_free_rsrc_req {
 	struct mbox_msghdr hdr;
-	u8 rsrc_id;		/* Index of the entry to be freed */
+	u8 rsrc_id;		 
 	u8 rsrc_type;
 	u8 mcs_id;
 	u8 dir;
-	u8 all;			/* Free all the cam resources */
+	u8 all;			 
 	u64 rsvd;
 };
-
 struct mcs_flowid_entry_write_req {
 	struct mbox_msghdr hdr;
 	u64 data[4];
 	u64 mask[4];
-	u64 sci;	/* CNF10K-B for tx_secy_mem_map */
+	u64 sci;	 
 	u8 flow_id;
-	u8 secy_id;	/* secyid for which flowid is mapped */
-	u8 sc_id;	/* Valid if dir = MCS_TX, SC_CAM id mapped to flowid */
-	u8 ena;		/* Enable tcam entry */
+	u8 secy_id;	 
+	u8 sc_id;	 
+	u8 ena;		 
 	u8 ctrl_pkt;
 	u8 mcs_id;
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_secy_plcy_write_req {
 	struct mbox_msghdr hdr;
 	u64 plcy;
@@ -1869,27 +1505,23 @@ struct mcs_secy_plcy_write_req {
 	u8 dir;
 	u64 rsvd;
 };
-
-/* RX SC_CAM mapping */
 struct mcs_rx_sc_cam_write_req {
 	struct mbox_msghdr hdr;
-	u64 sci;	/* SCI */
-	u64 secy_id;	/* secy index mapped to SC */
-	u8 sc_id;	/* SC CAM entry index */
+	u64 sci;	 
+	u64 secy_id;	 
+	u8 sc_id;	 
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_sa_plcy_write_req {
 	struct mbox_msghdr hdr;
-	u64 plcy[2][9];		/* Support 2 SA policy */
+	u64 plcy[2][9];		 
 	u8 sa_index[2];
 	u8 sa_cnt;
 	u8 mcs_id;
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_tx_sc_sa_map {
 	struct mbox_msghdr hdr;
 	u8 sa_index0;
@@ -1899,21 +1531,19 @@ struct mcs_tx_sc_sa_map {
 	u8 sa_index1_vld;
 	u8 tx_sa_active;
 	u64 sectag_sci;
-	u8 sc_id;	/* used as index for SA_MEM_MAP */
+	u8 sc_id;	 
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_rx_sc_sa_map {
 	struct mbox_msghdr hdr;
 	u8 sa_index;
 	u8 sa_in_use;
 	u8 sc_id;
-	u8 an;		/* value range 0-3, sc_id + an used as index SA_MEM_MAP */
+	u8 an;		 
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_flowid_ena_dis_entry {
 	struct mbox_msghdr hdr;
 	u8 flow_id;
@@ -1922,7 +1552,6 @@ struct mcs_flowid_ena_dis_entry {
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_pn_table_write_req {
 	struct mbox_msghdr hdr;
 	u64 next_pn;
@@ -1931,33 +1560,29 @@ struct mcs_pn_table_write_req {
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_hw_info {
 	struct mbox_msghdr hdr;
-	u8 num_mcs_blks;	/* Number of MCS blocks */
-	u8 tcam_entries;	/* RX/TX Tcam entries per mcs block */
-	u8 secy_entries;	/* RX/TX SECY entries per mcs block */
-	u8 sc_entries;		/* RX/TX SC CAM entries per mcs block */
-	u16 sa_entries;		/* PN table entries = SA entries */
+	u8 num_mcs_blks;	 
+	u8 tcam_entries;	 
+	u8 secy_entries;	 
+	u8 sc_entries;		 
+	u16 sa_entries;		 
 	u64 rsvd[16];
 };
-
 struct mcs_set_active_lmac {
 	struct mbox_msghdr hdr;
-	u32 lmac_bmap;	/* bitmap of active lmac per mcs block */
+	u32 lmac_bmap;	 
 	u8 mcs_id;
-	u16 chan_base; /* MCS channel base */
+	u16 chan_base;  
 	u64 rsvd;
 };
-
 struct mcs_set_lmac_mode {
 	struct mbox_msghdr hdr;
-	u8 mode;	/* 1:Bypass 0:Operational */
+	u8 mode;	 
 	u8 lmac_id;
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_port_reset_req {
 	struct mbox_msghdr hdr;
 	u8 reset;
@@ -1965,7 +1590,6 @@ struct mcs_port_reset_req {
 	u8 port_id;
 	u64 rsvd;
 };
-
 struct mcs_port_cfg_set_req {
 	struct mbox_msghdr hdr;
 	u8 cstm_tag_rel_mode_sel;
@@ -1976,14 +1600,12 @@ struct mcs_port_cfg_set_req {
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_port_cfg_get_req {
 	struct mbox_msghdr hdr;
 	u8 port_id;
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_port_cfg_get_rsp {
 	struct mbox_msghdr hdr;
 	u8 cstm_tag_rel_mode_sel;
@@ -1994,14 +1616,12 @@ struct mcs_port_cfg_get_rsp {
 	u8 mcs_id;
 	u64 rsvd;
 };
-
 struct mcs_custom_tag_cfg_get_req {
 	struct mbox_msghdr hdr;
 	u8 mcs_id;
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_custom_tag_cfg_get_rsp {
 	struct mbox_msghdr hdr;
 	u16 cstm_etype[8];
@@ -2011,24 +1631,18 @@ struct mcs_custom_tag_cfg_get_rsp {
 	u8 dir;
 	u64 rsvd;
 };
-
-/* MCS mailbox error codes
- * Range 1201 - 1300.
- */
 enum mcs_af_status {
 	MCS_AF_ERR_INVALID_MCSID        = -1201,
 	MCS_AF_ERR_NOT_MAPPED           = -1202,
 };
-
 struct mcs_set_pn_threshold {
 	struct mbox_msghdr hdr;
 	u64 threshold;
-	u8 xpn; /* '1' for setting xpn threshold */
+	u8 xpn;  
 	u8 mcs_id;
 	u8 dir;
 	u64 rsvd;
 };
-
 enum mcs_ctrl_pkt_rulew_type {
 	MCS_CTRL_PKT_RULE_TYPE_ETH,
 	MCS_CTRL_PKT_RULE_TYPE_DA,
@@ -2036,15 +1650,13 @@ enum mcs_ctrl_pkt_rulew_type {
 	MCS_CTRL_PKT_RULE_TYPE_COMBO,
 	MCS_CTRL_PKT_RULE_TYPE_MAC,
 };
-
 struct mcs_alloc_ctrl_pkt_rule_req {
 	struct mbox_msghdr hdr;
 	u8 rule_type;
-	u8 mcs_id;	/* MCS block ID	*/
-	u8 dir;		/* Macsec ingress or egress side */
+	u8 mcs_id;	 
+	u8 dir;		 
 	u64 rsvd;
 };
-
 struct mcs_alloc_ctrl_pkt_rule_rsp {
 	struct mbox_msghdr hdr;
 	u8 rule_idx;
@@ -2053,7 +1665,6 @@ struct mcs_alloc_ctrl_pkt_rule_rsp {
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_free_ctrl_pkt_rule_req {
 	struct mbox_msghdr hdr;
 	u8 rule_idx;
@@ -2063,7 +1674,6 @@ struct mcs_free_ctrl_pkt_rule_req {
 	u8 all;
 	u64 rsvd;
 };
-
 struct mcs_ctrl_pkt_rule_write_req {
 	struct mbox_msghdr hdr;
 	u64 data0;
@@ -2075,7 +1685,6 @@ struct mcs_ctrl_pkt_rule_write_req {
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_stats_req {
 	struct mbox_msghdr hdr;
 	u8 id;
@@ -2083,13 +1692,11 @@ struct mcs_stats_req {
 	u8 dir;
 	u64 rsvd;
 };
-
 struct mcs_flowid_stats {
 	struct mbox_msghdr hdr;
 	u64 tcam_hit_cnt;
 	u64 rsvd;
 };
-
 struct mcs_secy_stats {
 	struct mbox_msghdr hdr;
 	u64 ctl_pkt_bcast_cnt;
@@ -2100,7 +1707,6 @@ struct mcs_secy_stats {
 	u64 unctl_pkt_mcast_cnt;
 	u64 unctl_pkt_ucast_cnt;
 	u64 unctl_octet_cnt;
-	/* Valid only for RX */
 	u64 octet_decrypted_cnt;
 	u64 octet_validated_cnt;
 	u64 pkt_port_disabled_cnt;
@@ -2109,9 +1715,8 @@ struct mcs_secy_stats {
 	u64 pkt_nosaerror_cnt;
 	u64 pkt_tagged_ctl_cnt;
 	u64 pkt_untaged_cnt;
-	u64 pkt_ctl_cnt;	/* CN10K-B */
-	u64 pkt_notag_cnt;	/* CNF10K-B */
-	/* Valid only for TX */
+	u64 pkt_ctl_cnt;	 
+	u64 pkt_notag_cnt;	 
 	u64 octet_encrypted_cnt;
 	u64 octet_protected_cnt;
 	u64 pkt_noactivesa_cnt;
@@ -2119,51 +1724,42 @@ struct mcs_secy_stats {
 	u64 pkt_untagged_cnt;
 	u64 rsvd[4];
 };
-
 struct mcs_port_stats {
 	struct mbox_msghdr hdr;
 	u64 tcam_miss_cnt;
 	u64 parser_err_cnt;
-	u64 preempt_err_cnt;  /* CNF10K-B */
+	u64 preempt_err_cnt;   
 	u64 sectag_insert_err_cnt;
 	u64 rsvd[4];
 };
-
-/* Only for CN10K-B */
 struct mcs_sa_stats {
 	struct mbox_msghdr hdr;
-	/* RX */
 	u64 pkt_invalid_cnt;
 	u64 pkt_nosaerror_cnt;
 	u64 pkt_notvalid_cnt;
 	u64 pkt_ok_cnt;
 	u64 pkt_nosa_cnt;
-	/* TX */
 	u64 pkt_encrypt_cnt;
 	u64 pkt_protected_cnt;
 	u64 rsvd[4];
 };
-
 struct mcs_sc_stats {
 	struct mbox_msghdr hdr;
-	/* RX */
 	u64 hit_cnt;
 	u64 pkt_invalid_cnt;
 	u64 pkt_late_cnt;
 	u64 pkt_notvalid_cnt;
 	u64 pkt_unchecked_cnt;
-	u64 pkt_delay_cnt;	/* CNF10K-B */
-	u64 pkt_ok_cnt;		/* CNF10K-B */
-	u64 octet_decrypt_cnt;	/* CN10K-B */
-	u64 octet_validate_cnt;	/* CN10K-B */
-	/* TX */
+	u64 pkt_delay_cnt;	 
+	u64 pkt_ok_cnt;		 
+	u64 octet_decrypt_cnt;	 
+	u64 octet_validate_cnt;	 
 	u64 pkt_encrypt_cnt;
 	u64 pkt_protected_cnt;
-	u64 octet_encrypt_cnt;		/* CN10K-B */
-	u64 octet_protected_cnt;	/* CN10K-B */
+	u64 octet_encrypt_cnt;		 
+	u64 octet_protected_cnt;	 
 	u64 rsvd[4];
 };
-
 struct mcs_clear_stats {
 	struct mbox_msghdr hdr;
 #define MCS_FLOWID_STATS	0
@@ -2171,13 +1767,12 @@ struct mcs_clear_stats {
 #define MCS_SC_STATS		2
 #define MCS_SA_STATS		3
 #define MCS_PORT_STATS		4
-	u8 type;	/* FLOWID, SECY, SC, SA, PORT */
-	u8 id;		/* type = PORT, If id = FF(invalid) port no is derived from pcifunc */
+	u8 type;	 
+	u8 id;		 
 	u8 mcs_id;
 	u8 dir;
-	u8 all;		/* All resources stats mapped to PF are cleared */
+	u8 all;		 
 };
-
 struct mcs_intr_cfg {
 	struct mbox_msghdr hdr;
 #define MCS_CPM_RX_SECTAG_V_EQ1_INT		BIT_ULL(0)
@@ -2196,12 +1791,11 @@ struct mcs_intr_cfg {
 #define MCS_BBE_TX_PLFIFO_OVERFLOW_INT		BIT_ULL(13)
 #define MCS_PAB_RX_CHAN_OVERFLOW_INT		BIT_ULL(14)
 #define MCS_PAB_TX_CHAN_OVERFLOW_INT		BIT_ULL(15)
-	u64 intr_mask;		/* Interrupt enable mask */
+	u64 intr_mask;		 
 	u8 mcs_id;
 	u8 lmac_id;
 	u64 rsvd;
 };
-
 struct mcs_intr_info {
 	struct mbox_msghdr hdr;
 	u64 intr_mask;
@@ -2210,5 +1804,4 @@ struct mcs_intr_info {
 	u8 lmac_id;
 	u64 rsvd;
 };
-
-#endif /* MBOX_H */
+#endif  

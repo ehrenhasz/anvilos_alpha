@@ -1,33 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- *
- * vineetg: June 2010
- *    -__clear_user( ) called multiple times during elf load was byte loop
- *    converted to do as much word clear as possible.
- *
- * vineetg: Dec 2009
- *    -Hand crafted constant propagation for "constant" copy sizes
- *    -stock kernel shrunk by 33K at -O3
- *
- * vineetg: Sept 2009
- *    -Added option to (UN)inline copy_(to|from)_user to reduce code sz
- *    -kernel shrunk by 200K even at -O3 (gcc 4.2.1)
- *    -Enabled when doing -Os
- *
- * Amit Bhor, Sameer Dhavale: Codito Technologies 2004
- */
-
 #ifndef _ASM_ARC_UACCESS_H
 #define _ASM_ARC_UACCESS_H
-
-#include <linux/string.h>	/* for generic string functions */
-
-/*********** Single byte/hword/word copies ******************/
-
+#include <linux/string.h>	 
 #define __get_user_fn(sz, u, k)					\
 ({								\
-	long __ret = 0;	/* success by default */	\
+	long __ret = 0;	 	\
 	switch (sz) {						\
 	case 1: __arc_get_user_one(*(k), u, "ldb", __ret); break;	\
 	case 2: __arc_get_user_one(*(k), u, "ldw", __ret); break;	\
@@ -36,13 +12,6 @@
 	}							\
 	__ret;							\
 })
-
-/*
- * Returns 0 on success, -EFAULT if not.
- * @ret already contains 0 - given that errors will be less likely
- * (hence +r asm constraint below).
- * In case of error, fixup code will make it -EFAULT
- */
 #define __arc_get_user_one(dst, src, op, ret)	\
 	__asm__ __volatile__(                   \
 	"1:	"op"    %1,[%2]\n"		\
@@ -62,7 +31,6 @@
 						\
 	: "+r" (ret), "=r" (dst)		\
 	: "r" (src), "ir" (-EFAULT))
-
 #define __arc_get_user_one_64(dst, src, ret)	\
 	__asm__ __volatile__(                   \
 	"1:	ld   %1,[%2]\n"			\
@@ -85,10 +53,9 @@
 						\
 	: "+r" (ret), "=r" (dst)		\
 	: "r" (src), "ir" (-EFAULT))
-
 #define __put_user_fn(sz, u, k)					\
 ({								\
-	long __ret = 0;	/* success by default */	\
+	long __ret = 0;	 	\
 	switch (sz) {						\
 	case 1: __arc_put_user_one(*(k), u, "stb", __ret); break;	\
 	case 2: __arc_put_user_one(*(k), u, "stw", __ret); break;	\
@@ -97,7 +64,6 @@
 	}							\
 	__ret;							\
 })
-
 #define __arc_put_user_one(src, dst, op, ret)	\
 	__asm__ __volatile__(                   \
 	"1:	"op"    %1,[%2]\n"		\
@@ -114,7 +80,6 @@
 						\
 	: "+r" (ret)				\
 	: "r" (src), "r" (dst), "ir" (-EFAULT))
-
 #define __arc_put_user_one_64(src, dst, ret)	\
 	__asm__ __volatile__(                   \
 	"1:	st   %1,[%2]\n"			\
@@ -133,8 +98,6 @@
 						\
 	: "+r" (ret)				\
 	: "r" (src), "r" (dst), "ir" (-EFAULT))
-
-
 static inline unsigned long
 raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
@@ -142,16 +105,11 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 	char val;
 	unsigned long tmp1, tmp2, tmp3, tmp4;
 	unsigned long orig_n = n;
-
 	if (n == 0)
 		return 0;
-
-	/* fallback for unaligned access when hardware doesn't support */
 	if (!IS_ENABLED(CONFIG_ARC_USE_UNALIGNED_MEM_ACCESS) &&
 	     (((unsigned long)to & 0x3) || ((unsigned long)from & 0x3))) {
-
 		unsigned char tmp;
-
 		__asm__ __volatile__ (
 		"	mov.f   lp_count, %0		\n"
 		"	lpnz 2f				\n"
@@ -167,30 +125,16 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		"	.align 4			\n"
 		"	.word   1b, 3b			\n"
 		"	.previous			\n"
-
 		: "+r" (n),
-		/*
-		 * Note as an '&' earlyclobber operand to make sure the
-		 * temporary register inside the loop is not the same as
-		 *  FROM or TO.
-		*/
 		  "=&r" (tmp), "+r" (to), "+r" (from)
 		:
 		: "lp_count", "memory");
-
 		return n;
 	}
-
-	/*
-	 * Hand-crafted constant propagation to reduce code sz of the
-	 * laddered copy 16x,8,4,2,1
-	 */
 	if (__builtin_constant_p(orig_n)) {
 		res = orig_n;
-
 		if (orig_n / 16) {
 			orig_n = orig_n % 16;
-
 			__asm__ __volatile__(
 			"	lsr   lp_count, %7,4		\n"
 			"	lp    3f			\n"
@@ -222,7 +166,6 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		}
 		if (orig_n / 8) {
 			orig_n = orig_n % 8;
-
 			__asm__ __volatile__(
 			"14:	ld.ab   %3, [%2,4]		\n"
 			"15:	ld.ab   %4, [%2,4]		\n"
@@ -246,7 +189,6 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		}
 		if (orig_n / 4) {
 			orig_n = orig_n % 4;
-
 			__asm__ __volatile__(
 			"16:	ld.ab   %3, [%2,4]		\n"
 			"	st.ab   %3, [%1,4]		\n"
@@ -266,7 +208,6 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		}
 		if (orig_n / 2) {
 			orig_n = orig_n % 2;
-
 			__asm__ __volatile__(
 			"17:	ldw.ab   %3, [%2,2]		\n"
 			"	stw.ab   %3, [%1,2]		\n"
@@ -302,11 +243,10 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 			:
 			: "memory");
 		}
-	} else {  /* n is NOT constant, so laddered copy of 16x,8,4,2,1  */
-
+	} else {   
 		__asm__ __volatile__(
 		"	mov %0,%3			\n"
-		"	lsr.f   lp_count, %3,4		\n"  /* 16x bytes */
+		"	lsr.f   lp_count, %3,4		\n"   
 		"	lpnz    3f			\n"
 		"1:	ld.ab   %5, [%2, 4]		\n"
 		"11:	ld.ab   %6, [%2, 4]		\n"
@@ -317,24 +257,24 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		"	st.ab   %7, [%1, 4]		\n"
 		"	st.ab   %8, [%1, 4]		\n"
 		"	sub     %0,%0,16		\n"
-		"3:	and.f   %3,%3,0xf		\n"  /* stragglers */
+		"3:	and.f   %3,%3,0xf		\n"   
 		"	bz      34f			\n"
-		"	bbit0   %3,3,31f		\n"  /* 8 bytes left */
+		"	bbit0   %3,3,31f		\n"   
 		"14:	ld.ab   %5, [%2,4]		\n"
 		"15:	ld.ab   %6, [%2,4]		\n"
 		"	st.ab   %5, [%1,4]		\n"
 		"	st.ab   %6, [%1,4]		\n"
 		"	sub.f   %0,%0,8			\n"
-		"31:	bbit0   %3,2,32f		\n"  /* 4 bytes left */
+		"31:	bbit0   %3,2,32f		\n"   
 		"16:	ld.ab   %5, [%2,4]		\n"
 		"	st.ab   %5, [%1,4]		\n"
 		"	sub.f   %0,%0,4			\n"
-		"32:	bbit0   %3,1,33f		\n"  /* 2 bytes left */
+		"32:	bbit0   %3,1,33f		\n"   
 		"17:	ldw.ab  %5, [%2,2]		\n"
 		"	stw.ab  %5, [%1,2]		\n"
 		"	sub.f   %0,%0,2			\n"
 		"33:	bbit0   %3,0,34f		\n"
-		"18:	ldb.ab  %5, [%2,1]		\n"  /* 1 byte left */
+		"18:	ldb.ab  %5, [%2,1]		\n"   
 		"	stb.ab  %5, [%1,1]		\n"
 		"	sub.f   %0,%0,1			\n"
 		"34:	;nop				\n"
@@ -359,10 +299,8 @@ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 		:
 		: "lp_count", "memory");
 	}
-
 	return res;
 }
-
 static inline unsigned long
 raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
@@ -370,16 +308,11 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 	char val;
 	unsigned long tmp1, tmp2, tmp3, tmp4;
 	unsigned long orig_n = n;
-
 	if (n == 0)
 		return 0;
-
-	/* fallback for unaligned access when hardware doesn't support */
 	if (!IS_ENABLED(CONFIG_ARC_USE_UNALIGNED_MEM_ACCESS) &&
 	     (((unsigned long)to & 0x3) || ((unsigned long)from & 0x3))) {
-
 		unsigned char tmp;
-
 		__asm__ __volatile__(
 		"	mov.f   lp_count, %0		\n"
 		"	lpnz 3f				\n"
@@ -395,25 +328,16 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		"	.align 4			\n"
 		"	.word   1b, 4b			\n"
 		"	.previous			\n"
-
 		: "+r" (n),
-		/* Note as an '&' earlyclobber operand to make sure the
-		 * temporary register inside the loop is not the same as
-		 * FROM or TO.
-		 */
 		  "=&r" (tmp), "+r" (to), "+r" (from)
 		:
 		: "lp_count", "memory");
-
 		return n;
 	}
-
 	if (__builtin_constant_p(orig_n)) {
 		res = orig_n;
-
 		if (orig_n / 16) {
 			orig_n = orig_n % 16;
-
 			__asm__ __volatile__(
 			"	lsr lp_count, %7,4		\n"
 			"	lp  3f				\n"
@@ -445,7 +369,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		}
 		if (orig_n / 8) {
 			orig_n = orig_n % 8;
-
 			__asm__ __volatile__(
 			"	ld.ab   %3, [%2,4]		\n"
 			"	ld.ab   %4, [%2,4]		\n"
@@ -469,7 +392,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		}
 		if (orig_n / 4) {
 			orig_n = orig_n % 4;
-
 			__asm__ __volatile__(
 			"	ld.ab   %3, [%2,4]		\n"
 			"16:	st.ab   %3, [%1,4]		\n"
@@ -489,7 +411,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		}
 		if (orig_n / 2) {
 			orig_n = orig_n % 2;
-
 			__asm__ __volatile__(
 			"	ldw.ab    %3, [%2,2]		\n"
 			"17:	stw.ab    %3, [%1,2]		\n"
@@ -525,11 +446,10 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 			:
 			: "memory");
 		}
-	} else {  /* n is NOT constant, so laddered copy of 16x,8,4,2,1  */
-
+	} else {   
 		__asm__ __volatile__(
 		"	mov   %0,%3			\n"
-		"	lsr.f lp_count, %3,4		\n"  /* 16x bytes */
+		"	lsr.f lp_count, %3,4		\n"   
 		"	lpnz  3f			\n"
 		"	ld.ab %5, [%2, 4]		\n"
 		"	ld.ab %6, [%2, 4]		\n"
@@ -540,24 +460,24 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		"12:	st.ab %7, [%1, 4]		\n"
 		"13:	st.ab %8, [%1, 4]		\n"
 		"	sub   %0, %0, 16		\n"
-		"3:	and.f %3,%3,0xf			\n" /* stragglers */
+		"3:	and.f %3,%3,0xf			\n"  
 		"	bz 34f				\n"
-		"	bbit0   %3,3,31f		\n" /* 8 bytes left */
+		"	bbit0   %3,3,31f		\n"  
 		"	ld.ab   %5, [%2,4]		\n"
 		"	ld.ab   %6, [%2,4]		\n"
 		"14:	st.ab   %5, [%1,4]		\n"
 		"15:	st.ab   %6, [%1,4]		\n"
 		"	sub.f   %0, %0, 8		\n"
-		"31:	bbit0   %3,2,32f		\n"  /* 4 bytes left */
+		"31:	bbit0   %3,2,32f		\n"   
 		"	ld.ab   %5, [%2,4]		\n"
 		"16:	st.ab   %5, [%1,4]		\n"
 		"	sub.f   %0, %0, 4		\n"
-		"32:	bbit0 %3,1,33f			\n"  /* 2 bytes left */
+		"32:	bbit0 %3,1,33f			\n"   
 		"	ldw.ab    %5, [%2,2]		\n"
 		"17:	stw.ab    %5, [%1,2]		\n"
 		"	sub.f %0, %0, 2			\n"
 		"33:	bbit0 %3,0,34f			\n"
-		"	ldb.ab    %5, [%2,1]		\n"  /* 1 byte left */
+		"	ldb.ab    %5, [%2,1]		\n"   
 		"18:	stb.ab  %5, [%1,1]		\n"
 		"	sub.f %0, %0, 1			\n"
 		"34:	;nop				\n"
@@ -582,15 +502,12 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 		:
 		: "lp_count", "memory");
 	}
-
 	return res;
 }
-
 static inline unsigned long __clear_user(void __user *to, unsigned long n)
 {
 	long res = n;
 	unsigned char *d_char = to;
-
 	__asm__ __volatile__(
 	"	bbit0   %0, 0, 1f		\n"
 	"75:	stb.ab  %2, [%0,1]		\n"
@@ -624,15 +541,10 @@ static inline unsigned long __clear_user(void __user *to, unsigned long n)
 	: "+r"(d_char), "+r"(res)
 	: "i"(0)
 	: "lp_count", "memory");
-
 	return res;
 }
-
 #define INLINE_COPY_TO_USER
 #define INLINE_COPY_FROM_USER
-
 #define __clear_user			__clear_user
-
 #include <asm-generic/uaccess.h>
-
 #endif

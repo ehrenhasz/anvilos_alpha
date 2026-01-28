@@ -1,8 +1,5 @@
-#!/bin/sh
-
 export LC_ALL=POSIX
 export LC_CTYPE=POSIX
-
 prefix=$1
 if [ -z "$prefix" ]; then
 	echo "usage: applets/install.sh DESTINATION TYPE [OPTS ...]"
@@ -10,21 +7,16 @@ if [ -z "$prefix" ]; then
 	echo "  OPTS is one or more of: --cleanup --noclobber"
 	exit 1
 fi
-shift # Keep only remaining options
-
-# Source the configuration
+shift 
 . ./.config
-
 h=`sort busybox.links | uniq`
-
 sharedlib_dir="0_lib"
-
 linkopts=""
 scriptwrapper="n"
 binaries="n"
 cleanup="0"
 noclobber="0"
-while [ ${#} -gt 0 ]; do
+while [ ${
 	case "$1" in
 		--hardlinks)     linkopts="-f";;
 		--symlinks)      linkopts="-fs";;
@@ -39,16 +31,12 @@ while [ ${#} -gt 0 ]; do
 	esac
 	shift
 done
-
 if [ -n "$DO_INSTALL_LIBS" ] && [ x"$DO_INSTALL_LIBS" != x"n" ]; then
-	# get the target dir for the libs
-	# assume it starts with lib
 	libdir=$($CC -print-file-name=libc.so | \
 		 sed -n 's%^.*\(/lib[^\/]*\)/libc.so%\1%p')
 	if test -z "$libdir"; then
 		libdir=/lib
 	fi
-
 	mkdir -p "$prefix/$libdir" || exit 1
 	for i in $DO_INSTALL_LIBS; do
 		rm -f "$prefix/$libdir/$i" || exit 1
@@ -59,7 +47,6 @@ if [ -n "$DO_INSTALL_LIBS" ] && [ x"$DO_INSTALL_LIBS" != x"n" ]; then
 		fi
 	done
 fi
-
 if [ x"$cleanup" = x"1" ] && [ -e "$prefix/bin/busybox" ]; then
 	inode=`ls -i "$prefix/bin/busybox" | awk '{print $1}'`
 	sub_shell_it=`
@@ -75,11 +62,9 @@ if [ x"$cleanup" = x"1" ] && [ -e "$prefix/bin/busybox" ]; then
 		`
 	exit 0
 fi
-
 rm -f "$prefix/bin/busybox" || exit 1
 mkdir -p "$prefix/bin" || exit 1
 install -m 755 busybox "$prefix/bin/busybox" || exit 1
-
 for i in $h; do
 	appdir=`dirname "$i"`
 	app=`basename "$i"`
@@ -98,7 +83,6 @@ for i in $h; do
 		fi
 		echo "	$prefix/$i"
 	elif [ x"$binaries" = x"y" ]; then
-		# Copy the binary over rather
 		if [ -e "$sharedlib_dir/$app" ]; then
 			echo "   Copying $sharedlib_dir/$app to $prefix/$i"
 			cp -pPR "$sharedlib_dir/$app" "$prefix/$i" || exit 1
@@ -133,5 +117,4 @@ for i in $h; do
 		ln $linkopts "$bb_path" "$prefix/$i" || exit 1
 	fi
 done
-
 exit 0

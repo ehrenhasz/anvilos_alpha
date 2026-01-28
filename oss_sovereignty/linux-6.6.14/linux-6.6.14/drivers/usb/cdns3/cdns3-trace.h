@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * USBSS device controller driver.
- * Trace support header file.
- *
- * Copyright (C) 2018-2019 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdns3
-
 #if !defined(__LINUX_CDNS3_TRACE) || defined(TRACE_HEADER_MULTI_READ)
 #define __LINUX_CDNS3_TRACE
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 #include <asm/byteorder.h>
@@ -21,9 +9,7 @@
 #include "core.h"
 #include "cdns3-gadget.h"
 #include "cdns3-debug.h"
-
 #define CDNS3_MSG_MAX	500
-
 TRACE_EVENT(cdns3_halt,
 	TP_PROTO(struct cdns3_endpoint *ep_priv, u8 halt, u8 flush),
 	TP_ARGS(ep_priv, halt, flush),
@@ -40,7 +26,6 @@ TRACE_EVENT(cdns3_halt,
 	TP_printk("Halt %s for %s: %s", __entry->flush ? " and flush" : "",
 		  __get_str(name), __entry->halt ? "set" : "cleared")
 );
-
 TRACE_EVENT(cdns3_wa1,
 	TP_PROTO(struct cdns3_endpoint *ep_priv, char *msg),
 	TP_ARGS(ep_priv, msg),
@@ -54,7 +39,6 @@ TRACE_EVENT(cdns3_wa1,
 	),
 	TP_printk("WA1: %s %s", __get_str(ep_name), __get_str(msg))
 );
-
 TRACE_EVENT(cdns3_wa2,
 	TP_PROTO(struct cdns3_endpoint *ep_priv, char *msg),
 	TP_ARGS(ep_priv, msg),
@@ -68,7 +52,6 @@ TRACE_EVENT(cdns3_wa2,
 	),
 	TP_printk("WA2: %s %s", __get_str(ep_name), __get_str(msg))
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_doorbell,
 	TP_PROTO(const char *ep_name, u32 ep_trbaddr),
 	TP_ARGS(ep_name, ep_trbaddr),
@@ -83,17 +66,14 @@ DECLARE_EVENT_CLASS(cdns3_log_doorbell,
 	TP_printk("%s, ep_trbaddr %08x", __get_str(name),
 		  __entry->ep_trbaddr)
 );
-
 DEFINE_EVENT(cdns3_log_doorbell, cdns3_doorbell_ep0,
 	TP_PROTO(const char *ep_name, u32 ep_trbaddr),
 	TP_ARGS(ep_name, ep_trbaddr)
 );
-
 DEFINE_EVENT(cdns3_log_doorbell, cdns3_doorbell_epx,
 	TP_PROTO(const char *ep_name, u32 ep_trbaddr),
 	TP_ARGS(ep_name, ep_trbaddr)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_usb_irq,
 	TP_PROTO(struct cdns3_device *priv_dev, u32 usb_ists),
 	TP_ARGS(priv_dev, usb_ists),
@@ -108,12 +88,10 @@ DECLARE_EVENT_CLASS(cdns3_log_usb_irq,
 	TP_printk("%s", cdns3_decode_usb_irq(__get_buf(CDNS3_MSG_MAX), __entry->speed,
 					     __entry->usb_ists))
 );
-
 DEFINE_EVENT(cdns3_log_usb_irq, cdns3_usb_irq,
 	TP_PROTO(struct cdns3_device *priv_dev, u32 usb_ists),
 	TP_ARGS(priv_dev, usb_ists)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_epx_irq,
 	TP_PROTO(struct cdns3_device *priv_dev, struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_dev, priv_ep),
@@ -139,12 +117,10 @@ DECLARE_EVENT_CLASS(cdns3_log_epx_irq,
 		  __entry->ep_last_sid,
 		  __entry->use_streams)
 );
-
 DEFINE_EVENT(cdns3_log_epx_irq, cdns3_epx_irq,
 	TP_PROTO(struct cdns3_device *priv_dev, struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_dev, priv_ep)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_ep0_irq,
 	TP_PROTO(struct cdns3_device *priv_dev,  u32 ep_sts),
 	TP_ARGS(priv_dev, ep_sts),
@@ -160,12 +136,10 @@ DECLARE_EVENT_CLASS(cdns3_log_ep0_irq,
 					     __entry->ep_dir,
 					     __entry->ep_sts))
 );
-
 DEFINE_EVENT(cdns3_log_ep0_irq, cdns3_ep0_irq,
 	TP_PROTO(struct cdns3_device *priv_dev, u32 ep_sts),
 	TP_ARGS(priv_dev, ep_sts)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_ctrl,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl),
@@ -189,12 +163,10 @@ DECLARE_EVENT_CLASS(cdns3_log_ctrl,
 					__entry->wIndex, __entry->wLength)
 	)
 );
-
 DEFINE_EVENT(cdns3_log_ctrl, cdns3_ctrl_req,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_request,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req),
@@ -242,32 +214,26 @@ DECLARE_EVENT_CLASS(cdns3_log_request,
 		__entry->stream_id
 	)
 );
-
 DEFINE_EVENT(cdns3_log_request, cdns3_alloc_request,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_log_request, cdns3_free_request,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_log_request, cdns3_ep_queue,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_log_request, cdns3_ep_dequeue,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_log_request, cdns3_gadget_giveback,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 TRACE_EVENT(cdns3_ep0_queue,
 	TP_PROTO(struct cdns3_device *dev_priv, struct usb_request *request),
 	TP_ARGS(dev_priv, request),
@@ -282,7 +248,6 @@ TRACE_EVENT(cdns3_ep0_queue,
 	TP_printk("Queue to ep0%s length: %u", __entry->dir ? "in" : "out",
 		  __entry->length)
 );
-
 DECLARE_EVENT_CLASS(cdns3_stream_split_transfer_len,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req),
@@ -304,18 +269,15 @@ DECLARE_EVENT_CLASS(cdns3_stream_split_transfer_len,
 		  __get_str(name), __entry->req, __entry->length,
 		  __entry->actual, __entry->stream_id)
 );
-
 DEFINE_EVENT(cdns3_stream_split_transfer_len, cdns3_stream_transfer_split,
 	     TP_PROTO(struct cdns3_request *req),
 	     TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_stream_split_transfer_len,
 	     cdns3_stream_transfer_split_next_part,
 	     TP_PROTO(struct cdns3_request *req),
 	     TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_aligned_request,
 	TP_PROTO(struct cdns3_request *priv_req),
 	TP_ARGS(priv_req),
@@ -343,17 +305,14 @@ DECLARE_EVENT_CLASS(cdns3_log_aligned_request,
 		__entry->aligned_buf_size
 	)
 );
-
 DEFINE_EVENT(cdns3_log_aligned_request, cdns3_free_aligned_request,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DEFINE_EVENT(cdns3_log_aligned_request, cdns3_prepare_aligned_request,
 	TP_PROTO(struct cdns3_request *req),
 	TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_map_request,
 	TP_PROTO(struct cdns3_request *priv_req),
 	TP_ARGS(priv_req),
@@ -381,7 +340,6 @@ DEFINE_EVENT(cdns3_log_map_request, cdns3_mapped_request,
 	     TP_PROTO(struct cdns3_request *req),
 	     TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_trb,
 	TP_PROTO(struct cdns3_endpoint *priv_ep, struct cdns3_trb *trb),
 	TP_ARGS(priv_ep, trb),
@@ -419,17 +377,14 @@ DECLARE_EVENT_CLASS(cdns3_log_trb,
 		__entry->last_stream_id
 	)
 );
-
 DEFINE_EVENT(cdns3_log_trb, cdns3_prepare_trb,
 	TP_PROTO(struct cdns3_endpoint *priv_ep, struct cdns3_trb *trb),
 	TP_ARGS(priv_ep, trb)
 );
-
 DEFINE_EVENT(cdns3_log_trb, cdns3_complete_trb,
 	TP_PROTO(struct cdns3_endpoint *priv_ep, struct cdns3_trb *trb),
 	TP_ARGS(priv_ep, trb)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_ring,
 	TP_PROTO(struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_ep),
@@ -442,15 +397,12 @@ DECLARE_EVENT_CLASS(cdns3_log_ring,
 	TP_fast_assign(
 		cdns3_dbg_ring(priv_ep, __get_str(buffer));
 	),
-
 	TP_printk("%s", __get_str(buffer))
 );
-
 DEFINE_EVENT(cdns3_log_ring, cdns3_ring,
 	TP_PROTO(struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_ep)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_ep,
 	TP_PROTO(struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_ep),
@@ -496,17 +448,14 @@ DECLARE_EVENT_CLASS(cdns3_log_ep,
 		__entry->dir ? "IN" : "OUT"
 	)
 );
-
 DEFINE_EVENT(cdns3_log_ep, cdns3_gadget_ep_enable,
 	TP_PROTO(struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_ep)
 );
-
 DEFINE_EVENT(cdns3_log_ep, cdns3_gadget_ep_disable,
 	TP_PROTO(struct cdns3_endpoint *priv_ep),
 	TP_ARGS(priv_ep)
 );
-
 DECLARE_EVENT_CLASS(cdns3_log_request_handled,
 	TP_PROTO(struct cdns3_request *priv_req, int current_index,
 		 int handled),
@@ -538,20 +487,14 @@ DECLARE_EVENT_CLASS(cdns3_log_request_handled,
 		__entry->end_trb
 	)
 );
-
 DEFINE_EVENT(cdns3_log_request_handled, cdns3_request_handled,
 	TP_PROTO(struct cdns3_request *priv_req, int current_index,
 		 int handled),
 	TP_ARGS(priv_req, current_index, handled)
 );
-#endif /* __LINUX_CDNS3_TRACE */
-
-/* this part must be outside header guard */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE cdns3-trace
-
 #include <trace/define_trace.h>

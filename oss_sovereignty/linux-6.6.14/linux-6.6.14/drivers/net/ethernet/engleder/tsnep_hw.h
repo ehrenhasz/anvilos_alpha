@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
-
-/* Hardware definition of TSNEP and EtherCAT MAC device */
-
 #ifndef _TSNEP_HW_H
 #define _TSNEP_HW_H
-
 #include <linux/types.h>
-
-/* type */
 #define ECM_TYPE 0x0000
 #define ECM_REVISION_MASK 0x000000FF
 #define ECM_REVISION_SHIFT 0
@@ -17,17 +9,11 @@
 #define ECM_QUEUE_COUNT_MASK 0x00070000
 #define ECM_QUEUE_COUNT_SHIFT 16
 #define ECM_GATE_CONTROL 0x02000000
-
-/* system time */
 #define ECM_SYSTEM_TIME_LOW 0x0008
 #define ECM_SYSTEM_TIME_HIGH 0x000C
-
-/* clock */
 #define ECM_CLOCK_RATE 0x0010
 #define ECM_CLOCK_RATE_OFFSET_MASK 0x7FFFFFFF
 #define ECM_CLOCK_RATE_OFFSET_SIGN 0x80000000
-
-/* interrupt */
 #define ECM_INT_ENABLE 0x0018
 #define ECM_INT_ACTIVE 0x001C
 #define ECM_INT_ACKNOWLEDGE 0x001C
@@ -37,33 +23,23 @@
 #define ECM_INT_TXRX_SHIFT 2
 #define ECM_INT_ALL 0x7FFFFFFF
 #define ECM_INT_DISABLE 0x80000000
-
-/* reset */
 #define ECM_RESET 0x0020
 #define ECM_RESET_COMMON 0x00000001
 #define ECM_RESET_CHANNEL 0x00000100
 #define ECM_RESET_TXRX 0x00010000
-
-/* counter */
 #define ECM_COUNTER_LOW 0x0028
 #define ECM_COUNTER_HIGH 0x002C
-
-/* interrupt delay */
 #define ECM_INT_DELAY 0x0030
 #define ECM_INT_DELAY_MASK 0xF0
 #define ECM_INT_DELAY_SHIFT 4
 #define ECM_INT_DELAY_BASE_US 16
 #define ECM_INT_DELAY_OFFSET 1
-
-/* control and status */
 #define ECM_STATUS 0x0080
 #define ECM_LINK_MODE_OFF 0x01000000
 #define ECM_LINK_MODE_100 0x02000000
 #define ECM_LINK_MODE_1000 0x04000000
 #define ECM_NO_LINK 0x01000000
 #define ECM_LINK_MODE_MASK 0x06000000
-
-/* management data */
 #define ECM_MD_CONTROL 0x0084
 #define ECM_MD_STATUS 0x0084
 #define ECM_MD_PREAMBLE 0x00000001
@@ -76,8 +52,6 @@
 #define ECM_MD_BUSY 0x00000001
 #define ECM_MD_DATA_MASK 0xFFFF0000
 #define ECM_MD_DATA_SHIFT 16
-
-/* statistic */
 #define ECM_STAT 0x00B0
 #define ECM_STAT_RX_ERR_MASK 0x000000FF
 #define ECM_STAT_RX_ERR_SHIFT 0
@@ -85,8 +59,6 @@
 #define ECM_STAT_INV_FRM_SHIFT 8
 #define ECM_STAT_FWD_RX_ERR_MASK 0x00FF0000
 #define ECM_STAT_FWD_RX_ERR_SHIFT 16
-
-/* tsnep */
 #define TSNEP_MAC_SIZE 0x4000
 #define TSNEP_QUEUE_SIZE 0x1000
 #define TSNEP_QUEUE(n) ({ typeof(n) __n = (n); \
@@ -94,11 +66,9 @@
 			  0 : \
 			  TSNEP_MAC_SIZE + TSNEP_QUEUE_SIZE * ((__n) - 1); })
 #define TSNEP_MAX_QUEUES 8
-#define TSNEP_MAX_FRAME_SIZE (2 * 1024) /* hardware supports actually 16k */
+#define TSNEP_MAX_FRAME_SIZE (2 * 1024)  
 #define TSNEP_DESC_SIZE 256
 #define TSNEP_DESC_OFFSET 128
-
-/* tsnep register */
 #define TSNEP_INFO 0x0100
 #define TSNEP_INFO_TX_TIME 0x00010000
 #define TSNEP_CONTROL 0x0108
@@ -163,21 +133,16 @@
 #define TSNEP_RX_ASSIGN_ETHER_TYPE 0x0880
 #define TSNEP_RX_ASSIGN_ETHER_TYPE_OFFSET 2
 #define TSNEP_RX_ASSIGN_ETHER_TYPE_COUNT 2
-
-/* tsnep gate control list operation */
 struct tsnep_gcl_operation {
 	u32 properties;
 	u32 interval;
 };
-
 #define TSNEP_GCL_COUNT (TSNEP_GCL_SIZE / sizeof(struct tsnep_gcl_operation))
 #define TSNEP_GCL_MASK 0x000000FF
 #define TSNEP_GCL_INSERT 0x20000000
 #define TSNEP_GCL_CHANGE 0x40000000
 #define TSNEP_GCL_LAST 0x80000000
 #define TSNEP_GCL_MIN_INTERVAL 32
-
-/* tsnep TX/RX descriptor */
 #define TSNEP_DESC_SIZE 256
 #define TSNEP_DESC_SIZE_DATA_AFTER 2048
 #define TSNEP_DESC_OFFSET 128
@@ -187,8 +152,6 @@ struct tsnep_gcl_operation {
 #define TSNEP_DESC_INTERRUPT_FLAG 0x00040000
 #define TSNEP_DESC_EXTENDED_WRITEBACK_FLAG 0x00080000
 #define TSNEP_DESC_NO_LINK_FLAG 0x01000000
-
-/* tsnep TX descriptor */
 struct tsnep_tx_desc {
 	__le32 properties;
 	__le32 more_properties;
@@ -196,13 +159,10 @@ struct tsnep_tx_desc {
 	__le64 next;
 	__le64 tx;
 };
-
 #define TSNEP_TX_DESC_OWNER_MASK 0xE0000000
 #define TSNEP_TX_DESC_OWNER_USER_FLAG 0x20000000
 #define TSNEP_TX_DESC_LAST_FRAGMENT_FLAG 0x00010000
 #define TSNEP_TX_DESC_DATA_AFTER_DESC_FLAG 0x00020000
-
-/* tsnep TX descriptor writeback */
 struct tsnep_tx_desc_wb {
 	__le32 properties;
 	__le32 reserved1;
@@ -211,36 +171,26 @@ struct tsnep_tx_desc_wb {
 	__le32 dma_delay;
 	__le32 reserved2;
 };
-
 #define TSNEP_TX_DESC_UNDERRUN_ERROR_FLAG 0x00010000
 #define TSNEP_TX_DESC_DMA_DELAY_FIRST_DATA_MASK 0x0000FFFC
 #define TSNEP_TX_DESC_DMA_DELAY_FIRST_DATA_SHIFT 2
 #define TSNEP_TX_DESC_DMA_DELAY_LAST_DATA_MASK 0xFFFC0000
 #define TSNEP_TX_DESC_DMA_DELAY_LAST_DATA_SHIFT 18
 #define TSNEP_TX_DESC_DMA_DELAY_NS 64
-
-/* tsnep RX descriptor */
 struct tsnep_rx_desc {
 	__le32 properties;
 	__le32 reserved[3];
 	__le64 next;
 	__le64 rx;
 };
-
 #define TSNEP_RX_DESC_BUFFER_SIZE_MASK 0x00003FFC
-
-/* tsnep RX descriptor writeback */
 struct tsnep_rx_desc_wb {
 	__le32 properties;
 	__le32 reserved[7];
 };
-
-/* tsnep RX inline meta */
 struct tsnep_rx_inline {
 	__le64 counter;
 	__le64 timestamp;
 };
-
 #define TSNEP_RX_INLINE_METADATA_SIZE (sizeof(struct tsnep_rx_inline))
-
-#endif /* _TSNEP_HW_H */
+#endif  

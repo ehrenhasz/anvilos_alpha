@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_POWER_MT8186_POWER_H
 #define _DT_BINDINGS_POWER_MT8186_POWER_H
-
 #define MT8186_POWER_DOMAIN_MFG0			0
 #define MT8186_POWER_DOMAIN_MFG1			1
 #define MT8186_POWER_DOMAIN_MFG2			2
@@ -28,5 +21,4 @@
 #define MT8186_POWER_DOMAIN_ADSP_AO			18
 #define MT8186_POWER_DOMAIN_ADSP_INFRA			19
 #define MT8186_POWER_DOMAIN_ADSP_TOP			20
-
-#endif /* _DT_BINDINGS_POWER_MT8186_POWER_H */
+#endif  

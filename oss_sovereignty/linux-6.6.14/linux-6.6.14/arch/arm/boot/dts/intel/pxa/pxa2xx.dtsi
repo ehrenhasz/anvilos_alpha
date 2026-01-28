@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pxa2xx.dtsi - Device Tree Include file for Marvell PXA2xx family SoC
- *
- * Copyright (C) 2011 Marek Vasut <marek.vasut@gmail.com>
- */
-
 #include "dt-bindings/clock/pxa-clock.h"
-
 #define PMGROUP(pin) #pin
 #define PMMUX(func, pin, af)			\
 	mux- ## func {				\
@@ -25,14 +17,12 @@
 		function = #af;			\
 		low-power-enable;		\
 	}
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	model = "Marvell PXA2xx family SoC";
 	compatible = "marvell,pxa2xx";
 	interrupt-parent = <&pxairq>;
-
 	aliases {
 		serial0 = &ffuart;
 		serial1 = &btuart;
@@ -41,20 +31,17 @@
 		i2c0 = &pwri2c;
 		i2c1 = &pxai2c1;
 	};
-
 	cpus {
 		cpu {
 			compatible = "marvell,xscale";
 			device_type = "cpu";
 		};
 	};
-
 	pxabus {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		pxairq: interrupt-controller@40d00000 {
 			#interrupt-cells = <1>;
 			compatible = "marvell,pxa-intc";
@@ -63,7 +50,6 @@
 			marvell,intc-nr-irqs = <32>;
 			reg = <0x40d00000 0xd0>;
 		};
-
 		gpio: gpio@40e00000 {
 			compatible = "mrvl,pxa-gpio";
 			#address-cells = <0x1>;
@@ -76,15 +62,12 @@
 			interrupt-controller;
 			#interrupt-cells = <0x2>;
 			ranges;
-
 			gcb0: gpio@40e00000 {
 				reg = <0x40e00000 0x4>;
 			};
-
 			gcb1: gpio@40e00004 {
 				reg = <0x40e00004 0x4>;
 			};
-
 			gcb2: gpio@40e00008 {
 				reg = <0x40e00008 0x4>;
 			};
@@ -92,7 +75,6 @@
 				reg = <0x40e0000c 0x4>;
 			};
 		};
-
 		ffuart: serial@40100000 {
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40100000 0x30>;
@@ -100,7 +82,6 @@
 			clocks = <&clks CLK_FFUART>;
 			status = "disabled";
 		};
-
 		btuart: serial@40200000 {
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40200000 0x30>;
@@ -108,7 +89,6 @@
 			clocks = <&clks CLK_BTUART>;
 			status = "disabled";
 		};
-
 		stuart: serial@40700000 {
 			compatible = "mrvl,pxa-uart";
 			reg = <0x40700000 0x30>;
@@ -116,14 +96,12 @@
 			clocks = <&clks CLK_STUART>;
 			status = "disabled";
 		};
-
 		hwuart: serial@41600000 {
 			compatible = "mrvl,pxa-uart";
 			reg = <0x41600000 0x30>;
 			interrupts = <7>;
 			status = "disabled";
 		};
-
 		pxai2c1: i2c@40301680 {
 			compatible = "mrvl,pxa-i2c";
 			reg = <0x40301680 0x30>;
@@ -133,7 +111,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		mmc0: mmc@41100000 {
 			compatible = "marvell,pxa-mmc";
 			reg = <0x41100000 0x1000>;
@@ -144,13 +121,11 @@
 			dma-names = "rx", "tx";
 			status = "disabled";
 		};
-
 		rtc@40900000 {
 			compatible = "marvell,pxa-rtc";
 			reg = <0x40900000 0x3c>;
 			interrupts = <30 31>;
 		};
-
 		lcdc: lcd-controller@40500000 {
 			compatible = "marvell,pxa2xx-lcdc";
 			reg = <0x44000000 0x10000>;

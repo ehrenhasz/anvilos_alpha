@@ -1,33 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
-/*
- * Copyright (C) 2023 DH electronics GmbH
- *
- * DHCOM iMX6ULL variant:
- * DHCM-iMX6ULL-C080-R051-F0409-SPI-E2-CAN2-SD-RTC-ADC-I-01D2
- * DHCOR PCB number: 578-200 or newer
- * DHCOM PCB number: 579-200 or newer
- * DRC02 PCB number: 568-100 or newer (2nd ethernet by SoM)
- */
 /dts-v1/;
-
 #include "imx6ull-dhcom-som.dtsi"
 #include "imx6ull-dhcom-som-cfg-sdcard.dtsi"
-
 / {
 	model = "DH electronics i.MX6ULL DHCOM on DRC02";
 	compatible = "dh,imx6ull-dhcom-drc02", "dh,imx6ull-dhcom-som",
 		     "dh,imx6ull-dhcor-som", "fsl,imx6ull";
 };
-
-/*
- * The signals for CAN2 TX and RX are routed to the DHCOM UART1 RTS/CTS pins.
- * Therefore the UART RTS/CTS must be output on other DHCOM pins, see uart1
- * node below.
- */
 &can2 {
 	status = "okay";
 };
-
 &gpio1 {
 	gpio-line-names =
 		"", "", "", "",
@@ -39,7 +20,6 @@
 		"", "", "", "",
 		"", "", "", "";
 };
-
 &gpio4 {
 	gpio-line-names =
 		"", "", "", "",
@@ -50,20 +30,13 @@
 		"DRC02-HW2", "DHCOM-U", "DHCOM-T", "DHCOM-S",
 		"DHCOM-R", "DHCOM-Q", "DHCOM-P", "DHCOM-O",
 		"DHCOM-N", "", "", "";
-	/*
-	 * NOTE: On DRC02, the RS485_RX_En is controlled by a separate
-	 * GPIO line, however the i.MX6ULL UART driver assumes RX happens
-	 * during TX anyway and that it only controls drive enable DE
-	 * line. Hence, the RX is always enabled here.
-	 */
 	rs485-rx-en-hog {
 		gpio-hog;
-		gpios = <25 0>; /* GPIO Q */
+		gpios = <25 0>;  
 		line-name = "rs485-rx-en";
 		output-low;
 	};
 };
-
 &gpio5 {
 	gpio-line-names =
 		"DHCOM-A", "DHCOM-B", "DHCOM-C", "DRC02-Out2",
@@ -75,8 +48,6 @@
 		"", "", "", "",
 		"", "", "", "";
 };
-
-/* DHCOM I2C2 */
 &i2c1 {
 	eeprom@56 {
 		compatible = "atmel,24c04";
@@ -84,16 +55,13 @@
 		pagesize = <16>;
 	};
 };
-
 &uart1 {
 	/delete-property/ uart-has-rtscts;
-	rts-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* GPIO I */
-	cts-gpios = <&gpio4 19 GPIO_ACTIVE_HIGH>; /* GPIO M */
+	rts-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;  
+	cts-gpios = <&gpio4 19 GPIO_ACTIVE_HIGH>;  
 };
-
-/* Use UART as RS485 */
 &uart2 {
 	/delete-property/ uart-has-rtscts;
 	linux,rs485-enabled-at-boot-time;
-	rts-gpios = <&gpio4 26 GPIO_ACTIVE_HIGH>; /* GPIO P */
+	rts-gpios = <&gpio4 26 GPIO_ACTIVE_HIGH>;  
 };

@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016, Cyril Bur, IBM Corp.
- */
-
 #ifndef _SELFTESTS_POWERPC_GPR_ASM_H
 #define _SELFTESTS_POWERPC_GPR_ASM_H
-
 #include "basic_asm.h"
-
 #define __PUSH_NVREGS(top_pos); \
 	std r31,(top_pos)(%r1); \
 	std r30,(top_pos - 8)(%r1); \
@@ -27,7 +20,6 @@
 	std r16,(top_pos - 120)(%r1); \
 	std r15,(top_pos - 128)(%r1); \
 	std r14,(top_pos - 136)(%r1)
-
 #define __POP_NVREGS(top_pos); \
 	ld r31,(top_pos)(%r1); \
 	ld r30,(top_pos - 8)(%r1); \
@@ -47,25 +39,14 @@
 	ld r16,(top_pos - 120)(%r1); \
 	ld r15,(top_pos - 128)(%r1); \
 	ld r14,(top_pos - 136)(%r1)
-
 #define PUSH_NVREGS(stack_size) \
 	__PUSH_NVREGS(stack_size + STACK_FRAME_MIN_SIZE)
-
-/* 18 NV FPU REGS */
 #define PUSH_NVREGS_BELOW_FPU(stack_size) \
 	__PUSH_NVREGS(stack_size + STACK_FRAME_MIN_SIZE - (18 * 8))
-
 #define POP_NVREGS(stack_size) \
 	__POP_NVREGS(stack_size + STACK_FRAME_MIN_SIZE)
-
-/* 18 NV FPU REGS */
 #define POP_NVREGS_BELOW_FPU(stack_size) \
 	__POP_NVREGS(stack_size + STACK_FRAME_MIN_SIZE - (18 * 8))
-
-/*
- * Careful calling this, it will 'clobber' NVGPRs (by design)
- * Don't call this from C
- */
 FUNC_START(load_gpr)
 	ld	r14,0(r3)
 	ld	r15,8(r3)
@@ -87,6 +68,4 @@ FUNC_START(load_gpr)
 	ld	r31,136(r3)
 	blr
 FUNC_END(load_gpr)
-
-
-#endif /* _SELFTESTS_POWERPC_GPR_ASM_H */
+#endif  

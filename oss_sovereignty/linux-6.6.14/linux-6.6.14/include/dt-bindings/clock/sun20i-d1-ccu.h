@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2020 huangzhenwei@allwinnertech.com
- * Copyright (C) 2021 Samuel Holland <samuel@sholland.org>
- */
-
 #ifndef _DT_BINDINGS_CLK_SUN20I_D1_CCU_H_
 #define _DT_BINDINGS_CLK_SUN20I_D1_CCU_H_
-
 #define CLK_PLL_CPUX		0
 #define CLK_PLL_DDR0		1
 #define CLK_PLL_PERIPH0_4X	2
@@ -154,5 +147,4 @@
 #define CLK_FANOUT2		144
 #define CLK_BUS_CAN0		145
 #define CLK_BUS_CAN1		146
-
-#endif /* _DT_BINDINGS_CLK_SUN20I_D1_CCU_H_ */
+#endif  

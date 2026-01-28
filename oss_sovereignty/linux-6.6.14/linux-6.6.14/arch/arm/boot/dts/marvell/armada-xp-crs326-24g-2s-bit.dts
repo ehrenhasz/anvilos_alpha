@@ -1,28 +1,16 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree file for MikroTik CRS326-24G-2S+ Bit board
- *
- * Copyright (C) 2020 Sartura Ltd.
- * Author: Luka Kovacic <luka.kovacic@sartura.hr>
- */
-
 #include "armada-xp-crs326-24g-2s.dtsi"
-
 / {
 	model = "MikroTik CRS326-24G-2S+ Bit";
 };
-
 &spi0 {
 	status = "okay";
-
 	flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "jedec,spi-nor";
-		reg = <0>; /* Chip select 0 */
+		reg = <0>;  
 		spi-max-frequency = <108000000>;
 		m25p,fast-read;
-
 		partition@u-boot {
 			reg = <0x00000000 0x001f0000>;
 			label = "u-boot";

@@ -1,32 +1,4 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2010 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2013, 2015 by Delphix. All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- */
-
 #include <sys/zfs_context.h>
-
 #if defined(_KERNEL)
 #include <sys/sunddi.h>
 #include <sys/ctype.h>
@@ -41,7 +13,6 @@
 #include "zfs_prop.h"
 #include "zfs_deleg.h"
 #include "zfs_namecheck.h"
-
 const zfs_deleg_perm_tab_t zfs_deleg_perm_tab[] = {
 	{ZFS_DELEG_PERM_ALLOW},
 	{ZFS_DELEG_PERM_BOOKMARK},
@@ -76,16 +47,13 @@ const zfs_deleg_perm_tab_t zfs_deleg_perm_tab[] = {
 	{ZFS_DELEG_PERM_PROJECTOBJQUOTA},
 	{NULL}
 };
-
 static int
 zfs_valid_permission_name(const char *perm)
 {
 	if (zfs_deleg_canonicalize_perm(perm))
 		return (0);
-
 	return (permset_namecheck(perm, NULL, NULL));
 }
-
 const char *
 zfs_deleg_canonicalize_perm(const char *perm)
 {
@@ -93,22 +61,17 @@ zfs_deleg_canonicalize_perm(const char *perm)
 		if (strcmp(perm, zfs_deleg_perm_tab[i].z_perm) == 0)
 			return (perm);
 	}
-
 	zfs_prop_t prop = zfs_name_to_prop(perm);
 	if (prop != ZPROP_INVAL && zfs_prop_delegatable(prop))
 		return (zfs_prop_to_name(prop));
 	return (NULL);
-
 }
-
 static int
 zfs_validate_who(const char *who)
 {
 	const char *p;
-
 	if (who[2] != ZFS_DELEG_FIELD_SEP_CHR)
 		return (-1);
-
 	switch (who[0]) {
 	case ZFS_DELEG_USER:
 	case ZFS_DELEG_GROUP:
@@ -120,13 +83,11 @@ zfs_validate_who(const char *who)
 			if (!isdigit(*p))
 				return (-1);
 		break;
-
 	case ZFS_DELEG_NAMED_SET:
 	case ZFS_DELEG_NAMED_SET_SETS:
 		if (who[1] != ZFS_DELEG_NA)
 			return (-1);
 		return (permset_namecheck(&who[3], NULL, NULL));
-
 	case ZFS_DELEG_CREATE:
 	case ZFS_DELEG_CREATE_SETS:
 		if (who[1] != ZFS_DELEG_NA)
@@ -134,7 +95,6 @@ zfs_validate_who(const char *who)
 		if (who[3] != '\0')
 			return (-1);
 		break;
-
 	case ZFS_DELEG_EVERYONE:
 	case ZFS_DELEG_EVERYONE_SETS:
 		if (who[1] != ZFS_DELEG_LOCAL && who[1] != ZFS_DELEG_DESCENDENT)
@@ -142,39 +102,30 @@ zfs_validate_who(const char *who)
 		if (who[3] != '\0')
 			return (-1);
 		break;
-
 	default:
 		return (-1);
 	}
-
 	return (0);
 }
-
 int
 zfs_deleg_verify_nvlist(nvlist_t *nvp)
 {
 	nvpair_t *who, *perm_name;
 	nvlist_t *perms;
 	int error;
-
 	if (nvp == NULL)
 		return (-1);
-
 	who = nvlist_next_nvpair(nvp, NULL);
 	if (who == NULL)
 		return (-1);
-
 	do {
 		if (zfs_validate_who(nvpair_name(who)))
 			return (-1);
-
 		error = nvlist_lookup_nvlist(nvp, nvpair_name(who), &perms);
-
 		if (error && error != ENOENT)
 			return (-1);
 		if (error == ENOENT)
 			continue;
-
 		perm_name = nvlist_next_nvpair(perms, NULL);
 		if (perm_name == NULL) {
 			return (-1);
@@ -189,28 +140,12 @@ zfs_deleg_verify_nvlist(nvlist_t *nvp)
 	} while ((who = nvlist_next_nvpair(nvp, who)) != NULL);
 	return (0);
 }
-
-/*
- * Construct the base attribute name.  The base attribute names
- * are the "key" to locate the jump objects which contain the actual
- * permissions.  The base attribute names are encoded based on
- * type of entry and whether it is a local or descendent permission.
- *
- * Arguments:
- * attr - attribute name return string, attribute is assumed to be
- *        ZFS_MAX_DELEG_NAME long.
- * type - type of entry to construct
- * inheritchr - inheritance type (local,descendent, or NA for create and
- *                               permission set definitions
- * data - is either a permission set name or a 64 bit uid/gid.
- */
 void
 zfs_deleg_whokey(char *attr, zfs_deleg_who_type_t type,
     char inheritchr, void *data)
 {
 	int len = ZFS_MAX_DELEG_NAME;
 	uint64_t *id = data;
-
 	switch (type) {
 	case ZFS_DELEG_USER:
 	case ZFS_DELEG_GROUP:
@@ -238,7 +173,6 @@ zfs_deleg_whokey(char *attr, zfs_deleg_who_type_t type,
 		ASSERT(!"bad zfs_deleg_who_type_t");
 	}
 }
-
 #if defined(_KERNEL)
 EXPORT_SYMBOL(zfs_deleg_verify_nvlist);
 EXPORT_SYMBOL(zfs_deleg_whokey);

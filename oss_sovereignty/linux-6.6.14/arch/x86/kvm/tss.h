@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __TSS_SEGMENT_H
 #define __TSS_SEGMENT_H
-
 struct tss_segment_32 {
 	u32 prev_task_link;
 	u32 esp0;
@@ -31,7 +29,6 @@ struct tss_segment_32 {
 	u16 t;
 	u16 io_map;
 };
-
 struct tss_segment_16 {
 	u16 prev_task_link;
 	u16 sp0;
@@ -56,5 +53,4 @@ struct tss_segment_16 {
 	u16 ds;
 	u16 ldt;
 };
-
 #endif

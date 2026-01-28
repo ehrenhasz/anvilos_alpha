@@ -1,67 +1,47 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2003 Ralf Baechle
- */
 #ifndef _ASM_ASMMACRO_H
 #define _ASM_ASMMACRO_H
-
 #include <asm/hazards.h>
 #include <asm/asm-offsets.h>
 #include <asm/msa.h>
-
 #ifdef CONFIG_32BIT
 #include <asm/asmmacro-32.h>
 #endif
 #ifdef CONFIG_64BIT
 #include <asm/asmmacro-64.h>
 #endif
-
-/* preprocessor replaces the fp in ".set fp=64" with $30 otherwise */
 #undef fp
-
-/*
- * Helper macros for generating raw instruction encodings.
- */
 #ifdef CONFIG_CPU_MICROMIPS
 	.macro	insn32_if_mm enc
 	.insn
 	.hword ((\enc) >> 16)
 	.hword ((\enc) & 0xffff)
 	.endm
-
 	.macro	insn_if_mips enc
 	.endm
 #else
 	.macro	insn32_if_mm enc
 	.endm
-
 	.macro	insn_if_mips enc
 	.insn
 	.word (\enc)
 	.endm
 #endif
-
 #ifdef CONFIG_CPU_HAS_DIEI
 	.macro	local_irq_enable
 	ei
 	irq_enable_hazard
 	.endm
-
 	.macro	local_irq_disable
 	di
 	irq_disable_hazard
 	.endm
-#else /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
+#else  
 	.macro	local_irq_enable reg=t0
 	mfc0	\reg, CP0_STATUS
 	ori	\reg, \reg, 1
 	mtc0	\reg, CP0_STATUS
 	irq_enable_hazard
 	.endm
-
 	.macro	local_irq_disable reg=t0
 #ifdef CONFIG_PREEMPTION
 	lw      \reg, TI_PRE_COUNT($28)
@@ -79,8 +59,7 @@
 	sw      \reg, TI_PRE_COUNT($28)
 #endif
 	.endm
-#endif  /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
-
+#endif   
 	.macro	fpu_save_16even thread tmp=t0
 	.set	push
 	.set	hardfloat
@@ -104,7 +83,6 @@
 	sw	\tmp, THREAD_FCR31(\thread)
 	.set	pop
 	.endm
-
 	.macro	fpu_save_16odd thread
 	.set	push
 	.set	mips64r2
@@ -128,7 +106,6 @@
 	sdc1	$f31, THREAD_FPR31(\thread)
 	.set	pop
 	.endm
-
 	.macro	fpu_save_double thread status tmp
 #if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPSR2) || \
     defined(CONFIG_CPU_MIPSR5) || defined(CONFIG_CPU_MIPSR6)
@@ -139,7 +116,6 @@
 #endif
 	fpu_save_16even \thread \tmp
 	.endm
-
 	.macro	fpu_restore_16even thread tmp=t0
 	.set	push
 	.set	hardfloat
@@ -163,7 +139,6 @@
 	ctc1	\tmp, fcr31
 	.set	pop
 	.endm
-
 	.macro	fpu_restore_16odd thread
 	.set	push
 	.set	mips64r2
@@ -187,58 +162,45 @@
 	ldc1	$f31, THREAD_FPR31(\thread)
 	.set	pop
 	.endm
-
 	.macro	fpu_restore_double thread status tmp
 #if defined(CONFIG_64BIT) || defined(CONFIG_CPU_MIPSR2) || \
     defined(CONFIG_CPU_MIPSR5) || defined(CONFIG_CPU_MIPSR6)
 	sll	\tmp, \status, 5
 	bgez	\tmp, 10f				# 16 register mode?
-
 	fpu_restore_16odd \thread
 10:
 #endif
 	fpu_restore_16even \thread \tmp
 	.endm
-
 #if defined(CONFIG_CPU_MIPSR2) || defined(CONFIG_CPU_MIPSR5) || \
     defined(CONFIG_CPU_MIPSR6)
 	.macro	_EXT	rd, rs, p, s
 	ext	\rd, \rs, \p, \s
 	.endm
-#else /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
+#else  
 	.macro	_EXT	rd, rs, p, s
 	srl	\rd, \rs, \p
 	andi	\rd, \rd, (1 << \s) - 1
 	.endm
-#endif /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
-
-/*
- * Temporary until all gas have MT ASE support
- */
+#endif  
 	.macro	DMT	reg=0
 	.word	0x41600bc1 | (\reg << 16)
 	.endm
-
 	.macro	EMT	reg=0
 	.word	0x41600be1 | (\reg << 16)
 	.endm
-
 	.macro	DVPE	reg=0
 	.word	0x41600001 | (\reg << 16)
 	.endm
-
 	.macro	EVPE	reg=0
 	.word	0x41600021 | (\reg << 16)
 	.endm
-
 	.macro	MFTR	rt=0, rd=0, u=0, sel=0
 	 .word	0x41000000 | (\rt << 16) | (\rd << 11) | (\u << 5) | (\sel)
 	.endm
-
 	.macro	MTTR	rt=0, rd=0, u=0, sel=0
 	 .word	0x41800000 | (\rt << 16) | (\rd << 11) | (\u << 5) | (\sel)
 	.endm
-
 #ifdef TOOLCHAIN_SUPPORTS_MSA
 	.macro	_cfcmsa	rd, cs
 	.set	push
@@ -248,7 +210,6 @@
 	cfcmsa	\rd, $\cs
 	.set	pop
 	.endm
-
 	.macro	_ctcmsa	cd, rs
 	.set	push
 	.set	mips32r2
@@ -257,7 +218,6 @@
 	ctcmsa	$\cd, \rs
 	.set	pop
 	.endm
-
 	.macro	ld_b	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -266,7 +226,6 @@
 	ld.b	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	ld_h	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -275,7 +234,6 @@
 	ld.h	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	ld_w	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -284,7 +242,6 @@
 	ld.w	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	ld_d	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -293,7 +250,6 @@
 	ld.d	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	st_b	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -302,7 +258,6 @@
 	st.b	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	st_h	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -311,7 +266,6 @@
 	st.h	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	st_w	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -320,7 +274,6 @@
 	st.w	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	st_d	wd, off, base
 	.set	push
 	.set	mips32r2
@@ -329,7 +282,6 @@
 	st.d	$w\wd, \off(\base)
 	.set	pop
 	.endm
-
 	.macro	copy_s_w	ws, n
 	.set	push
 	.set	mips32r2
@@ -338,7 +290,6 @@
 	copy_s.w $1, $w\ws[\n]
 	.set	pop
 	.endm
-
 	.macro	copy_s_d	ws, n
 	.set	push
 	.set	mips64r2
@@ -347,7 +298,6 @@
 	copy_s.d $1, $w\ws[\n]
 	.set	pop
 	.endm
-
 	.macro	insert_w	wd, n
 	.set	push
 	.set	mips32r2
@@ -356,7 +306,6 @@
 	insert.w $w\wd[\n], $1
 	.set	pop
 	.endm
-
 	.macro	insert_d	wd, n
 	.set	push
 	.set	mips64r2
@@ -366,10 +315,6 @@
 	.set	pop
 	.endm
 #else
-
-	/*
-	 * Temporary until all toolchains in use include MSA support.
-	 */
 	.macro	_cfcmsa	rd, cs
 	.set	push
 	.set	noat
@@ -379,7 +324,6 @@
 	move	\rd, $1
 	.set	pop
 	.endm
-
 	.macro	_ctcmsa	cd, rs
 	.set	push
 	.set	noat
@@ -389,7 +333,6 @@
 	insn32_if_mm 0x583e0816 | (\cd << 6)
 	.set	pop
 	.endm
-
 	.macro	ld_b	wd, off, base
 	.set	push
 	.set	noat
@@ -399,7 +342,6 @@
 	insn32_if_mm 0x58000807 | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	ld_h	wd, off, base
 	.set	push
 	.set	noat
@@ -409,7 +351,6 @@
 	insn32_if_mm 0x58000817 | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	ld_w	wd, off, base
 	.set	push
 	.set	noat
@@ -419,7 +360,6 @@
 	insn32_if_mm 0x58000827 | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	ld_d	wd, off, base
 	.set	push
 	.set	noat
@@ -429,7 +369,6 @@
 	insn32_if_mm 0x58000837 | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	st_b	wd, off, base
 	.set	push
 	.set	noat
@@ -439,7 +378,6 @@
 	insn32_if_mm 0x5800080f | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	st_h	wd, off, base
 	.set	push
 	.set	noat
@@ -449,7 +387,6 @@
 	insn32_if_mm 0x5800081f | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	st_w	wd, off, base
 	.set	push
 	.set	noat
@@ -459,7 +396,6 @@
 	insn32_if_mm 0x5800082f | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	st_d	wd, off, base
 	.set	push
 	.set	noat
@@ -469,7 +405,6 @@
 	insn32_if_mm 0x5800083f | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	copy_s_w	ws, n
 	.set	push
 	.set	noat
@@ -478,7 +413,6 @@
 	insn32_if_mm 0x58b00056 | (\n << 16) | (\ws << 11)
 	.set	pop
 	.endm
-
 	.macro	copy_s_d	ws, n
 	.set	push
 	.set	noat
@@ -487,7 +421,6 @@
 	insn32_if_mm 0x58b80056 | (\n << 16) | (\ws << 11)
 	.set	pop
 	.endm
-
 	.macro	insert_w	wd, n
 	.set	push
 	.set	noat
@@ -496,7 +429,6 @@
 	insn32_if_mm 0x59300816 | (\n << 16) | (\wd << 6)
 	.set	pop
 	.endm
-
 	.macro	insert_d	wd, n
 	.set	push
 	.set	noat
@@ -506,7 +438,6 @@
 	.set	pop
 	.endm
 #endif
-
 #ifdef TOOLCHAIN_SUPPORTS_MSA
 #define FPR_BASE_OFFS	THREAD_FPR0
 #define FPR_BASE	$1
@@ -514,7 +445,6 @@
 #define FPR_BASE_OFFS	0
 #define FPR_BASE	\thread
 #endif
-
 	.macro	msa_save_all	thread
 	.set	push
 	.set	noat
@@ -558,7 +488,6 @@
 	sw	$1, THREAD_MSA_CSR(\thread)
 	.set	pop
 	.endm
-
 	.macro	msa_restore_all	thread
 	.set	push
 	.set	noat
@@ -602,10 +531,8 @@
 	ld_d	31, THREAD_FPR31 - FPR_BASE_OFFS, FPR_BASE
 	.set pop
 	.endm
-
 #undef FPR_BASE_OFFS
 #undef FPR_BASE
-
 	.macro	msa_init_upper wd
 #ifdef CONFIG_64BIT
 	insert_d \wd, 1
@@ -614,7 +541,6 @@
 	insert_w \wd, 3
 #endif
 	.endm
-
 	.macro	msa_init_all_upper
 	.set	push
 	.set	noat
@@ -654,5 +580,4 @@
 	msa_init_upper	31
 	.set	pop
 	.endm
-
-#endif /* _ASM_ASMMACRO_H */
+#endif  

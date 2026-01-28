@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Various register offset definitions for debuggers, core file
- * examiners and whatnot.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1995, 1999 Ralf Baechle
- * Copyright (C) 1995, 1999 Silicon Graphics
- */
 #ifndef __UAPI_ASM_MIPS_REG_H
 #define __UAPI_ASM_MIPS_REG_H
-
 #define MIPS32_EF_R0		6
 #define MIPS32_EF_R1		7
 #define MIPS32_EF_R2		8
@@ -39,32 +26,20 @@
 #define MIPS32_EF_R23		29
 #define MIPS32_EF_R24		30
 #define MIPS32_EF_R25		31
-
-/*
- * k0/k1 unsaved
- */
 #define MIPS32_EF_R26		32
 #define MIPS32_EF_R27		33
-
 #define MIPS32_EF_R28		34
 #define MIPS32_EF_R29		35
 #define MIPS32_EF_R30		36
 #define MIPS32_EF_R31		37
-
-/*
- * Saved special registers
- */
 #define MIPS32_EF_LO		38
 #define MIPS32_EF_HI		39
-
 #define MIPS32_EF_CP0_EPC	40
 #define MIPS32_EF_CP0_BADVADDR	41
 #define MIPS32_EF_CP0_STATUS	42
 #define MIPS32_EF_CP0_CAUSE	43
 #define MIPS32_EF_UNUSED0	44
-
 #define MIPS32_EF_SIZE		180
-
 #define MIPS64_EF_R0		0
 #define MIPS64_EF_R1		1
 #define MIPS64_EF_R2		2
@@ -91,34 +66,20 @@
 #define MIPS64_EF_R23		23
 #define MIPS64_EF_R24		24
 #define MIPS64_EF_R25		25
-
-/*
- * k0/k1 unsaved
- */
 #define MIPS64_EF_R26		26
 #define MIPS64_EF_R27		27
-
-
 #define MIPS64_EF_R28		28
 #define MIPS64_EF_R29		29
 #define MIPS64_EF_R30		30
 #define MIPS64_EF_R31		31
-
-/*
- * Saved special registers
- */
 #define MIPS64_EF_LO		32
 #define MIPS64_EF_HI		33
-
 #define MIPS64_EF_CP0_EPC	34
 #define MIPS64_EF_CP0_BADVADDR	35
 #define MIPS64_EF_CP0_STATUS	36
 #define MIPS64_EF_CP0_CAUSE	37
-
-#define MIPS64_EF_SIZE		304	/* size in bytes */
-
+#define MIPS64_EF_SIZE		304	 
 #if _MIPS_SIM == _MIPS_SIM_ABI32
-
 #define EF_R0			MIPS32_EF_R0
 #define EF_R1			MIPS32_EF_R1
 #define EF_R2			MIPS32_EF_R2
@@ -159,9 +120,7 @@
 #define EF_CP0_CAUSE		MIPS32_EF_CP0_CAUSE
 #define EF_UNUSED0		MIPS32_EF_UNUSED0
 #define EF_SIZE			MIPS32_EF_SIZE
-
 #elif _MIPS_SIM == _MIPS_SIM_ABI64 || _MIPS_SIM == _MIPS_SIM_NABI32
-
 #define EF_R0			MIPS64_EF_R0
 #define EF_R1			MIPS64_EF_R1
 #define EF_R2			MIPS64_EF_R2
@@ -201,7 +160,5 @@
 #define EF_CP0_STATUS		MIPS64_EF_CP0_STATUS
 #define EF_CP0_CAUSE		MIPS64_EF_CP0_CAUSE
 #define EF_SIZE			MIPS64_EF_SIZE
-
-#endif /* _MIPS_SIM == _MIPS_SIM_ABI64 || _MIPS_SIM == _MIPS_SIM_NABI32 */
-
-#endif /* __UAPI_ASM_MIPS_REG_H */
+#endif  
+#endif  

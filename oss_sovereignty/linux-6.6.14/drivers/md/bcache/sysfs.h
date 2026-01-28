@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _BCACHE_SYSFS_H_
 #define _BCACHE_SYSFS_H_
-
 #define KTYPE(type)							\
 const struct kobj_type type ## _ktype = {					\
 	.release	= type ## _release,				\
@@ -11,15 +9,12 @@ const struct kobj_type type ## _ktype = {					\
 	}),								\
 	.default_groups	= type ## _groups				\
 }
-
 #define SHOW(fn)							\
 static ssize_t fn ## _show(struct kobject *kobj, struct attribute *attr,\
 			   char *buf)					\
-
 #define STORE(fn)							\
 static ssize_t fn ## _store(struct kobject *kobj, struct attribute *attr,\
 			    const char *buf, size_t size)		\
-
 #define SHOW_LOCKED(fn)							\
 SHOW(fn)								\
 {									\
@@ -29,7 +24,6 @@ SHOW(fn)								\
 	mutex_unlock(&bch_register_lock);				\
 	return ret;							\
 }
-
 #define STORE_LOCKED(fn)						\
 STORE(fn)								\
 {									\
@@ -39,21 +33,17 @@ STORE(fn)								\
 	mutex_unlock(&bch_register_lock);				\
 	return ret;							\
 }
-
 #define __sysfs_attribute(_name, _mode)					\
 	static struct attribute sysfs_##_name =				\
 		{ .name = #_name, .mode = _mode }
-
 #define write_attribute(n)	__sysfs_attribute(n, 0200)
 #define read_attribute(n)	__sysfs_attribute(n, 0444)
 #define rw_attribute(n)		__sysfs_attribute(n, 0644)
-
 #define sysfs_printf(file, fmt, ...)					\
 do {									\
 	if (attr == &sysfs_ ## file)					\
 		return sysfs_emit(buf, fmt "\n", __VA_ARGS__);	\
 } while (0)
-
 #define sysfs_print(file, var)						\
 do {									\
 	if (attr == &sysfs_ ## file)					\
@@ -73,7 +63,6 @@ do {									\
 				__builtin_types_compatible_p(typeof(var), const char *)	\
 					 ? "%s\n" : "%i\n", var);	\
 } while (0)
-
 #define sysfs_hprint(file, val)						\
 do {									\
 	if (attr == &sysfs_ ## file) {					\
@@ -82,17 +71,14 @@ do {									\
 		return ret + 1;						\
 	}								\
 } while (0)
-
 #define var_printf(_var, fmt)	sysfs_printf(_var, fmt, var(_var))
 #define var_print(_var)		sysfs_print(_var, var(_var))
 #define var_hprint(_var)	sysfs_hprint(_var, var(_var))
-
 #define sysfs_strtoul(file, var)					\
 do {									\
 	if (attr == &sysfs_ ## file)					\
 		return strtoul_safe(buf, var) ?: (ssize_t) size;	\
 } while (0)
-
 #define sysfs_strtoul_bool(file, var)					\
 do {									\
 	if (attr == &sysfs_ ## file) {					\
@@ -102,7 +88,6 @@ do {									\
 		return size;						\
 	}								\
 } while (0)
-
 #define sysfs_strtoul_clamp(file, var, min, max)			\
 do {									\
 	if (attr == &sysfs_ ## file) {					\
@@ -116,7 +101,6 @@ do {									\
 		return ret;						\
 	}								\
 } while (0)
-
 #define strtoul_or_return(cp)						\
 ({									\
 	unsigned long _v;						\
@@ -125,18 +109,15 @@ do {									\
 		return _r;						\
 	_v;								\
 })
-
 #define strtoi_h_or_return(cp, v)					\
 do {									\
 	int _r = strtoi_h(cp, &v);					\
 	if (_r)								\
 		return _r;						\
 } while (0)
-
 #define sysfs_hatoi(file, var)						\
 do {									\
 	if (attr == &sysfs_ ## file)					\
 		return strtoi_h(buf, &var) ?: (ssize_t) size;		\
 } while (0)
-
-#endif  /* _BCACHE_SYSFS_H_ */
+#endif   

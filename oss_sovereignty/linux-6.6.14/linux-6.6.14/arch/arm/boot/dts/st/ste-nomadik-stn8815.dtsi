@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree for the ST-Ericsson Nomadik 8815 STn8815 SoC
- */
-
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x04000000>,
 		    <0x08000000 0x04000000>;
 	};
-
 	L2: cache-controller {
 		compatible = "arm,l210-cache";
 		reg = <0x10210000 0x1000>;
@@ -25,14 +17,11 @@
 		cache-size = <131072>;
 		cache-sets = <512>;
 		cache-line-size = <32>;
-		/* At full speed latency must be >=2 */
 		arm,tag-latency = <8>;
 		arm,data-latency = <8 8>;
 		arm,dirty-latency = <8>;
 	};
-
 	mtu0: mtu@101e2000 {
-		/* Nomadik system timer */
 		compatible = "st,nomadik-mtu";
 		reg = <0x101e2000 0x1000>;
 		interrupt-parent = <&vica>;
@@ -40,16 +29,13 @@
 		clocks = <&timclk>, <&pclk>;
 		clock-names = "timclk", "apb_pclk";
 	};
-
 	mtu1: mtu@101e3000 {
-		/* Secondary timer */
 		reg = <0x101e3000 0x1000>;
 		interrupt-parent = <&vica>;
 		interrupts = <5>;
 		clocks = <&timclk>, <&pclk>;
 		clock-names = "timclk", "apb_pclk";
 	};
-
 	gpio0: gpio@101e4000 {
 		compatible = "st,nomadik-gpio";
 		reg =  <0x101e4000 0x80>;
@@ -63,7 +49,6 @@
 		gpio-ranges = <&pinctrl 0 0 32>;
 		clocks = <&pclk>;
 	};
-
 	gpio1: gpio@101e5000 {
 		compatible = "st,nomadik-gpio";
 		reg =  <0x101e5000 0x80>;
@@ -77,7 +62,6 @@
 		gpio-ranges = <&pinctrl 0 32 32>;
 		clocks = <&pclk>;
 	};
-
 	gpio2: gpio@101e6000 {
 		compatible = "st,nomadik-gpio";
 		reg =  <0x101e6000 0x80>;
@@ -91,7 +75,6 @@
 		gpio-ranges = <&pinctrl 0 64 32>;
 		clocks = <&pclk>;
 	};
-
 	gpio3: gpio@101e7000 {
 		compatible = "st,nomadik-gpio";
 		reg =  <0x101e7000 0x80>;
@@ -106,11 +89,9 @@
 		gpio-ranges = <&pinctrl 0 96 28>;
 		clocks = <&pclk>;
 	};
-
 	pinctrl: pinctrl {
 		compatible = "stericsson,stn8815-pinctrl";
 		nomadik-gpio-chips = <&gpio0>, <&gpio1>, <&gpio2>, <&gpio3>;
-		/* Pin configurations */
 		uart1 {
 			uart1_default_mux: uart1_mux {
 				u1_default_mux {
@@ -128,10 +109,6 @@
 			};
 			mmcsd_default_mode: mmcsd_default {
 				mmcsd_default_cfg1 {
-					/*
-					 * MCCLK, MCCMDDIR, MCDAT0DIR, MCDAT31DIR, MCDATDIR2
-					 * MCCMD, MCDAT3-0, MCMSFBCLK
-					 */
 					pins = "GPIO8_B10", "GPIO9_A10", "GPIO10_C11", "GPIO11_B11",
 					       "GPIO12_A11", "GPIO13_C12", "GPIO14_B12", "GPIO15_A12",
 					       "GPIO16_C13", "GPIO23_D15", "GPIO24_C15";
@@ -168,10 +145,6 @@
 			};
 		};
 		clcd {
-			/*
-			 * This should be activated to use the additional
-			 * 8 lines for bits 16 thru 23 from the CLCD block.
-			 */
 			clcd_24bit_mux: clcd_mux {
 				clcd_24bit_mux {
 					function = "clcd";
@@ -180,33 +153,18 @@
 			};
 		};
 	};
-
-	/* Power Management Unit */
 	pmu: pmu@101e9000 {
 		compatible = "stericsson,nomadik-pmu", "syscon";
 		reg = <0x101e0000 0x1000>;
 	};
-
 	src: src@101e0000 {
 		compatible = "stericsson,nomadik-src";
 		reg = <0x101e0000 0x1000>;
-
-		/*
-		 * MXTAL "Main Chrystal" is a chrystal oscillator @19.2 MHz
-		 * that is parent of TIMCLK, PLL1 and PLL2
-		 */
 		mxtal: mxtal@19.2M {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <19200000>;
 		};
-
-		/*
-		 * The 2.4 MHz TIMCLK reference clock is active at
-		 * boot time, this is actually the MXTALCLK @19.2 MHz
-		 * divided by 8. This clock is used by the timers and
-		 * watchdog. See page 105 ff.
-		 */
 		timclk: timclk@2.4M {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
@@ -214,22 +172,17 @@
 			clock-mult = <1>;
 			clocks = <&mxtal>;
 		};
-
-		/* PLL1 is locked to MXTALI and variable from 20.4 to 334 MHz */
 		pll1: pll1@0 {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-pll-clock";
 			pll-id = <1>;
 			clocks = <&mxtal>;
 		};
-
-		/* HCLK divides the PLL1 with 1,2,3 or 4 */
 		hclk: hclk@0 {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-hclk-clock";
 			clocks = <&pll1>;
 		};
-		/* The PCLK domain uses HCLK right off */
 		pclk: pclk@0 {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
@@ -237,8 +190,6 @@
 			clock-mult = <1>;
 			clocks = <&hclk>;
 		};
-
-		/* PLL2 is usually 864 MHz and divided into a few fixed rates */
 		pll2: pll2@0 {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-pll-clock";
@@ -262,7 +213,6 @@
 		clk72: clk72@72M {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
-			/* The data sheet does not say how this is derived */
 			clock-div = <12>;
 			clock-mult = <1>;
 			clocks = <&pll2>;
@@ -270,7 +220,6 @@
 		clk48: clk48@48M {
 			#clock-cells = <0>;
 			compatible = "fixed-factor-clock";
-			/* The data sheet does not say how this is derived */
 			clock-div = <18>;
 			clock-mult = <1>;
 			clocks = <&pll2>;
@@ -282,19 +231,11 @@
 			clock-mult = <1>;
 			clocks = <&clk108>;
 		};
-
-		/* This apparently exists as well */
 		ulpiclk: ulpiclk@60M {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
 			clock-frequency = <60000000>;
 		};
-
-		/*
-		 * IP AMBA bus clocks, driving the bus side of the
-		 * peripheral clocking, clock gates.
-		 */
-
 		hclkdma0: hclkdma0@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
@@ -487,8 +428,6 @@
 			clock-id = <31>;
 			clocks = <&hclk>;
 		};
-
-		/* IP kernel clocks */
 		clcdclk: clcdclk@0 {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
@@ -514,7 +453,6 @@
 			clocks = <&clk48>;
 		};
 		sdiclk: sdiclk@48M {
-			/* Also called MCCLK in some documents */
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <40>;
@@ -548,7 +486,7 @@
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <45>;
-			clocks = <&clk48>; /* 48 MHz not ULPI */
+			clocks = <&clk48>;  
 		};
 		difclk: difclk@72M {
 			#clock-cells = <0>;
@@ -560,13 +498,13 @@
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <47>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		ipbmcclk: ipbmcclk@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <48>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		hsiclkrx: hsiclkrx@216M {
 			#clock-cells = <0>;
@@ -602,19 +540,19 @@
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <54>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		skeclk: skeclk@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <56>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		x3dclk: x3dclk@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <58>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		pclkmsp3: pclkmsp3@48M {
 			#clock-cells = <0>;
@@ -632,36 +570,32 @@
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <61>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 		usbmclk: usbmclk@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <62>;
-			/* Stated as "48 MHz not ULPI clock" */
 			clocks = <&clk48>;
 		};
 		rngcclk: rngcclk@48M {
 			#clock-cells = <0>;
 			compatible = "st,nomadik-src-clock";
 			clock-id = <63>;
-			clocks = <&clk48>; /* Guess */
+			clocks = <&clk48>;  
 		};
 	};
-
-	/* A NAND flash of 128 MiB */
 	fsmc: flash@40000000 {
 		compatible = "stericsson,fsmc-nand";
 		#address-cells = <1>;
 		#size-cells = <1>;
-		reg = <0x10100000 0x1000>,	/* FSMC Register*/
-			<0x40000000 0x2000>,	/* NAND Base DATA */
-			<0x41000000 0x2000>,	/* NAND Base ADDR */
-			<0x40800000 0x2000>;	/* NAND Base CMD */
+		reg = <0x10100000 0x1000>,	 
+			<0x40000000 0x2000>,	 
+			<0x41000000 0x2000>,	 
+			<0x40800000 0x2000>;	 
 		reg-names = "fsmc_regs", "nand_data", "nand_addr", "nand_cmd";
 		clocks = <&hclksmc>;
 		status = "okay";
-
 		partition@0 {
 		label = "X-Loader(NAND)";
 			reg = <0x0 0x40000>;
@@ -687,8 +621,6 @@
 			reg = <0x1b80000 0x6480000>;
 		};
 	};
-
-	/* I2C0 connected to the STw4811 power management chip */
 	i2c0 {
 		compatible = "st,nomadik-i2c", "arm,primecell";
 		reg = <0x101f8000 0x1000>;
@@ -701,7 +633,6 @@
 		clock-names = "mclk", "apb_pclk";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c0_default_mux>, <&i2c0_default_mode>;
-
 		stw4811@2d {
 			compatible = "st,stw4811";
 			reg = <0x2d>;
@@ -713,8 +644,6 @@
 			};
 		};
 	};
-
-	/* I2C1 connected to various sensors */
 	i2c1 {
 		compatible = "st,nomadik-i2c", "arm,primecell";
 		reg = <0x101f7000 0x1000>;
@@ -727,7 +656,6 @@
 		clock-names = "mclk", "apb_pclk";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c1_default_mux>, <&i2c1_default_mode>;
-
 		camera@2d {
 			   compatible = "st,camera";
 			   reg = <0x10>;
@@ -737,13 +665,11 @@
 			   reg = <0x1a>;
 		};
 	};
-
 	amba {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		clcd@10120000 {
 			compatible = "arm,pl110", "arm,primecell";
 			reg = <0x10120000 0x1000>;
@@ -754,21 +680,18 @@
 			clock-names = "clcdclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		vica: interrupt-controller@10140000 {
 			compatible = "arm,versatile-vic";
 			interrupt-controller;
 			#interrupt-cells = <1>;
 			reg = <0x10140000 0x20>;
 		};
-
 		vicb: interrupt-controller@10140020 {
 			compatible = "arm,versatile-vic";
 			interrupt-controller;
 			#interrupt-cells = <1>;
 			reg = <0x10140020 0x20>;
 		};
-
 		uart0: serial@101fd000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x101fd000 0x1000>;
@@ -781,7 +704,6 @@
 			       <&dmac0 15 1>;
 			dma-names = "rx", "tx";
 		};
-
 		uart1: serial@101fb000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x101fb000 0x1000>;
@@ -795,7 +717,6 @@
 			       <&dmac1 23 1>;
 			dma-names = "rx", "tx";
 		};
-
 		uart2: serial@101f2000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x101f2000 0x1000>;
@@ -808,14 +729,12 @@
 			       <&dmac1 31 1>;
 			dma-names = "rx", "tx";
 		};
-
 		rng: rng@101b0000 {
 			compatible = "arm,primecell";
 			reg = <0x101b0000 0x1000>;
 			clocks = <&rngcclk>, <&hclkrng>;
 			clock-names = "rng", "apb_pclk";
 		};
-
 		rtc: rtc@101e8000 {
 			compatible = "arm,pl031", "arm,primecell";
 			reg = <0x101e8000 0x1000>;
@@ -824,7 +743,6 @@
 			interrupt-parent = <&vica>;
 			interrupts = <10>;
 		};
-
 		mmcsd: mmc@101f6000 {
 			compatible = "arm,pl18x", "arm,primecell";
 			reg = <0x101f6000 0x1000>;
@@ -837,11 +755,6 @@
 			cap-mmc-highspeed;
 			cap-sd-highspeed;
 			full-pwr-cycle;
-			/*
-			 * The STw4811 circuit used with the Nomadik strictly
-			 * requires that all of these signal direction pins be
-			 * routed and used for its 4-bit levelshifter.
-			 */
 			st,sig-dir-dat0;
 			st,sig-dir-dat2;
 			st,sig-dir-dat31;
@@ -851,7 +764,6 @@
 			pinctrl-0 = <&mmcsd_default_mux>, <&mmcsd_default_mode>;
 			vmmc-supply = <&vmmc_regulator>;
 		};
-
 		dmac0: dma-controller@10130000 {
 			compatible = "arm,pl080", "arm,primecell";
 			reg = <0x10130000 0x1000>;

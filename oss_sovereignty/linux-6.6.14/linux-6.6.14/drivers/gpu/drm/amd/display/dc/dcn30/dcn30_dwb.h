@@ -1,32 +1,7 @@
-/* Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef __DC_DWBC_DCN30_H__
 #define __DC_DWBC_DCN30_H__
-
 #define TO_DCN30_DWBC(dwbc_base) \
 	container_of(dwbc_base, struct dcn30_dwbc, base)
-
 #define DWBC_COMMON_REG_LIST_DCN30(inst) \
 	SR(DWB_ENABLE_CLK_CTRL),\
 	SR(DWB_MEM_PWR_CTRL),\
@@ -135,8 +110,6 @@
 	SR(DWB_OGAM_RAMB_REGION_28_29),\
 	SR(DWB_OGAM_RAMB_REGION_30_31),\
 	SR(DWB_OGAM_RAMB_REGION_32_33)
-
-
 #define DWBC_COMMON_MASK_SH_LIST_DCN30(mask_sh) \
 	SF_DWB2(DWB_ENABLE_CLK_CTRL, DWB_TOP, 0, DWB_ENABLE, mask_sh),\
 	SF_DWB2(DWB_ENABLE_CLK_CTRL, DWB_TOP, 0, DISPCLK_R_DWB_GATE_DIS, mask_sh),\
@@ -404,8 +377,6 @@
 	SF_DWB2(DWB_OGAM_RAMB_REGION_32_33, DWBCP, 0, DWB_OGAM_RAMB_EXP_REGION32_NUM_SEGMENTS, mask_sh),\
 	SF_DWB2(DWB_OGAM_RAMB_REGION_32_33, DWBCP, 0, DWB_OGAM_RAMB_EXP_REGION33_LUT_OFFSET, mask_sh),\
 	SF_DWB2(DWB_OGAM_RAMB_REGION_32_33, DWBCP, 0, DWB_OGAM_RAMB_EXP_REGION33_NUM_SEGMENTS, mask_sh)
-
-
 #define DWBC_REG_FIELD_LIST_DCN3_0(type) \
 	type DWB_ENABLE;\
 	type DISPCLK_R_DWB_GATE_DIS;\
@@ -713,10 +684,7 @@
 	type DWB_OGAM_RAMB_EXP_REGION32_NUM_SEGMENTS;\
 	type DWB_OGAM_RAMB_EXP_REGION33_LUT_OFFSET;\
 	type DWB_OGAM_RAMB_EXP_REGION33_NUM_SEGMENTS;
-
 struct dcn30_dwbc_registers {
-	/* DCN3AG */
-	/* DWB_TOP */
 	uint32_t DWB_ENABLE_CLK_CTRL;
 	uint32_t DWB_MEM_PWR_CTRL;
 	uint32_t FC_MODE_CTRL;
@@ -735,8 +703,6 @@ struct dcn30_dwbc_registers {
 	uint32_t DWB_MMHUBBUB_BACKPRESSURE_CNT;
 	uint32_t DWB_HOST_READ_CONTROL;
 	uint32_t DWB_SOFT_RESET;
-
-	/* DWBSCL */
 	uint32_t DWBSCL_COEF_RAM_TAP_SELECT;
 	uint32_t DWBSCL_COEF_RAM_TAP_DATA;
 	uint32_t DWBSCL_MODE;
@@ -749,8 +715,6 @@ struct dcn30_dwbc_registers {
 	uint32_t DWBSCL_DEST_SIZE;
 	uint32_t DWBSCL_OVERFLOW_STATUS;
 	uint32_t DWBSCL_OVERFLOW_COUNTER;
-
-	/* DWBCP */
 	uint32_t DWB_HDR_MULT_COEF;
 	uint32_t DWB_GAMUT_REMAP_MODE;
 	uint32_t DWB_GAMUT_REMAP_COEF_FORMAT;
@@ -841,68 +805,47 @@ struct dcn30_dwbc_registers {
 	uint32_t DWB_OGAM_RAMB_REGION_30_31;
 	uint32_t DWB_OGAM_RAMB_REGION_32_33;
 };
-
-/* Internal enums / structs */
 enum dwbscl_coef_filter_type_sel {
 	DWBSCL_COEF_RAM_FILTER_TYPE_VERT_RGB = 0,
 	DWBSCL_COEF_RAM_FILTER_TYPE_HORZ_RGB = 1
 };
-
-
 struct dcn30_dwbc_mask {
 	DWBC_REG_FIELD_LIST_DCN3_0(uint32_t);
 };
-
 struct dcn30_dwbc_shift {
 	DWBC_REG_FIELD_LIST_DCN3_0(uint8_t);
 };
-
 struct dcn30_dwbc {
 	struct dwbc base;
 	const struct dcn30_dwbc_registers *dwbc_regs;
 	const struct dcn30_dwbc_shift *dwbc_shift;
 	const struct dcn30_dwbc_mask *dwbc_mask;
 };
-
 void dcn30_dwbc_construct(struct dcn30_dwbc *dwbc30,
 	struct dc_context *ctx,
 	const struct dcn30_dwbc_registers *dwbc_regs,
 	const struct dcn30_dwbc_shift *dwbc_shift,
 	const struct dcn30_dwbc_mask *dwbc_mask,
 	int inst);
-
 bool dwb3_enable(struct dwbc *dwbc, struct dc_dwb_params *params);
-
 bool dwb3_disable(struct dwbc *dwbc);
-
 bool dwb3_update(struct dwbc *dwbc, struct dc_dwb_params *params);
-
 bool dwb3_is_enabled(struct dwbc *dwbc);
-
 void dwb3_set_stereo(struct dwbc *dwbc,
 	struct dwb_stereo_params *stereo_params);
-
 void dwb3_set_new_content(struct dwbc *dwbc,
 	bool is_new_content);
-
 void dwb3_config_fc(struct dwbc *dwbc,
 	struct dc_dwb_params *params);
-
 void dwb3_set_denorm(struct dwbc *dwbc, struct dc_dwb_params *params);
-
 void dwb3_program_hdr_mult(
 	struct dwbc *dwbc,
 	const struct dc_dwb_params *params);
-
 void dwb3_set_gamut_remap(
 	struct dwbc *dwbc,
 	const struct dc_dwb_params *params);
-
 bool dwb3_ogam_set_input_transfer_func(
 	struct dwbc *dwbc,
 	const struct dc_transfer_func *in_transfer_func_dwb_ogam);
-
 void dwb3_set_host_read_rate_control(struct dwbc *dwbc, bool host_read_delay);
 #endif
-
-

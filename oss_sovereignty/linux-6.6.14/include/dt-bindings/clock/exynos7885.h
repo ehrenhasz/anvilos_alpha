@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021 Dávid Virág
- *
- * Device Tree binding constants for Exynos7885 clock controller.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_EXYNOS_7885_H
 #define _DT_BINDINGS_CLOCK_EXYNOS_7885_H
-
-/* CMU_TOP */
 #define CLK_FOUT_SHARED0_PLL		1
 #define CLK_FOUT_SHARED1_PLL		2
 #define CLK_DOUT_SHARED0_DIV2		3
@@ -69,8 +60,6 @@
 #define CLK_GOUT_FSYS_MMC_EMBD		58
 #define CLK_GOUT_FSYS_MMC_SDIO		59
 #define CLK_GOUT_FSYS_USB30DRD		60
-
-/* CMU_CORE */
 #define CLK_MOUT_CORE_BUS_USER			1
 #define CLK_MOUT_CORE_CCI_USER			2
 #define CLK_MOUT_CORE_G3D_USER			3
@@ -85,8 +74,6 @@
 #define CLK_GOUT_TREX_P_CORE_CCLK_P_CORE	12
 #define CLK_GOUT_TREX_P_CORE_PCLK		13
 #define CLK_GOUT_TREX_P_CORE_PCLK_P_CORE	14
-
-/* CMU_PERI */
 #define CLK_MOUT_PERI_BUS_USER		1
 #define CLK_MOUT_PERI_SPI0_USER		2
 #define CLK_MOUT_PERI_SPI1_USER		3
@@ -130,8 +117,6 @@
 #define CLK_GOUT_SYSREG_PERI_PCLK	41
 #define CLK_GOUT_WDT0_PCLK		42
 #define CLK_GOUT_WDT1_PCLK		43
-
-/* CMU_FSYS */
 #define CLK_MOUT_FSYS_BUS_USER		1
 #define CLK_MOUT_FSYS_MMC_CARD_USER	2
 #define CLK_MOUT_FSYS_MMC_EMBD_USER	3
@@ -143,5 +128,4 @@
 #define CLK_GOUT_MMC_EMBD_SDCLKIN	8
 #define CLK_GOUT_MMC_SDIO_ACLK		9
 #define CLK_GOUT_MMC_SDIO_SDCLKIN	10
-
-#endif /* _DT_BINDINGS_CLOCK_EXYNOS_7885_H */
+#endif  

@@ -1,50 +1,21 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _POLARIS10_PWRVIRUS_H
 #define _POLARIS10_PWRVIRUS_H
-
-
 #define mmCP_HYP_MEC1_UCODE_ADDR	0xf81a
 #define mmCP_HYP_MEC1_UCODE_DATA	0xf81b
 #define mmCP_HYP_MEC2_UCODE_ADDR	0xf81c
 #define mmCP_HYP_MEC2_UCODE_DATA	0xf81d
-
 struct PWR_Command_Table {
 	uint32_t              data;
 	uint32_t reg;
 };
-
 typedef struct PWR_Command_Table PWR_Command_Table;
-
 struct PWR_DFY_Section {
 	uint32_t dfy_cntl;
 	uint32_t dfy_addr_hi, dfy_addr_lo;
 	uint32_t dfy_size;
 	uint32_t dfy_data[];
 };
-
 typedef struct PWR_DFY_Section PWR_DFY_Section;
-
 static const PWR_Command_Table pwr_virus_table_pre[] = {
 	{ 0x00000000, mmRLC_CNTL                                 },
 	{ 0x00000002, mmRLC_SRM_CNTL                             },
@@ -253,7 +224,6 @@ static const PWR_Command_Table pwr_virus_table_pre[] = {
 	{ 0x000f016a, mmCP_HYP_MEC2_UCODE_DATA                   },
 	{ 0x00000000, 0xFFFFFFFF                                 },
 };
-
 static const PWR_DFY_Section pwr_virus_section1 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -314,7 +284,6 @@ static const PWR_DFY_Section pwr_virus_section1 = {
 	},
 	.dfy_size = 416
 };
-
 static const PWR_DFY_Section pwr_virus_section2 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -325,7 +294,6 @@ static const PWR_DFY_Section pwr_virus_section2 = {
 	},
 	.dfy_size = 16
 };
-
 static const PWR_DFY_Section pwr_virus_section3 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -1264,7 +1232,6 @@ static const PWR_DFY_Section pwr_virus_section3 = {
 	},
 	.dfy_size = 7440
 };
-
 static const PWR_DFY_Section pwr_virus_section4 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -1303,7 +1270,6 @@ static const PWR_DFY_Section pwr_virus_section4 = {
 	},
 	.dfy_size = 240
 };
-
 static const PWR_DFY_Section pwr_virus_section5 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -1360,7 +1326,6 @@ static const PWR_DFY_Section pwr_virus_section5 = {
 	},
 	.dfy_size = 384
 };
-
 static const PWR_DFY_Section pwr_virus_section6 = {
 	.dfy_cntl = 0x80000004,
 	.dfy_addr_hi = 0x000000b4,
@@ -1497,7 +1462,6 @@ static const PWR_DFY_Section pwr_virus_section6 = {
 	},
 	.dfy_size = 1024
 };
-
 static const PWR_Command_Table pwr_virus_table_post[] = {
 	{ 0x00000000, mmCP_MEC_CNTL                              },
 	{ 0x00000000, mmCP_MEC_CNTL                              },
@@ -1788,6 +1752,4 @@ static const PWR_Command_Table pwr_virus_table_post[] = {
 	{ 0x00000000, mmGRBM_STATUS                              },
 	{ 0x00000000, 0xFFFFFFFF                                 },
 };
-
-
 #endif

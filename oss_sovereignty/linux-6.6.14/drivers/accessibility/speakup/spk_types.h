@@ -1,29 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef SPEAKUP_TYPES_H
 #define SPEAKUP_TYPES_H
-
-/* This file includes all of the typedefs and structs used in speakup. */
-
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
-#include <linux/wait.h>		/* for wait_queue */
-#include <linux/init.h>		/* for __init */
+#include <linux/wait.h>		 
+#include <linux/init.h>		 
 #include <linux/module.h>
 #include <linux/vt_kern.h>
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
-#include <linux/io.h>		/* for inb_p, outb_p, inb, outb, etc... */
+#include <linux/io.h>		 
 #include <linux/device.h>
-
 enum var_type_t {
 	VAR_NUM = 0,
 	VAR_TIME,
 	VAR_STRING,
 	VAR_PROC
 };
-
 enum {
 	E_DEFAULT = 0,
 	E_SET,
@@ -31,17 +25,12 @@ enum {
 	E_DEC,
 	E_NEW_DEFAULT,
 };
-
-/*
- * Note: add new members at the end, speakupmap.h depends on the values of the
- * enum starting from SPELL_DELAY (see inc_dec_var)
- */
 enum var_id_t {
 	VERSION = 0, SYNTH, SILENT, SYNTH_DIRECT,
 	KEYMAP, CHARS,
 	PUNC_SOME, PUNC_MOST, PUNC_ALL,
 	DELIM, REPEATS, EXNUMBER,
-	DELAY, TRIGGER, JIFFY, FULL, /* all timers must be together */
+	DELAY, TRIGGER, JIFFY, FULL,  
 	BLEEP_TIME, CURSOR_TIME, BELL_POS,
 	SAY_CONTROL, SAY_WORD_CTL, NO_INTERRUPT, KEY_ECHO,
 	SPELL_DELAY, PUNC_LEVEL, READING_PUNC,
@@ -51,25 +40,16 @@ enum var_id_t {
 	CAPS_START, CAPS_STOP, CHARTAB, INFLECTION, FLUSH,
 	CUR_PHONETIC, MAXVARS
 };
-
 typedef int (*special_func)(struct vc_data *vc, u_char type, u_char ch,
 		u_short key);
-
 #define COLOR_BUFFER_SIZE 160
-
 struct spk_highlight_color_track {
-	/* Count of each background color */
 	unsigned int bgcount[8];
-	/* Buffer for characters drawn with each background color */
 	u16 highbuf[8][COLOR_BUFFER_SIZE];
-	/* Current index into highbuf */
 	unsigned int highsize[8];
-	/* Reading Position for each color */
 	u_long rpos[8], rx[8], ry[8];
-	/* Real Cursor Y Position */
 	ulong cy;
 };
-
 struct st_spk_t {
 	u_long reading_x, cursor_x;
 	u_long reading_y, cursor_y;
@@ -82,8 +62,6 @@ struct st_spk_t {
 	struct spk_highlight_color_track ht;
 	int tty_stopped;
 };
-
-/* now some defines to make these easier to use. */
 #define spk_shut_up (speakup_console[vc->vc_num]->shut_up)
 #define spk_killed (speakup_console[vc->vc_num]->shut_up & 0x40)
 #define spk_x (speakup_console[vc->vc_num]->reading_x)
@@ -103,34 +81,29 @@ struct st_spk_t {
 #define spk_attr (speakup_console[vc->vc_num]->reading_attr)
 #define spk_old_attr (speakup_console[vc->vc_num]->old_attr)
 #define spk_parked (speakup_console[vc->vc_num]->parked)
-
 struct st_var_header {
 	char *name;
 	enum var_id_t var_id;
 	enum var_type_t var_type;
-	void *p_val; /* ptr to programs variable to store value */
-	void *data;  /* ptr to the vars data */
+	void *p_val;  
+	void *data;   
 };
-
 struct num_var_t {
 	char *synth_fmt;
 	int default_val;
 	int low;
 	int high;
-	short offset, multiplier; /* for fiddling rates etc. */
-	char *out_str;  /* if synth needs char representation of number */
-	int value;	/* current value */
+	short offset, multiplier;  
+	char *out_str;   
+	int value;	 
 };
-
 struct punc_var_t {
 	enum var_id_t var_id;
 	short value;
 };
-
 struct string_var_t {
 	char *default_val;
 };
-
 struct var_t {
 	enum var_id_t var_id;
 	union {
@@ -138,22 +111,18 @@ struct var_t {
 		struct string_var_t s;
 	} u;
 };
-
-struct st_bits_data { /* punc, repeats, word delim bits */
+struct st_bits_data {  
 	char *name;
 	char *value;
 	short mask;
 };
-
 struct synth_indexing {
 	char *command;
 	unsigned char lowindex;
 	unsigned char highindex;
 	unsigned char currindex;
 };
-
 struct spk_synth;
-
 struct spk_io_ops {
 	int (*synth_out)(struct spk_synth *synth, const char ch);
 	int (*synth_out_unicode)(struct spk_synth *synth, u16 ch);
@@ -164,10 +133,8 @@ struct spk_io_ops {
 	void (*flush_buffer)(struct spk_synth *synth);
 	int (*wait_for_xmitr)(struct spk_synth *synth);
 };
-
 struct spk_synth {
 	struct list_head node;
-
 	const char *name;
 	const char *version;
 	const char *long_name;
@@ -183,7 +150,7 @@ struct spk_synth {
 	char *dev_name;
 	short flags;
 	short startup;
-	const int checkval; /* for validating a proper synth module */
+	const int checkval;  
 	struct var_t *vars;
 	int *default_pitch;
 	int *default_vol;
@@ -201,26 +168,15 @@ struct spk_synth {
 	struct synth_indexing indexing;
 	int alive;
 	struct attribute_group attributes;
-
 	void *dev;
 };
-
-/*
- * module_spk_synth() - Helper macro for registering a speakup driver
- * @__spk_synth: spk_synth struct
- * Helper macro for speakup drivers which do not do anything special in module
- * init/exit. This eliminates a lot of boilerplate. Each module may only
- * use this macro once, and calling it replaces module_init() and module_exit()
- */
 #define module_spk_synth(__spk_synth) \
 	module_driver(__spk_synth, synth_add, synth_remove)
-
 struct speakup_info_t {
 	spinlock_t spinlock;
 	int port_tts;
 	int flushing;
 };
-
 struct bleep {
 	short freq;
 	unsigned long jiffies;

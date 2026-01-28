@@ -1,24 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Ltd. Versatile Express
- *
- * Motherboard Express uATX
- * V2M-P1
- *
- * HBI-0190D
- *
- * Original memory map ("Legacy memory map" in the board's
- * Technical Reference Manual)
- *
- * WARNING! The hardware described in this file is independent from the
- * RS1 variant (vexpress-v2m-rs1.dtsi), but there is a strong
- * correspondence between the two configurations.
- *
- * TAKE CARE WHEN MAINTAINING THIS FILE TO PROPAGATE ANY RELEVANT
- * CHANGES TO vexpress-v2m-rs1.dtsi!
- */
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	bus@40000000 {
 		compatible = "simple-bus";
@@ -26,7 +6,6 @@
 		#size-cells = <1>;
 		ranges = <0x40000000 0x40000000 0x10000000>,
 			 <0x10000000 0x10000000 0x00020000>;
-
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 63>;
 		interrupt-map = <0  0 &gic GIC_SPI  0 IRQ_TYPE_LEVEL_HIGH>,
@@ -72,19 +51,17 @@
 				<0 40 &gic GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
 				<0 41 &gic GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
 				<0 42 &gic GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
-
 		motherboard-bus@40000000 {
 			arm,hbi = <0x190>;
 			arm,vexpress,site = <0>;
 			compatible = "arm,vexpress,v2m-p1", "simple-bus";
-			#address-cells = <2>; /* SMB chipselect number and offset */
+			#address-cells = <2>;  
 			#size-cells = <1>;
 			ranges = <0 0 0x40000000 0x04000000>,
 				 <1 0 0x44000000 0x04000000>,
 				 <2 0 0x48000000 0x04000000>,
 				 <3 0 0x4c000000 0x04000000>,
 				 <7 0 0x10000000 0x00020000>;
-
 			flash@0,00000000 {
 				compatible = "arm,vexpress-flash", "cfi-flash";
 				reg = <0 0x00000000 0x04000000>,
@@ -94,13 +71,11 @@
 					compatible = "arm,arm-firmware-suite";
 				};
 			};
-
 			psram@2,00000000 {
 				compatible = "arm,vexpress-psram", "mtd-ram";
 				reg = <2 0x00000000 0x02000000>;
 				bank-width = <4>;
 			};
-
 			ethernet@3,02000000 {
 				compatible = "smsc,lan9118", "smsc,lan9115";
 				reg = <3 0x02000000 0x10000>;
@@ -112,41 +87,35 @@
 				vdd33a-supply = <&v2m_fixed_3v3>;
 				vddvario-supply = <&v2m_fixed_3v3>;
 			};
-
 			usb@3,03000000 {
 				compatible = "nxp,usb-isp1761";
 				reg = <3 0x03000000 0x20000>;
 				interrupts = <16>;
 				dr_mode = "peripheral";
 			};
-
 			iofpga@7,00000000 {
 				compatible = "simple-bus";
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0 7 0 0x20000>;
-
 				v2m_sysreg: sysreg@0 {
 					compatible = "arm,vexpress-sysreg";
 					reg = <0x00000 0x1000>;
 					#address-cells = <1>;
 					#size-cells = <1>;
 					ranges = <0 0 0x1000>;
-
 					v2m_led_gpios: gpio@8 {
 						compatible = "arm,vexpress-sysreg,sys_led";
 						reg = <0x008 4>;
 						gpio-controller;
 						#gpio-cells = <2>;
 					};
-
 					v2m_mmc_gpios: gpio@48 {
 						compatible = "arm,vexpress-sysreg,sys_mci";
 						reg = <0x048 4>;
 						gpio-controller;
 						#gpio-cells = <2>;
 					};
-
 					v2m_flash_gpios: gpio@4c {
 						compatible = "arm,vexpress-sysreg,sys_flash";
 						reg = <0x04c 4>;
@@ -154,7 +123,6 @@
 						#gpio-cells = <2>;
 					};
 				};
-
 				v2m_sysctl: sysctl@1000 {
 					compatible = "arm,sp810", "arm,primecell";
 					reg = <0x01000 0x1000>;
@@ -165,21 +133,16 @@
 					assigned-clocks = <&v2m_sysctl 0>, <&v2m_sysctl 1>, <&v2m_sysctl 3>, <&v2m_sysctl 3>;
 					assigned-clock-parents = <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>, <&v2m_refclk1mhz>;
 				};
-
-				/* PCI-E I2C bus */
 				v2m_i2c_pcie: i2c@2000 {
 					compatible = "arm,versatile-i2c";
 					reg = <0x02000 0x1000>;
-
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					pcie-switch@60 {
 						compatible = "idt,89hpes32h8";
 						reg = <0x60>;
 					};
 				};
-
 				aaci@4000 {
 					compatible = "arm,pl041", "arm,primecell";
 					reg = <0x04000 0x1000>;
@@ -187,7 +150,6 @@
 					clocks = <&smbclk>;
 					clock-names = "apb_pclk";
 				};
-
 				mmci@5000 {
 					compatible = "arm,pl180", "arm,primecell";
 					reg = <0x05000 0x1000>;
@@ -199,7 +161,6 @@
 					clocks = <&v2m_clk24mhz>, <&smbclk>;
 					clock-names = "mclk", "apb_pclk";
 				};
-
 				kmi@6000 {
 					compatible = "arm,pl050", "arm,primecell";
 					reg = <0x06000 0x1000>;
@@ -207,7 +168,6 @@
 					clocks = <&v2m_clk24mhz>, <&smbclk>;
 					clock-names = "KMIREFCLK", "apb_pclk";
 				};
-
 				kmi@7000 {
 					compatible = "arm,pl050", "arm,primecell";
 					reg = <0x07000 0x1000>;
@@ -215,7 +175,6 @@
 					clocks = <&v2m_clk24mhz>, <&smbclk>;
 					clock-names = "KMIREFCLK", "apb_pclk";
 				};
-
 				v2m_serial0: serial@9000 {
 					compatible = "arm,pl011", "arm,primecell";
 					reg = <0x09000 0x1000>;
@@ -223,7 +182,6 @@
 					clocks = <&v2m_oscclk2>, <&smbclk>;
 					clock-names = "uartclk", "apb_pclk";
 				};
-
 				v2m_serial1: serial@a000 {
 					compatible = "arm,pl011", "arm,primecell";
 					reg = <0x0a000 0x1000>;
@@ -231,7 +189,6 @@
 					clocks = <&v2m_oscclk2>, <&smbclk>;
 					clock-names = "uartclk", "apb_pclk";
 				};
-
 				v2m_serial2: serial@b000 {
 					compatible = "arm,pl011", "arm,primecell";
 					reg = <0x0b000 0x1000>;
@@ -239,7 +196,6 @@
 					clocks = <&v2m_oscclk2>, <&smbclk>;
 					clock-names = "uartclk", "apb_pclk";
 				};
-
 				v2m_serial3: serial@c000 {
 					compatible = "arm,pl011", "arm,primecell";
 					reg = <0x0c000 0x1000>;
@@ -247,7 +203,6 @@
 					clocks = <&v2m_oscclk2>, <&smbclk>;
 					clock-names = "uartclk", "apb_pclk";
 				};
-
 				wdt@f000 {
 					compatible = "arm,sp805", "arm,primecell";
 					reg = <0x0f000 0x1000>;
@@ -255,7 +210,6 @@
 					clocks = <&v2m_refclk32khz>, <&smbclk>;
 					clock-names = "wdog_clk", "apb_pclk";
 				};
-
 				v2m_timer01: timer@11000 {
 					compatible = "arm,sp804", "arm,primecell";
 					reg = <0x11000 0x1000>;
@@ -263,7 +217,6 @@
 					clocks = <&v2m_sysctl 0>, <&v2m_sysctl 1>, <&smbclk>;
 					clock-names = "timclken1", "timclken2", "apb_pclk";
 				};
-
 				v2m_timer23: timer@12000 {
 					compatible = "arm,sp804", "arm,primecell";
 					reg = <0x12000 0x1000>;
@@ -271,29 +224,17 @@
 					clocks = <&v2m_sysctl 2>, <&v2m_sysctl 3>, <&smbclk>;
 					clock-names = "timclken1", "timclken2", "apb_pclk";
 				};
-
-				/* DVI I2C bus */
 				v2m_i2c_dvi: i2c@16000 {
 					compatible = "arm,versatile-i2c";
 					reg = <0x16000 0x1000>;
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					dvi-transmitter@39 {
 						compatible = "sil,sii9022-tpi", "sil,sii9022";
 						reg = <0x39>;
-
 						ports {
 							#address-cells = <1>;
 							#size-cells = <0>;
-
-							/*
-							 * Both the core tile and the motherboard routes their output
-							 * pads to this transmitter. The motherboard system controller
-							 * can select one of them as input using a mux register in
-							 * "arm,vexpress-muxfpga". The Vexpress with the CA9 core tile is
-							 * the only platform with this specific set-up.
-							 */
 							port@0 {
 								reg = <0>;
 								dvi_bridge_in_ct: endpoint {
@@ -308,13 +249,11 @@
 							};
 						};
 					};
-
 					dvi-transmitter@60 {
 						compatible = "sil,sii9022-cpi", "sil,sii9022";
 						reg = <0x60>;
 					};
 				};
-
 				rtc@17000 {
 					compatible = "arm,pl031", "arm,primecell";
 					reg = <0x17000 0x1000>;
@@ -322,15 +261,12 @@
 					clocks = <&smbclk>;
 					clock-names = "apb_pclk";
 				};
-
 				compact-flash@1a000 {
 					compatible = "arm,vexpress-cf", "ata-generic";
 					reg = <0x1a000 0x100
 					       0x1a100 0xf00>;
 					reg-shift = <2>;
 				};
-
-
 				clcd@1f000 {
 					compatible = "arm,pl111", "arm,primecell";
 					reg = <0x1f000 0x1000>;
@@ -338,10 +274,8 @@
 					interrupts = <14>;
 					clocks = <&v2m_oscclk1>, <&smbclk>;
 					clock-names = "clcdclk", "apb_pclk";
-					/* 800x600 16bpp @36MHz works fine */
 					max-memory-bandwidth = <54000000>;
 					memory-region = <&vram>;
-
 					port {
 						clcd_pads_mb: endpoint {
 							remote-endpoint = <&dvi_bridge_in_mb>;
@@ -350,7 +284,6 @@
 					};
 				};
 			};
-
 			v2m_fixed_3v3: fixed-regulator-0 {
 				compatible = "regulator-fixed";
 				regulator-name = "3V3";
@@ -358,147 +291,119 @@
 				regulator-max-microvolt = <3300000>;
 				regulator-always-on;
 			};
-
 			v2m_clk24mhz: clk24mhz {
 				compatible = "fixed-clock";
 				#clock-cells = <0>;
 				clock-frequency = <24000000>;
 				clock-output-names = "v2m:clk24mhz";
 			};
-
 			v2m_refclk1mhz: refclk1mhz {
 				compatible = "fixed-clock";
 				#clock-cells = <0>;
 				clock-frequency = <1000000>;
 				clock-output-names = "v2m:refclk1mhz";
 			};
-
 			v2m_refclk32khz: refclk32khz {
 				compatible = "fixed-clock";
 				#clock-cells = <0>;
 				clock-frequency = <32768>;
 				clock-output-names = "v2m:refclk32khz";
 			};
-
 			leds {
 				compatible = "gpio-leds";
-
 				led-user1 {
 					label = "v2m:green:user1";
 					gpios = <&v2m_led_gpios 0 0>;
 					linux,default-trigger = "heartbeat";
 				};
-
 				led-user2 {
 					label = "v2m:green:user2";
 					gpios = <&v2m_led_gpios 1 0>;
 					linux,default-trigger = "mmc0";
 				};
-
 				led-user3 {
 					label = "v2m:green:user3";
 					gpios = <&v2m_led_gpios 2 0>;
 					linux,default-trigger = "cpu0";
 				};
-
 				led-user4 {
 					label = "v2m:green:user4";
 					gpios = <&v2m_led_gpios 3 0>;
 					linux,default-trigger = "cpu1";
 				};
-
 				led-user5 {
 					label = "v2m:green:user5";
 					gpios = <&v2m_led_gpios 4 0>;
 					linux,default-trigger = "cpu2";
 				};
-
 				led-user6 {
 					label = "v2m:green:user6";
 					gpios = <&v2m_led_gpios 5 0>;
 					linux,default-trigger = "cpu3";
 				};
-
 				led-user7 {
 					label = "v2m:green:user7";
 					gpios = <&v2m_led_gpios 6 0>;
 					linux,default-trigger = "cpu4";
 				};
-
 				led-user8 {
 					label = "v2m:green:user8";
 					gpios = <&v2m_led_gpios 7 0>;
 					linux,default-trigger = "cpu5";
 				};
 			};
-
 			mcc {
 				compatible = "arm,vexpress,config-bus";
 				arm,vexpress,config-bridge = <&v2m_sysreg>;
-
 				oscclk0 {
-					/* MCC static memory clock */
 					compatible = "arm,vexpress-osc";
 					arm,vexpress-sysreg,func = <1 0>;
 					freq-range = <25000000 60000000>;
 					#clock-cells = <0>;
 					clock-output-names = "v2m:oscclk0";
 				};
-
 				v2m_oscclk1: oscclk1 {
-					/* CLCD clock */
 					compatible = "arm,vexpress-osc";
 					arm,vexpress-sysreg,func = <1 1>;
 					freq-range = <23750000 65000000>;
 					#clock-cells = <0>;
 					clock-output-names = "v2m:oscclk1";
 				};
-
 				v2m_oscclk2: oscclk2 {
-					/* IO FPGA peripheral clock */
 					compatible = "arm,vexpress-osc";
 					arm,vexpress-sysreg,func = <1 2>;
 					freq-range = <24000000 24000000>;
 					#clock-cells = <0>;
 					clock-output-names = "v2m:oscclk2";
 				};
-
 				volt-vio {
-					/* Logic level voltage */
 					compatible = "arm,vexpress-volt";
 					arm,vexpress-sysreg,func = <2 0>;
 					regulator-name = "VIO";
 					regulator-always-on;
 					label = "VIO";
 				};
-
 				temp-mcc {
-					/* MCC internal operating temperature */
 					compatible = "arm,vexpress-temp";
 					arm,vexpress-sysreg,func = <4 0>;
 					label = "MCC";
 				};
-
 				reset {
 					compatible = "arm,vexpress-reset";
 					arm,vexpress-sysreg,func = <5 0>;
 				};
-
 				muxfpga {
 					compatible = "arm,vexpress-muxfpga";
 					arm,vexpress-sysreg,func = <7 0>;
 				};
-
 				shutdown {
 					compatible = "arm,vexpress-shutdown";
 					arm,vexpress-sysreg,func = <8 0>;
 				};
-
 				reboot {
 					compatible = "arm,vexpress-reboot";
 					arm,vexpress-sysreg,func = <9 0>;
 				};
-
 				dvimode {
 					compatible = "arm,vexpress-dvimode";
 					arm,vexpress-sysreg,func = <11 0>;

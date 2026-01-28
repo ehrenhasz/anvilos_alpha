@@ -1,29 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Zarlink DVB-T MT352 demodulator
- *
- *  Written by Holger Waechtler <holger@qanu.de>
- *	 and Daniel Mack <daniel@qanu.de>
- *
- *  AVerMedia AVerTV DVB-T 771 support by
- *       Wolfram Joost <dbox2@frokaschwei.de>
- *
- *  Support for Samsung TDTC9251DH01C(M) tuner
- *  Copyright (C) 2004 Antonio Mancuso <antonio.mancuso@digitaltelevision.it>
- *                     Amauri  Celani  <acelani@essegi.net>
- *
- *  DVICO FusionHDTV DVB-T1 and DVICO FusionHDTV DVB-T Lite support by
- *       Christopher Pascoe <c.pascoe@itee.uq.edu.au>
- */
-
 #ifndef _MT352_PRIV_
 #define _MT352_PRIV_
-
 #define ID_MT352        0x13
-
 #define msb(x) (((x) >> 8) & 0xff)
 #define lsb(x) ((x) & 0xff)
-
 enum mt352_reg_addr {
 	STATUS_0           = 0x00,
 	STATUS_1           = 0x01,
@@ -106,8 +85,5 @@ enum mt352_reg_addr {
 	ADC_CTL_1          = 0x8E,
 	ADC_CTL_0          = 0x8F
 };
-
-/* here we assume 1/6MHz == 166.66kHz stepsize */
-#define IF_FREQUENCYx6 217    /* 6 * 36.16666666667MHz */
-
-#endif                          /* _MT352_PRIV_ */
+#define IF_FREQUENCYx6 217     
+#endif                           

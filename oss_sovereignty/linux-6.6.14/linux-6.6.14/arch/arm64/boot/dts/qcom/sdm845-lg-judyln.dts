@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SDM845 LG G7 (judyln) device tree.
- *
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- */
-
 /dts-v1/;
-
 #include "sdm845-lg-common.dtsi"
-
 / {
 	model = "LG G7 ThinQ";
 	compatible = "lg,judyln", "qcom,sdm845";
-
 	chosen {
 		framebuffer@9d400000 {
 			compatible = "simple-framebuffer";
@@ -25,11 +15,8 @@
 			ibb-supply = <&ibb>;
 		};
 	};
-
-	/* Additional ThinQ key */
 	gpio-keys {
 		pinctrl-0 = <&vol_up_pin_a &thinq_key_default>;
-
 		key-thinq {
 			label = "ThinQ";
 			linux,code = <KEY_ASSISTANT>;
@@ -38,30 +25,24 @@
 		};
 	};
 };
-
 &adsp_pas {
 	firmware-name = "qcom/sdm845/judyln/adsp.mbn";
 };
-
 &cdsp_pas {
 	firmware-name = "qcom/sdm845/judyln/cdsp.mbn";
 };
-
 &gpu {
 	zap-shader {
 		firmware-name = "qcom/sdm845/judyln/a630_zap.mbn";
 	};
 };
-
 &mss_pil {
 	firmware-name = "qcom/sdm845/judyln/mba.mbn", "qcom/sdm845/judyln/modem.mbn";
 };
-
 &tlmm {
 	thinq_key_default: thinq-key-default-state {
 		pins = "gpio89";
 		function = "gpio";
-
 		drive-strength = <2>;
 		bias-pull-up;
 	};

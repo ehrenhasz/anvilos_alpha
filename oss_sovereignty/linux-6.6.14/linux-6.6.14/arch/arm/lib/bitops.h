@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/assembler.h>
 #include <asm/unwind.h>
-
 #if __LINUX_ARM_ARCH__ >= 6
 	.macro	bitop, name, instr
 ENTRY(	\name		)
@@ -27,7 +25,6 @@ UNWIND(	.fnstart	)
 UNWIND(	.fnend		)
 ENDPROC(\name		)
 	.endm
-
 	.macro	__testop, name, instr, store, barrier
 ENTRY(	\name		)
 UNWIND(	.fnstart	)
@@ -57,11 +54,9 @@ UNWIND(	.fnstart	)
 UNWIND(	.fnend		)
 ENDPROC(\name		)
 	.endm
-
 	.macro	testop, name, instr, store
 	__testop \name, \instr, \store, smp_dmb
 	.endm
-
 	.macro	sync_testop, name, instr, store
 	__testop \name, \instr, \store, __smp_dmb
 	.endm
@@ -84,15 +79,6 @@ UNWIND(	.fnstart	)
 UNWIND(	.fnend		)
 ENDPROC(\name		)
 	.endm
-
-/**
- * testop - implement a test_and_xxx_bit operation.
- * @instr: operational instruction
- * @store: store instruction
- *
- * Note: we can trivially conditionalise the store instruction
- * to avoid dirtying the data cache.
- */
 	.macro	testop, name, instr, store
 ENTRY(	\name		)
 UNWIND(	.fnstart	)

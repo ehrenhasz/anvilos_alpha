@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SELinux interface to the NetLabel subsystem
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
-
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
- */
-
 #ifndef _SELINUX_NETLABEL_H_
 #define _SELINUX_NETLABEL_H_
-
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/net.h>
@@ -19,19 +7,14 @@
 #include <net/sock.h>
 #include <net/request_sock.h>
 #include <net/sctp/structs.h>
-
 #include "avc.h"
 #include "objsec.h"
-
 #ifdef CONFIG_NETLABEL
 void selinux_netlbl_cache_invalidate(void);
-
 void selinux_netlbl_err(struct sk_buff *skb, u16 family, int error,
 			int gateway);
-
 void selinux_netlbl_sk_security_free(struct sk_security_struct *sksec);
 void selinux_netlbl_sk_security_reset(struct sk_security_struct *sksec);
-
 int selinux_netlbl_skbuff_getsid(struct sk_buff *skb,
 				 u16 family,
 				 u32 *type,
@@ -55,13 +38,11 @@ int selinux_netlbl_socket_setsockopt(struct socket *sock,
 int selinux_netlbl_socket_connect(struct sock *sk, struct sockaddr *addr);
 int selinux_netlbl_socket_connect_locked(struct sock *sk,
 					 struct sockaddr *addr);
-
 #else
 static inline void selinux_netlbl_cache_invalidate(void)
 {
 	return;
 }
-
 static inline void selinux_netlbl_err(struct sk_buff *skb,
 				      u16 family,
 				      int error,
@@ -69,19 +50,16 @@ static inline void selinux_netlbl_err(struct sk_buff *skb,
 {
 	return;
 }
-
 static inline void selinux_netlbl_sk_security_free(
 					       struct sk_security_struct *sksec)
 {
 	return;
 }
-
 static inline void selinux_netlbl_sk_security_reset(
 					       struct sk_security_struct *sksec)
 {
 	return;
 }
-
 static inline int selinux_netlbl_skbuff_getsid(struct sk_buff *skb,
 					       u16 family,
 					       u32 *type,
@@ -97,7 +75,6 @@ static inline int selinux_netlbl_skbuff_setsid(struct sk_buff *skb,
 {
 	return 0;
 }
-
 static inline int selinux_netlbl_sctp_assoc_request(struct sctp_association *asoc,
 						    struct sk_buff *skb)
 {
@@ -145,6 +122,5 @@ static inline int selinux_netlbl_socket_connect_locked(struct sock *sk,
 {
 	return 0;
 }
-#endif /* CONFIG_NETLABEL */
-
+#endif  
 #endif

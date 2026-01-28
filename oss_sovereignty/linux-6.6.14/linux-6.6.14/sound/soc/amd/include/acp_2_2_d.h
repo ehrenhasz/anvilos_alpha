@@ -1,29 +1,5 @@
-/*
- * ACP_2_2 Register documentation
- *
- * Copyright (C) 2014  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef ACP_2_2_D_H
 #define ACP_2_2_D_H
-
 #define mmACP_DMA_CNTL_0                                                        0x5000
 #define mmACP_DMA_CNTL_1                                                        0x5001
 #define mmACP_DMA_CNTL_2                                                        0x5002
@@ -605,5 +581,4 @@
 #define mmACP_I2SBT_COMP_PARAM_1                                                0x5287
 #define mmACP_I2SBT_COMP_VERSION                                                0x5288
 #define mmACP_I2SBT_COMP_TYPE                                                   0x5289
-
-#endif /* ACP_2_2_D_H */
+#endif  

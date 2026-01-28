@@ -1,18 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
 #define _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
-
 #ifndef __LITTLE_ENDIAN
 #define __LITTLE_ENDIAN 1234
 #endif
 #ifndef __LITTLE_ENDIAN_BITFIELD
 #define __LITTLE_ENDIAN_BITFIELD
 #endif
-
 #include <linux/stddef.h>
 #include <linux/types.h>
 #include <linux/swab.h>
-
 #define __constant_htonl(x) ((__force __be32)___constant_swab32((x)))
 #define __constant_ntohl(x) ___constant_swab32((__force __be32)(x))
 #define __constant_htons(x) ((__force __be16)___constant_swab16((x)))
@@ -41,7 +37,6 @@
 #define __be32_to_cpu(x) __swab32((__force __u32)(__be32)(x))
 #define __cpu_to_be16(x) ((__force __be16)__swab16((x)))
 #define __be16_to_cpu(x) __swab16((__force __u16)(__be16)(x))
-
 static __always_inline __le64 __cpu_to_le64p(const __u64 *p)
 {
 	return (__force __le64)*p;
@@ -102,6 +97,4 @@ static __always_inline __u16 __be16_to_cpup(const __be16 *p)
 #define __be32_to_cpus(x) __swab32s((x))
 #define __cpu_to_be16s(x) __swab16s((x))
 #define __be16_to_cpus(x) __swab16s((x))
-
-
-#endif /* _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H */
+#endif  

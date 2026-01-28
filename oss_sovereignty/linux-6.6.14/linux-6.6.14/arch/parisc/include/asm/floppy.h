@@ -1,37 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*    Architecture specific parts of the Floppy driver
- *
- *    Linux/PA-RISC Project (http://www.parisc-linux.org/)
- *    Copyright (C) 2000 Matthew Wilcox (willy a debian . org)
- *    Copyright (C) 2000 Dave Kennedy
- */
 #ifndef __ASM_PARISC_FLOPPY_H
 #define __ASM_PARISC_FLOPPY_H
-
 #include <linux/vmalloc.h>
-
-
-/*
- * The DMA channel used by the floppy controller cannot access data at
- * addresses >= 16MB
- *
- * Went back to the 1MB limit, as some people had problems with the floppy
- * driver otherwise. It doesn't matter much for performance anyway, as most
- * floppy accesses go through the track buffer.
- */
 #define _CROSS_64KB(a,s,vdma) \
 (!(vdma) && ((unsigned long)(a)/K_64 != ((unsigned long)(a) + (s) - 1) / K_64))
-
 #define CROSS_64KB(a,s) _CROSS_64KB(a,s,use_virtual_dma & 1)
-
-
 #define SW fd_routine[use_virtual_dma&1]
 #define CSW fd_routine[can_use_virtual_dma & 1]
-
-
 #define fd_inb(base, reg)		readb((base) + (reg))
 #define fd_outb(value, base, reg)	writeb(value, (base) + (reg))
-
 #define fd_request_dma()        CSW._request_dma(FLOPPY_DMA,"floppy")
 #define fd_free_dma()           CSW._free_dma(FLOPPY_DMA)
 #define fd_enable_irq()         enable_irq(FLOPPY_IRQ)
@@ -40,21 +16,16 @@
 #define fd_get_dma_residue()    SW._get_dma_residue(FLOPPY_DMA)
 #define fd_dma_mem_alloc(size)	SW._dma_mem_alloc(size)
 #define fd_dma_setup(addr, size, mode, io) SW._dma_setup(addr, size, mode, io)
-
 #define FLOPPY_CAN_FALLBACK_ON_NODMA
-
 static int virtual_dma_count=0;
 static int virtual_dma_residue=0;
 static char *virtual_dma_addr=0;
 static int virtual_dma_mode=0;
 static int doing_pdma=0;
-
 static void floppy_hardint(int irq, void *dev_id, struct pt_regs * regs)
 {
 	register unsigned char st;
-
 #undef TRACE_FLPY_INT
-
 #ifdef TRACE_FLPY_INT
 	static int calls=0;
 	static int bytes=0;
@@ -64,16 +35,13 @@ static void floppy_hardint(int irq, void *dev_id, struct pt_regs * regs)
 		floppy_interrupt(irq, dev_id, regs);
 		return;
 	}
-
 #ifdef TRACE_FLPY_INT
 	if(!calls)
 		bytes = virtual_dma_count;
 #endif
-
 	{
 		register int lcount;
 		register char *lptr = virtual_dma_addr;
-
 		for (lcount = virtual_dma_count; lcount; lcount--) {
 			st = fd_inb(virtual_dma_port, FD_STATUS);
 			st &= STATUS_DMA | STATUS_READY;
@@ -90,7 +58,6 @@ static void floppy_hardint(int irq, void *dev_id, struct pt_regs * regs)
 		virtual_dma_addr = lptr;
 		st = fd_inb(virtual_dma_port, FD_STATUS);
 	}
-
 #ifdef TRACE_FLPY_INT
 	calls++;
 #endif
@@ -115,7 +82,6 @@ static void floppy_hardint(int irq, void *dev_id, struct pt_regs * regs)
 		dma_wait++;
 #endif
 }
-
 static void fd_disable_dma(void)
 {
 	if(! (can_use_virtual_dma & 1))
@@ -124,23 +90,17 @@ static void fd_disable_dma(void)
 	virtual_dma_residue += virtual_dma_count;
 	virtual_dma_count=0;
 }
-
 static int vdma_request_dma(unsigned int dmanr, const char * device_id)
 {
 	return 0;
 }
-
 static void vdma_nop(unsigned int dummy)
 {
 }
-
-
 static int vdma_get_dma_residue(unsigned int dummy)
 {
 	return virtual_dma_count + virtual_dma_residue;
 }
-
-
 static int fd_request_irq(void)
 {
 	if(can_use_virtual_dma)
@@ -150,21 +110,15 @@ static int fd_request_irq(void)
 		return request_irq(FLOPPY_IRQ, floppy_interrupt,
 				   0, "floppy", NULL);
 }
-
 static unsigned long dma_mem_alloc(unsigned long size)
 {
 	return __get_dma_pages(GFP_KERNEL, get_order(size));
 }
-
-
 static unsigned long vdma_mem_alloc(unsigned long size)
 {
 	return (unsigned long) vmalloc(size);
-
 }
-
 #define nodma_mem_alloc(size) vdma_mem_alloc(size)
-
 static void _fd_dma_mem_free(unsigned long addr, unsigned long size)
 {
 	if((unsigned int) addr >= (unsigned int) high_memory)
@@ -172,9 +126,7 @@ static void _fd_dma_mem_free(unsigned long addr, unsigned long size)
 	else
 		free_pages(addr, get_order(size));		
 }
-
 #define fd_dma_mem_free(addr, size)  _fd_dma_mem_free(addr, size) 
-
 static void _fd_chose_dma_mode(char *addr, unsigned long size)
 {
 	if(can_use_virtual_dma == 2) {
@@ -188,10 +140,7 @@ static void _fd_chose_dma_mode(char *addr, unsigned long size)
 		use_virtual_dma = can_use_virtual_dma & 1;
 	}
 }
-
 #define fd_chose_dma_mode(addr, size) _fd_chose_dma_mode(addr, size)
-
-
 static int vdma_dma_setup(char *addr, unsigned long size, int mode, int io)
 {
 	doing_pdma = 1;
@@ -202,7 +151,6 @@ static int vdma_dma_setup(char *addr, unsigned long size, int mode, int io)
 	virtual_dma_residue = 0;
 	return 0;
 }
-
 static int hard_dma_setup(char *addr, unsigned long size, int mode, int io)
 {
 #ifdef FLOPPY_SANITY_CHECK
@@ -211,7 +159,6 @@ static int hard_dma_setup(char *addr, unsigned long size, int mode, int io)
 		return -1;
 	}
 #endif
-	/* actual, physical DMA */
 	doing_pdma = 0;
 	clear_dma_ff(FLOPPY_DMA);
 	set_dma_mode(FLOPPY_DMA,mode);
@@ -220,7 +167,6 @@ static int hard_dma_setup(char *addr, unsigned long size, int mode, int io)
 	enable_dma(FLOPPY_DMA);
 	return 0;
 }
-
 static struct fd_routine_l {
 	int (*_request_dma)(unsigned int dmanr, const char * device_id);
 	void (*_free_dma)(unsigned int dmanr);
@@ -243,17 +189,11 @@ static struct fd_routine_l {
 		vdma_dma_setup
 	}
 };
-
-
-static int FDC1 = 0x3f0; /* Lies.  Floppy controller is memory mapped, not io mapped */
+static int FDC1 = 0x3f0;  
 static int FDC2 = -1;
-
 #define FLOPPY0_TYPE	0
 #define FLOPPY1_TYPE	0
-
 #define N_FDC 1
 #define N_DRIVE 8
-
 #define EXTRA_FLOPPY_PARAMS
-
-#endif /* __ASM_PARISC_FLOPPY_H */
+#endif  

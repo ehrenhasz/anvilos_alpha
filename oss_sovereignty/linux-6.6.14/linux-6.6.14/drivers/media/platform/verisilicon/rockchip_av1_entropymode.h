@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef _ROCKCHIP_AV1_ENTROPYMODE_H_
 #define _ROCKCHIP_AV1_ENTROPYMODE_H_
-
 #include <linux/types.h>
-
 struct hantro_ctx;
-
 #define AV1_INTER_MODE_CONTEXTS 15
 #define AV1_INTRA_MODES 13
 #define AV1_REF_CONTEXTS 3
-#define AV1_SWITCHABLE_FILTERS 3	/* number of switchable filters */
+#define AV1_SWITCHABLE_FILTERS 3	 
 #define AV1_TX_SIZE_CONTEXTS 3
 #define BLOCK_SIZE_GROUPS 4
 #define BR_CDF_SIZE 4
@@ -84,7 +79,6 @@ struct hantro_ctx;
 #define UV_INTRA_MODES 14
 #define VARTX_PART_CONTEXTS 22
 #define ZEROMV_MODE_CONTEXTS 2
-
 enum blocksizetype {
 	BLOCK_SIZE_AB4X4,
 	BLOCK_SIZE_SB4X8,
@@ -111,7 +105,6 @@ enum blocksizetype {
 	BLOCK_SIZE_TYPES,
 	BLOCK_SIZES_ALL = BLOCK_SIZE_TYPES
 };
-
 enum filterintramodetype {
 	FILTER_DC_PRED,
 	FILTER_V_PRED,
@@ -121,13 +114,11 @@ enum filterintramodetype {
 	FILTER_INTRA_MODES,
 	FILTER_INTRA_UNUSED = 7
 };
-
 enum frametype {
 	KEY_FRAME = 0,
 	INTER_FRAME = 1,
 	NUM_FRAME_TYPES,
 };
-
 enum txsize {
 	TX_4X4 = 0,
 	TX_8X8 = 1,
@@ -135,24 +126,22 @@ enum txsize {
 	TX_32X32 = 3,
 	TX_SIZE_MAX_SB,
 };
-
 enum { SIMPLE_TRANSLATION, OBMC_CAUSAL, MOTION_MODE_COUNT };
-
 enum mb_prediction_mode {
-	DC_PRED,		/* average of above and left pixels */
-	V_PRED,			/* vertical prediction */
-	H_PRED,			/* horizontal prediction */
-	D45_PRED,		/* Directional 45 deg prediction  [anti-clockwise from 0 deg hor] */
-	D135_PRED,		/* Directional 135 deg prediction [anti-clockwise from 0 deg hor] */
-	D117_PRED,		/* Directional 112 deg prediction [anti-clockwise from 0 deg hor] */
-	D153_PRED,		/* Directional 157 deg prediction [anti-clockwise from 0 deg hor] */
-	D27_PRED,		/* Directional 22 deg prediction  [anti-clockwise from 0 deg hor] */
-	D63_PRED,		/* Directional 67 deg prediction  [anti-clockwise from 0 deg hor] */
+	DC_PRED,		 
+	V_PRED,			 
+	H_PRED,			 
+	D45_PRED,		 
+	D135_PRED,		 
+	D117_PRED,		 
+	D153_PRED,		 
+	D27_PRED,		 
+	D63_PRED,		 
 	SMOOTH_PRED,
 	TM_PRED_AV1 = SMOOTH_PRED,
-	SMOOTH_V_PRED,		// Vertical interpolation
-	SMOOTH_H_PRED,		// Horizontal interpolation
-	TM_PRED,		/* Truemotion prediction */
+	SMOOTH_V_PRED,		 
+	SMOOTH_H_PRED,		 
+	TM_PRED,		 
 	PAETH_PRED = TM_PRED,
 	NEARESTMV,
 	NEARMV,
@@ -169,7 +158,6 @@ enum mb_prediction_mode {
 	SPLITMV,
 	MB_MODE_COUNT
 };
-
 enum partitiontype {
 	PARTITION_NONE,
 	PARTITION_HORZ,
@@ -177,7 +165,6 @@ enum partitiontype {
 	PARTITION_SPLIT,
 	PARTITION_TYPES
 };
-
 struct mvcdfs {
 	u16 joint_cdf[3];
 	u16 sign_cdf[2];
@@ -189,7 +176,6 @@ struct mvcdfs {
 	u16 class0_cdf[2];
 	u16 bits_cdf[2][10];
 };
-
 struct av1cdfs {
 	u16 partition_cdf[13][16];
 	u16 kf_ymode_cdf[KF_MODE_CONTEXTS][KF_MODE_CONTEXTS][AV1_INTRA_MODES - 1];
@@ -238,7 +224,6 @@ struct av1cdfs {
 	u16 comp_group_idx_cdf[COMP_GROUP_IDX_CONTEXTS][CDF_SIZE(2)];
 	u16 compound_idx_cdf[COMP_INDEX_CONTEXTS][CDF_SIZE(2)];
 	u16 dummy0[14];
-	// Palette index contexts; sizes 1/7, 2/6, 3/5 packed together
 	u16 palette_y_color_index_cdf[PALETTE_IDX_CONTEXTS][8];
 	u16 palette_uv_color_index_cdf[PALETTE_IDX_CONTEXTS][8];
 	u16 tx_type_intra0_cdf[EXTTX_SIZES][AV1_INTRA_MODES][8];
@@ -261,12 +246,10 @@ struct av1cdfs {
 	u16 coeff_br_cdf[TX_SIZES][PLANE_TYPES][LEVEL_CONTEXTS][CDF_SIZE(BR_CDF_SIZE) + 1];
 	u16 dummy3[16];
 };
-
 void rockchip_av1_store_cdfs(struct hantro_ctx *ctx,
 			     u32 refresh_frame_flags);
 void rockchip_av1_get_cdfs(struct hantro_ctx *ctx, u32 ref_idx);
 void rockchip_av1_set_default_cdfs(struct av1cdfs *cdfs,
 				   struct mvcdfs *cdfs_ndvc);
 void rockchip_av1_default_coeff_probs(u32 base_qindex, void *ptr);
-
-#endif /* _ROCKCHIP_AV1_ENTROPYMODE_H_ */
+#endif  

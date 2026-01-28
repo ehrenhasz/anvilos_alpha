@@ -1,27 +1,18 @@
-#!/bin/sh
-# perf record offcpu profiling tests
-# SPDX-License-Identifier: GPL-2.0
-
 set -e
-
 err=0
 perfdata=$(mktemp /tmp/__perf_test.perf.data.XXXXX)
-
 cleanup() {
   rm -f ${perfdata}
   rm -f ${perfdata}.old
   trap - EXIT TERM INT
 }
-
 trap_cleanup() {
   cleanup
   exit 1
 }
 trap trap_cleanup EXIT TERM INT
-
 test_offcpu_priv() {
   echo "Checking off-cpu privilege"
-
   if [ "$(id -u)" != 0 ]
   then
     echo "off-cpu test [Skipped permission]"
@@ -35,10 +26,8 @@ test_offcpu_priv() {
     return
   fi
 }
-
 test_offcpu_basic() {
   echo "Basic off-cpu test"
-
   if ! perf record --off-cpu -e dummy -o ${perfdata} sleep 1 2> /dev/null
   then
     echo "Basic off-cpu test [Failed record]"
@@ -59,11 +48,8 @@ test_offcpu_basic() {
   fi
   echo "Basic off-cpu test [Success]"
 }
-
 test_offcpu_child() {
   echo "Child task off-cpu test"
-
-  # perf bench sched messaging creates 400 processes
   if ! perf record --off-cpu -e dummy -o ${perfdata} -- \
     perf bench sched messaging -g 10 > /dev/null 2>&1
   then
@@ -77,7 +63,6 @@ test_offcpu_child() {
     err=1
     return
   fi
-  # each process waits for read and write, so it should be more than 800 events
   if ! perf report -i ${perfdata} -s comm -q -n -t ';' --percent-limit=90 | \
     awk -F ";" '{ if (NF > 3 && int($3) < 800) exit 1; }'
   then
@@ -87,17 +72,12 @@ test_offcpu_child() {
   fi
   echo "Child task off-cpu test [Success]"
 }
-
-
 test_offcpu_priv
-
 if [ $err = 0 ]; then
   test_offcpu_basic
 fi
-
 if [ $err = 0 ]; then
   test_offcpu_child
 fi
-
 cleanup
 exit $err

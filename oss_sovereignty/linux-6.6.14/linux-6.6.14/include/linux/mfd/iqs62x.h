@@ -1,47 +1,30 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Azoteq IQS620A/621/622/624/625 Multi-Function Sensors
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
-
 #ifndef __LINUX_MFD_IQS62X_H
 #define __LINUX_MFD_IQS62X_H
-
 #define IQS620_PROD_NUM				0x41
 #define IQS621_PROD_NUM				0x46
 #define IQS622_PROD_NUM				0x42
 #define IQS624_PROD_NUM				0x43
 #define IQS625_PROD_NUM				0x4E
-
 #define IQS620_HW_NUM_V0			0x82
 #define IQS620_HW_NUM_V1			IQS620_HW_NUM_V0
 #define IQS620_HW_NUM_V2			IQS620_HW_NUM_V0
 #define IQS620_HW_NUM_V3			0x92
-
 #define IQS621_ALS_FLAGS			0x16
 #define IQS622_ALS_FLAGS			0x14
-
 #define IQS624_HALL_UI				0x70
 #define IQS624_HALL_UI_WHL_EVENT		BIT(4)
 #define IQS624_HALL_UI_INT_EVENT		BIT(3)
 #define IQS624_HALL_UI_AUTO_CAL			BIT(2)
-
 #define IQS624_INTERVAL_DIV			0x7D
-
 #define IQS620_GLBL_EVENT_MASK			0xD7
 #define IQS620_GLBL_EVENT_MASK_PMU		BIT(6)
-
 #define IQS62X_NUM_KEYS				16
 #define IQS62X_NUM_EVENTS			(IQS62X_NUM_KEYS + 6)
-
 #define IQS62X_EVENT_SIZE			10
-
 enum iqs62x_ui_sel {
 	IQS62X_UI_PROX,
 	IQS62X_UI_SAR1,
 };
-
 enum iqs62x_event_reg {
 	IQS62X_EVENT_NONE,
 	IQS62X_EVENT_SYS,
@@ -55,9 +38,7 @@ enum iqs62x_event_reg {
 	IQS62X_EVENT_UI_LO,
 	IQS62X_EVENT_UI_HI,
 };
-
 enum iqs62x_event_flag {
-	/* keys */
 	IQS62X_EVENT_PROX_CH0_T,
 	IQS62X_EVENT_PROX_CH0_P,
 	IQS62X_EVENT_PROX_CH1_T,
@@ -74,31 +55,24 @@ enum iqs62x_event_flag {
 	IQS62X_EVENT_SAR1_HALT,
 	IQS62X_EVENT_WHEEL_UP,
 	IQS62X_EVENT_WHEEL_DN,
-
-	/* switches */
 	IQS62X_EVENT_HALL_N_T,
 	IQS62X_EVENT_HALL_N_P,
 	IQS62X_EVENT_HALL_S_T,
 	IQS62X_EVENT_HALL_S_P,
-
-	/* everything else */
 	IQS62X_EVENT_SYS_RESET,
 	IQS62X_EVENT_SYS_ATI,
 };
-
 struct iqs62x_event_data {
 	u16 ui_data;
 	u8 als_flags;
 	u8 ir_flags;
 	u8 interval;
 };
-
 struct iqs62x_event_desc {
 	enum iqs62x_event_reg reg;
 	u8 mask;
 	u8 val;
 };
-
 struct iqs62x_dev_desc {
 	const char *dev_name;
 	const struct mfd_cell *sub_devs;
@@ -123,7 +97,6 @@ struct iqs62x_dev_desc {
 	const char *fw_name;
 	const enum iqs62x_event_reg (*event_regs)[IQS62X_EVENT_SIZE];
 };
-
 struct iqs62x_core {
 	const struct iqs62x_dev_desc *dev_desc;
 	struct i2c_client *client;
@@ -137,7 +110,5 @@ struct iqs62x_core {
 	u8 sw_num;
 	u8 hw_num;
 };
-
 extern const struct iqs62x_event_desc iqs62x_events[IQS62X_NUM_EVENTS];
-
-#endif /* __LINUX_MFD_IQS62X_H */
+#endif  

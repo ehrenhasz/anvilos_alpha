@@ -1,64 +1,14 @@
-/*
- * Copyright 2013-2017 Lothar Waßmann <LW@KARO-electronics.de>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License
- *     version 2 as published by the Free Software Foundation.
- *
- *     This file is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
- */
-
 /dts-v1/;
 #include "imx53-tx53.dtsi"
 #include <dt-bindings/input/input.h>
-
 / {
 	model = "Ka-Ro electronics TX53 module (LVDS)";
 	compatible = "karo,tx53", "fsl,imx53";
-
 	aliases {
 		display = &lvds0;
 		lvds0 = &lvds0;
 		lvds1 = &lvds1;
 	};
-
 	backlight0: backlight0 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm2 0 500000 0>;
@@ -78,7 +28,6 @@
 		>;
 		default-brightness-level = <50>;
 	};
-
 	backlight1: backlight1 {
 		compatible = "pwm-backlight";
 		pwms = <&pwm1 0 500000 0>;
@@ -98,7 +47,6 @@
 		>;
 		default-brightness-level = <50>;
 	};
-
 	reg_lcd_pwr0: regulator-lvds0-pwr {
 		compatible = "regulator-fixed";
 		regulator-name = "LVDS0 POWER";
@@ -108,7 +56,6 @@
 		enable-active-high;
 		regulator-boot-on;
 	};
-
 	reg_lcd_pwr1: regulator-lvds1-pwr {
 		compatible = "regulator-fixed";
 		regulator-name = "LVDS1 POWER";
@@ -119,7 +66,6 @@
 		regulator-boot-on;
 	};
 };
-
 &i2c3 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
@@ -127,7 +73,6 @@
 	scl-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
 	sda-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
 	status = "okay";
-
 	sgtl5000: codec@a {
 		compatible = "fsl,sgtl5000";
 		reg = <0x0a>;
@@ -137,7 +82,6 @@
 		clocks = <&mclk>;
 	};
 };
-
 &iomuxc {
 	imx53-tx53-x13x {
 		pinctrl_lvds0: lvds0grp {
@@ -149,7 +93,6 @@
 				MX53_PAD_LVDS0_TX0_P__LDB_LVDS0_TX0 0x80000000
 			>;
 		};
-
 		pinctrl_lvds1: lvds1grp {
 			fsl,pins = <
 				MX53_PAD_LVDS1_TX3_P__LDB_LVDS1_TX3 0x80000000
@@ -159,38 +102,31 @@
 				MX53_PAD_LVDS1_TX0_P__LDB_LVDS1_TX0 0x80000000
 			>;
 		};
-
 		pinctrl_pwm1: pwm1grp {
 			fsl,pins = <MX53_PAD_GPIO_9__PWM1_PWMO 0x04>;
 		};
-
 		pinctrl_eeti1: eeti1grp {
 			fsl,pins = <
-				MX53_PAD_EIM_D22__GPIO3_22 0x1f0 /* Interrupt */
+				MX53_PAD_EIM_D22__GPIO3_22 0x1f0  
 			>;
 		};
-
 		pinctrl_eeti2: eeti2grp {
 			fsl,pins = <
-				MX53_PAD_EIM_D23__GPIO3_23 0x1f0 /* Interrupt */
+				MX53_PAD_EIM_D23__GPIO3_23 0x1f0  
 			>;
 		};
 	};
 };
-
 &ldb {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lvds0 &pinctrl_lvds1>;
 	status = "okay";
-
 	lvds0: lvds-channel@0 {
 		fsl,data-mapping = "spwg";
 		fsl,data-width = <18>;
 		status = "okay";
-
 		display-timings {
 			native-mode = <&lvds0_timing0>;
-
 			lvds0_timing0: hsd100pxn1 {
 				clock-frequency = <65000000>;
 				hactive = <1024>;
@@ -206,7 +142,6 @@
 				de-active = <1>;
 				pixelclk-active = <1>;
 			};
-
 			lvds0_timing1: nl12880bc20 {
 				clock-frequency = <71000000>;
 				hactive = <1280>;
@@ -224,15 +159,12 @@
 			};
 		};
 	};
-
 	lvds1: lvds-channel@1 {
 		fsl,data-mapping = "spwg";
 		fsl,data-width = <18>;
 		status = "okay";
-
 		display-timings {
 			native-mode = <&lvds1_timing0>;
-
 			lvds1_timing0: hsd100pxn1 {
 				clock-frequency = <65000000>;
 				hactive = <1024>;
@@ -251,12 +183,10 @@
 		};
 	};
 };
-
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm1>;
 };
-
 &sata {
 	status = "okay";
 };

@@ -1,31 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- *
- * based on
- *
- * samsung/clk.h
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- */
-
 #ifndef CLK_ROCKCHIP_CLK_H
 #define CLK_ROCKCHIP_CLK_H
-
 #include <linux/io.h>
 #include <linux/clk-provider.h>
-
 struct clk;
-
 #define HIWORD_UPDATE(val, mask, shift) \
 		((val) << (shift) | (mask) << ((shift) + 16))
-
-/* register positions shared by PX30, RV1108, RK2928, RK3036, RK3066, RK3188 and RK3228 */
 #define BOOST_PLL_H_CON(x)		((x) * 0x4)
 #define BOOST_CLK_CON			0x0008
 #define BOOST_BOOST_CON			0x000c
@@ -44,7 +23,6 @@ struct clk;
 #define BOOST_LOW_FREQ_EN_MASK		0x1
 #define BOOST_LOW_FREQ_EN_SHIFT		3
 #define BOOST_BUSY_STATE		BIT(8)
-
 #define PX30_PLL_CON(x)			((x) * 0x4)
 #define PX30_CLKSEL_CON(x)		((x) * 0x4 + 0x100)
 #define PX30_CLKGATE_CON(x)		((x) * 0x4 + 0x200)
@@ -59,12 +37,10 @@ struct clk;
 #define PX30_SDIO_CON1			0x38c
 #define PX30_EMMC_CON0			0x390
 #define PX30_EMMC_CON1			0x394
-
 #define PX30_PMU_PLL_CON(x)		((x) * 0x4)
 #define PX30_PMU_CLKSEL_CON(x)		((x) * 0x4 + 0x40)
 #define PX30_PMU_CLKGATE_CON(x)		((x) * 0x4 + 0x80)
 #define PX30_PMU_MODE			0x0020
-
 #define RV1108_PLL_CON(x)		((x) * 0x4)
 #define RV1108_CLKSEL_CON(x)		((x) * 0x4 + 0x60)
 #define RV1108_CLKGATE_CON(x)		((x) * 0x4 + 0x120)
@@ -78,7 +54,6 @@ struct clk;
 #define RV1108_SDIO_CON1		0x1e4
 #define RV1108_EMMC_CON0		0x1e8
 #define RV1108_EMMC_CON1		0x1ec
-
 #define RV1126_PMU_MODE			0x0
 #define RV1126_PMU_PLL_CON(x)		((x) * 0x4 + 0x10)
 #define RV1126_PMU_CLKSEL_CON(x)	((x) * 0x4 + 0x100)
@@ -97,7 +72,6 @@ struct clk;
 #define RV1126_SDIO_CON1		0x44c
 #define RV1126_EMMC_CON0		0x450
 #define RV1126_EMMC_CON1		0x454
-
 #define RK2928_PLL_CON(x)		((x) * 0x4)
 #define RK2928_MODE_CON		0x40
 #define RK2928_CLKSEL_CON(x)	((x) * 0x4 + 0x44)
@@ -106,14 +80,12 @@ struct clk;
 #define RK2928_GLB_SRST_SND		0x104
 #define RK2928_SOFTRST_CON(x)	((x) * 0x4 + 0x110)
 #define RK2928_MISC_CON		0x134
-
 #define RK3036_SDMMC_CON0		0x144
 #define RK3036_SDMMC_CON1		0x148
 #define RK3036_SDIO_CON0		0x14c
 #define RK3036_SDIO_CON1		0x150
 #define RK3036_EMMC_CON0		0x154
 #define RK3036_EMMC_CON1		0x158
-
 #define RK3228_GLB_SRST_FST		0x1f0
 #define RK3228_GLB_SRST_SND		0x1f4
 #define RK3228_SDMMC_CON0		0x1c0
@@ -122,7 +94,6 @@ struct clk;
 #define RK3228_SDIO_CON1		0x1cc
 #define RK3228_EMMC_CON0		0x1d8
 #define RK3228_EMMC_CON1		0x1dc
-
 #define RK3288_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3288_MODE_CON			0x50
 #define RK3288_CLKSEL_CON(x)		((x) * 0x4 + 0x60)
@@ -139,7 +110,6 @@ struct clk;
 #define RK3288_SDIO1_CON1		0x214
 #define RK3288_EMMC_CON0		0x218
 #define RK3288_EMMC_CON1		0x21c
-
 #define RK3308_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3308_CLKSEL_CON(x)		((x) * 0x4 + 0x100)
 #define RK3308_CLKGATE_CON(x)		((x) * 0x4 + 0x300)
@@ -152,7 +122,6 @@ struct clk;
 #define RK3308_SDIO_CON1		0x48c
 #define RK3308_EMMC_CON0		0x490
 #define RK3308_EMMC_CON1		0x494
-
 #define RK3328_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3328_CLKSEL_CON(x)		((x) * 0x4 + 0x100)
 #define RK3328_CLKGATE_CON(x)		((x) * 0x4 + 0x200)
@@ -170,7 +139,6 @@ struct clk;
 #define RK3328_EMMC_CON1		0x394
 #define RK3328_SDMMC_EXT_CON0		0x398
 #define RK3328_SDMMC_EXT_CON1		0x39C
-
 #define RK3368_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3368_CLKSEL_CON(x)		((x) * 0x4 + 0x100)
 #define RK3368_CLKGATE_CON(x)		((x) * 0x4 + 0x200)
@@ -186,7 +154,6 @@ struct clk;
 #define RK3368_SDIO1_CON1		0x414
 #define RK3368_EMMC_CON0		0x418
 #define RK3368_EMMC_CON1		0x41c
-
 #define RK3399_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3399_CLKSEL_CON(x)		((x) * 0x4 + 0x100)
 #define RK3399_CLKGATE_CON(x)		((x) * 0x4 + 0x300)
@@ -201,12 +168,10 @@ struct clk;
 #define RK3399_SDMMC_CON1		0x584
 #define RK3399_SDIO_CON0		0x588
 #define RK3399_SDIO_CON1		0x58c
-
 #define RK3399_PMU_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3399_PMU_CLKSEL_CON(x)	((x) * 0x4 + 0x80)
 #define RK3399_PMU_CLKGATE_CON(x)	((x) * 0x4 + 0x100)
 #define RK3399_PMU_SOFTRST_CON(x)	((x) * 0x4 + 0x110)
-
 #define RK3568_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3568_MODE_CON0		0xc0
 #define RK3568_MISC_CON0		0xc4
@@ -228,19 +193,16 @@ struct clk;
 #define RK3568_SDMMC2_CON1		0x594
 #define RK3568_EMMC_CON0		0x598
 #define RK3568_EMMC_CON1		0x59c
-
 #define RK3568_PMU_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3568_PMU_MODE_CON0		0x80
 #define RK3568_PMU_CLKSEL_CON(x)	((x) * 0x4 + 0x100)
 #define RK3568_PMU_CLKGATE_CON(x)	((x) * 0x4 + 0x180)
 #define RK3568_PMU_SOFTRST_CON(x)	((x) * 0x4 + 0x200)
-
 #define RK3588_PHP_CRU_BASE		0x8000
 #define RK3588_PMU_CRU_BASE		0x30000
 #define RK3588_BIGCORE0_CRU_BASE	0x50000
 #define RK3588_BIGCORE1_CRU_BASE	0x52000
 #define RK3588_DSU_CRU_BASE		0x58000
-
 #define RK3588_PLL_CON(x)		RK2928_PLL_CON(x)
 #define RK3588_MODE_CON0		0x280
 #define RK3588_B0_PLL_MODE_CON0		(RK3588_BIGCORE0_CRU_BASE + 0x280)
@@ -258,15 +220,12 @@ struct clk;
 #define RK3588_SDIO_CON1		0xC28
 #define RK3588_SDMMC_CON0		0xC30
 #define RK3588_SDMMC_CON1		0xC34
-
 #define RK3588_PHP_CLKGATE_CON(x)	((x) * 0x4 + RK3588_PHP_CRU_BASE + 0x800)
 #define RK3588_PHP_SOFTRST_CON(x)	((x) * 0x4 + RK3588_PHP_CRU_BASE + 0xa00)
-
 #define RK3588_PMU_PLL_CON(x)		((x) * 0x4 + RK3588_PHP_CRU_BASE)
 #define RK3588_PMU_CLKSEL_CON(x)	((x) * 0x4 + RK3588_PMU_CRU_BASE + 0x300)
 #define RK3588_PMU_CLKGATE_CON(x)	((x) * 0x4 + RK3588_PMU_CRU_BASE + 0x800)
 #define RK3588_PMU_SOFTRST_CON(x)	((x) * 0x4 + RK3588_PMU_CRU_BASE + 0xa00)
-
 #define RK3588_B0_PLL_CON(x)		((x) * 0x4 + RK3588_BIGCORE0_CRU_BASE)
 #define RK3588_BIGCORE0_CLKSEL_CON(x)	((x) * 0x4 + RK3588_BIGCORE0_CRU_BASE + 0x300)
 #define RK3588_BIGCORE0_CLKGATE_CON(x)	((x) * 0x4 + RK3588_BIGCORE0_CRU_BASE + 0x800)
@@ -279,7 +238,6 @@ struct clk;
 #define RK3588_DSU_CLKSEL_CON(x)	((x) * 0x4 + RK3588_DSU_CRU_BASE + 0x300)
 #define RK3588_DSU_CLKGATE_CON(x)	((x) * 0x4 + RK3588_DSU_CRU_BASE + 0x800)
 #define RK3588_DSU_SOFTRST_CON(x)	((x) * 0x4 + RK3588_DSU_CRU_BASE + 0xa00)
-
 enum rockchip_pll_type {
 	pll_rk3036,
 	pll_rk3066,
@@ -288,7 +246,6 @@ enum rockchip_pll_type {
 	pll_rk3588,
 	pll_rk3588_core,
 };
-
 #define RK3036_PLL_RATE(_rate, _refdiv, _fbdiv, _postdiv1,	\
 			_postdiv2, _dsmpd, _frac)		\
 {								\
@@ -300,7 +257,6 @@ enum rockchip_pll_type {
 	.dsmpd = _dsmpd,					\
 	.frac = _frac,						\
 }
-
 #define RK3066_PLL_RATE(_rate, _nr, _nf, _no)	\
 {						\
 	.rate	= _rate##U,			\
@@ -309,7 +265,6 @@ enum rockchip_pll_type {
 	.no = _no,				\
 	.nb = ((_nf) < 2) ? 1 : (_nf) >> 1,	\
 }
-
 #define RK3066_PLL_RATE_NB(_rate, _nr, _nf, _no, _nb)		\
 {								\
 	.rate	= _rate##U,					\
@@ -318,7 +273,6 @@ enum rockchip_pll_type {
 	.no = _no,						\
 	.nb = _nb,						\
 }
-
 #define RK3588_PLL_RATE(_rate, _p, _m, _s, _k)			\
 {								\
 	.rate   = _rate##U,					\
@@ -327,15 +281,6 @@ enum rockchip_pll_type {
 	.s = _s,						\
 	.k = _k,						\
 }
-
-/**
- * struct rockchip_clk_provider - information about clock provider
- * @reg_base: virtual address for the register base.
- * @clk_data: holds clock related data like clk* and number of clocks.
- * @cru_node: device-node of the clock-provider
- * @grf: regmap of the general-register-files syscon
- * @lock: maintains exclusion between callbacks for a given clock-provider.
- */
 struct rockchip_clk_provider {
 	void __iomem *reg_base;
 	struct clk_onecell_data clk_data;
@@ -343,19 +288,16 @@ struct rockchip_clk_provider {
 	struct regmap *grf;
 	spinlock_t lock;
 };
-
 struct rockchip_pll_rate_table {
 	unsigned long rate;
 	union {
 		struct {
-			/* for RK3066 */
 			unsigned int nr;
 			unsigned int nf;
 			unsigned int no;
 			unsigned int nb;
 		};
 		struct {
-			/* for RK3036/RK3399 */
 			unsigned int fbdiv;
 			unsigned int postdiv1;
 			unsigned int refdiv;
@@ -364,7 +306,6 @@ struct rockchip_pll_rate_table {
 			unsigned int frac;
 		};
 		struct {
-			/* for RK3588 */
 			unsigned int m;
 			unsigned int p;
 			unsigned int s;
@@ -372,26 +313,6 @@ struct rockchip_pll_rate_table {
 		};
 	};
 };
-
-/**
- * struct rockchip_pll_clock - information about pll clock
- * @id: platform specific id of the clock.
- * @name: name of this pll clock.
- * @parent_names: name of the parent clock.
- * @num_parents: number of parents
- * @flags: optional flags for basic clock.
- * @con_offset: offset of the register for configuring the PLL.
- * @mode_offset: offset of the register for configuring the PLL-mode.
- * @mode_shift: offset inside the mode-register for the mode of this pll.
- * @lock_shift: offset inside the lock register for the lock status.
- * @type: Type of PLL to be registered.
- * @pll_flags: hardware-specific flags
- * @rate_table: Table of usable pll rates
- *
- * Flags:
- * ROCKCHIP_PLL_SYNC_RATE - check rate parameters to match against the
- *	rate_table parameters and ajust them if necessary.
- */
 struct rockchip_pll_clock {
 	unsigned int		id;
 	const char		*name;
@@ -406,9 +327,7 @@ struct rockchip_pll_clock {
 	u8			pll_flags;
 	struct rockchip_pll_rate_table *rate_table;
 };
-
 #define ROCKCHIP_PLL_SYNC_RATE		BIT(0)
-
 #define PLL(_type, _id, _name, _pnames, _flags, _con, _mode, _mshift,	\
 		_lshift, _pflags, _rtable)				\
 	{								\
@@ -425,7 +344,6 @@ struct rockchip_pll_clock {
 		.pll_flags	= _pflags,				\
 		.rate_table	= _rtable,				\
 	}
-
 struct clk *rockchip_clk_register_pll(struct rockchip_clk_provider *ctx,
 		enum rockchip_pll_type pll_type,
 		const char *name, const char *const *parent_names,
@@ -433,12 +351,10 @@ struct clk *rockchip_clk_register_pll(struct rockchip_clk_provider *ctx,
 		int lock_shift, int mode_offset, int mode_shift,
 		struct rockchip_pll_rate_table *rate_table,
 		unsigned long flags, u8 clk_pll_flags);
-
 struct rockchip_cpuclk_clksel {
 	int reg;
 	u32 val;
 };
-
 #define ROCKCHIP_CPUCLK_NUM_DIVIDERS	6
 #define ROCKCHIP_CPUCLK_MAX_CORES	4
 struct rockchip_cpuclk_rate_table {
@@ -447,19 +363,6 @@ struct rockchip_cpuclk_rate_table {
 	struct rockchip_cpuclk_clksel pre_muxs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
 	struct rockchip_cpuclk_clksel post_muxs[ROCKCHIP_CPUCLK_NUM_DIVIDERS];
 };
-
-/**
- * struct rockchip_cpuclk_reg_data - register offsets and masks of the cpuclock
- * @core_reg[]:	register offset of the cores setting register
- * @div_core_shift[]:	cores divider offset used to divide the pll value
- * @div_core_mask[]:	cores divider mask
- * @num_cores:	number of cpu cores
- * @mux_core_reg:       register offset of the cores select parent
- * @mux_core_alt:       mux value to select alternate parent
- * @mux_core_main:	mux value to select main parent of core
- * @mux_core_shift:	offset of the core multiplexer
- * @mux_core_mask:	core multiplexer mask
- */
 struct rockchip_cpuclk_reg_data {
 	int	core_reg[ROCKCHIP_CPUCLK_MAX_CORES];
 	u8	div_core_shift[ROCKCHIP_CPUCLK_MAX_CORES];
@@ -471,23 +374,15 @@ struct rockchip_cpuclk_reg_data {
 	u8	mux_core_shift;
 	u32	mux_core_mask;
 };
-
 struct clk *rockchip_clk_register_cpuclk(const char *name,
 			const char *const *parent_names, u8 num_parents,
 			const struct rockchip_cpuclk_reg_data *reg_data,
 			const struct rockchip_cpuclk_rate_table *rates,
 			int nrates, void __iomem *reg_base, spinlock_t *lock);
-
 struct clk *rockchip_clk_register_mmc(const char *name,
 				const char *const *parent_names, u8 num_parents,
 				void __iomem *reg, int shift);
-
-/*
- * DDRCLK flags, including method of setting the rate
- * ROCKCHIP_DDRCLK_SIP: use SIP call to bl31 to change ddrclk rate.
- */
 #define ROCKCHIP_DDRCLK_SIP		BIT(0)
-
 struct clk *rockchip_clk_register_ddrclk(const char *name, int flags,
 					 const char *const *parent_names,
 					 u8 num_parents, int mux_offset,
@@ -495,21 +390,16 @@ struct clk *rockchip_clk_register_ddrclk(const char *name, int flags,
 					 int div_shift, int div_width,
 					 int ddr_flags, void __iomem *reg_base,
 					 spinlock_t *lock);
-
 #define ROCKCHIP_INVERTER_HIWORD_MASK	BIT(0)
-
 struct clk *rockchip_clk_register_inverter(const char *name,
 				const char *const *parent_names, u8 num_parents,
 				void __iomem *reg, int shift, int flags,
 				spinlock_t *lock);
-
 struct clk *rockchip_clk_register_muxgrf(const char *name,
 				const char *const *parent_names, u8 num_parents,
 				int flags, struct regmap *grf, int reg,
 				int shift, int width, int mux_flags);
-
 #define PNAME(x) static const char *const x[] __initconst
-
 enum rockchip_clk_branch_type {
 	branch_composite,
 	branch_mux,
@@ -523,7 +413,6 @@ enum rockchip_clk_branch_type {
 	branch_ddrclk,
 	branch_half_divider,
 };
-
 struct rockchip_clk_branch {
 	unsigned int			id;
 	enum rockchip_clk_branch_type	branch_type;
@@ -546,7 +435,6 @@ struct rockchip_clk_branch {
 	u8				gate_flags;
 	struct rockchip_clk_branch	*child;
 };
-
 #define COMPOSITE(_id, cname, pnames, f, mo, ms, mw, mf, ds, dw,\
 		  df, go, gs, gf)				\
 	{							\
@@ -567,7 +455,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_DIV_OFFSET(_id, cname, pnames, f, mo, ms, mw,	\
 			     mf, do, ds, dw, df, go, gs, gf)	\
 	{							\
@@ -589,7 +476,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_NOMUX(_id, cname, pname, f, mo, ds, dw, df,	\
 			go, gs, gf)				\
 	{							\
@@ -607,7 +493,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_NOMUX_DIVTBL(_id, cname, pname, f, mo, ds, dw,\
 			       df, dt, go, gs, gf)		\
 	{							\
@@ -626,7 +511,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_NODIV(_id, cname, pnames, f, mo, ms, mw, mf,	\
 			go, gs, gf)				\
 	{							\
@@ -644,7 +528,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_NOGATE(_id, cname, pnames, f, mo, ms, mw, mf,	\
 			 ds, dw, df)				\
 	{							\
@@ -663,7 +546,6 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.gate_offset	= -1,				\
 	}
-
 #define COMPOSITE_NOGATE_DIVTBL(_id, cname, pnames, f, mo, ms,	\
 				mw, mf, ds, dw, df, dt)		\
 	{							\
@@ -683,7 +565,6 @@ struct rockchip_clk_branch {
 		.div_table	= dt,				\
 		.gate_offset	= -1,				\
 	}
-
 #define COMPOSITE_FRAC(_id, cname, pname, f, mo, df, go, gs, gf)\
 	{							\
 		.id		= _id,				\
@@ -700,7 +581,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_FRACMUX(_id, cname, pname, f, mo, df, go, gs, gf, ch) \
 	{							\
 		.id		= _id,				\
@@ -718,7 +598,6 @@ struct rockchip_clk_branch {
 		.gate_flags	= gf,				\
 		.child		= ch,				\
 	}
-
 #define COMPOSITE_FRACMUX_NOGATE(_id, cname, pname, f, mo, df, ch) \
 	{							\
 		.id		= _id,				\
@@ -734,7 +613,6 @@ struct rockchip_clk_branch {
 		.gate_offset	= -1,				\
 		.child		= ch,				\
 	}
-
 #define COMPOSITE_DDRCLK(_id, cname, pnames, f, mo, ms, mw,	\
 			 ds, dw, df)				\
 	{							\
@@ -752,7 +630,6 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.gate_offset    = -1,                           \
 	}
-
 #define MUX(_id, cname, pnames, f, o, s, w, mf)			\
 	{							\
 		.id		= _id,				\
@@ -767,7 +644,6 @@ struct rockchip_clk_branch {
 		.mux_flags	= mf,				\
 		.gate_offset	= -1,				\
 	}
-
 #define MUXTBL(_id, cname, pnames, f, o, s, w, mf, mt)		\
 	{							\
 		.id		= _id,				\
@@ -783,7 +659,6 @@ struct rockchip_clk_branch {
 		.gate_offset	= -1,				\
 		.mux_table	= mt,				\
 	}
-
 #define MUXGRF(_id, cname, pnames, f, o, s, w, mf)		\
 	{							\
 		.id		= _id,				\
@@ -798,7 +673,6 @@ struct rockchip_clk_branch {
 		.mux_flags	= mf,				\
 		.gate_offset	= -1,				\
 	}
-
 #define DIV(_id, cname, pname, f, o, s, w, df)			\
 	{							\
 		.id		= _id,				\
@@ -813,7 +687,6 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.gate_offset	= -1,				\
 	}
-
 #define DIVTBL(_id, cname, pname, f, o, s, w, df, dt)		\
 	{							\
 		.id		= _id,				\
@@ -828,7 +701,6 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.div_table	= dt,				\
 	}
-
 #define GATE(_id, cname, pname, f, o, b, gf)			\
 	{							\
 		.id		= _id,				\
@@ -841,7 +713,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= b,				\
 		.gate_flags	= gf,				\
 	}
-
 #define MMC(_id, cname, pname, offset, shift)			\
 	{							\
 		.id		= _id,				\
@@ -852,7 +723,6 @@ struct rockchip_clk_branch {
 		.muxdiv_offset	= offset,			\
 		.div_shift	= shift,			\
 	}
-
 #define INVERTER(_id, cname, pname, io, is, if)			\
 	{							\
 		.id		= _id,				\
@@ -864,7 +734,6 @@ struct rockchip_clk_branch {
 		.div_shift	= is,				\
 		.div_flags	= if,				\
 	}
-
 #define FACTOR(_id, cname, pname,  f, fm, fd)			\
 	{							\
 		.id		= _id,				\
@@ -876,7 +745,6 @@ struct rockchip_clk_branch {
 		.div_shift	= fm,				\
 		.div_width	= fd,				\
 	}
-
 #define FACTOR_GATE(_id, cname, pname,  f, fm, fd, go, gb, gf)	\
 	{							\
 		.id		= _id,				\
@@ -891,7 +759,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gb,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_HALFDIV(_id, cname, pnames, f, mo, ms, mw, mf, ds, dw,\
 			  df, go, gs, gf)				\
 	{							\
@@ -912,7 +779,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define COMPOSITE_NOGATE_HALFDIV(_id, cname, pnames, f, mo, ms, mw, mf,	\
 				 ds, dw, df)				\
 	{							\
@@ -931,7 +797,6 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.gate_offset	= -1,				\
 	}
-
 #define COMPOSITE_NOMUX_HALFDIV(_id, cname, pname, f, mo, ds, dw, df,	\
 			go, gs, gf)				\
 	{							\
@@ -949,7 +814,6 @@ struct rockchip_clk_branch {
 		.gate_shift	= gs,				\
 		.gate_flags	= gf,				\
 	}
-
 #define DIV_HALF(_id, cname, pname, f, o, s, w, df)			\
 	{							\
 		.id		= _id,				\
@@ -964,11 +828,8 @@ struct rockchip_clk_branch {
 		.div_flags	= df,				\
 		.gate_offset	= -1,				\
 	}
-
-/* SGRF clocks are only accessible from secure mode, so not controllable */
 #define SGRF_GATE(_id, cname, pname)				\
 		FACTOR(_id, cname, pname, 0, 1, 1)
-
 struct rockchip_clk_provider *rockchip_clk_init(struct device_node *np,
 			void __iomem *base, unsigned long nr_clks);
 void rockchip_clk_of_add_provider(struct device_node *np,
@@ -988,9 +849,7 @@ void rockchip_clk_register_armclk(struct rockchip_clk_provider *ctx,
 void rockchip_clk_protect_critical(const char *const clocks[], int nclocks);
 void rockchip_register_restart_notifier(struct rockchip_clk_provider *ctx,
 					unsigned int reg, void (*cb)(void));
-
 #define ROCKCHIP_SOFTRST_HIWORD_MASK	BIT(0)
-
 struct clk *rockchip_clk_register_halfdiv(const char *name,
 					  const char *const *parent_names,
 					  u8 num_parents, void __iomem *base,
@@ -1001,7 +860,6 @@ struct clk *rockchip_clk_register_halfdiv(const char *name,
 					  u8 gate_shift, u8 gate_flags,
 					  unsigned long flags,
 					  spinlock_t *lock);
-
 #ifdef CONFIG_RESET_CONTROLLER
 void rockchip_register_softrst_lut(struct device_node *np,
 				   const int *lookup_table,
@@ -1015,14 +873,11 @@ static inline void rockchip_register_softrst_lut(struct device_node *np,
 {
 }
 #endif
-
 static inline void rockchip_register_softrst(struct device_node *np,
 					     unsigned int num_regs,
 					     void __iomem *base, u8 flags)
 {
 	return rockchip_register_softrst_lut(np, NULL, num_regs, base, flags);
 }
-
 void rk3588_rst_init(struct device_node *np, void __iomem *reg_base);
-
 #endif

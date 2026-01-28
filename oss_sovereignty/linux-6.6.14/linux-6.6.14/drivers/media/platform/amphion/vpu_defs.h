@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
-
 #ifndef _AMPHION_VPU_DEFS_H
 #define _AMPHION_VPU_DEFS_H
-
 enum MSG_TYPE {
 	INIT_DONE = 1,
 	PRC_BUF_OFFSET,
@@ -13,13 +7,11 @@ enum MSG_TYPE {
 	COMMAND,
 	EVENT,
 };
-
 enum {
 	VPU_IRQ_CODE_BOOT_DONE = 0x55,
 	VPU_IRQ_CODE_SNAPSHOT_DONE = 0xa5,
 	VPU_IRQ_CODE_SYNC = 0xaa,
 };
-
 enum {
 	VPU_CMD_ID_NOOP = 0x0,
 	VPU_CMD_ID_CONFIGURE_CODEC,
@@ -42,7 +34,6 @@ enum {
 	VPU_CMD_ID_TIMESTAMP,
 	VPU_CMD_ID_DEBUG
 };
-
 enum {
 	VPU_MSG_ID_NOOP = 0x100,
 	VPU_MSG_ID_RESET_DONE,
@@ -73,19 +64,16 @@ enum {
 	VPU_MSG_ID_PIC_SKIPPED,
 	VPU_MSG_ID_DBG_MSG,
 };
-
 enum VPU_ENC_MEMORY_RESOURSE {
 	MEM_RES_ENC,
 	MEM_RES_REF,
 	MEM_RES_ACT
 };
-
 enum VPU_DEC_MEMORY_RESOURCE {
 	MEM_RES_FRAME,
 	MEM_RES_MBI,
 	MEM_RES_DCP
 };
-
 enum VPU_SCODE_TYPE {
 	SCODE_PADDING_EOS = 1,
 	SCODE_PADDING_BUFFLUSH = 2,
@@ -94,7 +82,6 @@ enum VPU_SCODE_TYPE {
 	SCODE_PICTURE = 0x32,
 	SCODE_SLICE = 0x33
 };
-
 struct vpu_pkt_mem_req_data {
 	u32 enc_frame_size;
 	u32 enc_frame_num;
@@ -103,7 +90,6 @@ struct vpu_pkt_mem_req_data {
 	u32 act_buf_size;
 	u32 act_buf_num;
 };
-
 struct vpu_enc_pic_info {
 	u32 frame_id;
 	u32 pic_type;
@@ -115,7 +101,6 @@ struct vpu_enc_pic_info {
 	u32 crc;
 	s64 timestamp;
 };
-
 struct vpu_dec_codec_info {
 	u32 pixfmt;
 	u32 num_ref_frms;
@@ -147,7 +132,6 @@ struct vpu_dec_codec_info {
 	u32 dcp_size;
 	u32 stride;
 };
-
 struct vpu_dec_pic_info {
 	u32 id;
 	u32 luma;
@@ -159,7 +143,6 @@ struct vpu_dec_pic_info {
 	s64 timestamp;
 	u32 consumed_count;
 };
-
 struct vpu_fs_info {
 	u32 id;
 	u32 type;
@@ -173,16 +156,13 @@ struct vpu_fs_info {
 	u32 bytesperline;
 	u32 not_displayed;
 };
-
 struct vpu_ts_info {
 	s64 timestamp;
 	u32 size;
 };
-
 #define BITRATE_STEP		(1024)
 #define BITRATE_MIN		(16 * BITRATE_STEP)
 #define BITRATE_MAX		(240 * 1024 * BITRATE_STEP)
 #define BITRATE_DEFAULT		(2 * 1024 * BITRATE_STEP)
 #define BITRATE_DEFAULT_PEAK	(BITRATE_DEFAULT * 2)
-
 #endif

@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8962.h  --  WM8962 Soc Audio driver platform data
- */
-
 #ifndef _WM8962_PDATA_H
 #define _WM8962_PDATA_H
-
 #define WM8962_MAX_GPIO 6
-
-/* Use to set GPIO default values to zero */
 #define WM8962_GPIO_SET 0x10000
-
 #define WM8962_GPIO_FN_CLKOUT           0
 #define WM8962_GPIO_FN_LOGIC            1
 #define WM8962_GPIO_FN_SDOUT            2
@@ -32,27 +23,13 @@
 #define WM8962_GPIO_FN_DMICDAT         20
 #define WM8962_GPIO_FN_MICD            21
 #define WM8962_GPIO_FN_MICSCD          22
-
 struct wm8962_pdata {
 	struct clk *mclk;
 	int gpio_base;
 	u32 gpio_init[WM8962_MAX_GPIO];
-
-	/* Setup for microphone detection, raw value to be written to
-	 * R48(0x30) - only microphone related bits will be updated.
-	 * Detection may be enabled here for use with signals brought
-	 * out on the GPIOs. */
 	u32 mic_cfg;
-
 	bool irq_active_low;
-
-	bool spk_mono;   /* Speaker outputs tied together as mono */
-
-	/**
-	 * This flag should be set if one or both IN4 inputs is wired
-	 * in a DC measurement configuration.
-	 */
+	bool spk_mono;    
 	bool in4_dc_measure;
 };
-
 #endif

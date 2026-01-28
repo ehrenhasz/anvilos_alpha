@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Performance counter support for POWER7 processors.
- *
- * Copyright 2013 Runzhen Wang, IBM Corporation.
- */
-
 EVENT(PM_IC_DEMAND_L2_BR_ALL,                 0x04898)
 EVENT(PM_GCT_UTIL_7_TO_10_SLOTS,              0x020a0)
 EVENT(PM_PMC2_SAVED,                          0x10022)

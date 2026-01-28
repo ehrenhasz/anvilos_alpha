@@ -1,18 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __QCOM_PDR_HELPER_INTERNAL__
 #define __QCOM_PDR_HELPER_INTERNAL__
-
 #include <linux/soc/qcom/pdr.h>
-
 #define SERVREG_LOCATOR_SERVICE				0x40
 #define SERVREG_NOTIFIER_SERVICE			0x42
-
 #define SERVREG_REGISTER_LISTENER_REQ			0x20
 #define SERVREG_GET_DOMAIN_LIST_REQ			0x21
 #define SERVREG_STATE_UPDATED_IND_ID			0x22
 #define SERVREG_SET_ACK_REQ				0x23
 #define SERVREG_RESTART_PD_REQ				0x24
-
 #define SERVREG_DOMAIN_LIST_LENGTH			32
 #define SERVREG_RESTART_PD_REQ_MAX_LEN			67
 #define SERVREG_REGISTER_LISTENER_REQ_LEN		71
@@ -20,14 +15,12 @@
 #define SERVREG_GET_DOMAIN_LIST_REQ_MAX_LEN		74
 #define SERVREG_STATE_UPDATED_IND_MAX_LEN		79
 #define SERVREG_GET_DOMAIN_LIST_RESP_MAX_LEN		2389
-
 struct servreg_location_entry {
 	char name[SERVREG_NAME_LENGTH + 1];
 	u8 service_data_valid;
 	u32 service_data;
 	u32 instance;
 };
-
 static const struct qmi_elem_info servreg_location_entry_ei[] = {
 	{
 		.data_type      = QMI_STRING,
@@ -67,13 +60,11 @@ static const struct qmi_elem_info servreg_location_entry_ei[] = {
 	},
 	{}
 };
-
 struct servreg_get_domain_list_req {
 	char service_name[SERVREG_NAME_LENGTH + 1];
 	u8 domain_offset_valid;
 	u32 domain_offset;
 };
-
 static const struct qmi_elem_info servreg_get_domain_list_req_ei[] = {
 	{
 		.data_type      = QMI_STRING,
@@ -104,7 +95,6 @@ static const struct qmi_elem_info servreg_get_domain_list_req_ei[] = {
 	},
 	{}
 };
-
 struct servreg_get_domain_list_resp {
 	struct qmi_response_type_v01 resp;
 	u8 total_domains_valid;
@@ -115,7 +105,6 @@ struct servreg_get_domain_list_resp {
 	u32 domain_list_len;
 	struct servreg_location_entry domain_list[SERVREG_DOMAIN_LIST_LENGTH];
 };
-
 static const struct qmi_elem_info servreg_get_domain_list_resp_ei[] = {
 	{
 		.data_type      = QMI_STRUCT,
@@ -193,12 +182,10 @@ static const struct qmi_elem_info servreg_get_domain_list_resp_ei[] = {
 	},
 	{}
 };
-
 struct servreg_register_listener_req {
 	u8 enable;
 	char service_path[SERVREG_NAME_LENGTH + 1];
 };
-
 static const struct qmi_elem_info servreg_register_listener_req_ei[] = {
 	{
 		.data_type      = QMI_UNSIGNED_1_BYTE,
@@ -220,13 +207,11 @@ static const struct qmi_elem_info servreg_register_listener_req_ei[] = {
 	},
 	{}
 };
-
 struct servreg_register_listener_resp {
 	struct qmi_response_type_v01 resp;
 	u8 curr_state_valid;
 	enum servreg_service_state curr_state;
 };
-
 static const struct qmi_elem_info servreg_register_listener_resp_ei[] = {
 	{
 		.data_type      = QMI_STRUCT,
@@ -258,11 +243,9 @@ static const struct qmi_elem_info servreg_register_listener_resp_ei[] = {
 	},
 	{}
 };
-
 struct servreg_restart_pd_req {
 	char service_path[SERVREG_NAME_LENGTH + 1];
 };
-
 static const struct qmi_elem_info servreg_restart_pd_req_ei[] = {
 	{
 		.data_type      = QMI_STRING,
@@ -275,11 +258,9 @@ static const struct qmi_elem_info servreg_restart_pd_req_ei[] = {
 	},
 	{}
 };
-
 struct servreg_restart_pd_resp {
 	struct qmi_response_type_v01 resp;
 };
-
 static const struct qmi_elem_info servreg_restart_pd_resp_ei[] = {
 	{
 		.data_type      = QMI_STRUCT,
@@ -293,13 +274,11 @@ static const struct qmi_elem_info servreg_restart_pd_resp_ei[] = {
 	},
 	{}
 };
-
 struct servreg_state_updated_ind {
 	enum servreg_service_state curr_state;
 	char service_path[SERVREG_NAME_LENGTH + 1];
 	u16 transaction_id;
 };
-
 static const struct qmi_elem_info servreg_state_updated_ind_ei[] = {
 	{
 		.data_type      = QMI_SIGNED_4_BYTE_ENUM,
@@ -330,12 +309,10 @@ static const struct qmi_elem_info servreg_state_updated_ind_ei[] = {
 	},
 	{}
 };
-
 struct servreg_set_ack_req {
 	char service_path[SERVREG_NAME_LENGTH + 1];
 	u16 transaction_id;
 };
-
 static const struct qmi_elem_info servreg_set_ack_req_ei[] = {
 	{
 		.data_type      = QMI_STRING,
@@ -357,11 +334,9 @@ static const struct qmi_elem_info servreg_set_ack_req_ei[] = {
 	},
 	{}
 };
-
 struct servreg_set_ack_resp {
 	struct qmi_response_type_v01 resp;
 };
-
 static const struct qmi_elem_info servreg_set_ack_resp_ei[] = {
 	{
 		.data_type      = QMI_STRUCT,
@@ -375,5 +350,4 @@ static const struct qmi_elem_info servreg_set_ack_resp_ei[] = {
 	},
 	{}
 };
-
 #endif

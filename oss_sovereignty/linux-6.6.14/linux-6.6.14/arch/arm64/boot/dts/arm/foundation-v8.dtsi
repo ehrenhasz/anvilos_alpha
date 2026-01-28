@@ -1,36 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Ltd.
- *
- * ARMv8 Foundation model DTS
- */
-
 /dts-v1/;
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 /memreserve/ 0x80000000 0x00010000;
-
 / {
 	model = "Foundation-v8A";
 	compatible = "arm,foundation-aarch64", "arm,vexpress";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	chosen { };
-
 	aliases {
 		serial0 = &v2m_serial0;
 		serial1 = &v2m_serial1;
 		serial2 = &v2m_serial2;
 		serial3 = &v2m_serial3;
 	};
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,armv8";
@@ -55,20 +41,17 @@
 			reg = <0x0 0x3>;
 			next-level-cache = <&L2_0>;
 		};
-
 		L2_0: l2-cache0 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
 	};
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x00000000 0x80000000 0 0x80000000>,
 		      <0x00000008 0x80000000 0 0x80000000>;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
@@ -77,7 +60,6 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 		clock-frequency = <100000000>;
 	};
-
 	pmu {
 		compatible = "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>,
@@ -85,12 +67,10 @@
 			     <GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	spe-pmu {
 		compatible = "arm,statistical-profiling-extension-v1";
 		interrupts = <GIC_PPI 5 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	watchdog@2a440000 {
 		compatible = "arm,sbsa-gwdt";
 		reg = <0x0 0x2a440000 0 0x1000>,
@@ -98,40 +78,34 @@
 		interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
 		timeout-sec = <30>;
 	};
-
 	v2m_clk24mhz: clk24mhz {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <24000000>;
 		clock-output-names = "v2m:clk24mhz";
 	};
-
 	v2m_refclk1mhz: refclk1mhz {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <1000000>;
 		clock-output-names = "v2m:refclk1mhz";
 	};
-
 	v2m_refclk32khz: refclk32khz {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 		clock-output-names = "v2m:refclk32khz";
 	};
-
 	bus@8000000 {
 		compatible = "arm,vexpress,v2m-p1", "simple-bus";
-		#address-cells = <2>; /* SMB chipselect number and offset */
+		#address-cells = <2>;  
 		#size-cells = <1>;
-
 		ranges = <0 0 0 0x08000000 0x04000000>,
 			 <1 0 0 0x14000000 0x04000000>,
 			 <2 0 0 0x18000000 0x04000000>,
 			 <3 0 0 0x1c000000 0x04000000>,
 			 <4 0 0 0x0c000000 0x04000000>,
 			 <5 0 0 0x10000000 0x04000000>;
-
 		#interrupt-cells = <1>;
 		interrupt-map-mask = <0 0 63>;
 		interrupt-map = <0 0  0 &gic 0 GIC_SPI  0 IRQ_TYPE_LEVEL_HIGH>,
@@ -177,24 +151,20 @@
 				<0 0 40 &gic 0 GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>,
 				<0 0 41 &gic 0 GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>,
 				<0 0 42 &gic 0 GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
-
 		ethernet@202000000 {
 			compatible = "smsc,lan91c111";
 			reg = <2 0x02000000 0x10000>;
 			interrupts = <15>;
 		};
-
 		iofpga-bus@300000000 {
 			compatible = "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 3 0 0x200000>;
-
 			v2m_sysreg: sysreg@10000 {
 				compatible = "arm,vexpress-sysreg";
 				reg = <0x010000 0x1000>;
 			};
-
 			v2m_serial0: serial@90000 {
 				compatible = "arm,pl011", "arm,primecell";
 				reg = <0x090000 0x1000>;
@@ -202,7 +172,6 @@
 				clocks = <&v2m_clk24mhz>, <&v2m_clk24mhz>;
 				clock-names = "uartclk", "apb_pclk";
 			};
-
 			v2m_serial1: serial@a0000 {
 				compatible = "arm,pl011", "arm,primecell";
 				reg = <0x0a0000 0x1000>;
@@ -210,7 +179,6 @@
 				clocks = <&v2m_clk24mhz>, <&v2m_clk24mhz>;
 				clock-names = "uartclk", "apb_pclk";
 			};
-
 			v2m_serial2: serial@b0000 {
 				compatible = "arm,pl011", "arm,primecell";
 				reg = <0x0b0000 0x1000>;
@@ -218,7 +186,6 @@
 				clocks = <&v2m_clk24mhz>, <&v2m_clk24mhz>;
 				clock-names = "uartclk", "apb_pclk";
 			};
-
 			v2m_serial3: serial@c0000 {
 				compatible = "arm,pl011", "arm,primecell";
 				reg = <0x0c0000 0x1000>;
@@ -226,7 +193,6 @@
 				clocks = <&v2m_clk24mhz>, <&v2m_clk24mhz>;
 				clock-names = "uartclk", "apb_pclk";
 			};
-
 			virtio@130000 {
 				compatible = "virtio,mmio";
 				reg = <0x130000 0x200>;

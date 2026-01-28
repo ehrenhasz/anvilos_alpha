@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2019 Xilinx Inc.
- *
- */
-
 #ifndef _DT_BINDINGS_CLK_VERSAL_H
 #define _DT_BINDINGS_CLK_VERSAL_H
-
 #define PMC_PLL					1
 #define APU_PLL					2
 #define RPU_PLL					3
@@ -119,5 +112,4 @@
 #define PL_LB					110
 #define MIO_50_OR_51				111
 #define MIO_24_OR_25				112
-
 #endif

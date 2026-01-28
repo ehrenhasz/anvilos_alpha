@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Gru-Scarlet Rev5+ (SKU-0) board device tree source
- *
- * Copyright 2021 Google LLC.
- */
-
 /dts-v1/;
-
 #include "rk3399-gru-scarlet.dtsi"
-
 / {
 	model = "Google Scarlet";
 	compatible = "google,scarlet-rev15-sku0", "google,scarlet-rev15",
@@ -24,13 +15,11 @@
 		     "google,scarlet-rev5-sku0",  "google,scarlet-rev5",
 		     "google,scarlet", "google,gru", "rockchip,rk3399";
 };
-
 &mipi_panel {
 	compatible = "innolux,p097pfg";
 	avdd-supply = <&ppvarp_lcd>;
 	avee-supply = <&ppvarn_lcd>;
 };
-
 &pci_rootport {
 	wifi@0,0 {
 		compatible = "qcom,ath10k";

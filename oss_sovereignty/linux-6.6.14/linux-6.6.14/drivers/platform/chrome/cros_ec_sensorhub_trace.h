@@ -1,21 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Trace events for the ChromeOS Sensorhub kernel module
- *
- * Copyright 2021 Google LLC.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cros_ec
-
 #if !defined(_CROS_EC_SENSORHUB_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _CROS_EC_SENSORHUB_TRACE_H_
-
 #include <linux/types.h>
 #include <linux/platform_data/cros_ec_sensorhub.h>
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(cros_ec_sensorhub_timestamp,
 	    TP_PROTO(u32 ec_sample_timestamp, u32 ec_fifo_timestamp, s64 fifo_timestamp,
 		     s64 current_timestamp, s64 current_time),
@@ -46,7 +35,6 @@ TRACE_EVENT(cros_ec_sensorhub_timestamp,
 		__entry->delta
 	)
 );
-
 TRACE_EVENT(cros_ec_sensorhub_data,
 	    TP_PROTO(u32 ec_sensor_num, u32 ec_fifo_timestamp, s64 fifo_timestamp,
 		     s64 current_timestamp, s64 current_time),
@@ -76,7 +64,6 @@ TRACE_EVENT(cros_ec_sensorhub_data,
 		__entry->delta
 	)
 );
-
 TRACE_EVENT(cros_ec_sensorhub_filter,
 	    TP_PROTO(struct cros_ec_sensors_ts_filter_state *state, s64 dx, s64 dy),
 	TP_ARGS(state, dx, dy),
@@ -108,16 +95,9 @@ TRACE_EVENT(cros_ec_sensorhub_filter,
 		__entry->y
 	)
 );
-
-
-#endif /* _CROS_EC_SENSORHUB_TRACE_H_ */
-
-/* this part must be outside header guard */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE cros_ec_sensorhub_trace
-
 #include <trace/define_trace.h>

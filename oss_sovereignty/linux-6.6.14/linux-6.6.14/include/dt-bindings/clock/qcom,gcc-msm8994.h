@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
-
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8994_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8994_H
-
 #define GPLL0_EARLY				0
 #define GPLL0					1
 #define GPLL4_EARLY				2
@@ -160,20 +153,15 @@
 #define GCC_BOOT_ROM_AHB_CLK		150
 #define GCC_PRNG_AHB_CLK			151
 #define GCC_USB3_PHY_PIPE_CLK		152
-
-/* GDSCs */
 #define PCIE_GDSC			0
 #define PCIE_0_GDSC			1
 #define PCIE_1_GDSC			2
 #define USB30_GDSC			3
 #define UFS_GDSC			4
-
-/* Resets */
 #define USB3_PHY_RESET			0
 #define USB3PHY_PHY_RESET		1
 #define PCIE_PHY_0_RESET		2
 #define PCIE_PHY_1_RESET		3
 #define QUSB2_PHY_RESET			4
 #define MSS_RESET				5
-
 #endif

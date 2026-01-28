@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm SM8150 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM8150_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM8150_H
-
 #define MASTER_A1NOC_CFG		0
 #define MASTER_QUP_0			1
 #define MASTER_EMAC			2
@@ -16,7 +8,6 @@
 #define MASTER_USB3_1			5
 #define A1NOC_SNOC_SLV			6
 #define SLAVE_SERVICE_A1NOC		7
-
 #define MASTER_A2NOC_CFG		0
 #define MASTER_QDSS_BAM			1
 #define MASTER_QSPI			2
@@ -35,15 +26,12 @@
 #define A2NOC_SNOC_SLV			15
 #define SLAVE_ANOC_PCIE_GEM_NOC		16
 #define SLAVE_SERVICE_A2NOC		17
-
 #define MASTER_CAMNOC_HF0_UNCOMP	0
 #define MASTER_CAMNOC_HF1_UNCOMP	1
 #define MASTER_CAMNOC_SF_UNCOMP		2
 #define SLAVE_CAMNOC_UNCOMP		3
-
 #define MASTER_NPU			0
 #define SLAVE_CDSP_MEM_NOC		1
-
 #define MASTER_SPDM			0
 #define SNOC_CNOC_MAS			1
 #define MASTER_QDSS_DAP			2
@@ -98,11 +86,9 @@
 #define SLAVE_VSENSE_CTRL_CFG		51
 #define SLAVE_CNOC_A2NOC		52
 #define SLAVE_SERVICE_CNOC		53
-
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_GEM_NOC_CFG		2
-
 #define MASTER_AMPSS_M0			0
 #define MASTER_GPU_TCU			1
 #define MASTER_SYS_TCU			2
@@ -120,10 +106,8 @@
 #define SLAVE_GEM_NOC_SNOC		14
 #define SLAVE_LLCC			15
 #define SLAVE_SERVICE_GEM_NOC		16
-
 #define MASTER_LLCC			0
 #define SLAVE_EBI_CH0			1
-
 #define MASTER_CNOC_MNOC_CFG		0
 #define MASTER_CAMNOC_HF0		1
 #define MASTER_CAMNOC_HF1		2
@@ -137,7 +121,6 @@
 #define SLAVE_MNOC_SF_MEM_NOC		10
 #define SLAVE_MNOC_HF_MEM_NOC		11
 #define SLAVE_SERVICE_MNOC		12
-
 #define MASTER_SNOC_CFG			0
 #define A1NOC_SNOC_MAS			1
 #define A2NOC_SNOC_MAS			2
@@ -155,5 +138,4 @@
 #define SLAVE_PCIE_1			14
 #define SLAVE_QDSS_STM			15
 #define SLAVE_TCU			16
-
 #endif

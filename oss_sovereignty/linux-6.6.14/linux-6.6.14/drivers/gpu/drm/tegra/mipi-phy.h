@@ -1,20 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
-
 #ifndef DRM_TEGRA_MIPI_PHY_H
 #define DRM_TEGRA_MIPI_PHY_H
-
-/*
- * D-PHY timing parameters
- *
- * A detailed description of these parameters can be found in the  MIPI
- * Alliance Specification for D-PHY, Section 5.9 "Global Operation Timing
- * Parameters".
- *
- * All parameters are specified in nanoseconds.
- */
 struct mipi_dphy_timing {
 	unsigned int clkmiss;
 	unsigned int clkpost;
@@ -39,10 +24,8 @@ struct mipi_dphy_timing {
 	unsigned int tasure;
 	unsigned int wakeup;
 };
-
 int mipi_dphy_timing_get_default(struct mipi_dphy_timing *timing,
 				 unsigned long period);
 int mipi_dphy_timing_validate(struct mipi_dphy_timing *timing,
 			      unsigned long period);
-
 #endif

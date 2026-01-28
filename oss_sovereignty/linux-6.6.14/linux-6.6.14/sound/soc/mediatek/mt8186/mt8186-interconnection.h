@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Mediatek MT8186 audio driver interconnection definition
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
- */
-
 #ifndef _MT8186_INTERCONNECTION_H_
 #define _MT8186_INTERCONNECTION_H_
-
-/* in port define */
 #define I_I2S0_CH1 0
 #define I_I2S0_CH2 1
 #define I_ADDA_UL_CH1 3
@@ -38,8 +28,6 @@
 #define I_I2S2_CH2 26
 #define I_I2S2_CH3 27
 #define I_I2S2_CH4 28
-
-/* in port define >= 32 */
 #define I_32_OFFSET 32
 #define I_CONNSYS_I2S_CH1 (34 - I_32_OFFSET)
 #define I_CONNSYS_I2S_CH2 (35 - I_32_OFFSET)
@@ -65,5 +53,4 @@
 #define I_TDM_IN_CH6 (61 - I_32_OFFSET)
 #define I_TDM_IN_CH7 (62 - I_32_OFFSET)
 #define I_TDM_IN_CH8 (63 - I_32_OFFSET)
-
 #endif

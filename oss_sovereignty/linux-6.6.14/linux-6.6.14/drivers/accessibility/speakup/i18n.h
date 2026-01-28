@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef I18N_H
 #define I18N_H
-/* Internationalization declarations */
-
 enum msg_index_t {
 	MSG_FIRST_INDEX,
 	MSG_ANNOUNCEMENTS_START = MSG_FIRST_INDEX,
@@ -23,15 +20,12 @@ enum msg_index_t {
 	MSG_OFF = MSG_STATUS_START,
 	MSG_ON,
 	MSG_NO_WINDOW,
-
-	/* These must be ordered the same as enum cursor_track */
 	MSG_CURSOR_MSGS_START,
 	MSG_CURSORING_OFF = MSG_CURSOR_MSGS_START,
 	MSG_CURSORING_ON,
 	MSG_HIGHLIGHT_TRACKING,
 	MSG_READ_WINDOW,
 	MSG_READ_ALL,
-
 	MSG_EDIT_DONE,
 	MSG_WINDOW_ALREADY_SET,
 	MSG_END_BEFORE_START,
@@ -44,25 +38,18 @@ enum msg_index_t {
 	MSG_LEAVING_HELP,
 	MSG_IS_UNASSIGNED,
 	MSG_HELP_INFO,
-
-	/* These must be ordered the same as enum edge */
 	MSG_EDGE_MSGS_START,
 	MSG_EDGE_TOP  = MSG_EDGE_MSGS_START,
 	MSG_EDGE_BOTTOM,
 	MSG_EDGE_LEFT,
 	MSG_EDGE_RIGHT,
-
 	MSG_NUMBER,
 	MSG_SPACE,
-	MSG_START, /* A little confusing, given our convention. */
-	MSG_END, /* A little confusing, given our convention. */
+	MSG_START,  
+	MSG_END,  
 	MSG_CTRL,
-
-/* A message containing the single word "or". */
 	MSG_DISJUNCTION,
 	MSG_ANNOUNCEMENTS_END = MSG_DISJUNCTION,
-
-/* Messages with format specifiers. */
 	MSG_FORMATTED_START,
 	MSG_POS_INFO = MSG_FORMATTED_START,
 	MSG_CHAR_INFO,
@@ -74,8 +61,6 @@ enum msg_index_t {
 	MSG_NO_COMMAND,
 	MSG_KEYDESC,
 	MSG_FORMATTED_END = MSG_KEYDESC,
-
-	/* Control keys. */
 	MSG_CTL_START,
 	MSG_CTL_SHIFT = MSG_CTL_START,
 	MSG_CTL_ALTGR,
@@ -87,8 +72,6 @@ enum msg_index_t {
 	MSG_CTL_RCONTROL,
 	MSG_CTL_CAPSSHIFT,
 	MSG_CTL_END = MSG_CTL_CAPSSHIFT,
-
-	/* Colors. */
 	MSG_COLORS_START,
 	MSG_COLOR_BLACK = MSG_COLORS_START,
 	MSG_COLOR_BLUE,
@@ -107,7 +90,6 @@ enum msg_index_t {
 	MSG_COLOR_BRIGHTYELLOW,
 	MSG_COLOR_BRIGHTWHITE,
 	MSG_COLORS_END = MSG_COLOR_BRIGHTWHITE,
-
 	MSG_STATES_START,
 	MSG_STATE_DOUBLE = MSG_STATES_START,
 	MSG_STATE_SPEAKUP,
@@ -116,7 +98,6 @@ enum msg_index_t {
 	MSG_STATE_ALTGR,
 	MSG_STATE_SHIFT,
 	MSG_STATES_END = MSG_STATE_SHIFT,
-
 	MSG_KEYNAMES_START,
 	MSG_KEYNAME_ESC = MSG_KEYNAMES_START,
 	MSG_KEYNAME_1, MSG_KEYNAME_2, MSG_KEYNAME_3, MSG_KEYNAME_4,
@@ -188,7 +169,6 @@ enum msg_index_t {
 	MSG_KEYNAME_EDIT, MSG_KEYNAME_SCROLLUP, MSG_KEYNAME_SCROLLDN,
 	MSG_KEYNAME_KPLEFTPAR, MSG_KEYNAME_KPRIGHTPAR,
 	MSG_KEYNAMES_END = MSG_KEYNAME_KPRIGHTPAR,
-
 	MSG_FUNCNAMES_START,
 	MSG_FUNCNAME_ATTRIB_BLEEP_DEC = MSG_FUNCNAMES_START,
 	MSG_FUNCNAME_ATTRIB_BLEEP_INC,
@@ -227,22 +207,17 @@ enum msg_index_t {
 	MSG_FUNCNAME_WORD_SAY_CURRENT, MSG_FUNCNAME_WORD_SAY_NEXT,
 	MSG_FUNCNAME_WORD_SAY_PREVIOUS,
 	MSG_FUNCNAMES_END = MSG_FUNCNAME_WORD_SAY_PREVIOUS,
-
-	/* all valid indices must be above this */
 	MSG_LAST_INDEX
 };
-
 struct msg_group_t {
 	char *name;
 	enum msg_index_t start;
 	enum msg_index_t end;
 };
-
 char *spk_msg_get(enum msg_index_t index);
 ssize_t spk_msg_set(enum msg_index_t index, char *text, size_t length);
 struct msg_group_t *spk_find_msg_group(const char *group_name);
 void spk_reset_msg_group(struct msg_group_t *group);
 void spk_initialize_msgs(void);
 void spk_free_user_msgs(void);
-
 #endif

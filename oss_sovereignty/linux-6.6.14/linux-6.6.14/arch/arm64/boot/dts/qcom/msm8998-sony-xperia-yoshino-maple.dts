@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2021, AngeloGioacchino Del Regno
- *                     <angelogioacchino.delregno@somainline.org>
- */
-
 /dts-v1/;
-
 #include "msm8998-sony-xperia-yoshino.dtsi"
-
 / {
 	model = "Sony Xperia XZ Premium";
 	compatible = "sony,xperia-maple", "qcom,msm8998";
 	chassis-type = "handset";
-
 	disp_dvdd_vreg: disp-dvdd-vreg {
 		compatible = "regulator-fixed";
 		regulator-name = "disp_dvdd_en";
@@ -25,27 +16,23 @@
 		pinctrl-0 = <&four_k_disp_dcdc_en>;
 	};
 };
-
 &ibb {
 	regulator-min-microvolt = <5600000>;
 	regulator-max-microvolt = <5600000>;
 };
-
 &lab {
 	regulator-min-microvolt = <5800000>;
 	regulator-max-microvolt = <5800000>;
 	qcom,soft-start-us = <200>;
 };
-
 &pm8005_gpios {
-	gpio-line-names = "EAR_EN", /* GPIO_1 */
+	gpio-line-names = "EAR_EN",  
 			  "NC",
 			  "SLB",
 			  "OPTION_1_PM8005";
 };
-
 &pmi8998_gpios {
-	gpio-line-names = "MAIN_CAM_PWR_IO_EN", /* GPIO_1 */
+	gpio-line-names = "MAIN_CAM_PWR_IO_EN",  
 			  "NC",
 			  "NC",
 			  "TYPEC_UUSB_SEL",
@@ -54,12 +41,11 @@
 			  "DISPLAY_TYPE_SEL",
 			  "USB_SWITCH_SEL",
 			  "NC",
-			  "4K_DISP_DCDC_EN", /* GPIO_10 */
+			  "4K_DISP_DCDC_EN",  
 			  "NC",
 			  "DIV_CLK3",
 			  "SPMI_I2C_SEL",
 			  "NC";
-
 	four_k_disp_dcdc_en: 4k-disp-dcdc-en-state {
 		pins = "gpio10";
 		function = "normal";
@@ -70,9 +56,8 @@
 		qcom,drive-strength = <1>;
 	};
 };
-
 &tlmm {
-	gpio-line-names = "", /* GPIO_0 */
+	gpio-line-names = "",  
 			  "",
 			  "",
 			  "",
@@ -82,7 +67,7 @@
 			  "CAMSENSOR_I2C_SCL",
 			  "NC",
 			  "NC",
-			  "MDP_VSYNC_P", /* GPIO_10 */
+			  "MDP_VSYNC_P",  
 			  "RGBC_IR_INT",
 			  "NFC_VEN",
 			  "CAM_MCLK0",
@@ -92,7 +77,7 @@
 			  "CCI_I2C_SDA0",
 			  "CCI_I2C_SCL0",
 			  "CCI_I2C_SDA1",
-			  "CCI_I2C_SCL1", /* GPIO_20 */
+			  "CCI_I2C_SCL1",  
 			  "MAIN_CAM_PWR_EN",
 			  "TOF_INT_N",
 			  "NC",
@@ -102,7 +87,7 @@
 			  "TOF_RESET_N",
 			  "CAM2_RSTN",
 			  "NC",
-			  "CAM1_RSTN", /* GPIO_30 */
+			  "CAM1_RSTN",  
 			  "NC",
 			  "NC",
 			  "NC",
@@ -112,7 +97,7 @@
 			  "NC",
 			  "CC_DIR",
 			  "UIM2_DETECT_EN",
-			  "FP_RESET_N", /* GPIO_40 */
+			  "FP_RESET_N",  
 			  "NC",
 			  "NC",
 			  "NC",
@@ -122,7 +107,7 @@
 			  "BT_HCI_UART_CTS_N",
 			  "BT_HCI_UART_RFR_N",
 			  "NC",
-			  "NC", /* GPIO_50 */
+			  "NC",  
 			  "NC",
 			  "NC",
 			  "CODEC_INT2_N",
@@ -132,7 +117,7 @@
 			  "FORCED_USB_BOOT",
 			  "NC",
 			  "NC",
-			  "NC", /* GPIO_60 */
+			  "NC",  
 			  "NC",
 			  "NC",
 			  "TRAY2_DET_DS",
@@ -142,7 +127,7 @@
 			  "NC",
 			  "NC",
 			  "NC",
-			  "LPASS_SLIMBUS_CLK", /* GPIO_70 */
+			  "LPASS_SLIMBUS_CLK",  
 			  "LPASS_SLIMBUS_DATA0",
 			  "LPASS_SLIMBUS_DATA1",
 			  "BT_FM_SLIMBUS_DATA",
@@ -152,7 +137,7 @@
 			  "NC",
 			  "NC",
 			  "NC",
-			  "NC", /* GPIO_80 */
+			  "NC",  
 			  "SW_SERVICE",
 			  "TX_GTR_THRES_IN",
 			  "HW_ID0",
@@ -162,7 +147,7 @@
 			  "TS_I2C_SDA",
 			  "TS_I2C_SCL",
 			  "TS_RESET_N",
-			  "NC", /* GPIO_90 */
+			  "NC",  
 			  "NC",
 			  "NFC_IRQ",
 			  "NFC_DWLD_EN",
@@ -172,7 +157,7 @@
 			  "RFFE6_CLK",
 			  "RFFE6_DATA",
 			  "DEBUG_GPIO0",
-			  "DEBUG_GPIO1", /* GPIO_100 */
+			  "DEBUG_GPIO1",  
 			  "GRFC4",
 			  "NC",
 			  "NC",
@@ -182,7 +167,7 @@
 			  "UIM2_RESET",
 			  "UIM2_PRESENT",
 			  "UIM1_DATA",
-			  "UIM1_CLK", /* GPIO_110 */
+			  "UIM1_CLK",  
 			  "UIM1_RST",
 			  "UIM1_PRESENT",
 			  "UIM_BATT_ALARM",
@@ -192,7 +177,7 @@
 			  "ACCEL_INT",
 			  "GYRO_INT",
 			  "COMPASS_INT",
-			  "ALS_PROX_INT_N", /* GPIO_120 */
+			  "ALS_PROX_INT_N",  
 			  "FP_INT_N",
 			  "NC",
 			  "BAROMETER_INT",
@@ -202,7 +187,7 @@
 			  "NC",
 			  "USB_DETECT_EN",
 			  "NC",
-			  "QLINK_REQUEST", /* GPIO_130 */
+			  "QLINK_REQUEST",  
 			  "QLINK_ENABLE",
 			  "NC",
 			  "TS_VDDIO_EN",
@@ -212,7 +197,7 @@
 			  "RFFE3_DATA",
 			  "RFFE3_CLK",
 			  "RFFE4_DATA",
-			  "RFFE4_CLK", /* GPIO_140 */
+			  "RFFE4_CLK",  
 			  "RFFE5_DATA",
 			  "RFFE5_CLK",
 			  "GNSS_EN",
@@ -223,7 +208,6 @@
 			  "RFFE1_DATA",
 			  "RFFE1_CLK";
 };
-
 &vreg_l22a_2p85 {
 	regulator-min-microvolt = <2704000>;
 	regulator-max-microvolt = <2704000>;

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip lan937x dev ops headers
- * Copyright (C) 2019-2022 Microchip Technology Inc.
- */
-
 #ifndef __LAN937X_CFG_H
 #define __LAN937X_CFG_H
-
 int lan937x_reset_switch(struct ksz_device *dev);
 int lan937x_setup(struct dsa_switch *ds);
 void lan937x_teardown(struct dsa_switch *ds);

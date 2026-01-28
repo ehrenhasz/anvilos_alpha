@@ -1,34 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
-/*
- * This file contains commonly used trace macros.  Feel free to add and use
- * them in your tracepoint headers.
- */
-
 #ifndef	_SYS_TRACE_COMMON_H
 #define	_SYS_TRACE_COMMON_H
 #include <linux/tracepoint.h>
-
-/* ZIO macros */
 #define	ZIO_TP_STRUCT_ENTRY						\
 		__field(zio_type_t,		zio_type)		\
 		__field(int,			zio_cmd)		\
@@ -58,7 +30,6 @@
 		__field(boolean_t,		zp_dedup)		\
 		__field(boolean_t,		zp_dedup_verify)	\
 		__field(boolean_t,		zp_nopwrite)
-
 #define	ZIO_TP_FAST_ASSIGN						    \
 		__entry->zio_type		= zio->io_type;		    \
 		__entry->zio_cmd		= zio->io_cmd;		    \
@@ -88,7 +59,6 @@
 		__entry->zp_dedup		= zio->io_prop.zp_dedup;    \
 		__entry->zp_nopwrite		= zio->io_prop.zp_nopwrite; \
 		__entry->zp_dedup_verify	= zio->io_prop.zp_dedup_verify;
-
 #define	ZIO_TP_PRINTK_FMT						\
 	"zio { type %u cmd %i prio %u size %llu orig_size %llu "	\
 	"offset %llu timestamp %llu delta %llu delay %llu "		\
@@ -96,7 +66,6 @@
 	"orig_stage 0x%x orig_pipeline 0x%x reexecute %u "		\
 	"txg %llu error %d ena %llu prop { checksum %u compress %u "	\
 	"type %u level %u copies %u dedup %u dedup_verify %u nopwrite %u } }"
-
 #define	ZIO_TP_PRINTK_ARGS						\
 	__entry->zio_type, __entry->zio_cmd, __entry->zio_priority,	\
 	__entry->zio_size, __entry->zio_orig_size, __entry->zio_offset,	\
@@ -108,5 +77,4 @@
 	__entry->zp_checksum, __entry->zp_compress, __entry->zp_type,	\
 	__entry->zp_level, __entry->zp_copies, __entry->zp_dedup,	\
 	__entry->zp_dedup_verify, __entry->zp_nopwrite
-
-#endif /* _SYS_TRACE_COMMON_H */
+#endif  

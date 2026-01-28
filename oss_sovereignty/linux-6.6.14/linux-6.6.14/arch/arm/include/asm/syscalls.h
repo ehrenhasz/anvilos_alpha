@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ASM_SYSCALLS_H
 #define __ASM_SYSCALLS_H
-
 #include <linux/linkage.h>
 #include <linux/types.h>
-
 struct pt_regs;
 asmlinkage int sys_sigreturn(struct pt_regs *regs);
 asmlinkage int sys_rt_sigreturn(struct pt_regs *regs);
 asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 				     loff_t offset, loff_t len);
-
 struct oldabi_stat64;
 asmlinkage long sys_oabi_stat64(const char __user * filename,
 				struct oldabi_stat64 __user * statbuf);
@@ -47,5 +43,4 @@ asmlinkage long sys_oabi_sendto(int fd, void __user *buff,
 struct user_msghdr;
 asmlinkage long sys_oabi_sendmsg(int fd, struct user_msghdr __user *msg, unsigned flags);
 asmlinkage long sys_oabi_socketcall(int call, unsigned long __user *args);
-
 #endif

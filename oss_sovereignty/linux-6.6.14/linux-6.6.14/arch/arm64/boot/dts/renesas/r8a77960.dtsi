@@ -1,55 +1,34 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for the R-Car M3-W (R8A77960) SoC
- *
- * Copyright (C) 2016-2017 Renesas Electronics Corp.
- */
-
 #include <dt-bindings/clock/r8a7796-cpg-mssr.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/power/r8a7796-sysc.h>
-
 #define CPG_AUDIO_CLK_I		R8A7796_CLK_S0D4
-
 / {
 	compatible = "renesas,r8a7796";
 	#address-cells = <2>;
 	#size-cells = <2>;
-
-	/*
-	 * The external audio clocks are configured as 0 Hz fixed frequency
-	 * clocks by default.
-	 * Boards that provide audio clocks should override them.
-	 */
 	audio_clk_a: audio_clk_a {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	audio_clk_b: audio_clk_b {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	audio_clk_c: audio_clk_c {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
-	/* External CAN clock - to be overridden by boards that provide it */
 	can_clk: can {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	cluster0_opp: opp-table-0 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-500000000 {
 			opp-hz = /bits/ 64 <500000000>;
 			opp-microvolt = <830000>;
@@ -83,11 +62,9 @@
 			turbo-mode;
 		};
 	};
-
 	cluster1_opp: opp-table-1 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-800000000 {
 			opp-hz = /bits/ 64 <800000000>;
 			opp-microvolt = <820000>;
@@ -110,11 +87,9 @@
 			turbo-mode;
 		};
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -124,7 +99,6 @@
 					cpu = <&a57_1>;
 				};
 			};
-
 			cluster1 {
 				core0 {
 					cpu = <&a53_0>;
@@ -140,7 +114,6 @@
 				};
 			};
 		};
-
 		a57_0: cpu@0 {
 			compatible = "arm,cortex-a57";
 			reg = <0x0>;
@@ -155,7 +128,6 @@
 			capacity-dmips-mhz = <1024>;
 			#cooling-cells = <2>;
 		};
-
 		a57_1: cpu@1 {
 			compatible = "arm,cortex-a57";
 			reg = <0x1>;
@@ -169,7 +141,6 @@
 			capacity-dmips-mhz = <1024>;
 			#cooling-cells = <2>;
 		};
-
 		a53_0: cpu@100 {
 			compatible = "arm,cortex-a53";
 			reg = <0x100>;
@@ -184,7 +155,6 @@
 			operating-points-v2 = <&cluster1_opp>;
 			capacity-dmips-mhz = <535>;
 		};
-
 		a53_1: cpu@101 {
 			compatible = "arm,cortex-a53";
 			reg = <0x101>;
@@ -197,7 +167,6 @@
 			operating-points-v2 = <&cluster1_opp>;
 			capacity-dmips-mhz = <535>;
 		};
-
 		a53_2: cpu@102 {
 			compatible = "arm,cortex-a53";
 			reg = <0x102>;
@@ -210,7 +179,6 @@
 			operating-points-v2 = <&cluster1_opp>;
 			capacity-dmips-mhz = <535>;
 		};
-
 		a53_3: cpu@103 {
 			compatible = "arm,cortex-a53";
 			reg = <0x103>;
@@ -223,24 +191,20 @@
 			operating-points-v2 = <&cluster1_opp>;
 			capacity-dmips-mhz = <535>;
 		};
-
 		L2_CA57: cache-controller-0 {
 			compatible = "cache";
 			power-domains = <&sysc R8A7796_PD_CA57_SCU>;
 			cache-unified;
 			cache-level = <2>;
 		};
-
 		L2_CA53: cache-controller-1 {
 			compatible = "cache";
 			power-domains = <&sysc R8A7796_PD_CA53_SCU>;
 			cache-unified;
 			cache-level = <2>;
 		};
-
 		idle-states {
 			entry-method = "psci";
-
 			CPU_SLEEP_0: cpu-sleep-0 {
 				compatible = "arm,idle-state";
 				arm,psci-suspend-param = <0x0010000>;
@@ -249,7 +213,6 @@
 				exit-latency-us = <500>;
 				min-residency-us = <4000>;
 			};
-
 			CPU_SLEEP_1: cpu-sleep-1 {
 				compatible = "arm,idle-state";
 				arm,psci-suspend-param = <0x0010000>;
@@ -260,28 +223,21 @@
 			};
 		};
 	};
-
 	extal_clk: extal {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* This value must be overridden by the board */
 		clock-frequency = <0>;
 	};
-
 	extalr_clk: extalr {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* This value must be overridden by the board */
 		clock-frequency = <0>;
 	};
-
-	/* External PCIe clock - can be overridden by the board */
 	pcie_bus_clk: pcie_bus {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	pmu_a53 {
 		compatible = "arm,cortex-a53-pmu";
 		interrupts-extended = <&gic GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>,
@@ -290,33 +246,27 @@
 				      <&gic GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&a53_0>, <&a53_1>, <&a53_2>, <&a53_3>;
 	};
-
 	pmu_a57 {
 		compatible = "arm,cortex-a57-pmu";
 		interrupts-extended = <&gic GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
 				      <&gic GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&a57_0>, <&a57_1>;
 	};
-
 	psci {
 		compatible = "arm,psci-1.0", "arm,psci-0.2";
 		method = "smc";
 	};
-
-	/* External SCIF clock - to be overridden by boards that provide it */
 	scif_clk: scif {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	soc {
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		rwdt: watchdog@e6020000 {
 			compatible = "renesas,r8a7796-wdt",
 				     "renesas,rcar-gen3-wdt";
@@ -327,7 +277,6 @@
 			resets = <&cpg 402>;
 			status = "disabled";
 		};
-
 		gpio0: gpio@e6050000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -342,7 +291,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 912>;
 		};
-
 		gpio1: gpio@e6051000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -357,7 +305,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 911>;
 		};
-
 		gpio2: gpio@e6052000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -372,7 +319,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 910>;
 		};
-
 		gpio3: gpio@e6053000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -387,7 +333,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 909>;
 		};
-
 		gpio4: gpio@e6054000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -402,7 +347,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 908>;
 		};
-
 		gpio5: gpio@e6055000 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -417,7 +361,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 907>;
 		};
-
 		gpio6: gpio@e6055400 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -432,7 +375,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 906>;
 		};
-
 		gpio7: gpio@e6055800 {
 			compatible = "renesas,gpio-r8a7796",
 				     "renesas,rcar-gen3-gpio";
@@ -447,12 +389,10 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 905>;
 		};
-
 		pfc: pinctrl@e6060000 {
 			compatible = "renesas,pfc-r8a7796";
 			reg = <0 0xe6060000 0 0x50c>;
 		};
-
 		cmt0: timer@e60f0000 {
 			compatible = "renesas,r8a7796-cmt0",
 				     "renesas,rcar-gen3-cmt0";
@@ -465,7 +405,6 @@
 			resets = <&cpg 303>;
 			status = "disabled";
 		};
-
 		cmt1: timer@e6130000 {
 			compatible = "renesas,r8a7796-cmt1",
 				     "renesas,rcar-gen3-cmt1";
@@ -484,7 +423,6 @@
 			resets = <&cpg 302>;
 			status = "disabled";
 		};
-
 		cmt2: timer@e6140000 {
 			compatible = "renesas,r8a7796-cmt1",
 				     "renesas,rcar-gen3-cmt1";
@@ -503,7 +441,6 @@
 			resets = <&cpg 301>;
 			status = "disabled";
 		};
-
 		cmt3: timer@e6148000 {
 			compatible = "renesas,r8a7796-cmt1",
 				     "renesas,rcar-gen3-cmt1";
@@ -522,7 +459,6 @@
 			resets = <&cpg 300>;
 			status = "disabled";
 		};
-
 		cpg: clock-controller@e6150000 {
 			compatible = "renesas,r8a7796-cpg-mssr";
 			reg = <0 0xe6150000 0 0x1000>;
@@ -532,18 +468,15 @@
 			#power-domain-cells = <0>;
 			#reset-cells = <1>;
 		};
-
 		rst: reset-controller@e6160000 {
 			compatible = "renesas,r8a7796-rst";
 			reg = <0 0xe6160000 0 0x0200>;
 		};
-
 		sysc: system-controller@e6180000 {
 			compatible = "renesas,r8a7796-sysc";
 			reg = <0 0xe6180000 0 0x0400>;
 			#power-domain-cells = <1>;
 		};
-
 		tsc: thermal@e6198000 {
 			compatible = "renesas,r8a7796-thermal";
 			reg = <0 0xe6198000 0 0x100>,
@@ -557,7 +490,6 @@
 			resets = <&cpg 522>;
 			#thermal-sensor-cells = <1>;
 		};
-
 		intc_ex: interrupt-controller@e61c0000 {
 			compatible = "renesas,intc-ex-r8a7796", "renesas,irqc";
 			#interrupt-cells = <2>;
@@ -573,7 +505,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 407>;
 		};
-
 		tmu0: timer@e61e0000 {
 			compatible = "renesas,tmu-r8a7796", "renesas,tmu";
 			reg = <0 0xe61e0000 0 0x30>;
@@ -586,7 +517,6 @@
 			resets = <&cpg 125>;
 			status = "disabled";
 		};
-
 		tmu1: timer@e6fc0000 {
 			compatible = "renesas,tmu-r8a7796", "renesas,tmu";
 			reg = <0 0xe6fc0000 0 0x30>;
@@ -599,7 +529,6 @@
 			resets = <&cpg 124>;
 			status = "disabled";
 		};
-
 		tmu2: timer@e6fd0000 {
 			compatible = "renesas,tmu-r8a7796", "renesas,tmu";
 			reg = <0 0xe6fd0000 0 0x30>;
@@ -612,7 +541,6 @@
 			resets = <&cpg 123>;
 			status = "disabled";
 		};
-
 		tmu3: timer@e6fe0000 {
 			compatible = "renesas,tmu-r8a7796", "renesas,tmu";
 			reg = <0 0xe6fe0000 0 0x30>;
@@ -625,7 +553,6 @@
 			resets = <&cpg 122>;
 			status = "disabled";
 		};
-
 		tmu4: timer@ffc00000 {
 			compatible = "renesas,tmu-r8a7796", "renesas,tmu";
 			reg = <0 0xffc00000 0 0x30>;
@@ -638,7 +565,6 @@
 			resets = <&cpg 121>;
 			status = "disabled";
 		};
-
 		i2c0: i2c@e6500000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -655,7 +581,6 @@
 			i2c-scl-internal-delay-ns = <110>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@e6508000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -672,7 +597,6 @@
 			i2c-scl-internal-delay-ns = <6>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@e6510000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -689,7 +613,6 @@
 			i2c-scl-internal-delay-ns = <6>;
 			status = "disabled";
 		};
-
 		i2c3: i2c@e66d0000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -705,7 +628,6 @@
 			i2c-scl-internal-delay-ns = <110>;
 			status = "disabled";
 		};
-
 		i2c4: i2c@e66d8000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -721,7 +643,6 @@
 			i2c-scl-internal-delay-ns = <110>;
 			status = "disabled";
 		};
-
 		i2c5: i2c@e66e0000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -737,7 +658,6 @@
 			i2c-scl-internal-delay-ns = <110>;
 			status = "disabled";
 		};
-
 		i2c6: i2c@e66e8000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -753,7 +673,6 @@
 			i2c-scl-internal-delay-ns = <6>;
 			status = "disabled";
 		};
-
 		i2c_dvfs: i2c@e60b0000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -769,7 +688,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		hscif0: serial@e6540000 {
 			compatible = "renesas,hscif-r8a7796",
 				     "renesas,rcar-gen3-hscif",
@@ -787,7 +705,6 @@
 			resets = <&cpg 520>;
 			status = "disabled";
 		};
-
 		hscif1: serial@e6550000 {
 			compatible = "renesas,hscif-r8a7796",
 				     "renesas,rcar-gen3-hscif",
@@ -805,7 +722,6 @@
 			resets = <&cpg 519>;
 			status = "disabled";
 		};
-
 		hscif2: serial@e6560000 {
 			compatible = "renesas,hscif-r8a7796",
 				     "renesas,rcar-gen3-hscif",
@@ -823,7 +739,6 @@
 			resets = <&cpg 518>;
 			status = "disabled";
 		};
-
 		hscif3: serial@e66a0000 {
 			compatible = "renesas,hscif-r8a7796",
 				     "renesas,rcar-gen3-hscif",
@@ -840,7 +755,6 @@
 			resets = <&cpg 517>;
 			status = "disabled";
 		};
-
 		hscif4: serial@e66b0000 {
 			compatible = "renesas,hscif-r8a7796",
 				     "renesas,rcar-gen3-hscif",
@@ -857,7 +771,6 @@
 			resets = <&cpg 516>;
 			status = "disabled";
 		};
-
 		hsusb: usb@e6590000 {
 			compatible = "renesas,usbhs-r8a7796",
 				     "renesas,rcar-gen3-usbhs";
@@ -874,7 +787,6 @@
 			resets = <&cpg 704>, <&cpg 703>;
 			status = "disabled";
 		};
-
 		usb_dmac0: dma-controller@e65a0000 {
 			compatible = "renesas,r8a7796-usb-dmac",
 				     "renesas,usb-dmac";
@@ -888,7 +800,6 @@
 			#dma-cells = <1>;
 			dma-channels = <2>;
 		};
-
 		usb_dmac1: dma-controller@e65b0000 {
 			compatible = "renesas,r8a7796-usb-dmac",
 				     "renesas,usb-dmac";
@@ -902,7 +813,6 @@
 			#dma-cells = <1>;
 			dma-channels = <2>;
 		};
-
 		usb3_phy0: usb-phy@e65ee000 {
 			compatible = "renesas,r8a7796-usb3-phy",
 				     "renesas,rcar-gen3-usb3-phy";
@@ -915,7 +825,6 @@
 			#phy-cells = <0>;
 			status = "disabled";
 		};
-
 		arm_cc630p: crypto@e6601000 {
 			compatible = "arm,cryptocell-630p-ree";
 			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
@@ -924,7 +833,6 @@
 			resets = <&cpg 229>;
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 		};
-
 		dmac0: dma-controller@e6700000 {
 			compatible = "renesas,dmac-r8a7796",
 				     "renesas,rcar-dmac";
@@ -966,7 +874,6 @@
 			       <&ipmmu_ds0 12>, <&ipmmu_ds0 13>,
 			       <&ipmmu_ds0 14>, <&ipmmu_ds0 15>;
 		};
-
 		dmac1: dma-controller@e7300000 {
 			compatible = "renesas,dmac-r8a7796",
 				     "renesas,rcar-dmac";
@@ -1008,7 +915,6 @@
 			       <&ipmmu_ds1 12>, <&ipmmu_ds1 13>,
 			       <&ipmmu_ds1 14>, <&ipmmu_ds1 15>;
 		};
-
 		dmac2: dma-controller@e7310000 {
 			compatible = "renesas,dmac-r8a7796",
 				     "renesas,rcar-dmac";
@@ -1050,7 +956,6 @@
 			       <&ipmmu_ds1 28>, <&ipmmu_ds1 29>,
 			       <&ipmmu_ds1 30>, <&ipmmu_ds1 31>;
 		};
-
 		ipmmu_ds0: iommu@e6740000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xe6740000 0 0x1000>;
@@ -1058,7 +963,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_ds1: iommu@e7740000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xe7740000 0 0x1000>;
@@ -1066,7 +970,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_hc: iommu@e6570000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xe6570000 0 0x1000>;
@@ -1074,7 +977,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_ir: iommu@ff8b0000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xff8b0000 0 0x1000>;
@@ -1082,7 +984,6 @@
 			power-domains = <&sysc R8A7796_PD_A3IR>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_mm: iommu@e67b0000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xe67b0000 0 0x1000>;
@@ -1091,7 +992,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_mp: iommu@ec670000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xec670000 0 0x1000>;
@@ -1099,7 +999,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_pv0: iommu@fd800000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xfd800000 0 0x1000>;
@@ -1107,7 +1006,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_pv1: iommu@fd950000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xfd950000 0 0x1000>;
@@ -1115,7 +1013,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_rt: iommu@ffc80000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xffc80000 0 0x1000>;
@@ -1123,7 +1020,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_vc0: iommu@fe6b0000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xfe6b0000 0 0x1000>;
@@ -1131,7 +1027,6 @@
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			#iommu-cells = <1>;
 		};
-
 		ipmmu_vi0: iommu@febd0000 {
 			compatible = "renesas,ipmmu-r8a7796";
 			reg = <0 0xfebd0000 0 0x1000>;
@@ -1139,7 +1034,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			#iommu-cells = <1>;
 		};
-
 		avb: ethernet@e6800000 {
 			compatible = "renesas,etheravb-r8a7796",
 				     "renesas,etheravb-rcar-gen3";
@@ -1188,7 +1082,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		can0: can@e6c30000 {
 			compatible = "renesas,can-r8a7796",
 				     "renesas,rcar-gen3-can";
@@ -1204,7 +1097,6 @@
 			resets = <&cpg 916>;
 			status = "disabled";
 		};
-
 		can1: can@e6c38000 {
 			compatible = "renesas,can-r8a7796",
 				     "renesas,rcar-gen3-can";
@@ -1220,7 +1112,6 @@
 			resets = <&cpg 915>;
 			status = "disabled";
 		};
-
 		canfd: can@e66c0000 {
 			compatible = "renesas,r8a7796-canfd",
 				     "renesas,rcar-gen3-canfd";
@@ -1237,16 +1128,13 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 914>;
 			status = "disabled";
-
 			channel0 {
 				status = "disabled";
 			};
-
 			channel1 {
 				status = "disabled";
 			};
 		};
-
 		pwm0: pwm@e6e30000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e30000 0 8>;
@@ -1256,7 +1144,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm1: pwm@e6e31000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e31000 0 8>;
@@ -1266,7 +1153,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm2: pwm@e6e32000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e32000 0 8>;
@@ -1276,7 +1162,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm3: pwm@e6e33000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e33000 0 8>;
@@ -1286,7 +1171,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm4: pwm@e6e34000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e34000 0 8>;
@@ -1296,7 +1180,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm5: pwm@e6e35000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e35000 0 8>;
@@ -1306,7 +1189,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		pwm6: pwm@e6e36000 {
 			compatible = "renesas,pwm-r8a7796", "renesas,pwm-rcar";
 			reg = <0 0xe6e36000 0 8>;
@@ -1316,7 +1198,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			status = "disabled";
 		};
-
 		scif0: serial@e6e60000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1333,7 +1214,6 @@
 			resets = <&cpg 207>;
 			status = "disabled";
 		};
-
 		scif1: serial@e6e68000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1350,7 +1230,6 @@
 			resets = <&cpg 206>;
 			status = "disabled";
 		};
-
 		scif2: serial@e6e88000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1367,7 +1246,6 @@
 			resets = <&cpg 310>;
 			status = "disabled";
 		};
-
 		scif3: serial@e6c50000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1383,7 +1261,6 @@
 			resets = <&cpg 204>;
 			status = "disabled";
 		};
-
 		scif4: serial@e6c40000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1399,7 +1276,6 @@
 			resets = <&cpg 203>;
 			status = "disabled";
 		};
-
 		scif5: serial@e6f30000 {
 			compatible = "renesas,scif-r8a7796",
 				     "renesas,rcar-gen3-scif", "renesas,scif";
@@ -1416,7 +1292,6 @@
 			resets = <&cpg 202>;
 			status = "disabled";
 		};
-
 		tpu: pwm@e6e80000 {
 			compatible = "renesas,tpu-r8a7796", "renesas,tpu";
 			reg = <0 0xe6e80000 0 0x148>;
@@ -1427,7 +1302,6 @@
 			#pwm-cells = <3>;
 			status = "disabled";
 		};
-
 		msiof0: spi@e6e90000 {
 			compatible = "renesas,msiof-r8a7796",
 				     "renesas,rcar-gen3-msiof";
@@ -1443,7 +1317,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		msiof1: spi@e6ea0000 {
 			compatible = "renesas,msiof-r8a7796",
 				     "renesas,rcar-gen3-msiof";
@@ -1459,7 +1332,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		msiof2: spi@e6c00000 {
 			compatible = "renesas,msiof-r8a7796",
 				     "renesas,rcar-gen3-msiof";
@@ -1474,7 +1346,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		msiof3: spi@e6c10000 {
 			compatible = "renesas,msiof-r8a7796",
 				     "renesas,rcar-gen3-msiof";
@@ -1489,7 +1360,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		vin0: video@e6ef0000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef0000 0 0x1000>;
@@ -1499,17 +1369,13 @@
 			resets = <&cpg 811>;
 			renesas,id = <0>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin0csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin0>;
@@ -1521,7 +1387,6 @@
 				};
 			};
 		};
-
 		vin1: video@e6ef1000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef1000 0 0x1000>;
@@ -1531,17 +1396,13 @@
 			resets = <&cpg 810>;
 			renesas,id = <1>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin1csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin1>;
@@ -1553,7 +1414,6 @@
 				};
 			};
 		};
-
 		vin2: video@e6ef2000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef2000 0 0x1000>;
@@ -1563,17 +1423,13 @@
 			resets = <&cpg 809>;
 			renesas,id = <2>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin2csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin2>;
@@ -1585,7 +1441,6 @@
 				};
 			};
 		};
-
 		vin3: video@e6ef3000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef3000 0 0x1000>;
@@ -1595,17 +1450,13 @@
 			resets = <&cpg 808>;
 			renesas,id = <3>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin3csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin3>;
@@ -1617,7 +1468,6 @@
 				};
 			};
 		};
-
 		vin4: video@e6ef4000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef4000 0 0x1000>;
@@ -1627,17 +1477,13 @@
 			resets = <&cpg 807>;
 			renesas,id = <4>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin4csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin4>;
@@ -1649,7 +1495,6 @@
 				};
 			};
 		};
-
 		vin5: video@e6ef5000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef5000 0 0x1000>;
@@ -1659,17 +1504,13 @@
 			resets = <&cpg 806>;
 			renesas,id = <5>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin5csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin5>;
@@ -1681,7 +1522,6 @@
 				};
 			};
 		};
-
 		vin6: video@e6ef6000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef6000 0 0x1000>;
@@ -1691,17 +1531,13 @@
 			resets = <&cpg 805>;
 			renesas,id = <6>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin6csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin6>;
@@ -1713,7 +1549,6 @@
 				};
 			};
 		};
-
 		vin7: video@e6ef7000 {
 			compatible = "renesas,vin-r8a7796";
 			reg = <0 0xe6ef7000 0 0x1000>;
@@ -1723,17 +1558,13 @@
 			resets = <&cpg 804>;
 			renesas,id = <7>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					vin7csi20: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&csi20vin7>;
@@ -1745,7 +1576,6 @@
 				};
 			};
 		};
-
 		drif00: rif@e6f40000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1760,7 +1590,6 @@
 			renesas,bonding = <&drif01>;
 			status = "disabled";
 		};
-
 		drif01: rif@e6f50000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1775,7 +1604,6 @@
 			renesas,bonding = <&drif00>;
 			status = "disabled";
 		};
-
 		drif10: rif@e6f60000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1790,7 +1618,6 @@
 			renesas,bonding = <&drif11>;
 			status = "disabled";
 		};
-
 		drif11: rif@e6f70000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1805,7 +1632,6 @@
 			renesas,bonding = <&drif10>;
 			status = "disabled";
 		};
-
 		drif20: rif@e6f80000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1820,7 +1646,6 @@
 			renesas,bonding = <&drif21>;
 			status = "disabled";
 		};
-
 		drif21: rif@e6f90000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1835,7 +1660,6 @@
 			renesas,bonding = <&drif20>;
 			status = "disabled";
 		};
-
 		drif30: rif@e6fa0000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1850,7 +1674,6 @@
 			renesas,bonding = <&drif31>;
 			status = "disabled";
 		};
-
 		drif31: rif@e6fb0000 {
 			compatible = "renesas,r8a7796-drif",
 				     "renesas,rcar-gen3-drif";
@@ -1865,28 +1688,14 @@
 			renesas,bonding = <&drif30>;
 			status = "disabled";
 		};
-
 		rcar_sound: sound@ec500000 {
-			/*
-			 * #sound-dai-cells is required if simple-card
-			 *
-			 * Single DAI : #sound-dai-cells = <0>;	<&rcar_sound>;
-			 * Multi  DAI : #sound-dai-cells = <1>;	<&rcar_sound N>;
-			 */
-			/*
-			 * #clock-cells is required for audio_clkout0/1/2/3
-			 *
-			 * clkout	: #clock-cells = <0>;	<&rcar_sound>;
-			 * clkout0/1/2/3: #clock-cells = <1>;	<&rcar_sound N>;
-			 */
 			compatible = "renesas,rcar_sound-r8a7796", "renesas,rcar_sound-gen3";
-			reg = <0 0xec500000 0 0x1000>, /* SCU */
-			      <0 0xec5a0000 0 0x100>,  /* ADG */
-			      <0 0xec540000 0 0x1000>, /* SSIU */
-			      <0 0xec541000 0 0x280>,  /* SSI */
-			      <0 0xec760000 0 0x200>;  /* Audio DMAC peri peri*/
+			reg = <0 0xec500000 0 0x1000>,  
+			      <0 0xec5a0000 0 0x100>,   
+			      <0 0xec540000 0 0x1000>,  
+			      <0 0xec541000 0 0x280>,   
+			      <0 0xec760000 0 0x200>;   
 			reg-names = "scu", "adg", "ssiu", "ssi", "audmapp";
-
 			clocks = <&cpg CPG_MOD 1005>,
 				 <&cpg CPG_MOD 1006>, <&cpg CPG_MOD 1007>,
 				 <&cpg CPG_MOD 1008>, <&cpg CPG_MOD 1009>,
@@ -1927,7 +1736,6 @@
 				      "ssi.5", "ssi.4", "ssi.3", "ssi.2",
 				      "ssi.1", "ssi.0";
 			status = "disabled";
-
 			rcar_sound,ctu {
 				ctu00: ctu-0 { };
 				ctu01: ctu-1 { };
@@ -1938,7 +1746,6 @@
 				ctu12: ctu-6 { };
 				ctu13: ctu-7 { };
 			};
-
 			rcar_sound,dvc {
 				dvc0: dvc-0 {
 					dmas = <&audma1 0xbc>;
@@ -1949,12 +1756,10 @@
 					dma-names = "tx";
 				};
 			};
-
 			rcar_sound,mix {
 				mix0: mix-0 { };
 				mix1: mix-1 { };
 			};
-
 			rcar_sound,src {
 				src0: src-0 {
 					interrupts = <GIC_SPI 352 IRQ_TYPE_LEVEL_HIGH>;
@@ -2007,7 +1812,6 @@
 					dma-names = "rx", "tx";
 				};
 			};
-
 			rcar_sound,ssi {
 				ssi0: ssi-0 {
 					interrupts = <GIC_SPI 370 IRQ_TYPE_LEVEL_HIGH>;
@@ -2060,7 +1864,6 @@
 					dma-names = "rx", "tx";
 				};
 			};
-
 			rcar_sound,ssiu {
 				ssiu00: ssiu-0 {
 					dmas = <&audma0 0x15>, <&audma1 0x16>;
@@ -2272,7 +2075,6 @@
 				};
 			};
 		};
-
 		mlp: mlp@ec520000 {
 			compatible = "renesas,r8a7796-mlp",
 				     "renesas,rcar-gen3-mlp";
@@ -2284,7 +2086,6 @@
 			resets = <&cpg 802>;
 			status = "disabled";
 		};
-
 		audma0: dma-controller@ec700000 {
 			compatible = "renesas,dmac-r8a7796",
 				     "renesas,rcar-dmac";
@@ -2326,7 +2127,6 @@
 			       <&ipmmu_mp 12>, <&ipmmu_mp 13>,
 			       <&ipmmu_mp 14>, <&ipmmu_mp 15>;
 		};
-
 		audma1: dma-controller@ec720000 {
 			compatible = "renesas,dmac-r8a7796",
 				     "renesas,rcar-dmac";
@@ -2368,7 +2168,6 @@
 			       <&ipmmu_mp 28>, <&ipmmu_mp 29>,
 			       <&ipmmu_mp 30>, <&ipmmu_mp 31>;
 		};
-
 		xhci0: usb@ee000000 {
 			compatible = "renesas,xhci-r8a7796",
 				     "renesas,rcar-gen3-xhci";
@@ -2379,7 +2178,6 @@
 			resets = <&cpg 328>;
 			status = "disabled";
 		};
-
 		usb3_peri0: usb@ee020000 {
 			compatible = "renesas,r8a7796-usb3-peri",
 				     "renesas,rcar-gen3-usb3-peri";
@@ -2390,7 +2188,6 @@
 			resets = <&cpg 328>;
 			status = "disabled";
 		};
-
 		ohci0: usb@ee080000 {
 			compatible = "generic-ohci";
 			reg = <0 0xee080000 0 0x100>;
@@ -2402,7 +2199,6 @@
 			resets = <&cpg 703>, <&cpg 704>;
 			status = "disabled";
 		};
-
 		ohci1: usb@ee0a0000 {
 			compatible = "generic-ohci";
 			reg = <0 0xee0a0000 0 0x100>;
@@ -2414,7 +2210,6 @@
 			resets = <&cpg 702>;
 			status = "disabled";
 		};
-
 		ehci0: usb@ee080100 {
 			compatible = "generic-ehci";
 			reg = <0 0xee080100 0 0x100>;
@@ -2427,7 +2222,6 @@
 			resets = <&cpg 703>, <&cpg 704>;
 			status = "disabled";
 		};
-
 		ehci1: usb@ee0a0100 {
 			compatible = "generic-ehci";
 			reg = <0 0xee0a0100 0 0x100>;
@@ -2440,7 +2234,6 @@
 			resets = <&cpg 702>;
 			status = "disabled";
 		};
-
 		usb2_phy0: usb-phy@ee080200 {
 			compatible = "renesas,usb2-phy-r8a7796",
 				     "renesas,rcar-gen3-usb2-phy";
@@ -2452,7 +2245,6 @@
 			#phy-cells = <1>;
 			status = "disabled";
 		};
-
 		usb2_phy1: usb-phy@ee0a0200 {
 			compatible = "renesas,usb2-phy-r8a7796",
 				     "renesas,rcar-gen3-usb2-phy";
@@ -2463,7 +2255,6 @@
 			#phy-cells = <1>;
 			status = "disabled";
 		};
-
 		sdhi0: mmc@ee100000 {
 			compatible = "renesas,sdhi-r8a7796",
 				     "renesas,rcar-gen3-sdhi";
@@ -2477,7 +2268,6 @@
 			iommus = <&ipmmu_ds1 32>;
 			status = "disabled";
 		};
-
 		sdhi1: mmc@ee120000 {
 			compatible = "renesas,sdhi-r8a7796",
 				     "renesas,rcar-gen3-sdhi";
@@ -2491,7 +2281,6 @@
 			iommus = <&ipmmu_ds1 33>;
 			status = "disabled";
 		};
-
 		sdhi2: mmc@ee140000 {
 			compatible = "renesas,sdhi-r8a7796",
 				     "renesas,rcar-gen3-sdhi";
@@ -2505,7 +2294,6 @@
 			iommus = <&ipmmu_ds1 34>;
 			status = "disabled";
 		};
-
 		sdhi3: mmc@ee160000 {
 			compatible = "renesas,sdhi-r8a7796",
 				     "renesas,rcar-gen3-sdhi";
@@ -2519,7 +2307,6 @@
 			iommus = <&ipmmu_ds1 35>;
 			status = "disabled";
 		};
-
 		rpc: spi@ee200000 {
 			compatible = "renesas,r8a7796-rpc-if",
 				     "renesas,rcar-gen3-rpc-if";
@@ -2535,7 +2322,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		gic: interrupt-controller@f1010000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
@@ -2552,7 +2338,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 408>;
 		};
-
 		pciec0: pcie@fe000000 {
 			compatible = "renesas,pcie-r8a7796",
 				     "renesas,pcie-rcar-gen3";
@@ -2565,7 +2350,6 @@
 				 <0x02000000 0 0xfe200000 0 0xfe200000 0 0x00200000>,
 				 <0x02000000 0 0x30000000 0 0x30000000 0 0x08000000>,
 				 <0x42000000 0 0x38000000 0 0x38000000 0 0x08000000>;
-			/* Map all possible DDR/IOMMU as inbound ranges */
 			dma-ranges = <0x42000000 0 0x00000000 0 0x00000000 1 0x00000000>;
 			interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
 				<GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>,
@@ -2581,7 +2365,6 @@
 			iommu-map-mask = <0>;
 			status = "disabled";
 		};
-
 		pciec1: pcie@ee800000 {
 			compatible = "renesas,pcie-r8a7796",
 				     "renesas,pcie-rcar-gen3";
@@ -2594,7 +2377,6 @@
 				 <0x02000000 0 0xeea00000 0 0xeea00000 0 0x00200000>,
 				 <0x02000000 0 0xc0000000 0 0xc0000000 0 0x08000000>,
 				 <0x42000000 0 0xc8000000 0 0xc8000000 0 0x08000000>;
-			/* Map all possible DDR/IOMMU as inbound ranges */
 			dma-ranges = <0x42000000 0 0x00000000 0 0x00000000 1 0x00000000>;
 			interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>,
 				<GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
@@ -2610,7 +2392,6 @@
 			iommu-map-mask = <0>;
 			status = "disabled";
 		};
-
 		imr-lx4@fe860000 {
 			compatible = "renesas,r8a7796-imr-lx4",
 				     "renesas,imr-lx4";
@@ -2620,7 +2401,6 @@
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 823>;
 		};
-
 		imr-lx4@fe870000 {
 			compatible = "renesas,r8a7796-imr-lx4",
 				     "renesas,imr-lx4";
@@ -2630,7 +2410,6 @@
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 822>;
 		};
-
 		fdp1@fe940000 {
 			compatible = "renesas,fdp1";
 			reg = <0 0xfe940000 0 0x2400>;
@@ -2640,7 +2419,6 @@
 			resets = <&cpg 119>;
 			renesas,fcp = <&fcpf0>;
 		};
-
 		fcpf0: fcp@fe950000 {
 			compatible = "renesas,fcpf";
 			reg = <0 0xfe950000 0 0x200>;
@@ -2648,7 +2426,6 @@
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 615>;
 		};
-
 		fcpvb0: fcp@fe96f000 {
 			compatible = "renesas,fcpv";
 			reg = <0 0xfe96f000 0 0x200>;
@@ -2656,7 +2433,6 @@
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 607>;
 		};
-
 		fcpvi0: fcp@fe9af000 {
 			compatible = "renesas,fcpv";
 			reg = <0 0xfe9af000 0 0x200>;
@@ -2665,7 +2441,6 @@
 			resets = <&cpg 611>;
 			iommus = <&ipmmu_vc0 19>;
 		};
-
 		fcpvd0: fcp@fea27000 {
 			compatible = "renesas,fcpv";
 			reg = <0 0xfea27000 0 0x200>;
@@ -2674,7 +2449,6 @@
 			resets = <&cpg 603>;
 			iommus = <&ipmmu_vi0 8>;
 		};
-
 		fcpvd1: fcp@fea2f000 {
 			compatible = "renesas,fcpv";
 			reg = <0 0xfea2f000 0 0x200>;
@@ -2683,7 +2457,6 @@
 			resets = <&cpg 602>;
 			iommus = <&ipmmu_vi0 9>;
 		};
-
 		fcpvd2: fcp@fea37000 {
 			compatible = "renesas,fcpv";
 			reg = <0 0xfea37000 0 0x200>;
@@ -2692,7 +2465,6 @@
 			resets = <&cpg 601>;
 			iommus = <&ipmmu_vi0 10>;
 		};
-
 		vspb: vsp@fe960000 {
 			compatible = "renesas,vsp2";
 			reg = <0 0xfe960000 0 0x8000>;
@@ -2700,10 +2472,8 @@
 			clocks = <&cpg CPG_MOD 626>;
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 626>;
-
 			renesas,fcp = <&fcpvb0>;
 		};
-
 		vspd0: vsp@fea20000 {
 			compatible = "renesas,vsp2";
 			reg = <0 0xfea20000 0 0x5000>;
@@ -2711,10 +2481,8 @@
 			clocks = <&cpg CPG_MOD 623>;
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 623>;
-
 			renesas,fcp = <&fcpvd0>;
 		};
-
 		vspd1: vsp@fea28000 {
 			compatible = "renesas,vsp2";
 			reg = <0 0xfea28000 0 0x5000>;
@@ -2722,10 +2490,8 @@
 			clocks = <&cpg CPG_MOD 622>;
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 622>;
-
 			renesas,fcp = <&fcpvd1>;
 		};
-
 		vspd2: vsp@fea30000 {
 			compatible = "renesas,vsp2";
 			reg = <0 0xfea30000 0 0x5000>;
@@ -2733,10 +2499,8 @@
 			clocks = <&cpg CPG_MOD 621>;
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 621>;
-
 			renesas,fcp = <&fcpvd2>;
 		};
-
 		vspi0: vsp@fe9a0000 {
 			compatible = "renesas,vsp2";
 			reg = <0 0xfe9a0000 0 0x8000>;
@@ -2744,10 +2508,8 @@
 			clocks = <&cpg CPG_MOD 631>;
 			power-domains = <&sysc R8A7796_PD_A3VC>;
 			resets = <&cpg 631>;
-
 			renesas,fcp = <&fcpvi0>;
 		};
-
 		cmm0: cmm@fea40000 {
 			compatible = "renesas,r8a7796-cmm",
 				     "renesas,rcar-gen3-cmm";
@@ -2756,7 +2518,6 @@
 			clocks = <&cpg CPG_MOD 711>;
 			resets = <&cpg 711>;
 		};
-
 		cmm1: cmm@fea50000 {
 			compatible = "renesas,r8a7796-cmm",
 				     "renesas,rcar-gen3-cmm";
@@ -2765,7 +2526,6 @@
 			clocks = <&cpg CPG_MOD 710>;
 			resets = <&cpg 710>;
 		};
-
 		cmm2: cmm@fea60000 {
 			compatible = "renesas,r8a7796-cmm",
 				     "renesas,rcar-gen3-cmm";
@@ -2774,7 +2534,6 @@
 			clocks = <&cpg CPG_MOD 709>;
 			resets = <&cpg 709>;
 		};
-
 		csi20: csi2@fea80000 {
 			compatible = "renesas,r8a7796-csi2";
 			reg = <0 0xfea80000 0 0x10000>;
@@ -2783,21 +2542,16 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 714>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 				};
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					csi20vin0: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&vin0csi20>;
@@ -2833,7 +2587,6 @@
 				};
 			};
 		};
-
 		csi40: csi2@feaa0000 {
 			compatible = "renesas,r8a7796-csi2";
 			reg = <0 0xfeaa0000 0 0x10000>;
@@ -2842,21 +2595,16 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 716>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 				};
-
 				port@1 {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					reg = <1>;
-
 					csi40vin0: endpoint@0 {
 						reg = <0>;
 						remote-endpoint = <&vin0csi40>;
@@ -2890,10 +2638,8 @@
 						remote-endpoint = <&vin7csi40>;
 					};
 				};
-
 			};
 		};
-
 		hdmi0: hdmi@fead0000 {
 			compatible = "renesas,r8a7796-hdmi", "renesas,rcar-gen3-hdmi";
 			reg = <0 0xfead0000 0 0x10000>;
@@ -2903,7 +2649,6 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 729>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -2917,12 +2662,10 @@
 					reg = <1>;
 				};
 				port@2 {
-					/* HDMI sound */
 					reg = <2>;
 				};
 			};
 		};
-
 		du: display@feb00000 {
 			compatible = "renesas,du-r8a7796";
 			reg = <0 0xfeb00000 0 0x70000>;
@@ -2934,16 +2677,12 @@
 			clock-names = "du.0", "du.1", "du.2";
 			resets = <&cpg 724>, <&cpg 722>;
 			reset-names = "du.0", "du.2";
-
 			renesas,cmms = <&cmm0>, <&cmm1>, <&cmm2>;
 			renesas,vsps = <&vspd0 0>, <&vspd1 0>, <&vspd2 0>;
-
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 				};
@@ -2961,7 +2700,6 @@
 				};
 			};
 		};
-
 		lvds0: lvds@feb90000 {
 			compatible = "renesas,r8a7796-lvds";
 			reg = <0 0xfeb90000 0 0x14>;
@@ -2969,11 +2707,9 @@
 			power-domains = <&sysc R8A7796_PD_ALWAYS_ON>;
 			resets = <&cpg 727>;
 			status = "disabled";
-
 			ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					lvds0_in: endpoint {
@@ -2985,20 +2721,17 @@
 				};
 			};
 		};
-
 		prr: chipid@fff00044 {
 			compatible = "renesas,prr";
 			reg = <0 0xfff00044 0 4>;
 		};
 	};
-
 	thermal-zones {
 		sensor1_thermal: sensor1-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <1000>;
 			thermal-sensors = <&tsc 0>;
 			sustainable-power = <3874>;
-
 			trips {
 				sensor1_crit: sensor1-crit {
 					temperature = <120000>;
@@ -3007,13 +2740,11 @@
 				};
 			};
 		};
-
 		sensor2_thermal: sensor2-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <1000>;
 			thermal-sensors = <&tsc 1>;
 			sustainable-power = <3874>;
-
 			trips {
 				sensor2_crit: sensor2-crit {
 					temperature = <120000>;
@@ -3022,13 +2753,11 @@
 				};
 			};
 		};
-
 		sensor3_thermal: sensor3-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <1000>;
 			thermal-sensors = <&tsc 2>;
 			sustainable-power = <3874>;
-
 			cooling-maps {
 				map0 {
 					trip = <&target>;
@@ -3047,7 +2776,6 @@
 					hysteresis = <1000>;
 					type = "passive";
 				};
-
 				sensor3_crit: sensor3-crit {
 					temperature = <120000>;
 					hysteresis = <1000>;
@@ -3056,7 +2784,6 @@
 			};
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts-extended = <&gic GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
@@ -3064,14 +2791,11 @@
 				      <&gic GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>,
 				      <&gic GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(6) | IRQ_TYPE_LEVEL_LOW)>;
 	};
-
-	/* External USB clocks - can be overridden by the board */
 	usb3s0_clk: usb3s0 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <0>;
 	};
-
 	usb_extal_clk: usb_extal {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;

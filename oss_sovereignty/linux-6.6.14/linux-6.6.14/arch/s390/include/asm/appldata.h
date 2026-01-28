@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright IBM Corp. 2006
- *
- * Author(s): Melissa Howland <melissah@us.ibm.com>
- */
-
 #ifndef _ASM_S390_APPLDATA_H
 #define _ASM_S390_APPLDATA_H
-
 #include <linux/io.h>
 #include <asm/diag.h>
-
 #define APPLDATA_START_INTERVAL_REC	0x80
 #define APPLDATA_STOP_REC		0x81
 #define APPLDATA_GEN_EVENT_REC		0x82
 #define APPLDATA_START_CONFIG_REC	0x83
-
-/*
- * Parameter list for DIAGNOSE X'DC'
- */
 struct appldata_parameter_list {
 	u16 diag;
 	u8  function;
@@ -30,24 +17,20 @@ struct appldata_parameter_list {
 	u64 product_id_addr;
 	u64 buffer_addr;
 } __attribute__ ((packed));
-
 struct appldata_product_id {
-	char prod_nr[7];	/* product number */
-	u16  prod_fn;		/* product function */
-	u8   record_nr; 	/* record number */
-	u16  version_nr;	/* version */
-	u16  release_nr;	/* release */
-	u16  mod_lvl;		/* modification level */
+	char prod_nr[7];	 
+	u16  prod_fn;		 
+	u8   record_nr; 	 
+	u16  version_nr;	 
+	u16  release_nr;	 
+	u16  mod_lvl;		 
 } __attribute__ ((packed));
-
-
 static inline int appldata_asm(struct appldata_parameter_list *parm_list,
 			       struct appldata_product_id *id,
 			       unsigned short fn, void *buffer,
 			       unsigned short length)
 {
 	int ry;
-
 	if (!MACHINE_IS_VM)
 		return -EOPNOTSUPP;
 	parm_list->diag = 0xdc;
@@ -64,5 +47,4 @@ static inline int appldata_asm(struct appldata_parameter_list *parm_list,
 		: "cc");
 	return ry;
 }
-
-#endif /* _ASM_S390_APPLDATA_H */
+#endif  

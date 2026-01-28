@@ -1,25 +1,6 @@
-/*
- * Definitions for the SGI MACE (Multimedia, Audio and Communications Engine)
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2000 Harald Koerfgen
- * Copyright (C) 2004 Ladislav Michl
- */
-
 #ifndef __ASM_MACE_H__
 #define __ASM_MACE_H__
-
-/*
- * Address map
- */
-#define MACE_BASE	0x1f000000	/* physical */
-
-/*
- * PCI interface
- */
+#define MACE_BASE	0x1f000000	 
 struct mace_pci {
 	volatile unsigned int error_addr;
 	volatile unsigned int error;
@@ -83,17 +64,9 @@ struct mace_pci {
 #define MACEPCI_IO			0x80000000
 #define MACEPCI_HI_MEMORY		0x280000000
 #define MACEPCI_HI_IO			0x100000000
-
-/*
- * Video interface
- */
 struct mace_video {
-	unsigned long xxx;	/* later... */
+	unsigned long xxx;	 
 };
-
-/*
- * Ethernet interface
- */
 struct mace_ethernet {
 	volatile u64 mac_ctrl;
 	volatile unsigned long int_stat;
@@ -111,86 +84,60 @@ struct mace_ethernet {
 	volatile unsigned long phy_regs;
 	volatile unsigned long phy_trans_go;
 	volatile unsigned long backoff_seed;
-	/*===================================*/
 	volatile unsigned long imq_reserved[4];
 	volatile unsigned long mac_addr;
 	volatile unsigned long mac_addr2;
 	volatile unsigned long mcast_filter;
 	volatile unsigned long tx_ring_base;
-	/* Following are read-only registers for debugging */
 	volatile unsigned long tx_pkt1_hdr;
 	volatile unsigned long tx_pkt1_ptr[3];
 	volatile unsigned long tx_pkt2_hdr;
 	volatile unsigned long tx_pkt2_ptr[3];
-	/*===================================*/
 	volatile unsigned long rx_fifo;
 };
-
-/*
- * Peripherals
- */
-
-/* Audio registers */
 struct mace_audio {
 	volatile unsigned long control;
-	volatile unsigned long codec_control;		/* codec status control */
-	volatile unsigned long codec_mask;		/* codec status input mask */
-	volatile unsigned long codec_read;		/* codec status read data */
+	volatile unsigned long codec_control;		 
+	volatile unsigned long codec_mask;		 
+	volatile unsigned long codec_read;		 
 	struct {
-		volatile unsigned long control;		/* channel control */
-		volatile unsigned long read_ptr;	/* channel read pointer */
-		volatile unsigned long write_ptr;	/* channel write pointer */
-		volatile unsigned long depth;		/* channel depth */
+		volatile unsigned long control;		 
+		volatile unsigned long read_ptr;	 
+		volatile unsigned long write_ptr;	 
+		volatile unsigned long depth;		 
 	} chan[3];
 };
-
-
-/* register definitions for parallel port DMA */
 struct mace_parport {
-	/* 0 - do nothing,
-	 * 1 - pulse terminal count to the device after buffer is drained */
 #define MACEPAR_CONTEXT_LASTFLAG	BIT(63)
-	/* Should not cross 4K page boundary */
 #define MACEPAR_CONTEXT_DATA_BOUND	0x0000000000001000UL
 #define MACEPAR_CONTEXT_DATALEN_MASK	0x00000fff00000000UL
 #define MACEPAR_CONTEXT_DATALEN_SHIFT	32
-	/* Can be arbitrarily aligned on any byte boundary on output,
-	 * 64 byte aligned on input */
 #define MACEPAR_CONTEXT_BASEADDR_MASK	0x00000000ffffffffUL
 	volatile u64 context_a;
 	volatile u64 context_b;
-	/* 0 - mem->device, 1 - device->mem */
 #define MACEPAR_CTLSTAT_DIRECTION	BIT(0)
-	/* 0 - channel frozen, 1 - channel enabled */
 #define MACEPAR_CTLSTAT_ENABLE		BIT(1)
-	/* 0 - channel active, 1 - complete channel reset */
 #define MACEPAR_CTLSTAT_RESET		BIT(2)
 #define MACEPAR_CTLSTAT_CTXB_VALID	BIT(3)
 #define MACEPAR_CTLSTAT_CTXA_VALID	BIT(4)
-	volatile u64 cntlstat;		/* Control/Status register */
+	volatile u64 cntlstat;		 
 #define MACEPAR_DIAG_CTXINUSE		BIT(0)
-	/* 1 - Dma engine is enabled and processing something */
 #define MACEPAR_DIAG_DMACTIVE		BIT(1)
-	/* Counter of bytes left */
 #define MACEPAR_DIAG_CTRMASK		0x0000000000003ffcUL
 #define MACEPAR_DIAG_CTRSHIFT		2
-	volatile u64 diagnostic;	/* RO: diagnostic register */
+	volatile u64 diagnostic;	 
 };
-
-/* ISA Control and DMA registers */
 struct mace_isactrl {
 	volatile unsigned long ringbase;
 #define MACEISA_RINGBUFFERS_SIZE	(8 * 4096)
-
 	volatile unsigned long misc;
-#define MACEISA_FLASH_WE		BIT(0)	/* 1=> Enable FLASH writes */
-#define MACEISA_PWD_CLEAR		BIT(1)	/* 1=> PWD CLEAR jumper detected */
+#define MACEISA_FLASH_WE		BIT(0)	 
+#define MACEISA_PWD_CLEAR		BIT(1)	 
 #define MACEISA_NIC_DEASSERT		BIT(2)
 #define MACEISA_NIC_DATA		BIT(3)
-#define MACEISA_LED_RED			BIT(4)	/* 0=> Illuminate red LED */
-#define MACEISA_LED_GREEN		BIT(5)	/* 0=> Illuminate green LED */
+#define MACEISA_LED_RED			BIT(4)	 
+#define MACEISA_LED_GREEN		BIT(5)	 
 #define MACEISA_DP_RAM_ENABLE		BIT(6)
-
 	volatile unsigned long istat;
 	volatile unsigned long imask;
 #define MACEISA_AUDIO_SW_INT		BIT(0)
@@ -225,29 +172,20 @@ struct mace_isactrl {
 #define MACEISA_SERIAL2_TDMAME_INT	BIT(29)
 #define MACEISA_SERIAL2_RDMAT_INT	BIT(30)
 #define MACEISA_SERIAL2_RDMAOR_INT	BIT(31)
-
 	volatile unsigned long _pad[0x2000/8 - 4];
-
 	volatile unsigned long dp_ram[0x400];
 	struct mace_parport parport;
 };
-
-/* Keyboard & Mouse registers
- * -> drivers/input/serio/maceps2.c */
 struct mace_ps2port {
 	volatile unsigned long tx;
 	volatile unsigned long rx;
 	volatile unsigned long control;
 	volatile unsigned long status;
 };
-
 struct mace_ps2 {
 	struct mace_ps2port keyb;
 	struct mace_ps2port mouse;
 };
-
-/* I2C registers
- * -> drivers/i2c/algos/i2c-algo-sgi.c */
 struct mace_i2c {
 	volatile unsigned long config;
 #define MACEI2C_RESET		BIT(0)
@@ -259,8 +197,6 @@ struct mace_i2c {
 	volatile unsigned long control;
 	volatile unsigned long data;
 };
-
-/* Timer registers */
 typedef union {
 	volatile unsigned long ust_msc;
 	struct reg {
@@ -268,15 +204,12 @@ typedef union {
 		volatile unsigned int msc;
 	} reg;
 } timer_reg;
-
 struct mace_timers {
 	volatile unsigned long ust;
 #define MACE_UST_PERIOD_NS	960
-
 	volatile unsigned long compare1;
 	volatile unsigned long compare2;
 	volatile unsigned long compare3;
-
 	timer_reg audio_in;
 	timer_reg audio_out1;
 	timer_reg audio_out2;
@@ -284,82 +217,52 @@ struct mace_timers {
 	timer_reg video_in2;
 	timer_reg video_out;
 };
-
 struct mace_perif {
 	struct mace_audio audio;
 	char _pad0[0x10000 - sizeof(struct mace_audio)];
-
 	struct mace_isactrl ctrl;
 	char _pad1[0x10000 - sizeof(struct mace_isactrl)];
-
 	struct mace_ps2 ps2;
 	char _pad2[0x10000 - sizeof(struct mace_ps2)];
-
 	struct mace_i2c i2c;
 	char _pad3[0x10000 - sizeof(struct mace_i2c)];
-
 	struct mace_timers timers;
 	char _pad4[0x10000 - sizeof(struct mace_timers)];
 };
-
-
-/*
- * ISA peripherals
- */
-
-/* Parallel port */
 struct mace_parallel {
 };
-
-struct mace_ecp1284 {	/* later... */
+struct mace_ecp1284 {	 
 };
-
-/* Serial port */
 struct mace_serial {
-	volatile unsigned long xxx;	/* later... */
+	volatile unsigned long xxx;	 
 };
-
 struct mace_isa {
 	struct mace_parallel parallel;
 	char _pad1[0x8000 - sizeof(struct mace_parallel)];
-
 	struct mace_ecp1284 ecp1284;
 	char _pad2[0x8000 - sizeof(struct mace_ecp1284)];
-
 	struct mace_serial serial1;
 	char _pad3[0x8000 - sizeof(struct mace_serial)];
-
 	struct mace_serial serial2;
 	char _pad4[0x8000 - sizeof(struct mace_serial)];
-
 	volatile unsigned char rtc[0x10000];
 };
-
 struct sgi_mace {
 	char _reserved[0x80000];
-
 	struct mace_pci pci;
 	char _pad0[0x80000 - sizeof(struct mace_pci)];
-
 	struct mace_video video_in1;
 	char _pad1[0x80000 - sizeof(struct mace_video)];
-
 	struct mace_video video_in2;
 	char _pad2[0x80000 - sizeof(struct mace_video)];
-
 	struct mace_video video_out;
 	char _pad3[0x80000 - sizeof(struct mace_video)];
-
 	struct mace_ethernet eth;
 	char _pad4[0x80000 - sizeof(struct mace_ethernet)];
-
 	struct mace_perif perif;
 	char _pad5[0x80000 - sizeof(struct mace_perif)];
-
 	struct mace_isa isa;
 	char _pad6[0x80000 - sizeof(struct mace_isa)];
 };
-
 extern struct sgi_mace __iomem *mace;
-
-#endif /* __ASM_MACE_H__ */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2021 Intel Corporation
- */
-
 #ifndef _ABI_GUC_ERRORS_ABI_H
 #define _ABI_GUC_ERRORS_ABI_H
-
 enum intel_guc_response_status {
 	INTEL_GUC_RESPONSE_STATUS_SUCCESS = 0x0,
 	INTEL_GUC_RESPONSE_NOT_SUPPORTED = 0x20,
@@ -14,7 +8,6 @@ enum intel_guc_response_status {
 	INTEL_GUC_RESPONSE_DECRYPTION_FAILED = 0x204,
 	INTEL_GUC_RESPONSE_STATUS_GENERIC_FAIL = 0xF000,
 };
-
 enum intel_guc_load_status {
 	INTEL_GUC_LOAD_STATUS_DEFAULT                          = 0x00,
 	INTEL_GUC_LOAD_STATUS_START                            = 0x01,
@@ -37,10 +30,8 @@ enum intel_guc_load_status {
 	INTEL_GUC_LOAD_STATUS_MPU_DATA_INVALID                 = 0x73,
 	INTEL_GUC_LOAD_STATUS_INIT_MMIO_SAVE_RESTORE_INVALID   = 0x74,
 	INTEL_GUC_LOAD_STATUS_INVALID_INIT_DATA_RANGE_END,
-
 	INTEL_GUC_LOAD_STATUS_READY                            = 0xF0,
 };
-
 enum intel_bootrom_load_status {
 	INTEL_BOOTROM_STATUS_NO_KEY_FOUND                 = 0x13,
 	INTEL_BOOTROM_STATUS_AES_PROD_KEY_FOUND           = 0x1A,
@@ -55,5 +46,4 @@ enum intel_bootrom_load_status {
 	INTEL_BOOTROM_STATUS_MPUMAP_INCORRECT             = 0x7A,
 	INTEL_BOOTROM_STATUS_EXCEPTION                    = 0x7E,
 };
-
-#endif /* _ABI_GUC_ERRORS_ABI_H */
+#endif  

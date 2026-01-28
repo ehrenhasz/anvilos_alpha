@@ -1,22 +1,7 @@
-/*
- * Copyright (C) 2000, 2004, 2021  Maciej W. Rozycki
- * Copyright (C) 2003, 07 Ralf Baechle (ralf@linux-mips.org)
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
 #ifndef __ASM_DIV64_H
 #define __ASM_DIV64_H
-
 #include <asm/bitsperlong.h>
-
 #if BITS_PER_LONG == 32
-
-/*
- * No traps on overflows for any of these...
- */
-
 #define do_div64_32(res, high, low, base) ({				\
 	unsigned long __cf, __tmp, __tmp2, __i;				\
 	unsigned long __quot32, __mod32;				\
@@ -55,7 +40,6 @@
 	(res) = __quot32;						\
 	__mod32;							\
 })
-
 #define __div64_32(n, base) ({						\
 	unsigned long __upper, __low, __high, __radix;			\
 	unsigned long long __quot;					\
@@ -83,9 +67,6 @@
 	(*n) = __quot;							\
 	__mod;								\
 })
-
-#endif /* BITS_PER_LONG == 32 */
-
+#endif  
 #include <asm-generic/div64.h>
-
-#endif /* __ASM_DIV64_H */
+#endif  

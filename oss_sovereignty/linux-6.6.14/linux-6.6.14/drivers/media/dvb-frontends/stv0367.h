@@ -1,32 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * stv0367.h
- *
- * Driver for ST STV0367 DVB-T & DVB-C demodulator IC.
- *
- * Copyright (C) ST Microelectronics.
- * Copyright (C) 2010,2011 NetUP Inc.
- * Copyright (C) 2010,2011 Igor M. Liplianin <liplianin@netup.ru>
- */
-
 #ifndef STV0367_H
 #define STV0367_H
-
 #include <linux/dvb/frontend.h>
 #include <media/dvb_frontend.h>
-
 #define STV0367_ICSPEED_53125	53125000
 #define STV0367_ICSPEED_58000	58000000
-
 struct stv0367_config {
 	u8 demod_address;
 	u32 xtal;
-	u32 if_khz;/*4500*/
+	u32 if_khz; 
 	int if_iq_mode;
 	int ts_mode;
 	int clk_pol;
 };
-
 #if IS_REACHABLE(CONFIG_DVB_STV0367)
 extern struct
 dvb_frontend *stv0367ter_attach(const struct stv0367_config *config,
@@ -60,5 +45,4 @@ dvb_frontend *stv0367ddb_attach(const struct stv0367_config *config,
 	return NULL;
 }
 #endif
-
 #endif

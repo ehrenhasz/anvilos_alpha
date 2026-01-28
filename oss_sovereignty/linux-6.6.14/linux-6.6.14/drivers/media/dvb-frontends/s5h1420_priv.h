@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for
- *    Samsung S5H1420 and
- *    PnpNetwork PN1010 QPSK Demodulator
- *
- * Copyright (C) 2005 Andrew de Quincey <adq_dvb@lidskialf.net>
- * Copyright (C) 2005 Patrick Boettcher <pb@linuxtv.org>
- */
 #ifndef S5H1420_PRIV
 #define S5H1420_PRIV
-
 #include <asm/types.h>
-
 enum s5h1420_register {
 	ID01      = 0x00,
 	CON_0     = 0x01,
@@ -41,7 +30,6 @@ enum s5h1420_register {
 	Monitor06 = 0x19,
 	Monitor07 = 0x1a,
 	Monitor12 = 0x1f,
-
 	FEC01     = 0x22,
 	Soft01    = 0x23,
 	Soft02    = 0x24,
@@ -83,6 +71,4 @@ enum s5h1420_register {
 	Err03     = 0x48,
 	Err04     = 0x49,
 };
-
-
 #endif

@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Display helpers for NFS protocol elements
- *
- * Author: Chuck Lever <chuck.lever@oracle.com>
- *
- * Copyright (c) 2020, Oracle and/or its affiliates.
- */
-
 #include <linux/nfs.h>
 #include <linux/nfs4.h>
 #include <uapi/linux/nfs.h>
-
 TRACE_DEFINE_ENUM(NFS_OK);
 TRACE_DEFINE_ENUM(NFSERR_PERM);
 TRACE_DEFINE_ENUM(NFSERR_NOENT);
@@ -43,7 +33,6 @@ TRACE_DEFINE_ENUM(NFSERR_TOOSMALL);
 TRACE_DEFINE_ENUM(NFSERR_SERVERFAULT);
 TRACE_DEFINE_ENUM(NFSERR_BADTYPE);
 TRACE_DEFINE_ENUM(NFSERR_JUKEBOX);
-
 #define show_nfs_status(x) \
 	__print_symbolic(x, \
 		{ NFS_OK,			"OK" }, \
@@ -79,17 +68,14 @@ TRACE_DEFINE_ENUM(NFSERR_JUKEBOX);
 		{ NFSERR_SERVERFAULT,		"REMOTEIO" }, \
 		{ NFSERR_BADTYPE,		"BADTYPE" }, \
 		{ NFSERR_JUKEBOX,		"JUKEBOX" })
-
 TRACE_DEFINE_ENUM(NFS_UNSTABLE);
 TRACE_DEFINE_ENUM(NFS_DATA_SYNC);
 TRACE_DEFINE_ENUM(NFS_FILE_SYNC);
-
 #define show_nfs_stable_how(x) \
 	__print_symbolic(x, \
 		{ NFS_UNSTABLE,			"UNSTABLE" }, \
 		{ NFS_DATA_SYNC,		"DATA_SYNC" }, \
 		{ NFS_FILE_SYNC,		"FILE_SYNC" })
-
 TRACE_DEFINE_ENUM(NFS4_OK);
 TRACE_DEFINE_ENUM(NFS4ERR_ACCESS);
 TRACE_DEFINE_ENUM(NFS4ERR_ATTRNOTSUPP);
@@ -194,10 +180,8 @@ TRACE_DEFINE_ENUM(NFS4ERR_WRONGSEC);
 TRACE_DEFINE_ENUM(NFS4ERR_WRONG_CRED);
 TRACE_DEFINE_ENUM(NFS4ERR_WRONG_TYPE);
 TRACE_DEFINE_ENUM(NFS4ERR_XDEV);
-
 TRACE_DEFINE_ENUM(NFS4ERR_RESET_TO_MDS);
 TRACE_DEFINE_ENUM(NFS4ERR_RESET_TO_PNFS);
-
 #define show_nfs4_status(x) \
 	__print_symbolic(x, \
 		{ NFS4_OK,			"OK" }, \
@@ -343,23 +327,19 @@ TRACE_DEFINE_ENUM(NFS4ERR_RESET_TO_PNFS);
 		{ NFS4ERR_WRONG_CRED,		"WRONG_CRED" }, \
 		{ NFS4ERR_WRONG_TYPE,		"WRONG_TYPE" }, \
 		{ NFS4ERR_XDEV,			"XDEV" }, \
-		/* ***** Internal to Linux NFS client ***** */ \
+		  \
 		{ NFS4ERR_RESET_TO_MDS,		"RESET_TO_MDS" }, \
 		{ NFS4ERR_RESET_TO_PNFS,	"RESET_TO_PNFS" })
-
 #define show_nfs4_verifier(x) \
 	__print_hex_str(x, NFS4_VERIFIER_SIZE)
-
 TRACE_DEFINE_ENUM(IOMODE_READ);
 TRACE_DEFINE_ENUM(IOMODE_RW);
 TRACE_DEFINE_ENUM(IOMODE_ANY);
-
 #define show_pnfs_layout_iomode(x) \
 	__print_symbolic(x, \
 		{ IOMODE_READ,			"READ" }, \
 		{ IOMODE_RW,			"RW" }, \
 		{ IOMODE_ANY,			"ANY" })
-
 #define show_rca_mask(x) \
 	__print_flags(x, "|", \
 		{ BIT(RCA4_TYPE_MASK_RDATA_DLG),	"RDATA_DLG" }, \
@@ -371,7 +351,6 @@ TRACE_DEFINE_ENUM(IOMODE_ANY);
 		{ BIT(RCA4_TYPE_MASK_OBJ_LAYOUT_MAX),	"OBJ_LAYOUT_MAX" }, \
 		{ BIT(RCA4_TYPE_MASK_OTHER_LAYOUT_MIN),	"OTHER_LAYOUT_MIN" }, \
 		{ BIT(RCA4_TYPE_MASK_OTHER_LAYOUT_MAX),	"OTHER_LAYOUT_MAX" })
-
 #define show_nfs4_seq4_status(x) \
 	__print_flags(x, "|", \
 		{ SEQ4_STATUS_CB_PATH_DOWN,		"CB_PATH_DOWN" }, \

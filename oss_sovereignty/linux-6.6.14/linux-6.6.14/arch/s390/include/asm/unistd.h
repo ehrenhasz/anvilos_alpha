@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  S390 version
- *
- *  Derived from "include/asm-i386/unistd.h"
- */
 #ifndef _ASM_S390_UNISTD_H_
 #define _ASM_S390_UNISTD_H_
-
 #include <uapi/asm/unistd.h>
 #include <asm/unistd_nr.h>
-
 #define __ARCH_WANT_NEW_STAT
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_SYS_ALARM
@@ -36,5 +28,4 @@
 #define __ARCH_WANT_SYS_VFORK
 #define __ARCH_WANT_SYS_CLONE
 #define __ARCH_WANT_SYS_CLONE3
-
-#endif /* _ASM_S390_UNISTD_H_ */
+#endif  

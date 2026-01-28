@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_EADM_H
 #define _ASM_S390_EADM_H
-
 #include <linux/types.h>
 #include <linux/device.h>
 #include <linux/blk_types.h>
-
 struct arqb {
 	u64 data;
 	u16 fmt:4;
@@ -15,9 +12,7 @@ struct arqb {
 	u16 msb_count;
 	u32 reserved[12];
 } __packed;
-
 #define ARQB_CMD_MOVE	1
-
 struct arsb {
 	u16 fmt:4;
 	u32:28;
@@ -35,9 +30,7 @@ struct arsb {
 	u64 fail_scm;
 	u32 reserved[4];
 } __packed;
-
 #define EQC_WR_PROHIBIT 22
-
 struct msb {
 	u8 fmt:4;
 	u8 oc:4;
@@ -49,38 +42,30 @@ struct msb {
 	u64 scm_addr;
 	u64:64;
 } __packed;
-
 struct aidaw {
 	u8 flags;
 	u32 :24;
 	u32 :32;
 	u64 data_addr;
 } __packed;
-
 #define MSB_OC_CLEAR	0
 #define MSB_OC_READ	1
 #define MSB_OC_WRITE	2
 #define MSB_OC_RELEASE	3
-
 #define MSB_FLAG_BNM	0x80
 #define MSB_FLAG_IDA	0x40
-
 #define MSB_BS_4K	0
 #define MSB_BS_1M	1
-
 #define AOB_NR_MSB	124
-
 struct aob {
 	struct arqb request;
 	struct arsb response;
 	struct msb msb[AOB_NR_MSB];
 } __packed __aligned(PAGE_SIZE);
-
 struct aob_rq_header {
 	struct scm_device *scmdev;
 	char data[];
 };
-
 struct scm_device {
 	u64 address;
 	u64 size;
@@ -95,13 +80,10 @@ struct scm_device {
 		unsigned int res_id:8;
 	} __packed attrs;
 };
-
 #define OP_STATE_GOOD		1
 #define OP_STATE_TEMP_ERR	2
 #define OP_STATE_PERM_ERR	3
-
 enum scm_event {SCM_CHANGE, SCM_AVAIL};
-
 struct scm_driver {
 	struct device_driver drv;
 	int (*probe) (struct scm_device *scmdev);
@@ -110,11 +92,8 @@ struct scm_driver {
 	void (*handler) (struct scm_device *scmdev, void *data,
 			blk_status_t error);
 };
-
 int scm_driver_register(struct scm_driver *scmdrv);
 void scm_driver_unregister(struct scm_driver *scmdrv);
-
 int eadm_start_aob(struct aob *aob);
 void scm_irq_handler(struct aob *aob, blk_status_t error);
-
-#endif /* _ASM_S390_EADM_H */
+#endif  

@@ -1,32 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
-
 #ifndef __JH7110_PINFUNC_H__
 #define __JH7110_PINFUNC_H__
-
-/*
- * mux bits:
- *  | 31 - 24 | 23 - 16 | 15 - 10 |  9 - 8   |  7 - 0  |
- *  |  din    |  dout   |  doen   | function | gpio nr |
- *
- * dout:     output signal
- * doen:     output enable signal
- * din:      optional input signal, 0xff = none
- * function: function selector
- * gpio nr:  gpio number, 0 - 63
- */
 #define GPIOMUX(n, dout, doen, din) ( \
 		(((din)  & 0xff) << 24) | \
 		(((dout) & 0xff) << 16) | \
 		(((doen) & 0x3f) << 10) | \
 		((n) & 0x3f))
-
 #define PINMUX(n, func) ((1 << 10) | (((func) & 0x3) << 8) | ((n) & 0xff))
-
-/* sys_iomux dout */
 #define GPOUT_LOW				0
 #define GPOUT_HIGH				1
 #define GPOUT_SYS_WAVE511_UART_TX		2
@@ -135,8 +114,6 @@
 #define GPOUT_SYS_SPI6_CLK			105
 #define GPOUT_SYS_SPI6_FSS			106
 #define GPOUT_SYS_SPI6_TXD			107
-
-/* aon_iomux dout */
 #define GPOUT_AON_CLK_32K_OUT			2
 #define GPOUT_AON_PTC0_PWM4			3
 #define GPOUT_AON_PTC0_PWM5			4
@@ -145,8 +122,6 @@
 #define GPOUT_AON_CLK_GCLK0			7
 #define GPOUT_AON_CLK_GCLK1			8
 #define GPOUT_AON_CLK_GCLK2			9
-
-/* sys_iomux doen */
 #define GPOEN_ENABLE				0
 #define GPOEN_DISABLE				1
 #define GPOEN_SYS_HDMI_CEC_SDA			2
@@ -197,16 +172,11 @@
 #define GPOEN_SYS_I2C6_DATA			47
 #define GPOEN_SYS_SPI6_NSSPCTL			48
 #define GPOEN_SYS_SPI6_NSSP			49
-
-/* aon_iomux doen */
 #define GPOEN_AON_PTC0_OE_N_4			2
 #define GPOEN_AON_PTC0_OE_N_5			3
 #define GPOEN_AON_PTC0_OE_N_6			4
 #define GPOEN_AON_PTC0_OE_N_7			5
-
-/* sys_iomux gin */
 #define GPI_NONE				255
-
 #define GPI_SYS_WAVE511_UART_RX			0
 #define GPI_SYS_CAN0_RXD			1
 #define GPI_SYS_USB_OVERCURRENT			2
@@ -298,11 +268,8 @@
 #define GPI_SYS_SPI6_CLK			88
 #define GPI_SYS_SPI6_FSS			89
 #define GPI_SYS_SPI6_RXD			90
-
-/* aon_iomux gin */
 #define GPI_AON_PMU_GPIO_WAKEUP_0		0
 #define GPI_AON_PMU_GPIO_WAKEUP_1		1
 #define GPI_AON_PMU_GPIO_WAKEUP_2		2
 #define GPI_AON_PMU_GPIO_WAKEUP_3		3
-
 #endif

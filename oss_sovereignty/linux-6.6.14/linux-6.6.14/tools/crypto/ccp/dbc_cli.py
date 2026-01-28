@@ -1,11 +1,8 @@
-#!/usr/bin/python3
-# SPDX-License-Identifier: GPL-2.0
 import argparse
 import binascii
 import os
 import errno
 from dbc import *
-
 ERRORS = {
     errno.EACCES: "Access is denied",
     errno.E2BIG: "Excess data provided",
@@ -16,7 +13,6 @@ ERRORS = {
     errno.ENFILE: "Overflow",
     errno.EPERM: "Signature invalid",
 }
-
 messages = {
     "get-fmax-cap": PARAM_GET_FMAX_CAP,
     "set-fmax-cap": PARAM_SET_FMAX_CAP,
@@ -31,12 +27,8 @@ messages = {
     "get-soc-power-min": PARAM_GET_SOC_PWR_MIN,
     "get-soc-power-cur": PARAM_GET_SOC_PWR_CUR,
 }
-
-
 def _pretty_buffer(ba):
     return str(binascii.hexlify(ba, " "))
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Dynamic Boost control command line interface"
@@ -52,15 +44,11 @@ def parse_args():
     parser.add_argument("--data", help="Argument to pass to message")
     parser.add_argument("--uid", help="File containing UID to pass")
     return parser.parse_args()
-
-
 def pretty_error(code):
     if code in ERRORS:
         print(ERRORS[code])
     else:
         print("failed with return code %d" % code)
-
-
 if __name__ == "__main__":
     args = parse_args()
     data = 0
@@ -91,7 +79,6 @@ if __name__ == "__main__":
             data = int(args.data, 10)
         except ValueError:
             data = int(args.data, 16)
-
     with open(args.device) as d:
         if args.command == "get-nonce":
             try:

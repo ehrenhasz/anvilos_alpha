@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2007-2011  Realtek Corporation.*/
-
 #ifndef	__HALBT_PRECOMP_H__
 #define __HALBT_PRECOMP_H__
-/*************************************************************
- * include files
- *************************************************************/
 #include "../wifi.h"
 #include "../efuse.h"
 #include "../base.h"
@@ -13,21 +7,16 @@
 #include "../cam.h"
 #include "../ps.h"
 #include "../pci.h"
-
 #include "halbtcoutsrc.h"
-
-/* Interface type */
 #define RT_PCI_INTERFACE	1
 #define RT_USB_INTERFACE	2
 #define RT_SDIO_INTERFACE	3
 #define DEV_BUS_TYPE		RT_PCI_INTERFACE
-
 #include "halbtc8192e2ant.h"
 #include "halbtc8723b1ant.h"
 #include "halbtc8723b2ant.h"
 #include "halbtc8821a2ant.h"
 #include "halbtc8821a1ant.h"
-
 #define BIT0	0x00000001
 #define BIT1	0x00000002
 #define BIT2	0x00000004
@@ -60,5 +49,4 @@
 #define BIT29	0x20000000
 #define BIT30	0x40000000
 #define BIT31	0x80000000
-
-#endif	/* __HALBT_PRECOMP_H__ */
+#endif	 

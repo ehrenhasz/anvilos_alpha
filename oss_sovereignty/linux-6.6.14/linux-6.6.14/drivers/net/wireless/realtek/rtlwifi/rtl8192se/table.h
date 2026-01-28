@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __INC_HAL8192SE_FW_IMG_H
 #define __INC_HAL8192SE_FW_IMG_H
-
 #include <linux/types.h>
-
-/*Created on  2010/ 4/12,  5:56*/
-
 #define PHY_REG_2T2RARRAYLENGTH 372
 extern u32 rtl8192sephy_reg_2t2rarray[PHY_REG_2T2RARRAYLENGTH];
 #define PHY_CHANGETO_1T1RARRAYLENGTH 48
@@ -26,6 +19,4 @@ extern u32 rtl8192seradiob_gm_array[RADIOB_GM_ARRAYLENGTH];
 extern u32 rtl8192semac_2t_array[MAC_2T_ARRAYLENGTH];
 #define AGCTAB_ARRAYLENGTH 320
 extern u32 rtl8192seagctab_array[AGCTAB_ARRAYLENGTH];
-
 #endif
-

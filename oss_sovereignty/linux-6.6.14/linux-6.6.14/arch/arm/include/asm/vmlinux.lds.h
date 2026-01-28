@@ -1,6 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #include <asm-generic/vmlinux.lds.h>
-
 #ifdef CONFIG_HOTPLUG_CPU
 #define ARM_CPU_DISCARD(x)
 #define ARM_CPU_KEEP(x)		x
@@ -8,7 +6,6 @@
 #define ARM_CPU_DISCARD(x)	x
 #define ARM_CPU_KEEP(x)
 #endif
-
 #if (defined(CONFIG_SMP_ON_UP) && !defined(CONFIG_DEBUG_SPINLOCK)) || \
 	defined(CONFIG_GENERIC_BUG) || defined(CONFIG_JUMP_LABEL)
 #define ARM_EXIT_KEEP(x)	x
@@ -17,7 +14,6 @@
 #define ARM_EXIT_KEEP(x)
 #define ARM_EXIT_DISCARD(x)	x
 #endif
-
 #ifdef CONFIG_MMU
 #define ARM_MMU_KEEP(x)		x
 #define ARM_MMU_DISCARD(x)
@@ -25,32 +21,22 @@
 #define ARM_MMU_KEEP(x)
 #define ARM_MMU_DISCARD(x)	x
 #endif
-
-/*
- * ld.lld does not support NOCROSSREFS:
- * https://github.com/ClangBuiltLinux/linux/issues/1609
- */
 #ifdef CONFIG_LD_IS_LLD
 #define NOCROSSREFS
 #endif
-
-/* Set start/end symbol names to the LMA for the section */
 #define ARM_LMA(sym, section)						\
 	sym##_start = LOADADDR(section);				\
 	sym##_end = LOADADDR(section) + SIZEOF(section)
-
 #define PROC_INFO							\
 		. = ALIGN(4);						\
 		__proc_info_begin = .;					\
 		*(.proc.info.init)					\
 		__proc_info_end = .;
-
 #define IDMAP_TEXT							\
 		ALIGN_FUNCTION();					\
 		__idmap_text_start = .;					\
 		*(.idmap.text)						\
 		__idmap_text_end = .;					\
-
 #define ARM_DISCARD							\
 		*(.ARM.exidx.exit.text)					\
 		*(.ARM.extab.exit.text)					\
@@ -64,29 +50,21 @@
 		ARM_MMU_DISCARD(*(.text.fixup))				\
 		ARM_MMU_DISCARD(*(__ex_table))				\
 		COMMON_DISCARDS
-
-/*
- * Sections that should stay zero sized, which is safer to explicitly
- * check instead of blindly discarding.
- */
 #define ARM_ASSERTS							\
 	.plt : {							\
 		*(.iplt) *(.rel.iplt) *(.iplt) *(.igot.plt)		\
 	}								\
 	ASSERT(SIZEOF(.plt) == 0,					\
 	       "Unexpected run-time procedure linkages detected!")
-
 #define ARM_DETAILS							\
 		ELF_DETAILS						\
 		.ARM.attributes 0 : { *(.ARM.attributes) }
-
 #define ARM_STUBS_TEXT							\
 		*(.gnu.warning)						\
 		*(.glue_7)						\
 		*(.glue_7t)						\
 		*(.vfp11_veneer)                                        \
 		*(.v4_bx)
-
 #define ARM_TEXT							\
 		IDMAP_TEXT						\
 		__entry_text_start = .;					\
@@ -100,10 +78,8 @@
 		KPROBES_TEXT						\
 		ARM_STUBS_TEXT						\
 		. = ALIGN(4);						\
-		*(.got)			/* Global offset table */	\
+		*(.got)			 	\
 		ARM_CPU_KEEP(PROC_INFO)
-
-/* Stack unwinding tables */
 #define ARM_UNWIND_SECTIONS						\
 	. = ALIGN(8);							\
 	.ARM.unwind_idx : {						\
@@ -116,11 +92,6 @@
 		*(.ARM.extab*)						\
 		__stop_unwind_tab = .;					\
 	}
-
-/*
- * The vectors and stubs are relocatable code, and the
- * only thing that matters is their relative offsets
- */
 #define ARM_VECTORS							\
 	__vectors_lma = .;						\
 	OVERLAY 0xffff0000 : NOCROSSREFS AT(__vectors_lma) {		\
@@ -149,7 +120,6 @@
 	. = __stubs_lma + SIZEOF(.stubs);				\
 									\
 	PROVIDE(vector_fiq_offset = vector_fiq - ADDR(.vectors));
-
 #define ARM_TCM								\
 	__itcm_start = ALIGN(4);					\
 	.text_itcm ITCM_OFFSET : AT(__itcm_start - LOAD_OFFSET) {	\

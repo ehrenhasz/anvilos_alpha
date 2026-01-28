@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2022, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM8550_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM8550_H
-
-/* GCC clocks */
 #define GCC_AGGRE_NOC_PCIE_AXI_CLK				0
 #define GCC_AGGRE_UFS_PHY_AXI_CLK				1
 #define GCC_AGGRE_UFS_PHY_AXI_HW_CTL_CLK			2
@@ -179,8 +171,6 @@
 #define GCC_VIDEO_AXI0_CLK					168
 #define GCC_VIDEO_AXI1_CLK					169
 #define GCC_VIDEO_XO_CLK					170
-
-/* GCC resets */
 #define GCC_CAMERA_BCR						0
 #define GCC_DISPLAY_BCR						1
 #define GCC_GPU_BCR						2
@@ -217,8 +207,6 @@
 #define GCC_VIDEO_AXI0_CLK_ARES					33
 #define GCC_VIDEO_AXI1_CLK_ARES					34
 #define GCC_VIDEO_BCR						35
-
-/* GCC power domains */
 #define PCIE_0_GDSC						0
 #define PCIE_0_PHY_GDSC						1
 #define PCIE_1_GDSC						2
@@ -227,5 +215,4 @@
 #define UFS_MEM_PHY_GDSC					5
 #define USB30_PRIM_GDSC						6
 #define USB3_PHY_GDSC						7
-
 #endif

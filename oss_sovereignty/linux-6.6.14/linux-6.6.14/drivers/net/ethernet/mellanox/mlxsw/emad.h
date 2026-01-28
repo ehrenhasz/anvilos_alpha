@@ -1,21 +1,13 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
-
 #ifndef _MLXSW_EMAD_H
 #define _MLXSW_EMAD_H
-
-#define MLXSW_EMAD_MAX_FRAME_LEN 1518	/* Length in u8 */
+#define MLXSW_EMAD_MAX_FRAME_LEN 1518	 
 #define MLXSW_EMAD_MAX_RETRY 5
-
-/* EMAD Ethernet header */
-#define MLXSW_EMAD_ETH_HDR_LEN 0x10	/* Length in u8 */
+#define MLXSW_EMAD_ETH_HDR_LEN 0x10	 
 #define MLXSW_EMAD_EH_DMAC "\x01\x02\xc9\x00\x00\x01"
 #define MLXSW_EMAD_EH_SMAC "\x00\x02\xc9\x01\x02\x03"
 #define MLXSW_EMAD_EH_ETHERTYPE 0x8932
 #define MLXSW_EMAD_EH_MLX_PROTO 0
 #define MLXSW_EMAD_EH_PROTO_VERSION 0
-
-/* EMAD TLV Types */
 enum {
 	MLXSW_EMAD_TLV_TYPE_END,
 	MLXSW_EMAD_TLV_TYPE_OP,
@@ -23,15 +15,11 @@ enum {
 	MLXSW_EMAD_TLV_TYPE_REG,
 	MLXSW_EMAD_TLV_TYPE_LATENCY,
 };
-
-/* OP TLV */
-#define MLXSW_EMAD_OP_TLV_LEN 4		/* Length in u32 */
-
+#define MLXSW_EMAD_OP_TLV_LEN 4		 
 enum {
 	MLXSW_EMAD_OP_TLV_CLASS_REG_ACCESS = 1,
 	MLXSW_EMAD_OP_TLV_CLASS_IPC = 2,
 };
-
 enum mlxsw_emad_op_tlv_status {
 	MLXSW_EMAD_OP_TLV_STATUS_SUCCESS,
 	MLXSW_EMAD_OP_TLV_STATUS_BUSY,
@@ -45,7 +33,6 @@ enum mlxsw_emad_op_tlv_status {
 	MLXSW_EMAD_OP_TLV_STATUS_MESSAGE_RECEIPT_ACK,
 	MLXSW_EMAD_OP_TLV_STATUS_INTERNAL_ERROR = 0x70,
 };
-
 static inline char *mlxsw_emad_op_tlv_status_str(u8 status)
 {
 	switch (status) {
@@ -75,26 +62,17 @@ static inline char *mlxsw_emad_op_tlv_status_str(u8 status)
 		return "*UNKNOWN*";
 	}
 }
-
 enum {
 	MLXSW_EMAD_OP_TLV_REQUEST,
 	MLXSW_EMAD_OP_TLV_RESPONSE
 };
-
 enum {
 	MLXSW_EMAD_OP_TLV_METHOD_QUERY = 1,
 	MLXSW_EMAD_OP_TLV_METHOD_WRITE = 2,
 	MLXSW_EMAD_OP_TLV_METHOD_SEND = 3,
 	MLXSW_EMAD_OP_TLV_METHOD_EVENT = 5,
 };
-
-/* STRING TLV */
-#define MLXSW_EMAD_STRING_TLV_LEN 33	/* Length in u32 */
-
-/* LATENCY TLV */
-#define MLXSW_EMAD_LATENCY_TLV_LEN 7	/* Length in u32 */
-
-/* END TLV */
-#define MLXSW_EMAD_END_TLV_LEN 1	/* Length in u32 */
-
+#define MLXSW_EMAD_STRING_TLV_LEN 33	 
+#define MLXSW_EMAD_LATENCY_TLV_LEN 7	 
+#define MLXSW_EMAD_END_TLV_LEN 1	 
 #endif

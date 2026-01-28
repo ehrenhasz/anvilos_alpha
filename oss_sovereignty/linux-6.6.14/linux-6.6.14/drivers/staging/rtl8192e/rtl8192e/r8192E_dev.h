@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
 #ifndef _RTL8192E_H
 #define _RTL8192E_H
-
 #include "r8190P_def.h"
-
 bool rtl92e_is_halfn_supported_by_ap(struct net_device *dev);
 bool rtl92e_get_nmode_support_by_sec(struct net_device *dev);
 bool rtl92e_is_tx_stuck(struct net_device *dev);

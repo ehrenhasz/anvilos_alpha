@@ -1,44 +1,7 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #include "dc_features.h"
 #include "display_mode_enums.h"
-
-/**
- * DOC: overview
- *
- * Most of the DML code is automatically generated and tested via hardware
- * description language. Usually, we use the reference _vcs_dpi in the code
- * where VCS means "Verilog Compiled Simulator" and DPI stands for "Direct
- * Programmer Interface". In other words, those structs can be used to
- * interface with Verilog with other languages such as C.
- */
-
 #ifndef __DISPLAY_MODE_STRUCTS_H__
 #define __DISPLAY_MODE_STRUCTS_H__
-
 typedef struct _vcs_dpi_voltage_scaling_st voltage_scaling_st;
 typedef struct _vcs_dpi_soc_bounding_box_st soc_bounding_box_st;
 typedef struct _vcs_dpi_ip_params_st ip_params_st;
@@ -63,7 +26,6 @@ typedef struct _vcs_dpi_display_data_rq_regs_st display_data_rq_regs_st;
 typedef struct _vcs_dpi_display_rq_regs_st display_rq_regs_st;
 typedef struct _vcs_dpi_display_dlg_sys_params_st display_dlg_sys_params_st;
 typedef struct _vcs_dpi_display_arb_params_st display_arb_params_st;
-
 typedef struct {
 	double UrgentWatermark;
 	double WritebackUrgentWatermark;
@@ -77,7 +39,6 @@ typedef struct {
 	double Z8StutterEnterPlusExitWatermark;
 	double USRRetrainingWatermark;
 } Watermarks;
-
 typedef struct {
 	double UrgentLatency;
 	double ExtraLatency;
@@ -90,7 +51,6 @@ typedef struct {
 	double SREnterPlusExitZ8Time;
 	double USRRetrainingLatencyPlusSMNLatency;
 } Latencies;
-
 typedef struct {
 	double Dppclk;
 	double Dispclk;
@@ -138,7 +98,6 @@ typedef struct {
 	unsigned int SwathHeightY;
 	unsigned int SwathHeightC;
 } DmlPipe;
-
 typedef struct {
 	double UrgentLatency;
 	double ExtraLatency;
@@ -152,7 +111,6 @@ typedef struct {
 	double USRRetrainingLatency;
 	double SMNLatency;
 } SOCParametersList;
-
 struct _vcs_dpi_voltage_scaling_st {
 	int state;
 	double dscclk_mhz;
@@ -169,21 +127,8 @@ struct _vcs_dpi_voltage_scaling_st {
 	double dtbclk_mhz;
 	float net_bw_in_kbytes_sec;
 };
-
-/**
- * _vcs_dpi_soc_bounding_box_st: SOC definitions
- *
- * This struct maintains the SOC Bounding Box information for the ASIC; it
- * defines things such as clock, voltage, performance, etc. Usually, we load
- * these values from VBIOS; if something goes wrong, we use some hard-coded
- * values, which will enable the ASIC to light up with limitations.
- */
 struct _vcs_dpi_soc_bounding_box_st {
 	struct _vcs_dpi_voltage_scaling_st clock_limits[DC__VOLTAGE_STATES];
-	/**
-	 * @num_states: It represents the total of Display Power Management
-	 * (DPM) supported by the specific ASIC.
-	 */
 	unsigned int num_states;
 	double sr_exit_time_us;
 	double sr_enter_plus_exit_time_us;
@@ -205,7 +150,7 @@ struct _vcs_dpi_soc_bounding_box_st {
 	bool dram_clock_change_requirement_final;
 	double writeback_latency_us;
 	double ideal_dram_bw_after_urgent_percent;
-	double pct_ideal_dram_sdp_bw_after_urgent_pixel_only; // PercentOfIdealDRAMFabricAndSDPPortBWReceivedAfterUrgLatencyPixelDataOnly
+	double pct_ideal_dram_sdp_bw_after_urgent_pixel_only;  
 	double pct_ideal_dram_sdp_bw_after_urgent_pixel_and_vm;
 	double pct_ideal_dram_sdp_bw_after_urgent_vm_only;
 	double pct_ideal_sdp_bw_after_urgent;
@@ -249,15 +194,6 @@ struct _vcs_dpi_soc_bounding_box_st {
 	enum self_refresh_affinity allow_dram_self_refresh_or_dram_clock_change_in_vblank;
 	double max_vratio_pre;
 };
-
-/**
- * @_vcs_dpi_ip_params_st: IP configuraion for DCN blocks
- *
- * In this struct you can find the DCN configuration associated to the specific
- * ASIC. For example, here we can save how many DPPs the ASIC is using and it
- * is available.
- *
- */
 struct _vcs_dpi_ip_params_st {
 	bool use_min_dcfclk;
 	bool clamp_min_dcfclk;
@@ -293,10 +229,8 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int writeback_luma_buffer_size_kbytes;
 	unsigned int writeback_chroma_buffer_size_kbytes;
 	unsigned int writeback_chroma_line_buffer_width_pixels;
-
 	unsigned int writeback_interface_buffer_size_kbytes;
 	unsigned int writeback_line_buffer_buffer_size;
-
 	unsigned int writeback_10bpc420_supported;
 	double writeback_max_hscl_ratio;
 	double writeback_max_vscl_ratio;
@@ -308,11 +242,7 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int writeback_max_vscl_taps;
 	unsigned int writeback_line_buffer_luma_buffer_size;
 	unsigned int writeback_line_buffer_chroma_buffer_size;
-
 	unsigned int max_page_table_levels;
-	/**
-	 * @max_num_dpp: Maximum number of DPP supported in the target ASIC.
-	 */
 	unsigned int max_num_dpp;
 	unsigned int max_num_otg;
 	unsigned int cursor_chunk_size;
@@ -331,11 +261,9 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int xfc_supported;
 	unsigned int ptoi_supported;
 	unsigned int gfx7_compat_tiling_supported;
-
 	bool odm_combine_4to1_supported;
 	bool dynamic_metadata_vm_enabled;
 	unsigned int max_num_hdmi_frl_outputs;
-
 	unsigned int xfc_fill_constant_bytes;
 	double dispclk_ramp_margin_percent;
 	double xfc_fill_bw_overhead_percent;
@@ -357,7 +285,6 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int zero_size_buffer_entries;
 	unsigned int compbuf_reserved_space_64b;
 	unsigned int compbuf_reserved_space_zs;
-
 	unsigned int IsLineBufferBppFixed;
 	unsigned int LineBufferFixedBpp;
 	unsigned int can_vstartup_lines_exceed_vsync_plus_back_porch_lines_minus_one;
@@ -366,19 +293,15 @@ struct _vcs_dpi_ip_params_st {
 	unsigned int max_num_dp2p0_outputs;
 	unsigned int max_num_dp2p0_streams;
 	unsigned int VBlankNomDefaultUS;
-
-	/* DM workarounds */
-	double dsc_delay_factor_wa; // TODO: Remove after implementing root cause fix
+	double dsc_delay_factor_wa;  
 	double min_prefetch_in_strobe_us;
 };
-
 struct _vcs_dpi_display_xfc_params_st {
 	double xfc_tslv_vready_offset_us;
 	double xfc_tslv_vupdate_width_us;
 	double xfc_tslv_vupdate_offset_us;
 	int xfc_slv_chunk_size_bytes;
 };
-
 struct _vcs_dpi_display_pipe_source_params_st {
 	int source_format;
 	double dcc_fraction_of_zs_req_luma;
@@ -389,15 +312,15 @@ struct _vcs_dpi_display_pipe_source_params_st {
 	unsigned char dcc_use_global;
 	unsigned char vm;
 	bool unbounded_req_mode;
-	bool gpuvm;    // gpuvm enabled
-	bool hostvm;    // hostvm enabled
+	bool gpuvm;     
+	bool hostvm;     
 	bool gpuvm_levels_force_en;
 	unsigned int gpuvm_levels_force;
 	bool hostvm_levels_force_en;
 	unsigned int hostvm_levels_force;
 	int source_scan;
-	int source_rotation; // new in dml32
-	unsigned int det_size_override; // use to populate DETSizeOverride in vba struct
+	int source_rotation;  
+	unsigned int det_size_override;  
 	int sw_mode;
 	int macro_tile_size;
 	unsigned int surface_width_y;
@@ -439,7 +362,6 @@ struct _vcs_dpi_display_pipe_source_params_st {
 	unsigned char xfc_slave;
 	unsigned char immediate_flip;
 	struct _vcs_dpi_display_xfc_params_st xfc_params;
-	//for vstartuplines calculation freesync
 	unsigned char v_total_min;
 	unsigned char v_total_max;
 };
@@ -458,12 +380,10 @@ struct writeback_st {
 	double wb_hratio;
 	double wb_vratio;
 };
-
 struct display_audio_params_st {
 	unsigned int   audio_sample_rate_khz;
 	int    		   audio_sample_layout;
 };
-
 struct _vcs_dpi_display_output_params_st {
 	int dp_lanes;
 	double output_bpp;
@@ -483,7 +403,6 @@ struct _vcs_dpi_display_output_params_st {
 	unsigned int dp_multistream_id;
 	bool dp_multistream_en;
 };
-
 struct _vcs_dpi_scaler_ratio_depth_st {
 	double hscl_ratio;
 	double vscl_ratio;
@@ -496,14 +415,12 @@ struct _vcs_dpi_scaler_ratio_depth_st {
 	int lb_depth;
 	int scl_enable;
 };
-
 struct _vcs_dpi_scaler_taps_st {
 	unsigned int htaps;
 	unsigned int vtaps;
 	unsigned int htaps_c;
 	unsigned int vtaps_c;
 };
-
 struct _vcs_dpi_display_pipe_dest_params_st {
 	unsigned int recout_width;
 	unsigned int recout_height;
@@ -536,14 +453,12 @@ struct _vcs_dpi_display_pipe_dest_params_st {
 	unsigned int odm_combine_policy;
 	bool drr_display;
 };
-
 struct _vcs_dpi_display_pipe_params_st {
 	display_pipe_source_params_st src;
 	display_pipe_dest_params_st dest;
 	scaler_ratio_depth_st scale_ratio_depth;
 	scaler_taps_st scale_taps;
 };
-
 struct _vcs_dpi_display_clocks_and_cfg_st {
 	int voltage;
 	double dppclk_mhz;
@@ -552,13 +467,11 @@ struct _vcs_dpi_display_clocks_and_cfg_st {
 	double dcfclk_mhz;
 	double socclk_mhz;
 };
-
 struct _vcs_dpi_display_e2e_pipe_params_st {
 	display_pipe_params_st pipe;
 	display_output_params_st dout;
 	display_clocks_and_cfg_st clks_cfg;
 };
-
 struct _vcs_dpi_display_data_rq_misc_params_st {
 	unsigned int full_swath_bytes;
 	unsigned int stored_swath_bytes;
@@ -567,7 +480,6 @@ struct _vcs_dpi_display_data_rq_misc_params_st {
 	unsigned int req_height;
 	unsigned int req_width;
 };
-
 struct _vcs_dpi_display_data_rq_sizing_params_st {
 	unsigned int chunk_bytes;
 	unsigned int min_chunk_bytes;
@@ -576,7 +488,6 @@ struct _vcs_dpi_display_data_rq_sizing_params_st {
 	unsigned int mpte_group_bytes;
 	unsigned int dpte_group_bytes;
 };
-
 struct _vcs_dpi_display_data_rq_dlg_params_st {
 	unsigned int swath_width_ub;
 	unsigned int swath_height;
@@ -591,22 +502,18 @@ struct _vcs_dpi_display_data_rq_dlg_params_st {
 	unsigned int meta_row_height;
 	unsigned int meta_bytes_per_row_ub;
 };
-
 struct _vcs_dpi_display_rq_dlg_params_st {
 	display_data_rq_dlg_params_st rq_l;
 	display_data_rq_dlg_params_st rq_c;
 };
-
 struct _vcs_dpi_display_rq_sizing_params_st {
 	display_data_rq_sizing_params_st rq_l;
 	display_data_rq_sizing_params_st rq_c;
 };
-
 struct _vcs_dpi_display_rq_misc_params_st {
 	display_data_rq_misc_params_st rq_l;
 	display_data_rq_misc_params_st rq_c;
 };
-
 struct _vcs_dpi_display_rq_params_st {
 	unsigned char yuv420;
 	unsigned char yuv420_10bpc;
@@ -615,7 +522,6 @@ struct _vcs_dpi_display_rq_params_st {
 	display_rq_sizing_params_st sizing;
 	display_rq_dlg_params_st dlg;
 };
-
 struct _vcs_dpi_display_dlg_regs_st {
 	unsigned int refcyc_h_blank_end;
 	unsigned int dlg_vblank_end;
@@ -669,7 +575,6 @@ struct _vcs_dpi_display_dlg_regs_st {
 	unsigned int refcyc_per_vm_dmdata;
 	unsigned int dmdata_dl_delta;
 };
-
 struct _vcs_dpi_display_ttu_regs_st {
 	unsigned int qos_level_low_wm;
 	unsigned int qos_level_high_wm;
@@ -692,7 +597,6 @@ struct _vcs_dpi_display_ttu_regs_st {
 	unsigned int qos_ramp_disable_cur0;
 	unsigned int qos_ramp_disable_cur1;
 };
-
 struct _vcs_dpi_display_data_rq_regs_st {
 	unsigned int chunk_size;
 	unsigned int min_chunk_size;
@@ -703,7 +607,6 @@ struct _vcs_dpi_display_data_rq_regs_st {
 	unsigned int swath_height;
 	unsigned int pte_row_height_linear;
 };
-
 struct _vcs_dpi_display_rq_regs_st {
 	display_data_rq_regs_st rq_regs_l;
 	display_data_rq_regs_st rq_regs_c;
@@ -712,10 +615,9 @@ struct _vcs_dpi_display_rq_regs_st {
 	unsigned int mrq_expansion_mode;
 	unsigned int crq_expansion_mode;
 	unsigned int plane1_base_address;
-	unsigned int aperture_low_addr;   // bits [47:18]
-	unsigned int aperture_high_addr;  // bits [47:18]
+	unsigned int aperture_low_addr;    
+	unsigned int aperture_high_addr;   
 };
-
 struct _vcs_dpi_display_dlg_sys_params_st {
 	double t_mclk_wm_us;
 	double t_urg_wm_us;
@@ -726,7 +628,6 @@ struct _vcs_dpi_display_dlg_sys_params_st {
 	double total_flip_bw;
 	unsigned int total_flip_bytes;
 };
-
 struct _vcs_dpi_display_arb_params_st {
 	int max_req_outstanding;
 	int min_req_outstanding;
@@ -735,5 +636,4 @@ struct _vcs_dpi_display_arb_params_st {
 	int hvm_max_qos_commit_threshold;
 	int compbuf_reserved_space_kbytes;
 };
-
-#endif /*__DISPLAY_MODE_STRUCTS_H__*/
+#endif  

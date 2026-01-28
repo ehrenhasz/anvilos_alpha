@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __NET_TC_CTINFO_H
 #define __NET_TC_CTINFO_H
-
 #include <net/act_api.h>
-
 struct tcf_ctinfo_params {
 	struct rcu_head rcu;
 	struct net *net;
@@ -14,7 +11,6 @@ struct tcf_ctinfo_params {
 	u8 mode;
 	u8 dscpmaskshift;
 };
-
 struct tcf_ctinfo {
 	struct tc_action common;
 	struct tcf_ctinfo_params __rcu *params;
@@ -22,12 +18,9 @@ struct tcf_ctinfo {
 	u64 stats_dscp_error;
 	u64 stats_cpmark_set;
 };
-
 enum {
 	CTINFO_MODE_DSCP	= BIT(0),
 	CTINFO_MODE_CPMARK	= BIT(1)
 };
-
 #define to_ctinfo(a) ((struct tcf_ctinfo *)a)
-
-#endif /* __NET_TC_CTINFO_H */
+#endif  

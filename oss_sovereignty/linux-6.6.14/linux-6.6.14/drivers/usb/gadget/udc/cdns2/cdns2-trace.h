@@ -1,35 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * USBHS-DEV device controller driver.
- * Trace support header file.
- *
- * Copyright (C) 2023 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cdns2-dev
-
-/*
- * The TRACE_SYSTEM_VAR defaults to TRACE_SYSTEM, but must be a
- * legitimate C variable. It is not exported to user space.
- */
 #undef TRACE_SYSTEM_VAR
 #define TRACE_SYSTEM_VAR cdns2_dev
-
 #if !defined(__LINUX_CDNS2_TRACE) || defined(TRACE_HEADER_MULTI_READ)
 #define __LINUX_CDNS2_TRACE
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 #include <asm/byteorder.h>
 #include <linux/usb/ch9.h>
 #include "cdns2-gadget.h"
 #include "cdns2-debug.h"
-
 #define CDNS2_MSG_MAX	500
-
 DECLARE_EVENT_CLASS(cdns2_log_enable_disable,
 	TP_PROTO(int set),
 	TP_ARGS(set),
@@ -41,22 +22,18 @@ DECLARE_EVENT_CLASS(cdns2_log_enable_disable,
 	),
 	TP_printk("%s", __entry->set ? "enabled" : "disabled")
 );
-
 DEFINE_EVENT(cdns2_log_enable_disable, cdns2_pullup,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdns2_log_enable_disable, cdns2_lpm,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DEFINE_EVENT(cdns2_log_enable_disable, cdns2_may_wakeup,
 	TP_PROTO(int set),
 	TP_ARGS(set)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_simple,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg),
@@ -68,32 +45,26 @@ DECLARE_EVENT_CLASS(cdns2_log_simple,
 	),
 	TP_printk("%s", __get_str(text))
 );
-
 DEFINE_EVENT(cdns2_log_simple, cdns2_no_room_on_ring,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdns2_log_simple, cdns2_ep0_status_stage,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdns2_log_simple, cdns2_ep0_set_config,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdns2_log_simple, cdns2_ep0_setup,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 DEFINE_EVENT(cdns2_log_simple, cdns2_device_state,
 	TP_PROTO(char *msg),
 	TP_ARGS(msg)
 );
-
 TRACE_EVENT(cdns2_ep_halt,
 	TP_PROTO(struct cdns2_endpoint *ep_priv, u8 halt, u8 flush),
 	TP_ARGS(ep_priv, halt, flush),
@@ -110,7 +81,6 @@ TRACE_EVENT(cdns2_ep_halt,
 	TP_printk("Halt %s for %s: %s", __entry->flush ? " and flush" : "",
 		  __get_str(name), __entry->halt ? "set" : "cleared")
 );
-
 TRACE_EVENT(cdns2_wa1,
 	TP_PROTO(struct cdns2_endpoint *ep_priv, char *msg),
 	TP_ARGS(ep_priv, msg),
@@ -124,7 +94,6 @@ TRACE_EVENT(cdns2_wa1,
 	),
 	TP_printk("WA1: %s %s", __get_str(ep_name), __get_str(msg))
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_doorbell,
 	TP_PROTO(struct cdns2_endpoint *pep, u32 ep_trbaddr),
 	TP_ARGS(pep, ep_trbaddr),
@@ -140,17 +109,14 @@ DECLARE_EVENT_CLASS(cdns2_log_doorbell,
 	TP_printk("%s, ep_trbaddr %08x", __get_str(name),
 		  __entry->ep_trbaddr)
 );
-
 DEFINE_EVENT(cdns2_log_doorbell, cdns2_doorbell_ep0,
 	TP_PROTO(struct cdns2_endpoint *pep, u32 ep_trbaddr),
 	TP_ARGS(pep, ep_trbaddr)
 );
-
 DEFINE_EVENT(cdns2_log_doorbell, cdns2_doorbell_epx,
 	TP_PROTO(struct cdns2_endpoint *pep, u32 ep_trbaddr),
 	TP_ARGS(pep, ep_trbaddr)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_usb_irq,
 	TP_PROTO(u32 usb_irq, u32 ext_irq),
 	TP_ARGS(usb_irq, ext_irq),
@@ -167,12 +133,10 @@ DECLARE_EVENT_CLASS(cdns2_log_usb_irq,
 					     __entry->usb_irq,
 					     __entry->ext_irq))
 );
-
 DEFINE_EVENT(cdns2_log_usb_irq, cdns2_usb_irq,
 	TP_PROTO(u32 usb_irq, u32 ext_irq),
 	TP_ARGS(usb_irq, ext_irq)
 );
-
 TRACE_EVENT(cdns2_dma_ep_ists,
 	TP_PROTO(u32 dma_ep_ists),
 	TP_ARGS(dma_ep_ists),
@@ -185,7 +149,6 @@ TRACE_EVENT(cdns2_dma_ep_ists,
 	TP_printk("OUT: 0x%04x, IN: 0x%04x", (u16)__entry->dma_ep_ists,
 		  __entry->dma_ep_ists >> 16)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_epx_irq,
 	TP_PROTO(struct cdns2_device *pdev, struct cdns2_endpoint *pep),
 	TP_ARGS(pdev, pep),
@@ -207,12 +170,10 @@ DECLARE_EVENT_CLASS(cdns2_log_epx_irq,
 				       __entry->ep_ists, __entry->ep_sts),
 		  __entry->ep_traddr)
 );
-
 DEFINE_EVENT(cdns2_log_epx_irq, cdns2_epx_irq,
 	TP_PROTO(struct cdns2_device *pdev, struct cdns2_endpoint *pep),
 	TP_ARGS(pdev, pep)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_ep0_irq,
 	TP_PROTO(struct cdns2_device *pdev),
 	TP_ARGS(pdev),
@@ -231,12 +192,10 @@ DECLARE_EVENT_CLASS(cdns2_log_ep0_irq,
 					     __entry->ep_ists, __entry->ep_sts,
 					     __entry->ep_dir))
 );
-
 DEFINE_EVENT(cdns2_log_ep0_irq, cdns2_ep0_irq,
 	TP_PROTO(struct cdns2_device *pdev),
 	TP_ARGS(pdev)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_ctrl,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl),
@@ -260,12 +219,10 @@ DECLARE_EVENT_CLASS(cdns2_log_ctrl,
 					__entry->wIndex, __entry->wLength)
 	)
 );
-
 DEFINE_EVENT(cdns2_log_ctrl, cdns2_ctrl_req,
 	TP_PROTO(struct usb_ctrlrequest *ctrl),
 	TP_ARGS(ctrl)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_request,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq),
@@ -319,42 +276,34 @@ DECLARE_EVENT_CLASS(cdns2_log_request,
 		  __entry->end_trb
 	)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_request_enqueue,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_request_enqueue_error,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_alloc_request,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_free_request,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_ep_queue,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_request_dequeue,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 DEFINE_EVENT(cdns2_log_request, cdns2_request_giveback,
 	TP_PROTO(struct cdns2_request *preq),
 	TP_ARGS(preq)
 );
-
 TRACE_EVENT(cdns2_ep0_enqueue,
 	TP_PROTO(struct cdns2_device *dev_priv, struct usb_request *request),
 	TP_ARGS(dev_priv, request),
@@ -369,7 +318,6 @@ TRACE_EVENT(cdns2_ep0_enqueue,
 	TP_printk("Queue to ep0%s length: %u", __entry->dir ? "in" : "out",
 		  __entry->length)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_map_request,
 	TP_PROTO(struct cdns2_request *priv_req),
 	TP_ARGS(priv_req),
@@ -389,7 +337,6 @@ DECLARE_EVENT_CLASS(cdns2_log_map_request,
 		  __get_str(name), __entry->req, __entry->buf, &__entry->dma
 	)
 );
-
 DEFINE_EVENT(cdns2_log_map_request, cdns2_map_request,
 	     TP_PROTO(struct cdns2_request *req),
 	     TP_ARGS(req)
@@ -398,7 +345,6 @@ DEFINE_EVENT(cdns2_log_map_request, cdns2_mapped_request,
 	     TP_PROTO(struct cdns2_request *req),
 	     TP_ARGS(req)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_trb,
 	TP_PROTO(struct cdns2_endpoint *pep, struct cdns2_trb *trb),
 	TP_ARGS(pep, trb),
@@ -424,17 +370,14 @@ DECLARE_EVENT_CLASS(cdns2_log_trb,
 				  __entry->control, __entry->length,
 				  __entry->buffer))
 );
-
 DEFINE_EVENT(cdns2_log_trb, cdns2_queue_trb,
 	TP_PROTO(struct cdns2_endpoint *pep, struct cdns2_trb *trb),
 	TP_ARGS(pep, trb)
 );
-
 DEFINE_EVENT(cdns2_log_trb, cdns2_complete_trb,
 	TP_PROTO(struct cdns2_endpoint *pep, struct cdns2_trb *trb),
 	TP_ARGS(pep, trb)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_ring,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep),
@@ -450,19 +393,16 @@ DECLARE_EVENT_CLASS(cdns2_log_ring,
 		memcpy(__get_dynamic_array(tr_seg), pep->ring.trbs,
 		       TR_SEG_SIZE);
 	),
-
 	TP_printk("%s",
 		  cdns2_raw_ring((struct cdns2_endpoint *)__get_str(pep),
 				    (struct cdns2_trb *)__get_str(tr_seg),
 				    __get_str(buffer),
 				    (TRBS_PER_SEGMENT * 65) + CDNS2_MSG_MAX))
 );
-
 DEFINE_EVENT(cdns2_log_ring, cdns2_ring,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_ep,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep),
@@ -496,27 +436,22 @@ DECLARE_EVENT_CLASS(cdns2_log_ep,
 		__entry->dir ? "IN" : "OUT"
 	)
 );
-
 DEFINE_EVENT(cdns2_log_ep, cdns2_gadget_ep_enable,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep)
 );
-
 DEFINE_EVENT(cdns2_log_ep, cdns2_gadget_ep_disable,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep)
 );
-
 DEFINE_EVENT(cdns2_log_ep, cdns2_iso_out_ep_disable,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep)
 );
-
 DEFINE_EVENT(cdns2_log_ep, cdns2_ep_busy_try_halt_again,
 	TP_PROTO(struct cdns2_endpoint *pep),
 	TP_ARGS(pep)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_request_handled,
 	TP_PROTO(struct cdns2_request *priv_req, int current_index,
 		 int handled),
@@ -548,13 +483,11 @@ DECLARE_EVENT_CLASS(cdns2_log_request_handled,
 		__entry->end_trb
 	)
 );
-
 DEFINE_EVENT(cdns2_log_request_handled, cdns2_request_handled,
 	TP_PROTO(struct cdns2_request *priv_req, int current_index,
 		 int handled),
 	TP_ARGS(priv_req, current_index, handled)
 );
-
 DECLARE_EVENT_CLASS(cdns2_log_epx_reg_config,
 	TP_PROTO(struct cdns2_device *pdev, struct cdns2_endpoint *pep),
 	TP_ARGS(pdev, pep),
@@ -578,7 +511,6 @@ DECLARE_EVENT_CLASS(cdns2_log_epx_reg_config,
 		__entry->ep_sts_en_reg = readl(&pdev->adma_regs->ep_sts_en);
 		__entry->ep_cfg_reg = readl(&pdev->adma_regs->ep_cfg);
 	),
-
 	TP_printk("%s, maxpack: %d, con: %02x, dma_ep_sel: %08x, dma_ep_sts_en: %08x"
 		  " dma_ep_cfg %08x",
 		  __get_str(ep_name), __entry->maxpack_reg, __entry->con_reg,
@@ -586,20 +518,13 @@ DECLARE_EVENT_CLASS(cdns2_log_epx_reg_config,
 		  __entry->ep_cfg_reg
 	)
 );
-
 DEFINE_EVENT(cdns2_log_epx_reg_config, cdns2_epx_hw_cfg,
 	TP_PROTO(struct cdns2_device *pdev, struct cdns2_endpoint *pep),
 	TP_ARGS(pdev, pep)
 );
-
-#endif /* __LINUX_CDNS2_TRACE */
-
-/* This part must be outside header guard. */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE cdns2-trace
-
 #include <trace/define_trace.h>

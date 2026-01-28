@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 CompuLab, Ltd. - http://www.compulab.co.il/
- */
-
 / {
 	model = "CompuLab SB-SOM";
 	compatible = "compulab,sb-som";
-
 	vsb_3v3: fixedregulator-v3_3 {
 		compatible = "regulator-fixed";
 		regulator-name = "vsb_3v3";
@@ -15,11 +9,9 @@
 		regulator-always-on;
 		enable-active-high;
 	};
-
 	lcd0: display {
 		compatible = "startek,startek-kd050c", "panel-dpi";
 		label = "lcd";
-
 		panel-timing {
 			clock-frequency = <33000000>;
 			hactive = <800>;
@@ -36,11 +28,9 @@
 			pixelclk-active = <1>;
 		};
 	};
-
 	hdmi_conn: connector {
 		compatible = "hdmi-connector";
 		label = "hdmi";
-
 		type = "a";
 	};
 };

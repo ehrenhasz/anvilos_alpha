@@ -1,24 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010-2011,2013-2015 The Linux Foundation. All rights reserved.
- */
-
 #ifndef __LPASS_LPAIF_REG_H__
 #define __LPASS_LPAIF_REG_H__
-
-/* LPAIF I2S */
-
 #define LPAIF_I2SCTL_REG_ADDR(v, addr, port) \
 	(v->i2sctrl_reg_base + (addr) + v->i2sctrl_reg_stride * (port))
-
 #define LPAIF_I2SCTL_REG(v, port)	LPAIF_I2SCTL_REG_ADDR(v, 0x0, (port))
-
 #define LPAIF_I2SCTL_LOOPBACK_DISABLE	0
 #define LPAIF_I2SCTL_LOOPBACK_ENABLE	1
-
 #define LPAIF_I2SCTL_SPKEN_DISABLE	0
 #define LPAIF_I2SCTL_SPKEN_ENABLE	1
-
 #define LPAIF_I2SCTL_MODE_NONE		0
 #define LPAIF_I2SCTL_MODE_SD0		1
 #define LPAIF_I2SCTL_MODE_SD1		2
@@ -39,121 +27,85 @@
 #define LPAIF_I2SCTL_MODE_QUAD45	17
 #define LPAIF_I2SCTL_MODE_QUAD47	18
 #define LPAIF_I2SCTL_MODE_8CH_2		19
-
 #define LPAIF_I2SCTL_SPKMODE(mode)	mode
-
 #define LPAIF_I2SCTL_SPKMONO_STEREO	0
 #define LPAIF_I2SCTL_SPKMONO_MONO	1
-
 #define LPAIF_I2SCTL_MICEN_DISABLE	0
 #define LPAIF_I2SCTL_MICEN_ENABLE	1
-
 #define LPAIF_I2SCTL_MICMODE(mode)	mode
-
 #define LPAIF_I2SCTL_MICMONO_STEREO	0
 #define LPAIF_I2SCTL_MICMONO_MONO	1
-
 #define LPAIF_I2SCTL_WSSRC_INTERNAL	0
 #define LPAIF_I2SCTL_WSSRC_EXTERNAL	1
-
 #define LPAIF_I2SCTL_BITWIDTH_16	0
 #define LPAIF_I2SCTL_BITWIDTH_24	1
 #define LPAIF_I2SCTL_BITWIDTH_32	2
-
 #define LPAIF_I2SCTL_RESET_STATE	0x003C0004
 #define LPAIF_DMACTL_RESET_STATE	0x00200000
-
-
-/* LPAIF IRQ */
 #define LPAIF_IRQ_REG_ADDR(v, addr, port) \
 	(v->irq_reg_base + (addr) + v->irq_reg_stride * (port))
-
 #define LPAIF_IRQ_PORT_HOST		0
-
 #define LPAIF_IRQEN_REG(v, port)	LPAIF_IRQ_REG_ADDR(v, 0x0, (port))
 #define LPAIF_IRQSTAT_REG(v, port)	LPAIF_IRQ_REG_ADDR(v, 0x4, (port))
 #define LPAIF_IRQCLEAR_REG(v, port)	LPAIF_IRQ_REG_ADDR(v, 0xC, (port))
-
-/* LPAIF RXTX IRQ */
 #define LPAIF_RXTX_IRQ_REG_ADDR(v, addr, port) \
 		(v->rxtx_irq_reg_base + (addr) + v->rxtx_irq_reg_stride * (port))
-
 #define LPAIF_RXTX_IRQEN_REG(v, port) LPAIF_RXTX_IRQ_REG_ADDR(v, 0x0, port)
 #define LPAIF_RXTX_IRQSTAT_REG(v, port) LPAIF_RXTX_IRQ_REG_ADDR(v, 0x4, port)
 #define LPAIF_RXTX_IRQCLEAR_REG(v, port) LPAIF_RXTX_IRQ_REG_ADDR(v, 0xC, port)
-
-/* LPAIF VA IRQ */
 #define LPAIF_VA_IRQ_REG_ADDR(v, addr, port) \
 		(v->va_irq_reg_base + (addr) + v->va_irq_reg_stride * (port))
-
 #define LPAIF_VA_IRQEN_REG(v, port) LPAIF_VA_IRQ_REG_ADDR(v, 0x0, port)
 #define LPAIF_VA_IRQSTAT_REG(v, port) LPAIF_VA_IRQ_REG_ADDR(v, 0x4, port)
 #define LPAIF_VA_IRQCLEAR_REG(v, port) LPAIF_VA_IRQ_REG_ADDR(v, 0xC, port)
-
 #define LPASS_HDMITX_APP_IRQ_REG_ADDR(v, addr)  \
 	((v->hdmi_irq_reg_base) + (addr))
-
 #define LPASS_HDMITX_APP_IRQEN_REG(v)			LPASS_HDMITX_APP_IRQ_REG_ADDR(v, 0x4)
 #define LPASS_HDMITX_APP_IRQSTAT_REG(v)			LPASS_HDMITX_APP_IRQ_REG_ADDR(v, 0x8)
 #define LPASS_HDMITX_APP_IRQCLEAR_REG(v)		LPASS_HDMITX_APP_IRQ_REG_ADDR(v, 0xC)
-
 #define LPAIF_IRQ_BITSTRIDE		3
-
 #define LPAIF_IRQ_PER(chan)		(1 << (LPAIF_IRQ_BITSTRIDE * (chan)))
 #define LPAIF_IRQ_XRUN(chan)		(2 << (LPAIF_IRQ_BITSTRIDE * (chan)))
 #define LPAIF_IRQ_ERR(chan)		(4 << (LPAIF_IRQ_BITSTRIDE * (chan)))
-
 #define LPAIF_IRQ_ALL(chan)		(7 << (LPAIF_IRQ_BITSTRIDE * (chan)))
 #define LPAIF_IRQ_HDMI_REQ_ON_PRELOAD(chan)	(1 << (14 + chan))
 #define LPAIF_IRQ_HDMI_SDEEP_AUD_DIS(chan)	(1 << (24 + chan))
 #define LPAIF_IRQ_HDMI_METADONE		BIT(23)
-
-/* LPAIF DMA */
 #define LPAIF_HDMI_RDMA_REG_ADDR(v, addr, chan) \
 	(v->hdmi_rdma_reg_base + (addr) + v->hdmi_rdma_reg_stride * (chan))
-
 #define LPAIF_HDMI_RDMACTL_AUDINTF(id)	(id << LPAIF_RDMACTL_AUDINTF_SHIFT)
-
 #define LPAIF_HDMI_RDMACTL_REG(v, chan)		LPAIF_HDMI_RDMA_REG_ADDR(v, 0x00, (chan))
 #define LPAIF_HDMI_RDMABASE_REG(v, chan)	LPAIF_HDMI_RDMA_REG_ADDR(v, 0x04, (chan))
 #define	LPAIF_HDMI_RDMABUFF_REG(v, chan)	LPAIF_HDMI_RDMA_REG_ADDR(v, 0x08, (chan))
 #define LPAIF_HDMI_RDMACURR_REG(v, chan)	LPAIF_HDMI_RDMA_REG_ADDR(v, 0x0C, (chan))
 #define	LPAIF_HDMI_RDMAPER_REG(v, chan)		LPAIF_HDMI_RDMA_REG_ADDR(v, 0x10, (chan))
 #define	LPAIF_HDMI_RDMAPERCNT_REG(v, chan)	LPAIF_HDMI_RDMA_REG_ADDR(v, 0x14, (chan))
-
 #define LPAIF_RDMA_REG_ADDR(v, addr, chan) \
 	(v->rdma_reg_base + (addr) + v->rdma_reg_stride * (chan))
-
 #define LPAIF_RDMACTL_AUDINTF(id)	(id << LPAIF_RDMACTL_AUDINTF_SHIFT)
-
 #define LPAIF_RDMACTL_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x00, (chan))
 #define LPAIF_RDMABASE_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x04, (chan))
 #define	LPAIF_RDMABUFF_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x08, (chan))
 #define LPAIF_RDMACURR_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x0C, (chan))
 #define	LPAIF_RDMAPER_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x10, (chan))
 #define	LPAIF_RDMAPERCNT_REG(v, chan)	LPAIF_RDMA_REG_ADDR(v, 0x14, (chan))
-
 #define LPAIF_WRDMA_REG_ADDR(v, addr, chan) \
 	(v->wrdma_reg_base + (addr) + \
 	 v->wrdma_reg_stride * (chan - v->wrdma_channel_start))
-
 #define LPAIF_WRDMACTL_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x00, (chan))
 #define LPAIF_WRDMABASE_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x04, (chan))
 #define	LPAIF_WRDMABUFF_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x08, (chan))
 #define LPAIF_WRDMACURR_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x0C, (chan))
 #define	LPAIF_WRDMAPER_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x10, (chan))
 #define	LPAIF_WRDMAPERCNT_REG(v, chan)	LPAIF_WRDMA_REG_ADDR(v, 0x14, (chan))
-
 #define LPAIF_INTFDMA_REG(v, chan, reg, dai_id)  \
 	((dai_id ==  LPASS_DP_RX) ? \
 		LPAIF_HDMI_RDMA##reg##_REG(v, chan) : \
 		 LPAIF_RDMA##reg##_REG(v, chan))
-
 #define __LPAIF_DMA_REG(v, chan, dir, reg, dai_id)  \
 	((dir ==  SNDRV_PCM_STREAM_PLAYBACK) ? \
 		(LPAIF_INTFDMA_REG(v, chan, reg, dai_id)) : \
 		LPAIF_WRDMA##reg##_REG(v, chan))
-
 #define LPAIF_DMACTL_REG(v, chan, dir, dai_id) \
 	(is_cdc_dma_port(dai_id) ? \
 	__LPAIF_CDC_DMA_REG(v, chan, dir, CTL, dai_id) : \
@@ -178,12 +130,10 @@
 	(is_cdc_dma_port(dai_id) ? \
 	__LPAIF_CDC_DMA_REG(v, chan, dir, PERCNT, dai_id) : \
 	__LPAIF_DMA_REG(v, chan, dir, PERCNT, dai_id))
-
 #define LPAIF_CDC_RDMA_REG_ADDR(v, addr, chan, dai_id) \
 	(is_rxtx_cdc_dma_port(dai_id) ? \
 	(v->rxtx_rdma_reg_base + (addr) + v->rxtx_rdma_reg_stride * (chan)) : \
 	(v->va_rdma_reg_base + (addr) + v->va_rdma_reg_stride * (chan)))
-
 #define LPAIF_CDC_RXTX_RDMACTL_REG(v, chan, dai_id) \
 		LPAIF_CDC_RDMA_REG_ADDR(v, 0x00, (chan), dai_id)
 #define LPAIF_CDC_RXTX_RDMABASE_REG(v, chan, dai_id) \
@@ -196,7 +146,6 @@
 		LPAIF_CDC_RDMA_REG_ADDR(v, 0x10, (chan), dai_id)
 #define LPAIF_CDC_RXTX_RDMA_INTF_REG(v, chan, dai_id) \
 	LPAIF_CDC_RDMA_REG_ADDR(v, 0x50, (chan), dai_id)
-
 #define LPAIF_CDC_VA_RDMACTL_REG(v, chan, dai_id) LPAIF_CDC_RDMA_REG_ADDR(v, 0x00, (chan), dai_id)
 #define LPAIF_CDC_VA_RDMABASE_REG(v, chan, dai_id) LPAIF_CDC_RDMA_REG_ADDR(v, 0x04, (chan), dai_id)
 #define LPAIF_CDC_VA_RDMABUFF_REG(v, chan, dai_id) LPAIF_CDC_RDMA_REG_ADDR(v, 0x08, (chan), dai_id)
@@ -204,14 +153,12 @@
 #define LPAIF_CDC_VA_RDMAPER_REG(v, chan, dai_id) LPAIF_CDC_RDMA_REG_ADDR(v, 0x10, (chan), dai_id)
 #define LPAIF_CDC_VA_RDMA_INTF_REG(v, chan, dai_id) \
 	LPAIF_CDC_RDMA_REG_ADDR(v, 0x50, (chan), dai_id)
-
 #define LPAIF_CDC_WRDMA_REG_ADDR(v, addr, chan, dai_id) \
 	(is_rxtx_cdc_dma_port(dai_id) ? \
 	(v->rxtx_wrdma_reg_base + (addr) + \
 		v->rxtx_wrdma_reg_stride * (chan - v->rxtx_wrdma_channel_start)) : \
 	(v->va_wrdma_reg_base + (addr) + \
 		v->va_wrdma_reg_stride * (chan - v->va_wrdma_channel_start)))
-
 #define LPAIF_CDC_RXTX_WRDMACTL_REG(v, chan, dai_id) \
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x00, (chan), dai_id)
 #define LPAIF_CDC_RXTX_WRDMABASE_REG(v, chan, dai_id) \
@@ -224,7 +171,6 @@
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x10, (chan), dai_id)
 #define LPAIF_CDC_RXTX_WRDMA_INTF_REG(v, chan, dai_id) \
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x50, (chan), dai_id)
-
 #define LPAIF_CDC_VA_WRDMACTL_REG(v, chan, dai_id) \
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x00, (chan), dai_id)
 #define LPAIF_CDC_VA_WRDMABASE_REG(v, chan, dai_id) \
@@ -237,33 +183,26 @@
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x10, (chan), dai_id)
 #define LPAIF_CDC_VA_WRDMA_INTF_REG(v, chan, dai_id) \
 	LPAIF_CDC_WRDMA_REG_ADDR(v, 0x50, (chan), dai_id)
-
 #define __LPAIF_CDC_RDDMA_REG(v, chan, dir, reg, dai_id) \
 		(is_rxtx_cdc_dma_port(dai_id) ? LPAIF_CDC_RXTX_RDMA##reg##_REG(v, chan, dai_id) : \
 			LPAIF_CDC_VA_RDMA##reg##_REG(v, chan, dai_id))
-
 #define __LPAIF_CDC_WRDMA_REG(v, chan, dir, reg, dai_id) \
 		(is_rxtx_cdc_dma_port(dai_id) ? LPAIF_CDC_RXTX_WRDMA##reg##_REG(v, chan, dai_id) : \
 			LPAIF_CDC_VA_WRDMA##reg##_REG(v, chan, dai_id))
-
 #define __LPAIF_CDC_DMA_REG(v, chan, dir, reg, dai_id) \
 		((dir ==  SNDRV_PCM_STREAM_PLAYBACK) ? \
 			__LPAIF_CDC_RDDMA_REG(v, chan, dir, reg, dai_id) : \
 			__LPAIF_CDC_WRDMA_REG(v, chan, dir, reg, dai_id))
-
 #define LPAIF_CDC_INTF_REG(v, chan, dir, dai_id) \
 		((dir ==  SNDRV_PCM_STREAM_PLAYBACK) ? \
 		LPAIF_CDC_RDMA_INTF_REG(v, chan, dai_id) : \
 		LPAIF_CDC_WRDMA_INTF_REG(v, chan, dai_id))
-
 #define LPAIF_INTF_REG(v, chan, dir, dai_id) \
 		(is_cdc_dma_port(dai_id) ? \
 		LPAIF_CDC_INTF_REG(v, chan, dir, dai_id) : \
 		LPAIF_DMACTL_REG(v, chan, dir, dai_id))
-
 #define LPAIF_DMACTL_BURSTEN_SINGLE	0
 #define LPAIF_DMACTL_BURSTEN_INCR4	1
-
 #define LPAIF_DMACTL_WPSCNT_ONE		0
 #define LPAIF_DMACTL_WPSCNT_TWO		1
 #define LPAIF_DMACTL_WPSCNT_THREE	2
@@ -274,9 +213,7 @@
 #define LPAIF_DMACTL_WPSCNT_TWELVE	11
 #define LPAIF_DMACTL_WPSCNT_FOURTEEN	13
 #define LPAIF_DMACTL_WPSCNT_SIXTEEN	15
-
 #define LPAIF_DMACTL_AUDINTF(id)	id
-
 #define LPAIF_DMACTL_FIFOWM_1		0
 #define LPAIF_DMACTL_FIFOWM_2		1
 #define LPAIF_DMACTL_FIFOWM_3		2
@@ -309,11 +246,8 @@
 #define LPAIF_DMACTL_FIFOWM_30		29
 #define LPAIF_DMACTL_FIFOWM_31		30
 #define LPAIF_DMACTL_FIFOWM_32		31
-
 #define LPAIF_DMACTL_ENABLE_OFF		0
 #define LPAIF_DMACTL_ENABLE_ON		1
-
 #define LPAIF_DMACTL_DYNCLK_OFF		0
 #define LPAIF_DMACTL_DYNCLK_ON		1
-
-#endif /* __LPASS_LPAIF_REG_H__ */
+#endif  

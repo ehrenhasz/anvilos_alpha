@@ -1,38 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments PCM186x Universal Audio ADC
- *
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - https://www.ti.com
- *	Andreas Dannenberg <dannenberg@ti.com>
- *	Andrew F. Davis <afd@ti.com>
- */
-
 #ifndef _PCM186X_H_
 #define _PCM186X_H_
-
 #include <linux/pm.h>
 #include <linux/regmap.h>
-
 enum pcm186x_type {
 	PCM1862,
 	PCM1863,
 	PCM1864,
 	PCM1865,
 };
-
 #define PCM186X_RATES	SNDRV_PCM_RATE_8000_192000
 #define PCM186X_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | \
 			 SNDRV_PCM_FMTBIT_S20_3LE |\
 			 SNDRV_PCM_FMTBIT_S24_LE | \
 			 SNDRV_PCM_FMTBIT_S32_LE)
-
 #define PCM186X_PAGE_LEN		0x0100
 #define PCM186X_PAGE_BASE(n)		(PCM186X_PAGE_LEN * n)
-
-/* The page selection register address is the same on all pages */
 #define PCM186X_PAGE			0
-
-/* Register Definitions - Page 0 */
 #define PCM186X_PGA_VAL_CH1_L		(PCM186X_PAGE_BASE(0) +   1)
 #define PCM186X_PGA_VAL_CH1_R		(PCM186X_PAGE_BASE(0) +   2)
 #define PCM186X_PGA_VAL_CH2_L		(PCM186X_PAGE_BASE(0) +   3)
@@ -116,8 +99,6 @@ enum pcm186x_type {
 #define PCM186X_DIV_STATUS		(PCM186X_PAGE_BASE(0) + 116)
 #define PCM186X_CLK_STATUS		(PCM186X_PAGE_BASE(0) + 117)
 #define PCM186X_SUPPLY_STATUS		(PCM186X_PAGE_BASE(0) + 120)
-
-/* Register Definitions - Page 1 */
 #define PCM186X_MMAP_STAT_CTRL		(PCM186X_PAGE_BASE(1) +   1)
 #define PCM186X_MMAP_ADDRESS		(PCM186X_PAGE_BASE(1) +   2)
 #define PCM186X_MEM_WDATA0		(PCM186X_PAGE_BASE(1) +   4)
@@ -128,24 +109,13 @@ enum pcm186x_type {
 #define PCM186X_MEM_RDATA1		(PCM186X_PAGE_BASE(1) +   9)
 #define PCM186X_MEM_RDATA2		(PCM186X_PAGE_BASE(1) +  10)
 #define PCM186X_MEM_RDATA3		(PCM186X_PAGE_BASE(1) +  11)
-
-/* Register Definitions - Page 3 */
 #define PCM186X_OSC_PWR_DOWN_CTRL	(PCM186X_PAGE_BASE(3) +  18)
 #define PCM186X_MIC_BIAS_CTRL		(PCM186X_PAGE_BASE(3) +  21)
-
-/* Register Definitions - Page 253 */
 #define PCM186X_CURR_TRIM_CTRL		(PCM186X_PAGE_BASE(253) +  20)
-
 #define PCM186X_MAX_REGISTER		PCM186X_CURR_TRIM_CTRL
-
-/* PCM186X_PAGE */
 #define PCM186X_RESET			0xfe
-
-/* PCM186X_ADCX_INPUT_SEL_X */
 #define PCM186X_ADC_INPUT_SEL_POL	BIT(7)
 #define PCM186X_ADC_INPUT_SEL_MASK	GENMASK(5, 0)
-
-/* PCM186X_PCM_CFG */
 #define PCM186X_PCM_CFG_RX_WLEN_MASK	GENMASK(7, 6)
 #define PCM186X_PCM_CFG_RX_WLEN_SHIFT	6
 #define PCM186X_PCM_CFG_RX_WLEN_32	0x00
@@ -165,14 +135,10 @@ enum pcm186x_type {
 #define PCM186X_PCM_CFG_FMT_LEFTJ	0x01
 #define PCM186X_PCM_CFG_FMT_RIGHTJ	0x02
 #define PCM186X_PCM_CFG_FMT_TDM		0x03
-
-/* PCM186X_TDM_TX_SEL */
 #define PCM186X_TDM_TX_SEL_2CH		0x00
 #define PCM186X_TDM_TX_SEL_4CH		0x01
 #define PCM186X_TDM_TX_SEL_6CH		0x02
 #define PCM186X_TDM_TX_SEL_MASK		0x03
-
-/* PCM186X_CLK_CTRL */
 #define PCM186X_CLK_CTRL_SCK_XI_SEL1	BIT(7)
 #define PCM186X_CLK_CTRL_SCK_XI_SEL0	BIT(6)
 #define PCM186X_CLK_CTRL_SCK_SRC_PLL	BIT(5)
@@ -181,39 +147,26 @@ enum pcm186x_type {
 #define PCM186X_CLK_CTRL_DSP2_SRC_PLL	BIT(2)
 #define PCM186X_CLK_CTRL_DSP1_SRC_PLL	BIT(1)
 #define PCM186X_CLK_CTRL_CLKDET_EN	BIT(0)
-
-/* PCM186X_PLL_CTRL */
 #define PCM186X_PLL_CTRL_LOCK		BIT(4)
 #define PCM186X_PLL_CTRL_REF_SEL	BIT(1)
 #define PCM186X_PLL_CTRL_EN		BIT(0)
-
-/* PCM186X_POWER_CTRL */
 #define PCM186X_PWR_CTRL_PWRDN		BIT(2)
 #define PCM186X_PWR_CTRL_SLEEP		BIT(1)
 #define PCM186X_PWR_CTRL_STBY		BIT(0)
-
-/* PCM186X_CLK_STATUS */
 #define PCM186X_CLK_STATUS_LRCKHLT	BIT(6)
 #define PCM186X_CLK_STATUS_BCKHLT	BIT(5)
 #define PCM186X_CLK_STATUS_SCKHLT	BIT(4)
 #define PCM186X_CLK_STATUS_LRCKERR	BIT(2)
 #define PCM186X_CLK_STATUS_BCKERR	BIT(1)
 #define PCM186X_CLK_STATUS_SCKERR	BIT(0)
-
-/* PCM186X_SUPPLY_STATUS */
 #define PCM186X_SUPPLY_STATUS_DVDD	BIT(2)
 #define PCM186X_SUPPLY_STATUS_AVDD	BIT(1)
 #define PCM186X_SUPPLY_STATUS_LDO	BIT(0)
-
-/* PCM186X_MMAP_STAT_CTRL */
 #define PCM186X_MMAP_STAT_DONE		BIT(4)
 #define PCM186X_MMAP_STAT_BUSY		BIT(2)
 #define PCM186X_MMAP_STAT_R_REQ		BIT(1)
 #define PCM186X_MMAP_STAT_W_REQ		BIT(0)
-
 extern const struct regmap_config pcm186x_regmap;
-
 int pcm186x_probe(struct device *dev, enum pcm186x_type type, int irq,
 		  struct regmap *regmap);
-
-#endif /* _PCM186X_H_ */
+#endif  

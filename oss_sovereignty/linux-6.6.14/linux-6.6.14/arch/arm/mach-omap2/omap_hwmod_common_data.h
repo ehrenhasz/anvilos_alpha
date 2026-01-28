@@ -1,21 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * omap_hwmod_common_data.h - OMAP hwmod common macros and declarations
- *
- * Copyright (C) 2010-2011 Nokia Corporation
- * Copyright (C) 2010-2012 Texas Instruments, Inc.
- * Paul Walmsley
- * Benoît Cousson
- */
 #ifndef __ARCH_ARM_MACH_OMAP2_OMAP_HWMOD_COMMON_DATA_H
 #define __ARCH_ARM_MACH_OMAP2_OMAP_HWMOD_COMMON_DATA_H
-
 #include "omap_hwmod.h"
-
 #include "common.h"
 #include "display.h"
-
-/* Common IP block data across OMAP2xxx */
 extern struct omap_hwmod omap2xxx_l3_main_hwmod;
 extern struct omap_hwmod omap2xxx_l4_core_hwmod;
 extern struct omap_hwmod omap2xxx_l4_wkup_hwmod;
@@ -48,8 +35,6 @@ extern struct omap_hwmod omap2xxx_gpmc_hwmod;
 extern struct omap_hwmod omap2xxx_rng_hwmod;
 extern struct omap_hwmod omap2xxx_sham_hwmod;
 extern struct omap_hwmod omap2xxx_aes_hwmod;
-
-/* Common interface data across OMAP2xxx */
 extern struct omap_hwmod_ocp_if omap2xxx_l3_main__l4_core;
 extern struct omap_hwmod_ocp_if omap2xxx_mpu__l3_main;
 extern struct omap_hwmod_ocp_if omap2xxx_dss__l3;
@@ -76,8 +61,6 @@ extern struct omap_hwmod_ocp_if omap2xxx_l4_core__dss_venc;
 extern struct omap_hwmod_ocp_if omap2xxx_l4_core__rng;
 extern struct omap_hwmod_ocp_if omap2xxx_l4_core__sham;
 extern struct omap_hwmod_ocp_if omap2xxx_l4_core__aes;
-
-/* OMAP hwmod classes - forward declarations */
 extern struct omap_hwmod_class l3_hwmod_class;
 extern struct omap_hwmod_class l4_hwmod_class;
 extern struct omap_hwmod_class mpu_hwmod_class;
@@ -87,11 +70,8 @@ extern struct omap_hwmod_class omap2_dss_hwmod_class;
 extern struct omap_hwmod_class omap2_rfbi_hwmod_class;
 extern struct omap_hwmod_class omap2_venc_hwmod_class;
 extern struct omap_hwmod_class omap2_hdq1w_class;
-
 extern struct omap_hwmod_class omap2xxx_gpio_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_mailbox_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_mcspi_class;
-
 extern struct omap_dss_dispc_dev_attr omap2_3_dss_dispc_dev_attr;
-
 #endif

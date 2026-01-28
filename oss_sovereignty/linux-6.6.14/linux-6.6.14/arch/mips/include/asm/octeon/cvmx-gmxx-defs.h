@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_GMXX_DEFS_H__
 #define __CVMX_GMXX_DEFS_H__
-
 static inline uint64_t CVMX_GMXX_HG2_CONTROL(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -36,7 +8,6 @@ static inline uint64_t CVMX_GMXX_HG2_CONTROL(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000550ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_INF_MODE(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -45,7 +16,6 @@ static inline uint64_t CVMX_GMXX_INF_MODE(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800080007F8ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_PRTX_CFG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -56,7 +26,6 @@ static inline uint64_t CVMX_GMXX_PRTX_CFG(unsigned long offset, unsigned long bl
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000010ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM0(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -67,7 +36,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM0(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000180ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM1(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -78,7 +46,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM1(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000188ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM2(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -89,7 +56,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM2(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000190ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM3(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -100,7 +66,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM3(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000198ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM4(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -111,7 +76,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM4(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x00011800080001A0ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM5(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -122,7 +86,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM5(unsigned long offset, unsigned lon
 	}
 	return CVMX_ADD_IO_SEG(0x00011800080001A8ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CAM_EN(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -133,7 +96,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CAM_EN(unsigned long offset, unsigned l
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000108ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_ADR_CTL(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -144,7 +106,6 @@ static inline uint64_t CVMX_GMXX_RXX_ADR_CTL(unsigned long offset, unsigned long
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000100ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_FRM_CTL(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -155,10 +116,8 @@ static inline uint64_t CVMX_GMXX_RXX_FRM_CTL(unsigned long offset, unsigned long
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000018ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 #define CVMX_GMXX_RXX_FRM_MAX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180008000030ull) + (((offset) & 3) + ((block_id) & 1) * 0x10000ull) * 2048)
 #define CVMX_GMXX_RXX_FRM_MIN(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180008000028ull) + (((offset) & 3) + ((block_id) & 1) * 0x10000ull) * 2048)
-
 static inline uint64_t CVMX_GMXX_RXX_INT_EN(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -169,7 +128,6 @@ static inline uint64_t CVMX_GMXX_RXX_INT_EN(unsigned long offset, unsigned long 
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000008ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_INT_REG(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -180,7 +138,6 @@ static inline uint64_t CVMX_GMXX_RXX_INT_REG(unsigned long offset, unsigned long
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000000ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_RXX_JABBER(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -191,9 +148,7 @@ static inline uint64_t CVMX_GMXX_RXX_JABBER(unsigned long offset, unsigned long 
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000038ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 #define CVMX_GMXX_RXX_RX_INBND(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180008000060ull) + (((offset) & 3) + ((block_id) & 1) * 0x10000ull) * 2048)
-
 static inline uint64_t CVMX_GMXX_RX_PRTS(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -202,7 +157,6 @@ static inline uint64_t CVMX_GMXX_RX_PRTS(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000410ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_RX_XAUI_CTL(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -211,7 +165,6 @@ static inline uint64_t CVMX_GMXX_RX_XAUI_CTL(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000530ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_SMACX(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -222,7 +175,6 @@ static inline uint64_t CVMX_GMXX_SMACX(unsigned long offset, unsigned long block
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000230ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TXX_BURST(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -233,7 +185,6 @@ static inline uint64_t CVMX_GMXX_TXX_BURST(unsigned long offset, unsigned long b
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000228ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 #define CVMX_GMXX_TXX_CLK(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180008000208ull) + (((offset) & 3) + ((block_id) & 1) * 0x10000ull) * 2048)
 static inline uint64_t CVMX_GMXX_TXX_CTL(unsigned long offset, unsigned long block_id)
 {
@@ -245,7 +196,6 @@ static inline uint64_t CVMX_GMXX_TXX_CTL(unsigned long offset, unsigned long blo
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000270ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TXX_PAUSE_PKT_INTERVAL(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -256,7 +206,6 @@ static inline uint64_t CVMX_GMXX_TXX_PAUSE_PKT_INTERVAL(unsigned long offset, un
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000248ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TXX_PAUSE_PKT_TIME(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -267,7 +216,6 @@ static inline uint64_t CVMX_GMXX_TXX_PAUSE_PKT_TIME(unsigned long offset, unsign
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000238ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TXX_SLOT(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -278,7 +226,6 @@ static inline uint64_t CVMX_GMXX_TXX_SLOT(unsigned long offset, unsigned long bl
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000220ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TXX_THRESH(unsigned long offset, unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -289,7 +236,6 @@ static inline uint64_t CVMX_GMXX_TXX_THRESH(unsigned long offset, unsigned long 
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000210ull) + ((offset) + (block_id) * 0x10000ull) * 2048;
 }
-
 static inline uint64_t CVMX_GMXX_TX_INT_EN(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -298,7 +244,6 @@ static inline uint64_t CVMX_GMXX_TX_INT_EN(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000508ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_TX_INT_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -307,7 +252,6 @@ static inline uint64_t CVMX_GMXX_TX_INT_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000500ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_TX_OVR_BP(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -316,7 +260,6 @@ static inline uint64_t CVMX_GMXX_TX_OVR_BP(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800080004C8ull) + (block_id) * 0x8000000ull;
 }
-
 static inline uint64_t CVMX_GMXX_TX_PRTS(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -325,7 +268,6 @@ static inline uint64_t CVMX_GMXX_TX_PRTS(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000480ull) + (block_id) * 0x8000000ull;
 }
-
 #define CVMX_GMXX_TX_SPI_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800080004C0ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_GMXX_TX_SPI_MAX(block_id) (CVMX_ADD_IO_SEG(0x00011800080004B0ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_GMXX_TX_SPI_THRESH(block_id) (CVMX_ADD_IO_SEG(0x00011800080004B8ull) + ((block_id) & 1) * 0x8000000ull)
@@ -337,9 +279,7 @@ static inline uint64_t CVMX_GMXX_TX_XAUI_CTL(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180008000528ull) + (block_id) * 0x8000000ull;
 }
-
 void __cvmx_interrupt_gmxx_enable(int interface);
-
 union cvmx_gmxx_hg2_control {
 	uint64_t u64;
 	struct cvmx_gmxx_hg2_control_s {
@@ -358,7 +298,6 @@ union cvmx_gmxx_hg2_control {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_inf_mode {
 	uint64_t u64;
 	struct cvmx_gmxx_inf_mode_s {
@@ -491,7 +430,6 @@ union cvmx_gmxx_inf_mode {
 #endif
 	} cn68xx;
 };
-
 union cvmx_gmxx_prtx_cfg {
 	uint64_t u64;
 	struct cvmx_gmxx_prtx_cfg_s {
@@ -564,7 +502,6 @@ union cvmx_gmxx_prtx_cfg {
 #endif
 	} cn52xx;
 };
-
 union cvmx_gmxx_rxx_adr_ctl {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_adr_ctl_s {
@@ -581,7 +518,6 @@ union cvmx_gmxx_rxx_adr_ctl {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rxx_frm_ctl {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_frm_ctl_s {
@@ -778,7 +714,6 @@ union cvmx_gmxx_rxx_frm_ctl {
 #endif
 	} cn61xx;
 };
-
 union cvmx_gmxx_rxx_frm_max {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_frm_max_s {
@@ -791,7 +726,6 @@ union cvmx_gmxx_rxx_frm_max {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rxx_frm_min {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_frm_min_s {
@@ -804,7 +738,6 @@ union cvmx_gmxx_rxx_frm_min {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rxx_int_en {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_int_en_s {
@@ -1185,7 +1118,6 @@ union cvmx_gmxx_rxx_int_en {
 #endif
 	} cn61xx;
 };
-
 union cvmx_gmxx_rxx_int_reg {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_int_reg_s {
@@ -1566,7 +1498,6 @@ union cvmx_gmxx_rxx_int_reg {
 #endif
 	} cn61xx;
 };
-
 union cvmx_gmxx_rxx_jabber {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_jabber_s {
@@ -1579,7 +1510,6 @@ union cvmx_gmxx_rxx_jabber {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rxx_rx_inbnd {
 	uint64_t u64;
 	struct cvmx_gmxx_rxx_rx_inbnd_s {
@@ -1596,7 +1526,6 @@ union cvmx_gmxx_rxx_rx_inbnd {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rx_prts {
 	uint64_t u64;
 	struct cvmx_gmxx_rx_prts_s {
@@ -1609,7 +1538,6 @@ union cvmx_gmxx_rx_prts {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_rx_xaui_ctl {
 	uint64_t u64;
 	struct cvmx_gmxx_rx_xaui_ctl_s {
@@ -1622,7 +1550,6 @@ union cvmx_gmxx_rx_xaui_ctl {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_txx_thresh {
 	uint64_t u64;
 	struct cvmx_gmxx_txx_thresh_s {
@@ -1653,7 +1580,6 @@ union cvmx_gmxx_txx_thresh {
 #endif
 	} cn38xx;
 };
-
 union cvmx_gmxx_tx_int_en {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_int_en_s {
@@ -1870,7 +1796,6 @@ union cvmx_gmxx_tx_int_en {
 #endif
 	} cnf71xx;
 };
-
 union cvmx_gmxx_tx_int_reg {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_int_reg_s {
@@ -2087,7 +2012,6 @@ union cvmx_gmxx_tx_int_reg {
 #endif
 	} cnf71xx;
 };
-
 union cvmx_gmxx_tx_ovr_bp {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_ovr_bp_s {
@@ -2159,7 +2083,6 @@ union cvmx_gmxx_tx_ovr_bp {
 #endif
 	} cnf71xx;
 };
-
 union cvmx_gmxx_tx_prts {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_prts_s {
@@ -2172,7 +2095,6 @@ union cvmx_gmxx_tx_prts {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_tx_spi_ctl {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_spi_ctl_s {
@@ -2187,7 +2109,6 @@ union cvmx_gmxx_tx_spi_ctl {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_tx_spi_max {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_spi_max_s {
@@ -2215,7 +2136,6 @@ union cvmx_gmxx_tx_spi_max {
 #endif
 	} cn38xx;
 };
-
 union cvmx_gmxx_tx_spi_thresh {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_spi_thresh_s {
@@ -2228,7 +2148,6 @@ union cvmx_gmxx_tx_spi_thresh {
 #endif
 	} s;
 };
-
 union cvmx_gmxx_tx_xaui_ctl {
 	uint64_t u64;
 	struct cvmx_gmxx_tx_xaui_ctl_s {
@@ -2255,5 +2174,4 @@ union cvmx_gmxx_tx_xaui_ctl {
 #endif
 	} s;
 };
-
 #endif

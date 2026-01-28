@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fsi
-
 #if !defined(_TRACE_FSI_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_FSI_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(fsi_master_read,
 	TP_PROTO(const struct fsi_master *master, int link, int id,
 			uint32_t addr, size_t size),
@@ -34,7 +29,6 @@ TRACE_EVENT(fsi_master_read,
 		__entry->size
 	)
 );
-
 TRACE_EVENT(fsi_master_write,
 	TP_PROTO(const struct fsi_master *master, int link, int id,
 			uint32_t addr, size_t size, const void *data),
@@ -65,7 +59,6 @@ TRACE_EVENT(fsi_master_write,
 		(int)__entry->size, &__entry->data
 	)
 );
-
 TRACE_EVENT(fsi_master_rw_result,
 	TP_PROTO(const struct fsi_master *master, int link, int id,
 			uint32_t addr, size_t size,
@@ -104,7 +97,6 @@ TRACE_EVENT(fsi_master_rw_result,
 		__entry->ret
 	)
 );
-
 TRACE_EVENT(fsi_master_break,
 	TP_PROTO(const struct fsi_master *master, int link),
 	TP_ARGS(master, link),
@@ -121,7 +113,6 @@ TRACE_EVENT(fsi_master_break,
 		__entry->link
 	)
 );
-
 TRACE_EVENT(fsi_master_scan,
 	TP_PROTO(const struct fsi_master *master, bool scan),
 	TP_ARGS(master, scan),
@@ -138,7 +129,6 @@ TRACE_EVENT(fsi_master_scan,
 	TP_printk("fsi%d (%d links) %s", __entry->master_idx, __entry->n_links,
 		  __entry->scan ? "scan" : "unscan")
 );
-
 TRACE_EVENT(fsi_master_unregister,
 	TP_PROTO(const struct fsi_master *master),
 	TP_ARGS(master),
@@ -152,7 +142,6 @@ TRACE_EVENT(fsi_master_unregister,
 	),
 	TP_printk("fsi%d (%d links)", __entry->master_idx, __entry->n_links)
 );
-
 TRACE_EVENT(fsi_slave_init,
 	TP_PROTO(const struct fsi_slave *slave),
 	TP_ARGS(slave),
@@ -184,7 +173,6 @@ TRACE_EVENT(fsi_slave_init,
 		__entry->size
 	)
 );
-
 TRACE_EVENT(fsi_slave_invalid_cfam,
 	TP_PROTO(const struct fsi_master *master, int link, uint32_t cfam_id),
 	TP_ARGS(master, link, cfam_id),
@@ -207,7 +195,6 @@ TRACE_EVENT(fsi_slave_invalid_cfam,
 		__entry->master_n_links
 	)
 );
-
 TRACE_EVENT(fsi_dev_init,
 	TP_PROTO(const struct fsi_device *dev),
 	TP_ARGS(dev),
@@ -239,7 +226,5 @@ TRACE_EVENT(fsi_dev_init,
 		__entry->addr
 	)
 );
-
-#endif /* _TRACE_FSI_H */
-
+#endif  
 #include <trace/define_trace.h>

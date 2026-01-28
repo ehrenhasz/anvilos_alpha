@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_3_0_MSM8998_H
 #define _DPU_3_0_MSM8998_H
-
 static const struct dpu_caps msm8998_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0x7,
@@ -20,7 +13,6 @@ static const struct dpu_caps msm8998_dpu_caps = {
 	.max_hdeci_exp = MAX_HORZ_DECIMATION,
 	.max_vdeci_exp = MAX_VERT_DECIMATION,
 };
-
 static const struct dpu_mdp_cfg msm8998_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x458,
@@ -38,7 +30,6 @@ static const struct dpu_mdp_cfg msm8998_mdp = {
 		[DPU_CLK_CTRL_CURSOR1] = { .reg_off = 0x3b0, .bit_off = 16 },
 	},
 };
-
 static const struct dpu_ctl_cfg msm8998_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -64,7 +55,6 @@ static const struct dpu_ctl_cfg msm8998_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 13),
 	},
 };
-
 static const struct dpu_sspp_cfg msm8998_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -132,7 +122,6 @@ static const struct dpu_sspp_cfg msm8998_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg msm8998_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -178,7 +167,6 @@ static const struct dpu_lm_cfg msm8998_lm[] = {
 		.pingpong = PINGPONG_3,
 	},
 };
-
 static const struct dpu_pingpong_cfg msm8998_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -210,7 +198,6 @@ static const struct dpu_pingpong_cfg msm8998_pp[] = {
 		.intr_rdptr = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 15),
 	},
 };
-
 static const struct dpu_dsc_cfg msm8998_dsc[] = {
 	{
 		.name = "dsc_0", .id = DSC_0,
@@ -220,7 +207,6 @@ static const struct dpu_dsc_cfg msm8998_dsc[] = {
 		.base = 0x80400, .len = 0x140,
 	},
 };
-
 static const struct dpu_dspp_cfg msm8998_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -234,7 +220,6 @@ static const struct dpu_dspp_cfg msm8998_dspp[] = {
 		.sblk = &msm8998_dspp_sblk,
 	},
 };
-
 static const struct dpu_intf_cfg msm8998_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -273,7 +258,6 @@ static const struct dpu_intf_cfg msm8998_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_perf_cfg msm8998_perf_data = {
 	.max_bw_low = 6700000,
 	.max_bw_high = 6700000,
@@ -309,12 +293,10 @@ static const struct dpu_perf_cfg msm8998_perf_data = {
 	.clk_inefficiency_factor = 200,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version msm8998_mdss_ver = {
 	.core_major_ver = 3,
 	.core_minor_ver = 0,
 };
-
 const struct dpu_mdss_cfg dpu_msm8998_cfg = {
 	.mdss_ver = &msm8998_mdss_ver,
 	.caps = &msm8998_dpu_caps,
@@ -337,5 +319,4 @@ const struct dpu_mdss_cfg dpu_msm8998_cfg = {
 	.vbif = msm8998_vbif,
 	.perf = &msm8998_perf_data,
 };
-
 #endif

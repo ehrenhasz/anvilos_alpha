@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef PAGE_ACTOR_H
 #define PAGE_ACTOR_H
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
-
 struct squashfs_page_actor {
 	union {
 		void		**buffer;
@@ -24,7 +18,6 @@ struct squashfs_page_actor {
 	int	returned_pages;
 	pgoff_t	next_index;
 };
-
 extern struct squashfs_page_actor *squashfs_page_actor_init(void **buffer,
 				int pages, int length);
 extern struct squashfs_page_actor *squashfs_page_actor_init_special(
@@ -33,7 +26,6 @@ extern struct squashfs_page_actor *squashfs_page_actor_init_special(
 static inline struct page *squashfs_page_actor_free(struct squashfs_page_actor *actor)
 {
 	struct page *last_page = actor->last_page;
-
 	kfree(actor->tmp_buffer);
 	kfree(actor);
 	return last_page;

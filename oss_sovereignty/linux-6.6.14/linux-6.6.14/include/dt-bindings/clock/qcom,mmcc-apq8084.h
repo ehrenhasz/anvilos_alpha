@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_APQ_MMCC_8084_H
 #define _DT_BINDINGS_CLK_APQ_MMCC_8084_H
-
 #define MMSS_AHB_CLK_SRC		0
 #define MMSS_AXI_CLK_SRC		1
 #define MMPLL0				2
@@ -171,8 +165,6 @@
 #define VPU_MAPLE_CLK			162
 #define VPU_SLEEP_CLK			163
 #define VPU_VDP_CLK			164
-
-/* GDSCs */
 #define VENUS0_GDSC			0
 #define VENUS0_CORE0_GDSC		1
 #define VENUS0_CORE1_GDSC		2
@@ -181,5 +173,4 @@
 #define CAMSS_VFE_GDSC			5
 #define OXILI_GDSC			6
 #define OXILICX_GDSC			7
-
 #endif

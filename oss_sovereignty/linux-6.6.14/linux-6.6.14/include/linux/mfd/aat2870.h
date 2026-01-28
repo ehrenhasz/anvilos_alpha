@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/include/linux/mfd/aat2870.h
- *
- * Copyright (c) 2011, NVIDIA Corporation.
- * Author: Jin Park <jinyoungp@nvidia.com>
- */
-
 #ifndef __LINUX_MFD_AAT2870_H
 #define __LINUX_MFD_AAT2870_H
-
 #include <linux/debugfs.h>
 #include <linux/i2c.h>
-
-/* Register offsets */
 #define AAT2870_BL_CH_EN	0x00
 #define AAT2870_BLM		0x01
 #define AAT2870_BLS		0x02
@@ -53,8 +42,6 @@
 #define AAT2870_LDO_CD		0x25
 #define AAT2870_LDO_EN		0x26
 #define AAT2870_REG_NUM		0x27
-
-/* Device IDs */
 enum aat2870_id {
 	AAT2870_ID_BL,
 	AAT2870_ID_LDOA,
@@ -62,8 +49,6 @@ enum aat2870_id {
 	AAT2870_ID_LDOC,
 	AAT2870_ID_LDOD
 };
-
-/* Backlight channels */
 #define AAT2870_BL_CH1		0x01
 #define AAT2870_BL_CH2		0x02
 #define AAT2870_BL_CH3		0x04
@@ -73,8 +58,6 @@ enum aat2870_id {
 #define AAT2870_BL_CH7		0x40
 #define AAT2870_BL_CH8		0x80
 #define AAT2870_BL_CH_ALL	0xFF
-
-/* Backlight current magnitude (mA) */
 enum aat2870_current {
 	AAT2870_CURRENT_0_45 = 1,
 	AAT2870_CURRENT_0_90,
@@ -109,59 +92,40 @@ enum aat2870_current {
 	AAT2870_CURRENT_27_0,
 	AAT2870_CURRENT_27_9
 };
-
 struct aat2870_register {
 	bool readable;
 	bool writeable;
 	u8 value;
 };
-
 struct aat2870_data {
 	struct device *dev;
 	struct i2c_client *client;
-
 	struct mutex io_lock;
-	struct aat2870_register *reg_cache; /* register cache */
-	int en_pin; /* enable GPIO pin (if < 0, ignore this value) */
+	struct aat2870_register *reg_cache;  
+	int en_pin;  
 	bool is_enable;
-
-	/* init and uninit for platform specified */
 	int (*init)(struct aat2870_data *aat2870);
 	void (*uninit)(struct aat2870_data *aat2870);
-
-	/* i2c io funcntions */
 	int (*read)(struct aat2870_data *aat2870, u8 addr, u8 *val);
 	int (*write)(struct aat2870_data *aat2870, u8 addr, u8 val);
 	int (*update)(struct aat2870_data *aat2870, u8 addr, u8 mask, u8 val);
-
-	/* for debugfs */
 	struct dentry *dentry_root;
 };
-
 struct aat2870_subdev_info {
 	int id;
 	const char *name;
 	void *platform_data;
 };
-
 struct aat2870_platform_data {
-	int en_pin; /* enable GPIO pin (if < 0, ignore this value) */
-
+	int en_pin;  
 	struct aat2870_subdev_info *subdevs;
 	int num_subdevs;
-
-	/* init and uninit for platform specified */
 	int (*init)(struct aat2870_data *aat2870);
 	void (*uninit)(struct aat2870_data *aat2870);
 };
-
 struct aat2870_bl_platform_data {
-	/* backlight channels, default is AAT2870_BL_CH_ALL */
 	int channels;
-	/* backlight current magnitude, default is AAT2870_CURRENT_27_9 */
 	int max_current;
-	/* maximum brightness, default is 255 */
 	int max_brightness;
 };
-
-#endif /* __LINUX_MFD_AAT2870_H */
+#endif  

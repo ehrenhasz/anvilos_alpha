@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_IPD_DEFS_H__
 #define __CVMX_IPD_DEFS_H__
-
 #define CVMX_IPD_1ST_MBUFF_SKIP (CVMX_ADD_IO_SEG(0x00014F0000000000ull))
 #define CVMX_IPD_1st_NEXT_PTR_BACK (CVMX_ADD_IO_SEG(0x00014F0000000150ull))
 #define CVMX_IPD_2nd_NEXT_PTR_BACK (CVMX_ADD_IO_SEG(0x00014F0000000158ull))
@@ -96,7 +68,6 @@
 #define CVMX_IPD_SUB_PORT_QOS_CNT (CVMX_ADD_IO_SEG(0x00014F0000000800ull))
 #define CVMX_IPD_WQE_FPA_QUEUE (CVMX_ADD_IO_SEG(0x00014F0000000020ull))
 #define CVMX_IPD_WQE_PTR_VALID (CVMX_ADD_IO_SEG(0x00014F0000000360ull))
-
 union cvmx_ipd_1st_mbuff_skip {
 	uint64_t u64;
 	struct cvmx_ipd_1st_mbuff_skip_s {
@@ -109,7 +80,6 @@ union cvmx_ipd_1st_mbuff_skip {
 #endif
 	} s;
 };
-
 union cvmx_ipd_1st_next_ptr_back {
 	uint64_t u64;
 	struct cvmx_ipd_1st_next_ptr_back_s {
@@ -122,7 +92,6 @@ union cvmx_ipd_1st_next_ptr_back {
 #endif
 	} s;
 };
-
 union cvmx_ipd_2nd_next_ptr_back {
 	uint64_t u64;
 	struct cvmx_ipd_2nd_next_ptr_back_s {
@@ -135,7 +104,6 @@ union cvmx_ipd_2nd_next_ptr_back {
 #endif
 	} s;
 };
-
 union cvmx_ipd_bist_status {
 	uint64_t u64;
 	struct cvmx_ipd_bist_status_s {
@@ -274,7 +242,6 @@ union cvmx_ipd_bist_status {
 #endif
 	} cn52xx;
 };
-
 union cvmx_ipd_bp_prt_red_end {
 	uint64_t u64;
 	struct cvmx_ipd_bp_prt_red_end_s {
@@ -314,7 +281,6 @@ union cvmx_ipd_bp_prt_red_end {
 #endif
 	} cn63xx;
 };
-
 union cvmx_ipd_bpidx_mbuf_th {
 	uint64_t u64;
 	struct cvmx_ipd_bpidx_mbuf_th_s {
@@ -329,7 +295,6 @@ union cvmx_ipd_bpidx_mbuf_th {
 #endif
 	} s;
 };
-
 union cvmx_ipd_bpid_bp_counterx {
 	uint64_t u64;
 	struct cvmx_ipd_bpid_bp_counterx_s {
@@ -342,7 +307,6 @@ union cvmx_ipd_bpid_bp_counterx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_clk_count {
 	uint64_t u64;
 	struct cvmx_ipd_clk_count_s {
@@ -353,7 +317,6 @@ union cvmx_ipd_clk_count {
 #endif
 	} s;
 };
-
 union cvmx_ipd_credits {
 	uint64_t u64;
 	struct cvmx_ipd_credits_s {
@@ -368,7 +331,6 @@ union cvmx_ipd_credits {
 #endif
 	} s;
 };
-
 union cvmx_ipd_ctl_status {
 	uint64_t u64;
 	struct cvmx_ipd_ctl_status_s {
@@ -562,7 +524,6 @@ union cvmx_ipd_ctl_status {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_ipd_ecc_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_ecc_ctl_s {
@@ -581,7 +542,6 @@ union cvmx_ipd_ecc_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_free_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_free_ptr_fifo_ctl_s {
@@ -602,7 +562,6 @@ union cvmx_ipd_free_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_free_ptr_value {
 	uint64_t u64;
 	struct cvmx_ipd_free_ptr_value_s {
@@ -615,7 +574,6 @@ union cvmx_ipd_free_ptr_value {
 #endif
 	} s;
 };
-
 union cvmx_ipd_hold_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_hold_ptr_fifo_ctl_s {
@@ -636,7 +594,6 @@ union cvmx_ipd_hold_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_int_enb {
 	uint64_t u64;
 	struct cvmx_ipd_int_enb_s {
@@ -768,7 +725,6 @@ union cvmx_ipd_int_enb {
 #endif
 	} cn52xx;
 };
-
 union cvmx_ipd_int_sum {
 	uint64_t u64;
 	struct cvmx_ipd_int_sum_s {
@@ -900,7 +856,6 @@ union cvmx_ipd_int_sum {
 #endif
 	} cn52xx;
 };
-
 union cvmx_ipd_next_pkt_ptr {
 	uint64_t u64;
 	struct cvmx_ipd_next_pkt_ptr_s {
@@ -913,7 +868,6 @@ union cvmx_ipd_next_pkt_ptr {
 #endif
 	} s;
 };
-
 union cvmx_ipd_next_wqe_ptr {
 	uint64_t u64;
 	struct cvmx_ipd_next_wqe_ptr_s {
@@ -926,7 +880,6 @@ union cvmx_ipd_next_wqe_ptr {
 #endif
 	} s;
 };
-
 union cvmx_ipd_not_1st_mbuff_skip {
 	uint64_t u64;
 	struct cvmx_ipd_not_1st_mbuff_skip_s {
@@ -939,7 +892,6 @@ union cvmx_ipd_not_1st_mbuff_skip {
 #endif
 	} s;
 };
-
 union cvmx_ipd_on_bp_drop_pktx {
 	uint64_t u64;
 	struct cvmx_ipd_on_bp_drop_pktx_s {
@@ -950,7 +902,6 @@ union cvmx_ipd_on_bp_drop_pktx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_packet_mbuff_size {
 	uint64_t u64;
 	struct cvmx_ipd_packet_mbuff_size_s {
@@ -963,7 +914,6 @@ union cvmx_ipd_packet_mbuff_size {
 #endif
 	} s;
 };
-
 union cvmx_ipd_pkt_err {
 	uint64_t u64;
 	struct cvmx_ipd_pkt_err_s {
@@ -976,7 +926,6 @@ union cvmx_ipd_pkt_err {
 #endif
 	} s;
 };
-
 union cvmx_ipd_pkt_ptr_valid {
 	uint64_t u64;
 	struct cvmx_ipd_pkt_ptr_valid_s {
@@ -989,7 +938,6 @@ union cvmx_ipd_pkt_ptr_valid {
 #endif
 	} s;
 };
-
 union cvmx_ipd_portx_bp_page_cnt {
 	uint64_t u64;
 	struct cvmx_ipd_portx_bp_page_cnt_s {
@@ -1004,7 +952,6 @@ union cvmx_ipd_portx_bp_page_cnt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_portx_bp_page_cnt2 {
 	uint64_t u64;
 	struct cvmx_ipd_portx_bp_page_cnt2_s {
@@ -1019,7 +966,6 @@ union cvmx_ipd_portx_bp_page_cnt2 {
 #endif
 	} s;
 };
-
 union cvmx_ipd_portx_bp_page_cnt3 {
 	uint64_t u64;
 	struct cvmx_ipd_portx_bp_page_cnt3_s {
@@ -1034,7 +980,6 @@ union cvmx_ipd_portx_bp_page_cnt3 {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_bp_counters2_pairx {
 	uint64_t u64;
 	struct cvmx_ipd_port_bp_counters2_pairx_s {
@@ -1047,7 +992,6 @@ union cvmx_ipd_port_bp_counters2_pairx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_bp_counters3_pairx {
 	uint64_t u64;
 	struct cvmx_ipd_port_bp_counters3_pairx_s {
@@ -1060,7 +1004,6 @@ union cvmx_ipd_port_bp_counters3_pairx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_bp_counters4_pairx {
 	uint64_t u64;
 	struct cvmx_ipd_port_bp_counters4_pairx_s {
@@ -1073,7 +1016,6 @@ union cvmx_ipd_port_bp_counters4_pairx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_bp_counters_pairx {
 	uint64_t u64;
 	struct cvmx_ipd_port_bp_counters_pairx_s {
@@ -1086,7 +1028,6 @@ union cvmx_ipd_port_bp_counters_pairx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_port_ptr_fifo_ctl_s {
@@ -1105,7 +1046,6 @@ union cvmx_ipd_port_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_qos_x_cnt {
 	uint64_t u64;
 	struct cvmx_ipd_port_qos_x_cnt_s {
@@ -1118,7 +1058,6 @@ union cvmx_ipd_port_qos_x_cnt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_qos_intx {
 	uint64_t u64;
 	struct cvmx_ipd_port_qos_intx_s {
@@ -1129,7 +1068,6 @@ union cvmx_ipd_port_qos_intx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_qos_int_enbx {
 	uint64_t u64;
 	struct cvmx_ipd_port_qos_int_enbx_s {
@@ -1140,7 +1078,6 @@ union cvmx_ipd_port_qos_int_enbx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_port_sopx {
 	uint64_t u64;
 	struct cvmx_ipd_port_sopx_s {
@@ -1151,7 +1088,6 @@ union cvmx_ipd_port_sopx {
 #endif
 	} s;
 };
-
 union cvmx_ipd_prc_hold_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_prc_hold_ptr_fifo_ctl_s {
@@ -1172,7 +1108,6 @@ union cvmx_ipd_prc_hold_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_prc_port_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_prc_port_ptr_fifo_ctl_s {
@@ -1191,7 +1126,6 @@ union cvmx_ipd_prc_port_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_ptr_count {
 	uint64_t u64;
 	struct cvmx_ipd_ptr_count_s {
@@ -1212,7 +1146,6 @@ union cvmx_ipd_ptr_count {
 #endif
 	} s;
 };
-
 union cvmx_ipd_pwp_ptr_fifo_ctl {
 	uint64_t u64;
 	struct cvmx_ipd_pwp_ptr_fifo_ctl_s {
@@ -1235,7 +1168,6 @@ union cvmx_ipd_pwp_ptr_fifo_ctl {
 #endif
 	} s;
 };
-
 union cvmx_ipd_qosx_red_marks {
 	uint64_t u64;
 	struct cvmx_ipd_qosx_red_marks_s {
@@ -1248,7 +1180,6 @@ union cvmx_ipd_qosx_red_marks {
 #endif
 	} s;
 };
-
 union cvmx_ipd_que0_free_page_cnt {
 	uint64_t u64;
 	struct cvmx_ipd_que0_free_page_cnt_s {
@@ -1261,7 +1192,6 @@ union cvmx_ipd_que0_free_page_cnt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_red_bpid_enablex {
 	uint64_t u64;
 	struct cvmx_ipd_red_bpid_enablex_s {
@@ -1272,7 +1202,6 @@ union cvmx_ipd_red_bpid_enablex {
 #endif
 	} s;
 };
-
 union cvmx_ipd_red_delay {
 	uint64_t u64;
 	struct cvmx_ipd_red_delay_s {
@@ -1287,7 +1216,6 @@ union cvmx_ipd_red_delay {
 #endif
 	} s;
 };
-
 union cvmx_ipd_red_port_enable {
 	uint64_t u64;
 	struct cvmx_ipd_red_port_enable_s {
@@ -1302,7 +1230,6 @@ union cvmx_ipd_red_port_enable {
 #endif
 	} s;
 };
-
 union cvmx_ipd_red_port_enable2 {
 	uint64_t u64;
 	struct cvmx_ipd_red_port_enable2_s {
@@ -1333,7 +1260,6 @@ union cvmx_ipd_red_port_enable2 {
 #endif
 	} cn63xx;
 };
-
 union cvmx_ipd_red_quex_param {
 	uint64_t u64;
 	struct cvmx_ipd_red_quex_param_s {
@@ -1352,7 +1278,6 @@ union cvmx_ipd_red_quex_param {
 #endif
 	} s;
 };
-
 union cvmx_ipd_req_wgt {
 	uint64_t u64;
 	struct cvmx_ipd_req_wgt_s {
@@ -1377,7 +1302,6 @@ union cvmx_ipd_req_wgt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_sub_port_bp_page_cnt {
 	uint64_t u64;
 	struct cvmx_ipd_sub_port_bp_page_cnt_s {
@@ -1392,7 +1316,6 @@ union cvmx_ipd_sub_port_bp_page_cnt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_sub_port_fcs {
 	uint64_t u64;
 	struct cvmx_ipd_sub_port_fcs_s {
@@ -1427,7 +1350,6 @@ union cvmx_ipd_sub_port_fcs {
 #endif
 	} cn38xx;
 };
-
 union cvmx_ipd_sub_port_qos_cnt {
 	uint64_t u64;
 	struct cvmx_ipd_sub_port_qos_cnt_s {
@@ -1442,7 +1364,6 @@ union cvmx_ipd_sub_port_qos_cnt {
 #endif
 	} s;
 };
-
 union cvmx_ipd_wqe_fpa_queue {
 	uint64_t u64;
 	struct cvmx_ipd_wqe_fpa_queue_s {
@@ -1455,7 +1376,6 @@ union cvmx_ipd_wqe_fpa_queue {
 #endif
 	} s;
 };
-
 union cvmx_ipd_wqe_ptr_valid {
 	uint64_t u64;
 	struct cvmx_ipd_wqe_ptr_valid_s {
@@ -1468,5 +1388,4 @@ union cvmx_ipd_wqe_ptr_valid {
 #endif
 	} s;
 };
-
 #endif

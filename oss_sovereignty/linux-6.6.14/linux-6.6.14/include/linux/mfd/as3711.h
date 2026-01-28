@@ -1,26 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AS3711 PMIC MFC driver header
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- * Author: Guennadi Liakhovetski, <g.liakhovetski@gmx.de>
- */
-
 #ifndef MFD_AS3711_H
 #define MFD_AS3711_H
-
-/*
- * Client data
- */
-
-/* Register addresses */
-#define AS3711_SD_1_VOLTAGE		0	/* Digital Step-Down */
+#define AS3711_SD_1_VOLTAGE		0	 
 #define AS3711_SD_2_VOLTAGE		1
 #define AS3711_SD_3_VOLTAGE		2
 #define AS3711_SD_4_VOLTAGE		3
-#define AS3711_LDO_1_VOLTAGE		4	/* Analog LDO */
+#define AS3711_LDO_1_VOLTAGE		4	 
 #define AS3711_LDO_2_VOLTAGE		5
-#define AS3711_LDO_3_VOLTAGE		6	/* Digital LDO */
+#define AS3711_LDO_3_VOLTAGE		6	 
 #define AS3711_LDO_4_VOLTAGE		7
 #define AS3711_LDO_5_VOLTAGE		8
 #define AS3711_LDO_6_VOLTAGE		9
@@ -47,11 +33,8 @@
 #define AS3711_CHARGER_STATUS_2		0x87
 #define AS3711_ASIC_ID_1		0x90
 #define AS3711_ASIC_ID_2		0x91
-
 #define AS3711_MAX_REG		AS3711_ASIC_ID_2
 #define AS3711_NUM_REGS		(AS3711_MAX_REG + 1)
-
-/* Regulators */
 enum {
 	AS3711_REGULATOR_SD_1,
 	AS3711_REGULATOR_SD_2,
@@ -65,22 +48,17 @@ enum {
 	AS3711_REGULATOR_LDO_6,
 	AS3711_REGULATOR_LDO_7,
 	AS3711_REGULATOR_LDO_8,
-
 	AS3711_REGULATOR_MAX,
 };
-
 struct device;
 struct regmap;
-
 struct as3711 {
 	struct device *dev;
 	struct regmap *regmap;
 };
-
 #define AS3711_MAX_STEPDOWN 4
 #define AS3711_MAX_STEPUP 2
 #define AS3711_MAX_LDO 8
-
 enum as3711_su2_feedback {
 	AS3711_SU2_VOLTAGE,
 	AS3711_SU2_CURR1,
@@ -88,22 +66,15 @@ enum as3711_su2_feedback {
 	AS3711_SU2_CURR3,
 	AS3711_SU2_CURR_AUTO,
 };
-
 enum as3711_su2_fbprot {
 	AS3711_SU2_LX_SD4,
 	AS3711_SU2_GPIO2,
 	AS3711_SU2_GPIO3,
 	AS3711_SU2_GPIO4,
 };
-
-/*
- * Platform data
- */
-
 struct as3711_regulator_pdata {
 	struct regulator_init_data *init_data[AS3711_REGULATOR_MAX];
 };
-
 struct as3711_bl_pdata {
 	bool su1_fb;
 	int su1_max_uA;
@@ -115,10 +86,8 @@ struct as3711_bl_pdata {
 	bool su2_auto_curr2;
 	bool su2_auto_curr3;
 };
-
 struct as3711_platform_data {
 	struct as3711_regulator_pdata regulator;
 	struct as3711_bl_pdata backlight;
 };
-
 #endif

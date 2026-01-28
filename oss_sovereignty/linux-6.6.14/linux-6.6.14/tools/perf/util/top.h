@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_TOP_H
 #define __PERF_TOP_H 1
-
 #include "tool.h"
 #include "evswitch.h"
 #include "annotate.h"
@@ -12,21 +10,15 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <sys/ioctl.h>
-
 struct evlist;
 struct evsel;
 struct perf_session;
-
 struct perf_top {
 	struct perf_tool   tool;
 	struct evlist *evlist, *sb_evlist;
 	struct record_opts record_opts;
 	struct annotation_options annotation_opts;
 	struct evswitch	   evswitch;
-	/*
-	 * Symbols will be added here in perf_event__process_sample and will
-	 * get out after decayed.
-	 */
 	u64		   samples, lost, lost_total, drop, drop_total;
 	u64		   kernel_samples, us_samples;
 	u64		   exact_samples;
@@ -49,7 +41,6 @@ struct perf_top {
 	const char	   *sym_filter;
 	float		   min_percent;
 	unsigned int	   nr_threads_synthesize;
-
 	struct {
 		struct ordered_events	*in;
 		struct ordered_events	 data[2];
@@ -58,9 +49,7 @@ struct perf_top {
 		struct cond cond;
 	} qe;
 };
-
 #define CONSOLE_CLEAR "[H[2J"
-
 size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size);
 void perf_top__reset_sample_counters(struct perf_top *top);
-#endif /* __PERF_TOP_H */
+#endif  

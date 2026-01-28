@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_BADBLOCKS_H
 #define _LINUX_BADBLOCKS_H
-
 #include <linux/seqlock.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/stddef.h>
 #include <linux/types.h>
-
 #define BB_LEN_MASK	(0x00000000000001FFULL)
 #define BB_OFFSET_MASK	(0x7FFFFFFFFFFFFE00ULL)
 #define BB_ACK_MASK	(0x8000000000000000ULL)
@@ -16,31 +13,18 @@
 #define BB_LEN(x)	(((x) & BB_LEN_MASK) + 1)
 #define BB_ACK(x)	(!!((x) & BB_ACK_MASK))
 #define BB_MAKE(a, l, ack) (((a)<<9) | ((l)-1) | ((u64)(!!(ack)) << 63))
-
-/* Bad block numbers are stored sorted in a single page.
- * 64bits is used for each block or extent.
- * 54 bits are sector number, 9 bits are extent size,
- * 1 bit is an 'acknowledged' flag.
- */
 #define MAX_BADBLOCKS	(PAGE_SIZE/8)
-
 struct badblocks {
-	struct device *dev;	/* set by devm_init_badblocks */
-	int count;		/* count of bad blocks */
-	int unacked_exist;	/* there probably are unacknowledged
-				 * bad blocks.  This is only cleared
-				 * when a read discovers none
-				 */
-	int shift;		/* shift from sectors to block size
-				 * a -ve shift means badblocks are
-				 * disabled.*/
-	u64 *page;		/* badblock list */
+	struct device *dev;	 
+	int count;		 
+	int unacked_exist;	 
+	int shift;		 
+	u64 *page;		 
 	int changed;
 	seqlock_t lock;
 	sector_t sector;
-	sector_t size;		/* in sectors */
+	sector_t size;		 
 };
-
 int badblocks_check(struct badblocks *bb, sector_t s, int sectors,
 		   sector_t *first_bad, int *bad_sectors);
 int badblocks_set(struct badblocks *bb, sector_t s, int sectors,

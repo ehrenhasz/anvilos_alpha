@@ -1,35 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
-
 #ifndef _CCU_NK_H_
 #define _CCU_NK_H_
-
 #include <linux/clk-provider.h>
-
 #include "ccu_common.h"
 #include "ccu_div.h"
 #include "ccu_mult.h"
-
-/*
- * struct ccu_nk - Definition of an N-K clock
- *
- * Clocks based on the formula parent * N * K
- */
 struct ccu_nk {
 	u16			reg;
 	u32			enable;
 	u32			lock;
-
 	struct ccu_mult_internal	n;
 	struct ccu_mult_internal	k;
-
 	unsigned int		fixed_post_div;
-
 	struct ccu_common	common;
 };
-
 #define SUNXI_CCU_NK_WITH_GATE_LOCK_POSTDIV(_struct, _name, _parent, _reg, \
 					    _nshift, _nwidth,		\
 					    _kshift, _kwidth,		\
@@ -50,14 +33,10 @@ struct ccu_nk {
 						      _flags),		\
 		},							\
 	}
-
 static inline struct ccu_nk *hw_to_ccu_nk(struct clk_hw *hw)
 {
 	struct ccu_common *common = hw_to_ccu_common(hw);
-
 	return container_of(common, struct ccu_nk, common);
 }
-
 extern const struct clk_ops ccu_nk_ops;
-
-#endif /* _CCU_NK_H_ */
+#endif  

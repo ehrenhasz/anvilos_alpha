@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_POWER_MT8183_POWER_H
 #define _DT_BINDINGS_POWER_MT8183_POWER_H
-
 #define MT8183_POWER_DOMAIN_AUDIO	0
 #define MT8183_POWER_DOMAIN_CONN	1
 #define MT8183_POWER_DOMAIN_MFG_ASYNC	2
@@ -22,5 +15,4 @@
 #define MT8183_POWER_DOMAIN_VPU_TOP	12
 #define MT8183_POWER_DOMAIN_VPU_CORE0	13
 #define MT8183_POWER_DOMAIN_VPU_CORE1	14
-
-#endif /* _DT_BINDINGS_POWER_MT8183_POWER_H */
+#endif  

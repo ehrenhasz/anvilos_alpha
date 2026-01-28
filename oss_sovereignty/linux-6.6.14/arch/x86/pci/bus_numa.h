@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __BUS_NUMA_H
 #define __BUS_NUMA_H
-/*
- * sub bus (transparent) will use entres from 3 to store extra from
- * root, so need to make sure we have enough slot there.
- */
 struct pci_root_res {
 	struct list_head list;
 	struct resource res;
 };
-
 struct pci_root_info {
 	struct list_head list;
 	char name[12];
@@ -18,7 +12,6 @@ struct pci_root_info {
 	int node;
 	int link;
 };
-
 extern struct list_head pci_root_infos;
 struct pci_root_info *alloc_pci_root_info(int bus_min, int bus_max,
 						int node, int link);

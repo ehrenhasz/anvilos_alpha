@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Microsemi Switchtec PCIe Driver
- * Copyright (c) 2017, Microsemi Corporation
- */
-
 #ifndef _SWITCHTEC_H
 #define _SWITCHTEC_H
-
 #include <linux/pci.h>
 #include <linux/cdev.h>
-
 #define SWITCHTEC_MRPC_PAYLOAD_SIZE 1024
 #define SWITCHTEC_MAX_PFF_CSR 255
-
 #define SWITCHTEC_EVENT_OCCURRED BIT(0)
 #define SWITCHTEC_EVENT_CLEAR    BIT(0)
 #define SWITCHTEC_EVENT_EN_LOG   BIT(1)
@@ -20,13 +11,10 @@
 #define SWITCHTEC_EVENT_EN_IRQ   BIT(3)
 #define SWITCHTEC_EVENT_FATAL    BIT(4)
 #define SWITCHTEC_EVENT_NOT_SUPP BIT(31)
-
 #define SWITCHTEC_DMA_MRPC_EN	BIT(0)
-
 #define MRPC_GAS_READ		0x29
 #define MRPC_GAS_WRITE		0x87
 #define MRPC_CMD_ID(x)		((x) & 0xffff)
-
 enum {
 	SWITCHTEC_GAS_MRPC_OFFSET       = 0x0000,
 	SWITCHTEC_GAS_TOP_CFG_OFFSET    = 0x1000,
@@ -37,13 +25,11 @@ enum {
 	SWITCHTEC_GAS_NTB_OFFSET        = 0x10000,
 	SWITCHTEC_GAS_PFF_CSR_OFFSET    = 0x134000,
 };
-
 enum switchtec_gen {
 	SWITCHTEC_GEN3,
 	SWITCHTEC_GEN4,
 	SWITCHTEC_GEN5,
 };
-
 struct mrpc_regs {
 	u8 input_data[SWITCHTEC_MRPC_PAYLOAD_SIZE];
 	u8 output_data[SWITCHTEC_MRPC_PAYLOAD_SIZE];
@@ -55,14 +41,12 @@ struct mrpc_regs {
 	u32 dma_vector;
 	u32 dma_ver;
 } __packed;
-
 enum mrpc_status {
 	SWITCHTEC_MRPC_STATUS_INPROGRESS = 1,
 	SWITCHTEC_MRPC_STATUS_DONE = 2,
 	SWITCHTEC_MRPC_STATUS_ERROR = 0xFF,
 	SWITCHTEC_MRPC_STATUS_INTERRUPTED = 0x100,
 };
-
 struct sw_event_regs {
 	u64 event_report_ctrl;
 	u64 reserved1;
@@ -108,14 +92,12 @@ struct sw_event_regs {
 	u32 gfms_event_data;
 	u32 reserved17[4];
 } __packed;
-
 enum {
 	SWITCHTEC_GEN3_CFG0_RUNNING = 0x04,
 	SWITCHTEC_GEN3_CFG1_RUNNING = 0x05,
 	SWITCHTEC_GEN3_IMG0_RUNNING = 0x03,
 	SWITCHTEC_GEN3_IMG1_RUNNING = 0x07,
 };
-
 enum {
 	SWITCHTEC_GEN4_MAP0_RUNNING = 0x00,
 	SWITCHTEC_GEN4_MAP1_RUNNING = 0x01,
@@ -128,7 +110,6 @@ enum {
 	SWITCHTEC_GEN4_IMG0_RUNNING = 0x08,
 	SWITCHTEC_GEN4_IMG1_RUNNING = 0x09,
 };
-
 enum {
 	SWITCHTEC_GEN4_KEY0_ACTIVE = 0,
 	SWITCHTEC_GEN4_KEY1_ACTIVE = 1,
@@ -139,7 +120,6 @@ enum {
 	SWITCHTEC_GEN4_IMG0_ACTIVE = 0,
 	SWITCHTEC_GEN4_IMG1_ACTIVE = 1,
 };
-
 struct sys_info_regs_gen3 {
 	u32 reserved1;
 	u32 vendor_table_revision;
@@ -156,7 +136,6 @@ struct sys_info_regs_gen3 {
 	u16 component_id;
 	u8 component_revision;
 } __packed;
-
 struct sys_info_regs_gen4 {
 	u16 gas_layout_ver;
 	u8 evlist_ver;
@@ -197,7 +176,6 @@ struct sys_info_regs_gen4 {
 	char  product_revision[2];
 	u16 reserved8;
 } __packed;
-
 struct sys_info_regs {
 	u32 device_id;
 	u32 device_version;
@@ -207,27 +185,21 @@ struct sys_info_regs {
 		struct sys_info_regs_gen4 gen4;
 	};
 } __packed;
-
 struct partition_info {
 	u32 address;
 	u32 length;
 };
-
 struct flash_info_regs_gen3 {
 	u32 flash_part_map_upd_idx;
-
 	struct active_partition_info_gen3 {
 		u32 address;
 		u32 build_version;
 		u32 build_string;
 	} active_img;
-
 	struct active_partition_info_gen3 active_cfg;
 	struct active_partition_info_gen3 inactive_img;
 	struct active_partition_info_gen3 inactive_cfg;
-
 	u32 flash_length;
-
 	struct partition_info cfg0;
 	struct partition_info cfg1;
 	struct partition_info img0;
@@ -235,20 +207,16 @@ struct flash_info_regs_gen3 {
 	struct partition_info nvlog;
 	struct partition_info vendor[8];
 };
-
 struct flash_info_regs_gen4 {
 	u32 flash_address;
 	u32 flash_length;
-
 	struct active_partition_info_gen4 {
 		unsigned char bl2;
 		unsigned char cfg;
 		unsigned char img;
 		unsigned char key;
 	} active_flag;
-
 	u32 reserved[3];
-
 	struct partition_info map0;
 	struct partition_info map1;
 	struct partition_info key0;
@@ -262,20 +230,17 @@ struct flash_info_regs_gen4 {
 	struct partition_info nvlog;
 	struct partition_info vendor[8];
 };
-
 struct flash_info_regs {
 	union {
 		struct flash_info_regs_gen3 gen3;
 		struct flash_info_regs_gen4 gen4;
 	};
 };
-
 enum {
 	SWITCHTEC_NTB_REG_INFO_OFFSET   = 0x0000,
 	SWITCHTEC_NTB_REG_CTRL_OFFSET   = 0x4000,
 	SWITCHTEC_NTB_REG_DBMSG_OFFSET  = 0x64000,
 };
-
 struct ntb_info_regs {
 	u8  partition_count;
 	u8  partition_id;
@@ -291,7 +256,6 @@ struct ntb_info_regs {
 		u32 reserved;
 	} ntp_info[48];
 } __packed;
-
 struct part_cfg_regs {
 	u32 status;
 	u32 state;
@@ -319,27 +283,21 @@ struct part_cfg_regs {
 	u32 intercomm_notify_data[5];
 	u32 reserved4[153];
 } __packed;
-
 enum {
 	NTB_CTRL_PART_OP_LOCK = 0x1,
 	NTB_CTRL_PART_OP_CFG = 0x2,
 	NTB_CTRL_PART_OP_RESET = 0x3,
-
 	NTB_CTRL_PART_STATUS_NORMAL = 0x1,
 	NTB_CTRL_PART_STATUS_LOCKED = 0x2,
 	NTB_CTRL_PART_STATUS_LOCKING = 0x3,
 	NTB_CTRL_PART_STATUS_CONFIGURING = 0x4,
 	NTB_CTRL_PART_STATUS_RESETTING = 0x5,
-
 	NTB_CTRL_BAR_VALID = 1 << 0,
 	NTB_CTRL_BAR_DIR_WIN_EN = 1 << 4,
 	NTB_CTRL_BAR_LUT_WIN_EN = 1 << 5,
-
 	NTB_CTRL_REQ_ID_EN = 1 << 0,
-
 	NTB_CTRL_LUT_EN = 1 << 0,
 };
-
 struct ntb_ctrl_regs {
 	u32 partition_status;
 	u32 partition_op;
@@ -367,10 +325,8 @@ struct ntb_ctrl_regs {
 	u32 reserved3[256];
 	u64 lut_entry[512];
 } __packed;
-
 #define NTB_DBMSG_IMSG_STATUS BIT_ULL(32)
 #define NTB_DBMSG_IMSG_MASK   BIT_ULL(40)
-
 struct ntb_dbmsg_regs {
 	u32 reserved1[1024];
 	u64 odb;
@@ -384,7 +340,6 @@ struct ntb_dbmsg_regs {
 		u32 msg;
 		u32 status;
 	} omsg[4];
-
 	struct {
 		u32 msg;
 		u8  status;
@@ -392,21 +347,18 @@ struct ntb_dbmsg_regs {
 		u8  src;
 		u8  reserved;
 	} imsg[4];
-
 	u8 reserved3[3928];
 	u8 msix_table[1024];
 	u8 reserved4[3072];
 	u8 pba[24];
 	u8 reserved5[4072];
 } __packed;
-
 enum {
 	SWITCHTEC_PART_CFG_EVENT_RESET = 1 << 0,
 	SWITCHTEC_PART_CFG_EVENT_MRPC_CMP = 1 << 1,
 	SWITCHTEC_PART_CFG_EVENT_MRPC_ASYNC_CMP = 1 << 2,
 	SWITCHTEC_PART_CFG_EVENT_DYN_PART_CMP = 1 << 3,
 };
-
 struct pff_csr_regs {
 	u16 vendor_id;
 	u16 device_id;
@@ -459,9 +411,7 @@ struct pff_csr_regs {
 	u32 link_state_data[5];
 	u32 reserved4[174];
 } __packed;
-
 struct switchtec_ntb;
-
 struct dma_mrpc_output {
 	u32 status;
 	u32 cmd_id;
@@ -469,19 +419,15 @@ struct dma_mrpc_output {
 	u32 output_size;
 	u8 data[SWITCHTEC_MRPC_PAYLOAD_SIZE];
 };
-
 struct switchtec_dev {
 	struct pci_dev *pdev;
 	struct device dev;
 	struct cdev cdev;
-
 	enum switchtec_gen gen;
-
 	int partition;
 	int partition_count;
 	int pff_csr_count;
 	char pff_local[SWITCHTEC_MAX_PFF_CSR];
-
 	void __iomem *mmio;
 	struct mrpc_regs __iomem *mmio_mrpc;
 	struct sw_event_regs __iomem *mmio_sw_event;
@@ -491,36 +437,24 @@ struct switchtec_dev {
 	struct part_cfg_regs __iomem *mmio_part_cfg;
 	struct part_cfg_regs __iomem *mmio_part_cfg_all;
 	struct pff_csr_regs __iomem *mmio_pff_csr;
-
-	/*
-	 * The mrpc mutex must be held when accessing the other
-	 * mrpc_ fields, alive flag and stuser->state field
-	 */
 	struct mutex mrpc_mutex;
 	struct list_head mrpc_queue;
 	int mrpc_busy;
 	struct work_struct mrpc_work;
 	struct delayed_work mrpc_timeout;
 	bool alive;
-
 	wait_queue_head_t event_wq;
 	atomic_t event_cnt;
-
 	struct work_struct link_event_work;
 	void (*link_notifier)(struct switchtec_dev *stdev);
 	u8 link_event_count[SWITCHTEC_MAX_PFF_CSR];
-
 	struct switchtec_ntb *sndev;
-
 	struct dma_mrpc_output *dma_mrpc;
 	dma_addr_t dma_mrpc_dma_addr;
 };
-
 static inline struct switchtec_dev *to_stdev(struct device *dev)
 {
 	return container_of(dev, struct switchtec_dev, dev);
 }
-
 extern struct class *switchtec_class;
-
 #endif

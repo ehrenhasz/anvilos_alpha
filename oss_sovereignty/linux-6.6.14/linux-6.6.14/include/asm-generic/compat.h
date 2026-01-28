@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_GENERIC_COMPAT_H
 #define __ASM_GENERIC_COMPAT_H
-
 #ifndef COMPAT_USER_HZ
 #define COMPAT_USER_HZ		100
 #endif
-
 #ifndef COMPAT_RLIM_INFINITY
 #define COMPAT_RLIM_INFINITY	0xffffffff
 #endif
-
 #ifndef COMPAT_OFF_T_MAX
 #define COMPAT_OFF_T_MAX	0x7fffffff
 #endif
-
 #ifndef compat_arg_u64
 #ifndef CONFIG_CPU_BIG_ENDIAN
 #define compat_arg_u64(name)		u32  name##_lo, u32  name##_hi
@@ -24,9 +19,7 @@
 #endif
 #define compat_arg_u64_glue(name)	(((u64)name##_lo & 0xffffffffUL) | \
 					 ((u64)name##_hi << 32))
-#endif /* compat_arg_u64 */
-
-/* These types are common across all compat ABIs */
+#endif  
 typedef u32 compat_size_t;
 typedef s32 compat_ssize_t;
 typedef s32 compat_clock_t;
@@ -47,21 +40,17 @@ typedef u32 compat_uptr_t;
 typedef u32 compat_caddr_t;
 typedef u32 compat_aio_context_t;
 typedef u32 compat_old_sigset_t;
-
 #ifndef __compat_uid_t
 typedef u32 __compat_uid_t;
 typedef u32 __compat_gid_t;
 #endif
-
 #ifndef __compat_uid32_t
 typedef u32 __compat_uid32_t;
 typedef u32 __compat_gid32_t;
 #endif
-
 #ifndef compat_mode_t
 typedef u32 compat_mode_t;
 #endif
-
 #ifdef CONFIG_COMPAT_FOR_U64_ALIGNMENT
 typedef s64 __attribute__((aligned(4))) compat_s64;
 typedef u64 __attribute__((aligned(4))) compat_u64;
@@ -69,25 +58,20 @@ typedef u64 __attribute__((aligned(4))) compat_u64;
 typedef s64 compat_s64;
 typedef u64 compat_u64;
 #endif
-
 #ifndef _COMPAT_NSIG
 typedef u32 compat_sigset_word;
 #define _COMPAT_NSIG _NSIG
 #define _COMPAT_NSIG_BPW 32
 #endif
-
 #ifndef compat_dev_t
 typedef u32 compat_dev_t;
 #endif
-
 #ifndef compat_ipc_pid_t
 typedef s32 compat_ipc_pid_t;
 #endif
-
 #ifndef compat_fsid_t
 typedef __kernel_fsid_t	compat_fsid_t;
 #endif
-
 #ifndef compat_statfs
 struct compat_statfs {
 	compat_int_t	f_type;
@@ -104,7 +88,6 @@ struct compat_statfs {
 	compat_int_t	f_spare[4];
 };
 #endif
-
 #ifndef compat_ipc64_perm
 struct compat_ipc64_perm {
 	compat_key_t key;
@@ -119,7 +102,6 @@ struct compat_ipc64_perm {
 	compat_ulong_t	unused1;
 	compat_ulong_t	unused2;
 };
-
 struct compat_semid64_ds {
 	struct compat_ipc64_perm sem_perm;
 	compat_ulong_t sem_otime;
@@ -130,7 +112,6 @@ struct compat_semid64_ds {
 	compat_ulong_t __unused3;
 	compat_ulong_t __unused4;
 };
-
 struct compat_msqid64_ds {
 	struct compat_ipc64_perm msg_perm;
 	compat_ulong_t msg_stime;
@@ -147,7 +128,6 @@ struct compat_msqid64_ds {
 	compat_ulong_t __unused4;
 	compat_ulong_t __unused5;
 };
-
 struct compat_shmid64_ds {
 	struct compat_ipc64_perm shm_perm;
 	compat_size_t  shm_segsz;
@@ -164,5 +144,4 @@ struct compat_shmid64_ds {
 	compat_ulong_t __unused5;
 };
 #endif
-
 #endif

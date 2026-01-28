@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause
-
 #include <dt-bindings/spmi/spmi.h>
 #include <dt-bindings/iio/qcom,spmi-vadc.h>
-
 &spmi_bus {
 	pmic@0 {
 		compatible = "qcom,pmp8074", "qcom,spmi-pmic";
 		reg = <0x0 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		pmp8074_adc: adc@3100 {
 			compatible = "qcom,spmi-adc-rev2";
 			reg = <0x3100>;
@@ -17,31 +13,26 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			#io-channel-cells = <1>;
-
 			channel@0 {
 				reg = <ADC5_REF_GND>;
 				qcom,pre-scaling = <1 1>;
 				label = "ref_gnd";
 			};
-
 			channel@1 {
 				reg = <ADC5_1P25VREF>;
 				qcom,pre-scaling = <1 1>;
 				label = "vref_1p25";
 			};
-
 			channel@2 {
 				reg = <ADC5_VREF_VADC>;
 				qcom,pre-scaling = <1 1>;
 				label = "vref_vadc";
 			};
-
 			channel@6 {
 				reg = <ADC5_DIE_TEMP>;
 				qcom,pre-scaling = <1 1>;
 				label = "pmic_die";
 			};
-
 			channel@76 {
 				reg = <ADC5_XO_THERM_100K_PU>;
 				qcom,ratiometric;
@@ -49,7 +40,6 @@
 				qcom,pre-scaling = <1 1>;
 				label = "xo_therm";
 			};
-
 			channel@77 {
 				reg = <ADC5_AMUX_THM1_100K_PU>;
 				qcom,ratiometric;
@@ -57,7 +47,6 @@
 				qcom,pre-scaling = <1 1>;
 				label = "pa_therm1";
 			};
-
 			channel@78 {
 				reg = <ADC5_AMUX_THM2_100K_PU>;
 				qcom,ratiometric;
@@ -65,7 +54,6 @@
 				qcom,pre-scaling = <1 1>;
 				label = "pa_therm2";
 			};
-
 			channel@79 {
 				reg = <ADC5_AMUX_THM3_100K_PU>;
 				qcom,ratiometric;
@@ -73,14 +61,12 @@
 				qcom,pre-scaling = <1 1>;
 				label = "pa_therm3";
 			};
-
 			channel@131 {
 				reg = <ADC5_VPH_PWR>;
 				qcom,pre-scaling = <1 3>;
 				label = "vph_pwr";
 			};
 		};
-
 		pmp8074_rtc: rtc@6000 {
 			compatible = "qcom,pm8941-rtc";
 			reg = <0x6000>, <0x6100>;
@@ -89,7 +75,6 @@
 			allow-set-time;
 			status = "disabled";
 		};
-
 		pmp8074_gpios: gpio@c000 {
 			compatible = "qcom,pmp8074-gpio", "qcom,spmi-gpio";
 			reg = <0xc000>;
@@ -100,14 +85,11 @@
 			#interrupt-cells = <2>;
 		};
 	};
-
 	pmic@1 {
 		compatible = "qcom,pmp8074", "qcom,spmi-pmic";
 		reg = <0x1 SPMI_USID>;
-
 		regulators {
 			compatible = "qcom,pmp8074-regulators";
-
 			s3: s3 {
 				regulator-name = "vdd_s3";
 				regulator-min-microvolt = <592000>;
@@ -115,7 +97,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			s4: s4 {
 				regulator-name = "vdd_s4";
 				regulator-min-microvolt = <712000>;
@@ -123,7 +104,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			l11: l11 {
 				regulator-name = "l11";
 				regulator-min-microvolt = <1800000>;

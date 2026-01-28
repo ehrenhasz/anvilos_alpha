@@ -1,18 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-
 #ifndef _UAPI_LINUX_CYCLADES_H
 #define _UAPI_LINUX_CYCLADES_H
-
 #warning "Support for features provided by this header has been removed"
 #warning "Please consider updating your code"
-
 struct cyclades_monitor {
 	unsigned long int_count;
 	unsigned long char_count;
 	unsigned long char_max;
 	unsigned long char_last;
 };
-
 #define CYGETMON		0x435901
 #define CYGETTHRESH		0x435902
 #define CYSETTHRESH		0x435903
@@ -31,5 +26,4 @@ struct cyclades_monitor {
 #define CYGETCD1400VER		0x435910
 #define CYSETWAIT		0x435912
 #define CYGETWAIT		0x435913
-
-#endif /* _UAPI_LINUX_CYCLADES_H */
+#endif  

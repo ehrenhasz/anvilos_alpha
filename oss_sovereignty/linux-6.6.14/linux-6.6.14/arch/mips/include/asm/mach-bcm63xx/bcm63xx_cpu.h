@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef BCM63XX_CPU_H_
 #define BCM63XX_CPU_H_
-
 #include <linux/types.h>
 #include <linux/init.h>
-
-/*
- * Macro to fetch bcm63xx cpu id and revision, should be optimized at
- * compile time if only one CPU support is enabled (idea stolen from
- * arm mach-types)
- */
 #define BCM3368_CPU_ID		0x3368
 #define BCM6328_CPU_ID		0x6328
 #define BCM6338_CPU_ID		0x6338
@@ -18,42 +10,33 @@
 #define BCM6358_CPU_ID		0x6358
 #define BCM6362_CPU_ID		0x6362
 #define BCM6368_CPU_ID		0x6368
-
 void __init bcm63xx_cpu_init(void);
 u8 bcm63xx_get_cpu_rev(void);
 unsigned int bcm63xx_get_cpu_freq(void);
-
 static inline u16 __pure __bcm63xx_get_cpu_id(const u16 cpu_id)
 {
 	switch (cpu_id) {
 #ifdef CONFIG_BCM63XX_CPU_3368
 		case BCM3368_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6328
 		case BCM6328_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6338
 		case BCM6338_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6345
 		case BCM6345_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6348
 		case BCM6348_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6358
 		case BCM6358_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6362
 		case BCM6362_CPU_ID:
 #endif
-
 #ifdef CONFIG_BCM63XX_CPU_6368
 		case BCM6368_CPU_ID:
 #endif
@@ -61,19 +44,14 @@ static inline u16 __pure __bcm63xx_get_cpu_id(const u16 cpu_id)
 	default:
 		unreachable();
 	}
-
 	return cpu_id;
 }
-
 extern u16 bcm63xx_cpu_id;
-
 static inline u16 __pure bcm63xx_get_cpu_id(void)
 {
 	const u16 cpu_id = bcm63xx_cpu_id;
-
 	return __bcm63xx_get_cpu_id(cpu_id);
 }
-
 #define BCMCPU_IS_3368()	(bcm63xx_get_cpu_id() == BCM3368_CPU_ID)
 #define BCMCPU_IS_6328()	(bcm63xx_get_cpu_id() == BCM6328_CPU_ID)
 #define BCMCPU_IS_6338()	(bcm63xx_get_cpu_id() == BCM6338_CPU_ID)
@@ -82,11 +60,6 @@ static inline u16 __pure bcm63xx_get_cpu_id(void)
 #define BCMCPU_IS_6358()	(bcm63xx_get_cpu_id() == BCM6358_CPU_ID)
 #define BCMCPU_IS_6362()	(bcm63xx_get_cpu_id() == BCM6362_CPU_ID)
 #define BCMCPU_IS_6368()	(bcm63xx_get_cpu_id() == BCM6368_CPU_ID)
-
-/*
- * While registers sets are (mostly) the same across 63xx CPU, base
- * address of these sets do change.
- */
 enum bcm63xx_regs_set {
 	RSET_DSL_LMEM = 0,
 	RSET_PERF,
@@ -130,7 +103,6 @@ enum bcm63xx_regs_set {
 	RSET_RNG,
 	RSET_MISC
 };
-
 #define RSET_DSL_LMEM_SIZE		(64 * 1024 * 4)
 #define RSET_DSL_SIZE			4096
 #define RSET_WDT_SIZE			12
@@ -159,10 +131,6 @@ enum bcm63xx_regs_set {
 #define RSET_XTMDMAC_SIZE(chans)	(16 * (chans))
 #define RSET_XTMDMAS_SIZE(chans)	(16 * (chans))
 #define RSET_RNG_SIZE			20
-
-/*
- * 3368 register sets base address
- */
 #define BCM_3368_DSL_LMEM_BASE		(0xdeadbeef)
 #define BCM_3368_PERF_BASE		(0xfff8c000)
 #define BCM_3368_TIMER_BASE		(0xfff8c040)
@@ -206,10 +174,6 @@ enum bcm63xx_regs_set {
 #define BCM_3368_PCMDMAS_BASE		(0xdeadbeef)
 #define BCM_3368_RNG_BASE		(0xdeadbeef)
 #define BCM_3368_MISC_BASE		(0xdeadbeef)
-
-/*
- * 6328 register sets base address
- */
 #define BCM_6328_DSL_LMEM_BASE		(0xdeadbeef)
 #define BCM_6328_PERF_BASE		(0xb0000000)
 #define BCM_6328_TIMER_BASE		(0xb0000040)
@@ -254,10 +218,6 @@ enum bcm63xx_regs_set {
 #define BCM_6328_RNG_BASE		(0xdeadbeef)
 #define BCM_6328_MISC_BASE		(0xb0001800)
 #define BCM_6328_OTP_BASE		(0xb0000600)
-
-/*
- * 6338 register sets base address
- */
 #define BCM_6338_DSL_LMEM_BASE		(0xfff00000)
 #define BCM_6338_PERF_BASE		(0xfffe0000)
 #define BCM_6338_BB_BASE		(0xfffe0100)
@@ -302,10 +262,6 @@ enum bcm63xx_regs_set {
 #define BCM_6338_PCMDMAS_BASE		(0xdeadbeef)
 #define BCM_6338_RNG_BASE		(0xdeadbeef)
 #define BCM_6338_MISC_BASE		(0xdeadbeef)
-
-/*
- * 6345 register sets base address
- */
 #define BCM_6345_DSL_LMEM_BASE		(0xfff00000)
 #define BCM_6345_PERF_BASE		(0xfffe0000)
 #define BCM_6345_BB_BASE		(0xfffe0100)
@@ -350,10 +306,6 @@ enum bcm63xx_regs_set {
 #define BCM_6345_PCMDMAS_BASE		(0xdeadbeef)
 #define BCM_6345_RNG_BASE		(0xdeadbeef)
 #define BCM_6345_MISC_BASE		(0xdeadbeef)
-
-/*
- * 6348 register sets base address
- */
 #define BCM_6348_DSL_LMEM_BASE		(0xfff00000)
 #define BCM_6348_PERF_BASE		(0xfffe0000)
 #define BCM_6348_TIMER_BASE		(0xfffe0200)
@@ -396,10 +348,6 @@ enum bcm63xx_regs_set {
 #define BCM_6348_PCMDMAS_BASE		(0xdeadbeef)
 #define BCM_6348_RNG_BASE		(0xdeadbeef)
 #define BCM_6348_MISC_BASE		(0xdeadbeef)
-
-/*
- * 6358 register sets base address
- */
 #define BCM_6358_DSL_LMEM_BASE		(0xfff00000)
 #define BCM_6358_PERF_BASE		(0xfffe0000)
 #define BCM_6358_TIMER_BASE		(0xfffe0040)
@@ -442,11 +390,6 @@ enum bcm63xx_regs_set {
 #define BCM_6358_PCMDMAS_BASE		(0xfffe1a00)
 #define BCM_6358_RNG_BASE		(0xdeadbeef)
 #define BCM_6358_MISC_BASE		(0xdeadbeef)
-
-
-/*
- * 6362 register sets base address
- */
 #define BCM_6362_DSL_LMEM_BASE		(0xdeadbeef)
 #define BCM_6362_PERF_BASE		(0xb0000000)
 #define BCM_6362_TIMER_BASE		(0xb0000040)
@@ -490,7 +433,6 @@ enum bcm63xx_regs_set {
 #define BCM_6362_PCMDMAS_BASE		(0xdeadbeef)
 #define BCM_6362_RNG_BASE		(0xdeadbeef)
 #define BCM_6362_MISC_BASE		(0xb0001800)
-
 #define BCM_6362_NAND_REG_BASE		(0xb0000200)
 #define BCM_6362_NAND_CACHE_BASE	(0xb0000600)
 #define BCM_6362_LED_BASE		(0xb0001900)
@@ -499,10 +441,6 @@ enum bcm63xx_regs_set {
 #define BCM_6362_WLAN_CHIPCOMMON_BASE	(0xb0004000)
 #define BCM_6362_WLAN_D11_BASE		(0xb0005000)
 #define BCM_6362_WLAN_SHIM_BASE		(0xb0007000)
-
-/*
- * 6368 register sets base address
- */
 #define BCM_6368_DSL_LMEM_BASE		(0xdeadbeef)
 #define BCM_6368_PERF_BASE		(0xb0000000)
 #define BCM_6368_TIMER_BASE		(0xb0000040)
@@ -545,10 +483,7 @@ enum bcm63xx_regs_set {
 #define BCM_6368_PCMDMAS_BASE		(0xb0005c00)
 #define BCM_6368_RNG_BASE		(0xb0004180)
 #define BCM_6368_MISC_BASE		(0xdeadbeef)
-
-
 extern const unsigned long *bcm63xx_regs_base;
-
 #define __GEN_CPU_REGS_TABLE(__cpu)					\
 	[RSET_DSL_LMEM]		= BCM_## __cpu ##_DSL_LMEM_BASE,	\
 	[RSET_PERF]		= BCM_## __cpu ##_PERF_BASE,		\
@@ -591,16 +526,10 @@ extern const unsigned long *bcm63xx_regs_base;
 	[RSET_PCMDMAS]		= BCM_## __cpu ##_PCMDMAS_BASE,		\
 	[RSET_RNG]		= BCM_## __cpu ##_RNG_BASE,		\
 	[RSET_MISC]		= BCM_## __cpu ##_MISC_BASE,		\
-
-
 static inline unsigned long bcm63xx_regset_address(enum bcm63xx_regs_set set)
 {
 	return bcm63xx_regs_base[set];
 }
-
-/*
- * IRQ number changes across CPU too
- */
 enum bcm63xx_irq {
 	IRQ_TIMER = 0,
 	IRQ_SPI,
@@ -638,10 +567,6 @@ enum bcm63xx_irq {
 	IRQ_XTM,
 	IRQ_XTM_DMA0,
 };
-
-/*
- * 3368 irqs
- */
 #define BCM_3368_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_3368_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_3368_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -678,18 +603,11 @@ enum bcm63xx_irq {
 #define BCM_3368_ENETSW_TXDMA3_IRQ	0
 #define BCM_3368_XTM_IRQ		0
 #define BCM_3368_XTM_DMA0_IRQ		0
-
 #define BCM_3368_EXT_IRQ0		(IRQ_INTERNAL_BASE + 25)
 #define BCM_3368_EXT_IRQ1		(IRQ_INTERNAL_BASE + 26)
 #define BCM_3368_EXT_IRQ2		(IRQ_INTERNAL_BASE + 27)
 #define BCM_3368_EXT_IRQ3		(IRQ_INTERNAL_BASE + 28)
-
-
-/*
- * 6328 irqs
- */
 #define BCM_6328_HIGH_IRQ_BASE		(IRQ_INTERNAL_BASE + 32)
-
 #define BCM_6328_TIMER_IRQ		(IRQ_INTERNAL_BASE + 31)
 #define BCM_6328_SPI_IRQ		0
 #define BCM_6328_UART0_IRQ		(IRQ_INTERNAL_BASE + 28)
@@ -726,17 +644,12 @@ enum bcm63xx_irq {
 #define BCM_6328_ENETSW_TXDMA3_IRQ	0
 #define BCM_6328_XTM_IRQ		(BCM_6328_HIGH_IRQ_BASE + 31)
 #define BCM_6328_XTM_DMA0_IRQ		(BCM_6328_HIGH_IRQ_BASE + 11)
-
 #define BCM_6328_PCM_DMA0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6328_PCM_DMA1_IRQ		(IRQ_INTERNAL_BASE + 3)
 #define BCM_6328_EXT_IRQ0		(IRQ_INTERNAL_BASE + 24)
 #define BCM_6328_EXT_IRQ1		(IRQ_INTERNAL_BASE + 25)
 #define BCM_6328_EXT_IRQ2		(IRQ_INTERNAL_BASE + 26)
 #define BCM_6328_EXT_IRQ3		(IRQ_INTERNAL_BASE + 27)
-
-/*
- * 6338 irqs
- */
 #define BCM_6338_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6338_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_6338_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -772,10 +685,6 @@ enum bcm63xx_irq {
 #define BCM_6338_ENETSW_TXDMA3_IRQ	0
 #define BCM_6338_XTM_IRQ		0
 #define BCM_6338_XTM_DMA0_IRQ		0
-
-/*
- * 6345 irqs
- */
 #define BCM_6345_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6345_SPI_IRQ		0
 #define BCM_6345_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -811,10 +720,6 @@ enum bcm63xx_irq {
 #define BCM_6345_ENETSW_TXDMA3_IRQ	0
 #define BCM_6345_XTM_IRQ		0
 #define BCM_6345_XTM_DMA0_IRQ		0
-
-/*
- * 6348 irqs
- */
 #define BCM_6348_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6348_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_6348_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -850,10 +755,6 @@ enum bcm63xx_irq {
 #define BCM_6348_ENETSW_TXDMA3_IRQ	0
 #define BCM_6348_XTM_IRQ		0
 #define BCM_6348_XTM_DMA0_IRQ		0
-
-/*
- * 6358 irqs
- */
 #define BCM_6358_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6358_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_6358_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -889,19 +790,13 @@ enum bcm63xx_irq {
 #define BCM_6358_ENETSW_TXDMA3_IRQ	0
 #define BCM_6358_XTM_IRQ		0
 #define BCM_6358_XTM_DMA0_IRQ		0
-
 #define BCM_6358_PCM_DMA0_IRQ		(IRQ_INTERNAL_BASE + 23)
 #define BCM_6358_PCM_DMA1_IRQ		(IRQ_INTERNAL_BASE + 24)
 #define BCM_6358_EXT_IRQ0		(IRQ_INTERNAL_BASE + 25)
 #define BCM_6358_EXT_IRQ1		(IRQ_INTERNAL_BASE + 26)
 #define BCM_6358_EXT_IRQ2		(IRQ_INTERNAL_BASE + 27)
 #define BCM_6358_EXT_IRQ3		(IRQ_INTERNAL_BASE + 28)
-
-/*
- * 6362 irqs
- */
 #define BCM_6362_HIGH_IRQ_BASE		(IRQ_INTERNAL_BASE + 32)
-
 #define BCM_6362_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6362_SPI_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6362_UART0_IRQ		(IRQ_INTERNAL_BASE + 3)
@@ -938,7 +833,6 @@ enum bcm63xx_irq {
 #define BCM_6362_ENETSW_TXDMA3_IRQ	0
 #define BCM_6362_XTM_IRQ		0
 #define BCM_6362_XTM_DMA0_IRQ		(BCM_6362_HIGH_IRQ_BASE + 12)
-
 #define BCM_6362_RING_OSC_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_6362_WLAN_GPIO_IRQ		(IRQ_INTERNAL_BASE + 6)
 #define BCM_6362_WLAN_IRQ		(IRQ_INTERNAL_BASE + 7)
@@ -961,12 +855,7 @@ enum bcm63xx_irq {
 #define BCM_6362_EXT_IRQ1		(BCM_6362_HIGH_IRQ_BASE + 9)
 #define BCM_6362_EXT_IRQ2		(BCM_6362_HIGH_IRQ_BASE + 10)
 #define BCM_6362_EXT_IRQ3		(BCM_6362_HIGH_IRQ_BASE + 11)
-
-/*
- * 6368 irqs
- */
 #define BCM_6368_HIGH_IRQ_BASE		(IRQ_INTERNAL_BASE + 32)
-
 #define BCM_6368_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6368_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
 #define BCM_6368_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
@@ -1002,7 +891,6 @@ enum bcm63xx_irq {
 #define BCM_6368_ENETSW_TXDMA3_IRQ	(BCM_6368_HIGH_IRQ_BASE + 7)
 #define BCM_6368_XTM_IRQ		(IRQ_INTERNAL_BASE + 11)
 #define BCM_6368_XTM_DMA0_IRQ		(BCM_6368_HIGH_IRQ_BASE + 8)
-
 #define BCM_6368_PCM_DMA0_IRQ		(BCM_6368_HIGH_IRQ_BASE + 30)
 #define BCM_6368_PCM_DMA1_IRQ		(BCM_6368_HIGH_IRQ_BASE + 31)
 #define BCM_6368_EXT_IRQ0		(IRQ_INTERNAL_BASE + 20)
@@ -1011,9 +899,7 @@ enum bcm63xx_irq {
 #define BCM_6368_EXT_IRQ3		(IRQ_INTERNAL_BASE + 23)
 #define BCM_6368_EXT_IRQ4		(IRQ_INTERNAL_BASE + 24)
 #define BCM_6368_EXT_IRQ5		(IRQ_INTERNAL_BASE + 25)
-
 extern const int *bcm63xx_irqs;
-
 #define __GEN_CPU_IRQ_TABLE(__cpu)					\
 	[IRQ_TIMER]		= BCM_## __cpu ##_TIMER_IRQ,		\
 	[IRQ_SPI]		= BCM_## __cpu ##_SPI_IRQ,		\
@@ -1050,19 +936,11 @@ extern const int *bcm63xx_irqs;
 	[IRQ_ENETSW_TXDMA3]	= BCM_## __cpu ##_ENETSW_TXDMA3_IRQ,	\
 	[IRQ_XTM]		= BCM_## __cpu ##_XTM_IRQ,		\
 	[IRQ_XTM_DMA0]		= BCM_## __cpu ##_XTM_DMA0_IRQ,		\
-
 static inline int bcm63xx_get_irq_number(enum bcm63xx_irq irq)
 {
 	return bcm63xx_irqs[irq];
 }
-
-/*
- * return installed memory size
- */
 unsigned int bcm63xx_get_memory_size(void);
-
 void bcm63xx_machine_halt(void);
-
 void bcm63xx_machine_reboot(void);
-
-#endif /* !BCM63XX_CPU_H_ */
+#endif  

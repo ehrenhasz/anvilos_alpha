@@ -1,8 +1,5 @@
-#!/bin/sh -ex
-
 mountpoint -q /
 [ ! -e hdc.img.dir ]
-
 cleanup()
 {
 	trap - EXIT
@@ -13,13 +10,10 @@ cleanup()
 		rm -rf hdc.img.dir
 	exit $@
 }
-
 trap 'cleanup $?' EXIT
 trap 'cleanup 1' HUP PIPE INT QUIT TERM
-
 size=$(du -ks hdc.dir | sed -rn 's/^([0-9]+).*/\1/p')
 [ "$size" -gt 0 ]
-
 rm -f hdc.img
 dd if=/dev/zero of=hdc.img count=1 bs=1024 seek=$(($size*2))
 mkfs.ext3 -q -F -b 1024 -i 4096 hdc.img

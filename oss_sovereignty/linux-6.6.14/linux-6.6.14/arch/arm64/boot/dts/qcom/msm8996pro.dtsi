@@ -1,25 +1,11 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2022, Linaro Limited
- */
-
 #include "msm8996.dtsi"
-
 / {
 	/delete-node/ opp-table-cluster0;
 	/delete-node/ opp-table-cluster1;
-
-	/*
-	 * On MSM8996 Pro the cpufreq driver shifts speed bins into the high
-	 * nibble of supported hw, so speed bin 0 becomes 0x10, speed bin 1
-	 * becomes 0x20, speed 2 becomes 0x40.
-	 */
-
 	cluster0_opp: opp-table-cluster0 {
 		compatible = "operating-points-v2-kryo-cpu";
 		nvmem-cells = <&speedbin_efuse>;
 		opp-shared;
-
 		opp-307200000 {
 			opp-hz = /bits/ 64 <307200000>;
 			opp-supported-hw = <0x70>;
@@ -141,12 +127,10 @@
 			opp-peak-kBps = <1593600>;
 		};
 	};
-
 	cluster1_opp: opp-table-cluster1 {
 		compatible = "operating-points-v2-kryo-cpu";
 		nvmem-cells = <&speedbin_efuse>;
 		opp-shared;
-
 		opp-307200000 {
 			opp-hz = /bits/ 64 <307200000>;
 			opp-supported-hw = <0x70>;
@@ -311,17 +295,7 @@
 		};
 	};
 };
-
 &gpu_opp_table {
-	/*
-	 * Unlike CPU opp tables, the GPU driver does not shift speed bins.
-	 *
-	 * 652.8 Mhz is available on speed bin 0 only.
-	 * 624 Mhz and 560 Mhz are available on speed bins 0 and 1.
-	 * All the rest are available on all bins of the hardware (like on
-	 * plain 8996).
-	 */
-
 	opp-652800000 {
 		opp-hz = /bits/ 64 <652800000>;
 		opp-supported-hw = <0x01>;
@@ -334,9 +308,7 @@
 		opp-hz = /bits/ 64 <560000000>;
 		opp-supported-hw = <0x03>;
 	};
-	/* The rest is inherited from msm8996 */
 };
-
 &cbf {
 	compatible = "qcom,msm8996pro-cbf";
 };

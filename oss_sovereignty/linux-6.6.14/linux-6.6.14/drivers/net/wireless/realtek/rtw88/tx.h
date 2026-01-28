@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
-
 #ifndef __RTW_TX_H_
 #define __RTW_TX_H_
-
 #define RTK_TX_MAX_AGG_NUM_MASK		0x1f
-
 #define RTW_TX_PROBE_TIMEOUT		msecs_to_jiffies(500)
-
 struct rtw_tx_desc {
 	__le32 w0;
 	__le32 w1;
@@ -21,7 +14,6 @@ struct rtw_tx_desc {
 	__le32 w8;
 	__le32 w9;
 } __packed;
-
 #define RTW_TX_DESC_W0_TXPKTSIZE GENMASK(15, 0)
 #define RTW_TX_DESC_W0_OFFSET GENMASK(23, 16)
 #define RTW_TX_DESC_W0_BMC BIT(24)
@@ -56,7 +48,6 @@ struct rtw_tx_desc {
 #define RTW_TX_DESC_W9_SW_SEQ GENMASK(23, 12)
 #define RTW_TX_DESC_W9_TIM_EN BIT(7)
 #define RTW_TX_DESC_W9_TIM_OFFSET GENMASK(6, 0)
-
 enum rtw_tx_desc_queue_select {
 	TX_DESC_QSEL_TID0	= 0,
 	TX_DESC_QSEL_TID1	= 1,
@@ -79,9 +70,7 @@ enum rtw_tx_desc_queue_select {
 	TX_DESC_QSEL_MGMT	= 18,
 	TX_DESC_QSEL_H2C	= 19,
 };
-
 enum rtw_rsvd_packet_type;
-
 void rtw_tx(struct rtw_dev *rtwdev,
 	    struct ieee80211_tx_control *control,
 	    struct sk_buff *skb);
@@ -108,33 +97,25 @@ struct sk_buff *
 rtw_tx_write_data_h2c_get(struct rtw_dev *rtwdev,
 			  struct rtw_tx_pkt_info *pkt_info,
 			  u8 *buf, u32 size);
-
 enum rtw_tx_queue_type rtw_tx_ac_to_hwq(enum ieee80211_ac_numbers ac);
 enum rtw_tx_queue_type rtw_tx_queue_mapping(struct sk_buff *skb);
-
 static inline
 void fill_txdesc_checksum_common(u8 *txdesc, size_t words)
 {
 	__le16 chksum = 0;
 	__le16 *data = (__le16 *)(txdesc);
 	struct rtw_tx_desc *tx_desc = (struct rtw_tx_desc *)txdesc;
-
 	le32p_replace_bits(&tx_desc->w7, 0, RTW_TX_DESC_W7_TXDESC_CHECKSUM);
-
 	while (words--)
 		chksum ^= *data++;
-
 	le32p_replace_bits(&tx_desc->w7, __le16_to_cpu(chksum),
 			   RTW_TX_DESC_W7_TXDESC_CHECKSUM);
 }
-
 static inline void rtw_tx_fill_txdesc_checksum(struct rtw_dev *rtwdev,
 					       struct rtw_tx_pkt_info *pkt_info,
 					       u8 *txdesc)
 {
 	const struct rtw_chip_info *chip = rtwdev->chip;
-
 	chip->ops->fill_txdesc_checksum(rtwdev, pkt_info, txdesc);
 }
-
 #endif

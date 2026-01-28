@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- */
-
 #ifndef _MTK_JPEG_REG_H
 #define _MTK_JPEG_REG_H
-
 #define MTK_JPEG_BLOCK_MAX		10
 #define MTK_JPEG_DCTSIZE		8
-
 #define BIT_INQST_MASK_ERROR_BS		0x20
 #define BIT_INQST_MASK_PAUSE		0x10
 #define BIT_INQST_MASK_OVERFLOW		0x04
 #define BIT_INQST_MASK_UNDERFLOW	0x02
 #define BIT_INQST_MASK_EOF		0x01
 #define BIT_INQST_MASK_ALLIRQ		0x37
-
 #define JPGDEC_REG_RESET		0x0090
 #define JPGDEC_REG_BRZ_FACTOR		0x00f8
 #define JPGDEC_REG_DU_NUM		0x00fc
@@ -46,5 +36,4 @@
 #define JPGDEC_REG_INTERRUPT_STATUS	0x0274
 #define JPGDEC_REG_STATUS		0x0278
 #define JPGDEC_REG_BIT_STREAM_SIZE	0x0344
-
-#endif /* _MTK_JPEG_REG_H */
+#endif  

@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2010 Yong Shen <yong.shen@linaro.org>
- */
-
 #ifndef __LINUX_MFD_MC13892_H
 #define __LINUX_MFD_MC13892_H
-
 #include <linux/mfd/mc13xxx.h>
-
 #define MC13892_SW1		0
 #define MC13892_SW2		1
 #define MC13892_SW3		2
@@ -32,5 +25,4 @@
 #define MC13892_PWGT1SPI	21
 #define MC13892_PWGT2SPI	22
 #define MC13892_VCOINCELL	23
-
 #endif

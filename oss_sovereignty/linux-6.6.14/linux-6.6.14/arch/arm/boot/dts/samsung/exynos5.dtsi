@@ -1,23 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Samsung's Exynos5 SoC series common device tree source
- *
- * Copyright (c) 2012-2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung's Exynos5 SoC series device nodes are listed in this file. Particular
- * SoCs from Exynos5 series can include this file and provide values for SoCs
- * specific bindings.
- */
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	interrupt-parent = <&gic>;
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		i2c0 = &i2c_0;
 		i2c1 = &i2c_1;
@@ -28,23 +14,19 @@
 		serial2 = &serial_2;
 		serial3 = &serial_3;
 	};
-
 	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		chipid: chipid@10000000 {
 			compatible = "samsung,exynos4210-chipid";
 			reg = <0x10000000 0x100>;
 		};
-
 		sromc: memory-controller@12250000 {
 			compatible = "samsung,exynos4210-srom";
 			reg = <0x12250000 0x14>;
 		};
-
 		combiner: interrupt-controller@10440000 {
 			compatible = "samsung,exynos4210-combiner";
 			#interrupt-cells = <2>;
@@ -84,7 +66,6 @@
 				     <GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		gic: interrupt-controller@10481000 {
 			compatible = "arm,gic-400", "arm,cortex-a15-gic";
 			#interrupt-cells = <3>;
@@ -96,36 +77,30 @@
 			interrupts = <GIC_PPI 9
 					(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		};
-
 		sysreg_system_controller: syscon@10050000 {
 			compatible = "samsung,exynos5-sysreg", "syscon";
 			reg = <0x10050000 0x5000>;
 		};
-
 		serial_0: serial@12c00000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x12c00000 0x100>;
 			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		serial_1: serial@12c10000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x12c10000 0x100>;
 			interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		serial_2: serial@12c20000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x12c20000 0x100>;
 			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		serial_3: serial@12c30000 {
 			compatible = "samsung,exynos4210-uart";
 			reg = <0x12c30000 0x100>;
 			interrupts = <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		i2c_0: i2c@12c60000 {
 			compatible = "samsung,s3c2440-i2c";
 			reg = <0x12c60000 0x100>;
@@ -135,7 +110,6 @@
 			samsung,sysreg-phandle = <&sysreg_system_controller>;
 			status = "disabled";
 		};
-
 		i2c_1: i2c@12c70000 {
 			compatible = "samsung,s3c2440-i2c";
 			reg = <0x12c70000 0x100>;
@@ -145,7 +119,6 @@
 			samsung,sysreg-phandle = <&sysreg_system_controller>;
 			status = "disabled";
 		};
-
 		i2c_2: i2c@12c80000 {
 			compatible = "samsung,s3c2440-i2c";
 			reg = <0x12c80000 0x100>;
@@ -155,7 +128,6 @@
 			samsung,sysreg-phandle = <&sysreg_system_controller>;
 			status = "disabled";
 		};
-
 		i2c_3: i2c@12c90000 {
 			compatible = "samsung,s3c2440-i2c";
 			reg = <0x12c90000 0x100>;
@@ -165,7 +137,6 @@
 			samsung,sysreg-phandle = <&sysreg_system_controller>;
 			status = "disabled";
 		};
-
 		pwm: pwm@12dd0000 {
 			compatible = "samsung,exynos4210-pwm";
 			reg = <0x12dd0000 0x100>;
@@ -177,7 +148,6 @@
 			samsung,pwm-outputs = <0>, <1>, <2>, <3>;
 			#pwm-cells = <3>;
 		};
-
 		rtc: rtc@101e0000 {
 			compatible = "samsung,s3c6410-rtc";
 			reg = <0x101e0000 0x100>;
@@ -185,7 +155,6 @@
 				     <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		fimd: fimd@14400000 {
 			compatible = "samsung,exynos5250-fimd";
 			interrupt-parent = <&combiner>;
@@ -195,7 +164,6 @@
 			samsung,sysreg = <&sysreg_system_controller>;
 			status = "disabled";
 		};
-
 		dp: dp-controller@145b0000 {
 			compatible = "samsung,exynos5-dp";
 			reg = <0x145b0000 0x1000>;
@@ -203,23 +171,19 @@
 			interrupt-parent = <&combiner>;
 			status = "disabled";
 		};
-
 		sss: sss@10830000 {
 			compatible = "samsung,exynos4210-secss";
 			reg = <0x10830000 0x300>;
 			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		prng: rng@10830400 {
 			compatible = "samsung,exynos5250-prng";
 			reg = <0x10830400 0x200>;
 		};
-
 		trng: rng@10830600 {
 			compatible = "samsung,exynos5250-trng";
 			reg = <0x10830600 0x100>;
 		};
-
 		g2d: g2d@10850000 {
 			compatible = "samsung,exynos5250-g2d";
 			reg = <0x10850000 0x1000>;

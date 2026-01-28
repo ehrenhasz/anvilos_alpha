@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Copyright IBM Corp. 2008
- *
- * Authors: Hollis Blanchard <hollisb@us.ibm.com>
- */
-
 #ifndef __POWERPC_KVM_ASM_H__
 #define __POWERPC_KVM_ASM_H__
-
 #ifdef __ASSEMBLY__
 #ifdef CONFIG_64BIT
 #define PPC_STD(sreg, offset, areg)  std sreg, (offset)(areg)
@@ -18,12 +9,9 @@
 #define PPC_LD(treg, offset, areg)   lwz treg, (offset+4)(areg)
 #endif
 #endif
-
-/* IVPR must be 64KiB-aligned. */
 #define VCPU_SIZE_ORDER 4
 #define VCPU_SIZE_LOG   (VCPU_SIZE_ORDER + 12)
 #define VCPU_SIZE_BYTES (1<<VCPU_SIZE_LOG)
-
 #define BOOKE_INTERRUPT_CRITICAL 0
 #define BOOKE_INTERRUPT_MACHINE_CHECK 1
 #define BOOKE_INTERRUPT_DATA_STORAGE 2
@@ -40,32 +28,23 @@
 #define BOOKE_INTERRUPT_DTLB_MISS 13
 #define BOOKE_INTERRUPT_ITLB_MISS 14
 #define BOOKE_INTERRUPT_DEBUG 15
-
-/* E500 */
 #ifdef CONFIG_SPE_POSSIBLE
 #define BOOKE_INTERRUPT_SPE_UNAVAIL 32
 #define BOOKE_INTERRUPT_SPE_FP_DATA 33
 #define BOOKE_INTERRUPT_SPE_FP_ROUND 34
 #endif
-
 #ifdef CONFIG_PPC_E500MC
 #define BOOKE_INTERRUPT_ALTIVEC_UNAVAIL 32
 #define BOOKE_INTERRUPT_ALTIVEC_ASSIST 33
 #endif
-
 #define BOOKE_INTERRUPT_PERFORMANCE_MONITOR 35
 #define BOOKE_INTERRUPT_DOORBELL 36
 #define BOOKE_INTERRUPT_DOORBELL_CRITICAL 37
-
-/* booke_hv */
 #define BOOKE_INTERRUPT_GUEST_DBELL 38
 #define BOOKE_INTERRUPT_GUEST_DBELL_CRIT 39
 #define BOOKE_INTERRUPT_HV_SYSCALL 40
 #define BOOKE_INTERRUPT_HV_PRIV 41
 #define BOOKE_INTERRUPT_LRAT_ERROR 42
-
-/* book3s */
-
 #define BOOK3S_INTERRUPT_SYSTEM_RESET	0x100
 #define BOOK3S_INTERRUPT_MACHINE_CHECK	0x200
 #define BOOK3S_INTERRUPT_DATA_STORAGE	0x300
@@ -94,18 +73,8 @@
 #define BOOK3S_INTERRUPT_VSX		0xf40
 #define BOOK3S_INTERRUPT_FAC_UNAVAIL	0xf60
 #define BOOK3S_INTERRUPT_H_FAC_UNAVAIL	0xf80
-
-/* book3s_hv */
-
 #define BOOK3S_INTERRUPT_HV_SOFTPATCH	0x1500
-
-/*
- * Special trap used to indicate to host that this is a
- * passthrough interrupt that could not be handled
- * completely in the guest.
- */
 #define BOOK3S_INTERRUPT_HV_RM_HARD	0x5555
-
 #define BOOK3S_IRQPRIO_SYSTEM_RESET		0
 #define BOOK3S_IRQPRIO_DATA_SEGMENT		1
 #define BOOK3S_IRQPRIO_INST_SEGMENT		2
@@ -124,7 +93,6 @@
 #define BOOK3S_IRQPRIO_DECREMENTER		15
 #define BOOK3S_IRQPRIO_PERFORMANCE_MONITOR	16
 #define BOOK3S_IRQPRIO_MAX			17
-
 #define BOOK3S_HFLAG_DCBZ32			0x1
 #define BOOK3S_HFLAG_SLB			0x2
 #define BOOK3S_HFLAG_PAIRED_SINGLE		0x4
@@ -132,27 +100,20 @@
 #define BOOK3S_HFLAG_MULTI_PGSIZE		0x10
 #define BOOK3S_HFLAG_NEW_TLBIE			0x20
 #define BOOK3S_HFLAG_SPLIT_HACK			0x40
-
-#define RESUME_FLAG_NV          (1<<0)  /* Reload guest nonvolatile state? */
-#define RESUME_FLAG_HOST        (1<<1)  /* Resume host? */
+#define RESUME_FLAG_NV          (1<<0)   
+#define RESUME_FLAG_HOST        (1<<1)   
 #define RESUME_FLAG_ARCH1	(1<<2)
 #define RESUME_FLAG_ARCH2	(1<<3)
-
 #define RESUME_GUEST            0
 #define RESUME_GUEST_NV         RESUME_FLAG_NV
 #define RESUME_HOST             RESUME_FLAG_HOST
 #define RESUME_HOST_NV          (RESUME_FLAG_HOST|RESUME_FLAG_NV)
-
 #define KVM_GUEST_MODE_NONE	0
 #define KVM_GUEST_MODE_GUEST	1
 #define KVM_GUEST_MODE_SKIP	2
 #define KVM_GUEST_MODE_GUEST_HV	3
 #define KVM_GUEST_MODE_HOST_HV	4
-#define KVM_GUEST_MODE_HV_P9	5 /* ISA >= v3.0 path */
-
+#define KVM_GUEST_MODE_HV_P9	5  
 #define KVM_INST_FETCH_FAILED	-1
-
-/* Extract PO and XOP opcode fields */
 #define PO_XOP_OPCODE_MASK 0xfc0007fe
-
-#endif /* __POWERPC_KVM_ASM_H__ */
+#endif  

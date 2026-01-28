@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8971.h  --  audio driver for WM8971
- *
- * Copyright 2005 Lab126, Inc.
- *
- * Author: Kenneth Kiraly <kiraly@lab126.com>
- */
-
 #ifndef _WM8971_H
 #define _WM8971_H
-
 #define WM8971_LINVOL	0x00
 #define WM8971_RINVOL	0x01
 #define WM8971_LOUT1V	0x02
@@ -45,7 +35,5 @@
 #define WM8971_LOUT2V	0x28
 #define WM8971_ROUT2V	0x29
 #define WM8971_MOUTV	0x2A
-
 #define WM8971_SYSCLK	0
-
 #endif

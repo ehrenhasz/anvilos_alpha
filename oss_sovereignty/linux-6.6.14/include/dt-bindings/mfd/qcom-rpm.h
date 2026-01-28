@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for the Qualcomm RPM bindings.
- */
-
 #ifndef _DT_BINDINGS_MFD_QCOM_RPM_H
 #define _DT_BINDINGS_MFD_QCOM_RPM_H
-
-/*
- * Constants use to identify individual resources in the RPM.
- */
 #define QCOM_RPM_APPS_FABRIC_ARB		1
 #define QCOM_RPM_APPS_FABRIC_CLK		2
 #define QCOM_RPM_APPS_FABRIC_HALT		3
@@ -170,14 +161,9 @@
 #define QCOM_RPM_PM8018_LVS1			159
 #define QCOM_RPM_PM8018_NCP			160
 #define QCOM_RPM_VOLTAGE_CORNER			161
-
-/*
- * Constants used to select force mode for regulators.
- */
 #define QCOM_RPM_FORCE_MODE_NONE		0
 #define QCOM_RPM_FORCE_MODE_LPM			1
 #define QCOM_RPM_FORCE_MODE_HPM			2
 #define QCOM_RPM_FORCE_MODE_AUTO		3
 #define QCOM_RPM_FORCE_MODE_BYPASS		4
-
 #endif

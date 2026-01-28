@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2021 Sergio Paracuellos
- * Author: Sergio Paracuellos <sergio.paracuellos@gmail.com>
- */
-
 #ifndef DT_BINDING_MT7621_RESET_H
 #define DT_BINDING_MT7621_RESET_H
-
 #define MT7621_RST_SYS		0
 #define MT7621_RST_MCM		2
 #define MT7621_RST_HSDMA	5
@@ -33,5 +26,4 @@
 #define MT7621_RST_CRYPTO	29
 #define MT7621_RST_SDXC		30
 #define MT7621_RST_PPE		31
-
-#endif /* DT_BINDING_MT7621_RESET_H */
+#endif  

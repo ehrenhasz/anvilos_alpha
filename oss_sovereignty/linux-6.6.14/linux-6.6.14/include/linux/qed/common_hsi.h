@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- * Copyright (c) 2019-2021 Marvell International Ltd.
- */
-
 #ifndef _COMMON_HSI_H
 #define _COMMON_HSI_H
-
 #include <linux/types.h>
 #include <asm/byteorder.h>
 #include <linux/bitops.h>
 #include <linux/slab.h>
-
-/* dma_addr_t manip */
 #define PTR_LO(x)		((u32)(((uintptr_t)(x)) & 0xffffffff))
 #define PTR_HI(x)		((u32)((((uintptr_t)(x)) >> 16) >> 16))
 #define DMA_LO_LE(x)		cpu_to_le32(lower_32_bits(x))
@@ -21,7 +12,6 @@
 					(x).hi = DMA_HI_LE((val)); \
 					(x).lo = DMA_LO_LE((val)); \
 				} while (0)
-
 #define HILO_GEN(hi, lo, type)		((((type)(hi)) << 32) + (lo))
 #define HILO_64(hi, lo) \
 	HILO_GEN(le32_to_cpu(hi), le32_to_cpu(lo), u64)
@@ -29,137 +19,83 @@
 	typeof(regpair) __regpair = (regpair); \
 	HILO_64(__regpair.hi, __regpair.lo); })
 #define HILO_DMA_REGPAIR(regpair)	((dma_addr_t)HILO_64_REGPAIR(regpair))
-
 #ifndef __COMMON_HSI__
 #define __COMMON_HSI__
-
-/********************************/
-/* PROTOCOL COMMON FW CONSTANTS */
-/********************************/
-
 #define X_FINAL_CLEANUP_AGG_INT			1
-
 #define EVENT_RING_PAGE_SIZE_BYTES		4096
-
 #define NUM_OF_GLOBAL_QUEUES			128
 #define COMMON_QUEUE_ENTRY_MAX_BYTE_SIZE	64
-
 #define ISCSI_CDU_TASK_SEG_TYPE			0
 #define FCOE_CDU_TASK_SEG_TYPE			0
 #define RDMA_CDU_TASK_SEG_TYPE			1
 #define ETH_CDU_TASK_SEG_TYPE			2
-
 #define FW_ASSERT_GENERAL_ATTN_IDX		32
-
-/* Queue Zone sizes in bytes */
 #define TSTORM_QZONE_SIZE	8
 #define MSTORM_QZONE_SIZE	16
 #define USTORM_QZONE_SIZE	8
 #define XSTORM_QZONE_SIZE	8
 #define YSTORM_QZONE_SIZE	0
 #define PSTORM_QZONE_SIZE	0
-
 #define MSTORM_VF_ZONE_DEFAULT_SIZE_LOG		7
 #define ETH_MAX_RXQ_VF_DEFAULT 16
 #define ETH_MAX_RXQ_VF_DOUBLE 48
 #define ETH_MAX_RXQ_VF_QUAD 112
-
 #define ETH_RGSRC_CTX_SIZE			6
 #define ETH_TGSRC_CTX_SIZE			6
-
-/********************************/
-/* CORE (LIGHT L2) FW CONSTANTS */
-/********************************/
-
 #define CORE_LL2_MAX_RAMROD_PER_CON	8
 #define CORE_LL2_TX_BD_PAGE_SIZE_BYTES	4096
 #define CORE_LL2_RX_BD_PAGE_SIZE_BYTES	4096
 #define CORE_LL2_RX_CQE_PAGE_SIZE_BYTES	4096
 #define CORE_LL2_RX_NUM_NEXT_PAGE_BDS	1
-
 #define CORE_LL2_TX_MAX_BDS_PER_PACKET	12
-
 #define CORE_SPQE_PAGE_SIZE_BYTES	4096
-
-/* Number of LL2 RAM based queues */
 #define MAX_NUM_LL2_RX_RAM_QUEUES 32
-
-/* Number of LL2 context based queues */
 #define MAX_NUM_LL2_RX_CTX_QUEUES 208
 #define MAX_NUM_LL2_RX_QUEUES \
 	(MAX_NUM_LL2_RX_RAM_QUEUES + MAX_NUM_LL2_RX_CTX_QUEUES)
-
 #define MAX_NUM_LL2_TX_STATS_COUNTERS  48
-
 #define FW_MAJOR_VERSION	8
 #define FW_MINOR_VERSION	59
 #define FW_REVISION_VERSION	1
 #define FW_ENGINEERING_VERSION	0
-
-/***********************/
-/* COMMON HW CONSTANTS */
-/***********************/
-
-/* PCI functions */
 #define MAX_NUM_PORTS_K2	(4)
 #define MAX_NUM_PORTS_BB	(2)
 #define MAX_NUM_PORTS		(MAX_NUM_PORTS_K2)
-
 #define MAX_NUM_PFS_K2		(16)
 #define MAX_NUM_PFS_BB		(8)
 #define MAX_NUM_PFS		(MAX_NUM_PFS_K2)
-#define MAX_NUM_OF_PFS_IN_CHIP	(16) /* On both engines */
-
+#define MAX_NUM_OF_PFS_IN_CHIP	(16)  
 #define MAX_NUM_VFS_K2	(192)
 #define MAX_NUM_VFS_BB	(120)
 #define MAX_NUM_VFS	(MAX_NUM_VFS_K2)
-
 #define MAX_NUM_FUNCTIONS_BB	(MAX_NUM_PFS_BB + MAX_NUM_VFS_BB)
 #define MAX_NUM_FUNCTIONS_K2    (MAX_NUM_PFS_K2 + MAX_NUM_VFS_K2)
-
 #define MAX_FUNCTION_NUMBER_BB	(MAX_NUM_PFS + MAX_NUM_VFS_BB)
 #define MAX_FUNCTION_NUMBER_K2  (MAX_NUM_PFS + MAX_NUM_VFS_K2)
 #define MAX_NUM_FUNCTIONS	(MAX_FUNCTION_NUMBER_K2)
-
 #define MAX_NUM_VPORTS_K2	(208)
 #define MAX_NUM_VPORTS_BB	(160)
 #define MAX_NUM_VPORTS		(MAX_NUM_VPORTS_K2)
-
 #define MAX_NUM_L2_QUEUES_K2	(320)
 #define MAX_NUM_L2_QUEUES_BB	(256)
 #define MAX_NUM_L2_QUEUES	(MAX_NUM_L2_QUEUES_K2)
-
-/* Traffic classes in network-facing blocks (PBF, BTB, NIG, BRB, PRS and QM) */
 #define NUM_PHYS_TCS_4PORT_K2	(4)
 #define NUM_OF_PHYS_TCS		(8)
 #define PURE_LB_TC		NUM_OF_PHYS_TCS
 #define NUM_TCS_4PORT_K2	(NUM_PHYS_TCS_4PORT_K2 + 1)
 #define NUM_OF_TCS		(NUM_OF_PHYS_TCS + 1)
-
-/* CIDs */
 #define NUM_OF_CONNECTION_TYPES	(8)
 #define NUM_OF_LCIDS			(320)
 #define NUM_OF_LTIDS			(320)
-
-/* Global PXP windows (GTT) */
 #define NUM_OF_GTT		19
 #define GTT_DWORD_SIZE_BITS	10
 #define GTT_BYTE_SIZE_BITS	(GTT_DWORD_SIZE_BITS + 2)
 #define GTT_DWORD_SIZE		BIT(GTT_DWORD_SIZE_BITS)
-
-/* Tools Version */
 #define TOOLS_VERSION 11
-
-/*****************/
-/* CDU CONSTANTS */
-/*****************/
-
 #define CDU_SEG_TYPE_OFFSET_REG_TYPE_SHIFT			(17)
 #define CDU_SEG_TYPE_OFFSET_REG_OFFSET_MASK			(0x1ffff)
-
 #define CDU_VF_FL_SEG_TYPE_OFFSET_REG_TYPE_SHIFT		(12)
 #define CDU_VF_FL_SEG_TYPE_OFFSET_REG_OFFSET_MASK		(0xfff)
-
 #define CDU_CONTEXT_VALIDATION_CFG_ENABLE_SHIFT			(0)
 #define CDU_CONTEXT_VALIDATION_CFG_VALIDATION_TYPE_SHIFT	(1)
 #define CDU_CONTEXT_VALIDATION_CFG_USE_TYPE			(2)
@@ -167,18 +103,10 @@
 #define CDU_CONTEXT_VALIDATION_CFG_USE_CID			(4)
 #define CDU_CONTEXT_VALIDATION_CFG_USE_ACTIVE			(5)
 #define CDU_CONTEXT_VALIDATION_DEFAULT_CFG			(0x3d)
-
-/*****************/
-/* DQ CONSTANTS  */
-/*****************/
-
-/* DEMS */
 #define DQ_DEMS_LEGACY			0
 #define DQ_DEMS_TOE_MORE_TO_SEND	3
 #define DQ_DEMS_TOE_LOCAL_ADV_WND	4
 #define DQ_DEMS_ROCE_CQ_CONS		7
-
-/* XCM agg val selection (HW) */
 #define DQ_XCM_AGG_VAL_SEL_WORD2	0
 #define DQ_XCM_AGG_VAL_SEL_WORD3	1
 #define DQ_XCM_AGG_VAL_SEL_WORD4	2
@@ -187,8 +115,6 @@
 #define DQ_XCM_AGG_VAL_SEL_REG4		5
 #define DQ_XCM_AGG_VAL_SEL_REG5		6
 #define DQ_XCM_AGG_VAL_SEL_REG6		7
-
-/* XCM agg val selection (FW) */
 #define	DQ_XCM_CORE_TX_BD_CONS_CMD		DQ_XCM_AGG_VAL_SEL_WORD3
 #define	DQ_XCM_CORE_TX_BD_PROD_CMD		DQ_XCM_AGG_VAL_SEL_WORD4
 #define	DQ_XCM_CORE_SPQ_PROD_CMD		DQ_XCM_AGG_VAL_SEL_WORD4
@@ -208,8 +134,6 @@
 #define DQ_XCM_TOE_MORE_TO_SEND_SEQ_CMD		DQ_XCM_AGG_VAL_SEL_REG3
 #define DQ_XCM_TOE_LOCAL_ADV_WND_SEQ_CMD	DQ_XCM_AGG_VAL_SEL_REG4
 #define DQ_XCM_ROCE_ACK_EDPM_DORQ_SEQ_CMD	DQ_XCM_AGG_VAL_SEL_WORD5
-
-/* UCM agg val selection (HW) */
 #define	DQ_UCM_AGG_VAL_SEL_WORD0	0
 #define	DQ_UCM_AGG_VAL_SEL_WORD1	1
 #define	DQ_UCM_AGG_VAL_SEL_WORD2	2
@@ -218,14 +142,10 @@
 #define	DQ_UCM_AGG_VAL_SEL_REG1		5
 #define	DQ_UCM_AGG_VAL_SEL_REG2		6
 #define	DQ_UCM_AGG_VAL_SEL_REG3		7
-
-/* UCM agg val selection (FW) */
 #define DQ_UCM_ETH_PMD_TX_CONS_CMD	DQ_UCM_AGG_VAL_SEL_WORD2
 #define DQ_UCM_ETH_PMD_RX_CONS_CMD	DQ_UCM_AGG_VAL_SEL_WORD3
 #define DQ_UCM_ROCE_CQ_CONS_CMD		DQ_UCM_AGG_VAL_SEL_REG0
 #define DQ_UCM_ROCE_CQ_PROD_CMD		DQ_UCM_AGG_VAL_SEL_REG2
-
-/* TCM agg val selection (HW) */
 #define	DQ_TCM_AGG_VAL_SEL_WORD0	0
 #define	DQ_TCM_AGG_VAL_SEL_WORD1	1
 #define	DQ_TCM_AGG_VAL_SEL_WORD2	2
@@ -234,14 +154,10 @@
 #define	DQ_TCM_AGG_VAL_SEL_REG2		5
 #define	DQ_TCM_AGG_VAL_SEL_REG6		6
 #define	DQ_TCM_AGG_VAL_SEL_REG9		7
-
-/* TCM agg val selection (FW) */
 #define DQ_TCM_L2B_BD_PROD_CMD \
 	DQ_TCM_AGG_VAL_SEL_WORD1
 #define DQ_TCM_ROCE_RQ_PROD_CMD	\
 	DQ_TCM_AGG_VAL_SEL_WORD0
-
-/* XCM agg counter flag selection (HW) */
 #define	DQ_XCM_AGG_FLG_SHIFT_BIT14	0
 #define	DQ_XCM_AGG_FLG_SHIFT_BIT15	1
 #define	DQ_XCM_AGG_FLG_SHIFT_CF12	2
@@ -250,8 +166,6 @@
 #define	DQ_XCM_AGG_FLG_SHIFT_CF19	5
 #define	DQ_XCM_AGG_FLG_SHIFT_CF22	6
 #define	DQ_XCM_AGG_FLG_SHIFT_CF23	7
-
-/* XCM agg counter flag selection (FW) */
 #define DQ_XCM_CORE_DQ_CF_CMD			BIT(DQ_XCM_AGG_FLG_SHIFT_CF18)
 #define DQ_XCM_CORE_TERMINATE_CMD		BIT(DQ_XCM_AGG_FLG_SHIFT_CF19)
 #define DQ_XCM_CORE_SLOW_PATH_CMD		BIT(DQ_XCM_AGG_FLG_SHIFT_CF22)
@@ -265,8 +179,6 @@
 #define DQ_XCM_ISCSI_PROC_ONLY_CLEANUP_CMD	BIT(DQ_XCM_AGG_FLG_SHIFT_CF23)
 #define DQ_XCM_TOE_DQ_FLUSH_CMD			BIT(DQ_XCM_AGG_FLG_SHIFT_CF19)
 #define DQ_XCM_TOE_SLOW_PATH_CMD		BIT(DQ_XCM_AGG_FLG_SHIFT_CF22)
-
-/* UCM agg counter flag selection (HW) */
 #define	DQ_UCM_AGG_FLG_SHIFT_CF0	0
 #define	DQ_UCM_AGG_FLG_SHIFT_CF1	1
 #define	DQ_UCM_AGG_FLG_SHIFT_CF3	2
@@ -275,8 +187,6 @@
 #define	DQ_UCM_AGG_FLG_SHIFT_CF6	5
 #define	DQ_UCM_AGG_FLG_SHIFT_RULE0EN	6
 #define	DQ_UCM_AGG_FLG_SHIFT_RULE1EN	7
-
-/* UCM agg counter flag selection (FW) */
 #define DQ_UCM_ETH_PMD_TX_ARM_CMD	BIT(DQ_UCM_AGG_FLG_SHIFT_CF4)
 #define DQ_UCM_ETH_PMD_RX_ARM_CMD	BIT(DQ_UCM_AGG_FLG_SHIFT_CF5)
 #define DQ_UCM_ROCE_CQ_ARM_SE_CF_CMD	BIT(DQ_UCM_AGG_FLG_SHIFT_CF4)
@@ -284,8 +194,6 @@
 #define DQ_UCM_TOE_TIMER_STOP_ALL_CMD	BIT(DQ_UCM_AGG_FLG_SHIFT_CF3)
 #define DQ_UCM_TOE_SLOW_PATH_CF_CMD	BIT(DQ_UCM_AGG_FLG_SHIFT_CF4)
 #define DQ_UCM_TOE_DQ_CF_CMD		BIT(DQ_UCM_AGG_FLG_SHIFT_CF5)
-
-/* TCM agg counter flag selection (HW) */
 #define DQ_TCM_AGG_FLG_SHIFT_CF0	0
 #define DQ_TCM_AGG_FLG_SHIFT_CF1	1
 #define DQ_TCM_AGG_FLG_SHIFT_CF2	2
@@ -294,7 +202,6 @@
 #define DQ_TCM_AGG_FLG_SHIFT_CF5	5
 #define DQ_TCM_AGG_FLG_SHIFT_CF6	6
 #define DQ_TCM_AGG_FLG_SHIFT_CF7	7
-/* TCM agg counter flag selection (FW) */
 #define DQ_TCM_FCOE_FLUSH_Q0_CMD	BIT(DQ_TCM_AGG_FLG_SHIFT_CF1)
 #define DQ_TCM_FCOE_DUMMY_TIMER_CMD	BIT(DQ_TCM_AGG_FLG_SHIFT_CF2)
 #define DQ_TCM_FCOE_TIMER_STOP_ALL_CMD	BIT(DQ_TCM_AGG_FLG_SHIFT_CF3)
@@ -303,8 +210,6 @@
 #define DQ_TCM_TOE_FLUSH_Q0_CMD		BIT(DQ_TCM_AGG_FLG_SHIFT_CF1)
 #define DQ_TCM_TOE_TIMER_STOP_ALL_CMD	BIT(DQ_TCM_AGG_FLG_SHIFT_CF3)
 #define DQ_TCM_IWARP_POST_RQ_CF_CMD	BIT(DQ_TCM_AGG_FLG_SHIFT_CF1)
-
-/* PWM address mapping */
 #define DQ_PWM_OFFSET_DPM_BASE		0x0
 #define DQ_PWM_OFFSET_DPM_END		0x27
 #define DQ_PWM_OFFSET_XCM32_24ICID_BASE 0x28
@@ -320,7 +225,6 @@
 #define DQ_PWM_OFFSET_XCM_FLAGS		0x68
 #define DQ_PWM_OFFSET_UCM_FLAGS		0x69
 #define DQ_PWM_OFFSET_TCM_FLAGS		0x6B
-
 #define DQ_PWM_OFFSET_XCM_RDMA_SQ_PROD		(DQ_PWM_OFFSET_XCM16_BASE + 2)
 #define DQ_PWM_OFFSET_UCM_RDMA_CQ_CONS_32BIT	(DQ_PWM_OFFSET_UCM32_BASE)
 #define DQ_PWM_OFFSET_UCM_RDMA_CQ_CONS_16BIT	(DQ_PWM_OFFSET_UCM16_4)
@@ -328,56 +232,28 @@
 #define DQ_PWM_OFFSET_UCM_RDMA_ARM_FLAGS	(DQ_PWM_OFFSET_UCM_FLAGS)
 #define DQ_PWM_OFFSET_TCM_ROCE_RQ_PROD		(DQ_PWM_OFFSET_TCM16_BASE + 1)
 #define DQ_PWM_OFFSET_TCM_IWARP_RQ_PROD		(DQ_PWM_OFFSET_TCM16_BASE + 3)
-
-/* DQ_DEMS_AGG_VAL_BASE */
 #define DQ_PWM_OFFSET_TCM_LL2_PROD_UPDATE \
 	(DQ_PWM_OFFSET_TCM32_BASE + DQ_TCM_AGG_VAL_SEL_REG9 - 4)
-
 #define DQ_PWM_OFFSET_XCM_RDMA_24B_ICID_SQ_PROD \
 	(DQ_PWM_OFFSET_XCM32_24ICID_BASE + 2)
 #define DQ_PWM_OFFSET_UCM_RDMA_24B_ICID_CQ_CONS_32BIT \
 	(DQ_PWM_OFFSET_UCM32_24ICID_BASE + 4)
 #define DQ_PWM_OFFSET_TCM_ROCE_24B_ICID_RQ_PROD \
 	(DQ_PWM_OFFSET_TCM32_24ICID_BASE + 1)
-
 #define	DQ_REGION_SHIFT			(12)
-
-/* DPM */
 #define	DQ_DPM_WQE_BUFF_SIZE		(320)
-
-/* Conn type ranges */
 #define	DQ_CONN_TYPE_RANGE_SHIFT	(4)
-
-/*****************/
-/* QM CONSTANTS  */
-/*****************/
-
-/* Number of TX queues in the QM */
 #define MAX_QM_TX_QUEUES_K2	512
 #define MAX_QM_TX_QUEUES_BB	448
 #define MAX_QM_TX_QUEUES	MAX_QM_TX_QUEUES_K2
-
-/* Number of Other queues in the QM */
 #define MAX_QM_OTHER_QUEUES_BB	64
 #define MAX_QM_OTHER_QUEUES_K2	128
 #define MAX_QM_OTHER_QUEUES	MAX_QM_OTHER_QUEUES_K2
-
-/* Number of queues in a PF queue group */
 #define QM_PF_QUEUE_GROUP_SIZE	8
-
-/* The size of a single queue element in bytes */
 #define QM_PQ_ELEMENT_SIZE	4
-
-/* Base number of Tx PQs in the CM PQ representation.
- * Should be used when storing PQ IDs in CM PQ registers and context.
- */
 #define CM_TX_PQ_BASE		0x200
-
-/* Number of global Vport/QCN rate limiters */
 #define MAX_QM_GLOBAL_RLS	256
 #define COMMON_MAX_QM_GLOBAL_RLS MAX_QM_GLOBAL_RLS
-
-/* QM registers data */
 #define QM_LINE_CRD_REG_WIDTH		16
 #define QM_LINE_CRD_REG_SIGN_BIT	BIT((QM_LINE_CRD_REG_WIDTH - 1))
 #define QM_BYTE_CRD_REG_WIDTH		24
@@ -386,66 +262,38 @@
 #define QM_WFQ_CRD_REG_SIGN_BIT		BIT((QM_WFQ_CRD_REG_WIDTH - 1))
 #define QM_RL_CRD_REG_WIDTH		32
 #define QM_RL_CRD_REG_SIGN_BIT		BIT((QM_RL_CRD_REG_WIDTH - 1))
-
-/*****************/
-/* CAU CONSTANTS */
-/*****************/
-
 #define CAU_FSM_ETH_RX  0
 #define CAU_FSM_ETH_TX  1
-
-/* Number of Protocol Indices per Status Block */
 #define PIS_PER_SB	12
 #define MAX_PIS_PER_SB	PIS_PER_SB
-
 #define CAU_HC_STOPPED_STATE	3
 #define CAU_HC_DISABLE_STATE	4
 #define CAU_HC_ENABLE_STATE	0
-
-/*****************/
-/* IGU CONSTANTS */
-/*****************/
-
 #define MAX_SB_PER_PATH_K2	(368)
 #define MAX_SB_PER_PATH_BB	(288)
 #define MAX_TOT_SB_PER_PATH \
 	MAX_SB_PER_PATH_K2
-
 #define MAX_SB_PER_PF_MIMD	129
 #define MAX_SB_PER_PF_SIMD	64
 #define MAX_SB_PER_VF		64
-
-/* Memory addresses on the BAR for the IGU Sub Block */
 #define IGU_MEM_BASE			0x0000
-
 #define IGU_MEM_MSIX_BASE		0x0000
 #define IGU_MEM_MSIX_UPPER		0x0101
 #define IGU_MEM_MSIX_RESERVED_UPPER	0x01ff
-
 #define IGU_MEM_PBA_MSIX_BASE		0x0200
 #define IGU_MEM_PBA_MSIX_UPPER		0x0202
 #define IGU_MEM_PBA_MSIX_RESERVED_UPPER	0x03ff
-
 #define IGU_CMD_INT_ACK_BASE		0x0400
 #define IGU_CMD_INT_ACK_RESERVED_UPPER	0x05ff
-
 #define IGU_CMD_ATTN_BIT_UPD_UPPER	0x05f0
 #define IGU_CMD_ATTN_BIT_SET_UPPER	0x05f1
 #define IGU_CMD_ATTN_BIT_CLR_UPPER	0x05f2
-
 #define IGU_REG_SISR_MDPC_WMASK_UPPER		0x05f3
 #define IGU_REG_SISR_MDPC_WMASK_LSB_UPPER	0x05f4
 #define IGU_REG_SISR_MDPC_WMASK_MSB_UPPER	0x05f5
 #define IGU_REG_SISR_MDPC_WOMASK_UPPER		0x05f6
-
 #define IGU_CMD_PROD_UPD_BASE			0x0600
 #define IGU_CMD_PROD_UPD_RESERVED_UPPER		0x07ff
-
-/*****************/
-/* PXP CONSTANTS */
-/*****************/
-
-/* Bars for Blocks */
 #define PXP_BAR_GRC	0
 #define PXP_BAR_TSDM	0
 #define PXP_BAR_USDM	0
@@ -455,8 +303,6 @@
 #define PXP_BAR_PSDM	0
 #define PXP_BAR_IGU	0
 #define PXP_BAR_DQ	1
-
-/* PTT and GTT */
 #define PXP_PER_PF_ENTRY_SIZE		8
 #define PXP_NUM_GLOBAL_WINDOWS		243
 #define PXP_GLOBAL_ENTRY_SIZE		4
@@ -480,7 +326,6 @@
 #define PXP_PF_ME_OPAQUE_MASK_ADDR	0xf4
 #define PXP_PF_ME_OPAQUE_ADDR		0x1f8
 #define PXP_PF_ME_CONCRETE_ADDR		0x1fc
-
 #define PXP_NUM_PF_WINDOWS	12
 #define PXP_EXTERNAL_BAR_PF_WINDOW_START	0x1000
 #define PXP_EXTERNAL_BAR_PF_WINDOW_NUM		PXP_NUM_PF_WINDOWS
@@ -491,7 +336,6 @@
 #define PXP_EXTERNAL_BAR_PF_WINDOW_END \
 	(PXP_EXTERNAL_BAR_PF_WINDOW_START + \
 	 PXP_EXTERNAL_BAR_PF_WINDOW_LENGTH - 1)
-
 #define PXP_EXTERNAL_BAR_GLOBAL_WINDOW_START \
 	(PXP_EXTERNAL_BAR_PF_WINDOW_END + 1)
 #define PXP_EXTERNAL_BAR_GLOBAL_WINDOW_NUM		PXP_NUM_GLOBAL_WINDOWS
@@ -502,54 +346,40 @@
 #define PXP_EXTERNAL_BAR_GLOBAL_WINDOW_END \
 	(PXP_EXTERNAL_BAR_GLOBAL_WINDOW_START + \
 	 PXP_EXTERNAL_BAR_GLOBAL_WINDOW_LENGTH - 1)
-
-/* PF BAR */
 #define PXP_BAR0_START_GRC		0x0000
 #define PXP_BAR0_GRC_LENGTH		0x1C00000
 #define PXP_BAR0_END_GRC		(PXP_BAR0_START_GRC + \
 					 PXP_BAR0_GRC_LENGTH - 1)
-
 #define PXP_BAR0_START_IGU		0x1C00000
 #define PXP_BAR0_IGU_LENGTH		0x10000
 #define PXP_BAR0_END_IGU		(PXP_BAR0_START_IGU + \
 					 PXP_BAR0_IGU_LENGTH - 1)
-
 #define PXP_BAR0_START_TSDM		0x1C80000
 #define PXP_BAR0_SDM_LENGTH		0x40000
 #define PXP_BAR0_SDM_RESERVED_LENGTH	0x40000
 #define PXP_BAR0_END_TSDM		(PXP_BAR0_START_TSDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_START_MSDM		0x1D00000
 #define PXP_BAR0_END_MSDM		(PXP_BAR0_START_MSDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_START_USDM		0x1D80000
 #define PXP_BAR0_END_USDM		(PXP_BAR0_START_USDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_START_XSDM		0x1E00000
 #define PXP_BAR0_END_XSDM		(PXP_BAR0_START_XSDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_START_YSDM		0x1E80000
 #define PXP_BAR0_END_YSDM		(PXP_BAR0_START_YSDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_START_PSDM		0x1F00000
 #define PXP_BAR0_END_PSDM		(PXP_BAR0_START_PSDM + \
 					 PXP_BAR0_SDM_LENGTH - 1)
-
 #define PXP_BAR0_FIRST_INVALID_ADDRESS	(PXP_BAR0_END_PSDM + 1)
-
-/* VF BAR */
 #define PXP_VF_BAR0			0
-
 #define PXP_VF_BAR0_START_IGU		0
 #define PXP_VF_BAR0_IGU_LENGTH		0x3000
 #define PXP_VF_BAR0_END_IGU		(PXP_VF_BAR0_START_IGU + \
 					 PXP_VF_BAR0_IGU_LENGTH - 1)
-
 #define PXP_VF_BAR0_START_DQ		0x3000
 #define PXP_VF_BAR0_DQ_LENGTH		0x200
 #define PXP_VF_BAR0_DQ_OPAQUE_OFFSET	0
@@ -559,78 +389,49 @@
 					 + 4)
 #define PXP_VF_BAR0_END_DQ		(PXP_VF_BAR0_START_DQ +	\
 					 PXP_VF_BAR0_DQ_LENGTH - 1)
-
 #define PXP_VF_BAR0_START_TSDM_ZONE_B	0x3200
 #define PXP_VF_BAR0_SDM_LENGTH_ZONE_B	0x200
 #define PXP_VF_BAR0_END_TSDM_ZONE_B	(PXP_VF_BAR0_START_TSDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_MSDM_ZONE_B	0x3400
 #define PXP_VF_BAR0_END_MSDM_ZONE_B	(PXP_VF_BAR0_START_MSDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_USDM_ZONE_B	0x3600
 #define PXP_VF_BAR0_END_USDM_ZONE_B	(PXP_VF_BAR0_START_USDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_XSDM_ZONE_B	0x3800
 #define PXP_VF_BAR0_END_XSDM_ZONE_B	(PXP_VF_BAR0_START_XSDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_YSDM_ZONE_B	0x3a00
 #define PXP_VF_BAR0_END_YSDM_ZONE_B	(PXP_VF_BAR0_START_YSDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_PSDM_ZONE_B	0x3c00
 #define PXP_VF_BAR0_END_PSDM_ZONE_B	(PXP_VF_BAR0_START_PSDM_ZONE_B + \
 					 PXP_VF_BAR0_SDM_LENGTH_ZONE_B - 1)
-
 #define PXP_VF_BAR0_START_GRC		0x3E00
 #define PXP_VF_BAR0_GRC_LENGTH		0x200
 #define PXP_VF_BAR0_END_GRC		(PXP_VF_BAR0_START_GRC + \
 					 PXP_VF_BAR0_GRC_LENGTH - 1)
-
 #define PXP_VF_BAR0_START_SDM_ZONE_A	0x4000
 #define PXP_VF_BAR0_END_SDM_ZONE_A	0x10000
-
 #define PXP_VF_BAR0_START_IGU2		0x10000
 #define PXP_VF_BAR0_IGU2_LENGTH		0xD000
 #define PXP_VF_BAR0_END_IGU2		(PXP_VF_BAR0_START_IGU2 + \
 					 PXP_VF_BAR0_IGU2_LENGTH - 1)
-
 #define PXP_VF_BAR0_GRC_WINDOW_LENGTH	32
-
 #define PXP_ILT_PAGE_SIZE_NUM_BITS_MIN	12
 #define PXP_ILT_BLOCK_FACTOR_MULTIPLIER	1024
-
-/* ILT Records */
 #define PXP_NUM_ILT_RECORDS_BB 7600
 #define PXP_NUM_ILT_RECORDS_K2 11000
 #define MAX_NUM_ILT_RECORDS MAX(PXP_NUM_ILT_RECORDS_BB, PXP_NUM_ILT_RECORDS_K2)
-
-/* Host Interface */
 #define PXP_QUEUES_ZONE_MAX_NUM	320
-
-/*****************/
-/* PRM CONSTANTS */
-/*****************/
 #define PRM_DMA_PAD_BYTES_NUM	2
-
-/*****************/
-/* SDMs CONSTANTS  */
-/*****************/
-
 #define SDM_OP_GEN_TRIG_NONE		0
 #define SDM_OP_GEN_TRIG_WAKE_THREAD	1
 #define SDM_OP_GEN_TRIG_AGG_INT		2
 #define SDM_OP_GEN_TRIG_LOADER		4
 #define SDM_OP_GEN_TRIG_INDICATE_ERROR  6
 #define SDM_OP_GEN_TRIG_INC_ORDER_CNT   9
-
-/********************/
-/* Completion types */
-/********************/
-
 #define SDM_COMP_TYPE_NONE		0
 #define SDM_COMP_TYPE_WAKE_THREAD	1
 #define SDM_COMP_TYPE_AGG_INT		2
@@ -641,24 +442,10 @@
 #define SDM_COMP_TYPE_RELEASE_THREAD	7
 #define SDM_COMP_TYPE_RAM		8
 #define SDM_COMP_TYPE_INC_ORDER_CNT	9
-
-/*****************/
-/* PBF CONSTANTS */
-/*****************/
-
-/* Number of PBF command queue lines. Each line is 32B. */
 #define PBF_MAX_CMD_LINES	3328
-
-/* Number of BTB blocks. Each block is 256B. */
 #define BTB_MAX_BLOCKS_BB 1440
 #define BTB_MAX_BLOCKS_K2 1840
-/*****************/
-/* PRS CONSTANTS */
-/*****************/
-
 #define PRS_GFT_CAM_LINES_NO_MATCH	31
-
-/* Interrupt coalescing TimeSet */
 struct coalescing_timeset {
 	u8 value;
 #define	COALESCING_TIMESET_TIMESET_MASK		0x7F
@@ -666,18 +453,14 @@ struct coalescing_timeset {
 #define	COALESCING_TIMESET_VALID_MASK		0x1
 #define	COALESCING_TIMESET_VALID_SHIFT		7
 };
-
 struct common_queue_zone {
 	__le16 ring_drv_data_consumer;
 	__le16 reserved;
 };
-
-/* ETH Rx producers data */
 struct eth_rx_prod_data {
 	__le16 bd_prod;
 	__le16 cqe_prod;
 };
-
 struct tcp_ulp_connect_done_params {
 	__le16 mss;
 	u8 snd_wnd_scale;
@@ -687,13 +470,11 @@ struct tcp_ulp_connect_done_params {
 #define TCP_ULP_CONNECT_DONE_PARAMS_RESERVED_MASK	0x7F
 #define TCP_ULP_CONNECT_DONE_PARAMS_RESERVED_SHIFT	1
 };
-
 struct iscsi_connect_done_results {
 	__le16 icid;
 	__le16 conn_id;
 	struct tcp_ulp_connect_done_params params;
 };
-
 struct iscsi_eqe_data {
 	__le16 icid;
 	__le16 conn_id;
@@ -707,23 +488,15 @@ struct iscsi_eqe_data {
 #define ISCSI_EQE_DATA_RESERVED0_MASK			0x1
 #define ISCSI_EQE_DATA_RESERVED0_SHIFT			7
 };
-
-/* Multi function mode */
 enum mf_mode {
-	ERROR_MODE /* Unsupported mode */,
+	ERROR_MODE  ,
 	MF_OVLAN,
 	MF_NPAR,
 	MAX_MF_MODE
 };
-
-/* Per protocol packet duplication enable bit vector. If set, duplicate
- * offloaded traffic to LL2 debug queueu.
- */
 struct offload_pkt_dup_enable {
 	__le16 enable_vector;
 };
-
-/* Per-protocol connection types */
 enum protocol_type {
 	PROTOCOLID_TCP_ULP,
 	PROTOCOLID_FCOE,
@@ -739,60 +512,43 @@ enum protocol_type {
 	PROTOCOLID_SCSI,
 	MAX_PROTOCOL_TYPE
 };
-
-/* Pstorm packet duplication config */
 struct pstorm_pkt_dup_cfg {
 	struct offload_pkt_dup_enable enable;
 	__le16 reserved[3];
 };
-
 struct regpair {
 	__le32 lo;
 	__le32 hi;
 };
-
-/* RoCE Destroy Event Data */
 struct rdma_eqe_destroy_qp {
 	__le32 cid;
 	u8 reserved[4];
 };
-
-/* RoCE Suspend Event Data */
 struct rdma_eqe_suspend_qp {
 	__le32 cid;
 	u8 reserved[4];
 };
-
-/* RDMA Event Data Union */
 union rdma_eqe_data {
 	struct regpair async_handle;
 	struct rdma_eqe_destroy_qp rdma_destroy_qp_data;
 	struct rdma_eqe_suspend_qp rdma_suspend_qp_data;
 };
-
-/* Tstorm packet duplication config */
 struct tstorm_pkt_dup_cfg {
 	struct offload_pkt_dup_enable enable;
 	__le16 reserved;
 	__le32 cid;
 };
-
 struct tstorm_queue_zone {
 	__le32 reserved[2];
 };
-
-/* Ustorm Queue Zone */
 struct ustorm_eth_queue_zone {
 	struct coalescing_timeset int_coalescing_timeset;
 	u8 reserved[3];
 };
-
 struct ustorm_queue_zone {
 	struct ustorm_eth_queue_zone eth;
 	struct common_queue_zone common;
 };
-
-/* Status block structure */
 struct cau_pi_entry {
 	__le32 prod;
 #define CAU_PI_ENTRY_PROD_VAL_MASK	0xFFFF
@@ -804,8 +560,6 @@ struct cau_pi_entry {
 #define CAU_PI_ENTRY_RESERVED_MASK	0xFF
 #define CAU_PI_ENTRY_RESERVED_SHIFT	24
 };
-
-/* Status block structure */
 struct cau_sb_entry {
 	__le32 data;
 #define CAU_SB_ENTRY_SB_PROD_MASK	0xFFFFFF
@@ -832,17 +586,11 @@ struct cau_sb_entry {
 #define CAU_SB_ENTRY_TPH_MASK		0x1
 #define CAU_SB_ENTRY_TPH_SHIFT		31
 };
-
-/* Igu cleanup bit values to distinguish between clean or producer consumer
- * update.
- */
 enum command_type_bit {
 	IGU_COMMAND_TYPE_NOP = 0,
 	IGU_COMMAND_TYPE_SET = 1,
 	MAX_COMMAND_TYPE_BIT
 };
-
-/* Core doorbell data */
 struct core_db_data {
 	u8 params;
 #define CORE_DB_DATA_DEST_MASK		0x3
@@ -858,8 +606,6 @@ struct core_db_data {
 	u8 agg_flags;
 	__le16 spq_prod;
 };
-
-/* Enum of doorbell aggregative command selection */
 enum db_agg_cmd_sel {
 	DB_AGG_CMD_NOP,
 	DB_AGG_CMD_SET,
@@ -867,8 +613,6 @@ enum db_agg_cmd_sel {
 	DB_AGG_CMD_MAX,
 	MAX_DB_AGG_CMD_SEL
 };
-
-/* Enum of doorbell destination */
 enum db_dest {
 	DB_DEST_XCM,
 	DB_DEST_UCM,
@@ -876,8 +620,6 @@ enum db_dest {
 	DB_NUM_DESTINATIONS,
 	MAX_DB_DEST
 };
-
-/* Enum of doorbell DPM types */
 enum db_dpm_type {
 	DPM_LEGACY,
 	DPM_RDMA,
@@ -885,8 +627,6 @@ enum db_dpm_type {
 	DPM_L2_BD,
 	MAX_DB_DPM_TYPE
 };
-
-/* Structure for doorbell data, in L2 DPM mode, for 1st db in a DPM burst */
 struct db_l2_dpm_data {
 	__le16 icid;
 	__le16 bd_prod;
@@ -906,8 +646,6 @@ struct db_l2_dpm_data {
 #define DB_L2_DPM_DATA_TGFS_SRC_EN_MASK  0x1
 #define DB_L2_DPM_DATA_TGFS_SRC_EN_SHIFT 31
 };
-
-/* Structure for SGE in a DPM doorbell of type DPM_L2_BD */
 struct db_l2_dpm_sge {
 	struct regpair addr;
 	__le16 nbytes;
@@ -922,8 +660,6 @@ struct db_l2_dpm_sge {
 #define DB_L2_DPM_SGE_RESERVED1_SHIFT		12
 	__le32 reserved2;
 };
-
-/* Structure for doorbell address, in legacy mode */
 struct db_legacy_addr {
 	__le32 addr;
 #define DB_LEGACY_ADDR_RESERVED0_MASK	0x3
@@ -933,8 +669,6 @@ struct db_legacy_addr {
 #define DB_LEGACY_ADDR_ICID_MASK	0x7FFFFFF
 #define DB_LEGACY_ADDR_ICID_SHIFT	5
 };
-
-/* Structure for doorbell address, in legacy mode, without DEMS */
 struct db_legacy_wo_dems_addr {
 	__le32 addr;
 #define DB_LEGACY_WO_DEMS_ADDR_RESERVED0_MASK   0x3
@@ -942,8 +676,6 @@ struct db_legacy_wo_dems_addr {
 #define DB_LEGACY_WO_DEMS_ADDR_ICID_MASK        0x3FFFFFFF
 #define DB_LEGACY_WO_DEMS_ADDR_ICID_SHIFT       2
 };
-
-/* Structure for doorbell address, in PWM mode */
 struct db_pwm_addr {
 	__le32 addr;
 #define DB_PWM_ADDR_RESERVED0_MASK	0x7
@@ -957,8 +689,6 @@ struct db_pwm_addr {
 #define DB_PWM_ADDR_RESERVED1_MASK	0xF
 #define DB_PWM_ADDR_RESERVED1_SHIFT	28
 };
-
-/* Parameters to RDMA firmware, passed in EDPM doorbell */
 struct db_rdma_24b_icid_dpm_params {
 	__le32 params;
 #define DB_RDMA_24B_ICID_DPM_PARAMS_SIZE_MASK   0x3F
@@ -982,8 +712,6 @@ struct db_rdma_24b_icid_dpm_params {
 #define DB_RDMA_24B_ICID_DPM_PARAMS_CONN_TYPE_IS_IWARP_MASK     0x1
 #define DB_RDMA_24B_ICID_DPM_PARAMS_CONN_TYPE_IS_IWARP_SHIFT    31
 };
-
-/* Parameters to RDMA firmware, passed in EDPM doorbell */
 struct db_rdma_dpm_params {
 	__le32 params;
 #define DB_RDMA_DPM_PARAMS_SIZE_MASK			0x3F
@@ -1005,17 +733,11 @@ struct db_rdma_dpm_params {
 #define DB_RDMA_DPM_PARAMS_CONN_TYPE_IS_IWARP_MASK	0x1
 #define DB_RDMA_DPM_PARAMS_CONN_TYPE_IS_IWARP_SHIFT	31
 };
-
-/* Structure for doorbell data, in RDMA DPM mode, for the first doorbell in a
- * DPM burst.
- */
 struct db_rdma_dpm_data {
 	__le16 icid;
 	__le16 prod_val;
 	struct db_rdma_dpm_params params;
 };
-
-/* Igu interrupt command */
 enum igu_int_cmd {
 	IGU_INT_ENABLE	= 0,
 	IGU_INT_DISABLE = 1,
@@ -1023,8 +745,6 @@ enum igu_int_cmd {
 	IGU_INT_NOP2	= 3,
 	MAX_IGU_INT_CMD
 };
-
-/* IGU producer or consumer update command */
 struct igu_prod_cons_update {
 	__le32 sb_id_and_flags;
 #define IGU_PROD_CONS_UPDATE_SB_INDEX_MASK		0xFFFFFF
@@ -1043,38 +763,23 @@ struct igu_prod_cons_update {
 #define IGU_PROD_CONS_UPDATE_COMMAND_TYPE_SHIFT		31
 	__le32 reserved1;
 };
-
-/* Igu segments access for default status block only */
 enum igu_seg_access {
 	IGU_SEG_ACCESS_REG	= 0,
 	IGU_SEG_ACCESS_ATTN	= 1,
 	MAX_IGU_SEG_ACCESS
 };
-
-/* Enumeration for L3 type field of parsing_and_err_flags.
- * L3Type: 0 - unknown (not ip), 1 - Ipv4, 2 - Ipv6
- * (This field can be filled according to the last-ethertype)
- */
 enum l3_type {
 	e_l3_type_unknown,
 	e_l3_type_ipv4,
 	e_l3_type_ipv6,
 	MAX_L3_TYPE
 };
-
-/* Enumeration for l4Protocol field of parsing_and_err_flags.
- * L4-protocol: 0 - none, 1 - TCP, 2 - UDP.
- * If the packet is IPv4 fragment, and its not the first fragment, the
- * protocol-type should be set to none.
- */
 enum l4_protocol {
 	e_l4_protocol_none,
 	e_l4_protocol_tcp,
 	e_l4_protocol_udp,
 	MAX_L4_PROTOCOL
 };
-
-/* Parsing and error flags field */
 struct parsing_and_err_flags {
 	__le16 flags;
 #define PARSING_AND_ERR_FLAGS_L3TYPE_MASK			0x3
@@ -1106,8 +811,6 @@ struct parsing_and_err_flags {
 #define PARSING_AND_ERR_FLAGS_TUNNELL4CHKSMERROR_MASK		0x1
 #define PARSING_AND_ERR_FLAGS_TUNNELL4CHKSMERROR_SHIFT		15
 };
-
-/* Parsing error flags bitmap */
 struct parsing_err_flags {
 	__le16 flags;
 #define PARSING_ERR_FLAGS_MAC_ERROR_MASK				0x1
@@ -1143,13 +846,9 @@ struct parsing_err_flags {
 #define PARSING_ERR_FLAGS_TUNNEL_L4_CHKSM_ERROR_MASK			0x1
 #define PARSING_ERR_FLAGS_TUNNEL_L4_CHKSM_ERROR_SHIFT			15
 };
-
-/* Pb context */
 struct pb_context {
 	__le32 crc[4];
 };
-
-/* Concrete Function ID */
 struct pxp_concrete_fid {
 	__le16 fid;
 #define PXP_CONCRETE_FID_PFID_MASK	0xF
@@ -1163,8 +862,6 @@ struct pxp_concrete_fid {
 #define PXP_CONCRETE_FID_VFID_MASK	0xFF
 #define PXP_CONCRETE_FID_VFID_SHIFT	8
 };
-
-/* Concrete Function ID */
 struct pxp_pretend_concrete_fid {
 	__le16 fid;
 #define PXP_PRETEND_CONCRETE_FID_PFID_MASK	0xF
@@ -1176,14 +873,10 @@ struct pxp_pretend_concrete_fid {
 #define PXP_PRETEND_CONCRETE_FID_VFID_MASK	0xFF
 #define PXP_PRETEND_CONCRETE_FID_VFID_SHIFT	8
 };
-
-/* Function ID */
 union pxp_pretend_fid {
 	struct pxp_pretend_concrete_fid concrete_fid;
 	__le16 opaque_fid;
 };
-
-/* Pxp Pretend Command Register */
 struct pxp_pretend_cmd {
 	union pxp_pretend_fid fid;
 	__le16 control;
@@ -1206,8 +899,6 @@ struct pxp_pretend_cmd {
 #define PXP_PRETEND_CMD_IS_CONCRETE_MASK	0x1
 #define PXP_PRETEND_CMD_IS_CONCRETE_SHIFT	15
 };
-
-/* PTT Record in PXP Admin Window */
 struct pxp_ptt_entry {
 	__le32 offset;
 #define PXP_PTT_ENTRY_OFFSET_MASK	0x7FFFFF
@@ -1216,8 +907,6 @@ struct pxp_ptt_entry {
 #define PXP_PTT_ENTRY_RESERVED0_SHIFT	23
 	struct pxp_pretend_cmd pretend;
 };
-
-/* VF Zone A Permission Register */
 struct pxp_vf_zone_a_permission {
 	__le32 control;
 #define PXP_VF_ZONE_A_PERMISSION_VFID_MASK		0xFF
@@ -1229,8 +918,6 @@ struct pxp_vf_zone_a_permission {
 #define PXP_VF_ZONE_A_PERMISSION_RESERVED1_MASK		0xFFFF
 #define PXP_VF_ZONE_A_PERMISSION_RESERVED1_SHIFT	16
 };
-
-/* Rdif context */
 struct rdif_task_context {
 	__le32 initial_ref_tag;
 	__le16 app_tag_value;
@@ -1296,8 +983,6 @@ struct rdif_task_context {
 #define RDIF_TASK_CONTEXT_RESERVED1_SHIFT			14
 	__le32 reserved2;
 };
-
-/* Searcher Table struct */
 struct src_entry_header {
 	__le32 flags;
 #define SRC_ENTRY_HEADER_NEXT_PTR_TYPE_MASK     0x1
@@ -1309,15 +994,11 @@ struct src_entry_header {
 	__le32 magic_number;
 	struct regpair next_ptr;
 };
-
-/* Enumeration for address type */
 enum src_header_next_ptr_type_enum {
 	e_physical_addr,
 	e_logical_addr,
 	MAX_SRC_HEADER_NEXT_PTR_TYPE_ENUM
 };
-
-/* Status block structure */
 struct status_block {
 	__le16	pi_array[PIS_PER_SB];
 	__le32	sb_num;
@@ -1333,8 +1014,6 @@ struct status_block {
 #define STATUS_BLOCK_ZERO_PAD3_MASK		0xFF
 #define STATUS_BLOCK_ZERO_PAD3_SHIFT		24
 };
-
-/* Tdif context */
 struct tdif_task_context {
 	__le32 initial_ref_tag;
 	__le16 app_tag_value;
@@ -1416,8 +1095,6 @@ struct tdif_task_context {
 	u8 partial_dif_data_a[8];
 	u8 partial_dif_data_b[8];
 };
-
-/* Timers context */
 struct timers_context {
 	__le32 logical_client_0;
 #define TIMERS_CONTEXT_EXPIRATIONTIMELC0_MASK	0x7FFFFFF
@@ -1462,8 +1139,6 @@ struct timers_context {
 #define TIMERS_CONTEXT_RESERVED7_MASK			0x7
 #define TIMERS_CONTEXT_RESERVED7_SHIFT			29
 };
-
-/* Enum for next_protocol field of tunnel_parsing_flags / tunnelTypeDesc */
 enum tunnel_next_protocol {
 	e_unknown = 0,
 	e_l2 = 1,
@@ -1471,6 +1146,5 @@ enum tunnel_next_protocol {
 	e_ipv6 = 3,
 	MAX_TUNNEL_NEXT_PROTOCOL
 };
-
-#endif /* __COMMON_HSI__ */
+#endif  
 #endif

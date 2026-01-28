@@ -1,29 +1,21 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_CLIENT_H__
 #define __NVKM_CLIENT_H__
 #define nvkm_client(p) container_of((p), struct nvkm_client, object)
 #include <core/object.h>
-
 struct nvkm_client {
 	struct nvkm_object object;
 	char name[32];
 	u64 device;
 	u32 debug;
-
 	struct rb_root objroot;
-
 	void *data;
 	int (*event)(u64 token, void *argv, u32 argc);
-
 	struct list_head umem;
 	spinlock_t lock;
 };
-
 int  nvkm_client_new(const char *name, u64 device, const char *cfg, const char *dbg,
 		     int (*)(u64, void *, u32), struct nvkm_client **);
 struct nvkm_client *nvkm_client_search(struct nvkm_client *, u64 handle);
-
-/* logging for client-facing objects */
 #define nvif_printk(o,l,p,f,a...) do {                                         \
 	const struct nvkm_object *_object = (o);                               \
 	const struct nvkm_client *_client = _object->client;                   \

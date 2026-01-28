@@ -1,37 +1,21 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright 2019 Intel Corporation.
- */
-
 #ifndef __INTEL_PCH__
 #define __INTEL_PCH__
-
 struct drm_i915_private;
-
-/*
- * Sorted by south display engine compatibility.
- * If the new PCH comes with a south display engine that is not
- * inherited from the latest item, please do not add it to the
- * end. Instead, add it right after its "parent" PCH.
- */
 enum intel_pch {
-	PCH_NOP = -1,	/* PCH without south display */
-	PCH_NONE = 0,	/* No PCH present */
-	PCH_IBX,	/* Ibexpeak PCH */
-	PCH_CPT,	/* Cougarpoint/Pantherpoint PCH */
-	PCH_LPT,	/* Lynxpoint/Wildcatpoint PCH */
-	PCH_SPT,        /* Sunrisepoint/Kaby Lake PCH */
-	PCH_CNP,        /* Cannon/Comet Lake PCH */
-	PCH_ICP,	/* Ice Lake/Jasper Lake PCH */
-	PCH_TGP,	/* Tiger Lake/Mule Creek Canyon PCH */
-	PCH_ADP,	/* Alder Lake PCH */
-	PCH_MTP,	/* Meteor Lake PCH */
-
-	/* Fake PCHs, functionality handled on the same PCI dev */
+	PCH_NOP = -1,	 
+	PCH_NONE = 0,	 
+	PCH_IBX,	 
+	PCH_CPT,	 
+	PCH_LPT,	 
+	PCH_SPT,         
+	PCH_CNP,         
+	PCH_ICP,	 
+	PCH_TGP,	 
+	PCH_ADP,	 
+	PCH_MTP,	 
 	PCH_DG1 = 1024,
 	PCH_DG2,
 };
-
 #define INTEL_PCH_DEVICE_ID_MASK		0xff80
 #define INTEL_PCH_IBX_DEVICE_ID_TYPE		0x3b00
 #define INTEL_PCH_CPT_DEVICE_ID_TYPE		0x1c00
@@ -62,8 +46,7 @@ enum intel_pch {
 #define INTEL_PCH_MTP2_DEVICE_ID_TYPE		0xAE00
 #define INTEL_PCH_P2X_DEVICE_ID_TYPE		0x7100
 #define INTEL_PCH_P3X_DEVICE_ID_TYPE		0x7000
-#define INTEL_PCH_QEMU_DEVICE_ID_TYPE		0x2900 /* qemu q35 has 2918 */
-
+#define INTEL_PCH_QEMU_DEVICE_ID_TYPE		0x2900  
 #define INTEL_PCH_TYPE(dev_priv)		((dev_priv)->pch_type)
 #define INTEL_PCH_ID(dev_priv)			((dev_priv)->pch_id)
 #define HAS_PCH_MTP(dev_priv)			(INTEL_PCH_TYPE(dev_priv) == PCH_MTP)
@@ -85,7 +68,5 @@ enum intel_pch {
 #define HAS_PCH_IBX(dev_priv)			(INTEL_PCH_TYPE(dev_priv) == PCH_IBX)
 #define HAS_PCH_NOP(dev_priv)			(INTEL_PCH_TYPE(dev_priv) == PCH_NOP)
 #define HAS_PCH_SPLIT(dev_priv)			(INTEL_PCH_TYPE(dev_priv) != PCH_NONE)
-
 void intel_detect_pch(struct drm_i915_private *dev_priv);
-
-#endif /* __INTEL_PCH__ */
+#endif  

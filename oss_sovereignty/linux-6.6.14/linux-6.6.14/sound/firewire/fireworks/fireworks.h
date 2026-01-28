@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * fireworks.h - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
 #ifndef SOUND_FIREWORKS_H_INCLUDED
 #define SOUND_FIREWORKS_H_INCLUDED
-
 #include <linux/compat.h>
 #include <linux/device.h>
 #include <linux/firewire.h>
@@ -17,7 +9,6 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
-
 #include <sound/core.h>
 #include <sound/initval.h>
 #include <sound/pcm.h>
@@ -26,88 +17,58 @@
 #include <sound/pcm_params.h>
 #include <sound/firewire.h>
 #include <sound/hwdep.h>
-
 #include "../packets-buffer.h"
 #include "../iso-resources.h"
 #include "../amdtp-am824.h"
 #include "../cmp.h"
 #include "../lib.h"
-
 #define SND_EFW_MAX_MIDI_OUT_PORTS	2
 #define SND_EFW_MAX_MIDI_IN_PORTS	2
-
 #define SND_EFW_MULTIPLIER_MODES	3
 #define HWINFO_NAME_SIZE_BYTES		32
 #define HWINFO_MAX_CAPS_GROUPS		8
-
-/*
- * This should be greater than maximum bytes for EFW response content.
- * Currently response against command for isochronous channel mapping is
- * confirmed to be the maximum one. But for flexibility, use maximum data
- * payload for asynchronous primary packets at S100 (Cable base rate) in
- * IEEE Std 1394-1995.
- */
 #define SND_EFW_RESPONSE_MAXIMUM_BYTES	0x200U
-
 extern unsigned int snd_efw_resp_buf_size;
 extern bool snd_efw_resp_buf_debug;
-
 struct snd_efw_phys_grp {
-	u8 type;	/* see enum snd_efw_grp_type */
+	u8 type;	 
 	u8 count;
 } __packed;
-
 struct snd_efw {
 	struct snd_card *card;
 	struct fw_unit *unit;
 	int card_index;
-
 	struct mutex mutex;
 	spinlock_t lock;
-
-	/* for transaction */
 	u32 seqnum;
 	bool resp_addr_changable;
-
-	/* for quirks */
 	bool is_af9;
 	bool is_fireworks3;
 	u32 firmware_version;
-
 	unsigned int midi_in_ports;
 	unsigned int midi_out_ports;
-
 	unsigned int supported_sampling_rate;
 	unsigned int pcm_capture_channels[SND_EFW_MULTIPLIER_MODES];
 	unsigned int pcm_playback_channels[SND_EFW_MULTIPLIER_MODES];
-
 	struct amdtp_stream tx_stream;
 	struct amdtp_stream rx_stream;
 	struct cmp_connection out_conn;
 	struct cmp_connection in_conn;
 	unsigned int substreams_counter;
-
-	/* hardware metering parameters */
 	unsigned int phys_out;
 	unsigned int phys_in;
 	unsigned int phys_out_grp_count;
 	unsigned int phys_in_grp_count;
 	struct snd_efw_phys_grp phys_out_grps[HWINFO_MAX_CAPS_GROUPS];
 	struct snd_efw_phys_grp phys_in_grps[HWINFO_MAX_CAPS_GROUPS];
-
-	/* for uapi */
 	int dev_lock_count;
 	bool dev_lock_changed;
 	wait_queue_head_t hwdep_wait;
-
-	/* response queue */
 	u8 *resp_buf;
 	u8 *pull_ptr;
 	u8 *push_ptr;
-
 	struct amdtp_domain domain;
 };
-
 int snd_efw_transaction_cmd(struct fw_unit *unit,
 			    const void *cmd, unsigned int size);
 int snd_efw_transaction_run(struct fw_unit *unit,
@@ -118,7 +79,6 @@ void snd_efw_transaction_unregister(void);
 void snd_efw_transaction_bus_reset(struct fw_unit *unit);
 void snd_efw_transaction_add_instance(struct snd_efw *efw);
 void snd_efw_transaction_remove_instance(struct snd_efw *efw);
-
 struct snd_efw_hwinfo {
 	u32 flags;
 	u32 guid_hi;
@@ -165,7 +125,7 @@ enum snd_efw_grp_type {
 	SND_EFW_CH_TYPE_DUMMY
 };
 struct snd_efw_phys_meters {
-	u32 status;	/* guitar state/midi signal/clock input detect */
+	u32 status;	 
 	u32 reserved0;
 	u32 reserved1;
 	u32 reserved2;
@@ -178,12 +138,11 @@ struct snd_efw_phys_meters {
 } __packed;
 enum snd_efw_clock_source {
 	SND_EFW_CLOCK_SOURCE_INTERNAL	= 0,
-	// Unused.
 	SND_EFW_CLOCK_SOURCE_WORDCLOCK	= 2,
 	SND_EFW_CLOCK_SOURCE_SPDIF	= 3,
 	SND_EFW_CLOCK_SOURCE_ADAT_1	= 4,
 	SND_EFW_CLOCK_SOURCE_ADAT_2	= 5,
-	SND_EFW_CLOCK_SOURCE_CONTINUOUS	= 6	/* internal variable clock */
+	SND_EFW_CLOCK_SOURCE_CONTINUOUS	= 6	 
 };
 enum snd_efw_transport_mode {
 	SND_EFW_TRANSPORT_MODE_WINDOWS	= 0,
@@ -202,7 +161,6 @@ int snd_efw_command_get_clock_source(struct snd_efw *efw,
 				     enum snd_efw_clock_source *source);
 int snd_efw_command_get_sampling_rate(struct snd_efw *efw, unsigned int *rate);
 int snd_efw_command_set_sampling_rate(struct snd_efw *efw, unsigned int rate);
-
 int snd_efw_stream_init_duplex(struct snd_efw *efw);
 int snd_efw_stream_reserve_duplex(struct snd_efw *efw, unsigned int rate,
 				  unsigned int frames_per_period,
@@ -214,14 +172,9 @@ void snd_efw_stream_destroy_duplex(struct snd_efw *efw);
 void snd_efw_stream_lock_changed(struct snd_efw *efw);
 int snd_efw_stream_lock_try(struct snd_efw *efw);
 void snd_efw_stream_lock_release(struct snd_efw *efw);
-
 void snd_efw_proc_init(struct snd_efw *efw);
-
 int snd_efw_create_midi_devices(struct snd_efw *efw);
-
 int snd_efw_create_pcm_devices(struct snd_efw *efw);
 int snd_efw_get_multiplier_mode(unsigned int sampling_rate, unsigned int *mode);
-
 int snd_efw_create_hwdep_device(struct snd_efw *efw);
-
 #endif

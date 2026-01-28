@@ -1,31 +1,5 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _sdma_4_4_0_OFFSET_HEADER
 #define _sdma_4_4_0_OFFSET_HEADER
-
-
-// addressBlock: sdma0_sdma0dec
-// base address: 0x4980
 #define regSDMA0_UCODE_ADDR                                                                             0x0000
 #define regSDMA0_UCODE_ADDR_BASE_IDX                                                                    0
 #define regSDMA0_UCODE_DATA                                                                             0x0001
@@ -1068,10 +1042,6 @@
 #define regSDMA0_RLC7_MIDCMD_DATA10_BASE_IDX                                                            0
 #define regSDMA0_RLC7_MIDCMD_CNTL                                                                       0x03e3
 #define regSDMA0_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
-
-
-// addressBlock: sdma0_sdma1dec
-// base address: 0x6180
 #define regSDMA1_UCODE_ADDR                                                                             0x0600
 #define regSDMA1_UCODE_ADDR_BASE_IDX                                                                    0
 #define regSDMA1_UCODE_DATA                                                                             0x0601
@@ -2106,10 +2076,6 @@
 #define regSDMA1_RLC7_MIDCMD_DATA10_BASE_IDX                                                            0
 #define regSDMA1_RLC7_MIDCMD_CNTL                                                                       0x09e3
 #define regSDMA1_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
-
-
-// addressBlock: sdma0_sdma2dec
-// base address: 0x78000
 #define regSDMA2_UCODE_ADDR                                                                             0x1cda0
 #define regSDMA2_UCODE_ADDR_BASE_IDX                                                                    0
 #define regSDMA2_UCODE_DATA                                                                             0x1cda1
@@ -3144,10 +3110,6 @@
 #define regSDMA2_RLC7_MIDCMD_DATA10_BASE_IDX                                                            0
 #define regSDMA2_RLC7_MIDCMD_CNTL                                                                       0x1d183
 #define regSDMA2_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
-
-
-// addressBlock: sdma0_sdma3dec
-// base address: 0x79000
 #define regSDMA3_UCODE_ADDR                                                                             0x1d1a0
 #define regSDMA3_UCODE_ADDR_BASE_IDX                                                                    0
 #define regSDMA3_UCODE_DATA                                                                             0x1d1a1
@@ -4182,10 +4144,6 @@
 #define regSDMA3_RLC7_MIDCMD_DATA10_BASE_IDX                                                            0
 #define regSDMA3_RLC7_MIDCMD_CNTL                                                                       0x1d583
 #define regSDMA3_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
-
-
-// addressBlock: sdma0_sdma4dec
-// base address: 0x7a000
 #define regSDMA4_UCODE_ADDR                                                                             0x1d5a0
 #define regSDMA4_UCODE_ADDR_BASE_IDX                                                                    0
 #define regSDMA4_UCODE_DATA                                                                             0x1d5a1
@@ -5220,5 +5178,4 @@
 #define regSDMA4_RLC7_MIDCMD_DATA10_BASE_IDX                                                            0
 #define regSDMA4_RLC7_MIDCMD_CNTL                                                                       0x1d983
 #define regSDMA4_RLC7_MIDCMD_CNTL_BASE_IDX                                                              0
-
 #endif

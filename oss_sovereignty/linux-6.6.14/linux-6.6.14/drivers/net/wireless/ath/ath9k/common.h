@@ -1,37 +1,14 @@
-/*
- * Copyright (c) 2009-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #include <net/mac80211.h>
-
 #include "../ath.h"
-
 #include "hw.h"
 #include "hw-ops.h"
-
 #include "common-init.h"
 #include "common-beacon.h"
 #include "common-debug.h"
 #include "common-spectral.h"
-
-/* Common header for Atheros 802.11n base driver cores */
-
 #define WME_BA_BMP_SIZE         64
 #define WME_MAX_BA              WME_BA_BMP_SIZE
 #define ATH_TID_MAX_BUFS        (2 * WME_MAX_BA)
-
 #define ATH_RSSI_DUMMY_MARKER   127
 #define ATH_RSSI_LPF_LEN 		10
 #define RSSI_LPF_THRESHOLD		-20
@@ -46,9 +23,7 @@
 } while (0)
 #define ATH_EP_RND(x, mul) 						\
 	(((x) + ((mul)/2)) / (mul))
-
 #define IEEE80211_MS_TO_TU(x)   (((x) * 1000) / 1024)
-
 struct ath_beacon_config {
 	struct ieee80211_vif *main_vif;
 	int beacon_interval;
@@ -60,7 +35,6 @@ struct ath_beacon_config {
 	u32 nexttbtt;
 	u32 intval;
 };
-
 bool ath9k_cmn_rx_accept(struct ath_common *common,
 			 struct ieee80211_hdr *hdr,
 			 struct ieee80211_rx_status *rxs,

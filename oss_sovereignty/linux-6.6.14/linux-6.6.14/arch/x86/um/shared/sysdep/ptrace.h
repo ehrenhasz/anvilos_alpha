@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SYSDEP_X86_PTRACE_H
 #define __SYSDEP_X86_PTRACE_H
-
 #include <generated/user_constants.h>
 #include <sysdep/faultinfo.h>
-
 #define MAX_REG_OFFSET (UM_FRAME_SIZE)
 #define MAX_REG_NR ((MAX_REG_OFFSET) / sizeof(unsigned long))
-
 #define REGS_IP(r) ((r)[HOST_IP])
 #define REGS_SP(r) ((r)[HOST_SP])
 #define REGS_EFLAGS(r) ((r)[HOST_EFLAGS])
@@ -22,7 +18,6 @@
 #define REGS_SS(r) ((r)[HOST_SS])
 #define REGS_DS(r) ((r)[HOST_DS])
 #define REGS_ES(r) ((r)[HOST_ES])
-
 #define UPT_IP(r) REGS_IP((r)->gp)
 #define UPT_SP(r) REGS_SP((r)->gp)
 #define UPT_EFLAGS(r) REGS_EFLAGS((r)->gp)
@@ -37,17 +32,14 @@
 #define UPT_SS(r) REGS_SS((r)->gp)
 #define UPT_DS(r) REGS_DS((r)->gp)
 #define UPT_ES(r) REGS_ES((r)->gp)
-
 #ifdef __i386__
 #include "ptrace_32.h"
 #else
 #include "ptrace_64.h"
 #endif
-
 struct syscall_args {
 	unsigned long args[6];
 };
-
 #define SYSCALL_ARGS(r) ((struct syscall_args) \
 			 { .args = { UPT_SYSCALL_ARG1(r),	 \
 				     UPT_SYSCALL_ARG2(r),	 \
@@ -55,7 +47,6 @@ struct syscall_args {
 				     UPT_SYSCALL_ARG4(r),	 \
 				     UPT_SYSCALL_ARG5(r),	 \
 				     UPT_SYSCALL_ARG6(r) } } )
-
 struct uml_pt_regs {
 	unsigned long gp[MAX_REG_NR];
 	unsigned long fp[MAX_FP_NR];
@@ -63,13 +54,9 @@ struct uml_pt_regs {
 	long syscall;
 	int is_user;
 };
-
 #define EMPTY_UML_PT_REGS { }
-
 #define UPT_SYSCALL_NR(r) ((r)->syscall)
 #define UPT_FAULTINFO(r) (&(r)->faultinfo)
 #define UPT_IS_USER(r) ((r)->is_user)
-
 extern int user_context(unsigned long sp);
-
-#endif /* __SYSDEP_X86_PTRACE_H */
+#endif  

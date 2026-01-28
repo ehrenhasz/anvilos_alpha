@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2015 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3036_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3036_H
-
-/* core clocks */
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_GPLL		3
 #define ARMCLK			4
-
-/* sclk gates (special clocks) */
 #define SCLK_GPU		64
 #define SCLK_SPI		65
 #define SCLK_SDMMC		68
@@ -47,16 +37,12 @@
 #define SCLK_MACREF		152
 #define SCLK_MACPLL		153
 #define SCLK_SFC		160
-
-/* aclk gates */
 #define ACLK_DMAC2		194
 #define ACLK_LCDC		197
 #define ACLK_VIO		203
 #define ACLK_VCODEC		208
 #define ACLK_CPU		209
 #define ACLK_PERI		210
-
-/* pclk gates */
 #define PCLK_GPIO0		320
 #define PCLK_GPIO1		321
 #define PCLK_GPIO2		322
@@ -76,8 +62,6 @@
 #define PCLK_DDRUPCTL		364
 #define PCLK_WDT		368
 #define PCLK_ACODEC		369
-
-/* hclk gates */
 #define HCLK_OTG0		449
 #define HCLK_OTG1		450
 #define HCLK_NANDC		453
@@ -93,10 +77,7 @@
 #define HCLK_VCODEC		476
 #define HCLK_CPU		477
 #define HCLK_PERI		478
-
 #define CLK_NR_CLKS		(HCLK_PERI + 1)
-
-/* soft-reset indices */
 #define SRST_CORE0		0
 #define SRST_CORE1		1
 #define SRST_CORE0_DBG		4
@@ -107,7 +88,6 @@
 #define SRST_TOPDBG		13
 #define SRST_STRC_SYS_A		14
 #define SRST_PD_CORE_NIU	15
-
 #define SRST_TIMER2		16
 #define SRST_CPUSYS_H		17
 #define SRST_AHB2APB_H		19
@@ -123,7 +103,6 @@
 #define SRST_CORE_DLL		29
 #define SRST_EFUSE_P		30
 #define SRST_ACODEC_P		31
-
 #define SRST_GPIO0		32
 #define SRST_GPIO1		33
 #define SRST_GPIO2		34
@@ -134,7 +113,6 @@
 #define SRST_I2C1		44
 #define SRST_I2C2		45
 #define SRST_SFC		47
-
 #define SRST_PWM0		48
 #define SRST_DAP		51
 #define SRST_DAP_SYS		52
@@ -145,7 +123,6 @@
 #define SRST_CPU_PERI		61
 #define SRST_EMEM_PERI		62
 #define SRST_USB_PERI		63
-
 #define SRST_DMA2		64
 #define SRST_MAC		66
 #define SRST_NANDC		68
@@ -154,7 +131,6 @@
 #define SRST_USBOTG1		72
 #define SRST_OTGC1		74
 #define SRST_DDRMSCH		79
-
 #define SRST_MMC0		81
 #define SRST_SDIO		82
 #define SRST_EMMC		83
@@ -164,13 +140,11 @@
 #define SRST_DDRPHY_P		89
 #define SRST_DDRCTRL		90
 #define SRST_DDRCTRL_P		91
-
 #define SRST_HDMI_P		96
 #define SRST_VIO_BUS_H		99
 #define SRST_UTMI0		103
 #define SRST_UTMI1		104
 #define SRST_USBPOR		105
-
 #define SRST_VCODEC_A		112
 #define SRST_VCODEC_H		113
 #define SRST_VIO1_A		114
@@ -181,7 +155,5 @@
 #define SRST_LCDC1_D		119
 #define SRST_GPU		120
 #define SRST_GPU_NIU_A		122
-
 #define SRST_DBG_P		131
-
 #endif

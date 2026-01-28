@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI LMU (Lighting Management Unit) Devices
- *
- * Copyright 2017 Texas Instruments
- *
- * Author: Milo Kim <milo.kim@ti.com>
- */
-
 #ifndef __MFD_TI_LMU_H__
 #define __MFD_TI_LMU_H__
-
 #include <linux/gpio.h>
 #include <linux/notifier.h>
 #include <linux/regmap.h>
 #include <linux/gpio/consumer.h>
-
-/* Notifier event */
 #define LMU_EVENT_MONITOR_DONE		0x01
-
 enum ti_lmu_id {
 	LM3631,
 	LM3632,
@@ -26,7 +13,6 @@ enum ti_lmu_id {
 	LM36274,
 	LMU_MAX_ID,
 };
-
 enum ti_lmu_max_current {
 	LMU_IMAX_5mA,
 	LMU_IMAX_6mA,
@@ -55,29 +41,19 @@ enum ti_lmu_max_current {
 	LMU_IMAX_29mA,
 	LMU_IMAX_30mA,
 };
-
 enum lm363x_regulator_id {
-	LM3631_BOOST,		/* Boost output */
-	LM3631_LDO_CONT,	/* Display panel controller */
-	LM3631_LDO_OREF,	/* Gamma reference */
-	LM3631_LDO_POS,		/* Positive display bias output */
-	LM3631_LDO_NEG,		/* Negative display bias output */
-	LM3632_BOOST,		/* Boost output */
-	LM3632_LDO_POS,		/* Positive display bias output */
-	LM3632_LDO_NEG,		/* Negative display bias output */
-	LM36274_BOOST,		/* Boost output */
-	LM36274_LDO_POS,	/* Positive display bias output */
-	LM36274_LDO_NEG,	/* Negative display bias output */
+	LM3631_BOOST,		 
+	LM3631_LDO_CONT,	 
+	LM3631_LDO_OREF,	 
+	LM3631_LDO_POS,		 
+	LM3631_LDO_NEG,		 
+	LM3632_BOOST,		 
+	LM3632_LDO_POS,		 
+	LM3632_LDO_NEG,		 
+	LM36274_BOOST,		 
+	LM36274_LDO_POS,	 
+	LM36274_LDO_NEG,	 
 };
-
-/**
- * struct ti_lmu
- *
- * @dev:	Parent device pointer
- * @regmap:	Used for i2c communcation on accessing registers
- * @en_gpio:	GPIO for HWEN pin [Optional]
- * @notifier:	Notifier for reporting hwmon event
- */
 struct ti_lmu {
 	struct device *dev;
 	struct regmap *regmap;

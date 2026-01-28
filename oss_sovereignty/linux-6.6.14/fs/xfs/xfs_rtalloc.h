@@ -1,106 +1,51 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
 #ifndef __XFS_RTALLOC_H__
 #define	__XFS_RTALLOC_H__
-
-/* kernel only definitions and functions */
-
 struct xfs_mount;
 struct xfs_trans;
-
-/*
- * XXX: Most of the realtime allocation functions deal in units of realtime
- * extents, not realtime blocks.  This looks funny when paired with the type
- * name and screams for a larger cleanup.
- */
 struct xfs_rtalloc_rec {
 	xfs_rtblock_t		ar_startext;
 	xfs_rtblock_t		ar_extcount;
 };
-
 typedef int (*xfs_rtalloc_query_range_fn)(
 	struct xfs_mount		*mp,
 	struct xfs_trans		*tp,
 	const struct xfs_rtalloc_rec	*rec,
 	void				*priv);
-
 #ifdef CONFIG_XFS_RT
-/*
- * Function prototypes for exported functions.
- */
-
-/*
- * Allocate an extent in the realtime subvolume, with the usual allocation
- * parameters.  The length units are all in realtime extents, as is the
- * result block number.
- */
-int					/* error */
+int					 
 xfs_rtallocate_extent(
-	struct xfs_trans	*tp,	/* transaction pointer */
-	xfs_rtblock_t		bno,	/* starting block number to allocate */
-	xfs_extlen_t		minlen,	/* minimum length to allocate */
-	xfs_extlen_t		maxlen,	/* maximum length to allocate */
-	xfs_extlen_t		*len,	/* out: actual length allocated */
-	int			wasdel,	/* was a delayed allocation extent */
-	xfs_extlen_t		prod,	/* extent product factor */
-	xfs_rtblock_t		*rtblock); /* out: start block allocated */
-
-/*
- * Free an extent in the realtime subvolume.  Length is expressed in
- * realtime extents, as is the block number.
- */
-int					/* error */
+	struct xfs_trans	*tp,	 
+	xfs_rtblock_t		bno,	 
+	xfs_extlen_t		minlen,	 
+	xfs_extlen_t		maxlen,	 
+	xfs_extlen_t		*len,	 
+	int			wasdel,	 
+	xfs_extlen_t		prod,	 
+	xfs_rtblock_t		*rtblock);  
+int					 
 xfs_rtfree_extent(
-	struct xfs_trans	*tp,	/* transaction pointer */
-	xfs_rtblock_t		bno,	/* starting block number to free */
-	xfs_extlen_t		len);	/* length of extent freed */
-
-/*
- * Initialize realtime fields in the mount structure.
- */
-int					/* error */
+	struct xfs_trans	*tp,	 
+	xfs_rtblock_t		bno,	 
+	xfs_extlen_t		len);	 
+int					 
 xfs_rtmount_init(
-	struct xfs_mount	*mp);	/* file system mount structure */
+	struct xfs_mount	*mp);	 
 void
 xfs_rtunmount_inodes(
 	struct xfs_mount	*mp);
-
-/*
- * Get the bitmap and summary inodes into the mount structure
- * at mount time.
- */
-int					/* error */
+int					 
 xfs_rtmount_inodes(
-	struct xfs_mount	*mp);	/* file system mount structure */
-
-/*
- * Pick an extent for allocation at the start of a new realtime file.
- * Use the sequence number stored in the atime field of the bitmap inode.
- * Translate this to a fraction of the rtextents, and return the product
- * of rtextents and the fraction.
- * The fraction sequence is 0, 1/2, 1/4, 3/4, 1/8, ..., 7/8, 1/16, ...
- */
-int					/* error */
+	struct xfs_mount	*mp);	 
+int					 
 xfs_rtpick_extent(
-	struct xfs_mount	*mp,	/* file system mount point */
-	struct xfs_trans	*tp,	/* transaction pointer */
-	xfs_extlen_t		len,	/* allocation length (rtextents) */
-	xfs_rtblock_t		*pick);	/* result rt extent */
-
-/*
- * Grow the realtime area of the filesystem.
- */
+	struct xfs_mount	*mp,	 
+	struct xfs_trans	*tp,	 
+	xfs_extlen_t		len,	 
+	xfs_rtblock_t		*pick);	 
 int
 xfs_growfs_rt(
-	struct xfs_mount	*mp,	/* file system mount structure */
-	xfs_growfs_rt_t		*in);	/* user supplied growfs struct */
-
-/*
- * From xfs_rtbitmap.c
- */
+	struct xfs_mount	*mp,	 
+	xfs_growfs_rt_t		*in);	 
 int xfs_rtbuf_get(struct xfs_mount *mp, struct xfs_trans *tp,
 		  xfs_rtblock_t block, int issum, struct xfs_buf **bpp);
 int xfs_rtcheck_range(struct xfs_mount *mp, struct xfs_trans *tp,
@@ -147,18 +92,16 @@ int xfs_rtalloc_reinit_frextents(struct xfs_mount *mp);
 # define xfs_verify_rtbno(m, r)			(false)
 # define xfs_rtalloc_extent_is_free(m,t,s,l,i)          (ENOSYS)
 # define xfs_rtalloc_reinit_frextents(m)                (0)
-static inline int		/* error */
+static inline int		 
 xfs_rtmount_init(
-	xfs_mount_t	*mp)	/* file system mount structure */
+	xfs_mount_t	*mp)	 
 {
 	if (mp->m_sb.sb_rblocks == 0)
 		return 0;
-
 	xfs_warn(mp, "Not built with CONFIG_XFS_RT");
 	return -ENOSYS;
 }
 # define xfs_rtmount_inodes(m)  (((mp)->m_sb.sb_rblocks == 0)? 0 : (ENOSYS))
 # define xfs_rtunmount_inodes(m)
-#endif	/* CONFIG_XFS_RT */
-
-#endif	/* __XFS_RTALLOC_H__ */
+#endif	 
+#endif	 

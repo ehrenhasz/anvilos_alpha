@@ -1,22 +1,8 @@
-/*
- * Support for CompuLab SBC-iMX7 Single Board Computer
- *
- * Copyright (C) 2015 CompuLab Ltd. - http://www.compulab.co.il/
- * Author: Ilya Ledvich <ilya@compulab.co.il>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- */
-
 #include "imx7d-cl-som-imx7.dts"
-
 / {
 	model = "CompuLab SBC-iMX7";
 	compatible = "compulab,sbc-imx7", "compulab,cl-som-imx7", "fsl,imx7d";
 };
-
 &usdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1>;
@@ -25,7 +11,6 @@
 	wakeup-source;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_usdhc1: usdhc1grp {
 		fsl,pins = <
@@ -35,8 +20,8 @@
 			MX7D_PAD_SD1_DATA1__SD1_DATA1		0x59
 			MX7D_PAD_SD1_DATA2__SD1_DATA2		0x59
 			MX7D_PAD_SD1_DATA3__SD1_DATA3		0x59
-			MX7D_PAD_SD1_CD_B__GPIO5_IO0		0x59 /* CD */
-			MX7D_PAD_SD1_WP__GPIO5_IO1		0x59 /* WP */
+			MX7D_PAD_SD1_CD_B__GPIO5_IO0		0x59  
+			MX7D_PAD_SD1_WP__GPIO5_IO1		0x59  
 		>;
 	};
 };

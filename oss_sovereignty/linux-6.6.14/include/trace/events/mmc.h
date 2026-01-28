@@ -1,21 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mmc
-
 #if !defined(_TRACE_MMC_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_MMC_H
-
 #include <linux/blkdev.h>
 #include <linux/mmc/core.h>
 #include <linux/mmc/host.h>
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(mmc_request_start,
-
 	TP_PROTO(struct mmc_host *host, struct mmc_request *mrq),
-
 	TP_ARGS(host, mrq),
-
 	TP_STRUCT__entry(
 		__field(u32,			cmd_opcode)
 		__field(u32,			cmd_arg)
@@ -43,7 +36,6 @@ TRACE_EVENT(mmc_request_start,
 		__field(struct mmc_request *,	mrq)
 		__string(name,			mmc_hostname(host))
 	),
-
 	TP_fast_assign(
 		__entry->cmd_opcode = mrq->cmd ? mrq->cmd->opcode : 0;
 		__entry->cmd_arg = mrq->cmd ? mrq->cmd->arg : 0;
@@ -71,7 +63,6 @@ TRACE_EVENT(mmc_request_start,
 		__assign_str(name, mmc_hostname(host));
 		__entry->mrq = mrq;
 	),
-
 	TP_printk("%s: start struct mmc_request[%p]: "
 		  "cmd_opcode=%u cmd_arg=0x%x cmd_flags=0x%x cmd_retries=%u "
 		  "stop_opcode=%u stop_arg=0x%x stop_flags=0x%x stop_retries=%u "
@@ -92,13 +83,9 @@ TRACE_EVENT(mmc_request_start,
 		  __entry->retune_now, __entry->need_retune,
 		  __entry->hold_retune, __entry->retune_period)
 );
-
 TRACE_EVENT(mmc_request_done,
-
 	TP_PROTO(struct mmc_host *host, struct mmc_request *mrq),
-
 	TP_ARGS(host, mrq),
-
 	TP_STRUCT__entry(
 		__field(u32,			cmd_opcode)
 		__field(int,			cmd_err)
@@ -124,7 +111,6 @@ TRACE_EVENT(mmc_request_done,
 		__field(struct mmc_request *,	mrq)
 		__string(name,			mmc_hostname(host))
 	),
-
 	TP_fast_assign(
 		__entry->cmd_opcode = mrq->cmd ? mrq->cmd->opcode : 0;
 		__entry->cmd_err = mrq->cmd ? mrq->cmd->error : 0;
@@ -159,7 +145,6 @@ TRACE_EVENT(mmc_request_done,
 		__assign_str(name, mmc_hostname(host));
 		__entry->mrq = mrq;
 	),
-
 	TP_printk("%s: end struct mmc_request[%p]: "
 		  "cmd_opcode=%u cmd_err=%d cmd_resp=0x%x 0x%x 0x%x 0x%x "
 		  "cmd_retries=%u stop_opcode=%u stop_err=%d "
@@ -186,8 +171,5 @@ TRACE_EVENT(mmc_request_done,
 		  __entry->retune_now, __entry->need_retune,
 		  __entry->hold_retune, __entry->retune_period)
 );
-
-#endif /* _TRACE_MMC_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

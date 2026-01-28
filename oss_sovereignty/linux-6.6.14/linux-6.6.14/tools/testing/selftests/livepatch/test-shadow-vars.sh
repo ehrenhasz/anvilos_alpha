@@ -1,21 +1,9 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2018 Joe Lawrence <joe.lawrence@redhat.com>
-
 . $(dirname $0)/functions.sh
-
 MOD_TEST=test_klp_shadow_vars
-
 setup_config
-
-
-# - load a module that exercises the shadow variable API
-
 start_test "basic shadow variable API"
-
 load_mod $MOD_TEST
 unload_mod $MOD_TEST
-
 check_result "% modprobe $MOD_TEST
 $MOD_TEST: klp_shadow_get(obj=PTR1, id=0x1234) = PTR0
 $MOD_TEST:   got expected NULL result
@@ -75,5 +63,4 @@ $MOD_TEST:   got expected NULL result
 $MOD_TEST: klp_shadow_get(obj=PTR14, id=0x1235) = PTR0
 $MOD_TEST:   got expected NULL result
 % rmmod $MOD_TEST"
-
 exit 0

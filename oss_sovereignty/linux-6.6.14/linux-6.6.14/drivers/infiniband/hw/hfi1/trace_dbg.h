@@ -1,32 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
-* Copyright(c) 2015 - 2018 Intel Corporation.
-*/
-
 #if !defined(__HFI1_TRACE_EXTRA_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_EXTRA_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include "hfi.h"
-
-/*
- * Note:
- * This produces a REALLY ugly trace in the console output when the string is
- * too long.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hfi1_dbg
-
 #define MAX_MSG_LEN 512
-
 #pragma GCC diagnostic push
 #ifndef __clang__
 #pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
 #endif
-
 DECLARE_EVENT_CLASS(hfi1_trace_template,
 		    TP_PROTO(const char *function, struct va_format *vaf),
 		    TP_ARGS(function, vaf),
@@ -40,20 +23,13 @@ DECLARE_EVENT_CLASS(hfi1_trace_template,
 			      __get_str(function),
 			      __get_str(msg))
 );
-
 #pragma GCC diagnostic pop
-
-/*
- * It may be nice to macroize the __hfi1_trace but the va_* stuff requires an
- * actual function to work and can not be in a macro.
- */
 #define __hfi1_trace_def(lvl) \
 void __printf(2, 3) __hfi1_trace_##lvl(const char *funct, char *fmt, ...); \
 									\
 DEFINE_EVENT(hfi1_trace_template, hfi1_ ##lvl,				\
 	TP_PROTO(const char *function, struct va_format *vaf),		\
 	TP_ARGS(function, vaf))
-
 #define __hfi1_trace_fn(lvl) \
 void __printf(2, 3) __hfi1_trace_##lvl(const char *func, char *fmt, ...)\
 {									\
@@ -68,13 +44,6 @@ void __printf(2, 3) __hfi1_trace_##lvl(const char *func, char *fmt, ...)\
 	va_end(args);							\
 	return;								\
 }
-
-/*
- * To create a new trace level simply define it below and as a __hfi1_trace_fn
- * in trace.c. This will create all the hooks for calling
- * hfi1_cdbg(LVL, fmt, ...); as well as take care of all
- * the debugfs stuff.
- */
 __hfi1_trace_def(AFFINITY);
 __hfi1_trace_def(PKT);
 __hfi1_trace_def(PROC);
@@ -90,27 +59,17 @@ __hfi1_trace_def(RCVCTRL);
 __hfi1_trace_def(TID);
 __hfi1_trace_def(MMU);
 __hfi1_trace_def(IOCTL);
-
 #define hfi1_cdbg(which, fmt, ...) \
 	__hfi1_trace_##which(__func__, fmt, ##__VA_ARGS__)
-
 #define hfi1_dbg(fmt, ...) \
 	hfi1_cdbg(DEBUG, fmt, ##__VA_ARGS__)
-
-/*
- * Define HFI1_EARLY_DBG at compile time or here to enable early trace
- * messages. Do not check in an enablement for this.
- */
-
 #ifdef HFI1_EARLY_DBG
 #define hfi1_dbg_early(fmt, ...) \
 	trace_printk(fmt, ##__VA_ARGS__)
 #else
 #define hfi1_dbg_early(fmt, ...)
 #endif
-
-#endif /* __HFI1_TRACE_EXTRA_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

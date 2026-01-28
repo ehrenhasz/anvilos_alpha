@@ -1,33 +1,5 @@
-/*
- * Copyright (c) 2020 iXsystems, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- */
-
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
-
 #include <sys/param.h>
 #include <sys/buf.h>
 #include <sys/cmn_err.h>
@@ -85,37 +57,27 @@ __FBSDID("$FreeBSD$");
 #include <sys/zio_checksum.h>
 #include <sys/zone.h>
 #include <sys/zvol.h>
-
 #include "zfs_comutil.h"
 #include "zfs_deleg.h"
 #include "zfs_namecheck.h"
 #include "zfs_prop.h"
-
 SYSCTL_DECL(_vfs_zfs);
 SYSCTL_DECL(_vfs_zfs_vdev);
-
 extern uint_t rrw_tsd_key;
 static int zfs_version_ioctl = ZFS_IOCVER_OZFS;
 SYSCTL_DECL(_vfs_zfs_version);
 SYSCTL_INT(_vfs_zfs_version, OID_AUTO, ioctl, CTLFLAG_RD, &zfs_version_ioctl,
     0, "ZFS_IOCTL_VERSION");
-
 static struct cdev *zfsdev;
-
 static struct root_hold_token *zfs_root_token;
-
 extern uint_t rrw_tsd_key;
 extern uint_t zfs_allow_log_key;
 extern uint_t zfs_geom_probe_vdev_key;
-
 static int zfs__init(void);
 static int zfs__fini(void);
 static void zfs_shutdown(void *, int);
-
 static eventhandler_tag zfs_shutdown_event_tag;
-
 #define	ZFS_MIN_KSTACK_PAGES 4
-
 static int
 zfsdev_ioctl(struct cdev *dev, ulong_t zcmd, caddr_t arg, int flag,
     struct thread *td)
@@ -129,7 +91,6 @@ zfsdev_ioctl(struct cdev *dev, ulong_t zcmd, caddr_t arg, int flag,
 #endif
 	int rc, error;
 	void *uaddr;
-
 	len = IOCPARM_LEN(zcmd);
 	vecnum = zcmd & 0xff;
 	zp = (void *)arg;
@@ -137,16 +98,11 @@ zfsdev_ioctl(struct cdev *dev, ulong_t zcmd, caddr_t arg, int flag,
 #ifdef ZFS_LEGACY_SUPPORT
 	zcl = NULL;
 #endif
-
 	if (len != sizeof (zfs_iocparm_t))
 		return (EINVAL);
-
 	uaddr = (void *)(uintptr_t)zp->zfs_cmd;
 	zc = vmem_zalloc(sizeof (zfs_cmd_t), KM_SLEEP);
 #ifdef ZFS_LEGACY_SUPPORT
-	/*
-	 * Remap ioctl code for legacy user binaries
-	 */
 	if (zp->zfs_ioctl_version == ZFS_IOCVER_LEGACY) {
 		vecnum = zfs_ioctl_legacy_to_ozfs(vecnum);
 		if (vecnum < 0) {
@@ -186,50 +142,41 @@ out:
 	MPASS(tsd_get(rrw_tsd_key) == NULL);
 	return (error);
 }
-
 static void
 zfsdev_close(void *data)
 {
 	zfsdev_state_destroy(data);
 }
-
 void
 zfsdev_private_set_state(void *priv __unused, zfsdev_state_t *zs)
 {
 	devfs_set_cdevpriv(zs, zfsdev_close);
 }
-
 zfsdev_state_t *
 zfsdev_private_get_state(void *priv)
 {
 	return (priv);
 }
-
 static int
 zfsdev_open(struct cdev *devp __unused, int flag __unused, int mode __unused,
     struct thread *td __unused)
 {
 	int error;
-
 	mutex_enter(&zfsdev_state_lock);
 	error = zfsdev_state_init(NULL);
 	mutex_exit(&zfsdev_state_lock);
-
 	return (error);
 }
-
 static struct cdevsw zfs_cdevsw = {
 	.d_version =	D_VERSION,
 	.d_open =	zfsdev_open,
 	.d_ioctl =	zfsdev_ioctl,
 	.d_name =	ZFS_DRIVER
 };
-
 int
 zfsdev_attach(void)
 {
 	struct make_dev_args args;
-
 	make_dev_args_init(&args);
 	args.mda_flags = MAKEDEV_CHECKNAME | MAKEDEV_WAITOK;
 	args.mda_devsw = &zfs_cdevsw;
@@ -239,19 +186,16 @@ zfsdev_attach(void)
 	args.mda_mode = 0666;
 	return (make_dev_s(&args, &zfsdev, ZFS_DRIVER));
 }
-
 void
 zfsdev_detach(void)
 {
 	if (zfsdev != NULL)
 		destroy_dev(zfsdev);
 }
-
 int
 zfs__init(void)
 {
 	int error;
-
 #if KSTACK_PAGES < ZFS_MIN_KSTACK_PAGES
 	printf("ZFS NOTICE: KSTACK_PAGES is %d which could result in stack "
 	    "overflow panic!\nPlease consider adding "
@@ -265,17 +209,13 @@ zfs__init(void)
 		root_mount_rel(zfs_root_token);
 		return (error);
 	}
-
-
 	tsd_create(&zfs_geom_probe_vdev_key, NULL);
-
 	printf("ZFS storage pool version: features support ("
 	    SPA_VERSION_STRING ")\n");
 	root_mount_rel(zfs_root_token);
 	ddi_sysevent_init();
 	return (0);
 }
-
 int
 zfs__fini(void)
 {
@@ -287,23 +227,16 @@ zfs__fini(void)
 	tsd_destroy(&zfs_geom_probe_vdev_key);
 	return (0);
 }
-
 static void
 zfs_shutdown(void *arg __unused, int howto __unused)
 {
-
-	/*
-	 * ZFS fini routines can not properly work in a panic-ed system.
-	 */
 	if (panicstr == NULL)
 		zfs__fini();
 }
-
 static int
 zfs_modevent(module_t mod, int type, void *unused __unused)
 {
 	int err;
-
 	switch (type) {
 	case MOD_LOAD:
 		err = zfs__init();
@@ -325,17 +258,14 @@ zfs_modevent(module_t mod, int type, void *unused __unused)
 	}
 	return (EOPNOTSUPP);
 }
-
 static moduledata_t zfs_mod = {
 	"zfsctrl",
 	zfs_modevent,
 	0
 };
-
 #ifdef _KERNEL
 EVENTHANDLER_DEFINE(mountroot, spa_boot_init, NULL, 0);
 #endif
-
 DECLARE_MODULE(zfsctrl, zfs_mod, SI_SUB_CLOCKS, SI_ORDER_ANY);
 MODULE_VERSION(zfsctrl, 1);
 #if __FreeBSD_version > 1300092

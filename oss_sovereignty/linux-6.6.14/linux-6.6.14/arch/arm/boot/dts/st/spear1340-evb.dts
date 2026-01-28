@@ -1,28 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DTS file for SPEAr1340 Evaluation Baord
- *
- * Copyright 2012 Viresh Kumar <vireshk@kernel.org>
- */
-
 /dts-v1/;
 /include/ "spear1340.dtsi"
-
 / {
 	model = "ST SPEAr1340 Evaluation Board";
 	compatible = "st,spear1340-evb", "st,spear1340";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	memory {
 		reg = <0 0x40000000>;
 	};
-
 	ahb {
 		pinmux@e0700000 {
 			pinctrl-names = "default";
 			pinctrl-0 = <&state_default>;
-
 			state_default: pinmux {
 				pads_as_gpio {
 					st,pins = "pads_as_gpio_grp";
@@ -108,29 +97,22 @@
 					st,pins = "pcie_grp";
 					st,function = "pcie";
 				};
-
 			};
 		};
-
 		ahci@b1000000 {
 			status = "okay";
 		};
-
 		miphy@eb800000 {
 			status = "okay";
 		};
-
 		dma@ea800000 {
 			status = "okay";
 		};
-
 		dma@eb000000 {
 			status = "okay";
 		};
-
 		fsmc: flash@b0000000 {
 			status = "okay";
-
 			partition@0 {
 				label = "xloader";
 				reg = <0x0 0x200000>;
@@ -156,26 +138,21 @@
 				reg = <0x1200000 0x0>;
 			};
 		};
-
 		gmac0: eth@e2000000 {
 			phy-mode = "rgmii";
 			status = "okay";
 		};
-
 		sdhci@b3000000 {
 			status = "okay";
 		};
-
 		smi: flash@ea000000 {
 			status = "okay";
 			clock-rate = <50000000>;
-
 			flash@e6000000 {
 				#address-cells = <1>;
 				#size-cells = <1>;
 				reg = <0xe6000000 0x800000>;
 				st,smi-fast-mode;
-
 				partition@0 {
 					label = "xloader";
 					reg = <0x0 0x10000>;
@@ -202,16 +179,13 @@
 				};
 			};
 		};
-
 		ehci@e4800000 {
 			status = "okay";
 		};
-
 		gpio_keys {
 			compatible = "gpio-keys";
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			button@1 {
 				label = "wakeup";
 				linux,code = <0x100>;
@@ -220,37 +194,29 @@
 				wakeup-source;
 			};
 		};
-
 		ehci@e5800000 {
 			status = "okay";
 		};
-
 		i2s0: i2s-play@b2400000 {
 			status = "okay";
 		};
-
 		i2s1: i2s-rec@b2000000 {
 			status = "okay";
 		};
-
 		incodec: dir-hifi {
 			compatible = "dummy,dir-hifi";
 			status = "okay";
 		};
-
 		ohci@e4000000 {
 			status = "okay";
 		};
-
 		ohci@e5000000 {
 			status = "okay";
 		};
-
 		outcodec: dit-hifi {
 			compatible = "dummy,dit-hifi";
 			status = "okay";
 		};
-
 		sound {
 			compatible = "spear,spear-evb";
 			audio-controllers = <&spdif0 &spdif1 &i2s0 &i2s1>;
@@ -261,57 +227,44 @@
 			nr_controllers = <4>;
 		        status = "okay";
 		};
-
 		spdif0: spdif-in@d0100000 {
 			status = "okay";
 		};
-
 		spdif1: spdif-out@d0000000 {
 			status = "okay";
 		};
-
 		apb {
 			adc@e0080000 {
 				status = "okay";
 			};
-
 			i2s-play@b2400000 {
 				status = "okay";
 			};
-
 			i2s-rec@b2000000 {
 				status = "okay";
 			};
-
 			gpio0: gpio@e0600000 {
 			       status = "okay";
 			};
-
 			gpio1: gpio@e0680000 {
 			       status = "okay";
 			};
-
 			gpio@e2800000 {
 			       status = "okay";
 			};
-
 			i2c0: i2c@e0280000 {
 			       status = "okay";
-
 				sta529: sta529@1a {
 					compatible = "st,sta529";
 					reg = <0x1a>;
 				};
 			};
-
 			i2c1: i2c@b4000000 {
 			       status = "okay";
-
 				eeprom0@56 {
 					compatible = "st,eeprom";
 					reg = <0x56>;
 				};
-
 				stmpe801@41 {
 					compatible = "st,stmpe801";
 					#address-cells = <1>;
@@ -320,7 +273,6 @@
 					interrupts = <4 0x4>;
 					interrupt-parent = <&gpio0>;
 					irq-trigger = <0x2>;
-
 					stmpegpio: stmpe_gpio {
 						compatible = "st,stmpe-gpio";
 						gpio-controller;
@@ -328,7 +280,6 @@
 					};
 				};
 			};
-
 			kbd@e0300000 {
 				linux,keymap = < 0x00000001
 						 0x00010002
@@ -416,29 +367,24 @@
 			       suspended_rate = <2000000>;
 			       status = "okay";
 			};
-
 			rtc@e0580000 {
 			       status = "okay";
 			};
-
 			serial@e0000000 {
 			       status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <>;
 			};
-
 			serial@b4100000 {
 			       status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <>;
 			};
-
 			spi0: spi@e0100000 {
 				status = "okay";
 				num-cs = <3>;
 				cs-gpios = <&gpiopinctrl 80 0>, <&gpiopinctrl 24 0>,
 					   <&gpiopinctrl 85 0>;
-
 				flash@0 {
 					compatible = "m25p80";
 					reg = <0>;
@@ -455,7 +401,6 @@
 					pl022,wait-state = <0>;
 					pl022,duplex = <0>;
 				};
-
 				stmpe610@1 {
 					compatible = "st,stmpe610";
 					spi-max-frequency = <1000000>;
@@ -475,7 +420,6 @@
 					irq-trigger = <0x2>;
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					stmpe_touchscreen {
 						compatible = "st,stmpe-ts";
 						ts,sample-time = <4>;
@@ -490,11 +434,9 @@
 					};
 				};
 			};
-
 			timer@ec800600 {
 				status = "okay";
 			};
-
 			wdt@ec800620 {
 			       status = "okay";
 			};

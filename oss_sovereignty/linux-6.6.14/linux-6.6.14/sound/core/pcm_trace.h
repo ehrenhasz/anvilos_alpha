@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM snd_pcm
 #define TRACE_INCLUDE_FILE pcm_trace
-
 #if !defined(_PCM_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _PCM_TRACE_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(hwptr,
 	TP_PROTO(struct snd_pcm_substream *substream, snd_pcm_uframes_t pos, bool irq),
 	TP_ARGS(substream, pos, irq),
@@ -46,7 +42,6 @@ TRACE_EVENT(hwptr,
 		  (unsigned long)__entry->period_size,
 		  (unsigned long)__entry->buffer_size)
 );
-
 TRACE_EVENT(xrun,
 	TP_PROTO(struct snd_pcm_substream *substream),
 	TP_ARGS(substream),
@@ -79,7 +74,6 @@ TRACE_EVENT(xrun,
 		  (unsigned long)__entry->period_size,
 		  (unsigned long)__entry->buffer_size)
 );
-
 TRACE_EVENT(hw_ptr_error,
 	TP_PROTO(struct snd_pcm_substream *substream, const char *why),
 	TP_ARGS(substream, why),
@@ -102,7 +96,6 @@ TRACE_EVENT(hw_ptr_error,
 		  __entry->stream == SNDRV_PCM_STREAM_PLAYBACK ? "p" : "c",
 		  __entry->number, __get_str(reason))
 );
-
 TRACE_EVENT(applptr,
 	TP_PROTO(struct snd_pcm_substream *substream, snd_pcm_uframes_t prev, snd_pcm_uframes_t curr),
 	TP_ARGS(substream, prev, curr),
@@ -140,10 +133,7 @@ TRACE_EVENT(applptr,
 		__entry->buffer_size
 	)
 );
-
-#endif /* _PCM_TRACE_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

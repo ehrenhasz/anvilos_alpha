@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- */
 #ifndef _ASM_POWERPC_MMAN_H
 #define _ASM_POWERPC_MMAN_H
-
 #include <uapi/asm/mman.h>
-
 #ifdef CONFIG_PPC64
-
 #include <asm/cputable.h>
 #include <linux/mm.h>
 #include <linux/pkeys.h>
 #include <asm/cpu_has_feature.h>
 #include <asm/firmware.h>
-
 static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
 		unsigned long pkey)
 {
@@ -24,7 +17,6 @@ static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
 #endif
 }
 #define arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
-
 static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
 {
 	if (prot & ~(PROT_READ | PROT_WRITE | PROT_EXEC | PROT_SEM | PROT_SAO))
@@ -39,6 +31,5 @@ static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
 	return true;
 }
 #define arch_validate_prot arch_validate_prot
-
-#endif /* CONFIG_PPC64 */
-#endif	/* _ASM_POWERPC_MMAN_H */
+#endif  
+#endif	 

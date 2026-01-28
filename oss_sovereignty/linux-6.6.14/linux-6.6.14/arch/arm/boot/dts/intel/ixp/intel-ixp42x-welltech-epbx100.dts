@@ -1,48 +1,31 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Corentin Labbe <clabbe@baylibre.com>
- */
-
 /dts-v1/;
-
 #include "intel-ixp42x.dtsi"
-
 / {
 	model = "Welltech EPBX100";
 	compatible = "welltech,epbx100", "intel,ixp42x";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	memory@0 {
-		/* 64 MB SDRAM */
 		device_type = "memory";
 		reg = <0x00000000 0x4000000>;
 	};
-
 	chosen {
 		bootargs = "console=ttyS0,115200n8 root=/dev/ram0 initrd=0x00800000,9M";
 		stdout-path = "uart0:115200n8";
 	};
-
 	aliases {
 		serial0 = &uart0;
 	};
-
 	soc {
 		bus@c4000000 {
 			flash@0,0 {
 				compatible = "intel,ixp4xx-flash", "cfi-flash";
 				bank-width = <2>;
-				/*
-				 * 16 MB of Flash
-				 */
 				reg = <0 0x00000000 0x1000000>;
-
 				partitions {
 					compatible = "fixed-partitions";
 					#address-cells = <1>;
 					#size-cells = <1>;
-
 					partition@0 {
 						label = "RedBoot";
 						reg = <0x00000000 0x00080000>;
@@ -76,19 +59,15 @@
 				};
 			};
 		};
-
-		/* LAN port */
 		ethernet@c8009000 {
 			status = "okay";
 			queue-rx = <&qmgr 3>;
 			queue-txready = <&qmgr 20>;
 			phy-mode = "rgmii";
 			phy-handle = <&phy5>;
-
 			mdio {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				phy5: ethernet-phy@5 {
 					reg = <5>;
 				};

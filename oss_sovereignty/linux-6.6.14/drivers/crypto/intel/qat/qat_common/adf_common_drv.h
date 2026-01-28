@@ -1,21 +1,16 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2021 Intel Corporation */
 #ifndef ADF_DRV_H
 #define ADF_DRV_H
-
 #include <linux/list.h>
 #include <linux/pci.h>
 #include "adf_accel_devices.h"
 #include "icp_qat_fw_loader_handle.h"
 #include "icp_qat_hal.h"
-
 #define ADF_MAJOR_VERSION	0
 #define ADF_MINOR_VERSION	6
 #define ADF_BUILD_VERSION	0
 #define ADF_DRV_VERSION		__stringify(ADF_MAJOR_VERSION) "." \
 				__stringify(ADF_MINOR_VERSION) "." \
 				__stringify(ADF_BUILD_VERSION)
-
 #define ADF_STATUS_RESTARTING 0
 #define ADF_STATUS_STARTING 1
 #define ADF_STATUS_CONFIGURED 2
@@ -27,12 +22,10 @@
 #define ADF_STATUS_IRQ_ALLOCATED 8
 #define ADF_STATUS_CRYPTO_ALGS_REGISTERED 9
 #define ADF_STATUS_COMP_ALGS_REGISTERED 10
-
 enum adf_dev_reset_mode {
 	ADF_DEV_RESET_ASYNC = 0,
 	ADF_DEV_RESET_SYNC
 };
-
 enum adf_event {
 	ADF_EVENT_INIT = 0,
 	ADF_EVENT_START,
@@ -41,7 +34,6 @@ enum adf_event {
 	ADF_EVENT_RESTARTING,
 	ADF_EVENT_RESTARTED,
 };
-
 struct service_hndl {
 	int (*event_hld)(struct adf_accel_dev *accel_dev,
 			 enum adf_event event);
@@ -50,14 +42,11 @@ struct service_hndl {
 	char *name;
 	struct list_head list;
 };
-
 int adf_service_register(struct service_hndl *service);
 int adf_service_unregister(struct service_hndl *service);
-
 int adf_dev_up(struct adf_accel_dev *accel_dev, bool init_config);
 int adf_dev_down(struct adf_accel_dev *accel_dev, bool cache_config);
 int adf_dev_restart(struct adf_accel_dev *accel_dev);
-
 void adf_devmgr_update_class_index(struct adf_hw_device_data *hw_data);
 void adf_clean_vf_map(bool);
 int adf_devmgr_add_dev(struct adf_accel_dev *accel_dev,
@@ -80,7 +69,6 @@ int adf_ae_fw_load(struct adf_accel_dev *accel_dev);
 void adf_ae_fw_release(struct adf_accel_dev *accel_dev);
 int adf_ae_start(struct adf_accel_dev *accel_dev);
 int adf_ae_stop(struct adf_accel_dev *accel_dev);
-
 extern const struct pci_error_handlers adf_err_handler;
 void adf_reset_sbr(struct adf_accel_dev *accel_dev);
 void adf_reset_flr(struct adf_accel_dev *accel_dev);
@@ -98,7 +86,6 @@ int adf_get_fw_timestamp(struct adf_accel_dev *accel_dev, u64 *timestamp);
 int adf_init_arb(struct adf_accel_dev *accel_dev);
 void adf_exit_arb(struct adf_accel_dev *accel_dev);
 void adf_update_ring_arb(struct adf_etr_ring_data *ring);
-
 int adf_dev_get(struct adf_accel_dev *accel_dev);
 void adf_dev_put(struct adf_accel_dev *accel_dev);
 int adf_dev_in_use(struct adf_accel_dev *accel_dev);
@@ -115,7 +102,6 @@ int qat_algs_register(void);
 void qat_algs_unregister(void);
 int qat_asym_algs_register(void);
 void qat_asym_algs_unregister(void);
-
 struct qat_compression_instance *qat_compression_get_instance_node(int node);
 void qat_compression_put_instance(struct qat_compression_instance *inst);
 int qat_compression_register(void);
@@ -123,16 +109,12 @@ int qat_compression_unregister(void);
 int qat_comp_algs_register(void);
 void qat_comp_algs_unregister(void);
 void qat_comp_alg_callback(void *resp);
-
 int adf_isr_resource_alloc(struct adf_accel_dev *accel_dev);
 void adf_isr_resource_free(struct adf_accel_dev *accel_dev);
 int adf_vf_isr_resource_alloc(struct adf_accel_dev *accel_dev);
 void adf_vf_isr_resource_free(struct adf_accel_dev *accel_dev);
-
 int adf_pfvf_comms_disabled(struct adf_accel_dev *accel_dev);
-
 int adf_sysfs_init(struct adf_accel_dev *accel_dev);
-
 int qat_hal_init(struct adf_accel_dev *accel_dev);
 void qat_hal_deinit(struct icp_qat_fw_loader_handle *handle);
 int qat_hal_start(struct icp_qat_fw_loader_handle *handle);
@@ -211,39 +193,29 @@ void adf_exit_vf_wq(void);
 void adf_flush_vf_wq(struct adf_accel_dev *accel_dev);
 #else
 #define adf_sriov_configure NULL
-
 static inline void adf_disable_sriov(struct adf_accel_dev *accel_dev)
 {
 }
-
 static inline int adf_init_pf_wq(void)
 {
 	return 0;
 }
-
 static inline void adf_exit_pf_wq(void)
 {
 }
-
 static inline int adf_init_vf_wq(void)
 {
 	return 0;
 }
-
 static inline void adf_exit_vf_wq(void)
 {
 }
-
 #endif
-
 static inline void __iomem *adf_get_pmisc_base(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;
 	struct adf_bar *pmisc;
-
 	pmisc = &GET_BARS(accel_dev)[hw_data->get_misc_bar_id(hw_data)];
-
 	return pmisc->virt_addr;
 }
-
 #endif

@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Weiyi Lu <weiyi.lu@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT2712_H
 #define _DT_BINDINGS_CLK_MT2712_H
-
-/* APMIXEDSYS */
-
 #define CLK_APMIXED_MAINPLL		0
 #define CLK_APMIXED_UNIVPLL		1
 #define CLK_APMIXED_VCODECPLL		2
@@ -25,9 +16,6 @@
 #define CLK_APMIXED_ARMCA72PLL		13
 #define CLK_APMIXED_ETHERPLL		14
 #define CLK_APMIXED_NR_CLK		15
-
-/* TOPCKGEN */
-
 #define CLK_TOP_ARMCA35PLL		0
 #define CLK_TOP_ARMCA35PLL_600M		1
 #define CLK_TOP_ARMCA35PLL_400M		2
@@ -222,9 +210,6 @@
 #define CLK_TOP_NFI1X_CK_EN		191
 #define CLK_TOP_APLL2_D3		192
 #define CLK_TOP_NR_CLK			193
-
-/* INFRACFG */
-
 #define CLK_INFRA_DBGCLK		0
 #define CLK_INFRA_GCE			1
 #define CLK_INFRA_M4U			2
@@ -233,9 +218,6 @@
 #define CLK_INFRA_AO_SPI1		5
 #define CLK_INFRA_AO_UART5		6
 #define CLK_INFRA_NR_CLK		7
-
-/* PERICFG */
-
 #define CLK_PERI_NFI			0
 #define CLK_PERI_THERM			1
 #define CLK_PERI_PWM0			2
@@ -283,21 +265,12 @@
 #define CLK_PERI_MSDC30_0_QTR_EN	44
 #define CLK_PERI_MSDC30_3_QTR_EN	45
 #define CLK_PERI_NR_CLK			46
-
-/* MCUCFG */
-
 #define CLK_MCU_MP0_SEL			0
 #define CLK_MCU_MP2_SEL			1
 #define CLK_MCU_BUS_SEL			2
 #define CLK_MCU_NR_CLK			3
-
-/* MFGCFG */
-
 #define CLK_MFG_BG3D			0
 #define CLK_MFG_NR_CLK			1
-
-/* MMSYS */
-
 #define CLK_MM_SMI_COMMON		0
 #define CLK_MM_SMI_LARB0		1
 #define CLK_MM_CAM_MDP			2
@@ -362,9 +335,6 @@
 #define CLK_MM_DSI3			61
 #define CLK_MM_DSI3_DIGITAL		62
 #define CLK_MM_NR_CLK			63
-
-/* IMGSYS */
-
 #define CLK_IMG_SMI_LARB2		0
 #define CLK_IMG_SENINF_SCAM_EN		1
 #define CLK_IMG_SENINF_CAM_EN		2
@@ -372,9 +342,6 @@
 #define CLK_IMG_CAM_SV1_EN		4
 #define CLK_IMG_CAM_SV2_EN		5
 #define CLK_IMG_NR_CLK			6
-
-/* BDPSYS */
-
 #define CLK_BDP_BRIDGE_B		0
 #define CLK_BDP_BRIDGE_DRAM		1
 #define CLK_BDP_LARB_DRAM		2
@@ -404,25 +371,15 @@
 #define CLK_BDP_TVD_54			26
 #define CLK_BDP_TVD_CBUS		27
 #define CLK_BDP_NR_CLK			28
-
-/* VDECSYS */
-
 #define CLK_VDEC_CKEN			0
 #define CLK_VDEC_LARB1_CKEN		1
 #define CLK_VDEC_IMGRZ_CKEN		2
 #define CLK_VDEC_NR_CLK			3
-
-/* VENCSYS */
-
 #define CLK_VENC_SMI_COMMON_CON		0
 #define CLK_VENC_VENC			1
 #define CLK_VENC_SMI_LARB6		2
 #define CLK_VENC_NR_CLK			3
-
-/* JPGDECSYS */
-
 #define CLK_JPGDEC_JPGDEC1		0
 #define CLK_JPGDEC_JPGDEC		1
 #define CLK_JPGDEC_NR_CLK		2
-
-#endif /* _DT_BINDINGS_CLK_MT2712_H */
+#endif  

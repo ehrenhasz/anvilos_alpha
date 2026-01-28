@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt1308-sdw.h -- RT1308 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT1308_SDW_H__
 #define __RT1308_SDW_H__
-
 static const struct reg_default rt1308_reg_defaults[] = {
 	{ 0x0000, 0x00 },
 	{ 0x0001, 0x00 },
@@ -146,15 +138,12 @@ static const struct reg_default rt1308_reg_defaults[] = {
 	{ 0xc002 | (RT1308_POWER << 4), 0x00 },
 	{ 0xc000 | (RT1308_POWER_STATUS << 4), 0x00 },
 };
-
 #define RT1308_SDW_OFFSET 0xc000
 #define RT1308_SDW_OFFSET_BYTE0 0xc000
 #define RT1308_SDW_OFFSET_BYTE1 0xc001
 #define RT1308_SDW_OFFSET_BYTE2 0xc002
 #define RT1308_SDW_OFFSET_BYTE3 0xc003
-
 #define RT1308_SDW_RESET (RT1308_SDW_OFFSET | (RT1308_RESET << 4))
-
 struct rt1308_sdw_priv {
 	struct snd_soc_component *component;
 	struct regmap *regmap;
@@ -168,5 +157,4 @@ struct rt1308_sdw_priv {
 	unsigned char *bq_params;
 	unsigned int bq_params_cnt;
 };
-
-#endif /* __RT1308_SDW_H__ */
+#endif  

@@ -1,33 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Copyright 2014 Soeren Moch <smoch@web.de>
-
 /dts-v1/;
-
 #include "imx6q.dtsi"
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
-
 / {
 	model = "TBS2910 Matrix ARM mini PC";
 	compatible = "tbs,imx6q-tbs2910", "fsl,imx6q";
-
 	chosen {
 		stdout-path = &uart1;
 	};
-
 	aliases {
 		mmc0 = &usdhc2;
 		mmc1 = &usdhc3;
 		mmc2 = &usdhc4;
 		/delete-property/ mmc3;
 	};
-
 	memory@10000000 {
 		device_type = "memory";
 		reg = <0x10000000 0x80000000>;
 	};
-
 	fan {
 		compatible = "gpio-fan";
 		pinctrl-names = "default";
@@ -36,47 +26,40 @@
 		gpio-fan,speed-map = <0    0
 				      3000 1>;
 	};
-
 	ir_recv {
 		compatible = "gpio-ir-receiver";
 		gpios = <&gpio3 18 GPIO_ACTIVE_LOW>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_ir>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_leds>;
-
 		led-blue {
 			label = "blue_status_led";
 			gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 			default-state = "keep";
 		};
 	};
-
 	reg_2p5v: regulator-2p5v {
 		compatible = "regulator-fixed";
 		regulator-name = "2P5V";
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	reg_5p0v: regulator-5p0v {
 		compatible = "regulator-fixed";
 		regulator-name = "5P0V";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 	};
-
 	sound-sgtl5000 {
 		audio-codec = <&sgtl5000>;
 		audio-routing =
@@ -89,7 +72,6 @@
 		mux-int-port = <1>;
 		ssi-controller = <&ssi1>;
 	};
-
 	sound-spdif {
 		compatible = "fsl,imx-audio-spdif";
 		model = "On-board SPDIF";
@@ -97,22 +79,18 @@
 		spdif-out;
 	};
 };
-
 &audmux {
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
 	phy-mode = "rgmii-id";
 	phy-handle = <&phy>;
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		phy: ethernet-phy@4 {
 			reg = <4>;
 			qca,clk-out-frequency = <125000000>;
@@ -121,20 +99,17 @@
 		};
 	};
 };
-
 &hdmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hdmi>;
 	ddc-i2c-bus = <&i2c2>;
 	status = "okay";
 };
-
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	sgtl5000: sgtl5000@a {
 		clocks = <&clks IMX6QDL_CLK_CKO>;
 		compatible = "fsl,sgtl5000";
@@ -146,33 +121,28 @@
 		VDDIO-supply = <&reg_3p3v>;
 	};
 };
-
 &i2c2 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
 };
-
 &i2c3 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
-
 	rtc: rtc@68 {
 		compatible = "dallas,ds1307";
 		reg = <0x68>;
 	};
 };
-
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	reset-gpio = <&gpio7 12 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &sata {
 	fsl,transmit-level-mV = <1104>;
 	fsl,transmit-boost-mdB = <3330>;
@@ -180,38 +150,31 @@
 	fsl,receive-eq-mdB = <3000>;
 	status = "okay";
 };
-
 &snvs_poweroff {
 	status = "okay";
 };
-
 &spdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_spdif>;
 	status = "okay";
 };
-
 &ssi1 {
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &usbh1 {
 	vbus-supply = <&reg_5p0v>;
 	status = "okay";
 };
-
 &usbotg {
 	vbus-supply = <&reg_5p0v>;
 	pinctrl-names = "default";
@@ -219,7 +182,6 @@
 	disable-over-current;
 	status = "okay";
 };
-
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
@@ -231,7 +193,6 @@
 	no-1-8-v;
 	status = "okay";
 };
-
 &usdhc3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc3>;
@@ -244,7 +205,6 @@
 	no-1-8-v;
 	status = "okay";
 };
-
 &usdhc4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc4>;
@@ -256,7 +216,6 @@
 	no-1-8-v;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
@@ -279,58 +238,49 @@
 			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25    0x1b059
 		>;
 	};
-
 	pinctrl_gpio_fan: gpiofangrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D28__GPIO3_IO28        0x130b1
 		>;
 	};
-
 	pinctrl_gpio_leds: gpioledsgrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_2__GPIO1_IO02         0x130b1
 		>;
 	};
-
 	pinctrl_hdmi: hdmigrp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_ROW2__HDMI_TX_CEC_LINE 0x1f8b0
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT9__I2C1_SCL        0x4001b8b1
 			MX6QDL_PAD_CSI0_DAT8__I2C1_SDA        0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL3__I2C2_SCL         0x4001b8b1
 			MX6QDL_PAD_KEY_ROW3__I2C2_SDA         0x4001b8b1
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_3__I2C3_SCL           0x4001b8b1
 			MX6QDL_PAD_GPIO_6__I2C3_SDA           0x4001b8b1
 		>;
 	};
-
 	pinctrl_ir: irgrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D18__GPIO3_IO18        0x17059
 		>;
 	};
-
 	pinctrl_pcie: pciegrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_17__GPIO7_IO12        0x17059
 		>;
 	};
-
 	pinctrl_sgtl5000: sgtl5000grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT7__AUD3_RXD        0x130b0
@@ -340,32 +290,27 @@
 			MX6QDL_PAD_GPIO_0__CCM_CLKO1          0x130b0
 		>;
 	};
-
 	pinctrl_spdif: spdifgrp {
 		fsl,pins = <MX6QDL_PAD_GPIO_19__SPDIF_OUT     0x13091
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX6QDL_PAD_CSI0_DAT10__UART1_TX_DATA  0x1b0b1
 			MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA  0x1b0b1
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D26__UART2_TX_DATA     0x1b0b1
 			MX6QDL_PAD_EIM_D27__UART2_RX_DATA     0x1b0b1
 		>;
 	};
-
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID     0x17059
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD2_CMD__SD2_CMD           0x17059
@@ -377,7 +322,6 @@
 			MX6QDL_PAD_NANDF_D2__GPIO2_IO02       0x17059
 		>;
 	};
-
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD3_CMD__SD3_CMD           0x17059
@@ -390,7 +334,6 @@
 			MX6QDL_PAD_NANDF_D1__GPIO2_IO01       0x17059
 		>;
 	};
-
 	pinctrl_usdhc4: usdhc4grp {
 		fsl,pins = <
 			MX6QDL_PAD_SD4_CMD__SD4_CMD           0x17059

@@ -1,151 +1,17 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * COPYRIGHT AND PERMISSION NOTICE
- *
- * Copyright (c) 1991-2006 Unicode, Inc. All rights reserved. Distributed under
- * the Terms of Use in http://www.unicode.org/copyright.html.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of the Unicode data files and any associated documentation (the
- * "Data Files") or Unicode software and any associated documentation (the
- * "Software") to deal in the Data Files or Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, and/or sell copies of the Data Files or Software, and
- * to permit persons to whom the Data Files or Software are furnished to do so,
- * provided that (a) the above copyright notice(s) and this permission notice
- * appear with all copies of the Data Files or Software, (b) both the above
- * copyright notice(s) and this permission notice appear in associated
- * documentation, and (c) there is clear notice in each modified Data File or
- * in the Software as well as in the documentation associated with the Data
- * File(s) or Software that the data or software has been modified.
- *
- * THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
- * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
- * THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS
- * INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR
- * CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THE DATA FILES OR SOFTWARE.
- *
- * Except as contained in this notice, the name of a copyright holder shall not
- * be used in advertising or otherwise to promote the sale, use or other
- * dealings in these Data Files or Software without prior written authorization
- * of the copyright holder.
- *
- * Unicode and the Unicode logo are trademarks of Unicode, Inc., and may be
- * registered in some jurisdictions. All other trademarks and registered
- * trademarks mentioned herein are the property of their respective owners.
- */
-/*
- * This file has been modified by Sun Microsystems, Inc.
- */
-
 #ifndef _SYS_U8_TEXTPREP_DATA_H
 #define	_SYS_U8_TEXTPREP_DATA_H
-
-
-
 #include <sys/types.h>
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-/*
- * To get to the combining class data, composition mappings, decomposition
- * mappings, and case conversion mappings of Unicode, the data structures
- * formulated and their meanings are like the following:
- *
- * Each UTF-8 character is seen as a 4-byte entity so that U+0061 (or 0x61 in
- * UTF-8) would be seen as 0x00 0x00 0x00 0x61. Similarly, U+1D15E would be
- * 0xF0 0x9D 0x85 0x9E in UTF-8.
- *
- * The first byte (MSB) value is an index to the b1_tbl, such as
- * u8_common_b1_tbl and u8_composition_b1_tbl tables. A b1_tbl has
- * indices to b2_tbl tables that have indices to b3_tbl. Each b3_tbl has
- * either indices to b4_tbl or indices to b4_tbl and base values for
- * displacement calculations later by using the u8_displacement_t type at
- * below. Each b4_tbl table then has indices to the final tables.
- *
- * As an example, if we have a character with code value of U+1D15E which is
- * 0xF0 0x9D 0x85 0x9E in UTF-8, the target decomposition character bytes
- * that will be mapped by the mapping procedure would be the ones between
- * the start_index and the end_index computed as like the following:
- *
- *	b2_tbl_id = u8_common_b1_tbl[0][0xF0];
- *	b3_tbl_id = u8_decomp_b2_tbl[0][b2_tbl_id][0x9D];
- *	b4_tbl_id = u8_decomp_b3_tbl[0][b3_tbl_id][0x85].tbl_id;
- *	b4_base = u8_decomp_b3_tbl[0][b3_tbl_id][0x85].base;
- *	if (b4_tbl_id >= 0x8000) {
- *		b4_tbl_id -= 0x8000;
- *      	start_index = u8_decomp_b4_16bit_tbl[0][b4_tbl_id][0x9E];
- *      	end_index = u8_decomp_b4_16bit_tbl[0][b4_tbl_id][0x9E + 1];
- *	} else {
- *      	start_index = u8_decomp_b4_tbl[0][b4_tbl_id][0x9E];
- *      	end_index = u8_decomp_b4_tbl[0][b4_tbl_id][0x9E + 1];
- *	}
- *
- * The start_index and the end_index can be used to retrieve the bytes
- * possibly of multiple UTF-8 characters from the final tables.
- *
- * The "[0]" at the above indicates this is for Unicode Version 3.2.0 data
- * as of today.  Consequently, the "[1]" indicates another Unicode version
- * data and it is Unicode 5.0.0 as of today.
- *
- * The mapping procedures and the data structures are more or less similar or
- * alike among different mappings. You might want to read the u8_textprep.c
- * for specific details.
- *
- * The tool programs created and used to generate the tables in this file are
- * saved at PSARC/2007/149/materials/ as tools.tar.gz file.
- */
-
-/* The following is a component type for the b4_tbl vectors. */
 typedef struct {
 	uint16_t	tbl_id;
 	uint16_t	base;
 } u8_displacement_t;
-
-/*
- * The U8_TBL_ELEMENT_NOT_DEF macro indicates a byte that is not defined or
- * used. The U8_TBL_ELEMENT_FILLER indicates the end of a UTF-8 character at
- * the final tables.
- */
 #define	U8_TBL_ELEMENT_NOT_DEF		(0xff)
 #define	N_				U8_TBL_ELEMENT_NOT_DEF
-
 #define	U8_TBL_ELEMENT_FILLER		(0xf7)
 #define	FIL_				U8_TBL_ELEMENT_FILLER
-
-/*
- * The common b1_tbl for combining class, decompositions, tolower, and
- * toupper case conversion mappings.
- */
 static const uchar_t u8_common_b1_tbl[2][256] = {
 	{
 		0,  N_, N_, N_, N_, N_, N_, N_,
@@ -216,7 +82,6 @@ static const uchar_t u8_common_b1_tbl[2][256] = {
 		N_, N_, N_, N_, N_, N_, N_, N_,
 	},
 };
-
 static const uchar_t u8_combining_class_b2_tbl[2][2][256] = {
 	{
 		{
@@ -287,7 +152,6 @@ static const uchar_t u8_combining_class_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
 	{
 		{
@@ -358,14 +222,11 @@ static const uchar_t u8_combining_class_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
-
 };
-
 static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 	{
-		{	/* Third byte table 0. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -399,7 +260,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 1. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -433,7 +294,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 2. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -467,7 +328,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 3. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -501,7 +362,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 4. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -535,7 +396,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 5. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -569,7 +430,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 6. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -603,7 +464,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 7. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -637,7 +498,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 8. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -673,7 +534,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 		},
 	},
 	{
-		{	/* Third byte table 0. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -707,7 +568,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 1. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -741,7 +602,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 2. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -775,7 +636,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 3. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -809,7 +670,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 4. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -843,7 +704,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 5. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -877,7 +738,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 6. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -911,7 +772,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 7. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -945,7 +806,7 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-		{	/* Third byte table 8. */
+		{	 
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
@@ -981,14 +842,9 @@ static const uchar_t u8_combining_class_b3_tbl[2][9][256] = {
 		},
 	},
 };
-
-/*
- * Unlike other b4_tbl, the b4_tbl for combining class data has
- * the combining class values not indices to the final tables.
- */
 static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1022,7 +878,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1056,7 +912,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1090,7 +946,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1124,7 +980,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1158,7 +1014,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1192,7 +1048,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1226,7 +1082,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1260,7 +1116,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1294,7 +1150,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1328,7 +1184,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1362,7 +1218,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1396,7 +1252,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1430,7 +1286,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1464,7 +1320,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1498,7 +1354,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1532,7 +1388,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1566,7 +1422,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1600,7 +1456,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1634,7 +1490,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1668,7 +1524,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1702,7 +1558,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1736,7 +1592,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1770,7 +1626,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1804,7 +1660,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1838,7 +1694,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1872,7 +1728,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1906,7 +1762,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1940,7 +1796,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -1974,7 +1830,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2008,7 +1864,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2042,7 +1898,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2076,7 +1932,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2110,7 +1966,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2144,7 +2000,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2178,7 +2034,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2212,7 +2068,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2246,7 +2102,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2280,7 +2136,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2314,7 +2170,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2348,7 +2204,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2382,7 +2238,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 41. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2416,7 +2272,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 42. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2450,7 +2306,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 43. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2484,7 +2340,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 44. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2518,7 +2374,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 45. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2552,7 +2408,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 46. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2586,7 +2442,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 47. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2620,7 +2476,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 48. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2654,7 +2510,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 49. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2688,7 +2544,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 50. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2722,7 +2578,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 51. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2756,7 +2612,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 52. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2790,7 +2646,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 53. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2824,7 +2680,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 54. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2860,7 +2716,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 		},
 	},
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2894,7 +2750,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2928,7 +2784,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2962,7 +2818,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -2996,7 +2852,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3030,7 +2886,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3064,7 +2920,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3098,7 +2954,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3132,7 +2988,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3166,7 +3022,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3200,7 +3056,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3234,7 +3090,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3268,7 +3124,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3302,7 +3158,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3336,7 +3192,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3370,7 +3226,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3404,7 +3260,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3438,7 +3294,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3472,7 +3328,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3506,7 +3362,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3540,7 +3396,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3574,7 +3430,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3608,7 +3464,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3642,7 +3498,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3676,7 +3532,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3710,7 +3566,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3744,7 +3600,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3778,7 +3634,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3812,7 +3668,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3846,7 +3702,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3880,7 +3736,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3914,7 +3770,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3948,7 +3804,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -3982,7 +3838,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4016,7 +3872,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4050,7 +3906,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4084,7 +3940,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4118,7 +3974,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4152,7 +4008,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4186,7 +4042,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4220,7 +4076,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4254,7 +4110,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 41. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4288,7 +4144,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 42. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4322,7 +4178,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 43. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4356,7 +4212,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 44. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4390,7 +4246,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 45. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4424,7 +4280,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 46. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4458,7 +4314,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 47. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4492,7 +4348,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 48. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4526,7 +4382,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 49. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4560,7 +4416,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 50. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4594,7 +4450,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 51. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4628,7 +4484,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 52. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4662,7 +4518,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 53. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4696,7 +4552,7 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 		},
-		{	/* Fourth byte table 54. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -4732,7 +4588,6 @@ static const uchar_t u8_combining_class_b4_tbl[2][55][256] = {
 		},
 	},
 };
-
 static const uchar_t u8_composition_b1_tbl[2][256] = {
 	{
 		0,  N_, N_, N_, N_, N_, N_, N_,
@@ -4803,7 +4658,6 @@ static const uchar_t u8_composition_b1_tbl[2][256] = {
 		N_, N_, N_, N_, N_, N_, N_, N_,
 	},
 };
-
 static const uchar_t u8_composition_b2_tbl[2][1][256] = {
 	{
 		{
@@ -4840,7 +4694,6 @@ static const uchar_t u8_composition_b2_tbl[2][1][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
 	{
 		{
@@ -4877,14 +4730,11 @@ static const uchar_t u8_composition_b2_tbl[2][1][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
-
 };
-
 static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ 0x8000, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -4972,7 +4822,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5060,7 +4910,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5148,7 +4998,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5236,7 +5086,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5326,7 +5176,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 		},
 	},
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ 0x8000, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5414,7 +5264,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5502,7 +5352,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5590,7 +5440,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5678,7 +5528,7 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -5768,10 +5618,9 @@ static const u8_displacement_t u8_composition_b3_tbl[2][5][256] = {
 		},
 	},
 };
-
 static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5806,7 +5655,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5841,7 +5690,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			88,  88,  88,  88,  88,  88,  88,  88,
 			88,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5876,7 +5725,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			102, 102, 102, 102, 102, 102, 102, 102,
 			102,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5911,7 +5760,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			151, 151, 151, 151, 151, 151, 151, 151,
 			151,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5946,7 +5795,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -5981,7 +5830,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			44,  44,  44,  44,  44,  44,  44,  44,
 			44,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6016,7 +5865,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6051,7 +5900,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			175, 175, 175, 175, 175, 175, 175, 175,
 			175,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6086,7 +5935,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			249, 249, 249, 249, 249, 249, 249, 249,
 			249,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6121,7 +5970,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			67,  67,  67,  67,  67,  67,  67,  67,
 			67,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6156,7 +6005,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			28,  28,  28,  28,  28,  28,  28,  28,
 			28,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6191,7 +6040,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			19,  19,  19,  19,  19,  19,  19,  19,
 			19,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6226,7 +6075,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6261,7 +6110,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6296,7 +6145,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			27,  27,  27,  27,  27,  27,  27,  27,
 			27,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6331,7 +6180,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			17,  17,  17,  17,  17,  17,  17,  17,
 			17,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6366,7 +6215,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6401,7 +6250,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6436,7 +6285,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6471,7 +6320,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6506,7 +6355,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6541,7 +6390,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			34,  34,  34,  34,  34,  34,  34,  34,
 			34,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6576,7 +6425,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6611,7 +6460,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			34,  34,  34,  34,  34,  34,  34,  34,
 			34,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6646,7 +6495,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6681,7 +6530,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6716,7 +6565,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6751,7 +6600,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			46,  46,  46,  46,  46,  46,  46,  46,
 			46,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6786,7 +6635,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6821,7 +6670,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			30,  30,  30,  30,  30,  30,  30,  30,
 			30,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6856,7 +6705,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6891,7 +6740,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			24,  24,  24,  24,  24,  24,  24,  24,
 			24,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6926,7 +6775,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			24,  24,  24,  24,  24,  24,  24,  24,
 			24,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6961,7 +6810,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -6996,7 +6845,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			120, 120, 120, 120, 120, 120, 120, 120,
 			120,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7031,7 +6880,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			112, 112, 112, 112, 112, 112, 112, 112,
 			112,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7066,7 +6915,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			229, 229, 229, 229, 229, 229, 229, 229,
 			229,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7101,7 +6950,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			117, 117, 117, 117, 117, 117, 117, 117,
 			117,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7136,7 +6985,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			166, 166, 166, 166, 166, 166, 166, 166,
 			166,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7171,7 +7020,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7208,7 +7057,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7243,7 +7092,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7278,7 +7127,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			88,  88,  88,  88,  88,  88,  88,  88,
 			88,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7313,7 +7162,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			102, 102, 102, 102, 102, 102, 102, 102,
 			102,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7348,7 +7197,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			151, 151, 151, 151, 151, 151, 151, 151,
 			151,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7383,7 +7232,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7418,7 +7267,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			44,  44,  44,  44,  44,  44,  44,  44,
 			44,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7453,7 +7302,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7488,7 +7337,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			175, 175, 175, 175, 175, 175, 175, 175,
 			175,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7523,7 +7372,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			249, 249, 249, 249, 249, 249, 249, 249,
 			249,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7558,7 +7407,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			67,  67,  67,  67,  67,  67,  67,  67,
 			67,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7593,7 +7442,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			28,  28,  28,  28,  28,  28,  28,  28,
 			28,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7628,7 +7477,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			19,  19,  19,  19,  19,  19,  19,  19,
 			19,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7663,7 +7512,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7698,7 +7547,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7733,7 +7582,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			27,  27,  27,  27,  27,  27,  27,  27,
 			27,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7768,7 +7617,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			17,  17,  17,  17,  17,  17,  17,  17,
 			17,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7803,7 +7652,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7838,7 +7687,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7873,7 +7722,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7908,7 +7757,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7943,7 +7792,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -7978,7 +7827,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			34,  34,  34,  34,  34,  34,  34,  34,
 			34,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8013,7 +7862,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8048,7 +7897,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			34,  34,  34,  34,  34,  34,  34,  34,
 			34,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8083,7 +7932,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8118,7 +7967,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			90,  90,  90,  90,  90,  90,  90,  90,
 			90,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8153,7 +8002,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			9,   9,   9,   9,   9,   9,   9,   9,
 			9,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8188,7 +8037,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8223,7 +8072,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8258,7 +8107,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			46,  46,  46,  46,  46,  46,  46,  46,
 			46,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8293,7 +8142,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8328,7 +8177,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			30,  30,  30,  30,  30,  30,  30,  30,
 			30,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8363,7 +8212,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8398,7 +8247,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			24,  24,  24,  24,  24,  24,  24,  24,
 			24,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8433,7 +8282,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			24,  24,  24,  24,  24,  24,  24,  24,
 			24,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8468,7 +8317,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8503,7 +8352,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			120, 120, 120, 120, 120, 120, 120, 120,
 			120,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8538,7 +8387,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			112, 112, 112, 112, 112, 112, 112, 112,
 			112,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8573,7 +8422,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			229, 229, 229, 229, 229, 229, 229, 229,
 			229,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8608,7 +8457,7 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 			117, 117, 117, 117, 117, 117, 117, 117,
 			117,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -8645,10 +8494,9 @@ static const uchar_t u8_composition_b4_tbl[2][41][257] = {
 		},
 	},
 };
-
 static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 	{
-		{	/* Fourth byte 16-bit table 0. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8683,7 +8531,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			2470, 2470, 2470, 2470, 2470, 2470, 2470, 2470,
 			2470,
 		},
-		{	/* Fourth byte 16-bit table 1. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8718,7 +8566,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			380,  380,  380,  380,  380,  380,  380,  380,
 			380,
 		},
-		{	/* Fourth byte 16-bit table 2. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8753,7 +8601,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			497,  497,  497,  497,  497,  497,  497,  497,
 			497,
 		},
-		{	/* Fourth byte 16-bit table 3. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8788,7 +8636,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			572,  572,  572,  572,  572,  572,  572,  572,
 			572,
 		},
-		{	/* Fourth byte 16-bit table 4. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8825,7 +8673,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte 16-bit table 0. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8860,7 +8708,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			2470, 2470, 2470, 2470, 2470, 2470, 2470, 2470,
 			2470,
 		},
-		{	/* Fourth byte 16-bit table 1. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8895,7 +8743,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			380,  380,  380,  380,  380,  380,  380,  380,
 			380,
 		},
-		{	/* Fourth byte 16-bit table 2. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8930,7 +8778,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			497,  497,  497,  497,  497,  497,  497,  497,
 			497,
 		},
-		{	/* Fourth byte 16-bit table 3. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -8965,7 +8813,7 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 			572,  572,  572,  572,  572,  572,  572,  572,
 			572,
 		},
-		{	/* Fourth byte 16-bit table 4. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -9002,7 +8850,6 @@ static const uint16_t u8_composition_b4_16bit_tbl[2][5][257] = {
 		},
 	},
 };
-
 static const uchar_t u8_composition_final_tbl[2][6623] = {
 	{
 		0x01, 0xCC, 0xB8, FIL_, 0xE2, 0x89, 0xAE, FIL_,
@@ -10665,7 +10512,6 @@ static const uchar_t u8_composition_final_tbl[2][6623] = {
 		0x82, 0x99, FIL_, 0xE3, 0x83, 0xBE, FIL_,
 	},
 };
-
 static const uchar_t u8_decomp_b2_tbl[2][2][256] = {
 	{
 		{
@@ -10736,7 +10582,6 @@ static const uchar_t u8_decomp_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
 	{
 		{
@@ -10807,14 +10652,11 @@ static const uchar_t u8_decomp_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
-
 };
-
 static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -10902,7 +10744,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -10990,7 +10832,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11078,7 +10920,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11166,7 +11008,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11254,7 +11096,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 5. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11342,7 +11184,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 6. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11430,7 +11272,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 7. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11520,7 +11362,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 		},
 	},
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11608,7 +11450,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11696,7 +11538,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11784,7 +11626,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11872,7 +11714,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -11960,7 +11802,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 5. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -12048,7 +11890,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 6. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -12136,7 +11978,7 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 },
 		},
-		{	/* Third byte table 7. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -12226,10 +12068,9 @@ static const u8_displacement_t u8_decomp_b3_tbl[2][8][256] = {
 		},
 	},
 };
-
 static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12264,7 +12105,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12299,7 +12140,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			212, 212, 212, 212, 212, 212, 212, 212,
 			212,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12334,7 +12175,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			227, 227, 227, 227, 227, 227, 227, 227,
 			227,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12369,7 +12210,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			219, 219, 219, 219, 219, 219, 219, 219,
 			219,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12404,7 +12245,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12439,7 +12280,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			242, 242, 242, 242, 242, 242, 242, 242,
 			242,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12474,7 +12315,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			188, 188, 188, 188, 188, 188, 188, 188,
 			188,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12509,7 +12350,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12544,7 +12385,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12579,7 +12420,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			22,  22,  22,  22,  22,  22,  22,  22,
 			22,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12614,7 +12455,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12649,7 +12490,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			65,  65,  65,  65,  65,  65,  65,  65,
 			65,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12684,7 +12525,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12719,7 +12560,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12754,7 +12595,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			170, 170, 170, 170, 170, 170, 170, 170,
 			170,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12789,7 +12630,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			4,   4,   4,   4,   4,   4,   4,   4,
 			4,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12824,7 +12665,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12859,7 +12700,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12894,7 +12735,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			15,  15,  15,  15,  15,  15,  15,  15,
 			15,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12929,7 +12770,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12964,7 +12805,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -12999,7 +12840,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13034,7 +12875,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13069,7 +12910,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			28,  28,  28,  28,  28,  28,  28,  28,
 			28,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13104,7 +12945,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13139,7 +12980,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13174,7 +13015,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13209,7 +13050,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13244,7 +13085,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13279,7 +13120,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13314,7 +13155,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			31,  31,  31,  31,  31,  31,  31,  31,
 			31,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13349,7 +13190,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13384,7 +13225,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13419,7 +13260,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			12,  12,  12,  12,  12,  12,  12,  12,
 			12,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13454,7 +13295,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13489,7 +13330,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			88,  88,  88,  88,  88,  88,  88,  88,
 			88,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13524,7 +13365,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			49,  49,  49,  49,  49,  49,  49,  49,
 			49,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13559,7 +13400,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13594,7 +13435,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			69,  69,  69,  69,  69,  69,  69,  69,
 			69,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13629,7 +13470,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13664,7 +13505,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			19,  19,  19,  19,  19,  19,  19,  19,
 			19,
 		},
-		{	/* Fourth byte table 41. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13699,7 +13540,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			80,  80,  80,  80,  80,  80,  80,  80,
 			80,
 		},
-		{	/* Fourth byte table 42. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13734,7 +13575,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			132, 132, 132, 132, 132, 132, 132, 132,
 			132,
 		},
-		{	/* Fourth byte table 43. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13769,7 +13610,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 44. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13804,7 +13645,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 45. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13839,7 +13680,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 46. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13874,7 +13715,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			84,  84,  84,  84,  84,  84,  84,  84,
 			84,
 		},
-		{	/* Fourth byte table 47. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13909,7 +13750,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 48. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13944,7 +13785,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 49. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -13979,7 +13820,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 50. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14014,7 +13855,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			70,  70,  70,  70,  70,  70,  70,  70,
 			70,
 		},
-		{	/* Fourth byte table 51. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14049,7 +13890,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			171, 171, 171, 171, 171, 171, 171, 171,
 			171,
 		},
-		{	/* Fourth byte table 52. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14084,7 +13925,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			43,  43,  43,  43,  43,  43,  43,  43,
 			43,
 		},
-		{	/* Fourth byte table 53. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14119,7 +13960,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			12,  12,  12,  12,  12,  12,  12,  12,
 			12,
 		},
-		{	/* Fourth byte table 54. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14154,7 +13995,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 55. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14189,7 +14030,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 56. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14224,7 +14065,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 57. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14259,7 +14100,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 58. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14294,7 +14135,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 59. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14329,7 +14170,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 60. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14364,7 +14205,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 61. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14399,7 +14240,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			66,  66,  66,  66,  66,  66,  66,  66,
 			66,
 		},
-		{	/* Fourth byte table 62. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14434,7 +14275,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 63. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14469,7 +14310,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			175, 175, 175, 175, 175, 175, 175, 175,
 			175,
 		},
-		{	/* Fourth byte table 64. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14504,7 +14345,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			98,  98,  98,  98,  98,  98,  98,  98,
 			98,
 		},
-		{	/* Fourth byte table 65. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14539,7 +14380,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			153, 153, 153, 153, 153, 153, 153, 153,
 			153,
 		},
-		{	/* Fourth byte table 66. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14574,7 +14415,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 67. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14609,7 +14450,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 68. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14644,7 +14485,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 69. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14679,7 +14520,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			176, 176, 176, 176, 176, 176, 176, 176,
 			176,
 		},
-		{	/* Fourth byte table 70. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14714,7 +14555,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			177, 177, 177, 177, 177, 177, 177, 177,
 			177,
 		},
-		{	/* Fourth byte table 71. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14749,7 +14590,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 72. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14784,7 +14625,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			171, 171, 171, 171, 171, 171, 171, 171,
 			171,
 		},
-		{	/* Fourth byte table 73. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14819,7 +14660,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			221, 221, 221, 221, 221, 221, 221, 221,
 			221,
 		},
-		{	/* Fourth byte table 74. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14854,7 +14695,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			200, 200, 200, 200, 200, 200, 200, 200,
 			200,
 		},
-		{	/* Fourth byte table 75. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14889,7 +14730,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			172, 172, 172, 172, 172, 172, 172, 172,
 			172,
 		},
-		{	/* Fourth byte table 76. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14924,7 +14765,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			164, 164, 164, 164, 164, 164, 164, 164,
 			164,
 		},
-		{	/* Fourth byte table 77. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14959,7 +14800,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			165, 165, 165, 165, 165, 165, 165, 165,
 			165,
 		},
-		{	/* Fourth byte table 78. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -14994,7 +14835,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			108, 108, 108, 108, 108, 108, 108, 108,
 			108,
 		},
-		{	/* Fourth byte table 79. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15029,7 +14870,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			164, 164, 164, 164, 164, 164, 164, 164,
 			164,
 		},
-		{	/* Fourth byte table 80. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15064,7 +14905,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			248, 248, 248, 248, 248, 248, 248, 248,
 			248,
 		},
-		{	/* Fourth byte table 81. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15099,7 +14940,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			178, 178, 178, 178, 178, 178, 178, 178,
 			178,
 		},
-		{	/* Fourth byte table 82. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15134,7 +14975,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 83. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15169,7 +15010,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			112, 112, 112, 112, 112, 112, 112, 112,
 			112,
 		},
-		{	/* Fourth byte table 84. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15204,7 +15045,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			152, 152, 152, 152, 152, 152, 152, 152,
 			152,
 		},
-		{	/* Fourth byte table 85. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15239,7 +15080,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			150, 150, 150, 150, 150, 150, 150, 150,
 			150,
 		},
-		{	/* Fourth byte table 86. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15274,7 +15115,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 87. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15309,7 +15150,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 88. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15344,7 +15185,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			189, 189, 189, 189, 189, 189, 189, 189,
 			189,
 		},
-		{	/* Fourth byte table 89. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15379,7 +15220,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			100, 100, 100, 100, 100, 100, 100, 100,
 			100,
 		},
-		{	/* Fourth byte table 90. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15414,7 +15255,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			83,  83,  83,  83,  83,  83,  83,  83,
 			83,
 		},
-		{	/* Fourth byte table 91. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15449,7 +15290,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 92. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15484,7 +15325,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 93. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15519,7 +15360,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 94. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15554,7 +15395,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 95. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15589,7 +15430,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 96. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15624,7 +15465,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 97. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15659,7 +15500,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 98. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15694,7 +15535,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			59,  59,  59,  59,  59,  59,  59,  59,
 			59,
 		},
-		{	/* Fourth byte table 99. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15729,7 +15570,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 100. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15764,7 +15605,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 101. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15799,7 +15640,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 102. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15834,7 +15675,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 103. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15869,7 +15710,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			84,  84,  84,  84,  84,  84,  84,  84,
 			84,
 		},
-		{	/* Fourth byte table 104. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15904,7 +15745,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			131, 131, 131, 131, 131, 131, 131, 131,
 			131,
 		},
-		{	/* Fourth byte table 105. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15939,7 +15780,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 106. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -15974,7 +15815,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 107. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16009,7 +15850,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 108. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16044,7 +15885,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			71,  71,  71,  71,  71,  71,  71,  71,
 			71,
 		},
-		{	/* Fourth byte table 109. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16079,7 +15920,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			127, 127, 127, 127, 127, 127, 127, 127,
 			127,
 		},
-		{	/* Fourth byte table 110. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16114,7 +15955,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 111. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16149,7 +15990,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 112. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16184,7 +16025,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 113. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16219,7 +16060,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 114. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16254,7 +16095,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 115. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16289,7 +16130,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 116. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16324,7 +16165,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 117. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16361,7 +16202,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16396,7 +16237,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16431,7 +16272,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			212, 212, 212, 212, 212, 212, 212, 212,
 			212,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16466,7 +16307,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			227, 227, 227, 227, 227, 227, 227, 227,
 			227,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16501,7 +16342,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			219, 219, 219, 219, 219, 219, 219, 219,
 			219,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16536,7 +16377,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16571,7 +16412,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			242, 242, 242, 242, 242, 242, 242, 242,
 			242,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16606,7 +16447,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			188, 188, 188, 188, 188, 188, 188, 188,
 			188,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16641,7 +16482,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16676,7 +16517,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16711,7 +16552,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			22,  22,  22,  22,  22,  22,  22,  22,
 			22,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16746,7 +16587,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16781,7 +16622,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			67,  67,  67,  67,  67,  67,  67,  67,
 			67,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16816,7 +16657,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16851,7 +16692,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16886,7 +16727,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			170, 170, 170, 170, 170, 170, 170, 170,
 			170,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16921,7 +16762,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			4,   4,   4,   4,   4,   4,   4,   4,
 			4,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16956,7 +16797,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -16991,7 +16832,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17026,7 +16867,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			15,  15,  15,  15,  15,  15,  15,  15,
 			15,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17061,7 +16902,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17096,7 +16937,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17131,7 +16972,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17166,7 +17007,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17201,7 +17042,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			28,  28,  28,  28,  28,  28,  28,  28,
 			28,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17236,7 +17077,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17271,7 +17112,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17306,7 +17147,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17341,7 +17182,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17376,7 +17217,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17411,7 +17252,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17446,7 +17287,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			31,  31,  31,  31,  31,  31,  31,  31,
 			31,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17481,7 +17322,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17516,7 +17357,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17551,7 +17392,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			12,  12,  12,  12,  12,  12,  12,  12,
 			12,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17586,7 +17427,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17621,7 +17462,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			88,  88,  88,  88,  88,  88,  88,  88,
 			88,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17656,7 +17497,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			49,  49,  49,  49,  49,  49,  49,  49,
 			49,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17691,7 +17532,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			7,   7,   7,   7,   7,   7,   7,   7,
 			7,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17726,7 +17567,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 39. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17761,7 +17602,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 40. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17796,7 +17637,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 41. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17831,7 +17672,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 42. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17866,7 +17707,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			72,  72,  72,  72,  72,  72,  72,  72,
 			72,
 		},
-		{	/* Fourth byte table 43. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17901,7 +17742,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			74,  74,  74,  74,  74,  74,  74,  74,
 			74,
 		},
-		{	/* Fourth byte table 44. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17936,7 +17777,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			69,  69,  69,  69,  69,  69,  69,  69,
 			69,
 		},
-		{	/* Fourth byte table 45. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -17971,7 +17812,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			35,  35,  35,  35,  35,  35,  35,  35,
 			35,
 		},
-		{	/* Fourth byte table 46. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18006,7 +17847,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			25,  25,  25,  25,  25,  25,  25,  25,
 			25,
 		},
-		{	/* Fourth byte table 47. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18041,7 +17882,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			85,  85,  85,  85,  85,  85,  85,  85,
 			85,
 		},
-		{	/* Fourth byte table 48. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18076,7 +17917,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			132, 132, 132, 132, 132, 132, 132, 132,
 			132,
 		},
-		{	/* Fourth byte table 49. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18111,7 +17952,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 50. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18146,7 +17987,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 51. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18181,7 +18022,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 52. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18216,7 +18057,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			84,  84,  84,  84,  84,  84,  84,  84,
 			84,
 		},
-		{	/* Fourth byte table 53. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18251,7 +18092,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 54. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18286,7 +18127,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 55. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18321,7 +18162,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 56. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18356,7 +18197,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			70,  70,  70,  70,  70,  70,  70,  70,
 			70,
 		},
-		{	/* Fourth byte table 57. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18391,7 +18232,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			171, 171, 171, 171, 171, 171, 171, 171,
 			171,
 		},
-		{	/* Fourth byte table 58. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18426,7 +18267,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			43,  43,  43,  43,  43,  43,  43,  43,
 			43,
 		},
-		{	/* Fourth byte table 59. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18461,7 +18302,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			12,  12,  12,  12,  12,  12,  12,  12,
 			12,
 		},
-		{	/* Fourth byte table 60. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18496,7 +18337,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 61. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18531,7 +18372,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			6,   6,   6,   6,   6,   6,   6,   6,
 			6,
 		},
-		{	/* Fourth byte table 62. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18566,7 +18407,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 63. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18601,7 +18442,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 64. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18636,7 +18477,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 65. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18671,7 +18512,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 66. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18706,7 +18547,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 67. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18741,7 +18582,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 68. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18776,7 +18617,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			66,  66,  66,  66,  66,  66,  66,  66,
 			66,
 		},
-		{	/* Fourth byte table 69. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18811,7 +18652,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 70. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18846,7 +18687,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			175, 175, 175, 175, 175, 175, 175, 175,
 			175,
 		},
-		{	/* Fourth byte table 71. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18881,7 +18722,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			98,  98,  98,  98,  98,  98,  98,  98,
 			98,
 		},
-		{	/* Fourth byte table 72. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18916,7 +18757,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			153, 153, 153, 153, 153, 153, 153, 153,
 			153,
 		},
-		{	/* Fourth byte table 73. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18951,7 +18792,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			45,  45,  45,  45,  45,  45,  45,  45,
 			45,
 		},
-		{	/* Fourth byte table 74. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -18986,7 +18827,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			192, 192, 192, 192, 192, 192, 192, 192,
 			192,
 		},
-		{	/* Fourth byte table 75. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19021,7 +18862,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 76. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19056,7 +18897,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			212, 212, 212, 212, 212, 212, 212, 212,
 			212,
 		},
-		{	/* Fourth byte table 77. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19091,7 +18932,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			177, 177, 177, 177, 177, 177, 177, 177,
 			177,
 		},
-		{	/* Fourth byte table 78. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19126,7 +18967,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			202, 202, 202, 202, 202, 202, 202, 202,
 			202,
 		},
-		{	/* Fourth byte table 79. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19161,7 +19002,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			171, 171, 171, 171, 171, 171, 171, 171,
 			171,
 		},
-		{	/* Fourth byte table 80. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19196,7 +19037,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			234, 234, 234, 234, 234, 234, 234, 234,
 			234,
 		},
-		{	/* Fourth byte table 81. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19231,7 +19072,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			200, 200, 200, 200, 200, 200, 200, 200,
 			200,
 		},
-		{	/* Fourth byte table 82. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19266,7 +19107,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			236, 236, 236, 236, 236, 236, 236, 236,
 			236,
 		},
-		{	/* Fourth byte table 83. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19301,7 +19142,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			110, 110, 110, 110, 110, 110, 110, 110,
 			110,
 		},
-		{	/* Fourth byte table 84. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19336,7 +19177,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			164, 164, 164, 164, 164, 164, 164, 164,
 			164,
 		},
-		{	/* Fourth byte table 85. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19371,7 +19212,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			165, 165, 165, 165, 165, 165, 165, 165,
 			165,
 		},
-		{	/* Fourth byte table 86. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19406,7 +19247,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			108, 108, 108, 108, 108, 108, 108, 108,
 			108,
 		},
-		{	/* Fourth byte table 87. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19441,7 +19282,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			164, 164, 164, 164, 164, 164, 164, 164,
 			164,
 		},
-		{	/* Fourth byte table 88. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19476,7 +19317,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			248, 248, 248, 248, 248, 248, 248, 248,
 			248,
 		},
-		{	/* Fourth byte table 89. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19511,7 +19352,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			178, 178, 178, 178, 178, 178, 178, 178,
 			178,
 		},
-		{	/* Fourth byte table 90. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19546,7 +19387,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			55,  55,  55,  55,  55,  55,  55,  55,
 			55,
 		},
-		{	/* Fourth byte table 91. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19581,7 +19422,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			114, 114, 114, 114, 114, 114, 114, 114,
 			114,
 		},
-		{	/* Fourth byte table 92. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19616,7 +19457,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			152, 152, 152, 152, 152, 152, 152, 152,
 			152,
 		},
-		{	/* Fourth byte table 93. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19651,7 +19492,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			150, 150, 150, 150, 150, 150, 150, 150,
 			150,
 		},
-		{	/* Fourth byte table 94. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19686,7 +19527,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 95. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19721,7 +19562,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 96. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19756,7 +19597,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			189, 189, 189, 189, 189, 189, 189, 189,
 			189,
 		},
-		{	/* Fourth byte table 97. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19791,7 +19632,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			100, 100, 100, 100, 100, 100, 100, 100,
 			100,
 		},
-		{	/* Fourth byte table 98. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19826,7 +19667,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			83,  83,  83,  83,  83,  83,  83,  83,
 			83,
 		},
-		{	/* Fourth byte table 99. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19861,7 +19702,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 100. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19896,7 +19737,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			13,  13,  13,  13,  13,  13,  13,  13,
 			13,
 		},
-		{	/* Fourth byte table 101. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19931,7 +19772,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 102. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -19966,7 +19807,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 103. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20001,7 +19842,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 104. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20036,7 +19877,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 105. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20071,7 +19912,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 106. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20106,7 +19947,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			59,  59,  59,  59,  59,  59,  59,  59,
 			59,
 		},
-		{	/* Fourth byte table 107. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20141,7 +19982,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 108. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20176,7 +20017,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 109. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20211,7 +20052,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 110. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20246,7 +20087,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 111. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20281,7 +20122,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			88,  88,  88,  88,  88,  88,  88,  88,
 			88,
 		},
-		{	/* Fourth byte table 112. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20316,7 +20157,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			131, 131, 131, 131, 131, 131, 131, 131,
 			131,
 		},
-		{	/* Fourth byte table 113. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20351,7 +20192,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 114. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20386,7 +20227,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 115. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20421,7 +20262,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			130, 130, 130, 130, 130, 130, 130, 130,
 			130,
 		},
-		{	/* Fourth byte table 116. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20456,7 +20297,7 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 			75,  75,  75,  75,  75,  75,  75,  75,
 			75,
 		},
-		{	/* Fourth byte table 117. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -20493,10 +20334,9 @@ static const uchar_t u8_decomp_b4_tbl[2][118][257] = {
 		},
 	},
 };
-
 static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 	{
-		{	/* Fourth byte 16-bit table 0. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20531,7 +20371,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			280,  280,  280,  280,  280,  280,  280,  280,
 			280,
 		},
-		{	/* Fourth byte 16-bit table 1. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20566,7 +20406,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			296,  296,  296,  296,  296,  296,  296,  296,
 			296,
 		},
-		{	/* Fourth byte 16-bit table 2. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20601,7 +20441,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			288,  288,  288,  288,  288,  288,  288,  288,
 			288,
 		},
-		{	/* Fourth byte 16-bit table 3. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20636,7 +20476,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			308,  308,  308,  308,  308,  308,  308,  308,
 			308,
 		},
-		{	/* Fourth byte 16-bit table 4. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20671,7 +20511,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			388,  388,  388,  388,  388,  388,  388,  388,
 			388,
 		},
-		{	/* Fourth byte 16-bit table 5. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20706,7 +20546,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			328,  328,  328,  328,  328,  328,  328,  328,
 			328,
 		},
-		{	/* Fourth byte 16-bit table 6. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20741,7 +20581,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			483,  483,  483,  483,  483,  483,  483,  483,
 			483,
 		},
-		{	/* Fourth byte 16-bit table 7. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20776,7 +20616,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			359,  359,  359,  359,  359,  359,  359,  359,
 			359,
 		},
-		{	/* Fourth byte 16-bit table 8. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20811,7 +20651,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			350,  350,  350,  350,  350,  350,  350,  350,
 			350,
 		},
-		{	/* Fourth byte 16-bit table 9. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20846,7 +20686,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			777,  777,  777,  777,  777,  777,  777,  777,
 			777,
 		},
-		{	/* Fourth byte 16-bit table 10. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20881,7 +20721,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			432,  432,  432,  432,  432,  432,  432,  432,
 			432,
 		},
-		{	/* Fourth byte 16-bit table 11. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20916,7 +20756,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 12. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20951,7 +20791,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 13. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -20986,7 +20826,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 14. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21021,7 +20861,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 15. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21056,7 +20896,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 16. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21091,7 +20931,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			274,  274,  274,  274,  274,  274,  274,  274,
 			274,
 		},
-		{	/* Fourth byte 16-bit table 17. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21126,7 +20966,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 18. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21161,7 +21001,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 19. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21196,7 +21036,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			288,  288,  288,  288,  288,  288,  288,  288,
 			288,
 		},
-		{	/* Fourth byte 16-bit table 20. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21231,7 +21071,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			372,  372,  372,  372,  372,  372,  372,  372,
 			372,
 		},
-		{	/* Fourth byte 16-bit table 21. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21266,7 +21106,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			263,  263,  263,  263,  263,  263,  263,  263,
 			263,
 		},
-		{	/* Fourth byte 16-bit table 22. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21301,7 +21141,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			263,  263,  263,  263,  263,  263,  263,  263,
 			263,
 		},
-		{	/* Fourth byte 16-bit table 23. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21336,7 +21176,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			265,  265,  265,  265,  265,  265,  265,  265,
 			265,
 		},
-		{	/* Fourth byte 16-bit table 24. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21371,7 +21211,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			265,  265,  265,  265,  265,  265,  265,  265,
 			265,
 		},
-		{	/* Fourth byte 16-bit table 25. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21406,7 +21246,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			272,  272,  272,  272,  272,  272,  272,  272,
 			272,
 		},
-		{	/* Fourth byte 16-bit table 26. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21441,7 +21281,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			277,  277,  277,  277,  277,  277,  277,  277,
 			277,
 		},
-		{	/* Fourth byte 16-bit table 27. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21476,7 +21316,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			269,  269,  269,  269,  269,  269,  269,  269,
 			269,
 		},
-		{	/* Fourth byte 16-bit table 28. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21511,7 +21351,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			272,  272,  272,  272,  272,  272,  272,  272,
 			272,
 		},
-		{	/* Fourth byte 16-bit table 29. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21548,7 +21388,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte 16-bit table 0. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21583,7 +21423,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			280,  280,  280,  280,  280,  280,  280,  280,
 			280,
 		},
-		{	/* Fourth byte 16-bit table 1. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21618,7 +21458,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			296,  296,  296,  296,  296,  296,  296,  296,
 			296,
 		},
-		{	/* Fourth byte 16-bit table 2. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21653,7 +21493,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			288,  288,  288,  288,  288,  288,  288,  288,
 			288,
 		},
-		{	/* Fourth byte 16-bit table 3. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21688,7 +21528,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			308,  308,  308,  308,  308,  308,  308,  308,
 			308,
 		},
-		{	/* Fourth byte 16-bit table 4. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21723,7 +21563,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			388,  388,  388,  388,  388,  388,  388,  388,
 			388,
 		},
-		{	/* Fourth byte 16-bit table 5. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21758,7 +21598,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			328,  328,  328,  328,  328,  328,  328,  328,
 			328,
 		},
-		{	/* Fourth byte 16-bit table 6. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21793,7 +21633,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			483,  483,  483,  483,  483,  483,  483,  483,
 			483,
 		},
-		{	/* Fourth byte 16-bit table 7. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21828,7 +21668,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			359,  359,  359,  359,  359,  359,  359,  359,
 			359,
 		},
-		{	/* Fourth byte 16-bit table 8. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21863,7 +21703,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			381,  381,  381,  381,  381,  381,  381,  381,
 			381,
 		},
-		{	/* Fourth byte 16-bit table 9. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21898,7 +21738,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			777,  777,  777,  777,  777,  777,  777,  777,
 			777,
 		},
-		{	/* Fourth byte 16-bit table 10. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21933,7 +21773,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			442,  442,  442,  442,  442,  442,  442,  442,
 			442,
 		},
-		{	/* Fourth byte 16-bit table 11. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -21968,7 +21808,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 12. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22003,7 +21843,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 13. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22038,7 +21878,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 14. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22073,7 +21913,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 15. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22108,7 +21948,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			256,  256,  256,  256,  256,  256,  256,  256,
 			256,
 		},
-		{	/* Fourth byte 16-bit table 16. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22143,7 +21983,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 17. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22178,7 +22018,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			274,  274,  274,  274,  274,  274,  274,  274,
 			274,
 		},
-		{	/* Fourth byte 16-bit table 18. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22213,7 +22053,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 19. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22248,7 +22088,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			266,  266,  266,  266,  266,  266,  266,  266,
 			266,
 		},
-		{	/* Fourth byte 16-bit table 20. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22283,7 +22123,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			288,  288,  288,  288,  288,  288,  288,  288,
 			288,
 		},
-		{	/* Fourth byte 16-bit table 21. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22318,7 +22158,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			372,  372,  372,  372,  372,  372,  372,  372,
 			372,
 		},
-		{	/* Fourth byte 16-bit table 22. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22353,7 +22193,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			263,  263,  263,  263,  263,  263,  263,  263,
 			263,
 		},
-		{	/* Fourth byte 16-bit table 23. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22388,7 +22228,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			263,  263,  263,  263,  263,  263,  263,  263,
 			263,
 		},
-		{	/* Fourth byte 16-bit table 24. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22423,7 +22263,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			265,  265,  265,  265,  265,  265,  265,  265,
 			265,
 		},
-		{	/* Fourth byte 16-bit table 25. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22458,7 +22298,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			265,  265,  265,  265,  265,  265,  265,  265,
 			265,
 		},
-		{	/* Fourth byte 16-bit table 26. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22493,7 +22333,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			272,  272,  272,  272,  272,  272,  272,  272,
 			272,
 		},
-		{	/* Fourth byte 16-bit table 27. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22528,7 +22368,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			277,  277,  277,  277,  277,  277,  277,  277,
 			277,
 		},
-		{	/* Fourth byte 16-bit table 28. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22563,7 +22403,7 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 			269,  269,  269,  269,  269,  269,  269,  269,
 			269,
 		},
-		{	/* Fourth byte 16-bit table 29. */
+		{	 
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
 			0,    0,    0,    0,    0,    0,    0,    0,
@@ -22600,7 +22440,6 @@ static const uint16_t u8_decomp_b4_16bit_tbl[2][30][257] = {
 		},
 	},
 };
-
 static const uchar_t u8_decomp_final_tbl[2][19370] = {
 	{
 		0x20, 0x20, 0xCC, 0x88, 0x61, 0x20, 0xCC, 0x84,
@@ -27451,7 +27290,6 @@ static const uchar_t u8_decomp_final_tbl[2][19370] = {
 		0x98, 0x80,
 	},
 };
-
 static const uchar_t u8_case_common_b2_tbl[2][2][256] = {
 	{
 		{
@@ -27522,7 +27360,6 @@ static const uchar_t u8_case_common_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
 	{
 		{
@@ -27593,14 +27430,11 @@ static const uchar_t u8_case_common_b2_tbl[2][2][256] = {
 			N_, N_, N_, N_, N_, N_, N_, N_,
 			N_, N_, N_, N_, N_, N_, N_, N_,
 		},
-
 	},
-
 };
-
 static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27666,7 +27500,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27732,7 +27566,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27798,7 +27632,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27864,7 +27698,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27932,7 +27766,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 		},
 	},
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -27998,7 +27832,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -28064,7 +27898,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -28130,7 +27964,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -28196,7 +28030,7 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -28264,10 +28098,9 @@ static const u8_displacement_t u8_tolower_b3_tbl[2][5][256] = {
 		},
 	},
 };
-
 static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28302,7 +28135,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28337,7 +28170,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28372,7 +28205,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28407,7 +28240,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			72,  72,  72,  72,  72,  72,  72,  72,
 			72,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28442,7 +28275,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28477,7 +28310,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			52,  52,  52,  52,  52,  52,  52,  52,
 			52,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28512,7 +28345,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			66,  66,  66,  66,  66,  66,  66,  66,
 			66,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28547,7 +28380,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28582,7 +28415,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28617,7 +28450,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28652,7 +28485,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28687,7 +28520,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28722,7 +28555,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			46,  46,  46,  46,  46,  46,  46,  46,
 			46,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28757,7 +28590,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			46,  46,  46,  46,  46,  46,  46,  46,
 			46,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28792,7 +28625,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28827,7 +28660,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28862,7 +28695,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			81,  81,  81,  81,  81,  81,  81,  81,
 			81,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28897,7 +28730,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28932,7 +28765,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			90,  90,  90,  90,  90,  90,  90,  90,
 			90,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -28967,7 +28800,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29002,7 +28835,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29037,7 +28870,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29072,7 +28905,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			5,   5,   5,   5,   5,   5,   5,   5,
 			5,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29107,7 +28940,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29142,7 +28975,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			30,  30,  30,  30,  30,  30,  30,  30,
 			30,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29177,7 +29010,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29212,7 +29045,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29247,7 +29080,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			152, 152, 152, 152, 152, 152, 152, 152,
 			152,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29282,7 +29115,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29317,7 +29150,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29352,7 +29185,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29387,7 +29220,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29422,7 +29255,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29457,7 +29290,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29492,7 +29325,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29529,7 +29362,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29564,7 +29397,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			60,  60,  60,  60,  60,  60,  60,  60,
 			60,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29599,7 +29432,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29634,7 +29467,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29669,7 +29502,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			72,  72,  72,  72,  72,  72,  72,  72,
 			72,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29704,7 +29537,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29739,7 +29572,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29774,7 +29607,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29809,7 +29642,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			66,  66,  66,  66,  66,  66,  66,  66,
 			66,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29844,7 +29677,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29879,7 +29712,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29914,7 +29747,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29949,7 +29782,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -29984,7 +29817,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30019,7 +29852,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			50,  50,  50,  50,  50,  50,  50,  50,
 			50,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30054,7 +29887,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			46,  46,  46,  46,  46,  46,  46,  46,
 			46,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30089,7 +29922,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30124,7 +29957,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			18,  18,  18,  18,  18,  18,  18,  18,
 			18,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30159,7 +29992,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30194,7 +30027,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30229,7 +30062,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			81,  81,  81,  81,  81,  81,  81,  81,
 			81,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30264,7 +30097,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30299,7 +30132,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			90,  90,  90,  90,  90,  90,  90,  90,
 			90,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30334,7 +30167,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30369,7 +30202,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30404,7 +30237,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			57,  57,  57,  57,  57,  57,  57,  57,
 			57,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30439,7 +30272,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30474,7 +30307,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30509,7 +30342,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30544,7 +30377,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			30,  30,  30,  30,  30,  30,  30,  30,
 			30,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30579,7 +30412,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30614,7 +30447,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			141, 141, 141, 141, 141, 141, 141, 141,
 			141,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30649,7 +30482,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			22,  22,  22,  22,  22,  22,  22,  22,
 			22,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30684,7 +30517,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30719,7 +30552,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30754,7 +30587,7 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -30791,7 +30624,6 @@ static const uchar_t u8_tolower_b4_tbl[2][36][257] = {
 		},
 	},
 };
-
 static const uchar_t u8_tolower_final_tbl[2][2299] = {
 	{
 		0xC3, 0xA0, 0xC3, 0xA1, 0xC3, 0xA2, 0xC3, 0xA3,
@@ -31374,10 +31206,9 @@ static const uchar_t u8_tolower_final_tbl[2][2299] = {
 		0x90, 0x91, 0x8F,
 	},
 };
-
 static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31443,7 +31274,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31509,7 +31340,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31575,7 +31406,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31641,7 +31472,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31709,7 +31540,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 		},
 	},
 	{
-		{	/* Third byte table 0. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31775,7 +31606,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 1. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31841,7 +31672,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 2. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31907,7 +31738,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 3. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -31973,7 +31804,7 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 		},
-		{	/* Third byte table 4. */
+		{	 
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
 			{ N_, 0 }, { N_, 0 }, { N_, 0 }, { N_, 0 },
@@ -32041,10 +31872,9 @@ static const u8_displacement_t u8_toupper_b3_tbl[2][5][256] = {
 		},
 	},
 };
-
 static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32079,7 +31909,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			2,   2,   2,   2,   2,   2,   2,   2,
 			2,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32114,7 +31944,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32149,7 +31979,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			61,  61,  61,  61,  61,  61,  61,  61,
 			61,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32184,7 +32014,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32219,7 +32049,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32254,7 +32084,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32289,7 +32119,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			50,  50,  50,  50,  50,  50,  50,  50,
 			50,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32324,7 +32154,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			26,  26,  26,  26,  26,  26,  26,  26,
 			26,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32359,7 +32189,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			12,  12,  12,  12,  12,  12,  12,  12,
 			12,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32394,7 +32224,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			2,   2,   2,   2,   2,   2,   2,   2,
 			2,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32429,7 +32259,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32464,7 +32294,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			70,  70,  70,  70,  70,  70,  70,  70,
 			70,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32499,7 +32329,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32534,7 +32364,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32569,7 +32399,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32604,7 +32434,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32639,7 +32469,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32674,7 +32504,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32709,7 +32539,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32744,7 +32574,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32779,7 +32609,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32814,7 +32644,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			84,  84,  84,  84,  84,  84,  84,  84,
 			84,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32849,7 +32679,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32884,7 +32714,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			90,  90,  90,  90,  90,  90,  90,  90,
 			90,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32919,7 +32749,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32954,7 +32784,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			83,  83,  83,  83,  83,  83,  83,  83,
 			83,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -32989,7 +32819,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33024,7 +32854,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33059,7 +32889,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33094,7 +32924,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33129,7 +32959,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33164,7 +32994,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33199,7 +33029,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33234,7 +33064,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33269,7 +33099,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33304,7 +33134,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33339,7 +33169,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33374,7 +33204,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33411,7 +33241,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 		},
 	},
 	{
-		{	/* Fourth byte table 0. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33446,7 +33276,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			2,   2,   2,   2,   2,   2,   2,   2,
 			2,
 		},
-		{	/* Fourth byte table 1. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33481,7 +33311,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 2. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33516,7 +33346,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			61,  61,  61,  61,  61,  61,  61,  61,
 			61,
 		},
-		{	/* Fourth byte table 3. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33551,7 +33381,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			63,  63,  63,  63,  63,  63,  63,  63,
 			63,
 		},
-		{	/* Fourth byte table 4. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33586,7 +33416,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			42,  42,  42,  42,  42,  42,  42,  42,
 			42,
 		},
-		{	/* Fourth byte table 5. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33621,7 +33451,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 6. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33656,7 +33486,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			52,  52,  52,  52,  52,  52,  52,  52,
 			52,
 		},
-		{	/* Fourth byte table 7. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33691,7 +33521,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			44,  44,  44,  44,  44,  44,  44,  44,
 			44,
 		},
-		{	/* Fourth byte table 8. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33726,7 +33556,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			16,  16,  16,  16,  16,  16,  16,  16,
 			16,
 		},
-		{	/* Fourth byte table 9. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33761,7 +33591,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			8,   8,   8,   8,   8,   8,   8,   8,
 			8,
 		},
-		{	/* Fourth byte table 10. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33796,7 +33626,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			38,  38,  38,  38,  38,  38,  38,  38,
 			38,
 		},
-		{	/* Fourth byte table 11. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33831,7 +33661,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			74,  74,  74,  74,  74,  74,  74,  74,
 			74,
 		},
-		{	/* Fourth byte table 12. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33866,7 +33696,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			32,  32,  32,  32,  32,  32,  32,  32,
 			32,
 		},
-		{	/* Fourth byte table 13. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33901,7 +33731,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 14. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33936,7 +33766,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			56,  56,  56,  56,  56,  56,  56,  56,
 			56,
 		},
-		{	/* Fourth byte table 15. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -33971,7 +33801,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			64,  64,  64,  64,  64,  64,  64,  64,
 			64,
 		},
-		{	/* Fourth byte table 16. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34006,7 +33836,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			20,  20,  20,  20,  20,  20,  20,  20,
 			20,
 		},
-		{	/* Fourth byte table 17. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34041,7 +33871,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			62,  62,  62,  62,  62,  62,  62,  62,
 			62,
 		},
-		{	/* Fourth byte table 18. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34076,7 +33906,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			14,  14,  14,  14,  14,  14,  14,  14,
 			14,
 		},
-		{	/* Fourth byte table 19. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34111,7 +33941,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 20. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34146,7 +33976,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 21. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34181,7 +34011,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 22. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34216,7 +34046,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			84,  84,  84,  84,  84,  84,  84,  84,
 			84,
 		},
-		{	/* Fourth byte table 23. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34251,7 +34081,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			87,  87,  87,  87,  87,  87,  87,  87,
 			87,
 		},
-		{	/* Fourth byte table 24. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34286,7 +34116,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			90,  90,  90,  90,  90,  90,  90,  90,
 			90,
 		},
-		{	/* Fourth byte table 25. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34321,7 +34151,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 26. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34356,7 +34186,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			83,  83,  83,  83,  83,  83,  83,  83,
 			83,
 		},
-		{	/* Fourth byte table 27. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34391,7 +34221,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			21,  21,  21,  21,  21,  21,  21,  21,
 			21,
 		},
-		{	/* Fourth byte table 28. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34426,7 +34256,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			51,  51,  51,  51,  51,  51,  51,  51,
 			51,
 		},
-		{	/* Fourth byte table 29. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34461,7 +34291,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			3,   3,   3,   3,   3,   3,   3,   3,
 			3,
 		},
-		{	/* Fourth byte table 30. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34496,7 +34326,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 31. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34531,7 +34361,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			48,  48,  48,  48,  48,  48,  48,  48,
 			48,
 		},
-		{	/* Fourth byte table 32. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34566,7 +34396,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			112, 112, 112, 112, 112, 112, 112, 112,
 			112,
 		},
-		{	/* Fourth byte table 33. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34601,7 +34431,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 34. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34636,7 +34466,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			54,  54,  54,  54,  54,  54,  54,  54,
 			54,
 		},
-		{	/* Fourth byte table 35. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34671,7 +34501,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			114, 114, 114, 114, 114, 114, 114, 114,
 			114,
 		},
-		{	/* Fourth byte table 36. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34706,7 +34536,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			78,  78,  78,  78,  78,  78,  78,  78,
 			78,
 		},
-		{	/* Fourth byte table 37. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34741,7 +34571,7 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 			96,  96,  96,  96,  96,  96,  96,  96,
 			96,
 		},
-		{	/* Fourth byte table 38. */
+		{	 
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
 			0,   0,   0,   0,   0,   0,   0,   0,
@@ -34778,7 +34608,6 @@ static const uchar_t u8_toupper_b4_tbl[2][39][257] = {
 		},
 	},
 };
-
 static const uchar_t u8_toupper_final_tbl[2][2318] = {
 	{
 		0xCE, 0x9C, 0xC3, 0x80, 0xC3, 0x81, 0xC3, 0x82,
@@ -35365,12 +35194,9 @@ static const uchar_t u8_toupper_final_tbl[2][2318] = {
 		0x90, 0xA6, 0xF0, 0x90, 0x90, 0xA7,
 	},
 };
-
 #undef	N_
 #undef	FIL_
-
 #ifdef	__cplusplus
 }
 #endif
-
-#endif	/* _SYS_U8_TEXTPREP_DATA_H */
+#endif	 

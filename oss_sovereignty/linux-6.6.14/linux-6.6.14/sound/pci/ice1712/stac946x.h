@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SOUND_STAC946X_H
 #define __SOUND_STAC946X_H
-
 #define STAC946X_RESET			0x00
 #define STAC946X_STATUS			0x01
 #define STAC946X_MASTER_VOLUME		0x02
@@ -22,5 +20,4 @@
 #define STAC946X_REVISION_CODE		0x12
 #define STAC946X_ADDRESS_CONTROL	0x13
 #define STAC946X_ADDRESS		0x14
-
-#endif  /*  __SOUND_STAC946X_H */
+#endif   

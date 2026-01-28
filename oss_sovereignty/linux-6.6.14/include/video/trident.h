@@ -1,26 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef TRIDENTFB_DEBUG
 #define TRIDENTFB_DEBUG 0
 #endif
-
 #if TRIDENTFB_DEBUG
 #define debug(f, a...)	printk("%s:" f,  __func__ , ## a);
 #else
 #define debug(f, a...)
 #endif
-
 #define output(f, a...) pr_info("tridentfb: " f, ## a)
-
 #define Kb	(1024)
 #define Mb	(Kb*Kb)
-
-/* PCI IDS of supported cards temporarily here */
-
 #define CYBER9320	0x9320
 #define CYBER9388	0x9388
-#define CYBER9382	0x9382		/* the real PCI id for this is 9660 */
-#define CYBER9385	0x9385		/* ditto */		
+#define CYBER9382	0x9382		 
+#define CYBER9385	0x9385		 		
 #define CYBER9397	0x9397
 #define CYBER9397DVD	0x939A
 #define CYBER9520	0x9520
@@ -41,16 +33,10 @@
 #define CYBERBLADEXPAi1 0x8820
 #define CYBERBLADEXPm8  0x9910
 #define CYBERBLADEXPm16 0x9930
-
-/* these defines are for 'lcd' variable */
 #define LCD_STRETCH	0
 #define LCD_CENTER	1
 #define LCD_BIOS	2
-
-/* General Registers */
-#define SPR	0x1F		/* Software Programming Register (videoram) */
-
-/* 3C4 */
+#define SPR	0x1F		 
 #define RevisionID 0x09
 #define OldOrNew 0x0B	
 #define ConfPort1 0x0C
@@ -65,8 +51,6 @@
 #define SSetup 0x20
 #define SKey 0x37
 #define SPKey 0x57
-
-/* 3x4 */
 #define CRTCModuleTest 0x1E
 #define FIFOControl 0x20
 #define LinearAddReg 0x21
@@ -111,9 +95,6 @@
 #define TVinterface 0xC0
 #define TVMode 0xC1
 #define ClockControl 0xCF
-
-
-/* 3CE */
 #define MiscExtFunc 0x0F
 #define PowerStatus 0x23
 #define MiscIntContReg 0x2F
@@ -124,8 +105,6 @@
 #define HorStretch   0x53
 #define BiosMode     0x5c
 #define BiosReg      0x5d
-
-/* Graphics Engine */
 #define STATUS	0x2120
 #define OLDCMD	0x2124
 #define DRAWFL	0x2128
@@ -141,7 +120,6 @@
 #define SRC2	0x2104
 #define DST1	0x2108
 #define DST2	0x210C
-
 #define ROP_S	0xCC
 #define ROP_P	0xF0
 #define ROP_X	0x66

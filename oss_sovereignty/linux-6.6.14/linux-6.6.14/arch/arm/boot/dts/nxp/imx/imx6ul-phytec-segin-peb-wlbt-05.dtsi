@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (C) 2021 PHYTEC Messtechnik GmbH
- * Author: Yunus Bas <y.bas@phytec.de>
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	reg_wl_en: regulator-wl-en {
 		compatible = "regulator-fixed";
@@ -21,16 +14,14 @@
 		status = "disabled";
 	};
 };
-
 &iomuxc {
 	pinctrl_bt: btgrp {
 		fsl,pins = <
-			MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0x3031	/* BT ENABLE */
-			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x3031	/* HOST WAKEUP */
-			MX6UL_PAD_JTAG_MOD__GPIO1_IO10		0x3031	/* DEV WAKEUP */
+			MX6UL_PAD_GPIO1_IO01__GPIO1_IO01	0x3031	 
+			MX6UL_PAD_GPIO1_IO03__GPIO1_IO03	0x3031	 
+			MX6UL_PAD_JTAG_MOD__GPIO1_IO10		0x3031	 
 		>;
 	};
-
 	pinctrl_uart2_bt: uart2grp-bt {
 		fsl,pins = <
 			MX6UL_PAD_UART2_TX_DATA__UART2_DCE_TX   0x17059
@@ -39,7 +30,6 @@
 			MX6UL_PAD_UART2_RTS_B__UART2_DCE_RTS    0x17059
 		>;
 	};
-
 	pinctrl_usdhc2_wl: usdhc2grp-wl {
 		fsl,pins = <
 			MX6UL_PAD_LCD_DATA18__USDHC2_CMD    0x10051
@@ -50,20 +40,17 @@
 			MX6UL_PAD_LCD_DATA23__USDHC2_DATA3  0x10051
 		>;
 	};
-
 	pinctrl_wl: wlgrp {
 		fsl,pins = <
-			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x3031	/* WLAN ENABLE */
+			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09  0x3031	 
 		>;
 	};
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2_bt &pinctrl_bt>;
 	uart-has-rtscts;
 	status = "disabled";
-
 	bluetooth {
 		compatible = "brcm,bcm43438-bt";
 		shutdown-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
@@ -71,7 +58,6 @@
 		host-wakeup-gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &usdhc2 {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -82,7 +68,6 @@
 	non-removable;
 	no-1-8-v;
 	status = "disabled";
-
 	brmcf: wifi@1 {
 		compatible = "brcm,bcm4329-fmac";
 		reg = <1>;

@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
-
 #ifndef __RTL8723BE_HW_H__
 #define __RTL8723BE_HW_H__
-
 void rtl8723be_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl8723be_read_eeprom_info(struct ieee80211_hw *hw);
-
 void rtl8723be_interrupt_recognized(struct ieee80211_hw *hw,
 				    struct rtl_int *int_vec);
 int rtl8723be_hw_init(struct ieee80211_hw *hw);
@@ -37,5 +32,4 @@ void rtl8723be_bt_reg_init(struct ieee80211_hw *hw);
 void rtl8723be_bt_hw_init(struct ieee80211_hw *hw);
 void rtl8723be_suspend(struct ieee80211_hw *hw);
 void rtl8723be_resume(struct ieee80211_hw *hw);
-
 #endif

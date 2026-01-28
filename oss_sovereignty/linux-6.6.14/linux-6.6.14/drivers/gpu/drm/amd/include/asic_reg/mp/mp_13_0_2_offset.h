@@ -1,33 +1,5 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
 #ifndef _mp_13_0_2_OFFSET_HEADER
 #define _mp_13_0_2_OFFSET_HEADER
-
-
-
-// addressBlock: mp_SmuMp0_SmnDec
-// base address: 0x0
 #define regMP0_SMN_C2PMSG_32                                                                            0x0060
 #define regMP0_SMN_C2PMSG_32_BASE_IDX                                                                   0
 #define regMP0_SMN_C2PMSG_33                                                                            0x0061
@@ -226,16 +198,8 @@
 #define regMP0_SMN_IH_SW_INT_BASE_IDX                                                                   0
 #define regMP0_SMN_IH_SW_INT_CTRL                                                                       0x00c3
 #define regMP0_SMN_IH_SW_INT_CTRL_BASE_IDX                                                              0
-
-
-// addressBlock: mp_SmuMp1Pub_CruDec
-// base address: 0x0
 #define regMP1_FIRMWARE_FLAGS                                                                           0xbee009
 #define regMP1_FIRMWARE_FLAGS_BASE_IDX                                                                  0
-
-
-// addressBlock: mp_SmuMp1_SmnDec
-// base address: 0x0
 #define regMP1_SMN_C2PMSG_32                                                                            0x0260
 #define regMP1_SMN_C2PMSG_32_BASE_IDX                                                                   0
 #define regMP1_SMN_C2PMSG_33                                                                            0x0261
@@ -404,6 +368,4 @@
 #define regMP1_SMN_EXT_SCRATCH6_BASE_IDX                                                                0
 #define regMP1_SMN_EXT_SCRATCH7                                                                         0x0347
 #define regMP1_SMN_EXT_SCRATCH7_BASE_IDX                                                                0
-
-
 #endif

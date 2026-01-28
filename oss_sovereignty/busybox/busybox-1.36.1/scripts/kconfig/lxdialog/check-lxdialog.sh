@@ -1,7 +1,3 @@
-#!/bin/sh
-# Check ncurses compatibility
-
-# What library to link
 ldflags()
 {
 	pkg-config --libs ncursesw 2>/dev/null && exit
@@ -17,8 +13,6 @@ ldflags()
 	done
 	exit 1
 }
-
-# Where is ncurses.h?
 ccflags()
 {
 	if pkg-config --cflags ncursesw 2>/dev/null; then
@@ -38,15 +32,10 @@ ccflags()
 		echo '-DCURSES_LOC="<curses.h>"'
 	fi
 }
-
-# Temp file, try to clean up after us
 tmp=.lxdialog.tmp
 trap "rm -f $tmp" 0 1 2 3 15
-
-# Check if we can link to ncurses
 check() {
         $cc -x c - -o $tmp 2>/dev/null <<'EOF'
-#include CURSES_LOC
 main() {}
 EOF
 	if [ $? != 0 ]; then
@@ -59,16 +48,13 @@ EOF
 	    exit 1
 	fi
 }
-
 usage() {
 	printf "Usage: $0 [-check compiler options|-ccflags|-ldflags compiler options]\n"
 }
-
-if [ $# -eq 0 ]; then
+if [ $
 	usage
 	exit 1
 fi
-
 cc=""
 case "$1" in
 	"-check")

@@ -1,7 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2018-2023 Broadcom Inc. All rights reserved.
- */
 #ifndef MPI30_IMAGE_H
 #define MPI30_IMAGE_H     1
 struct mpi3_comp_image_version {
@@ -12,12 +8,10 @@ struct mpi3_comp_image_version {
 	u8         gen_minor;
 	u8         gen_major;
 };
-
 struct mpi3_hash_exclusion_format {
 	__le32                     offset;
 	__le32                     size;
 };
-
 #define MPI3_IMAGE_HASH_EXCUSION_NUM                           (4)
 struct mpi3_component_image_header {
 	__le32                            signature0;
@@ -47,7 +41,6 @@ struct mpi3_component_image_header {
 	union mpi3_version_union             security_version;
 	__le32                            reserved84[31];
 };
-
 #define MPI3_IMAGE_HEADER_SIGNATURE0_MPI3                     (0xeb00003e)
 #define MPI3_IMAGE_HEADER_LOAD_ADDRESS_INVALID                (0x00000000)
 #define MPI3_IMAGE_HEADER_SIGNATURE1_APPLICATION              (0x20505041)
@@ -108,7 +101,6 @@ struct mpi3_ci_manifest_mpi_comp_image_ref {
 	__le32                                component_image_version_string_offset;
 	__le32                                crc;
 };
-
 struct mpi3_ci_manifest_mpi {
 	u8                                       manifest_type;
 	u8                                       reserved01[3];
@@ -134,7 +126,6 @@ struct mpi3_ci_manifest_mpi {
 	__le32                                   diag_authorization_identifier[16];
 	struct mpi3_ci_manifest_mpi_comp_image_ref   component_image_ref[MPI3_CI_MANIFEST_MPI_MAX];
 };
-
 #define MPI3_CI_MANIFEST_MPI_RELEASE_LEVEL_DEV                        (0x00)
 #define MPI3_CI_MANIFEST_MPI_RELEASE_LEVEL_PREALPHA                   (0x10)
 #define MPI3_CI_MANIFEST_MPI_RELEASE_LEVEL_ALPHA                      (0x20)
@@ -151,7 +142,6 @@ union mpi3_ci_manifest {
 	struct mpi3_ci_manifest_mpi               mpi;
 	__le32                                dword[1];
 };
-
 #define MPI3_CI_MANIFEST_TYPE_MPI                                  (0x00)
 struct mpi3_extended_image_header {
 	u8                                image_type;
@@ -162,7 +152,6 @@ struct mpi3_extended_image_header {
 	__le32                            reserved10[4];
 	__le32                            identify_string[8];
 };
-
 #define MPI3_EXT_IMAGE_IMAGETYPE_OFFSET         (0x00)
 #define MPI3_EXT_IMAGE_IMAGESIZE_OFFSET         (0x08)
 #define MPI3_EXT_IMAGE_NEXTIMAGE_OFFSET         (0x0c)
@@ -185,7 +174,6 @@ struct mpi3_supported_device {
 	__le16                     reserved0a;
 	__le32                     reserved0c;
 };
-
 #ifndef MPI3_SUPPORTED_DEVICE_MAX
 #define MPI3_SUPPORTED_DEVICE_MAX                      (1)
 #endif
@@ -197,7 +185,6 @@ struct mpi3_supported_devices_data {
 	__le32                     reserved04;
 	struct mpi3_supported_device   supported_device[MPI3_SUPPORTED_DEVICE_MAX];
 };
-
 #ifndef MPI3_ENCRYPTED_HASH_MAX
 #define MPI3_ENCRYPTED_HASH_MAX                      (1)
 #endif
@@ -209,7 +196,6 @@ struct mpi3_encrypted_hash_entry {
 	__le32                     reserved04;
 	__le32                     encrypted_hash[MPI3_ENCRYPTED_HASH_MAX];
 };
-
 #define MPI3_HASH_IMAGE_TYPE_KEY_WITH_SIGNATURE      (0x03)
 #define MPI3_HASH_ALGORITHM_VERSION_MASK             (0xe0)
 #define MPI3_HASH_ALGORITHM_VERSION_NONE             (0x00)
@@ -239,7 +225,6 @@ struct mpi3_encrypted_key_with_hash_entry {
 	__le32                     reserved04;
 	__le32                     public_key[MPI3_PUBLIC_KEY_MAX];
 };
-
 #ifndef MPI3_ENCRYPTED_HASH_ENTRY_MAX
 #define MPI3_ENCRYPTED_HASH_ENTRY_MAX               (1)
 #endif
@@ -250,7 +235,6 @@ struct mpi3_encrypted_hash_data {
 	__le32                              reserved04;
 	struct mpi3_encrypted_hash_entry        encrypted_hash_entry[MPI3_ENCRYPTED_HASH_ENTRY_MAX];
 };
-
 #ifndef MPI3_AUX_PROC_DATA_MAX
 #define MPI3_AUX_PROC_DATA_MAX               (1)
 #endif
@@ -264,7 +248,6 @@ struct mpi3_aux_processor_data {
 	__le32                     reserved28[22];
 	__le32                     aux_processor_data[MPI3_AUX_PROC_DATA_MAX];
 };
-
 #define MPI3_AUX_PROC_DATA_OFFSET                                     (0x80)
 #define MPI3_AUXPROCESSOR_BOOT_METHOD_MO_MSG                          (0x00)
 #define MPI3_AUXPROCESSOR_BOOT_METHOD_MO_DOORBELL                     (0x01)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-//
-// Device Tree binding constants for Actions Semi S900 Reset Management Unit
-//
-// Copyright (c) 2018 Linaro Ltd.
-
 #ifndef __DT_BINDINGS_ACTIONS_S900_RESET_H
 #define __DT_BINDINGS_ACTIONS_S900_RESET_H
-
 #define RESET_CHIPID				0
 #define RESET_CPU_SCNT				1
 #define RESET_SRAMI				2
@@ -61,5 +54,4 @@
 #define RESET_DMM				51
 #define RESET_HDCP2TX				52
 #define RESET_ETHERNET				53
-
-#endif /* __DT_BINDINGS_ACTIONS_S900_RESET_H */
+#endif  

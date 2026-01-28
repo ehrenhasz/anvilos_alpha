@@ -1,32 +1,5 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _vcn_4_0_0_OFFSET_HEADER
 #define _vcn_4_0_0_OFFSET_HEADER
-
-
-
-// addressBlock: uvd0_uvddec
-// base address: 0x1fb00
 #define regUVD_TOP_CTRL                                                                                 0x00c0
 #define regUVD_TOP_CTRL_BASE_IDX                                                                        1
 #define regUVD_CGC_GATE                                                                                 0x00c1
@@ -371,10 +344,6 @@
 #define regUVD_SUVD_CGC_STATUS_BASE_IDX                                                                 1
 #define regUVD_GPCOM_VCPU_CMD                                                                           0x0152
 #define regUVD_GPCOM_VCPU_CMD_BASE_IDX                                                                  1
-
-
-// addressBlock: uvd0_ecpudec
-// base address: 0x1fe00
 #define regUVD_VCPU_CACHE_OFFSET0                                                                       0x0180
 #define regUVD_VCPU_CACHE_OFFSET0_BASE_IDX                                                              1
 #define regUVD_VCPU_CACHE_SIZE0                                                                         0x0181
@@ -431,10 +400,6 @@
 #define regUVD_VCPU_IND_INDEX_BASE_IDX                                                                  1
 #define regUVD_VCPU_IND_DATA                                                                            0x019c
 #define regUVD_VCPU_IND_DATA_BASE_IDX                                                                   1
-
-
-// addressBlock: uvd0_uvd_mpcdec
-// base address: 0x1ff30
 #define regUVD_MP_SWAP_CNTL                                                                             0x01cc
 #define regUVD_MP_SWAP_CNTL_BASE_IDX                                                                    1
 #define regUVD_MP_SWAP_CNTL2                                                                            0x01cd
@@ -475,10 +440,6 @@
 #define regUVD_MPC_IND_INDEX_BASE_IDX                                                                   1
 #define regUVD_MPC_IND_DATA                                                                             0x01df
 #define regUVD_MPC_IND_DATA_BASE_IDX                                                                    1
-
-
-// addressBlock: uvd0_uvd_rbcdec
-// base address: 0x1ff90
 #define regUVD_RBC_IB_SIZE                                                                              0x01e4
 #define regUVD_RBC_IB_SIZE_BASE_IDX                                                                     1
 #define regUVD_RBC_IB_SIZE_UPDATE                                                                       0x01e5
@@ -525,10 +486,6 @@
 #define regUVD_RBC_BUF_STATUS_BASE_IDX                                                                  1
 #define regUVD_RBC_SWAP_CNTL                                                                            0x01fd
 #define regUVD_RBC_SWAP_CNTL_BASE_IDX                                                                   1
-
-
-// addressBlock: uvd0_lmi_adpdec
-// base address: 0x20090
 #define regUVD_LMI_RE_64BIT_BAR_LOW                                                                     0x0224
 #define regUVD_LMI_RE_64BIT_BAR_LOW_BASE_IDX                                                            1
 #define regUVD_LMI_RE_64BIT_BAR_HIGH                                                                    0x0225
@@ -775,10 +732,6 @@
 #define regUVD_LMI_MIF_REF_LUMA_64BIT_BAR_HIGH_BASE_IDX                                                 1
 #define regVCN_RAS_CNTL                                                                                 0x02df
 #define regVCN_RAS_CNTL_BASE_IDX                                                                        1
-
-
-// addressBlock: uvd0_jpegnpdec
-// base address: 0x20f00
 #define regUVD_JPEG_CNTL                                                                                0x05c0
 #define regUVD_JPEG_CNTL_BASE_IDX                                                                       1
 #define regUVD_JPEG_RB_BASE                                                                             0x05c1
@@ -851,10 +804,6 @@
 #define regUVD_JPEG_SCRATCH1_BASE_IDX                                                                   1
 #define regUVD_JPEG_DEC_SOFT_RST                                                                        0x05ef
 #define regUVD_JPEG_DEC_SOFT_RST_BASE_IDX                                                               1
-
-
-// addressBlock: uvd0_uvd_jrbc_dec
-// base address: 0x21100
 #define regUVD_JRBC_RB_WPTR                                                                             0x0640
 #define regUVD_JRBC_RB_WPTR_BASE_IDX                                                                    1
 #define regUVD_JRBC_RB_CNTL                                                                             0x0641
@@ -893,10 +842,6 @@
 #define regUVD_JRBC_RB_SIZE_BASE_IDX                                                                    1
 #define regUVD_JRBC_SCRATCH0                                                                            0x0654
 #define regUVD_JRBC_SCRATCH0_BASE_IDX                                                                   1
-
-
-// addressBlock: uvd0_uvd_jmi_dec
-// base address: 0x21200
 #define regUVD_JADP_MCIF_URGENT_CTRL                                                                    0x0681
 #define regUVD_JADP_MCIF_URGENT_CTRL_BASE_IDX                                                           1
 #define regUVD_JMI_URGENT_CTRL                                                                          0x0682
@@ -1083,10 +1028,6 @@
 #define regUVD_JMI_EJPEG_RAS_CNTL_BASE_IDX                                                              1
 #define regUVD_JPEG_DEC2_PF_CTRL                                                                        0x06df
 #define regUVD_JPEG_DEC2_PF_CTRL_BASE_IDX                                                               1
-
-
-// addressBlock: uvd0_uvd_jpeg_common_dec
-// base address: 0x21400
 #define regJPEG_SOFT_RESET_STATUS                                                                       0x0700
 #define regJPEG_SOFT_RESET_STATUS_BASE_IDX                                                              1
 #define regJPEG_SYS_INT_EN                                                                              0x0701
@@ -1107,10 +1048,6 @@
 #define regJPEG_IH_CTRL_BASE_IDX                                                                        1
 #define regJRBBM_ARB_CTRL                                                                               0x070b
 #define regJRBBM_ARB_CTRL_BASE_IDX                                                                      1
-
-
-// addressBlock: uvd0_uvd_jpeg_common_sclk_dec
-// base address: 0x21480
 #define regJPEG_CGC_GATE                                                                                0x0720
 #define regJPEG_CGC_GATE_BASE_IDX                                                                       1
 #define regJPEG_CGC_CTRL                                                                                0x0721
@@ -1139,10 +1076,6 @@
 #define regJPEG_PERF_BANK_COUNT2_BASE_IDX                                                               1
 #define regJPEG_PERF_BANK_COUNT3                                                                        0x072d
 #define regJPEG_PERF_BANK_COUNT3_BASE_IDX                                                               1
-
-
-// addressBlock: uvd0_uvd_pg_dec
-// base address: 0x1f800
 #define regUVD_PGFSM_CONFIG                                                                             0x0000
 #define regUVD_PGFSM_CONFIG_BASE_IDX                                                                    1
 #define regUVD_PGFSM_STATUS                                                                             0x0001
@@ -1339,10 +1272,6 @@
 #define regUVD_RBC_RB_WPTR_BASE_IDX                                                                     1
 #define regUVD_DPG_LMA_CTL2                                                                             0x00bb
 #define regUVD_DPG_LMA_CTL2_BASE_IDX                                                                    1
-
-
-// addressBlock: uvd0_mmsch_dec
-// base address: 0x20d00
 #define regMMSCH_UCODE_ADDR                                                                             0x0540
 #define regMMSCH_UCODE_ADDR_BASE_IDX                                                                    1
 #define regMMSCH_UCODE_DATA                                                                             0x0541
@@ -1511,10 +1440,6 @@
 #define regMMSCH_VM_BUSY_STATUS_1_BASE_IDX                                                              1
 #define regMMSCH_VM_BUSY_STATUS_2                                                                       0x05a4
 #define regMMSCH_VM_BUSY_STATUS_2_BASE_IDX                                                              1
-
-
-// addressBlock: uvd0_slmi_adpdec
-// base address: 0x21c00
 #define regUVD_LMI_MMSCH_NC0_64BIT_BAR_LOW                                                              0x0900
 #define regUVD_LMI_MMSCH_NC0_64BIT_BAR_LOW_BASE_IDX                                                     1
 #define regUVD_LMI_MMSCH_NC0_64BIT_BAR_HIGH                                                             0x0901
@@ -1555,10 +1480,6 @@
 #define regUVD_MMSCH_LMI_STATUS_BASE_IDX                                                                1
 #define regVCN_RAS_CNTL_MMSCH                                                                           0x0914
 #define regVCN_RAS_CNTL_MMSCH_BASE_IDX                                                                  1
-
-
-// addressBlock: uvdctxind
-// base address: 0x0
 #define ixUVD_CGC_MEM_CTRL                                                                             0x0000
 #define ixUVD_CGC_CTRL2                                                                                0x0001
 #define ixUVD_CGC_MEM_DS_CTRL                                                                          0x0002
@@ -1580,10 +1501,6 @@
 #define ixUVD_SW_SCRATCH_14                                                                            0x0012
 #define ixUVD_SW_SCRATCH_15                                                                            0x0013
 #define ixUVD_IH_SEM_CTRL                                                                              0x001e
-
-
-// addressBlock: lmi_adp_indirect
-// base address: 0x0
 #define ixUVD_LMI_CRC0                                                                                 0x0000
 #define ixUVD_LMI_CRC1                                                                                 0x0001
 #define ixUVD_LMI_CRC2                                                                                 0x0002
@@ -1605,6 +1522,4 @@
 #define ixUVD_MEMCHECK2_SYS_INT_ACK                                                                    0x0141
 #define ixUVD_MEMCHECK2_VCPU_INT_STAT                                                                  0x0142
 #define ixUVD_MEMCHECK2_VCPU_INT_ACK                                                                   0x0143
-
-
 #endif

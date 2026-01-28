@@ -1,31 +1,15 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-# Copyright (C) 2019 Joe Lawrence <joe.lawrence@redhat.com>
-
 . $(dirname $0)/functions.sh
-
 MOD_LIVEPATCH=test_klp_livepatch
-
 setup_config
-
-
-# - turn ftrace_enabled OFF and verify livepatches can't load
-# - turn ftrace_enabled ON and verify livepatch can load
-# - verify that ftrace_enabled can't be turned OFF while a livepatch is loaded
-
 start_test "livepatch interaction with ftrace_enabled sysctl"
-
 set_ftrace_enabled 0
 load_failing_mod $MOD_LIVEPATCH
-
 set_ftrace_enabled 1
 load_lp $MOD_LIVEPATCH
 if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
 	echo -e "FAIL\n\n"
 	die "livepatch kselftest(s) failed"
 fi
-
-# Check that ftrace could not get disabled when a livepatch is enabled
 set_ftrace_enabled --fail 0
 if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] ; then
 	echo -e "FAIL\n\n"
@@ -33,7 +17,6 @@ if [[ "$(cat /proc/cmdline)" != "$MOD_LIVEPATCH: this has been live patched" ]] 
 fi
 disable_lp $MOD_LIVEPATCH
 unload_lp $MOD_LIVEPATCH
-
 check_result "livepatch: kernel.ftrace_enabled = 0
 % modprobe $MOD_LIVEPATCH
 livepatch: enabling patch '$MOD_LIVEPATCH'
@@ -59,6 +42,4 @@ livepatch: '$MOD_LIVEPATCH': starting unpatching transition
 livepatch: '$MOD_LIVEPATCH': completing unpatching transition
 livepatch: '$MOD_LIVEPATCH': unpatching complete
 % rmmod $MOD_LIVEPATCH"
-
-
 exit 0

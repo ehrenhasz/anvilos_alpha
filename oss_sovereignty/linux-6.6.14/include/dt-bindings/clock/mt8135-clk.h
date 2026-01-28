@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT8135_H
 #define _DT_BINDINGS_CLK_MT8135_H
-
-/* TOPCKGEN */
-
 #define CLK_TOP_DSI0_LNTC_DSICLK	1
 #define CLK_TOP_HDMITX_CLKDIG_CTS	2
 #define CLK_TOP_CLKPH_MCK		3
@@ -102,9 +93,6 @@
 #define CLK_TOP_APLL_SEL		91
 #define CLK_TOP_HDMIPLL_SEL		92
 #define CLK_TOP_NR_CLK			93
-
-/* APMIXED_SYS */
-
 #define CLK_APMIXED_ARMPLL1		1
 #define CLK_APMIXED_ARMPLL2		2
 #define CLK_APMIXED_MAINPLL		3
@@ -116,9 +104,6 @@
 #define CLK_APMIXED_AUDPLL		9
 #define CLK_APMIXED_VDECPLL		10
 #define CLK_APMIXED_NR_CLK		11
-
-/* INFRA_SYS */
-
 #define CLK_INFRA_PMIC_WRAP		1
 #define CLK_INFRA_PMICSPI		2
 #define CLK_INFRA_CCIF1_AP_CTRL		3
@@ -133,9 +118,6 @@
 #define CLK_INFRA_SMI			12
 #define CLK_INFRA_DBGCLK		13
 #define CLK_INFRA_NR_CLK		14
-
-/* PERI_SYS */
-
 #define CLK_PERI_I2C5			1
 #define CLK_PERI_I2C4			2
 #define CLK_PERI_I2C3			3
@@ -182,5 +164,4 @@
 #define CLK_PERI_UART2_SEL		44
 #define CLK_PERI_UART3_SEL		45
 #define CLK_PERI_NR_CLK			46
-
-#endif /* _DT_BINDINGS_CLK_MT8135_H */
+#endif  

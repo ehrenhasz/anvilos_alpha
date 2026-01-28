@@ -1,27 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * intel_pt_decoder.h: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
-
 #ifndef INCLUDE__INTEL_PT_DECODER_H__
 #define INCLUDE__INTEL_PT_DECODER_H__
-
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-
 #include <linux/rbtree.h>
-
 #include "intel-pt-insn-decoder.h"
-
 #define INTEL_PT_IN_TX		(1 << 0)
 #define INTEL_PT_ABORT_TX	(1 << 1)
 #define INTEL_PT_IFLAG		(1 << 2)
 #define INTEL_PT_ASYNC		(1 << 2)
 #define INTEL_PT_FUP_IP		(1 << 3)
 #define INTEL_PT_SAMPLE_IPC	(1 << 4)
-
 enum intel_pt_sample_type {
 	INTEL_PT_BRANCH		= 1 << 0,
 	INTEL_PT_INSTRUCTION	= 1 << 1,
@@ -39,14 +28,12 @@ enum intel_pt_sample_type {
 	INTEL_PT_EVT		= 1 << 13,
 	INTEL_PT_IFLAG_CHG	= 1 << 14,
 };
-
 enum intel_pt_period_type {
 	INTEL_PT_PERIOD_NONE,
 	INTEL_PT_PERIOD_INSTRUCTIONS,
 	INTEL_PT_PERIOD_TICKS,
 	INTEL_PT_PERIOD_MTC,
 };
-
 enum {
 	INTEL_PT_ERR_NOMEM = 1,
 	INTEL_PT_ERR_INTERN,
@@ -61,15 +48,9 @@ enum {
 	INTEL_PT_ERR_EPTW,
 	INTEL_PT_ERR_MAX,
 };
-
 enum intel_pt_param_flags {
-	/*
-	 * FUP packet can contain next linear instruction pointer instead of
-	 * current linear instruction pointer.
-	 */
 	INTEL_PT_FUP_WITH_NLIP	= 1 << 0,
 };
-
 enum intel_pt_blk_type {
 	INTEL_PT_GP_REGS	= 1,
 	INTEL_PT_PEBS_BASIC	= 4,
@@ -80,11 +61,6 @@ enum intel_pt_blk_type {
 	INTEL_PT_XMM		= 16,
 	INTEL_PT_BLK_TYPE_MAX
 };
-
-/*
- * The block type numbers are not sequential but here they are given sequential
- * positions to avoid wasting space for array placement.
- */
 enum intel_pt_blk_type_pos {
 	INTEL_PT_GP_REGS_POS,
 	INTEL_PT_PEBS_BASIC_POS,
@@ -95,8 +71,6 @@ enum intel_pt_blk_type_pos {
 	INTEL_PT_XMM_POS,
 	INTEL_PT_BLK_TYPE_CNT
 };
-
-/* Get the array position for a block type */
 static inline int intel_pt_blk_type_pos(enum intel_pt_blk_type blk_type)
 {
 #define BLK_TYPE(bt) [INTEL_PT_##bt] = INTEL_PT_##bt##_POS + 1
@@ -110,17 +84,9 @@ static inline int intel_pt_blk_type_pos(enum intel_pt_blk_type blk_type)
 		BLK_TYPE(XMM),
 	};
 #undef BLK_TYPE
-
 	return blk_type < INTEL_PT_BLK_TYPE_MAX ? map[blk_type] - 1 : -1;
 }
-
 #define INTEL_PT_BLK_ITEM_ID_CNT	32
-
-/*
- * Use unions so that the block items can be accessed by name or by array index.
- * There is an array of 32-bit masks for each block type, which indicate which
- * values are present. Then arrays of 32 64-bit values for each block type.
- */
 struct intel_pt_blk_items {
 	union {
 		uint32_t mask[INTEL_PT_BLK_TYPE_CNT];
@@ -204,7 +170,6 @@ struct intel_pt_blk_items {
 	};
 	bool is_32_bit;
 };
-
 struct intel_pt_vmcs_info {
 	struct rb_node rb_node;
 	uint64_t vmcs;
@@ -212,19 +177,11 @@ struct intel_pt_vmcs_info {
 	bool reliable;
 	bool error_printed;
 };
-
-/*
- * Maximum number of event trace data in one go, assuming at most 1 per type
- * and 6-bits of type in the EVD packet.
- */
 #define INTEL_PT_MAX_EVDS 64
-
-/* Event trace data from EVD packet */
 struct intel_pt_evd {
 	int type;
 	uint64_t payload;
 };
-
 struct intel_pt_state {
 	enum intel_pt_sample_type type;
 	bool from_nr;
@@ -257,9 +214,7 @@ struct intel_pt_state {
 	int evd_cnt;
 	struct intel_pt_evd *evd;
 };
-
 struct intel_pt_insn;
-
 struct intel_pt_buffer {
 	const unsigned char *buf;
 	size_t len;
@@ -267,9 +222,7 @@ struct intel_pt_buffer {
 	uint64_t ref_timestamp;
 	uint64_t trace_nr;
 };
-
 typedef int (*intel_pt_lookahead_cb_t)(struct intel_pt_buffer *, void *);
-
 struct intel_pt_params {
 	int (*get_trace)(struct intel_pt_buffer *buffer, void *data);
 	int (*walk_insn)(struct intel_pt_insn *intel_pt_insn,
@@ -295,24 +248,16 @@ struct intel_pt_params {
 	unsigned int quick;
 	int max_loops;
 };
-
 struct intel_pt_decoder;
-
 struct intel_pt_decoder *intel_pt_decoder_new(struct intel_pt_params *params);
 void intel_pt_decoder_free(struct intel_pt_decoder *decoder);
-
 const struct intel_pt_state *intel_pt_decode(struct intel_pt_decoder *decoder);
-
 int intel_pt_fast_forward(struct intel_pt_decoder *decoder, uint64_t timestamp);
-
 unsigned char *intel_pt_find_overlap(unsigned char *buf_a, size_t len_a,
 				     unsigned char *buf_b, size_t len_b,
 				     bool have_tsc, bool *consecutive,
 				     bool ooo_tsc);
-
 int intel_pt__strerror(int code, char *buf, size_t buflen);
-
 void intel_pt_set_first_timestamp(struct intel_pt_decoder *decoder,
 				  uint64_t first_timestamp);
-
 #endif

@@ -1,28 +1,5 @@
-/*
- * Copyright (C) 2020  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _gc_9_4_1_OFFSET_HEADER
 #define _gc_9_4_1_OFFSET_HEADER
-
-// addressBlock: gc_grbmdec
-// base address: 0x8000
 #define mmGRBM_CNTL                                                                                    0x0000
 #define mmGRBM_CNTL_BASE_IDX                                                                           0
 #define mmGRBM_SKEW_CNTL                                                                               0x0001
@@ -109,9 +86,6 @@
 #define mmGRBM_SCRATCH_REG6_BASE_IDX                                                                   0
 #define mmGRBM_SCRATCH_REG7                                                                            0x0047
 #define mmGRBM_SCRATCH_REG7_BASE_IDX                                                                   0
-
-// addressBlock: gc_cppdec2
-// base address: 0xc600
 #define mmCPF_EDC_TAG_CNT                                                                              0x1189
 #define mmCPF_EDC_TAG_CNT_BASE_IDX                                                                     0
 #define mmCPF_EDC_ROQ_CNT                                                                              0x118a
@@ -130,9 +104,6 @@
 #define mmDC_EDC_CSINVOC_CNT_BASE_IDX                                                                  0
 #define mmDC_EDC_RESTORE_CNT                                                                           0x1193
 #define mmDC_EDC_RESTORE_CNT_BASE_IDX                                                                  0
-
-// addressBlock: gc_gdsdec
-// base address: 0x9700
 #define mmGDS_EDC_CNT                                                                                  0x05c5
 #define mmGDS_EDC_CNT_BASE_IDX                                                                         0
 #define mmGDS_EDC_GRBM_CNT                                                                             0x05c6
@@ -143,14 +114,8 @@
 #define mmGDS_EDC_OA_PHY_CNT_BASE_IDX                                                                  0
 #define mmGDS_EDC_OA_PIPE_CNT                                                                          0x05cc
 #define mmGDS_EDC_OA_PIPE_CNT_BASE_IDX                                                                 0
-
-// addressBlock: gc_shsdec
-// base address: 0x9000
 #define mmSPI_EDC_CNT                                                                                  0x0445
 #define mmSPI_EDC_CNT_BASE_IDX                                                                         0
-
-// addressBlock: gc_sqdec
-// base address: 0x8c00
 #define mmSQC_EDC_CNT2                                                                                 0x032c
 #define mmSQC_EDC_CNT2_BASE_IDX                                                                        0
 #define mmSQC_EDC_CNT3                                                                                 0x032d
@@ -167,14 +132,8 @@
 #define mmSQ_EDC_INFO_BASE_IDX                                                                         0
 #define mmSQ_EDC_CNT                                                                                   0x03a6
 #define mmSQ_EDC_CNT_BASE_IDX                                                                          0
-
-// addressBlock: gc_tpdec
-// base address: 0x9400
 #define mmTA_EDC_CNT                                                                                   0x0586
 #define mmTA_EDC_CNT_BASE_IDX                                                                          0
-
-// addressBlock: gc_tcdec
-// base address: 0xac00
 #define mmTCP_EDC_CNT                                                                                  0x0b17
 #define mmTCP_EDC_CNT_BASE_IDX                                                                         0
 #define mmTCP_EDC_CNT_NEW                                                                              0x0b18
@@ -189,16 +148,10 @@
 #define mmTCC_EDC_CNT2_BASE_IDX                                                                        0
 #define mmTCA_EDC_CNT                                                                                  0x0bc5
 #define mmTCA_EDC_CNT_BASE_IDX                                                                         0
-
-// addressBlock: gc_tpdec
-// base address: 0x9400
 #define mmTD_EDC_CNT                                                                                   0x052e
 #define mmTD_EDC_CNT_BASE_IDX                                                                          0
 #define mmTA_EDC_CNT                                                                                   0x0586
 #define mmTA_EDC_CNT_BASE_IDX                                                                          0
-
-// addressBlock: gc_ea_gceadec2
-// base address: 0x9c00
 #define mmGCEA_EDC_CNT                                                                                 0x0706
 #define mmGCEA_EDC_CNT_BASE_IDX                                                                        0
 #define mmGCEA_EDC_CNT2                                                                                0x0707
@@ -207,9 +160,6 @@
 #define mmGCEA_EDC_CNT3_BASE_IDX                                                                       0
 #define mmGCEA_ERR_STATUS                                                                              0x0712
 #define mmGCEA_ERR_STATUS_BASE_IDX                                                                     0
-
-// addressBlock: gc_gfxudec
-// base address: 0x30000
 #define mmSCRATCH_REG0                                                                                 0x2040
 #define mmSCRATCH_REG0_BASE_IDX                                                                        1
 #define mmSCRATCH_REG1                                                                                 0x2041
@@ -228,9 +178,6 @@
 #define mmSCRATCH_REG7_BASE_IDX                                                                        1
 #define mmGRBM_GFX_INDEX                                                                               0x2200
 #define mmGRBM_GFX_INDEX_BASE_IDX                                                                      1
-
-// addressBlock: gc_utcl2_atcl2dec
-// base address: 0xa000
 #define mmATC_L2_CACHE_4K_DSM_INDEX                                                                    0x080e
 #define mmATC_L2_CACHE_4K_DSM_INDEX_BASE_IDX                                                           0
 #define mmATC_L2_CACHE_2M_DSM_INDEX                                                                    0x080f
@@ -239,28 +186,20 @@
 #define mmATC_L2_CACHE_4K_DSM_CNTL_BASE_IDX                                                            0
 #define mmATC_L2_CACHE_2M_DSM_CNTL                                                                     0x0811
 #define mmATC_L2_CACHE_2M_DSM_CNTL_BASE_IDX                                                            0
-
-// addressBlock: gc_utcl2_vml2pfdec
-// base address: 0xa100
 #define mmVML2_MEM_ECC_INDEX                                                                           0x0860
 #define mmVML2_MEM_ECC_INDEX_BASE_IDX                                                                  0
 #define mmVML2_WALKER_MEM_ECC_INDEX                                                                    0x0861
 #define mmVML2_WALKER_MEM_ECC_INDEX_BASE_IDX                                                           0
 #define mmUTCL2_MEM_ECC_INDEX                                                                          0x0862
 #define mmUTCL2_MEM_ECC_INDEX_BASE_IDX                                                                 0
-
 #define mmVML2_MEM_ECC_CNTL                                                                            0x0863
 #define mmVML2_MEM_ECC_CNTL_BASE_IDX                                                                   0
 #define mmVML2_WALKER_MEM_ECC_CNTL                                                                     0x0864
 #define mmVML2_WALKER_MEM_ECC_CNTL_BASE_IDX                                                            0
 #define mmUTCL2_MEM_ECC_CNTL                                                                           0x0865
 #define mmUTCL2_MEM_ECC_CNTL_BASE_IDX                                                                  0
-
-// addressBlock: gc_rlcpdec
-// base address: 0x3b000
 #define mmRLC_EDC_CNT                                                                                  0x4d40
 #define mmRLC_EDC_CNT_BASE_IDX                                                                         1
 #define mmRLC_EDC_CNT2                                                                                 0x4d41
 #define mmRLC_EDC_CNT2_BASE_IDX                                                                        1
-
 #endif

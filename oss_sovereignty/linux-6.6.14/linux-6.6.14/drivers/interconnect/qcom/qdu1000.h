@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_QDU1000_H
 #define __DRIVERS_INTERCONNECT_QCOM_QDU1000_H
-
 #define QDU1000_MASTER_SYS_TCU				0
 #define QDU1000_MASTER_APPSS_PROC			1
 #define QDU1000_MASTER_LLCC				2
@@ -91,5 +85,4 @@
 #define QDU1000_SLAVE_PCIE_0				561
 #define QDU1000_SLAVE_QDSS_STM				562
 #define QDU1000_SLAVE_TCU				563
-
 #endif

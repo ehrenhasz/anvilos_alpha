@@ -1,145 +1,3 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2015 by Delphix. All rights reserved.
- * Copyright (c) 2017, Intel Corporation.
- */
-
-/*
- * ZFS Fault Injector
- *
- * This userland component takes a set of options and uses libzpool to translate
- * from a user-visible object type and name to an internal representation.
- * There are two basic types of faults: device faults and data faults.
- *
- *
- * DEVICE FAULTS
- *
- * Errors can be injected into a particular vdev using the '-d' option.  This
- * option takes a path or vdev GUID to uniquely identify the device within a
- * pool.  There are four types of errors that can be injected, IO, ENXIO,
- * ECHILD, and EILSEQ.  These can be controlled through the '-e' option and the
- * default is ENXIO.  For EIO failures, any attempt to read data from the device
- * will return EIO, but a subsequent attempt to reopen the device will succeed.
- * For ENXIO failures, any attempt to read from the device will return EIO, but
- * any attempt to reopen the device will also return ENXIO.  The EILSEQ failures
- * only apply to read operations (-T read) and will flip a bit after the device
- * has read the original data.
- *
- * For label faults, the -L option must be specified. This allows faults
- * to be injected into either the nvlist, uberblock, pad1, or pad2 region
- * of all the labels for the specified device.
- *
- * This form of the command looks like:
- *
- * 	zinject -d device [-e errno] [-L <uber | nvlist | pad1 | pad2>] pool
- *
- *
- * DATA FAULTS
- *
- * We begin with a tuple of the form:
- *
- * 	<type,level,range,object>
- *
- * 	type	A string describing the type of data to target.  Each type
- * 		implicitly describes how to interpret 'object'. Currently,
- * 		the following values are supported:
- *
- * 		data		User data for a file
- * 		dnode		Dnode for a file or directory
- *
- *		The following MOS objects are special.  Instead of injecting
- *		errors on a particular object or blkid, we inject errors across
- *		all objects of the given type.
- *
- * 		mos		Any data in the MOS
- * 		mosdir		object directory
- * 		config		pool configuration
- * 		bpobj		blkptr list
- * 		spacemap	spacemap
- * 		metaslab	metaslab
- * 		errlog		persistent error log
- *
- * 	level	Object level.  Defaults to '0', not applicable to all types.  If
- * 		a range is given, this corresponds to the indirect block
- * 		corresponding to the specific range.
- *
- *	range	A numerical range [start,end) within the object.  Defaults to
- *		the full size of the file.
- *
- * 	object	A string describing the logical location of the object.  For
- * 		files and directories (currently the only supported types),
- * 		this is the path of the object on disk.
- *
- * This is translated, via libzpool, into the following internal representation:
- *
- * 	<type,objset,object,level,range>
- *
- * These types should be self-explanatory.  This tuple is then passed to the
- * kernel via a special ioctl() to initiate fault injection for the given
- * object.  Note that 'type' is not strictly necessary for fault injection, but
- * is used when translating existing faults into a human-readable string.
- *
- *
- * The command itself takes one of the forms:
- *
- * 	zinject
- * 	zinject <-a | -u pool>
- * 	zinject -c <id|all>
- * 	zinject [-q] <-t type> [-f freq] [-u] [-a] [-m] [-e errno] [-l level]
- *	    [-r range] <object>
- * 	zinject [-f freq] [-a] [-m] [-u] -b objset:object:level:start:end pool
- *
- * With no arguments, the command prints all currently registered injection
- * handlers, with their numeric identifiers.
- *
- * The '-c' option will clear the given handler, or all handlers if 'all' is
- * specified.
- *
- * The '-e' option takes a string describing the errno to simulate.  This must
- * be one of 'io', 'checksum', 'decompress', or 'decrypt'.  In most cases this
- * will result in the same behavior, but RAID-Z will produce a different set of
- * ereports for this situation.
- *
- * The '-a', '-u', and '-m' flags toggle internal flush behavior.  If '-a' is
- * specified, then the ARC cache is flushed appropriately.  If '-u' is
- * specified, then the underlying SPA is unloaded.  Either of these flags can be
- * specified independently of any other handlers.  The '-m' flag automatically
- * does an unmount and remount of the underlying dataset to aid in flushing the
- * cache.
- *
- * The '-f' flag controls the frequency of errors injected, expressed as a
- * real number percentage between 0.0001 and 100.  The default is 100.
- *
- * The this form is responsible for actually injecting the handler into the
- * framework.  It takes the arguments described above, translates them to the
- * internal tuple using libzpool, and then issues an ioctl() to register the
- * handler.
- *
- * The final form can target a specific bookmark, regardless of whether a
- * human-readable interface has been designed.  It allows developers to specify
- * a particular block by number.
- */
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -147,19 +5,13 @@
 #include <string.h>
 #include <strings.h>
 #include <unistd.h>
-
 #include <sys/fs/zfs.h>
 #include <sys/mount.h>
-
 #include <libzfs.h>
-
-#undef verify	/* both libzfs.h and zfs_context.h want to define this */
-
+#undef verify	 
 #include "zinject.h"
-
 libzfs_handle_t *g_zfs;
 int zfs_fd;
-
 static const char *const errtable[TYPE_INVAL] = {
 	"data",
 	"dnode",
@@ -175,7 +27,6 @@ static const char *const errtable[TYPE_INVAL] = {
 	"pad1",
 	"pad2"
 };
-
 static err_type_t
 name_to_type(const char *arg)
 {
@@ -183,10 +34,8 @@ name_to_type(const char *arg)
 	for (i = 0; i < TYPE_INVAL; i++)
 		if (strcmp(errtable[i], arg) == 0)
 			return (i);
-
 	return (TYPE_INVAL);
 }
-
 static const char *
 type_to_name(uint64_t type)
 {
@@ -207,11 +56,6 @@ type_to_name(uint64_t type)
 		return ("-");
 	}
 }
-
-
-/*
- * Print usage message.
- */
 void
 usage(void)
 {
@@ -331,37 +175,30 @@ usage(void)
 	    "\t\t\tspacemap, metaslab, errlog.  The only valid <object> is\n"
 	    "\t\t\tthe poolname.\n");
 }
-
 static int
 iter_handlers(int (*func)(int, const char *, zinject_record_t *, void *),
     void *data)
 {
 	zfs_cmd_t zc = {"\0"};
 	int ret;
-
 	while (zfs_ioctl(g_zfs, ZFS_IOC_INJECT_LIST_NEXT, &zc) == 0)
 		if ((ret = func((int)zc.zc_guid, zc.zc_name,
 		    &zc.zc_inject_record, data)) != 0)
 			return (ret);
-
 	if (errno != ENOENT) {
 		(void) fprintf(stderr, "Unable to list handlers: %s\n",
 		    strerror(errno));
 		return (-1);
 	}
-
 	return (0);
 }
-
 static int
 print_data_handler(int id, const char *pool, zinject_record_t *record,
     void *data)
 {
 	int *count = data;
-
 	if (record->zi_guid != 0 || record->zi_func[0] != '\0')
 		return (0);
-
 	if (*count == 0) {
 		(void) printf("%3s  %-15s  %-6s  %-6s  %-8s  %3s  %-4s  "
 		    "%-15s\n", "ID", "POOL", "OBJSET", "OBJECT", "TYPE",
@@ -369,211 +206,150 @@ print_data_handler(int id, const char *pool, zinject_record_t *record,
 		(void) printf("---  ---------------  ------  "
 		    "------  --------  ---  ----  ---------------\n");
 	}
-
 	*count += 1;
-
 	(void) printf("%3d  %-15s  %-6llu  %-6llu  %-8s  %-3d  0x%02x  ",
 	    id, pool, (u_longlong_t)record->zi_objset,
 	    (u_longlong_t)record->zi_object, type_to_name(record->zi_type),
 	    record->zi_level, record->zi_dvas);
-
-
 	if (record->zi_start == 0 &&
 	    record->zi_end == -1ULL)
 		(void) printf("all\n");
 	else
 		(void) printf("[%llu, %llu]\n", (u_longlong_t)record->zi_start,
 		    (u_longlong_t)record->zi_end);
-
 	return (0);
 }
-
 static int
 print_device_handler(int id, const char *pool, zinject_record_t *record,
     void *data)
 {
 	int *count = data;
-
 	if (record->zi_guid == 0 || record->zi_func[0] != '\0')
 		return (0);
-
 	if (record->zi_cmd == ZINJECT_DELAY_IO)
 		return (0);
-
 	if (*count == 0) {
 		(void) printf("%3s  %-15s  %s\n", "ID", "POOL", "GUID");
 		(void) printf("---  ---------------  ----------------\n");
 	}
-
 	*count += 1;
-
 	(void) printf("%3d  %-15s  %llx\n", id, pool,
 	    (u_longlong_t)record->zi_guid);
-
 	return (0);
 }
-
 static int
 print_delay_handler(int id, const char *pool, zinject_record_t *record,
     void *data)
 {
 	int *count = data;
-
 	if (record->zi_guid == 0 || record->zi_func[0] != '\0')
 		return (0);
-
 	if (record->zi_cmd != ZINJECT_DELAY_IO)
 		return (0);
-
 	if (*count == 0) {
 		(void) printf("%3s  %-15s  %-15s  %-15s  %s\n",
 		    "ID", "POOL", "DELAY (ms)", "LANES", "GUID");
 		(void) printf("---  ---------------  ---------------  "
 		    "---------------  ----------------\n");
 	}
-
 	*count += 1;
-
 	(void) printf("%3d  %-15s  %-15llu  %-15llu  %llx\n", id, pool,
 	    (u_longlong_t)NSEC2MSEC(record->zi_timer),
 	    (u_longlong_t)record->zi_nlanes,
 	    (u_longlong_t)record->zi_guid);
-
 	return (0);
 }
-
 static int
 print_panic_handler(int id, const char *pool, zinject_record_t *record,
     void *data)
 {
 	int *count = data;
-
 	if (record->zi_func[0] == '\0')
 		return (0);
-
 	if (*count == 0) {
 		(void) printf("%3s  %-15s  %s\n", "ID", "POOL", "FUNCTION");
 		(void) printf("---  ---------------  ----------------\n");
 	}
-
 	*count += 1;
-
 	(void) printf("%3d  %-15s  %s\n", id, pool, record->zi_func);
-
 	return (0);
 }
-
-/*
- * Print all registered error handlers.  Returns the number of handlers
- * registered.
- */
 static int
 print_all_handlers(void)
 {
 	int count = 0, total = 0;
-
 	(void) iter_handlers(print_device_handler, &count);
 	if (count > 0) {
 		total += count;
 		(void) printf("\n");
 		count = 0;
 	}
-
 	(void) iter_handlers(print_delay_handler, &count);
 	if (count > 0) {
 		total += count;
 		(void) printf("\n");
 		count = 0;
 	}
-
 	(void) iter_handlers(print_data_handler, &count);
 	if (count > 0) {
 		total += count;
 		(void) printf("\n");
 		count = 0;
 	}
-
 	(void) iter_handlers(print_panic_handler, &count);
-
 	return (count + total);
 }
-
 static int
 cancel_one_handler(int id, const char *pool, zinject_record_t *record,
     void *data)
 {
 	(void) pool, (void) record, (void) data;
 	zfs_cmd_t zc = {"\0"};
-
 	zc.zc_guid = (uint64_t)id;
-
 	if (zfs_ioctl(g_zfs, ZFS_IOC_CLEAR_FAULT, &zc) != 0) {
 		(void) fprintf(stderr, "failed to remove handler %d: %s\n",
 		    id, strerror(errno));
 		return (1);
 	}
-
 	return (0);
 }
-
-/*
- * Remove all fault injection handlers.
- */
 static int
 cancel_all_handlers(void)
 {
 	int ret = iter_handlers(cancel_one_handler, NULL);
-
 	if (ret == 0)
 		(void) printf("removed all registered handlers\n");
-
 	return (ret);
 }
-
-/*
- * Remove a specific fault injection handler.
- */
 static int
 cancel_handler(int id)
 {
 	zfs_cmd_t zc = {"\0"};
-
 	zc.zc_guid = (uint64_t)id;
-
 	if (zfs_ioctl(g_zfs, ZFS_IOC_CLEAR_FAULT, &zc) != 0) {
 		(void) fprintf(stderr, "failed to remove handler %d: %s\n",
 		    id, strerror(errno));
 		return (1);
 	}
-
 	(void) printf("removed handler %d\n", id);
-
 	return (0);
 }
-
-/*
- * Register a new fault injection handler.
- */
 static int
 register_handler(const char *pool, int flags, zinject_record_t *record,
     int quiet)
 {
 	zfs_cmd_t zc = {"\0"};
-
 	(void) strlcpy(zc.zc_name, pool, sizeof (zc.zc_name));
 	zc.zc_inject_record = *record;
 	zc.zc_guid = flags;
-
 	if (zfs_ioctl(g_zfs, ZFS_IOC_INJECT_FAULT, &zc) != 0) {
 		(void) fprintf(stderr, "failed to add handler: %s\n",
 		    errno == EDOM ? "block level exceeds max level of object" :
 		    strerror(errno));
 		return (1);
 	}
-
 	if (flags & ZINJECT_NULL)
 		return (0);
-
 	if (quiet) {
 		(void) printf("%llu\n", (u_longlong_t)zc.zc_guid);
 	} else {
@@ -610,108 +386,64 @@ register_handler(const char *pool, int flags, zinject_record_t *record,
 			(void) printf("  dvas: 0x%x\n", record->zi_dvas);
 		}
 	}
-
 	return (0);
 }
-
 static int
 perform_action(const char *pool, zinject_record_t *record, int cmd)
 {
 	zfs_cmd_t zc = {"\0"};
-
 	ASSERT(cmd == VDEV_STATE_DEGRADED || cmd == VDEV_STATE_FAULTED);
 	(void) strlcpy(zc.zc_name, pool, sizeof (zc.zc_name));
 	zc.zc_guid = record->zi_guid;
 	zc.zc_cookie = cmd;
-
 	if (zfs_ioctl(g_zfs, ZFS_IOC_VDEV_SET_STATE, &zc) == 0)
 		return (0);
-
 	return (1);
 }
-
 static int
 parse_delay(char *str, uint64_t *delay, uint64_t *nlanes)
 {
 	unsigned long scan_delay;
 	unsigned long scan_nlanes;
-
 	if (sscanf(str, "%lu:%lu", &scan_delay, &scan_nlanes) != 2)
 		return (1);
-
-	/*
-	 * We explicitly disallow a delay of zero here, because we key
-	 * off this value being non-zero in translate_device(), to
-	 * determine if the fault is a ZINJECT_DELAY_IO fault or not.
-	 */
 	if (scan_delay == 0)
 		return (1);
-
-	/*
-	 * The units for the CLI delay parameter is milliseconds, but
-	 * the data passed to the kernel is interpreted as nanoseconds.
-	 * Thus we scale the milliseconds to nanoseconds here, and this
-	 * nanosecond value is used to pass the delay to the kernel.
-	 */
 	*delay = MSEC2NSEC(scan_delay);
 	*nlanes = scan_nlanes;
-
 	return (0);
 }
-
 static int
 parse_frequency(const char *str, uint32_t *percent)
 {
 	double val;
 	char *post;
-
 	val = strtod(str, &post);
 	if (post == NULL || *post != '\0')
 		return (EINVAL);
-
-	/* valid range is [0.0001, 100.0] */
 	val /= 100.0f;
 	if (val < 0.000001f || val > 1.0f)
 		return (ERANGE);
-
-	/* convert to an integer for use by kernel */
 	*percent = ((uint32_t)(val * ZI_PERCENTAGE_MAX));
-
 	return (0);
 }
-
-/*
- * This function converts a string specifier for DVAs into a bit mask.
- * The dva's provided by the user should be 0 indexed and separated by
- * a comma. For example:
- *	"1"	-> 0b0010  (0x2)
- *	"0,1"	-> 0b0011  (0x3)
- *	"0,1,2"	-> 0b0111  (0x7)
- */
 static int
 parse_dvas(const char *str, uint32_t *dvas_out)
 {
 	const char *c = str;
 	uint32_t mask = 0;
 	boolean_t need_delim = B_FALSE;
-
-	/* max string length is 5 ("0,1,2") */
 	if (strlen(str) > 5 || strlen(str) == 0)
 		return (EINVAL);
-
 	while (*c != '\0') {
 		switch (*c) {
 		case '0':
 		case '1':
 		case '2':
-			/* check for pipe between DVAs */
 			if (need_delim)
 				return (EINVAL);
-
-			/* check if this DVA has been set already */
 			if (mask & (1 << ((*c) - '0')))
 				return (EINVAL);
-
 			mask |= (1 << ((*c) - '0'));
 			need_delim = B_TRUE;
 			break;
@@ -719,20 +451,15 @@ parse_dvas(const char *str, uint32_t *dvas_out)
 			need_delim = B_FALSE;
 			break;
 		default:
-			/* check for invalid character */
 			return (EINVAL);
 		}
 		c++;
 	}
-
-	/* check for dangling delimiter */
 	if (!need_delim)
 		return (EINVAL);
-
 	*dvas_out = mask;
 	return (0);
 }
-
 int
 main(int argc, char **argv)
 {
@@ -760,26 +487,17 @@ main(int argc, char **argv)
 	int ret;
 	int flags = 0;
 	uint32_t dvas = 0;
-
 	if ((g_zfs = libzfs_init()) == NULL) {
 		(void) fprintf(stderr, "%s\n", libzfs_error_init(errno));
 		return (1);
 	}
-
 	libzfs_print_on_error(g_zfs, B_TRUE);
-
 	if ((zfs_fd = open(ZFS_DEV, O_RDWR)) < 0) {
 		(void) fprintf(stderr, "failed to open ZFS device\n");
 		libzfs_fini(g_zfs);
 		return (1);
 	}
-
 	if (argc == 1) {
-		/*
-		 * No arguments.  Print the available handlers.  If there are no
-		 * available handlers, direct the user to '-h' for help
-		 * information.
-		 */
 		if (print_all_handlers() == 0) {
 			(void) printf("No handlers registered.\n");
 			(void) printf("Run 'zinject -h' for usage "
@@ -788,7 +506,6 @@ main(int argc, char **argv)
 		libzfs_fini(g_zfs);
 		return (0);
 	}
-
 	while ((c = getopt(argc, argv,
 	    ":aA:b:C:d:D:f:Fg:qhIc:t:T:l:mr:s:e:uL:p:")) != -1) {
 		switch (c) {
@@ -833,7 +550,6 @@ main(int argc, char **argv)
 			ret = parse_delay(optarg, &record.zi_timer,
 			    &record.zi_nlanes);
 			if (ret != 0) {
-
 				(void) fprintf(stderr, "invalid i/o delay "
 				    "value: '%s'\n", optarg);
 				usage();
@@ -889,7 +605,6 @@ main(int argc, char **argv)
 				libzfs_fini(g_zfs);
 				return (1);
 			}
-			/* store duration of txgs as its negative */
 			record.zi_duration *= -1;
 			break;
 		case 'h':
@@ -897,7 +612,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (0);
 		case 'I':
-			/* default duration, if one hasn't yet been defined */
 			nowrites = 1;
 			if (dur_secs == 0 && dur_txg == 0)
 				record.zi_duration = 30;
@@ -995,17 +709,11 @@ main(int argc, char **argv)
 			return (2);
 		}
 	}
-
 	argc -= optind;
 	argv += optind;
-
 	if (record.zi_duration != 0)
 		record.zi_cmd = ZINJECT_IGNORED_WRITES;
-
 	if (cancel != NULL) {
-		/*
-		 * '-c' is invalid with any other options.
-		 */
 		if (raw != NULL || range != NULL || type != TYPE_INVAL ||
 		    level != 0 || record.zi_cmd != ZINJECT_UNINITIALIZED ||
 		    record.zi_freq > 0 || dvas != 0) {
@@ -1021,7 +729,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (strcmp(cancel, "all") == 0) {
 			return (cancel_all_handlers());
 		} else {
@@ -1036,12 +743,7 @@ main(int argc, char **argv)
 			return (cancel_handler(id));
 		}
 	}
-
 	if (device != NULL) {
-		/*
-		 * Device (-d) injection uses a completely different mechanism
-		 * for doing injection, so handle it separately here.
-		 */
 		if (raw != NULL || range != NULL || type != TYPE_INVAL ||
 		    level != 0 || record.zi_cmd != ZINJECT_UNINITIALIZED ||
 		    dvas != 0) {
@@ -1051,7 +753,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (argc != 1) {
 			(void) fprintf(stderr, "device (-d) injection requires "
 			    "a single pool name\n");
@@ -1059,17 +760,14 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		(void) strlcpy(pool, argv[0], sizeof (pool));
 		dataset[0] = '\0';
-
 		if (error == ECKSUM) {
 			(void) fprintf(stderr, "device error type must be "
 			    "'io', 'nxio' or 'corrupt'\n");
 			libzfs_fini(g_zfs);
 			return (1);
 		}
-
 		if (error == EILSEQ &&
 		    (record.zi_freq == 0 || io_type != ZIO_TYPE_READ)) {
 			(void) fprintf(stderr, "device corrupt errors require "
@@ -1077,7 +775,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (1);
 		}
-
 		record.zi_iotype = io_type;
 		if (translate_device(pool, device, label, &record) != 0) {
 			libzfs_fini(g_zfs);
@@ -1085,10 +782,8 @@ main(int argc, char **argv)
 		}
 		if (!error)
 			error = ENXIO;
-
 		if (action != VDEV_STATE_UNKNOWN)
 			return (perform_action(pool, &record, action));
-
 	} else if (raw != NULL) {
 		if (range != NULL || type != TYPE_INVAL || level != 0 ||
 		    record.zi_cmd != ZINJECT_UNINITIALIZED ||
@@ -1099,7 +794,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (argc != 1) {
 			(void) fprintf(stderr, "raw (-b) format expects a "
 			    "single pool name\n");
@@ -1107,17 +801,14 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		(void) strlcpy(pool, argv[0], sizeof (pool));
 		dataset[0] = '\0';
-
 		if (error == ENXIO) {
 			(void) fprintf(stderr, "data error type must be "
 			    "'checksum' or 'io'\n");
 			libzfs_fini(g_zfs);
 			return (1);
 		}
-
 		record.zi_cmd = ZINJECT_DATA_FAULT;
 		if (translate_raw(raw, &record) != 0) {
 			libzfs_fini(g_zfs);
@@ -1135,7 +826,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (argc < 1 || argc > 2) {
 			(void) fprintf(stderr, "panic (-p) injection requires "
 			    "a single pool name and an optional id\n");
@@ -1143,7 +833,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		(void) strlcpy(pool, argv[0], sizeof (pool));
 		if (argv[1] != NULL)
 			record.zi_type = atoi(argv[1]);
@@ -1157,7 +846,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (nowrites == 0) {
 			(void) fprintf(stderr, "-s or -g meaningless "
 			    "without -I (ignore writes)\n");
@@ -1178,7 +866,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		(void) strlcpy(pool, argv[0], sizeof (pool));
 		dataset[0] = '\0';
 	} else if (type == TYPE_INVAL) {
@@ -1190,7 +877,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (argc == 1 && (flags & ZINJECT_UNLOAD_SPA)) {
 			(void) strlcpy(pool, argv[0], sizeof (pool));
 			dataset[0] = '\0';
@@ -1201,7 +887,6 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		flags |= ZINJECT_NULL;
 	} else {
 		if (argc != 1) {
@@ -1210,14 +895,12 @@ main(int argc, char **argv)
 			libzfs_fini(g_zfs);
 			return (2);
 		}
-
 		if (error == ENXIO || error == EILSEQ) {
 			(void) fprintf(stderr, "data error type must be "
 			    "'checksum' or 'io'\n");
 			libzfs_fini(g_zfs);
 			return (1);
 		}
-
 		if (dvas != 0) {
 			if (error == EACCES || error == EINVAL) {
 				(void) fprintf(stderr, "the '-C' option may "
@@ -1226,10 +909,8 @@ main(int argc, char **argv)
 				libzfs_fini(g_zfs);
 				return (1);
 			}
-
 			record.zi_dvas = dvas;
 		}
-
 		if (error == EACCES) {
 			if (type != TYPE_DATA) {
 				(void) fprintf(stderr, "decryption errors "
@@ -1237,18 +918,11 @@ main(int argc, char **argv)
 				libzfs_fini(g_zfs);
 				return (1);
 			}
-
 			record.zi_cmd = ZINJECT_DECRYPT_FAULT;
-			/*
-			 * Internally, ZFS actually uses ECKSUM for decryption
-			 * errors since EACCES is used to indicate the key was
-			 * not found.
-			 */
 			error = ECKSUM;
 		} else {
 			record.zi_cmd = ZINJECT_DATA_FAULT;
 		}
-
 		if (translate_record(type, argv[0], range, level, &record, pool,
 		    dataset) != 0) {
 			libzfs_fini(g_zfs);
@@ -1257,12 +931,6 @@ main(int argc, char **argv)
 		if (!error)
 			error = EIO;
 	}
-
-	/*
-	 * If this is pool-wide metadata, unmount everything.  The ioctl() will
-	 * unload the pool, so that we trigger spa-wide reopen of metadata next
-	 * time we access the pool.
-	 */
 	if (dataset[0] != '\0' && domount) {
 		if ((zhp = zfs_open(g_zfs, dataset,
 		    ZFS_TYPE_DATASET)) == NULL) {
@@ -1274,15 +942,10 @@ main(int argc, char **argv)
 			return (1);
 		}
 	}
-
 	record.zi_error = error;
-
 	ret = register_handler(pool, flags, &record, quiet);
-
 	if (dataset[0] != '\0' && domount)
 		ret = (zfs_mount(zhp, NULL, 0) != 0);
-
 	libzfs_fini(g_zfs);
-
 	return (ret);
 }

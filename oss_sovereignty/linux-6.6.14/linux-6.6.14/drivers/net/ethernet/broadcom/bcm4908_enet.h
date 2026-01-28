@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __BCM4908_ENET_H
 #define __BCM4908_ENET_H
-
 #define ENET_CONTROL					0x000
 #define ENET_MIB_CTRL					0x004
 #define  ENET_MIB_CTRL_CLR_MIB				0x00000001
@@ -56,41 +54,37 @@
 #define ENET_DMA_CTRL_CHANNEL_DEBUG			0x838
 #define ENET_DMA_CTRL_GLOBAL_INTERRUPT_STATUS		0x840
 #define ENET_DMA_CTRL_GLOBAL_INTERRUPT_MASK		0x844
-#define ENET_DMA_CH0_CFG				0xa00		/* RX */
-#define ENET_DMA_CH1_CFG				0xa10		/* TX */
-#define ENET_DMA_CH0_STATE_RAM				0xc00		/* RX */
-#define ENET_DMA_CH1_STATE_RAM				0xc10		/* TX */
-
-#define ENET_DMA_CH_CFG					0x00		/* assorted configuration */
-#define  ENET_DMA_CH_CFG_ENABLE				0x00000001	/* set to enable channel */
-#define  ENET_DMA_CH_CFG_PKT_HALT			0x00000002	/* idle after an EOP flag is detected */
-#define  ENET_DMA_CH_CFG_BURST_HALT			0x00000004	/* idle after finish current memory burst */
-#define ENET_DMA_CH_CFG_INT_STAT			0x04		/* interrupts control and status */
-#define ENET_DMA_CH_CFG_INT_MASK			0x08		/* interrupts mask */
-#define  ENET_DMA_CH_CFG_INT_BUFF_DONE			0x00000001	/* buffer done */
-#define  ENET_DMA_CH_CFG_INT_DONE			0x00000002	/* packet xfer complete */
-#define  ENET_DMA_CH_CFG_INT_NO_DESC			0x00000004	/* no valid descriptors */
-#define  ENET_DMA_CH_CFG_INT_RX_ERROR			0x00000008	/* rxdma detect client protocol error */
-#define ENET_DMA_CH_CFG_MAX_BURST			0x0c		/* max burst length permitted */
-#define  ENET_DMA_CH_CFG_MAX_BURST_DESCSIZE_SEL		0x00040000	/* DMA Descriptor Size Selection */
+#define ENET_DMA_CH0_CFG				0xa00		 
+#define ENET_DMA_CH1_CFG				0xa10		 
+#define ENET_DMA_CH0_STATE_RAM				0xc00		 
+#define ENET_DMA_CH1_STATE_RAM				0xc10		 
+#define ENET_DMA_CH_CFG					0x00		 
+#define  ENET_DMA_CH_CFG_ENABLE				0x00000001	 
+#define  ENET_DMA_CH_CFG_PKT_HALT			0x00000002	 
+#define  ENET_DMA_CH_CFG_BURST_HALT			0x00000004	 
+#define ENET_DMA_CH_CFG_INT_STAT			0x04		 
+#define ENET_DMA_CH_CFG_INT_MASK			0x08		 
+#define  ENET_DMA_CH_CFG_INT_BUFF_DONE			0x00000001	 
+#define  ENET_DMA_CH_CFG_INT_DONE			0x00000002	 
+#define  ENET_DMA_CH_CFG_INT_NO_DESC			0x00000004	 
+#define  ENET_DMA_CH_CFG_INT_RX_ERROR			0x00000008	 
+#define ENET_DMA_CH_CFG_MAX_BURST			0x0c		 
+#define  ENET_DMA_CH_CFG_MAX_BURST_DESCSIZE_SEL		0x00040000	 
 #define ENET_DMA_CH_CFG_SIZE				0x10
-
-#define ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR		0x00		/* descriptor ring start address */
-#define ENET_DMA_CH_STATE_RAM_STATE_DATA		0x04		/* state/bytes done/ring offset */
-#define ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS		0x08		/* buffer descriptor status and len */
-#define ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR		0x0c		/* buffer descrpitor current processing */
+#define ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR		0x00		 
+#define ENET_DMA_CH_STATE_RAM_STATE_DATA		0x04		 
+#define ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS		0x08		 
+#define ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR		0x0c		 
 #define ENET_DMA_CH_STATE_RAM_SIZE			0x10
-
 #define DMA_CTL_STATUS_APPEND_CRC			0x00000100
 #define DMA_CTL_STATUS_APPEND_BRCM_TAG			0x00000200
-#define DMA_CTL_STATUS_PRIO				0x00000C00  /* Prio for Tx */
-#define DMA_CTL_STATUS_WRAP				0x00001000  /* */
-#define DMA_CTL_STATUS_SOP				0x00002000  /* first buffer in packet */
-#define DMA_CTL_STATUS_EOP				0x00004000  /* last buffer in packet */
-#define DMA_CTL_STATUS_OWN				0x00008000  /* cleared by DMA, set by SW */
+#define DMA_CTL_STATUS_PRIO				0x00000C00   
+#define DMA_CTL_STATUS_WRAP				0x00001000   
+#define DMA_CTL_STATUS_SOP				0x00002000   
+#define DMA_CTL_STATUS_EOP				0x00004000   
+#define DMA_CTL_STATUS_OWN				0x00008000   
 #define DMA_CTL_LEN_DESC_BUFLENGTH			0x0fff0000
 #define DMA_CTL_LEN_DESC_BUFLENGTH_SHIFT		16
 #define DMA_CTL_LEN_DESC_MULTICAST			0x40000000
 #define DMA_CTL_LEN_DESC_USEFPM				0x80000000
-
 #endif

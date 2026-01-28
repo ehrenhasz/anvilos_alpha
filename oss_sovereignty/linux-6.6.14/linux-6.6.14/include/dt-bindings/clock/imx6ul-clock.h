@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DT_BINDINGS_CLOCK_IMX6UL_H
 #define __DT_BINDINGS_CLOCK_IMX6UL_H
-
 #define IMX6UL_CLK_DUMMY		0
 #define IMX6UL_CLK_CKIL			1
 #define IMX6UL_CLK_CKIH			2
@@ -261,7 +255,5 @@
 #define IMX6UL_CLK_ENET1_REF_PAD	252
 #define IMX6UL_CLK_ENET2_REF_SEL	253
 #define IMX6UL_CLK_ENET2_REF_PAD	254
-
 #define IMX6UL_CLK_END			255
-
-#endif /* __DT_BINDINGS_CLOCK_IMX6UL_H */
+#endif  

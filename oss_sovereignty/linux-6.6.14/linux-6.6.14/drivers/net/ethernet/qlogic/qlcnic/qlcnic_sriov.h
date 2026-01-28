@@ -1,24 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
-
 #ifndef _QLCNIC_83XX_SRIOV_H_
 #define _QLCNIC_83XX_SRIOV_H_
-
 #include <linux/types.h>
 #include <linux/pci.h>
-
 #include "qlcnic.h"
-
 extern const u32 qlcnic_83xx_reg_tbl[];
 extern const u32 qlcnic_83xx_ext_reg_tbl[];
-
 struct qlcnic_bc_payload {
 	u64 payload[126];
 };
-
 struct qlcnic_bc_hdr {
 #if defined(__LITTLE_ENDIAN)
 	u8	version;
@@ -44,24 +33,19 @@ struct qlcnic_bc_hdr {
 	u64	rsvd3;
 #endif
 };
-
 enum qlcnic_bc_commands {
 	QLCNIC_BC_CMD_CHANNEL_INIT = 0x0,
 	QLCNIC_BC_CMD_CHANNEL_TERM = 0x1,
 	QLCNIC_BC_CMD_GET_ACL = 0x2,
 	QLCNIC_BC_CMD_CFG_GUEST_VLAN = 0x3,
 };
-
 #define QLCNIC_83XX_SRIOV_VF_MAX_MAC 2
 #define QLC_BC_CMD 1
-
 struct qlcnic_trans_list {
-	/* Lock for manipulating list */
 	spinlock_t		lock;
 	struct list_head	wait_list;
 	int			count;
 };
-
 enum qlcnic_trans_state {
 	QLC_INIT = 0,
 	QLC_WAIT_FOR_CHANNEL_FREE,
@@ -69,7 +53,6 @@ enum qlcnic_trans_state {
 	QLC_ABORT,
 	QLC_END,
 };
-
 struct qlcnic_bc_trans {
 	u8				func_id;
 	u8				active;
@@ -88,7 +71,6 @@ struct qlcnic_bc_trans {
 	struct completion		resp_cmpl;
 	struct qlcnic_vf_info		*vf;
 };
-
 enum qlcnic_vf_state {
 	QLC_BC_VF_SEND = 0,
 	QLC_BC_VF_RECV,
@@ -97,32 +79,25 @@ enum qlcnic_vf_state {
 	QLC_BC_VF_FLR,
 	QLC_BC_VF_SOFT_FLR,
 };
-
 enum qlcnic_vlan_mode {
 	QLC_NO_VLAN_MODE = 0,
 	QLC_PVID_MODE,
 	QLC_GUEST_VLAN_MODE,
 };
-
 struct qlcnic_resources {
 	u16 num_tx_mac_filters;
 	u16 num_rx_ucast_mac_filters;
 	u16 num_rx_mcast_mac_filters;
-
 	u16 num_txvlan_keys;
-
 	u16 num_rx_queues;
 	u16 num_tx_queues;
-
 	u16 num_rx_buf_rings;
 	u16 num_rx_status_rings;
-
 	u16 num_destip;
 	u32 num_lro_flows_supported;
 	u16 max_local_ipv6_addrs;
 	u16 max_remote_ipv6_addrs;
 };
-
 struct qlcnic_vport {
 	u16			handle;
 	u16			max_tx_bw;
@@ -133,7 +108,6 @@ struct qlcnic_vport {
 	bool			spoofchk;
 	u8			mac[6];
 };
-
 struct qlcnic_vf_info {
 	u8				pci_func;
 	u16				rx_ctx_id;
@@ -144,7 +118,6 @@ struct qlcnic_vf_info {
 	struct completion		ch_free_cmpl;
 	struct work_struct		trans_work;
 	struct work_struct		flr_work;
-	/* It synchronizes commands sent from VF */
 	struct mutex			send_cmd_lock;
 	struct qlcnic_bc_trans		*send_cmd;
 	struct qlcnic_bc_trans		*flr_trans;
@@ -152,14 +125,12 @@ struct qlcnic_vf_info {
 	struct qlcnic_trans_list	rcv_pend;
 	struct qlcnic_adapter		*adapter;
 	struct qlcnic_vport		*vp;
-	spinlock_t			vlan_list_lock;	/* Lock for VLAN list */
+	spinlock_t			vlan_list_lock;	 
 };
-
 struct qlcnic_async_cmd {
 	struct list_head	list;
 	struct qlcnic_cmd_args	*cmd;
 };
-
 struct qlcnic_back_channel {
 	u16			trans_counter;
 	struct workqueue_struct *bc_trans_wq;
@@ -168,9 +139,8 @@ struct qlcnic_back_channel {
 	struct qlcnic_adapter	*adapter;
 	struct list_head	async_cmd_list;
 	struct work_struct	vf_async_work;
-	spinlock_t		queue_lock; /* async_cmd_list queue lock */
+	spinlock_t		queue_lock;  
 };
-
 struct qlcnic_sriov {
 	u16				vp_handle;
 	u8				num_vfs;
@@ -183,7 +153,6 @@ struct qlcnic_sriov {
 	struct qlcnic_back_channel	bc;
 	struct qlcnic_vf_info		*vf_info;
 };
-
 int qlcnic_sriov_init(struct qlcnic_adapter *, int);
 void qlcnic_sriov_cleanup(struct qlcnic_adapter *);
 void __qlcnic_sriov_cleanup(struct qlcnic_adapter *);
@@ -207,12 +176,10 @@ void qlcnic_sriov_del_vlan_id(struct qlcnic_sriov *,
 			      struct qlcnic_vf_info *, u16);
 void qlcnic_sriov_add_vlan_id(struct qlcnic_sriov *,
 			      struct qlcnic_vf_info *, u16);
-
 static inline bool qlcnic_sriov_enable_check(struct qlcnic_adapter *adapter)
 {
 	return test_bit(__QLCNIC_SRIOV_ENABLE, &adapter->state) ? true : false;
 }
-
 #ifdef CONFIG_QLCNIC_SRIOV
 void qlcnic_sriov_pf_process_bc_cmd(struct qlcnic_adapter *,
 				    struct qlcnic_bc_trans *,
@@ -273,5 +240,4 @@ static inline void qlcnic_sriov_pf_reset(struct qlcnic_adapter *adapter) {}
 static inline int qlcnic_sriov_pf_reinit(struct qlcnic_adapter *adapter)
 { return 0; }
 #endif
-
 #endif

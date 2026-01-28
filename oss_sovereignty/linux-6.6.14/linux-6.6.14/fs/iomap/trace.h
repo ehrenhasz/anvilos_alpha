@@ -1,29 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2009-2021 Christoph Hellwig
- *
- * NOTE: none of these tracepoints shall be considered a stable kernel ABI
- * as they can change at any time.
- *
- * Current conventions for printing numbers measuring specific units:
- *
- * offset: byte offset into a subcomponent of a file operation
- * pos: file offset, in bytes
- * length: length of a file operation, in bytes
- * ino: inode number
- *
- * Numbers describing space allocations should be formatted in hexadecimal.
- */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iomap
-
 #if !defined(_IOMAP_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _IOMAP_TRACE_H
-
 #include <linux/tracepoint.h>
-
 struct inode;
-
 DECLARE_EVENT_CLASS(iomap_readpage_class,
 	TP_PROTO(struct inode *inode, int nr_pages),
 	TP_ARGS(inode, nr_pages),
@@ -42,14 +22,12 @@ DECLARE_EVENT_CLASS(iomap_readpage_class,
 		  __entry->ino,
 		  __entry->nr_pages)
 )
-
 #define DEFINE_READPAGE_EVENT(name)		\
 DEFINE_EVENT(iomap_readpage_class, name,	\
 	TP_PROTO(struct inode *inode, int nr_pages), \
 	TP_ARGS(inode, nr_pages))
 DEFINE_READPAGE_EVENT(iomap_readpage);
 DEFINE_READPAGE_EVENT(iomap_readahead);
-
 DECLARE_EVENT_CLASS(iomap_range_class,
 	TP_PROTO(struct inode *inode, loff_t off, u64 len),
 	TP_ARGS(inode, off, len),
@@ -74,7 +52,6 @@ DECLARE_EVENT_CLASS(iomap_range_class,
 		  __entry->offset,
 		  __entry->length)
 )
-
 #define DEFINE_RANGE_EVENT(name)		\
 DEFINE_EVENT(iomap_range_class, name,	\
 	TP_PROTO(struct inode *inode, loff_t off, u64 len),\
@@ -84,14 +61,12 @@ DEFINE_RANGE_EVENT(iomap_release_folio);
 DEFINE_RANGE_EVENT(iomap_invalidate_folio);
 DEFINE_RANGE_EVENT(iomap_dio_invalidate_fail);
 DEFINE_RANGE_EVENT(iomap_dio_rw_queued);
-
 #define IOMAP_TYPE_STRINGS \
 	{ IOMAP_HOLE,		"HOLE" }, \
 	{ IOMAP_DELALLOC,	"DELALLOC" }, \
 	{ IOMAP_MAPPED,		"MAPPED" }, \
 	{ IOMAP_UNWRITTEN,	"UNWRITTEN" }, \
 	{ IOMAP_INLINE,		"INLINE" }
-
 #define IOMAP_FLAGS_STRINGS \
 	{ IOMAP_WRITE,		"WRITE" }, \
 	{ IOMAP_ZERO,		"ZERO" }, \
@@ -99,7 +74,6 @@ DEFINE_RANGE_EVENT(iomap_dio_rw_queued);
 	{ IOMAP_FAULT,		"FAULT" }, \
 	{ IOMAP_DIRECT,		"DIRECT" }, \
 	{ IOMAP_NOWAIT,		"NOWAIT" }
-
 #define IOMAP_F_FLAGS_STRINGS \
 	{ IOMAP_F_NEW,		"NEW" }, \
 	{ IOMAP_F_DIRTY,	"DIRTY" }, \
@@ -107,12 +81,10 @@ DEFINE_RANGE_EVENT(iomap_dio_rw_queued);
 	{ IOMAP_F_MERGED,	"MERGED" }, \
 	{ IOMAP_F_BUFFER_HEAD,	"BH" }, \
 	{ IOMAP_F_SIZE_CHANGED,	"SIZE_CHANGED" }
-
 #define IOMAP_DIO_STRINGS \
 	{IOMAP_DIO_FORCE_WAIT,	"DIO_FORCE_WAIT" }, \
 	{IOMAP_DIO_OVERWRITE_ONLY, "DIO_OVERWRITE_ONLY" }, \
 	{IOMAP_DIO_PARTIAL,	"DIO_PARTIAL" }
-
 DECLARE_EVENT_CLASS(iomap_class,
 	TP_PROTO(struct inode *inode, struct iomap *iomap),
 	TP_ARGS(inode, iomap),
@@ -147,7 +119,6 @@ DECLARE_EVENT_CLASS(iomap_class,
 		  __print_symbolic(__entry->type, IOMAP_TYPE_STRINGS),
 		  __print_flags(__entry->flags, "|", IOMAP_F_FLAGS_STRINGS))
 )
-
 #define DEFINE_IOMAP_EVENT(name)		\
 DEFINE_EVENT(iomap_class, name,	\
 	TP_PROTO(struct inode *inode, struct iomap *iomap), \
@@ -155,7 +126,6 @@ DEFINE_EVENT(iomap_class, name,	\
 DEFINE_IOMAP_EVENT(iomap_iter_dstmap);
 DEFINE_IOMAP_EVENT(iomap_iter_srcmap);
 DEFINE_IOMAP_EVENT(iomap_writepage_map);
-
 TRACE_EVENT(iomap_iter,
 	TP_PROTO(struct iomap_iter *iter, const void *ops,
 		 unsigned long caller),
@@ -188,7 +158,6 @@ TRACE_EVENT(iomap_iter,
 		   __entry->ops,
 		   (void *)__entry->caller)
 );
-
 TRACE_EVENT(iomap_dio_rw_begin,
 	TP_PROTO(struct kiocb *iocb, struct iov_iter *iter,
 		 unsigned int dio_flags, size_t done_before),
@@ -226,7 +195,6 @@ TRACE_EVENT(iomap_dio_rw_begin,
 		  __print_flags(__entry->dio_flags, "|", IOMAP_DIO_STRINGS),
 		  __entry->aio)
 );
-
 TRACE_EVENT(iomap_dio_complete,
 	TP_PROTO(struct kiocb *iocb, int error, ssize_t ret),
 	TP_ARGS(iocb, error, ret),
@@ -260,9 +228,7 @@ TRACE_EVENT(iomap_dio_complete,
 		  __entry->error,
 		  __entry->ret)
 );
-
-#endif /* _IOMAP_TRACE_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

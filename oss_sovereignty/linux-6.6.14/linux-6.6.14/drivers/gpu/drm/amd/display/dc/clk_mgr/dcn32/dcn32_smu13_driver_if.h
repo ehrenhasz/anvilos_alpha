@@ -1,9 +1,4 @@
-// SPDX-License-Identifier: MIT
-// This is a stripped-down version of the smu13_driver_if.h file for the relevant DAL interfaces.
-
 #define SMU13_DRIVER_IF_VERSION  0x18
-
-//Only Clks that have DPM descriptors are listed here
 typedef enum {
 	PPCLK_GFXCLK = 0,
 	PPCLK_SOCCLK,
@@ -20,36 +15,26 @@ typedef enum {
 	PPCLK_DTBCLK,
 	PPCLK_COUNT,
 } PPCLK_e;
-
 typedef struct {
 	uint8_t  WmSetting;
 	uint8_t  Flags;
 	uint8_t  Padding[2];
-
 } WatermarkRowGeneric_t;
-
 #define NUM_WM_RANGES 4
-
 typedef enum {
 	WATERMARKS_CLOCK_RANGE = 0,
 	WATERMARKS_DUMMY_PSTATE,
 	WATERMARKS_MALL,
 	WATERMARKS_COUNT,
 } WATERMARKS_FLAGS_e;
-
 typedef struct {
-	// Watermarks
 	WatermarkRowGeneric_t WatermarkRow[NUM_WM_RANGES];
 } Watermarks_t;
-
 typedef struct {
 	Watermarks_t Watermarks;
 	uint32_t  Spare[16];
-
-	uint32_t     MmHubPadding[8]; // SMU internal use
+	uint32_t     MmHubPadding[8];  
 } WatermarksExternal_t;
-
-// Table types
 #define TABLE_PMFW_PPTABLE            0
 #define TABLE_COMBO_PPTABLE           1
 #define TABLE_WATERMARKS              2

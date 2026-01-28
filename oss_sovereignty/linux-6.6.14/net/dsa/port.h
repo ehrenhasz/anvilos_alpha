@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-
 #ifndef __DSA_PORT_H
 #define __DSA_PORT_H
-
 #include <linux/types.h>
 #include <net/dsa.h>
-
 struct ifreq;
 struct netdev_lag_lower_state_info;
 struct netdev_lag_upper_info;
@@ -14,7 +10,6 @@ struct switchdev_mst_state;
 struct switchdev_obj_port_mdb;
 struct switchdev_vlan_msti;
 struct phy_device;
-
 bool dsa_port_supports_hwtstamp(struct dsa_port *dp);
 void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
 			       const struct dsa_device_ops *tag_ops);
@@ -110,5 +105,4 @@ void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
 void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc);
 int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
 			   struct netlink_ext_ack *extack);
-
 #endif

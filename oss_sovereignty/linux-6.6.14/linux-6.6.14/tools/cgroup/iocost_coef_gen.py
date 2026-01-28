@@ -1,23 +1,14 @@
-#!/usr/bin/env python3
-#
-# Copyright (C) 2019 Tejun Heo <tj@kernel.org>
-# Copyright (C) 2019 Andy Newell <newella@fb.com>
-# Copyright (C) 2019 Facebook
-
 desc = """
 Generate linear IO cost model coefficients used by the blk-iocost
 controller.  If the target raw testdev is specified, destructive tests
 are performed against the whole device; otherwise, on
 ./iocost-coef-fio.testfile.  The result can be written directly to
 /sys/fs/cgroup/io.cost.model.
-
 On high performance devices, --numjobs > 1 is needed to achieve
 saturation.
-
 See Documentation/admin-guide/cgroup-v2.rst and block/blk-iocost.c
 for more details.
 """
-
 import argparse
 import re
 import json
@@ -28,7 +19,6 @@ import atexit
 import shutil
 import tempfile
 import subprocess
-
 parser = argparse.ArgumentParser(description=desc,
                                  formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--testdev', metavar='DEV',
@@ -47,35 +37,25 @@ parser.add_argument('--numjobs', type=int, metavar='JOBS', default=1,
                     help='Number of parallel fio jobs to run (default: %(default)s)')
 parser.add_argument('--quiet', action='store_true')
 parser.add_argument('--verbose', action='store_true')
-
 def info(msg):
     if not args.quiet:
         print(msg)
-
 def dbg(msg):
     if args.verbose and not args.quiet:
         print(msg)
-
-# determine ('DEVNAME', 'MAJ:MIN') for @path
 def dir_to_dev(path):
-    # find the block device the current directory is on
     devname = subprocess.run(f'findmnt -nvo SOURCE -T{path}',
                              stdout=subprocess.PIPE, shell=True).stdout
     devname = os.path.basename(devname).decode('utf-8').strip()
-
-    # partition -> whole device
     parents = glob.glob('/sys/block/*/' + devname)
     if len(parents):
         devname = os.path.basename(os.path.dirname(parents[0]))
     rdev = os.stat(f'/dev/{devname}').st_rdev
     return (devname, f'{os.major(rdev)}:{os.minor(rdev)}')
-
 def create_testfile(path, size):
     global args
-
     if os.path.isfile(path) and os.stat(path).st_size == size:
         return
-
     info(f'Creating testfile {path}')
     subprocess.check_call(f'rm -f {path}', shell=True)
     subprocess.check_call(f'touch {path}', shell=True)
@@ -85,10 +65,8 @@ def create_testfile(path, size):
         f'dd of={path} count={size} '
         f'iflag=count_bytes,fullblock oflag=direct bs=16M status=none',
         shell=True)
-
 def run_fio(testfile, duration, iotype, iodepth, blocksize, jobs):
     global args
-
     eta = 'never' if args.quiet else 'always'
     outfile = tempfile.NamedTemporaryFile()
     cmd = (f'fio --direct=1 --ioengine=libaio --name=coef '
@@ -102,19 +80,14 @@ def run_fio(testfile, duration, iotype, iodepth, blocksize, jobs):
     with open(outfile.name, 'r') as f:
         d = json.loads(f.read())
     return sum(j['read']['bw_bytes'] + j['write']['bw_bytes'] for j in d['jobs'])
-
 def restore_elevator_nomerges():
     global elevator_path, nomerges_path, elevator, nomerges
-
     info(f'Restoring elevator to {elevator} and nomerges to {nomerges}')
     with open(elevator_path, 'w') as f:
         f.write(elevator)
     with open(nomerges_path, 'w') as f:
         f.write(nomerges)
-
-
 args = parser.parse_args()
-
 missing = False
 for cmd in [ 'findmnt', 'pv', 'dd', 'fio' ]:
     if not shutil.which(cmd):
@@ -122,7 +95,6 @@ for cmd in [ 'findmnt', 'pv', 'dd', 'fio' ]:
         missing = True
 if missing:
     sys.exit(1)
-
 if args.testdev:
     devname = os.path.basename(args.testdev)
     rdev = os.stat(f'/dev/{devname}').st_rdev
@@ -135,22 +107,18 @@ else:
     testfile_size = int(args.testfile_size_gb * 2 ** 30)
     create_testfile(testfile, testfile_size)
     info(f'Test target: {testfile} on {devname}({devno})')
-
 elevator_path = f'/sys/block/{devname}/queue/scheduler'
 nomerges_path = f'/sys/block/{devname}/queue/nomerges'
-
 with open(elevator_path, 'r') as f:
     elevator = re.sub(r'.*\[(.*)\].*', r'\1', f.read().strip())
 with open(nomerges_path, 'r') as f:
     nomerges = f.read().strip()
-
 info(f'Temporarily disabling elevator and merges')
 atexit.register(restore_elevator_nomerges)
 with open(elevator_path, 'w') as f:
     f.write('none')
 with open(nomerges_path, 'w') as f:
     f.write('1')
-
 info('Determining rbps...')
 rbps = run_fio(testfile, args.duration, 'read',
                1, args.seqio_block_mb * (2 ** 20), args.numjobs)
@@ -173,6 +141,5 @@ info(f'\nwrandiops={wrandiops}')
 restore_elevator_nomerges()
 atexit.unregister(restore_elevator_nomerges)
 info('')
-
 print(f'{devno} rbps={rbps} rseqiops={rseqiops} rrandiops={rrandiops} '
       f'wbps={wbps} wseqiops={wseqiops} wrandiops={wrandiops}')

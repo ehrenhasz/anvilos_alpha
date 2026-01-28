@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * arch/arm/boot/dts/axm5516-cpus.dtsi
- *
- * Copyright (C) 2013 LSI
- */
-
 / {
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -68,133 +60,117 @@
 				};
 			};
 		};
-
 		CPU0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x00>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x01>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x02>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x03>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU4: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x100>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU5: cpu@101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x101>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU6: cpu@102 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x102>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU7: cpu@103 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x103>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU8: cpu@200 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x200>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU9: cpu@201 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x201>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU10: cpu@202 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x202>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU11: cpu@203 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x203>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU12: cpu@300 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x300>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU13: cpu@301 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x301>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU14: cpu@302 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x302>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
-
 		CPU15: cpu@303 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a15";
 			reg = <0x303>;
 			clock-frequency = <1400000000>;
-			cpu-release-addr = <0>; // Fixed by the boot loader
+			cpu-release-addr = <0>;  
 		};
 	};
 };

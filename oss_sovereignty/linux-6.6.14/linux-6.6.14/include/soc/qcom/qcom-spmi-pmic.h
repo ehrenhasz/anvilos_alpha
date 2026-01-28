@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2022 Linaro. All rights reserved.
- * Author: Caleb Connolly <caleb.connolly@linaro.org>
- */
-
 #ifndef __QCOM_SPMI_PMIC_H__
 #define __QCOM_SPMI_PMIC_H__
-
 #include <linux/device.h>
-
 #define COMMON_SUBTYPE		0x00
 #define PM8941_SUBTYPE		0x01
 #define PM8841_SUBTYPE		0x02
@@ -49,14 +42,11 @@
 #define PMR735B_SUBTYPE		0x34
 #define PM6350_SUBTYPE		0x36
 #define PM2250_SUBTYPE		0x37
-
 #define PMI8998_FAB_ID_SMIC	0x11
 #define PMI8998_FAB_ID_GF	0x30
-
 #define PM660_FAB_ID_GF		0x0
 #define PM660_FAB_ID_TSMC	0x2
 #define PM660_FAB_ID_MX		0x3
-
 struct qcom_spmi_pmic {
 	unsigned int type;
 	unsigned int subtype;
@@ -66,7 +56,5 @@ struct qcom_spmi_pmic {
 	unsigned int fab_id;
 	const char *name;
 };
-
 const struct qcom_spmi_pmic *qcom_pmic_get(struct device *dev);
-
-#endif /* __QCOM_SPMI_PMIC_H__ */
+#endif  

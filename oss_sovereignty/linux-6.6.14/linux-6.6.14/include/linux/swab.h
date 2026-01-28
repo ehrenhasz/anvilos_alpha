@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_SWAB_H
 #define _LINUX_SWAB_H
-
 #include <uapi/linux/swab.h>
-
 # define swab16 __swab16
 # define swab32 __swab32
 # define swab64 __swab64
@@ -20,7 +17,6 @@
 # define swab64s __swab64s
 # define swahw32s __swahw32s
 # define swahb32s __swahb32s
-
 static inline void swab16_array(u16 *buf, unsigned int words)
 {
 	while (words--) {
@@ -28,7 +24,6 @@ static inline void swab16_array(u16 *buf, unsigned int words)
 		buf++;
 	}
 }
-
 static inline void swab32_array(u32 *buf, unsigned int words)
 {
 	while (words--) {
@@ -36,7 +31,6 @@ static inline void swab32_array(u32 *buf, unsigned int words)
 		buf++;
 	}
 }
-
 static inline void swab64_array(u64 *buf, unsigned int words)
 {
 	while (words--) {
@@ -44,5 +38,4 @@ static inline void swab64_array(u64 *buf, unsigned int words)
 		buf++;
 	}
 }
-
-#endif /* _LINUX_SWAB_H */
+#endif  

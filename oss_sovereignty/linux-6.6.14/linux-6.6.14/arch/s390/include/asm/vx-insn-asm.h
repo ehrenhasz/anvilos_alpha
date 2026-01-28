@@ -1,30 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Vector Instructions
- *
- * Assembler macros to generate .byte/.word code for particular
- * vector instructions that are supported by recent binutils (>= 2.26) only.
- *
- * Copyright IBM Corp. 2015
- * Author(s): Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
- */
-
 #ifndef __ASM_S390_VX_INSN_INTERNAL_H
 #define __ASM_S390_VX_INSN_INTERNAL_H
-
 #ifndef __ASM_S390_VX_INSN_H
 #error only <asm/vx-insn.h> can be included directly
 #endif
-
 #ifdef __ASSEMBLY__
-
-/* Macros to generate vector instruction byte code */
-
-/* GR_NUM - Retrieve general-purpose register number
- *
- * @opd:	Operand to store register number
- * @r64:	String designation register in the format "%rN"
- */
 .macro	GR_NUM	opd gr
 	\opd = 255
 	.ifc \gr,%r0
@@ -79,16 +58,6 @@
 		\opd = \gr
 	.endif
 .endm
-
-/* VX_NUM - Retrieve vector register number
- *
- * @opd:	Operand to store register number
- * @vxr:	String designation register in the format "%vN"
- *
- * The vector register number is used for as input number to the
- * instruction and, as well as, to compute the RXB field of the
- * instruction.
- */
 .macro	VX_NUM	opd vxr
 	\opd = 255
 	.ifc \vxr,%v0
@@ -191,15 +160,6 @@
 		\opd = \vxr
 	.endif
 .endm
-
-/* RXB - Compute most significant bit used vector registers
- *
- * @rxb:	Operand to store computed RXB value
- * @v1:		First vector register designated operand
- * @v2:		Second vector register designated operand
- * @v3:		Third vector register designated operand
- * @v4:		Fourth vector register designated operand
- */
 .macro	RXB	rxb v1 v2=0 v3=0 v4=0
 	\rxb = 0
 	.if \v1 & 0x10
@@ -215,38 +175,15 @@
 		\rxb = \rxb | 0x01
 	.endif
 .endm
-
-/* MRXB - Generate Element Size Control and RXB value
- *
- * @m:		Element size control
- * @v1:		First vector register designated operand (for RXB)
- * @v2:		Second vector register designated operand (for RXB)
- * @v3:		Third vector register designated operand (for RXB)
- * @v4:		Fourth vector register designated operand (for RXB)
- */
 .macro	MRXB	m v1 v2=0 v3=0 v4=0
 	rxb = 0
 	RXB	rxb, \v1, \v2, \v3, \v4
 	.byte	(\m << 4) | rxb
 .endm
-
-/* MRXBOPC - Generate Element Size Control, RXB, and final Opcode fields
- *
- * @m:		Element size control
- * @opc:	Opcode
- * @v1:		First vector register designated operand (for RXB)
- * @v2:		Second vector register designated operand (for RXB)
- * @v3:		Third vector register designated operand (for RXB)
- * @v4:		Fourth vector register designated operand (for RXB)
- */
 .macro	MRXBOPC	m opc v1 v2=0 v3=0 v4=0
 	MRXB	\m, \v1, \v2, \v3, \v4
 	.byte	\opc
 .endm
-
-/* Vector support instructions */
-
-/* VECTOR GENERATE BYTE MASK */
 .macro	VGBM	vr imm2
 	VX_NUM	v1, \vr
 	.word	(0xE700 | ((v1&15) << 4))
@@ -259,8 +196,6 @@
 .macro	VONE	vxr
 	VGBM	\vxr, 0xFFFF
 .endm
-
-/* VECTOR LOAD VR ELEMENT FROM GR */
 .macro	VLVG	v, gr, disp, m
 	VX_NUM	v1, \v
 	GR_NUM	b2, "%r0"
@@ -281,8 +216,6 @@
 .macro	VLVGG	v, gr, index
 	VLVG	\v, \gr, \index, 3
 .endm
-
-/* VECTOR LOAD REGISTER */
 .macro	VLR	v1, v2
 	VX_NUM	v1, \v1
 	VX_NUM	v2, \v2
@@ -290,8 +223,6 @@
 	.word	0
 	MRXBOPC	0, 0x56, v1, v2
 .endm
-
-/* VECTOR LOAD */
 .macro	VL	v, disp, index="%r0", base
 	VX_NUM	v1, \v
 	GR_NUM	x2, \index
@@ -300,8 +231,6 @@
 	.word	(b2 << 12) | (\disp)
 	MRXBOPC 0, 0x06, v1
 .endm
-
-/* VECTOR LOAD ELEMENT */
 .macro	VLEx	vr1, disp, index="%r0", base, m3, opc
 	VX_NUM	v1, \vr1
 	GR_NUM	x2, \index
@@ -322,8 +251,6 @@
 .macro	VLEG	vr1, disp, index="%r0", base, m3
 	VLEx	\vr1, \disp, \index, \base, \m3, 0x02
 .endm
-
-/* VECTOR LOAD ELEMENT IMMEDIATE */
 .macro	VLEIx	vr1, imm2, m3, opc
 	VX_NUM	v1, \vr1
 	.word	0xE700 | ((v1&15) << 4)
@@ -342,8 +269,6 @@
 .macro	VLEIG	vr1, imm2, index
 	VLEIx	\vr1, \imm2, \index, 0x42
 .endm
-
-/* VECTOR LOAD GR FROM VR ELEMENT */
 .macro	VLGV	gr, vr, disp, base="%r0", m
 	GR_NUM	r1, \gr
 	GR_NUM	b2, \base
@@ -364,8 +289,6 @@
 .macro	VLGVG	gr, vr, disp, base="%r0"
 	VLGV	\gr, \vr, \disp, \base, 3
 .endm
-
-/* VECTOR LOAD MULTIPLE */
 .macro	VLM	vfrom, vto, disp, base, hint=3
 	VX_NUM	v1, \vfrom
 	VX_NUM	v3, \vto
@@ -374,8 +297,6 @@
 	.word	(b2 << 12) | (\disp)
 	MRXBOPC	\hint, 0x36, v1, v3
 .endm
-
-/* VECTOR STORE */
 .macro	VST	vr1, disp, index="%r0", base
 	VX_NUM	v1, \vr1
 	GR_NUM	x2, \index
@@ -384,8 +305,6 @@
 	.word	(b2 << 12) | (\disp)
 	MRXBOPC	0, 0x0E, v1
 .endm
-
-/* VECTOR STORE MULTIPLE */
 .macro	VSTM	vfrom, vto, disp, base, hint=3
 	VX_NUM	v1, \vfrom
 	VX_NUM	v3, \vto
@@ -394,8 +313,6 @@
 	.word	(b2 << 12) | (\disp)
 	MRXBOPC	\hint, 0x3E, v1, v3
 .endm
-
-/* VECTOR PERMUTE */
 .macro	VPERM	vr1, vr2, vr3, vr4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -405,8 +322,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC	(v4&15), 0x8C, v1, v2, v3, v4
 .endm
-
-/* VECTOR UNPACK LOGICAL LOW */
 .macro	VUPLL	vr1, vr2, m3
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -423,8 +338,6 @@
 .macro	VUPLLF	vr1, vr2
 	VUPLL	\vr1, \vr2, 2
 .endm
-
-/* VECTOR PERMUTE DOUBLEWORD IMMEDIATE */
 .macro	VPDI	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -433,8 +346,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC	\m4, 0x84, v1, v2, v3
 .endm
-
-/* VECTOR REPLICATE */
 .macro	VREP	vr1, vr3, imm2, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v3, \vr3
@@ -454,8 +365,6 @@
 .macro	VREPG	vr1, vr3, imm2
 	VREP	\vr1, \vr3, \imm2, 3
 .endm
-
-/* VECTOR MERGE HIGH */
 .macro	VMRH	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -476,8 +385,6 @@
 .macro	VMRHG	vr1, vr2, vr3
 	VMRH	\vr1, \vr2, \vr3, 3
 .endm
-
-/* VECTOR MERGE LOW */
 .macro	VMRL	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -498,11 +405,6 @@
 .macro	VMRLG	vr1, vr2, vr3
 	VMRL	\vr1, \vr2, \vr3, 3
 .endm
-
-
-/* Vector integer instructions */
-
-/* VECTOR AND */
 .macro	VN	vr1, vr2, vr3
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -511,8 +413,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC	0, 0x68, v1, v2, v3
 .endm
-
-/* VECTOR EXCLUSIVE OR */
 .macro	VX	vr1, vr2, vr3
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -521,8 +421,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC	0, 0x6D, v1, v2, v3
 .endm
-
-/* VECTOR GALOIS FIELD MULTIPLY SUM */
 .macro	VGFM	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -543,8 +441,6 @@
 .macro	VGFMG	vr1, vr2, vr3
 	VGFM	\vr1, \vr2, \vr3, 3
 .endm
-
-/* VECTOR GALOIS FIELD MULTIPLY SUM AND ACCUMULATE */
 .macro	VGFMA	vr1, vr2, vr3, vr4, m5
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -566,8 +462,6 @@
 .macro	VGFMAG	vr1, vr2, vr3, vr4
 	VGFMA	\vr1, \vr2, \vr3, \vr4, 3
 .endm
-
-/* VECTOR SHIFT RIGHT LOGICAL BY BYTE */
 .macro	VSRLB	vr1, vr2, vr3
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -576,8 +470,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC	0, 0x7D, v1, v2, v3
 .endm
-
-/* VECTOR REPLICATE IMMEDIATE */
 .macro	VREPI	vr1, imm2, m3
 	VX_NUM	v1, \vr1
 	.word	0xE700 | ((v1&15) << 4)
@@ -596,8 +488,6 @@
 .macro	VREPIG	vr1, imm2
 	VREP	\vr1, \imm2, 3
 .endm
-
-/* VECTOR ADD */
 .macro	VA	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -621,8 +511,6 @@
 .macro	VAQ	vr1, vr2, vr3
 	VA	\vr1, \vr2, \vr3, 4
 .endm
-
-/* VECTOR ELEMENT SHIFT RIGHT ARITHMETIC */
 .macro	VESRAV	vr1, vr2, vr3, m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -631,7 +519,6 @@
 	.word	((v3&15) << 12)
 	MRXBOPC \m4, 0x7A, v1, v2, v3
 .endm
-
 .macro	VESRAVB	vr1, vr2, vr3
 	VESRAV	\vr1, \vr2, \vr3, 0
 .endm
@@ -644,8 +531,6 @@
 .macro	VESRAVG	vr1, vr2, vr3
 	VESRAV	\vr1, \vr2, \vr3, 3
 .endm
-
-/* VECTOR ELEMENT ROTATE LEFT LOGICAL */
 .macro	VERLL	vr1, vr3, disp, base="%r0", m4
 	VX_NUM	v1, \vr1
 	VX_NUM	v3, \vr3
@@ -666,8 +551,6 @@
 .macro	VERLLG	vr1, vr3, disp, base="%r0"
 	VERLL	\vr1, \vr3, \disp, \base, 3
 .endm
-
-/* VECTOR SHIFT LEFT DOUBLE BY BYTE */
 .macro	VSLDB	vr1, vr2, vr3, imm4
 	VX_NUM	v1, \vr1
 	VX_NUM	v2, \vr2
@@ -676,6 +559,5 @@
 	.word	((v3&15) << 12) | (\imm4)
 	MRXBOPC	0, 0x77, v1, v2, v3
 .endm
-
-#endif	/* __ASSEMBLY__ */
-#endif	/* __ASM_S390_VX_INSN_INTERNAL_H */
+#endif	 
+#endif	 

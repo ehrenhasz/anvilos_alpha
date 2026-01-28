@@ -1,11 +1,3 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0-only
-#
-# Copyright 2015, Daniel Axtens, IBM Corporation
-#
-
-
-# do we have ./getscom, ./putscom?
 if [ -x ./getscom ] && [ -x ./putscom ]; then
 	GETSCOM=./getscom
 	PUTSCOM=./putscom
@@ -20,29 +12,17 @@ The tool is in external/xscom-utils
 EOF
 	exit 1
 fi
-
-# We will get 8 HMI events per injection
-# todo: deal with things being offline
 expected_hmis=8
 COUNT_HMIS() {
     dmesg | grep -c 'Harmless Hypervisor Maintenance interrupt'
 }
-
-# massively expand snooze delay, allowing injection on all cores
 ppc64_cpu --smt-snooze-delay=1000000000
-
-# when we exit, restore it
 trap "ppc64_cpu --smt-snooze-delay=100" 0 1
-
-# for each chip+core combination
-# todo - less fragile parsing
 grep -E -o 'OCC: Chip [0-9a-f]+ Core [0-9a-f]' < /sys/firmware/opal/msglog |
 while read chipcore; do
 	chip=$(echo "$chipcore"|awk '{print $3}')
 	core=$(echo "$chipcore"|awk '{print $5}')
 	fir="0x1${core}013100"
-
-	# verify that Core FIR is zero as expected
 	if [ "$($GETSCOM -c 0x${chip} $fir)" != 0 ]; then
 		echo "FIR was not zero before injection for chip $chip, core $core. Aborting!"
 		echo "Result of $GETSCOM -c 0x${chip} $fir:"
@@ -51,20 +31,12 @@ while read chipcore; do
 		echo "Otherwise, try $PUTSCOM -c 0x${chip} $fir 0"
 		exit 1
 	fi
-
-	# keep track of the number of HMIs handled
 	old_hmis=$(COUNT_HMIS)
-
-	# do injection, adding a marker to dmesg for clarity
 	echo "Injecting HMI on core $core, chip $chip" | tee /dev/kmsg
-	# inject a RegFile recoverable error
 	if ! $PUTSCOM -c 0x${chip} $fir 2000000000000000 > /dev/null; then
 		echo "Error injecting. Aborting!"
 		exit 1
 	fi
-
-	# now we want to wait for all the HMIs to be processed
-	# we expect one per thread on the core
 	i=0;
 	new_hmis=$(COUNT_HMIS)
 	while [ $new_hmis -lt $((old_hmis + expected_hmis)) ] && [ $i -lt 12 ]; do

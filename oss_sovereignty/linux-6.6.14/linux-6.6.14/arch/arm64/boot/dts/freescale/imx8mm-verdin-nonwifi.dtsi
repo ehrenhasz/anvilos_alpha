@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2022 Toradex
- */
-
 &gpio3 {
 	gpio-line-names = "SODIMM_52",
 			  "SODIMM_54",
@@ -30,7 +25,6 @@
 			  "SODIMM_42",
 			  "SODIMM_46";
 };
-
 &gpio4 {
 	gpio-line-names = "SODIMM_102",
 			  "SODIMM_90",
@@ -65,7 +59,6 @@
 			  "SODIMM_135",
 			  "SODIMM_129";
 };
-
 &usdhc3 {
 	bus-width = <4>;
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";

@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPC8377E WLAN Device Tree Source
- *
- * Copyright 2007-2009 Freescale Semiconductor Inc.
- * Copyright 2009 MontaVista Software, Inc.
- */
-
 /dts-v1/;
-
 / {
 	compatible = "fsl,mpc8377wlan";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
@@ -22,11 +12,9 @@
 		pci1 = &pci1;
 		pci2 = &pci2;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8377@0 {
 			device_type = "cpu";
 			reg = <0x0>;
@@ -39,12 +27,10 @@
 			clock-frequency = <0>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
-		reg = <0x00000000 0x20000000>;	// 512MB at 0
+		reg = <0x00000000 0x20000000>;	 
 	};
-
 	localbus@e0005000 {
 		#address-cells = <2>;
 		#size-cells = <1>;
@@ -53,7 +39,6 @@
 		interrupts = <77 0x8>;
 		interrupt-parent = <&ipic>;
 		ranges = <0x0 0x0 0xfc000000 0x04000000>;
-
 		flash@0,0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -61,25 +46,21 @@
 			reg = <0x0 0x0 0x4000000>;
 			bank-width = <2>;
 			device-width = <1>;
-
 			partition@0 {
 				reg = <0 0x80000>;
 				label = "u-boot";
 				read-only;
 			};
-
 			partition@a0000 {
 				reg = <0xa0000 0x300000>;
 				label = "kernel";
 			};
-
 			partition@3a0000 {
 				reg = <0x3a0000 0x3c60000>;
 				label = "rootfs";
 			};
 		};
 	};
-
 	immr@e0000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -88,13 +69,11 @@
 		ranges = <0x0 0xe0000000 0x00100000>;
 		reg = <0xe0000000 0x00000200>;
 		bus-frequency = <0>;
-
 		wdt@200 {
 			device_type = "watchdog";
 			compatible = "mpc83xx_wdt";
 			reg = <0x200 0x100>;
 		};
-
 		gpio1: gpio-controller@c00 {
 			#gpio-cells = <2>;
 			compatible = "fsl,mpc8377-gpio", "fsl,mpc8349-gpio";
@@ -103,7 +82,6 @@
 			interrupt-parent = <&ipic>;
 			gpio-controller;
 		};
-
 		gpio2: gpio-controller@d00 {
 			#gpio-cells = <2>;
 			compatible = "fsl,mpc8377-gpio", "fsl,mpc8349-gpio";
@@ -112,14 +90,12 @@
 			interrupt-parent = <&ipic>;
 			gpio-controller;
 		};
-
 		sleep-nexus {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			compatible = "simple-bus";
 			sleep = <&pmc 0x0c000000>;
 			ranges;
-
 			i2c@3000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -129,18 +105,15 @@
 				interrupts = <14 0x8>;
 				interrupt-parent = <&ipic>;
 				dfsrr;
-
 				at24@50 {
 					compatible = "atmel,24c256";
 					reg = <0x50>;
 				};
-
 				rtc@68 {
 					compatible = "dallas,ds1339";
 					reg = <0x68>;
 				};
 			};
-
 			sdhci@2e000 {
 				compatible = "fsl,mpc8377-esdhc", "fsl,esdhc";
 				reg = <0x2e000 0x1000>;
@@ -150,7 +123,6 @@
 				clock-frequency = <133333333>;
 			};
 		};
-
 		i2c@3100 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -161,7 +133,6 @@
 			interrupt-parent = <&ipic>;
 			dfsrr;
 		};
-
 		spi@7000 {
 			cell-index = <0>;
 			compatible = "fsl,spi";
@@ -170,7 +141,6 @@
 			interrupt-parent = <&ipic>;
 			mode = "cpu";
 		};
-
 		dma@82a8 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -209,7 +179,6 @@
 				interrupts = <71 8>;
 			};
 		};
-
 		usb@23000 {
 			compatible = "fsl-usb2-dr";
 			reg = <0x23000 0x1000>;
@@ -220,7 +189,6 @@
 			phy_type = "ulpi";
 			sleep = <&pmc 0x00c00000>;
 		};
-
 		enet0: ethernet@24000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -238,32 +206,27 @@
 			phy-handle = <&phy2>;
 			sleep = <&pmc 0xc0000000>;
 			fsl,magic-packet;
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-mdio";
 				reg = <0x520 0x20>;
-
 				phy2: ethernet-phy@2 {
 					interrupt-parent = <&ipic>;
 					interrupts = <17 0x8>;
 					reg = <0x2>;
 				};
-
 				phy3: ethernet-phy@3 {
 					interrupt-parent = <&ipic>;
 					interrupts = <18 0x8>;
 					reg = <0x3>;
 				};
-
 				tbi0: tbi-phy@11 {
 					reg = <0x11>;
 					device_type = "tbi-phy";
 				};
 			};
 		};
-
 		enet1: ethernet@25000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -281,20 +244,17 @@
 			tbi-handle = <&tbi1>;
 			sleep = <&pmc 0x30000000>;
 			fsl,magic-packet;
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-tbi";
 				reg = <0x520 0x20>;
-
 				tbi1: tbi-phy@11 {
 					reg = <0x11>;
 					device_type = "tbi-phy";
 				};
 			};
 		};
-
 		serial0: serial@4500 {
 			cell-index = <0>;
 			device_type = "serial";
@@ -304,7 +264,6 @@
 			interrupts = <9 0x8>;
 			interrupt-parent = <&ipic>;
 		};
-
 		serial1: serial@4600 {
 			cell-index = <1>;
 			device_type = "serial";
@@ -314,7 +273,6 @@
 			interrupts = <10 0x8>;
 			interrupt-parent = <&ipic>;
 		};
-
 		crypto@30000 {
 			compatible = "fsl,sec3.0", "fsl,sec2.4", "fsl,sec2.2",
 				     "fsl,sec2.1", "fsl,sec2.0";
@@ -327,7 +285,6 @@
 			fsl,descriptor-types-mask = <0x3ab0ebf>;
 			sleep = <&pmc 0x03000000>;
 		};
-
 		sata@18000 {
 			compatible = "fsl,mpc8377-sata", "fsl,pq-sata";
 			reg = <0x18000 0x1000>;
@@ -335,7 +292,6 @@
 			interrupt-parent = <&ipic>;
 			sleep = <&pmc 0x000000c0>;
 		};
-
 		sata@19000 {
 			compatible = "fsl,mpc8377-sata", "fsl,pq-sata";
 			reg = <0x19000 0x1000>;
@@ -343,13 +299,6 @@
 			interrupt-parent = <&ipic>;
 			sleep = <&pmc 0x00000030>;
 		};
-
-		/* IPIC
-		 * interrupts cell = <intr #, sense>
-		 * sense values match linux IORESOURCE_IRQ_* defines:
-		 * sense == 8: Level, low assertion
-		 * sense == 2: Edge, high-to-low change
-		 */
 		ipic: interrupt-controller@700 {
 			compatible = "fsl,ipic";
 			interrupt-controller;
@@ -357,7 +306,6 @@
 			#interrupt-cells = <2>;
 			reg = <0x700 0x100>;
 		};
-
 		pmc: power@b00 {
 			compatible = "fsl,mpc8377-pmc", "fsl,mpc8349-pmc";
 			reg = <0xb00 0x100 0xa00 0x100>;
@@ -365,16 +313,10 @@
 			interrupt-parent = <&ipic>;
 		};
 	};
-
 	pci0: pci@e0008500 {
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-				/* IRQ5 = 21 = 0x15, IRQ6 = 0x16, IRQ7 = 23 = 0x17 */
-
-				/* IDSEL AD14 IRQ6 inta */
 				 0x7000 0x0 0x0 0x1 &ipic 22 0x8
-
-				/* IDSEL AD15 IRQ5 inta */
 				 0x7800 0x0 0x0 0x1 &ipic 21 0x8>;
 		interrupt-parent = <&ipic>;
 		interrupts = <66 0x8>;
@@ -387,12 +329,11 @@
 		#interrupt-cells = <1>;
 		#size-cells = <2>;
 		#address-cells = <3>;
-		reg = <0xe0008500 0x100		/* internal registers */
-		       0xe0008300 0x8>;		/* config space access registers */
+		reg = <0xe0008500 0x100		 
+		       0xe0008300 0x8>;		 
 		compatible = "fsl,mpc8349-pci";
 		device_type = "pci";
 	};
-
 	pci1: pcie@e0009000 {
 		#address-cells = <3>;
 		#size-cells = <2>;
@@ -410,7 +351,6 @@
 				 0 0 0 4 &ipic 1 8>;
 		sleep = <&pmc 0x00300000>;
 		clock-frequency = <0>;
-
 		pcie@0 {
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -424,7 +364,6 @@
 				  0 0x00800000>;
 		};
 	};
-
 	pci2: pcie@e000a000 {
 		#address-cells = <3>;
 		#size-cells = <2>;
@@ -442,7 +381,6 @@
 				 0 0 0 4 &ipic 2 8>;
 		sleep = <&pmc 0x000c0000>;
 		clock-frequency = <0>;
-
 		pcie@0 {
 			#address-cells = <3>;
 			#size-cells = <2>;

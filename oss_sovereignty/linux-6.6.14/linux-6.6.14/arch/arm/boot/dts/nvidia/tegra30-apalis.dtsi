@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 #include "tegra30.dtsi"
-
-/*
- * Toradex Apalis T30 Module Device Tree
- * Compatible for Revisions 1GB: V1.0A; 2GB: V1.0B, V1.0C, V1.0E
- */
 / {
 	memory@80000000 {
 		reg = <0x80000000 0x40000000>;
 	};
-
 	pcie@3000 {
 		status = "okay";
 		avdd-pexa-supply = <&vdd2_reg>;
@@ -20,29 +13,21 @@
 		vddio-pex-ctl-supply = <&reg_module_3v3>;
 		vdd-pexa-supply = <&vdd2_reg>;
 		vdd-pexb-supply = <&vdd2_reg>;
-
-		/* Apalis type specific */
 		pci@1,0 {
 			nvidia,num-lanes = <4>;
 		};
-
-		/* Apalis PCIe */
 		pci@2,0 {
 			nvidia,num-lanes = <1>;
 		};
-
-		/* I210/I211 Gigabit Ethernet Controller (on-module) */
 		pci@3,0 {
 			status = "okay";
 			nvidia,num-lanes = <1>;
-
 			ethernet@0,0 {
 				reg = <0 0 0 0 0>;
 				local-mac-address = [00 00 00 00 00 00];
 			};
 		};
 	};
-
 	host1x@50000000 {
 		hdmi@54280000 {
 			nvidia,ddc-i2c-bus = <&hdmi_ddc>;
@@ -52,13 +37,10 @@
 			vdd-supply = <&reg_3v3_avdd_hdmi>;
 		};
 	};
-
 	pinmux@70000868 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
-
 		state_default: pinmux {
-			/* Analogue Audio (On-module) */
 			clk1-out-pw4 {
 				nvidia,pins = "clk1_out_pw4";
 				nvidia,function = "extperiph1";
@@ -75,8 +57,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis BKL1_ON */
 			pv2 {
 				nvidia,pins = "pv2";
 				nvidia,function = "rsvd4";
@@ -84,8 +64,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis BKL1_PWM */
 			uart3-rts-n-pc0 {
 				nvidia,pins = "uart3_rts_n_pc0";
 				nvidia,function = "pwm0";
@@ -93,7 +71,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-			/* BKL1_PWM_EN#, disable TPS65911 PMIC PWM backlight */
 			uart3-cts-n-pa1 {
 				nvidia,pins = "uart3_cts_n_pa1";
 				nvidia,function = "rsvd2";
@@ -101,8 +78,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis CAN1 on SPI6 */
 			spi2-cs0-n-px3 {
 				nvidia,pins = "spi2_cs0_n_px3",
 					      "spi2_miso_px1",
@@ -112,7 +87,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-			/* CAN_INT1 */
 			spi2-cs1-n-pw2 {
 				nvidia,pins = "spi2_cs1_n_pw2";
 				nvidia,function = "spi3";
@@ -120,8 +94,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis CAN2 on SPI4 */
 			gmi-a16-pj7 {
 				nvidia,pins = "gmi_a16_pj7",
 					      "gmi_a17_pb0",
@@ -132,7 +104,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-			/* CAN_INT2 */
 			spi2-cs2-n-pw3 {
 				nvidia,pins = "spi2_cs2_n_pw3";
 				nvidia,function = "spi3";
@@ -140,8 +111,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis Digital Audio */
 			clk1-req-pee2 {
 				nvidia,pins = "clk1_req_pee2";
 				nvidia,function = "hda";
@@ -164,8 +133,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis GPIO */
 			kb-col0-pq0 {
 				nvidia,pins = "kb_col0_pq0",
 					      "kb_col1_pq1",
@@ -180,7 +147,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-			/* Multiplexed and therefore disabled */
 			owr {
 				nvidia,pins = "owr";
 				nvidia,function = "rsvd3";
@@ -188,8 +154,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis HDMI1 */
 			hdmi-cec-pee3 {
 				nvidia,pins = "hdmi_cec_pee3";
 				nvidia,function = "cec";
@@ -205,8 +169,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis I2C1 */
 			gen1-i2c-scl-pc4 {
 				nvidia,pins = "gen1_i2c_scl_pc4",
 					      "gen1_i2c_sda_pc5";
@@ -216,8 +178,6 @@
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 				nvidia,open-drain = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis I2C2 (DDC) */
 			ddc-scl-pv4 {
 				nvidia,pins = "ddc_scl_pv4",
 					      "ddc_sda_pv5";
@@ -226,8 +186,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis I2C3 (CAM) */
 			cam-i2c-scl-pbb1 {
 				nvidia,pins = "cam_i2c_scl_pbb1",
 					      "cam_i2c_sda_pbb2";
@@ -237,8 +195,6 @@
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 				nvidia,open-drain = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis LCD1 */
 			lcd-d0-pe0 {
 				nvidia,pins = "lcd_d0_pe0",
 					      "lcd_d1_pe1",
@@ -273,8 +229,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis MMC1 */
 			sdmmc3-clk-pa6 {
 				nvidia,pins = "sdmmc3_clk_pa6";
 				nvidia,function = "sdmmc3";
@@ -295,7 +249,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-			/* Apalis MMC1_CD# */
 			pv3 {
 				nvidia,pins = "pv3";
 				nvidia,function = "rsvd2";
@@ -303,8 +256,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis Parallel Camera */
 			cam-mclk-pcc0 {
 				nvidia,pins = "cam_mclk_pcc0";
 				nvidia,function = "vi_alt3";
@@ -333,7 +284,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-			/* Multiplexed and therefore disabled */
 			kb-col2-pq2 {
 				nvidia,pins = "kb_col2_pq2",
 					      "kb_col3_pq3",
@@ -363,10 +313,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-			/*
-			 * VI level-shifter direction
-			 * (pull-down => default direction input)
-			 */
 			vi-mclk-pt1 {
 				nvidia,pins = "vi_mclk_pt1";
 				nvidia,function = "vi_alt3";
@@ -374,48 +320,36 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis PWM1 */
 			pu6 {
 				nvidia,pins = "pu6";
 				nvidia,function = "pwm3";
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis PWM2 */
 			pu5 {
 				nvidia,pins = "pu5";
 				nvidia,function = "pwm2";
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis PWM3 */
 			pu4 {
 				nvidia,pins = "pu4";
 				nvidia,function = "pwm1";
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis PWM4 */
 			pu3 {
 				nvidia,pins = "pu3";
 				nvidia,function = "pwm0";
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis RESET_MOCI# */
 			gmi-rst-n-pi4 {
 				nvidia,pins = "gmi_rst_n_pi4";
 				nvidia,function = "gmi";
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis SATA1_ACT# */
 			pex-l0-prsnt-n-pdd0 {
 				nvidia,pins = "pex_l0_prsnt_n_pdd0";
 				nvidia,function = "rsvd3";
@@ -423,8 +357,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis SD1 */
 			sdmmc1-clk-pz0 {
 				nvidia,pins = "sdmmc1_clk_pz0";
 				nvidia,function = "sdmmc1";
@@ -441,7 +373,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-			/* Apalis SD1_CD# */
 			clk2-req-pcc5 {
 				nvidia,pins = "clk2_req_pcc5";
 				nvidia,function = "rsvd2";
@@ -449,8 +380,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis SPDIF1 */
 			spdif-out-pk5 {
 				nvidia,pins = "spdif_out_pk5",
 					      "spdif_in_pk6";
@@ -459,8 +388,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis SPI1 */
 			spi1-sck-px5 {
 				nvidia,pins = "spi1_sck_px5",
 					      "spi1_mosi_px4",
@@ -470,8 +397,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis SPI2 */
 			lcd-sck-pz4 {
 				nvidia,pins = "lcd_sck_pz4",
 					      "lcd_sdout_pn5",
@@ -481,11 +406,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/*
-			 * Apalis TS (Low-speed type specific)
-			 * pins may be used as GPIOs
-			 */
 			kb-col5-pq5 {
 				nvidia,pins = "kb_col5_pq5";
 				nvidia,function = "rsvd4";
@@ -503,8 +423,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis UART1 */
 			ulpi-data0 {
 				nvidia,pins = "ulpi_data0_po1",
 					      "ulpi_data1_po2",
@@ -518,8 +436,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis UART2 */
 			ulpi-clk-py0 {
 				nvidia,pins = "ulpi_clk_py0",
 					      "ulpi_dir_py1",
@@ -529,8 +445,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis UART3 */
 			uart2-rxd-pc3 {
 				nvidia,pins = "uart2_rxd_pc3",
 					      "uart2_txd_pc2";
@@ -538,8 +452,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis UART4 */
 			uart3-rxd-pw7 {
 				nvidia,pins = "uart3_rxd_pw7",
 					      "uart3_txd_pw6";
@@ -547,8 +459,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis USBH_EN */
 			pex-l0-rst-n-pdd1 {
 				nvidia,pins = "pex_l0_rst_n_pdd1";
 				nvidia,function = "rsvd3";
@@ -556,8 +466,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis USBH_OC# */
 			pex-l0-clkreq-n-pdd2 {
 				nvidia,pins = "pex_l0_clkreq_n_pdd2";
 				nvidia,function = "rsvd3";
@@ -565,8 +473,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis USBO1_EN */
 			gen2-i2c-scl-pt5 {
 				nvidia,pins = "gen2_i2c_scl_pt5";
 				nvidia,function = "rsvd4";
@@ -574,8 +480,6 @@
 				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis USBO1_OC# */
 			gen2-i2c-sda-pt6 {
 				nvidia,pins = "gen2_i2c_sda_pt6";
 				nvidia,function = "rsvd4";
@@ -584,8 +488,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* Apalis VGA1 not supported and therefore disabled */
 			crt-hsync-pv6 {
 				nvidia,pins = "crt_hsync_pv6",
 					      "crt_vsync_pv7";
@@ -594,8 +496,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Apalis WAKE1_MICO */
 			pv1 {
 				nvidia,pins = "pv1";
 				nvidia,function = "rsvd1";
@@ -603,8 +503,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* eMMC (On-module) */
 			sdmmc4-clk-pcc4 {
 				nvidia,pins = "sdmmc4_clk_pcc4",
 					      "sdmmc4_cmd_pt7",
@@ -628,8 +526,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* LAN i210/i211 DEV_OFF_N, PE_RST_N (On-module) */
 			pex-l2-prsnt-n-pdd7 {
 				nvidia,pins = "pex_l2_prsnt_n_pdd7",
 					      "pex_l2_rst_n_pcc6";
@@ -638,7 +534,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-			/* LAN i210/i211 PE_WAKE_N, SDP3 (On-module) */
 			pex-wake-n-pdd3 {
 				nvidia,pins = "pex_wake_n_pdd3",
 					      "pex_l2_clkreq_n_pcc7";
@@ -647,7 +542,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-			/* LAN i210/i211 SMB_ALERT_N (On-module) */
 			sys-clk-req-pz5 {
 				nvidia,pins = "sys_clk_req_pz5";
 				nvidia,function = "rsvd2";
@@ -655,8 +549,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 			};
-
-			/* LVDS Transceiver Configuration */
 			pbb0 {
 				nvidia,pins = "pbb0",
 					      "pbb7",
@@ -677,8 +569,6 @@
 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Not connected and therefore disabled */
 			clk-32k-out-pa0 {
 				nvidia,pins = "clk3_out_pee0",
 					      "clk3_req_pee1",
@@ -782,8 +672,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* Power I2C (On-module) */
 			pwr-i2c-scl-pz6 {
 				nvidia,pins = "pwr_i2c_scl_pz6",
 					      "pwr_i2c_sda_pz7";
@@ -793,12 +681,6 @@
 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 				nvidia,open-drain = <TEGRA_PIN_ENABLE>;
 			};
-
-			/*
-			 * THERMD_ALERT#, unlatched I2C address pin of LM95245
-			 * temperature sensor therefore requires disabling for
-			 * now
-			 */
 			lcd-dc1-pd2 {
 				nvidia,pins = "lcd_dc1_pd2";
 				nvidia,function = "rsvd3";
@@ -806,8 +688,6 @@
 				nvidia,tristate = <TEGRA_PIN_ENABLE>;
 				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
 			};
-
-			/* TOUCH_PEN_INT# (On-module) */
 			pv0 {
 				nvidia,pins = "pv0";
 				nvidia,function = "rsvd1";
@@ -817,38 +697,27 @@
 			};
 		};
 	};
-
 	serial@70006040 {
 		compatible = "nvidia,tegra30-hsuart";
 		reset-names = "serial";
 		/delete-property/ reg-shift;
 	};
-
 	serial@70006200 {
 		compatible = "nvidia,tegra30-hsuart";
 		reset-names = "serial";
 		/delete-property/ reg-shift;
 	};
-
 	serial@70006300 {
 		compatible = "nvidia,tegra30-hsuart";
 		reset-names = "serial";
 		/delete-property/ reg-shift;
 	};
-
 	hdmi_ddc: i2c@7000c700 {
 		clock-frequency = <10000>;
 	};
-
-	/*
-	 * PWR_I2C: power I2C to audio codec, PMIC, temperature sensor and
-	 * touch screen controller
-	 */
 	i2c@7000d000 {
 		status = "okay";
 		clock-frequency = <100000>;
-
-		/* SGTL5000 audio codec */
 		sgtl5000: codec@a {
 			compatible = "fsl,sgtl5000";
 			reg = <0x0a>;
@@ -858,21 +727,16 @@
 			VDDIO-supply = <&reg_module_3v3>;
 			clocks = <&tegra_car TEGRA30_CLK_EXTERN1>;
 		};
-
 		pmic: pmic@2d {
 			compatible = "ti,tps65911";
 			reg = <0x2d>;
-
 			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
 			#interrupt-cells = <2>;
 			interrupt-controller;
 			wakeup-source;
-
 			ti,system-power-controller;
-
 			#gpio-cells = <2>;
 			gpio-controller;
-
 			vcc1-supply = <&reg_module_3v3>;
 			vcc2-supply = <&reg_module_3v3>;
 			vcc3-supply = <&reg_1v8_vio>;
@@ -881,7 +745,6 @@
 			vcc6-supply = <&reg_1v8_vio>;
 			vcc7-supply = <&reg_5v0_charge_pump>;
 			vccio-supply = <&reg_module_3v3>;
-
 			regulators {
 				vdd1_reg: vdd1 {
 					regulator-name = "+V1.35_VDDIO_DDR";
@@ -889,83 +752,57 @@
 					regulator-max-microvolt = <1350000>;
 					regulator-always-on;
 				};
-
 				vdd2_reg: vdd2 {
 					regulator-name = "+V1.05";
 					regulator-min-microvolt = <1050000>;
 					regulator-max-microvolt = <1050000>;
 				};
-
 				vddctrl_reg: vddctrl {
 					regulator-name = "+V1.0_VDD_CPU";
 					regulator-min-microvolt = <1150000>;
 					regulator-max-microvolt = <1150000>;
 					regulator-always-on;
 				};
-
 				reg_1v8_vio: vio {
 					regulator-name = "+V1.8";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					regulator-always-on;
 				};
-
-				/* LDO1: unused */
-
-				/*
-				 * EN_+V3.3 switching via FET:
-				 * +V3.3_AUDIO_AVDD_S, +V3.3
-				 * see also +V3.3 fixed supply
-				 */
 				ldo2_reg: ldo2 {
 					regulator-name = "EN_+V3.3";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 				};
-
 				ldo3_reg: ldo3 {
 					regulator-name = "+V1.2_CSI";
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1200000>;
 				};
-
 				ldo4_reg: ldo4 {
 					regulator-name = "+V1.2_VDD_RTC";
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1200000>;
 					regulator-always-on;
 				};
-
-				/*
-				 * +V2.8_AVDD_VDAC:
-				 * only required for (unsupported) analog RGB
-				 */
 				ldo5_reg: ldo5 {
 					regulator-name = "+V2.8_AVDD_VDAC";
 					regulator-min-microvolt = <2800000>;
 					regulator-max-microvolt = <2800000>;
 					regulator-always-on;
 				};
-
-				/*
-				 * +V1.05_AVDD_PLLE: avdd_plle should be 1.05V
-				 * but LDO6 can't set voltage in 50mV
-				 * granularity
-				 */
 				ldo6_reg: ldo6 {
 					regulator-name = "+V1.05_AVDD_PLLE";
 					regulator-min-microvolt = <1100000>;
 					regulator-max-microvolt = <1100000>;
 				};
-
 				ldo7_reg: ldo7 {
 					regulator-name = "+V1.2_AVDD_PLL";
 					regulator-min-microvolt = <1200000>;
 					regulator-max-microvolt = <1200000>;
 					regulator-always-on;
 				};
-
 				ldo8_reg: ldo8 {
 					regulator-name = "+V1.0_VDD_DDR_HS";
 					regulator-min-microvolt = <1000000>;
@@ -974,8 +811,6 @@
 				};
 			};
 		};
-
-		/* STMPE811 touch screen controller */
 		touchscreen@41 {
 			compatible = "st,stmpe811";
 			reg = <0x41>;
@@ -984,53 +819,30 @@
 			id = <0>;
 			blocks = <0x5>;
 			irq-trigger = <0x1>;
-			/* 3.25 MHz ADC clock speed */
 			st,adc-freq = <1>;
-			/* 12-bit ADC */
 			st,mod-12b = <1>;
-			/* internal ADC reference */
 			st,ref-sel = <0>;
-			/* ADC converstion time: 80 clocks */
 			st,sample-time = <4>;
-
 			stmpe_adc {
 				compatible = "st,stmpe-adc";
-				/* forbid to use ADC channels 3-0 (touch) */
 				st,norequest-mask = <0x0F>;
 			};
-
 			stmpe_touchscreen {
 				compatible = "st,stmpe-ts";
-				/* 8 sample average control */
 				st,ave-ctrl = <3>;
-				/* 7 length fractional part in z */
 				st,fraction-z = <7>;
-				/*
-				 * 50 mA typical 80 mA max touchscreen drivers
-				 * current limit value
-				 */
 				st,i-drive = <1>;
-				/* 1 ms panel driver settling time */
 				st,settling = <3>;
-				/* 5 ms touch detect interrupt delay */
 				st,touch-det-delay = <5>;
 			};
 		};
-
-		/*
-		 * LM95245 temperature sensor
-		 * Note: OVERT1# directly connected to TPS65911 PMIC PWRDN
-		 */
 		temp-sensor@4c {
 			compatible = "national,lm95245";
 			reg = <0x4c>;
 		};
-
-		/* SW: +V1.2_VDD_CORE */
 		regulator@60 {
 			compatible = "ti,tps62362";
 			reg = <0x60>;
-
 			regulator-name = "tps62362-vout";
 			regulator-min-microvolt = <900000>;
 			regulator-max-microvolt = <1400000>;
@@ -1038,12 +850,9 @@
 			regulator-always-on;
 		};
 	};
-
-	/* SPI4: CAN2 */
 	spi@7000da00 {
 		status = "okay";
 		spi-max-frequency = <10000000>;
-
 		can@1 {
 			compatible = "microchip,mcp2515";
 			reg = <1>;
@@ -1053,12 +862,9 @@
 			spi-max-frequency = <10000000>;
 		};
 	};
-
-	/* SPI6: CAN1 */
 	spi@7000de00 {
 		status = "okay";
 		spi-max-frequency = <10000000>;
-
 		can@0 {
 			compatible = "microchip,mcp2515";
 			reg = <0>;
@@ -1068,7 +874,6 @@
 			spi-max-frequency = <10000000>;
 		};
 	};
-
 	pmc@7000e400 {
 		nvidia,invert-interrupt;
 		nvidia,suspend-mode = <1>;
@@ -1078,8 +883,6 @@
 		nvidia,core-pwr-off-time = <0>;
 		nvidia,core-power-req-active-high;
 		nvidia,sys-clock-req-active-high;
-
-		/* Set DEV_OFF bit in DCDC control register of TPS65911 PMIC */
 		i2c-thermtrip {
 			nvidia,i2c-controller-id = <4>;
 			nvidia,bus-addr = <0x2d>;
@@ -1087,39 +890,32 @@
 			nvidia,reg-data = <0x1>;
 		};
 	};
-
 	hda@70030000 {
 		status = "okay";
 	};
-
 	ahub@70080000 {
 		i2s@70080500 {
 			status = "okay";
 		};
 	};
-
-	/* eMMC */
 	mmc@78000600 {
 		status = "okay";
 		bus-width = <8>;
 		non-removable;
-		vmmc-supply = <&reg_module_3v3>; /* VCC */
-		vqmmc-supply = <&reg_1v8_vio>; /* VCCQ */
+		vmmc-supply = <&reg_module_3v3>;  
+		vqmmc-supply = <&reg_1v8_vio>;  
 		mmc-ddr-1_8v;
 	};
-
 	clk16m: clock-osc4 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <16000000>;
 	};
-
 	clk32k_in: clock-xtal1 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 	};
-
 	reg_1v8_avdd_hdmi_pll: regulator-1v8-avdd-hdmi-pll {
 		compatible = "regulator-fixed";
 		regulator-name = "+V1.8_AVDD_HDMI_PLL";
@@ -1129,7 +925,6 @@
 		gpio = <&pmic 6 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&reg_1v8_vio>;
 	};
-
 	reg_3v3_avdd_hdmi: regulator-3v3-avdd-hdmi {
 		compatible = "regulator-fixed";
 		regulator-name = "+V3.3_AVDD_HDMI";
@@ -1139,7 +934,6 @@
 		gpio = <&pmic 6 GPIO_ACTIVE_HIGH>;
 		vin-supply = <&reg_module_3v3>;
 	};
-
 	reg_5v0_charge_pump: regulator-5v0-charge-pump {
 		compatible = "regulator-fixed";
 		regulator-name = "+V5.0";
@@ -1147,7 +941,6 @@
 		regulator-max-microvolt = <5000000>;
 		regulator-always-on;
 	};
-
 	reg_module_3v3: regulator-module-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "+V3.3";
@@ -1155,7 +948,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	reg_module_3v3_audio: regulator-module-3v3-audio {
 		compatible = "regulator-fixed";
 		regulator-name = "+V3.3_AUDIO_AVDD_S";
@@ -1163,7 +955,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	sound {
 		compatible = "toradex,tegra-audio-sgtl5000-apalis_t30",
 			     "nvidia,tegra-audio-sgtl5000";
@@ -1178,10 +969,8 @@
 			 <&tegra_car TEGRA30_CLK_PLL_A_OUT0>,
 			 <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
 		clock-names = "pll_a", "pll_a_out0", "mclk";
-
 		assigned-clocks = <&tegra_car TEGRA30_CLK_EXTERN1>,
 				  <&tegra_pmc TEGRA_PMC_CLK_OUT_1>;
-
 		assigned-clock-parents = <&tegra_car TEGRA30_CLK_PLL_A_OUT0>,
 					 <&tegra_car TEGRA30_CLK_EXTERN1>;
 	};

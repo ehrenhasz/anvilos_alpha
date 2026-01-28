@@ -1,11 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * mt8186-afe-common.h  --  Mediatek 8186 audio driver definitions
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
- */
-
 #ifndef _MT_8186_AFE_COMMON_H_
 #define _MT_8186_AFE_COMMON_H_
 #include <sound/soc.h>
@@ -13,7 +5,6 @@
 #include <linux/regmap.h>
 #include "mt8186-reg.h"
 #include "../common/mtk-base-afe.h"
-
 enum {
 	MT8186_MEMIF_DL1,
 	MT8186_MEMIF_DL12,
@@ -59,7 +50,6 @@ enum {
 	MT8186_DAI_HOSTLESS_UL6,
 	MT8186_DAI_NUM,
 };
-
 #define MT8186_RECORD_MEMIF MT8186_MEMIF_VUL12
 #define MT8186_ECHO_REF_MEMIF MT8186_MEMIF_AWB
 #define MT8186_PRIMARY_MEMIF MT8186_MEMIF_DL1
@@ -69,7 +59,6 @@ enum {
 #define MT8186_MMAP_DL_MEMIF MT8186_MEMIF_DL5
 #define MT8186_MMAP_UL_MEMIF MT8186_MEMIF_VUL5
 #define MT8186_BARGEIN_MEMIF MT8186_MEMIF_AWB
-
 enum {
 	MT8186_IRQ_0,
 	MT8186_IRQ_1,
@@ -100,31 +89,24 @@ enum {
 	MT8186_IRQ_26,
 	MT8186_IRQ_NUM,
 };
-
 enum {
 	MT8186_AFE_IRQ_DIR_MCU = 0,
 	MT8186_AFE_IRQ_DIR_DSP,
 	MT8186_AFE_IRQ_DIR_BOTH,
 };
-
 enum {
 	MTKAIF_PROTOCOL_1 = 0,
 	MTKAIF_PROTOCOL_2,
 	MTKAIF_PROTOCOL_2_CLK_P2,
 };
-
 enum {
 	MTK_AFE_ADDA_DL_GAIN_MUTE = 0,
 	MTK_AFE_ADDA_DL_GAIN_NORMAL = 0xf74f,
-	/* SA suggest apply -0.3db to audio/speech path */
 };
-
 #define MTK_SPK_I2S_0_STR "MTK_SPK_I2S_0"
 #define MTK_SPK_I2S_1_STR "MTK_SPK_I2S_1"
 #define MTK_SPK_I2S_2_STR "MTK_SPK_I2S_2"
 #define MTK_SPK_I2S_3_STR "MTK_SPK_I2S_3"
-
-/* MCLK */
 enum {
 	MT8186_I2S0_MCK = 0,
 	MT8186_I2S1_MCK,
@@ -133,11 +115,9 @@ enum {
 	MT8186_TDM_MCK,
 	MT8186_MCK_NUM,
 };
-
 struct snd_pcm_substream;
 struct mtk_base_irq_data;
 struct clk;
-
 struct mt8186_afe_private {
 	struct clk **clk;
 	struct clk_lookup **lookup;
@@ -150,15 +130,9 @@ struct mt8186_afe_private {
 	int sgen_mode;
 	int sgen_rate;
 	int sgen_amplitude;
-
-	/* xrun assert */
 	int xrun_assert[MT8186_MEMIF_NUM];
-
-	/* dai */
 	bool dai_on[MT8186_DAI_NUM];
 	void *dai_priv[MT8186_DAI_NUM];
-
-	/* adda */
 	bool mtkaif_calibration_ok;
 	int mtkaif_protocol;
 	int mtkaif_chosen_phase[4];
@@ -167,11 +141,8 @@ struct mt8186_afe_private {
 	int mtkaif_dmic;
 	int mtkaif_looback0;
 	int mtkaif_looback1;
-
-	/* mck */
 	int mck_rate[MT8186_MCK_NUM];
 };
-
 int mt8186_dai_adda_register(struct mtk_base_afe *afe);
 int mt8186_dai_i2s_register(struct mtk_base_afe *afe);
 int mt8186_dai_tdm_register(struct mtk_base_afe *afe);
@@ -179,20 +150,15 @@ int mt8186_dai_hw_gain_register(struct mtk_base_afe *afe);
 int mt8186_dai_src_register(struct mtk_base_afe *afe);
 int mt8186_dai_pcm_register(struct mtk_base_afe *afe);
 int mt8186_dai_hostless_register(struct mtk_base_afe *afe);
-
 int mt8186_add_misc_control(struct snd_soc_component *component);
-
 unsigned int mt8186_general_rate_transform(struct device *dev,
 					   unsigned int rate);
 unsigned int mt8186_rate_transform(struct device *dev,
 				   unsigned int rate, int aud_blk);
 unsigned int mt8186_tdm_relatch_rate_transform(struct device *dev,
 					       unsigned int rate);
-
 int mt8186_dai_i2s_set_share(struct mtk_base_afe *afe, const char *main_i2s_name,
 			     const char *secondary_i2s_name);
-
 int mt8186_dai_set_priv(struct mtk_base_afe *afe, int id,
 			int priv_size, const void *priv_data);
-
 #endif

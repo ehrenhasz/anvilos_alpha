@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __RTC_SA1100_H__
 #define __RTC_SA1100_H__
-
 #include <linux/kernel.h>
-
 struct clk;
 struct platform_device;
-
 struct sa1100_rtc {
 	spinlock_t		lock;
 	void __iomem		*rcnr;
@@ -18,7 +14,5 @@ struct sa1100_rtc {
 	struct rtc_device	*rtc;
 	struct clk		*clk;
 };
-
 int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info);
-
 #endif

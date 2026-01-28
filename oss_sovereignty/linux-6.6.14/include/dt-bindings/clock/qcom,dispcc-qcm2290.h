@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_QCM2290_H
 #define _DT_BINDINGS_CLK_QCOM_DISP_CC_QCM2290_H
-
-/* DISP_CC clocks */
 #define DISP_CC_PLL0				0
 #define DISP_CC_MDSS_AHB_CLK			1
 #define DISP_CC_MDSS_AHB_CLK_SRC		2
@@ -28,11 +21,6 @@
 #define DISP_CC_SLEEP_CLK_SRC			18
 #define DISP_CC_XO_CLK				19
 #define DISP_CC_XO_CLK_SRC			20
-
-/* GDSCs */
 #define MDSS_GDSC				0
-
-/* Resets */
 #define DISP_CC_MDSS_CORE_BCR			0
-
 #endif

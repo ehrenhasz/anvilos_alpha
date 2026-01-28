@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_IMX35_PINFUNC_H
 #define __DTS_IMX35_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX35_PAD_CAPTURE__GPT_CAPIN1				0x004 0x328 0x000 0x0 0x0
 #define MX35_PAD_CAPTURE__GPT_CMPOUT2				0x004 0x328 0x000 0x1 0x0
 #define MX35_PAD_CAPTURE__CSPI2_SS1				0x004 0x328 0x7f4 0x2 0x0
@@ -962,5 +952,4 @@
 #define MX35_PAD_FEC_TDATA3__GPIO3_23				0x324 0x788 0x000 0x5 0x0
 #define MX35_PAD_EXT_ARMCLK__CCM_EXT_ARMCLK			0x000 0x78c 0x000 0x0 0x0
 #define MX35_PAD_TEST_MODE__TCU_TEST_MODE			0x000 0x790 0x000 0x0 0x0
-
-#endif /* __DTS_IMX35_PINFUNC_H */
+#endif  

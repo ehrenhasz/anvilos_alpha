@@ -1,29 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010-2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
-
 #ifndef __INPUT_FORMATTER_LOCAL_H_INCLUDED__
 #define __INPUT_FORMATTER_LOCAL_H_INCLUDED__
-
 #include "input_formatter_global.h"
-
-#include "isp.h"		/* ISP_VEC_ALIGN */
-
+#include "isp.h"		 
 typedef struct input_formatter_switch_state_s	input_formatter_switch_state_t;
 typedef struct input_formatter_state_s			input_formatter_state_t;
 typedef struct input_formatter_bin_state_s		input_formatter_bin_state_t;
-
 #define HIVE_IF_FSM_SYNC_STATUS                 0x100
 #define HIVE_IF_FSM_SYNC_COUNTER                0x104
 #define HIVE_IF_FSM_DEINTERLEAVING_IDX          0x114
@@ -36,38 +17,13 @@ typedef struct input_formatter_bin_state_s		input_formatter_bin_state_t;
 #define HIVE_IF_FSM_VECTOR_SUPPORT_BUFF_FULL    0x130
 #define HIVE_IF_FSM_VECTOR_SUPPORT              0x134
 #define HIVE_IF_FIFO_SENSOR_STATUS              0x138
-
-/*
- * The switch LUT's coding defines a sink for each
- * single channel ID + channel format type. Conversely
- * the sink (i.e. an input formatter) can be reached
- * from multiple channel & format type combinations
- *
- * LUT[0,1] channel=0, format type {0,1,...31}
- * LUT[2,3] channel=1, format type {0,1,...31}
- * LUT[4,5] channel=2, format type {0,1,...31}
- * LUT[6,7] channel=3, format type {0,1,...31}
- *
- * Each register hold 16 2-bit fields encoding the sink
- * {0,1,2,3}, "0" means unconnected.
- *
- * The single FSYNCH register uses four 3-bit fields of 1-hot
- * encoded sink information, "0" means unconnected.
- *
- * The encoding is redundant. The FSYNCH setting will connect
- * a channel to a sink. At that point the LUT's belonging to
- * that channel can be directed to another sink. Thus the data
- * goes to another place than the synch
- */
 struct input_formatter_switch_state_s {
 	int	if_input_switch_lut_reg[8];
 	int	if_input_switch_fsync_lut;
 	int	if_input_switch_ch_id_fmt_type;
 	bool if_input_switch_map[HIVE_SWITCH_N_CHANNELS][HIVE_SWITCH_N_FORMATTYPES];
 };
-
 struct input_formatter_state_s {
-	/*	int	reset; */
 	int	start_line;
 	int	start_column;
 	int	cropped_height;
@@ -102,7 +58,6 @@ struct input_formatter_state_s {
 	int	vector_support;
 	int	sensor_data_lost;
 };
-
 struct input_formatter_bin_state_s {
 	u32	reset;
 	u32	input_endianness;
@@ -114,5 +69,4 @@ struct input_formatter_bin_state_s {
 	u32	is_2ppc;
 	u32	en_status_update;
 };
-
-#endif /* __INPUT_FORMATTER_LOCAL_H_INCLUDED__ */
+#endif  

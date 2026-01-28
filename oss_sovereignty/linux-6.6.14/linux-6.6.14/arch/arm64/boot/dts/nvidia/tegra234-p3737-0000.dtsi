@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-
 #include <dt-bindings/sound/rt5640.h>
-
 / {
 	compatible = "nvidia,p3737-0000";
-
 	bus@0 {
 		aconnect@2900000 {
 			ahub@2900800 {
@@ -20,14 +16,11 @@
 				};
 			};
 		};
-
 		i2c@3160000 {
 			status = "okay";
-
 			eeprom@56 {
 				compatible = "atmel,24c02";
 				reg = <0x56>;
-
 				label = "system";
 				vcc-supply = <&vdd_1v8_sys>;
 				address-width = <8>;
@@ -36,10 +29,8 @@
 				read-only;
 			};
 		};
-
 		i2c@31e0000 {
 			status = "okay";
-
 			audio-codec@1c {
 				compatible = "realtek,rt5640";
 				reg = <0x1c>;
@@ -51,7 +42,6 @@
 				realtek,dmic2-data-pin = <RT5640_DMIC2_DATA_PIN_NONE>;
 				realtek,jack-detect-source = <RT5640_JD_SRC_HDA_HEADER>;
 				sound-name-prefix = "CVB-RT";
-
 				port {
 					rt5640_ep: endpoint {
 						remote-endpoint = <&i2s1_dap>;
@@ -60,26 +50,21 @@
 				};
 			};
 		};
-
 		pwm@3280000 {
 			status = "okay";
 		};
-
 		pwm@32c0000 {
 			status = "okay";
 		};
-
 		pwm@32f0000 {
 			status = "okay";
 		};
 	};
-
 	fan: pwm-fan {
 		compatible = "pwm-fan";
 		pwms = <&pwm3 0 45334>;
 		#cooling-cells = <2>;
 	};
-
 	vdd_1v8_sys: regulator-vdd-1v8-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "VDD_1V8_SYS";

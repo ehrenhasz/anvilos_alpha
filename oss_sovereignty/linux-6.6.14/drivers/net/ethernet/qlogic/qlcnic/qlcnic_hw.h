@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
-
 #ifndef __QLCNIC_HW_H
 #define __QLCNIC_HW_H
-
-/* Common registers in 83xx and 82xx */
 enum qlcnic_regs {
 	QLCNIC_PEG_HALT_STATUS1 = 0,
 	QLCNIC_PEG_HALT_STATUS2,
@@ -33,23 +25,14 @@ enum qlcnic_regs {
 	QLCNIC_FLASH_LOCK,
 	QLCNIC_FLASH_UNLOCK,
 };
-
-/* Read from an address offset from BAR0, existing registers */
 #define QLC_SHARED_REG_RD32(a, addr)			\
 	readl(((a)->ahw->pci_base0) + ((a)->ahw->reg_tbl[addr]))
-
-/* Write to an address offset from BAR0, existing registers */
 #define QLC_SHARED_REG_WR32(a, addr, value)		\
 	writel(value, ((a)->ahw->pci_base0) + ((a)->ahw->reg_tbl[addr]))
-
-/* Read from a direct address offset from BAR0, additional registers */
 #define QLCRDX(ahw, addr)	\
 	readl(((ahw)->pci_base0) + ((ahw)->ext_reg_tbl[addr]))
-
-/* Write to a direct address offset from BAR0, additional registers */
 #define QLCWRX(ahw, addr, value)	\
 	writel(value, (((ahw)->pci_base0) + ((ahw)->ext_reg_tbl[addr])))
-
 #define QLCNIC_CMD_CONFIGURE_IP_ADDR		0x1
 #define QLCNIC_CMD_CONFIG_INTRPT		0x2
 #define QLCNIC_CMD_CREATE_RX_CTX		0x7
@@ -109,18 +92,15 @@ enum qlcnic_regs {
 #define QLCNIC_CMD_83XX_SET_DRV_VER		0x6F
 #define QLCNIC_CMD_ADD_RCV_RINGS		0x0B
 #define QLCNIC_CMD_83XX_EXTEND_ISCSI_DUMP_CAP	0x37
-
 #define QLCNIC_INTRPT_INTX			1
 #define QLCNIC_INTRPT_MSIX			3
 #define QLCNIC_INTRPT_ADD			1
 #define QLCNIC_INTRPT_DEL			2
-
 #define QLCNIC_GET_CURRENT_MAC			1
 #define QLCNIC_SET_STATION_MAC			2
 #define QLCNIC_GET_DEFAULT_MAC			3
 #define QLCNIC_GET_FAC_DEF_MAC			4
 #define QLCNIC_SET_FAC_DEF_MAC			5
-
 #define QLCNIC_MBX_LINK_EVENT		0x8001
 #define QLCNIC_MBX_BC_EVENT		0x8002
 #define QLCNIC_MBX_COMP_EVENT		0x8100
@@ -129,30 +109,22 @@ enum qlcnic_regs {
 #define QLCNIC_MBX_DCBX_CONFIG_CHANGE_EVENT	0x8110
 #define QLCNIC_MBX_SFP_INSERT_EVENT	0x8130
 #define QLCNIC_MBX_SFP_REMOVE_EVENT	0x8131
-
 struct qlcnic_mailbox_metadata {
 	u32 cmd;
 	u32 in_args;
 	u32 out_args;
 };
-
-/* Mailbox ownership */
 #define QLCNIC_GET_OWNER(val)	((val) & (BIT_0 | BIT_1))
-
 #define QLCNIC_SET_OWNER        1
 #define QLCNIC_CLR_OWNER        0
 #define QLCNIC_MBX_TIMEOUT      5000
-
 #define QLCNIC_MBX_RSP_OK	1
 #define QLCNIC_MBX_PORT_RSP_OK	0x1a
 #define QLCNIC_MBX_ASYNC_EVENT	BIT_15
-
-/* Set HW Tx ring limit for 82xx adapter. */
 #define QLCNIC_MAX_HW_TX_RINGS		8
 #define QLCNIC_MAX_HW_VNIC_TX_RINGS	4
 #define QLCNIC_MAX_TX_RINGS		8
 #define QLCNIC_MAX_SDS_RINGS		8
-
 struct qlcnic_pci_info;
 struct qlcnic_info;
 struct qlcnic_cmd_args;
@@ -163,7 +135,6 @@ struct qlcnic_host_tx_ring;
 struct qlcnic_hardware_context;
 struct qlcnic_adapter;
 struct qlcnic_fw_dump;
-
 int qlcnic_82xx_hw_read_wx_2M(struct qlcnic_adapter *adapter, ulong, int *);
 int qlcnic_82xx_hw_write_wx_2M(struct qlcnic_adapter *, ulong, u32);
 int qlcnic_82xx_config_hw_lro(struct qlcnic_adapter *adapter, int);
@@ -215,11 +186,10 @@ int qlcnic_82xx_shutdown(struct pci_dev *);
 int qlcnic_82xx_resume(struct qlcnic_adapter *);
 void qlcnic_clr_all_drv_state(struct qlcnic_adapter *adapter, u8 failed);
 void qlcnic_fw_poll_work(struct work_struct *work);
-
 u32 qlcnic_82xx_get_saved_state(void *, u32);
 void qlcnic_82xx_set_saved_state(void *, u32, u32);
 void qlcnic_82xx_cache_tmpl_hdr_values(struct qlcnic_fw_dump *);
 u32 qlcnic_82xx_get_cap_size(void *, int);
 void qlcnic_82xx_set_sys_info(void *, int, u32);
 void qlcnic_82xx_store_cap_mask(void *, u32);
-#endif				/* __QLCNIC_HW_H_ */
+#endif				 

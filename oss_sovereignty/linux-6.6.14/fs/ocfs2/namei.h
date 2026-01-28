@@ -1,22 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * namei.h
- *
- * Function prototypes
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
-
 #ifndef OCFS2_NAMEI_H
 #define OCFS2_NAMEI_H
-
 #define OCFS2_DIO_ORPHAN_PREFIX "dio-"
 #define OCFS2_DIO_ORPHAN_PREFIX_LEN 4
-
 extern const struct inode_operations ocfs2_dir_iops;
-
 struct dentry *ocfs2_get_parent(struct dentry *child);
-
 int ocfs2_orphan_del(struct ocfs2_super *osb,
 		     handle_t *handle,
 		     struct inode *orphan_dir_inode,
@@ -34,5 +21,4 @@ int ocfs2_del_inode_from_orphan(struct ocfs2_super *osb,
 int ocfs2_mv_orphaned_inode_to_new(struct inode *dir,
 				   struct inode *new_inode,
 				   struct dentry *new_dentry);
-
-#endif /* OCFS2_NAMEI_H */
+#endif  

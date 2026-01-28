@@ -1,45 +1,30 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
- * All rights reserved.
- * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
- */
-
 #ifndef IB_PMA_H
 #define IB_PMA_H
-
 #include <rdma/ib_mad.h>
-
-/*
- * PMA class portinfo capability mask bits
- */
 #define IB_PMA_CLASS_CAP_ALLPORTSELECT  cpu_to_be16(1 << 8)
 #define IB_PMA_CLASS_CAP_EXT_WIDTH      cpu_to_be16(1 << 9)
 #define IB_PMA_CLASS_CAP_EXT_WIDTH_NOIETF cpu_to_be16(1 << 10)
 #define IB_PMA_CLASS_CAP_XMIT_WAIT      cpu_to_be16(1 << 12)
-
 #define IB_PMA_CLASS_PORT_INFO          cpu_to_be16(0x0001)
 #define IB_PMA_PORT_SAMPLES_CONTROL     cpu_to_be16(0x0010)
 #define IB_PMA_PORT_SAMPLES_RESULT      cpu_to_be16(0x0011)
 #define IB_PMA_PORT_COUNTERS            cpu_to_be16(0x0012)
 #define IB_PMA_PORT_COUNTERS_EXT        cpu_to_be16(0x001D)
 #define IB_PMA_PORT_SAMPLES_RESULT_EXT  cpu_to_be16(0x001E)
-
 struct ib_pma_mad {
 	struct ib_mad_hdr mad_hdr;
 	u8 reserved[40];
 	u8 data[192];
 } __packed;
-
 struct ib_pma_portsamplescontrol {
 	u8 opcode;
 	u8 port_select;
 	u8 tick;
-	u8 counter_width;		/* resv: 7:3, counter width: 2:0 */
-	__be32 counter_mask0_9;		/* 2, 10 3-bit fields */
-	__be16 counter_mask10_14;	/* 1, 5 3-bit fields */
+	u8 counter_width;		 
+	__be32 counter_mask0_9;		 
+	__be16 counter_mask10_14;	 
 	u8 sample_mechanisms;
-	u8 sample_status;		/* only lower 2 bits */
+	u8 sample_status;		 
 	__be64 option_mask;
 	__be64 vendor_mask;
 	__be32 sample_start;
@@ -50,20 +35,17 @@ struct ib_pma_portsamplescontrol {
 	__be64 samples_only_option_mask;
 	__be32 reserved2[28];
 };
-
 struct ib_pma_portsamplesresult {
 	__be16 tag;
-	__be16 sample_status;   /* only lower 2 bits */
+	__be16 sample_status;    
 	__be32 counter[15];
 };
-
 struct ib_pma_portsamplesresult_ext {
 	__be16 tag;
-	__be16 sample_status;   /* only lower 2 bits */
-	__be32 extended_width;  /* only upper 2 bits */
+	__be16 sample_status;    
+	__be32 extended_width;   
 	__be64 counter[15];
 };
-
 struct ib_pma_portcounters {
 	u8 reserved;
 	u8 port_select;
@@ -78,7 +60,7 @@ struct ib_pma_portcounters {
 	u8 port_xmit_constraint_errors;
 	u8 port_rcv_constraint_errors;
 	u8 reserved1;
-	u8 link_overrun_errors; /* LocalLink: 7:4, BufferOverrun: 3:0 */
+	u8 link_overrun_errors;  
 	__be16 reserved2;
 	__be16 vl15_dropped;
 	__be32 port_xmit_data;
@@ -87,8 +69,6 @@ struct ib_pma_portcounters {
 	__be32 port_rcv_packets;
 	__be32 port_xmit_wait;
 } __packed;
-
-
 #define IB_PMA_SEL_SYMBOL_ERROR                 cpu_to_be16(0x0001)
 #define IB_PMA_SEL_LINK_ERROR_RECOVERY          cpu_to_be16(0x0002)
 #define IB_PMA_SEL_LINK_DOWNED                  cpu_to_be16(0x0004)
@@ -102,7 +82,6 @@ struct ib_pma_portcounters {
 #define IB_PMA_SEL_PORT_RCV_DATA                cpu_to_be16(0x2000)
 #define IB_PMA_SEL_PORT_XMIT_PACKETS            cpu_to_be16(0x4000)
 #define IB_PMA_SEL_PORT_RCV_PACKETS             cpu_to_be16(0x8000)
-
 struct ib_pma_portcounters_ext {
 	u8 reserved;
 	u8 port_select;
@@ -117,7 +96,6 @@ struct ib_pma_portcounters_ext {
 	__be64 port_multicast_xmit_packets;
 	__be64 port_multicast_rcv_packets;
 } __packed;
-
 #define IB_PMA_SELX_PORT_XMIT_DATA              cpu_to_be16(0x0001)
 #define IB_PMA_SELX_PORT_RCV_DATA               cpu_to_be16(0x0002)
 #define IB_PMA_SELX_PORT_XMIT_PACKETS           cpu_to_be16(0x0004)
@@ -126,5 +104,4 @@ struct ib_pma_portcounters_ext {
 #define IB_PMA_SELX_PORT_UNI_RCV_PACKETS        cpu_to_be16(0x0020)
 #define IB_PMA_SELX_PORT_MULTI_XMIT_PACKETS     cpu_to_be16(0x0040)
 #define IB_PMA_SELX_PORT_MULTI_RCV_PACKETS      cpu_to_be16(0x0080)
-
-#endif /* IB_PMA_H */
+#endif  

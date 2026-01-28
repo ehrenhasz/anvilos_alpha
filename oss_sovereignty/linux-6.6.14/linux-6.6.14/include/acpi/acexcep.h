@@ -1,73 +1,36 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/******************************************************************************
- *
- * Name: acexcep.h - Exception codes returned by the ACPI subsystem
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
-
 #ifndef __ACEXCEP_H__
 #define __ACEXCEP_H__
-
-/* This module contains all possible exception codes for acpi_status */
-
-/*
- * Exception code classes
- */
-#define AE_CODE_ENVIRONMENTAL           0x0000	/* General ACPICA environment */
-#define AE_CODE_PROGRAMMER              0x1000	/* External ACPICA interface caller */
-#define AE_CODE_ACPI_TABLES             0x2000	/* ACPI tables */
-#define AE_CODE_AML                     0x3000	/* From executing AML code */
-#define AE_CODE_CONTROL                 0x4000	/* Internal control codes */
-
+#define AE_CODE_ENVIRONMENTAL           0x0000	 
+#define AE_CODE_PROGRAMMER              0x1000	 
+#define AE_CODE_ACPI_TABLES             0x2000	 
+#define AE_CODE_AML                     0x3000	 
+#define AE_CODE_CONTROL                 0x4000	 
 #define AE_CODE_MAX                     0x4000
 #define AE_CODE_MASK                    0xF000
-
-/*
- * Macros to insert the exception code classes
- */
 #define EXCEP_ENV(code)                 ((acpi_status) (code | AE_CODE_ENVIRONMENTAL))
 #define EXCEP_PGM(code)                 ((acpi_status) (code | AE_CODE_PROGRAMMER))
 #define EXCEP_TBL(code)                 ((acpi_status) (code | AE_CODE_ACPI_TABLES))
 #define EXCEP_AML(code)                 ((acpi_status) (code | AE_CODE_AML))
 #define EXCEP_CTL(code)                 ((acpi_status) (code | AE_CODE_CONTROL))
-
-/*
- * Exception info table. The "Description" field is used only by the
- * ACPICA help application (acpihelp).
- */
 struct acpi_exception_info {
 	char *name;
-
 #if defined (ACPI_HELP_APP) || defined (ACPI_ASL_COMPILER)
 	char *description;
 #endif
 };
-
 #if defined (ACPI_HELP_APP) || defined (ACPI_ASL_COMPILER)
 #define EXCEP_TXT(name,description)     {name, description}
 #else
 #define EXCEP_TXT(name,description)     {name}
 #endif
-
-/*
- * Success is always zero, failure is non-zero
- */
 #define ACPI_SUCCESS(a)                 (!(a))
 #define ACPI_FAILURE(a)                 (a)
-
 #define AE_OK                           (acpi_status) 0x0000
-
 #define ACPI_ENV_EXCEPTION(status)      (((status) & AE_CODE_MASK) == AE_CODE_ENVIRONMENTAL)
 #define ACPI_AML_EXCEPTION(status)      (((status) & AE_CODE_MASK) == AE_CODE_AML)
 #define ACPI_PROG_EXCEPTION(status)     (((status) & AE_CODE_MASK) == AE_CODE_PROGRAMMER)
 #define ACPI_TABLE_EXCEPTION(status)    (((status) & AE_CODE_MASK) == AE_CODE_ACPI_TABLES)
 #define ACPI_CNTL_EXCEPTION(status)     (((status) & AE_CODE_MASK) == AE_CODE_CONTROL)
-
-/*
- * Environmental exceptions
- */
 #define AE_ERROR                        EXCEP_ENV (0x0001)
 #define AE_NO_ACPI_TABLES               EXCEP_ENV (0x0002)
 #define AE_NO_NAMESPACE                 EXCEP_ENV (0x0003)
@@ -103,12 +66,7 @@ struct acpi_exception_info {
 #define AE_DECIMAL_OVERFLOW             EXCEP_ENV (0x0021)
 #define AE_OCTAL_OVERFLOW               EXCEP_ENV (0x0022)
 #define AE_END_OF_TABLE                 EXCEP_ENV (0x0023)
-
 #define AE_CODE_ENV_MAX                 0x0023
-
-/*
- * Programmer exceptions
- */
 #define AE_BAD_PARAMETER                EXCEP_PGM (0x0001)
 #define AE_BAD_CHARACTER                EXCEP_PGM (0x0002)
 #define AE_BAD_PATHNAME                 EXCEP_PGM (0x0003)
@@ -118,24 +76,13 @@ struct acpi_exception_info {
 #define AE_BAD_DECIMAL_CONSTANT         EXCEP_PGM (0x0007)
 #define AE_MISSING_ARGUMENTS            EXCEP_PGM (0x0008)
 #define AE_BAD_ADDRESS                  EXCEP_PGM (0x0009)
-
 #define AE_CODE_PGM_MAX                 0x0009
-
-/*
- * Acpi table exceptions
- */
 #define AE_BAD_SIGNATURE                EXCEP_TBL (0x0001)
 #define AE_BAD_HEADER                   EXCEP_TBL (0x0002)
 #define AE_BAD_CHECKSUM                 EXCEP_TBL (0x0003)
 #define AE_BAD_VALUE                    EXCEP_TBL (0x0004)
 #define AE_INVALID_TABLE_LENGTH         EXCEP_TBL (0x0005)
-
 #define AE_CODE_TBL_MAX                 0x0005
-
-/*
- * AML exceptions. These are caused by problems with
- * the actual AML byte stream
- */
 #define AE_AML_BAD_OPCODE               EXCEP_AML (0x0001)
 #define AE_AML_NO_OPERAND               EXCEP_AML (0x0002)
 #define AE_AML_OPERAND_TYPE             EXCEP_AML (0x0003)
@@ -173,12 +120,7 @@ struct acpi_exception_info {
 #define AE_AML_TARGET_TYPE              EXCEP_AML (0x0023)
 #define AE_AML_PROTOCOL                 EXCEP_AML (0x0024)
 #define AE_AML_BUFFER_LENGTH            EXCEP_AML (0x0025)
-
 #define AE_CODE_AML_MAX                 0x0025
-
-/*
- * Internal exceptions used for control
- */
 #define AE_CTRL_RETURN_VALUE            EXCEP_CTL (0x0001)
 #define AE_CTRL_PENDING                 EXCEP_CTL (0x0002)
 #define AE_CTRL_TERMINATE               EXCEP_CTL (0x0003)
@@ -191,17 +133,8 @@ struct acpi_exception_info {
 #define AE_CTRL_CONTINUE                EXCEP_CTL (0x000A)
 #define AE_CTRL_PARSE_CONTINUE          EXCEP_CTL (0x000B)
 #define AE_CTRL_PARSE_PENDING           EXCEP_CTL (0x000C)
-
 #define AE_CODE_CTRL_MAX                0x000C
-
-/* Exception strings for acpi_format_exception */
-
 #ifdef ACPI_DEFINE_EXCEPTION_TABLE
-
-/*
- * String versions of the exception codes above
- * These strings must match the corresponding defines exactly
- */
 static const struct acpi_exception_info acpi_gbl_exception_names_env[] = {
 	EXCEP_TXT("AE_OK", "No error"),
 	EXCEP_TXT("AE_ERROR", "Unspecified error"),
@@ -253,7 +186,6 @@ static const struct acpi_exception_info acpi_gbl_exception_names_env[] = {
 		  "Overflow during ASCII octal-to-binary conversion"),
 	EXCEP_TXT("AE_END_OF_TABLE", "Reached the end of table")
 };
-
 static const struct acpi_exception_info acpi_gbl_exception_names_pgm[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_BAD_PARAMETER", "A parameter is out of range or invalid"),
@@ -272,7 +204,6 @@ static const struct acpi_exception_info acpi_gbl_exception_names_pgm[] = {
 		  "Too few arguments were passed to a control method"),
 	EXCEP_TXT("AE_BAD_ADDRESS", "An illegal null I/O address")
 };
-
 static const struct acpi_exception_info acpi_gbl_exception_names_tbl[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_BAD_SIGNATURE", "An ACPI table has an invalid signature"),
@@ -282,7 +213,6 @@ static const struct acpi_exception_info acpi_gbl_exception_names_tbl[] = {
 	EXCEP_TXT("AE_INVALID_TABLE_LENGTH",
 		  "The FADT or FACS has improper length")
 };
-
 static const struct acpi_exception_info acpi_gbl_exception_names_aml[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_AML_BAD_OPCODE", "Invalid AML opcode encountered"),
@@ -355,7 +285,6 @@ static const struct acpi_exception_info acpi_gbl_exception_names_aml[] = {
 	EXCEP_TXT("AE_AML_BUFFER_LENGTH",
 		  "The length of the buffer is invalid/incorrect")
 };
-
 static const struct acpi_exception_info acpi_gbl_exception_names_ctrl[] = {
 	EXCEP_TXT(NULL, NULL),
 	EXCEP_TXT("AE_CTRL_RETURN_VALUE", "A Method returned a value"),
@@ -371,7 +300,5 @@ static const struct acpi_exception_info acpi_gbl_exception_names_ctrl[] = {
 	EXCEP_TXT("AE_CTRL_PARSE_CONTINUE", "Used to skip over bad opcodes"),
 	EXCEP_TXT("AE_CTRL_PARSE_PENDING", "Used to implement AML While loops")
 };
-
-#endif				/* EXCEPTION_TABLE */
-
-#endif				/* __ACEXCEP_H__ */
+#endif				 
+#endif				 

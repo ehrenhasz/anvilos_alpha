@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2016 Freescale Semiconductor, Inc.
- * Copyright 2017 NXP
- */
-
 #ifndef __DTS_IMX7ULP_PINFUNC_H
 #define __DTS_IMX7ULP_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_conf_reg input_reg mux_mode input_val>
- */
-
 #define IMX7ULP_PAD_PTC0__PTC0                                       0x0000 0x0000 0x1 0x0
 #define IMX7ULP_PAD_PTC0__TRACE_D15                                  0x0000 0x0000 0xa 0x0
 #define IMX7ULP_PAD_PTC0__LPUART4_CTS_B                              0x0000 0x0244 0x4 0x1
@@ -474,5 +462,4 @@
 #define IMX7ULP_PAD_PTF19__LPSPI3_PCS0                               0x01cc 0x0310 0x3 0x3
 #define IMX7ULP_PAD_PTF19__TPM6_CH1                                  0x01cc 0x02d4 0x6 0x3
 #define IMX7ULP_PAD_PTF19__FB_AD31                                   0x01cc 0x0000 0x9 0x0
-
-#endif /* __DTS_IMX7ULP_PINFUNC_H */
+#endif  

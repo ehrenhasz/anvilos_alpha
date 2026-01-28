@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for Zarlink DVB-T ZL10353 demodulator
- *
- *  Copyright (C) 2006, 2007 Christopher Pascoe <c.pascoe@itee.uq.edu.au>
- */
-
 #ifndef _ZL10353_PRIV_
 #define _ZL10353_PRIV_
-
-#define ID_ZL10353	0x14 /* Zarlink ZL10353 */
-#define ID_CE6230	0x18 /* Intel CE6230 */
-#define ID_CE6231	0x19 /* Intel CE6231 */
-
+#define ID_ZL10353	0x14  
+#define ID_CE6230	0x18  
+#define ID_CE6231	0x19  
 #define msb(x) (((x) >> 8) & 0xff)
 #define lsb(x) ((x) & 0xff)
-
 enum zl10353_reg_addr {
 	INTERRUPT_0        = 0x00,
 	INTERRUPT_1        = 0x01,
@@ -61,5 +51,4 @@ enum zl10353_reg_addr {
 	FEC_LOCK_TIME      = 0xE8,
 	ACQ_DELAY          = 0xE9,
 };
-
-#endif                          /* _ZL10353_PRIV_ */
+#endif                           

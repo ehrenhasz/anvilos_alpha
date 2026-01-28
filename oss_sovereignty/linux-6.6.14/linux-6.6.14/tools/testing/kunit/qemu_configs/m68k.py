@@ -1,6 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
 from ..qemu_config import QemuArchParams
-
 QEMU_ARCH = QemuArchParams(linux_arch='m68k',
 			   kconfig='''
 CONFIG_VIRT=y''',

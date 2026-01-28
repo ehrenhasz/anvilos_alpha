@@ -1,52 +1,42 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/pwm/pwm.h>
 #include "rk3288.dtsi"
-
 / {
 	memory@0 {
 		device_type = "memory";
 		reg = <0x0 0x0 0x0 0x80000000>;
 	};
-
 	adc-keys {
 		compatible = "adc-keys";
 		io-channels = <&saradc 1>;
 		io-channel-names = "buttons";
 		keyup-threshold-microvolt = <1800000>;
-
 		button-up {
 			label = "Volume Up";
 			linux,code = <KEY_VOLUMEUP>;
 			press-threshold-microvolt = <100000>;
 		};
-
 		button-down {
 			label = "Volume Down";
 			linux,code = <KEY_VOLUMEDOWN>;
 			press-threshold-microvolt = <300000>;
 		};
-
 		button-menu {
 			label = "Menu";
 			linux,code = <KEY_MENU>;
 			press-threshold-microvolt = <640000>;
 		};
-
 		button-esc {
 			label = "Esc";
 			linux,code = <KEY_ESC>;
 			press-threshold-microvolt = <1000000>;
 		};
-
 		button-home  {
 			label = "Home";
 			linux,code = <KEY_HOME>;
 			press-threshold-microvolt = <1300000>;
 		};
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		brightness-levels = <
@@ -88,20 +78,17 @@
 		pinctrl-0 = <&bl_en>;
 		pwms = <&pwm0 0 1000000 PWM_POLARITY_INVERTED>;
 	};
-
 	ext_gmac: external-gmac-clock {
 		compatible = "fixed-clock";
 		clock-frequency = <125000000>;
 		clock-output-names = "ext_gmac";
 		#clock-cells = <0>;
 	};
-
 	panel: panel {
 		compatible = "lg,lp079qx1-sp0v";
 		backlight = <&backlight>;
 		enable-gpios = <&gpio7 RK_PA4 GPIO_ACTIVE_HIGH>;
 		pinctrl-0 = <&lcd_cs>;
-
 		ports {
 			panel_in: port {
 				panel_in_edp: endpoint {
@@ -110,14 +97,11 @@
 			};
 		};
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 		autorepeat;
-
 		pinctrl-names = "default";
 		pinctrl-0 = <&pwrbtn>;
-
 		key-power {
 			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
@@ -127,8 +111,6 @@
 			debounce-interval = <100>;
 		};
 	};
-
-	/* This turns on USB vbus for both host0 (ehci) and host1 (dwc2) */
 	vcc_host: vcc-host-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -139,7 +121,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vcc_phy: vcc-phy-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -152,7 +133,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vcc_sys: vsys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_sys";
@@ -161,12 +141,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
-	/*
-	 * NOTE: vcc_sd isn't hooked up on v1.0 boards where power comes from
-	 * vcc_io directly.  Those boards won't be able to power cycle SD cards
-	 * but it shouldn't hurt to toggle this pin there anyway.
-	 */
 	vcc_sd: sdmmc-regulator {
 		compatible = "regulator-fixed";
 		gpio = <&gpio7 RK_PB3 GPIO_ACTIVE_LOW>;
@@ -179,21 +153,17 @@
 		vin-supply = <&vcc_io>;
 	};
 };
-
 &cpu0 {
 	cpu0-supply = <&vdd_cpu>;
 };
-
 &edp {
 	force-hpd;
 	status = "okay";
-
 	ports {
 		edp_out: port@1 {
 			reg = <1>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			edp_out_panel: endpoint@0 {
 				reg = <0>;
 				remote-endpoint = <&panel_in_edp>;
@@ -201,11 +171,9 @@
 		};
 	};
 };
-
 &edp_phy {
 	status = "okay";
 };
-
 &emmc {
 	bus-width = <8>;
 	cap-mmc-highspeed;
@@ -215,25 +183,22 @@
 	pinctrl-0 = <&emmc_clk &emmc_cmd &emmc_pwr &emmc_bus8>;
 	status = "okay";
 };
-
 &saradc {
 	vref-supply = <&vcc_18>;
 	status = "okay";
 };
-
 &sdmmc {
 	bus-width = <4>;
 	cap-mmc-highspeed;
 	cap-sd-highspeed;
 	card-detect-delay = <200>;
-	disable-wp;			/* wp not hooked up */
+	disable-wp;			 
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_cd &sdmmc_bus4>;
 	status = "okay";
 	vmmc-supply = <&vcc_sd>;
 	vqmmc-supply = <&vccio_sd>;
 };
-
 &gmac {
 	phy-supply = <&vcc_phy>;
 	phy-mode = "rgmii";
@@ -249,155 +214,120 @@
 	rx_delay = <0x10>;
 	status = "okay";
 };
-
 &gpu {
 	mali-supply = <&vdd_gpu>;
 	status = "okay";
 };
-
 &hdmi {
 	ddc-i2c-bus = <&i2c5>;
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
 };
-
 &i2c5 {
 	status = "okay";
 };
-
 &wdt {
 	status = "okay";
 };
-
 &pwm0 {
 	status = "okay";
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &uart3 {
 	status = "okay";
 };
-
 &uart4 {
 	status = "okay";
 };
-
 &tsadc {
-	rockchip,hw-tshut-mode = <0>; /* tshut mode 0:CRU 1:GPIO */
-	rockchip,hw-tshut-polarity = <0>; /* tshut polarity 0:LOW 1:HIGH */
+	rockchip,hw-tshut-mode = <0>;  
+	rockchip,hw-tshut-polarity = <0>;  
 	status = "okay";
 };
-
 &pinctrl {
 	pcfg_pull_none_drv_8ma: pcfg-pull-none-drv-8ma {
 		drive-strength = <8>;
 	};
-
 	pcfg_pull_up_drv_8ma: pcfg-pull-up-drv-8ma {
 		bias-pull-up;
 		drive-strength = <8>;
 	};
-
 	backlight {
 		bl_en: bl-en {
 			rockchip,pins = <7 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	buttons {
 		pwrbtn: pwrbtn {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	lcd {
 		lcd_cs: lcd-cs {
 			rockchip,pins = <7 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	pmic {
 		pmic_int: pmic-int {
 			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
-
 	sdmmc {
-		/*
-		 * Default drive strength isn't enough to achieve even
-		 * high-speed mode on EVB board so bump up to 8ma.
-		 */
 		sdmmc_bus4: sdmmc-bus4 {
 			rockchip,pins = <6 RK_PC0 1 &pcfg_pull_up_drv_8ma>,
 					<6 RK_PC1 1 &pcfg_pull_up_drv_8ma>,
 					<6 RK_PC2 1 &pcfg_pull_up_drv_8ma>,
 					<6 RK_PC3 1 &pcfg_pull_up_drv_8ma>;
 		};
-
 		sdmmc_clk: sdmmc-clk {
 			rockchip,pins = <6 RK_PC4 1 &pcfg_pull_none_drv_8ma>;
 		};
-
 		sdmmc_cmd: sdmmc-cmd {
 			rockchip,pins = <6 RK_PC5 1 &pcfg_pull_up_drv_8ma>;
 		};
-
 		sdmmc_pwr: sdmmc-pwr {
 			rockchip,pins = <7 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	usb {
 		host_vbus_drv: host-vbus-drv {
 			rockchip,pins = <0 RK_PB6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
-
 	eth_phy {
 		eth_phy_pwr: eth-phy-pwr {
 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
-
 &usbphy {
 	status = "okay";
 };
-
 &usb_host0_ehci {
 	status = "okay";
 };
-
 &usb_host1 {
 	status = "okay";
 };
-
 &vopb {
 	status = "okay";
 };
-
 &vopb_mmu {
 	status = "okay";
 };
-
 &vopl {
 	status = "okay";
 };
-
 &vopl_mmu {
 	status = "okay";
 };

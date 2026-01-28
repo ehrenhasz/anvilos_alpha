@@ -1,12 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ATMEL_AES_REGS_H__
 #define __ATMEL_AES_REGS_H__
-
 #define AES_CR			0x00
 #define AES_CR_START		(1 << 0)
 #define AES_CR_SWRST		(1 << 8)
 #define AES_CR_LOADSEED		(1 << 16)
-
 #define	AES_MR			0x04
 #define AES_MR_CYPHER_DEC		(0 << 0)
 #define AES_MR_CYPHER_ENC		(1 << 0)
@@ -41,7 +38,6 @@
 #define AES_MR_CKEY_OFFSET		20
 #define AES_MR_CMTYP_MASK		(0x1F << 24)
 #define AES_MR_CMTYP_OFFSET		24
-
 #define	AES_IER		0x10
 #define	AES_IDR		0x14
 #define	AES_IMR		0x18
@@ -56,26 +52,23 @@
 #define AES_ISR_URAT_ODR_RD_SUBK	(0x3 << 12)
 #define AES_ISR_URAT_MR_WR_SUBK		(0x4 << 12)
 #define AES_ISR_URAT_WOR_RD			(0x5 << 12)
-
 #define AES_KEYWR(x)	(0x20 + ((x) * 0x04))
 #define AES_IDATAR(x)	(0x40 + ((x) * 0x04))
 #define AES_ODATAR(x)	(0x50 + ((x) * 0x04))
 #define AES_IVR(x)		(0x60 + ((x) * 0x04))
-
 #define AES_AADLENR	0x70
 #define AES_CLENR	0x74
 #define AES_GHASHR(x)	(0x78 + ((x) * 0x04))
 #define AES_TAGR(x)	(0x88 + ((x) * 0x04))
 #define AES_CTRR	0x98
 #define AES_GCMHR(x)	(0x9c + ((x) * 0x04))
-
 #define AES_EMR		0xb0
-#define AES_EMR_APEN		BIT(0)	/* Auto Padding Enable */
-#define AES_EMR_APM		BIT(1)	/* Auto Padding Mode */
+#define AES_EMR_APEN		BIT(0)	 
+#define AES_EMR_APM		BIT(1)	 
 #define AES_EMR_APM_IPSEC	0x0
 #define AES_EMR_APM_SSL		BIT(1)
-#define AES_EMR_PLIPEN		BIT(4)	/* PLIP Enable */
-#define AES_EMR_PLIPD		BIT(5)	/* PLIP Decipher */
+#define AES_EMR_PLIPEN		BIT(4)	 
+#define AES_EMR_PLIPD		BIT(5)	 
 #define AES_EMR_PADLEN_MASK	(0xFu << 8)
 #define AES_EMR_PADLEN_OFFSET	8
 #define AES_EMR_PADLEN(padlen)	(((padlen) << AES_EMR_PADLEN_OFFSET) &\
@@ -84,10 +77,7 @@
 #define AES_EMR_NHEAD_OFFSET	16
 #define AES_EMR_NHEAD(nhead)	(((nhead) << AES_EMR_NHEAD_OFFSET) &\
 				 AES_EMR_NHEAD_MASK)
-
 #define AES_TWR(x)	(0xc0 + ((x) * 0x04))
 #define AES_ALPHAR(x)	(0xd0 + ((x) * 0x04))
-
 #define AES_HW_VERSION	0xFC
-
-#endif /* __ATMEL_AES_REGS_H__ */
+#endif  

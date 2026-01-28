@@ -1,54 +1,40 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2020 NXP
- */
-
 /dts-v1/;
-
 #include <dt-bindings/phy/phy-imx8-pcie.h>
 #include <dt-bindings/usb/pd.h>
 #include "imx8mm.dtsi"
-
 / {
 	chosen {
 		stdout-path = &uart2;
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x0 0x40000000 0 0x80000000>;
 	};
-
 	hdmi-connector {
 		compatible = "hdmi-connector";
 		label = "hdmi";
 		type = "a";
-
 		port {
 			hdmi_connector_in: endpoint {
 				remote-endpoint = <&adv7535_out>;
 			};
 		};
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_led>;
-
 		status {
 			label = "status";
 			gpios = <&gpio3 16 GPIO_ACTIVE_HIGH>;
 			default-state = "on";
 		};
 	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 	};
-
 	reg_pcie0: regulator-pcie {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -59,7 +45,6 @@
 		gpio = <&gpio1 5 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_usdhc2_vmmc: regulator-usdhc2 {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -71,14 +56,12 @@
 		off-on-delay-us = <20000>;
 		enable-active-high;
 	};
-
 	reg_vddext_3v3: regulator-vddext-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "VDDEXT_3V3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm1 0 5000000 0>;
@@ -86,7 +69,6 @@
 		num-interpolated-steps = <255>;
 		default-brightness-level = <250>;
 	};
-
 	ir-receiver {
 		compatible = "gpio-ir-receiver";
 		gpios = <&gpio1 13 GPIO_ACTIVE_LOW>;
@@ -94,12 +76,10 @@
 		pinctrl-0 = <&pinctrl_ir>;
 		linux,autosuspend-period = <125>;
 	};
-
 	audio_codec_bt_sco: audio-codec-bt-sco {
 		compatible = "linux,bt-sco";
 		#sound-dai-cells = <1>;
 	};
-
 	wm8524: audio-codec {
 		#sound-dai-cells = <0>;
 		compatible = "wlf,wm8524";
@@ -107,7 +87,6 @@
 		pinctrl-0 = <&pinctrl_gpio_wlf>;
 		wlf,mute-gpios = <&gpio5 21 GPIO_ACTIVE_LOW>;
 	};
-
 	sound-bt-sco {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "bt-sco-audio";
@@ -115,18 +94,15 @@
 		simple-audio-card,bitclock-inversion;
 		simple-audio-card,frame-master = <&btcpu>;
 		simple-audio-card,bitclock-master = <&btcpu>;
-
 		btcpu: simple-audio-card,cpu {
 			sound-dai = <&sai2>;
 			dai-tdm-slot-num = <2>;
 			dai-tdm-slot-width = <16>;
 		};
-
 		simple-audio-card,codec {
 			sound-dai = <&audio_codec_bt_sco 1>;
 		};
 	};
-
 	sound-wm8524 {
 		compatible = "simple-audio-card";
 		simple-audio-card,name = "wm8524-audio";
@@ -139,36 +115,29 @@
 		simple-audio-card,routing =
 			"Left Line Out Jack", "LINEVOUTL",
 			"Right Line Out Jack", "LINEVOUTR";
-
 		cpudai: simple-audio-card,cpu {
 			sound-dai = <&sai3>;
 			dai-tdm-slot-num = <2>;
 			dai-tdm-slot-width = <32>;
 		};
-
 		simple-audio-card,codec {
 			sound-dai = <&wm8524>;
 			clocks = <&clk IMX8MM_CLK_SAI3_ROOT>;
 		};
 	};
 };
-
 &A53_0 {
 	cpu-supply = <&buck2_reg>;
 };
-
 &A53_1 {
 	cpu-supply = <&buck2_reg>;
 };
-
 &A53_2 {
 	cpu-supply = <&buck2_reg>;
 };
-
 &A53_3 {
 	cpu-supply = <&buck2_reg>;
 };
-
 &fec1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
@@ -176,11 +145,9 @@
 	phy-handle = <&ethphy0>;
 	fsl,magic-packet;
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		ethphy0: ethernet-phy@0 {
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
@@ -188,7 +155,6 @@
 			reset-assert-us = <10000>;
 			qca,disable-smarteee;
 			vddio-supply = <&vddio>;
-
 			vddio: vddio-regulator {
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
@@ -196,13 +162,11 @@
 		};
 	};
 };
-
 &i2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	pmic@4b {
 		compatible = "rohm,bd71847";
 		reg = <0x4b>;
@@ -211,11 +175,9 @@
 		interrupt-parent = <&gpio1>;
 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
 		rohm,reset-snvs-powered;
-
 		#clock-cells = <0>;
 		clocks = <&osc_32k>;
 		clock-output-names = "clk-32k-out";
-
 		regulators {
 			buck1_reg: BUCK1 {
 				regulator-name = "buck1";
@@ -225,7 +187,6 @@
 				regulator-always-on;
 				regulator-ramp-delay = <1250>;
 			};
-
 			buck2_reg: BUCK2 {
 				regulator-name = "buck2";
 				regulator-min-microvolt = <700000>;
@@ -236,43 +197,34 @@
 				rohm,dvs-run-voltage = <1000000>;
 				rohm,dvs-idle-voltage = <900000>;
 			};
-
 			buck3_reg: BUCK3 {
-				// BUCK5 in datasheet
 				regulator-name = "buck3";
 				regulator-min-microvolt = <700000>;
 				regulator-max-microvolt = <1350000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			buck4_reg: BUCK4 {
-				// BUCK6 in datasheet
 				regulator-name = "buck4";
 				regulator-min-microvolt = <3000000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			buck5_reg: BUCK5 {
-				// BUCK7 in datasheet
 				regulator-name = "buck5";
 				regulator-min-microvolt = <1605000>;
 				regulator-max-microvolt = <1995000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			buck6_reg: BUCK6 {
-				// BUCK8 in datasheet
 				regulator-name = "buck6";
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <1400000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			ldo1_reg: LDO1 {
 				regulator-name = "ldo1";
 				regulator-min-microvolt = <1600000>;
@@ -280,7 +232,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			ldo2_reg: LDO2 {
 				regulator-name = "ldo2";
 				regulator-min-microvolt = <800000>;
@@ -288,7 +239,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			ldo3_reg: LDO3 {
 				regulator-name = "ldo3";
 				regulator-min-microvolt = <1800000>;
@@ -296,7 +246,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			ldo4_reg: LDO4 {
 				regulator-name = "ldo4";
 				regulator-min-microvolt = <900000>;
@@ -304,7 +253,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
 			ldo6_reg: LDO6 {
 				regulator-name = "ldo6";
 				regulator-min-microvolt = <900000>;
@@ -315,13 +263,11 @@
 		};
 	};
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	hdmi@3d {
 		compatible = "adi,adv7535";
 		reg = <0x3d>;
@@ -334,30 +280,23 @@
 		a2vdd-supply = <&buck5_reg>;
 		v3p3-supply = <&reg_vddext_3v3>;
 		v1p2-supply = <&buck5_reg>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
-
 				adv7535_in: endpoint {
 					remote-endpoint = <&dsi_out>;
 				};
 			};
-
 			port@1 {
 				reg = <1>;
-
 				adv7535_out: endpoint {
 					remote-endpoint = <&hdmi_connector_in>;
 				};
 			};
-
 		};
 	};
-
 	ptn5110: tcpc@50 {
 		compatible = "nxp,ptn5110";
 		pinctrl-names = "default";
@@ -366,13 +305,11 @@
 		interrupt-parent = <&gpio2>;
 		interrupts = <11 8>;
 		status = "okay";
-
 		port {
 			typec1_dr_sw: endpoint {
 				remote-endpoint = <&usb1_drd_sw>;
 			};
 		};
-
 		typec1_con: connector {
 			compatible = "usb-c-connector";
 			label = "USB-C";
@@ -387,18 +324,14 @@
 		};
 	};
 };
-
-
 &csi {
 	status = "okay";
 };
-
 &i2c3 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
-
 	pca6416: gpio@20 {
 		compatible = "nxp,pca6416";
 		reg = <0x20>;
@@ -406,7 +339,6 @@
 		#gpio-cells = <2>;
 		vcc-supply = <&buck4_reg>;
 	};
-
 	camera@3c {
 		compatible = "ovti,ov5640";
 		reg = <0x3c>;
@@ -419,7 +351,6 @@
 		assigned-clock-rates = <24000000>;
 		powerdown-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
-
 		port {
 			ov5640_to_mipi_csi2: endpoint {
 				remote-endpoint = <&imx8mm_mipi_csi_in>;
@@ -429,14 +360,11 @@
 		};
 	};
 };
-
 &lcdif {
 	status = "okay";
 };
-
 &mipi_csi {
 	status = "okay";
-
 	ports {
 		port@0 {
 			imx8mm_mipi_csi_in: endpoint {
@@ -446,15 +374,12 @@
 		};
 	};
 };
-
 &mipi_dsi {
 	samsung,esc-clock-frequency = <10000000>;
 	status = "okay";
-
 	ports {
 		port@1 {
 			reg = <1>;
-
 			dsi_out: endpoint {
 				remote-endpoint = <&adv7535_in>;
 				data-lanes = <1 2 3 4>;
@@ -462,7 +387,6 @@
 		};
 	};
 };
-
 &pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
 	fsl,tx-deemph-gen1 = <0x2d>;
@@ -470,7 +394,6 @@
 	clocks = <&pcie0_refclk>;
 	status = "okay";
 };
-
 &pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
@@ -485,7 +408,6 @@
 	vpcie-supply = <&reg_pcie0>;
 	status = "okay";
 };
-
 &sai2 {
 	#sound-dai-cells = <0>;
 	pinctrl-names = "default";
@@ -495,7 +417,6 @@
 	assigned-clock-rates = <24576000>;
 	status = "okay";
 };
-
 &sai3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai3>;
@@ -504,21 +425,17 @@
 	assigned-clock-rates = <24576000>;
 	status = "okay";
 };
-
 &snvs_pwrkey {
 	status = "okay";
 };
-
-&uart2 { /* console */
+&uart2 {  
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &usbphynop1 {
 	wakeup-source;
 };
-
 &usbotg1 {
 	dr_mode = "otg";
 	hnp-disable;
@@ -529,14 +446,12 @@
 	samsung,picophy-pre-emp-curr-control = <3>;
 	samsung,picophy-dc-vol-level-adjust = <7>;
 	status = "okay";
-
 	port {
 		usb1_drd_sw: endpoint {
 			remote-endpoint = <&typec1_dr_sw>;
 		};
 	};
 };
-
 &usdhc2 {
 	assigned-clocks = <&clk IMX8MM_CLK_USDHC2>;
 	assigned-clock-rates = <200000000>;
@@ -549,20 +464,17 @@
 	vmmc-supply = <&reg_usdhc2_vmmc>;
 	status = "okay";
 };
-
 &wdog1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wdog>;
 	fsl,ext-reset-output;
 	status = "okay";
 };
-
 &pwm1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_backlight>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_fec1: fec1grp {
 		fsl,pins = <
@@ -583,71 +495,60 @@
 			MX8MM_IOMUXC_SAI2_RXC_GPIO4_IO22		0x19
 		>;
 	};
-
 	pinctrl_gpio_led: gpioledgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_READY_B_GPIO3_IO16	0x19
 		>;
 	};
-
 	pinctrl_ir: irgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO13_GPIO1_IO13              0x4f
 		>;
 	};
-
 	pinctrl_gpio_wlf: gpiowlfgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SDA_GPIO5_IO21	0xd6
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C1_SCL_I2C1_SCL			0x400001c3
 			MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA			0x400001c3
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C2_SCL_I2C2_SCL			0x400001c3
 			MX8MM_IOMUXC_I2C2_SDA_I2C2_SDA			0x400001c3
 		>;
 	};
-
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL			0x400001c3
 			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA			0x400001c3
 		>;
 	};
-
 	pinctrl_pcie0: pcie0grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SCL_PCIE1_CLKREQ_B    0x61
 			MX8MM_IOMUXC_SAI2_RXFS_GPIO4_IO21       0x41
 		>;
 	};
-
 	pinctrl_pcie0_reg: pcie0reggrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5       0x41
 		>;
 	};
-
 	pinctrl_pmic: pmicirqgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3		0x141
 		>;
 	};
-
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19	0x41
 		>;
 	};
-
 	pinctrl_sai2: sai2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI2_TXC_SAI2_TX_BCLK      0xd6
@@ -656,7 +557,6 @@
 			MX8MM_IOMUXC_SAI2_RXD0_SAI2_RX_DATA0    0xd6
 		>;
 	};
-
 	pinctrl_sai3: sai3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC     0xd6
@@ -665,26 +565,22 @@
 			MX8MM_IOMUXC_SAI3_TXD_SAI3_TX_DATA0     0xd6
 		>;
 	};
-
 	pinctrl_typec1: typec1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD1_STROBE_GPIO2_IO11	0x159
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
 			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX	0x140
 		>;
 	};
-
 	pinctrl_usdhc2_gpio: usdhc2grpgpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO15_GPIO1_IO15	0x1c4
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x190
@@ -696,7 +592,6 @@
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT	0x1d0
 		>;
 	};
-
 	pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x194
@@ -708,7 +603,6 @@
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT	0x1d0
 		>;
 	};
-
 	pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x196
@@ -720,19 +614,16 @@
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT	0x1d0
 		>;
 	};
-
 	pinctrl_wdog: wdoggrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	0x166
 		>;
 	};
-
 	pinctrl_backlight: backlightgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT	0x06
 		>;
 	};
-
 	pinctrl_camera: cameragrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19

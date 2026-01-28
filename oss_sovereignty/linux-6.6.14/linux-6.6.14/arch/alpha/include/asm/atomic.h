@@ -1,43 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ALPHA_ATOMIC_H
 #define _ALPHA_ATOMIC_H
-
 #include <linux/types.h>
 #include <asm/barrier.h>
 #include <asm/cmpxchg.h>
-
-/*
- * Atomic operations that C can't guarantee us.  Useful for
- * resource counting etc...
- *
- * But use these as seldom as possible since they are much slower
- * than regular operations.
- */
-
-/*
- * To ensure dependency ordering is preserved for the _relaxed and
- * _release atomics, an smp_mb() is unconditionally inserted into the
- * _relaxed variants, which are used to build the barriered versions.
- * Avoid redundant back-to-back fences in the _acquire and _fence
- * versions.
- */
 #define __atomic_acquire_fence()
 #define __atomic_post_full_fence()
-
 #define ATOMIC64_INIT(i)	{ (i) }
-
 #define arch_atomic_read(v)	READ_ONCE((v)->counter)
 #define arch_atomic64_read(v)	READ_ONCE((v)->counter)
-
 #define arch_atomic_set(v,i)	WRITE_ONCE((v)->counter, (i))
 #define arch_atomic64_set(v,i)	WRITE_ONCE((v)->counter, (i))
-
-/*
- * To get proper branch prediction for the main line, we must branch
- * forward to code at the end of this object's .text section, then
- * branch back to restart the operation.
- */
-
 #define ATOMIC_OP(op, asm_op)						\
 static __inline__ void arch_atomic_##op(int i, atomic_t * v)		\
 {									\
@@ -53,7 +25,6 @@ static __inline__ void arch_atomic_##op(int i, atomic_t * v)		\
 	:"=&r" (temp), "=m" (v->counter)				\
 	:"Ir" (i), "m" (v->counter));					\
 }									\
-
 #define ATOMIC_OP_RETURN(op, asm_op)					\
 static inline int arch_atomic_##op##_return_relaxed(int i, atomic_t *v)	\
 {									\
@@ -72,7 +43,6 @@ static inline int arch_atomic_##op##_return_relaxed(int i, atomic_t *v)	\
 	smp_mb();							\
 	return result;							\
 }
-
 #define ATOMIC_FETCH_OP(op, asm_op)					\
 static inline int arch_atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
 {									\
@@ -90,7 +60,6 @@ static inline int arch_atomic_fetch_##op##_relaxed(int i, atomic_t *v)	\
 	smp_mb();							\
 	return result;							\
 }
-
 #define ATOMIC64_OP(op, asm_op)						\
 static __inline__ void arch_atomic64_##op(s64 i, atomic64_t * v)	\
 {									\
@@ -106,7 +75,6 @@ static __inline__ void arch_atomic64_##op(s64 i, atomic64_t * v)	\
 	:"=&r" (temp), "=m" (v->counter)				\
 	:"Ir" (i), "m" (v->counter));					\
 }									\
-
 #define ATOMIC64_OP_RETURN(op, asm_op)					\
 static __inline__ s64							\
 arch_atomic64_##op##_return_relaxed(s64 i, atomic64_t * v)		\
@@ -126,7 +94,6 @@ arch_atomic64_##op##_return_relaxed(s64 i, atomic64_t * v)		\
 	smp_mb();							\
 	return result;							\
 }
-
 #define ATOMIC64_FETCH_OP(op, asm_op)					\
 static __inline__ s64							\
 arch_atomic64_fetch_##op##_relaxed(s64 i, atomic64_t * v)		\
@@ -145,7 +112,6 @@ arch_atomic64_fetch_##op##_relaxed(s64 i, atomic64_t * v)		\
 	smp_mb();							\
 	return result;							\
 }
-
 #define ATOMIC_OPS(op)							\
 	ATOMIC_OP(op, op##l)						\
 	ATOMIC_OP_RETURN(op, op##l)					\
@@ -153,45 +119,36 @@ arch_atomic64_fetch_##op##_relaxed(s64 i, atomic64_t * v)		\
 	ATOMIC64_OP(op, op##q)						\
 	ATOMIC64_OP_RETURN(op, op##q)					\
 	ATOMIC64_FETCH_OP(op, op##q)
-
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
-
 #define arch_atomic_add_return_relaxed		arch_atomic_add_return_relaxed
 #define arch_atomic_sub_return_relaxed		arch_atomic_sub_return_relaxed
 #define arch_atomic_fetch_add_relaxed		arch_atomic_fetch_add_relaxed
 #define arch_atomic_fetch_sub_relaxed		arch_atomic_fetch_sub_relaxed
-
 #define arch_atomic64_add_return_relaxed	arch_atomic64_add_return_relaxed
 #define arch_atomic64_sub_return_relaxed	arch_atomic64_sub_return_relaxed
 #define arch_atomic64_fetch_add_relaxed		arch_atomic64_fetch_add_relaxed
 #define arch_atomic64_fetch_sub_relaxed		arch_atomic64_fetch_sub_relaxed
-
 #define arch_atomic_andnot			arch_atomic_andnot
 #define arch_atomic64_andnot			arch_atomic64_andnot
-
 #undef ATOMIC_OPS
 #define ATOMIC_OPS(op, asm)						\
 	ATOMIC_OP(op, asm)						\
 	ATOMIC_FETCH_OP(op, asm)					\
 	ATOMIC64_OP(op, asm)						\
 	ATOMIC64_FETCH_OP(op, asm)
-
 ATOMIC_OPS(and, and)
 ATOMIC_OPS(andnot, bic)
 ATOMIC_OPS(or, bis)
 ATOMIC_OPS(xor, xor)
-
 #define arch_atomic_fetch_and_relaxed		arch_atomic_fetch_and_relaxed
 #define arch_atomic_fetch_andnot_relaxed	arch_atomic_fetch_andnot_relaxed
 #define arch_atomic_fetch_or_relaxed		arch_atomic_fetch_or_relaxed
 #define arch_atomic_fetch_xor_relaxed		arch_atomic_fetch_xor_relaxed
-
 #define arch_atomic64_fetch_and_relaxed		arch_atomic64_fetch_and_relaxed
 #define arch_atomic64_fetch_andnot_relaxed	arch_atomic64_fetch_andnot_relaxed
 #define arch_atomic64_fetch_or_relaxed		arch_atomic64_fetch_or_relaxed
 #define arch_atomic64_fetch_xor_relaxed		arch_atomic64_fetch_xor_relaxed
-
 #undef ATOMIC_OPS
 #undef ATOMIC64_FETCH_OP
 #undef ATOMIC64_OP_RETURN
@@ -199,7 +156,6 @@ ATOMIC_OPS(xor, xor)
 #undef ATOMIC_FETCH_OP
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
-
 static __inline__ int arch_atomic_fetch_add_unless(atomic_t *v, int a, int u)
 {
 	int c, new, old;
@@ -222,7 +178,6 @@ static __inline__ int arch_atomic_fetch_add_unless(atomic_t *v, int a, int u)
 	return old;
 }
 #define arch_atomic_fetch_add_unless arch_atomic_fetch_add_unless
-
 static __inline__ s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u)
 {
 	s64 c, new, old;
@@ -245,7 +200,6 @@ static __inline__ s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u
 	return old;
 }
 #define arch_atomic64_fetch_add_unless arch_atomic64_fetch_add_unless
-
 static inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
 {
 	s64 old, tmp;
@@ -267,5 +221,4 @@ static inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
 	return old - 1;
 }
 #define arch_atomic64_dec_if_positive arch_atomic64_dec_if_positive
-
-#endif /* _ALPHA_ATOMIC_H */
+#endif  

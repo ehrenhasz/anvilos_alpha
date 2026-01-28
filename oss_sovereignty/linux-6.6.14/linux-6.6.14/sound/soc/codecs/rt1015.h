@@ -1,22 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// rt1015.h  --  RT1015 ALSA SoC audio amplifier driver
-//
-// Copyright 2019 Realtek Semiconductor Corp.
-// Author: Jack Yu <jack.yu@realtek.com>
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License version 2 as
-// published by the Free Software Foundation.
-//
-
 #ifndef __RT1015_H__
 #define __RT1015_H__
 #include <sound/rt1015.h>
-
 #define RT1015_DEVICE_ID_VAL			0x1011
 #define RT1015_DEVICE_ID_VAL2			0x1015
-
 #define RT1015_RESET				0x0000
 #define RT1015_CLK2				0x0004
 #define RT1015_CLK3				0x0006
@@ -179,8 +165,6 @@
 #define RT1015_S_BST_TIMING_INTER34		0x1347
 #define RT1015_S_BST_TIMING_INTER35		0x1348
 #define RT1015_S_BST_TIMING_INTER36		0x1349
-
-/* 0x0004 */
 #define RT1015_CLK_SYS_PRE_SEL_MASK		(0x3 << 14)
 #define RT1015_CLK_SYS_PRE_SEL_SFT		14
 #define RT1015_CLK_SYS_PRE_SEL_MCLK		(0x0 << 14)
@@ -191,8 +175,6 @@
 #define RT1015_PLL_SEL_BCLK			(0x1 << 13)
 #define RT1015_FS_PD_MASK			(0x7 << 4)
 #define RT1015_FS_PD_SFT			4
-
-/* 0x000a */
 #define RT1015_PLL_M_MAX			0xf
 #define RT1015_PLL_M_MASK			(RT1015_PLL_M_MAX << 12)
 #define RT1015_PLL_M_SFT			12
@@ -201,44 +183,28 @@
 #define RT1015_PLL_N_MAX			0x1ff
 #define RT1015_PLL_N_MASK			(RT1015_PLL_N_MAX << 0)
 #define RT1015_PLL_N_SFT			0
-
-/* 0x000c */
 #define RT1015_PLL_BPK_MASK			(0x1 << 5)
 #define RT1015_PLL_BPK				(0x0 << 5)
 #define RT1015_PLL_K_MAX			0x1f
 #define RT1015_PLL_K_MASK			(RT1015_PLL_K_MAX)
 #define RT1015_PLL_K_SFT			0
-
-/* 0x0020 */
 #define RT1015_EN_BCLK_DET_MASK			(0x1 << 15)
 #define RT1015_EN_BCLK_DET				(0x1 << 15)
 #define RT1015_DIS_BCLK_DET				(0x0 << 15)
-
-/* 0x007a */
 #define RT1015_ID_MASK				0xff
 #define RT1015_ID_VERA				0x0
 #define RT1015_ID_VERB				0x1
-
-/* 0x00f2 */
 #define RT1015_MONO_LR_SEL_MASK			(0x3 << 4)
 #define RT1015_MONO_L_CHANNEL			(0x0 << 4)
 #define RT1015_MONO_R_CHANNEL			(0x1 << 4)
 #define RT1015_MONO_LR_MIX_CHANNEL			(0x2 << 4)
-
-/* 0x0102 */
 #define RT1015_DAC_VOL_MASK			(0x7f << 9)
 #define RT1015_DAC_VOL_SFT			9
-
-/* 0x0104 */
 #define RT1015_DAC_CLK				(0x1 << 13)
 #define RT1015_DAC_CLK_BIT			13
-
-/* 0x0106 */
 #define RT1015_DAC_MUTE_MASK			(0x1 << 15)
 #define RT1015_DA_MUTE_SFT			15
 #define RT1015_DVOL_MUTE_FLAG_SFT		12
-
-/* 0x0111 */
 #define RT1015_TCON_TDM_MS_MASK			(0x1 << 14)
 #define RT1015_TCON_TDM_MS_SFT			14
 #define RT1015_TCON_TDM_MS_S			(0x0 << 14)
@@ -257,8 +223,6 @@
 #define RT1015_I2S_M_DF_PCM_B			(0x3)
 #define RT1015_I2S_M_DF_PCM_A_N			(0x6)
 #define RT1015_I2S_M_DF_PCM_B_N			(0x7)
-
-/* TDM_tcon Setting (0x0112) */
 #define RT1015_I2S_TCON_DF_MASK			(0x7 << 13)
 #define RT1015_I2S_TCON_DF_SFT			13
 #define RT1015_I2S_TCON_DF_I2S			(0x0 << 13)
@@ -282,8 +246,6 @@
 #define RT1015_TCON_BCLK_MST_MASK			(0x1 << 4)
 #define RT1015_TCON_BCLK_MST_SFT			4
 #define RT1015_TCON_BCLK_MST_INV		(0x1 << 4)
-
-/* TDM1 Setting-1 (0x0114) */
 #define RT1015_TDM_INV_BCLK_MASK		(0x1 << 15)
 #define RT1015_TDM_INV_BCLK_SFT			15
 #define RT1015_TDM_INV_BCLK			(0x1 << 15)
@@ -317,14 +279,10 @@
 #define RT1015_I2S_CH_RX_LEN_24B			(0x2 << 0)
 #define RT1015_I2S_CH_RX_LEN_32B			(0x3 << 0)
 #define RT1015_I2S_CH_RX_LEN_8B			(0x4 << 0)
-
-/* TDM1 Setting-4 (0x011a) */
 #define RT1015_TDM_I2S_TX_L_DAC1_1_MASK			(0x7 << 12)
 #define RT1015_TDM_I2S_TX_R_DAC1_1_MASK			(0x7 << 8)
 #define RT1015_TDM_I2S_TX_L_DAC1_1_SFT 12
 #define RT1015_TDM_I2S_TX_R_DAC1_1_SFT 8
-
-/* 0x0330 */
 #define RT1015_ABST_AUTO_EN_MASK		(0x1 << 13)
 #define RT1015_ABST_AUTO_MODE			(0x1 << 13)
 #define RT1015_ABST_REG_MODE			(0x0 << 13)
@@ -334,8 +292,6 @@
 #define RT1015_BYPASS_SWR_REG_MASK		(0x1 << 7)
 #define RT1015_BYPASS_SWRREG_BYPASS		(0x1 << 7)
 #define RT1015_BYPASS_SWRREG_PASS		(0x0 << 7)
-
-/* 0x0322 */
 #define RT1015_PWR_LDO2				(0x1 << 15)
 #define RT1015_PWR_LDO2_BIT			15
 #define RT1015_PWR_DAC				(0x1 << 14)
@@ -364,8 +320,6 @@
 #define RT1015_PWR_SUMV_BIT			1
 #define RT1015_PWR_VREFLV			(0x1 << 0)
 #define RT1015_PWR_VREFLV_BIT			0
-
-/* 0x0324 */
 #define RT1015_PWR_BASIC			(0x1 << 15)
 #define RT1015_PWR_BASIC_BIT			15
 #define RT1015_PWR_SD				(0x1 << 14)
@@ -374,63 +328,45 @@
 #define RT1015_PWR_IBIAS_BIT			13
 #define RT1015_PWR_VCM				(0x1 << 11)
 #define RT1015_PWR_VCM_BIT			11
-
-/* 0x0328 */
 #define RT1015_PWR_SWR				(0x1 << 12)
 #define RT1015_PWR_SWR_BIT			12
-
-/* 0x0519 */
 #define RT1015_EN_CLA_D_DC_DET_MASK	(0x1 << 12)
 #define RT1015_EN_CLA_D_DC_DET		(0x1 << 12)
 #define RT1015_DIS_CLA_D_DC_DET		(0x0 << 12)
-
-/* 0x1300 */
 #define RT1015_PWR_CLSD				(0x1 << 12)
 #define RT1015_PWR_CLSD_BIT			12
-
-/* 0x007a */
 #define RT1015_ID_MASK				0xff
 #define RT1015_ID_VERA				0x0
 #define RT1015_ID_VERB				0x1
-
-/* System Clock Source */
 enum {
 	RT1015_SCLK_S_MCLK,
 	RT1015_SCLK_S_PLL,
 };
-
-/* PLL1 Source */
 enum {
 	RT1015_PLL_S_MCLK,
 	RT1015_PLL_S_BCLK,
 };
-
 enum {
 	RT1015_AIF1,
 	RT1015_AIFS,
 };
-
 enum {
 	RT1015_VERA,
 	RT1015_VERB,
 };
-
 enum {
 	BYPASS,
 	ADAPTIVE,
 	FIXED_ADAPTIVE,
 };
-
 enum {
 	RT1015_Enable_Boost = 0,
 	RT1015_Bypass_Boost,
 };
-
 enum {
 	RT1015_HW_28 = 0,
 	RT1015_HW_29,
 };
-
 struct rt1015_priv {
 	struct snd_soc_component *component;
 	struct rt1015_platform_data pdata;
@@ -445,5 +381,4 @@ struct rt1015_priv {
 	int dac_is_used;
 	int cali_done;
 };
-
-#endif /* __RT1015_H__ */
+#endif  

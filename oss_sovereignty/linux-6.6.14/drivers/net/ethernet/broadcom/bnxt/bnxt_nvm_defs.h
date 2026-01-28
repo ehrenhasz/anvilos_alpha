@@ -1,15 +1,5 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2014-2016 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
-
 #ifndef _BNXT_NVM_DEFS_H_
 #define _BNXT_NVM_DEFS_H_
-
 enum bnxt_nvm_directory_type {
 	BNX_DIR_TYPE_UNUSED = 0,
 	BNX_DIR_TYPE_PKG_LOG = 1,
@@ -48,17 +38,13 @@ enum bnxt_nvm_directory_type {
 	BNX_DIR_TYPE_MGMT_EVENT_LOG = 52,
 	BNX_DIR_TYPE_MGMT_AUDIT_LOG = 53
 };
-
 #define BNX_DIR_ORDINAL_FIRST			0
-
 #define BNX_DIR_EXT_NONE			0
 #define BNX_DIR_EXT_INACTIVE			(1 << 0)
 #define BNX_DIR_EXT_UPDATE			(1 << 1)
-
 #define BNX_DIR_ATTR_NONE			0
 #define BNX_DIR_ATTR_NO_CHKSUM			(1 << 0)
 #define BNX_DIR_ATTR_PROP_STREAM		(1 << 1)
-
 enum bnxnvm_pkglog_field_index {
 	BNX_PKG_LOG_FIELD_IDX_INSTALLED_TIMESTAMP	= 0,
 	BNX_PKG_LOG_FIELD_IDX_PKG_DESCRIPTION		= 1,
@@ -68,5 +54,4 @@ enum bnxnvm_pkglog_field_index {
 	BNX_PKG_LOG_FIELD_IDX_INSTALLED_ITEMS		= 5,
 	BNX_PKG_LOG_FIELD_IDX_INSTALLED_MASK		= 6
 };
-
-#endif				/* Don't add anything after this line */
+#endif				 

@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- */
-
 #ifndef __CUDBG_IF_H__
 #define __CUDBG_IF_H__
-
-/* Error codes */
 #define CUDBG_STATUS_NO_MEM -19
 #define CUDBG_STATUS_ENTITY_NOT_FOUND -24
 #define CUDBG_STATUS_NOT_IMPLEMENTED -28
 #define CUDBG_SYSTEM_ERROR -29
 #define CUDBG_STATUS_CCLK_NOT_DEFINED -32
 #define CUDBG_STATUS_PARTIAL_DATA -41
-
 #define CUDBG_MAJOR_VERSION 1
 #define CUDBG_MINOR_VERSION 14
-
 enum cudbg_dbg_entity_type {
 	CUDBG_REG_DUMP = 1,
 	CUDBG_DEV_LOG = 2,
@@ -73,19 +64,17 @@ enum cudbg_dbg_entity_type {
 	CUDBG_FLASH = 71,
 	CUDBG_MAX_ENTITY = 72,
 };
-
 struct cudbg_init {
-	struct adapter *adap; /* Pointer to adapter structure */
-	void *outbuf; /* Output buffer */
-	u32 outbuf_size;  /* Output buffer size */
-	u8 compress_type; /* Type of compression to use */
-	void *compress_buff; /* Compression buffer */
-	u32 compress_buff_size; /* Compression buffer size */
-	void *workspace; /* Workspace for zlib */
+	struct adapter *adap;  
+	void *outbuf;  
+	u32 outbuf_size;   
+	u8 compress_type;  
+	void *compress_buff;  
+	u32 compress_buff_size;  
+	void *workspace;  
 };
-
 static inline unsigned int cudbg_mbytes_to_bytes(unsigned int size)
 {
 	return size * 1024 * 1024;
 }
-#endif /* __CUDBG_IF_H__ */
+#endif  

@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8974.h  --  WM8974 Soc Audio driver
- */
-
 #ifndef _WM8974_H
 #define _WM8974_H
-
-/* WM8974 register space */
-
 #define WM8974_RESET		0x0
 #define WM8974_POWER1		0x1
 #define WM8974_POWER2		0x2
@@ -48,29 +40,20 @@
 #define WM8974_SPKMIX		0x32
 #define WM8974_SPKVOL		0x36
 #define WM8974_MONOMIX		0x38
-
 #define WM8974_CACHEREGNUM 	57
-
-/* Clock divider Id's */
 #define WM8974_OPCLKDIV		0
 #define WM8974_MCLKDIV		1
 #define WM8974_BCLKDIV		2
-
-/* PLL Out dividers */
 #define WM8974_OPCLKDIV_1	(0 << 4)
 #define WM8974_OPCLKDIV_2	(1 << 4)
 #define WM8974_OPCLKDIV_3	(2 << 4)
 #define WM8974_OPCLKDIV_4	(3 << 4)
-
-/* BCLK clock dividers */
 #define WM8974_BCLKDIV_1	(0 << 2)
 #define WM8974_BCLKDIV_2	(1 << 2)
 #define WM8974_BCLKDIV_4	(2 << 2)
 #define WM8974_BCLKDIV_8	(3 << 2)
 #define WM8974_BCLKDIV_16	(4 << 2)
 #define WM8974_BCLKDIV_32	(5 << 2)
-
-/* MCLK clock dividers */
 #define WM8974_MCLKDIV_1	(0 << 5)
 #define WM8974_MCLKDIV_1_5	(1 << 5)
 #define WM8974_MCLKDIV_2	(2 << 5)
@@ -79,5 +62,4 @@
 #define WM8974_MCLKDIV_6	(5 << 5)
 #define WM8974_MCLKDIV_8	(6 << 5)
 #define WM8974_MCLKDIV_12	(7 << 5)
-
 #endif

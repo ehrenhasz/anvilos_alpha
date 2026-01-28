@@ -1,9 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree file for the AM62P MCU domain peripherals
- * Copyright (C) 2023 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 &cbass_mcu {
 	mcu_pmx0: pinctrl@4084000 {
 		compatible = "pinctrl-single";

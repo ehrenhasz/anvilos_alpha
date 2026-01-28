@@ -1,24 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2014 Intel Corporation.  All rights reserved.
- */
-
 #ifndef OPA_SMI_H
 #define OPA_SMI_H
-
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
-
 #define OPA_SMP_LID_DATA_SIZE			2016
 #define OPA_SMP_DR_DATA_SIZE			1872
 #define OPA_SMP_MAX_PATH_HOPS			64
-
 #define OPA_MAX_VLS				32
 #define OPA_MAX_SLS				32
 #define OPA_MAX_SCS				32
-
 #define OPA_LID_PERMISSIVE			cpu_to_be32(0xFFFFFFFF)
-
 struct opa_smp {
 	u8	base_version;
 	u8	mgmt_class;
@@ -46,10 +36,6 @@ struct opa_smp {
 		} dr;
 	} route;
 } __packed;
-
-
-/* Subnet management attributes */
-/* ... */
 #define OPA_ATTRIB_ID_NODE_DESCRIPTION		cpu_to_be16(0x0010)
 #define OPA_ATTRIB_ID_NODE_INFO			cpu_to_be16(0x0011)
 #define OPA_ATTRIB_ID_PORT_INFO			cpu_to_be16(0x0015)
@@ -63,16 +49,11 @@ struct opa_smp {
 #define OPA_ATTRIB_ID_SC_TO_VLR_MAP		cpu_to_be16(0x0083)
 #define OPA_ATTRIB_ID_SC_TO_VLT_MAP		cpu_to_be16(0x0084)
 #define OPA_ATTRIB_ID_SC_TO_VLNT_MAP		cpu_to_be16(0x0085)
-/* ... */
 #define OPA_ATTRIB_ID_PORT_STATE_INFO		cpu_to_be16(0x0087)
-/* ... */
 #define OPA_ATTRIB_ID_BUFFER_CONTROL_TABLE	cpu_to_be16(0x008A)
-/* ... */
-
 struct opa_node_description {
 	u8 data[64];
 } __packed;
-
 struct opa_node_info {
 	u8      base_version;
 	u8      class_version;
@@ -86,39 +67,30 @@ struct opa_node_info {
 	__be16  device_id;
 	__be32  revision;
 	u8      local_port_num;
-	u8      vendor_id[3];   /* network byte order */
+	u8      vendor_id[3];    
 } __packed;
-
 #define OPA_PARTITION_TABLE_BLK_SIZE 32
-
 static inline u8
 opa_get_smp_direction(struct opa_smp *smp)
 {
 	return ib_get_smp_direction((struct ib_smp *)smp);
 }
-
 static inline u8 *opa_get_smp_data(struct opa_smp *smp)
 {
 	if (smp->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		return smp->route.dr.data;
-
 	return smp->route.lid.data;
 }
-
 static inline size_t opa_get_smp_data_size(struct opa_smp *smp)
 {
 	if (smp->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		return sizeof(smp->route.dr.data);
-
 	return sizeof(smp->route.lid.data);
 }
-
 static inline size_t opa_get_smp_header_size(struct opa_smp *smp)
 {
 	if (smp->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		return sizeof(*smp) - sizeof(smp->route.dr.data);
-
 	return sizeof(*smp) - sizeof(smp->route.lid.data);
 }
-
-#endif /* OPA_SMI_H */
+#endif  

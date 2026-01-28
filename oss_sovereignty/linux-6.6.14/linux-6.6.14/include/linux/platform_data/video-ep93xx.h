@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __VIDEO_EP93XX_H
 #define __VIDEO_EP93XX_H
-
 struct platform_device;
 struct fb_info;
-
-/* VideoAttributes flags */
 #define EP93XXFB_STATE_MACHINE_ENABLE	(1 << 0)
 #define EP93XXFB_PIXEL_CLOCK_ENABLE	(1 << 1)
 #define EP93XXFB_VSYNC_ENABLE		(1 << 2)
@@ -29,17 +25,14 @@ struct fb_info;
 #define EP93XXFB_USE_SDCSN1		(1 << 21)
 #define EP93XXFB_USE_SDCSN2		(2 << 21)
 #define EP93XXFB_USE_SDCSN3		(3 << 21)
-
 #define EP93XXFB_ENABLE			(EP93XXFB_STATE_MACHINE_ENABLE	| \
 					 EP93XXFB_PIXEL_CLOCK_ENABLE	| \
 					 EP93XXFB_VSYNC_ENABLE		| \
 					 EP93XXFB_PIXEL_DATA_ENABLE)
-
 struct ep93xxfb_mach_info {
 	unsigned int			flags;
 	int	(*setup)(struct platform_device *pdev);
 	void	(*teardown)(struct platform_device *pdev);
 	void	(*blank)(int blank_mode, struct fb_info *info);
 };
-
-#endif /* __VIDEO_EP93XX_H */
+#endif  

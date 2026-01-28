@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_QDU1000_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_QDU1000_H
-
 #define MASTER_QUP_CORE_0			0
 #define MASTER_QUP_CORE_1			1
 #define SLAVE_QUP_CORE_0			2
 #define SLAVE_QUP_CORE_1			3
-
 #define MASTER_SYS_TCU				0
 #define MASTER_APPSS_PROC			1
 #define MASTER_GEMNOC_ECPRI_DMA			2
@@ -23,10 +16,8 @@
 #define SLAVE_LLCC				9
 #define SLAVE_GEMNOC_MODEM_CNOC			10
 #define SLAVE_MEM_NOC_PCIE_SNOC			11
-
 #define MASTER_LLCC				0
 #define SLAVE_EBI1				1
-
 #define MASTER_GIC_AHB				0
 #define MASTER_QDSS_BAM				1
 #define MASTER_QPIC				2
@@ -94,5 +85,4 @@
 #define SLAVE_PCIE_0				65
 #define SLAVE_QDSS_STM				66
 #define SLAVE_TCU				67
-
 #endif

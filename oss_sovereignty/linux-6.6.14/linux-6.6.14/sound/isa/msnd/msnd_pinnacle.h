@@ -1,22 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*********************************************************************
- *
- * msnd_pinnacle.h
- *
- * Turtle Beach MultiSound Sound Card Driver for Linux
- *
- * Some parts of this header file were derived from the Turtle Beach
- * MultiSound Driver Development Kit.
- *
- * Copyright (C) 1998 Andrew Veliath
- * Copyright (C) 1993 Turtle Beach Systems, Inc.
- *
- ********************************************************************/
 #ifndef __MSND_PINNACLE_H
 #define __MSND_PINNACLE_H
-
 #define DSP_NUMIO				0x08
-
 #define IREG_LOGDEVICE				0x07
 #define IREG_ACTIVATE				0x30
 #define LD_ACTIVATE				0x01
@@ -41,58 +25,42 @@
 #define IRQTYPE_LOW				0x00
 #define IRQTYPE_LEVEL				0x01
 #define IRQTYPE_EDGE				0x00
-
 #define	HP_DSPR					0x04
 #define	HP_BLKS					0x04
-
 #define HPDSPRESET_OFF				2
 #define HPDSPRESET_ON				0
-
 #define HPBLKSEL_0				2
 #define HPBLKSEL_1				3
-
 #define	HIMT_DAT_OFF				0x03
-
 #define	HIDSP_PLAY_UNDER			0x00
 #define	HIDSP_INT_PLAY_UNDER			0x01
 #define	HIDSP_SSI_TX_UNDER  			0x02
 #define HIDSP_RECQ_OVERFLOW			0x08
 #define HIDSP_INT_RECORD_OVER			0x09
 #define HIDSP_SSI_RX_OVERFLOW			0x0a
-
 #define	HIDSP_MIDI_IN_OVER			0x10
-
 #define	HIDSP_MIDI_FRAME_ERR			0x11
 #define	HIDSP_MIDI_PARITY_ERR			0x12
 #define	HIDSP_MIDI_OVERRUN_ERR			0x13
-
 #define HIDSP_INPUT_CLIPPING			0x20
 #define	HIDSP_MIX_CLIPPING			0x30
 #define HIDSP_DAT_IN_OFF			0x21
-
 #define TIME_PRO_RESET_DONE			0x028A
 #define TIME_PRO_SYSEX				0x001E
 #define TIME_PRO_RESET				0x0032
-
 #define DAR_BUFF_SIZE				0x1000
-
 #define MIDQ_BUFF_SIZE				0x800
 #define DSPQ_BUFF_SIZE				0x5A0
-
 #define DSPQ_DATA_BUFF				0x7860
-
 #define MOP_WAVEHDR				0
 #define MOP_EXTOUT				1
 #define MOP_HWINIT				0xfe
 #define MOP_NONE				0xff
 #define MOP_MAX					1
-
 #define MIP_EXTIN				0
 #define MIP_WAVEHDR				1
 #define MIP_HWINIT				0xfe
 #define MIP_MAX					1
-
-/* Pinnacle/Fiji SMA Common Data */
 #define SMA_wCurrPlayBytes			0x0000
 #define SMA_wCurrRecordBytes			0x0002
 #define SMA_wCurrPlayVolLeft			0x0004
@@ -160,9 +128,7 @@
 #define SMA_wCurrDATRXRate			0x0076
 #define SMA_dwDSPPlayCount			0x0078
 #define SMA__size				0x007c
-
 #define INITCODEFILE		"turtlebeach/pndspini.bin"
 #define PERMCODEFILE		"turtlebeach/pndsperm.bin"
 #define LONGNAME		"MultiSound (Pinnacle/Fiji)"
-
-#endif /* __MSND_PINNACLE_H */
+#endif  

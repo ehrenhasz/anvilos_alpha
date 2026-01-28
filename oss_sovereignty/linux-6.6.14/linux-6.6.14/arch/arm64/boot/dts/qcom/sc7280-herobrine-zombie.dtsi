@@ -1,97 +1,52 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Zombie board device tree source
- *
- * Copyright 2022 Google LLC.
- */
-
 #include "sc7280-herobrine.dtsi"
 #include "sc7280-herobrine-audio-rt5682.dtsi"
-
-/*
- * ADDITIONS TO FIXED REGULATORS DEFINED IN PARENT DEVICE TREE FILES
- *
- * Sort order matches the order in the parent files (parents before children).
- */
-
 &pp3300_codec {
 	status = "okay";
 };
-
-/* ADDITIONS TO NODES DEFINED IN PARENT DEVICE TREE FILES */
-
 ap_tp_i2c: &i2c0 {
 	clock-frequency = <400000>;
 	status = "okay";
-
 	trackpad: trackpad@15 {
 		compatible = "hid-over-i2c";
 		reg = <0x15>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&tp_int_odl>;
-
 		interrupt-parent = <&tlmm>;
 		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
-
 		hid-descr-addr = <0x01>;
 		vdd-supply = <&pp3300_z1>;
-
 		wakeup-source;
 	};
 };
-
 &ap_sar_sensor_i2c {
 	status = "okay";
 };
-
 &ap_sar_sensor0 {
 	status = "okay";
 };
-
 &ap_sar_sensor1 {
 	status = "okay";
 };
-
 &mdss_edp {
 	status = "okay";
 };
-
 &mdss_edp_phy {
 	status = "okay";
 };
-
 &pm8350c_pwm_backlight {
-	/* Set the PWM period to 320 microseconds (3.125kHz frequency) */
 	pwms = <&pm8350c_pwm 3 320000>;
 };
-
 &pwmleds {
 	status = "okay";
 };
-
-/* For eMMC */
 &sdhc_1 {
 	status = "okay";
 };
-
-/* PINCTRL - ADDITIONS TO NODES IN PARENT DEVICE TREE FILES */
-
 &ts_rst_conn {
 	bias-disable;
 };
-
-/* PINCTRL - BOARD-SPECIFIC */
-
-/*
- * Methodology for gpio-line-names:
- * - If a pin goes to herobrine board and is named it gets that name.
- * - If a pin goes to herobrine board and is not named, it gets no name.
- * - If a pin is totally internal to Qcard then it gets Qcard name.
- * - If a pin is not hooked up on Qcard, it gets no name.
- */
-
 &pm8350c_gpios {
-	gpio-line-names = "FLASH_STROBE_1",		/* 1 */
+	gpio-line-names = "FLASH_STROBE_1",		 
 			  "AP_SUSPEND",
 			  "PM8008_1_RST_N",
 			  "",
@@ -101,9 +56,8 @@ ap_tp_i2c: &i2c0 {
 			  "PMIC_EDP_BL_PWM",
 			  "";
 };
-
 &tlmm {
-	gpio-line-names = "AP_TP_I2C_SDA",		/* 0 */
+	gpio-line-names = "AP_TP_I2C_SDA",		 
 			  "AP_TP_I2C_SCL",
 			  "SSD_RST_L",
 			  "PE_WAKE_ODL",
@@ -113,23 +67,17 @@ ap_tp_i2c: &i2c0 {
 			  "TP_INT_ODL",
 			  "HP_I2C_SDA",
 			  "HP_I2C_SCL",
-
-			  "GNSS_L1_EN",			/* 10 */
+			  "GNSS_L1_EN",			 
 			  "GNSS_L5_EN",
 			  "SPI_AP_MOSI",
 			  "SPI_AP_MISO",
 			  "SPI_AP_CLK",
 			  "SPI_AP_CS0_L",
-			  /*
-			   * AP_FLASH_WP is crossystem ABI. Schematics
-			   * call it BIOS_FLASH_WP_OD.
-			   */
 			  "AP_FLASH_WP",
 			  "",
 			  "AP_EC_INT_L",
 			  "",
-
-			  "UF_CAM_RST_L",		/* 20 */
+			  "UF_CAM_RST_L",		 
 			  "WF_CAM_RST_L",
 			  "UART_AP_TX_DBG_RX",
 			  "UART_DBG_TX_AP_RX",
@@ -139,8 +87,7 @@ ap_tp_i2c: &i2c0 {
 			  "WLAN2HOST_SOL",
 			  "MOS_BT_UART_CTS",
 			  "MOS_BT_UART_RFR",
-
-			  "MOS_BT_UART_TX",		/* 30 */
+			  "MOS_BT_UART_TX",		 
 			  "MOS_BT_UART_RX",
 			  "PRB_SC_GPIO_32",
 			  "HUB_RST_L",
@@ -150,8 +97,7 @@ ap_tp_i2c: &i2c0 {
 			  "AP_SPI_FP_MOSI",
 			  "AP_SPI_FP_CLK",
 			  "AP_SPI_FP_CS_L",
-
-			  "AP_EC_SPI_MISO",		/* 40 */
+			  "AP_EC_SPI_MISO",		 
 			  "AP_EC_SPI_MOSI",
 			  "AP_EC_SPI_CLK",
 			  "AP_EC_SPI_CS_L",
@@ -161,8 +107,7 @@ ap_tp_i2c: &i2c0 {
 			  "DP_HOT_PLUG_DET",
 			  "IO_BRD_MLB_ID0",
 			  "IO_BRD_MLB_ID1",
-
-			  "IO_BRD_MLB_ID2",		/* 50 */
+			  "IO_BRD_MLB_ID2",		 
 			  "SSD_EN",
 			  "TS_I2C_SDA_CONN",
 			  "TS_I2C_CLK_CONN",
@@ -172,8 +117,7 @@ ap_tp_i2c: &i2c0 {
 			  "AP_I2C_TPM_SCL",
 			  "PRB_SC_GPIO_58",
 			  "PRB_SC_GPIO_59",
-
-			  "EDP_HOT_PLUG_DET_N",		/* 60 */
+			  "EDP_HOT_PLUG_DET_N",		 
 			  "FP_TO_AP_IRQ_L",
 			  "",
 			  "AMP_EN",
@@ -183,8 +127,7 @@ ap_tp_i2c: &i2c0 {
 			  "PRB_SC_GPIO_67",
 			  "FPMCU_BOOT0",
 			  "UF_CAM_SDA",
-
-			  "UF_CAM_SCL",			/* 70 */
+			  "UF_CAM_SCL",			 
 			  "",
 			  "",
 			  "WF_CAM_SDA",
@@ -194,8 +137,7 @@ ap_tp_i2c: &i2c0 {
 			  "EN_FP_RAILS",
 			  "FP_RST_L",
 			  "PCIE1_CLKREQ_ODL",
-
-			  "EN_PP3300_DX_EDP",		/* 80 */
+			  "EN_PP3300_DX_EDP",		 
 			  "US_EURO_HS_SEL",
 			  "FORCED_USB_BOOT",
 			  "WCD_RESET_N",
@@ -205,8 +147,7 @@ ap_tp_i2c: &i2c0 {
 			  "MOS_PCIE0_RST",
 			  "MOS_PCIE0_CLKREQ_N",
 			  "MOS_PCIE0_WAKE_N",
-
-			  "MOS_LAA_AS_EN",		/* 90 */
+			  "MOS_LAA_AS_EN",		 
 			  "SD_CD_ODL",
 			  "",
 			  "",
@@ -216,8 +157,7 @@ ap_tp_i2c: &i2c0 {
 			  "HP_BCLK",
 			  "HP_DOUT",
 			  "HP_DIN",
-
-			  "HP_LRCLK",			/* 100 */
+			  "HP_LRCLK",			 
 			  "HP_IRQ",
 			  "",
 			  "",
@@ -227,8 +167,7 @@ ap_tp_i2c: &i2c0 {
 			  "AMP_DIN",
 			  "AMP_LRCLK",
 			  "UIM1_DATA_GPIO_109",
-
-			  "UIM1_CLK_GPIO_110",		/* 110 */
+			  "UIM1_CLK_GPIO_110",		 
 			  "UIM1_RESET_GPIO_111",
 			  "PRB_SC_GPIO_112",
 			  "UIM0_DATA",
@@ -238,8 +177,7 @@ ap_tp_i2c: &i2c0 {
 			  "SDM_RFFE0_CLK",
 			  "SDM_RFFE0_DATA",
 			  "WF_CAM_EN",
-
-			  "FASTBOOT_SEL_0",		/* 120 */
+			  "FASTBOOT_SEL_0",		 
 			  "SC_GPIO_121",
 			  "FASTBOOT_SEL_1",
 			  "SC_GPIO_123",
@@ -249,8 +187,7 @@ ap_tp_i2c: &i2c0 {
 			  "WLAN_COEX_UART1_RX",
 			  "WLAN_COEX_UART1_TX",
 			  "PRB_SC_GPIO_129",
-
-			  "LCM_ID0",			/* 130 */
+			  "LCM_ID0",			 
 			  "LCM_ID1",
 			  "",
 			  "SDR_QLINK_REQ",
@@ -260,8 +197,7 @@ ap_tp_i2c: &i2c0 {
 			  "SMR526_QLINK1_EN",
 			  "SMR526_QLINK1_WMSS_RESET_N",
 			  "PRB_SC_GPIO_139",
-
-			  "SAR1_IRQ_ODL",		/* 140 */
+			  "SAR1_IRQ_ODL",		 
 			  "SAR0_IRQ_ODL",
 			  "PRB_SC_GPIO_142",
 			  "",
@@ -271,8 +207,7 @@ ap_tp_i2c: &i2c0 {
 			  "WCD_SWR_RX_CLK",
 			  "WCD_SWR_RX_DATA0",
 			  "WCD_SWR_RX_DATA1",
-
-			  "DMIC01_CLK",			/* 150 */
+			  "DMIC01_CLK",			 
 			  "DMIC01_DATA",
 			  "DMIC23_CLK",
 			  "DMIC23_DATA",
@@ -282,8 +217,7 @@ ap_tp_i2c: &i2c0 {
 			  "HUB_EN",
 			  "WCD_SWR_TX_DATA2",
 			  "",
-
-			  "",				/* 160 */
+			  "",				 
 			  "",
 			  "",
 			  "",
@@ -293,8 +227,7 @@ ap_tp_i2c: &i2c0 {
 			  "",
 			  "",
 			  "",
-
-			  "",				/* 170 */
+			  "",				 
 			  "MOS_BLE_UART_TX",
 			  "MOS_BLE_UART_RX",
 			  "",

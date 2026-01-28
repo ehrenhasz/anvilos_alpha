@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2016-2021, AngeloGioacchino Del Regno
- *                     <angelogioacchino.delregno@somainline.org>
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8976_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8976_H
-
 #define GPLL0					0
 #define GPLL2					1
 #define GPLL3					2
@@ -212,8 +204,6 @@
 #define GCC_GFX3D_TBU1_CLK			201
 #define GCC_GFX3D_TCU_CLK			202
 #define GCC_GFX3D_GTCU_AHB_CLK			203
-
-/* GCC block resets */
 #define RST_CAMSS_MICRO_BCR			0
 #define RST_USB_HS_BCR				1
 #define RST_QUSB2_PHY_BCR			2
@@ -225,8 +215,6 @@
 #define RST_CAMSS_VFE1_BCR			8
 #define RST_CAMSS_CPP_BCR			9
 #define RST_MSS_BCR				10
-
-/* GDSCs */
 #define VENUS_GDSC				0
 #define VENUS_CORE0_GDSC			1
 #define VENUS_CORE1_GDSC			2
@@ -237,5 +225,4 @@
 #define CPP_GDSC				7
 #define OXILI_GX_GDSC				8
 #define OXILI_CX_GDSC				9
-
-#endif /* _DT_BINDINGS_CLK_MSM_GCC_8976_H */
+#endif  

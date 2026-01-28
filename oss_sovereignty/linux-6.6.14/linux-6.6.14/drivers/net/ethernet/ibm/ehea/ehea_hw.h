@@ -1,27 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  linux/drivers/net/ethernet/ibm/ehea/ehea_hw.h
- *
- *  eHEA ethernet device driver for IBM eServer System p
- *
- *  (C) Copyright IBM Corp. 2006
- *
- *  Authors:
- *       Christoph Raisch <raisch@de.ibm.com>
- *       Jan-Bernd Themann <themann@de.ibm.com>
- *       Thomas Klein <tklein@de.ibm.com>
- */
-
 #ifndef __EHEA_HW_H__
 #define __EHEA_HW_H__
-
 #define QPX_SQA_VALUE   EHEA_BMASK_IBM(48, 63)
 #define QPX_RQ1A_VALUE  EHEA_BMASK_IBM(48, 63)
 #define QPX_RQ2A_VALUE  EHEA_BMASK_IBM(48, 63)
 #define QPX_RQ3A_VALUE  EHEA_BMASK_IBM(48, 63)
-
 #define QPTEMM_OFFSET(x) offsetof(struct ehea_qptemm, x)
-
 struct ehea_qptemm {
 	u64 qpx_hcr;
 	u64 qpx_c;
@@ -79,11 +62,8 @@ struct ehea_qptemm {
 	u64 reserved_ext[(0x500 - 0x400) / 8];
 	u64 reserved2[(0x1000 - 0x500) / 8];
 };
-
 #define MRx_HCR_LPARID_VALID EHEA_BMASK_IBM(0, 0)
-
 #define MRMWMM_OFFSET(x) offsetof(struct ehea_mrmwmm, x)
-
 struct ehea_mrmwmm {
 	u64 mrx_hcr;
 	u64 mrx_c;
@@ -96,11 +76,8 @@ struct ehea_mrmwmm {
 	u64 reserved4[(0x200 - 0x40) / 8];
 	u64 mrx_ctl[64];
 };
-
 #define QPEDMM_OFFSET(x) offsetof(struct ehea_qpedmm, x)
-
 struct ehea_qpedmm {
-
 	u64 reserved0[(0x400) / 8];
 	u64 qpedx_phh;
 	u64 qpedx_ppsgp;
@@ -132,14 +109,11 @@ struct ehea_qpedmm {
 	u64 qpedx_rrrkey3;
 	u64 qpedx_rrva3;
 };
-
 #define CQX_FECADDER EHEA_BMASK_IBM(32, 63)
 #define CQX_FEC_CQE_CNT EHEA_BMASK_IBM(32, 63)
 #define CQX_N1_GENERATE_COMP_EVENT EHEA_BMASK_IBM(0, 0)
 #define CQX_EP_EVENT_PENDING EHEA_BMASK_IBM(0, 0)
-
 #define CQTEMM_OFFSET(x) offsetof(struct ehea_cqtemm, x)
-
 struct ehea_cqtemm {
 	u64 cqx_hcr;
 	u64 cqx_c;
@@ -156,9 +130,7 @@ struct ehea_cqtemm {
 	u64 cqx_n1;
 	u64 reserved2[(0x1000 - 0x60) / 8];
 };
-
 #define EQTEMM_OFFSET(x) offsetof(struct ehea_eqtemm, x)
-
 struct ehea_eqtemm {
 	u64 eqx_hcr;
 	u64 eqx_c;
@@ -174,80 +146,63 @@ struct ehea_eqtemm {
 	u64 eqx_xisc;
 	u64 eqx_it;
 };
-
-/*
- * These access functions will be changed when the dissuccsion about
- * the new access methods for POWER has settled.
- */
-
 static inline u64 epa_load(struct h_epa epa, u32 offset)
 {
 	return __raw_readq((void __iomem *)(epa.addr + offset));
 }
-
 static inline void epa_store(struct h_epa epa, u32 offset, u64 value)
 {
 	__raw_writeq(value, (void __iomem *)(epa.addr + offset));
-	epa_load(epa, offset);	/* synchronize explicitly to eHEA */
+	epa_load(epa, offset);	 
 }
-
 static inline void epa_store_acc(struct h_epa epa, u32 offset, u64 value)
 {
 	__raw_writeq(value, (void __iomem *)(epa.addr + offset));
 }
-
 #define epa_store_cq(epa, offset, value)\
 	epa_store(epa, CQTEMM_OFFSET(offset), value)
 #define epa_load_cq(epa, offset)\
 	epa_load(epa, CQTEMM_OFFSET(offset))
-
 static inline void ehea_update_sqa(struct ehea_qp *qp, u16 nr_wqes)
 {
 	struct h_epa epa = qp->epas.kernel;
 	epa_store_acc(epa, QPTEMM_OFFSET(qpx_sqa),
 		      EHEA_BMASK_SET(QPX_SQA_VALUE, nr_wqes));
 }
-
 static inline void ehea_update_rq3a(struct ehea_qp *qp, u16 nr_wqes)
 {
 	struct h_epa epa = qp->epas.kernel;
 	epa_store_acc(epa, QPTEMM_OFFSET(qpx_rq3a),
 		      EHEA_BMASK_SET(QPX_RQ1A_VALUE, nr_wqes));
 }
-
 static inline void ehea_update_rq2a(struct ehea_qp *qp, u16 nr_wqes)
 {
 	struct h_epa epa = qp->epas.kernel;
 	epa_store_acc(epa, QPTEMM_OFFSET(qpx_rq2a),
 		      EHEA_BMASK_SET(QPX_RQ2A_VALUE, nr_wqes));
 }
-
 static inline void ehea_update_rq1a(struct ehea_qp *qp, u16 nr_wqes)
 {
 	struct h_epa epa = qp->epas.kernel;
 	epa_store_acc(epa, QPTEMM_OFFSET(qpx_rq1a),
 		      EHEA_BMASK_SET(QPX_RQ3A_VALUE, nr_wqes));
 }
-
 static inline void ehea_update_feca(struct ehea_cq *cq, u32 nr_cqes)
 {
 	struct h_epa epa = cq->epas.kernel;
 	epa_store_acc(epa, CQTEMM_OFFSET(cqx_feca),
 		      EHEA_BMASK_SET(CQX_FECADDER, nr_cqes));
 }
-
 static inline void ehea_reset_cq_n1(struct ehea_cq *cq)
 {
 	struct h_epa epa = cq->epas.kernel;
 	epa_store_cq(epa, cqx_n1,
 		     EHEA_BMASK_SET(CQX_N1_GENERATE_COMP_EVENT, 1));
 }
-
 static inline void ehea_reset_cq_ep(struct ehea_cq *my_cq)
 {
 	struct h_epa epa = my_cq->epas.kernel;
 	epa_store_acc(epa, CQTEMM_OFFSET(cqx_ep),
 		      EHEA_BMASK_SET(CQX_EP_EVENT_PENDING, 0));
 }
-
-#endif	/* __EHEA_HW_H__ */
+#endif	 

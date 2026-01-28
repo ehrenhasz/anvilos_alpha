@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Keystone 2 lamarr SoC clock nodes
- *
- * Copyright (C) 2013-2017 Texas Instruments Incorporated - http://www.ti.com/
- */
-
 clocks {
 	armpllclk: armpllclk@2620370 {
 		#clock-cells = <0>;
@@ -14,7 +7,6 @@ clocks {
 		reg = <0x02620370 4>;
 		reg-names = "control";
 	};
-
 	mainpllclk: mainpllclk@2310110 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,main-pll-clock";
@@ -22,7 +14,6 @@ clocks {
 		reg = <0x02620350 4>, <0x02310110 4>, <0x02310108 4>;
 		reg-names = "control", "multiplier", "post-divider";
 	};
-
 	papllclk: papllclk@2620358 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,pll-clock";
@@ -31,7 +22,6 @@ clocks {
 		reg = <0x02620358 4>;
 		reg-names = "control";
 	};
-
 	ddr3apllclk: ddr3apllclk@2620360 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,pll-clock";
@@ -40,7 +30,6 @@ clocks {
 		reg = <0x02620360 4>;
 		reg-names = "control";
 	};
-
 	clkdfeiqnsys: clkdfeiqnsys@2350004 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -50,7 +39,6 @@ clocks {
 		reg = <0x02350004 0xb00>, <0x02350000 0x400>;
 		domain-id = <0>;
 	};
-
 	clkpcie1: clkpcie1@235002c {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -60,7 +48,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <4>;
 	};
-
 	clkgem1: clkgem1@2350040 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -70,7 +57,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <9>;
 	};
-
 	clkgem2: clkgem2@2350044 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -80,7 +66,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <10>;
 	};
-
 	clkgem3: clkgem3@2350048 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -90,7 +75,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <11>;
 	};
-
 	clktac: clktac@2350064 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -100,7 +84,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <17>;
 	};
-
 	clkrac: clkrac@2350068 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -110,7 +93,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <17>;
 	};
-
 	clkdfepd0: clkdfepd0@235006c {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -120,7 +102,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <18>;
 	};
-
 	clkfftc0: clkfftc0@2350070 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -130,7 +111,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <19>;
 	};
-
 	clkosr: clkosr@2350088 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -140,7 +120,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <21>;
 	};
-
 	clktcp3d0: clktcp3d0@235008c {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -150,7 +129,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <22>;
 	};
-
 	clktcp3d1: clktcp3d1@2350094 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -160,7 +138,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <23>;
 	};
-
 	clkvcp0: clkvcp0@235009c {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -170,7 +147,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <24>;
 	};
-
 	clkvcp1: clkvcp1@23500a0 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -180,7 +156,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <24>;
 	};
-
 	clkvcp2: clkvcp2@23500a4 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -190,7 +165,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <24>;
 	};
-
 	clkvcp3: clkvcp3@23500a8 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -200,7 +174,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <24>;
 	};
-
 	clkbcp: clkbcp@23500bc {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -210,7 +183,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <26>;
 	};
-
 	clkdfepd1: clkdfepd1@23500c0 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -220,7 +192,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <27>;
 	};
-
 	clkfftc1: clkfftc1@23500c4 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -230,7 +201,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <28>;
 	};
-
 	clkiqnail: clkiqnail@23500c8 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -240,7 +210,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <29>;
 	};
-
 	clkuart2: clkuart2@2350000 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";
@@ -250,7 +219,6 @@ clocks {
 		reg-names = "control", "domain";
 		domain-id = <0>;
 	};
-
 	clkuart3: clkuart3@2350000 {
 		#clock-cells = <0>;
 		compatible = "ti,keystone,psc-clock";

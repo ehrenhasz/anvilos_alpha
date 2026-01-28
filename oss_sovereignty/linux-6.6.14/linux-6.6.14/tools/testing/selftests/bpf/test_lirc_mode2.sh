@@ -1,22 +1,14 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
-# Kselftest framework requirement - SKIP code is 4.
 ksft_skip=4
 ret=$ksft_skip
-
 msg="skip all tests:"
 if [ $UID != 0 ]; then
 	echo $msg please run this as root >&2
 	exit $ksft_skip
 fi
-
 GREEN='\033[0;92m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
-
+NC='\033[0m' 
 modprobe rc-loopback
-
 for i in /sys/class/rc/rc*
 do
 	if grep -q DRV_NAME=rc-loopback $i/uevent
@@ -25,7 +17,6 @@ do
 		INPUTDEV=$(grep DEVNAME= $i/input*/event*/uevent | sed sQDEVNAME=Q/dev/Q)
 	fi
 done
-
 if [ -n "$LIRCDEV" ];
 then
 	TYPE=lirc_mode2
@@ -37,5 +28,4 @@ then
 		echo -e ${GREEN}"PASS: $TYPE"${NC}
 	fi
 fi
-
 exit $ret

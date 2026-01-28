@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _BPF_JIT_H
 #define _BPF_JIT_H
-
 #ifndef __ASSEMBLER__
 #define G0		0x00
 #define G1		0x01
@@ -34,5 +32,4 @@
 #define FP		0x1e
 #define I7		0x1f
 #endif
-
-#endif /* _BPF_JIT_H */
+#endif  

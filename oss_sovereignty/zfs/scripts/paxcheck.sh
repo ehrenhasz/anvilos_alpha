@@ -1,15 +1,9 @@
-#!/bin/sh
-
 if ! command -v scanelf > /dev/null; then
     echo "scanelf (from pax-utils) is required for these checks." >&2
     exit 3
 fi
-
 RET=0
-
-# check for exec stacks
 OUT=$(scanelf -qyRAF '%e %p' "$1")
-
 if [ x"${OUT}" != x ]; then
     RET=2
     echo "The following files contain writable and executable sections"
@@ -21,11 +15,7 @@ if [ x"${OUT}" != x ]; then
     echo "${OUT}"
     echo
 fi
-
-
-# check for TEXTRELS
 OUT=$(scanelf -qyRAF '%T %p' "$1")
-
 if [ x"${OUT}" != x ]; then
     RET=2
     echo "The following files contain runtime text relocations"
@@ -39,5 +29,4 @@ if [ x"${OUT}" != x ]; then
     echo "${OUT}"
     echo
 fi
-
 exit "$RET"

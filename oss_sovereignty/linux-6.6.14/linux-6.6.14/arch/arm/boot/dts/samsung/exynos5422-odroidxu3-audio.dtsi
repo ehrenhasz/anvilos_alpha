@@ -1,20 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hardkernel Odroid XU3 audio subsystem device tree source
- *
- * Copyright (c) 2015 Krzysztof Kozlowski
- * Copyright (c) 2014 Collabora Ltd.
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- */
-
 #include <dt-bindings/sound/samsung-i2s.h>
-
 / {
 	sound: sound {
 		compatible = "samsung,odroid-xu3-audio";
 		model = "Odroid-XU3";
-
 		samsung,audio-widgets =
 			"Headphone", "Headphone Jack",
 			"Speakers", "Speakers";
@@ -28,7 +16,6 @@
 			"I2S Playback", "Mixer DAI TX",
 			"HiFi Playback", "Mixer DAI TX",
 			"Mixer DAI RX", "HiFi Capture";
-
 		cpu {
 			sound-dai = <&i2s0 0>, <&i2s0 1>;
 		};
@@ -37,7 +24,6 @@
 		};
 	};
 };
-
 &hsi2c_5 {
 	status = "okay";
 	max98090: audio-codec@10 {
@@ -50,7 +36,6 @@
 		#sound-dai-cells = <0>;
 	};
 };
-
 &i2s0 {
 	status = "okay";
 	assigned-clocks = <&clock CLK_MOUT_EPLL>,
@@ -62,14 +47,12 @@
 			<&clock_audss EXYNOS_DOUT_SRP>,
 			<&clock_audss EXYNOS_DOUT_AUD_BUS>,
 			<&clock_audss EXYNOS_DOUT_I2S>;
-
 	assigned-clock-parents = <&clock CLK_FOUT_EPLL>,
 			<&clock CLK_MOUT_EPLL>,
 			<&clock CLK_MOUT_MAU_EPLL>,
 			<&clock CLK_MAU_EPLL>,
 			<&clock_audss EXYNOS_MOUT_AUDSS>,
 			<&clock_audss EXYNOS_SCLK_I2S>;
-
 	assigned-clock-rates = <0>,
 			<0>,
 			<0>,
@@ -79,5 +62,4 @@
 			<196608001>,
 			<(196608002 / 2)>,
 			<196608000>;
-
 };

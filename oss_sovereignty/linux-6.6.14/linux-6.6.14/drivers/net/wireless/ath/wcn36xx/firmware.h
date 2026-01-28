@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef _FIRMWARE_H_
 #define _FIRMWARE_H_
-
-/* Capability bitmap exchange definitions and macros starts */
-
 enum wcn36xx_firmware_feat_caps {
 	MCC = 0,
 	P2P = 1,
@@ -67,18 +62,13 @@ enum wcn36xx_firmware_feat_caps {
 	EXT_LL_STAT = 60,
 	WIFI_CONFIG = 61,
 	ANTENNA_DIVERSITY_SELECTION = 62,
-
 	MAX_FEATURE_SUPPORTED = 128,
 };
-
 void wcn36xx_firmware_set_feat_caps(u32 *bitmap,
 				    enum wcn36xx_firmware_feat_caps cap);
 int wcn36xx_firmware_get_feat_caps(u32 *bitmap,
 				   enum wcn36xx_firmware_feat_caps cap);
 void wcn36xx_firmware_clear_feat_caps(u32 *bitmap,
 				      enum wcn36xx_firmware_feat_caps cap);
-
 const char *wcn36xx_firmware_get_cap_name(enum wcn36xx_firmware_feat_caps x);
-
-#endif /* _FIRMWARE_H_ */
-
+#endif  

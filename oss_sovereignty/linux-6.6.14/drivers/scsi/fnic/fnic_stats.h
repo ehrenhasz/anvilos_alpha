@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2013 Cisco Systems, Inc.  All rights reserved. */
 #ifndef _FNIC_STATS_H_
 #define _FNIC_STATS_H_
-
 struct stats_timestamps {
 	struct timespec64 last_reset_time;
 	struct timespec64 last_read_time;
 };
-
 struct io_path_stats {
 	atomic64_t active_ios;
 	atomic64_t max_active_ios;
@@ -27,7 +23,6 @@ struct io_path_stats {
 	atomic64_t io_greater_than_30000_msec;
 	atomic64_t current_max_io_time;
 };
-
 struct abort_stats {
 	atomic64_t aborts;
 	atomic64_t abort_failures;
@@ -42,7 +37,6 @@ struct abort_stats {
 	atomic64_t abort_issued_btw_50_to_60_sec;
 	atomic64_t abort_issued_greater_than_60_sec;
 };
-
 struct terminate_stats {
 	atomic64_t terminates;
 	atomic64_t max_terminates;
@@ -51,7 +45,6 @@ struct terminate_stats {
 	atomic64_t terminate_io_not_found;
 	atomic64_t terminate_failures;
 };
-
 struct reset_stats {
 	atomic64_t device_resets;
 	atomic64_t device_reset_failures;
@@ -65,21 +58,18 @@ struct reset_stats {
 	atomic64_t fnic_reset_completions;
 	atomic64_t fnic_reset_failures;
 };
-
 struct fw_stats {
 	atomic64_t active_fw_reqs;
 	atomic64_t max_fw_reqs;
 	atomic64_t fw_out_of_resources;
 	atomic64_t io_fw_errs;
 };
-
 struct vlan_stats {
 	atomic64_t vlan_disc_reqs;
 	atomic64_t resp_withno_vlanID;
 	atomic64_t sol_expiry_count;
 	atomic64_t flogi_rejects;
 };
-
 struct misc_stats {
 	u64 last_isr_time;
 	u64 last_ack_time;
@@ -104,7 +94,6 @@ struct misc_stats {
 	atomic64_t frame_errors;
 	atomic64_t current_port_speed;
 };
-
 struct fnic_stats {
 	struct stats_timestamps stats_timestamps;
 	struct io_path_stats io_stats;
@@ -115,15 +104,13 @@ struct fnic_stats {
 	struct vlan_stats vlan_stats;
 	struct misc_stats misc_stats;
 };
-
 struct stats_debug_info {
 	char *debug_buffer;
 	void *i_private;
 	int buf_size;
 	int buffer_len;
 };
-
 int fnic_get_stats_data(struct stats_debug_info *, struct fnic_stats *);
 void fnic_stats_debugfs_init(struct fnic *);
 void fnic_stats_debugfs_remove(struct fnic *);
-#endif /* _FNIC_STATS_H_ */
+#endif  

@@ -1,22 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
- */
-
 #include "rk3588s.dtsi"
 #include "rk3588-pinctrl.dtsi"
-
 / {
 	pcie30_phy_grf: syscon@fd5b8000 {
 		compatible = "rockchip,rk3588-pcie3-phy-grf", "syscon";
 		reg = <0x0 0xfd5b8000 0x0 0x10000>;
 	};
-
 	pipe_phy1_grf: syscon@fd5c0000 {
 		compatible = "rockchip,rk3588-pipe-phy-grf", "syscon";
 		reg = <0x0 0xfd5c0000 0x0 0x100>;
 	};
-
 	i2s8_8ch: i2s@fddc8000 {
 		compatible = "rockchip,rk3588-i2s-tdm";
 		reg = <0x0 0xfddc8000 0x0 0x1000>;
@@ -33,7 +25,6 @@
 		#sound-dai-cells = <0>;
 		status = "disabled";
 	};
-
 	i2s6_8ch: i2s@fddf4000 {
 		compatible = "rockchip,rk3588-i2s-tdm";
 		reg = <0x0 0xfddf4000 0x0 0x1000>;
@@ -50,7 +41,6 @@
 		#sound-dai-cells = <0>;
 		status = "disabled";
 	};
-
 	i2s7_8ch: i2s@fddf8000 {
 		compatible = "rockchip,rk3588-i2s-tdm";
 		reg = <0x0 0xfddf8000 0x0 0x1000>;
@@ -67,7 +57,6 @@
 		#sound-dai-cells = <0>;
 		status = "disabled";
 	};
-
 	i2s10_8ch: i2s@fde00000 {
 		compatible = "rockchip,rk3588-i2s-tdm";
 		reg = <0x0 0xfde00000 0x0 0x1000>;
@@ -84,7 +73,6 @@
 		#sound-dai-cells = <0>;
 		status = "disabled";
 	};
-
 	pcie3x4: pcie@fe150000 {
 		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
 		#address-cells = <3>;
@@ -126,7 +114,6 @@
 		resets = <&cru SRST_PCIE0_POWER_UP>, <&cru SRST_P_PCIE0>;
 		reset-names = "pwr", "pipe";
 		status = "disabled";
-
 		pcie3x4_intc: legacy-interrupt-controller {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -135,7 +122,6 @@
 			interrupts = <GIC_SPI 260 IRQ_TYPE_EDGE_RISING 0>;
 		};
 	};
-
 	pcie3x2: pcie@fe160000 {
 		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
 		#address-cells = <3>;
@@ -177,7 +163,6 @@
 		resets = <&cru SRST_PCIE1_POWER_UP>, <&cru SRST_P_PCIE1>;
 		reset-names = "pwr", "pipe";
 		status = "disabled";
-
 		pcie3x2_intc: legacy-interrupt-controller {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -186,7 +171,6 @@
 			interrupts = <GIC_SPI 255 IRQ_TYPE_EDGE_RISING 0>;
 		};
 	};
-
 	pcie2x1l0: pcie@fe170000 {
 		compatible = "rockchip,rk3588-pcie", "rockchip,rk3568-pcie";
 		bus-range = <0x20 0x2f>;
@@ -228,7 +212,6 @@
 		#address-cells = <3>;
 		#size-cells = <2>;
 		status = "disabled";
-
 		pcie2x1l0_intc: legacy-interrupt-controller {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -237,7 +220,6 @@
 			interrupts = <GIC_SPI 240 IRQ_TYPE_EDGE_RISING 0>;
 		};
 	};
-
 	gmac0: ethernet@fe1b0000 {
 		compatible = "rockchip,rk3588-gmac", "snps,dwmac-4.20a";
 		reg = <0x0 0xfe1b0000 0x0 0x10000>;
@@ -261,32 +243,27 @@
 		snps,mtl-tx-config = <&gmac0_mtl_tx_setup>;
 		snps,tso;
 		status = "disabled";
-
 		mdio0: mdio {
 			compatible = "snps,dwmac-mdio";
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
 		};
-
 		gmac0_stmmac_axi_setup: stmmac-axi-config {
 			snps,blen = <0 0 0 0 16 8 4>;
 			snps,wr_osr_lmt = <4>;
 			snps,rd_osr_lmt = <8>;
 		};
-
 		gmac0_mtl_rx_setup: rx-queues-config {
 			snps,rx-queues-to-use = <2>;
 			queue0 {};
 			queue1 {};
 		};
-
 		gmac0_mtl_tx_setup: tx-queues-config {
 			snps,tx-queues-to-use = <2>;
 			queue0 {};
 			queue1 {};
 		};
 	};
-
 	sata1: sata@fe220000 {
 		compatible = "rockchip,rk3588-dwc-ahci", "snps,dwc-ahci";
 		reg = <0 0xfe220000 0 0x1000>;
@@ -299,7 +276,6 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "disabled";
-
 		sata-port@0 {
 			reg = <0>;
 			hba-port-cap = <HBA_PORT_FBSCP>;
@@ -309,7 +285,6 @@
 			snps,tx-ts-max = <32>;
 		};
 	};
-
 	combphy1_ps: phy@fee10000 {
 		compatible = "rockchip,rk3588-naneng-combphy";
 		reg = <0x0 0xfee10000 0x0 0x100>;
@@ -325,7 +300,6 @@
 		rockchip,pipe-phy-grf = <&pipe_phy1_grf>;
 		status = "disabled";
 	};
-
 	pcie30phy: phy@fee80000 {
 		compatible = "rockchip,rk3588-pcie3-phy";
 		reg = <0x0 0xfee80000 0x0 0x20000>;

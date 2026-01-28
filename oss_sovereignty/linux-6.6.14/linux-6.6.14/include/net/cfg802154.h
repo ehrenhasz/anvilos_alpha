@@ -1,26 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2007, 2008, 2009 Siemens AG
- *
- * Written by:
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- */
-
 #ifndef __NET_CFG802154_H
 #define __NET_CFG802154_H
-
 #include <linux/ieee802154.h>
 #include <linux/netdevice.h>
 #include <linux/spinlock.h>
 #include <linux/bug.h>
-
 #include <net/nl802154.h>
-
 struct wpan_phy;
 struct wpan_phy_cca;
 struct cfg802154_scan_request;
 struct cfg802154_beacon_request;
-
 #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
 struct ieee802154_llsec_device_key;
 struct ieee802154_llsec_seclevel;
@@ -29,8 +17,7 @@ struct ieee802154_llsec_device;
 struct ieee802154_llsec_table;
 struct ieee802154_llsec_key_id;
 struct ieee802154_llsec_key;
-#endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
-
+#endif  
 struct cfg802154_ops {
 	struct net_device * (*add_virtual_intf_deprecated)(struct wpan_phy *wpan_phy,
 							   const char *name,
@@ -85,9 +72,6 @@ struct cfg802154_ops {
 				    struct wpan_dev *wpan_dev);
 	void	(*unlock_llsec_table)(struct wpan_phy *wpan_phy,
 				      struct wpan_dev *wpan_dev);
-	/* TODO remove locking/get table callbacks, this is part of the
-	 * nl802154 interface and should be accessible from ieee802154 layer.
-	 */
 	int	(*get_llsec_params)(struct wpan_phy *wpan_phy,
 				    struct wpan_dev *wpan_dev,
 				    struct ieee802154_llsec_params *params);
@@ -121,9 +105,8 @@ struct cfg802154_ops {
 			      struct wpan_dev *wpan_dev,
 			      __le64 extended_addr,
 			      const struct ieee802154_llsec_device_key *key);
-#endif /* CONFIG_IEEE802154_NL802154_EXPERIMENTAL */
+#endif  
 };
-
 static inline bool
 wpan_phy_supported_bool(bool b, enum nl802154_supported_bool_states st)
 {
@@ -137,10 +120,8 @@ wpan_phy_supported_bool(bool b, enum nl802154_supported_bool_states st)
 	default:
 		WARN_ON(1);
 	}
-
 	return false;
 }
-
 struct wpan_phy_supported {
 	u32 channels[IEEE802154_MAX_PAGE + 1],
 	    cca_modes, cca_opts, iftypes;
@@ -151,37 +132,19 @@ struct wpan_phy_supported {
 	size_t tx_powers_size, cca_ed_levels_size;
 	const s32 *tx_powers, *cca_ed_levels;
 };
-
 struct wpan_phy_cca {
 	enum nl802154_cca_modes mode;
 	enum nl802154_cca_opts opt;
 };
-
 static inline bool
 wpan_phy_cca_cmp(const struct wpan_phy_cca *a, const struct wpan_phy_cca *b)
 {
 	if (a->mode != b->mode)
 		return false;
-
 	if (a->mode == NL802154_CCA_ENERGY_CARRIER)
 		return a->opt == b->opt;
-
 	return true;
 }
-
-/**
- * enum wpan_phy_flags - WPAN PHY state flags
- * @WPAN_PHY_FLAG_TXPOWER: Indicates that transceiver will support
- *	transmit power setting.
- * @WPAN_PHY_FLAG_CCA_ED_LEVEL: Indicates that transceiver will support cca ed
- *	level setting.
- * @WPAN_PHY_FLAG_CCA_MODE: Indicates that transceiver will support cca mode
- *	setting.
- * @WPAN_PHY_FLAG_STATE_QUEUE_STOPPED: Indicates that the transmit queue was
- *	temporarily stopped.
- * @WPAN_PHY_FLAG_DATAGRAMS_ONLY: Indicates that transceiver is only able to
- *	send/receive datagrams.
- */
 enum wpan_phy_flags {
 	WPAN_PHY_FLAG_TXPOWER		= BIT(1),
 	WPAN_PHY_FLAG_CCA_ED_LEVEL	= BIT(2),
@@ -189,72 +152,36 @@ enum wpan_phy_flags {
 	WPAN_PHY_FLAG_STATE_QUEUE_STOPPED = BIT(4),
 	WPAN_PHY_FLAG_DATAGRAMS_ONLY	= BIT(5),
 };
-
 struct wpan_phy {
-	/* If multiple wpan_phys are registered and you're handed e.g.
-	 * a regular netdev with assigned ieee802154_ptr, you won't
-	 * know whether it points to a wpan_phy your driver has registered
-	 * or not. Assign this to something global to your driver to
-	 * help determine whether you own this wpan_phy or not.
-	 */
 	const void *privid;
-
 	unsigned long flags;
-
-	/*
-	 * This is a PIB according to 802.15.4-2011.
-	 * We do not provide timing-related variables, as they
-	 * aren't used outside of driver
-	 */
 	u8 current_channel;
 	u8 current_page;
 	struct wpan_phy_supported supported;
-	/* current transmit_power in mBm */
 	s32 transmit_power;
 	struct wpan_phy_cca cca;
-
 	__le64 perm_extended_addr;
-
-	/* current cca ed threshold in mBm */
 	s32 cca_ed_level;
-
-	/* PHY depended MAC PIB values */
-
-	/* 802.15.4 acronym: Tdsym in nsec */
 	u32 symbol_duration;
-	/* lifs and sifs periods timing */
 	u16 lifs_period;
 	u16 sifs_period;
-
 	struct device dev;
-
-	/* the network namespace this phy lives in currently */
 	possible_net_t _net;
-
-	/* Transmission monitoring and control */
 	spinlock_t queue_lock;
 	atomic_t ongoing_txs;
 	atomic_t hold_txs;
 	wait_queue_head_t sync_txq;
-
-	/* Current filtering level on reception.
-	 * Only allowed to be changed if phy is not operational.
-	 */
 	enum ieee802154_filtering_level filtering;
-
 	char priv[] __aligned(NETDEV_ALIGN);
 };
-
 static inline struct net *wpan_phy_net(struct wpan_phy *wpan_phy)
 {
 	return read_pnet(&wpan_phy->_net);
 }
-
 static inline void wpan_phy_net_set(struct wpan_phy *wpan_phy, struct net *net)
 {
 	write_pnet(&wpan_phy->_net, net);
 }
-
 static inline bool ieee802154_chan_is_valid(struct wpan_phy *phy,
 					    u8 page, u8 channel)
 {
@@ -262,20 +189,8 @@ static inline bool ieee802154_chan_is_valid(struct wpan_phy *phy,
 	    channel > IEEE802154_MAX_CHANNEL ||
 	    !(phy->supported.channels[page] & BIT(channel)))
 		return false;
-
 	return true;
 }
-
-/**
- * struct ieee802154_addr - IEEE802.15.4 device address
- * @mode: Address mode from frame header. Can be one of:
- *        - @IEEE802154_ADDR_NONE
- *        - @IEEE802154_ADDR_SHORT
- *        - @IEEE802154_ADDR_LONG
- * @pan_id: The PAN ID this address belongs to
- * @short_addr: address if @mode is @IEEE802154_ADDR_SHORT
- * @extended_addr: address if @mode is @IEEE802154_ADDR_LONG
- */
 struct ieee802154_addr {
 	u8 mode;
 	__le16 pan_id;
@@ -284,16 +199,6 @@ struct ieee802154_addr {
 		__le64 extended_addr;
 	};
 };
-
-/**
- * struct ieee802154_coord_desc - Coordinator descriptor
- * @addr: PAN ID and coordinator address
- * @page: page this coordinator is using
- * @channel: channel this coordinator is using
- * @superframe_spec: SuperFrame specification as received
- * @link_quality: link quality indicator at which the beacon was received
- * @gts_permit: the coordinator accepts GTS requests
- */
 struct ieee802154_coord_desc {
 	struct ieee802154_addr addr;
 	u8 page;
@@ -302,18 +207,6 @@ struct ieee802154_coord_desc {
 	u8 link_quality;
 	bool gts_permit;
 };
-
-/**
- * struct cfg802154_scan_request - Scan request
- *
- * @type: type of scan to be performed
- * @page: page on which to perform the scan
- * @channels: channels in te %page to be scanned
- * @duration: time spent on each channel, calculated with:
- *            aBaseSuperframeDuration * (2 ^ duration + 1)
- * @wpan_dev: the wpan device on which to perform the scan
- * @wpan_phy: the wpan phy on which to perform the scan
- */
 struct cfg802154_scan_request {
 	enum nl802154_scan_types type;
 	u8 page;
@@ -322,33 +215,11 @@ struct cfg802154_scan_request {
 	struct wpan_dev *wpan_dev;
 	struct wpan_phy *wpan_phy;
 };
-
-/**
- * struct cfg802154_beacon_request - Beacon request descriptor
- *
- * @interval: interval n between sendings, in multiple order of the super frame
- *            duration: aBaseSuperframeDuration * (2^n) unless the interval
- *            order is greater or equal to 15, in this case beacons won't be
- *            passively sent out at a fixed rate but instead inform the device
- *            that it should answer beacon requests as part of active scan
- *            procedures
- * @wpan_dev: the concerned wpan device
- * @wpan_phy: the wpan phy this was for
- */
 struct cfg802154_beacon_request {
 	u8 interval;
 	struct wpan_dev *wpan_dev;
 	struct wpan_phy *wpan_phy;
 };
-
-/**
- * struct cfg802154_mac_pkt - MAC packet descriptor (beacon/command)
- * @node: MAC packets to process list member
- * @skb: the received sk_buff
- * @sdata: the interface on which @skb was received
- * @page: page configuration when @skb was received
- * @channel: channel configuration when @skb was received
- */
 struct cfg802154_mac_pkt {
 	struct list_head node;
 	struct sk_buff *skb;
@@ -356,7 +227,6 @@ struct cfg802154_mac_pkt {
 	u8 page;
 	u8 channel;
 };
-
 struct ieee802154_llsec_key_id {
 	u8 mode;
 	u8 id;
@@ -366,122 +236,82 @@ struct ieee802154_llsec_key_id {
 		__le64 extended_source;
 	};
 };
-
 #define IEEE802154_LLSEC_KEY_SIZE 16
-
 struct ieee802154_llsec_key {
 	u8 frame_types;
 	u32 cmd_frame_ids;
-	/* TODO replace with NL802154_KEY_SIZE */
 	u8 key[IEEE802154_LLSEC_KEY_SIZE];
 };
-
 struct ieee802154_llsec_key_entry {
 	struct list_head list;
-
 	struct ieee802154_llsec_key_id id;
 	struct ieee802154_llsec_key *key;
 };
-
 struct ieee802154_llsec_params {
 	bool enabled;
-
 	__be32 frame_counter;
 	u8 out_level;
 	struct ieee802154_llsec_key_id out_key;
-
 	__le64 default_key_source;
-
 	__le16 pan_id;
 	__le64 hwaddr;
 	__le64 coord_hwaddr;
 	__le16 coord_shortaddr;
 };
-
 struct ieee802154_llsec_table {
 	struct list_head keys;
 	struct list_head devices;
 	struct list_head security_levels;
 };
-
 struct ieee802154_llsec_seclevel {
 	struct list_head list;
-
 	u8 frame_type;
 	u8 cmd_frame_id;
 	bool device_override;
 	u32 sec_levels;
 };
-
 struct ieee802154_llsec_device {
 	struct list_head list;
-
 	__le16 pan_id;
 	__le16 short_addr;
 	__le64 hwaddr;
 	u32 frame_counter;
 	bool seclevel_exempt;
-
 	u8 key_mode;
 	struct list_head keys;
 };
-
 struct ieee802154_llsec_device_key {
 	struct list_head list;
-
 	struct ieee802154_llsec_key_id key_id;
 	u32 frame_counter;
 };
-
 struct wpan_dev_header_ops {
-	/* TODO create callback currently assumes ieee802154_mac_cb inside
-	 * skb->cb. This should be changed to give these information as
-	 * parameter.
-	 */
 	int	(*create)(struct sk_buff *skb, struct net_device *dev,
 			  const struct ieee802154_addr *daddr,
 			  const struct ieee802154_addr *saddr,
 			  unsigned int len);
 };
-
 struct wpan_dev {
 	struct wpan_phy *wpan_phy;
 	int iftype;
-
-	/* the remainder of this struct should be private to cfg802154 */
 	struct list_head list;
 	struct net_device *netdev;
-
 	const struct wpan_dev_header_ops *header_ops;
-
-	/* lowpan interface, set when the wpan_dev belongs to one lowpan_dev */
 	struct net_device *lowpan_dev;
-
 	u32 identifier;
-
-	/* MAC PIB */
 	__le16 pan_id;
 	__le16 short_addr;
 	__le64 extended_addr;
-
-	/* MAC BSN field */
 	atomic_t bsn;
-	/* MAC DSN field */
 	atomic_t dsn;
-
 	u8 min_be;
 	u8 max_be;
 	u8 csma_retries;
 	s8 frame_retries;
-
 	bool lbt;
-
-	/* fallback for acknowledgment bit setting */
 	bool ackreq;
 };
-
 #define to_phy(_dev)	container_of(_dev, struct wpan_phy, dev)
-
 #if IS_ENABLED(CONFIG_IEEE802154) || IS_ENABLED(CONFIG_6LOWPAN)
 static inline int
 wpan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
@@ -490,43 +320,33 @@ wpan_dev_hard_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned int len)
 {
 	struct wpan_dev *wpan_dev = dev->ieee802154_ptr;
-
 	return wpan_dev->header_ops->create(skb, dev, daddr, saddr, len);
 }
 #endif
-
 struct wpan_phy *
 wpan_phy_new(const struct cfg802154_ops *ops, size_t priv_size);
 static inline void wpan_phy_set_dev(struct wpan_phy *phy, struct device *dev)
 {
 	phy->dev.parent = dev;
 }
-
 int wpan_phy_register(struct wpan_phy *phy);
 void wpan_phy_unregister(struct wpan_phy *phy);
 void wpan_phy_free(struct wpan_phy *phy);
-/* Same semantics as for class_for_each_device */
 int wpan_phy_for_each(int (*fn)(struct wpan_phy *phy, void *data), void *data);
-
 static inline void *wpan_phy_priv(struct wpan_phy *phy)
 {
 	BUG_ON(!phy);
 	return &phy->priv;
 }
-
 struct wpan_phy *wpan_phy_find(const char *str);
-
 static inline void wpan_phy_put(struct wpan_phy *phy)
 {
 	put_device(&phy->dev);
 }
-
 static inline const char *wpan_phy_name(struct wpan_phy *phy)
 {
 	return dev_name(&phy->dev);
 }
-
 void ieee802154_configure_durations(struct wpan_phy *phy,
 				    unsigned int page, unsigned int channel);
-
-#endif /* __NET_CFG802154_H */
+#endif  

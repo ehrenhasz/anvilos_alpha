@@ -1,21 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/linux/spi/mxs-spi.h
- *
- * Freescale i.MX233/i.MX28 SPI controller register definition
- *
- * Copyright 2008 Embedded Alley Solutions, Inc.
- * Copyright 2009-2011 Freescale Semiconductor, Inc.
- */
-
 #ifndef __LINUX_SPI_MXS_SPI_H__
 #define __LINUX_SPI_MXS_SPI_H__
-
 #include <linux/dmaengine.h>
-
 #define ssp_is_old(host)	((host)->devid == IMX23_SSP)
-
-/* SSP registers */
 #define HW_SSP_CTRL0				0x000
 #define  BM_SSP_CTRL0_RUN			(1 << 29)
 #define  BM_SSP_CTRL0_SDIO_IRQ_CHECK		(1 << 28)
@@ -96,9 +82,7 @@
 #define  BV_SSP_CTRL1_SSP_MODE__SSI		0x1
 #define  BV_SSP_CTRL1_SSP_MODE__SD_MMC		0x3
 #define  BV_SSP_CTRL1_SSP_MODE__MS		0x4
-
 #define HW_SSP_DATA(h)				(ssp_is_old(h) ? 0x070 : 0x090)
-
 #define HW_SSP_SDRESP0(h)			(ssp_is_old(h) ? 0x080 : 0x0a0)
 #define HW_SSP_SDRESP1(h)			(ssp_is_old(h) ? 0x090 : 0x0b0)
 #define HW_SSP_SDRESP2(h)			(ssp_is_old(h) ? 0x0a0 : 0x0c0)
@@ -107,29 +91,22 @@
 #define  BM_SSP_STATUS_CARD_DETECT		(1 << 28)
 #define  BM_SSP_STATUS_SDIO_IRQ			(1 << 17)
 #define  BM_SSP_STATUS_FIFO_EMPTY		(1 << 5)
-
 #define BF_SSP(value, field)	(((value) << BP_SSP_##field) & BM_SSP_##field)
-
 #define SSP_PIO_NUM	3
-
 enum mxs_ssp_id {
 	IMX23_SSP,
 	IMX28_SSP,
 };
-
 struct mxs_ssp {
 	struct device			*dev;
 	void __iomem			*base;
 	struct clk			*clk;
 	unsigned int			clk_rate;
 	enum mxs_ssp_id			devid;
-
 	struct dma_chan			*dmach;
 	unsigned int			dma_dir;
 	enum dma_transfer_direction	slave_dirn;
 	u32				ssp_pio_words[SSP_PIO_NUM];
 };
-
 void mxs_ssp_set_clk_rate(struct mxs_ssp *ssp, unsigned int rate);
-
-#endif	/* __LINUX_SPI_MXS_SPI_H__ */
+#endif	 

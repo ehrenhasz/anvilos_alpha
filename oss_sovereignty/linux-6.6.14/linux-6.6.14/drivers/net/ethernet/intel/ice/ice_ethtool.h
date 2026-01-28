@@ -1,26 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2023 Intel Corporation */
-
 #ifndef _ICE_ETHTOOL_H_
 #define _ICE_ETHTOOL_H_
-
 struct ice_phy_type_to_ethtool {
 	u64 aq_link_speed;
 	u8 link_mode;
 };
-
-/* Macro to make PHY type to Ethtool link mode table entry.
- * The index is the PHY type.
- */
 #define ICE_PHY_TYPE(LINK_SPEED, ETHTOOL_LINK_MODE) {\
 	.aq_link_speed = ICE_AQ_LINK_SPEED_##LINK_SPEED, \
 	.link_mode = ETHTOOL_LINK_MODE_##ETHTOOL_LINK_MODE##_BIT, \
 }
-
-/* Lookup table mapping PHY type low to link speed and Ethtool link modes.
- * Array index corresponds to HW PHY type bit, see
- * ice_adminq_cmd.h:ICE_PHY_TYPE_LOW_*.
- */
 static const struct ice_phy_type_to_ethtool
 phy_type_low_lkup[] = {
 	[0] = ICE_PHY_TYPE(100MB, 100baseT_Full),
@@ -88,11 +75,6 @@ phy_type_low_lkup[] = {
 	[62] = ICE_PHY_TYPE(100GB, 100000baseSR2_Full),
 	[63] = ICE_PHY_TYPE(100GB, 100000baseLR4_ER4_Full),
 };
-
-/* Lookup table mapping PHY type high to link speed and Ethtool link modes.
- * Array index corresponds to HW PHY type bit, see
- * ice_adminq_cmd.h:ICE_PHY_TYPE_HIGH_*
- */
 static const struct ice_phy_type_to_ethtool
 phy_type_high_lkup[] = {
 	[0] = ICE_PHY_TYPE(100GB, 100000baseKR2_Full),
@@ -101,5 +83,4 @@ phy_type_high_lkup[] = {
 	[3] = ICE_PHY_TYPE(100GB, 100000baseSR2_Full),
 	[4] = ICE_PHY_TYPE(100GB, 100000baseCR2_Full),
 };
-
-#endif /* !_ICE_ETHTOOL_H_ */
+#endif  

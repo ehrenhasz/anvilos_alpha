@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM8450_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SM8450_H
-
-/* GCC HW clocks */
 #define PCIE_0_PIPE_CLK						1
 #define PCIE_1_PHY_AUX_CLK					2
 #define PCIE_1_PIPE_CLK						3
@@ -15,8 +7,6 @@
 #define UFS_PHY_RX_SYMBOL_1_CLK					5
 #define UFS_PHY_TX_SYMBOL_0_CLK					6
 #define USB3_PHY_WRAPPER_GCC_USB30_PIPE_CLK			7
-
-/* GCC clocks */
 #define GCC_AGGRE_NOC_PCIE_0_AXI_CLK				8
 #define GCC_AGGRE_NOC_PCIE_1_AXI_CLK				9
 #define GCC_AGGRE_UFS_PHY_AXI_CLK				10
@@ -194,8 +184,6 @@
 #define GCC_VIDEO_AXI0_CLK					182
 #define GCC_VIDEO_AXI1_CLK					183
 #define GCC_VIDEO_XO_CLK					184
-
-/* GCC resets */
 #define GCC_CAMERA_BCR						0
 #define GCC_DISPLAY_BCR						1
 #define GCC_GPU_BCR						2
@@ -233,11 +221,8 @@
 #define GCC_VIDEO_AXI0_CLK_ARES					34
 #define GCC_VIDEO_AXI1_CLK_ARES					35
 #define GCC_VIDEO_BCR						36
-
-/* GCC power domains */
 #define PCIE_0_GDSC						0
 #define PCIE_1_GDSC						1
 #define UFS_PHY_GDSC						2
 #define USB30_PRIM_GDSC						3
-
 #endif

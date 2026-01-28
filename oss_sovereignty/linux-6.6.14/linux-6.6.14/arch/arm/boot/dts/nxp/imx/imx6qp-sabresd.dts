@@ -1,21 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Copyright 2016 Freescale Semiconductor, Inc.
-
 /dts-v1/;
-
 #include "imx6qp.dtsi"
 #include "imx6qdl-sabresd.dtsi"
-
 / {
 	model = "Freescale i.MX6 Quad Plus SABRE Smart Device Board";
 	compatible = "fsl,imx6qp-sabresd", "fsl,imx6qp";
 };
-
 &reg_arm {
 	vin-supply = <&sw2_reg>;
 };
-
 &iomuxc {
 	imx6qdl-sabresd {
 		pinctrl_usdhc2: usdhc2grp {
@@ -32,7 +24,6 @@
 				MX6QDL_PAD_NANDF_D7__SD2_DATA7		0x17059
 			>;
 		};
-
 		pinctrl_usdhc3: usdhc3grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD3_CMD__SD3_CMD		0x17059
@@ -49,15 +40,12 @@
 		};
 	};
 };
-
 &vgen3_reg {
 	regulator-always-on;
 };
-
 &pcie {
 	status = "okay";
 };
-
 &sata {
 	status = "okay";
 };

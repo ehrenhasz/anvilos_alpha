@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __BCM63XX_RESET_H
 #define __BCM63XX_RESET_H
-
 enum bcm63xx_core_reset {
 	BCM63XX_RESET_SPI,
 	BCM63XX_RESET_ENET,
@@ -16,7 +14,5 @@ enum bcm63xx_core_reset {
 	BCM63XX_RESET_PCIE,
 	BCM63XX_RESET_PCIE_EXT,
 };
-
 void bcm63xx_core_set_reset(enum bcm63xx_core_reset, int reset);
-
 #endif

@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SELINUX_POLICYCAP_NAMES_H_
 #define _SELINUX_POLICYCAP_NAMES_H_
-
 #include "policycap.h"
-
-/* Policy capability names */
 const char *const selinux_policycap_names[__POLICYDB_CAP_MAX] = {
 	"network_peer_controls",
 	"open_perms",
@@ -15,5 +11,4 @@ const char *const selinux_policycap_names[__POLICYDB_CAP_MAX] = {
 	"genfs_seclabel_symlinks",
 	"ioctl_skip_cloexec",
 };
-
-#endif /* _SELINUX_POLICYCAP_NAMES_H_ */
+#endif  

@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2023 Intel Corporation */
 #ifndef _ADF_CFG_SERVICES_H_
 #define _ADF_CFG_SERVICES_H_
-
 #include "adf_cfg_strings.h"
-
 enum adf_services {
 	SVC_CY = 0,
 	SVC_CY2,
@@ -17,7 +13,6 @@ enum adf_services {
 	SVC_DC_SYM,
 	SVC_SYM_DC,
 };
-
 static const char *const adf_cfg_services[] = {
 	[SVC_CY] = ADF_CFG_CY,
 	[SVC_CY2] = ADF_CFG_ASYM_SYM,
@@ -30,5 +25,4 @@ static const char *const adf_cfg_services[] = {
 	[SVC_DC_SYM] = ADF_CFG_DC_SYM,
 	[SVC_SYM_DC] = ADF_CFG_SYM_DC,
 };
-
 #endif

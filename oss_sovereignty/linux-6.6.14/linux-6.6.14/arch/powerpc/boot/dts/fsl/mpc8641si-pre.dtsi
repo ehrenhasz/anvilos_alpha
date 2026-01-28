@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPC8641 Silicon/SoC Device Tree Source (pre include)
- *
- * Copyright 2016 Elettra-Sincrotrone Trieste S.C.p.A.
- */
-
 /dts-v1/;
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	interrupt-parent = <&mpic>;
-
 	aliases {
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
@@ -22,11 +13,9 @@
 		pci0 = &pci0;
 		pci1 = &pci1;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8641@0 {
 			device_type = "cpu";
 			reg = <0>;
@@ -38,7 +27,6 @@
 			bus-frequency = <0>;
 			clock-frequency = <0>;
 		};
-
 		PowerPC,8641@1 {
 			device_type = "cpu";
 			reg = <1>;

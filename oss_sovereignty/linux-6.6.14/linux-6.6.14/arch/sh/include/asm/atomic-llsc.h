@@ -1,21 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_ATOMIC_LLSC_H
 #define __ASM_SH_ATOMIC_LLSC_H
-
-/*
- * SH-4A note:
- *
- * We basically get atomic_xxx_return() for free compared with
- * atomic_xxx(). movli.l/movco.l require r0 due to the instruction
- * encoding, so the retval is automatically set without having to
- * do any special work.
- */
-/*
- * To get proper branch prediction for the main line, we must branch
- * forward to code at the end of this object's .text section, then
- * branch back to restart the operation.
- */
-
 #define ATOMIC_OP(op)							\
 static inline void arch_atomic_##op(int i, atomic_t *v)			\
 {									\
@@ -30,7 +14,6 @@ static inline void arch_atomic_##op(int i, atomic_t *v)			\
 	: "r" (i), "r" (&v->counter)					\
 	: "t");								\
 }
-
 #define ATOMIC_OP_RETURN(op)						\
 static inline int arch_atomic_##op##_return(int i, atomic_t *v)		\
 {									\
@@ -48,7 +31,6 @@ static inline int arch_atomic_##op##_return(int i, atomic_t *v)		\
 									\
 	return temp;							\
 }
-
 #define ATOMIC_FETCH_OP(op)						\
 static inline int arch_atomic_fetch_##op(int i, atomic_t *v)		\
 {									\
@@ -67,31 +49,23 @@ static inline int arch_atomic_fetch_##op(int i, atomic_t *v)		\
 									\
 	return res;							\
 }
-
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_OP_RETURN(op) ATOMIC_FETCH_OP(op)
-
 ATOMIC_OPS(add)
 ATOMIC_OPS(sub)
-
 #define arch_atomic_add_return	arch_atomic_add_return
 #define arch_atomic_sub_return	arch_atomic_sub_return
 #define arch_atomic_fetch_add	arch_atomic_fetch_add
 #define arch_atomic_fetch_sub	arch_atomic_fetch_sub
-
 #undef ATOMIC_OPS
 #define ATOMIC_OPS(op) ATOMIC_OP(op) ATOMIC_FETCH_OP(op)
-
 ATOMIC_OPS(and)
 ATOMIC_OPS(or)
 ATOMIC_OPS(xor)
-
 #define arch_atomic_fetch_and	arch_atomic_fetch_and
 #define arch_atomic_fetch_or	arch_atomic_fetch_or
 #define arch_atomic_fetch_xor	arch_atomic_fetch_xor
-
 #undef ATOMIC_OPS
 #undef ATOMIC_FETCH_OP
 #undef ATOMIC_OP_RETURN
 #undef ATOMIC_OP
-
-#endif /* __ASM_SH_ATOMIC_LLSC_H */
+#endif  

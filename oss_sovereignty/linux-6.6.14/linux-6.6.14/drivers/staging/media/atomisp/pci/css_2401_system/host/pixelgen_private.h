@@ -1,34 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
-
 #ifndef __PIXELGEN_PRIVATE_H_INCLUDED__
 #define __PIXELGEN_PRIVATE_H_INCLUDED__
 #include "pixelgen_public.h"
 #include "PixelGen_SysBlock_defs.h"
-#include "device_access.h"	/* ia_css_device_load_uint32 */
-#include "assert_support.h" /* assert */
-
-/*****************************************************
- *
- * Device level interface (DLI).
- *
- *****************************************************/
-/**
- * @brief Load the register value.
- * Refer to "pixelgen_public.h" for details.
- */
+#include "device_access.h"	 
+#include "assert_support.h"  
 STORAGE_CLASS_PIXELGEN_C hrt_data pixelgen_ctrl_reg_load(
     const pixelgen_ID_t ID,
     const hrt_address reg)
@@ -38,11 +13,6 @@ STORAGE_CLASS_PIXELGEN_C hrt_data pixelgen_ctrl_reg_load(
 	return ia_css_device_load_uint32(PIXELGEN_CTRL_BASE[ID] + reg * sizeof(
 					     hrt_data));
 }
-
-/**
- * @brief Store a value to the register.
- * Refer to "pixelgen_ctrl_public.h" for details.
- */
 STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_reg_store(
     const pixelgen_ID_t ID,
     const hrt_address reg,
@@ -50,22 +20,9 @@ STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_reg_store(
 {
 	assert(ID < N_PIXELGEN_ID);
 	assert(PIXELGEN_CTRL_BASE[ID] != (hrt_address)-1);
-
 	ia_css_device_store_uint32(PIXELGEN_CTRL_BASE[ID] + reg * sizeof(hrt_data),
 				   value);
 }
-
-/* end of DLI */
-
-/*****************************************************
- *
- * Native command interface (NCI).
- *
- *****************************************************/
-/**
- * @brief Get the pixelgen state.
- * Refer to "pixelgen_public.h" for details.
- */
 STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_get_state(
     const pixelgen_ID_t ID,
     pixelgen_ctrl_state_t *state)
@@ -125,11 +82,6 @@ STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_get_state(
 	state->tpg_b2 =
 	    pixelgen_ctrl_reg_load(ID, _PXG_TPG_B2_REG_IDX);
 }
-
-/**
- * @brief Dump the pixelgen state.
- * Refer to "pixelgen_public.h" for details.
- */
 STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_dump_state(
     const pixelgen_ID_t ID,
     pixelgen_ctrl_state_t *state)
@@ -179,6 +131,4 @@ STORAGE_CLASS_PIXELGEN_C void pixelgen_ctrl_dump_state(
 	ia_css_print("Pixel Generator ID %d tpg g2 0x%x\n", ID, state->tpg_g2);
 	ia_css_print("Pixel Generator ID %d tpg b2 0x%x\n", ID, state->tpg_b2);
 }
-
-/* end of NCI */
-#endif /* __PIXELGEN_PRIVATE_H_INCLUDED__ */
+#endif  

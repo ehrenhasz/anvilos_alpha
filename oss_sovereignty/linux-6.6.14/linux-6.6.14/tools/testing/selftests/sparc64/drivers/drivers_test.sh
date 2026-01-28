@@ -1,8 +1,4 @@
-#!/bin/sh
-# SPDX-License-Identifier: GPL-2.0
-
 SRC_TREE=../../../../
-
 test_run()
 {
 	if [ -f ${SRC_TREE}/drivers/char/adi.ko ]; then
@@ -11,7 +7,6 @@ test_run()
 			rc=1
 		fi
 	else
-		# Use modprobe dry run to check for missing adi module
 		if ! /sbin/modprobe -q -n adi; then
 			echo "adi: [SKIP]"
 		elif /sbin/modprobe -q adi; then
@@ -24,7 +19,6 @@ test_run()
 	./adi-test
 	rmmod adi 2> /dev/null
 }
-
 rc=0
 test_run
 exit $rc

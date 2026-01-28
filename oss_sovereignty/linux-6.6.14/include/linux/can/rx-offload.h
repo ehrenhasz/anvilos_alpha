@@ -1,36 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * linux/can/rx-offload.h
- *
- * Copyright (c) 2014 David Jander, Protonic Holland
- * Copyright (c) 2014-2017, 2023 Pengutronix, Marc Kleine-Budde <kernel@pengutronix.de>
- */
-
 #ifndef _CAN_RX_OFFLOAD_H
 #define _CAN_RX_OFFLOAD_H
-
 #include <linux/netdevice.h>
 #include <linux/can.h>
-
 struct can_rx_offload {
 	struct net_device *dev;
-
 	struct sk_buff *(*mailbox_read)(struct can_rx_offload *offload,
 					unsigned int mb, u32 *timestamp,
 					bool drop);
-
 	struct sk_buff_head skb_queue;
 	struct sk_buff_head skb_irq_queue;
 	u32 skb_queue_len_max;
-
 	unsigned int mb_first;
 	unsigned int mb_last;
-
 	struct napi_struct napi;
-
 	bool inc;
 };
-
 int can_rx_offload_add_timestamp(struct net_device *dev,
 				 struct can_rx_offload *offload);
 int can_rx_offload_add_fifo(struct net_device *dev,
@@ -56,10 +40,8 @@ void can_rx_offload_irq_finish(struct can_rx_offload *offload);
 void can_rx_offload_threaded_irq_finish(struct can_rx_offload *offload);
 void can_rx_offload_del(struct can_rx_offload *offload);
 void can_rx_offload_enable(struct can_rx_offload *offload);
-
 static inline void can_rx_offload_disable(struct can_rx_offload *offload)
 {
 	napi_disable(&offload->napi);
 }
-
-#endif /* !_CAN_RX_OFFLOAD_H */
+#endif  

@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2011 Zhang, Keguang <keguang.zhang@gmail.com>
- *
- * IRQ mappings for Loongson 1
- */
-
 #ifndef __ASM_MACH_LOONGSON32_IRQ_H
 #define __ASM_MACH_LOONGSON32_IRQ_H
-
-/*
- * CPU core Interrupt Numbers
- */
 #define MIPS_CPU_IRQ_BASE		0
 #define MIPS_CPU_IRQ(x)			(MIPS_CPU_IRQ_BASE + (x))
-
 #define SOFTINT0_IRQ			MIPS_CPU_IRQ(0)
 #define SOFTINT1_IRQ			MIPS_CPU_IRQ(1)
 #define INT0_IRQ			MIPS_CPU_IRQ(2)
@@ -21,16 +9,10 @@
 #define INT2_IRQ			MIPS_CPU_IRQ(4)
 #define INT3_IRQ			MIPS_CPU_IRQ(5)
 #define INT4_IRQ			MIPS_CPU_IRQ(6)
-#define TIMER_IRQ			MIPS_CPU_IRQ(7)		/* cpu timer */
-
+#define TIMER_IRQ			MIPS_CPU_IRQ(7)		 
 #define MIPS_CPU_IRQS		(MIPS_CPU_IRQ(7) + 1 - MIPS_CPU_IRQ_BASE)
-
-/*
- * INT0~3 Interrupt Numbers
- */
 #define LS1X_IRQ_BASE			MIPS_CPU_IRQS
 #define LS1X_IRQ(n, x)			(LS1X_IRQ_BASE + (n << 5) + (x))
-
 #define LS1X_UART0_IRQ			LS1X_IRQ(0, 2)
 #if defined(CONFIG_LOONGSON1_LS1B)
 #define LS1X_UART1_IRQ			LS1X_IRQ(0, 3)
@@ -71,7 +53,6 @@
 #define LS1X_ADC_IRQ			LS1X_IRQ(0, 30)
 #define LS1X_SDIO_IRQ			LS1X_IRQ(0, 31)
 #endif
-
 #define LS1X_EHCI_IRQ			LS1X_IRQ(1, 0)
 #define LS1X_OHCI_IRQ			LS1X_IRQ(1, 1)
 #if defined(CONFIG_LOONGSON1_LS1B)
@@ -93,15 +74,11 @@
 #define LS1X_I2C1_IRQ			LS1X_IRQ(1, 18)
 #define LS1X_I2C2_IRQ			LS1X_IRQ(1, 19)
 #endif
-
 #if defined(CONFIG_LOONGSON1_LS1B)
 #define INTN	4
 #elif defined(CONFIG_LOONGSON1_LS1C)
 #define INTN	5
 #endif
-
 #define LS1X_IRQS		(LS1X_IRQ(INTN, 31) + 1 - LS1X_IRQ_BASE)
-
 #define NR_IRQS			(MIPS_CPU_IRQS + LS1X_IRQS)
-
-#endif /* __ASM_MACH_LOONGSON32_IRQ_H */
+#endif  

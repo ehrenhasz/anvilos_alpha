@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _DIB07X0_H_
 #define _DIB07X0_H_
-
 enum dib07x0_gpios {
 	GPIO0  =  0,
 	GPIO1  =  2,
@@ -15,8 +13,6 @@ enum dib07x0_gpios {
 	GPIO9  = 14,
 	GPIO10 = 15,
 };
-
 #define GPIO_IN  0
 #define GPIO_OUT 1
-
 #endif

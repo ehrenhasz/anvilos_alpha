@@ -1,22 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * debug.h - DesignWare USB3 DRD Controller Debug Header
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
-
 #ifndef __DWC3_DEBUG_H
 #define __DWC3_DEBUG_H
-
 #include "core.h"
-
-/**
- * dwc3_gadget_ep_cmd_string - returns endpoint command string
- * @cmd: command code
- */
 static inline const char *
 dwc3_gadget_ep_cmd_string(u8 cmd)
 {
@@ -43,11 +27,6 @@ dwc3_gadget_ep_cmd_string(u8 cmd)
 		return "UNKNOWN command";
 	}
 }
-
-/**
- * dwc3_gadget_generic_cmd_string - returns generic command string
- * @cmd: command code
- */
 static inline const char *
 dwc3_gadget_generic_cmd_string(u8 cmd)
 {
@@ -78,11 +57,6 @@ dwc3_gadget_generic_cmd_string(u8 cmd)
 		return "UNKNOWN";
 	}
 }
-
-/**
- * dwc3_gadget_link_string - returns link name
- * @link_state: link state code
- */
 static inline const char *
 dwc3_gadget_link_string(enum dwc3_link_state link_state)
 {
@@ -119,11 +93,6 @@ dwc3_gadget_link_string(enum dwc3_link_state link_state)
 		return "UNKNOWN link state";
 	}
 }
-
-/**
- * dwc3_gadget_hs_link_string - returns highspeed and below link name
- * @link_state: link state code
- */
 static inline const char *
 dwc3_gadget_hs_link_string(enum dwc3_link_state link_state)
 {
@@ -148,11 +117,6 @@ dwc3_gadget_hs_link_string(enum dwc3_link_state link_state)
 		return "UNKNOWN link state";
 	}
 }
-
-/**
- * dwc3_trb_type_string - returns TRB type as a string
- * @type: the type of the TRB
- */
 static inline const char *dwc3_trb_type_string(unsigned int type)
 {
 	switch (type) {
@@ -176,7 +140,6 @@ static inline const char *dwc3_trb_type_string(unsigned int type)
 		return "UNKNOWN";
 	}
 }
-
 static inline const char *dwc3_ep0_state_string(enum dwc3_ep0_state state)
 {
 	switch (state) {
@@ -192,16 +155,10 @@ static inline const char *dwc3_ep0_state_string(enum dwc3_ep0_state state)
 		return "UNKNOWN";
 	}
 }
-
-/**
- * dwc3_gadget_event_string - returns event name
- * @event: the event code
- */
 static inline const char *dwc3_gadget_event_string(char *str, size_t size,
 		const struct dwc3_event_devt *event)
 {
 	enum dwc3_link_state state = event->event_info & DWC3_LINK_STATE_MASK;
-
 	switch (event->type) {
 	case DWC3_DEVICE_EVENT_DISCONNECT:
 		snprintf(str, size, "Disconnect: [%s]",
@@ -246,26 +203,17 @@ static inline const char *dwc3_gadget_event_string(char *str, size_t size,
 	default:
 		snprintf(str, size, "UNKNOWN");
 	}
-
 	return str;
 }
-
-/**
- * dwc3_ep_event_string - returns event name
- * @event: then event code
- */
 static inline const char *dwc3_ep_event_string(char *str, size_t size,
 		const struct dwc3_event_depevt *event, u32 ep0state)
 {
 	u8 epnum = event->endpoint_number;
 	size_t len;
 	int status;
-
 	len = scnprintf(str, size, "ep%d%s: ", epnum >> 1,
 			(epnum & 1) ? "in" : "out");
-
 	status = event->status;
-
 	switch (event->endpoint_event) {
 	case DWC3_DEPEVT_XFERCOMPLETE:
 		len += scnprintf(str + len, size - len,
@@ -273,7 +221,6 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 				status & DEPEVT_STATUS_SHORT ? 'S' : 's',
 				status & DEPEVT_STATUS_IOC ? 'I' : 'i',
 				status & DEPEVT_STATUS_LST ? 'L' : 'l');
-
 		if (epnum <= 1)
 			scnprintf(str + len, size - len, " [%s]",
 					dwc3_ep0_state_string(ep0state));
@@ -292,11 +239,8 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 				event->parameters,
 				status & DEPEVT_STATUS_TRANSFER_ACTIVE ?
 				" (Active)" : " (Not Active)");
-
-		/* Control Endpoints */
 		if (epnum <= 1) {
 			int phase = DEPEVT_STATUS_CONTROL_PHASE(event->status);
-
 			switch (phase) {
 			case DEPEVT_STATUS_CONTROL_DATA:
 				scnprintf(str + len, size - len,
@@ -313,7 +257,6 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 		break;
 	case DWC3_DEPEVT_STREAMEVT:
 		status = event->status;
-
 		switch (status) {
 		case DEPEVT_STREAMEVT_FOUND:
 			scnprintf(str + len, size - len, " Stream %d Found",
@@ -324,7 +267,6 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 			scnprintf(str + len, size - len, " Stream Not Found");
 			break;
 		}
-
 		break;
 	case DWC3_DEPEVT_EPCMDCMPLT:
 		scnprintf(str + len, size - len, "Endpoint Command Complete");
@@ -332,14 +274,8 @@ static inline const char *dwc3_ep_event_string(char *str, size_t size,
 	default:
 		scnprintf(str + len, size - len, "UNKNOWN");
 	}
-
 	return str;
 }
-
-/**
- * dwc3_gadget_event_type_string - return event name
- * @event: the event code
- */
 static inline const char *dwc3_gadget_event_type_string(u8 event)
 {
 	switch (event) {
@@ -369,20 +305,16 @@ static inline const char *dwc3_gadget_event_type_string(u8 event)
 		return "UNKNOWN";
 	}
 }
-
 static inline const char *dwc3_decode_event(char *str, size_t size, u32 event,
 		u32 ep0state)
 {
 	union dwc3_event evt;
-
 	memcpy(&evt, &event, sizeof(event));
-
 	if (evt.type.is_devspec)
 		return dwc3_gadget_event_string(str, size, &evt.devt);
 	else
 		return dwc3_ep_event_string(str, size, &evt.depevt, ep0state);
 }
-
 static inline const char *dwc3_ep_cmd_status_string(int status)
 {
 	switch (status) {
@@ -398,7 +330,6 @@ static inline const char *dwc3_ep_cmd_status_string(int status)
 		return "UNKNOWN";
 	}
 }
-
 static inline const char *dwc3_gadget_generic_cmd_status_string(int status)
 {
 	switch (status) {
@@ -412,8 +343,6 @@ static inline const char *dwc3_gadget_generic_cmd_status_string(int status)
 		return "UNKNOWN";
 	}
 }
-
-
 #ifdef CONFIG_DEBUG_FS
 extern void dwc3_debugfs_create_endpoint_dir(struct dwc3_ep *dep);
 extern void dwc3_debugfs_remove_endpoint_dir(struct dwc3_ep *dep);
@@ -429,4 +358,4 @@ static inline void dwc3_debugfs_init(struct dwc3 *d)
 static inline void dwc3_debugfs_exit(struct dwc3 *d)
 {  }
 #endif
-#endif /* __DWC3_DEBUG_H */
+#endif  

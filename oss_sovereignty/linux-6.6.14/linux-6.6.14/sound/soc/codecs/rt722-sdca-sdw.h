@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt722-sdca-sdw.h -- RT722 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT722_SDW_H__
 #define __RT722_SDW_H__
-
 #include <linux/regmap.h>
 #include <linux/soundwire/sdw_registers.h>
-
 static const struct reg_default rt722_sdca_reg_defaults[] = {
 	{ 0x202d, 0x00 },
 	{ 0x2f01, 0x00 },
@@ -71,7 +62,6 @@ static const struct reg_default rt722_sdca_reg_defaults[] = {
 		0x03 },
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT722_SDCA_ENT_OT23, RT722_SDCA_CTL_VENDOR_DEF, 0), 0x00 },
 };
-
 static const struct reg_default rt722_sdca_mbq_defaults[] = {
 	{ 0x200003c, 0xc214 },
 	{ 0x2000046, 0x8004 },
@@ -120,5 +110,4 @@ static const struct reg_default rt722_sdca_mbq_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT722_SDCA_ENT_USER_FU06, RT722_SDCA_CTL_FU_VOLUME, CH_R),
 		0x0000 },
 };
-
-#endif /* __RT722_SDW_H__ */
+#endif  

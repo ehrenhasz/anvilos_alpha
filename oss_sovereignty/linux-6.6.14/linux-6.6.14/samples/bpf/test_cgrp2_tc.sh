@@ -1,26 +1,16 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
 MY_DIR=$(dirname $0)
-# Details on the bpf prog
 BPF_CGRP2_ARRAY_NAME='test_cgrp2_array_pin'
 BPF_PROG="$MY_DIR/test_cgrp2_tc.bpf.o"
 BPF_SECTION='filter'
-
 [ -z "$TC" ] && TC='tc'
 [ -z "$IP" ] && IP='ip'
-
-# Names of the veth interface, net namespace...etc.
 HOST_IFC='ve'
 NS_IFC='vens'
 NS='ns'
-
 find_mnt() {
     cat /proc/mounts | \
 	awk '{ if ($3 == "'$1'" && mnt == "") { mnt = $2 }} END { print mnt }'
 }
-
-# Init cgroup2 vars
 init_cgrp2_vars() {
     CGRP2_ROOT=$(find_mnt cgroup2)
     if [ -z "$CGRP2_ROOT" ]
@@ -31,14 +21,11 @@ init_cgrp2_vars() {
     CGRP2_TC="$CGRP2_ROOT/tc"
     CGRP2_TC_LEAF="$CGRP2_TC/leaf"
 }
-
-# Init bpf fs vars
 init_bpf_fs_vars() {
     local bpf_fs_root=$(find_mnt bpf)
     [ -n "$bpf_fs_root" ] || return -1
     BPF_FS_TC_SHARE="$bpf_fs_root/tc/globals"
 }
-
 setup_cgrp2() {
     case $1 in
 	start)
@@ -55,7 +42,6 @@ setup_cgrp2() {
 	    ;;
     esac
 }
-
 setup_bpf_cgrp2_array() {
     local bpf_cgrp2_array="$BPF_FS_TC_SHARE/$BPF_CGRP2_ARRAY_NAME"
     case $1 in
@@ -67,7 +53,6 @@ setup_bpf_cgrp2_array() {
 	    ;;
     esac
 }
-
 setup_net() {
     case $1 in
 	start)
@@ -75,7 +60,6 @@ setup_net() {
 	    $IP link set dev $HOST_IFC up || return $?
 	    sysctl -q net.ipv6.conf.$HOST_IFC.disable_ipv6=0
 	    sysctl -q net.ipv6.conf.$HOST_IFC.accept_dad=0
-
 	    $IP netns add $NS || return $?
 	    $IP link set dev $NS_IFC netns $NS || return $?
 	    $IP -n $NS link set dev $NS_IFC up || return $?
@@ -90,15 +74,11 @@ setup_net() {
 	    ;;
     esac
 }
-
 run_in_cgrp() {
-    # Fork another bash and move it under the specified cgroup.
-    # It makes the cgroup cleanup easier at the end of the test.
     cmd='echo $$ > '
     cmd="$cmd $1/cgroup.procs; exec $2"
     bash -c "$cmd"
 }
-
 do_test() {
     run_in_cgrp $CGRP2_TC_LEAF "ping -6 -c3 ff02::1%$HOST_IFC >& /dev/null"
     local dropped=$($TC -s qdisc show dev $HOST_IFC | tail -3 | \
@@ -112,7 +92,6 @@ do_test() {
 	return 0
     fi
 }
-
 do_exit() {
     if [ "$DEBUG" == "yes" ] && [ "$MODE" != 'cleanuponly' ]
     then
@@ -135,7 +114,6 @@ do_exit() {
 	echo "------ DEBUG ------"
 	echo
     fi
-
     if [ "$MODE" != 'nocleanup' ]
     then
 	setup_net stop
@@ -143,11 +121,9 @@ do_exit() {
 	setup_cgrp2 stop
     fi
 }
-
 init_cgrp2_vars
 init_bpf_fs_vars
-
-while [[ $# -ge 1 ]]
+while [[ $
 do
     a="$1"
     case $a in
@@ -174,11 +150,8 @@ do
 	    ;;
     esac
 done
-
 trap do_exit 0
-
 [ "$MODE" == 'cleanuponly' ] && exit
-
 setup_cgrp2 start || exit $?
 setup_net start || exit $?
 init_bpf_fs_vars || exit $?

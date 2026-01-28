@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 Hisilicon Limited.
- */
-
 #ifndef __DTS_HIX5HD2_CLOCK_H
 #define __DTS_HIX5HD2_CLOCK_H
-
-/* fixed rate */
 #define HIX5HD2_FIXED_1200M		1
 #define HIX5HD2_FIXED_400M		2
 #define HIX5HD2_FIXED_48M		3
@@ -38,14 +30,10 @@
 #define HIX5HD2_FIXED_50M		28
 #define HIX5HD2_FIXED_25M		29
 #define HIX5HD2_FIXED_83M		30
-
-/* mux clocks */
 #define HIX5HD2_SFC_MUX			64
 #define HIX5HD2_MMC_MUX			65
 #define HIX5HD2_FEPHY_MUX		66
 #define HIX5HD2_SD_MUX			67
-
-/* gate clocks */
 #define HIX5HD2_SFC_RST			128
 #define HIX5HD2_SFC_CLK			129
 #define HIX5HD2_MMC_CIU_CLK		130
@@ -71,12 +59,9 @@
 #define HIX5HD2_I2C4_RST		150
 #define HIX5HD2_I2C5_CLK		151
 #define HIX5HD2_I2C5_RST		152
-
-/* complex */
 #define HIX5HD2_MAC0_CLK		192
 #define HIX5HD2_MAC1_CLK		193
 #define HIX5HD2_SATA_CLK		194
 #define HIX5HD2_USB_CLK			195
-
 #define HIX5HD2_NR_CLKS			256
-#endif	/* __DTS_HIX5HD2_CLOCK_H */
+#endif	 

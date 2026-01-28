@@ -1,16 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for AM64 SoC Family MCU Domain peripherals
- *
- * Copyright (C) 2020-2021 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 &cbass_mcu {
-	/*
-	 * The MCU domain timer interrupts are routed only to the ESM module,
-	 * and not currently available for Linux. The MCU domain timers are
-	 * of limited use without interrupts, and likely reserved by the ESM.
-	 */
 	mcu_timer0: timer@4800000 {
 		compatible = "ti,am654-timer";
 		reg = <0x00 0x4800000 0x00 0x400>;
@@ -20,7 +8,6 @@
 		ti,timer-pwm;
 		status = "reserved";
 	};
-
 	mcu_timer1: timer@4810000 {
 		compatible = "ti,am654-timer";
 		reg = <0x00 0x4810000 0x00 0x400>;
@@ -30,7 +17,6 @@
 		ti,timer-pwm;
 		status = "reserved";
 	};
-
 	mcu_timer2: timer@4820000 {
 		compatible = "ti,am654-timer";
 		reg = <0x00 0x4820000 0x00 0x400>;
@@ -40,7 +26,6 @@
 		ti,timer-pwm;
 		status = "reserved";
 	};
-
 	mcu_timer3: timer@4830000 {
 		compatible = "ti,am654-timer";
 		reg = <0x00 0x4830000 0x00 0x400>;
@@ -50,7 +35,6 @@
 		ti,timer-pwm;
 		status = "reserved";
 	};
-
 	mcu_uart0: serial@4a00000 {
 		compatible = "ti,am64-uart", "ti,am654-uart";
 		reg = <0x00 0x04a00000 0x00 0x100>;
@@ -60,7 +44,6 @@
 		clock-names = "fclk";
 		status = "disabled";
 	};
-
 	mcu_uart1: serial@4a10000 {
 		compatible = "ti,am64-uart", "ti,am654-uart";
 		reg = <0x00 0x04a10000 0x00 0x100>;
@@ -70,7 +53,6 @@
 		clock-names = "fclk";
 		status = "disabled";
 	};
-
 	mcu_i2c0: i2c@4900000 {
 		compatible = "ti,am64-i2c", "ti,omap4-i2c";
 		reg = <0x00 0x04900000 0x00 0x100>;
@@ -82,7 +64,6 @@
 		clock-names = "fck";
 		status = "disabled";
 	};
-
 	mcu_i2c1: i2c@4910000 {
 		compatible = "ti,am64-i2c", "ti,omap4-i2c";
 		reg = <0x00 0x04910000 0x00 0x100>;
@@ -94,7 +75,6 @@
 		clock-names = "fck";
 		status = "disabled";
 	};
-
 	mcu_spi0: spi@4b00000 {
 		compatible = "ti,am654-mcspi", "ti,omap4-mcspi";
 		reg = <0x00 0x04b00000 0x00 0x400>;
@@ -105,7 +85,6 @@
 		clocks = <&k3_clks 147 0>;
 		status = "disabled";
 	};
-
 	mcu_spi1: spi@4b10000 {
 		compatible = "ti,am654-mcspi","ti,omap4-mcspi";
 		reg = <0x00 0x04b10000 0x00 0x400>;
@@ -116,7 +95,6 @@
 		clocks = <&k3_clks 148 0>;
 		status = "disabled";
 	};
-
 	mcu_gpio_intr: interrupt-controller@4210000 {
 		compatible = "ti,sci-intr";
 		reg = <0x00 0x04210000 0x00 0x200>;
@@ -128,7 +106,6 @@
 		ti,sci-dev-id = <5>;
 		ti,interrupt-ranges = <0 104 4>;
 	};
-
 	mcu_gpio0: gpio@4201000 {
 		compatible = "ti,am64-gpio", "ti,keystone-gpio";
 		reg = <0x0 0x4201000 0x0 0x100>;
@@ -144,7 +121,6 @@
 		clocks = <&k3_clks 79 0>;
 		clock-names = "gpio";
 	};
-
 	mcu_pmx0: pinctrl@4084000 {
 		compatible = "pinctrl-single";
 		reg = <0x00 0x4084000 0x00 0x84>;
@@ -152,7 +128,6 @@
 		pinctrl-single,register-width = <32>;
 		pinctrl-single,function-mask = <0xffffffff>;
 	};
-
 	mcu_esm: esm@4100000 {
 		compatible = "ti,j721e-esm";
 		reg = <0x00 0x4100000 0x00 0x1000>;

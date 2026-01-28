@@ -1,56 +1,22 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-/*
- * link_encoder.h
- *
- *  Created on: Oct 6, 2015
- *      Author: yonsun
- */
-
 #ifndef LINK_ENCODER_H_
 #define LINK_ENCODER_H_
-
 #include "grph_object_defs.h"
 #include "signal_types.h"
 #include "dc_types.h"
-
 struct dc_context;
 struct encoder_set_dp_phy_pattern_param;
 struct link_mst_stream_allocation_table;
 struct dc_link_settings;
 struct link_training_settings;
 struct pipe_ctx;
-
 struct encoder_init_data {
 	enum channel_id channel;
 	struct graphics_object_id connector;
 	enum hpd_source_id hpd_source;
-	/* TODO: in DAL2, here was pointer to EventManagerInterface */
 	struct graphics_object_id encoder;
 	struct dc_context *ctx;
 	enum transmitter transmitter;
 };
-
 struct encoder_feature_support {
 	union {
 		struct {
@@ -67,14 +33,12 @@ struct encoder_feature_support {
 		} bits;
 		uint32_t raw;
 	} flags;
-
 	enum dc_color_depth max_hdmi_deep_color;
 	unsigned int max_hdmi_pixel_clock;
 	bool hdmi_ycbcr420_supported;
 	bool dp_ycbcr420_supported;
 	bool fec_supported;
 };
-
 struct link_encoder {
 	const struct link_encoder_funcs *funcs;
 	int32_t aux_channel_offset;
@@ -88,22 +52,17 @@ struct link_encoder {
 	enum hpd_source_id hpd_source;
 	bool usbc_combo_phy;
 };
-
 struct link_enc_state {
-
 		uint32_t dphy_fec_en;
 		uint32_t dphy_fec_ready_shadow;
 		uint32_t dphy_fec_active_status;
 		uint32_t dp_link_training_complete;
-
 };
-
 enum encoder_type_select {
 	ENCODER_TYPE_DIG = 0,
 	ENCODER_TYPE_HDMI_FRL = 1,
 	ENCODER_TYPE_DP_128B132B = 2
 };
-
 struct link_encoder_funcs {
 	void (*read_state)(
 			struct link_encoder *enc, struct link_enc_state *s);
@@ -148,19 +107,14 @@ struct link_encoder_funcs {
 	bool (*is_dig_enabled)(struct link_encoder *enc);
 	unsigned int (*get_dig_frontend)(struct link_encoder *enc);
 	void (*destroy)(struct link_encoder **enc);
-
 	void (*fec_set_enable)(struct link_encoder *enc,
 		bool enable);
-
 	void (*fec_set_ready)(struct link_encoder *enc,
 		bool ready);
-
 	bool (*fec_is_active)(struct link_encoder *enc);
 	bool (*is_in_alt_mode) (struct link_encoder *enc);
-
 	void (*get_max_link_cap)(struct link_encoder *enc,
 		struct dc_link_settings *link_settings);
-
 	enum signal_type (*get_dig_mode)(
 		struct link_encoder *enc);
 	void (*set_dio_phy_mux)(
@@ -170,33 +124,22 @@ struct link_encoder_funcs {
 	void (*set_dig_output_mode)(
 			struct link_encoder *enc, uint8_t pix_per_container);
 };
-
-/*
- * Used to track assignments of links (display endpoints) to link encoders.
- *
- * Entry in link_enc_assignments table in struct resource_context.
- * Entries only marked valid once encoder assigned to a link and invalidated once unassigned.
- * Uses engine ID as identifier since PHY ID not relevant for USB4 DPIA endpoint.
- */
 struct link_enc_assignment {
 	bool valid;
 	struct display_endpoint_id ep_id;
 	enum engine_id eng_id;
 	struct dc_stream_state *stream;
 };
-
 enum link_enc_cfg_mode {
-	LINK_ENC_CFG_STEADY, /* Normal operation - use current_state. */
-	LINK_ENC_CFG_TRANSIENT /* During commit state - use state to be committed. */
+	LINK_ENC_CFG_STEADY,  
+	LINK_ENC_CFG_TRANSIENT  
 };
-
 enum dp2_link_mode {
 	DP2_LINK_TRAINING_TPS1,
 	DP2_LINK_TRAINING_TPS2,
 	DP2_LINK_ACTIVE,
 	DP2_TEST_PATTERN
 };
-
 enum dp2_phy_tp_select {
 	DP_DPHY_TP_SELECT_TPS1,
 	DP_DPHY_TP_SELECT_TPS2,
@@ -204,7 +147,6 @@ enum dp2_phy_tp_select {
 	DP_DPHY_TP_SELECT_CUSTOM,
 	DP_DPHY_TP_SELECT_SQUARE
 };
-
 enum dp2_phy_tp_prbs {
 	DP_DPHY_TP_PRBS7,
 	DP_DPHY_TP_PRBS9,
@@ -213,7 +155,6 @@ enum dp2_phy_tp_prbs {
 	DP_DPHY_TP_PRBS23,
 	DP_DPHY_TP_PRBS31
 };
-
 struct hpo_dp_link_enc_state {
 	uint32_t   link_enc_enabled;
 	uint32_t   link_mode;
@@ -223,7 +164,6 @@ struct hpo_dp_link_enc_state {
 	uint32_t   vc_rate_x[4];
 	uint32_t   vc_rate_y[4];
 };
-
 struct hpo_dp_link_encoder {
 	const struct hpo_dp_link_encoder_funcs *funcs;
 	struct dc_context *ctx;
@@ -232,48 +172,36 @@ struct hpo_dp_link_encoder {
 	enum transmitter transmitter;
 	enum hpd_source_id hpd_source;
 };
-
 struct hpo_dp_link_encoder_funcs {
-
 	void (*enable_link_phy)(struct hpo_dp_link_encoder *enc,
 		const struct dc_link_settings *link_settings,
 		enum transmitter transmitter,
 		enum hpd_source_id hpd_source);
-
 	void (*disable_link_phy)(struct hpo_dp_link_encoder *link_enc,
 		enum signal_type signal);
-
 	void (*link_enable)(
 			struct hpo_dp_link_encoder *enc,
 			enum dc_lane_count num_lanes);
-
 	void (*link_disable)(
 			struct hpo_dp_link_encoder *enc);
-
 	void (*set_link_test_pattern)(
 			struct hpo_dp_link_encoder *enc,
 			struct encoder_set_dp_phy_pattern_param *tp_params);
-
 	void (*update_stream_allocation_table)(
 			struct hpo_dp_link_encoder *enc,
 			const struct link_mst_stream_allocation_table *table);
-
 	void (*set_throttled_vcp_size)(
 			struct hpo_dp_link_encoder *enc,
 			uint32_t stream_encoder_inst,
 			struct fixed31_32 avg_time_slots_per_mtp);
-
 	bool (*is_in_alt_mode) (
 			struct hpo_dp_link_encoder *enc);
-
 	void (*read_state)(
 			struct hpo_dp_link_encoder *enc,
 			struct hpo_dp_link_enc_state *state);
-
 	void (*set_ffe)(
 		struct hpo_dp_link_encoder *enc,
 		const struct dc_link_settings *link_settings,
 		uint8_t ffe_preset);
 };
-
-#endif /* LINK_ENCODER_H_ */
+#endif  

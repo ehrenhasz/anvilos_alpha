@@ -1,50 +1,13 @@
-/**************************************************************************
-
-Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
-All Rights Reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sub license, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice (including the
-next paragraph) shall be included in all copies or substantial portions
-of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
-IN NO EVENT SHALL PRECISION INSIGHT AND/OR ITS SUPPLIERS BE LIABLE FOR
-ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-**************************************************************************/
-
-/*
- * Authors:
- *   Kevin E. Martin <kevin@precisioninsight.com>
- */
-
-/* I/O register offsets */
 #define SRX VGA_SEQ_I
 #define GRX VGA_GFX_I
 #define ARX VGA_ATT_IW
 #define XRX 0x3D6
 #define MRX 0x3D2
-
-/* VGA Color Palette Registers */
 #define DACMASK		0x3C6
 #define DACSTATE	0x3C7
 #define DACRX		0x3C7
 #define DACWX		0x3C8
 #define DACDATA		0x3C9
-
-/* CRT Controller Registers (CRX) */
 #define START_ADDR_HI		0x0C
 #define START_ADDR_LO		0x0D
 #define VERT_SYNC_END		0x11
@@ -61,25 +24,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define INTERLACE_CNTL		0x70
 #define INTERLACE_ENABLE	0x80
 #define INTERLACE_DISABLE	0x00
-
-/* Miscellaneous Output Register */
 #define MSR_R		0x3CC
 #define MSR_W		0x3C2
 #define IO_ADDR_SELECT	0x01
-
 #define MDA_BASE	0x3B0
 #define CGA_BASE	0x3D0
-
-/* System Configuration Extension Registers (XRX) */
 #define IO_CTNL		0x09
 #define EXTENDED_ATTR_CNTL	0x02
 #define EXTENDED_CRTC_CNTL	0x01
-
 #define ADDRESS_MAPPING	0x0A
 #define PACKED_MODE_ENABLE	0x04
 #define LINEAR_MODE_ENABLE	0x02
 #define PAGE_MAPPING_ENABLE	0x01
-
 #define BITBLT_CNTL	0x20
 #define COLEXP_MODE		0x30
 #define COLEXP_8BPP		0x00
@@ -88,7 +44,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define COLEXP_RESERVED		0x30
 #define CHIP_RESET		0x02
 #define BITBLT_STATUS		0x01
-
 #define DISPLAY_CNTL	0x40
 #define VGA_WRAP_MODE		0x02
 #define VGA_WRAP_AT_256KB	0x00
@@ -96,7 +51,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define GUI_MODE		0x01
 #define STANDARD_VGA_MODE	0x00
 #define HIRES_MODE		0x01
-
 #define DRAM_ROW_TYPE	0x50
 #define DRAM_ROW_0		0x07
 #define DRAM_ROW_0_SDRAM	0x00
@@ -118,7 +72,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DRAM_TIMING	0x54
 #define DRAM_ROW_BNDRY_0 0x55
 #define DRAM_ROW_BNDRY_1 0x56
-
 #define DPMS_SYNC_SELECT 0x61
 #define VSYNC_CNTL		0x08
 #define VSYNC_ON		0x00
@@ -126,13 +79,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define HSYNC_CNTL		0x02
 #define HSYNC_ON		0x00
 #define HSYNC_OFF		0x02
-
 #define PIXPIPE_CONFIG_0 0x80
 #define DAC_8_BIT		0x80
 #define DAC_6_BIT		0x00
 #define HW_CURSOR_ENABLE	0x10
 #define EXTENDED_PALETTE	0x01
-
 #define PIXPIPE_CONFIG_1 0x81
 #define DISPLAY_COLOR_MODE	0x0F
 #define DISPLAY_VGA_MODE	0x00
@@ -141,13 +92,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DISPLAY_16BPP_MODE	0x05
 #define DISPLAY_24BPP_MODE	0x06
 #define DISPLAY_32BPP_MODE	0x07
-
 #define PIXPIPE_CONFIG_2 0x82
 #define DISPLAY_GAMMA_ENABLE	0x08
 #define DISPLAY_GAMMA_DISABLE	0x00
 #define OVERLAY_GAMMA_ENABLE	0x04
 #define OVERLAY_GAMMA_DISABLE	0x00
-
 #define CURSOR_CONTROL	0xA0
 #define CURSOR_ORIGIN_SCREEN	0x00
 #define CURSOR_ORIGIN_DISPLAY	0x10
@@ -170,7 +119,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define CURSOR_Y_HI	0xA7
 #define CURSOR_Y_POS		0x00
 #define CURSOR_Y_NEG		0x80
-
 #define VCLK2_VCO_M	0xC8
 #define VCLK2_VCO_N	0xC9
 #define VCLK2_VCO_MN_MSBS 0xCA
@@ -189,15 +137,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define REF_CLK_DIV_BY_5	0x02
 #define REF_DIV_4		0x00
 #define REF_DIV_1		0x01
-
 #define PLL_CNTL	0xCE
 #define PLL_MEMCLK_SEL		0x03
 #define PLL_MEMCLK__66667KHZ	0x00
 #define PLL_MEMCLK__75000KHZ	0x01
 #define PLL_MEMCLK__88889KHZ	0x02
 #define PLL_MEMCLK_100000KHZ	0x03
-
-/* Multimedia Extension Registers (MRX) */
 #define ACQ_CNTL_1	0x02
 #define ACQ_CNTL_2	0x03
 #define FRAME_CAP_MODE		0x01
@@ -206,26 +151,18 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define ACQ_CNTL_3	0x04
 #define COL_KEY_CNTL_1		0x3C
 #define BLANK_DISP_OVERLAY	0x20
-
-/* FIFOs */
 #define LP_FIFO		0x1000
 #define HP_FIFO		0x2000
 #define INSTPNT		0x3040
 #define LP_FIFO_COUNT	0x3040
 #define HP_FIFO_COUNT	0x3041
-
-/* FIFO Commands */
 #define CLIENT		0xE0000000
 #define CLIENT_2D	0x60000000
-
-/* Command Parser Mode Register */
 #define COMPARS		0x3038
 #define TWO_D_INST_DISABLE		0x08
 #define THREE_D_INST_DISABLE		0x04
 #define STATE_VAR_UPDATE_DISABLE	0x02
 #define PAL_STIP_DISABLE		0x01
-
-/* Interrupt Control Registers */
 #define IER		0x3030
 #define IIR		0x3032
 #define IMR		0x3034
@@ -244,15 +181,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define CAPTURE_HORIZ_COUNT	0x0004
 #define CAPTURE_VSYNC		0x0002
 #define THREE_D_PIPE_FLUSHED	0x0001
-
-/* FIFO Watermark and Burst Length Control Register */
 #define FWATER_BLC	0x00006000
 #define LMI_BURST_LENGTH	0x7F000000
 #define LMI_FIFO_WATERMARK	0x003F0000
 #define AGP_BURST_LENGTH	0x00007F00
 #define AGP_FIFO_WATERMARK	0x0000003F
-
-/* BitBLT Registers */
 #define SRC_DST_PITCH	0x00040000
 #define DST_PITCH		0x1FFF0000
 #define SRC_PITCH		0x00001FFF
@@ -276,7 +209,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DYN_DEPTH_8BPP		0x00000000
 #define DYN_DEPTH_16BPP		0x01000000
 #define DYN_DEPTH_24BPP		0x02000000
-#define DYN_DEPTH_32BPP		0x03000000	/* Unimplemented on the i740 */
+#define DYN_DEPTH_32BPP		0x03000000	 
 #define DYN_DEPTH_ENABLE	0x00800000
 #define PAT_VERT_ALIGN		0x00700000
 #define SOLID_PAT_SELECT	0x00080000

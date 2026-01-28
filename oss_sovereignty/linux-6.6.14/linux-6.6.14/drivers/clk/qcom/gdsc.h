@@ -1,36 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, 2017-2018, 2022, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __QCOM_GDSC_H__
 #define __QCOM_GDSC_H__
-
 #include <linux/err.h>
 #include <linux/pm_domain.h>
-
 struct regmap;
 struct regulator;
 struct reset_controller_dev;
-
-/**
- * struct gdsc - Globally Distributed Switch Controller
- * @pd: generic power domain
- * @regmap: regmap for MMIO accesses
- * @gdscr: gsdc control register
- * @collapse_ctrl: APCS collapse-vote register
- * @collapse_mask: APCS collapse-vote mask
- * @gds_hw_ctrl: gds_hw_ctrl register
- * @cxcs: offsets of branch registers to toggle mem/periph bits in
- * @cxc_count: number of @cxcs
- * @pwrsts: Possible powerdomain power states
- * @en_rest_wait_val: transition delay value for receiving enr ack signal
- * @en_few_wait_val: transition delay value for receiving enf ack signal
- * @clk_dis_wait_val: transition delay value for halting clock
- * @resets: ids of resets associated with this gdsc
- * @reset_count: number of @resets
- * @rcdev: reset controller
- */
 struct gdsc {
 	struct generic_pm_domain	pd;
 	struct generic_pm_domain	*parent;
@@ -46,13 +20,7 @@ struct gdsc {
 	unsigned int			en_few_wait_val;
 	unsigned int			clk_dis_wait_val;
 	const u8			pwrsts;
-/* Powerdomain allowable state bitfields */
 #define PWRSTS_OFF		BIT(0)
-/*
- * There is no SW control to transition a GDSC into
- * PWRSTS_RET. This happens in HW when the parent
- * domain goes down to a low power state
- */
 #define PWRSTS_RET		BIT(1)
 #define PWRSTS_ON		BIT(2)
 #define PWRSTS_OFF_ON		(PWRSTS_OFF | PWRSTS_ON)
@@ -70,17 +38,14 @@ struct gdsc {
 	struct reset_controller_dev	*rcdev;
 	unsigned int			*resets;
 	unsigned int			reset_count;
-
 	const char 			*supply;
 	struct regulator		*rsupply;
 };
-
 struct gdsc_desc {
 	struct device *dev;
 	struct gdsc **scs;
 	size_t num;
 };
-
 #ifdef CONFIG_QCOM_GDSC
 int gdsc_register(struct gdsc_desc *desc, struct reset_controller_dev *,
 		  struct regmap *);
@@ -93,7 +58,6 @@ static inline int gdsc_register(struct gdsc_desc *desc,
 {
 	return -ENOSYS;
 }
-
 static inline void gdsc_unregister(struct gdsc_desc *desc) {};
-#endif /* CONFIG_QCOM_GDSC */
-#endif /* __QCOM_GDSC_H__ */
+#endif  
+#endif  

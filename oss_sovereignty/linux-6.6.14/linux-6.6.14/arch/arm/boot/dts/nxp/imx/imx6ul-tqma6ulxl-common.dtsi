@@ -1,15 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR MIT)
-/*
- * Copyright 2018-2022 TQ-Systems GmbH
- * Author: Markus Niebel <Markus.Niebel@tq-group.com>
- */
-
-/*
- * Common for
- * - TQMa6ULxL
- * - TQMa6ULLxL
- */
-
 / {
 	reg_vin: reg-vin {
 		compatible = "regulator-fixed";
@@ -19,21 +7,16 @@
 		regulator-always-on;
 	};
 };
-
 &m24c64_50 {
 	vcc-supply = <&reg_vin>;
 };
-
 &m24c02_52 {
 	vcc-supply = <&reg_vin>;
 };
-
-/* eMMC */
 &usdhc2 {
 	vmmc-supply = <&reg_vin>;
 	vqmmc-supply = <&reg_vldo4>;
 };
-
 &iomuxc {
 	pinctrl_qspi: qspigrp {
 		fsl,pins = <

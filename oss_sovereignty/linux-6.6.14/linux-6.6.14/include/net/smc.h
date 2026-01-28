@@ -1,35 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  Definitions for the SMC module (socket related)
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Ursula Braun <ubraun@linux.vnet.ibm.com>
- */
 #ifndef _SMC_H
 #define _SMC_H
-
 #include <linux/device.h>
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/wait.h>
 #include "linux/ism.h"
-
 struct sock;
-
-#define SMC_MAX_PNETID_LEN	16	/* Max. length of PNET id */
-
+#define SMC_MAX_PNETID_LEN	16	 
 struct smc_hashinfo {
 	rwlock_t lock;
 	struct hlist_head ht;
 };
-
 int smc_hash_sk(struct sock *sk);
 void smc_unhash_sk(struct sock *sk);
-
-/* SMCD/ISM device driver interface */
 struct smcd_dmb {
 	u64 dmb_tok;
 	u64 rgid;
@@ -40,18 +23,13 @@ struct smcd_dmb {
 	void *cpu_addr;
 	dma_addr_t dma_addr;
 };
-
 #define ISM_EVENT_DMB	0
 #define ISM_EVENT_GID	1
 #define ISM_EVENT_SWR	2
-
 #define ISM_RESERVED_VLANID	0x1FFF
-
 #define ISM_ERROR	0xFFFF
-
 struct smcd_dev;
 struct ism_client;
-
 struct smcd_ops {
 	int (*query_remote_gid)(struct smcd_dev *dev, u64 rgid, u32 vid_valid,
 				u32 vid);
@@ -73,7 +51,6 @@ struct smcd_ops {
 	u16 (*get_chid)(struct smcd_dev *dev);
 	struct device* (*get_dev)(struct smcd_dev *dev);
 };
-
 struct smcd_dev {
 	const struct smcd_ops *ops;
 	void *priv;
@@ -90,5 +67,4 @@ struct smcd_dev {
 	wait_queue_head_t lgrs_deleted;
 	u8 going_away : 1;
 };
-
-#endif	/* _SMC_H */
+#endif	 

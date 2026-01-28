@@ -1,15 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef LINUX_BCMA_DRIVER_PCIE2_H_
 #define LINUX_BCMA_DRIVER_PCIE2_H_
-
 #define BCMA_CORE_PCIE2_CLK_CONTROL		0x0000
-#define  PCIE2_CLKC_RST_OE			0x0001 /* When set, drives PCI_RESET out to pin */
-#define  PCIE2_CLKC_RST				0x0002 /* Value driven out to pin */
-#define  PCIE2_CLKC_SPERST			0x0004 /* SurvivePeRst */
+#define  PCIE2_CLKC_RST_OE			0x0001  
+#define  PCIE2_CLKC_RST				0x0002  
+#define  PCIE2_CLKC_SPERST			0x0004  
 #define  PCIE2_CLKC_DISABLE_L1CLK_GATING	0x0010
-#define  PCIE2_CLKC_DLYPERST			0x0100 /* Delay PeRst to CoE Core */
-#define  PCIE2_CLKC_DISSPROMLD			0x0200 /* DisableSpromLoadOnPerst */
-#define  PCIE2_CLKC_WAKE_MODE_L2		0x1000 /* Wake on L2 */
+#define  PCIE2_CLKC_DLYPERST			0x0100  
+#define  PCIE2_CLKC_DISSPROMLD			0x0200  
+#define  PCIE2_CLKC_WAKE_MODE_L2		0x1000  
 #define BCMA_CORE_PCIE2_RC_PM_CONTROL		0x0004
 #define BCMA_CORE_PCIE2_RC_PM_STATUS		0x0008
 #define BCMA_CORE_PCIE2_EP_PM_CONTROL		0x000C
@@ -34,7 +32,7 @@
 #define BCMA_CORE_PCIE2_H2D_INTMASK_0		0x0194
 #define BCMA_CORE_PCIE2_D2H_INTSTAT_0		0x0198
 #define BCMA_CORE_PCIE2_D2H_INTMASK_0		0x019c
-#define BCMA_CORE_PCIE2_LTR_STATE		0x01A0 /* Latency Tolerance Reporting */
+#define BCMA_CORE_PCIE2_LTR_STATE		0x01A0  
 #define  PCIE2_LTR_ACTIVE			2
 #define  PCIE2_LTR_ACTIVE_IDLE			1
 #define  PCIE2_LTR_SLEEP			0
@@ -130,30 +128,21 @@
 #define BCMA_CORE_PCIE2_INTR_EN			0x0F30
 #define BCMA_CORE_PCIE2_INTR_CLEAR		0x0F34
 #define BCMA_CORE_PCIE2_INTR_STATUS		0x0F38
-
-/* PCIE gen2 config regs */
 #define PCIE2_INTSTATUS				0x090
 #define PCIE2_INTMASK				0x094
 #define PCIE2_SBMBX				0x098
-
-#define PCIE2_PMCR_REFUP			0x1814 /* Trefup time */
-
+#define PCIE2_PMCR_REFUP			0x1814  
 #define PCIE2_CAP_DEVSTSCTRL2_OFFSET		0xD4
 #define PCIE2_CAP_DEVSTSCTRL2_LTRENAB		0x400
 #define PCIE2_PVT_REG_PM_CLK_PERIOD		0x184c
-
 struct bcma_drv_pcie2 {
 	struct bcma_device *core;
-
 	u16 reqsize;
 };
-
 #define pcie2_read16(pcie2, offset)		bcma_read16((pcie2)->core, offset)
 #define pcie2_read32(pcie2, offset)		bcma_read32((pcie2)->core, offset)
 #define pcie2_write16(pcie2, offset, val)	bcma_write16((pcie2)->core, offset, val)
 #define pcie2_write32(pcie2, offset, val)	bcma_write32((pcie2)->core, offset, val)
-
 #define pcie2_set32(pcie2, offset, set)		bcma_set32((pcie2)->core, offset, set)
 #define pcie2_mask32(pcie2, offset, mask)	bcma_mask32((pcie2)->core, offset, mask)
-
-#endif /* LINUX_BCMA_DRIVER_PCIE2_H_ */
+#endif  

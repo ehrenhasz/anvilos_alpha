@@ -1,20 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Ming Hsiu Tsai <minghsiu.tsai@mediatek.com>
- *         Rick Chang <rick.chang@mediatek.com>
- *         Xia Jiang <xia.jiang@mediatek.com>
- */
-
 #ifndef _MTK_JPEG_DEC_HW_H
 #define _MTK_JPEG_DEC_HW_H
-
 #include <media/videobuf2-core.h>
-
 #include "mtk_jpeg_dec_reg.h"
-
 #define MTK_JPEG_COMP_MAX		3
-
 enum {
 	MTK_JPEG_DEC_RESULT_EOF_DONE		= 0,
 	MTK_JPEG_DEC_RESULT_PAUSE		= 1,
@@ -23,7 +11,6 @@ enum {
 	MTK_JPEG_DEC_RESULT_ERROR_BS		= 4,
 	MTK_JPEG_DEC_RESULT_ERROR_UNKNOWN	= 6
 };
-
 struct mtk_jpeg_dec_param {
 	u32 pic_w;
 	u32 pic_h;
@@ -55,18 +42,15 @@ struct mtk_jpeg_dec_param {
 	u32 dec_size;
 	u8 uv_brz_w;
 };
-
 struct mtk_jpeg_bs {
 	dma_addr_t	str_addr;
 	dma_addr_t	end_addr;
 	size_t		size;
 };
-
 struct mtk_jpeg_fb {
 	dma_addr_t	plane_addr[MTK_JPEG_COMP_MAX];
 	size_t		size;
 };
-
 int mtk_jpeg_dec_fill_param(struct mtk_jpeg_dec_param *param);
 u32 mtk_jpeg_dec_get_int_status(void __iomem *dec_reg_base);
 u32 mtk_jpeg_dec_enum_result(u32 irq_result);
@@ -77,5 +61,4 @@ void mtk_jpeg_dec_set_config(void __iomem *base,
 			     struct mtk_jpeg_fb *fb);
 void mtk_jpeg_dec_reset(void __iomem *dec_reg_base);
 void mtk_jpeg_dec_start(void __iomem *dec_reg_base);
-
-#endif /* _MTK_JPEG_HW_H */
+#endif  

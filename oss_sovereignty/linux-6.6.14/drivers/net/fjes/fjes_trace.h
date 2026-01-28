@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015-2016 FUJITSU LIMITED
- */
-
 #if !defined(FJES_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define FJES_TRACE_H_
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fjes
-
-/* tracepoints for fjes_hw.c */
-
 TRACE_EVENT(fjes_hw_issue_request_command,
 	TP_PROTO(union REG_CR *cr, union REG_CS *cs, int timeout,
 		 enum fjes_dev_command_response_e ret),
@@ -46,7 +35,6 @@ TRACE_EVENT(fjes_hw_issue_request_command,
 		  __entry->cr_req_start, __entry->cs_req, __entry->cs_busy,
 		  __entry->cs_complete, __entry->timeout, __entry->ret)
 );
-
 TRACE_EVENT(fjes_hw_request_info,
 	TP_PROTO(struct fjes_hw *hw, union fjes_device_command_res *res_buf),
 	TP_ARGS(hw, res_buf),
@@ -58,7 +46,6 @@ TRACE_EVENT(fjes_hw_request_info,
 	),
 	TP_fast_assign(
 		int x;
-
 		__entry->length = res_buf->info.length;
 		__entry->code = res_buf->info.code;
 		for (x = 0; x < hw->max_epid; x++) {
@@ -77,7 +64,6 @@ TRACE_EVENT(fjes_hw_request_info,
 				__get_dynamic_array_len(status) / sizeof(u8),
 				sizeof(u8)))
 );
-
 TRACE_EVENT(fjes_hw_request_info_err,
 	TP_PROTO(char *err),
 	TP_ARGS(err),
@@ -89,7 +75,6 @@ TRACE_EVENT(fjes_hw_request_info_err,
 	),
 	TP_printk("%s", __get_str(err))
 );
-
 TRACE_EVENT(fjes_hw_register_buff_addr_req,
 	TP_PROTO(union fjes_device_command_req *req_buf,
 		 struct ep_share_mem_info *buf_pair),
@@ -104,7 +89,6 @@ TRACE_EVENT(fjes_hw_register_buff_addr_req,
 	),
 	TP_fast_assign(
 		void *tx, *rx;
-
 		tx = (void *)buf_pair->tx.buffer;
 		rx = (void *)buf_pair->rx.buffer;
 		__entry->length = req_buf->share_buffer.length;
@@ -120,7 +104,6 @@ TRACE_EVENT(fjes_hw_register_buff_addr_req,
 		  __entry->length, __entry->epid, __entry->tx, __entry->tx_size,
 		  __entry->rx, __entry->rx_size)
 );
-
 TRACE_EVENT(fjes_hw_register_buff_addr,
 	TP_PROTO(union fjes_device_command_res *res_buf, int timeout),
 	TP_ARGS(res_buf, timeout),
@@ -137,7 +120,6 @@ TRACE_EVENT(fjes_hw_register_buff_addr,
 	TP_printk("res_buf=[length=%d, code=%d], timeout=%d",
 		  __entry->length, __entry->code, __entry->timeout)
 );
-
 TRACE_EVENT(fjes_hw_register_buff_addr_err,
 	TP_PROTO(char *err),
 	TP_ARGS(err),
@@ -149,7 +131,6 @@ TRACE_EVENT(fjes_hw_register_buff_addr_err,
 	),
 	TP_printk("%s", __get_str(err))
 );
-
 TRACE_EVENT(fjes_hw_unregister_buff_addr_req,
 	TP_PROTO(union fjes_device_command_req *req_buf),
 	TP_ARGS(req_buf),
@@ -164,7 +145,6 @@ TRACE_EVENT(fjes_hw_unregister_buff_addr_req,
 	TP_printk("req_buf=[length=%d, epid=%d]",
 		  __entry->length, __entry->epid)
 );
-
 TRACE_EVENT(fjes_hw_unregister_buff_addr,
 	TP_PROTO(union fjes_device_command_res *res_buf, int timeout),
 	TP_ARGS(res_buf, timeout),
@@ -181,7 +161,6 @@ TRACE_EVENT(fjes_hw_unregister_buff_addr,
 	TP_printk("res_buf=[length=%d, code=%d], timeout=%d",
 		  __entry->length, __entry->code, __entry->timeout)
 );
-
 TRACE_EVENT(fjes_hw_unregister_buff_addr_err,
 	TP_PROTO(char *err),
 	TP_ARGS(err),
@@ -193,7 +172,6 @@ TRACE_EVENT(fjes_hw_unregister_buff_addr_err,
 	),
 	TP_printk("%s", __get_str(err))
 );
-
 TRACE_EVENT(fjes_hw_start_debug_req,
 	TP_PROTO(union fjes_device_command_req *req_buf),
 	TP_ARGS(req_buf),
@@ -210,7 +188,6 @@ TRACE_EVENT(fjes_hw_start_debug_req,
 	TP_printk("req_buf=[length=%d, mode=%d, buffer=%pap]",
 		  __entry->length, __entry->mode, &__entry->buffer)
 );
-
 TRACE_EVENT(fjes_hw_start_debug,
 	TP_PROTO(union fjes_device_command_res *res_buf),
 	TP_ARGS(res_buf),
@@ -224,7 +201,6 @@ TRACE_EVENT(fjes_hw_start_debug,
 	),
 	TP_printk("res_buf=[length=%d, code=%d]", __entry->length, __entry->code)
 );
-
 TRACE_EVENT(fjes_hw_start_debug_err,
 	TP_PROTO(char *err),
 	TP_ARGS(err),
@@ -236,7 +212,6 @@ TRACE_EVENT(fjes_hw_start_debug_err,
 	),
 	TP_printk("%s", __get_str(err))
 );
-
 TRACE_EVENT(fjes_hw_stop_debug,
 	TP_PROTO(union fjes_device_command_res *res_buf),
 	TP_ARGS(res_buf),
@@ -250,7 +225,6 @@ TRACE_EVENT(fjes_hw_stop_debug,
 	),
 	TP_printk("res_buf=[length=%d, code=%d]", __entry->length, __entry->code)
 );
-
 TRACE_EVENT(fjes_hw_stop_debug_err,
 	TP_PROTO(char *err),
 	TP_ARGS(err),
@@ -262,9 +236,6 @@ TRACE_EVENT(fjes_hw_stop_debug_err,
 	),
 	TP_printk("%s", __get_str(err))
 );
-
-/* tracepoints for fjes_main.c */
-
 TRACE_EVENT(fjes_txrx_stop_req_irq_pre,
 	TP_PROTO(struct fjes_hw *hw, int src_epid,
 		 enum ep_partner_status status),
@@ -288,7 +259,6 @@ TRACE_EVENT(fjes_txrx_stop_req_irq_pre,
 		  __entry->src_epid, __entry->status, __entry->ep_status,
 		  __entry->txrx_stop_req_bit, __entry->rx_status)
 );
-
 TRACE_EVENT(fjes_txrx_stop_req_irq_post,
 	TP_PROTO(struct fjes_hw *hw, int src_epid),
 	TP_ARGS(hw, src_epid),
@@ -308,7 +278,6 @@ TRACE_EVENT(fjes_txrx_stop_req_irq_post,
 		  __entry->src_epid, __entry->ep_status,
 		  __entry->txrx_stop_req_bit, __entry->rx_status)
 );
-
 TRACE_EVENT(fjes_stop_req_irq_pre,
 	TP_PROTO(struct fjes_hw *hw, int src_epid,
 		 enum ep_partner_status status),
@@ -332,7 +301,6 @@ TRACE_EVENT(fjes_stop_req_irq_pre,
 		  __entry->src_epid, __entry->status, __entry->ep_status,
 		  __entry->txrx_stop_req_bit, __entry->rx_status)
 );
-
 TRACE_EVENT(fjes_stop_req_irq_post,
 	TP_PROTO(struct fjes_hw *hw, int src_epid),
 	TP_ARGS(hw, src_epid),
@@ -353,13 +321,9 @@ TRACE_EVENT(fjes_stop_req_irq_post,
 		  __entry->src_epid, __entry->ep_status,
 		  __entry->txrx_stop_req_bit, __entry->rx_status)
 );
-
-#endif /* FJES_TRACE_H_ */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../../drivers/net/fjes
 #define TRACE_INCLUDE_FILE fjes_trace
-
-/* This part must be outside protection */
 #include <trace/define_trace.h>

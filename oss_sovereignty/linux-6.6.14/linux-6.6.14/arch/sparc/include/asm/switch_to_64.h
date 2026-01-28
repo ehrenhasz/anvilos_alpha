@@ -1,23 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SPARC64_SWITCH_TO_64_H
 #define __SPARC64_SWITCH_TO_64_H
-
 #include <asm/visasm.h>
-
 #define prepare_arch_switch(next)		\
 do {						\
 	flushw_all();				\
 } while (0)
-
-	/* See what happens when you design the chip correctly?
-	 *
-	 * We tell gcc we clobber all non-fixed-usage registers except
-	 * for l0/l1.  It will use one for 'next' and the other to hold
-	 * the output value of 'last'.  'next' is not referenced again
-	 * past the invocation of switch_to in the scheduler, so we need
-	 * not preserve it's value.  Hairy, but it lets us remove 2 loads
-	 * and 2 stores in this critical code path.  -DaveM
-	 */
 #define switch_to(prev, next, last)					\
 do {	save_and_clear_fpu();						\
 	__asm__ __volatile__("wr %%g0, %0, %%asi"			\
@@ -63,9 +50,7 @@ do {	save_and_clear_fpu();						\
 	  "i0", "i1", "i2", "i3", "i4", "i5",				\
 	  "o0", "o1", "o2", "o3", "o4", "o5",       "o7");		\
 } while(0)
-
 void synchronize_user_stack(void);
 struct pt_regs;
 void fault_in_user_windows(struct pt_regs *);
-
-#endif /* __SPARC64_SWITCH_TO_64_H */
+#endif  

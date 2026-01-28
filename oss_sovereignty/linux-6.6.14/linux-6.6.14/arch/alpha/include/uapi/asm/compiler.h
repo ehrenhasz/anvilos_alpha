@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI__ALPHA_COMPILER_H
 #define _UAPI__ALPHA_COMPILER_H
-
-/* 
- * Herein are macros we use when describing various patterns we want to GCC.
- * In all cases we can get better schedules out of the compiler if we hide
- * as little as possible inside inline assembly.  However, we want to be
- * able to know what we'll get out before giving up inline assembly.  Thus
- * these tests and macros.
- */
-
 #if __GNUC__ == 3 && __GNUC_MINOR__ >= 4 || __GNUC__ > 3
 # define __kernel_insbl(val, shift)	__builtin_alpha_insbl(val, shift)
 # define __kernel_inswl(val, shift)	__builtin_alpha_inswl(val, shift)
@@ -48,7 +38,6 @@
      __asm__("cmpbge %r2,%1,%0" : "=r"(__kir) : "rI"(b), "rJ"(a));	\
      __kir; })
 #endif
-
 #ifdef __alpha_cix__
 # if __GNUC__ == 3 && __GNUC_MINOR__ >= 4 || __GNUC__ > 3
 #  define __kernel_cttz(x)		__builtin_ctzl(x)
@@ -82,14 +71,6 @@
      __asm__(".arch ev67; ctpop %1,%0" : "=r"(__kir) : "r"(x));		\
      __kir; })
 #endif
-
-
-/* 
- * Beginning with EGCS 1.1, GCC defines __alpha_bwx__ when the BWX 
- * extension is enabled.  Previous versions did not define anything
- * we could test during compilation -- too bad, so sad.
- */
-
 #if defined(__alpha_bwx__)
 #define __kernel_ldbu(mem)	(mem)
 #define __kernel_ldwu(mem)	(mem)
@@ -113,6 +94,4 @@
   __asm__(".arch ev56;					\
 	   stw %1,%0" : "=m"(mem) : "r"(val))
 #endif
-
-
-#endif /* _UAPI__ALPHA_COMPILER_H */
+#endif  

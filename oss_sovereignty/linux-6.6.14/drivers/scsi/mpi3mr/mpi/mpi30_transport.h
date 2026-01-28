@@ -1,7 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2016-2023 Broadcom Inc. All rights reserved.
- */
 #ifndef MPI30_TRANSPORT_H
 #define MPI30_TRANSPORT_H     1
 struct mpi3_version_struct {
@@ -10,12 +6,10 @@ struct mpi3_version_struct {
 	u8         minor;
 	u8         major;
 };
-
 union mpi3_version_union {
 	struct mpi3_version_struct     mpi3_version;
 	__le32                     word;
 };
-
 #define MPI3_VERSION_MAJOR                                              (3)
 #define MPI3_VERSION_MINOR                                              (0)
 #define MPI3_VERSION_UNIT                                               (28)
@@ -27,7 +21,6 @@ struct mpi3_sysif_oper_queue_indexes {
 	__le16         consumer_index;
 	__le16         reserved06;
 };
-
 struct mpi3_sysif_registers {
 	__le64                             ioc_information;
 	union mpi3_version_union              version;
@@ -69,7 +62,6 @@ struct mpi3_sysif_registers {
 	__le32                             reserved1d00[192];
 	__le32                             device_assigned_registers[2048];
 };
-
 #define MPI3_SYSIF_IOC_INFO_LOW_OFFSET                                  (0x00000000)
 #define MPI3_SYSIF_IOC_INFO_HIGH_OFFSET                                 (0x00000004)
 #define MPI3_SYSIF_IOC_INFO_LOW_TIMEOUT_MASK                            (0xff000000)
@@ -204,7 +196,6 @@ struct mpi3_default_reply_descriptor {
 	__le16             descriptor_type_dependent2;
 	__le16             reply_flags;
 };
-
 #define MPI3_REPLY_DESCRIPT_FLAGS_PHASE_MASK                       (0x0001)
 #define MPI3_REPLY_DESCRIPT_FLAGS_TYPE_MASK                        (0xf000)
 #define MPI3_REPLY_DESCRIPT_FLAGS_TYPE_ADDRESS_REPLY               (0x0000)
@@ -219,7 +210,6 @@ struct mpi3_address_reply_descriptor {
 	__le16             reserved0c;
 	__le16             reply_flags;
 };
-
 struct mpi3_success_reply_descriptor {
 	__le32             reserved00[2];
 	__le16             request_queue_ci;
@@ -227,7 +217,6 @@ struct mpi3_success_reply_descriptor {
 	__le16             host_tag;
 	__le16             reply_flags;
 };
-
 struct mpi3_target_command_buffer_reply_descriptor {
 	__le32             reserved00;
 	__le16             initiator_dev_handle;
@@ -238,7 +227,6 @@ struct mpi3_target_command_buffer_reply_descriptor {
 	__le16             io_index;
 	__le16             reply_flags;
 };
-
 struct mpi3_status_reply_descriptor {
 	__le16             ioc_status;
 	__le16             reserved02;
@@ -248,7 +236,6 @@ struct mpi3_status_reply_descriptor {
 	__le16             host_tag;
 	__le16             reply_flags;
 };
-
 #define MPI3_REPLY_DESCRIPT_STATUS_IOCSTATUS_LOGINFOAVAIL               (0x8000)
 #define MPI3_REPLY_DESCRIPT_STATUS_IOCSTATUS_STATUS_MASK                (0x7fff)
 #define MPI3_REPLY_DESCRIPT_STATUS_IOCLOGINFO_TYPE_MASK                 (0xf0000000)
@@ -263,21 +250,18 @@ union mpi3_reply_descriptors_union {
 	struct mpi3_status_reply_descriptor                status;
 	__le32                                         words[4];
 };
-
 struct mpi3_sge_common {
 	__le64             address;
 	__le32             length;
 	u8                 reserved0c[3];
 	u8                 flags;
 };
-
 struct mpi3_sge_bit_bucket {
 	__le64             reserved00;
 	__le32             length;
 	u8                 reserved0c[3];
 	u8                 flags;
 };
-
 struct mpi3_sge_extended_eedp {
 	u8                 user_data_size;
 	u8                 reserved01;
@@ -289,7 +273,6 @@ struct mpi3_sge_extended_eedp {
 	u8                 extended_operation;
 	u8                 flags;
 };
-
 union mpi3_sge_union {
 	struct mpi3_sge_common                 simple;
 	struct mpi3_sge_common                  chain;
@@ -298,7 +281,6 @@ union mpi3_sge_union {
 	struct mpi3_sge_extended_eedp          eedp;
 	__le32                             words[4];
 };
-
 #define MPI3_SGE_FLAGS_ELEMENT_TYPE_MASK        (0xf0)
 #define MPI3_SGE_FLAGS_ELEMENT_TYPE_SIMPLE      (0x00)
 #define MPI3_SGE_FLAGS_ELEMENT_TYPE_BIT_BUCKET  (0x10)
@@ -353,7 +335,6 @@ struct mpi3_request_header {
 	__le16             change_count;
 	__le16             function_dependent;
 };
-
 struct mpi3_default_reply {
 	__le16             host_tag;
 	u8                 ioc_use_only02;
@@ -365,7 +346,6 @@ struct mpi3_default_reply {
 	__le16             ioc_status;
 	__le32             ioc_log_info;
 };
-
 #define MPI3_HOST_TAG_INVALID                       (0xffff)
 #define MPI3_FUNCTION_IOC_FACTS                     (0x01)
 #define MPI3_FUNCTION_IOC_INIT                      (0x02)

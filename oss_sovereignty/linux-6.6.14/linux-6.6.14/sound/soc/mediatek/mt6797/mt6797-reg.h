@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt6797-reg.h  --  Mediatek 6797 audio driver reg definition
- *
- * Copyright (c) 2018 MediaTek Inc.
- * Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
- */
-
 #ifndef _MT6797_REG_H_
 #define _MT6797_REG_H_
-
 #define AUDIO_TOP_CON0            0x0000
 #define AUDIO_TOP_CON1            0x0004
 #define AUDIO_TOP_CON3            0x000c
@@ -254,11 +245,8 @@
 #define AFE_CBIP_MON0             0x0844
 #define AFE_CBIP_SLV_MUX_MON0     0x0848
 #define AFE_CBIP_SLV_DECODER_MON0 0x084c
-
 #define AFE_MAX_REGISTER AFE_CBIP_SLV_DECODER_MON0
 #define AFE_IRQ_STATUS_BITS 0x5f
-
-/* AUDIO_TOP_CON0 */
 #define AHB_IDLE_EN_INT_SFT                                 30
 #define AHB_IDLE_EN_INT_MASK                                0x1
 #define AHB_IDLE_EN_INT_MASK_SFT                            (0x1 << 30)
@@ -310,8 +298,6 @@
 #define PDN_AFE_SFT                                         2
 #define PDN_AFE_MASK                                        0x1
 #define PDN_AFE_MASK_SFT                                    (0x1 << 2)
-
-/* AUDIO_TOP_CON1 */
 #define PDN_ADC_HIRES_TML_SFT                               17
 #define PDN_ADC_HIRES_TML_MASK                              0x1
 #define PDN_ADC_HIRES_TML_MASK_SFT                          (0x1 << 17)
@@ -336,8 +322,6 @@
 #define I2S_SOFT_RST_SFT                                    1
 #define I2S_SOFT_RST_MASK                                   0x1
 #define I2S_SOFT_RST_MASK_SFT                               (0x1 << 1)
-
-/* AFE_DAC_CON0 */
 #define AFE_AWB_RETM_SFT                                    31
 #define AFE_AWB_RETM_MASK                                   0x1
 #define AFE_AWB_RETM_MASK_SFT                               (0x1 << 31)
@@ -404,8 +388,6 @@
 #define AFE_ON_SFT                                          0
 #define AFE_ON_MASK                                         0x1
 #define AFE_ON_MASK_SFT                                     (0x1 << 0)
-
-/* AFE_DAC_CON1 */
 #define MOD_DAI_MODE_SFT                                    30
 #define MOD_DAI_MODE_MASK                                   0x3
 #define MOD_DAI_MODE_MASK_SFT                               (0x3 << 30)
@@ -454,8 +436,6 @@
 #define DL1_MODE_SFT                                        0
 #define DL1_MODE_MASK                                       0xf
 #define DL1_MODE_MASK_SFT                                   (0xf << 0)
-
-/* AFE_ADDA_DL_SRC2_CON0 */
 #define DL_2_INPUT_MODE_CTL_SFT                             28
 #define DL_2_INPUT_MODE_CTL_MASK                            0xf
 #define DL_2_INPUT_MODE_CTL_MASK_SFT                        (0xf << 28)
@@ -510,16 +490,12 @@
 #define DL_2_SRC_ON_TMP_CTL_PRE_SFT                         0
 #define DL_2_SRC_ON_TMP_CTL_PRE_MASK                        0x1
 #define DL_2_SRC_ON_TMP_CTL_PRE_MASK_SFT                    (0x1 << 0)
-
-/* AFE_ADDA_DL_SRC2_CON1 */
 #define DL_2_GAIN_CTL_PRE_SFT                               16
 #define DL_2_GAIN_CTL_PRE_MASK                              0xffff
 #define DL_2_GAIN_CTL_PRE_MASK_SFT                          (0xffff << 16)
 #define DL_2_GAIN_MODE_CTL_SFT                              0
 #define DL_2_GAIN_MODE_CTL_MASK                             0x1
 #define DL_2_GAIN_MODE_CTL_MASK_SFT                         (0x1 << 0)
-
-/* AFE_ADDA_UL_SRC_CON0 */
 #define C_COMB_OUT_SIN_GEN_CTL_SFT                          31
 #define C_COMB_OUT_SIN_GEN_CTL_MASK                         0x1
 #define C_COMB_OUT_SIN_GEN_CTL_MASK_SFT                     (0x1 << 31)
@@ -580,8 +556,6 @@
 #define UL_SRC_ON_TMP_CTL_SFT                               0
 #define UL_SRC_ON_TMP_CTL_MASK                              0x1
 #define UL_SRC_ON_TMP_CTL_MASK_SFT                          (0x1 << 0)
-
-/* AFE_ADDA_UL_SRC_CON1 */
 #define C_SDM_RESET_CTL_SFT                                 31
 #define C_SDM_RESET_CTL_MASK                                0x1
 #define C_SDM_RESET_CTL_MASK_SFT                            (0x1 << 31)
@@ -618,24 +592,18 @@
 #define C_SINE_MODE_CH1_CTL_SFT                             0
 #define C_SINE_MODE_CH1_CTL_MASK                            0xf
 #define C_SINE_MODE_CH1_CTL_MASK_SFT                        (0xf << 0)
-
-/* AFE_ADDA_TOP_CON0 */
 #define C_LOOP_BACK_MODE_CTL_SFT                            12
 #define C_LOOP_BACK_MODE_CTL_MASK                           0xf
 #define C_LOOP_BACK_MODE_CTL_MASK_SFT                       (0xf << 12)
 #define C_EXT_ADC_CTL_SFT                                   0
 #define C_EXT_ADC_CTL_MASK                                  0x1
 #define C_EXT_ADC_CTL_MASK_SFT                              (0x1 << 0)
-
-/* AFE_ADDA_UL_DL_CON0 */
 #define AFE_UL_DL_CON0_RESERVED_SFT                         1
 #define AFE_UL_DL_CON0_RESERVED_MASK                        0x3fff
 #define AFE_UL_DL_CON0_RESERVED_MASK_SFT                    (0x3fff << 1)
 #define ADDA_AFE_ON_SFT                                     0
 #define ADDA_AFE_ON_MASK                                    0x1
 #define ADDA_AFE_ON_MASK_SFT                                (0x1 << 0)
-
-/* AFE_IRQ_MCU_CON */
 #define IRQ7_MCU_MODE_SFT                                   24
 #define IRQ7_MCU_MODE_MASK                                  0xf
 #define IRQ7_MCU_MODE_MASK_SFT                              (0xf << 24)
@@ -669,8 +637,6 @@
 #define IRQ1_MCU_ON_SFT                                     0
 #define IRQ1_MCU_ON_MASK                                    0x1
 #define IRQ1_MCU_ON_MASK_SFT                                (0x1 << 0)
-
-/* AFE_IRQ_MCU_EN */
 #define AFE_IRQ_CM4_EN_SFT                                  16
 #define AFE_IRQ_CM4_EN_MASK                                 0x7f
 #define AFE_IRQ_CM4_EN_MASK_SFT                             (0x7f << 16)
@@ -680,8 +646,6 @@
 #define AFE_IRQ_MCU_EN_SFT                                  0
 #define AFE_IRQ_MCU_EN_MASK                                 0x7f
 #define AFE_IRQ_MCU_EN_MASK_SFT                             (0x7f << 0)
-
-/* AFE_IRQ_MCU_CLR */
 #define IRQ7_MCU_CLR_SFT                                    6
 #define IRQ7_MCU_CLR_MASK                                   0x1
 #define IRQ7_MCU_CLR_MASK_SFT                               (0x1 << 6)
@@ -700,46 +664,30 @@
 #define IRQ1_MCU_CLR_SFT                                    0
 #define IRQ1_MCU_CLR_MASK                                   0x1
 #define IRQ1_MCU_CLR_MASK_SFT                               (0x1 << 0)
-
-/* AFE_IRQ_MCU_CNT1 */
 #define AFE_IRQ_MCU_CNT1_SFT                                0
 #define AFE_IRQ_MCU_CNT1_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT1_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_IRQ_MCU_CNT2 */
 #define AFE_IRQ_MCU_CNT2_SFT                                0
 #define AFE_IRQ_MCU_CNT2_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT2_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_IRQ_MCU_CNT3 */
 #define AFE_IRQ_MCU_CNT3_SFT                                0
 #define AFE_IRQ_MCU_CNT3_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT3_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_IRQ_MCU_CNT4 */
 #define AFE_IRQ_MCU_CNT4_SFT                                0
 #define AFE_IRQ_MCU_CNT4_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT4_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_IRQ_MCU_CNT5 */
 #define AFE_IRQ_MCU_CNT5_SFT                                0
 #define AFE_IRQ_MCU_CNT5_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT5_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_IRQ_MCU_CNT7 */
 #define AFE_IRQ_MCU_CNT7_SFT                                0
 #define AFE_IRQ_MCU_CNT7_MASK                               0x3ffff
 #define AFE_IRQ_MCU_CNT7_MASK_SFT                           (0x3ffff << 0)
-
-/* AFE_MEMIF_MSB */
 #define CPU_COMPACT_MODE_SFT                                23
 #define CPU_COMPACT_MODE_MASK                               0x1
 #define CPU_COMPACT_MODE_MASK_SFT                           (0x1 << 23)
 #define CPU_HD_ALIGN_SFT                                    22
 #define CPU_HD_ALIGN_MASK                                   0x1
 #define CPU_HD_ALIGN_MASK_SFT                               (0x1 << 22)
-
-/* AFE_MEMIF_HD_MODE */
 #define HDMI_HD_SFT                                         20
 #define HDMI_HD_MASK                                        0x3
 #define HDMI_HD_MASK_SFT                                    (0x3 << 20)
@@ -770,8 +718,6 @@
 #define DL1_HD_SFT                                          0
 #define DL1_HD_MASK                                         0x3
 #define DL1_HD_MASK_SFT                                     (0x3 << 0)
-
-/* AFE_MEMIF_HDALIGN */
 #define HDMI_NORMAL_MODE_SFT                                26
 #define HDMI_NORMAL_MODE_MASK                               0x1
 #define HDMI_NORMAL_MODE_MASK_SFT                           (0x1 << 26)
@@ -835,8 +781,6 @@
 #define DL1_HD_ALIGN_SFT                                    0
 #define DL1_HD_ALIGN_MASK                                   0x1
 #define DL1_HD_ALIGN_MASK_SFT                               (0x1 << 0)
-
-/* PCM_INTF_CON1 */
 #define PCM_FIX_VALUE_SEL_SFT                               31
 #define PCM_FIX_VALUE_SEL_MASK                              0x1
 #define PCM_FIX_VALUE_SEL_MASK_SFT                          (0x1 << 31)
@@ -912,8 +856,6 @@
 #define PCM_EN_SFT                                          0
 #define PCM_EN_MASK                                         0x1
 #define PCM_EN_MASK_SFT                                     (0x1 << 0)
-
-/* PCM_INTF_CON2 */
 #define PCM1_TX_FIFO_OV_SFT                                 31
 #define PCM1_TX_FIFO_OV_MASK                                0x1
 #define PCM1_TX_FIFO_OV_MASK_SFT                            (0x1 << 31)
@@ -947,8 +889,6 @@
 #define TX_FIX_VALUE_SFT                                    0
 #define TX_FIX_VALUE_MASK                                   0xff
 #define TX_FIX_VALUE_MASK_SFT                               (0xff << 0)
-
-/* PCM2_INTF_CON */
 #define PCM2_TX_FIX_VALUE_SFT                                24
 #define PCM2_TX_FIX_VALUE_MASK                               0xff
 #define PCM2_TX_FIX_VALUE_MASK_SFT                           (0xff << 24)

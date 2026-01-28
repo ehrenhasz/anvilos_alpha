@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2018 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_PDC_SDM_845_H
 #define _DT_BINDINGS_RESET_PDC_SDM_845_H
-
 #define PDC_APPS_SYNC_RESET	0
 #define PDC_SP_SYNC_RESET	1
 #define PDC_AUDIO_SYNC_RESET	2
@@ -18,5 +12,4 @@
 #define PDC_MODEM_SYNC_RESET	9
 #define PDC_WLAN_RF_SYNC_RESET	10
 #define PDC_WPSS_SYNC_RESET	11
-
 #endif

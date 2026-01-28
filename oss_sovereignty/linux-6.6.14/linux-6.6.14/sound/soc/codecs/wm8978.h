@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8978.h		--  codec driver for WM8978
- *
- * Copyright 2009 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
-
 #ifndef __WM8978_H__
 #define __WM8978_H__
-
-/*
- * Register values.
- */
 #define WM8978_RESET				0x00
 #define WM8978_POWER_MANAGEMENT_1		0x01
 #define WM8978_POWER_MANAGEMENT_2		0x02
@@ -63,20 +52,14 @@
 #define WM8978_ROUT2_SPK_CONTROL		0x37
 #define WM8978_OUT3_MIXER_CONTROL		0x38
 #define WM8978_OUT4_MIXER_CONTROL		0x39
-
 #define WM8978_MAX_REGISTER			0x39
-
 #define WM8978_CACHEREGNUM			58
-
-/* Clock divider Id's */
 enum wm8978_clk_id {
 	WM8978_OPCLKRATE,
 	WM8978_BCLKDIV,
 };
-
 enum wm8978_sysclk_src {
 	WM8978_MCLK = 0,
 	WM8978_PLL,
 };
-
-#endif	/* __WM8978_H__ */
+#endif	 

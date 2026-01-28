@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
-
 #ifndef __INTEL_HUC_PRINT__
 #define __INTEL_HUC_PRINT__
-
 #include "gt/intel_gt.h"
 #include "gt/intel_gt_print.h"
-
 #define huc_printk(_huc, _level, _fmt, ...) \
 	gt_##_level(huc_to_gt(_huc), "HuC: " _fmt, ##__VA_ARGS__)
 #define huc_err(_huc, _fmt, ...)	huc_printk((_huc), err, _fmt, ##__VA_ARGS__)
@@ -17,5 +10,4 @@
 #define huc_info(_huc, _fmt, ...)	huc_printk((_huc), info, _fmt, ##__VA_ARGS__)
 #define huc_dbg(_huc, _fmt, ...)	huc_printk((_huc), dbg, _fmt, ##__VA_ARGS__)
 #define huc_probe_error(_huc, _fmt, ...) huc_printk((_huc), probe_error, _fmt, ##__VA_ARGS__)
-
-#endif /* __INTEL_HUC_PRINT__ */
+#endif  

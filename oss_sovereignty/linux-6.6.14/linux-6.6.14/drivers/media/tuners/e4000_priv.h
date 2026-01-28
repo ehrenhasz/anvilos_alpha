@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Elonics E4000 silicon tuner driver
- *
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
-
 #ifndef E4000_PRIV_H
 #define E4000_PRIV_H
-
 #include "e4000.h"
 #include <linux/math64.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-subdev.h>
 #include <linux/regmap.h>
-
 struct e4000_dev {
 	struct i2c_client *client;
 	struct regmap *regmap;
@@ -23,8 +14,6 @@ struct e4000_dev {
 	bool active;
 	unsigned int f_frequency;
 	unsigned int f_bandwidth;
-
-	/* Controls */
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *bandwidth_auto;
 	struct v4l2_ctrl *bandwidth;
@@ -36,33 +25,28 @@ struct e4000_dev {
 	struct v4l2_ctrl *if_gain;
 	struct v4l2_ctrl *pll_lock;
 };
-
 struct e4000_pll {
 	u32 freq;
 	u8 div_out_reg;
 	u8 div_out;
 };
-
 static const struct e4000_pll e4000_pll_lut[] = {
-/*                                      VCO min    VCO max */
-	{   72400000, 0x0f, 48 }, /* .......... 3475200000 */
-	{   81200000, 0x0e, 40 }, /* 2896000000 3248000000 */
-	{  108300000, 0x0d, 32 }, /* 2598400000 3465600000 */
-	{  162500000, 0x0c, 24 }, /* 2599200000 3900000000 */
-	{  216600000, 0x0b, 16 }, /* 2600000000 3465600000 */
-	{  325000000, 0x0a, 12 }, /* 2599200000 3900000000 */
-	{  350000000, 0x09,  8 }, /* 2600000000 2800000000 */
-	{  432000000, 0x03,  8 }, /* 2800000000 3456000000 */
-	{  667000000, 0x02,  6 }, /* 2592000000 4002000000 */
-	{ 1200000000, 0x01,  4 }, /* 2668000000 4800000000 */
-	{ 0xffffffff, 0x00,  2 }, /* 2400000000 .......... */
+	{   72400000, 0x0f, 48 },  
+	{   81200000, 0x0e, 40 },  
+	{  108300000, 0x0d, 32 },  
+	{  162500000, 0x0c, 24 },  
+	{  216600000, 0x0b, 16 },  
+	{  325000000, 0x0a, 12 },  
+	{  350000000, 0x09,  8 },  
+	{  432000000, 0x03,  8 },  
+	{  667000000, 0x02,  6 },  
+	{ 1200000000, 0x01,  4 },  
+	{ 0xffffffff, 0x00,  2 },  
 };
-
 struct e4000_lna_filter {
 	u32 freq;
 	u8 val;
 };
-
 static const struct e4000_lna_filter e400_lna_filter_lut[] = {
 	{  370000000,  0 },
 	{  392500000,  1 },
@@ -97,26 +81,22 @@ static const struct e4000_lna_filter e400_lna_filter_lut[] = {
 	{ 1735000000, 14 },
 	{ 0xffffffff, 15 },
 };
-
 struct e4000_band {
 	u32 freq;
 	u8 reg07_val;
 	u8 reg78_val;
 };
-
 static const struct e4000_band e4000_band_lut[] = {
 	{  140000000, 0x01, 0x03 },
 	{  350000000, 0x03, 0x03 },
 	{ 1000000000, 0x05, 0x03 },
 	{ 0xffffffff, 0x07, 0x00 },
 };
-
 struct e4000_if_filter {
 	u32 freq;
 	u8 reg11_val;
 	u8 reg12_val;
 };
-
 static const struct e4000_if_filter e4000_if_filter_lut[] = {
 	{    4300000, 0xfd, 0x1f },
 	{    4400000, 0xfd, 0x1e },
@@ -152,12 +132,10 @@ static const struct e4000_if_filter e4000_if_filter_lut[] = {
 	{   11000000, 0xf5, 0x00 },
 	{ 0xffffffff, 0x00, 0x20 },
 };
-
 struct e4000_if_gain {
 	u8 reg16_val;
 	u8 reg17_val;
 };
-
 static const struct e4000_if_gain e4000_if_gain_lut[] = {
 	{0x00, 0x00},
 	{0x20, 0x00},
@@ -215,5 +193,4 @@ static const struct e4000_if_gain e4000_if_gain_lut[] = {
 	{0x5f, 0x24},
 	{0x7f, 0x24},
 };
-
 #endif

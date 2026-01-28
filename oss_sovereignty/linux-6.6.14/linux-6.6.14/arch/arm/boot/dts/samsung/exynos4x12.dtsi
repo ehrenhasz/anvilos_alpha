@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Samsung's Exynos4412 SoC device tree source
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung's Exynos4x12 SoC series device nodes are listed in this file.
- * Particular SoCs from Exynos4x12 series can include this file and provide
- * values for SoCs specific bindings.
- *
- * Note: This file does not include device nodes for all the controllers in
- * Exynos4x12 SoCs. As device tree coverage for Exynos4x12 increases, additional
- * nodes can be added to this file.
- */
-
 #include "exynos4.dtsi"
-
 #include "exynos4-cpu-thermal.dtsi"
-
 / {
 	aliases {
 		pinctrl0 = &pinctrl_0;
@@ -27,17 +9,14 @@
 		fimc-lite0 = &fimc_lite_0;
 		fimc-lite1 = &fimc_lite_1;
 	};
-
 	bus_acp: bus-acp {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_DIV_ACP>;
 		clock-names = "bus";
 		operating-points-v2 = <&bus_acp_opp_table>;
 		status = "disabled";
-
 		bus_acp_opp_table: opp-table {
 			compatible = "operating-points-v2";
-
 			opp-100000000 {
 				opp-hz = /bits/ 64 <100000000>;
 			};
@@ -52,7 +31,6 @@
 			};
 		};
 	};
-
 	bus_c2c: bus-c2c {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_DIV_C2C>;
@@ -60,7 +38,6 @@
 		operating-points-v2 = <&bus_dmc_opp_table>;
 		status = "disabled";
 	};
-
 	bus_dmc: bus-dmc {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_DIV_DMC>;
@@ -70,7 +47,6 @@
 		#interconnect-cells = <0>;
 		status = "disabled";
 	};
-
 	bus_display: bus-display {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_ACLK160>;
@@ -79,10 +55,8 @@
 		interconnects = <&bus_leftbus &bus_dmc>;
 		#interconnect-cells = <0>;
 		status = "disabled";
-
 		bus_display_opp_table: opp-table {
 			compatible = "operating-points-v2";
-
 			opp-160000000 {
 				opp-hz = /bits/ 64 <160000000>;
 			};
@@ -91,17 +65,14 @@
 			};
 		};
 	};
-
 	bus_fsys: bus-fsys {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_ACLK133>;
 		clock-names = "bus";
 		operating-points-v2 = <&bus_fsys_opp_table>;
 		status = "disabled";
-
 		bus_fsys_opp_table: opp-table {
 			compatible = "operating-points-v2";
-
 			opp-100000000 {
 				opp-hz = /bits/ 64 <100000000>;
 			};
@@ -110,7 +81,6 @@
 			};
 		};
 	};
-
 	bus_leftbus: bus-leftbus {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_DIV_GDL>;
@@ -120,7 +90,6 @@
 		#interconnect-cells = <0>;
 		status = "disabled";
 	};
-
 	bus_mfc: bus-mfc {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_SCLK_MFC>;
@@ -128,17 +97,14 @@
 		operating-points-v2 = <&bus_leftbus_opp_table>;
 		status = "disabled";
 	};
-
 	bus_peri: bus-peri {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_ACLK100>;
 		clock-names = "bus";
 		operating-points-v2 = <&bus_peri_opp_table>;
 		status = "disabled";
-
 		bus_peri_opp_table: opp-table {
 			compatible = "operating-points-v2";
-
 			opp-50000000 {
 				opp-hz = /bits/ 64 <50000000>;
 			};
@@ -147,7 +113,6 @@
 			};
 		};
 	};
-
 	bus_rightbus: bus-rightbus {
 		compatible = "samsung,exynos-bus";
 		clocks = <&clock CLK_DIV_GDR>;
@@ -155,10 +120,8 @@
 		operating-points-v2 = <&bus_leftbus_opp_table>;
 		status = "disabled";
 	};
-
 	bus_dmc_opp_table: opp-table-1 {
 		compatible = "operating-points-v2";
-
 		opp-100000000 {
 			opp-hz = /bits/ 64 <100000000>;
 			opp-microvolt = <900000>;
@@ -181,10 +144,8 @@
 			opp-suspend;
 		};
 	};
-
 	bus_leftbus_opp_table: opp-table-2 {
 		compatible = "operating-points-v2";
-
 		opp-100000000 {
 			opp-hz = /bits/ 64 <100000000>;
 			opp-microvolt = <900000>;
@@ -203,65 +164,54 @@
 			opp-suspend;
 		};
 	};
-
 	soc: soc {
-
 		pinctrl_0: pinctrl@11400000 {
 			compatible = "samsung,exynos4x12-pinctrl";
 			reg = <0x11400000 0x1000>;
 			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		pinctrl_1: pinctrl@11000000 {
 			compatible = "samsung,exynos4x12-pinctrl";
 			reg = <0x11000000 0x1000>;
 			interrupts = <GIC_SPI 46 IRQ_TYPE_LEVEL_HIGH>;
-
 			wakup_eint: wakeup-interrupt-controller {
 				compatible = "samsung,exynos4210-wakeup-eint";
 				interrupt-parent = <&gic>;
 				interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
-
 		pinctrl_2: pinctrl@3860000 {
 			compatible = "samsung,exynos4x12-pinctrl";
 			reg = <0x03860000 0x1000>;
 			interrupt-parent = <&combiner>;
 			interrupts = <10 0>;
 		};
-
 		pinctrl_3: pinctrl@106e0000 {
 			compatible = "samsung,exynos4x12-pinctrl";
 			reg = <0x106e0000 0x1000>;
 			interrupts = <GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		sram@2020000 {
 			compatible = "mmio-sram";
 			reg = <0x02020000 0x40000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0 0x02020000 0x40000>;
-
 			smp-sram@0 {
 				compatible = "samsung,exynos4210-sysram";
 				reg = <0x0 0x1000>;
 			};
-
 			smp-sram@2f000 {
 				compatible = "samsung,exynos4210-sysram-ns";
 				reg = <0x2f000 0x1000>;
 			};
 		};
-
 		pd_isp: power-domain@10023ca0 {
 			compatible = "samsung,exynos4210-pd";
 			reg = <0x10023ca0 0x20>;
 			#power-domain-cells = <0>;
 			label = "ISP";
 		};
-
 		l2c: cache-controller@10502000 {
 			compatible = "arm,pl310-cache";
 			reg = <0x10502000 0x1000>;
@@ -277,12 +227,10 @@
 			arm,prefetch-drop = <1>;
 			arm,prefetch-offset = <7>;
 		};
-
 		clock: clock-controller@10030000 {
 			reg = <0x10030000 0x18000>;
 			#clock-cells = <1>;
 		};
-
 		isp_clock: clock-controller@10048000 {
 			compatible = "samsung,exynos4412-isp-clock";
 			reg = <0x10048000 0x1000>;
@@ -292,7 +240,6 @@
 				 <&clock CLK_ACLK400_MCUISP>;
 			clock-names = "aclk200", "aclk400_mcuisp";
 		};
-
 		timer@10050000 {
 			compatible = "samsung,exynos4412-mct";
 			reg = <0x10050000 0x800>;
@@ -304,7 +251,6 @@
 					      <&combiner 12 7>,
 					      <&gic GIC_PPI 12 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		watchdog: watchdog@10060000 {
 			compatible = "samsung,exynos5250-wdt";
 			reg = <0x10060000 0x100>;
@@ -313,7 +259,6 @@
 			clock-names = "watchdog";
 			samsung,syscon-phandle = <&pmu_system_controller>;
 		};
-
 		adc: adc@126c0000 {
 			compatible = "samsung,exynos4212-adc";
 			reg = <0x126c0000 0x100>;
@@ -325,7 +270,6 @@
 			samsung,syscon-phandle = <&pmu_system_controller>;
 			status = "disabled";
 		};
-
 		g2d: g2d@10800000 {
 			compatible = "samsung,exynos4212-g2d";
 			reg = <0x10800000 0x1000>;
@@ -334,7 +278,6 @@
 			clock-names = "sclk_fimg2d", "fimg2d";
 			iommus = <&sysmmu_g2d>;
 		};
-
 		mshc_0: mmc@12550000 {
 			compatible = "samsung,exynos4412-dw-mshc";
 			reg = <0x12550000 0x1000>;
@@ -346,7 +289,6 @@
 			clock-names = "biu", "ciu";
 			status = "disabled";
 		};
-
 		sysmmu_g2d: sysmmu@10a40000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x10a40000 0x1000>;
@@ -356,7 +298,6 @@
 			clocks = <&clock CLK_SMMU_G2D>, <&clock CLK_G2D>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_isp: sysmmu@12260000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x12260000 0x1000>;
@@ -367,7 +308,6 @@
 			clocks = <&isp_clock CLK_ISP_SMMU_ISP>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_drc: sysmmu@12270000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x12270000 0x1000>;
@@ -378,7 +318,6 @@
 			clocks = <&isp_clock CLK_ISP_SMMU_DRC>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_fd: sysmmu@122a0000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x122a0000 0x1000>;
@@ -389,7 +328,6 @@
 			clocks = <&isp_clock CLK_ISP_SMMU_FD>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_mcuctl: sysmmu@122b0000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x122b0000 0x1000>;
@@ -400,7 +338,6 @@
 			clocks = <&isp_clock CLK_ISP_SMMU_ISPCX>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_lite0: sysmmu@123b0000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x123b0000 0x1000>;
@@ -412,7 +349,6 @@
 				 <&isp_clock CLK_ISP_FIMC_LITE0>;
 			#iommu-cells = <0>;
 		};
-
 		sysmmu_fimc_lite1: sysmmu@123c0000 {
 			compatible = "samsung,exynos-sysmmu";
 			reg = <0x123c0000 0x1000>;
@@ -426,7 +362,6 @@
 		};
 	};
 };
-
 &combiner {
 	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
@@ -449,13 +384,10 @@
 		     <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &camera {
 	clocks = <&clock CLK_SCLK_CAM0>, <&clock CLK_SCLK_CAM1>,
 		 <&clock CLK_PIXELASYNCM0>, <&clock CLK_PIXELASYNCM1>;
 	clock-names = "sclk_cam0", "sclk_cam1", "pxl_async0", "pxl_async1";
-
-	/* fimc_[0-3] are configured outside, under phandles */
 	fimc_lite_0: fimc-lite@12390000 {
 		compatible = "samsung,exynos4212-fimc-lite";
 		reg = <0x12390000 0x1000>;
@@ -466,7 +398,6 @@
 		iommus = <&sysmmu_fimc_lite0>;
 		status = "disabled";
 	};
-
 	fimc_lite_1: fimc-lite@123a0000 {
 		compatible = "samsung,exynos4212-fimc-lite";
 		reg = <0x123a0000 0x1000>;
@@ -477,7 +408,6 @@
 		iommus = <&sysmmu_fimc_lite1>;
 		status = "disabled";
 	};
-
 	fimc_is: fimc-is@12000000 {
 		compatible = "samsung,exynos4212-fimc-is";
 		reg = <0x12000000 0x260000>;
@@ -520,11 +450,9 @@
 		#size-cells = <1>;
 		ranges;
 		status = "disabled";
-
 		pmu@10020000 {
 			reg = <0x10020000 0x3000>;
 		};
-
 		i2c1_isp: i2c-isp@12140000 {
 			compatible = "samsung,exynos4212-i2c-isp";
 			reg = <0x12140000 0x100>;
@@ -535,12 +463,10 @@
 		};
 	};
 };
-
 &exynos_usbphy {
 	compatible = "samsung,exynos4x12-usb2-phy";
 	samsung,sysreg-phandle = <&sys_reg>;
 };
-
 &fimc_0 {
 	compatible = "samsung,exynos4212-fimc";
 	samsung,pix-limits = <4224 8192 1920 4224>;
@@ -548,7 +474,6 @@
 	samsung,isp-wb;
 	samsung,cam-if;
 };
-
 &fimc_1 {
 	compatible = "samsung,exynos4212-fimc";
 	samsung,pix-limits = <4224 8192 1920 4224>;
@@ -556,7 +481,6 @@
 	samsung,isp-wb;
 	samsung,cam-if;
 };
-
 &fimc_2 {
 	compatible = "samsung,exynos4212-fimc";
 	samsung,pix-limits = <4224 8192 1920 4224>;
@@ -565,7 +489,6 @@
 	samsung,lcd-wb;
 	samsung,cam-if;
 };
-
 &fimc_3 {
 	compatible = "samsung,exynos4212-fimc";
 	samsung,pix-limits = <1920 8192 1366 1920>;
@@ -574,7 +497,6 @@
 	samsung,isp-wb;
 	samsung,lcd-wb;
 };
-
 &gpu {
 	interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
@@ -599,10 +521,8 @@
 			  "ppmmu3",
 			  "pmu";
 	operating-points-v2 = <&gpu_opp_table>;
-
 	gpu_opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp-160000000 {
 			opp-hz = /bits/ 64 <160000000>;
 			opp-microvolt = <875000>;
@@ -621,19 +541,15 @@
 		};
 	};
 };
-
 &hdmi {
 	compatible = "samsung,exynos4212-hdmi";
 };
-
 &jpeg_codec {
 	compatible = "samsung,exynos4212-jpeg";
 };
-
 &rotator {
 	compatible = "samsung,exynos4212-rotator";
 };
-
 &mixer {
 	compatible = "samsung,exynos4212-mixer";
 	clock-names = "mixer", "hdmi", "sclk_hdmi", "vp";
@@ -641,7 +557,6 @@
 		 <&clock CLK_SCLK_HDMI>, <&clock CLK_VP>;
 	interconnects = <&bus_display &bus_dmc>;
 };
-
 &pmu_system_controller {
 	clock-names = "clkout0", "clkout1", "clkout2", "clkout3",
 			"clkout4", "clkout8", "clkout9";
@@ -650,7 +565,6 @@
 		<&clock CLK_OUT_CPU>, <&clock CLK_XXTI>, <&clock CLK_XUSBXTI>;
 	#clock-cells = <1>;
 };
-
 &tmu {
 	compatible = "samsung,exynos4412-tmu";
 	interrupt-parent = <&combiner>;
@@ -660,5 +574,4 @@
 	clock-names = "tmu_apbif";
 	status = "disabled";
 };
-
 #include "exynos4x12-pinctrl.dtsi"

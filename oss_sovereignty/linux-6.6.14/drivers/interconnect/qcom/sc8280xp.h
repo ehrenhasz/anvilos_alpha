@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SC8280XP_H
 #define __DRIVERS_INTERCONNECT_QCOM_SC8280XP_H
-
 #define SC8280XP_MASTER_GPU_TCU				0
 #define SC8280XP_MASTER_PCIE_TCU			1
 #define SC8280XP_MASTER_SYS_TCU				2
 #define SC8280XP_MASTER_APPSS_PROC			3
-/* 4 was used by SLAVE_IPA_CORE, now represented as RPMh clock */
 #define SC8280XP_MASTER_LLCC				5
 #define SC8280XP_MASTER_CNOC_LPASS_AG_NOC		6
 #define SC8280XP_MASTER_CDSP_NOC_CFG			7
@@ -84,7 +77,6 @@
 #define SC8280XP_MASTER_USB4_0				75
 #define SC8280XP_MASTER_USB4_1				76
 #define SC8280XP_SLAVE_EBI1				512
-/* 513 was used by SLAVE_IPA_CORE, now represented as RPMh clock */
 #define SC8280XP_SLAVE_AHB2PHY_0			514
 #define SC8280XP_SLAVE_AHB2PHY_1			515
 #define SC8280XP_SLAVE_AHB2PHY_2			516
@@ -204,6 +196,4 @@
 #define SC8280XP_SLAVE_QDSS_STM				630
 #define SC8280XP_SLAVE_SMSS				631
 #define SC8280XP_SLAVE_TCU				632
-
 #endif
-

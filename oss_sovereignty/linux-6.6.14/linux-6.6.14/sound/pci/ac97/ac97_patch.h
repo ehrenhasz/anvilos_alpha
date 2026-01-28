@@ -1,12 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Universal interface for Audio Codec '97
- *
- *  For more details look to AC '97 component specification revision 2.2
- *  by Intel Corporation (http://developer.intel.com).
- */
-
 #define AC97_SINGLE_VALUE(reg,shift,mask,invert) \
 	((reg) | ((shift) << 8) | ((shift) << 12) | ((mask) << 16) | \
 	 ((invert) << 24))
@@ -27,8 +18,6 @@
   .info = snd_ac97_info_volsw,		\
   .get = snd_ac97_get_volsw, .put = snd_ac97_put_volsw, \
   .private_value = (reg) | ((shift_left) << 8) | ((shift_right) << 12) | ((mask) << 16) | ((invert) << 24) }
-
-/* enum control */
 struct ac97_enum {
 	unsigned char reg;
 	unsigned char shift_l;
@@ -36,7 +25,6 @@ struct ac97_enum {
 	unsigned short mask;
 	const char * const *texts;
 };
-
 #define AC97_ENUM_DOUBLE(xreg, xshift_l, xshift_r, xmask, xtexts) \
 { .reg = xreg, .shift_l = xshift_l, .shift_r = xshift_r, \
   .mask = xmask, .texts = xtexts }
@@ -47,8 +35,6 @@ struct ac97_enum {
   .info = snd_ac97_info_enum_double,		    \
   .get = snd_ac97_get_enum_double, .put = snd_ac97_put_enum_double, \
   .private_value = (unsigned long)&xenum }
-
-/* ac97_codec.c */
 static const struct snd_kcontrol_new snd_ac97_controls_3d[];
 static const struct snd_kcontrol_new snd_ac97_controls_spdif[];
 static struct snd_kcontrol *snd_ac97_cnew(const struct snd_kcontrol_new *_template,

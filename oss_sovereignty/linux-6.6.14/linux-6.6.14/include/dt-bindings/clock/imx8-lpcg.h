@@ -1,9 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2019-2020 NXP
- *   Dong Aisheng <aisheng.dong@nxp.com>
- */
-
 #define IMX_LPCG_CLK_0	0
 #define IMX_LPCG_CLK_1	4
 #define IMX_LPCG_CLK_2	8

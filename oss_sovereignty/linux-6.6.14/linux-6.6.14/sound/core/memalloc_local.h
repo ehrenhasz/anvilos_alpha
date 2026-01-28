@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
 #ifndef __MEMALLOC_LOCAL_H
 #define __MEMALLOC_LOCAL_H
-
 struct snd_malloc_ops {
 	void *(*alloc)(struct snd_dma_buffer *dmab, size_t size);
 	void (*free)(struct snd_dma_buffer *dmab);
@@ -12,5 +10,4 @@ struct snd_malloc_ops {
 	int (*mmap)(struct snd_dma_buffer *dmab, struct vm_area_struct *area);
 	void (*sync)(struct snd_dma_buffer *dmab, enum snd_dma_sync_mode mode);
 };
-
-#endif /* __MEMALLOC_LOCAL_H */
+#endif  

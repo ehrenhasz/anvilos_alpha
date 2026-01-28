@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #include <linux/list.h>
 #include <linux/acpi.h>
 #include <cxl.h>
-
 struct cxl_mock_ops {
 	struct list_head list;
 	bool (*is_mock_adev)(struct acpi_device *dev);
@@ -26,7 +23,6 @@ struct cxl_mock_ops {
 	int (*devm_cxl_enumerate_decoders)(
 		struct cxl_hdm *hdm, struct cxl_endpoint_dvsec_info *info);
 };
-
 void register_cxl_mock_ops(struct cxl_mock_ops *ops);
 void unregister_cxl_mock_ops(struct cxl_mock_ops *ops);
 struct cxl_mock_ops *get_cxl_mock_ops(int *index);

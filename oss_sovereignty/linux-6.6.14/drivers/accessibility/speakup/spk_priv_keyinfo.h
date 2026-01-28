@@ -1,19 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* spk_priv.h
- * review functions for the speakup screen review package.
- * originally written by: Kirk Reiser and Andy Berdan.
- *
- * extensively modified by David Borowski.
- *
- * Copyright (C) 1998  Kirk Reiser.
- * Copyright (C) 2003  David Borowski.
- */
-
 #ifndef _SPEAKUP_KEYINFO_H
 #define _SPEAKUP_KEYINFO_H
-
 #define FIRST_SYNTH_VAR RATE
-/* 0 is reserved for no remap */
 #define SPEAKUP_GOTO		0x01
 #define SPEECH_KILL		0x02
 #define SPEAKUP_QUIET		0x03
@@ -61,19 +48,11 @@
 #define SPEAKUP_HELP		0x2d
 #define TOGGLE_CURSORING	0x2e
 #define READ_ALL_DOC		0x2f
-
-/* one greater than the last func handler */
 #define SPKUP_MAX_FUNC		0x30
-
 #define SPK_KEY		0x80
 #define FIRST_EDIT_BITS	0x22
 #define FIRST_SET_VAR SPELL_DELAY
-
-/* increase if adding more than 0x3f functions */
 #define VAR_START		0x40
-
-/* keys for setting variables, must be ordered same as the enum for var_ids */
-/* with dec being even and inc being 1 greater */
 #define SPELL_DELAY_DEC (VAR_START + 0)
 #define SPELL_DELAY_INC (SPELL_DELAY_DEC + 1)
 #define PUNC_LEVEL_DEC (SPELL_DELAY_DEC + 2)
@@ -96,5 +75,4 @@
 #define PUNCT_INC (PUNCT_DEC + 1)
 #define VOICE_DEC (PUNCT_DEC + 2)
 #define VOICE_INC (VOICE_DEC + 1)
-
 #endif

@@ -1,29 +1,5 @@
-/*
- * GFX_8_1 Register documentation
- *
- * Copyright (C) 2014  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 #ifndef GFX_8_1_D_H
 #define GFX_8_1_D_H
-
 #define mmCB_BLEND_RED                                                          0xa105
 #define mmCB_BLEND_GREEN                                                        0xa106
 #define mmCB_BLEND_BLUE                                                         0xa107
@@ -2787,5 +2763,4 @@
 #define ixDIDT_DBR_WEIGHT0_3                                                    0x90
 #define ixDIDT_DBR_WEIGHT4_7                                                    0x91
 #define ixDIDT_DBR_WEIGHT8_11                                                   0x92
-
-#endif /* GFX_8_1_D_H */
+#endif  

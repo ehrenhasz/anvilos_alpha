@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
 #ifndef __SXGBE_DMA_H__
 #define __SXGBE_DMA_H__
-
-/* forward declaration */
 struct sxgbe_extra_stats;
-
 #define SXGBE_DMA_BLENMAP_LSHIFT	1
 #define SXGBE_DMA_TXPBL_LSHIFT		16
 #define SXGBE_DMA_RXPBL_LSHIFT		16
 #define DEFAULT_DMA_PBL			8
-
 struct sxgbe_dma_ops {
-	/* DMA core initialization */
 	int (*init)(void __iomem *ioaddr, int fix_burst, int burst_map);
 	void (*cha_init)(void __iomem *ioaddr, int cha_num, int fix_burst,
 			 int pbl, dma_addr_t dma_tx, dma_addr_t dma_rx,
@@ -36,12 +23,8 @@ struct sxgbe_dma_ops {
 				 struct sxgbe_extra_stats *x);
 	int (*rx_dma_int_status)(void __iomem *ioaddr, int channel_no,
 				 struct sxgbe_extra_stats *x);
-	/* Program the HW RX Watchdog */
 	void (*rx_watchdog)(void __iomem *ioaddr, u32 riwt);
-	/* Enable TSO for each DMA channel */
 	void (*enable_tso)(void __iomem *ioaddr, u8 chan_num);
 };
-
 const struct sxgbe_dma_ops *sxgbe_get_dma_ops(void);
-
-#endif /* __SXGBE_CORE_H__ */
+#endif  

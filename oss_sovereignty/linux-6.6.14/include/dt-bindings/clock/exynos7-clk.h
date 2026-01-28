@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
- */
-
 #ifndef _DT_BINDINGS_CLOCK_EXYNOS7_H
 #define _DT_BINDINGS_CLOCK_EXYNOS7_H
-
-/* TOPC */
 #define DOUT_ACLK_PERIS			1
 #define DOUT_SCLK_BUS0_PLL		2
 #define DOUT_SCLK_BUS1_PLL		3
@@ -30,8 +22,6 @@
 #define ACLK_CCORE_133			20
 #define ACLK_PERIS_66			21
 #define TOPC_NR_CLK			22
-
-/* TOP0 */
 #define DOUT_ACLK_PERIC1		1
 #define DOUT_ACLK_PERIC0		2
 #define CLK_SCLK_UART0			3
@@ -49,8 +39,6 @@
 #define CLK_ACLK_PERIC0_66		15
 #define CLK_ACLK_PERIC1_66		16
 #define TOP0_NR_CLK			17
-
-/* TOP1 */
 #define DOUT_ACLK_FSYS1_200		1
 #define DOUT_ACLK_FSYS0_200		2
 #define DOUT_SCLK_MMC2			3
@@ -69,12 +57,8 @@
 #define DOUT_SCLK_PHY_FSYS1		16
 #define DOUT_SCLK_PHY_FSYS1_26M		17
 #define TOP1_NR_CLK			18
-
-/* CCORE */
 #define PCLK_RTC			1
 #define CCORE_NR_CLK			2
-
-/* PERIC0 */
 #define PCLK_UART0			1
 #define SCLK_UART0			2
 #define PCLK_HSI2C0			3
@@ -88,8 +72,6 @@
 #define SCLK_PWM			11
 #define PCLK_ADCIF			12
 #define PERIC0_NR_CLK			13
-
-/* PERIC1 */
 #define PCLK_UART1			1
 #define PCLK_UART2			2
 #define PCLK_UART3			3
@@ -118,16 +100,12 @@
 #define SCLK_PCM1			26
 #define SCLK_SPDIF			27
 #define PERIC1_NR_CLK			28
-
-/* PERIS */
 #define PCLK_CHIPID			1
 #define SCLK_CHIPID			2
 #define PCLK_WDT			3
 #define PCLK_TMU			4
 #define SCLK_TMU			5
 #define PERIS_NR_CLK			6
-
-/* FSYS0 */
 #define ACLK_MMC2			1
 #define ACLK_AXIUS_USBDRD30X_FSYS0X	2
 #define ACLK_USBDRD300			3
@@ -139,8 +117,6 @@
 #define ACLK_PDMA0			9
 #define ACLK_PDMA1			10
 #define FSYS0_NR_CLK			11
-
-/* FSYS1 */
 #define ACLK_MMC1			1
 #define ACLK_MMC0			2
 #define PHYCLK_UFS20_TX0_SYMBOL		3
@@ -157,8 +133,6 @@
 #define PCLK_GPIO_FSYS1			14
 #define MOUT_FSYS1_PHYCLK_SEL1		15
 #define FSYS1_NR_CLK			16
-
-/* MSCL */
 #define USERMUX_ACLK_MSCL_532		1
 #define DOUT_PCLK_MSCL			2
 #define ACLK_MSCL_0			3
@@ -179,7 +153,6 @@
 #define ACLK_MSCLNP_133			18
 #define ACLK_AHB2APB_MSCL0P		19
 #define ACLK_AHB2APB_MSCL1P		20
-
 #define PCLK_MSCL_0			21
 #define PCLK_MSCL_1			22
 #define PCLK_JPEG			23
@@ -193,12 +166,10 @@
 #define PCLK_AXI2ACEL_BRIDGE		31
 #define PCLK_PMU_MSCL			32
 #define MSCL_NR_CLK			33
-
-/* AUD */
 #define SCLK_I2S			1
 #define SCLK_PCM			2
 #define PCLK_I2S			3
 #define PCLK_PCM			4
 #define ACLK_ADMA			5
 #define AUD_NR_CLK			6
-#endif /* _DT_BINDINGS_CLOCK_EXYNOS7_H */
+#endif  

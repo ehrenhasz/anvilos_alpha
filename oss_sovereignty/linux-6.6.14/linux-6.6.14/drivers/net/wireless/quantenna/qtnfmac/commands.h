@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2016 Quantenna Communications. All rights reserved. */
-
 #ifndef QLINK_COMMANDS_H_
 #define QLINK_COMMANDS_H_
-
 #include <linux/nl80211.h>
-
 #include "core.h"
 #include "bus.h"
-
 int qtnf_cmd_send_init_fw(struct qtnf_bus *bus);
 void qtnf_cmd_send_deinit_fw(struct qtnf_bus *bus);
 int qtnf_cmd_get_hw_info(struct qtnf_bus *bus);
@@ -78,5 +72,4 @@ int qtnf_cmd_send_wowlan_set(const struct qtnf_vif *vif,
 int qtnf_cmd_netdev_changeupper(const struct qtnf_vif *vif, int br_domain);
 int qtnf_cmd_send_update_owe(struct qtnf_vif *vif,
 			     struct cfg80211_update_owe_info *owe);
-
-#endif /* QLINK_COMMANDS_H_ */
+#endif  

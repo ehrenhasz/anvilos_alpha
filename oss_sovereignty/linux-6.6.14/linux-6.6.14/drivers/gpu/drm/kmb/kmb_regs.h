@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright © 2018-2020 Intel Corporation
- */
-
 #ifndef __KMB_REGS_H__
 #define __KMB_REGS_H__
-
-/***************************************************************************
- *		   LCD controller control register defines
- ***************************************************************************/
 #define LCD_CONTROL				(0x4 * 0x000)
 #define LCD_CTRL_PROGRESSIVE			  (0 << 0)
 #define LCD_CTRL_INTERLACED			  BIT(0)
@@ -47,8 +38,6 @@
 #define LCD_CTRL_PIPELINE_DMA			  BIT(28)
 #define LCD_CTRL_VHSYNC_IDLE_LVL		  BIT(31)
 #define LCD_CTRL_ALPHA_ALL			  (0xff << 6)
-
-/* interrupts */
 #define LCD_INT_STATUS				(0x4 * 0x001)
 #define LCD_INT_EOF				  BIT(0)
 #define LCD_INT_LINE_CMP			  BIT(1)
@@ -83,18 +72,12 @@
 #define LCD_LINE_COUNT				(0x4 * 0x004)
 #define LCD_LINE_COMPARE			(0x4 * 0x005)
 #define LCD_VSTATUS				(0x4 * 0x006)
-
-/*LCD_VSTATUS_COMPARE Vertcal interval in which to generate vertcal
- * interval interrupt
- */
-/* BITS 13 and 14 */
 #define LCD_VSTATUS_COMPARE			(0x4 * 0x007)
 #define LCD_VSTATUS_VERTICAL_STATUS_MASK	  (3 << 13)
 #define LCD_VSTATUS_COMPARE_VSYNC		  (0 << 13)
 #define LCD_VSTATUS_COMPARE_BACKPORCH		  BIT(13)
 #define LCD_VSTATUS_COMPARE_ACTIVE		  (2 << 13)
 #define LCD_VSTATUS_COMPARE_FRONT_PORCH		  (3 << 13)
-
 #define LCD_SCREEN_WIDTH			(0x4 * 0x008)
 #define LCD_SCREEN_HEIGHT			(0x4 * 0x009)
 #define LCD_FIELD_INT_CFG			(0x4 * 0x00a)
@@ -102,10 +85,6 @@
 #define LCD_BG_COLOUR_LS			(0x4 * 0x00c)
 #define LCD_BG_COLOUR_MS			(0x4 * 0x00d)
 #define LCD_RAM_CFG			        (0x4 * 0x00e)
-
-/****************************************************************************
- *		   LCD controller Layer config register
- ***************************************************************************/
 #define LCD_LAYER0_CFG		        (0x4 * 0x100)
 #define LCD_LAYERn_CFG(N)			(LCD_LAYER0_CFG + (0x400 * (N)))
 #define LCD_LAYER_SCALE_H			BIT(1)
@@ -118,7 +97,6 @@
 #define LCD_LAYER_ALPHA_COMBI			(LCD_LAYER_ALPHA_STATIC | \
 						      LCD_LAYER_ALPHA_EMBED)
 #define LCD_LAYER_ALPHA_DISABLED		~(LCD_LAYER_ALPHA_COMBI)
-/* RGB multiplied with alpha */
 #define LCD_LAYER_ALPHA_PREMULT			BIT(6)
 #define LCD_LAYER_INVERT_COL			BIT(7)
 #define LCD_LAYER_TRANSPARENT_EN		BIT(8)
@@ -172,7 +150,6 @@
 #define LCD_LAYER_INTERLEAVE_CH_SUB		(6 << 27)
 #define LCD_LAYER_INTER_POS_EVEN		(0 << 30)
 #define LCD_LAYER_INTER_POS_ODD			BIT(30)
-
 #define LCD_LAYER0_COL_START		(0x4 * 0x101)
 #define LCD_LAYERn_COL_START(N)		(LCD_LAYER0_COL_START + (0x400 * (N)))
 #define LCD_LAYER0_ROW_START		(0x4 * 0x102)
@@ -221,8 +198,6 @@
 #define LCD_LAYERn_CSC_OFF2(N)		(LCD_LAYER0_CSC_OFF2 + (0x400 * (N)))
 #define LCD_LAYER0_CSC_OFF3		(0x4 * 0x116)
 #define LCD_LAYERn_CSC_OFF3(N)		(LCD_LAYER0_CSC_OFF3 + (0x400 * (N)))
-
-/* LCD controller Layer DMA config register */
 #define LCD_LAYER0_DMA_CFG			(0x4 * 0x117)
 #define LCD_LAYERn_DMA_CFG(N)			(LCD_LAYER0_DMA_CFG + \
 						(0x400 * (N)))
@@ -250,7 +225,6 @@
 #define LCD_DMA_LAYER_AXI_BURST_15		  (0xf << 5)
 #define LCD_DMA_LAYER_AXI_BURST_16		  (0x10 << 5)
 #define LCD_DMA_LAYER_VSTRIDE_EN		  BIT(10)
-
 #define LCD_LAYER0_DMA_START_ADR		(0x4 * 0x118)
 #define LCD_LAYERn_DMA_START_ADDR(N)		(LCD_LAYER0_DMA_START_ADR \
 						+ (0x400 * (N)))
@@ -310,10 +284,6 @@
 #define LCD_LAYER1_DMA_START_CR_SHADOW		(0x4 * 0x70d)
 #define LCD_LAYER1_DMA_CR_LINE_WIDTH		(0x4 * 0x70e)
 #define LCD_LAYER1_DMA_CR_LINE_VSTRIDE		(0x4 * 0x70f)
-
-/****************************************************************************
- *		   LCD controller output format register defines
- ***************************************************************************/
 #define LCD_OUT_FORMAT_CFG			(0x4 * 0x800)
 #define LCD_OUTF_FORMAT_RGB121212                 (0x00)
 #define LCD_OUTF_FORMAT_RGB101010                 (0x01)
@@ -348,7 +318,6 @@
 #define LCD_OUTF_SYNC_MODE			  BIT(11)
 #define LCD_OUTF_RGB_CONV_MODE			  BIT(14)
 #define LCD_OUTF_MIPI_RGB_MODE			  BIT(18)
-
 #define LCD_HSYNC_WIDTH				(0x4 * 0x801)
 #define LCD_H_BACKPORCH				(0x4 * 0x802)
 #define LCD_H_ACTIVEWIDTH			(0x4 * 0x803)
@@ -392,19 +361,12 @@
 #define LCD_GRAPHIC0_DMA_STATE			(0x4 * 0xb0d)
 #define LCD_GRAPHIC1_DMA_BYTES			(0x4 * 0xb0e)
 #define LCD_GRAPHIC1_DMA_STATE			(0x4 * 0xb0f)
-
-/***************************************************************************
- *		   MIPI controller control register defines
- *************************************************************************/
 #define MIPI0_HS_BASE_ADDR			(MIPI_BASE_ADDR + 0x400)
 #define HS_OFFSET(M)				(((M) + 1) * 0x400)
-
 #define MIPI_TX_HS_CTRL				(0x0)
 #define   MIPI_TXm_HS_CTRL(M)			(MIPI_TX_HS_CTRL + HS_OFFSET(M))
 #define   HS_CTRL_EN				BIT(0)
-/* 1:CSI 0:DSI */
 #define   HS_CTRL_CSIDSIN			BIT(2)
-/* 1:LCD, 0:DMA */
 #define   TX_SOURCE				BIT(3)
 #define   ACTIVE_LANES(n)			((n) << 4)
 #define   LCD_VC(ch)				((ch) << 8)
@@ -452,7 +414,6 @@
 #define   MIPI_TXm_HS_FGn_SECTo_LINE_CFG(M, N, O)	\
 				(MIPI_TX_HS_FG0_SECT0_LINE_CFG + HS_OFFSET(M) \
 				+ (0x2C * (N)) + (8 * (O)))
-
 #define MIPI_TX_HS_FG0_NUM_LINES		(0x68)
 #define   MIPI_TXm_HS_FGn_NUM_LINES(M, N)	\
 				(MIPI_TX_HS_FG0_NUM_LINES + HS_OFFSET(M) \
@@ -501,11 +462,9 @@
 #define   MIPI_TXm_HS_LLP_H_FRONTPORCHn(M, N)	\
 				(MIPI_TX_HS_LLP_H_FRONTPORCH0 + HS_OFFSET(M) \
 				+ (0x4 * (N)))
-
 #define MIPI_TX_HS_MC_FIFO_CTRL_EN		(0x194)
 #define   MIPI_TXm_HS_MC_FIFO_CTRL_EN(M)	\
 				(MIPI_TX_HS_MC_FIFO_CTRL_EN + HS_OFFSET(M))
-
 #define MIPI_TX_HS_MC_FIFO_CHAN_ALLOC0		(0x198)
 #define MIPI_TX_HS_MC_FIFO_CHAN_ALLOC1		(0x19c)
 #define   MIPI_TXm_HS_MC_FIFO_CHAN_ALLOCn(M, N)	\
@@ -526,13 +485,10 @@
 #define MIPI_TX_HS_DMA_CFG			(0x1a8)
 #define MIPI_TX_HS_DMA_START_ADR_CHAN0		(0x1ac)
 #define MIPI_TX_HS_DMA_LEN_CHAN0		(0x1b4)
-
-/* MIPI IRQ */
 #define MIPI_CTRL_IRQ_STATUS0				(0x00)
 #define   MIPI_DPHY_ERR_IRQ				1
-#define   MIPI_DPHY_ERR_MASK				0x7FE	/*bits 1-10 */
+#define   MIPI_DPHY_ERR_MASK				0x7FE	 
 #define   MIPI_HS_IRQ					13
-/* bits 13-22 */
 #define   MIPI_HS_IRQ_MASK				0x7FE000
 #define   MIPI_LP_EVENT_IRQ				25
 #define   MIPI_GET_IRQ_STAT0(dev)		kmb_read_mipi(dev, \
@@ -586,19 +542,16 @@
 				MIPI_TX_HS_IRQ_FRAME_DONE_1 | \
 				MIPI_TX_HS_IRQ_FRAME_DONE_2 | \
 				MIPI_TX_HS_IRQ_FRAME_DONE_3)
-
 #define MIPI_TX_HS_IRQ_DMA_DONE				\
 				(MIPI_TX_HS_IRQ_DMA_DONE_0 | \
 				MIPI_TX_HS_IRQ_DMA_DONE_1 | \
 				MIPI_TX_HS_IRQ_DMA_DONE_2 | \
 				MIPI_TX_HS_IRQ_DMA_DONE_3)
-
 #define MIPI_TX_HS_IRQ_DMA_IDLE				\
 				(MIPI_TX_HS_IRQ_DMA_IDLE_0 | \
 				MIPI_TX_HS_IRQ_DMA_IDLE_1 | \
 				MIPI_TX_HS_IRQ_DMA_IDLE_2 | \
 				MIPI_TX_HS_IRQ_DMA_IDLE_3)
-
 #define MIPI_TX_HS_IRQ_ERROR				\
 				(MIPI_TX_HS_IRQ_MC_FIFO_UNDERFLOW | \
 				MIPI_TX_HS_IRQ_MC_FIFO_OVERFLOW | \
@@ -606,21 +559,17 @@
 				MIPI_TX_HS_IRQ_LLP_REQUEST_QUEUE_FULL | \
 				MIPI_TX_HS_IRQ_LLP_REQUEST_QUEUE_ERROR | \
 				MIPI_TX_HS_IRQ_LLP_WORD_COUNT_ERROR)
-
 #define MIPI_TX_HS_IRQ_ALL				\
 				(MIPI_TX_HS_IRQ_FRAME_DONE | \
 				MIPI_TX_HS_IRQ_DMA_DONE | \
 				MIPI_TX_HS_IRQ_DMA_IDLE | \
 				MIPI_TX_HS_IRQ_LINE_COMPARE | \
 				MIPI_TX_HS_IRQ_ERROR)
-
 #define MIPI_TX_HS_IRQ_ENABLE				(0x020)
 #define	  GET_HS_IRQ_ENABLE(dev, M)		kmb_read_mipi(dev, \
 						MIPI_TX_HS_IRQ_ENABLE \
 						+ HS_OFFSET(M))
 #define MIPI_TX_HS_IRQ_CLEAR				(0x024)
-
-/* MIPI Test Pattern Generation */
 #define MIPI_TX_HS_TEST_PAT_CTRL			(0x230)
 #define   MIPI_TXm_HS_TEST_PAT_CTRL(M)			\
 				(MIPI_TX_HS_TEST_PAT_CTRL + HS_OFFSET(M))
@@ -634,8 +583,6 @@
 #define MIPI_TX_HS_TEST_PAT_COLOR1			(0x238)
 #define   MIPI_TXm_HS_TEST_PAT_COLOR1(M)		\
 				(MIPI_TX_HS_TEST_PAT_COLOR1 + HS_OFFSET(M))
-
-/* D-PHY regs */
 #define DPHY_ENABLE				(0x100)
 #define DPHY_INIT_CTRL0				(0x104)
 #define   SHUTDOWNZ				0
@@ -659,7 +606,6 @@
 #define   SET_DPHY_FREQ_CTRL0_3(dev, dphy, val)	\
 			kmb_write_bits_mipi(dev, DPHY_FREQ_CTRL0_3 \
 			+ (((dphy) / 4) * 4), (dphy % 4) * 8, 6, val)
-
 #define DPHY_FORCE_CTRL0			(0x128)
 #define DPHY_FORCE_CTRL1			(0x12C)
 #define MIPI_DPHY_STAT0_3			(0x134)
@@ -668,9 +614,7 @@
 			(((kmb_read_mipi(dev, MIPI_DPHY_STAT0_3 + \
 					 ((dphy) / 4) * 4)) >> \
 					 (((dphy % 4) * 8) + 4)) & 0x03)
-
 #define MIPI_DPHY_ERR_STAT6_7			(0x14C)
-
 #define DPHY_TEST_CTRL0				(0x154)
 #define   SET_DPHY_TEST_CTRL0(dev, dphy)		\
 			kmb_set_bit_mipi(dev, DPHY_TEST_CTRL0, (dphy))
@@ -706,7 +650,6 @@
 			(kmb_read_mipi(dev, DPHY_PLL_LOCK) \
 			& (1 << ((dphy) - MIPI_DPHY6)))
 #define DPHY_CFG_CLK_EN				(0x18c)
-
 #define MSS_MIPI_CIF_CFG			(0x00)
 #define MSS_LCD_MIPI_CFG			(0x04)
 #define MSS_CAM_CLK_CTRL			(0x10)
@@ -717,12 +660,10 @@
 #define MSS_CAM_RSTN_CTRL			(0x14)
 #define MSS_CAM_RSTN_SET			(0x20)
 #define MSS_CAM_RSTN_CLR			(0x24)
-
 #define MSSCPU_CPR_CLK_EN			(0x0)
 #define MSSCPU_CPR_RST_EN			(0x10)
 #define BIT_MASK_16				(0xffff)
-/* icam lcd qos */
 #define LCD_QOS_PRIORITY			(0x8)
 #define LCD_QOS_MODE				(0xC)
 #define LCD_QOS_BW				(0x10)
-#endif /* __KMB_REGS_H__ */
+#endif  

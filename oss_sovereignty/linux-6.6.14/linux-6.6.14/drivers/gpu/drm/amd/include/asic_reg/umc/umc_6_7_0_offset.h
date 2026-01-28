@@ -1,32 +1,5 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef _umc_6_7_0_OFFSET_HEADER
 #define _umc_6_7_0_OFFSET_HEADER
-
-
-
-// addressBlock: umc_w_phy_umc0_mca_ip_umc0_mca_map
-// base address: 0x50f00
 #define regMCA_UMC_UMC0_MCUMC_STATUST0                                                                  0x03c2
 #define regMCA_UMC_UMC0_MCUMC_STATUST0_BASE_IDX                                                         0
 #define regMCA_UMC_UMC0_MCUMC_ADDRT0                                                                    0x03c4
@@ -37,10 +10,6 @@
 #define regMCA_UMC_UMC0_MCUMC_IPIDT0_BASE_IDX                                                           0
 #define regMCA_UMC_UMC0_MCUMC_SYNDT0                                                                    0x03cc
 #define regMCA_UMC_UMC0_MCUMC_SYNDT0_BASE_IDX                                                           0
-
-
-// addressBlock: umc_w_phy_umc0_umcch0_umcchdec
-// base address: 0x50000
 #define regUMCCH0_0_BaseAddrCS0                                                                         0x0000
 #define regUMCCH0_0_BaseAddrCS0_BASE_IDX                                                                0
 #define regUMCCH0_0_AddrMaskCS01                                                                        0x0008
@@ -123,10 +92,6 @@
 #define regUMCCH0_0_PerfMonCtr8_Lo_BASE_IDX                                                             0
 #define regUMCCH0_0_PerfMonCtr8_Hi                                                                      0x035b
 #define regUMCCH0_0_PerfMonCtr8_Hi_BASE_IDX                                                             0
-
-
-// addressBlock: umc_w_phy_umc0_umcch1_umcchdec
-// base address: 0x51000
 #define regUMCCH1_0_BaseAddrCS0                                                                         0x0400
 #define regUMCCH1_0_BaseAddrCS0_BASE_IDX                                                                0
 #define regUMCCH1_0_AddrMaskCS01                                                                        0x0408
@@ -209,10 +174,6 @@
 #define regUMCCH1_0_PerfMonCtr8_Lo_BASE_IDX                                                             0
 #define regUMCCH1_0_PerfMonCtr8_Hi                                                                      0x075b
 #define regUMCCH1_0_PerfMonCtr8_Hi_BASE_IDX                                                             0
-
-
-// addressBlock: umc_w_phy_umc0_umcch2_umcchdec
-// base address: 0x52000
 #define regUMCCH2_0_BaseAddrCS0                                                                         0x0800
 #define regUMCCH2_0_BaseAddrCS0_BASE_IDX                                                                0
 #define regUMCCH2_0_AddrMaskCS01                                                                        0x0808
@@ -295,10 +256,6 @@
 #define regUMCCH2_0_PerfMonCtr8_Lo_BASE_IDX                                                             0
 #define regUMCCH2_0_PerfMonCtr8_Hi                                                                      0x0b5b
 #define regUMCCH2_0_PerfMonCtr8_Hi_BASE_IDX                                                             0
-
-
-// addressBlock: umc_w_phy_umc0_umcch3_umcchdec
-// base address: 0x53000
 #define regUMCCH3_0_BaseAddrCS0                                                                         0x0c00
 #define regUMCCH3_0_BaseAddrCS0_BASE_IDX                                                                0
 #define regUMCCH3_0_AddrMaskCS01                                                                        0x0c08
@@ -381,10 +338,6 @@
 #define regUMCCH3_0_PerfMonCtr8_Lo_BASE_IDX                                                             0
 #define regUMCCH3_0_PerfMonCtr8_Hi                                                                      0x0f5b
 #define regUMCCH3_0_PerfMonCtr8_Hi_BASE_IDX                                                             0
-
-
-// addressBlock: umc_w_phy_umc0_umcch4_umcchdec
-// base address: 0x150000
 #define regUMCCH4_0_BaseAddrCS0                                                                         0x0000
 #define regUMCCH4_0_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH4_0_AddrMaskCS01                                                                        0x0008
@@ -461,10 +414,6 @@
 #define regUMCCH4_0_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH4_0_PerfMonCtr8_Hi                                                                      0x035b
 #define regUMCCH4_0_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc0_umcch5_umcchdec
-// base address: 0x151000
 #define regUMCCH5_0_BaseAddrCS0                                                                         0x0400
 #define regUMCCH5_0_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH5_0_AddrMaskCS01                                                                        0x0408
@@ -541,10 +490,6 @@
 #define regUMCCH5_0_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH5_0_PerfMonCtr8_Hi                                                                      0x075b
 #define regUMCCH5_0_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc0_umcch6_umcchdec
-// base address: 0x152000
 #define regUMCCH6_0_BaseAddrCS0                                                                         0x0800
 #define regUMCCH6_0_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH6_0_AddrMaskCS01                                                                        0x0808
@@ -621,10 +566,6 @@
 #define regUMCCH6_0_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH6_0_PerfMonCtr8_Hi                                                                      0x0b5b
 #define regUMCCH6_0_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc0_umcch7_umcchdec
-// base address: 0x153000
 #define regUMCCH7_0_BaseAddrCS0                                                                         0x0c00
 #define regUMCCH7_0_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH7_0_AddrMaskCS01                                                                        0x0c08
@@ -701,10 +642,6 @@
 #define regUMCCH7_0_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH7_0_PerfMonCtr8_Hi                                                                      0x0f5b
 #define regUMCCH7_0_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch0_umcchdec
-// base address: 0x250000
 #define regUMCCH0_1_BaseAddrCS0                                                                         0x40000
 #define regUMCCH0_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH0_1_AddrMaskCS01                                                                        0x40008
@@ -781,10 +718,6 @@
 #define regUMCCH0_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH0_1_PerfMonCtr8_Hi                                                                      0x4035b
 #define regUMCCH0_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch1_umcchdec
-// base address: 0x251000
 #define regUMCCH1_1_BaseAddrCS0                                                                         0x40400
 #define regUMCCH1_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH1_1_AddrMaskCS01                                                                        0x40408
@@ -861,10 +794,6 @@
 #define regUMCCH1_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH1_1_PerfMonCtr8_Hi                                                                      0x4075b
 #define regUMCCH1_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch2_umcchdec
-// base address: 0x252000
 #define regUMCCH2_1_BaseAddrCS0                                                                         0x40800
 #define regUMCCH2_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH2_1_AddrMaskCS01                                                                        0x40808
@@ -941,10 +870,6 @@
 #define regUMCCH2_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH2_1_PerfMonCtr8_Hi                                                                      0x40b5b
 #define regUMCCH2_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch3_umcchdec
-// base address: 0x253000
 #define regUMCCH3_1_BaseAddrCS0                                                                         0x40c00
 #define regUMCCH3_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH3_1_AddrMaskCS01                                                                        0x40c08
@@ -1021,10 +946,6 @@
 #define regUMCCH3_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH3_1_PerfMonCtr8_Hi                                                                      0x40f5b
 #define regUMCCH3_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch4_umcchdec
-// base address: 0x350000
 #define regUMCCH4_1_BaseAddrCS0                                                                         0x80000
 #define regUMCCH4_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH4_1_AddrMaskCS01                                                                        0x80008
@@ -1101,10 +1022,6 @@
 #define regUMCCH4_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH4_1_PerfMonCtr8_Hi                                                                      0x8035b
 #define regUMCCH4_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch5_umcchdec
-// base address: 0x351000
 #define regUMCCH5_1_BaseAddrCS0                                                                         0x80400
 #define regUMCCH5_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH5_1_AddrMaskCS01                                                                        0x80408
@@ -1181,10 +1098,6 @@
 #define regUMCCH5_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH5_1_PerfMonCtr8_Hi                                                                      0x8075b
 #define regUMCCH5_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch6_umcchdec
-// base address: 0x352000
 #define regUMCCH6_1_BaseAddrCS0                                                                         0x80800
 #define regUMCCH6_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH6_1_AddrMaskCS01                                                                        0x80808
@@ -1261,10 +1174,6 @@
 #define regUMCCH6_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH6_1_PerfMonCtr8_Hi                                                                      0x80b5b
 #define regUMCCH6_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc1_umcch7_umcchdec
-// base address: 0x353000
 #define regUMCCH7_1_BaseAddrCS0                                                                         0x80c00
 #define regUMCCH7_1_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH7_1_AddrMaskCS01                                                                        0x80c08
@@ -1341,10 +1250,6 @@
 #define regUMCCH7_1_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH7_1_PerfMonCtr8_Hi                                                                      0x80f5b
 #define regUMCCH7_1_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch0_umcchdec
-// base address: 0x450000
 #define regUMCCH0_2_BaseAddrCS0                                                                         0xc0000
 #define regUMCCH0_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH0_2_AddrMaskCS01                                                                        0xc0008
@@ -1421,10 +1326,6 @@
 #define regUMCCH0_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH0_2_PerfMonCtr8_Hi                                                                      0xc035b
 #define regUMCCH0_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch1_umcchdec
-// base address: 0x451000
 #define regUMCCH1_2_BaseAddrCS0                                                                         0xc0400
 #define regUMCCH1_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH1_2_AddrMaskCS01                                                                        0xc0408
@@ -1501,10 +1402,6 @@
 #define regUMCCH1_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH1_2_PerfMonCtr8_Hi                                                                      0xc075b
 #define regUMCCH1_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch2_umcchdec
-// base address: 0x452000
 #define regUMCCH2_2_BaseAddrCS0                                                                         0xc0800
 #define regUMCCH2_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH2_2_AddrMaskCS01                                                                        0xc0808
@@ -1581,10 +1478,6 @@
 #define regUMCCH2_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH2_2_PerfMonCtr8_Hi                                                                      0xc0b5b
 #define regUMCCH2_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch3_umcchdec
-// base address: 0x453000
 #define regUMCCH3_2_BaseAddrCS0                                                                         0xc0c00
 #define regUMCCH3_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH3_2_AddrMaskCS01                                                                        0xc0c08
@@ -1661,10 +1554,6 @@
 #define regUMCCH3_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH3_2_PerfMonCtr8_Hi                                                                      0xc0f5b
 #define regUMCCH3_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch4_umcchdec
-// base address: 0x550000
 #define regUMCCH4_2_BaseAddrCS0                                                                         0x100000
 #define regUMCCH4_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH4_2_AddrMaskCS01                                                                        0x100008
@@ -1741,10 +1630,6 @@
 #define regUMCCH4_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH4_2_PerfMonCtr8_Hi                                                                      0x10035b
 #define regUMCCH4_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch5_umcchdec
-// base address: 0x551000
 #define regUMCCH5_2_BaseAddrCS0                                                                         0x100400
 #define regUMCCH5_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH5_2_AddrMaskCS01                                                                        0x100408
@@ -1821,10 +1706,6 @@
 #define regUMCCH5_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH5_2_PerfMonCtr8_Hi                                                                      0x10075b
 #define regUMCCH5_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch6_umcchdec
-// base address: 0x552000
 #define regUMCCH6_2_BaseAddrCS0                                                                         0x100800
 #define regUMCCH6_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH6_2_AddrMaskCS01                                                                        0x100808
@@ -1901,10 +1782,6 @@
 #define regUMCCH6_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH6_2_PerfMonCtr8_Hi                                                                      0x100b5b
 #define regUMCCH6_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc2_umcch7_umcchdec
-// base address: 0x553000
 #define regUMCCH7_2_BaseAddrCS0                                                                         0x100c00
 #define regUMCCH7_2_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH7_2_AddrMaskCS01                                                                        0x100c08
@@ -1981,10 +1858,6 @@
 #define regUMCCH7_2_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH7_2_PerfMonCtr8_Hi                                                                      0x100f5b
 #define regUMCCH7_2_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch0_umcchdec
-// base address: 0x650000
 #define regUMCCH0_3_BaseAddrCS0                                                                         0x140000
 #define regUMCCH0_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH0_3_AddrMaskCS01                                                                        0x140008
@@ -2061,10 +1934,6 @@
 #define regUMCCH0_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH0_3_PerfMonCtr8_Hi                                                                      0x14035b
 #define regUMCCH0_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch1_umcchdec
-// base address: 0x651000
 #define regUMCCH1_3_BaseAddrCS0                                                                         0x140400
 #define regUMCCH1_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH1_3_AddrMaskCS01                                                                        0x140408
@@ -2141,10 +2010,6 @@
 #define regUMCCH1_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH1_3_PerfMonCtr8_Hi                                                                      0x14075b
 #define regUMCCH1_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch2_umcchdec
-// base address: 0x652000
 #define regUMCCH2_3_BaseAddrCS0                                                                         0x140800
 #define regUMCCH2_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH2_3_AddrMaskCS01                                                                        0x140808
@@ -2221,10 +2086,6 @@
 #define regUMCCH2_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH2_3_PerfMonCtr8_Hi                                                                      0x140b5b
 #define regUMCCH2_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch3_umcchdec
-// base address: 0x653000
 #define regUMCCH3_3_BaseAddrCS0                                                                         0x140c00
 #define regUMCCH3_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH3_3_AddrMaskCS01                                                                        0x140c08
@@ -2301,10 +2162,6 @@
 #define regUMCCH3_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH3_3_PerfMonCtr8_Hi                                                                      0x140f5b
 #define regUMCCH3_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch4_umcchdec
-// base address: 0x750000
 #define regUMCCH4_3_BaseAddrCS0                                                                         0x180000
 #define regUMCCH4_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH4_3_AddrMaskCS01                                                                        0x180008
@@ -2381,10 +2238,6 @@
 #define regUMCCH4_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH4_3_PerfMonCtr8_Hi                                                                      0x18035b
 #define regUMCCH4_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch5_umcchdec
-// base address: 0x751000
 #define regUMCCH5_3_BaseAddrCS0                                                                         0x180400
 #define regUMCCH5_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH5_3_AddrMaskCS01                                                                        0x180408
@@ -2461,10 +2314,6 @@
 #define regUMCCH5_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH5_3_PerfMonCtr8_Hi                                                                      0x18075b
 #define regUMCCH5_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch6_umcchdec
-// base address: 0x752000
 #define regUMCCH6_3_BaseAddrCS0                                                                         0x180800
 #define regUMCCH6_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH6_3_AddrMaskCS01                                                                        0x180808
@@ -2541,10 +2390,6 @@
 #define regUMCCH6_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH6_3_PerfMonCtr8_Hi                                                                      0x180b5b
 #define regUMCCH6_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
-// addressBlock: umc_w_phy_umc3_umcch7_umcchdec
-// base address: 0x753000
 #define regUMCCH7_3_BaseAddrCS0                                                                         0x180c00
 #define regUMCCH7_3_BaseAddrCS0_BASE_IDX                                                                1
 #define regUMCCH7_3_AddrMaskCS01                                                                        0x180c08
@@ -2621,6 +2466,4 @@
 #define regUMCCH7_3_PerfMonCtr8_Lo_BASE_IDX                                                             1
 #define regUMCCH7_3_PerfMonCtr8_Hi                                                                      0x180f5b
 #define regUMCCH7_3_PerfMonCtr8_Hi_BASE_IDX                                                             1
-
-
 #endif

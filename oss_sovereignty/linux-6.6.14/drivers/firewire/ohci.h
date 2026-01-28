@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _FIREWIRE_OHCI_H
 #define _FIREWIRE_OHCI_H
-
-/* OHCI register map */
-
 #define OHCI1394_Version                      0x000
 #define OHCI1394_GUID_ROM                     0x004
 #define OHCI1394_ATRetries                    0x008
@@ -80,41 +76,31 @@
 #define OHCI1394_PhyReqFilterLoSet            0x118
 #define OHCI1394_PhyReqFilterLoClear          0x11C
 #define OHCI1394_PhyUpperBound                0x120
-
 #define OHCI1394_AsReqTrContextBase           0x180
 #define OHCI1394_AsReqTrContextControlSet     0x180
 #define OHCI1394_AsReqTrContextControlClear   0x184
 #define OHCI1394_AsReqTrCommandPtr            0x18C
-
 #define OHCI1394_AsRspTrContextBase           0x1A0
 #define OHCI1394_AsRspTrContextControlSet     0x1A0
 #define OHCI1394_AsRspTrContextControlClear   0x1A4
 #define OHCI1394_AsRspTrCommandPtr            0x1AC
-
 #define OHCI1394_AsReqRcvContextBase          0x1C0
 #define OHCI1394_AsReqRcvContextControlSet    0x1C0
 #define OHCI1394_AsReqRcvContextControlClear  0x1C4
 #define OHCI1394_AsReqRcvCommandPtr           0x1CC
-
 #define OHCI1394_AsRspRcvContextBase          0x1E0
 #define OHCI1394_AsRspRcvContextControlSet    0x1E0
 #define OHCI1394_AsRspRcvContextControlClear  0x1E4
 #define OHCI1394_AsRspRcvCommandPtr           0x1EC
-
-/* Isochronous transmit registers */
 #define OHCI1394_IsoXmitContextBase(n)           (0x200 + 16 * (n))
 #define OHCI1394_IsoXmitContextControlSet(n)     (0x200 + 16 * (n))
 #define OHCI1394_IsoXmitContextControlClear(n)   (0x204 + 16 * (n))
 #define OHCI1394_IsoXmitCommandPtr(n)            (0x20C + 16 * (n))
-
-/* Isochronous receive registers */
 #define OHCI1394_IsoRcvContextBase(n)         (0x400 + 32 * (n))
 #define OHCI1394_IsoRcvContextControlSet(n)   (0x400 + 32 * (n))
 #define OHCI1394_IsoRcvContextControlClear(n) (0x404 + 32 * (n))
 #define OHCI1394_IsoRcvCommandPtr(n)          (0x40C + 32 * (n))
 #define OHCI1394_IsoRcvContextMatch(n)        (0x410 + 32 * (n))
-
-/* Interrupts Mask/Events */
 #define OHCI1394_reqTxComplete		0x00000001
 #define OHCI1394_respTxComplete		0x00000002
 #define OHCI1394_ARRQ			0x00000004
@@ -137,7 +123,6 @@
 #define OHCI1394_cycleTooLong		0x02000000
 #define OHCI1394_phyRegRcvd		0x04000000
 #define OHCI1394_masterIntEnable	0x80000000
-
 #define OHCI1394_evt_no_status		0x0
 #define OHCI1394_evt_long_packet	0x2
 #define OHCI1394_evt_missing_ack	0x3
@@ -153,7 +138,5 @@
 #define OHCI1394_evt_reserved_c		0xd
 #define OHCI1394_evt_unknown		0xe
 #define OHCI1394_evt_flushed		0xf
-
 #define OHCI1394_phy_tcode		0xe
-
-#endif /* _FIREWIRE_OHCI_H */
+#endif  

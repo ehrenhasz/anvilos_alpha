@@ -1,46 +1,19 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef SI_ENUMS_H
 #define SI_ENUMS_H
-
 #define VBLANK_INT_MASK                (1 << 0)
 #define DC_HPDx_INT_EN                 (1 << 16)
 #define VBLANK_ACK                     (1 << 4)
 #define VLINE_ACK                      (1 << 4)
-
 #define CURSOR_WIDTH 64
 #define CURSOR_HEIGHT 64
-
 #define VGA_VSTATUS_CNTL               0xFFFCFFFF
 #define PRIORITY_MARK_MASK             0x7fff
 #define PRIORITY_OFF                   (1 << 16)
 #define PRIORITY_ALWAYS_ON             (1 << 20)
 #define INTERLEAVE_EN                  (1 << 0)
-
 #define LATENCY_WATERMARK_MASK(x)      ((x) << 16)
 #define DC_LB_MEMORY_CONFIG(x)         ((x) << 20)
 #define ICON_DEGAMMA_MODE(x)           (((x) & 0x3) << 8)
-
 #define GRPH_ENDIAN_SWAP(x)            (((x) & 0x3) << 0)
 #define GRPH_ENDIAN_NONE               0
 #define GRPH_ENDIAN_8IN16              1
@@ -66,12 +39,10 @@
 #define GRPH_ALPHA_SEL_R               1
 #define GRPH_ALPHA_SEL_G               2
 #define GRPH_ALPHA_SEL_B               3
-
 #define GRPH_DEPTH(x)                  (((x) & 0x3) << 0)
 #define GRPH_DEPTH_8BPP                0
 #define GRPH_DEPTH_16BPP               1
 #define GRPH_DEPTH_32BPP               2
-
 #define GRPH_FORMAT(x)                 (((x) & 0x7) << 8)
 #define GRPH_FORMAT_INDEXED            0
 #define GRPH_FORMAT_ARGB1555           0
@@ -88,7 +59,6 @@
 #define GRPH_FORMAT_8B_BGRA1010102     5
 #define GRPH_FORMAT_RGB111110          6
 #define GRPH_FORMAT_BGR101111          7
-
 #define GRPH_NUM_BANKS(x)              (((x) & 0x3) << 2)
 #define GRPH_ARRAY_MODE(x)             (((x) & 0x7) << 20)
 #define GRPH_ARRAY_LINEAR_GENERAL      0
@@ -101,7 +71,6 @@
 #define GRPH_MACRO_TILE_ASPECT(x)      (((x) & 0x3) << 18)
 #define GRPH_ARRAY_MODE(x)             (((x) & 0x7) << 20)
 #define GRPH_PIPE_CONFIG(x)                   (((x) & 0x1f) << 24)
-
 #define CURSOR_EN                      (1 << 0)
 #define CURSOR_MODE(x)                 (((x) & 0x3) << 8)
 #define CURSOR_MONO                    0
@@ -120,26 +89,22 @@
 #define CURSOR_UPDATE_TAKEN            (1 << 1)
 #define CURSOR_UPDATE_LOCK             (1 << 16)
 #define CURSOR_DISABLE_MULTIPLE_UPDATE (1 << 24)
-
 #define SI_CRTC0_REGISTER_OFFSET                0
 #define SI_CRTC1_REGISTER_OFFSET                0x300
 #define SI_CRTC2_REGISTER_OFFSET                0x2600
 #define SI_CRTC3_REGISTER_OFFSET                0x2900
 #define SI_CRTC4_REGISTER_OFFSET                0x2c00
 #define SI_CRTC5_REGISTER_OFFSET                0x2f00
-
 #define DMA0_REGISTER_OFFSET 0x000
 #define DMA1_REGISTER_OFFSET 0x200
 #define ES_AND_GS_AUTO       3
 #define RADEON_PACKET_TYPE3  3
 #define CE_PARTITION_BASE    3
 #define BUF_SWAP_32BIT       (2 << 16)
-
 #define GFX_POWER_STATUS                           (1 << 1)
 #define GFX_CLOCK_STATUS                           (1 << 2)
 #define GFX_LS_STATUS                              (1 << 3)
 #define RLC_BUSY_STATUS                            (1 << 0)
-
 #define RLC_PUD(x)                               ((x) << 0)
 #define RLC_PUD_MASK                             (0xff << 0)
 #define RLC_PDD(x)                               ((x) << 8)
@@ -155,16 +120,13 @@
 #define WAIT_REG_MEM_MEM_SPACE(x)               ((x) << 4)
 #define WAIT_REG_MEM_FUNCTION(x)                ((x) << 0)
 #define WAIT_REG_MEM_ENGINE(x)                  ((x) << 8)
-
 #define GFX6_NUM_GFX_RINGS     1
 #define GFX6_NUM_COMPUTE_RINGS 2
 #define RLC_SAVE_AND_RESTORE_STARTING_OFFSET 0x90
 #define RLC_CLEAR_STATE_DESCRIPTOR_OFFSET    0x3D
-
 #define TAHITI_GB_ADDR_CONFIG_GOLDEN        0x12011003
 #define VERDE_GB_ADDR_CONFIG_GOLDEN         0x02010002
 #define HAINAN_GB_ADDR_CONFIG_GOLDEN        0x02011003
-
 #define PACKET3(op, n)  ((RADEON_PACKET_TYPE3 << 30) |                  \
                          (((op) & 0xFF) << 8) |                         \
                          ((n) & 0x3FFF) << 16)
@@ -287,5 +249,4 @@
 #define PACKET3_SEM_WAIT_ON_SIGNAL    (0x1 << 12)
 #define PACKET3_SEM_SEL_SIGNAL	    (0x6 << 29)
 #define PACKET3_SEM_SEL_WAIT	    (0x7 << 29)
-
 #endif

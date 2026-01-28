@@ -1,19 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* linux/drivers/media/platform/samsung/s5p-jpeg/jpeg-hw.h
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- */
 #ifndef JPEG_HW_S5P_H_
 #define JPEG_HW_S5P_H_
-
 #include <linux/io.h>
 #include <linux/videodev2.h>
-
 #include "jpeg-regs.h"
-
 #define S5P_JPEG_MIN_WIDTH		32
 #define S5P_JPEG_MIN_HEIGHT		32
 #define S5P_JPEG_MAX_WIDTH		8192
@@ -22,7 +11,6 @@
 #define S5P_JPEG_RAW_IN_422		1
 #define S5P_JPEG_RAW_OUT_422		0
 #define S5P_JPEG_RAW_OUT_420		1
-
 void s5p_jpeg_reset(void __iomem *regs);
 void s5p_jpeg_poweron(void __iomem *regs);
 void s5p_jpeg_input_raw_mode(void __iomem *regs, unsigned long mode);
@@ -53,5 +41,4 @@ int s5p_jpeg_result_stat_ok(void __iomem *regs);
 int s5p_jpeg_stream_stat_ok(void __iomem *regs);
 void s5p_jpeg_clear_int(void __iomem *regs);
 unsigned int s5p_jpeg_compressed_size(void __iomem *regs);
-
-#endif /* JPEG_HW_S5P_H_ */
+#endif  

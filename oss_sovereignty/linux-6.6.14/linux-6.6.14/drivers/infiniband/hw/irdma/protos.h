@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2016 - 2021 Intel Corporation */
 #ifndef IRDMA_PROTOS_H
 #define IRDMA_PROTOS_H
-
 #define PAUSE_TIMER_VAL		0xffff
 #define REFRESH_THRESHOLD	0x7fff
 #define HIGH_THRESHOLD		0x800
@@ -10,8 +7,6 @@
 #define ALL_TC2PFC		0xff
 #define CQP_COMPL_WAIT_TIME_MS	10
 #define CQP_TIMEOUT_THRESHOLD	500
-
-/* init operations */
 int irdma_sc_dev_init(enum irdma_vers ver, struct irdma_sc_dev *dev,
 		      struct irdma_device_init_info *info);
 void irdma_sc_rt_init(struct irdma_sc_dev *dev);
@@ -20,9 +15,7 @@ __le64 *irdma_sc_cqp_get_next_send_wqe(struct irdma_sc_cqp *cqp, u64 scratch);
 int irdma_sc_mr_fast_register(struct irdma_sc_qp *qp,
 			      struct irdma_fast_reg_stag_info *info,
 			      bool post_sq);
-/* HMC/FPM functions */
 int irdma_sc_init_iw_hmc(struct irdma_sc_dev *dev, u8 hmc_fn_id);
-/* stats misc */
 int irdma_cqp_gather_stats_cmd(struct irdma_sc_dev *dev,
 			       struct irdma_vsi_pestat *pestat, bool wait);
 void irdma_cqp_gather_stats_gen1(struct irdma_sc_dev *dev,
@@ -43,8 +36,6 @@ void irdma_update_stats(struct irdma_dev_hw_stats *hw_stats,
 			struct irdma_gather_stats *gather_stats,
 			struct irdma_gather_stats *last_gather_stats,
 			const struct irdma_hw_stat_map *map, u16 max_stat_idx);
-
-/* vsi functions */
 int irdma_vsi_stats_init(struct irdma_sc_vsi *vsi,
 			 struct irdma_vsi_stats_info *info);
 void irdma_vsi_stats_free(struct irdma_sc_vsi *vsi);
@@ -52,7 +43,6 @@ void irdma_sc_vsi_init(struct irdma_sc_vsi *vsi,
 		       struct irdma_vsi_init_info *info);
 int irdma_sc_add_cq_ctx(struct irdma_sc_ceq *ceq, struct irdma_sc_cq *cq);
 void irdma_sc_remove_cq_ctx(struct irdma_sc_ceq *ceq, struct irdma_sc_cq *cq);
-/* misc L2 param change functions */
 void irdma_change_l2params(struct irdma_sc_vsi *vsi,
 			   struct irdma_l2params *l2params);
 void irdma_sc_suspend_resume_qps(struct irdma_sc_vsi *vsi, u8 suspend);
@@ -62,16 +52,11 @@ void irdma_qp_rem_qos(struct irdma_sc_qp *qp);
 struct irdma_sc_qp *irdma_get_qp_from_list(struct list_head *head,
 					   struct irdma_sc_qp *qp);
 void irdma_reinitialize_ieq(struct irdma_sc_vsi *vsi);
-/* terminate functions*/
 void irdma_terminate_send_fin(struct irdma_sc_qp *qp);
-
 void irdma_terminate_connection(struct irdma_sc_qp *qp,
 				struct irdma_aeqe_info *info);
-
 void irdma_terminate_received(struct irdma_sc_qp *qp,
 			      struct irdma_aeqe_info *info);
-/* dynamic memory allocation */
-/* misc */
 u8 irdma_get_encoded_wqe_size(u32 wqsize, enum irdma_queue_type queue_type);
 void irdma_modify_qp_to_err(struct irdma_sc_qp *sc_qp);
 int irdma_sc_static_hmc_pages_allocated(struct irdma_sc_cqp *cqp, u64 scratch,
@@ -97,4 +82,4 @@ int irdma_cqp_manage_hmc_fcn_cmd(struct irdma_sc_dev *dev,
 void irdma_add_dev_ref(struct irdma_sc_dev *dev);
 void irdma_put_dev_ref(struct irdma_sc_dev *dev);
 void *irdma_remove_cqp_head(struct irdma_sc_dev *dev);
-#endif /* IRDMA_PROTOS_H */
+#endif  

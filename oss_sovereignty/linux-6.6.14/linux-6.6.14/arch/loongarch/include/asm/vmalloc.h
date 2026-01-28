@@ -1,4 +1,3 @@
 #ifndef _ASM_LOONGARCH_VMALLOC_H
 #define _ASM_LOONGARCH_VMALLOC_H
-
-#endif /* _ASM_LOONGARCH_VMALLOC_H */
+#endif  

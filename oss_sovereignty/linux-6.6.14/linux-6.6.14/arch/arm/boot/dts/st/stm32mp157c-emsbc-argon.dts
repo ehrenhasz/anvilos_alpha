@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2021 emtrion GmbH
-// Author: Reinhold Müller <reinhold.mueller@emtrion.de>.
-//
-
 /dts-v1/;
-
 #include "stm32mp157c-emstamp-argon.dtsi"
-
 / {
 	model = "emtrion STM32MP157C emSBC-Argon Developer Board";
 	compatible = "emtrion,stm32mp157c-emsbc-argon", "emtrion,stm32mp157c-emstamp-argon",
 			"st,stm32mp157";
-
 	led: gpio_leds {
 		compatible = "gpio-leds";
 		led-2 {
@@ -29,11 +20,9 @@
 		};
 	};
 };
-
 &dac {
 	status = "okay";
 };
-
 &sdmmc1 {
 	pinctrl-names = "default", "opendrain", "sleep";
 	pinctrl-0 = <&sdmmc1_b4_pins_a>;
@@ -46,8 +35,6 @@
 	vmmc-supply = <&vdd_sd>;
 	status = "okay";
 };
-
 &spi1 {
 	status = "okay";
 };
-

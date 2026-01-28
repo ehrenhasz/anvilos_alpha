@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
-
 #ifndef DRM_TEGRA_DSI_H
 #define DRM_TEGRA_DSI_H
-
 #define DSI_INCR_SYNCPT			0x00
 #define DSI_INCR_SYNCPT_CONTROL		0x01
 #define DSI_INCR_SYNCPT_ERROR		0x02
@@ -80,10 +74,8 @@
 #define DSI_PHY_TIMING_1		0x3d
 #define DSI_PHY_TIMING_2		0x3e
 #define DSI_BTA_TIMING			0x3f
-
 #define DSI_TIMING_FIELD(value, period, hwinc) \
 	((DIV_ROUND_CLOSEST(value, period) - (hwinc)) & 0xff)
-
 #define DSI_TIMEOUT_0			0x44
 #define DSI_TIMEOUT_LRX(x)		(((x) & 0xffff) << 16)
 #define DSI_TIMEOUT_HTX(x)		(((x) & 0xffff) <<  0)
@@ -129,15 +121,10 @@
 #define DSI_INIT_SEQ_DATA_13		0x5d
 #define DSI_INIT_SEQ_DATA_14		0x5e
 #define DSI_INIT_SEQ_DATA_15		0x5f
-
-/*
- * pixel format as used in the DSI_CONTROL_FORMAT field
- */
 enum tegra_dsi_format {
 	TEGRA_DSI_FORMAT_16P,
 	TEGRA_DSI_FORMAT_18NP,
 	TEGRA_DSI_FORMAT_18P,
 	TEGRA_DSI_FORMAT_24P,
 };
-
 #endif

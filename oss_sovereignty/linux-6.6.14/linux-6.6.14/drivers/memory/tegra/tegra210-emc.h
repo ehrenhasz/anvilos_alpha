@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015-2020, NVIDIA CORPORATION.  All rights reserved.
- */
-
 #ifndef TEGRA210_EMC_H
 #define TEGRA210_EMC_H
-
 #include <linux/clk.h>
 #include <linux/clk/tegra.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
-
 #define DVFS_FGCG_HIGH_SPEED_THRESHOLD				1000
 #define IOBRICK_DCC_THRESHOLD					2400
 #define DVFS_FGCG_MID_SPEED_THRESHOLD				600
-
 #define EMC_STATUS_UPDATE_TIMEOUT				1000
-
-/* register definitions */
 #define EMC_INTSTATUS						0x0
 #define EMC_INTSTATUS_CLKCHANGE_COMPLETE			BIT(4)
 #define EMC_DBG							0x8
@@ -77,7 +67,6 @@
 #define EMC_MRS_WAIT_CNT_SHORT_WAIT_SHIFT			0
 #define EMC_MRS_WAIT_CNT_SHORT_WAIT_MASK			\
 	(0x3FF << EMC_MRS_WAIT_CNT_SHORT_WAIT_SHIFT)
-
 #define EMC_MRS							0xcc
 #define EMC_EMRS						0xd0
 #define EMC_EMRS_USE_EMRS_LONG_CNT				BIT(26)
@@ -91,7 +80,6 @@
 #define EMC_MRW_MRW_MA_SHIFT					16
 #define EMC_MRW_USE_MRW_EXT_CNT					27
 #define EMC_MRW_MRW_DEV_SELECTN_SHIFT				30
-
 #define EMC_MRR							0xec
 #define EMC_MRR_DEV_SEL_SHIFT					30
 #define EMC_MRR_DEV_SEL_MASK					0x3
@@ -99,14 +87,12 @@
 #define EMC_MRR_MA_MASK						0xff
 #define EMC_MRR_DATA_SHIFT					0
 #define EMC_MRR_DATA_MASK					0xffff
-
 #define EMC_FBIO_SPARE						0x100
 #define EMC_FBIO_CFG5						0x104
 #define EMC_FBIO_CFG5_DRAM_TYPE_SHIFT				0
 #define EMC_FBIO_CFG5_DRAM_TYPE_MASK				\
 	(0x3 << EMC_FBIO_CFG5_DRAM_TYPE_SHIFT)
 #define EMC_FBIO_CFG5_CMD_TX_DIS				BIT(8)
-
 #define EMC_PDEX2CKE						0x118
 #define EMC_CKE2PDEN						0x11c
 #define EMC_MPC							0x128
@@ -136,7 +122,6 @@
 #define EMC_EMC_STATUS_DRAM_IN_SELF_REFRESH_SHIFT		8
 #define EMC_EMC_STATUS_DRAM_IN_SELF_REFRESH_MASK		\
 	(0x3 << EMC_EMC_STATUS_DRAM_IN_SELF_REFRESH_SHIFT)
-
 #define EMC_CFG_2						0x2b8
 #define EMC_CFG_DIG_DLL						0x2bc
 #define EMC_CFG_DIG_DLL_CFG_DLL_EN				BIT(0)
@@ -149,7 +134,6 @@
 #define EMC_CFG_DIG_DLL_CFG_DLL_LOCK_LIMIT_SHIFT		8
 #define EMC_CFG_DIG_DLL_CFG_DLL_LOCK_LIMIT_MASK			\
 	(0x7 << EMC_CFG_DIG_DLL_CFG_DLL_LOCK_LIMIT_SHIFT)
-
 #define EMC_CFG_DIG_DLL_PERIOD					0x2c0
 #define EMC_DIG_DLL_STATUS					0x2c4
 #define EMC_DIG_DLL_STATUS_DLL_LOCK				BIT(15)
@@ -157,7 +141,6 @@
 #define EMC_DIG_DLL_STATUS_DLL_OUT_SHIFT			0
 #define EMC_DIG_DLL_STATUS_DLL_OUT_MASK				\
 	(0x7ff << EMC_DIG_DLL_STATUS_DLL_OUT_SHIFT)
-
 #define EMC_CFG_DIG_DLL_1					0x2c8
 #define EMC_RDV_MASK						0x2cc
 #define EMC_WDV_MASK						0x2d0
@@ -168,7 +151,6 @@
 #define EMC_ZCAL_WAIT_CNT					0x2e4
 #define EMC_ZCAL_WAIT_CNT_ZCAL_WAIT_CNT_MASK			0x7ff
 #define EMC_ZCAL_WAIT_CNT_ZCAL_WAIT_CNT_SHIFT			0
-
 #define EMC_ZQ_CAL						0x2ec
 #define EMC_ZQ_CAL_DEV_SEL_SHIFT				30
 #define EMC_ZQ_CAL_LONG						BIT(4)
@@ -267,7 +249,6 @@
 #define EMC_DATA_BRLSHFT_0_RANK0_BYTE0_DATA_BRLSHFT_SHIFT	0
 #define EMC_DATA_BRLSHFT_0_RANK0_BYTE0_DATA_BRLSHFT_MASK	\
 	(0x7 << EMC_DATA_BRLSHFT_0_RANK0_BYTE0_DATA_BRLSHFT_SHIFT)
-
 #define EMC_DATA_BRLSHFT_1					0x58c
 #define EMC_DATA_BRLSHFT_1_RANK1_BYTE7_DATA_BRLSHFT_SHIFT	21
 #define EMC_DATA_BRLSHFT_1_RANK1_BYTE7_DATA_BRLSHFT_MASK	\
@@ -293,7 +274,6 @@
 #define EMC_DATA_BRLSHFT_1_RANK1_BYTE0_DATA_BRLSHFT_SHIFT	0
 #define EMC_DATA_BRLSHFT_1_RANK1_BYTE0_DATA_BRLSHFT_MASK	\
 	(0x7 << EMC_DATA_BRLSHFT_1_RANK1_BYTE0_DATA_BRLSHFT_SHIFT)
-
 #define EMC_RFCPB						0x590
 #define EMC_DQS_BRLSHFT_0					0x594
 #define EMC_DQS_BRLSHFT_1					0x598
@@ -314,13 +294,11 @@
 #define EMC_DLL_CFG_1_DDLLCAL_CTRL_START_TRIM_SHIFT		10
 #define EMC_DLL_CFG_1_DDLLCAL_CTRL_START_TRIM_MASK		\
 	(0x7ff << EMC_DLL_CFG_1_DDLLCAL_CTRL_START_TRIM_SHIFT)
-
 #define EMC_CONFIG_SAMPLE_DELAY					0x5f0
 #define EMC_CFG_UPDATE						0x5f4
 #define EMC_CFG_UPDATE_UPDATE_DLL_IN_UPDATE_SHIFT		9
 #define EMC_CFG_UPDATE_UPDATE_DLL_IN_UPDATE_MASK		\
 	(0x3 << EMC_CFG_UPDATE_UPDATE_DLL_IN_UPDATE_SHIFT)
-
 #define EMC_PMACRO_QUSE_DDLL_RANK0_0				0x600
 #define EMC_PMACRO_QUSE_DDLL_RANK0_1				0x604
 #define EMC_PMACRO_QUSE_DDLL_RANK0_2				0x608
@@ -344,7 +322,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_0_OB_DDLL_LONG_DQ_RANK0_BYTE0_MASK \
 	(0x3ff <<							    \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_0_OB_DDLL_LONG_DQ_RANK0_BYTE0_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_1			0x644
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_1_OB_DDLL_LONG_DQ_RANK0_BYTE3_SHIFT \
 	16
@@ -356,7 +333,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_1_OB_DDLL_LONG_DQ_RANK0_BYTE2_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_1_OB_DDLL_LONG_DQ_RANK0_BYTE2_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_2			0x648
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_2_OB_DDLL_LONG_DQ_RANK0_BYTE5_SHIFT  \
 	16
@@ -368,7 +344,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_2_OB_DDLL_LONG_DQ_RANK0_BYTE4_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_2_OB_DDLL_LONG_DQ_RANK0_BYTE4_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_3			0x64c
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_3_OB_DDLL_LONG_DQ_RANK0_BYTE7_SHIFT \
 	16
@@ -380,7 +355,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_3_OB_DDLL_LONG_DQ_RANK0_BYTE6_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_3_OB_DDLL_LONG_DQ_RANK0_BYTE6_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_4			0x650
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_5			0x654
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_0			0x660
@@ -394,7 +368,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_0_OB_DDLL_LONG_DQ_RANK1_BYTE0_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_0_OB_DDLL_LONG_DQ_RANK1_BYTE0_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_1			0x664
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_1_OB_DDLL_LONG_DQ_RANK1_BYTE3_SHIFT \
 	16
@@ -406,7 +379,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_1_OB_DDLL_LONG_DQ_RANK1_BYTE2_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_1_OB_DDLL_LONG_DQ_RANK1_BYTE2_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_2			0x668
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_2_OB_DDLL_LONG_DQ_RANK1_BYTE5_SHIFT \
 	16
@@ -418,7 +390,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_2_OB_DDLL_LONG_DQ_RANK1_BYTE4_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_2_OB_DDLL_LONG_DQ_RANK1_BYTE4_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_3			0x66c
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_3_OB_DDLL_LONG_DQ_RANK1_BYTE7_SHIFT \
 	16
@@ -430,7 +401,6 @@
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_3_OB_DDLL_LONG_DQ_RANK1_BYTE6_MASK  \
 	(0x3ff <<							     \
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_3_OB_DDLL_LONG_DQ_RANK1_BYTE6_SHIFT)
-
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_4			0x670
 #define EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_5			0x674
 #define EMC_PMACRO_OB_DDLL_LONG_DQS_RANK0_0			0x680
@@ -655,7 +625,6 @@
 #define EMC_PMACRO_CMD_PAD_TX_CTRL_CMD_DQSN_TX_E_DCC		BIT(16)
 #define EMC_PMACRO_CMD_PAD_TX_CTRL_CMD_CMD_TX_E_DCC		BIT(24)
 #define EMC_PMACRO_CMD_PAD_TX_CTRL_CMD_DQ_TX_DRVFORCEON		BIT(26)
-
 #define EMC_PMACRO_DATA_PAD_TX_CTRL				0xc64
 #define EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_DQ_E_IVREF		BIT(0)
 #define EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_DQ_TX_E_DCC		BIT(1)
@@ -663,7 +632,6 @@
 #define EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_DQSP_TX_E_DCC		BIT(9)
 #define EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_DQSN_TX_E_DCC		BIT(16)
 #define EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_CMD_TX_E_DCC		BIT(24)
-
 #define EMC_PMACRO_COMMON_PAD_TX_CTRL				0xc68
 #define EMC_PMACRO_AUTOCAL_CFG_COMMON				0xc78
 #define EMC_PMACRO_AUTOCAL_CFG_COMMON_E_CAL_BYPASS_DVFS		BIT(16)
@@ -693,10 +661,8 @@
 #define EMC_TRAINING_QUSE_VREF_CTRL				0xed0
 #define EMC_TRAINING_OPT_DQS_IB_VREF_RANK0			0xed4
 #define EMC_TRAINING_OPT_DQS_IB_VREF_RANK1			0xed8
-
 #define EMC_COPY_TABLE_PARAM_PERIODIC_FIELDS			BIT(0)
 #define EMC_COPY_TABLE_PARAM_TRIM_REGS				BIT(1)
-
 enum burst_regs_list {
 	EMC_RP_INDEX = 6,
 	EMC_R2P_INDEX = 9,
@@ -724,7 +690,6 @@ enum burst_regs_list {
 	EMC_MRW14_INDEX = 199,
 	EMC_MRW15_INDEX = 220,
 };
-
 enum trim_regs_list {
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_0_INDEX = 60,
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK0_1_INDEX,
@@ -737,11 +702,9 @@ enum trim_regs_list {
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_2_INDEX,
 	EMC_PMACRO_OB_DDLL_LONG_DQ_RANK1_3_INDEX,
 };
-
 enum burst_mc_regs_list {
 	MC_EMEM_ARB_MISC0_INDEX = 20,
 };
-
 enum {
 	T_RP,
 	T_FC_LPDDR4,
@@ -749,17 +712,14 @@ enum {
 	T_PDEX,
 	RL,
 };
-
 enum {
 	AUTO_PD = 0,
 	MAN_SR  = 2,
 };
-
 enum {
 	ASSEMBLY = 0,
 	ACTIVE,
 };
-
 enum {
 	C0D0U0,
 	C0D0U1,
@@ -771,7 +731,6 @@ enum {
 	C1D1U1,
 	DRAM_CLKTREE_NUM,
 };
-
 #define VREF_REGS_PER_CHANNEL_SIZE 4
 #define DRAM_TIMINGS_NUM 5
 #define BURST_REGS_PER_CHANNEL_SIZE 8
@@ -783,12 +742,10 @@ enum {
 #define BURST_MC_REGS_SIZE 33
 #define TRIM_REGS_SIZE 138
 #define BURST_REGS_SIZE 221
-
 struct tegra210_emc_per_channel_regs {
 	u16 bank;
 	u16 offset;
 };
-
 struct tegra210_emc_table_register_offsets {
 	u16 burst[BURST_REGS_SIZE];
 	u16 trim[TRIM_REGS_SIZE];
@@ -798,7 +755,6 @@ struct tegra210_emc_table_register_offsets {
 	struct tegra210_emc_per_channel_regs trim_per_channel[TRIM_REGS_PER_CHANNEL_SIZE];
 	struct tegra210_emc_per_channel_regs vref_per_channel[VREF_REGS_PER_CHANNEL_SIZE];
 };
-
 struct tegra210_emc_timing {
 	u32 revision;
 	const char dvfs_ver[60];
@@ -810,13 +766,11 @@ struct tegra210_emc_timing {
 	u32 needs_training;
 	u32 training_pattern;
 	u32 trained;
-
 	u32 periodic_training;
 	u32 trained_dram_clktree[DRAM_CLKTREE_NUM];
 	u32 current_dram_clktree[DRAM_CLKTREE_NUM];
 	u32 run_clocks;
 	u32 tree_margin;
-
 	u32 num_burst;
 	u32 num_burst_per_ch;
 	u32 num_trim;
@@ -826,26 +780,20 @@ struct tegra210_emc_timing {
 	u32 vref_num;
 	u32 training_mod_num;
 	u32 dram_timing_num;
-
 	u32 ptfv_list[PTFV_ARRAY_SIZE];
-
 	u32 burst_regs[BURST_REGS_SIZE];
 	u32 burst_reg_per_ch[BURST_REGS_PER_CHANNEL_SIZE];
 	u32 shadow_regs_ca_train[BURST_REGS_SIZE];
 	u32 shadow_regs_quse_train[BURST_REGS_SIZE];
 	u32 shadow_regs_rdwr_train[BURST_REGS_SIZE];
-
 	u32 trim_regs[TRIM_REGS_SIZE];
 	u32 trim_perch_regs[TRIM_REGS_PER_CHANNEL_SIZE];
-
 	u32 vref_perch_regs[VREF_REGS_PER_CHANNEL_SIZE];
-
 	u32 dram_timings[DRAM_TIMINGS_NUM];
 	u32 training_mod_regs[TRAINING_MOD_REGS_SIZE];
 	u32 save_restore_mod_regs[SAVE_RESTORE_MOD_REGS_SIZE];
 	u32 burst_mc_regs[BURST_MC_REGS_SIZE];
 	u32 la_scale_regs[BURST_UP_DOWN_REGS_SIZE];
-
 	u32 min_mrs_wait;
 	u32 emc_mrw;
 	u32 emc_mrw2;
@@ -870,123 +818,92 @@ struct tegra210_emc_timing {
 	u32 clk_out_enb_x_0_clk_enb_emc_dll;
 	u32 latency;
 };
-
 enum tegra210_emc_refresh {
 	TEGRA210_EMC_REFRESH_NOMINAL = 0,
 	TEGRA210_EMC_REFRESH_2X,
 	TEGRA210_EMC_REFRESH_4X,
-	TEGRA210_EMC_REFRESH_THROTTLE, /* 4x Refresh + derating. */
+	TEGRA210_EMC_REFRESH_THROTTLE,  
 };
-
 #define DRAM_TYPE_DDR3		0
 #define DRAM_TYPE_LPDDR4	1
 #define DRAM_TYPE_LPDDR2	2
 #define DRAM_TYPE_DDR2		3
-
 struct tegra210_emc {
 	struct tegra_mc *mc;
 	struct device *dev;
 	struct clk *clk;
-
-	/* nominal EMC frequency table */
 	struct tegra210_emc_timing *nominal;
-	/* derated EMC frequency table */
 	struct tegra210_emc_timing *derated;
-
-	/* currently selected table (nominal or derated) */
 	struct tegra210_emc_timing *timings;
 	unsigned int num_timings;
-
 	const struct tegra210_emc_table_register_offsets *offsets;
-
 	const struct tegra210_emc_sequence *sequence;
 	spinlock_t lock;
-
 	void __iomem *regs, *channel[2];
 	unsigned int num_channels;
 	unsigned int num_devices;
 	unsigned int dram_type;
-
 	struct tegra210_emc_timing *last;
 	struct tegra210_emc_timing *next;
-
 	unsigned int training_interval;
 	struct timer_list training;
-
 	enum tegra210_emc_refresh refresh;
 	unsigned int refresh_poll_interval;
 	struct timer_list refresh_timer;
 	unsigned int temperature;
 	atomic_t refresh_poll;
-
 	ktime_t clkchange_time;
 	int clkchange_delay;
-
 	unsigned long resume_rate;
-
 	struct {
 		struct dentry *root;
 		unsigned long min_rate;
 		unsigned long max_rate;
 		unsigned int temperature;
 	} debugfs;
-
 	struct tegra210_clk_emc_provider provider;
 };
-
 struct tegra210_emc_sequence {
 	u8 revision;
 	void (*set_clock)(struct tegra210_emc *emc, u32 clksrc);
 	u32 (*periodic_compensation)(struct tegra210_emc *emc);
 };
-
 static inline void emc_writel(struct tegra210_emc *emc, u32 value,
 			      unsigned int offset)
 {
 	writel_relaxed(value, emc->regs + offset);
 }
-
 static inline u32 emc_readl(struct tegra210_emc *emc, unsigned int offset)
 {
 	return readl_relaxed(emc->regs + offset);
 }
-
 static inline void emc_channel_writel(struct tegra210_emc *emc,
 				      unsigned int channel,
 				      u32 value, unsigned int offset)
 {
 	writel_relaxed(value, emc->channel[channel] + offset);
 }
-
 static inline u32 emc_channel_readl(struct tegra210_emc *emc,
 				    unsigned int channel, unsigned int offset)
 {
 	return readl_relaxed(emc->channel[channel] + offset);
 }
-
 static inline void ccfifo_writel(struct tegra210_emc *emc, u32 value,
 				 unsigned int offset, u32 delay)
 {
 	writel_relaxed(value, emc->regs + EMC_CCFIFO_DATA);
-
 	value = EMC_CCFIFO_ADDR_STALL_BY_1 | EMC_CCFIFO_ADDR_STALL(delay) |
 		EMC_CCFIFO_ADDR_OFFSET(offset);
 	writel_relaxed(value, emc->regs + EMC_CCFIFO_ADDR);
 }
-
 static inline u32 div_o3(u32 a, u32 b)
 {
 	u32 result = a / b;
-
 	if ((b * result) < a)
 		return result + 1;
-
 	return result;
 }
-
-/* from tegra210-emc-r21021.c */
 extern const struct tegra210_emc_sequence tegra210_emc_r21021;
-
 int tegra210_emc_set_refresh(struct tegra210_emc *emc,
 			     enum tegra210_emc_refresh refresh);
 u32 tegra210_emc_mrr_read(struct tegra210_emc *emc, unsigned int chip,
@@ -1012,5 +929,4 @@ u32 tegra210_emc_dvfs_power_ramp_up(struct tegra210_emc *emc, u32 clk,
 				    bool flip_backward);
 void tegra210_emc_reset_dram_clktree_values(struct tegra210_emc_timing *timing);
 void tegra210_emc_start_periodic_compensation(struct tegra210_emc *emc);
-
 #endif

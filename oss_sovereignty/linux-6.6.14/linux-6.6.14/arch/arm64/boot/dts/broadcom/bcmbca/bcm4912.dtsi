@@ -1,22 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2022 Broadcom Ltd.
- */
-
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	compatible = "brcm,bcm4912", "brcm,bcmbca";
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	interrupt-parent = <&gic>;
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		B53_0: cpu@0 {
 			compatible = "brcm,brahma-b53";
 			device_type = "cpu";
@@ -24,7 +15,6 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "psci";
 		};
-
 		B53_1: cpu@1 {
 			compatible = "brcm,brahma-b53";
 			device_type = "cpu";
@@ -32,7 +22,6 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "psci";
 		};
-
 		B53_2: cpu@2 {
 			compatible = "brcm,brahma-b53";
 			device_type = "cpu";
@@ -40,7 +29,6 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "psci";
 		};
-
 		B53_3: cpu@3 {
 			compatible = "brcm,brahma-b53";
 			device_type = "cpu";
@@ -48,14 +36,12 @@
 			next-level-cache = <&L2_0>;
 			enable-method = "psci";
 		};
-
 		L2_0: l2-cache0 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
@@ -63,7 +49,6 @@
 			<GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
 			<GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	pmu: pmu {
 		compatible = "arm,cortex-a53-pmu";
 		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
@@ -73,14 +58,12 @@
 		interrupt-affinity = <&B53_0>, <&B53_1>,
 			<&B53_2>, <&B53_3>;
 	};
-
 	clocks: clocks {
 		periph_clk: periph-clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <200000000>;
 		};
-
 		uart_clk: uart-clk {
 			compatible = "fixed-factor-clock";
 			#clock-cells = <0>;
@@ -88,25 +71,21 @@
 			clock-div = <4>;
 			clock-mult = <1>;
 		};
-
 		hsspi_pll: hsspi-pll {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <200000000>;
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	axi@81000000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0x0 0x0 0x81000000 0x8000>;
-
 		gic: interrupt-controller@1000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
@@ -118,13 +97,11 @@
 				<0x6000 0x2000>;
 		};
 	};
-
 	bus@ff800000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0x0 0x0 0xff800000 0x800000>;
-
 		hsspi: spi@1000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -137,7 +114,6 @@
 			num-cs = <8>;
 			status = "disabled";
 		};
-
 		uart0: serial@12000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x12000 0x1000>;

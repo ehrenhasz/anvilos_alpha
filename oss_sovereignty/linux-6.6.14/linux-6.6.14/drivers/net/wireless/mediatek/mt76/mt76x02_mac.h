@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
- */
-
 #ifndef __MT76X02_MAC_H
 #define __MT76X02_MAC_H
-
 struct mt76x02_dev;
-
 struct mt76x02_tx_status {
 	u8 valid:1;
 	u8 success:1;
@@ -19,30 +11,22 @@ struct mt76x02_tx_status {
 	u8 retry;
 	u16 rate;
 } __packed __aligned(2);
-
 #define MT_VIF_WCID(_n)		(254 - ((_n) & 7))
 #define MT_MAX_VIFS		8
-
 #define MT_PKTID_RATE		GENMASK(4, 0)
 #define MT_PKTID_AC		GENMASK(6, 5)
-
 struct mt76x02_vif {
-	struct mt76_wcid group_wcid; /* must be first */
+	struct mt76_wcid group_wcid;  
 	u8 idx;
 };
-
 DECLARE_EWMA(pktlen, 8, 8);
-
 struct mt76x02_sta {
-	struct mt76_wcid wcid; /* must be first */
-
+	struct mt76_wcid wcid;  
 	struct mt76x02_vif *vif;
 	struct mt76x02_tx_status status;
 	int n_frames;
-
 	struct ewma_pktlen pktlen;
 };
-
 #define MT_RXINFO_BA			BIT(0)
 #define MT_RXINFO_DATA			BIT(1)
 #define MT_RXINFO_NULL			BIT(2)
@@ -72,17 +56,14 @@ struct mt76x02_sta {
 #define MT_RXINFO_ACTION		BIT(28)
 #define MT_RXINFO_TCP_SUM_ERR		BIT(30)
 #define MT_RXINFO_IP_SUM_ERR		BIT(31)
-
 #define MT_RXWI_CTL_WCID		GENMASK(7, 0)
 #define MT_RXWI_CTL_KEY_IDX		GENMASK(9, 8)
 #define MT_RXWI_CTL_BSS_IDX		GENMASK(12, 10)
 #define MT_RXWI_CTL_UDF			GENMASK(15, 13)
 #define MT_RXWI_CTL_MPDU_LEN		GENMASK(29, 16)
 #define MT_RXWI_CTL_EOF			BIT(31)
-
 #define MT_RXWI_TID			GENMASK(3, 0)
 #define MT_RXWI_SN			GENMASK(15, 4)
-
 #define MT_RXWI_RATE_INDEX		GENMASK(5, 0)
 #define MT_RXWI_RATE_LDPC		BIT(6)
 #define MT_RXWI_RATE_BW			GENMASK(8, 7)
@@ -90,31 +71,22 @@ struct mt76x02_sta {
 #define MT_RXWI_RATE_STBC		BIT(10)
 #define MT_RXWI_RATE_LDPC_EXSYM		BIT(11)
 #define MT_RXWI_RATE_PHY		GENMASK(15, 13)
-
 #define MT_RATE_INDEX_VHT_IDX		GENMASK(3, 0)
 #define MT_RATE_INDEX_VHT_NSS		GENMASK(5, 4)
-
 struct mt76x02_rxwi {
 	__le32 rxinfo;
-
 	__le32 ctl;
-
 	__le16 tid_sn;
 	__le16 rate;
-
 	u8 rssi[4];
-
 	__le32 bbp_rxinfo[4];
 };
-
 #define MT_TX_PWR_ADJ			GENMASK(3, 0)
-
 enum mt76x2_phy_bandwidth {
 	MT_PHY_BW_20,
 	MT_PHY_BW_40,
 	MT_PHY_BW_80,
 };
-
 #define MT_TXWI_FLAGS_FRAG		BIT(0)
 #define MT_TXWI_FLAGS_MMPS		BIT(1)
 #define MT_TXWI_FLAGS_CFACK		BIT(2)
@@ -127,11 +99,9 @@ enum mt76x2_phy_bandwidth {
 #define MT_TXWI_FLAGS_NDP_BW		GENMASK(13, 12)
 #define MT_TXWI_FLAGS_SOUND		BIT(14)
 #define MT_TXWI_FLAGS_TX_RATE_LUT	BIT(15)
-
 #define MT_TXWI_ACK_CTL_REQ		BIT(0)
 #define MT_TXWI_ACK_CTL_NSEQ		BIT(1)
 #define MT_TXWI_ACK_CTL_BA_WINDOW	GENMASK(7, 2)
-
 struct mt76x02_txwi {
 	__le16 flags;
 	__le16 rate;
@@ -145,16 +115,13 @@ struct mt76x02_txwi {
 	u8 ctl2;
 	u8 pktid;
 } __packed __aligned(4);
-
 static inline bool mt76x02_wait_for_mac(struct mt76_dev *dev)
 {
 	const u32 MAC_CSR0 = 0x1000;
 	int i;
-
 	for (i = 0; i < 500; i++) {
 		if (test_bit(MT76_REMOVED, &dev->phy.state))
 			return false;
-
 		switch (dev->bus->rr(dev, MAC_CSR0)) {
 		case 0:
 		case ~0:
@@ -166,7 +133,6 @@ static inline bool mt76x02_wait_for_mac(struct mt76_dev *dev)
 	}
 	return false;
 }
-
 void mt76x02_mac_reset_counters(struct mt76x02_dev *dev);
 void mt76x02_mac_set_short_preamble(struct mt76x02_dev *dev, bool enable);
 int mt76x02_mac_shared_key_setup(struct mt76x02_dev *dev, u8 vif_idx,
@@ -197,12 +163,10 @@ void mt76x02_mac_poll_tx_status(struct mt76x02_dev *dev, bool irq);
 void mt76x02_tx_complete_skb(struct mt76_dev *mdev, struct mt76_queue_entry *e);
 void mt76x02_update_channel(struct mt76_phy *mphy);
 void mt76x02_mac_work(struct work_struct *work);
-
 void mt76x02_mac_cc_reset(struct mt76x02_dev *dev);
 void mt76x02_mac_set_bssid(struct mt76x02_dev *dev, u8 idx, const u8 *addr);
 void mt76x02_mac_set_beacon(struct mt76x02_dev *dev, struct sk_buff *skb);
 void mt76x02_mac_set_beacon_enable(struct mt76x02_dev *dev,
 				   struct ieee80211_vif *vif, bool enable);
-
 void mt76x02_edcca_init(struct mt76x02_dev *dev);
 #endif

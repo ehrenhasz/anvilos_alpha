@@ -1,51 +1,20 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_STREAM_ENCODER_DCE110_H__
 #define __DC_STREAM_ENCODER_DCE110_H__
-
 #include "stream_encoder.h"
-
 #define DCE110STRENC_FROM_STRENC(stream_encoder)\
 	container_of(stream_encoder, struct dce110_stream_encoder, base)
-
 #ifndef TMDS_CNTL__TMDS_PIXEL_ENCODING_MASK
 	#define TMDS_CNTL__TMDS_PIXEL_ENCODING_MASK       0x00000010L
 	#define TMDS_CNTL__TMDS_COLOR_FORMAT_MASK         0x00000300L
 	#define	TMDS_CNTL__TMDS_PIXEL_ENCODING__SHIFT     0x00000004
 	#define	TMDS_CNTL__TMDS_COLOR_FORMAT__SHIFT       0x00000008
 #endif
-
-
 #define SE_COMMON_REG_LIST_DCE_BASE(id) \
 	SE_COMMON_REG_LIST_BASE(id),\
 	SRI(AFMT_AVI_INFO0, DIG, id), \
 	SRI(AFMT_AVI_INFO1, DIG, id), \
 	SRI(AFMT_AVI_INFO2, DIG, id), \
 	SRI(AFMT_AVI_INFO3, DIG, id)
-
 #define SE_COMMON_REG_LIST_BASE(id) \
 	SRI(AFMT_GENERIC_0, DIG, id), \
 	SRI(AFMT_GENERIC_1, DIG, id), \
@@ -92,11 +61,9 @@
 	SRI(DP_VID_TIMING, DP, id), \
 	SRI(DP_SEC_AUD_N, DP, id), \
 	SRI(DP_SEC_TIMESTAMP, DP, id)
-
 #define SE_COMMON_REG_LIST(id)\
 	SE_COMMON_REG_LIST_DCE_BASE(id), \
 	SRI(AFMT_CNTL, DIG, id)
-
 #define SE_DCN_REG_LIST(id)\
 	SE_COMMON_REG_LIST_BASE(id),\
 	SRI(AFMT_CNTL, DIG, id),\
@@ -111,10 +78,8 @@
 	SRI(DP_MSA_TIMING_PARAM3, DP, id), \
 	SRI(DP_MSA_TIMING_PARAM4, DP, id), \
 	SRI(HDMI_DB_CONTROL, DIG, id)
-
 #define SE_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define SE_COMMON_MASK_SH_LIST_DCE_COMMON(mask_sh)\
 	SE_SF(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_INDEX, mask_sh),\
 	SE_SF(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC0_UPDATE, mask_sh),\
@@ -202,7 +167,6 @@
 	SE_SF(DP_SEC_CNTL, DP_SEC_ACM_ENABLE, mask_sh),\
 	SE_SF(AFMT_AUDIO_PACKET_CONTROL, AFMT_AUDIO_SAMPLE_SEND, mask_sh),\
 	SE_SF(DIG_FE_CNTL, DIG_SOURCE_SELECT, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_SOC(mask_sh)\
 	SE_SF(DIG0_AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_INDEX, mask_sh),\
 	SE_SF(DIG0_AFMT_GENERIC_HDR, AFMT_GENERIC_HB0, mask_sh),\
@@ -286,12 +250,10 @@
 	SE_SF(DIG0_DIG_FE_CNTL, DIG_STEREOSYNC_SELECT, mask_sh),\
 	SE_SF(DIG0_DIG_FE_CNTL, DIG_STEREOSYNC_GATE_EN, mask_sh),\
 	SE_SF(DIG0_DIG_FE_CNTL, DIG_SOURCE_SELECT, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCE80_100(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_DCE_COMMON(mask_sh),\
 	SE_SF(TMDS_CNTL, TMDS_PIXEL_ENCODING, mask_sh),\
 	SE_SF(TMDS_CNTL, TMDS_COLOR_FORMAT, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCE110(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_DCE_COMMON(mask_sh),\
 	SE_SF(AFMT_CNTL, AFMT_AUDIO_CLOCK_EN, mask_sh),\
@@ -301,7 +263,6 @@
 	SE_SF(DIG_FE_CNTL, TMDS_COLOR_FORMAT, mask_sh),\
 	SE_SF(DIG_FE_CNTL, DIG_STEREOSYNC_SELECT, mask_sh),\
 	SE_SF(DIG_FE_CNTL, DIG_STEREOSYNC_GATE_EN, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCE112(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_DCE_COMMON(mask_sh),\
 	SE_SF(AFMT_CNTL, AFMT_AUDIO_CLOCK_EN, mask_sh),\
@@ -310,7 +271,6 @@
 	SE_SF(DIG_FE_CNTL, TMDS_PIXEL_ENCODING, mask_sh),\
 	SE_SF(DIG_FE_CNTL, TMDS_COLOR_FORMAT, mask_sh),\
 	SE_SF(DP_VID_TIMING, DP_VID_M_DOUBLE_VALUE_EN, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCE120(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_SOC(mask_sh),\
 	SE_SF(DIG0_AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC0_UPDATE, mask_sh),\
@@ -323,7 +283,6 @@
 	SE_SF(DP0_DP_SEC_CNTL, DP_SEC_AVI_ENABLE, mask_sh),\
 	SE_SF(DIG0_AFMT_AVI_INFO3, AFMT_AVI_INFO_VERSION, mask_sh),\
 	SE_SF(DP0_DP_VID_TIMING, DP_VID_M_DOUBLE_VALUE_EN, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCN10(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_SOC(mask_sh),\
 	SE_SF(DIG0_AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_LOCK_STATUS, mask_sh),\
@@ -363,7 +322,6 @@
 	SE_SF(DP0_DP_MSA_TIMING_PARAM4, DP_MSA_VHEIGHT, mask_sh),\
 	SE_SF(DIG0_HDMI_DB_CONTROL, HDMI_DB_DISABLE, mask_sh),\
 	SE_SF(DP0_DP_VID_TIMING, DP_VID_N_MUL, mask_sh)
-
 struct dce_stream_encoder_shift {
 	uint8_t AFMT_GENERIC_INDEX;
 	uint8_t AFMT_GENERIC0_UPDATE;
@@ -495,7 +453,6 @@ struct dce_stream_encoder_shift {
 	uint8_t DP_VID_M_DOUBLE_VALUE_EN;
 	uint8_t DIG_SOURCE_SELECT;
 };
-
 struct dce_stream_encoder_mask {
 	uint32_t AFMT_GENERIC_INDEX;
 	uint32_t AFMT_GENERIC0_UPDATE;
@@ -627,7 +584,6 @@ struct dce_stream_encoder_mask {
 	uint32_t DP_VID_M_DOUBLE_VALUE_EN;
 	uint32_t DIG_SOURCE_SELECT;
 };
-
 struct dce110_stream_enc_registers {
 	uint32_t AFMT_CNTL;
 	uint32_t AFMT_AVI_INFO0;
@@ -691,14 +647,12 @@ struct dce110_stream_enc_registers {
 	uint32_t DP_MSA_TIMING_PARAM4;
 	uint32_t HDMI_DB_CONTROL;
 };
-
 struct dce110_stream_encoder {
 	struct stream_encoder base;
 	const struct dce110_stream_enc_registers *regs;
 	const struct dce_stream_encoder_shift *se_shift;
 	const struct dce_stream_encoder_mask *se_mask;
 };
-
 void dce110_stream_encoder_construct(
 	struct dce110_stream_encoder *enc110,
 	struct dc_context *ctx,
@@ -707,29 +661,21 @@ void dce110_stream_encoder_construct(
 	const struct dce110_stream_enc_registers *regs,
 	const struct dce_stream_encoder_shift *se_shift,
 	const struct dce_stream_encoder_mask *se_mask);
-
-
 void dce110_se_audio_mute_control(
 	struct stream_encoder *enc, bool mute);
-
 void dce110_se_dp_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info);
-
 void dce110_se_dp_audio_enable(
 		struct stream_encoder *enc);
-
 void dce110_se_dp_audio_disable(
 		struct stream_encoder *enc);
-
 void dce110_se_hdmi_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info,
 	struct audio_crtc_info *audio_crtc_info);
-
 void dce110_se_hdmi_audio_disable(
 	struct stream_encoder *enc);
-
-#endif /* __DC_STREAM_ENCODER_DCE110_H__ */
+#endif  

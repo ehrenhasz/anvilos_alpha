@@ -1,15 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- */
-
 #ifndef _ASM_ARC_UNWIND_H
 #define _ASM_ARC_UNWIND_H
-
 #ifdef CONFIG_ARC_DW2_UNWIND
-
 #include <linux/sched.h>
-
 struct arc700_regs {
 	unsigned long r0;
 	unsigned long r1;
@@ -38,25 +30,21 @@ struct arc700_regs {
 	unsigned long r24;
 	unsigned long r25;
 	unsigned long r26;
-	unsigned long r27;	/* fp */
-	unsigned long r28;	/* sp */
+	unsigned long r27;	 
+	unsigned long r28;	 
 	unsigned long r29;
 	unsigned long r30;
-	unsigned long r31;	/* blink */
-	unsigned long r63;	/* pc */
+	unsigned long r31;	 
+	unsigned long r63;	 
 };
-
 struct unwind_frame_info {
 	struct arc700_regs regs;
 	struct task_struct *task;
 	unsigned call_frame:1;
 };
-
 #define UNW_PC(frame)		((frame)->regs.r63)
 #define UNW_SP(frame)		((frame)->regs.r28)
 #define UNW_BLINK(frame)	((frame)->regs.r31)
-
-/* Rajesh FIXME */
 #ifdef CONFIG_FRAME_POINTER
 #define UNW_FP(frame)		((frame)->regs.r27)
 #define FRAME_RETADDR_OFFSET	4
@@ -66,9 +54,7 @@ struct unwind_frame_info {
 #else
 #define UNW_FP(frame)		((void)(frame), 0)
 #endif
-
 #define STACK_LIMIT(ptr)	(((ptr) - 1) & ~(THREAD_SIZE - 1))
-
 #define UNW_REGISTER_INFO \
 	PTREGS_INFO(r0), \
 	PTREGS_INFO(r1), \
@@ -103,16 +89,13 @@ struct unwind_frame_info {
 	PTREGS_INFO(r30), \
 	PTREGS_INFO(r31), \
 	PTREGS_INFO(r63)
-
 #define UNW_DEFAULT_RA(raItem, dataAlign) \
 	((raItem).where == Memory && !((raItem).value * (dataAlign) + 4))
-
 extern int arc_unwind(struct unwind_frame_info *frame);
 extern void arc_unwind_init(void);
 extern void *unwind_add_table(struct module *module, const void *table_start,
 			      unsigned long table_size);
 extern void unwind_remove_table(void *handle, int init_only);
-
 static inline int
 arch_unwind_init_running(struct unwind_frame_info *info,
 			 int (*callback) (struct unwind_frame_info *info,
@@ -121,36 +104,27 @@ arch_unwind_init_running(struct unwind_frame_info *info,
 {
 	return 0;
 }
-
 static inline int arch_unw_user_mode(const struct unwind_frame_info *info)
 {
 	return 0;
 }
-
 static inline void arch_unw_init_blocked(struct unwind_frame_info *info)
 {
 	return;
 }
-
 static inline void arch_unw_init_frame_info(struct unwind_frame_info *info,
 					    struct pt_regs *regs)
 {
 	return;
 }
-
 #else
-
 #define UNW_PC(frame) ((void)(frame), 0)
 #define UNW_SP(frame) ((void)(frame), 0)
 #define UNW_FP(frame) ((void)(frame), 0)
-
 static inline void arc_unwind_init(void)
 {
 }
-
 #define unwind_add_table(a, b, c)
 #define unwind_remove_table(a, b)
-
-#endif /* CONFIG_ARC_DW2_UNWIND */
-
-#endif /* _ASM_ARC_UNWIND_H */
+#endif  
+#endif  

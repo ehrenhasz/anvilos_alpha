@@ -119,7 +119,10 @@ def main_loop():
                     logger.info(f"Recipe forged with {len(recipe)} cards.")
                     for i, card in enumerate(recipe):
                         card_id = str(uuid.uuid4())
-                        DB.push_card(card_id, i, card['op'], card['pld'])
+                        pld = card['pld']
+                        if isinstance(pld, dict):
+                            pld["_source"] = "FORGE"
+                        DB.push_card(card_id, i, card['op'], pld)
                     DB.update_goal_status(goal_id, 2)
                     logger.info(f"Goal {goal_id} committed to Card Stack.")
                 else:

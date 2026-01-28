@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-//
-// Device Tree Source for General Electric B105Pv2
-//
-// Copyright 2018-2021 General Electric Company
-// Copyright 2018-2021 Collabora
-
 /dts-v1/;
 #include "imx6dl-b1x5pv2.dtsi"
-
 / {
 	model = "General Electric B105Pv2";
 	compatible = "ge,imx6dl-b105pv2", "congatec,qmx6", "fsl,imx6dl";
-
 	panel {
 		compatible = "auo,g101evn010";
 	};
 };
-
 &i2c3 {
 	touchscreen@41 {
 		compatible = "ilitek,ili251x";

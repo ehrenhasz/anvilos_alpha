@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI__ALPHA_PAL_H
 #define _UAPI__ALPHA_PAL_H
-
-/*
- * Common PAL-code
- */
 #define PAL_halt	  0
 #define PAL_cflush	  1
 #define PAL_draina	  2
@@ -17,16 +12,8 @@
 #define PAL_wruniq	159
 #define PAL_gentrap	170
 #define PAL_nphalt	190
-
-/*
- * VMS specific PAL-code
- */
 #define PAL_swppal	10
 #define PAL_mfpr_vptb	41
-
-/*
- * OSF specific PAL-code
- */
 #define PAL_cserve	 9
 #define PAL_wripir	13
 #define PAL_rdmces	16
@@ -49,6 +36,4 @@
 #define PAL_retsys	61
 #define PAL_wtint	62
 #define PAL_rti		63
-
-
-#endif /* _UAPI__ALPHA_PAL_H */
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _M68K_BUG_H
 #define _M68K_BUG_H
-
 #ifdef CONFIG_MMU
 #ifdef CONFIG_BUG
 #ifdef CONFIG_DEBUG_BUGVERBOSE
@@ -24,11 +22,8 @@
 	__builtin_trap(); \
 } while (0)
 #endif
-
 #define HAVE_ARCH_BUG
 #endif
-#endif /* CONFIG_MMU */
-
+#endif  
 #include <asm-generic/bug.h>
-
 #endif

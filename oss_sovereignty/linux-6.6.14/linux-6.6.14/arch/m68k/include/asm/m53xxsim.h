@@ -1,47 +1,27 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/****************************************************************************/
-
-/*
- *	m53xxsim.h -- ColdFire 5329 registers
- */
-
-/****************************************************************************/
 #ifndef	m53xxsim_h
 #define	m53xxsim_h
-/****************************************************************************/
-
 #define	CPU_NAME		"COLDFIRE(m53xx)"
 #define	CPU_INSTR_PER_JIFFY	3
 #define	MCF_BUSCLK		(MCF_CLK / 3)
-
 #include <asm/m53xxacr.h>
-
 #define MCFINT_VECBASE      64
-#define MCFINT_UART0        26          /* Interrupt number for UART0 */
-#define MCFINT_UART1        27          /* Interrupt number for UART1 */
-#define MCFINT_UART2        28          /* Interrupt number for UART2 */
-#define MCFINT_I2C0         30		/* Interrupt number for I2C */
-#define MCFINT_QSPI         31          /* Interrupt number for QSPI */
-#define MCFINT_FECRX0	    36		/* Interrupt number for FEC */
-#define MCFINT_FECTX0	    40		/* Interrupt number for FEC */
-#define MCFINT_FECENTC0	    42		/* Interrupt number for FEC */
-
+#define MCFINT_UART0        26           
+#define MCFINT_UART1        27           
+#define MCFINT_UART2        28           
+#define MCFINT_I2C0         30		 
+#define MCFINT_QSPI         31           
+#define MCFINT_FECRX0	    36		 
+#define MCFINT_FECTX0	    40		 
+#define MCFINT_FECENTC0	    42		 
 #define MCF_IRQ_UART0       (MCFINT_VECBASE + MCFINT_UART0)
 #define MCF_IRQ_UART1       (MCFINT_VECBASE + MCFINT_UART1)
 #define MCF_IRQ_UART2       (MCFINT_VECBASE + MCFINT_UART2)
-
 #define MCF_IRQ_FECRX0	    (MCFINT_VECBASE + MCFINT_FECRX0)
 #define MCF_IRQ_FECTX0	    (MCFINT_VECBASE + MCFINT_FECTX0)
 #define MCF_IRQ_FECENTC0    (MCFINT_VECBASE + MCFINT_FECENTC0)
-
 #define	MCF_IRQ_I2C0	    (MCFINT_VECBASE + MCFINT_I2C0)
 #define	MCF_IRQ_QSPI	    (MCFINT_VECBASE + MCFINT_QSPI)
-
 #define MCF_WTM_WCR		0xFC098000
-
-/*
- *	Define the 532x SIM register set addresses.
- */
 #define	MCFSIM_IPRL		0xFC048004
 #define	MCFSIM_IPRH		0xFC048000
 #define	MCFSIM_IPR		MCFSIM_IPRL
@@ -60,21 +40,15 @@
 #define	MCFSIM_ICR9		0xFC048049	
 #define	MCFSIM_ICR10		0xFC04804A
 #define	MCFSIM_ICR11		0xFC04804B
-
-/*
- *	Some symbol defines for the above...
- */
-#define	MCFSIM_SWDICR		MCFSIM_ICR0	/* Watchdog timer ICR */
-#define	MCFSIM_TIMER1ICR	MCFSIM_ICR1	/* Timer 1 ICR */
-#define	MCFSIM_TIMER2ICR	MCFSIM_ICR2	/* Timer 2 ICR */
-#define	MCFSIM_UART1ICR		MCFSIM_ICR4	/* UART 1 ICR */
-#define	MCFSIM_UART2ICR		MCFSIM_ICR5	/* UART 2 ICR */
-#define	MCFSIM_DMA0ICR		MCFSIM_ICR6	/* DMA 0 ICR */
-#define	MCFSIM_DMA1ICR		MCFSIM_ICR7	/* DMA 1 ICR */
-#define	MCFSIM_DMA2ICR		MCFSIM_ICR8	/* DMA 2 ICR */
-#define	MCFSIM_DMA3ICR		MCFSIM_ICR9	/* DMA 3 ICR */
-
-
+#define	MCFSIM_SWDICR		MCFSIM_ICR0	 
+#define	MCFSIM_TIMER1ICR	MCFSIM_ICR1	 
+#define	MCFSIM_TIMER2ICR	MCFSIM_ICR2	 
+#define	MCFSIM_UART1ICR		MCFSIM_ICR4	 
+#define	MCFSIM_UART2ICR		MCFSIM_ICR5	 
+#define	MCFSIM_DMA0ICR		MCFSIM_ICR6	 
+#define	MCFSIM_DMA1ICR		MCFSIM_ICR7	 
+#define	MCFSIM_DMA2ICR		MCFSIM_ICR8	 
+#define	MCFSIM_DMA3ICR		MCFSIM_ICR9	 
 #define	MCFINTC0_SIMR		0xFC04801C
 #define	MCFINTC0_CIMR		0xFC04801D
 #define	MCFINTC0_ICR0		0xFC048040
@@ -84,63 +58,28 @@
 #define MCFINTC2_SIMR		(0)
 #define MCFINTC2_CIMR		(0)
 #define MCFINTC2_ICR0		(0)
-
 #define MCFSIM_ICR_TIMER1	(0xFC048040+32)
 #define MCFSIM_ICR_TIMER2	(0xFC048040+33)
-
-/*
- *	Define system peripheral IRQ usage.
- */
-#define	MCF_IRQ_TIMER		(64 + 32)	/* Timer0 */
-#define	MCF_IRQ_PROFILER	(64 + 33)	/* Timer1 */
-
-/*
- *  UART module.
- */
-#define MCFUART_BASE0		0xFC060000	/* Base address of UART1 */
-#define MCFUART_BASE1		0xFC064000	/* Base address of UART2 */
-#define MCFUART_BASE2		0xFC068000	/* Base address of UART3 */
-
-/*
- *  FEC module.
- */
-#define	MCFFEC_BASE0		0xFC030000	/* Base address of FEC0 */
-#define	MCFFEC_SIZE0		0x800		/* Size of FEC0 region */
-
-/*
- *  QSPI module.
- */
-#define	MCFQSPI_BASE		0xFC05C000	/* Base address of QSPI */
-#define	MCFQSPI_SIZE		0x40		/* Size of QSPI region */
-
+#define	MCF_IRQ_TIMER		(64 + 32)	 
+#define	MCF_IRQ_PROFILER	(64 + 33)	 
+#define MCFUART_BASE0		0xFC060000	 
+#define MCFUART_BASE1		0xFC064000	 
+#define MCFUART_BASE2		0xFC068000	 
+#define	MCFFEC_BASE0		0xFC030000	 
+#define	MCFFEC_SIZE0		0x800		 
+#define	MCFQSPI_BASE		0xFC05C000	 
+#define	MCFQSPI_SIZE		0x40		 
 #define	MCFQSPI_CS0		84
 #define	MCFQSPI_CS1		85
 #define	MCFQSPI_CS2		86
-
-/*
- *  Timer module.
- */
-#define MCFTIMER_BASE1		0xFC070000	/* Base address of TIMER1 */
-#define MCFTIMER_BASE2		0xFC074000	/* Base address of TIMER2 */
-#define MCFTIMER_BASE3		0xFC078000	/* Base address of TIMER3 */
-#define MCFTIMER_BASE4		0xFC07C000	/* Base address of TIMER4 */
-
-/*********************************************************************
- *
- * Reset Controller Module
- *
- *********************************************************************/
-
+#define MCFTIMER_BASE1		0xFC070000	 
+#define MCFTIMER_BASE2		0xFC074000	 
+#define MCFTIMER_BASE3		0xFC078000	 
+#define MCFTIMER_BASE4		0xFC07C000	 
 #define	MCF_RCR			0xFC0A0000
 #define	MCF_RSR			0xFC0A0001
-
-#define	MCF_RCR_SWRESET		0x80		/* Software reset bit */
-#define	MCF_RCR_FRCSTOUT	0x40		/* Force external reset */
-
-
-/*
- * Power Management
- */
+#define	MCF_RCR_SWRESET		0x80		 
+#define	MCF_RCR_FRCSTOUT	0x40		 
 #define MCFPM_WCR		0xfc040013
 #define MCFPM_PPMSR0		0xfc04002c
 #define MCFPM_PPMCR0		0xfc04002d
@@ -150,12 +89,6 @@
 #define MCFPM_PPMLR0		0xfc040034
 #define MCFPM_PPMHR1		0xfc040038
 #define MCFPM_LPCR		0xec090007
-
-/*
- *	The M5329EVB board needs a help getting its devices initialized 
- *	at kernel start time if dBUG doesn't set it up (for example 
- *	it is not used), so we need to do it manually.
- */
 #ifdef __ASSEMBLER__
 .macro m5329EVB_setup
 	movel	#0xFC098000, %a7
@@ -170,16 +103,7 @@
 	jsr	sysinit
 .endm
 #define	PLATFORM_SETUP	m5329EVB_setup
-
-#endif /* __ASSEMBLER__ */
-
-/*********************************************************************
- *
- * Chip Configuration Module (CCM)
- *
- *********************************************************************/
-
-/* Register read/write macros */
+#endif  
 #define MCF_CCM_CCR               0xFC0A0004
 #define MCF_CCM_RCON              0xFC0A0008
 #define MCF_CCM_CIR               0xFC0A000A
@@ -187,8 +111,6 @@
 #define MCF_CCM_CDR               0xFC0A0012
 #define MCF_CCM_UHCSR             0xFC0A0014
 #define MCF_CCM_UOCSR             0xFC0A0016
-
-/* Bit definitions and macros for MCF_CCM_CCR */
 #define MCF_CCM_CCR_RESERVED      (0x0001)
 #define MCF_CCM_CCR_PLL_MODE      (0x0003)
 #define MCF_CCM_CCR_OSC_MODE      (0x0005)
@@ -196,8 +118,6 @@
 #define MCF_CCM_CCR_LOAD          (0x0021)
 #define MCF_CCM_CCR_LIMP          (0x0041)
 #define MCF_CCM_CCR_CSC(x)        (((x)&0x0003)<<8|0x0001)
-
-/* Bit definitions and macros for MCF_CCM_RCON */
 #define MCF_CCM_RCON_RESERVED     (0x0001)
 #define MCF_CCM_RCON_PLL_MODE     (0x0003)
 #define MCF_CCM_RCON_OSC_MODE     (0x0005)
@@ -205,12 +125,8 @@
 #define MCF_CCM_RCON_LOAD         (0x0021)
 #define MCF_CCM_RCON_LIMP         (0x0041)
 #define MCF_CCM_RCON_CSC(x)       (((x)&0x0003)<<8|0x0001)
-
-/* Bit definitions and macros for MCF_CCM_CIR */
 #define MCF_CCM_CIR_PRN(x)        (((x)&0x003F)<<0)
 #define MCF_CCM_CIR_PIN(x)        (((x)&0x03FF)<<6)
-
-/* Bit definitions and macros for MCF_CCM_MISCCR */
 #define MCF_CCM_MISCCR_USBSRC     (0x0001)
 #define MCF_CCM_MISCCR_USBDIV     (0x0002)
 #define MCF_CCM_MISCCR_SSI_SRC    (0x0010)
@@ -220,18 +136,12 @@
 #define MCF_CCM_MISCCR_LCD_CHEN   (0x0100)
 #define MCF_CCM_MISCCR_LIMP       (0x1000)
 #define MCF_CCM_MISCCR_PLL_LOCK   (0x2000)
-
-/* Bit definitions and macros for MCF_CCM_CDR */
 #define MCF_CCM_CDR_SSIDIV(x)     (((x)&0x000F)<<0)
 #define MCF_CCM_CDR_LPDIV(x)      (((x)&0x000F)<<8)
-
-/* Bit definitions and macros for MCF_CCM_UHCSR */
 #define MCF_CCM_UHCSR_XPDE        (0x0001)
 #define MCF_CCM_UHCSR_UHMIE       (0x0002)
 #define MCF_CCM_UHCSR_WKUP        (0x0004)
 #define MCF_CCM_UHCSR_PORTIND(x)  (((x)&0x0003)<<14)
-
-/* Bit definitions and macros for MCF_CCM_UOCSR */
 #define MCF_CCM_UOCSR_XPDE        (0x0001)
 #define MCF_CCM_UOCSR_UOMIE       (0x0002)
 #define MCF_CCM_UOCSR_WKUP        (0x0004)
@@ -247,14 +157,6 @@
 #define MCF_CCM_UOCSR_DMPD        (0x1000)
 #define MCF_CCM_UOCSR_DPPD        (0x2000)
 #define MCF_CCM_UOCSR_PORTIND(x)  (((x)&0x0003)<<14)
-
-/*********************************************************************
- *
- * FlexBus Chip Selects (FBCS)
- *
- *********************************************************************/
-
-/* Register read/write macros */
 #define MCF_FBCS0_CSAR		0xFC008000
 #define MCF_FBCS0_CSMR		0xFC008004
 #define MCF_FBCS0_CSCR		0xFC008008
@@ -273,11 +175,7 @@
 #define MCF_FBCS5_CSAR		0xFC00803C
 #define MCF_FBCS5_CSMR		0xFC008040
 #define MCF_FBCS5_CSCR		0xFC008044
-
-/* Bit definitions and macros for MCF_FBCS_CSAR */
 #define MCF_FBCS_CSAR_BA(x)	((x)&0xFFFF0000)
-
-/* Bit definitions and macros for MCF_FBCS_CSMR */
 #define MCF_FBCS_CSMR_V		(0x00000001)
 #define MCF_FBCS_CSMR_WP	(0x00000100)
 #define MCF_FBCS_CSMR_BAM(x)	(((x)&0x0000FFFF)<<16)
@@ -300,8 +198,6 @@
 #define MCF_FBCS_CSMR_BAM_256K	(0x00030000)
 #define MCF_FBCS_CSMR_BAM_128K	(0x00010000)
 #define MCF_FBCS_CSMR_BAM_64K	(0x00000000)
-
-/* Bit definitions and macros for MCF_FBCS_CSCR */
 #define MCF_FBCS_CSCR_BSTW	(0x00000008)
 #define MCF_FBCS_CSCR_BSTR	(0x00000010)
 #define MCF_FBCS_CSCR_BEM	(0x00000020)
@@ -317,14 +213,6 @@
 #define MCF_FBCS_CSCR_PS_8	(0x0040)
 #define MCF_FBCS_CSCR_PS_16	(0x0080)
 #define MCF_FBCS_CSCR_PS_32	(0x0000)
-
-/*********************************************************************
- *
- * General Purpose I/O (GPIO)
- *
- *********************************************************************/
-
-/* Register read/write macros */
 #define MCFGPIO_PODR_FECH		(0xFC0A4000)
 #define MCFGPIO_PODR_FECL		(0xFC0A4001)
 #define MCFGPIO_PODR_SSI		(0xFC0A4002)
@@ -415,8 +303,6 @@
 #define MCFGPIO_DSCR_DEBUG		(0xFC0A4070)
 #define MCFGPIO_DSCR_CLKRST		(0xFC0A4071)
 #define MCFGPIO_DSCR_IRQ		(0xFC0A4072)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_FECH */
 #define MCF_GPIO_PODR_FECH_PODR_FECH0              (0x01)
 #define MCF_GPIO_PODR_FECH_PODR_FECH1              (0x02)
 #define MCF_GPIO_PODR_FECH_PODR_FECH2              (0x04)
@@ -425,8 +311,6 @@
 #define MCF_GPIO_PODR_FECH_PODR_FECH5              (0x20)
 #define MCF_GPIO_PODR_FECH_PODR_FECH6              (0x40)
 #define MCF_GPIO_PODR_FECH_PODR_FECH7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_FECL */
 #define MCF_GPIO_PODR_FECL_PODR_FECL0              (0x01)
 #define MCF_GPIO_PODR_FECL_PODR_FECL1              (0x02)
 #define MCF_GPIO_PODR_FECL_PODR_FECL2              (0x04)
@@ -435,46 +319,32 @@
 #define MCF_GPIO_PODR_FECL_PODR_FECL5              (0x20)
 #define MCF_GPIO_PODR_FECL_PODR_FECL6              (0x40)
 #define MCF_GPIO_PODR_FECL_PODR_FECL7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_SSI */
 #define MCF_GPIO_PODR_SSI_PODR_SSI0                (0x01)
 #define MCF_GPIO_PODR_SSI_PODR_SSI1                (0x02)
 #define MCF_GPIO_PODR_SSI_PODR_SSI2                (0x04)
 #define MCF_GPIO_PODR_SSI_PODR_SSI3                (0x08)
 #define MCF_GPIO_PODR_SSI_PODR_SSI4                (0x10)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_BUSCTL */
 #define MCF_GPIO_PODR_BUSCTL_POSDR_BUSCTL0         (0x01)
 #define MCF_GPIO_PODR_BUSCTL_PODR_BUSCTL1          (0x02)
 #define MCF_GPIO_PODR_BUSCTL_PODR_BUSCTL2          (0x04)
 #define MCF_GPIO_PODR_BUSCTL_PODR_BUSCTL3          (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_BE */
 #define MCF_GPIO_PODR_BE_PODR_BE0                  (0x01)
 #define MCF_GPIO_PODR_BE_PODR_BE1                  (0x02)
 #define MCF_GPIO_PODR_BE_PODR_BE2                  (0x04)
 #define MCF_GPIO_PODR_BE_PODR_BE3                  (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_CS */
 #define MCF_GPIO_PODR_CS_PODR_CS1                  (0x02)
 #define MCF_GPIO_PODR_CS_PODR_CS2                  (0x04)
 #define MCF_GPIO_PODR_CS_PODR_CS3                  (0x08)
 #define MCF_GPIO_PODR_CS_PODR_CS4                  (0x10)
 #define MCF_GPIO_PODR_CS_PODR_CS5                  (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_PWM */
 #define MCF_GPIO_PODR_PWM_PODR_PWM2                (0x04)
 #define MCF_GPIO_PODR_PWM_PODR_PWM3                (0x08)
 #define MCF_GPIO_PODR_PWM_PODR_PWM4                (0x10)
 #define MCF_GPIO_PODR_PWM_PODR_PWM5                (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_FECI2C */
 #define MCF_GPIO_PODR_FECI2C_PODR_FECI2C0          (0x01)
 #define MCF_GPIO_PODR_FECI2C_PODR_FECI2C1          (0x02)
 #define MCF_GPIO_PODR_FECI2C_PODR_FECI2C2          (0x04)
 #define MCF_GPIO_PODR_FECI2C_PODR_FECI2C3          (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_UART */
 #define MCF_GPIO_PODR_UART_PODR_UART0              (0x01)
 #define MCF_GPIO_PODR_UART_PODR_UART1              (0x02)
 #define MCF_GPIO_PODR_UART_PODR_UART2              (0x04)
@@ -483,26 +353,18 @@
 #define MCF_GPIO_PODR_UART_PODR_UART5              (0x20)
 #define MCF_GPIO_PODR_UART_PODR_UART6              (0x40)
 #define MCF_GPIO_PODR_UART_PODR_UART7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_QSPI */
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI0              (0x01)
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI1              (0x02)
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI2              (0x04)
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI3              (0x08)
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI4              (0x10)
 #define MCF_GPIO_PODR_QSPI_PODR_QSPI5              (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_TIMER */
 #define MCF_GPIO_PODR_TIMER_PODR_TIMER0            (0x01)
 #define MCF_GPIO_PODR_TIMER_PODR_TIMER1            (0x02)
 #define MCF_GPIO_PODR_TIMER_PODR_TIMER2            (0x04)
 #define MCF_GPIO_PODR_TIMER_PODR_TIMER3            (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_LCDDATAH */
 #define MCF_GPIO_PODR_LCDDATAH_PODR_LCDDATAH0      (0x01)
 #define MCF_GPIO_PODR_LCDDATAH_PODR_LCDDATAH1      (0x02)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_LCDDATAM */
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM0      (0x01)
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM1      (0x02)
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM2      (0x04)
@@ -511,8 +373,6 @@
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM5      (0x20)
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM6      (0x40)
 #define MCF_GPIO_PODR_LCDDATAM_PODR_LCDDATAM7      (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_LCDDATAL */
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL0      (0x01)
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL1      (0x02)
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL2      (0x04)
@@ -521,11 +381,7 @@
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL5      (0x20)
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL6      (0x40)
 #define MCF_GPIO_PODR_LCDDATAL_PODR_LCDDATAL7      (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_LCDCTLH */
 #define MCF_GPIO_PODR_LCDCTLH_PODR_LCDCTLH0        (0x01)
-
-/* Bit definitions and macros for MCF_GPIO_PODR_LCDCTLL */
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL0        (0x01)
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL1        (0x02)
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL2        (0x04)
@@ -534,8 +390,6 @@
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL5        (0x20)
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL6        (0x40)
 #define MCF_GPIO_PODR_LCDCTLL_PODR_LCDCTLL7        (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_FECH */
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH0              (0x01)
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH1              (0x02)
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH2              (0x04)
@@ -544,8 +398,6 @@
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH5              (0x20)
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH6              (0x40)
 #define MCF_GPIO_PDDR_FECH_PDDR_FECH7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_FECL */
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL0              (0x01)
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL1              (0x02)
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL2              (0x04)
@@ -554,46 +406,32 @@
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL5              (0x20)
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL6              (0x40)
 #define MCF_GPIO_PDDR_FECL_PDDR_FECL7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_SSI */
 #define MCF_GPIO_PDDR_SSI_PDDR_SSI0                (0x01)
 #define MCF_GPIO_PDDR_SSI_PDDR_SSI1                (0x02)
 #define MCF_GPIO_PDDR_SSI_PDDR_SSI2                (0x04)
 #define MCF_GPIO_PDDR_SSI_PDDR_SSI3                (0x08)
 #define MCF_GPIO_PDDR_SSI_PDDR_SSI4                (0x10)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_BUSCTL */
 #define MCF_GPIO_PDDR_BUSCTL_POSDR_BUSCTL0         (0x01)
 #define MCF_GPIO_PDDR_BUSCTL_PDDR_BUSCTL1          (0x02)
 #define MCF_GPIO_PDDR_BUSCTL_PDDR_BUSCTL2          (0x04)
 #define MCF_GPIO_PDDR_BUSCTL_PDDR_BUSCTL3          (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_BE */
 #define MCF_GPIO_PDDR_BE_PDDR_BE0                  (0x01)
 #define MCF_GPIO_PDDR_BE_PDDR_BE1                  (0x02)
 #define MCF_GPIO_PDDR_BE_PDDR_BE2                  (0x04)
 #define MCF_GPIO_PDDR_BE_PDDR_BE3                  (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_CS */
 #define MCF_GPIO_PDDR_CS_PDDR_CS1                  (0x02)
 #define MCF_GPIO_PDDR_CS_PDDR_CS2                  (0x04)
 #define MCF_GPIO_PDDR_CS_PDDR_CS3                  (0x08)
 #define MCF_GPIO_PDDR_CS_PDDR_CS4                  (0x10)
 #define MCF_GPIO_PDDR_CS_PDDR_CS5                  (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_PWM */
 #define MCF_GPIO_PDDR_PWM_PDDR_PWM2                (0x04)
 #define MCF_GPIO_PDDR_PWM_PDDR_PWM3                (0x08)
 #define MCF_GPIO_PDDR_PWM_PDDR_PWM4                (0x10)
 #define MCF_GPIO_PDDR_PWM_PDDR_PWM5                (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_FECI2C */
 #define MCF_GPIO_PDDR_FECI2C_PDDR_FECI2C0          (0x01)
 #define MCF_GPIO_PDDR_FECI2C_PDDR_FECI2C1          (0x02)
 #define MCF_GPIO_PDDR_FECI2C_PDDR_FECI2C2          (0x04)
 #define MCF_GPIO_PDDR_FECI2C_PDDR_FECI2C3          (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_UART */
 #define MCF_GPIO_PDDR_UART_PDDR_UART0              (0x01)
 #define MCF_GPIO_PDDR_UART_PDDR_UART1              (0x02)
 #define MCF_GPIO_PDDR_UART_PDDR_UART2              (0x04)
@@ -602,26 +440,18 @@
 #define MCF_GPIO_PDDR_UART_PDDR_UART5              (0x20)
 #define MCF_GPIO_PDDR_UART_PDDR_UART6              (0x40)
 #define MCF_GPIO_PDDR_UART_PDDR_UART7              (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_QSPI */
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI0              (0x01)
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI1              (0x02)
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI2              (0x04)
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI3              (0x08)
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI4              (0x10)
 #define MCF_GPIO_PDDR_QSPI_PDDR_QSPI5              (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_TIMER */
 #define MCF_GPIO_PDDR_TIMER_PDDR_TIMER0            (0x01)
 #define MCF_GPIO_PDDR_TIMER_PDDR_TIMER1            (0x02)
 #define MCF_GPIO_PDDR_TIMER_PDDR_TIMER2            (0x04)
 #define MCF_GPIO_PDDR_TIMER_PDDR_TIMER3            (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_LCDDATAH */
 #define MCF_GPIO_PDDR_LCDDATAH_PDDR_LCDDATAH0      (0x01)
 #define MCF_GPIO_PDDR_LCDDATAH_PDDR_LCDDATAH1      (0x02)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_LCDDATAM */
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM0      (0x01)
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM1      (0x02)
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM2      (0x04)
@@ -630,8 +460,6 @@
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM5      (0x20)
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM6      (0x40)
 #define MCF_GPIO_PDDR_LCDDATAM_PDDR_LCDDATAM7      (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_LCDDATAL */
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL0      (0x01)
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL1      (0x02)
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL2      (0x04)
@@ -640,11 +468,7 @@
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL5      (0x20)
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL6      (0x40)
 #define MCF_GPIO_PDDR_LCDDATAL_PDDR_LCDDATAL7      (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_LCDCTLH */
 #define MCF_GPIO_PDDR_LCDCTLH_PDDR_LCDCTLH0        (0x01)
-
-/* Bit definitions and macros for MCF_GPIO_PDDR_LCDCTLL */
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL0        (0x01)
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL1        (0x02)
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL2        (0x04)
@@ -653,8 +477,6 @@
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL5        (0x20)
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL6        (0x40)
 #define MCF_GPIO_PDDR_LCDCTLL_PDDR_LCDCTLL7        (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_FECH */
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH0          (0x01)
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH1          (0x02)
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH2          (0x04)
@@ -663,8 +485,6 @@
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH5          (0x20)
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH6          (0x40)
 #define MCF_GPIO_PPDSDR_FECH_PPDSDR_FECH7          (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_FECL */
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL0          (0x01)
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL1          (0x02)
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL2          (0x04)
@@ -673,46 +493,32 @@
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL5          (0x20)
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL6          (0x40)
 #define MCF_GPIO_PPDSDR_FECL_PPDSDR_FECL7          (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_SSI */
 #define MCF_GPIO_PPDSDR_SSI_PPDSDR_SSI0            (0x01)
 #define MCF_GPIO_PPDSDR_SSI_PPDSDR_SSI1            (0x02)
 #define MCF_GPIO_PPDSDR_SSI_PPDSDR_SSI2            (0x04)
 #define MCF_GPIO_PPDSDR_SSI_PPDSDR_SSI3            (0x08)
 #define MCF_GPIO_PPDSDR_SSI_PPDSDR_SSI4            (0x10)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_BUSCTL */
 #define MCF_GPIO_PPDSDR_BUSCTL_POSDR_BUSCTL0       (0x01)
 #define MCF_GPIO_PPDSDR_BUSCTL_PPDSDR_BUSCTL1      (0x02)
 #define MCF_GPIO_PPDSDR_BUSCTL_PPDSDR_BUSCTL2      (0x04)
 #define MCF_GPIO_PPDSDR_BUSCTL_PPDSDR_BUSCTL3      (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_BE */
 #define MCF_GPIO_PPDSDR_BE_PPDSDR_BE0              (0x01)
 #define MCF_GPIO_PPDSDR_BE_PPDSDR_BE1              (0x02)
 #define MCF_GPIO_PPDSDR_BE_PPDSDR_BE2              (0x04)
 #define MCF_GPIO_PPDSDR_BE_PPDSDR_BE3              (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_CS */
 #define MCF_GPIO_PPDSDR_CS_PPDSDR_CS1              (0x02)
 #define MCF_GPIO_PPDSDR_CS_PPDSDR_CS2              (0x04)
 #define MCF_GPIO_PPDSDR_CS_PPDSDR_CS3              (0x08)
 #define MCF_GPIO_PPDSDR_CS_PPDSDR_CS4              (0x10)
 #define MCF_GPIO_PPDSDR_CS_PPDSDR_CS5              (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_PWM */
 #define MCF_GPIO_PPDSDR_PWM_PPDSDR_PWM2            (0x04)
 #define MCF_GPIO_PPDSDR_PWM_PPDSDR_PWM3            (0x08)
 #define MCF_GPIO_PPDSDR_PWM_PPDSDR_PWM4            (0x10)
 #define MCF_GPIO_PPDSDR_PWM_PPDSDR_PWM5            (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_FECI2C */
 #define MCF_GPIO_PPDSDR_FECI2C_PPDSDR_FECI2C0      (0x01)
 #define MCF_GPIO_PPDSDR_FECI2C_PPDSDR_FECI2C1      (0x02)
 #define MCF_GPIO_PPDSDR_FECI2C_PPDSDR_FECI2C2      (0x04)
 #define MCF_GPIO_PPDSDR_FECI2C_PPDSDR_FECI2C3      (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_UART */
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART0          (0x01)
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART1          (0x02)
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART2          (0x04)
@@ -721,26 +527,18 @@
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART5          (0x20)
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART6          (0x40)
 #define MCF_GPIO_PPDSDR_UART_PPDSDR_UART7          (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_QSPI */
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI0          (0x01)
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI1          (0x02)
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI2          (0x04)
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI3          (0x08)
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI4          (0x10)
 #define MCF_GPIO_PPDSDR_QSPI_PPDSDR_QSPI5          (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_TIMER */
 #define MCF_GPIO_PPDSDR_TIMER_PPDSDR_TIMER0        (0x01)
 #define MCF_GPIO_PPDSDR_TIMER_PPDSDR_TIMER1        (0x02)
 #define MCF_GPIO_PPDSDR_TIMER_PPDSDR_TIMER2        (0x04)
 #define MCF_GPIO_PPDSDR_TIMER_PPDSDR_TIMER3        (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_LCDDATAH */
 #define MCF_GPIO_PPDSDR_LCDDATAH_PPDSDR_LCDDATAH0  (0x01)
 #define MCF_GPIO_PPDSDR_LCDDATAH_PPDSDR_LCDDATAH1  (0x02)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_LCDDATAM */
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM0  (0x01)
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM1  (0x02)
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM2  (0x04)
@@ -749,8 +547,6 @@
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM5  (0x20)
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM6  (0x40)
 #define MCF_GPIO_PPDSDR_LCDDATAM_PPDSDR_LCDDATAM7  (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_LCDDATAL */
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL0  (0x01)
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL1  (0x02)
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL2  (0x04)
@@ -759,11 +555,7 @@
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL5  (0x20)
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL6  (0x40)
 #define MCF_GPIO_PPDSDR_LCDDATAL_PPDSDR_LCDDATAL7  (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_LCDCTLH */
 #define MCF_GPIO_PPDSDR_LCDCTLH_PPDSDR_LCDCTLH0    (0x01)
-
-/* Bit definitions and macros for MCF_GPIO_PPDSDR_LCDCTLL */
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL0    (0x01)
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL1    (0x02)
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL2    (0x04)
@@ -772,8 +564,6 @@
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL5    (0x20)
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL6    (0x40)
 #define MCF_GPIO_PPDSDR_LCDCTLL_PPDSDR_LCDCTLL7    (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_FECH */
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH0            (0x01)
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH1            (0x02)
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH2            (0x04)
@@ -782,8 +572,6 @@
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH5            (0x20)
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH6            (0x40)
 #define MCF_GPIO_PCLRR_FECH_PCLRR_FECH7            (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_FECL */
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL0            (0x01)
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL1            (0x02)
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL2            (0x04)
@@ -792,46 +580,32 @@
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL5            (0x20)
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL6            (0x40)
 #define MCF_GPIO_PCLRR_FECL_PCLRR_FECL7            (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_SSI */
 #define MCF_GPIO_PCLRR_SSI_PCLRR_SSI0              (0x01)
 #define MCF_GPIO_PCLRR_SSI_PCLRR_SSI1              (0x02)
 #define MCF_GPIO_PCLRR_SSI_PCLRR_SSI2              (0x04)
 #define MCF_GPIO_PCLRR_SSI_PCLRR_SSI3              (0x08)
 #define MCF_GPIO_PCLRR_SSI_PCLRR_SSI4              (0x10)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_BUSCTL */
 #define MCF_GPIO_PCLRR_BUSCTL_POSDR_BUSCTL0        (0x01)
 #define MCF_GPIO_PCLRR_BUSCTL_PCLRR_BUSCTL1        (0x02)
 #define MCF_GPIO_PCLRR_BUSCTL_PCLRR_BUSCTL2        (0x04)
 #define MCF_GPIO_PCLRR_BUSCTL_PCLRR_BUSCTL3        (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_BE */
 #define MCF_GPIO_PCLRR_BE_PCLRR_BE0                (0x01)
 #define MCF_GPIO_PCLRR_BE_PCLRR_BE1                (0x02)
 #define MCF_GPIO_PCLRR_BE_PCLRR_BE2                (0x04)
 #define MCF_GPIO_PCLRR_BE_PCLRR_BE3                (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_CS */
 #define MCF_GPIO_PCLRR_CS_PCLRR_CS1                (0x02)
 #define MCF_GPIO_PCLRR_CS_PCLRR_CS2                (0x04)
 #define MCF_GPIO_PCLRR_CS_PCLRR_CS3                (0x08)
 #define MCF_GPIO_PCLRR_CS_PCLRR_CS4                (0x10)
 #define MCF_GPIO_PCLRR_CS_PCLRR_CS5                (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_PWM */
 #define MCF_GPIO_PCLRR_PWM_PCLRR_PWM2              (0x04)
 #define MCF_GPIO_PCLRR_PWM_PCLRR_PWM3              (0x08)
 #define MCF_GPIO_PCLRR_PWM_PCLRR_PWM4              (0x10)
 #define MCF_GPIO_PCLRR_PWM_PCLRR_PWM5              (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_FECI2C */
 #define MCF_GPIO_PCLRR_FECI2C_PCLRR_FECI2C0        (0x01)
 #define MCF_GPIO_PCLRR_FECI2C_PCLRR_FECI2C1        (0x02)
 #define MCF_GPIO_PCLRR_FECI2C_PCLRR_FECI2C2        (0x04)
 #define MCF_GPIO_PCLRR_FECI2C_PCLRR_FECI2C3        (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_UART */
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART0            (0x01)
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART1            (0x02)
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART2            (0x04)
@@ -840,26 +614,18 @@
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART5            (0x20)
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART6            (0x40)
 #define MCF_GPIO_PCLRR_UART_PCLRR_UART7            (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_QSPI */
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI0            (0x01)
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI1            (0x02)
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI2            (0x04)
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI3            (0x08)
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI4            (0x10)
 #define MCF_GPIO_PCLRR_QSPI_PCLRR_QSPI5            (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_TIMER */
 #define MCF_GPIO_PCLRR_TIMER_PCLRR_TIMER0          (0x01)
 #define MCF_GPIO_PCLRR_TIMER_PCLRR_TIMER1          (0x02)
 #define MCF_GPIO_PCLRR_TIMER_PCLRR_TIMER2          (0x04)
 #define MCF_GPIO_PCLRR_TIMER_PCLRR_TIMER3          (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_LCDDATAH */
 #define MCF_GPIO_PCLRR_LCDDATAH_PCLRR_LCDDATAH0    (0x01)
 #define MCF_GPIO_PCLRR_LCDDATAH_PCLRR_LCDDATAH1    (0x02)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_LCDDATAM */
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM0    (0x01)
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM1    (0x02)
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM2    (0x04)
@@ -868,8 +634,6 @@
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM5    (0x20)
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM6    (0x40)
 #define MCF_GPIO_PCLRR_LCDDATAM_PCLRR_LCDDATAM7    (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_LCDDATAL */
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL0    (0x01)
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL1    (0x02)
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL2    (0x04)
@@ -878,11 +642,7 @@
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL5    (0x20)
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL6    (0x40)
 #define MCF_GPIO_PCLRR_LCDDATAL_PCLRR_LCDDATAL7    (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_LCDCTLH */
 #define MCF_GPIO_PCLRR_LCDCTLH_PCLRR_LCDCTLH0      (0x01)
-
-/* Bit definitions and macros for MCF_GPIO_PCLRR_LCDCTLL */
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL0      (0x01)
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL1      (0x02)
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL2      (0x04)
@@ -891,8 +651,6 @@
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL5      (0x20)
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL6      (0x40)
 #define MCF_GPIO_PCLRR_LCDCTLL_PCLRR_LCDCTLL7      (0x80)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_FEC */
 #define MCF_GPIO_PAR_FEC_PAR_FEC_MII(x)            (((x)&0x03)<<0)
 #define MCF_GPIO_PAR_FEC_PAR_FEC_7W(x)             (((x)&0x03)<<2)
 #define MCF_GPIO_PAR_FEC_PAR_FEC_7W_GPIO           (0x00)
@@ -901,14 +659,10 @@
 #define MCF_GPIO_PAR_FEC_PAR_FEC_MII_GPIO          (0x00)
 #define MCF_GPIO_PAR_FEC_PAR_FEC_MII_UART          (0x01)
 #define MCF_GPIO_PAR_FEC_PAR_FEC_MII_FEC           (0x03)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_PWM */
 #define MCF_GPIO_PAR_PWM_PAR_PWM1(x)               (((x)&0x03)<<0)
 #define MCF_GPIO_PAR_PWM_PAR_PWM3(x)               (((x)&0x03)<<2)
 #define MCF_GPIO_PAR_PWM_PAR_PWM5                  (0x10)
 #define MCF_GPIO_PAR_PWM_PAR_PWM7                  (0x20)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_BUSCTL */
 #define MCF_GPIO_PAR_BUSCTL_PAR_TS(x)              (((x)&0x03)<<3)
 #define MCF_GPIO_PAR_BUSCTL_PAR_RWB                (0x20)
 #define MCF_GPIO_PAR_BUSCTL_PAR_TA                 (0x40)
@@ -922,8 +676,6 @@
 #define MCF_GPIO_PAR_BUSCTL_PAR_TS_GPIO            (0x00)
 #define MCF_GPIO_PAR_BUSCTL_PAR_TS_DACK0           (0x10)
 #define MCF_GPIO_PAR_BUSCTL_PAR_TS_TS              (0x18)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_FECI2C */
 #define MCF_GPIO_PAR_FECI2C_PAR_SDA(x)             (((x)&0x03)<<0)
 #define MCF_GPIO_PAR_FECI2C_PAR_SCL(x)             (((x)&0x03)<<2)
 #define MCF_GPIO_PAR_FECI2C_PAR_MDIO(x)            (((x)&0x03)<<4)
@@ -942,14 +694,10 @@
 #define MCF_GPIO_PAR_FECI2C_PAR_SDA_GPIO           (0x00)
 #define MCF_GPIO_PAR_FECI2C_PAR_SDA_URXD2          (0x02)
 #define MCF_GPIO_PAR_FECI2C_PAR_SDA_SDA            (0x03)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_BE */
 #define MCF_GPIO_PAR_BE_PAR_BE0                    (0x01)
 #define MCF_GPIO_PAR_BE_PAR_BE1                    (0x02)
 #define MCF_GPIO_PAR_BE_PAR_BE2                    (0x04)
 #define MCF_GPIO_PAR_BE_PAR_BE3                    (0x08)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_CS */
 #define MCF_GPIO_PAR_CS_PAR_CS1                    (0x02)
 #define MCF_GPIO_PAR_CS_PAR_CS2                    (0x04)
 #define MCF_GPIO_PAR_CS_PAR_CS3                    (0x08)
@@ -958,15 +706,11 @@
 #define MCF_GPIO_PAR_CS_PAR_CS_CS1_GPIO            (0x00)
 #define MCF_GPIO_PAR_CS_PAR_CS_CS1_SDCS1           (0x01)
 #define MCF_GPIO_PAR_CS_PAR_CS_CS1_CS1             (0x03)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_SSI */
 #define MCF_GPIO_PAR_SSI_PAR_MCLK                  (0x0080)
 #define MCF_GPIO_PAR_SSI_PAR_TXD(x)                (((x)&0x0003)<<8)
 #define MCF_GPIO_PAR_SSI_PAR_RXD(x)                (((x)&0x0003)<<10)
 #define MCF_GPIO_PAR_SSI_PAR_FS(x)                 (((x)&0x0003)<<12)
 #define MCF_GPIO_PAR_SSI_PAR_BCLK(x)               (((x)&0x0003)<<14)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_UART */
 #define MCF_GPIO_PAR_UART_PAR_UTXD0                (0x0001)
 #define MCF_GPIO_PAR_UART_PAR_URXD0                (0x0002)
 #define MCF_GPIO_PAR_UART_PAR_URTS0                (0x0004)
@@ -991,16 +735,12 @@
 #define MCF_GPIO_PAR_UART_PAR_UTXD1_SSI_TXD        (0x0020)
 #define MCF_GPIO_PAR_UART_PAR_UTXD1_ULPI_D4        (0x0010)
 #define MCF_GPIO_PAR_UART_PAR_UTXD1_UTXD1          (0x0030)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_QSPI */
 #define MCF_GPIO_PAR_QSPI_PAR_SCK(x)               (((x)&0x0003)<<4)
 #define MCF_GPIO_PAR_QSPI_PAR_DOUT(x)              (((x)&0x0003)<<6)
 #define MCF_GPIO_PAR_QSPI_PAR_DIN(x)               (((x)&0x0003)<<8)
 #define MCF_GPIO_PAR_QSPI_PAR_PCS0(x)              (((x)&0x0003)<<10)
 #define MCF_GPIO_PAR_QSPI_PAR_PCS1(x)              (((x)&0x0003)<<12)
 #define MCF_GPIO_PAR_QSPI_PAR_PCS2(x)              (((x)&0x0003)<<14)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_TIMER */
 #define MCF_GPIO_PAR_TIMER_PAR_TIN0(x)             (((x)&0x03)<<0)
 #define MCF_GPIO_PAR_TIMER_PAR_TIN1(x)             (((x)&0x03)<<2)
 #define MCF_GPIO_PAR_TIMER_PAR_TIN2(x)             (((x)&0x03)<<4)
@@ -1021,14 +761,10 @@
 #define MCF_GPIO_PAR_TIMER_PAR_TIN0_TOUT0          (0x02)
 #define MCF_GPIO_PAR_TIMER_PAR_TIN0_DREQ0          (0x01)
 #define MCF_GPIO_PAR_TIMER_PAR_TIN0_TIN0           (0x03)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_LCDDATA */
 #define MCF_GPIO_PAR_LCDDATA_PAR_LD7_0(x)          (((x)&0x03)<<0)
 #define MCF_GPIO_PAR_LCDDATA_PAR_LD15_8(x)         (((x)&0x03)<<2)
 #define MCF_GPIO_PAR_LCDDATA_PAR_LD16(x)           (((x)&0x03)<<4)
 #define MCF_GPIO_PAR_LCDDATA_PAR_LD17(x)           (((x)&0x03)<<6)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_LCDCTL */
 #define MCF_GPIO_PAR_LCDCTL_PAR_CLS                (0x0001)
 #define MCF_GPIO_PAR_LCDCTL_PAR_PS                 (0x0002)
 #define MCF_GPIO_PAR_LCDCTL_PAR_REV                (0x0004)
@@ -1038,104 +774,47 @@
 #define MCF_GPIO_PAR_LCDCTL_PAR_LP_HSYNC           (0x0040)
 #define MCF_GPIO_PAR_LCDCTL_PAR_FLM_VSYNC          (0x0080)
 #define MCF_GPIO_PAR_LCDCTL_PAR_ACD_OE             (0x0100)
-
-/* Bit definitions and macros for MCF_GPIO_PAR_IRQ */
 #define MCF_GPIO_PAR_IRQ_PAR_IRQ1(x)               (((x)&0x0003)<<4)
 #define MCF_GPIO_PAR_IRQ_PAR_IRQ2(x)               (((x)&0x0003)<<6)
 #define MCF_GPIO_PAR_IRQ_PAR_IRQ4(x)               (((x)&0x0003)<<8)
 #define MCF_GPIO_PAR_IRQ_PAR_IRQ5(x)               (((x)&0x0003)<<10)
 #define MCF_GPIO_PAR_IRQ_PAR_IRQ6(x)               (((x)&0x0003)<<12)
-
-/* Bit definitions and macros for MCF_GPIO_MSCR_FLEXBUS */
 #define MCF_GPIO_MSCR_FLEXBUS_MSCR_ADDRCTL(x)      (((x)&0x03)<<0)
 #define MCF_GPIO_MSCR_FLEXBUS_MSCR_DLOWER(x)       (((x)&0x03)<<2)
 #define MCF_GPIO_MSCR_FLEXBUS_MSCR_DUPPER(x)       (((x)&0x03)<<4)
-
-/* Bit definitions and macros for MCF_GPIO_MSCR_SDRAM */
 #define MCF_GPIO_MSCR_SDRAM_MSCR_SDRAM(x)          (((x)&0x03)<<0)
 #define MCF_GPIO_MSCR_SDRAM_MSCR_SDCLK(x)          (((x)&0x03)<<2)
 #define MCF_GPIO_MSCR_SDRAM_MSCR_SDCLKB(x)         (((x)&0x03)<<4)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_I2C */
 #define MCF_GPIO_DSCR_I2C_I2C_DSE(x)               (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_PWM */
 #define MCF_GPIO_DSCR_PWM_PWM_DSE(x)               (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_FEC */
 #define MCF_GPIO_DSCR_FEC_FEC_DSE(x)               (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_UART */
 #define MCF_GPIO_DSCR_UART_UART0_DSE(x)            (((x)&0x03)<<0)
 #define MCF_GPIO_DSCR_UART_UART1_DSE(x)            (((x)&0x03)<<2)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_QSPI */
 #define MCF_GPIO_DSCR_QSPI_QSPI_DSE(x)             (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_TIMER */
 #define MCF_GPIO_DSCR_TIMER_TIMER_DSE(x)           (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_SSI */
 #define MCF_GPIO_DSCR_SSI_SSI_DSE(x)               (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_LCD */
 #define MCF_GPIO_DSCR_LCD_LCD_DSE(x)               (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_DEBUG */
 #define MCF_GPIO_DSCR_DEBUG_DEBUG_DSE(x)           (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_CLKRST */
 #define MCF_GPIO_DSCR_CLKRST_CLKRST_DSE(x)         (((x)&0x03)<<0)
-
-/* Bit definitions and macros for MCF_GPIO_DSCR_IRQ */
 #define MCF_GPIO_DSCR_IRQ_IRQ_DSE(x)               (((x)&0x03)<<0)
-
-/*
- * Generic GPIO support
- */
 #define MCFGPIO_PODR			MCFGPIO_PODR_FECH
 #define MCFGPIO_PDDR			MCFGPIO_PDDR_FECH
 #define MCFGPIO_PPDR			MCFGPIO_PPDSDR_FECH
 #define MCFGPIO_SETR			MCFGPIO_PPDSDR_FECH
 #define MCFGPIO_CLRR			MCFGPIO_PCLRR_FECH
-
 #define MCFGPIO_PIN_MAX			136
 #define MCFGPIO_IRQ_MAX			8
 #define MCFGPIO_IRQ_VECBASE		MCFINT_VECBASE
-
-/*********************************************************************
- *
- * Phase Locked Loop (PLL)
- *
- *********************************************************************/
-
-/* Register read/write macros */
 #define MCF_PLL_PODR              0xFC0C0000
 #define MCF_PLL_PLLCR             0xFC0C0004
 #define MCF_PLL_PMDR              0xFC0C0008
 #define MCF_PLL_PFDR              0xFC0C000C
-
-/* Bit definitions and macros for MCF_PLL_PODR */
 #define MCF_PLL_PODR_BUSDIV(x)    (((x)&0x0F)<<0)
 #define MCF_PLL_PODR_CPUDIV(x)    (((x)&0x0F)<<4)
-
-/* Bit definitions and macros for MCF_PLL_PLLCR */
 #define MCF_PLL_PLLCR_DITHDEV(x)  (((x)&0x07)<<0)
 #define MCF_PLL_PLLCR_DITHEN      (0x80)
-
-/* Bit definitions and macros for MCF_PLL_PMDR */
 #define MCF_PLL_PMDR_MODDIV(x)    (((x)&0xFF)<<0)
-
-/* Bit definitions and macros for MCF_PLL_PFDR */
 #define MCF_PLL_PFDR_MFD(x)       (((x)&0xFF)<<0)
-
-/*********************************************************************
- *
- * System Control Module Registers (SCM)
- *
- *********************************************************************/
-
-/* Register read/write macros */
 #define MCF_SCM_MPR			0xFC000000
 #define MCF_SCM_PACRA			0xFC000020
 #define MCF_SCM_PACRB			0xFC000024
@@ -1143,16 +822,7 @@
 #define MCF_SCM_PACRD			0xFC00002C
 #define MCF_SCM_PACRE			0xFC000040
 #define MCF_SCM_PACRF			0xFC000044
-
 #define MCF_SCM_BCR			0xFC040024
-
-/*********************************************************************
- *
- * SDRAM Controller (SDRAMC)
- *
- *********************************************************************/
-
-/* Register read/write macros */
 #define MCF_SDRAMC_SDMR			0xFC0B8000
 #define MCF_SDRAMC_SDCR			0xFC0B8004
 #define MCF_SDRAMC_SDCFG1		0xFC0B8008
@@ -1163,15 +833,11 @@
 #define MCF_SDRAMC_SDCS1		0xFC0B8114
 #define MCF_SDRAMC_SDCS2		0xFC0B8118
 #define MCF_SDRAMC_SDCS3		0xFC0B811C
-
-/* Bit definitions and macros for MCF_SDRAMC_SDMR */
 #define MCF_SDRAMC_SDMR_CMD		(0x00010000)
 #define MCF_SDRAMC_SDMR_AD(x)		(((x)&0x00000FFF)<<18)
 #define MCF_SDRAMC_SDMR_BNKAD(x)	(((x)&0x00000003)<<30)
 #define MCF_SDRAMC_SDMR_BNKAD_LMR	(0x00000000)
 #define MCF_SDRAMC_SDMR_BNKAD_LEMR	(0x40000000)
-
-/* Bit definitions and macros for MCF_SDRAMC_SDCR */
 #define MCF_SDRAMC_SDCR_IPALL		(0x00000002)
 #define MCF_SDRAMC_SDCR_IREF		(0x00000004)
 #define MCF_SDRAMC_SDCR_DQS_OE(x)	(((x)&0x0000000F)<<8)
@@ -1185,8 +851,6 @@
 #define MCF_SDRAMC_SDCR_MODE_EN		(0x80000000)
 #define MCF_SDRAMC_SDCR_PS_16		(0x00002000)
 #define MCF_SDRAMC_SDCR_PS_32		(0x00000000)
-
-/* Bit definitions and macros for MCF_SDRAMC_SDCFG1 */
 #define MCF_SDRAMC_SDCFG1_WTLAT(x)	(((x)&0x00000007)<<4)
 #define MCF_SDRAMC_SDCFG1_REF2ACT(x)	(((x)&0x0000000F)<<8)
 #define MCF_SDRAMC_SDCFG1_PRE2ACT(x)	(((x)&0x00000007)<<12)
@@ -1194,24 +858,16 @@
 #define MCF_SDRAMC_SDCFG1_RDLAT(x)	(((x)&0x0000000F)<<20)
 #define MCF_SDRAMC_SDCFG1_SWT2RD(x)	(((x)&0x00000007)<<24)
 #define MCF_SDRAMC_SDCFG1_SRD2RW(x)	(((x)&0x0000000F)<<28)
-
-/* Bit definitions and macros for MCF_SDRAMC_SDCFG2 */
 #define MCF_SDRAMC_SDCFG2_BL(x)		(((x)&0x0000000F)<<16)
 #define MCF_SDRAMC_SDCFG2_BRD2WT(x)	(((x)&0x0000000F)<<20)
 #define MCF_SDRAMC_SDCFG2_BWT2RW(x)	(((x)&0x0000000F)<<24)
 #define MCF_SDRAMC_SDCFG2_BRD2PRE(x)	(((x)&0x0000000F)<<28)
-
-/* Device Errata - LIMP mode work around */
 #define MCF_SDRAMC_REFRESH		(0x40000000)
-
-/* Bit definitions and macros for MCF_SDRAMC_SDDS */
 #define MCF_SDRAMC_SDDS_SB_D(x)		(((x)&0x00000003)<<0)
 #define MCF_SDRAMC_SDDS_SB_S(x)		(((x)&0x00000003)<<2)
 #define MCF_SDRAMC_SDDS_SB_A(x)		(((x)&0x00000003)<<4)
 #define MCF_SDRAMC_SDDS_SB_C(x)		(((x)&0x00000003)<<6)
 #define MCF_SDRAMC_SDDS_SB_E(x)		(((x)&0x00000003)<<8)
-
-/* Bit definitions and macros for MCF_SDRAMC_SDCS */
 #define MCF_SDRAMC_SDCS_CSSZ(x)		(((x)&0x0000001F)<<0)
 #define MCF_SDRAMC_SDCS_BASE(x)		(((x)&0x00000FFF)<<20)
 #define MCF_SDRAMC_SDCS_BA(x)		((x)&0xFFF00000)
@@ -1229,22 +885,12 @@
 #define MCF_SDRAMC_SDCS_CSSZ_1GBYTE	(0x0000001D)
 #define MCF_SDRAMC_SDCS_CSSZ_2GBYTE	(0x0000001E)
 #define MCF_SDRAMC_SDCS_CSSZ_4GBYTE	(0x0000001F)
-
-/*
- * Edge Port Module (EPORT)
- */
 #define MCFEPORT_EPPAR                (0xFC094000)
 #define MCFEPORT_EPDDR                (0xFC094002)
 #define MCFEPORT_EPIER                (0xFC094003)
 #define MCFEPORT_EPDR                 (0xFC094004)
 #define MCFEPORT_EPPDR                (0xFC094005)
 #define MCFEPORT_EPFR                 (0xFC094006)
-
-/*
- * I2C Module
- */
 #define	MCFI2C_BASE0			(0xFc058000)
 #define	MCFI2C_SIZE0			0x40
-
-/********************************************************************/
-#endif	/* m53xxsim_h */
+#endif	 

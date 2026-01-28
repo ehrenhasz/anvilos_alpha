@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_8974_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_8974_H
-
 #define MMSS_AHB_CLK_SRC				0
 #define MMSS_AXI_CLK_SRC				1
 #define MMPLL0						2
@@ -149,13 +143,10 @@
 #define SPDM_CSI0					140
 #define SPDM_RM_AXI					141
 #define SPDM_RM_OCMEMNOC				142
-
-/* gdscs */
 #define VENUS0_GDSC					0
 #define MDSS_GDSC					1
 #define CAMSS_JPEG_GDSC					2
 #define CAMSS_VFE_GDSC					3
 #define OXILI_GDSC					4
 #define OXILICX_GDSC					5
-
 #endif

@@ -1,9 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * The canonical list of T10 Additional Sense Codes is available at:
- * http://www.t10.org/lists/asc-num.txt [most recent: 20200817]
- */
-
 SENSE_CODE(0x0000, "No additional sense information")
 SENSE_CODE(0x0001, "Filemark detected")
 SENSE_CODE(0x0002, "End-of-partition/medium detected")
@@ -30,15 +24,11 @@ SENSE_CODE(0x001F, "Logical unit transitioning to another power condition")
 SENSE_CODE(0x0020, "Extended copy information available")
 SENSE_CODE(0x0021, "Atomic command aborted due to ACA")
 SENSE_CODE(0x0022, "Deferred microcode is pending")
-
 SENSE_CODE(0x0100, "No index/sector signal")
-
 SENSE_CODE(0x0200, "No seek complete")
-
 SENSE_CODE(0x0300, "Peripheral device write fault")
 SENSE_CODE(0x0301, "No write current")
 SENSE_CODE(0x0302, "Excessive write errors")
-
 SENSE_CODE(0x0400, "Logical unit not ready, cause not reportable")
 SENSE_CODE(0x0401, "Logical unit is in process of becoming ready")
 SENSE_CODE(0x0402, "Logical unit not ready, initializing command required")
@@ -76,28 +66,21 @@ SENSE_CODE(0x0422, "Logical unit not ready, power cycle required")
 SENSE_CODE(0x0423, "Logical unit not ready, affiliation required")
 SENSE_CODE(0x0424, "Depopulation in progress")
 SENSE_CODE(0x0425, "Depopulation restoration in progress")
-
 SENSE_CODE(0x0500, "Logical unit does not respond to selection")
-
 SENSE_CODE(0x0600, "No reference position found")
-
 SENSE_CODE(0x0700, "Multiple peripheral devices selected")
-
 SENSE_CODE(0x0800, "Logical unit communication failure")
 SENSE_CODE(0x0801, "Logical unit communication time-out")
 SENSE_CODE(0x0802, "Logical unit communication parity error")
 SENSE_CODE(0x0803, "Logical unit communication CRC error (Ultra-DMA/32)")
 SENSE_CODE(0x0804, "Unreachable copy target")
-
 SENSE_CODE(0x0900, "Track following error")
 SENSE_CODE(0x0901, "Tracking servo failure")
 SENSE_CODE(0x0902, "Focus servo failure")
 SENSE_CODE(0x0903, "Spindle servo failure")
 SENSE_CODE(0x0904, "Head select fault")
 SENSE_CODE(0x0905, "Vibration induced tracking error")
-
 SENSE_CODE(0x0A00, "Error log overflow")
-
 SENSE_CODE(0x0B00, "Warning")
 SENSE_CODE(0x0B01, "Warning - specified temperature exceeded")
 SENSE_CODE(0x0B02, "Warning - enclosure degraded")
@@ -119,7 +102,6 @@ SENSE_CODE(0x0B11, "Warning - low operating humidity limit exceeded")
 SENSE_CODE(0x0B12, "Warning - microcode security at risk")
 SENSE_CODE(0x0B13, "Warning - microcode digital signature validation failure")
 SENSE_CODE(0x0B14, "Warning - physical element status change")
-
 SENSE_CODE(0x0C00, "Write error")
 SENSE_CODE(0x0C01, "Write error - recovered with auto reallocation")
 SENSE_CODE(0x0C02, "Write error - auto reallocation failed")
@@ -139,26 +121,22 @@ SENSE_CODE(0x0C0F, "Defects in error window")
 SENSE_CODE(0x0C10, "Incomplete multiple atomic write operations")
 SENSE_CODE(0x0C11, "Write error - recovery scan needed")
 SENSE_CODE(0x0C12, "Write error - insufficient zone resources")
-
 SENSE_CODE(0x0D00, "Error detected by third party temporary initiator")
 SENSE_CODE(0x0D01, "Third party device failure")
 SENSE_CODE(0x0D02, "Copy target device not reachable")
 SENSE_CODE(0x0D03, "Incorrect copy target device type")
 SENSE_CODE(0x0D04, "Copy target device data underrun")
 SENSE_CODE(0x0D05, "Copy target device data overrun")
-
 SENSE_CODE(0x0E00, "Invalid information unit")
 SENSE_CODE(0x0E01, "Information unit too short")
 SENSE_CODE(0x0E02, "Information unit too long")
 SENSE_CODE(0x0E03, "Invalid field in command information unit")
-
 SENSE_CODE(0x1000, "Id CRC or ECC error")
 SENSE_CODE(0x1001, "Logical block guard check failed")
 SENSE_CODE(0x1002, "Logical block application tag check failed")
 SENSE_CODE(0x1003, "Logical block reference tag check failed")
 SENSE_CODE(0x1004, "Logical block protection error on recover buffered data")
 SENSE_CODE(0x1005, "Logical block protection method error")
-
 SENSE_CODE(0x1100, "Unrecovered read error")
 SENSE_CODE(0x1101, "Read retries exhausted")
 SENSE_CODE(0x1102, "Error too long to correct")
@@ -181,11 +159,8 @@ SENSE_CODE(0x1112, "Auxiliary memory read error")
 SENSE_CODE(0x1113, "Read error - failed retransmission request")
 SENSE_CODE(0x1114, "Read error - lba marked bad by application client")
 SENSE_CODE(0x1115, "Write after sanitize required")
-
 SENSE_CODE(0x1200, "Address mark not found for id field")
-
 SENSE_CODE(0x1300, "Address mark not found for data field")
-
 SENSE_CODE(0x1400, "Recorded entity not found")
 SENSE_CODE(0x1401, "Record not found")
 SENSE_CODE(0x1402, "Filemark or setmark not found")
@@ -194,17 +169,14 @@ SENSE_CODE(0x1404, "Block sequence error")
 SENSE_CODE(0x1405, "Record not found - recommend reassignment")
 SENSE_CODE(0x1406, "Record not found - data auto-reallocated")
 SENSE_CODE(0x1407, "Locate operation failure")
-
 SENSE_CODE(0x1500, "Random positioning error")
 SENSE_CODE(0x1501, "Mechanical positioning error")
 SENSE_CODE(0x1502, "Positioning error detected by read of medium")
-
 SENSE_CODE(0x1600, "Data synchronization mark error")
 SENSE_CODE(0x1601, "Data sync error - data rewritten")
 SENSE_CODE(0x1602, "Data sync error - recommend rewrite")
 SENSE_CODE(0x1603, "Data sync error - data auto-reallocated")
 SENSE_CODE(0x1604, "Data sync error - recommend reassignment")
-
 SENSE_CODE(0x1700, "Recovered data with no error correction applied")
 SENSE_CODE(0x1701, "Recovered data with retries")
 SENSE_CODE(0x1702, "Recovered data with positive head offset")
@@ -215,7 +187,6 @@ SENSE_CODE(0x1706, "Recovered data without ECC - data auto-reallocated")
 SENSE_CODE(0x1707, "Recovered data without ECC - recommend reassignment")
 SENSE_CODE(0x1708, "Recovered data without ECC - recommend rewrite")
 SENSE_CODE(0x1709, "Recovered data without ECC - data rewritten")
-
 SENSE_CODE(0x1800, "Recovered data with error correction applied")
 SENSE_CODE(0x1801, "Recovered data with error corr. & retries applied")
 SENSE_CODE(0x1802, "Recovered data - data auto-reallocated")
@@ -225,27 +196,19 @@ SENSE_CODE(0x1805, "Recovered data - recommend reassignment")
 SENSE_CODE(0x1806, "Recovered data - recommend rewrite")
 SENSE_CODE(0x1807, "Recovered data with ECC - data rewritten")
 SENSE_CODE(0x1808, "Recovered data with linking")
-
 SENSE_CODE(0x1900, "Defect list error")
 SENSE_CODE(0x1901, "Defect list not available")
 SENSE_CODE(0x1902, "Defect list error in primary list")
 SENSE_CODE(0x1903, "Defect list error in grown list")
-
 SENSE_CODE(0x1A00, "Parameter list length error")
-
 SENSE_CODE(0x1B00, "Synchronous data transfer error")
-
 SENSE_CODE(0x1C00, "Defect list not found")
 SENSE_CODE(0x1C01, "Primary defect list not found")
 SENSE_CODE(0x1C02, "Grown defect list not found")
-
 SENSE_CODE(0x1D00, "Miscompare during verify operation")
 SENSE_CODE(0x1D01, "Miscompare verify of unmapped LBA")
-
 SENSE_CODE(0x1E00, "Recovered id with ECC correction")
-
 SENSE_CODE(0x1F00, "Partial defect list transfer")
-
 SENSE_CODE(0x2000, "Invalid command operation code")
 SENSE_CODE(0x2001, "Access denied - initiator pending-enrolled")
 SENSE_CODE(0x2002, "Access denied - no access rights")
@@ -262,7 +225,6 @@ SENSE_CODE(0x200C, "Illegal command when not in append-only mode")
 SENSE_CODE(0x200D, "Not an administrative logical unit")
 SENSE_CODE(0x200E, "Not a subsidiary logical unit")
 SENSE_CODE(0x200F, "Not a conglomerate logical unit")
-
 SENSE_CODE(0x2100, "Logical block address out of range")
 SENSE_CODE(0x2101, "Invalid element address")
 SENSE_CODE(0x2102, "Invalid address for write")
@@ -273,9 +235,7 @@ SENSE_CODE(0x2106, "Attempt to read invalid data")
 SENSE_CODE(0x2107, "Read boundary violation")
 SENSE_CODE(0x2108, "Misaligned write command")
 SENSE_CODE(0x2109, "Attempt to access gap zone")
-
 SENSE_CODE(0x2200, "Illegal function (use 20 00, 24 00, or 26 00)")
-
 SENSE_CODE(0x2300, "Invalid token operation, cause not reportable")
 SENSE_CODE(0x2301, "Invalid token operation, unsupported token type")
 SENSE_CODE(0x2302, "Invalid token operation, remote token usage not supported")
@@ -287,7 +247,6 @@ SENSE_CODE(0x2307, "Invalid token operation, token expired")
 SENSE_CODE(0x2308, "Invalid token operation, token cancelled")
 SENSE_CODE(0x2309, "Invalid token operation, token deleted")
 SENSE_CODE(0x230A, "Invalid token operation, invalid token length")
-
 SENSE_CODE(0x2400, "Invalid field in cdb")
 SENSE_CODE(0x2401, "CDB decryption error")
 SENSE_CODE(0x2402, "Obsolete")
@@ -298,9 +257,7 @@ SENSE_CODE(0x2406, "Nonce not unique")
 SENSE_CODE(0x2407, "Nonce timestamp out of range")
 SENSE_CODE(0x2408, "Invalid XCDB")
 SENSE_CODE(0x2409, "Invalid fast format")
-
 SENSE_CODE(0x2500, "Logical unit not supported")
-
 SENSE_CODE(0x2600, "Invalid field in parameter list")
 SENSE_CODE(0x2601, "Parameter not supported")
 SENSE_CODE(0x2602, "Parameter value invalid")
@@ -324,7 +281,6 @@ SENSE_CODE(0x2613, "Application tag mode page is invalid")
 SENSE_CODE(0x2614, "Tape stream mirroring prevented")
 SENSE_CODE(0x2615, "Copy source or copy destination not authorized")
 SENSE_CODE(0x2616, "Fast copy not possible")
-
 SENSE_CODE(0x2700, "Write protected")
 SENSE_CODE(0x2701, "Hardware write protected")
 SENSE_CODE(0x2702, "Logical unit software write protected")
@@ -334,12 +290,10 @@ SENSE_CODE(0x2705, "Permanent write protect")
 SENSE_CODE(0x2706, "Conditional write protect")
 SENSE_CODE(0x2707, "Space allocation failed write protect")
 SENSE_CODE(0x2708, "Zone is read only")
-
 SENSE_CODE(0x2800, "Not ready to ready change, medium may have changed")
 SENSE_CODE(0x2801, "Import or export element accessed")
 SENSE_CODE(0x2802, "Format-layer may have changed")
 SENSE_CODE(0x2803, "Import/export element accessed, medium changed")
-
 SENSE_CODE(0x2900, "Power on, reset, or bus device reset occurred")
 SENSE_CODE(0x2901, "Power on occurred")
 SENSE_CODE(0x2902, "Scsi bus reset occurred")
@@ -348,7 +302,6 @@ SENSE_CODE(0x2904, "Device internal reset")
 SENSE_CODE(0x2905, "Transceiver mode changed to single-ended")
 SENSE_CODE(0x2906, "Transceiver mode changed to lvd")
 SENSE_CODE(0x2907, "I_T nexus loss occurred")
-
 SENSE_CODE(0x2A00, "Parameters changed")
 SENSE_CODE(0x2A01, "Mode parameters changed")
 SENSE_CODE(0x2A02, "Log parameters changed")
@@ -370,9 +323,7 @@ SENSE_CODE(0x2A13, "Data encryption key instance counter has changed")
 SENSE_CODE(0x2A14, "SA creation capabilities data has changed")
 SENSE_CODE(0x2A15, "Medium removal prevention preempted")
 SENSE_CODE(0x2A16, "Zone reset write pointer recommended")
-
 SENSE_CODE(0x2B00, "Copy cannot execute since host cannot disconnect")
-
 SENSE_CODE(0x2C00, "Command sequence error")
 SENSE_CODE(0x2C01, "Too many windows specified")
 SENSE_CODE(0x2C02, "Invalid combination of windows specified")
@@ -393,19 +344,15 @@ SENSE_CODE(0x2C10, "Unwritten data in zone")
 SENSE_CODE(0x2C11, "Descriptor format sense data required")
 SENSE_CODE(0x2C12, "Zone is inactive")
 SENSE_CODE(0x2C13, "Well known logical unit access required")
-
 SENSE_CODE(0x2D00, "Overwrite error on update in place")
-
 SENSE_CODE(0x2E00, "Insufficient time for operation")
 SENSE_CODE(0x2E01, "Command timeout before processing")
 SENSE_CODE(0x2E02, "Command timeout during processing")
 SENSE_CODE(0x2E03, "Command timeout during processing due to error recovery")
-
 SENSE_CODE(0x2F00, "Commands cleared by another initiator")
 SENSE_CODE(0x2F01, "Commands cleared by power loss notification")
 SENSE_CODE(0x2F02, "Commands cleared by device server")
 SENSE_CODE(0x2F03, "Some commands cleared by queuing layer event")
-
 SENSE_CODE(0x3000, "Incompatible medium installed")
 SENSE_CODE(0x3001, "Cannot read medium - unknown format")
 SENSE_CODE(0x3002, "Cannot read medium - incompatible format")
@@ -423,47 +370,36 @@ SENSE_CODE(0x3010, "Medium not formatted")
 SENSE_CODE(0x3011, "Incompatible volume type")
 SENSE_CODE(0x3012, "Incompatible volume qualifier")
 SENSE_CODE(0x3013, "Cleaning volume expired")
-
 SENSE_CODE(0x3100, "Medium format corrupted")
 SENSE_CODE(0x3101, "Format command failed")
 SENSE_CODE(0x3102, "Zoned formatting failed due to spare linking")
 SENSE_CODE(0x3103, "Sanitize command failed")
 SENSE_CODE(0x3104, "Depopulation failed")
 SENSE_CODE(0x3105, "Depopulation restoration failed")
-
 SENSE_CODE(0x3200, "No defect spare location available")
 SENSE_CODE(0x3201, "Defect list update failure")
-
 SENSE_CODE(0x3300, "Tape length error")
-
 SENSE_CODE(0x3400, "Enclosure failure")
-
 SENSE_CODE(0x3500, "Enclosure services failure")
 SENSE_CODE(0x3501, "Unsupported enclosure function")
 SENSE_CODE(0x3502, "Enclosure services unavailable")
 SENSE_CODE(0x3503, "Enclosure services transfer failure")
 SENSE_CODE(0x3504, "Enclosure services transfer refused")
 SENSE_CODE(0x3505, "Enclosure services checksum error")
-
 SENSE_CODE(0x3600, "Ribbon, ink, or toner failure")
-
 SENSE_CODE(0x3700, "Rounded parameter")
-
 SENSE_CODE(0x3800, "Event status notification")
 SENSE_CODE(0x3802, "Esn - power management class event")
 SENSE_CODE(0x3804, "Esn - media class event")
 SENSE_CODE(0x3806, "Esn - device busy class event")
 SENSE_CODE(0x3807, "Thin Provisioning soft threshold reached")
 SENSE_CODE(0x3808, "Depopulation interrupted")
-
 SENSE_CODE(0x3900, "Saving parameters not supported")
-
 SENSE_CODE(0x3A00, "Medium not present")
 SENSE_CODE(0x3A01, "Medium not present - tray closed")
 SENSE_CODE(0x3A02, "Medium not present - tray open")
 SENSE_CODE(0x3A03, "Medium not present - loadable")
 SENSE_CODE(0x3A04, "Medium not present - medium auxiliary memory accessible")
-
 SENSE_CODE(0x3B00, "Sequential positioning error")
 SENSE_CODE(0x3B01, "Tape position error at beginning-of-medium")
 SENSE_CODE(0x3B02, "Tape position error at end-of-medium")
@@ -493,15 +429,12 @@ SENSE_CODE(0x3B1A, "Data transfer device removed")
 SENSE_CODE(0x3B1B, "Data transfer device inserted")
 SENSE_CODE(0x3B1C, "Too many logical objects on partition to support operation")
 SENSE_CODE(0x3B20, "Element static information changed")
-
 SENSE_CODE(0x3D00, "Invalid bits in identify message")
-
 SENSE_CODE(0x3E00, "Logical unit has not self-configured yet")
 SENSE_CODE(0x3E01, "Logical unit failure")
 SENSE_CODE(0x3E02, "Timeout on logical unit")
 SENSE_CODE(0x3E03, "Logical unit failed self-test")
 SENSE_CODE(0x3E04, "Logical unit unable to update self-test log")
-
 SENSE_CODE(0x3F00, "Target operating conditions have changed")
 SENSE_CODE(0x3F01, "Microcode has been changed")
 SENSE_CODE(0x3F02, "Changed operating definition")
@@ -529,23 +462,12 @@ SENSE_CODE(0x3F17, "Zone transition to full")
 SENSE_CODE(0x3F18, "Bind completed")
 SENSE_CODE(0x3F19, "Bind redirected")
 SENSE_CODE(0x3F1A, "Subsidiary binding changed")
-
-/*
- *	SENSE_CODE(0x40NN, "Ram failure")
- *	SENSE_CODE(0x40NN, "Diagnostic failure on component nn")
- *	SENSE_CODE(0x41NN, "Data path failure")
- *	SENSE_CODE(0x42NN, "Power-on or self-test failure")
- */
 SENSE_CODE(0x4300, "Message error")
-
 SENSE_CODE(0x4400, "Internal target failure")
 SENSE_CODE(0x4401, "Persistent reservation information lost")
 SENSE_CODE(0x4471, "ATA device failed set features")
-
 SENSE_CODE(0x4500, "Select or reselect failure")
-
 SENSE_CODE(0x4600, "Unsuccessful soft reset")
-
 SENSE_CODE(0x4700, "Scsi parity error")
 SENSE_CODE(0x4701, "Data phase CRC error detected")
 SENSE_CODE(0x4702, "Scsi parity error detected during st data phase")
@@ -554,13 +476,9 @@ SENSE_CODE(0x4704, "Asynchronous information protection error detected")
 SENSE_CODE(0x4705, "Protocol service CRC error")
 SENSE_CODE(0x4706, "Phy test function in progress")
 SENSE_CODE(0x477f, "Some commands cleared by iSCSI Protocol event")
-
 SENSE_CODE(0x4800, "Initiator detected error message received")
-
 SENSE_CODE(0x4900, "Invalid message error")
-
 SENSE_CODE(0x4A00, "Command phase error")
-
 SENSE_CODE(0x4B00, "Data phase error")
 SENSE_CODE(0x4B01, "Invalid target port transfer tag received")
 SENSE_CODE(0x4B02, "Too much write data")
@@ -583,22 +501,14 @@ SENSE_CODE(0x4B12, "PCIe eCRC check failed")
 SENSE_CODE(0x4B13, "PCIe unsupported request")
 SENSE_CODE(0x4B14, "PCIe acs violation")
 SENSE_CODE(0x4B15, "PCIe tlp prefix blocked")
-
 SENSE_CODE(0x4C00, "Logical unit failed self-configuration")
-/*
- *	SENSE_CODE(0x4DNN, "Tagged overlapped commands (nn = queue tag)")
- */
 SENSE_CODE(0x4E00, "Overlapped commands attempted")
-
 SENSE_CODE(0x5000, "Write append error")
 SENSE_CODE(0x5001, "Write append position error")
 SENSE_CODE(0x5002, "Position error related to timing")
-
 SENSE_CODE(0x5100, "Erase failure")
 SENSE_CODE(0x5101, "Erase failure - incomplete erase operation detected")
-
 SENSE_CODE(0x5200, "Cartridge fault")
-
 SENSE_CODE(0x5300, "Media load or eject failed")
 SENSE_CODE(0x5301, "Unload tape failure")
 SENSE_CODE(0x5302, "Medium removal prevented")
@@ -613,9 +523,7 @@ SENSE_CODE(0x530a, "Data transfer device error - unload failed")
 SENSE_CODE(0x530b, "Data transfer device error - unload missing")
 SENSE_CODE(0x530c, "Data transfer device error - eject failed")
 SENSE_CODE(0x530d, "Data transfer device error - library communication failed")
-
 SENSE_CODE(0x5400, "Scsi to host system interface failure")
-
 SENSE_CODE(0x5500, "System resource failure")
 SENSE_CODE(0x5501, "System buffer full")
 SENSE_CODE(0x5502, "Insufficient reservation resources")
@@ -634,27 +542,20 @@ SENSE_CODE(0x550E, "Insufficient zone resources")
 SENSE_CODE(0x550F, "Insufficient zone resources to complete write")
 SENSE_CODE(0x5510, "Maximum number of streams open")
 SENSE_CODE(0x5511, "Insufficient resources to bind")
-
 SENSE_CODE(0x5700, "Unable to recover table-of-contents")
-
 SENSE_CODE(0x5800, "Generation does not exist")
-
 SENSE_CODE(0x5900, "Updated block read")
-
 SENSE_CODE(0x5A00, "Operator request or state change input")
 SENSE_CODE(0x5A01, "Operator medium removal request")
 SENSE_CODE(0x5A02, "Operator selected write protect")
 SENSE_CODE(0x5A03, "Operator selected write permit")
-
 SENSE_CODE(0x5B00, "Log exception")
 SENSE_CODE(0x5B01, "Threshold condition met")
 SENSE_CODE(0x5B02, "Log counter at maximum")
 SENSE_CODE(0x5B03, "Log list codes exhausted")
-
 SENSE_CODE(0x5C00, "Rpl status change")
 SENSE_CODE(0x5C01, "Spindles synchronized")
 SENSE_CODE(0x5C02, "Spindles not synchronized")
-
 SENSE_CODE(0x5D00, "Failure prediction threshold exceeded")
 SENSE_CODE(0x5D01, "Media failure prediction threshold exceeded")
 SENSE_CODE(0x5D02, "Logical unit failure prediction threshold exceeded")
@@ -739,7 +640,6 @@ SENSE_CODE(0x5D6B, "Firmware impending failure spin-up retry count")
 SENSE_CODE(0x5D6C, "Firmware impending failure drive calibration retry count")
 SENSE_CODE(0x5D73, "Media impending failure endurance limit met")
 SENSE_CODE(0x5DFF, "Failure prediction threshold exceeded (false)")
-
 SENSE_CODE(0x5E00, "Low power condition on")
 SENSE_CODE(0x5E01, "Idle condition activated by timer")
 SENSE_CODE(0x5E02, "Standby condition activated by timer")
@@ -756,28 +656,20 @@ SENSE_CODE(0x5E42, "Power state change to idle")
 SENSE_CODE(0x5E43, "Power state change to standby")
 SENSE_CODE(0x5E45, "Power state change to sleep")
 SENSE_CODE(0x5E47, "Power state change to device control")
-
 SENSE_CODE(0x6000, "Lamp failure")
-
 SENSE_CODE(0x6100, "Video acquisition error")
 SENSE_CODE(0x6101, "Unable to acquire video")
 SENSE_CODE(0x6102, "Out of focus")
-
 SENSE_CODE(0x6200, "Scan head positioning error")
-
 SENSE_CODE(0x6300, "End of user area encountered on this track")
 SENSE_CODE(0x6301, "Packet does not fit in available space")
-
 SENSE_CODE(0x6400, "Illegal mode for this track")
 SENSE_CODE(0x6401, "Invalid packet size")
-
 SENSE_CODE(0x6500, "Voltage fault")
-
 SENSE_CODE(0x6600, "Automatic document feeder cover up")
 SENSE_CODE(0x6601, "Automatic document feeder lift up")
 SENSE_CODE(0x6602, "Document jam in automatic document feeder")
 SENSE_CODE(0x6603, "Document miss feed automatic in document feeder")
-
 SENSE_CODE(0x6700, "Configuration failure")
 SENSE_CODE(0x6701, "Configuration of incapable logical units failed")
 SENSE_CODE(0x6702, "Add logical unit failed")
@@ -792,26 +684,18 @@ SENSE_CODE(0x670A, "Set target port groups command failed")
 SENSE_CODE(0x670B, "ATA device feature not enabled")
 SENSE_CODE(0x670C, "Command rejected")
 SENSE_CODE(0x670D, "Explicit bind not allowed")
-
 SENSE_CODE(0x6800, "Logical unit not configured")
 SENSE_CODE(0x6801, "Subsidiary logical unit not configured")
-
 SENSE_CODE(0x6900, "Data loss on logical unit")
 SENSE_CODE(0x6901, "Multiple logical unit failures")
 SENSE_CODE(0x6902, "Parity/data mismatch")
-
 SENSE_CODE(0x6A00, "Informational, refer to log")
-
 SENSE_CODE(0x6B00, "State change has occurred")
 SENSE_CODE(0x6B01, "Redundancy level got better")
 SENSE_CODE(0x6B02, "Redundancy level got worse")
-
 SENSE_CODE(0x6C00, "Rebuild failure occurred")
-
 SENSE_CODE(0x6D00, "Recalculate failure occurred")
-
 SENSE_CODE(0x6E00, "Command to logical unit failed")
-
 SENSE_CODE(0x6F00, "Copy protection key exchange failure - authentication failure")
 SENSE_CODE(0x6F01, "Copy protection key exchange failure - key not present")
 SENSE_CODE(0x6F02, "Copy protection key exchange failure - key not established")
@@ -823,12 +707,7 @@ SENSE_CODE(0x6F07, "Conflict in binding nonce recording")
 SENSE_CODE(0x6F08, "Insufficient permission")
 SENSE_CODE(0x6F09, "Invalid drive-host pairing server")
 SENSE_CODE(0x6F0A, "Drive-host pairing suspended")
-
-/*
- *	SENSE_CODE(0x70NN, "Decompression exception short algorithm id of nn")
- */
 SENSE_CODE(0x7100, "Decompression exception long algorithm id")
-
 SENSE_CODE(0x7200, "Session fixation error")
 SENSE_CODE(0x7201, "Session fixation error writing lead-in")
 SENSE_CODE(0x7202, "Session fixation error writing lead-out")
@@ -837,7 +716,6 @@ SENSE_CODE(0x7204, "Empty or partially written reserved track")
 SENSE_CODE(0x7205, "No more track reservations allowed")
 SENSE_CODE(0x7206, "RMZ extension is not allowed")
 SENSE_CODE(0x7207, "No more test zone extensions are allowed")
-
 SENSE_CODE(0x7300, "Cd control error")
 SENSE_CODE(0x7301, "Power calibration area almost full")
 SENSE_CODE(0x7302, "Power calibration area is full")
@@ -848,7 +726,6 @@ SENSE_CODE(0x7306, "RMA/PMA is almost full")
 SENSE_CODE(0x7310, "Current power calibration area almost full")
 SENSE_CODE(0x7311, "Current power calibration area is full")
 SENSE_CODE(0x7317, "RDZ is full")
-
 SENSE_CODE(0x7400, "Security error")
 SENSE_CODE(0x7401, "Unable to decrypt data")
 SENSE_CODE(0x7402, "Unencrypted data encountered while decrypting")

@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ASM_ARCH_OMAP_IO_H
 #define __ASM_ARCH_OMAP_IO_H
-
 #ifndef __ASSEMBLER__
 #include <linux/types.h>
-
 #ifdef CONFIG_ARCH_OMAP1
-/*
- * NOTE: Please use ioremap + __raw_read/write where possible instead of these
- */
 extern u8 omap_readb(u32 pa);
 extern u16 omap_readw(u32 pa);
 extern u32 omap_readl(u32 pa);
@@ -24,26 +18,14 @@ static inline void omap_writew(u16 v, u32 pa)  { }
 static inline void omap_writel(u32 v, u32 pa)  { }
 #endif
 #endif
-
-/*
- * ----------------------------------------------------------------------------
- * System control registers
- * ----------------------------------------------------------------------------
- */
 #define MOD_CONF_CTRL_0		0xfffe1080
 #define MOD_CONF_CTRL_1		0xfffe1110
-
-/*
- * ---------------------------------------------------------------------------
- * UPLD
- * ---------------------------------------------------------------------------
- */
 #define ULPD_REG_BASE		(0xfffe0800)
 #define ULPD_IT_STATUS		(ULPD_REG_BASE + 0x14)
 #define ULPD_SETUP_ANALOG_CELL_3	(ULPD_REG_BASE + 0x24)
 #define ULPD_CLOCK_CTRL		(ULPD_REG_BASE + 0x30)
-#	define DIS_USB_PVCI_CLK		(1 << 5)	/* no USB/FAC synch */
-#	define USB_MCLK_EN		(1 << 4)	/* enable W4_USB_CLKO */
+#	define DIS_USB_PVCI_CLK		(1 << 5)	 
+#	define USB_MCLK_EN		(1 << 4)	 
 #define ULPD_SOFT_REQ		(ULPD_REG_BASE + 0x34)
 #	define SOFT_UDC_REQ		(1 << 4)
 #	define SOFT_USB_CLK_REQ		(1 << 3)
@@ -61,12 +43,6 @@ static inline void omap_writel(u32 v, u32 pa)  { }
 #	define DIS_USB_HOST_DPLL_REQ	(1 << 6)
 #define ULPD_SDW_CLK_DIV_CTRL_SEL	(ULPD_REG_BASE + 0x74)
 #define ULPD_CAM_CLK_CTRL	(ULPD_REG_BASE + 0x7c)
-
-/*
- * ----------------------------------------------------------------------------
- * Clocks
- * ----------------------------------------------------------------------------
- */
 #define CLKGEN_REG_BASE		(0xfffece00)
 #define ARM_CKCTL		(CLKGEN_REG_BASE + 0x0)
 #define ARM_IDLECT1		(CLKGEN_REG_BASE + 0x4)
@@ -76,37 +52,20 @@ static inline void omap_writel(u32 v, u32 pa)  { }
 #define ARM_RSTCT2		(CLKGEN_REG_BASE + 0x14)
 #define ARM_SYSST		(CLKGEN_REG_BASE + 0x18)
 #define ARM_IDLECT3		(CLKGEN_REG_BASE + 0x24)
-
 #define CK_RATEF		1
 #define CK_IDLEF		2
 #define CK_ENABLEF		4
 #define CK_SELECTF		8
 #define SETARM_IDLE_SHIFT
-
-/* DPLL control registers */
 #define DPLL_CTL		(0xfffecf00)
-
-/* DSP clock control. Must use __raw_readw() and __raw_writew() with these */
 #define DSP_CONFIG_REG_BASE     IOMEM(0xe1008000)
 #define DSP_CKCTL		(DSP_CONFIG_REG_BASE + 0x0)
 #define DSP_IDLECT1		(DSP_CONFIG_REG_BASE + 0x4)
 #define DSP_IDLECT2		(DSP_CONFIG_REG_BASE + 0x8)
 #define DSP_RSTCT2		(DSP_CONFIG_REG_BASE + 0x14)
-
-/*
- * ----------------------------------------------------------------------------
- * Pulse-Width Light
- * ----------------------------------------------------------------------------
- */
 #define OMAP_PWL_BASE			0xfffb5800
 #define OMAP_PWL_ENABLE			(OMAP_PWL_BASE + 0x00)
 #define OMAP_PWL_CLK_ENABLE		(OMAP_PWL_BASE + 0x04)
-
-/*
- * ----------------------------------------------------------------------------
- * Pin multiplexing registers
- * ----------------------------------------------------------------------------
- */
 #define FUNC_MUX_CTRL_0		0xfffe1000
 #define FUNC_MUX_CTRL_1		0xfffe1004
 #define FUNC_MUX_CTRL_2		0xfffe1008
@@ -127,8 +86,6 @@ static inline void omap_writel(u32 v, u32 pa)  { }
 #define PULL_DWN_CTRL_2		0xfffe1048
 #define PULL_DWN_CTRL_3		0xfffe104c
 #define PULL_DWN_CTRL_4		0xfffe10ac
-
-/* OMAP-1610 specific multiplexing registers */
 #define FUNC_MUX_CTRL_E		0xfffe1090
 #define FUNC_MUX_CTRL_F		0xfffe1094
 #define FUNC_MUX_CTRL_10	0xfffe1098
@@ -139,5 +96,4 @@ static inline void omap_writel(u32 v, u32 pa)  { }
 #define PU_PD_SEL_2		0xfffe10bc
 #define PU_PD_SEL_3		0xfffe10c0
 #define PU_PD_SEL_4		0xfffe10c4
-
 #endif

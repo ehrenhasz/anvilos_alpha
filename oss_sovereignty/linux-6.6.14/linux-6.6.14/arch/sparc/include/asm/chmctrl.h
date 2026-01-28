@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SPARC64_CHMCTRL_H
 #define _SPARC64_CHMCTRL_H
-
-/* Cheetah memory controller programmable registers. */
-#define CHMCTRL_TCTRL1		0x00 /* Memory Timing Control I		*/
-#define CHMCTRL_TCTRL2		0x08 /* Memory Timing Control II	*/
-#define CHMCTRL_TCTRL3		0x38 /* Memory Timing Control III	*/
-#define CHMCTRL_TCTRL4		0x40 /* Memory Timing Control IV	*/
-#define CHMCTRL_DECODE1		0x10 /* Memory Address Decode I		*/
-#define CHMCTRL_DECODE2		0x18 /* Memory Address Decode II	*/
-#define CHMCTRL_DECODE3		0x20 /* Memory Address Decode III	*/
-#define CHMCTRL_DECODE4		0x28 /* Memory Address Decode IV	*/
-#define CHMCTRL_MACTRL		0x30 /* Memory Address Control		*/
-
-/* Memory Timing Control I */
+#define CHMCTRL_TCTRL1		0x00  
+#define CHMCTRL_TCTRL2		0x08  
+#define CHMCTRL_TCTRL3		0x38  
+#define CHMCTRL_TCTRL4		0x40  
+#define CHMCTRL_DECODE1		0x10  
+#define CHMCTRL_DECODE2		0x18  
+#define CHMCTRL_DECODE3		0x20  
+#define CHMCTRL_DECODE4		0x28  
+#define CHMCTRL_MACTRL		0x30  
 #define TCTRL1_SDRAMCTL_DLY	0xf000000000000000UL
 #define TCTRL1_SDRAMCTL_DLY_SHIFT     60
 #define TCTRL1_SDRAMCLK_DLY	0x0e00000000000000UL
@@ -44,8 +39,6 @@
 #define TCTRL1_RFR_ENABLE_SHIFT	      1
 #define TCTRL1_PRECHG_ALL	0x0000000000000001UL
 #define TCTRL1_PRECHG_ALL_SHIFT	      0
-
-/* Memory Timing Control II */
 #define TCTRL2_WR_MSEL_DLY	0xfc00000000000000UL
 #define TCTRL2_WR_MSEL_DLY_SHIFT      58
 #define TCTRL2_RD_MSEL_DLY	0x03f0000000000000UL
@@ -70,8 +63,6 @@
 #define TCTRL2_R_SHIFT		      15
 #define TCTRL2_SDRAM_MODE_REG_DATA 0x0000000000007fffUL
 #define TCTRL2_SDRAM_MODE_REG_DATA_SHIFT 0
-
-/* Memory Timing Control III */
 #define TCTRL3_SDRAM_CTL_DLY	0xf000000000000000UL
 #define TCTRL3_SDRAM_CTL_DLY_SHIFT    60
 #define TCTRL3_SDRAM_CLK_DLY	0x0e00000000000000UL
@@ -102,8 +93,6 @@
 #define TCTRL3_RFR_ENABLE_SHIFT       1
 #define TCTRL3_PRECHG_ALL	0x0000000000000001UL
 #define TCTRL3_PRECHG_ALL_SHIFT	      0
-
-/* Memory Timing Control IV */
 #define TCTRL4_WR_MSEL_DLY	0xfc00000000000000UL
 #define TCTRL4_WR_MSEL_DLY_SHIFT      58
 #define TCTRL4_RD_MSEL_DLY	0x03f0000000000000UL
@@ -128,26 +117,20 @@
 #define TCTRL4_R_SHIFT		      15
 #define TCTRL4_SDRAM_MODE_REG_DATA 0x0000000000007fffUL
 #define TCTRL4_SDRAM_MODE_REG_DATA_SHIFT 0
-
-/* All 4 memory address decoding registers have the
- * same layout.
- */
-#define MEM_DECODE_VALID	0x8000000000000000UL /* Valid */
+#define MEM_DECODE_VALID	0x8000000000000000UL  
 #define MEM_DECODE_VALID_SHIFT	      63
-#define MEM_DECODE_UK		0x001ffe0000000000UL /* Upper mask */
+#define MEM_DECODE_UK		0x001ffe0000000000UL  
 #define MEM_DECODE_UK_SHIFT	      41
-#define MEM_DECODE_UM		0x0000001ffff00000UL /* Upper match */
+#define MEM_DECODE_UM		0x0000001ffff00000UL  
 #define MEM_DECODE_UM_SHIFT	      20
-#define MEM_DECODE_LK		0x000000000003c000UL /* Lower mask */
+#define MEM_DECODE_LK		0x000000000003c000UL  
 #define MEM_DECODE_LK_SHIFT	      14
-#define MEM_DECODE_LM		0x0000000000000f00UL /* Lower match */
+#define MEM_DECODE_LM		0x0000000000000f00UL  
 #define MEM_DECODE_LM_SHIFT           8
-
 #define PA_UPPER_BITS		0x000007fffc000000UL
 #define PA_UPPER_BITS_SHIFT	26
 #define PA_LOWER_BITS		0x00000000000003c0UL
 #define PA_LOWER_BITS_SHIFT	6
-
 #define MACTRL_R0		         0x8000000000000000UL
 #define MACTRL_R0_SHIFT		         63
 #define MACTRL_ADDR_LE_PW                0x7000000000000000UL
@@ -180,5 +163,4 @@
 #define MACTRL_BANKSEL_N_ROWADDR_SIZE_B0_SHIFT  5
 #define MACTRL_ENC_INTLV_B0              0x000000000000001fUL
 #define MACTRL_ENC_INTLV_B0_SHIFT               0
-
-#endif /* _SPARC64_CHMCTRL_H */
+#endif  

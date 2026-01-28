@@ -1,61 +1,22 @@
-/*
- * T1040 Silicon/SoC Device Tree Source (post include)
- *
- * Copyright 2013 - 2014 Freescale Semiconductor Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <dt-bindings/thermal/thermal.h>
-
 &bman_fbpr {
 	compatible = "fsl,bman-fbpr";
 	alloc-ranges = <0 0 0x10000 0>;
 };
-
 &qman_fqd {
 	compatible = "fsl,qman-fqd";
 	alloc-ranges = <0 0 0x10000 0>;
 };
-
 &qman_pfdr {
 	compatible = "fsl,qman-pfdr";
 	alloc-ranges = <0 0 0x10000 0>;
 };
-
 &ifc {
 	#address-cells = <2>;
 	#size-cells = <1>;
 	compatible = "fsl,ifc", "simple-bus";
 	interrupts = <25 2 0 0>;
 };
-
 &pci0 {
 	compatible = "fsl,t1040-pcie", "fsl,qoriq-pcie-v2.4", "fsl,qoriq-pcie";
 	device_type = "pci";
@@ -73,7 +34,6 @@
 		interrupts = <20 2 0 0>;
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0000 0 0 1 &mpic 40 1 0 0
 			0000 0 0 2 &mpic 1 1 0 0
 			0000 0 0 3 &mpic 2 1 0 0
@@ -81,7 +41,6 @@
 			>;
 	};
 };
-
 &pci1 {
 	compatible = "fsl,t1040-pcie", "fsl,qoriq-pcie-v2.4", "fsl,qoriq-pcie";
 	device_type = "pci";
@@ -99,7 +58,6 @@
 		interrupts = <21 2 0 0>;
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0000 0 0 1 &mpic 41 1 0 0
 			0000 0 0 2 &mpic 5 1 0 0
 			0000 0 0 3 &mpic 6 1 0 0
@@ -107,7 +65,6 @@
 			>;
 	};
 };
-
 &pci2 {
 	compatible = "fsl,t1040-pcie", "fsl,qoriq-pcie-v2.4", "fsl,qoriq-pcie";
 	device_type = "pci";
@@ -125,7 +82,6 @@
 		interrupts = <22 2 0 0>;
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0000 0 0 1 &mpic 42 1 0 0
 			0000 0 0 2 &mpic 9 1 0 0
 			0000 0 0 3 &mpic 10 1 0 0
@@ -133,7 +89,6 @@
 			>;
 	};
 };
-
 &pci3 {
 	compatible = "fsl,t1040-pcie", "fsl,qoriq-pcie-v2.4", "fsl,qoriq-pcie";
 	device_type = "pci";
@@ -151,7 +106,6 @@
 		interrupts = <23 2 0 0>;
 		interrupt-map-mask = <0xf800 0 0 7>;
 		interrupt-map = <
-			/* IDSEL 0x0 */
 			0000 0 0 1 &mpic 43 1 0 0
 			0000 0 0 2 &mpic 0 1 0 0
 			0000 0 0 3 &mpic 4 1 0 0
@@ -159,12 +113,10 @@
 			>;
 	};
 };
-
 &dcsr {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	compatible = "fsl,dcsr", "simple-bus";
-
 	dcsr-epu@0 {
 		compatible = "fsl,t1040-dcsr-epu", "fsl,dcsr-epu";
 		interrupts = <52 2 0 0
@@ -234,12 +186,10 @@
 		reg = <0x118000 0x1000 0x119000 0x1000>;
 	};
 };
-
 &bportals {
 	#address-cells = <0x1>;
 	#size-cells = <0x1>;
 	compatible = "simple-bus";
-
 	bman-portal@0 {
 		compatible = "fsl,bman-portal";
 		reg = <0x0 0x4000>, <0x1000000 0x1000>;
@@ -291,12 +241,10 @@
 		interrupts = <123 2 0 0>;
 	};
 };
-
 &qportals {
 	#address-cells = <0x1>;
 	#size-cells = <0x1>;
 	compatible = "simple-bus";
-
 	qportal0: qman-portal@0 {
 		compatible = "fsl,qman-portal";
 		reg = <0x0 0x4000>, <0x1000000 0x1000>;
@@ -358,37 +306,31 @@
 		cell-index = <0x9>;
 	};
 };
-
 &soc {
 	#address-cells = <1>;
 	#size-cells = <1>;
 	device_type = "soc";
 	compatible = "simple-bus";
-
 	soc-sram-error {
 		compatible = "fsl,soc-sram-error";
 		interrupts = <16 2 1 29>;
 	};
-
 	corenet-law@0 {
 		compatible = "fsl,corenet-law";
 		reg = <0x0 0x1000>;
 		fsl,num-laws = <16>;
 	};
-
 	ddr1: memory-controller@8000 {
 		compatible = "fsl,qoriq-memory-controller-v5.0",
 				"fsl,qoriq-memory-controller";
 		reg = <0x8000 0x1000>;
 		interrupts = <16 2 1 23>;
 	};
-
 	cpc: l3-cache-controller@10000 {
 		compatible = "fsl,t1040-l3-cache-controller", "cache";
 		reg = <0x10000 0x1000>;
 		interrupts = <16 2 1 27>;
 	};
-
 	corenet-cf@18000 {
 		compatible = "fsl,corenet2-cf", "fsl,corenet-cf";
 		reg = <0x18000 0x1000>;
@@ -396,7 +338,6 @@
 		fsl,ccf-num-csdids = <32>;
 		fsl,ccf-num-snoopids = <32>;
 	};
-
 	iommu@20000 {
 		compatible = "fsl,pamu-v1.0", "fsl,pamu";
 		reg = <0x20000 0x1000>;
@@ -412,36 +353,29 @@
 			fsl,secondary-cache-geometry = <16 2>;
 		};
 	};
-
 /include/ "qoriq-mpic.dtsi"
-
 	guts: global-utilities@e0000 {
 		compatible = "fsl,t1040-device-config", "fsl,qoriq-device-config-2.0";
 		reg = <0xe0000 0xe00>;
 		fsl,has-rstcr;
 		fsl,liodn-bits = <12>;
 	};
-
 /include/ "qoriq-clockgen2.dtsi"
 	global-utilities@e1000 {
 		compatible = "fsl,t1040-clockgen", "fsl,qoriq-clockgen-2.0";
 	};
-
 	rcpm: global-utilities@e2000 {
 		compatible = "fsl,t1040-rcpm", "fsl,qoriq-rcpm-2.1";
 		reg = <0xe2000 0x1000>;
 	};
-
 	sfp: sfp@e8000 {
 		compatible = "fsl,t1040-sfp";
 		reg	   = <0xe8000 0x1000>;
 	};
-
 	serdes: serdes@ea000 {
 		compatible = "fsl,t1040-serdes";
 		reg	   = <0xea000 0x4000>;
 	};
-
 	tmu: tmu@f0000 {
 		compatible = "fsl,qoriq-tmu";
 		reg = <0xf0000 0x1000>;
@@ -458,7 +392,6 @@
 				       0x00000008 0x0000004a
 				       0x00000009 0x0000004f
 				       0x0000000a 0x00000054
-
 				       0x00010000 0x0000000d
 				       0x00010001 0x00000013
 				       0x00010002 0x00000019
@@ -469,7 +402,6 @@
 				       0x00010007 0x00000043
 				       0x00010008 0x0000004b
 				       0x00010009 0x00000053
-
 				       0x00020000 0x00000010
 				       0x00020001 0x00000017
 				       0x00020002 0x0000001f
@@ -479,19 +411,15 @@
 				       0x00020006 0x00000042
 				       0x00020007 0x0000004d
 				       0x00020008 0x00000056
-
 				       0x00030000 0x00000012
 				       0x00030001 0x0000001d>;
 		#thermal-sensor-cells = <1>;
 	};
-
 	thermal-zones {
 		cpu_thermal: cpu-thermal {
 			polling-delay-passive = <1000>;
 			polling-delay = <5000>;
-
 			thermal-sensors = <&tmu 2>;
-
 			trips {
 				cpu_alert: cpu-alert {
 					temperature = <85000>;
@@ -504,7 +432,6 @@
 					type = "critical";
 				};
 			};
-
 			cooling-maps {
 				map0 {
 					trip = <&cpu_alert>;
@@ -533,24 +460,21 @@
 			};
 		};
 	};
-
 	scfg: global-utilities@fc000 {
 		compatible = "fsl,t1040-scfg";
 		reg = <0xfc000 0x1000>;
 	};
-
 /include/ "elo3-dma-0.dtsi"
 /include/ "elo3-dma-1.dtsi"
 /include/ "qoriq-espi-0.dtsi"
 	spi@110000 {
 		fsl,espi-num-chipselects = <4>;
 	};
-
 /include/ "qoriq-esdhc-0.dtsi"
 	sdhc@114000 {
 		compatible = "fsl,t1040-esdhc", "fsl,esdhc";
 		fsl,iommu-parent = <&pamu0>;
-		fsl,liodn-reg = <&guts 0x530>; /* eSDHCLIODNR */
+		fsl,liodn-reg = <&guts 0x530>;  
 		sdhci,auto-cmd12;
 	};
 /include/ "qoriq-i2c-0.dtsi"
@@ -565,7 +489,7 @@
 		usb0: usb@210000 {
 			compatible = "fsl-usb2-mph-v2.5", "fsl-usb2-mph";
 			fsl,iommu-parent = <&pamu0>;
-			fsl,liodn-reg = <&guts 0x520>; /* USB1LIODNR */
+			fsl,liodn-reg = <&guts 0x520>;  
 			phy_type = "utmi";
 			port0;
 		};
@@ -573,31 +497,28 @@
 		usb1: usb@211000 {
 			compatible = "fsl-usb2-dr-v2.5", "fsl-usb2-dr";
 			fsl,iommu-parent = <&pamu0>;
-			fsl,liodn-reg = <&guts 0x524>; /* USB2LIODNR */
+			fsl,liodn-reg = <&guts 0x524>;  
 			dr_mode = "host";
 			phy_type = "utmi";
 		};
-
 	display@180000 {
 		compatible = "fsl,t1040-diu", "fsl,diu";
 		reg = <0x180000 1000>;
 		interrupts = <74 2 0 0>;
 	};
-
 /include/ "qoriq-sata2-0.dtsi"
 	sata@220000 {
 		fsl,iommu-parent = <&pamu0>;
-		fsl,liodn-reg = <&guts 0x550>; /* SATA1LIODNR */
+		fsl,liodn-reg = <&guts 0x550>;  
 	};
 /include/ "qoriq-sata2-1.dtsi"
 	sata@221000 {
 		fsl,iommu-parent = <&pamu0>;
-		fsl,liodn-reg = <&guts 0x554>; /* SATA2LIODNR */
+		fsl,liodn-reg = <&guts 0x554>;  
 	};
 /include/ "qoriq-sec5.0-0.dtsi"
 /include/ "qoriq-qman3.dtsi"
 /include/ "qoriq-bman1.dtsi"
-
 /include/ "qoriq-fman3l-0.dtsi"
 /include/ "qoriq-fman3-0-1g-0.dtsi"
 /include/ "qoriq-fman3-0-1g-1.dtsi"
@@ -607,28 +528,21 @@
 	fman@400000 {
 		enet0: ethernet@e0000 {
 		};
-
 		enet1: ethernet@e2000 {
 		};
-
 		enet2: ethernet@e4000 {
 		};
-
 		enet3: ethernet@e6000 {
 		};
-
 		enet4: ethernet@e8000 {
 		};
-
 		mdio@fc000 {
 			interrupts = <100 1 0 0>;
 		};
-
 		mdio@fd000 {
 			status = "disabled";
 		};
 	};
-
 	seville_switch: ethernet-switch@800000 {
 		compatible = "mscc,vsc9953-switch";
 		reg = <0x800000 0x290000>;
@@ -638,69 +552,56 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "disabled";
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			seville_port0: port@0 {
 				reg = <0>;
 				status = "disabled";
 			};
-
 			seville_port1: port@1 {
 				reg = <1>;
 				status = "disabled";
 			};
-
 			seville_port2: port@2 {
 				reg = <2>;
 				status = "disabled";
 			};
-
 			seville_port3: port@3 {
 				reg = <3>;
 				status = "disabled";
 			};
-
 			seville_port4: port@4 {
 				reg = <4>;
 				status = "disabled";
 			};
-
 			seville_port5: port@5 {
 				reg = <5>;
 				status = "disabled";
 			};
-
 			seville_port6: port@6 {
 				reg = <6>;
 				status = "disabled";
 			};
-
 			seville_port7: port@7 {
 				reg = <7>;
 				status = "disabled";
 			};
-
 			seville_port8: port@8 {
 				reg = <8>;
 				phy-mode = "internal";
 				ethernet = <&enet0>;
 				status = "disabled";
-
 				fixed-link {
 					speed = <2500>;
 					full-duplex;
 				};
 			};
-
 			seville_port9: port@9 {
 				reg = <9>;
 				phy-mode = "internal";
 				ethernet = <&enet1>;
 				status = "disabled";
-
 				fixed-link {
 					speed = <2500>;
 					full-duplex;
@@ -709,7 +610,6 @@
 		};
 	};
 };
-
 &qe {
 	#address-cells = <1>;
 	#size-cells = <1>;
@@ -717,36 +617,31 @@
 	compatible = "fsl,qe";
 	fsl,qe-num-riscs = <1>;
 	fsl,qe-num-snums = <28>;
-
 	qeic: interrupt-controller@80 {
 		interrupt-controller;
 		compatible = "fsl,qe-ic";
 		#address-cells = <0>;
 		#interrupt-cells = <1>;
 		reg = <0x80 0x80>;
-		interrupts = <95 2 0 0  94 2 0 0>; //high:79 low:78
+		interrupts = <95 2 0 0  94 2 0 0>;  
 	};
-
 	ucc@2000 {
 		cell-index = <1>;
 		reg = <0x2000 0x200>;
 		interrupts = <32>;
 		interrupt-parent = <&qeic>;
 	};
-
 	ucc@2200 {
 		cell-index = <3>;
 		reg = <0x2200 0x200>;
 		interrupts = <34>;
 		interrupt-parent = <&qeic>;
 	};
-
 	muram@10000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "fsl,qe-muram", "fsl,cpm-muram";
 		ranges = <0x0 0x10000 0x6000>;
-
 		data-only@0 {
 			compatible = "fsl,qe-muram-data",
 			"fsl,cpm-muram-data";

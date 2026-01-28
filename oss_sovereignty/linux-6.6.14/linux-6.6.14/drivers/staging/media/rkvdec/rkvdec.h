@@ -1,68 +1,45 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Rockchip Video Decoder driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on rkvdec driver by Google LLC. (Tomasz Figa <tfiga@chromium.org>)
- * Based on s5p-mfc driver by Samsung Electronics Co., Ltd.
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- */
 #ifndef RKVDEC_H_
 #define RKVDEC_H_
-
 #include <linux/platform_device.h>
 #include <linux/videodev2.h>
 #include <linux/wait.h>
 #include <linux/clk.h>
-
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/videobuf2-core.h>
 #include <media/videobuf2-dma-contig.h>
-
 struct rkvdec_ctx;
-
 struct rkvdec_ctrl_desc {
 	struct v4l2_ctrl_config cfg;
 };
-
 struct rkvdec_ctrls {
 	const struct rkvdec_ctrl_desc *ctrls;
 	unsigned int num_ctrls;
 };
-
 struct rkvdec_run {
 	struct {
 		struct vb2_v4l2_buffer *src;
 		struct vb2_v4l2_buffer *dst;
 	} bufs;
 };
-
 struct rkvdec_vp9_decoded_buffer_info {
-	/* Info needed when the decoded frame serves as a reference frame. */
 	unsigned short width;
 	unsigned short height;
 	unsigned int bit_depth : 4;
 };
-
 struct rkvdec_decoded_buffer {
-	/* Must be the first field in this struct. */
 	struct v4l2_m2m_buffer base;
-
 	union {
 		struct rkvdec_vp9_decoded_buffer_info vp9;
 	};
 };
-
 static inline struct rkvdec_decoded_buffer *
 vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
 {
 	return container_of(buf, struct rkvdec_decoded_buffer,
 			    base.vb.vb2_buf);
 }
-
 struct rkvdec_coded_fmt_ops {
 	int (*adjust_fmt)(struct rkvdec_ctx *ctx,
 			  struct v4l2_format *f);
@@ -74,7 +51,6 @@ struct rkvdec_coded_fmt_ops {
 		     enum vb2_buffer_state result);
 	int (*try_ctrl)(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl);
 };
-
 struct rkvdec_coded_fmt_desc {
 	u32 fourcc;
 	struct v4l2_frmsize_stepwise frmsize;
@@ -84,7 +60,6 @@ struct rkvdec_coded_fmt_desc {
 	const u32 *decoded_fmts;
 	u32 subsystem_flags;
 };
-
 struct rkvdec_dev {
 	struct v4l2_device v4l2_dev;
 	struct media_device mdev;
@@ -93,10 +68,9 @@ struct rkvdec_dev {
 	struct device *dev;
 	struct clk_bulk_data *clocks;
 	void __iomem *regs;
-	struct mutex vdev_lock; /* serializes ioctls */
+	struct mutex vdev_lock;  
 	struct delayed_work watchdog_work;
 };
-
 struct rkvdec_ctx {
 	struct v4l2_fh fh;
 	struct v4l2_format coded_fmt;
@@ -106,22 +80,17 @@ struct rkvdec_ctx {
 	struct rkvdec_dev *dev;
 	void *priv;
 };
-
 static inline struct rkvdec_ctx *fh_to_rkvdec_ctx(struct v4l2_fh *fh)
 {
 	return container_of(fh, struct rkvdec_ctx, fh);
 }
-
 struct rkvdec_aux_buf {
 	void *cpu;
 	dma_addr_t dma;
 	size_t size;
 };
-
 void rkvdec_run_preamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
 void rkvdec_run_postamble(struct rkvdec_ctx *ctx, struct rkvdec_run *run);
-
 extern const struct rkvdec_coded_fmt_ops rkvdec_h264_fmt_ops;
 extern const struct rkvdec_coded_fmt_ops rkvdec_vp9_fmt_ops;
-
-#endif /* RKVDEC_H_ */
+#endif  

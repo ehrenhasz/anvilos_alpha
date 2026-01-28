@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  S390 version
- *
- *  Derived from "include/asm-i386/stat.h"
- */
-
 #ifndef _S390_STAT_H
 #define _S390_STAT_H
-
 #ifndef __s390x__
 struct __old_kernel_stat {
         unsigned short st_dev;
@@ -22,7 +14,6 @@ struct __old_kernel_stat {
         unsigned long  st_mtime;
         unsigned long  st_ctime;
 };
-
 struct stat {
         unsigned short st_dev;
         unsigned short __pad1;
@@ -45,10 +36,6 @@ struct stat {
         unsigned long  __unused4;
         unsigned long  __unused5;
 };
-
-/* This matches struct stat64 in glibc2.1, hence the absolutely
- * insane amounts of padding around dev_t's.
- */
 struct stat64 {
         unsigned long long	st_dev;
         unsigned int    __pad1;
@@ -63,19 +50,17 @@ struct stat64 {
         long long	st_size;
         unsigned long   st_blksize;
         unsigned char   __pad4[4];
-        unsigned long   __pad5;     /* future possible st_blocks high bits */
-        unsigned long   st_blocks;  /* Number 512-byte blocks allocated. */
+        unsigned long   __pad5;      
+        unsigned long   st_blocks;   
         unsigned long   st_atime;
         unsigned long   st_atime_nsec;
         unsigned long   st_mtime;
         unsigned long   st_mtime_nsec;
         unsigned long   st_ctime;
-        unsigned long   st_ctime_nsec;  /* will be high 32 bits of ctime someday */
+        unsigned long   st_ctime_nsec;   
         unsigned long long	st_ino;
 };
-
-#else /* __s390x__ */
-
+#else  
 struct stat {
         unsigned long  st_dev;
         unsigned long  st_ino;
@@ -96,9 +81,6 @@ struct stat {
         long           st_blocks;
         unsigned long  __unused[3];
 };
-
-#endif /* __s390x__ */
-
+#endif  
 #define STAT_HAVE_NSEC 1
-
 #endif

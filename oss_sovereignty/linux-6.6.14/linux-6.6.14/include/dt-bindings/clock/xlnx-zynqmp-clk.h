@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Xilinx Zynq MPSoC Firmware layer
- *
- *  Copyright (C) 2014-2018 Xilinx, Inc.
- *
- */
-
 #ifndef _DT_BINDINGS_CLK_ZYNQMP_H
 #define _DT_BINDINGS_CLK_ZYNQMP_H
-
 #define IOPLL			0
 #define RPLL			1
 #define APLL			2
@@ -122,5 +113,4 @@
 #define GEM2_REF_UNG		110
 #define GEM3_REF_UNG		111
 #define LPD_WDT			112
-
 #endif

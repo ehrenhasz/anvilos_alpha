@@ -1,22 +1,15 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
-
 #ifndef __SKL_WATERMARK_REGS_H__
 #define __SKL_WATERMARK_REGS_H__
-
 #include "intel_display_reg_defs.h"
-
 #define _PIPEA_MBUS_DBOX_CTL			0x7003C
 #define _PIPEB_MBUS_DBOX_CTL			0x7103C
 #define PIPE_MBUS_DBOX_CTL(pipe)		_MMIO_PIPE(pipe, _PIPEA_MBUS_DBOX_CTL, \
 							   _PIPEB_MBUS_DBOX_CTL)
-#define MBUS_DBOX_B2B_TRANSACTIONS_MAX_MASK	REG_GENMASK(24, 20) /* tgl+ */
+#define MBUS_DBOX_B2B_TRANSACTIONS_MAX_MASK	REG_GENMASK(24, 20)  
 #define MBUS_DBOX_B2B_TRANSACTIONS_MAX(x)	REG_FIELD_PREP(MBUS_DBOX_B2B_TRANSACTIONS_MAX_MASK, x)
-#define MBUS_DBOX_B2B_TRANSACTIONS_DELAY_MASK	REG_GENMASK(19, 17) /* tgl+ */
+#define MBUS_DBOX_B2B_TRANSACTIONS_DELAY_MASK	REG_GENMASK(19, 17)  
 #define MBUS_DBOX_B2B_TRANSACTIONS_DELAY(x)	REG_FIELD_PREP(MBUS_DBOX_B2B_TRANSACTIONS_DELAY_MASK, x)
-#define MBUS_DBOX_REGULATE_B2B_TRANSACTIONS_EN	REG_BIT(16) /* tgl+ */
+#define MBUS_DBOX_REGULATE_B2B_TRANSACTIONS_EN	REG_BIT(16)  
 #define MBUS_DBOX_BW_CREDIT_MASK		REG_GENMASK(15, 14)
 #define MBUS_DBOX_BW_CREDIT(x)			REG_FIELD_PREP(MBUS_DBOX_BW_CREDIT_MASK, x)
 #define MBUS_DBOX_BW_4CREDITS_MTL		REG_FIELD_PREP(MBUS_DBOX_BW_CREDIT_MASK, 0x2)
@@ -27,11 +20,9 @@
 #define MBUS_DBOX_I_CREDIT(x)			REG_FIELD_PREP(MBUS_DBOX_I_CREDIT_MASK, x)
 #define MBUS_DBOX_A_CREDIT_MASK			REG_GENMASK(3, 0)
 #define MBUS_DBOX_A_CREDIT(x)			REG_FIELD_PREP(MBUS_DBOX_A_CREDIT_MASK, x)
-
 #define MBUS_UBOX_CTL			_MMIO(0x4503C)
 #define MBUS_BBOX_CTL_S1		_MMIO(0x45040)
 #define MBUS_BBOX_CTL_S2		_MMIO(0x45044)
-
 #define MBUS_CTL			_MMIO(0x4438C)
 #define MBUS_JOIN			REG_BIT(31)
 #define MBUS_HASHING_MODE_MASK		REG_BIT(30)
@@ -40,8 +31,6 @@
 #define MBUS_JOIN_PIPE_SELECT_MASK	REG_GENMASK(28, 26)
 #define MBUS_JOIN_PIPE_SELECT(pipe)	REG_FIELD_PREP(MBUS_JOIN_PIPE_SELECT_MASK, pipe)
 #define MBUS_JOIN_PIPE_SELECT_NONE	MBUS_JOIN_PIPE_SELECT(7)
-
-/* Watermark register definitions for SKL */
 #define _CUR_WM_A_0		0x70140
 #define _CUR_WM_B_0		0x71140
 #define _CUR_WM_SAGV_A		0x70158
@@ -70,7 +59,6 @@
 #define   PLANE_WM_IGNORE_LINES	(1 << 30)
 #define   PLANE_WM_LINES_MASK	REG_GENMASK(26, 14)
 #define   PLANE_WM_BLOCKS_MASK	REG_GENMASK(11, 0)
-
 #define _CUR_WM_0(pipe) _PIPE(pipe, _CUR_WM_A_0, _CUR_WM_B_0)
 #define CUR_WM(pipe, level) _MMIO(_CUR_WM_0(pipe) + ((4) * (level)))
 #define CUR_WM_SAGV(pipe) _MMIO_PIPE(pipe, _CUR_WM_SAGV_A, _CUR_WM_SAGV_B)
@@ -100,7 +88,6 @@
 	_PIPE(pipe, _PLANE_WM_TRANS_2_A, _PLANE_WM_TRANS_2_B)
 #define PLANE_WM_TRANS(pipe, plane) \
 	_MMIO(_PLANE(plane, _PLANE_WM_TRANS_1(pipe), _PLANE_WM_TRANS_2(pipe)))
-
 #define _PLANE_BUF_CFG_1_B			0x7127c
 #define _PLANE_BUF_CFG_2_B			0x7137c
 #define _PLANE_BUF_CFG_1(pipe)	\
@@ -109,7 +96,6 @@
 	_PIPE(pipe, _PLANE_BUF_CFG_2_A, _PLANE_BUF_CFG_2_B)
 #define PLANE_BUF_CFG(pipe, plane)	\
 	_MMIO_PLANE(plane, _PLANE_BUF_CFG_1(pipe), _PLANE_BUF_CFG_2(pipe))
-
 #define _PLANE_NV12_BUF_CFG_1_B		0x71278
 #define _PLANE_NV12_BUF_CFG_2_B		0x71378
 #define _PLANE_NV12_BUF_CFG_1(pipe)	\
@@ -118,20 +104,9 @@
 	_PIPE(pipe, _PLANE_NV12_BUF_CFG_2_A, _PLANE_NV12_BUF_CFG_2_B)
 #define PLANE_NV12_BUF_CFG(pipe, plane)	\
 	_MMIO_PLANE(plane, _PLANE_NV12_BUF_CFG_1(pipe), _PLANE_NV12_BUF_CFG_2(pipe))
-
-/* SKL new cursor registers */
 #define _CUR_BUF_CFG_A				0x7017c
 #define _CUR_BUF_CFG_B				0x7117c
 #define CUR_BUF_CFG(pipe)	_MMIO_PIPE(pipe, _CUR_BUF_CFG_A, _CUR_BUF_CFG_B)
-
-/*
- * The below are numbered starting from "S1" on gen11/gen12, but starting
- * with display 13, the bspec switches to a 0-based numbering scheme
- * (although the addresses stay the same so new S0 = old S1, new S1 = old S2).
- * We'll just use the 0-based numbering here for all platforms since it's the
- * way things will be named by the hardware team going forward, plus it's more
- * consistent with how most of the rest of our registers are named.
- */
 #define _DBUF_CTL_S0				0x45008
 #define _DBUF_CTL_S1				0x44FE8
 #define _DBUF_CTL_S2				0x44300
@@ -145,16 +120,13 @@
 #define  DBUF_POWER_STATE			REG_BIT(30)
 #define  DBUF_TRACKER_STATE_SERVICE_MASK	REG_GENMASK(23, 19)
 #define  DBUF_TRACKER_STATE_SERVICE(x)		REG_FIELD_PREP(DBUF_TRACKER_STATE_SERVICE_MASK, x)
-#define  DBUF_MIN_TRACKER_STATE_SERVICE_MASK	REG_GENMASK(18, 16) /* ADL-P+ */
-#define  DBUF_MIN_TRACKER_STATE_SERVICE(x)		REG_FIELD_PREP(DBUF_MIN_TRACKER_STATE_SERVICE_MASK, x) /* ADL-P+ */
-
+#define  DBUF_MIN_TRACKER_STATE_SERVICE_MASK	REG_GENMASK(18, 16)  
+#define  DBUF_MIN_TRACKER_STATE_SERVICE(x)		REG_FIELD_PREP(DBUF_MIN_TRACKER_STATE_SERVICE_MASK, x)  
 #define MTL_LATENCY_LP0_LP1		_MMIO(0x45780)
 #define MTL_LATENCY_LP2_LP3		_MMIO(0x45784)
 #define MTL_LATENCY_LP4_LP5		_MMIO(0x45788)
 #define  MTL_LATENCY_LEVEL_EVEN_MASK	REG_GENMASK(12, 0)
 #define  MTL_LATENCY_LEVEL_ODD_MASK	REG_GENMASK(28, 16)
-
 #define MTL_LATENCY_SAGV		_MMIO(0x4578c)
 #define   MTL_LATENCY_QCLK_SAGV		REG_GENMASK(12, 0)
-
-#endif /* __SKL_WATERMARK_REGS_H__ */
+#endif  

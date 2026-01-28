@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2023 Marijn Suijten <marijn.suijten@somainline.org>. All rights reserved.
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_5_4_SM6125_H
 #define _DPU_5_4_SM6125_H
-
 static const struct dpu_caps sm6125_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0x6,
@@ -18,7 +10,6 @@ static const struct dpu_caps sm6125_dpu_caps = {
 	.max_hdeci_exp = MAX_HORZ_DECIMATION,
 	.max_vdeci_exp = MAX_VERT_DECIMATION,
 };
-
 static const struct dpu_mdp_cfg sm6125_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x45c,
@@ -29,7 +20,6 @@ static const struct dpu_mdp_cfg sm6125_mdp = {
 		[DPU_CLK_CTRL_DMA1] = { .reg_off = 0x2b4, .bit_off = 8 },
 	},
 };
-
 static const struct dpu_ctl_cfg sm6125_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -63,7 +53,6 @@ static const struct dpu_ctl_cfg sm6125_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
 	},
 };
-
 static const struct dpu_sspp_cfg sm6125_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -91,7 +80,6 @@ static const struct dpu_sspp_cfg sm6125_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA1,
 	},
 };
-
 static const struct dpu_lm_cfg sm6125_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -111,7 +99,6 @@ static const struct dpu_lm_cfg sm6125_lm[] = {
 		.lm_pair = LM_0,
 	},
 };
-
 static const struct dpu_dspp_cfg sm6125_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -120,7 +107,6 @@ static const struct dpu_dspp_cfg sm6125_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sm6125_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -140,7 +126,6 @@ static const struct dpu_pingpong_cfg sm6125_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_intf_cfg sm6125_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -164,12 +149,11 @@ static const struct dpu_intf_cfg sm6125_intf[] = {
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2),
 	},
 };
-
 static const struct dpu_perf_cfg sm6125_perf_data = {
 	.max_bw_low = 4100000,
 	.max_bw_high = 4100000,
 	.min_core_ib = 2400000,
-	.min_llcc_ib = 0, /* No LLCC on this SoC */
+	.min_llcc_ib = 0,  
 	.min_dram_ib = 800000,
 	.min_prefill_lines = 24,
 	.danger_lut_tbl = {0xf, 0xffff, 0x0},
@@ -184,7 +168,6 @@ static const struct dpu_perf_cfg sm6125_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},
@@ -193,12 +176,10 @@ static const struct dpu_perf_cfg sm6125_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sm6125_mdss_ver = {
 	.core_major_ver = 5,
 	.core_minor_ver = 4,
 };
-
 const struct dpu_mdss_cfg dpu_sm6125_cfg = {
 	.mdss_ver = &sm6125_mdss_ver,
 	.caps = &sm6125_dpu_caps,
@@ -219,5 +200,4 @@ const struct dpu_mdss_cfg dpu_sm6125_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sm6125_perf_data,
 };
-
 #endif

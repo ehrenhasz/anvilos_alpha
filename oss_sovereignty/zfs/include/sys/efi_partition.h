@@ -1,41 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2012 Nexenta Systems, Inc.  All rights reserved.
- */
-
 #ifndef	_SYS_EFI_PARTITION_H
 #define	_SYS_EFI_PARTITION_H extern __attribute__((visibility("default")))
-
 #include <sys/uuid.h>
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
-/*
- * GUID Partition Table Header
- */
-
 #define	EFI_MIN_LABEL_SIZE 92
 #define	EFI_LABEL_SIZE	512
 #define	LEN_EFI_PAD	(EFI_LABEL_SIZE - \
@@ -43,10 +11,7 @@ extern "C" {
 			    (7 * sizeof (uint_t)) + \
 			    (8 * sizeof (char)) + \
 			    (1 * (sizeof (struct uuid)))))
-
 #define	EFI_SIGNATURE	0x5452415020494645ULL
-
-/* EFI Guid Partition Table Header -- little endian on-disk format */
 typedef struct efi_gpt {
 	uint64_t	efi_gpt_Signature;
 	uint_t		efi_gpt_Revision;
@@ -64,26 +29,15 @@ typedef struct efi_gpt {
 	uint_t		efi_gpt_PartitionEntryArrayCRC32;
 	char		efi_gpt_Reserved2[LEN_EFI_PAD];
 } efi_gpt_t;
-
-/* EFI Guid Partition Entry Attributes -- little endian format */
 typedef struct efi_gpe_Attrs {
 	uint32_t	PartitionAttrs		:16,
 			Reserved2		:16;
 	uint32_t	Reserved1		:31,
 			RequiredPartition	:1;
 } efi_gpe_Attrs_t;
-
-/* MBR partition identification tags */
-#define	V_UNASSIGNED	0x00		/* unassigned partition */
-#define	V_USR		0x04		/* Usr filesystem */
-#define	V_RESERVED	0x0b		/* SMI reserved data */
-
-/*
- * 6a96237f-1dd2-11b2-99a6-080020736631	V_UNASSIGNED (not used as such)
- * 6a898cc3-1dd2-11b2-99a6-080020736631	V_USR
- * 6a945a3b-1dd2-11b2-99a6-080020736631	V_RESERVED
- */
-
+#define	V_UNASSIGNED	0x00		 
+#define	V_USR		0x04		 
+#define	V_RESERVED	0x0b		 
 #define	EFI_UNUSED		{ 0x00000000, 0x0000, 0x0000, 0x00, 0x00, \
 				    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } }
 #define	EFI_RESV1		{ 0x6a96237f, 0x1dd2, 0x11b2, 0x99, 0xa6, \
@@ -142,9 +96,6 @@ typedef struct efi_gpe_Attrs {
 				    { 0x00, 0x02, 0x2d, 0x09, 0x71, 0x2b } }
 #define	EFI_FREEBSD_ZFS		{ 0x516e7cba, 0x6ecf, 0x11d6, 0x8f, 0xf8, \
 				    { 0x00, 0x02, 0x2d, 0x09, 0x71, 0x2b } }
-
-/* From Wikipedia */
-
 #define	EFI_BIOS_BOOT		{ 0x21686148, 0x6449, 0x6e6f, 0x74, 0x4e, \
 				    { 0x65, 0x65, 0x64, 0x45, 0x46, 0x49 } }
 #define	EFI_INTC_RS		{ 0xd3bfe2de, 0x3daf, 0x11df, 0xba, 0x40, \
@@ -247,9 +198,6 @@ typedef struct efi_gpe_Attrs {
 				    { 0x00, 0x0c, 0x29, 0x11, 0xd1, 0xb8 } }
 #define	EFI_VMW_RESV		{ 0x9198effc, 0x31c0, 0x11db, 0x8f, 0x78, \
 				    { 0x00, 0x0c, 0x29, 0x11, 0xd1, 0xb8 } }
-
-/* From GPT fdisk */
-
 #define	EFI_RHT_ROOTX86		{ 0x44479540, 0xf297, 0x41b2, 0x9a, 0xf7, \
 				    { 0xd1, 0x31, 0xd5, 0xf0, 0x45, 0x8a } }
 #define	EFI_RHT_ROOTAMD64	{ 0x4f68bce3, 0xe8cd, 0x4db1, 0x96, 0xe7, \
@@ -268,16 +216,9 @@ typedef struct efi_gpe_Attrs {
 				    { 0x8b, 0x49, 0x52, 0x1e, 0x5a, 0x8b } }
 #define	EFI_FREEDESKTOP_BOOT	{ 0xbc13c2ff, 0x59e6, 0x4262, 0xa3, 0x52, \
 				    { 0xb2, 0x75, 0xfd, 0x6f, 0x71, 0x72 } }
-
-/* minimum # of bytes for partition table entries, per EFI spec */
 #define	EFI_MIN_ARRAY_SIZE	(16 * 1024)
-
 #define	EFI_PART_NAME_LEN	36
-
-/* size of the "reserved" partition, in blocks */
 #define	EFI_MIN_RESV_SIZE	(16 * 1024)
-
-/* EFI Guid Partition Entry */
 typedef struct efi_gpe {
 	struct uuid	efi_gpe_PartitionTypeGUID;
 	struct uuid	efi_gpe_UniquePartitionGUID;
@@ -286,54 +227,38 @@ typedef struct efi_gpe {
 	efi_gpe_Attrs_t	efi_gpe_Attributes;
 	ushort_t	efi_gpe_PartitionName[EFI_PART_NAME_LEN];
 } efi_gpe_t;
-
-/*
- * passed to the useful (we hope) routines (efi_alloc_and_read and
- * efi_write) that take this VTOC-like struct.  These routines handle
- * converting this struct into the EFI struct, generate UUIDs and
- * checksums, and perform any necessary byte-swapping to the on-disk
- * format.
- */
-/* Solaris library abstraction for EFI partitions */
 typedef struct dk_part	{
-	diskaddr_t	p_start;	/* starting LBA */
-	diskaddr_t	p_size;		/* size in blocks */
-	struct uuid	p_guid;		/* partition type GUID */
-	ushort_t	p_tag;		/* converted to part'n type GUID */
-	ushort_t	p_flag;		/* attributes */
-	char		p_name[EFI_PART_NAME_LEN]; /* partition name */
-	struct uuid	p_uguid;	/* unique partition GUID */
-	uint_t		p_resv[8];	/* future use - set to zero */
+	diskaddr_t	p_start;	 
+	diskaddr_t	p_size;		 
+	struct uuid	p_guid;		 
+	ushort_t	p_tag;		 
+	ushort_t	p_flag;		 
+	char		p_name[EFI_PART_NAME_LEN];  
+	struct uuid	p_uguid;	 
+	uint_t		p_resv[8];	 
 } dk_part_t;
-
-/* Solaris library abstraction for an EFI GPT */
 #define	EFI_VERSION102		0x00010002
 #define	EFI_VERSION100		0x00010000
 #define	EFI_VERSION_CURRENT	EFI_VERSION100
 typedef struct dk_gpt {
-	uint_t		efi_version;	/* set to EFI_VERSION_CURRENT */
-	uint_t		efi_nparts;	/* number of partitions below */
-	uint_t		efi_part_size;	/* size of each partition entry */
-					/* efi_part_size is unused */
-	uint_t		efi_lbasize;	/* size of block in bytes */
-	diskaddr_t	efi_last_lba;	/* last block on the disk */
-	diskaddr_t	efi_first_u_lba; /* first block after labels */
-	diskaddr_t	efi_last_u_lba;	/* last block before backup labels */
-	struct uuid	efi_disk_uguid;	/* unique disk GUID */
+	uint_t		efi_version;	 
+	uint_t		efi_nparts;	 
+	uint_t		efi_part_size;	 
+	uint_t		efi_lbasize;	 
+	diskaddr_t	efi_last_lba;	 
+	diskaddr_t	efi_first_u_lba;  
+	diskaddr_t	efi_last_u_lba;	 
+	struct uuid	efi_disk_uguid;	 
 	uint_t		efi_flags;
-	uint_t		efi_reserved1;	/* future use - set to zero */
-	diskaddr_t	efi_altern_lba;	/* lba of alternate GPT header */
-	uint_t		efi_reserved[12]; /* future use - set to zero */
-	struct dk_part	efi_parts[1];	/* array of partitions */
+	uint_t		efi_reserved1;	 
+	diskaddr_t	efi_altern_lba;	 
+	uint_t		efi_reserved[12];  
+	struct dk_part	efi_parts[1];	 
 } dk_gpt_t;
-
-/* possible values for "efi_flags" */
-#define	EFI_GPT_PRIMARY_CORRUPT	0x1	/* primary label corrupt */
-
-/* the private ioctl between libefi and the driver */
+#define	EFI_GPT_PRIMARY_CORRUPT	0x1	 
 typedef struct dk_efi {
-	diskaddr_t	 dki_lba;	/* starting block */
-	len_t		 dki_length;	/* length in bytes */
+	diskaddr_t	 dki_lba;	 
+	len_t		 dki_length;	 
 	union {
 		efi_gpt_t 	*_dki_data;
 		uint64_t	_dki_data_64;
@@ -341,7 +266,6 @@ typedef struct dk_efi {
 #define	dki_data	dki_un._dki_data
 #define	dki_data_64	dki_un._dki_data_64
 } dk_efi_t;
-
 struct partition64 {
 	struct uuid	p_type;
 	uint_t		p_partno;
@@ -349,22 +273,16 @@ struct partition64 {
 	diskaddr_t	p_start;
 	diskaddr_t	p_size;
 };
-
-/*
- * Number of EFI partitions
- */
 #if defined(__linux__)
-#define	EFI_NUMPAR	128 /* Expected by parted-1.8.1 */
+#define	EFI_NUMPAR	128  
 #else
 #define	EFI_NUMPAR	9
 #endif
-
 #ifndef _KERNEL
-#define	VT_ERROR	(-2)		/* errno supplies specific error */
-#define	VT_EIO		(-3)		/* I/O error accessing vtoc */
-#define	VT_EINVAL	(-4)		/* illegal value in vtoc or request */
-#define	VT_ENOSPC	(-6)		/* requested space not found */
-
+#define	VT_ERROR	(-2)		 
+#define	VT_EIO		(-3)		 
+#define	VT_EINVAL	(-4)		 
+#define	VT_ENOSPC	(-6)		 
 _SYS_EFI_PARTITION_H int efi_debug;
 _SYS_EFI_PARTITION_H int efi_alloc_and_init(int, uint32_t, struct dk_gpt **);
 _SYS_EFI_PARTITION_H int efi_alloc_and_read(int, struct dk_gpt **);
@@ -374,9 +292,7 @@ _SYS_EFI_PARTITION_H void efi_free(struct dk_gpt *);
 _SYS_EFI_PARTITION_H void efi_err_check(struct dk_gpt *);
 _SYS_EFI_PARTITION_H int efi_use_whole_disk(int fd);
 #endif
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _SYS_EFI_PARTITION_H */
+#endif  

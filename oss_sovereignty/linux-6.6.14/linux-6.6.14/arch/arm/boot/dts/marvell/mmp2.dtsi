@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2012 Marvell Technology Group Ltd.
- *  Author: Haojian Zhuang <haojian.zhuang@marvell.com>
- */
-
 #include <dt-bindings/clock/marvell,mmp2.h>
 #include <dt-bindings/power/marvell,mmp2.h>
 #include <dt-bindings/clock/marvell,mmp2-audio.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		serial0 = &uart1;
 		serial1 = &uart2;
@@ -20,26 +12,22 @@
 		i2c0 = &twsi1;
 		i2c1 = &twsi2;
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&intc>;
 		ranges;
-
 		L2: l2-cache {
 			compatible = "marvell,tauros2-cache";
 			marvell,tauros2-cache-features = <0x3>;
 		};
-
-		axi@d4200000 {	/* AXI */
+		axi@d4200000 {	 
 			compatible = "mrvl,axi-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0xd4200000 0x00200000>;
 			ranges;
-
 			gpu: gpu@d420d000 {
 				compatible = "vivante,gc";
 				reg = <0xd420d000 0x4000>;
@@ -50,7 +38,6 @@
 				clock-names = "core", "bus";
 				power-domains = <&soc_clocks MMP2_POWER_DOMAIN_GPU>;
 			};
-
 			intc: interrupt-controller@d4282000 {
 				compatible = "mrvl,mmp2-intc";
 				interrupt-controller;
@@ -58,7 +45,6 @@
 				reg = <0xd4282000 0x1000>;
 				mrvl,intc-nr-irqs = <64>;
 			};
-
 			intcmux4: interrupt-controller@d4282150 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <4>;
@@ -68,7 +54,6 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <2>;
 			};
-
 			intcmux5: interrupt-controller@d4282154 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <5>;
@@ -79,7 +64,6 @@
 				mrvl,intc-nr-irqs = <2>;
 				mrvl,clr-mfp-irq = <1>;
 			};
-
 			intcmux9: interrupt-controller@d4282180 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <9>;
@@ -89,7 +73,6 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <3>;
 			};
-
 			intcmux17: interrupt-controller@d4282158 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <17>;
@@ -99,7 +82,6 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <5>;
 			};
-
 			intcmux35: interrupt-controller@d428215c {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <35>;
@@ -109,7 +91,6 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <15>;
 			};
-
 			intcmux51: interrupt-controller@d4282160 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <51>;
@@ -119,7 +100,6 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <2>;
 			};
-
 			intcmux55: interrupt-controller@d4282188 {
 				compatible = "mrvl,mmp2-mux-intc";
 				interrupts = <55>;
@@ -129,14 +109,12 @@
 				reg-names = "mux status", "mux mask";
 				mrvl,intc-nr-irqs = <2>;
 			};
-
 			usb_phy0: usb-phy@d4207000 {
 				compatible = "marvell,mmp2-usb-phy";
 				reg = <0xd4207000 0x40>;
 				#phy-cells = <0>;
 				status = "disabled";
 			};
-
 			usb_otg0: usb-otg@d4208000 {
 				compatible = "marvell,pxau2o-ehci";
 				reg = <0xd4208000 0x200>;
@@ -147,7 +125,6 @@
 				phy-names = "usb";
 				status = "disabled";
 			};
-
 			mmc1: mmc@d4280000 {
 				compatible = "mrvl,pxav3-mmc";
 				reg = <0xd4280000 0x120>;
@@ -156,7 +133,6 @@
 				interrupts = <39>;
 				status = "disabled";
 			};
-
 			mmc2: mmc@d4280800 {
 				compatible = "mrvl,pxav3-mmc";
 				reg = <0xd4280800 0x120>;
@@ -165,7 +141,6 @@
 				interrupts = <52>;
 				status = "disabled";
 			};
-
 			mmc3: mmc@d4281000 {
 				compatible = "mrvl,pxav3-mmc";
 				reg = <0xd4281000 0x120>;
@@ -174,7 +149,6 @@
 				interrupts = <53>;
 				status = "disabled";
 			};
-
 			mmc4: mmc@d4281800 {
 				compatible = "mrvl,pxav3-mmc";
 				reg = <0xd4281800 0x120>;
@@ -183,7 +157,6 @@
 				interrupts = <54>;
 				status = "disabled";
 			};
-
 			camera0: camera@d420a000 {
 				compatible = "marvell,mmp2-ccic";
 				reg = <0xd420a000 0x800>;
@@ -194,7 +167,6 @@
 				clock-output-names = "mclk";
 				status = "disabled";
 			};
-
 			camera1: camera@d420a800 {
 				compatible = "marvell,mmp2-ccic";
 				reg = <0xd420a800 0x800>;
@@ -205,7 +177,6 @@
 				clock-output-names = "mclk";
 				status = "disabled";
 			};
-
 			adma0: dma-controller@d42a0800 {
 				compatible = "marvell,adma-1.0";
 				reg = <0xd42a0800 0x100>;
@@ -215,7 +186,6 @@
 				iram = <&asram>;
 				status = "disabled";
 			};
-
 			adma1: dma-controller@d42a0900 {
 				compatible = "marvell,adma-1.0";
 				reg = <0xd42a0900 0x100>;
@@ -223,7 +193,6 @@
 				#dma-cells = <1>;
 				status = "disabled";
 			};
-
 			audio_clk: clocks@d42a0c30 {
 				compatible = "marvell,mmp2-audio-clock";
 				reg = <0xd42a0c30 0x10>;
@@ -236,7 +205,6 @@
 				#clock-cells = <1>;
 				status = "disabled";
 			};
-
 			sspa0: audio-controller@d42a0c00 {
 				compatible = "marvell,mmp-sspa";
 				reg = <0xd42a0c00 0x30>,
@@ -249,7 +217,6 @@
 				#sound-dai-cells = <0>;
 				status = "disabled";
 			};
-
 			sspa1: audio-controller@d42a0d00 {
 				compatible = "marvell,mmp-sspa";
 				reg = <0xd42a0d00 0x30>,
@@ -263,31 +230,26 @@
 				status = "disabled";
 			};
 		};
-
-		apb@d4000000 {	/* APB */
+		apb@d4000000 {	 
 			compatible = "mrvl,apb-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0xd4000000 0x00200000>;
 			ranges;
-
 			dma-controller@d4000000 {
 				compatible = "marvell,pdma-1.0";
 				reg = <0xd4000000 0x10000>;
 				interrupts = <48>;
-				/* For backwards compatibility: */
 				#dma-channels = <16>;
 				dma-channels = <16>;
 				status = "disabled";
 			};
-
 			timer0: timer@d4014000 {
 				compatible = "mrvl,mmp-timer";
 				reg = <0xd4014000 0x100>;
 				interrupts = <13>;
 				clocks = <&soc_clocks MMP2_CLK_TIMER>;
 			};
-
 			uart1: serial@d4030000 {
 				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
 				reg = <0xd4030000 0x1000>;
@@ -297,7 +259,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			uart2: serial@d4017000 {
 				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
 				reg = <0xd4017000 0x1000>;
@@ -307,7 +268,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			uart3: serial@d4018000 {
 				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
 				reg = <0xd4018000 0x1000>;
@@ -317,7 +277,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			uart4: serial@d4016000 {
 				compatible = "mrvl,mmp-uart", "intel,xscale-uart";
 				reg = <0xd4016000 0x1000>;
@@ -327,7 +286,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			gpio: gpio@d4019000 {
 				compatible = "marvell,mmp2-gpio";
 				#address-cells = <1>;
@@ -342,32 +300,25 @@
 				interrupt-controller;
 				#interrupt-cells = <2>;
 				ranges;
-
 				gcb0: gpio@d4019000 {
 					reg = <0xd4019000 0x4>;
 				};
-
 				gcb1: gpio@d4019004 {
 					reg = <0xd4019004 0x4>;
 				};
-
 				gcb2: gpio@d4019008 {
 					reg = <0xd4019008 0x4>;
 				};
-
 				gcb3: gpio@d4019100 {
 					reg = <0xd4019100 0x4>;
 				};
-
 				gcb4: gpio@d4019104 {
 					reg = <0xd4019104 0x4>;
 				};
-
 				gcb5: gpio@d4019108 {
 					reg = <0xd4019108 0x4>;
 				};
 			};
-
 			twsi1: i2c@d4011000 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4011000 0x1000>;
@@ -379,7 +330,6 @@
 				mrvl,i2c-fast-mode;
 				status = "disabled";
 			};
-
 			twsi2: i2c@d4031000 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4031000 0x1000>;
@@ -391,7 +341,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			twsi3: i2c@d4032000 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4032000 0x1000>;
@@ -403,7 +352,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			twsi4: i2c@d4033000 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4033000 0x1000>;
@@ -415,8 +363,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
-
 			twsi5: i2c@d4033800 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4033800 0x1000>;
@@ -428,7 +374,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			twsi6: i2c@d4034000 {
 				compatible = "mrvl,mmp-twsi";
 				reg = <0xd4034000 0x1000>;
@@ -440,7 +385,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			rtc: rtc@d4010000 {
 				compatible = "mrvl,mmp-rtc";
 				reg = <0xd4010000 0x1000>;
@@ -451,7 +395,6 @@
 				resets = <&soc_clocks MMP2_CLK_RTC>;
 				status = "disabled";
 			};
-
 			ssp1: spi@d4035000 {
 				compatible = "marvell,mmp2-ssp";
 				reg = <0xd4035000 0x1000>;
@@ -461,7 +404,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			ssp2: spi@d4036000 {
 				compatible = "marvell,mmp2-ssp";
 				reg = <0xd4036000 0x1000>;
@@ -471,7 +413,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			ssp3: spi@d4037000 {
 				compatible = "marvell,mmp2-ssp";
 				reg = <0xd4037000 0x1000>;
@@ -481,7 +422,6 @@
 				#size-cells = <0>;
 				status = "disabled";
 			};
-
 			ssp4: spi@d4039000 {
 				compatible = "marvell,mmp2-ssp";
 				reg = <0xd4039000 0x1000>;
@@ -492,7 +432,6 @@
 				status = "disabled";
 			};
 		};
-
 		asram: sram@e0000000 {
 			compatible = "mmio-sram";
 			reg = <0xe0000000 0x10000>;
@@ -501,7 +440,6 @@
 			#size-cells = <1>;
 			status = "disabled";
 		};
-
 		soc_clocks: clocks {
 			compatible = "marvell,mmp2-clock";
 			reg = <0xd4050000 0x2000>,

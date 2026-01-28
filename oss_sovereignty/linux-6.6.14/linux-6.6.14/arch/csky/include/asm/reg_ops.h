@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_REGS_OPS_H
 #define __ASM_REGS_OPS_H
-
 #define mfcr(reg)		\
 ({				\
 	unsigned int tmp;	\
@@ -13,7 +10,6 @@
 	: "memory");		\
 	tmp;			\
 })
-
 #define mtcr(reg, val)		\
 ({				\
 	asm volatile(		\
@@ -22,5 +18,4 @@
 	: "r"(val)		\
 	: "memory");		\
 })
-
-#endif /* __ASM_REGS_OPS_H */
+#endif  

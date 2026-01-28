@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 /include/ "xtfpga.dtsi"
 /include/ "xtfpga-flash-128m.dtsi"
-
 / {
 	compatible = "cdns,xtensa-kc705";
 	chosen {
@@ -12,13 +10,10 @@
 		device_type = "memory";
 		reg = <0x00000000 0x38000000>;
 	};
-
 	reserved-memory {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
-		/* global autoconfigured region for contiguous allocations */
 		linux,cma {
 			compatible = "shared-dma-pool";
 			reusable;

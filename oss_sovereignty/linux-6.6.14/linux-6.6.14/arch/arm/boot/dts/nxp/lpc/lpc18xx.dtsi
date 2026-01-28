@@ -1,32 +1,14 @@
-/*
- * Common base for NXP LPC18xx and LPC43xx devices.
- *
- * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * This code is released using a dual license strategy: BSD/GPL
- * You can choose the licence that better fits your requirements.
- *
- * Released under the terms of 3-clause BSD License
- * Released under the terms of GNU General Public License Version 2.0
- *
- */
-
 #include "../../armv7-m.dtsi"
-
 #include "dt-bindings/clock/lpc18xx-cgu.h"
 #include "dt-bindings/clock/lpc18xx-ccu.h"
-
 #define LPC_PIN(port, pin)	(0x##port * 32 + pin)
 #define LPC_GPIO(port, pin)	(port * 32 + pin)
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu@0 {
 			compatible = "arm,cortex-m3";
 			device_type = "cpu";
@@ -34,34 +16,29 @@
 			clocks = <&ccu1 CLK_CPU_CORE>;
 		};
 	};
-
 	clocks {
 		xtal: xtal {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <12000000>;
 		};
-
 		xtal32: xtal32 {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
-
 		enet_rx_clk: enet_rx_clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <0>;
 			clock-output-names = "enet_rx_clk";
 		};
-
 		enet_tx_clk: enet_tx_clk {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <0>;
 			clock-output-names = "enet_tx_clk";
 		};
-
 		gp_clkin: gp_clkin {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
@@ -69,7 +46,6 @@
 			clock-output-names = "gp_clkin";
 		};
 	};
-
 	soc {
 		sct_pwm: pwm@40000000 {
 			compatible = "nxp,lpc1850-sct-pwm";
@@ -80,7 +56,6 @@
 			#pwm-cells = <3>;
 			status = "disabled";
 		};
-
 		dmac: dma-controller@40002000 {
 			compatible = "arm,pl080", "arm,primecell";
 			arm,primecell-periphid = <0x00041080>;
@@ -99,7 +74,6 @@
 			memcpy-burst-size = <256>;
 			memcpy-bus-width = <32>;
 		};
-
 		spifi: flash-controller@40003000 {
 			compatible = "nxp,lpc1773-spifi";
 			reg = <0x40003000 0x1000>, <0x14000000 0x4000000>;
@@ -110,7 +84,6 @@
 			resets = <&rgu 53>;
 			status = "disabled";
 		};
-
 		mmcsd: mmcsd@40004000 {
 			compatible = "snps,dw-mshc";
 			reg = <0x40004000 0x1000>;
@@ -120,7 +93,6 @@
 			resets = <&rgu 20>;
 			status = "disabled";
 		};
-
 		usb0: usb@40006100 {
 			compatible = "nxp,lpc1850-ehci", "generic-ehci";
 			reg = <0x40006100 0x100>;
@@ -132,7 +104,6 @@
 			has-transaction-translator;
 			status = "disabled";
 		};
-
 		usb1: usb@40007100 {
 			compatible = "nxp,lpc1850-ehci", "generic-ehci";
 			reg = <0x40007100 0x100>;
@@ -141,7 +112,6 @@
 			resets = <&rgu 18>;
 			status = "disabled";
 		};
-
 		emc: memory-controller@40005000 {
 			compatible = "arm,pl172", "arm,primecell";
 			reg = <0x40005000 0x1000>;
@@ -156,7 +126,6 @@
 				  3 0 0x1f000000 0x1000000>;
 			status = "disabled";
 		};
-
 		lcdc: lcd-controller@40008000 {
 			compatible = "arm,pl111", "arm,primecell";
 			reg = <0x40008000 0x1000>;
@@ -167,7 +136,6 @@
 			resets = <&rgu 16>;
 			status = "disabled";
 		};
-
 		eeprom: eeprom@4000e000 {
 			compatible = "nxp,lpc1857-eeprom";
 			reg = <0x4000e000 0x1000>, <0x20040000 0x4000>;
@@ -178,7 +146,6 @@
 			interrupts = <4>;
 			status = "disabled";
 		};
-
 		mac: ethernet@40010000 {
 			compatible = "nxp,lpc1850-dwmac", "snps,dwmac-3.611", "snps,dwmac";
 			reg = <0x40010000 0x2000>;
@@ -190,29 +157,25 @@
 			reset-names = "stmmaceth";
 			rx-fifo-depth = <256>;
 			tx-fifo-depth = <256>;
-			snps,pbl = <4>; /* 32 (8x mode) */
+			snps,pbl = <4>;  
 			snps,force_thresh_dma_mode;
 			status = "disabled";
 		};
-
 		creg: syscon@40043000 {
 			compatible = "nxp,lpc1850-creg", "syscon", "simple-mfd";
 			reg = <0x40043000 0x1000>;
 			clocks = <&ccu1 CLK_CPU_CREG>;
 			resets = <&rgu 5>;
-
 			creg_clk: clock-controller {
 				compatible = "nxp,lpc1850-creg-clk";
 				clocks = <&xtal32>;
 				#clock-cells = <1>;
 			};
-
 			usb0_otg_phy: phy {
 				compatible = "nxp,lpc1850-usb-otg-phy";
 				clocks = <&ccu1 CLK_USB0>;
 				#phy-cells = <0>;
 			};
-
 			dmamux: dma-mux {
 				compatible = "nxp,lpc1850-dmamux";
 				#dma-cells = <3>;
@@ -220,7 +183,6 @@
 				dma-masters = <&dmac>;
 			};
 		};
-
 		rtc: rtc@40046000 {
 			compatible = "nxp,lpc1850-rtc", "nxp,lpc1788-rtc";
 			reg = <0x40046000 0x1000>;
@@ -228,14 +190,12 @@
 			clocks = <&creg_clk 0>, <&ccu1 CLK_CPU_BUS>;
 			clock-names = "rtc", "reg";
 		};
-
 		cgu: clock-controller@40050000 {
 			compatible = "nxp,lpc1850-cgu";
 			reg = <0x40050000 0x1000>;
 			#clock-cells = <1>;
 			clocks = <&xtal>, <&creg_clk 1>, <&enet_rx_clk>, <&enet_tx_clk>, <&gp_clkin>;
 		};
-
 		ccu1: clock-controller@40051000 {
 			compatible = "nxp,lpc1850-ccu";
 			reg = <0x40051000 0x1000>;
@@ -249,7 +209,6 @@
 				      "base_periph_clk", "base_usb0_clk",
 				      "base_usb1_clk",   "base_spi_clk";
 		};
-
 		ccu2: clock-controller@40052000 {
 			compatible = "nxp,lpc1850-ccu";
 			reg = <0x40052000 0x1000>;
@@ -263,7 +222,6 @@
 				      "base_uart0_clk", "base_ssp1_clk",
 				      "base_ssp0_clk",  "base_sdio_clk";
 		};
-
 		rgu: reset-controller@40053000 {
 			compatible = "nxp,lpc1850-rgu";
 			reg = <0x40053000 0x1000>;
@@ -271,7 +229,6 @@
 			clock-names = "delay", "reg";
 			#reset-cells = <1>;
 		};
-
 		watchdog@40080000 {
 			compatible = "nxp,lpc1850-wwdt";
 			reg = <0x40080000 0x24>;
@@ -279,7 +236,6 @@
 			clocks = <&cgu BASE_SAFE_CLK>, <&ccu1 CLK_CPU_WWDT>;
 			clock-names = "wdtclk", "reg";
 		};
-
 		uart0: serial@40081000 {
 			compatible = "nxp,lpc1850-uart", "ns16550a";
 			reg = <0x40081000 0x1000>;
@@ -295,7 +251,6 @@
 			dma-names = "tx", "rx", "tx", "rx";
 			status = "disabled";
 		};
-
 		uart1: serial@40082000 {
 			compatible = "nxp,lpc1850-uart", "ns16550a";
 			reg = <0x40082000 0x1000>;
@@ -309,7 +264,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		ssp0: spi@40083000 {
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0x40083000 0x1000>;
@@ -324,7 +278,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		timer0: timer@40084000 {
 			compatible = "nxp,lpc3220-timer";
 			reg = <0x40084000 0x1000>;
@@ -333,7 +286,6 @@
 			clock-names = "timerclk";
 			resets = <&rgu 32>;
 		};
-
 		timer1: timer@40085000 {
 			compatible = "nxp,lpc3220-timer";
 			reg = <0x40085000 0x1000>;
@@ -342,13 +294,11 @@
 			clock-names = "timerclk";
 			resets = <&rgu 33>;
 		};
-
 		pinctrl: pinctrl@40086000 {
 			compatible = "nxp,lpc1850-scu";
 			reg = <0x40086000 0x1000>;
 			clocks = <&ccu1 CLK_CPU_SCU>;
 		};
-
 		i2c0: i2c@400a1000 {
 			compatible = "nxp,lpc1788-i2c";
 			reg = <0x400a1000 0x1000>;
@@ -359,7 +309,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		can1: can@400a4000 {
 			compatible = "bosch,c_can";
 			reg = <0x400a4000 0x1000>;
@@ -368,7 +317,6 @@
 			resets = <&rgu 54>;
 			status = "disabled";
 		};
-
 		uart2: serial@400c1000 {
 			compatible = "nxp,lpc1850-uart", "ns16550a";
 			reg = <0x400c1000 0x1000>;
@@ -382,7 +330,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		uart3: serial@400c2000 {
 			compatible = "nxp,lpc1850-uart", "ns16550a";
 			reg = <0x400c2000 0x1000>;
@@ -398,7 +345,6 @@
 			dma-names = "tx", "rx", "rx", "tx";
 			status = "disabled";
 		};
-
 		timer2: timer@400c3000 {
 			compatible = "nxp,lpc3220-timer";
 			reg = <0x400c3000 0x1000>;
@@ -407,7 +353,6 @@
 			clock-names = "timerclk";
 			resets = <&rgu 34>;
 		};
-
 		timer3: timer@400c4000 {
 			compatible = "nxp,lpc3220-timer";
 			reg = <0x400c4000 0x1000>;
@@ -416,7 +361,6 @@
 			clock-names = "timerclk";
 			resets = <&rgu 35>;
 		};
-
 		ssp1: spi@400c5000 {
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0x400c5000 0x1000>;
@@ -438,7 +382,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@400e0000 {
 			compatible = "nxp,lpc1788-i2c";
 			reg = <0x400e0000 0x1000>;
@@ -449,7 +392,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		dac: dac@400e1000 {
 			compatible = "nxp,lpc1850-dac";
 			reg = <0x400e1000 0x1000>;
@@ -458,7 +400,6 @@
 			resets = <&rgu 42>;
 			status = "disabled";
 		};
-
 		can0: can@400e2000 {
 			compatible = "bosch,c_can";
 			reg = <0x400e2000 0x1000>;
@@ -467,7 +408,6 @@
 			resets = <&rgu 55>;
 			status = "disabled";
 		};
-
 		adc0: adc@400e3000 {
 			compatible = "nxp,lpc1850-adc";
 			reg = <0x400e3000 0x1000>;
@@ -476,7 +416,6 @@
 			resets = <&rgu 40>;
 			status = "disabled";
 		};
-
 		adc1: adc@400e4000 {
 			compatible = "nxp,lpc1850-adc";
 			reg = <0x400e4000 0x1000>;
@@ -485,7 +424,6 @@
 			resets = <&rgu 41>;
 			status = "disabled";
 		};
-
 		gpio: gpio@400f4000 {
 			compatible = "nxp,lpc1850-gpio";
 			reg = <0x400f4000 0x4000>;

@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include "kirkwood-ns2-common.dtsi"
-
 / {
 	model = "LaCie Network Space Lite v2";
 	compatible = "lacie,netspace_lite_v2", "marvell,kirkwood-88f6192", "marvell,kirkwood";
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x8000000>;
 	};
-
 	ocp@f1000000 {
 		sata@80000 {
 			pinctrl-0 = <&pmx_ns2_sata0>;
@@ -20,10 +15,8 @@
 			nr-ports = <1>;
 		};
 	};
-
 	gpio-leds {
 		compatible = "gpio-leds";
-
 		blue-sata {
 			label = "ns2:blue:sata";
 			gpios = <&gpio0 30 GPIO_ACTIVE_LOW>;
@@ -31,5 +24,4 @@
 		};
 	};
 };
-
 &ethphy0 { reg = <0>; };

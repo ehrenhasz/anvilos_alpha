@@ -1,11 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
-
 #ifndef _ICE_BASE_H_
 #define _ICE_BASE_H_
-
 #include "ice.h"
-
 int ice_vsi_cfg_rxq(struct ice_rx_ring *ring);
 int __ice_vsi_get_qs(struct ice_qs_cfg *qs_cfg);
 int
@@ -30,4 +25,4 @@ ice_vsi_stop_tx_ring(struct ice_vsi *vsi, enum ice_disq_rst_src rst_src,
 void
 ice_fill_txq_meta(struct ice_vsi *vsi, struct ice_tx_ring *ring,
 		  struct ice_txq_meta *txq_meta);
-#endif /* _ICE_BASE_H_ */
+#endif  

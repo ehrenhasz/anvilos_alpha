@@ -1,22 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-vid-cap.h - video capture support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
-
 #ifndef _VIVID_VID_CAP_H_
 #define _VIVID_VID_CAP_H_
-
 void vivid_update_quality(struct vivid_dev *dev);
 void vivid_update_format_cap(struct vivid_dev *dev, bool keep_controls);
 enum tpg_video_aspect vivid_get_video_aspect(const struct vivid_dev *dev);
-
 extern const v4l2_std_id vivid_standard[];
 extern const char * const vivid_ctrl_standard_strings[];
-
 extern const struct vb2_ops vivid_vid_cap_qops;
-
 int vivid_g_fmt_vid_cap(struct file *file, void *priv, struct v4l2_format *f);
 int vivid_try_fmt_vid_cap(struct file *file, void *priv, struct v4l2_format *f);
 int vivid_s_fmt_vid_cap(struct file *file, void *priv, struct v4l2_format *f);
@@ -52,5 +41,4 @@ int vidioc_enum_framesizes(struct file *file, void *fh, struct v4l2_frmsizeenum 
 int vidioc_enum_frameintervals(struct file *file, void *priv, struct v4l2_frmivalenum *fival);
 int vivid_vid_cap_g_parm(struct file *file, void *priv, struct v4l2_streamparm *parm);
 int vivid_vid_cap_s_parm(struct file *file, void *priv, struct v4l2_streamparm *parm);
-
 #endif

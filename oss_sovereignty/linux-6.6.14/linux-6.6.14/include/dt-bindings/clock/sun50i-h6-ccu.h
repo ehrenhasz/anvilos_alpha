@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (C) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
-
 #ifndef _DT_BINDINGS_CLK_SUN50I_H6_H_
 #define _DT_BINDINGS_CLK_SUN50I_H6_H_
-
 #define CLK_PLL_PERIPH0		3
-
 #define CLK_CPUX		21
-
 #define CLK_APB1		26
-
 #define CLK_DE			29
 #define CLK_BUS_DE		30
 #define CLK_DEINTERLACE		31
@@ -35,7 +26,6 @@
 #define CLK_BUS_PSI		49
 #define CLK_BUS_PWM		50
 #define CLK_BUS_IOMMU		51
-
 #define CLK_MBUS_DMA		53
 #define CLK_MBUS_VE		54
 #define CLK_MBUS_CE		55
@@ -43,7 +33,6 @@
 #define CLK_MBUS_NAND		57
 #define CLK_MBUS_CSI		58
 #define CLK_MBUS_DEINTERLACE	59
-
 #define CLK_NAND0		61
 #define CLK_NAND1		62
 #define CLK_BUS_NAND		63
@@ -121,5 +110,4 @@
 #define CLK_BUS_CSI		135
 #define CLK_HDCP		136
 #define CLK_BUS_HDCP		137
-
-#endif /* _DT_BINDINGS_CLK_SUN50I_H6_H_ */
+#endif  

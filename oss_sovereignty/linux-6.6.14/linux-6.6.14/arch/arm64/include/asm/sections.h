@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 ARM Limited
- */
 #ifndef __ASM_SECTIONS_H
 #define __ASM_SECTIONS_H
-
 #include <asm-generic/sections.h>
-
 extern char __alt_instructions[], __alt_instructions_end[];
 extern char __hibernate_exit_text_start[], __hibernate_exit_text_end[];
 extern char __hyp_idmap_text_start[], __hyp_idmap_text_end[];
@@ -22,10 +16,8 @@ extern char __irqentry_text_start[], __irqentry_text_end[];
 extern char __mmuoff_data_start[], __mmuoff_data_end[];
 extern char __entry_tramp_text_start[], __entry_tramp_text_end[];
 extern char __relocate_new_kernel_start[], __relocate_new_kernel_end[];
-
 static inline size_t entry_tramp_text_size(void)
 {
 	return __entry_tramp_text_end - __entry_tramp_text_start;
 }
-
-#endif /* __ASM_SECTIONS_H */
+#endif  

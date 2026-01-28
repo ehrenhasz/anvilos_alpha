@@ -1,28 +1,9 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * s390 specific definitions for NOLIBC
- */
-
 #ifndef _NOLIBC_ARCH_S390_H
 #define _NOLIBC_ARCH_S390_H
 #include <asm/signal.h>
 #include <asm/unistd.h>
-
 #include "compiler.h"
 #include "crt.h"
-
-/* Syscalls for s390:
- *   - registers are 64-bit
- *   - syscall number is passed in r1
- *   - arguments are in r2-r7
- *   - the system call is performed by calling the svc instruction
- *   - syscall return value is in r2
- *   - r1 and r2 are clobbered, others are preserved.
- *
- * Link s390 ABI: https://github.com/IBM/s390x-abi
- *
- */
-
 #define my_syscall0(num)						\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -36,7 +17,6 @@
 		);							\
 	_rc;								\
 })
-
 #define my_syscall1(num, arg1)						\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -50,7 +30,6 @@
 		);							\
 	_arg1;								\
 })
-
 #define my_syscall2(num, arg1, arg2)					\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -65,7 +44,6 @@
 		);							\
 	_arg1;								\
 })
-
 #define my_syscall3(num, arg1, arg2, arg3)				\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -81,7 +59,6 @@
 		);							\
 	_arg1;								\
 })
-
 #define my_syscall4(num, arg1, arg2, arg3, arg4)			\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -98,7 +75,6 @@
 		);							\
 	_arg1;								\
 })
-
 #define my_syscall5(num, arg1, arg2, arg3, arg4, arg5)			\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -117,7 +93,6 @@
 		);							\
 	_arg1;								\
 })
-
 #define my_syscall6(num, arg1, arg2, arg3, arg4, arg5, arg6)		\
 ({									\
 	register long _num __asm__ ("1") = (num);			\
@@ -137,19 +112,16 @@
 		);							\
 	_arg1;								\
 })
-
-/* startup code */
 void __attribute__((weak, noreturn, optimize("Os", "omit-frame-pointer"))) __no_stack_protector _start(void)
 {
 	__asm__ volatile (
-		"lgr	%r2, %r15\n"          /* save stack pointer to %r2, as arg1 of _start_c */
-		"aghi	%r15, -160\n"         /* allocate new stackframe                        */
-		"xc	0(8,%r15), 0(%r15)\n" /* clear backchain                                */
-		"brasl	%r14, _start_c\n"     /* transfer to c runtime                          */
+		"lgr	%r2, %r15\n"           
+		"aghi	%r15, -160\n"          
+		"xc	0(8,%r15), 0(%r15)\n"  
+		"brasl	%r14, _start_c\n"      
 	);
 	__builtin_unreachable();
 }
-
 struct s390_mmap_arg_struct {
 	unsigned long addr;
 	unsigned long len;
@@ -158,7 +130,6 @@ struct s390_mmap_arg_struct {
 	unsigned long fd;
 	unsigned long offset;
 };
-
 static __attribute__((unused))
 void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd,
 	       off_t offset)
@@ -171,16 +142,13 @@ void *sys_mmap(void *addr, size_t length, int prot, int flags, int fd,
 		.fd = fd,
 		.offset = (unsigned long)offset
 	};
-
 	return (void *)my_syscall1(__NR_mmap, &args);
 }
 #define sys_mmap sys_mmap
-
 static __attribute__((unused))
 pid_t sys_fork(void)
 {
 	return my_syscall5(__NR_clone, 0, SIGCHLD, 0, 0, 0);
 }
 #define sys_fork sys_fork
-
-#endif /* _NOLIBC_ARCH_S390_H */
+#endif  

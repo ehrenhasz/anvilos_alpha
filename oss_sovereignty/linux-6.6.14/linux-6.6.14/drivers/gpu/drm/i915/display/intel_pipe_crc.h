@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_PIPE_CRC_H__
 #define __INTEL_PIPE_CRC_H__
-
 #include <linux/types.h>
-
 struct drm_crtc;
 struct drm_i915_private;
 struct intel_crtc;
-
 #ifdef CONFIG_DEBUG_FS
 void intel_crtc_crc_init(struct intel_crtc *crtc);
 int intel_crtc_set_crc_source(struct drm_crtc *crtc, const char *source_name);
@@ -29,10 +21,8 @@ static inline void intel_crtc_crc_init(struct intel_crtc *crtc) {}
 static inline void intel_crtc_disable_pipe_crc(struct intel_crtc *crtc)
 {
 }
-
 static inline void intel_crtc_enable_pipe_crc(struct intel_crtc *crtc)
 {
 }
 #endif
-
-#endif /* __INTEL_PIPE_CRC_H__ */
+#endif  

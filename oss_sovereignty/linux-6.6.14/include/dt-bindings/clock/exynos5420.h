@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Author: Andrzej Hajda <a.hajda@samsung.com>
- *
- * Device Tree binding constants for Exynos5420 clock controller.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_EXYNOS_5420_H
 #define _DT_BINDINGS_CLOCK_EXYNOS_5420_H
-
-/* core clocks */
 #define CLK_FIN_PLL		1
 #define CLK_FOUT_APLL		2
 #define CLK_FOUT_CPLL		3
@@ -24,8 +14,6 @@
 #define CLK_FOUT_KPLL		12
 #define CLK_ARM_CLK		13
 #define CLK_KFC_CLK		14
-
-/* gate for special clocks (sclk) */
 #define CLK_SCLK_UART0		128
 #define CLK_SCLK_UART1		129
 #define CLK_SCLK_UART2		130
@@ -61,8 +49,6 @@
 #define CLK_SCLK_HSIC_12M	160
 #define CLK_SCLK_MPHY_IXTAL24	161
 #define CLK_SCLK_BPLL		162
-
-/* gate clocks */
 #define CLK_UART0		257
 #define CLK_UART1		258
 #define CLK_UART2		259
@@ -206,8 +192,6 @@
 #define CLK_PCLK_PPMU_DREX0_1	528
 #define CLK_PCLK_PPMU_DREX1_0	529
 #define CLK_PCLK_PPMU_DREX1_1	530
-
-/* mux clocks */
 #define CLK_MOUT_HDMI		640
 #define CLK_MOUT_G3D		641
 #define CLK_MOUT_VPLL		642
@@ -235,9 +219,6 @@
 #define CLK_MOUT_MSPLL_CPU	664
 #define CLK_MOUT_KPLL		665
 #define CLK_MOUT_MSPLL_KFC	666
-
-
-/* divider clocks */
 #define CLK_DOUT_PIXEL		768
 #define CLK_DOUT_ACLK400_WCORE	769
 #define CLK_DOUT_ACLK400_ISP	770
@@ -270,5 +251,4 @@
 #define CLK_FF_DOUT_SPLL2	797
 #define CLK_DOUT_PCLK_DREX0	798
 #define CLK_DOUT_PCLK_DREX1	799
-
-#endif /* _DT_BINDINGS_CLOCK_EXYNOS_5420_H */
+#endif  

@@ -1,52 +1,38 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DTS File for HiSilicon Hi3798cv200 SoC.
- *
- * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
- */
-
 #include <dt-bindings/clock/histb-clock.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/reset/ti-syscon.h>
-
 / {
 	compatible = "hisilicon,hi3798cv200";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu@0 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
 			reg = <0x0 0x0>;
 			enable-method = "psci";
 		};
-
 		cpu@1 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
 			reg = <0x0 0x1>;
 			enable-method = "psci";
 		};
-
 		cpu@2 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
 			reg = <0x0 0x2>;
 			enable-method = "psci";
 		};
-
 		cpu@3 {
 			compatible = "arm,cortex-a53";
 			device_type = "cpu";
@@ -54,16 +40,14 @@
 			enable-method = "psci";
 		};
 	};
-
 	gic: interrupt-controller@f1001000 {
 		compatible = "arm,gic-400";
-		reg = <0x0 0xf1001000 0x0 0x1000>,  /* GICD */
-		      <0x0 0xf1002000 0x0 0x100>;   /* GICC */
+		reg = <0x0 0xf1001000 0x0 0x1000>,   
+		      <0x0 0xf1002000 0x0 0x100>;    
 		#address-cells = <0>;
 		#interrupt-cells = <3>;
 		interrupt-controller;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
@@ -75,19 +59,16 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
 			      IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	soc: soc@f0000000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0x0 0x0 0xf0000000 0x10000000>;
-
 		crg: clock-reset-controller@8a22000 {
 			compatible = "hisilicon,hi3798cv200-crg", "syscon", "simple-mfd";
 			reg = <0x8a22000 0x1000>;
 			#clock-cells = <1>;
 			#reset-cells = <2>;
-
 			gmacphyrst: reset-controller {
 				compatible = "ti,syscon-reset";
 				#reset-cells = <1>;
@@ -97,14 +78,12 @@
 				>;
 			};
 		};
-
 		sysctrl: system-controller@8000000 {
 			compatible = "hisilicon,hi3798cv200-sysctrl", "syscon";
 			reg = <0x8000000 0x1000>;
 			#clock-cells = <1>;
 			#reset-cells = <2>;
 		};
-
 		perictrl: peripheral-controller@8a20000 {
 			compatible = "hisilicon,hi3798cv200-perictrl", "syscon",
 				     "simple-mfd";
@@ -112,7 +91,6 @@
 			#address-cells = <1>;
 			#size-cells = <1>;
 			ranges = <0x0 0x8a20000 0x1000>;
-
 			usb2_phy1: usb2_phy@120 {
 				compatible = "hisilicon,hi3798cv200-usb2-phy";
 				reg = <0x120 0x4>;
@@ -120,20 +98,17 @@
 				resets = <&crg 0xbc 4>;
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				usb2_phy1_port0: phy@0 {
 					reg = <0>;
 					#phy-cells = <0>;
 					resets = <&crg 0xbc 8>;
 				};
-
 				usb2_phy1_port1: phy@1 {
 					reg = <1>;
 					#phy-cells = <0>;
 					resets = <&crg 0xbc 9>;
 				};
 			};
-
 			usb2_phy2: usb2_phy@124 {
 				compatible = "hisilicon,hi3798cv200-usb2-phy";
 				reg = <0x124 0x4>;
@@ -141,14 +116,12 @@
 				resets = <&crg 0xbc 6>;
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				usb2_phy2_port0: phy@0 {
 					reg = <0>;
 					#phy-cells = <0>;
 					resets = <&crg 0xbc 10>;
 				};
 			};
-
 			combphy0: phy@850 {
 				compatible = "hisilicon,hi3798cv200-combphy";
 				reg = <0x850 0x8>;
@@ -159,7 +132,6 @@
 				assigned-clock-rates = <100000000>;
 				hisilicon,fixed-mode = <PHY_TYPE_USB3>;
 			};
-
 			combphy1: phy@858 {
 				compatible = "hisilicon,hi3798cv200-combphy";
 				reg = <0x858 0x8>;
@@ -171,47 +143,44 @@
 				hisilicon,mode-select-bits = <0x0008 11 (0x3 << 11)>;
 			};
 		};
-
 		pmx0: pinconf@8a21000 {
 			compatible = "pinconf-single";
 			reg = <0x8a21000 0x180>;
 			pinctrl-single,register-width = <32>;
 			pinctrl-single,function-mask = <7>;
 			pinctrl-single,gpio-range = <
-				&range 0  8 2  /* GPIO 0 */
-				&range 8  1 0  /* GPIO 1 */
+				&range 0  8 2   
+				&range 8  1 0   
 				&range 9  4 2
 				&range 13 1 0
 				&range 14 1 1
 				&range 15 1 0
-				&range 16 5 0  /* GPIO 2 */
+				&range 16 5 0   
 				&range 21 3 1
-				&range 24 4 1  /* GPIO 3 */
+				&range 24 4 1   
 				&range 28 2 2
 				&range 86 1 1
 				&range 87 1 0
-				&range 30 4 2  /* GPIO 4 */
+				&range 30 4 2   
 				&range 34 3 0
 				&range 37 1 2
-				&range 38 3 2  /* GPIO 6 */
+				&range 38 3 2   
 				&range 41 5 0
-				&range 46 8 1  /* GPIO 7 */
-				&range 54 8 1  /* GPIO 8 */
-				&range 64 7 1  /* GPIO 9 */
+				&range 46 8 1   
+				&range 54 8 1   
+				&range 64 7 1   
 				&range 71 1 0
-				&range 72 6 1  /* GPIO 10 */
+				&range 72 6 1   
 				&range 78 1 0
 				&range 79 1 1
-				&range 80 6 1  /* GPIO 11 */
+				&range 80 6 1   
 				&range 70 2 1
-				&range 88 8 0  /* GPIO 12 */
+				&range 88 8 0   
 			>;
-
 			range: gpio-range {
 				#pinctrl-single,gpio-range-cells = <3>;
 			};
 		};
-
 		uart0: serial@8b00000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x8b00000 0x1000>;
@@ -220,7 +189,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		uart2: serial@8b02000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x8b02000 0x1000>;
@@ -229,7 +197,6 @@
 			clock-names = "uartclk", "apb_pclk";
 			status = "disabled";
 		};
-
 		i2c0: i2c@8b10000 {
 			compatible = "hisilicon,hix5hd2-i2c";
 			reg = <0x8b10000 0x1000>;
@@ -240,7 +207,6 @@
 			clocks = <&crg HISTB_I2C0_CLK>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@8b11000 {
 			compatible = "hisilicon,hix5hd2-i2c";
 			reg = <0x8b11000 0x1000>;
@@ -251,7 +217,6 @@
 			clocks = <&crg HISTB_I2C1_CLK>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@8b12000 {
 			compatible = "hisilicon,hix5hd2-i2c";
 			reg = <0x8b12000 0x1000>;
@@ -262,7 +227,6 @@
 			clocks = <&crg HISTB_I2C2_CLK>;
 			status = "disabled";
 		};
-
 		i2c3: i2c@8b13000 {
 			compatible = "hisilicon,hix5hd2-i2c";
 			reg = <0x8b13000 0x1000>;
@@ -273,7 +237,6 @@
 			clocks = <&crg HISTB_I2C3_CLK>;
 			status = "disabled";
 		};
-
 		i2c4: i2c@8b14000 {
 			compatible = "hisilicon,hix5hd2-i2c";
 			reg = <0x8b14000 0x1000>;
@@ -284,7 +247,6 @@
 			clocks = <&crg HISTB_I2C4_CLK>;
 			status = "disabled";
 		};
-
 		spi0: spi@8b1a000 {
 			compatible = "arm,pl022", "arm,primecell";
 			reg = <0x8b1a000 0x1000>;
@@ -297,7 +259,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		sd0: mmc@9820000 {
 			compatible = "snps,dw-mshc";
 			reg = <0x9820000 0x10000>;
@@ -309,7 +270,6 @@
 			reset-names = "reset";
 			status = "disabled";
 		};
-
 		emmc: mmc@9830000 {
 			compatible = "hisilicon,hi3798cv200-dw-mshc";
 			reg = <0x9830000 0x10000>;
@@ -323,7 +283,6 @@
 			reset-names = "reset";
 			status = "disabled";
 		};
-
 		gpio0: gpio@8b20000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b20000 0x1000>;
@@ -337,7 +296,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio1: gpio@8b21000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b21000 0x1000>;
@@ -357,7 +315,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio2: gpio@8b22000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b22000 0x1000>;
@@ -371,7 +328,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio3: gpio@8b23000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b23000 0x1000>;
@@ -390,7 +346,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio4: gpio@8b24000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b24000 0x1000>;
@@ -404,7 +359,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio5: gpio@8004000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8004000 0x1000>;
@@ -417,7 +371,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio6: gpio@8b26000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b26000 0x1000>;
@@ -431,7 +384,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio7: gpio@8b27000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b27000 0x1000>;
@@ -445,7 +397,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio8: gpio@8b28000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b28000 0x1000>;
@@ -459,7 +410,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio9: gpio@8b29000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b29000 0x1000>;
@@ -473,7 +423,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio10: gpio@8b2a000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b2a000 0x1000>;
@@ -487,7 +436,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio11: gpio@8b2b000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b2b000 0x1000>;
@@ -501,7 +449,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpio12: gpio@8b2c000 {
 			compatible = "arm,pl061", "arm,primecell";
 			reg = <0x8b2c000 0x1000>;
@@ -515,7 +462,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gmac0: ethernet@9840000 {
 			compatible = "hisilicon,hi3798cv200-gmac", "hisilicon,hisi-gmac-v2";
 			reg = <0x9840000 0x1000>,
@@ -530,7 +476,6 @@
 			reset-names = "mac_core", "mac_ifc", "phy";
 			status = "disabled";
 		};
-
 		gmac1: ethernet@9841000 {
 			compatible = "hisilicon,hi3798cv200-gmac", "hisilicon,hisi-gmac-v2";
 			reg = <0x9841000 0x1000>,
@@ -545,7 +490,6 @@
 			reset-names = "mac_core", "mac_ifc", "phy";
 			status = "disabled";
 		};
-
 		ir: ir@8001000 {
 			compatible = "hisilicon,hix5hd2-ir";
 			reg = <0x8001000 0x1000>;
@@ -553,7 +497,6 @@
 			clocks = <&sysctrl HISTB_IR_CLK>;
 			status = "disabled";
 		};
-
 		pcie: pcie@9860000 {
 			compatible = "hisilicon,hi3798cv200-pcie";
 			reg = <0x9860000 0x1000>,
@@ -583,7 +526,6 @@
 			phy-names = "phy";
 			status = "disabled";
 		};
-
 		ohci: usb@9880000 {
 			compatible = "generic-ohci";
 			reg = <0x9880000 0x10000>;
@@ -598,7 +540,6 @@
 			phy-names = "usb";
 			status = "disabled";
 		};
-
 		ehci: usb@9890000 {
 			compatible = "generic-ehci";
 			reg = <0x9890000 0x10000>;

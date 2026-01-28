@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-
 #ifndef _TEST_TCPBPF_H
 #define _TEST_TCPBPF_H
-
 struct tcpbpf_globals {
 	__u32 event_map;
 	__u32 total_retrans;

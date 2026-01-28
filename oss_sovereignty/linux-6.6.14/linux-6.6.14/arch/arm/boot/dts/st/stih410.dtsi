@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 STMicroelectronics Limited.
- * Author: Peter Griffin <peter.griffin@linaro.org>
- */
 #include "stih410-clock.dtsi"
 #include "stih407-family.dtsi"
 #include "stih410-pinctrl.dtsi"
@@ -11,7 +6,6 @@
 	aliases {
 		bdisp0 = &bdisp0;
 	};
-
 	usb2_picophy1: phy2 {
 		compatible = "st,stih407-usb2-phy";
 		#phy-cells = <0>;
@@ -19,10 +13,8 @@
 		resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
 			 <&picophyreset STIH407_PICOPHY0_RESET>;
 		reset-names = "global", "port";
-
 		status = "disabled";
 	};
-
 	usb2_picophy2: phy3 {
 		compatible = "st,stih407-usb2-phy";
 		#phy-cells = <0>;
@@ -30,10 +22,8 @@
 		resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
 			 <&picophyreset STIH407_PICOPHY1_RESET>;
 		reset-names = "global", "port";
-
 		status = "disabled";
 	};
-
 	soc {
 		ohci0: usb@9a03c00 {
 			compatible = "st,st-ohci-300x";
@@ -46,10 +36,8 @@
 			reset-names = "power", "softreset";
 			phys = <&usb2_picophy1>;
 			phy-names = "usb";
-
 			status = "disabled";
 		};
-
 		ehci0: usb@9a03e00 {
 			compatible = "st,st-ehci-300x";
 			reg = <0x9a03e00 0x100>;
@@ -63,10 +51,8 @@
 			reset-names = "power", "softreset";
 			phys = <&usb2_picophy1>;
 			phy-names = "usb";
-
 			status = "disabled";
 		};
-
 		ohci1: usb@9a83c00 {
 			compatible = "st,st-ohci-300x";
 			reg = <0x9a83c00 0x100>;
@@ -78,10 +64,8 @@
 			reset-names = "power", "softreset";
 			phys = <&usb2_picophy2>;
 			phy-names = "usb";
-
 			status = "disabled";
 		};
-
 		ehci1: usb@9a83e00 {
 			compatible = "st,st-ehci-300x";
 			reg = <0x9a83e00 0x100>;
@@ -95,15 +79,12 @@
 			reset-names = "power", "softreset";
 			phys = <&usb2_picophy2>;
 			phy-names = "usb";
-
 			status = "disabled";
 		};
-
 		sti-display-subsystem@0 {
 			compatible = "st,sti-display-subsystem";
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			reg = <0 0>;
 			assigned-clocks = <&clk_s_d2_quadfs 0>,
 					  <&clk_s_d2_quadfs 1>,
@@ -116,7 +97,6 @@
 					  <&clk_s_d2_flexgen CLK_PIX_GDP2>,
 					  <&clk_s_d2_flexgen CLK_PIX_GDP3>,
 					  <&clk_s_d2_flexgen CLK_PIX_GDP4>;
-
 			assigned-clock-parents = <0>,
 						 <0>,
 						 <0>,
@@ -128,19 +108,15 @@
 						 <&clk_s_d2_quadfs 0>,
 						 <&clk_s_d2_quadfs 0>,
 						 <&clk_s_d2_quadfs 0>;
-
 			assigned-clock-rates = <297000000>,
 					       <297000000>,
 					       <0>,
 					       <400000000>,
 					       <400000000>;
-
 			ranges;
-
 			sti-compositor@9d11000 {
 				compatible = "st,stih407-compositor";
 				reg = <0x9d11000 0x1000>;
-
 				clock-names = "compo_main",
 					      "compo_aux",
 					      "pix_main",
@@ -151,7 +127,6 @@
 					      "pix_gdp4",
 					      "main_parent",
 					      "aux_parent";
-
 				clocks = <&clk_s_c0_flexgen CLK_COMPO_DVP>,
 					 <&clk_s_c0_flexgen CLK_COMPO_DVP>,
 					 <&clk_s_d2_flexgen CLK_PIX_MAIN_DISP>,
@@ -162,13 +137,11 @@
 					 <&clk_s_d2_flexgen CLK_PIX_GDP4>,
 					 <&clk_s_d2_quadfs 0>,
 					 <&clk_s_d2_quadfs 1>;
-
 				reset-names = "compo-main", "compo-aux";
 				resets = <&softreset STIH407_COMPO_SOFTRESET>,
 					 <&softreset STIH407_COMPO_SOFTRESET>;
 				st,vtg = <&vtg_main>, <&vtg_aux>;
 			};
-
 			sti-tvout@8d08000 {
 				compatible = "st,stih407-tvout";
 				reg = <0x8d08000 0x1000>;
@@ -183,7 +156,6 @@
 						  <&clk_s_d0_flexgen CLK_PCM_0>,
 						  <&clk_s_d2_flexgen CLK_PIX_HDDAC>,
 						  <&clk_s_d2_flexgen CLK_HDDAC>;
-
 				assigned-clock-parents = <&clk_s_d2_quadfs 0>,
 							 <&clk_tmdsout_hdmi>,
 							 <&clk_s_d2_quadfs 0>,
@@ -191,7 +163,6 @@
 							 <&clk_s_d2_quadfs 0>,
 							 <&clk_s_d2_quadfs 0>;
 			};
-
 			sti_hdmi: sti-hdmi@8d04000 {
 				compatible = "st,stih407-hdmi";
 				reg = <0x8d04000 0x1000>;
@@ -205,20 +176,17 @@
 					      "audio",
 					      "main_parent",
 					      "aux_parent";
-
 				clocks = <&clk_s_d2_flexgen CLK_PIX_HDMI>,
 					 <&clk_s_d2_flexgen CLK_TMDS_HDMI>,
 					 <&clk_s_d2_flexgen CLK_REF_HDMIPHY>,
 					 <&clk_s_d0_flexgen CLK_PCM_0>,
 					 <&clk_s_d2_quadfs 0>,
 					 <&clk_s_d2_quadfs 1>;
-
 				hdmi,hpd-gpio = <&pio5 3 GPIO_ACTIVE_LOW>;
 				reset-names = "hdmi";
 				resets = <&softreset STIH407_HDMI_TX_PHY_SOFTRESET>;
 				ddc = <&hdmiddc>;
 			};
-
 			sti-hda@8d02000 {
 				compatible = "st,stih407-hda";
 				status = "disabled";
@@ -233,7 +201,6 @@
 					 <&clk_s_d2_quadfs 0>,
 					 <&clk_s_d2_quadfs 1>;
 			};
-
 			sti-hqvdp@9c00000 {
 				compatible = "st,stih407-hqvdp";
 				reg = <0x9C00000 0x100000>;
@@ -245,7 +212,6 @@
 				st,vtg = <&vtg_main>;
 			};
 		};
-
 		bdisp0:bdisp@9f10000 {
 			compatible = "st,stih407-bdisp";
 			reg = <0x9f10000 0x1000>;
@@ -253,7 +219,6 @@
 			clock-names = "bdisp";
 			clocks = <&clk_s_c0_flexgen CLK_IC_BDISP_0>;
 		};
-
 		hva@8c85000 {
 			compatible = "st,st-hva";
 			reg = <0x8c85000 0x400>, <0x6000000 0x40000>;
@@ -263,7 +228,6 @@
 			clock-names = "clk_hva";
 			clocks = <&clk_s_c0_flexgen CLK_HVA>;
 		};
-
 		thermal@91a0000 {
 			compatible = "st,stih407-thermal";
 			reg = <0x91a0000 0x28>;
@@ -271,7 +235,6 @@
 			clocks = <&clk_sysin>;
 			interrupts = <GIC_SPI 205 IRQ_TYPE_EDGE_RISING>;
 		};
-
 		cec@94a087c {
 			compatible = "st,stih-cec";
 			reg = <0x94a087c 0x64>;

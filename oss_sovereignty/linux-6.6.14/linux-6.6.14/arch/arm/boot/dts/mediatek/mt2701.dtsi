@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Erin.Lo <erin.lo@mediatek.com>
- *
- */
-
 #include <dt-bindings/clock/mt2701-clk.h>
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/power/mt2701-power.h>
@@ -13,18 +6,15 @@
 #include <dt-bindings/memory/mt2701-larb-port.h>
 #include <dt-bindings/reset/mt2701-resets.h>
 #include "mt2701-pinfunc.h"
-
 / {
 	#address-cells = <2>;
 	#size-cells = <2>;
 	compatible = "mediatek,mt2701";
 	interrupt-parent = <&cirq>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		enable-method = "mediatek,mt81xx-tz-smp";
-
 		cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -46,65 +36,54 @@
 			reg = <0x3>;
 		};
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		trustzone-bootinfo@80002000 {
 			compatible = "mediatek,trustzone-bootinfo";
 			reg = <0 0x80002000 0 0x1000>;
 		};
 	};
-
 	system_clk: dummy13m {
 		compatible = "fixed-clock";
 		clock-frequency = <13000000>;
 		#clock-cells = <0>;
 	};
-
 	rtc_clk: dummy32k {
 		compatible = "fixed-clock";
 		clock-frequency = <32000>;
 		#clock-cells = <0>;
 	};
-
 	clk26m: oscillator@0 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "clk26m";
 	};
-
 	rtc32k: oscillator@1 {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32000>;
 		clock-output-names = "rtc32k";
 	};
-
 	thermal-zones {
 		cpu_thermal: cpu_thermal {
-			polling-delay-passive = <1000>; /* milliseconds */
-			polling-delay = <1000>; /* milliseconds */
-
+			polling-delay-passive = <1000>;  
+			polling-delay = <1000>;  
 			thermal-sensors = <&thermal 0>;
 			sustainable-power = <1000>;
-
 			trips {
 				threshold: trip-point@0 {
 					temperature = <68000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				target: trip-point@1 {
 					temperature = <85000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				cpu_crit: cpu_crit@0 {
 					temperature = <115000>;
 					hysteresis = <2000>;
@@ -113,7 +92,6 @@
 			};
 		};
 	};
-
 	timer {
 		compatible = "arm,armv7-timer";
 		interrupt-parent = <&gic>;
@@ -122,32 +100,27 @@
 			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 	};
-
 	topckgen: syscon@10000000 {
 		compatible = "mediatek,mt2701-topckgen", "syscon";
 		reg = <0 0x10000000 0 0x1000>;
 		#clock-cells = <1>;
 	};
-
 	infracfg: syscon@10001000 {
 		compatible = "mediatek,mt2701-infracfg", "syscon";
 		reg = <0 0x10001000 0 0x1000>;
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	pericfg: syscon@10003000 {
 		compatible = "mediatek,mt2701-pericfg", "syscon";
 		reg = <0 0x10003000 0 0x1000>;
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	syscfg_pctl_a: syscfg@10005000 {
 		compatible = "mediatek,mt2701-pctl-a-syscfg", "syscon";
 		reg = <0 0x10005000 0 0x1000>;
 	};
-
 	scpsys: power-controller@10006000 {
 		compatible = "mediatek,mt2701-scpsys", "syscon";
 		#power-domain-cells = <1>;
@@ -158,13 +131,11 @@
 			 <&topckgen CLK_TOP_ETHIF_SEL>;
 		clock-names = "mm", "mfg", "ethif";
 	};
-
 	watchdog: watchdog@10007000 {
 		compatible = "mediatek,mt2701-wdt",
 			     "mediatek,mt6589-wdt";
 		reg = <0 0x10007000 0 0x100>;
 	};
-
 	timer: timer@10008000 {
 		compatible = "mediatek,mt2701-timer",
 			     "mediatek,mt6577-timer";
@@ -173,7 +144,6 @@
 		clocks = <&system_clk>, <&rtc_clk>;
 		clock-names = "system-clk", "rtc-clk";
 	};
-
 	pio: pinctrl@1000b000 {
 		compatible = "mediatek,mt2701-pinctrl";
 		reg = <0 0x1000b000 0 0x1000>;
@@ -185,7 +155,6 @@
 		interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
 			     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	smi_common: smi@1000c000 {
 		compatible = "mediatek,mt2701-smi-common";
 		reg = <0 0x1000c000 0 0x1000>;
@@ -195,7 +164,6 @@
 		clock-names = "apb", "smi", "async";
 		power-domains = <&scpsys MT2701_POWER_DOMAIN_DISP>;
 	};
-
 	sysirq: interrupt-controller@10200100 {
 		compatible = "mediatek,mt2701-sysirq",
 			     "mediatek,mt6577-sysirq";
@@ -204,7 +172,6 @@
 		interrupt-parent = <&gic>;
 		reg = <0 0x10200100 0 0x1c>;
 	};
-
 	cirq: interrupt-controller@10204000 {
 		compatible = "mediatek,mt2701-cirq",
 			     "mediatek,mtk-cirq";
@@ -214,7 +181,6 @@
 		reg = <0 0x10204000 0 0x400>;
 		mediatek,ext-irq-range = <32 200>;
 	};
-
 	iommu: mmsys_iommu@10205000 {
 		compatible = "mediatek,mt2701-m4u";
 		reg = <0 0x10205000 0 0x1000>;
@@ -224,13 +190,11 @@
 		mediatek,larbs = <&larb0 &larb1 &larb2>;
 		#iommu-cells = <1>;
 	};
-
 	apmixedsys: syscon@10209000 {
 		compatible = "mediatek,mt2701-apmixedsys", "syscon";
 		reg = <0 0x10209000 0 0x1000>;
 		#clock-cells = <1>;
 	};
-
 	gic: interrupt-controller@10211000 {
 		compatible = "arm,cortex-a7-gic";
 		interrupt-controller;
@@ -241,7 +205,6 @@
 		      <0 0x10214000 0 0x2000>,
 		      <0 0x10216000 0 0x2000>;
 	};
-
 	auxadc: adc@11001000 {
 		compatible = "mediatek,mt2701-auxadc";
 		reg = <0 0x11001000 0 0x1000>;
@@ -250,7 +213,6 @@
 		#io-channel-cells = <1>;
 		status = "disabled";
 	};
-
 	uart0: serial@11002000 {
 		compatible = "mediatek,mt2701-uart",
 			     "mediatek,mt6577-uart";
@@ -260,7 +222,6 @@
 		clock-names = "baud", "bus";
 		status = "disabled";
 	};
-
 	uart1: serial@11003000 {
 		compatible = "mediatek,mt2701-uart",
 			     "mediatek,mt6577-uart";
@@ -270,7 +231,6 @@
 		clock-names = "baud", "bus";
 		status = "disabled";
 	};
-
 	uart2: serial@11004000 {
 		compatible = "mediatek,mt2701-uart",
 			     "mediatek,mt6577-uart";
@@ -280,7 +240,6 @@
 		clock-names = "baud", "bus";
 		status = "disabled";
 	};
-
 	uart3: serial@11005000 {
 		compatible = "mediatek,mt2701-uart",
 			     "mediatek,mt6577-uart";
@@ -290,7 +249,6 @@
 		clock-names = "baud", "bus";
 		status = "disabled";
 	};
-
 	i2c0: i2c@11007000 {
 		compatible = "mediatek,mt2701-i2c",
 			     "mediatek,mt6577-i2c";
@@ -304,7 +262,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	i2c1: i2c@11008000 {
 		compatible = "mediatek,mt2701-i2c",
 			     "mediatek,mt6577-i2c";
@@ -318,7 +275,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	i2c2: i2c@11009000 {
 		compatible = "mediatek,mt2701-i2c",
 			     "mediatek,mt6577-i2c";
@@ -332,7 +288,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	spi0: spi@1100a000 {
 		compatible = "mediatek,mt2701-spi";
 		#address-cells = <1>;
@@ -345,7 +300,6 @@
 		clock-names = "parent-clk", "sel-clk", "spi-clk";
 		status = "disabled";
 	};
-
 	thermal: thermal@1100b000 {
 		#thermal-sensor-cells = <0>;
 		compatible = "mediatek,mt2701-thermal";
@@ -358,7 +312,6 @@
 		mediatek,auxadc = <&auxadc>;
 		mediatek,apmixedsys = <&apmixedsys>;
 	};
-
 	nandc: nand-controller@1100d000 {
 		compatible = "mediatek,mt2701-nfc";
 		reg = <0 0x1100d000 0 0x1000>;
@@ -371,7 +324,6 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	bch: ecc@1100e000 {
 		compatible = "mediatek,mt2701-ecc";
 		reg = <0 0x1100e000 0 0x1000>;
@@ -380,7 +332,6 @@
 		clock-names = "nfiecc_clk";
 		status = "disabled";
 	};
-
 	nor_flash: spi@11014000 {
 		compatible = "mediatek,mt2701-nor",
 			     "mediatek,mt8173-nor";
@@ -392,7 +343,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	spi1: spi@11016000 {
 		compatible = "mediatek,mt2701-spi";
 		#address-cells = <1>;
@@ -405,7 +355,6 @@
 		clock-names = "parent-clk", "sel-clk", "spi-clk";
 		status = "disabled";
 	};
-
 	spi2: spi@11017000 {
 		compatible = "mediatek,mt2701-spi";
 		#address-cells = <1>;
@@ -418,19 +367,16 @@
 		clock-names = "parent-clk", "sel-clk", "spi-clk";
 		status = "disabled";
 	};
-
 	audsys: clock-controller@11220000 {
 		compatible = "mediatek,mt2701-audsys", "syscon";
 		reg = <0 0x11220000 0 0x2000>;
 		#clock-cells = <1>;
-
 		afe: audio-controller {
 			compatible = "mediatek,mt2701-audio";
 			interrupts = <GIC_SPI 104 IRQ_TYPE_LEVEL_LOW>,
 				      <GIC_SPI 132 IRQ_TYPE_LEVEL_LOW>;
 			interrupt-names = "afe", "asys";
 			power-domains = <&scpsys MT2701_POWER_DOMAIN_IFR_MSC>;
-
 			clocks = <&infracfg CLK_INFRA_AUDIO>,
 				 <&topckgen CLK_TOP_AUD_MUX1_SEL>,
 				 <&topckgen CLK_TOP_AUD_MUX2_SEL>,
@@ -465,7 +411,6 @@
 				 <&audsys CLK_AUD_A1SYS>,
 				 <&audsys CLK_AUD_A2SYS>,
 				 <&audsys CLK_AUD_AFE_MRGIF>;
-
 			clock-names = "infra_sys_audio_clk",
 				      "top_audio_mux1_sel",
 				      "top_audio_mux2_sel",
@@ -500,7 +445,6 @@
 				      "audio_a1sys_pd",
 				      "audio_a2sys_pd",
 				      "audio_mrgif_pd";
-
 			assigned-clocks = <&topckgen CLK_TOP_AUD_MUX1_SEL>,
 					  <&topckgen CLK_TOP_AUD_MUX2_SEL>,
 					  <&topckgen CLK_TOP_AUD_MUX1_DIV>,
@@ -510,13 +454,11 @@
 			assigned-clock-rates = <0>, <0>, <49152000>, <45158400>;
 		};
 	};
-
 	mmsys: syscon@14000000 {
 		compatible = "mediatek,mt2701-mmsys", "syscon";
 		reg = <0 0x14000000 0 0x1000>;
 		#clock-cells = <1>;
 	};
-
 	bls: pwm@1400a000 {
 		compatible = "mediatek,mt2701-disp-pwm";
 		reg = <0 0x1400a000 0 0x1000>;
@@ -525,7 +467,6 @@
 		clock-names = "main", "mm";
 		status = "disabled";
 	};
-
 	larb0: larb@14010000 {
 		compatible = "mediatek,mt2701-smi-larb";
 		reg = <0 0x14010000 0 0x1000>;
@@ -536,13 +477,11 @@
 		clock-names = "apb", "smi";
 		power-domains = <&scpsys MT2701_POWER_DOMAIN_DISP>;
 	};
-
 	imgsys: syscon@15000000 {
 		compatible = "mediatek,mt2701-imgsys", "syscon";
 		reg = <0 0x15000000 0 0x1000>;
 		#clock-cells = <1>;
 	};
-
 	larb2: larb@15001000 {
 		compatible = "mediatek,mt2701-smi-larb";
 		reg = <0 0x15001000 0 0x1000>;
@@ -553,7 +492,6 @@
 		clock-names = "apb", "smi";
 		power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
 	};
-
 	jpegdec: jpegdec@15004000 {
 		compatible = "mediatek,mt2701-jpgdec";
 		reg = <0 0x15004000 0 0x1000>;
@@ -566,7 +504,6 @@
 		iommus = <&iommu MT2701_M4U_PORT_JPGDEC_WDMA>,
 			 <&iommu MT2701_M4U_PORT_JPGDEC_BSDMA>;
 	};
-
 	jpegenc: jpegenc@1500a000 {
 		compatible = "mediatek,mt2701-jpgenc",
 			     "mediatek,mtk-jpgenc";
@@ -578,13 +515,11 @@
 		iommus = <&iommu MT2701_M4U_PORT_JPGENC_RDMA>,
 			 <&iommu MT2701_M4U_PORT_JPGENC_BSDMA>;
 	};
-
 	vdecsys: syscon@16000000 {
 		compatible = "mediatek,mt2701-vdecsys", "syscon";
 		reg = <0 0x16000000 0 0x1000>;
 		#clock-cells = <1>;
 	};
-
 	larb1: larb@16010000 {
 		compatible = "mediatek,mt2701-smi-larb";
 		reg = <0 0x16010000 0 0x1000>;
@@ -595,14 +530,12 @@
 		clock-names = "apb", "smi";
 		power-domains = <&scpsys MT2701_POWER_DOMAIN_VDEC>;
 	};
-
 	hifsys: syscon@1a000000 {
 		compatible = "mediatek,mt2701-hifsys", "syscon";
 		reg = <0 0x1a000000 0 0x1000>;
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	usb0: usb@1a1c0000 {
 		compatible = "mediatek,mt2701-xhci", "mediatek,mtk-xhci";
 		reg = <0 0x1a1c0000 0 0x1000>,
@@ -616,7 +549,6 @@
 		phys = <&u2port0 PHY_TYPE_USB2>, <&u3port0 PHY_TYPE_USB3>;
 		status = "disabled";
 	};
-
 	u3phy0: t-phy@1a1c4000 {
 		compatible = "mediatek,mt2701-tphy",
 			     "mediatek,generic-tphy-v1";
@@ -625,7 +557,6 @@
 		#size-cells = <2>;
 		ranges;
 		status = "disabled";
-
 		u2port0: usb-phy@1a1c4800 {
 			reg = <0 0x1a1c4800 0 0x0100>;
 			clocks = <&topckgen CLK_TOP_USB_PHY48M>;
@@ -633,7 +564,6 @@
 			#phy-cells = <1>;
 			status = "okay";
 		};
-
 		u3port0: usb-phy@1a1c4900 {
 			reg = <0 0x1a1c4900 0 0x0700>;
 			clocks = <&clk26m>;
@@ -642,7 +572,6 @@
 			status = "okay";
 		};
 	};
-
 	usb1: usb@1a240000 {
 		compatible = "mediatek,mt2701-xhci", "mediatek,mtk-xhci";
 		reg = <0 0x1a240000 0 0x1000>,
@@ -656,7 +585,6 @@
 		phys = <&u2port1 PHY_TYPE_USB2>, <&u3port1 PHY_TYPE_USB3>;
 		status = "disabled";
 	};
-
 	u3phy1: t-phy@1a244000 {
 		compatible = "mediatek,mt2701-tphy",
 			     "mediatek,generic-tphy-v1";
@@ -665,7 +593,6 @@
 		#size-cells = <2>;
 		ranges;
 		status = "disabled";
-
 		u2port1: usb-phy@1a244800 {
 			reg = <0 0x1a244800 0 0x0100>;
 			clocks = <&topckgen CLK_TOP_USB_PHY48M>;
@@ -673,7 +600,6 @@
 			#phy-cells = <1>;
 			status = "okay";
 		};
-
 		u3port1: usb-phy@1a244900 {
 			reg = <0 0x1a244900 0 0x0700>;
 			clocks = <&clk26m>;
@@ -682,7 +608,6 @@
 			status = "okay";
 		};
 	};
-
 	usb2: usb@11200000 {
 		compatible = "mediatek,mt2701-musb",
 			     "mediatek,mtk-musb";
@@ -698,7 +623,6 @@
 		power-domains = <&scpsys MT2701_POWER_DOMAIN_IFR_MSC>;
 		status = "disabled";
 	};
-
 	u2phy0: t-phy@11210000 {
 		compatible = "mediatek,mt2701-tphy",
 			     "mediatek,generic-tphy-v1";
@@ -707,7 +631,6 @@
 		#size-cells = <2>;
 		ranges;
 		status = "okay";
-
 		u2port2: usb-phy@1a1c4800 {
 			reg = <0 0x11210800 0 0x0100>;
 			clocks = <&topckgen CLK_TOP_USB_PHY48M>;
@@ -716,14 +639,12 @@
 			status = "okay";
 		};
 	};
-
 	ethsys: syscon@1b000000 {
 		compatible = "mediatek,mt2701-ethsys", "syscon";
 		reg = <0 0x1b000000 0 0x1000>;
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	eth: ethernet@1b100000 {
 		compatible = "mediatek,mt2701-eth", "syscon";
 		reg = <0 0x1b100000 0 0x20000>;
@@ -747,7 +668,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	bdpsys: syscon@1c000000 {
 		compatible = "mediatek,mt2701-bdpsys", "syscon";
 		reg = <0 0x1c000000 0 0x1000>;

@@ -1,27 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Device Tree Include file for NXP Layerscape-1028A family SoC.
- *
- * Copyright 2018-2020 NXP
- *
- * Harninder Rai <harninder.rai@nxp.com>
- *
- */
-
 #include <dt-bindings/clock/fsl,qoriq-clockgen.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/thermal/thermal.h>
-
 / {
 	compatible = "fsl,ls1028a";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -38,7 +25,6 @@
 			cpu-idle-states = <&CPU_PW20>;
 			#cooling-cells = <2>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -55,7 +41,6 @@
 			cpu-idle-states = <&CPU_PW20>;
 			#cooling-cells = <2>;
 		};
-
 		l2: l2-cache {
 			compatible = "cache";
 			cache-level = <2>;
@@ -65,14 +50,8 @@
 			cache-sets = <1024>;
 		};
 	};
-
 	idle-states {
-		/*
-		 * PSCI node is not added default, U-boot will add missing
-		 * parts if it determines to use PSCI.
-		 */
 		entry-method = "psci";
-
 		CPU_PW20: cpu-pw20 {
 			  compatible = "arm,idle-state";
 			  idle-state-name = "PW20";
@@ -82,28 +61,24 @@
 			  min-residency-us = <6000>;
 		};
 	};
-
 	rtc_clk: rtc-clk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32768>;
 		clock-output-names = "rtc_clk";
 	};
-
 	sysclk: sysclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 		clock-output-names = "sysclk";
 	};
-
 	osc_27m: clock-osc-27m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <27000000>;
 		clock-output-names = "phy_27m";
 	};
-
 	firmware {
 		optee: optee  {
 			compatible = "linaro,optee-tz";
@@ -111,14 +86,12 @@
 			status = "disabled";
 		};
 	};
-
 	reboot {
 		compatible = "syscon-reboot";
 		regmap = <&rst>;
 		offset = <0>;
 		mask = <0x02>;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(2) |
@@ -130,19 +103,17 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(2) |
 					  IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a72-pmu";
 		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	gic: interrupt-controller@6000000 {
 		compatible = "arm,gic-v3";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-		reg = <0x0 0x06000000 0 0x10000>, /* GIC Dist */
-			<0x0 0x06040000 0 0x40000>; /* GIC Redistributor */
+		reg = <0x0 0x06000000 0 0x10000>,  
+			<0x0 0x06040000 0 0x40000>;  
 		#interrupt-cells = <3>;
 		interrupt-controller;
 		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_RAW(0xf) |
@@ -150,23 +121,20 @@
 		its: msi-controller@6020000 {
 			compatible = "arm,gic-v3-its";
 			msi-controller;
-			reg = <0x0 0x06020000 0 0x20000>;/* GIC Translater */
+			reg = <0x0 0x06020000 0 0x20000>; 
 		};
 	};
-
 	thermal-zones {
 		ddr-controller {
 			polling-delay-passive = <1000>;
 			polling-delay = <5000>;
 			thermal-sensors = <&tmu 0>;
-
 			trips {
 				ddr-ctrler-alert {
 					temperature = <85000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				ddr-ctrler-crit {
 					temperature = <95000>;
 					hysteresis = <2000>;
@@ -174,26 +142,22 @@
 				};
 			};
 		};
-
 		core-cluster {
 			polling-delay-passive = <1000>;
 			polling-delay = <5000>;
 			thermal-sensors = <&tmu 1>;
-
 			trips {
 				core_cluster_alert: core-cluster-alert {
 					temperature = <85000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				core_cluster_crit: core-cluster-crit {
 					temperature = <95000>;
 					hysteresis = <2000>;
 					type = "critical";
 				};
 			};
-
 			cooling-maps {
 				map0 {
 					trip = <&core_cluster_alert>;
@@ -204,20 +168,17 @@
 			};
 		};
 	};
-
 	soc: soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		ddr: memory-controller@1080000 {
 			compatible = "fsl,qoriq-memory-controller";
 			reg = <0x0 0x1080000 0x0 0x1000>;
 			interrupts = <GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>;
 			little-endian;
 		};
-
 		dcfg: syscon@1e00000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -225,7 +186,6 @@
 			reg = <0x0 0x1e00000 0x0 0x10000>;
 			ranges = <0x0 0x0 0x1e00000 0x10000>;
 			little-endian;
-
 			fspi_clk: clock-controller@900 {
 				compatible = "fsl,ls1028a-flexspi-clk";
 				reg = <0x900 0x4>;
@@ -234,13 +194,11 @@
 				clock-output-names = "fspi_clk";
 			};
 		};
-
 		rst: syscon@1e60000 {
 			compatible = "syscon";
 			reg = <0x0 0x1e60000 0x0 0x10000>;
 			little-endian;
 		};
-
 		sfp: efuse@1e80000 {
 			compatible = "fsl,ls1028a-sfp";
 			reg = <0x0 0x1e80000 0x0 0x10000>;
@@ -249,25 +207,21 @@
 			clock-names = "sfp";
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			ls1028a_uid: unique-id@1c {
 				reg = <0x1c 0x8>;
 			};
 		};
-
 		scfg: syscon@1fc0000 {
 			compatible = "fsl,ls1028a-scfg", "syscon";
 			reg = <0x0 0x1fc0000 0x0 0x10000>;
 			big-endian;
 		};
-
 		clockgen: clock-controller@1300000 {
 			compatible = "fsl,ls1028a-clockgen";
 			reg = <0x0 0x1300000 0x0 0xa0000>;
 			#clock-cells = <2>;
 			clocks = <&sysclk>;
 		};
-
 		i2c0: i2c@2000000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -278,7 +232,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@2010000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -289,7 +242,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@2020000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -300,7 +252,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c3: i2c@2030000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -311,7 +262,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c4: i2c@2040000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -322,7 +272,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c5: i2c@2050000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -333,7 +282,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c6: i2c@2060000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -344,7 +292,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		i2c7: i2c@2070000 {
 			compatible = "fsl,vf610-i2c";
 			#address-cells = <1>;
@@ -355,7 +302,6 @@
 					    QORIQ_CLK_PLL_DIV(4)>;
 			status = "disabled";
 		};
-
 		fspi: spi@20c0000 {
 			compatible = "nxp,lx2160a-fspi";
 			#address-cells = <1>;
@@ -368,7 +314,6 @@
 			clock-names = "fspi_en", "fspi";
 			status = "disabled";
 		};
-
 		dspi0: spi@2100000 {
 			compatible = "fsl,ls1028a-dspi", "fsl,ls1021a-v1.0-dspi";
 			#address-cells = <1>;
@@ -384,7 +329,6 @@
 			little-endian;
 			status = "disabled";
 		};
-
 		dspi1: spi@2110000 {
 			compatible = "fsl,ls1028a-dspi", "fsl,ls1021a-v1.0-dspi";
 			#address-cells = <1>;
@@ -400,7 +344,6 @@
 			little-endian;
 			status = "disabled";
 		};
-
 		dspi2: spi@2120000 {
 			compatible = "fsl,ls1028a-dspi", "fsl,ls1021a-v1.0-dspi";
 			#address-cells = <1>;
@@ -416,12 +359,11 @@
 			little-endian;
 			status = "disabled";
 		};
-
 		esdhc: mmc@2140000 {
 			compatible = "fsl,ls1028a-esdhc", "fsl,esdhc";
 			reg = <0x0 0x2140000 0x0 0x10000>;
 			interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
-			clock-frequency = <0>; /* fixed up by bootloader */
+			clock-frequency = <0>;  
 			clocks = <&clockgen QORIQ_CLK_HWACCEL 1>;
 			voltage-ranges = <1800 1800 3300 3300>;
 			sdhci,auto-cmd12;
@@ -429,12 +371,11 @@
 			bus-width = <4>;
 			status = "disabled";
 		};
-
 		esdhc1: mmc@2150000 {
 			compatible = "fsl,ls1028a-esdhc", "fsl,esdhc";
 			reg = <0x0 0x2150000 0x0 0x10000>;
 			interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
-			clock-frequency = <0>; /* fixed up by bootloader */
+			clock-frequency = <0>;  
 			clocks = <&clockgen QORIQ_CLK_HWACCEL 1>;
 			voltage-ranges = <1800 1800>;
 			sdhci,auto-cmd12;
@@ -443,7 +384,6 @@
 			bus-width = <4>;
 			status = "disabled";
 		};
-
 		can0: can@2180000 {
 			compatible = "fsl,lx2160ar1-flexcan";
 			reg = <0x0 0x2180000 0x0 0x10000>;
@@ -455,7 +395,6 @@
 			clock-names = "ipg", "per";
 			status = "disabled";
 		};
-
 		can1: can@2190000 {
 			compatible = "fsl,lx2160ar1-flexcan";
 			reg = <0x0 0x2190000 0x0 0x10000>;
@@ -467,7 +406,6 @@
 			clock-names = "ipg", "per";
 			status = "disabled";
 		};
-
 		duart0: serial@21c0500 {
 			compatible = "fsl,ns16550", "ns16550a";
 			reg = <0x00 0x21c0500 0x0 0x100>;
@@ -476,7 +414,6 @@
 					    QORIQ_CLK_PLL_DIV(2)>;
 			status = "disabled";
 		};
-
 		duart1: serial@21c0600 {
 			compatible = "fsl,ns16550", "ns16550a";
 			reg = <0x00 0x21c0600 0x0 0x100>;
@@ -485,8 +422,6 @@
 					    QORIQ_CLK_PLL_DIV(2)>;
 			status = "disabled";
 		};
-
-
 		lpuart0: serial@2260000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x2260000 0x0 0x1000>;
@@ -499,7 +434,6 @@
 			       <&edma0 1 33>;
 			status = "disabled";
 		};
-
 		lpuart1: serial@2270000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x2270000 0x0 0x1000>;
@@ -512,7 +446,6 @@
 			       <&edma0 1 31>;
 			status = "disabled";
 		};
-
 		lpuart2: serial@2280000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x2280000 0x0 0x1000>;
@@ -525,7 +458,6 @@
 			       <&edma0 1 29>;
 			status = "disabled";
 		};
-
 		lpuart3: serial@2290000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x2290000 0x0 0x1000>;
@@ -538,7 +470,6 @@
 			       <&edma0 1 27>;
 			status = "disabled";
 		};
-
 		lpuart4: serial@22a0000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x22a0000 0x0 0x1000>;
@@ -551,7 +482,6 @@
 			       <&edma0 1 25>;
 			status = "disabled";
 		};
-
 		lpuart5: serial@22b0000 {
 			compatible = "fsl,ls1028a-lpuart";
 			reg = <0x0 0x22b0000 0x0 0x1000>;
@@ -564,7 +494,6 @@
 			       <&edma0 1 23>;
 			status = "disabled";
 		};
-
 		edma0: dma-controller@22c0000 {
 			#dma-cells = <2>;
 			compatible = "fsl,ls1028a-edma", "fsl,vf610-edma";
@@ -581,7 +510,6 @@
 				 <&clockgen QORIQ_CLK_PLATFORM_PLL
 					    QORIQ_CLK_PLL_DIV(2)>;
 		};
-
 		gpio1: gpio@2300000 {
 			compatible = "fsl,ls1028a-gpio","fsl,qoriq-gpio";
 			reg = <0x0 0x2300000 0x0 0x10000>;
@@ -592,7 +520,6 @@
 			#interrupt-cells = <2>;
 			little-endian;
 		};
-
 		gpio2: gpio@2310000 {
 			compatible = "fsl,ls1028a-gpio","fsl,qoriq-gpio";
 			reg = <0x0 0x2310000 0x0 0x10000>;
@@ -603,7 +530,6 @@
 			#interrupt-cells = <2>;
 			little-endian;
 		};
-
 		gpio3: gpio@2320000 {
 			compatible = "fsl,ls1028a-gpio","fsl,qoriq-gpio";
 			reg = <0x0 0x2320000 0x0 0x10000>;
@@ -614,7 +540,6 @@
 			#interrupt-cells = <2>;
 			little-endian;
 		};
-
 		usb0: usb@3100000 {
 			compatible = "fsl,ls1028a-dwc3", "snps,dwc3";
 			reg = <0x0 0x3100000 0x0 0x10000>;
@@ -624,7 +549,6 @@
 			snps,incr-burst-type-adjustment = <1>, <4>, <8>, <16>;
 			status = "disabled";
 		};
-
 		usb1: usb@3110000 {
 			compatible = "fsl,ls1028a-dwc3", "snps,dwc3";
 			reg = <0x0 0x3110000 0x0 0x10000>;
@@ -634,7 +558,6 @@
 			snps,incr-burst-type-adjustment = <1>, <4>, <8>, <16>;
 			status = "disabled";
 		};
-
 		sata: sata@3200000 {
 			compatible = "fsl,ls1028a-ahci";
 			reg = <0x0 0x3200000 0x0 0x10000>,
@@ -645,14 +568,13 @@
 					    QORIQ_CLK_PLL_DIV(2)>;
 			status = "disabled";
 		};
-
 		pcie1: pcie@3400000 {
 			compatible = "fsl,ls1028a-pcie";
-			reg = <0x00 0x03400000 0x0 0x00100000>, /* controller registers */
-			      <0x80 0x00000000 0x0 0x00002000>; /* configuration space */
+			reg = <0x00 0x03400000 0x0 0x00100000>,  
+			      <0x80 0x00000000 0x0 0x00002000>;  
 			reg-names = "regs", "config";
-			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>, /* PME interrupt */
-				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>; /* aer interrupt */
+			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>,  
+				     <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>;  
 			interrupt-names = "pme", "aer";
 			#address-cells = <3>;
 			#size-cells = <2>;
@@ -660,8 +582,8 @@
 			dma-coherent;
 			num-viewport = <8>;
 			bus-range = <0x0 0xff>;
-			ranges = <0x81000000 0x0 0x00000000 0x80 0x00010000 0x0 0x00010000   /* downstream I/O */
-				  0x82000000 0x0 0x40000000 0x80 0x40000000 0x0 0x40000000>; /* non-prefetchable memory */
+			ranges = <0x81000000 0x0 0x00000000 0x80 0x00010000 0x0 0x00010000    
+				  0x82000000 0x0 0x40000000 0x80 0x40000000 0x0 0x40000000>;  
 			msi-parent = <&its>;
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 7>;
@@ -669,26 +591,24 @@
 					<0000 0 0 2 &gic 0 0 GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>,
 					<0000 0 0 3 &gic 0 0 GIC_SPI 111 IRQ_TYPE_LEVEL_HIGH>,
 					<0000 0 0 4 &gic 0 0 GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>;
-			iommu-map = <0 &smmu 0 1>; /* Fixed-up by bootloader */
+			iommu-map = <0 &smmu 0 1>;  
 			status = "disabled";
 		};
-
 		pcie_ep1: pcie-ep@3400000 {
 			compatible = "fsl,ls1028a-pcie-ep","fsl,ls-pcie-ep";
 			reg = <0x00 0x03400000 0x0 0x00100000
 			       0x80 0x00000000 0x8 0x00000000>;
 			reg-names = "regs", "addr_space";
-			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>; /* PME interrupt */
+			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;  
 			interrupt-names = "pme";
 			num-ib-windows = <6>;
 			num-ob-windows = <8>;
 			status = "disabled";
 		};
-
 		pcie2: pcie@3500000 {
 			compatible = "fsl,ls1028a-pcie";
-			reg = <0x00 0x03500000 0x0 0x00100000>, /* controller registers */
-			      <0x88 0x00000000 0x0 0x00002000>; /* configuration space */
+			reg = <0x00 0x03500000 0x0 0x00100000>,  
+			      <0x88 0x00000000 0x0 0x00002000>;  
 			reg-names = "regs", "config";
 			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;
@@ -699,8 +619,8 @@
 			dma-coherent;
 			num-viewport = <8>;
 			bus-range = <0x0 0xff>;
-			ranges = <0x81000000 0x0 0x00000000 0x88 0x00010000 0x0 0x00010000   /* downstream I/O */
-				  0x82000000 0x0 0x40000000 0x88 0x40000000 0x0 0x40000000>; /* non-prefetchable memory */
+			ranges = <0x81000000 0x0 0x00000000 0x88 0x00010000 0x0 0x00010000    
+				  0x82000000 0x0 0x40000000 0x88 0x40000000 0x0 0x40000000>;  
 			msi-parent = <&its>;
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 7>;
@@ -708,22 +628,20 @@
 					<0000 0 0 2 &gic 0 0 GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
 					<0000 0 0 3 &gic 0 0 GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
 					<0000 0 0 4 &gic 0 0 GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
-			iommu-map = <0 &smmu 0 1>; /* Fixed-up by bootloader */
+			iommu-map = <0 &smmu 0 1>;  
 			status = "disabled";
 		};
-
 		pcie_ep2: pcie-ep@3500000 {
 			compatible = "fsl,ls1028a-pcie-ep","fsl,ls-pcie-ep";
 			reg = <0x00 0x03500000 0x0 0x00100000
 			       0x88 0x00000000 0x8 0x00000000>;
 			reg-names = "regs", "addr_space";
-			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>; /* PME interrupt */
+			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;  
 			interrupt-names = "pme";
 			num-ib-windows = <6>;
 			num-ob-windows = <8>;
 			status = "disabled";
 		};
-
 		smmu: iommu@5000000 {
 			compatible = "arm,mmu-500";
 			reg = <0 0x5000000 0 0x800000>;
@@ -731,18 +649,12 @@
 			#iommu-cells = <1>;
 			dma-coherent;
 			stream-match-mask = <0x7c00>;
-			/* global secure fault */
 			interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
-			/* combined secure interrupt */
 				     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
-			/* global non-secure fault */
 				     <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>,
-			/* combined non-secure interrupt */
 				     <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
-			/* performance counter interrupts 0-7 */
 				     <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 213 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 214 IRQ_TYPE_LEVEL_HIGH>,
-			/* per context interrupt, 64 interrupts */
 				     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>,
@@ -776,7 +688,6 @@
 				     <GIC_SPI 206 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 207 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		crypto: crypto@8000000 {
 			compatible = "fsl,sec-v5.0", "fsl,sec-v4.0";
 			fsl,sec-era = <10>;
@@ -786,28 +697,24 @@
 			reg = <0x00 0x8000000 0x0 0x100000>;
 			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
 			dma-coherent;
-
 			sec_jr0: jr@10000 {
 				compatible = "fsl,sec-v5.0-job-ring",
 					     "fsl,sec-v4.0-job-ring";
 				reg = <0x10000 0x10000>;
 				interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			sec_jr1: jr@20000 {
 				compatible = "fsl,sec-v5.0-job-ring",
 					     "fsl,sec-v4.0-job-ring";
 				reg = <0x20000 0x10000>;
 				interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			sec_jr2: jr@30000 {
 				compatible = "fsl,sec-v5.0-job-ring",
 					     "fsl,sec-v4.0-job-ring";
 				reg = <0x30000 0x10000>;
 				interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			sec_jr3: jr@40000 {
 				compatible = "fsl,sec-v5.0-job-ring",
 					     "fsl,sec-v4.0-job-ring";
@@ -815,12 +722,11 @@
 				interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
-
 		qdma: dma-controller@8380000 {
 			compatible = "fsl,ls1028a-qdma", "fsl,ls1021a-qdma";
-			reg = <0x0 0x8380000 0x0 0x1000>, /* Controller regs */
-			      <0x0 0x8390000 0x0 0x10000>, /* Status regs */
-			      <0x0 0x83a0000 0x0 0x40000>; /* Block regs */
+			reg = <0x0 0x8380000 0x0 0x1000>,  
+			      <0x0 0x8390000 0x0 0x10000>,  
+			      <0x0 0x83a0000 0x0 0x40000>;  
 			interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 252 IRQ_TYPE_LEVEL_HIGH>,
@@ -835,7 +741,6 @@
 			status-sizes = <64>;
 			queue-sizes = <64 64>;
 		};
-
 		cluster1_core0_watchdog: watchdog@c000000 {
 			compatible = "arm,sp805", "arm,primecell";
 			reg = <0x0 0xc000000 0x0 0x1000>;
@@ -845,7 +750,6 @@
 					    QORIQ_CLK_PLL_DIV(16)>;
 			clock-names = "wdog_clk", "apb_pclk";
 		};
-
 		cluster1_core1_watchdog: watchdog@c010000 {
 			compatible = "arm,sp805", "arm,primecell";
 			reg = <0x0 0xc010000 0x0 0x1000>;
@@ -855,7 +759,6 @@
 					    QORIQ_CLK_PLL_DIV(16)>;
 			clock-names = "wdog_clk", "apb_pclk";
 		};
-
 		malidp0: display@f080000 {
 			compatible = "arm,mali-dp500";
 			reg = <0x0 0xf080000 0x0 0x10000>;
@@ -869,14 +772,11 @@
 			clock-names = "pxlclk", "mclk", "aclk", "pclk";
 			arm,malidp-output-port-lines = /bits/ 8 <8 8 8>;
 			arm,malidp-arqos-value = <0xd000d000>;
-
 			port {
 				dpi0_out: endpoint {
-
 				};
 			};
 		};
-
 		gpu: gpu@f0c0000 {
 			compatible = "vivante,gc";
 			reg = <0x0 0xf0c0000 0x0 0x10000>;
@@ -887,7 +787,6 @@
 			clock-names = "core", "shader", "bus";
 			#cooling-cells = <2>;
 		};
-
 		sai1: audio-controller@f100000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -908,7 +807,6 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		sai2: audio-controller@f110000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -929,7 +827,6 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		sai3: audio-controller@f120000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -950,7 +847,6 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		sai4: audio-controller@f130000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -971,7 +867,6 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		sai5: audio-controller@f140000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -992,7 +887,6 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		sai6: audio-controller@f150000 {
 			#sound-dai-cells = <0>;
 			compatible = "fsl,vf610-sai";
@@ -1013,14 +907,12 @@
 			fsl,sai-asynchronous;
 			status = "disabled";
 		};
-
 		dpclk: clock-controller@f1f0000 {
 			compatible = "fsl,ls1028a-plldig";
 			reg = <0x0 0xf1f0000 0x0 0x10000>;
 			#clock-cells = <0>;
 			clocks = <&osc_27m>;
 		};
-
 		tmu: tmu@1f80000 {
 			compatible = "fsl,qoriq-tmu";
 			reg = <0x0 0x1f80000 0x0 0x10000>;
@@ -1038,7 +930,6 @@
 					       0x00000009 0x00000060
 					       0x0000000a 0x00000066
 					       0x0000000b 0x0000006d
-
 					       0x00010000 0x0000001c
 					       0x00010001 0x00000024
 					       0x00010002 0x0000002c
@@ -1050,7 +941,6 @@
 					       0x00010008 0x0000005e
 					       0x00010009 0x00000066
 					       0x0001000a 0x0000006e
-
 					       0x00020000 0x00000018
 					       0x00020001 0x00000022
 					       0x00020002 0x0000002d
@@ -1060,7 +950,6 @@
 					       0x00020006 0x00000058
 					       0x00020007 0x00000063
 					       0x00020008 0x0000006e
-
 					       0x00030000 0x00000010
 					       0x00030001 0x0000001c
 					       0x00030002 0x00000029
@@ -1072,8 +961,7 @@
 			little-endian;
 			#thermal-sensor-cells = <1>;
 		};
-
-		pcie@1f0000000 { /* Integrated Endpoint Root Complex */
+		pcie@1f0000000 {  
 			compatible = "pci-host-ecam-generic";
 			reg = <0x01 0xf0000000 0x0 0x100000>;
 			#address-cells = <3>;
@@ -1084,53 +972,40 @@
 			dma-coherent;
 			msi-map = <0 &its 0x17 0xe>;
 			iommu-map = <0 &smmu 0x17 0xe>;
-				  /* PF0-6 BAR0 - non-prefetchable memory */
 			ranges = <0x82000000 0x1 0xf8000000  0x1 0xf8000000  0x0 0x160000
-				  /* PF0-6 BAR2 - prefetchable memory */
 				  0xc2000000 0x1 0xf8160000  0x1 0xf8160000  0x0 0x070000
-				  /* PF0: VF0-1 BAR0 - non-prefetchable memory */
 				  0x82000000 0x1 0xf81d0000  0x1 0xf81d0000  0x0 0x020000
-				  /* PF0: VF0-1 BAR2 - prefetchable memory */
 				  0xc2000000 0x1 0xf81f0000  0x1 0xf81f0000  0x0 0x020000
-				  /* PF1: VF0-1 BAR0 - non-prefetchable memory */
 				  0x82000000 0x1 0xf8210000  0x1 0xf8210000  0x0 0x020000
-				  /* PF1: VF0-1 BAR2 - prefetchable memory */
 				  0xc2000000 0x1 0xf8230000  0x1 0xf8230000  0x0 0x020000
-				  /* BAR4 (PF5) - non-prefetchable memory */
 				  0x82000000 0x1 0xfc000000  0x1 0xfc000000  0x0 0x400000>;
-
 			enetc_port0: ethernet@0,0 {
 				compatible = "fsl,enetc";
 				reg = <0x000000 0 0 0 0>;
 				status = "disabled";
 			};
-
 			enetc_port1: ethernet@0,1 {
 				compatible = "fsl,enetc";
 				reg = <0x000100 0 0 0 0>;
 				status = "disabled";
 			};
-
 			enetc_port2: ethernet@0,2 {
 				compatible = "fsl,enetc";
 				reg = <0x000200 0 0 0 0>;
 				phy-mode = "internal";
 				status = "disabled";
-
 				fixed-link {
 					speed = <2500>;
 					full-duplex;
 					pause;
 				};
 			};
-
 			enetc_mdio_pf3: mdio@0,3 {
 				compatible = "fsl,enetc-mdio";
 				reg = <0x000300 0 0 0 0>;
 				#address-cells = <1>;
 				#size-cells = <0>;
 			};
-
 			ethernet@0,4 {
 				compatible = "fsl,enetc-ptp";
 				reg = <0x000400 0 0 0 0>;
@@ -1138,58 +1013,45 @@
 				little-endian;
 				fsl,extts-fifo;
 			};
-
 			mscc_felix: ethernet-switch@0,5 {
 				reg = <0x000500 0 0 0 0>;
-				/* IEP INT_B */
 				interrupts = <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>;
 				status = "disabled";
-
 				mscc_felix_ports: ports {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
-					/* External ports */
 					mscc_felix_port0: port@0 {
 						reg = <0>;
 						status = "disabled";
 					};
-
 					mscc_felix_port1: port@1 {
 						reg = <1>;
 						status = "disabled";
 					};
-
 					mscc_felix_port2: port@2 {
 						reg = <2>;
 						status = "disabled";
 					};
-
 					mscc_felix_port3: port@3 {
 						reg = <3>;
 						status = "disabled";
 					};
-
-					/* Internal ports */
 					mscc_felix_port4: port@4 {
 						reg = <4>;
 						phy-mode = "internal";
 						ethernet = <&enetc_port2>;
 						status = "disabled";
-
 						fixed-link {
 							speed = <2500>;
 							full-duplex;
 							pause;
 						};
 					};
-
 					mscc_felix_port5: port@5 {
 						reg = <5>;
 						phy-mode = "internal";
 						ethernet = <&enetc_port3>;
 						status = "disabled";
-
 						fixed-link {
 							speed = <1000>;
 							full-duplex;
@@ -1198,33 +1060,26 @@
 					};
 				};
 			};
-
 			enetc_port3: ethernet@0,6 {
 				compatible = "fsl,enetc";
 				reg = <0x000600 0 0 0 0>;
 				phy-mode = "internal";
 				status = "disabled";
-
 				fixed-link {
 					speed = <1000>;
 					full-duplex;
 					pause;
 				};
 			};
-
 			rcec@1f,0 {
 				reg = <0x00f800 0 0 0 0>;
-				/* IEP INT_A */
 				interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
-
-		/* Integrated Endpoint Register Block */
 		ierb@1f0800000 {
 			compatible = "fsl,ls1028a-enetc-ierb";
 			reg = <0x01 0xf0800000 0x0 0x10000>;
 		};
-
 		pwm0: pwm@2800000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1235,7 +1090,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm1: pwm@2810000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1246,7 +1100,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm2: pwm@2820000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1257,7 +1110,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm3: pwm@2830000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1268,7 +1120,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm4: pwm@2840000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1279,7 +1130,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm5: pwm@2850000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1290,7 +1140,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm6: pwm@2860000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1301,7 +1150,6 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		pwm7: pwm@2870000 {
 			compatible = "fsl,vf610-ftm-pwm";
 			#pwm-cells = <3>;
@@ -1312,14 +1160,12 @@
 				 <&rtc_clk>, <&clockgen 4 1>;
 			status = "disabled";
 		};
-
 		rcpm: power-controller@1e34040 {
 			compatible = "fsl,ls1028a-rcpm", "fsl,qoriq-rcpm-2.1+";
 			reg = <0x0 0x1e34040 0x0 0x1c>;
 			#fsl,rcpm-wakeup-cells = <7>;
 			little-endian;
 		};
-
 		ftm_alarm0: timer@2800000 {
 			compatible = "fsl,ls1028a-ftm-alarm";
 			reg = <0x0 0x2800000 0x0 0x10000>;
@@ -1327,7 +1173,6 @@
 			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		ftm_alarm1: timer@2810000 {
 			compatible = "fsl,ls1028a-ftm-alarm";
 			reg = <0x0 0x2810000 0x0 0x10000>;
@@ -1336,5 +1181,4 @@
 			status = "disabled";
 		};
 	};
-
 };

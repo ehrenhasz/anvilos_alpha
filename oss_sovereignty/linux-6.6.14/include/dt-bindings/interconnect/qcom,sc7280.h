@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Qualcomm SC7280 interconnect IDs
- *
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SC7280_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SC7280_H
-
 #define MASTER_QSPI_0			0
 #define MASTER_QUP_0			1
 #define MASTER_QUP_1			2
@@ -23,7 +15,6 @@
 #define SLAVE_A1NOC_SNOC			12
 #define SLAVE_ANOC_PCIE_GEM_NOC			13
 #define SLAVE_SERVICE_A1NOC			14
-
 #define MASTER_QDSS_BAM			0
 #define MASTER_A2NOC_CFG			1
 #define MASTER_CNOC_A2NOC			2
@@ -32,12 +23,10 @@
 #define MASTER_QDSS_ETR			5
 #define SLAVE_A2NOC_SNOC			6
 #define SLAVE_SERVICE_A2NOC			7
-
 #define MASTER_QUP_CORE_0			0
 #define MASTER_QUP_CORE_1		1
 #define SLAVE_QUP_CORE_0			2
 #define SLAVE_QUP_CORE_1			3
-
 #define MASTER_CNOC3_CNOC2			0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_AHB2PHY_SOUTH			2
@@ -85,7 +74,6 @@
 #define SLAVE_CNOC2_CNOC3			44
 #define SLAVE_CNOC_MNOC_CFG			45
 #define SLAVE_SNOC_CFG			46
-
 #define MASTER_CNOC2_CNOC3			0
 #define MASTER_GEM_NOC_CNOC			1
 #define MASTER_GEM_NOC_PCIE_SNOC			2
@@ -101,11 +89,9 @@
 #define SLAVE_PCIE_1			12
 #define SLAVE_QDSS_STM			13
 #define SLAVE_TCU			14
-
 #define MASTER_CNOC_DC_NOC			0
 #define SLAVE_LLCC_CFG			1
 #define SLAVE_GEM_NOC_CFG			2
-
 #define MASTER_GPU_TCU			0
 #define MASTER_SYS_TCU			1
 #define MASTER_APPSS_PROC			2
@@ -125,7 +111,6 @@
 #define SLAVE_SERVICE_GEM_NOC_1			16
 #define SLAVE_SERVICE_GEM_NOC_2			17
 #define SLAVE_SERVICE_GEM_NOC			18
-
 #define MASTER_CNOC_LPASS_AG_NOC			0
 #define SLAVE_LPASS_CORE_CFG			1
 #define SLAVE_LPASS_LPI_CFG			2
@@ -133,10 +118,8 @@
 #define SLAVE_LPASS_TOP_CFG			4
 #define SLAVE_SERVICES_LPASS_AML_NOC			5
 #define SLAVE_SERVICE_LPASS_AG_NOC			6
-
 #define MASTER_LLCC			0
 #define SLAVE_EBI1			1
-
 #define MASTER_CNOC_MNOC_CFG			0
 #define MASTER_VIDEO_P0			1
 #define MASTER_VIDEO_PROC			2
@@ -147,12 +130,10 @@
 #define SLAVE_MNOC_HF_MEM_NOC			7
 #define SLAVE_MNOC_SF_MEM_NOC			8
 #define SLAVE_SERVICE_MNOC			9
-
 #define MASTER_CDSP_NOC_CFG			0
 #define MASTER_CDSP_PROC			1
 #define SLAVE_CDSP_MEM_NOC			2
 #define SLAVE_SERVICE_NSP_NOC			3
-
 #define MASTER_A1NOC_SNOC			0
 #define MASTER_A2NOC_SNOC			1
 #define MASTER_SNOC_CFG			2
@@ -161,5 +142,4 @@
 #define SLAVE_SNOC_GEM_NOC_GC			5
 #define SLAVE_SNOC_GEM_NOC_SF			6
 #define SLAVE_SERVICE_SNOC			7
-
 #endif

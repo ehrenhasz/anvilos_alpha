@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2014-2015 Altera Corporation <www.altera.com>
- */
-
 /dts-v1/;
 #include "socfpga_arria10_socdk.dtsi"
-
 &mmc {
 	status = "okay";
 	cap-sd-highspeed;
@@ -14,7 +8,6 @@
 	bus-width = <4>;
 	clk-phase-sd-hs = <0>, <135>;
 };
-
 &eccmgr {
 	sdmmca-ecc@ff8c2c00 {
 		compatible = "altr,socfpga-sdmmc-ecc";

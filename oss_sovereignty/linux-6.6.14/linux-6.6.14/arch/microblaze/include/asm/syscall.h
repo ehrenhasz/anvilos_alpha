@@ -1,37 +1,28 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_MICROBLAZE_SYSCALL_H
 #define __ASM_MICROBLAZE_SYSCALL_H
-
 #include <uapi/linux/audit.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <asm/ptrace.h>
-
-/* The system call number is given by the user in R12 */
 static inline long syscall_get_nr(struct task_struct *task,
 				  struct pt_regs *regs)
 {
 	return regs->r12;
 }
-
 static inline void syscall_rollback(struct task_struct *task,
 				    struct pt_regs *regs)
 {
-	/* TODO.  */
 }
-
 static inline long syscall_get_error(struct task_struct *task,
 				     struct pt_regs *regs)
 {
 	return IS_ERR_VALUE(regs->r3) ? regs->r3 : 0;
 }
-
 static inline long syscall_get_return_value(struct task_struct *task,
 					    struct pt_regs *regs)
 {
 	return regs->r3;
 }
-
 static inline void syscall_set_return_value(struct task_struct *task,
 					    struct pt_regs *regs,
 					    int error, long val)
@@ -41,7 +32,6 @@ static inline void syscall_set_return_value(struct task_struct *task,
 	else
 		regs->r3 = val;
 }
-
 static inline microblaze_reg_t microblaze_get_syscall_arg(struct pt_regs *regs,
 							  unsigned int n)
 {
@@ -57,23 +47,19 @@ static inline microblaze_reg_t microblaze_get_syscall_arg(struct pt_regs *regs,
 	}
 	return ~0;
 }
-
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
 					 unsigned long *args)
 {
 	unsigned int i = 0;
 	unsigned int n = 6;
-
 	while (n--)
 		*args++ = microblaze_get_syscall_arg(regs, i++);
 }
-
 asmlinkage unsigned long do_syscall_trace_enter(struct pt_regs *regs);
 asmlinkage void do_syscall_trace_leave(struct pt_regs *regs);
-
 static inline int syscall_get_arch(struct task_struct *task)
 {
 	return AUDIT_ARCH_MICROBLAZE;
 }
-#endif /* __ASM_MICROBLAZE_SYSCALL_H */
+#endif  

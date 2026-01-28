@@ -1,25 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
-
-/*
- * VScom OnRISC
- * http://www.vscom.de
- */
-
 /dts-v1/;
-
 #include "am335x-baltos.dtsi"
-
 / {
 	model = "NetCom Plus";
 };
-
 &am33xx_pinmux {
 	pinctrl-names = "default";
 	pinctrl-0 = <&dip_switches>;
-
 	dip_switches: dip-switches-pins {
 		pinctrl-single,pins = <
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD12, PIN_INPUT_PULLDOWN, MUX_MODE7)
@@ -28,13 +14,11 @@
 			AM33XX_PADCONF(AM335X_PIN_GPMC_AD15, PIN_INPUT_PULLDOWN, MUX_MODE7)
 		>;
 	};
-
 	tca6416_pins: tca6416-pins {
 		pinctrl-single,pins = <
 			AM33XX_PADCONF(AM335X_PIN_XDMA_EVENT_INTR1, PIN_INPUT_PULLUP, MUX_MODE7)
 		>;
 	};
-
 	i2c2_pins: i2c2-pins {
 		pinctrl-single,pins = <
 			AM33XX_PADCONF(AM335X_PIN_UART1_CTSN, PIN_INPUT_PULLDOWN, MUX_MODE3)
@@ -42,25 +26,20 @@
 		>;
 	};
 };
-
 &usb0_phy {
 	status = "okay";
 };
-
 &usb1_phy {
 	status = "okay";
 };
-
 &usb0 {
 	status = "okay";
 	dr_mode = "host";
 };
-
 &usb1 {
 	status = "okay";
 	dr_mode = "host";
 };
-
 &i2c1 {
 	tca6416a: gpio@20 {
 		compatible = "ti,tca6416";
@@ -77,14 +56,11 @@
 				  "GP_OUT4", "GP_OUT5", "GP_OUT6", "GP_OUT7";
 	};
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins>;
-
 	status = "okay";
 	clock-frequency = <400000>;
-
 	tca6416b: gpio@20 {
 		compatible = "ti,tca6416";
 		reg = <0x20>;
@@ -95,7 +71,6 @@
 				  "CH3_M0", "CH3_M1", "CH3_M2", "CH3_M3",
 				  "CH4_M0", "CH4_M1", "CH4_M2", "CH4_M3";
 	};
-
 	tca6416c: gpio@21 {
 		compatible = "ti,tca6416";
 		reg = <0x21>;
@@ -107,25 +82,21 @@
 				  "CH8_M0", "CH8_M1", "CH8_M2", "CH8_M3";
 	};
 };
-
 &davinci_mdio_sw {
 	phy0: ethernet-phy@0 {
 		reg = <1>;
 	};
 };
-
 &cpsw_port1 {
 	phy-mode = "rmii";
 	ti,dual-emac-pvid = <1>;
 	phy-handle = <&phy0>;
 };
-
 &cpsw_port2 {
 	phy-mode = "rgmii-id";
 	ti,dual-emac-pvid = <2>;
 	phy-handle = <&phy1>;
 };
-
 &gpio0 {
 	gpio-line-names =
 		"MDIO",
@@ -161,7 +132,6 @@
 		"GPMC_WAIT0",
 		"GPMC_WP_N";
 };
-
 &gpio1 {
 	gpio-line-names =
 		"GPMC_AD0",
@@ -197,7 +167,6 @@
 		"MMC1_CLK",
 		"MMC1_CMD";
 };
-
 &gpio2 {
 	gpio-line-names =
 		"GPMC_CSN3_BUS",
@@ -233,7 +202,6 @@
 		"MMC0_CLK",
 		"MMC0_CMD";
 };
-
 &gpio3 {
 	gpio-line-names =
 		"onrisc:red:power",

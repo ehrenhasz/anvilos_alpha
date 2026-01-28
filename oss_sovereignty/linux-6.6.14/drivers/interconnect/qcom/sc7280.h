@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SC7280 interconnect IDs
- *
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SC7280_H
 #define __DRIVERS_INTERCONNECT_QCOM_SC7280_H
-
 #define SC7280_MASTER_GPU_TCU			0
 #define SC7280_MASTER_SYS_TCU			1
 #define SC7280_MASTER_APPSS_PROC			2
@@ -150,5 +142,4 @@
 #define SC7280_SLAVE_PCIE_1			139
 #define SC7280_SLAVE_QDSS_STM			140
 #define SC7280_SLAVE_TCU			141
-
 #endif

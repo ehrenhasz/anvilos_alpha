@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_BARRIER_H
 #define __ASM_BARRIER_H
-
 #include <asm/alternative.h>
-
 #ifndef __ASSEMBLY__
-
-/* The synchronize caches instruction executes as a nop on systems in
-   which all memory references are performed in order. */
 #define synchronize_caches() asm volatile("sync" \
 	ALTERNATIVE(ALT_COND_NO_SMP, INSN_NOP) \
 	: : : "memory")
-
 #if defined(CONFIG_SMP)
 #define mb()		do { synchronize_caches(); } while (0)
 #define rmb()		mb()
@@ -25,11 +18,9 @@
 #define dma_rmb()	barrier()
 #define dma_wmb()	barrier()
 #endif
-
 #define __smp_mb()	mb()
 #define __smp_rmb()	mb()
 #define __smp_wmb()	mb()
-
 #define __smp_store_release(p, v)					\
 do {									\
 	typeof(p) __p = (p);						\
@@ -60,7 +51,6 @@ do {									\
 		break;							\
 	}								\
 } while (0)
-
 #define __smp_load_acquire(p)						\
 ({									\
 	union { typeof(*p) __val; char __c[1]; } __u;			\
@@ -92,6 +82,5 @@ do {									\
 	__u.__val;							\
 })
 #include <asm-generic/barrier.h>
-
-#endif /* !__ASSEMBLY__ */
-#endif /* __ASM_BARRIER_H */
+#endif  
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_GR_REGS_H__
 #define __NVKM_GR_REGS_H__
-
 #define NV04_PGRAPH_DEBUG_0                                0x00400080
 #define NV04_PGRAPH_DEBUG_1                                0x00400084
 #define NV04_PGRAPH_DEBUG_2                                0x00400088
@@ -168,9 +166,7 @@
 #define NV04_PGRAPH_NOTIFY                                 0x00400714
 #define NV10_PGRAPH_STATE                                  0x00400714
 #define NV10_PGRAPH_NOTIFY                                 0x00400718
-
 #define NV04_PGRAPH_FIFO                                   0x00400720
-
 #define NV04_PGRAPH_BPIXEL                                 0x00400724
 #define NV10_PGRAPH_RDI_INDEX                              0x00400750
 #define NV04_PGRAPH_FFINTFC_ST2                            0x00400754
@@ -271,5 +267,4 @@
 #define NV40_PGRAPH_TSTATUS1(i)                            (0x0040690C + (i*16))
 #define NV40_PGRAPH_ZCOMP1(i)                              (0x00406980 + 4*(i))
 #define NV41_PGRAPH_ZCOMP1(i)                              (0x004069c0 + 4*(i))
-
 #endif

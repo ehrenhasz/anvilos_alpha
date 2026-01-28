@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 BayLibre, SAS
- * Author: Fabien Parent <fparent@baylibre.com>
- */
-
 #ifndef __MFD_MT6357_CORE_H__
 #define __MFD_MT6357_CORE_H__
-
 enum mt6357_irq_top_status_shift {
 	MT6357_BUCK_TOP = 0,
 	MT6357_LDO_TOP,
@@ -18,7 +11,6 @@ enum mt6357_irq_top_status_shift {
 	MT6357_AUD_TOP,
 	MT6357_MISC_TOP,
 };
-
 enum mt6357_irq_numbers {
 	MT6357_IRQ_VPROC_OC = 0,
 	MT6357_IRQ_VCORE_OC,
@@ -83,7 +75,6 @@ enum mt6357_irq_numbers {
 	MT6357_IRQ_SPI_CMD_ALERT = 144,
 	MT6357_IRQ_NR,
 };
-
 #define MT6357_IRQ_BUCK_BASE	MT6357_IRQ_VPROC_OC
 #define MT6357_IRQ_LDO_BASE	MT6357_IRQ_VFE28_OC
 #define MT6357_IRQ_PSC_BASE	MT6357_IRQ_PWRKEY
@@ -92,7 +83,6 @@ enum mt6357_irq_numbers {
 #define MT6357_IRQ_HK_BASE	MT6357_IRQ_BAT_H
 #define MT6357_IRQ_AUD_BASE	MT6357_IRQ_AUDIO
 #define MT6357_IRQ_MISC_BASE	MT6357_IRQ_SPI_CMD_ALERT
-
 #define MT6357_IRQ_BUCK_BITS (MT6357_IRQ_VCORE_PREOC - MT6357_IRQ_BUCK_BASE + 1)
 #define MT6357_IRQ_LDO_BITS (MT6357_IRQ_VSIM2_OC - MT6357_IRQ_LDO_BASE + 1)
 #define MT6357_IRQ_PSC_BITS (MT6357_IRQ_VCDT_HV_DET - MT6357_IRQ_PSC_BASE + 1)
@@ -102,7 +92,6 @@ enum mt6357_irq_numbers {
 #define MT6357_IRQ_AUD_BITS (MT6357_IRQ_ACCDET_EINT1 - MT6357_IRQ_AUD_BASE + 1)
 #define MT6357_IRQ_MISC_BITS	\
 	(MT6357_IRQ_SPI_CMD_ALERT - MT6357_IRQ_MISC_BASE + 1)
-
 #define MT6357_TOP_GEN(sp)	\
 {	\
 	.hwirq_base = MT6357_IRQ_##sp##_BASE,	\
@@ -115,5 +104,4 @@ enum mt6357_irq_numbers {
 	.sta_reg_shift = 0x2,	\
 	.top_offset = MT6357_##sp##_TOP,	\
 }
-
-#endif /* __MFD_MT6357_CORE_H__ */
+#endif  

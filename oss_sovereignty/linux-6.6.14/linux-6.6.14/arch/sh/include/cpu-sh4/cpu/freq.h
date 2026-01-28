@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * include/asm-sh/cpu-sh4/freq.h
- *
- * Copyright (C) 2002, 2003 Paul Mundt
- */
 #ifndef __ASM_CPU_SH4_FREQ_H
 #define __ASM_CPU_SH4_FREQ_H
-
 #if defined(CONFIG_CPU_SUBTYPE_SH7722) || \
     defined(CONFIG_CPU_SUBTYPE_SH7723) || \
     defined(CONFIG_CPU_SUBTYPE_SH7343) || \
@@ -30,7 +23,6 @@
 #define FRQCRA			0xa4150000
 #define FRQCRB			0xa4150004
 #define VCLKCR			0xa4150048
-
 #define FCLKACR			0xa4150008
 #define FCLKBCR			0xa415000c
 #define FRQCR			FRQCRA
@@ -39,11 +31,9 @@
 #define FCLKACR			0xa4150008
 #define FCLKBCR			0xa415000c
 #define IrDACLKCR		0xa4150018
-
 #define MSTPCR0			0xa4150030
 #define MSTPCR1			0xa4150034
 #define MSTPCR2			0xa4150038
-
 #elif defined(CONFIG_CPU_SUBTYPE_SH7734)
 #define FRQCR0			0xffc80000
 #define FRQCR2			0xffc80008
@@ -69,6 +59,4 @@
 #endif
 #define MIN_DIVISOR_NR		0
 #define MAX_DIVISOR_NR		3
-
-#endif /* __ASM_CPU_SH4_FREQ_H */
-
+#endif  

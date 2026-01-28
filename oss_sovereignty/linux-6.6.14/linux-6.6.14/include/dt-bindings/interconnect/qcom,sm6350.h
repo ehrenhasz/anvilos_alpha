@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Qualcomm SM6350 interconnect IDs
- *
- * Copyright (C) 2022 Luca Weiss <luca.weiss@fairphone.com>
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SM6350_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SM6350_H
-
 #define MASTER_A1NOC_CFG		0
 #define MASTER_QUP_0			1
 #define MASTER_EMMC			2
 #define MASTER_UFS_MEM			3
 #define A1NOC_SNOC_SLV			4
 #define SLAVE_SERVICE_A1NOC		5
-
 #define MASTER_A2NOC_CFG		0
 #define MASTER_QDSS_BAM			1
 #define MASTER_QUP_1			2
@@ -25,7 +16,6 @@
 #define MASTER_USB3			7
 #define A2NOC_SNOC_SLV			8
 #define SLAVE_SERVICE_A2NOC		9
-
 #define MASTER_CAMNOC_HF0_UNCOMP	0
 #define MASTER_CAMNOC_ICP_UNCOMP	1
 #define MASTER_CAMNOC_SF_UNCOMP		2
@@ -36,11 +26,9 @@
 #define SLAVE_QUP_CORE_0		7
 #define SLAVE_QUP_CORE_1		8
 #define SLAVE_EBI_CH0			9
-
 #define MASTER_NPU			0
 #define MASTER_NPU_PROC			1
 #define SLAVE_CDSP_GEM_NOC		2
-
 #define SNOC_CNOC_MAS			0
 #define MASTER_QDSS_DAP			1
 #define SLAVE_A1NOC_CFG			2
@@ -86,11 +74,9 @@
 #define SLAVE_VENUS_THROTTLE_CFG	42
 #define SLAVE_VSENSE_CTRL_CFG		43
 #define SLAVE_SERVICE_CNOC		44
-
 #define MASTER_CNOC_DC_NOC		0
 #define SLAVE_GEM_NOC_CFG		1
 #define SLAVE_LLCC_CFG			2
-
 #define MASTER_AMPSS_M0			0
 #define MASTER_SYS_TCU			1
 #define MASTER_GEM_NOC_CFG		2
@@ -105,7 +91,6 @@
 #define SLAVE_GEM_NOC_SNOC		11
 #define SLAVE_LLCC			12
 #define SLAVE_SERVICE_GEM_NOC		13
-
 #define MASTER_CNOC_MNOC_CFG		0
 #define MASTER_VIDEO_P0			1
 #define MASTER_VIDEO_PROC		2
@@ -116,7 +101,6 @@
 #define SLAVE_MNOC_HF_MEM_NOC		7
 #define SLAVE_MNOC_SF_MEM_NOC		8
 #define SLAVE_SERVICE_MNOC		9
-
 #define MASTER_NPU_SYS			0
 #define MASTER_NPU_NOC_CFG		1
 #define SLAVE_NPU_CAL_DP0		2
@@ -128,7 +112,6 @@
 #define SLAVE_NPU_TCM			8
 #define SLAVE_NPU_COMPUTE_NOC		9
 #define SLAVE_SERVICE_NPU_NOC		10
-
 #define MASTER_SNOC_CFG			0
 #define A1NOC_SNOC_MAS			1
 #define A2NOC_SNOC_MAS			2
@@ -144,5 +127,4 @@
 #define SLAVE_SERVICE_SNOC		12
 #define SLAVE_QDSS_STM			13
 #define SLAVE_TCU			14
-
 #endif

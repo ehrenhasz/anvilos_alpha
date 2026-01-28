@@ -1,26 +1,18 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-
 /dts-v1/;
-
 #include "rv1108.dtsi"
-
 / {
 	model = "Rockchip RV1108 Evaluation board";
 	compatible = "rockchip,rv1108-evb", "rockchip,rv1108";
-
 	aliases {
 		mmc0 = &sdmmc;
 	};
-
 	memory@60000000 {
 		device_type = "memory";
 		reg = <0x60000000 0x08000000>;
 	};
-
 	chosen {
 		stdout-path = "serial2:1500000n8";
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		brightness-levels = <
@@ -59,7 +51,6 @@
 		default-brightness-level = <200>;
 		pwms = <&pwm0 0 25000 0>;
 	};
-
 	vcc_sys: vsys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vsys";
@@ -68,17 +59,14 @@
 		regulator-boot-on;
 	};
 };
-
 &cpu0 {
 	cpu-supply = <&vdd_core>;
 };
-
 &i2c0 {
 	status = "okay";
 	i2c-scl-rising-time-ns = <275>;
 	i2c-scl-falling-time-ns = <16>;
 	clock-frequency = <400000>;
-
 	rk805: pmic@18 {
 		compatible = "rockchip,rk805";
 		reg = <0x18>;
@@ -86,14 +74,12 @@
 		interrupts = <RK_PB4 IRQ_TYPE_LEVEL_LOW>;
 		rockchip,system-power-controller;
 		#clock-cells = <0>;
-
 		vcc1-supply = <&vcc_sys>;
 		vcc2-supply = <&vcc_sys>;
 		vcc3-supply = <&vcc_sys>;
 		vcc4-supply = <&vcc_sys>;
 		vcc5-supply = <&vcc_sys>;
 		vcc6-supply = <&vcc_sys>;
-
 		regulators {
 			vdd_core: DCDC_REG1 {
 				regulator-name = "vdd_core";
@@ -106,7 +92,6 @@
 					regulator-suspend-microvolt = <900000>;
 				};
 			};
-
 			vdd_cam: DCDC_REG2 {
 				regulator-name = "vdd_cam";
 				regulator-min-microvolt = <700000>;
@@ -115,7 +100,6 @@
 					regulator-off-in-suspend;
 				};
 			};
-
 			vcc_ddr: DCDC_REG3 {
 				regulator-name = "vcc_ddr";
 				regulator-always-on;
@@ -124,7 +108,6 @@
 					regulator-on-in-suspend;
 				};
 			};
-
 			vcc_io: DCDC_REG4 {
 				regulator-name = "vcc_io";
 				regulator-min-microvolt = <3300000>;
@@ -136,7 +119,6 @@
 					regulator-suspend-microvolt = <3300000>;
 				};
 			};
-
 			vdd_10: LDO_REG1 {
 				regulator-name = "vdd_10";
 				regulator-min-microvolt = <1000000>;
@@ -147,7 +129,6 @@
 					regulator-off-in-suspend;
 				};
 			};
-
 			vcc_18: LDO_REG2 {
 				regulator-name = "vcc_18";
 				regulator-min-microvolt = <1800000>;
@@ -158,7 +139,6 @@
 					regulator-off-in-suspend;
 				};
 			};
-
 			vdd10_pmu: LDO_REG3 {
 				regulator-name = "vdd10_pmu";
 				regulator-min-microvolt = <1000000>;
@@ -172,7 +152,6 @@
 			};
 		};
 	};
-
 	bma250: accelerometer@19 {
 		compatible = "bosch,bma250e";
 		reg = <0x19>;
@@ -180,51 +159,39 @@
 		interrupts = <RK_PB3 IRQ_TYPE_LEVEL_LOW>;
 	};
 };
-
 &pwm0 {
 	status = "okay";
 };
-
 &sdmmc {
 	status = "okay";
 };
-
 &tsadc {
 	status = "okay";
 };
-
 &u2phy {
 	status = "okay";
-
 	u2phy_host: host-port {
 		status = "okay";
 	};
-
 	u2phy_otg: otg-port {
 		status = "okay";
 	};
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &usb_host_ehci {
 	status = "okay";
 };
-
 &usb_host_ohci {
 	status = "okay";
 };
-
 &usb_otg {
 	status = "okay";
 };

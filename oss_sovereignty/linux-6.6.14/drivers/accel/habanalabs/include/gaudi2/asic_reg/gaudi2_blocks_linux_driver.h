@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 #ifndef GAUDI2_BLOCKS_LINUX_DRIVER_H_
 #define GAUDI2_BLOCKS_LINUX_DRIVER_H_
-
 #define mmDCORE0_TPC0_ROM_TABLE_BASE 0x0ull
 #define DCORE0_TPC0_ROM_TABLE_MAX_OFFSET 0x1000
 #define DCORE0_TPC0_ROM_TABLE_SECTION 0x1000
@@ -45063,5 +45050,4 @@
 #define NIC11_DBG_FUNNEL_TX_SECTION 0x1000
 #define mmNIC11_DBG_FUNNEL_NCH_BASE 0x75F9000ull
 #define NIC11_DBG_FUNNEL_NCH_MAX_OFFSET 0x1000
-
-#endif /* GAUDI2_BLOCKS_LINUX_DRIVER_H_ */
+#endif  

@@ -1,32 +1,7 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __TRINITY_DPM_H__
 #define __TRINITY_DPM_H__
-
 #include "sumo_dpm.h"
-
 #define TRINITY_SIZEOF_DPM_STATE_TABLE (SMU_SCLK_DPM_STATE_1_CNTL_0 - SMU_SCLK_DPM_STATE_0_CNTL_0)
-
 struct trinity_pl {
 	u32 sclk;
 	u8 vddc_index;
@@ -37,33 +12,25 @@ struct trinity_pl {
 	u8 display_wm;
 	u8 vce_wm;
 };
-
 #define TRINITY_POWERSTATE_FLAGS_NBPS_FORCEHIGH  (1 << 0)
 #define TRINITY_POWERSTATE_FLAGS_NBPS_LOCKTOHIGH (1 << 1)
 #define TRINITY_POWERSTATE_FLAGS_NBPS_LOCKTOLOW  (1 << 2)
-
 #define TRINITY_POWERSTATE_FLAGS_BAPM_DISABLE    (1 << 0)
-
 struct trinity_ps {
 	u32 num_levels;
 	struct trinity_pl levels[SUMO_MAX_HARDWARE_POWERLEVELS];
-
 	u32 nbps_flags;
 	u32 bapm_flags;
-
 	u8 Dpm0PgNbPsLo;
 	u8 Dpm0PgNbPsHi;
 	u8 DpmXNbPsLo;
 	u8 DpmXNbPsHi;
-
 	u32 vclk_low_divider;
 	u32 vclk_high_divider;
 	u32 dclk_low_divider;
 	u32 dclk_high_divider;
 };
-
 #define TRINITY_NUM_NBPSTATES   4
-
 struct trinity_uvd_clock_table_entry
 {
 	u32 vclk;
@@ -72,7 +39,6 @@ struct trinity_uvd_clock_table_entry
 	u8 dclk_did;
 	u8 rsv[2];
 };
-
 struct trinity_sys_info {
 	u32 bootup_uma_clk;
 	u32 bootup_sclk;
@@ -90,7 +56,6 @@ struct trinity_sys_info {
 	u32 uma_channel_number;
 	struct trinity_uvd_clock_table_entry uvd_clock_table_entries[4];
 };
-
 struct trinity_power_info {
 	u32 at[SUMO_MAX_HARDWARE_POWERLEVELS];
 	u32 dpm_interval;
@@ -115,10 +80,7 @@ struct trinity_power_info {
 	struct radeon_ps requested_rps;
 	struct trinity_ps requested_ps;
 };
-
 #define TRINITY_AT_DFLT            30
-
-/* trinity_smc.c */
 int trinity_dpm_bapm_enable(struct radeon_device *rdev, bool enable);
 int trinity_dpm_config(struct radeon_device *rdev, bool enable);
 int trinity_uvd_dpm_config(struct radeon_device *rdev);
@@ -130,5 +92,4 @@ int trinity_dce_enable_voltage_adjustment(struct radeon_device *rdev,
 int trinity_gfx_dynamic_mgpg_config(struct radeon_device *rdev);
 void trinity_acquire_mutex(struct radeon_device *rdev);
 void trinity_release_mutex(struct radeon_device *rdev);
-
 #endif

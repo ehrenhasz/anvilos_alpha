@@ -1,8 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 NVIDIA Corporation.
- */
-
 #define HOST1X_HV_SYNCPT_PROT_EN			0x1ac4
 #define HOST1X_HV_SYNCPT_PROT_EN_CH_EN			BIT(1)
 #define HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(x)		(0x2020 + (x * 4))

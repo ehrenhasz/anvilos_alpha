@@ -1,34 +1,6 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
 #ifndef _SUMOD_H_
 #define _SUMOD_H_
-
-/* pm registers */
-
-/* rcu */
 #define RCU_FW_VERSION                                  0x30c
-
 #define RCU_PWR_GATING_SEQ0                             0x408
 #define RCU_PWR_GATING_SEQ1                             0x40c
 #define RCU_PWR_GATING_CNTL                             0x410
@@ -49,7 +21,6 @@
 #       define PGS(x)                                   ((x) << 28)
 #       define PGS_MASK                                 (0xf << 28)
 #       define PGS_SHIFT                                28
-
 #define RCU_ALTVDDNB_NOTIFY                             0x430
 #define RCU_LCLK_SCALING_CNTL                           0x434
 #       define LCLK_SCALING_EN                          (1 << 0)
@@ -60,7 +31,6 @@
 #       define LCLK_SCALING_TIMER_PERIOD(x)             ((x) << 16)
 #       define LCLK_SCALING_TIMER_PERIOD_MASK           (0xf << 16)
 #       define LCLK_SCALING_TIMER_PERIOD_SHIFT          16
-
 #define RCU_PWR_GATING_CNTL_2                           0x4a0
 #       define MPPU(x)                                  ((x) << 0)
 #       define MPPU_MASK                                (0xffff << 0)
@@ -82,30 +52,21 @@
 #       define IT(x)                                    ((x) << 16)
 #       define IT_MASK                                  (0xffff << 16)
 #       define IT_SHIFT                                 16
-
-/* yes these two have the same address */
 #define RCU_PWR_GATING_CNTL_5                           0x504
 #define RCU_GPU_BOOST_DISABLE                           0x508
-
 #define MCU_M3ARB_INDEX                                 0x504
 #define MCU_M3ARB_PARAMS                                0x508
-
 #define RCU_GNB_PWR_REP_TIMER_CNTL                      0x50C
-
 #define RCU_SclkDpmTdpLimit01                           0x514
 #define RCU_SclkDpmTdpLimit23                           0x518
 #define RCU_SclkDpmTdpLimit47                           0x51C
 #define RCU_SclkDpmTdpLimitPG                           0x520
-
 #define GNB_TDP_LIMIT                                   0x540
 #define RCU_BOOST_MARGIN                                0x544
 #define RCU_THROTTLE_MARGIN                             0x548
-
 #define SMU_PCIE_PG_ARGS                                0x58C
 #define SMU_PCIE_PG_ARGS_2                              0x598
 #define SMU_PCIE_PG_ARGS_3                              0x59C
-
-/* mmio */
 #define RCU_STATUS                                      0x11c
 #       define GMC_PWR_GATER_BUSY                       (1 << 8)
 #       define GFX_PWR_GATER_BUSY                       (1 << 9)
@@ -119,7 +80,6 @@
 #       define GFX2_PWR_GATER_BUSY                      (1 << 17)
 #       define GFX1_PWR_GATER_STATE                     (1 << 18)
 #       define GFX2_PWR_GATER_STATE                     (1 << 19)
-
 #define GFX_INT_REQ                                     0x120
 #       define INT_REQ                                  (1 << 0)
 #       define SERV_INDEX(x)                            ((x) << 1)
@@ -128,14 +88,12 @@
 #define GFX_INT_STATUS                                  0x124
 #       define INT_ACK                                  (1 << 0)
 #       define INT_DONE                                 (1 << 1)
-
 #define CG_SCLK_CNTL                                    0x600
 #       define SCLK_DIVIDER(x)                          ((x) << 0)
 #       define SCLK_DIVIDER_MASK                        (0x7f << 0)
 #       define SCLK_DIVIDER_SHIFT                       0
 #define CG_SCLK_STATUS                                  0x604
 #       define SCLK_OVERCLK_DETECT                      (1 << 2)
-
 #define CG_DCLK_CNTL                                    0x610
 #       define DCLK_DIVIDER_MASK                        0x7f
 #       define DCLK_DIR_CNTL_EN                         (1 << 8)
@@ -145,10 +103,8 @@
 #       define VCLK_DIVIDER_MASK                        0x7f
 #       define VCLK_DIR_CNTL_EN                         (1 << 8)
 #define CG_VCLK_STATUS                                  0x61c
-
 #define GENERAL_PWRMGT                                  0x63c
 #       define STATIC_PM_EN                             (1 << 1)
-
 #define SCLK_PWRMGT_CNTL                                0x644
 #       define SCLK_PWRMGT_OFF                          (1 << 0)
 #       define SCLK_LOW_D1                              (1 << 1)
@@ -164,7 +120,6 @@
 #       define GFX_CLK_OFF_ACPI_D3                      (1 << 13)
 #       define GFX_VOLTAGE_CHANGE_EN                    (1 << 16)
 #       define GFX_VOLTAGE_CHANGE_MODE                  (1 << 17)
-
 #define TARGET_AND_CURRENT_PROFILE_INDEX                0x66c
 #       define TARG_SCLK_INDEX(x)                       ((x) << 6)
 #       define TARG_SCLK_INDEX_MASK                     (0x7 << 6)
@@ -178,7 +133,6 @@
 #       define CURR_INDEX(x)                            ((x) << 15)
 #       define CURR_INDEX_MASK                          (0x7 << 15)
 #       define CURR_INDEX_SHIFT                         15
-
 #define CG_SCLK_DPM_CTRL                                0x684
 #       define SCLK_FSTATE_0_DIV(x)                     ((x) << 0)
 #       define SCLK_FSTATE_0_DIV_MASK                   (0x7f << 0)
@@ -210,7 +164,6 @@
 #       define DIV_ID(x)                                ((x) << 28)
 #       define DIV_ID_MASK                              (0x7 << 28)
 #       define DIV_ID_SHIFT                             28
-
 #define CG_FTV                                          0x690
 #define CG_FFCT_0                                       0x694
 #       define UTC_0(x)                                 ((x) << 0)
@@ -219,7 +172,6 @@
 #       define DTC_0(x)                                 ((x) << 10)
 #       define DTC_0_MASK                               (0x3ff << 10)
 #       define DTC_0_SHIFT                              10
-
 #define CG_GIT                                          0x6d8
 #       define CG_GICST(x)                              ((x) << 0)
 #       define CG_GICST_MASK                            (0xffff << 0)
@@ -227,7 +179,6 @@
 #       define CG_GIPOT(x)                              ((x) << 16)
 #       define CG_GIPOT_MASK                            (0xffff << 16)
 #       define CG_GIPOT_SHIFT                           16
-
 #define CG_SCLK_DPM_CTRL_3                              0x6e0
 #       define FORCE_SCLK_STATE(x)                      ((x) << 0)
 #       define FORCE_SCLK_STATE_MASK                    (0x7 << 0)
@@ -242,7 +193,6 @@
 #       define GNB_SLOW_FSTATE_0_MASK                   (1 << 23)
 #       define GNB_SLOW_FSTATE_0_SHIFT                  23
 #       define FORCE_NB_PSTATE_1                        (1 << 31)
-
 #define CG_SSP                                          0x6e8
 #       define SST(x)                                   ((x) << 0)
 #       define SST_MASK                                 (0xffff << 0)
@@ -250,12 +200,10 @@
 #       define SSTU(x)                                  ((x) << 16)
 #       define SSTU_MASK                                (0xffff << 16)
 #       define SSTU_SHIFT                               16
-
 #define CG_ACPI_CNTL                                    0x70c
 #       define SCLK_ACPI_DIV(x)                         ((x) << 0)
 #       define SCLK_ACPI_DIV_MASK                       (0x7f << 0)
 #       define SCLK_ACPI_DIV_SHIFT                      0
-
 #define CG_SCLK_DPM_CTRL_4                              0x71c
 #       define DC_HDC(x)                                ((x) << 14)
 #       define DC_HDC_MASK                              (0x3fff << 14)
@@ -297,7 +245,6 @@
 #define CG_AT_5                                         0x740
 #define CG_AT_6                                         0x744
 #define CG_AT_7                                         0x748
-
 #define CG_BSP_0                                        0x750
 #       define BSP(x)                                   ((x) << 0)
 #       define BSP_MASK                                 (0xffff << 0)
@@ -305,7 +252,6 @@
 #       define BSU(x)                                   ((x) << 16)
 #       define BSU_MASK                                 (0xf << 16)
 #       define BSU_SHIFT                                16
-
 #define CG_CG_VOLTAGE_CNTL                              0x770
 #       define REQ                                      (1 << 0)
 #       define LEVEL(x)                                 ((x) << 1)
@@ -319,15 +265,12 @@
 #       define UNIT(x)                                  ((x) << 24)
 #       define UNIT_MASK                                (0xf << 24)
 #       define UNIT_SHIFT                               24
-
 #define CG_ACPI_VOLTAGE_CNTL                            0x780
 #       define ACPI_VOLTAGE_EN                          (1 << 8)
-
 #define CG_DPM_VOLTAGE_CNTL                             0x788
 #       define DPM_STATE0_LEVEL_MASK                    (0x3 << 0)
 #       define DPM_STATE0_LEVEL_SHIFT                   0
 #       define DPM_VOLTAGE_EN                           (1 << 16)
-
 #define CG_PWR_GATING_CNTL                              0x7ac
 #       define DYN_PWR_DOWN_EN                          (1 << 0)
 #       define ACPI_PWR_DOWN_EN                         (1 << 1)
@@ -340,10 +283,8 @@
 #       define PGU(x)                                   ((x) << 24)
 #       define PGU_MASK                                 (0xf << 24)
 #       define PGU_SHIFT                                24
-
 #define CG_CGTT_LOCAL_0                                 0x7d0
 #define CG_CGTT_LOCAL_1                                 0x7d4
-
 #define DEEP_SLEEP_CNTL                                 0x818
 #       define R_DIS                                    (1 << 3)
 #       define HS(x)                                    ((x) << 4)
@@ -355,18 +296,11 @@
 #       define INOUT_C(x)                               ((x) << 4)
 #       define INOUT_C_MASK                             (0xff << 4)
 #       define INOUT_C_SHIFT                            4
-
 #define CG_SCRATCH2                                     0x824
-
 #define CG_SCLK_DPM_CTRL_11                             0x830
-
 #define HW_REV   					0x5564
 #       define ATI_REV_ID_MASK                          (0xf << 28)
 #       define ATI_REV_ID_SHIFT                         28
-/* 0 = A0, 1 = A1, 2 = B0, 3 = C0, etc. */
-
 #define DOUT_SCRATCH3   				0x611c
-
 #define GB_ADDR_CONFIG  				0x98f8
-
 #endif

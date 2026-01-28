@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* IRQ definitions for Marvell Dove 88AP510 SoC */
-
 #ifndef __ASM_ARCH_IRQS_H
 #define __ASM_ARCH_IRQS_H
-
-/*
- * Dove Low Interrupt Controller
- */
 #define IRQ_DOVE_BRIDGE		(1 + 0)
 #define IRQ_DOVE_H2C		(1 + 1)
 #define IRQ_DOVE_C2H		(1 + 2)
@@ -39,10 +32,6 @@
 #define IRQ_DOVE_GE00_SUM	(1 + 29)
 #define IRQ_DOVE_GE00_ERR	(1 + 30)
 #define IRQ_DOVE_CRYPTO		(1 + 31)
-
-/*
- * Dove High Interrupt Controller
- */
 #define IRQ_DOVE_AC97		(1 + 32)
 #define IRQ_DOVE_PMU		(1 + 33)
 #define IRQ_DOVE_CAM		(1 + 34)
@@ -69,21 +58,10 @@
 #define IRQ_DOVE_GPIO_24_31	(1 + 60)
 #define IRQ_DOVE_HIGH_GPIO	(1 + 61)
 #define IRQ_DOVE_SATA		(1 + 62)
-
-/*
- * DOVE General Purpose Pins
- */
 #define IRQ_DOVE_GPIO_START	65
 #define NR_GPIO_IRQS		64
-
-/*
- * PMU interrupts
- */
 #define IRQ_DOVE_PMU_START	(IRQ_DOVE_GPIO_START + NR_GPIO_IRQS)
 #define NR_PMU_IRQS		7
 #define IRQ_DOVE_RTC		(IRQ_DOVE_PMU_START + 5)
-
 #define DOVE_NR_IRQS		(IRQ_DOVE_PMU_START + NR_PMU_IRQS)
-
-
 #endif

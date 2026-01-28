@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2015, 2016 Intel Corporation.
- */
-
 #ifndef DEF_CHIP_REG
 #define DEF_CHIP_REG
-
 #define CORE		0x000000000000
 #define CCE			(CORE + 0x000000000000)
 #define ASIC		(CORE + 0x000000400000)
@@ -18,7 +12,6 @@
 #define DC_LCB_CSRS		(DC_TOP_CSRS + 0x000000001000)
 #define DC_8051_CSRS		(DC_TOP_CSRS + 0x000000002000)
 #define PCIE		0
-
 #define ASIC_NUM_SCRATCH 4
 #define CCE_ERR_INT_CNT 0
 #define CCE_MISC_INT_CNT 2
@@ -1291,5 +1284,4 @@
 #define SEND_DMA_IDLE_CNT (TXE + 0x000000200040)
 #define SEND_DMA_DESC_FETCHED_CNT (TXE + 0x000000200058)
 #define CCE_MSIX_PBA_OFFSET 0X0110000
-
-#endif          /* DEF_CHIP_REG */
+#endif           

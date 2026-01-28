@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2019~2020 NXP
- */
-
 #ifndef _IMX8DXL_PADS_H
 #define _IMX8DXL_PADS_H
-
-/* pin id */
 #define IMX8DXL_PCIE_CTRL0_PERST_B                  0
 #define IMX8DXL_PCIE_CTRL0_CLKREQ_B                 1
 #define IMX8DXL_PCIE_CTRL0_WAKE_B                   2
@@ -143,8 +136,6 @@
 #define IMX8DXL_QSPI0B_DATA2                        133
 #define IMX8DXL_QSPI0B_SS0_B                        134
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_QSPI0B        135
-
-/* format: <pin_id mux_mode> */
 #define IMX8DXL_PCIE_CTRL0_PERST_B_HSIO_PCIE0_PERST_B              IMX8DXL_PCIE_CTRL0_PERST_B            0
 #define IMX8DXL_PCIE_CTRL0_PERST_B_LSIO_GPIO4_IO00                 IMX8DXL_PCIE_CTRL0_PERST_B            4
 #define IMX8DXL_PCIE_CTRL0_PERST_B_LSIO_GPIO7_IO00                 IMX8DXL_PCIE_CTRL0_PERST_B            5
@@ -620,7 +611,6 @@
 #define IMX8DXL_QSPI0B_SS0_B_LSIO_QSPI0B_SS0_B                     IMX8DXL_QSPI0B_SS0_B                  0
 #define IMX8DXL_QSPI0B_SS0_B_LSIO_GPIO3_IO23                       IMX8DXL_QSPI0B_SS0_B                  4
 #define IMX8DXL_QSPI0B_SS0_B_LSIO_QSPI0A_SS1_B                     IMX8DXL_QSPI0B_SS0_B                  5
-
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_PCIESEP_PAD          IMX8DXL_COMP_CTL_GPIO_1V8_3V3_PCIESEP         0
 #define IMX8DXL_COMP_CTL_GPIO_3V3_USB3IO_PAD               IMX8DXL_COMP_CTL_GPIO_3V3_USB3IO              0
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_SD1FIX0_PAD          IMX8DXL_COMP_CTL_GPIO_1V8_3V3_SD1FIX0         0
@@ -635,5 +625,4 @@
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHD_PAD          IMX8DXL_COMP_CTL_GPIO_1V8_3V3_GPIORHD         0
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_QSPI0A_PAD           IMX8DXL_COMP_CTL_GPIO_1V8_3V3_QSPI0A          0
 #define IMX8DXL_COMP_CTL_GPIO_1V8_3V3_QSPI0B_PAD           IMX8DXL_COMP_CTL_GPIO_1V8_3V3_QSPI0B          0
-
 #endif

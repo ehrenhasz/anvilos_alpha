@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _TEST_MAPS_H
 #define _TEST_MAPS_H
-
 #include <stdio.h>
 #include <stdlib.h>
-
 #define CHECK(condition, tag, format...) ({				\
 	int __ret = !!(condition);					\
 	if (__ret) {							\
@@ -13,7 +10,5 @@
 		exit(-1);						\
 	}								\
 })
-
 extern int skips;
-
 #endif

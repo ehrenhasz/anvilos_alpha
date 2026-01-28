@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NV04_FIFO_REGS_H__
 #define __NV04_FIFO_REGS_H__
-
 #define NV04_PFIFO_DELAY_0                                 0x00002040
 #define NV04_PFIFO_DMA_TIMESLICE                           0x00002044
 #define NV04_PFIFO_NEXT_CHANNEL                            0x00002050

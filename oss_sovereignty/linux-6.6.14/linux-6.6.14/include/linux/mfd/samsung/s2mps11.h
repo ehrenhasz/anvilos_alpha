@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2012 Samsung Electronics Co., Ltd
- *              http://www.samsung.com
- */
-
 #ifndef __LINUX_MFD_S2MPS11_H
 #define __LINUX_MFD_S2MPS11_H
-
-/* S2MPS11 registers */
 enum s2mps11_reg {
 	S2MPS11_REG_ID,
 	S2MPS11_REG_INT1,
@@ -109,8 +101,6 @@ enum s2mps11_reg {
 	S2MPS11_REG_L37CTRL,
 	S2MPS11_REG_L38CTRL,
 };
-
-/* S2MPS11 regulator ids */
 enum s2mps11_regulators {
 	S2MPS11_LDO1,
 	S2MPS11_LDO2,
@@ -160,10 +150,8 @@ enum s2mps11_regulators {
 	S2MPS11_BUCK8,
 	S2MPS11_BUCK9,
 	S2MPS11_BUCK10,
-
 	S2MPS11_REGULATOR_MAX,
 };
-
 #define S2MPS11_LDO_VSEL_MASK	0x3F
 #define S2MPS11_BUCK_VSEL_MASK	0xFF
 #define S2MPS11_BUCK9_VSEL_MASK	0x1F
@@ -174,10 +162,8 @@ enum s2mps11_regulators {
 #define S2MPS11_BUCK5_N_VOLTAGES	216
 #define S2MPS11_BUCK7810_N_VOLTAGES	225
 #define S2MPS11_BUCK9_N_VOLTAGES (S2MPS11_BUCK9_VSEL_MASK + 1)
-#define S2MPS11_RAMP_DELAY	25000		/* uV/us */
-
+#define S2MPS11_RAMP_DELAY	25000		 
 #define S2MPS11_CTRL1_PWRHOLD_MASK	BIT(4)
-
 #define S2MPS11_BUCK2_RAMP_SHIFT	6
 #define S2MPS11_BUCK34_RAMP_SHIFT	4
 #define S2MPS11_BUCK5_RAMP_SHIFT	6
@@ -189,10 +175,4 @@ enum s2mps11_regulators {
 #define S2MPS11_BUCK4_RAMP_EN_SHIFT	1
 #define S2MPS11_BUCK6_RAMP_EN_SHIFT	0
 #define S2MPS11_PMIC_EN_SHIFT	6
-
-/*
- * Bits for "enable suspend" (On/Off controlled by PWREN)
- * are the same as in S2MPS14: S2MPS14_ENABLE_SUSPEND
- */
-
-#endif /*  __LINUX_MFD_S2MPS11_H */
+#endif  

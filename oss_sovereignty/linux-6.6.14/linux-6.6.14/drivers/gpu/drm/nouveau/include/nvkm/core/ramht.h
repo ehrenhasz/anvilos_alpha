@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_RAMHT_H__
 #define __NVKM_RAMHT_H__
 #include <core/gpuobj.h>
 struct nvkm_object;
-
 struct nvkm_ramht_data {
 	struct nvkm_gpuobj *inst;
 	int chid;
 	u32 handle;
 };
-
 struct nvkm_ramht {
 	struct nvkm_device *device;
 	struct nvkm_gpuobj *parent;
@@ -18,7 +15,6 @@ struct nvkm_ramht {
 	int bits;
 	struct nvkm_ramht_data data[];
 };
-
 int  nvkm_ramht_new(struct nvkm_device *, u32 size, u32 align,
 		    struct nvkm_gpuobj *, struct nvkm_ramht **);
 void nvkm_ramht_del(struct nvkm_ramht **);

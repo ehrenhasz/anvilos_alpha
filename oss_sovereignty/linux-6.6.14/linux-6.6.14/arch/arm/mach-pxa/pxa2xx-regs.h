@@ -1,42 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  arch/arm/mach-pxa/include/mach/pxa2xx-regs.h
- *
- *  Taken from pxa-regs.h by Russell King
- *
- *  Author:	Nicolas Pitre
- *  Copyright:	MontaVista Software Inc.
- */
-
 #ifndef __PXA2XX_REGS_H
 #define __PXA2XX_REGS_H
-
 #include "pxa-regs.h"
-
-/*
- * Power Manager
- */
-
-#define PMCR		__REG(0x40F00000)  /* Power Manager Control Register */
-#define PSSR		__REG(0x40F00004)  /* Power Manager Sleep Status Register */
-#define PSPR		__REG(0x40F00008)  /* Power Manager Scratch Pad Register */
-#define PWER		__REG(0x40F0000C)  /* Power Manager Wake-up Enable Register */
-#define PRER		__REG(0x40F00010)  /* Power Manager GPIO Rising-Edge Detect Enable Register */
-#define PFER		__REG(0x40F00014)  /* Power Manager GPIO Falling-Edge Detect Enable Register */
-#define PEDR		__REG(0x40F00018)  /* Power Manager GPIO Edge Detect Status Register */
-#define PCFR		__REG(0x40F0001C)  /* Power Manager General Configuration Register */
-#define PGSR0		__REG(0x40F00020)  /* Power Manager GPIO Sleep State Register for GP[31-0] */
-#define PGSR1		__REG(0x40F00024)  /* Power Manager GPIO Sleep State Register for GP[63-32] */
-#define PGSR2		__REG(0x40F00028)  /* Power Manager GPIO Sleep State Register for GP[84-64] */
-#define PGSR3		__REG(0x40F0002C)  /* Power Manager GPIO Sleep State Register for GP[118-96] */
-#define RCSR		__REG(0x40F00030)  /* Reset Controller Status Register */
-
-#define PSLR		__REG(0x40F00034)	/* Power Manager Sleep Config Register */
-#define PSTR		__REG(0x40F00038)	/* Power Manager Standby Config Register */
-#define PSNR		__REG(0x40F0003C)	/* Power Manager Sense Config Register */
-#define PVCR		__REG(0x40F00040)	/* Power Manager VoltageControl Register */
-#define PKWR		__REG(0x40F00050)	/* Power Manager KB Wake-up Enable Reg */
-#define PKSR		__REG(0x40F00054)	/* Power Manager KB Level-Detect Register */
+#define PMCR		__REG(0x40F00000)   
+#define PSSR		__REG(0x40F00004)   
+#define PSPR		__REG(0x40F00008)   
+#define PWER		__REG(0x40F0000C)   
+#define PRER		__REG(0x40F00010)   
+#define PFER		__REG(0x40F00014)   
+#define PEDR		__REG(0x40F00018)   
+#define PCFR		__REG(0x40F0001C)   
+#define PGSR0		__REG(0x40F00020)   
+#define PGSR1		__REG(0x40F00024)   
+#define PGSR2		__REG(0x40F00028)   
+#define PGSR3		__REG(0x40F0002C)   
+#define RCSR		__REG(0x40F00030)   
+#define PSLR		__REG(0x40F00034)	 
+#define PSTR		__REG(0x40F00038)	 
+#define PSNR		__REG(0x40F0003C)	 
+#define PVCR		__REG(0x40F00040)	 
+#define PKWR		__REG(0x40F00050)	 
+#define PKSR		__REG(0x40F00054)	 
 #define PCMD(x)	__REG2(0x40F00080, (x)<<2)
 #define PCMD0	__REG(0x40F00080 + 0 * 4)
 #define PCMD1	__REG(0x40F00080 + 1 * 4)
@@ -70,80 +53,63 @@
 #define PCMD29	__REG(0x40F00080 + 29 * 4)
 #define PCMD30	__REG(0x40F00080 + 30 * 4)
 #define PCMD31	__REG(0x40F00080 + 31 * 4)
-
 #define PCMD_MBC	(1<<12)
 #define PCMD_DCE	(1<<11)
 #define PCMD_LC	(1<<10)
-/* FIXME:  PCMD_SQC need be checked.   */
-#define PCMD_SQC	(3<<8)	/* currently only bit 8 is changeable,
-				   bit 9 should be 0 all day. */
+#define PCMD_SQC	(3<<8)	 
 #define PVCR_VCSA	(0x1<<14)
 #define PVCR_CommandDelay (0xf80)
 #define PCFR_PI2C_EN	(0x1 << 6)
-
-#define PSSR_OTGPH	(1 << 6)	/* OTG Peripheral control Hold */
-#define PSSR_RDH	(1 << 5)	/* Read Disable Hold */
-#define PSSR_PH		(1 << 4)	/* Peripheral Control Hold */
-#define PSSR_STS	(1 << 3)	/* Standby Mode Status */
-#define PSSR_VFS	(1 << 2)	/* VDD Fault Status */
-#define PSSR_BFS	(1 << 1)	/* Battery Fault Status */
-#define PSSR_SSS	(1 << 0)	/* Software Sleep Status */
-
-#define PSLR_SL_ROD	(1 << 20)	/* Sleep-Mode/Depp-Sleep Mode nRESET_OUT Disable */
-
-#define PCFR_RO		(1 << 15)	/* RDH Override */
-#define PCFR_PO		(1 << 14)	/* PH Override */
-#define PCFR_GPROD	(1 << 12)	/* GPIO nRESET_OUT Disable */
-#define PCFR_L1_EN	(1 << 11)	/* Sleep Mode L1 converter Enable */
-#define PCFR_FVC	(1 << 10)	/* Frequency/Voltage Change */
-#define PCFR_DC_EN	(1 << 7)	/* Sleep/deep-sleep DC-DC Converter Enable */
-#define PCFR_PI2CEN	(1 << 6)	/* Enable PI2C controller */
-#define PCFR_GPR_EN	(1 << 4)	/* nRESET_GPIO Pin Enable */
-#define PCFR_DS		(1 << 3)	/* Deep Sleep Mode */
-#define PCFR_FS		(1 << 2)	/* Float Static Chip Selects */
-#define PCFR_FP		(1 << 1)	/* Float PCMCIA controls */
-#define PCFR_OPDE	(1 << 0)	/* 3.6864 MHz oscillator power-down enable */
-
-#define RCSR_GPR	(1 << 3)	/* GPIO Reset */
-#define RCSR_SMR	(1 << 2)	/* Sleep Mode */
-#define RCSR_WDR	(1 << 1)	/* Watchdog Reset */
-#define RCSR_HWR	(1 << 0)	/* Hardware Reset */
-
-#define PWER_GPIO(Nb)	(1 << Nb)	/* GPIO [0..15] wake-up enable     */
-#define PWER_GPIO0	PWER_GPIO (0)	/* GPIO  [0] wake-up enable        */
-#define PWER_GPIO1	PWER_GPIO (1)	/* GPIO  [1] wake-up enable        */
-#define PWER_GPIO2	PWER_GPIO (2)	/* GPIO  [2] wake-up enable        */
-#define PWER_GPIO3	PWER_GPIO (3)	/* GPIO  [3] wake-up enable        */
-#define PWER_GPIO4	PWER_GPIO (4)	/* GPIO  [4] wake-up enable        */
-#define PWER_GPIO5	PWER_GPIO (5)	/* GPIO  [5] wake-up enable        */
-#define PWER_GPIO6	PWER_GPIO (6)	/* GPIO  [6] wake-up enable        */
-#define PWER_GPIO7	PWER_GPIO (7)	/* GPIO  [7] wake-up enable        */
-#define PWER_GPIO8	PWER_GPIO (8)	/* GPIO  [8] wake-up enable        */
-#define PWER_GPIO9	PWER_GPIO (9)	/* GPIO  [9] wake-up enable        */
-#define PWER_GPIO10	PWER_GPIO (10)	/* GPIO [10] wake-up enable        */
-#define PWER_GPIO11	PWER_GPIO (11)	/* GPIO [11] wake-up enable        */
-#define PWER_GPIO12	PWER_GPIO (12)	/* GPIO [12] wake-up enable        */
-#define PWER_GPIO13	PWER_GPIO (13)	/* GPIO [13] wake-up enable        */
-#define PWER_GPIO14	PWER_GPIO (14)	/* GPIO [14] wake-up enable        */
-#define PWER_GPIO15	PWER_GPIO (15)	/* GPIO [15] wake-up enable        */
-#define PWER_RTC	0x80000000	/* RTC alarm wake-up enable        */
-
-/*
- * PXA2xx specific Core clock definitions
- */
-#define CCCR		io_p2v(0x41300000)  /* Core Clock Configuration Register */
-#define CCSR		io_p2v(0x4130000C)  /* Core Clock Status Register */
-#define CKEN		io_p2v(0x41300004)  /* Clock Enable Register */
-#define OSCC		io_p2v(0x41300008)  /* Oscillator Configuration Register */
-
-#define OSCC_OON	(1 << 1)	/* 32.768kHz OON (write-once only bit) */
-#define OSCC_OOK	(1 << 0)	/* 32.768kHz OOK (read-only bit) */
-
-/* PWRMODE register M field values */
-
+#define PSSR_OTGPH	(1 << 6)	 
+#define PSSR_RDH	(1 << 5)	 
+#define PSSR_PH		(1 << 4)	 
+#define PSSR_STS	(1 << 3)	 
+#define PSSR_VFS	(1 << 2)	 
+#define PSSR_BFS	(1 << 1)	 
+#define PSSR_SSS	(1 << 0)	 
+#define PSLR_SL_ROD	(1 << 20)	 
+#define PCFR_RO		(1 << 15)	 
+#define PCFR_PO		(1 << 14)	 
+#define PCFR_GPROD	(1 << 12)	 
+#define PCFR_L1_EN	(1 << 11)	 
+#define PCFR_FVC	(1 << 10)	 
+#define PCFR_DC_EN	(1 << 7)	 
+#define PCFR_PI2CEN	(1 << 6)	 
+#define PCFR_GPR_EN	(1 << 4)	 
+#define PCFR_DS		(1 << 3)	 
+#define PCFR_FS		(1 << 2)	 
+#define PCFR_FP		(1 << 1)	 
+#define PCFR_OPDE	(1 << 0)	 
+#define RCSR_GPR	(1 << 3)	 
+#define RCSR_SMR	(1 << 2)	 
+#define RCSR_WDR	(1 << 1)	 
+#define RCSR_HWR	(1 << 0)	 
+#define PWER_GPIO(Nb)	(1 << Nb)	 
+#define PWER_GPIO0	PWER_GPIO (0)	 
+#define PWER_GPIO1	PWER_GPIO (1)	 
+#define PWER_GPIO2	PWER_GPIO (2)	 
+#define PWER_GPIO3	PWER_GPIO (3)	 
+#define PWER_GPIO4	PWER_GPIO (4)	 
+#define PWER_GPIO5	PWER_GPIO (5)	 
+#define PWER_GPIO6	PWER_GPIO (6)	 
+#define PWER_GPIO7	PWER_GPIO (7)	 
+#define PWER_GPIO8	PWER_GPIO (8)	 
+#define PWER_GPIO9	PWER_GPIO (9)	 
+#define PWER_GPIO10	PWER_GPIO (10)	 
+#define PWER_GPIO11	PWER_GPIO (11)	 
+#define PWER_GPIO12	PWER_GPIO (12)	 
+#define PWER_GPIO13	PWER_GPIO (13)	 
+#define PWER_GPIO14	PWER_GPIO (14)	 
+#define PWER_GPIO15	PWER_GPIO (15)	 
+#define PWER_RTC	0x80000000	 
+#define CCCR		io_p2v(0x41300000)   
+#define CCSR		io_p2v(0x4130000C)   
+#define CKEN		io_p2v(0x41300004)   
+#define OSCC		io_p2v(0x41300008)   
+#define OSCC_OON	(1 << 1)	 
+#define OSCC_OOK	(1 << 0)	 
 #define PWRMODE_IDLE		0x1
 #define PWRMODE_STANDBY		0x2
 #define PWRMODE_SLEEP		0x3
 #define PWRMODE_DEEPSLEEP	0x7
-
 #endif

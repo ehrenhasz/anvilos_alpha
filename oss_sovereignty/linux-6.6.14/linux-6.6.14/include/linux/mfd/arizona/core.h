@@ -1,30 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Arizona MFD internals
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
-
 #ifndef _WM_ARIZONA_CORE_H
 #define _WM_ARIZONA_CORE_H
-
 #include <linux/clk.h>
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/mfd/arizona/pdata.h>
-
 #define ARIZONA_MAX_CORE_SUPPLIES 2
-
 enum {
 	ARIZONA_MCLK1,
 	ARIZONA_MCLK2,
 	ARIZONA_NUM_MCLK
 };
-
 enum arizona_type {
 	WM5102 = 1,
 	WM5110 = 2,
@@ -35,7 +22,6 @@ enum arizona_type {
 	WM1831 = 7,
 	CS47L24 = 8,
 };
-
 #define ARIZONA_IRQ_GP1                    0
 #define ARIZONA_IRQ_GP2                    1
 #define ARIZONA_IRQ_GP3                    2
@@ -111,69 +97,49 @@ enum arizona_type {
 #define ARIZONA_IRQ_HP1R_SC_POS           72
 #define ARIZONA_IRQ_HP1L_SC_NEG           73
 #define ARIZONA_IRQ_HP1L_SC_POS           74
-
 #define ARIZONA_NUM_IRQ                   75
-
 struct snd_soc_dapm_context;
-
 struct arizona {
 	struct regmap *regmap;
 	struct device *dev;
-
 	enum arizona_type type;
 	unsigned int rev;
-
 	int num_core_supplies;
 	struct regulator_bulk_data core_supplies[ARIZONA_MAX_CORE_SUPPLIES];
 	struct regulator *dcvdd;
 	bool has_fully_powered_off;
-
 	struct arizona_pdata pdata;
-
 	unsigned int external_dcvdd:1;
-
 	int irq;
 	struct irq_domain *virq;
 	struct regmap_irq_chip_data *aod_irq_chip;
 	struct regmap_irq_chip_data *irq_chip;
-
 	bool hpdet_clamp;
 	unsigned int hp_ena;
-
 	struct mutex clk_lock;
 	int clk32k_ref;
-
 	struct clk *mclk[ARIZONA_NUM_MCLK];
-
 	bool ctrlif_error;
-
 	struct snd_soc_dapm_context *dapm;
-
 	int tdm_width[ARIZONA_MAX_AIF];
 	int tdm_slots[ARIZONA_MAX_AIF];
-
 	uint16_t dac_comp_coeff;
 	uint8_t dac_comp_enabled;
 	struct mutex dac_comp_lock;
-
 	struct blocking_notifier_head notifier;
 };
-
 static inline int arizona_call_notifiers(struct arizona *arizona,
 					 unsigned long event,
 					 void *data)
 {
 	return blocking_notifier_call_chain(&arizona->notifier, event, data);
 }
-
 int arizona_clk32k_enable(struct arizona *arizona);
 int arizona_clk32k_disable(struct arizona *arizona);
-
 int arizona_request_irq(struct arizona *arizona, int irq, char *name,
 			irq_handler_t handler, void *data);
 void arizona_free_irq(struct arizona *arizona, int irq, void *data);
 int arizona_set_irq_wake(struct arizona *arizona, int irq, int on);
-
 #ifdef CONFIG_MFD_WM5102
 int wm5102_patch(struct arizona *arizona);
 #else
@@ -182,10 +148,8 @@ static inline int wm5102_patch(struct arizona *arizona)
 	return 0;
 }
 #endif
-
 int wm5110_patch(struct arizona *arizona);
 int cs47l24_patch(struct arizona *arizona);
 int wm8997_patch(struct arizona *arizona);
 int wm8998_patch(struct arizona *arizona);
-
 #endif

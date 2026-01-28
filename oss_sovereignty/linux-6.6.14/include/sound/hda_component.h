@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-// HD-Audio helpers to sync with DRM driver
-
 #ifndef __SOUND_HDA_COMPONENT_H
 #define __SOUND_HDA_COMPONENT_H
-
 #include <drm/drm_audio_component.h>
 #include <sound/hdaudio.h>
-
-/* virtual idx for controller */
 #define HDA_CODEC_IDX_CONTROLLER	HDA_MAX_CODECS
-
 #ifdef CONFIG_SND_HDA_COMPONENT
 int snd_hdac_set_codec_wakeup(struct hdac_bus *bus, bool enable);
 void snd_hdac_display_power(struct hdac_bus *bus, unsigned int idx,
@@ -63,5 +56,4 @@ static inline int snd_hdac_acomp_register_notifier(struct hdac_bus *bus,
 	return -ENODEV;
 }
 #endif
-
-#endif /* __SOUND_HDA_COMPONENT_H */
+#endif  

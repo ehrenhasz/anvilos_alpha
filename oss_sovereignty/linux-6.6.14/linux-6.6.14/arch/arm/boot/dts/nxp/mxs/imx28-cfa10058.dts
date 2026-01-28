@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Crystalfontz America, Inc.
- * Copyright 2013 Free Electrons
- */
-
-/*
- * The CFA-10058 is an expansion board for the CFA-10036 module, thus we
- * need to include the CFA-10036 DTS.
- */
 #include "imx28-cfa10036.dts"
-
 / {
 	model = "Crystalfontz CFA-10058 Board";
 	compatible = "crystalfontz,cfa10058", "crystalfontz,cfa10036", "fsl,imx28";
-
 	reg_usb1_vbus: regulator-0 {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -23,7 +11,6 @@
 		regulator-max-microvolt = <5000000>;
 		gpio = <&gpio0 7 1>;
 	};
-
 	backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm 3 5000000>;
@@ -31,18 +18,15 @@
 		default-brightness-level = <6>;
 	};
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&lcdif_24bit_pins_a
 			 &lcdif_pins_cfa10058>;
 	display = <&display0>;
 	status = "okay";
-
 	display0: display0 {
 		bits-per-pixel = <32>;
 		bus-width = <24>;
-
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing0 {
@@ -63,12 +47,10 @@
 		};
 	};
 };
-
 &lradc {
 	fsl,lradc-touchscreen-wires = <4>;
 	status = "okay";
 };
-
 &mac0 {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
@@ -77,7 +59,6 @@
 	phy-reset-duration = <100>;
 	status = "okay";
 };
-
 &pinctrl {
 	usb_pins_cfa10058: usb-10058@0 {
 		reg = <0>;
@@ -88,7 +69,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	lcdif_pins_cfa10058: lcdif-10058@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -102,20 +82,17 @@
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
 };
-
 &pwm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pwm3_pins_b>;
 	status = "okay";
 };
-
 &usb1 {
 	vbus-supply = <&reg_usb1_vbus>;
 	pinctrl-0 = <&usb1_pins_a>;
 	pinctrl-names = "default";
 	status = "okay";
 };
-
 &usbphy1 {
 	status = "okay";
 };

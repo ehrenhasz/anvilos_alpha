@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 H. Nikolaus Schaller <hns@goldelico.com>
- */
-
 #include "omap3-gta04.dtsi"
-
 / {
 	model = "Goldelico GTA04A3/Letux 2804";
 };
-
 &i2c2 {
-
-	/* alternate accelerometer that might be installed on some GTA04A3 boards */
 	lis302@1d {
 		compatible = "st,lis331dlh", "st,lis3lv02d";
 		reg = <0x1d>;
@@ -19,7 +10,6 @@
 		interrupts = <18 (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_EDGE_RISING)>;
 		Vdd-supply = <&vaux2>;
 		Vdd_IO-supply = <&vaux2>;
-
 		st,click-single-x;
 		st,click-single-y;
 		st,click-single-z;

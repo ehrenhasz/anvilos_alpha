@@ -1,43 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Romain Dolbeau. All rights reserved.
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
-
 #include <sys/isa_defs.h>
-
 #if defined(__x86_64) && defined(HAVE_AVX512F)
-
 #include <sys/types.h>
 #include <sys/simd.h>
 #include <sys/debug.h>
-
 #ifdef __linux__
 #define	__asm __asm__ __volatile__
 #endif
-
 #define	_REG_CNT(_0, _1, _2, _3, _4, _5, _6, _7, N, ...) N
 #define	REG_CNT(r...) _REG_CNT(r, 8, 7, 6, 5, 4, 3, 2, 1)
-
 #define	VR0_(REG, ...) "zmm"#REG
 #define	VR1_(_1, REG, ...) "zmm"#REG
 #define	VR2_(_1, _2, REG, ...) "zmm"#REG
@@ -46,7 +16,6 @@
 #define	VR5_(_1, _2, _3, _4, _5, REG, ...) "zmm"#REG
 #define	VR6_(_1, _2, _3, _4, _5, _6, REG, ...) "zmm"#REG
 #define	VR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) "zmm"#REG
-
 #define	VR0(r...) VR0_(r)
 #define	VR1(r...) VR1_(r)
 #define	VR2(r...) VR2_(r, 1)
@@ -55,7 +24,6 @@
 #define	VR5(r...) VR5_(r, 1, 2, 3)
 #define	VR6(r...) VR6_(r, 1, 2, 3, 4)
 #define	VR7(r...) VR7_(r, 1, 2, 3, 4, 5)
-
 #define	VRy0_(REG, ...) "ymm"#REG
 #define	VRy1_(_1, REG, ...) "ymm"#REG
 #define	VRy2_(_1, _2, REG, ...) "ymm"#REG
@@ -64,7 +32,6 @@
 #define	VRy5_(_1, _2, _3, _4, _5, REG, ...) "ymm"#REG
 #define	VRy6_(_1, _2, _3, _4, _5, _6, REG, ...) "ymm"#REG
 #define	VRy7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) "ymm"#REG
-
 #define	VRy0(r...) VRy0_(r)
 #define	VRy1(r...) VRy1_(r)
 #define	VRy2(r...) VRy2_(r, 1)
@@ -73,18 +40,13 @@
 #define	VRy5(r...) VRy5_(r, 1, 2, 3)
 #define	VRy6(r...) VRy6_(r, 1, 2, 3, 4)
 #define	VRy7(r...) VRy7_(r, 1, 2, 3, 4, 5)
-
 #define	R_01(REG1, REG2, ...) REG1, REG2
 #define	_R_23(_0, _1, REG2, REG3, ...) REG2, REG3
 #define	R_23(REG...) _R_23(REG, 1, 2, 3)
-
 #define	ELEM_SIZE 64
-
 typedef struct v {
 	uint8_t b[ELEM_SIZE] __attribute__((aligned(ELEM_SIZE)));
 } v_t;
-
-
 #define	XOR_ACC(src, r...)						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -98,7 +60,6 @@ typedef struct v {
 		break;							\
 	}								\
 }
-
 #define	XOR(r...)							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -116,11 +77,7 @@ typedef struct v {
 		break;							\
 	}								\
 }
-
-
 #define	ZERO(r...)	XOR(r, r)
-
-
 #define	COPY(r...) 							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -138,7 +95,6 @@ typedef struct v {
 		break;							\
 	}								\
 }
-
 #define	LOAD(src, r...) 						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -152,7 +108,6 @@ typedef struct v {
 		break;							\
 	}								\
 }
-
 #define	STORE(dst, r...)   						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -166,7 +121,6 @@ typedef struct v {
 		break;							\
 	}								\
 }
-
 #define	MUL2_SETUP() 							\
 {   									\
 	__asm("vmovq %0,   %%xmm31" :: "r"(0x1d1d1d1d1d1d1d1d));	\
@@ -176,7 +130,6 @@ typedef struct v {
 	__asm("vmovq %0,   %%xmm29" :: "r"(0xfefefefefefefefe));	\
 	__asm("vpbroadcastq %xmm29, %zmm29");				\
 }
-
 #define	_MUL2(r...) 							\
 {									\
 	switch	(REG_CNT(r)) {						\
@@ -201,7 +154,6 @@ typedef struct v {
 		VERIFY(0);						\
 	}								\
 }
-
 #define	MUL2(r...)							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -214,19 +166,13 @@ typedef struct v {
 	    break;							\
 	}								\
 }
-
 #define	MUL4(r...)							\
 {									\
 	MUL2(r);							\
 	MUL2(r);							\
 }
-
-
-/* General multiplication by adding powers of two */
-
 #define	_mul_x2_in	21, 22
 #define	_mul_x2_acc	23, 24
-
 #define	_MUL_PARAM(x, in, acc)						\
 {									\
 	if (x & 0x01) {	COPY(in, acc); } else { ZERO(acc); }		\
@@ -244,12 +190,9 @@ typedef struct v {
 	if (x & 0x40) { XOR(in, acc); }					\
 	if (x & 0x80) { MUL2(in); XOR(in, acc); }			\
 }
-
 #define	MUL_x2_DEFINE(x)						\
 static void 								\
 mul_x2_ ## x(void) { _MUL_PARAM(x, _mul_x2_in, _mul_x2_acc); }
-
-
 MUL_x2_DEFINE(0); MUL_x2_DEFINE(1); MUL_x2_DEFINE(2); MUL_x2_DEFINE(3);
 MUL_x2_DEFINE(4); MUL_x2_DEFINE(5); MUL_x2_DEFINE(6); MUL_x2_DEFINE(7);
 MUL_x2_DEFINE(8); MUL_x2_DEFINE(9); MUL_x2_DEFINE(10); MUL_x2_DEFINE(11);
@@ -314,10 +257,7 @@ MUL_x2_DEFINE(240); MUL_x2_DEFINE(241); MUL_x2_DEFINE(242); MUL_x2_DEFINE(243);
 MUL_x2_DEFINE(244); MUL_x2_DEFINE(245); MUL_x2_DEFINE(246); MUL_x2_DEFINE(247);
 MUL_x2_DEFINE(248); MUL_x2_DEFINE(249); MUL_x2_DEFINE(250); MUL_x2_DEFINE(251);
 MUL_x2_DEFINE(252); MUL_x2_DEFINE(253); MUL_x2_DEFINE(254); MUL_x2_DEFINE(255);
-
-
 typedef void (*mul_fn_ptr_t)(void);
-
 static const mul_fn_ptr_t __attribute__((aligned(256)))
 gf_x2_mul_fns[256] = {
 	mul_x2_0, mul_x2_1, mul_x2_2, mul_x2_3, mul_x2_4, mul_x2_5,
@@ -364,7 +304,6 @@ gf_x2_mul_fns[256] = {
 	mul_x2_246, mul_x2_247, mul_x2_248, mul_x2_249, mul_x2_250, mul_x2_251,
 	mul_x2_252, mul_x2_253, mul_x2_254, mul_x2_255
 };
-
 #define	MUL(c, r...) 							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -380,86 +319,65 @@ gf_x2_mul_fns[256] = {
 		VERIFY(0);						\
 	}								\
 }
-
-
 #define	raidz_math_begin()	kfpu_begin()
 #define	raidz_math_end()	kfpu_end()
-
-
 #define	SYN_STRIDE		4
-
 #define	ZERO_STRIDE		4
 #define	ZERO_DEFINE()		{}
 #define	ZERO_D			0, 1, 2, 3
-
 #define	COPY_STRIDE		4
 #define	COPY_DEFINE()		{}
 #define	COPY_D			0, 1, 2, 3
-
 #define	ADD_STRIDE		4
 #define	ADD_DEFINE()		{}
 #define	ADD_D 			0, 1, 2, 3
-
 #define	MUL_STRIDE		4
 #define	MUL_DEFINE() 		MUL2_SETUP()
 #define	MUL_D			0, 1, 2, 3
-
 #define	GEN_P_STRIDE		4
 #define	GEN_P_DEFINE()		{}
 #define	GEN_P_P			0, 1, 2, 3
-
 #define	GEN_PQ_STRIDE		4
 #define	GEN_PQ_DEFINE() 	{}
 #define	GEN_PQ_D		0, 1, 2, 3
 #define	GEN_PQ_C		4, 5, 6, 7
-
 #define	GEN_PQR_STRIDE		4
 #define	GEN_PQR_DEFINE() 	{}
 #define	GEN_PQR_D		0, 1, 2, 3
 #define	GEN_PQR_C		4, 5, 6, 7
-
 #define	SYN_Q_DEFINE()		{}
 #define	SYN_Q_D			0, 1, 2, 3
 #define	SYN_Q_X			4, 5, 6, 7
-
 #define	SYN_R_DEFINE()		{}
 #define	SYN_R_D			0, 1, 2, 3
 #define	SYN_R_X			4, 5, 6, 7
-
 #define	SYN_PQ_DEFINE() 	{}
 #define	SYN_PQ_D		0, 1, 2, 3
 #define	SYN_PQ_X		4, 5, 6, 7
-
 #define	REC_PQ_STRIDE		4
 #define	REC_PQ_DEFINE()		MUL2_SETUP()
 #define	REC_PQ_X		0, 1, 2, 3
 #define	REC_PQ_Y		4, 5, 6, 7
 #define	REC_PQ_T		8, 9, 10, 11
-
 #define	SYN_PR_DEFINE() 	{}
 #define	SYN_PR_D		0, 1, 2, 3
 #define	SYN_PR_X		4, 5, 6, 7
-
 #define	REC_PR_STRIDE		4
 #define	REC_PR_DEFINE() 	MUL2_SETUP()
 #define	REC_PR_X		0, 1, 2, 3
 #define	REC_PR_Y		4, 5, 6, 7
 #define	REC_PR_T		8, 9, 10, 11
-
 #define	SYN_QR_DEFINE() 	{}
 #define	SYN_QR_D		0, 1, 2, 3
 #define	SYN_QR_X		4, 5, 6, 7
-
 #define	REC_QR_STRIDE		4
 #define	REC_QR_DEFINE() 	MUL2_SETUP()
 #define	REC_QR_X		0, 1, 2, 3
 #define	REC_QR_Y		4, 5, 6, 7
 #define	REC_QR_T		8, 9, 10, 11
-
 #define	SYN_PQR_DEFINE() 	{}
 #define	SYN_PQR_D		0, 1, 2, 3
 #define	SYN_PQR_X		4, 5, 6, 7
-
 #define	REC_PQR_STRIDE		4
 #define	REC_PQR_DEFINE() 	MUL2_SETUP()
 #define	REC_PQR_X		0, 1, 2, 3
@@ -467,21 +385,16 @@ gf_x2_mul_fns[256] = {
 #define	REC_PQR_Z		8, 9, 10, 11
 #define	REC_PQR_XS		12, 13, 14, 15
 #define	REC_PQR_YS		16, 17, 18, 19
-
-
 #include <sys/vdev_raidz_impl.h>
 #include "vdev_raidz_math_impl.h"
-
 DEFINE_GEN_METHODS(avx512f);
 DEFINE_REC_METHODS(avx512f);
-
 static boolean_t
 raidz_will_avx512f_work(void)
 {
 	return (kfpu_allowed() && zfs_avx_available() &&
 	    zfs_avx2_available() && zfs_avx512f_available());
 }
-
 const raidz_impl_ops_t vdev_raidz_avx512f_impl = {
 	.init = NULL,
 	.fini = NULL,
@@ -490,5 +403,4 @@ const raidz_impl_ops_t vdev_raidz_avx512f_impl = {
 	.is_supported = &raidz_will_avx512f_work,
 	.name = "avx512f"
 };
-
-#endif /* defined(__x86_64) && defined(HAVE_AVX512F) */
+#endif  

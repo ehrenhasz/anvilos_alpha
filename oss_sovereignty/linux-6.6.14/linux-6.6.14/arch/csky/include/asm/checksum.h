@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_CSKY_CHECKSUM_H
 #define __ASM_CSKY_CHECKSUM_H
-
 #include <linux/in6.h>
 #include <asm/byteorder.h>
-
 static inline __sum16 csum_fold(__wsum csum)
 {
 	u32 tmp;
-
 	asm volatile(
 	"mov	%1, %0\n"
 	"rori	%0, 16\n"
@@ -17,11 +12,9 @@ static inline __sum16 csum_fold(__wsum csum)
 	"lsri	%0, 16\n"
 	: "=r"(csum), "=r"(tmp)
 	: "0"(csum));
-
 	return (__force __sum16) ~csum;
 }
 #define csum_fold csum_fold
-
 static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
 		unsigned short len, unsigned short proto, __wsum sum)
 {
@@ -43,7 +36,5 @@ static inline __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
 	return sum;
 }
 #define csum_tcpudp_nofold csum_tcpudp_nofold
-
 #include <asm-generic/checksum.h>
-
-#endif /* __ASM_CSKY_CHECKSUM_H */
+#endif  

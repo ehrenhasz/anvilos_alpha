@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for AM6 SoC family in Quad core configuration
- *
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 #include "k3-am65.dtsi"
-
 / {
 	cpus {
 		#address-cells = <1>;
@@ -16,23 +8,19 @@
 				core0 {
 					cpu = <&cpu0>;
 				};
-
 				core1 {
 					cpu = <&cpu1>;
 				};
 			};
-
 			cluster1: cluster1 {
 				core0 {
 					cpu = <&cpu2>;
 				};
-
 				core1 {
 					cpu = <&cpu3>;
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a53";
 			reg = <0x000>;
@@ -46,7 +34,6 @@
 			d-cache-sets = <128>;
 			next-level-cache = <&L2_0>;
 		};
-
 		cpu1: cpu@1 {
 			compatible = "arm,cortex-a53";
 			reg = <0x001>;
@@ -60,7 +47,6 @@
 			d-cache-sets = <128>;
 			next-level-cache = <&L2_0>;
 		};
-
 		cpu2: cpu@100 {
 			compatible = "arm,cortex-a53";
 			reg = <0x100>;
@@ -74,7 +60,6 @@
 			d-cache-sets = <128>;
 			next-level-cache = <&L2_1>;
 		};
-
 		cpu3: cpu@101 {
 			compatible = "arm,cortex-a53";
 			reg = <0x101>;
@@ -89,7 +74,6 @@
 			next-level-cache = <&L2_1>;
 		};
 	};
-
 	L2_0: l2-cache0 {
 		compatible = "cache";
 		cache-level = <2>;
@@ -99,7 +83,6 @@
 		cache-sets = <512>;
 		next-level-cache = <&msmc_l3>;
 	};
-
 	L2_1: l2-cache1 {
 		compatible = "cache";
 		cache-level = <2>;
@@ -109,13 +92,11 @@
 		cache-sets = <512>;
 		next-level-cache = <&msmc_l3>;
 	};
-
 	msmc_l3: l3-cache0 {
 		compatible = "cache";
 		cache-level = <3>;
 		cache-unified;
 	};
-
 	thermal_zones: thermal-zones {
 		#include "k3-am654-industrial-thermal.dtsi"
 	};

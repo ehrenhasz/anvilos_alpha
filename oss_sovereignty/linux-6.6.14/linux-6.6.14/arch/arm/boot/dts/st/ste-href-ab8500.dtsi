@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 Linaro Ltd.
- */
-
 #include "ste-ab8500.dtsi"
-
 / {
 	soc {
 		prcmu@80157000 {
 			ab8500 {
 				gpio {
-					/* Hog a few default settings */
 					pinctrl-names = "default";
 					pinctrl-0 = <&gpio2_default_mode>,
 						    <&gpio4_default_mode>,
@@ -35,11 +28,6 @@
 						    <&dmic_default_mode>,
 						    <&extcpena_default_mode>,
 						    <&modsclsda_default_mode>;
-
-					/*
-					 * Pins 2, 4, 10, 11, 12, 13, 16, 24, 25, 36, 37, 38, 39 and 42
-					 * are muxed in as GPIO, and configured as INPUT PULL DOWN
-					 */
 					gpio2 {
 						gpio2_default_mode: gpio2_default {
 							default_mux {
@@ -222,9 +210,6 @@
 							};
 						};
 					};
-					/*
-					 * Pins 26 and 35 muxed in as GPIO, and configured as OUTPUT LOW
-					 */
 					gpio26 {
 						gpio26_default_mode: gpio26_default {
 							default_mux {
@@ -249,10 +234,6 @@
 							};
 						};
 					};
-					/*
-					 * This sets up the YCBCR connector pins, i.e. analog video out.
-					 * Set as input with no bias.
-					 */
 					ycbcr {
 						ycbcr_default_mode: ycbcr_default {
 							default_mux {
@@ -269,7 +250,6 @@
 							};
 						};
 					};
-					/* This sets up the PWM pins 14 and 15 */
 					pwm {
 						pwm_default_mode: pwm_default {
 							default_mux {
@@ -284,7 +264,6 @@
 							};
 						};
 					};
-					/* This sets up audio interface 1 */
 					adi1 {
 						adi1_default_mode: adi1_default {
 							default_mux {
@@ -301,7 +280,6 @@
 							};
 						};
 					};
-					/* This sets up the USB UICC pins */
 					usbuicc {
 						usbuicc_default_mode: usbuicc_default {
 							default_mux {
@@ -317,7 +295,6 @@
 							};
 						};
 					};
-					/* This sets up the microphone pins */
 					dmic {
 						dmic_default_mode: dmic_default {
 							default_mux {
@@ -351,7 +328,6 @@
 							};
 						};
 					};
-					/* Modem I2C setup (SCL and SDA pins) */
 					modsclsda {
 						modsclsda_default_mode: modsclsda_default {
 							default_mux {
@@ -366,9 +342,6 @@
 							};
 						};
 					};
-					/*
-					 * Clock output pins associated with regulators.
-					 */
 					sysclkreq2 {
 						sysclkreq2_default_mode: sysclkreq2_default {
 							default_mux {
@@ -418,12 +391,6 @@
 						};
 					};
 				};
-				/*
-				 * Charging is not working on the HREF unless an actual battery is
-				 * mounted, most HREFs have a DC cable in to the "battery power"
-				 * which means this will only be cofusing. So do not enable charging
-				 * of the HREFs.
-				 */
 				ab8500_fg {
 					status = "disabled";
 				};

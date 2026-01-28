@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Joshua Henderson <joshua.henderson@microchip.com>
- * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- */
 #ifndef _PIC32MZDA_EARLY_PIN_H
 #define _PIC32MZDA_EARLY_PIN_H
-
-/*
- * This is a complete, yet overly simplistic and unoptimized, PIC32MZDA PPS
- * configuration only useful before we have full pinctrl initialized.
- */
-
-/* Input PPS Functions */
 enum {
 	IN_FUNC_INT3,
 	IN_FUNC_T2CK,
@@ -65,8 +53,6 @@ enum {
 	IN_FUNC_OCFA,
 	IN_FUNC_REFCLKI3,
 };
-
-/* Input PPS Pins */
 #define IN_RPD2 0x00
 #define IN_RPG8 0x01
 #define IN_RPF4 0x02
@@ -120,8 +106,6 @@ enum {
 #define IN_RPF2 0x0B
 #define IN_RPC2 0x0C
 #define IN_RPE8 0x0D
-
-/* Output PPS Pins */
 enum {
 	OUT_RPD2,
 	OUT_RPG8,
@@ -177,8 +161,6 @@ enum {
 	OUT_RPE8,
 	OUT_RPF2,
 };
-
-/* Output PPS Functions */
 #define OUT_FUNC_U3TX 0x01
 #define OUT_FUNC_U4RTS 0x02
 #define OUT_FUNC_SDO1 0x05
@@ -226,8 +208,6 @@ enum {
 #define OUT_FUNC_OC1 0x0C
 #define OUT_FUNC_OC9 0x0D
 #define OUT_FUNC_C2TX 0x0F
-
 void pic32_pps_input(int function, int pin);
 void pic32_pps_output(int function, int pin);
-
 #endif

@@ -1,73 +1,56 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (C) 2021 MediaTek Inc.
- * Author: Seiya Wang <seiya.wang@mediatek.com>
- */
 /dts-v1/;
 #include "mt8195.dtsi"
-
 / {
 	model = "MediaTek MT8195 evaluation board";
 	compatible = "mediatek,mt8195-evb", "mediatek,mt8195";
-
 	aliases {
 		serial0 = &uart0;
 	};
-
 	chosen {
 		stdout-path = "serial0:921600n8";
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0 0x40000000 0 0x80000000>;
 	};
 };
-
 &auxadc {
 	status = "okay";
 };
-
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pin>;
 	clock-frequency = <100000>;
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pin>;
 	clock-frequency = <400000>;
 	status = "okay";
 };
-
 &i2c4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_pin>;
 	clock-frequency = <400000>;
 	status = "okay";
 };
-
 &i2c6 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c6_pin>;
 	clock-frequency = <400000>;
 	status = "okay";
 };
-
 &nor_flash {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&nor_pins_default>;
-
 	flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <50000000>;
 	};
 };
-
 &pio {
 	i2c0_pin: i2c0-pins {
 		pins {
@@ -78,7 +61,6 @@
 			drive-strength = <6>;
 		};
 	};
-
 	i2c1_pin: i2c1-pins {
 		pins {
 			pinmux = <PINMUX_GPIO10__FUNC_SDA1>,
@@ -88,7 +70,6 @@
 			drive-strength = <6>;
 		};
 	};
-
 	i2c4_pin: i2c4-pins {
 		pins {
 			pinmux = <PINMUX_GPIO16__FUNC_SDA4>,
@@ -97,7 +78,6 @@
 			mediatek,drive-strength-adv = <7>;
 		};
 	};
-
 	i2c6_pin: i2c6-pins {
 		pins {
 			pinmux = <PINMUX_GPIO25__FUNC_SDA6>,
@@ -105,7 +85,6 @@
 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
 		};
 	};
-
 	i2c7_pin: i2c7-pins {
 		pins {
 			pinmux = <PINMUX_GPIO27__FUNC_SCL7>,
@@ -113,7 +92,6 @@
 			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
 		};
 	};
-
 	nor_pins_default: nor-pins {
 		pins0 {
 			pinmux = <PINMUX_GPIO142__FUNC_SPINOR_IO0>,
@@ -121,7 +99,6 @@
 				 <PINMUX_GPIO143__FUNC_SPINOR_IO1>;
 			bias-pull-down;
 		};
-
 		pins1 {
 			pinmux = <PINMUX_GPIO140__FUNC_SPINOR_CS>,
 				 <PINMUX_GPIO130__FUNC_SPINOR_IO2>,
@@ -129,7 +106,6 @@
 			bias-pull-up;
 		};
 	};
-
 	uart0_pin: uart0-pins {
 		pins {
 			pinmux = <PINMUX_GPIO98__FUNC_UTXD0>,
@@ -137,45 +113,33 @@
 		};
 	};
 };
-
 &u3phy0 {
 	status = "okay";
 };
-
 &u3phy1 {
 	status = "okay";
 };
-
 &u3phy2 {
 	status = "okay";
 };
-
 &u3phy3 {
 	status = "okay";
 };
-
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_pin>;
 	status = "okay";
 };
-
 &xhci0 {
 	status = "okay";
 };
-
 &xhci1 {
 	status = "okay";
 };
-
 &xhci2 {
 	status = "okay";
 };
-
 &xhci3 {
-	/* This controller is connected with a BT device.
-	 * Disable usb2 lpm to prevent known issues.
-	 */
 	usb2-lpm-disable;
 	status = "okay";
 };

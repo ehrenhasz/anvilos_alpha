@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-// Copyright (c) 2017 Synopsys, Inc. and/or its affiliates.
-// stmmac Support for 5.xx Ethernet QoS cores
-
 #ifndef __DWMAC5_H__
 #define __DWMAC5_H__
-
 #define MAC_DPP_FSM_INT_STATUS		0x00000140
 #define MAC_AXI_SLV_DPE_ADDR_STATUS	0x00000144
 #define MAC_FSM_CONTROL			0x00000148
 #define PRTYEN				BIT(1)
 #define TMOUTEN				BIT(0)
-
 #define MAC_FPE_CTRL_STS		0x00000234
 #define TRSP				BIT(19)
 #define TVER				BIT(18)
@@ -19,7 +13,6 @@
 #define SRSP				BIT(2)
 #define SVER				BIT(1)
 #define EFPE				BIT(0)
-
 #define MAC_PPS_CONTROL			0x00000b70
 #define PPS_MAXIDX(x)			((((x) + 1) * 8) - 1)
 #define PPS_MINIDX(x)			((x) * 8)
@@ -38,13 +31,11 @@
 #define TTSL0				GENMASK(30, 0)
 #define MAC_PPSx_INTERVAL(x)		(0x00000b88 + ((x) * 0x10))
 #define MAC_PPSx_WIDTH(x)		(0x00000b8c + ((x) * 0x10))
-
 #define MTL_EST_CONTROL			0x00000c50
 #define PTOV				GENMASK(31, 24)
 #define PTOV_SHIFT			24
 #define SSWL				BIT(1)
 #define EEST				BIT(0)
-
 #define MTL_EST_STATUS			0x00000c58
 #define BTRL				GENMASK(11, 8)
 #define BTRL_SHIFT			8
@@ -56,7 +47,6 @@
 #define HLBF				BIT(2)
 #define BTRE				BIT(1)
 #define SWLC				BIT(0)
-
 #define MTL_EST_SCH_ERR			0x00000c60
 #define MTL_EST_FRM_SZ_ERR		0x00000c64
 #define MTL_EST_FRM_SZ_CAP		0x00000c68
@@ -66,14 +56,12 @@
 					((val) > 4 ? GENMASK(18, 16) :	\
 					 (val) > 2 ? GENMASK(17, 16) :	\
 					 BIT(16)); })
-
 #define MTL_EST_INT_EN			0x00000c70
 #define IECGCE				CGCE
 #define IEHS				HLBS
 #define IEHF				HLBF
 #define IEBE				BTRE
 #define IECC				SWLC
-
 #define MTL_EST_GCL_CONTROL		0x00000c80
 #define BTR_LOW				0x0
 #define BTR_HIGH			0x1
@@ -85,7 +73,6 @@
 #define GCRR				BIT(2)
 #define SRWO				BIT(0)
 #define MTL_EST_GCL_DATA		0x00000c84
-
 #define MTL_RXP_CONTROL_STATUS		0x00000ca0
 #define RXPI				BIT(31)
 #define NPE				GENMASK(23, 16)
@@ -104,7 +91,6 @@
 #define MESTEE				BIT(2)
 #define MRXEE				BIT(1)
 #define MTXEE				BIT(0)
-
 #define MTL_SAFETY_INT_STATUS		0x00000cc4
 #define MCSIS				BIT(31)
 #define MEUIS				BIT(1)
@@ -119,7 +105,6 @@
 #define EPSI				BIT(2)
 #define OPE				BIT(1)
 #define EDPP				BIT(0)
-
 #define DMA_SAFETY_INT_STATUS		0x00001080
 #define MSUIS				BIT(29)
 #define MSCIS				BIT(28)
@@ -128,15 +113,11 @@
 #define DMA_ECC_INT_ENABLE		0x00001084
 #define TCEIE				BIT(0)
 #define DMA_ECC_INT_STATUS		0x00001088
-
-/* EQoS version 5.xx VLAN Tag Filter Fail Packets Queuing */
 #define GMAC_RXQ_CTRL4			0x00000094
 #define GMAC_RXQCTRL_VFFQ_MASK		GENMASK(19, 17)
 #define GMAC_RXQCTRL_VFFQ_SHIFT		17
 #define GMAC_RXQCTRL_VFFQE		BIT(16)
-
 #define GMAC_INT_FPE_EN			BIT(17)
-
 int dwmac5_safety_feat_config(void __iomem *ioaddr, unsigned int asp,
 			      struct stmmac_safety_feature_cfg *safety_cfg);
 int dwmac5_safety_feat_irq_status(struct net_device *ndev,
@@ -160,5 +141,4 @@ void dwmac5_fpe_send_mpacket(void __iomem *ioaddr,
 			     struct stmmac_fpe_cfg *cfg,
 			     enum stmmac_mpacket_type type);
 int dwmac5_fpe_irq_status(void __iomem *ioaddr, struct net_device *dev);
-
-#endif /* __DWMAC5_H__ */
+#endif  

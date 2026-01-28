@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_V3_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_V3_H_
-
-/* Only for QMP V3 PHY - TX registers */
 #define QSERDES_V3_TX_BIST_MODE_LANENO			0x000
 #define QSERDES_V3_TX_CLKBUF_ENABLE			0x008
 #define QSERDES_V3_TX_TX_EMP_POST1_LVL			0x00c
@@ -32,8 +25,6 @@
 #define QSERDES_V3_TX_TRAN_DRVR_EMP_EN			0x0c0
 #define QSERDES_V3_TX_TX_INTERFACE_MODE			0x0c4
 #define QSERDES_V3_TX_VMODE_CTRL1			0x0f0
-
-/* Only for QMP V3 PHY - RX registers */
 #define QSERDES_V3_RX_UCDR_FO_GAIN			0x008
 #define QSERDES_V3_RX_UCDR_SO_GAIN_HALF			0x00c
 #define QSERDES_V3_RX_UCDR_SO_GAIN			0x014
@@ -64,5 +55,4 @@
 #define QSERDES_V3_RX_RX_INTERFACE_MODE			0x11c
 #define QSERDES_V3_RX_RX_MODE_00			0x164
 #define QSERDES_V3_RX_RX_MODE_01			0x168
-
 #endif

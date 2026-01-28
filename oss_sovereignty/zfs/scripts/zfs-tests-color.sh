@@ -1,8 +1,3 @@
-#!/bin/sh
-# A large mass of sed for coloring zfs-tests.sh output
-# Version 2, thanks to наб.
-# Just pipe zfs-tests.sh output into this, and watch.
-
 exec "$(command -v gsed || echo sed)" \
 	-e 's/\] \[PASS\]$/] [\x1b[92mPASS\x1b[0m]/' \
 	-e 's/\] \[FAIL\]$/] [\x1b[1;91mFAIL\x1b[0m]/' \

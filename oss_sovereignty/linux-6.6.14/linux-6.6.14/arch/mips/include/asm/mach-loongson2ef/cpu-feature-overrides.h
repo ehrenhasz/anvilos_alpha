@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2009 Wu Zhangjin <wuzhangjin@gmail.com>
- * Copyright (C) 2009 Philippe Vachon <philippe@cowpig.ca>
- * Copyright (C) 2009 Zhang Le <r0bertz@gentoo.org>
- *
- * reference: /proc/cpuinfo,
- *	arch/mips/kernel/cpu-probe.c(cpu_probe_legacy),
- *	arch/mips/kernel/proc.c(show_cpuinfo),
- *	loongson2f user manual.
- */
-
 #ifndef __ASM_MACH_LOONGSON2EF_CPU_FEATURE_OVERRIDES_H
 #define __ASM_MACH_LOONGSON2EF_CPU_FEATURE_OVERRIDES_H
-
 #define cpu_has_32fpr		1
 #define cpu_has_3k_cache	0
 #define cpu_has_4k_cache	1
@@ -39,5 +26,4 @@
 #define cpu_has_vint		0
 #define cpu_has_vtag_icache	0
 #define cpu_has_watch		1
-
-#endif /* __ASM_MACH_LOONGSON64_CPU_FEATURE_OVERRIDES_H */
+#endif  

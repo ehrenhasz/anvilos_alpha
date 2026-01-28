@@ -1,69 +1,10 @@
-#!/usr/bin/env perl
-# SPDX-License-Identifier: GPL-2.0
-
-# This code is taken from the OpenSSL project but the author (Andy Polyakov)
-# has relicensed it under the GPLv2. Therefore this program is free software;
-# you can redistribute it and/or modify it under the terms of the GNU General
-# Public License version 2 as published by the Free Software Foundation.
-#
-# The original headers, including the original license headers, are
-# included below for completeness.
-
-# ====================================================================
-# Written by Andy Polyakov <appro@openssl.org> for the OpenSSL
-# project. The module is, however, dual licensed under OpenSSL and
-# CRYPTOGAMS licenses depending on where you obtain it. For further
-# details see https://www.openssl.org/~appro/cryptogams/.
-# ====================================================================
-
-# SHA512 block procedure for ARMv4. September 2007.
-
-# This code is ~4.5 (four and a half) times faster than code generated
-# by gcc 3.4 and it spends ~72 clock cycles per byte [on single-issue
-# Xscale PXA250 core].
-#
-# July 2010.
-#
-# Rescheduling for dual-issue pipeline resulted in 6% improvement on
-# Cortex A8 core and ~40 cycles per processed byte.
-
-# February 2011.
-#
-# Profiler-assisted and platform-specific optimization resulted in 7%
-# improvement on Coxtex A8 core and ~38 cycles per byte.
-
-# March 2011.
-#
-# Add NEON implementation. On Cortex A8 it was measured to process
-# one byte in 23.3 cycles or ~60% faster than integer-only code.
-
-# August 2012.
-#
-# Improve NEON performance by 12% on Snapdragon S4. In absolute
-# terms it's 22.6 cycles per byte, which is disappointing result.
-# Technical writers asserted that 3-way S4 pipeline can sustain
-# multiple NEON instructions per cycle, but dual NEON issue could
-# not be observed, see https://www.openssl.org/~appro/Snapdragon-S4.html
-# for further details. On side note Cortex-A15 processes one byte in
-# 16 cycles.
-
-# Byte order [in]dependence. =========================================
-#
-# Originally caller was expected to maintain specific *dword* order in
-# h[0-7], namely with most significant dword at *lower* address, which
-# was reflected in below two parameters as 0 and 4. Now caller is
-# expected to maintain native byte order for whole 64-bit values.
 $hi="HI";
 $lo="LO";
-# ====================================================================
-
 while (($output=shift) && ($output!~/^\w[\w\-]*\.\w+$/)) {}
 open STDOUT,">$output";
-
-$ctx="r0";	# parameter block
+$ctx="r0";	
 $inp="r1";
 $len="r2";
-
 $Tlo="r3";
 $Thi="r4";
 $Alo="r5";
@@ -74,10 +15,7 @@ $t0="r9";
 $t1="r10";
 $t2="r11";
 $t3="r12";
-############	r13 is stack pointer
 $Ktbl="r14";
-############	r15 is program counter
-
 $Aoff=8*0;
 $Boff=8*1;
 $Coff=8*2;
@@ -87,90 +25,83 @@ $Foff=8*5;
 $Goff=8*6;
 $Hoff=8*7;
 $Xoff=8*8;
-
 sub BODY_00_15() {
 my $magic = shift;
 $code.=<<___;
 	@ Sigma1(x)	(ROTR((x),14) ^ ROTR((x),18)  ^ ROTR((x),41))
 	@ LO		lo>>14^hi<<18 ^ lo>>18^hi<<14 ^ hi>>9^lo<<23
 	@ HI		hi>>14^lo<<18 ^ hi>>18^lo<<14 ^ lo>>9^hi<<23
-	mov	$t0,$Elo,lsr#14
-	str	$Tlo,[sp,#$Xoff+0]
-	mov	$t1,$Ehi,lsr#14
-	str	$Thi,[sp,#$Xoff+4]
-	eor	$t0,$t0,$Ehi,lsl#18
-	ldr	$t2,[sp,#$Hoff+0]	@ h.lo
-	eor	$t1,$t1,$Elo,lsl#18
-	ldr	$t3,[sp,#$Hoff+4]	@ h.hi
-	eor	$t0,$t0,$Elo,lsr#18
-	eor	$t1,$t1,$Ehi,lsr#18
-	eor	$t0,$t0,$Ehi,lsl#14
-	eor	$t1,$t1,$Elo,lsl#14
-	eor	$t0,$t0,$Ehi,lsr#9
-	eor	$t1,$t1,$Elo,lsr#9
-	eor	$t0,$t0,$Elo,lsl#23
-	eor	$t1,$t1,$Ehi,lsl#23	@ Sigma1(e)
+	mov	$t0,$Elo,lsr
+	str	$Tlo,[sp,
+	mov	$t1,$Ehi,lsr
+	str	$Thi,[sp,
+	eor	$t0,$t0,$Ehi,lsl
+	ldr	$t2,[sp,
+	eor	$t1,$t1,$Elo,lsl
+	ldr	$t3,[sp,
+	eor	$t0,$t0,$Elo,lsr
+	eor	$t1,$t1,$Ehi,lsr
+	eor	$t0,$t0,$Ehi,lsl
+	eor	$t1,$t1,$Elo,lsl
+	eor	$t0,$t0,$Ehi,lsr
+	eor	$t1,$t1,$Elo,lsr
+	eor	$t0,$t0,$Elo,lsl
+	eor	$t1,$t1,$Ehi,lsl
 	adds	$Tlo,$Tlo,$t0
-	ldr	$t0,[sp,#$Foff+0]	@ f.lo
+	ldr	$t0,[sp,
 	adc	$Thi,$Thi,$t1		@ T += Sigma1(e)
-	ldr	$t1,[sp,#$Foff+4]	@ f.hi
+	ldr	$t1,[sp,
 	adds	$Tlo,$Tlo,$t2
-	ldr	$t2,[sp,#$Goff+0]	@ g.lo
+	ldr	$t2,[sp,
 	adc	$Thi,$Thi,$t3		@ T += h
-	ldr	$t3,[sp,#$Goff+4]	@ g.hi
-
+	ldr	$t3,[sp,
 	eor	$t0,$t0,$t2
-	str	$Elo,[sp,#$Eoff+0]
+	str	$Elo,[sp,
 	eor	$t1,$t1,$t3
-	str	$Ehi,[sp,#$Eoff+4]
+	str	$Ehi,[sp,
 	and	$t0,$t0,$Elo
-	str	$Alo,[sp,#$Aoff+0]
+	str	$Alo,[sp,
 	and	$t1,$t1,$Ehi
-	str	$Ahi,[sp,#$Aoff+4]
+	str	$Ahi,[sp,
 	eor	$t0,$t0,$t2
-	ldr	$t2,[$Ktbl,#$lo]	@ K[i].lo
+	ldr	$t2,[$Ktbl,
 	eor	$t1,$t1,$t3		@ Ch(e,f,g)
-	ldr	$t3,[$Ktbl,#$hi]	@ K[i].hi
-
+	ldr	$t3,[$Ktbl,
 	adds	$Tlo,$Tlo,$t0
-	ldr	$Elo,[sp,#$Doff+0]	@ d.lo
+	ldr	$Elo,[sp,
 	adc	$Thi,$Thi,$t1		@ T += Ch(e,f,g)
-	ldr	$Ehi,[sp,#$Doff+4]	@ d.hi
+	ldr	$Ehi,[sp,
 	adds	$Tlo,$Tlo,$t2
-	and	$t0,$t2,#0xff
+	and	$t0,$t2,
 	adc	$Thi,$Thi,$t3		@ T += K[i]
 	adds	$Elo,$Elo,$Tlo
-	ldr	$t2,[sp,#$Boff+0]	@ b.lo
+	ldr	$t2,[sp,
 	adc	$Ehi,$Ehi,$Thi		@ d += T
-	teq	$t0,#$magic
-
-	ldr	$t3,[sp,#$Coff+0]	@ c.lo
-#if __ARM_ARCH__>=7
+	teq	$t0,
+	ldr	$t3,[sp,
 	it	eq			@ Thumb2 thing, sanity check in ARM
-#endif
-	orreq	$Ktbl,$Ktbl,#1
+	orreq	$Ktbl,$Ktbl,
 	@ Sigma0(x)	(ROTR((x),28) ^ ROTR((x),34) ^ ROTR((x),39))
 	@ LO		lo>>28^hi<<4  ^ hi>>2^lo<<30 ^ hi>>7^lo<<25
 	@ HI		hi>>28^lo<<4  ^ lo>>2^hi<<30 ^ lo>>7^hi<<25
-	mov	$t0,$Alo,lsr#28
-	mov	$t1,$Ahi,lsr#28
-	eor	$t0,$t0,$Ahi,lsl#4
-	eor	$t1,$t1,$Alo,lsl#4
-	eor	$t0,$t0,$Ahi,lsr#2
-	eor	$t1,$t1,$Alo,lsr#2
-	eor	$t0,$t0,$Alo,lsl#30
-	eor	$t1,$t1,$Ahi,lsl#30
-	eor	$t0,$t0,$Ahi,lsr#7
-	eor	$t1,$t1,$Alo,lsr#7
-	eor	$t0,$t0,$Alo,lsl#25
-	eor	$t1,$t1,$Ahi,lsl#25	@ Sigma0(a)
+	mov	$t0,$Alo,lsr
+	mov	$t1,$Ahi,lsr
+	eor	$t0,$t0,$Ahi,lsl
+	eor	$t1,$t1,$Alo,lsl
+	eor	$t0,$t0,$Ahi,lsr
+	eor	$t1,$t1,$Alo,lsr
+	eor	$t0,$t0,$Alo,lsl
+	eor	$t1,$t1,$Ahi,lsl
+	eor	$t0,$t0,$Ahi,lsr
+	eor	$t1,$t1,$Alo,lsr
+	eor	$t0,$t0,$Alo,lsl
+	eor	$t1,$t1,$Ahi,lsl
 	adds	$Tlo,$Tlo,$t0
 	and	$t0,$Alo,$t2
 	adc	$Thi,$Thi,$t1		@ T += Sigma0(a)
-
-	ldr	$t1,[sp,#$Boff+4]	@ b.hi
+	ldr	$t1,[sp,
 	orr	$Alo,$Alo,$t2
-	ldr	$t2,[sp,#$Coff+4]	@ c.hi
+	ldr	$t2,[sp,
 	and	$Alo,$Alo,$t3
 	and	$t3,$Ahi,$t1
 	orr	$Ahi,$Ahi,$t1
@@ -178,46 +109,18 @@ $code.=<<___;
 	and	$Ahi,$Ahi,$t2
 	adds	$Alo,$Alo,$Tlo
 	orr	$Ahi,$Ahi,$t3		@ Maj(a,b,c).hi
-	sub	sp,sp,#8
+	sub	sp,sp,
 	adc	$Ahi,$Ahi,$Thi		@ h += T
-	tst	$Ktbl,#1
-	add	$Ktbl,$Ktbl,#8
+	tst	$Ktbl,
+	add	$Ktbl,$Ktbl,
 ___
 }
 $code=<<___;
-#ifndef __KERNEL__
-# include "arm_arch.h"
-# define VFP_ABI_PUSH	vstmdb	sp!,{d8-d15}
-# define VFP_ABI_POP	vldmia	sp!,{d8-d15}
-#else
-# define __ARM_ARCH__ __LINUX_ARM_ARCH__
-# define __ARM_MAX_ARCH__ 7
-# define VFP_ABI_PUSH
-# define VFP_ABI_POP
-#endif
-
-#ifdef __ARMEL__
-# define LO 0
-# define HI 4
-# define WORD64(hi0,lo0,hi1,lo1)	.word	lo0,hi0, lo1,hi1
-#else
-# define HI 0
-# define LO 4
-# define WORD64(hi0,lo0,hi1,lo1)	.word	hi0,lo0, hi1,lo1
-#endif
-
 .text
-#if __ARM_ARCH__<7
 .code	32
-#else
 .syntax unified
-# ifdef __thumb2__
 .thumb
-# else
 .code   32
-# endif
-#endif
-
 .type	K512,%object
 .align	5
 K512:
@@ -262,136 +165,117 @@ WORD64(0x3c9ebe0a,0x15c9bebc, 0x431d67c4,0x9c100d4c)
 WORD64(0x4cc5d4be,0xcb3e42b6, 0x597f299c,0xfc657e2a)
 WORD64(0x5fcb6fab,0x3ad6faec, 0x6c44198c,0x4a475817)
 .size	K512,.-K512
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 .LOPENSSL_armcap:
 .word	OPENSSL_armcap_P-sha512_block_data_order
 .skip	32-4
-#else
 .skip	32
-#endif
-
 .global	sha512_block_data_order
 .type	sha512_block_data_order,%function
 sha512_block_data_order:
 .Lsha512_block_data_order:
-#if __ARM_ARCH__<7
-	sub	r3,pc,#8		@ sha512_block_data_order
-#else
+	sub	r3,pc,
 	adr	r3,.Lsha512_block_data_order
-#endif
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 	ldr	r12,.LOPENSSL_armcap
 	ldr	r12,[r3,r12]		@ OPENSSL_armcap_P
-	tst	r12,#1
+	tst	r12,
 	bne	.LNEON
-#endif
-	add	$len,$inp,$len,lsl#7	@ len to point at the end of inp
+	add	$len,$inp,$len,lsl
 	stmdb	sp!,{r4-r12,lr}
-	sub	$Ktbl,r3,#672		@ K512
-	sub	sp,sp,#9*8
-
-	ldr	$Elo,[$ctx,#$Eoff+$lo]
-	ldr	$Ehi,[$ctx,#$Eoff+$hi]
-	ldr	$t0, [$ctx,#$Goff+$lo]
-	ldr	$t1, [$ctx,#$Goff+$hi]
-	ldr	$t2, [$ctx,#$Hoff+$lo]
-	ldr	$t3, [$ctx,#$Hoff+$hi]
+	sub	$Ktbl,r3,
+	sub	sp,sp,
+	ldr	$Elo,[$ctx,
+	ldr	$Ehi,[$ctx,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
 .Loop:
-	str	$t0, [sp,#$Goff+0]
-	str	$t1, [sp,#$Goff+4]
-	str	$t2, [sp,#$Hoff+0]
-	str	$t3, [sp,#$Hoff+4]
-	ldr	$Alo,[$ctx,#$Aoff+$lo]
-	ldr	$Ahi,[$ctx,#$Aoff+$hi]
-	ldr	$Tlo,[$ctx,#$Boff+$lo]
-	ldr	$Thi,[$ctx,#$Boff+$hi]
-	ldr	$t0, [$ctx,#$Coff+$lo]
-	ldr	$t1, [$ctx,#$Coff+$hi]
-	ldr	$t2, [$ctx,#$Doff+$lo]
-	ldr	$t3, [$ctx,#$Doff+$hi]
-	str	$Tlo,[sp,#$Boff+0]
-	str	$Thi,[sp,#$Boff+4]
-	str	$t0, [sp,#$Coff+0]
-	str	$t1, [sp,#$Coff+4]
-	str	$t2, [sp,#$Doff+0]
-	str	$t3, [sp,#$Doff+4]
-	ldr	$Tlo,[$ctx,#$Foff+$lo]
-	ldr	$Thi,[$ctx,#$Foff+$hi]
-	str	$Tlo,[sp,#$Foff+0]
-	str	$Thi,[sp,#$Foff+4]
-
+	str	$t0, [sp,
+	str	$t1, [sp,
+	str	$t2, [sp,
+	str	$t3, [sp,
+	ldr	$Alo,[$ctx,
+	ldr	$Ahi,[$ctx,
+	ldr	$Tlo,[$ctx,
+	ldr	$Thi,[$ctx,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
+	str	$Tlo,[sp,
+	str	$Thi,[sp,
+	str	$t0, [sp,
+	str	$t1, [sp,
+	str	$t2, [sp,
+	str	$t3, [sp,
+	ldr	$Tlo,[$ctx,
+	ldr	$Thi,[$ctx,
+	str	$Tlo,[sp,
+	str	$Thi,[sp,
 .L00_15:
-#if __ARM_ARCH__<7
-	ldrb	$Tlo,[$inp,#7]
-	ldrb	$t0, [$inp,#6]
-	ldrb	$t1, [$inp,#5]
-	ldrb	$t2, [$inp,#4]
-	ldrb	$Thi,[$inp,#3]
-	ldrb	$t3, [$inp,#2]
-	orr	$Tlo,$Tlo,$t0,lsl#8
-	ldrb	$t0, [$inp,#1]
-	orr	$Tlo,$Tlo,$t1,lsl#16
-	ldrb	$t1, [$inp],#8
-	orr	$Tlo,$Tlo,$t2,lsl#24
-	orr	$Thi,$Thi,$t3,lsl#8
-	orr	$Thi,$Thi,$t0,lsl#16
-	orr	$Thi,$Thi,$t1,lsl#24
-#else
-	ldr	$Tlo,[$inp,#4]
-	ldr	$Thi,[$inp],#8
-#ifdef __ARMEL__
+	ldrb	$Tlo,[$inp,
+	ldrb	$t0, [$inp,
+	ldrb	$t1, [$inp,
+	ldrb	$t2, [$inp,
+	ldrb	$Thi,[$inp,
+	ldrb	$t3, [$inp,
+	orr	$Tlo,$Tlo,$t0,lsl
+	ldrb	$t0, [$inp,
+	orr	$Tlo,$Tlo,$t1,lsl
+	ldrb	$t1, [$inp],
+	orr	$Tlo,$Tlo,$t2,lsl
+	orr	$Thi,$Thi,$t3,lsl
+	orr	$Thi,$Thi,$t0,lsl
+	orr	$Thi,$Thi,$t1,lsl
+	ldr	$Tlo,[$inp,
+	ldr	$Thi,[$inp],
 	rev	$Tlo,$Tlo
 	rev	$Thi,$Thi
-#endif
-#endif
 ___
 	&BODY_00_15(0x94);
 $code.=<<___;
-	tst	$Ktbl,#1
+	tst	$Ktbl,
 	beq	.L00_15
-	ldr	$t0,[sp,#`$Xoff+8*(16-1)`+0]
-	ldr	$t1,[sp,#`$Xoff+8*(16-1)`+4]
-	bic	$Ktbl,$Ktbl,#1
+	ldr	$t0,[sp,
+	ldr	$t1,[sp,
+	bic	$Ktbl,$Ktbl,
 .L16_79:
 	@ sigma0(x)	(ROTR((x),1)  ^ ROTR((x),8)  ^ ((x)>>7))
 	@ LO		lo>>1^hi<<31  ^ lo>>8^hi<<24 ^ lo>>7^hi<<25
 	@ HI		hi>>1^lo<<31  ^ hi>>8^lo<<24 ^ hi>>7
-	mov	$Tlo,$t0,lsr#1
-	ldr	$t2,[sp,#`$Xoff+8*(16-14)`+0]
-	mov	$Thi,$t1,lsr#1
-	ldr	$t3,[sp,#`$Xoff+8*(16-14)`+4]
-	eor	$Tlo,$Tlo,$t1,lsl#31
-	eor	$Thi,$Thi,$t0,lsl#31
-	eor	$Tlo,$Tlo,$t0,lsr#8
-	eor	$Thi,$Thi,$t1,lsr#8
-	eor	$Tlo,$Tlo,$t1,lsl#24
-	eor	$Thi,$Thi,$t0,lsl#24
-	eor	$Tlo,$Tlo,$t0,lsr#7
-	eor	$Thi,$Thi,$t1,lsr#7
-	eor	$Tlo,$Tlo,$t1,lsl#25
-
+	mov	$Tlo,$t0,lsr
+	ldr	$t2,[sp,
+	mov	$Thi,$t1,lsr
+	ldr	$t3,[sp,
+	eor	$Tlo,$Tlo,$t1,lsl
+	eor	$Thi,$Thi,$t0,lsl
+	eor	$Tlo,$Tlo,$t0,lsr
+	eor	$Thi,$Thi,$t1,lsr
+	eor	$Tlo,$Tlo,$t1,lsl
+	eor	$Thi,$Thi,$t0,lsl
+	eor	$Tlo,$Tlo,$t0,lsr
+	eor	$Thi,$Thi,$t1,lsr
+	eor	$Tlo,$Tlo,$t1,lsl
 	@ sigma1(x)	(ROTR((x),19) ^ ROTR((x),61) ^ ((x)>>6))
 	@ LO		lo>>19^hi<<13 ^ hi>>29^lo<<3 ^ lo>>6^hi<<26
 	@ HI		hi>>19^lo<<13 ^ lo>>29^hi<<3 ^ hi>>6
-	mov	$t0,$t2,lsr#19
-	mov	$t1,$t3,lsr#19
-	eor	$t0,$t0,$t3,lsl#13
-	eor	$t1,$t1,$t2,lsl#13
-	eor	$t0,$t0,$t3,lsr#29
-	eor	$t1,$t1,$t2,lsr#29
-	eor	$t0,$t0,$t2,lsl#3
-	eor	$t1,$t1,$t3,lsl#3
-	eor	$t0,$t0,$t2,lsr#6
-	eor	$t1,$t1,$t3,lsr#6
-	ldr	$t2,[sp,#`$Xoff+8*(16-9)`+0]
-	eor	$t0,$t0,$t3,lsl#26
-
-	ldr	$t3,[sp,#`$Xoff+8*(16-9)`+4]
+	mov	$t0,$t2,lsr
+	mov	$t1,$t3,lsr
+	eor	$t0,$t0,$t3,lsl
+	eor	$t1,$t1,$t2,lsl
+	eor	$t0,$t0,$t3,lsr
+	eor	$t1,$t1,$t2,lsr
+	eor	$t0,$t0,$t2,lsl
+	eor	$t1,$t1,$t3,lsl
+	eor	$t0,$t0,$t2,lsr
+	eor	$t1,$t1,$t3,lsr
+	ldr	$t2,[sp,
+	eor	$t0,$t0,$t3,lsl
+	ldr	$t3,[sp,
 	adds	$Tlo,$Tlo,$t0
-	ldr	$t0,[sp,#`$Xoff+8*16`+0]
+	ldr	$t0,[sp,
 	adc	$Thi,$Thi,$t1
-
-	ldr	$t1,[sp,#`$Xoff+8*16`+4]
+	ldr	$t1,[sp,
 	adds	$Tlo,$Tlo,$t2
 	adc	$Thi,$Thi,$t3
 	adds	$Tlo,$Tlo,$t0
@@ -399,146 +283,123 @@ $code.=<<___;
 ___
 	&BODY_00_15(0x17);
 $code.=<<___;
-#if __ARM_ARCH__>=7
 	ittt	eq			@ Thumb2 thing, sanity check in ARM
-#endif
-	ldreq	$t0,[sp,#`$Xoff+8*(16-1)`+0]
-	ldreq	$t1,[sp,#`$Xoff+8*(16-1)`+4]
+	ldreq	$t0,[sp,
+	ldreq	$t1,[sp,
 	beq	.L16_79
-	bic	$Ktbl,$Ktbl,#1
-
-	ldr	$Tlo,[sp,#$Boff+0]
-	ldr	$Thi,[sp,#$Boff+4]
-	ldr	$t0, [$ctx,#$Aoff+$lo]
-	ldr	$t1, [$ctx,#$Aoff+$hi]
-	ldr	$t2, [$ctx,#$Boff+$lo]
-	ldr	$t3, [$ctx,#$Boff+$hi]
+	bic	$Ktbl,$Ktbl,
+	ldr	$Tlo,[sp,
+	ldr	$Thi,[sp,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
 	adds	$t0,$Alo,$t0
-	str	$t0, [$ctx,#$Aoff+$lo]
+	str	$t0, [$ctx,
 	adc	$t1,$Ahi,$t1
-	str	$t1, [$ctx,#$Aoff+$hi]
+	str	$t1, [$ctx,
 	adds	$t2,$Tlo,$t2
-	str	$t2, [$ctx,#$Boff+$lo]
+	str	$t2, [$ctx,
 	adc	$t3,$Thi,$t3
-	str	$t3, [$ctx,#$Boff+$hi]
-
-	ldr	$Alo,[sp,#$Coff+0]
-	ldr	$Ahi,[sp,#$Coff+4]
-	ldr	$Tlo,[sp,#$Doff+0]
-	ldr	$Thi,[sp,#$Doff+4]
-	ldr	$t0, [$ctx,#$Coff+$lo]
-	ldr	$t1, [$ctx,#$Coff+$hi]
-	ldr	$t2, [$ctx,#$Doff+$lo]
-	ldr	$t3, [$ctx,#$Doff+$hi]
+	str	$t3, [$ctx,
+	ldr	$Alo,[sp,
+	ldr	$Ahi,[sp,
+	ldr	$Tlo,[sp,
+	ldr	$Thi,[sp,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
 	adds	$t0,$Alo,$t0
-	str	$t0, [$ctx,#$Coff+$lo]
+	str	$t0, [$ctx,
 	adc	$t1,$Ahi,$t1
-	str	$t1, [$ctx,#$Coff+$hi]
+	str	$t1, [$ctx,
 	adds	$t2,$Tlo,$t2
-	str	$t2, [$ctx,#$Doff+$lo]
+	str	$t2, [$ctx,
 	adc	$t3,$Thi,$t3
-	str	$t3, [$ctx,#$Doff+$hi]
-
-	ldr	$Tlo,[sp,#$Foff+0]
-	ldr	$Thi,[sp,#$Foff+4]
-	ldr	$t0, [$ctx,#$Eoff+$lo]
-	ldr	$t1, [$ctx,#$Eoff+$hi]
-	ldr	$t2, [$ctx,#$Foff+$lo]
-	ldr	$t3, [$ctx,#$Foff+$hi]
+	str	$t3, [$ctx,
+	ldr	$Tlo,[sp,
+	ldr	$Thi,[sp,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
 	adds	$Elo,$Elo,$t0
-	str	$Elo,[$ctx,#$Eoff+$lo]
+	str	$Elo,[$ctx,
 	adc	$Ehi,$Ehi,$t1
-	str	$Ehi,[$ctx,#$Eoff+$hi]
+	str	$Ehi,[$ctx,
 	adds	$t2,$Tlo,$t2
-	str	$t2, [$ctx,#$Foff+$lo]
+	str	$t2, [$ctx,
 	adc	$t3,$Thi,$t3
-	str	$t3, [$ctx,#$Foff+$hi]
-
-	ldr	$Alo,[sp,#$Goff+0]
-	ldr	$Ahi,[sp,#$Goff+4]
-	ldr	$Tlo,[sp,#$Hoff+0]
-	ldr	$Thi,[sp,#$Hoff+4]
-	ldr	$t0, [$ctx,#$Goff+$lo]
-	ldr	$t1, [$ctx,#$Goff+$hi]
-	ldr	$t2, [$ctx,#$Hoff+$lo]
-	ldr	$t3, [$ctx,#$Hoff+$hi]
+	str	$t3, [$ctx,
+	ldr	$Alo,[sp,
+	ldr	$Ahi,[sp,
+	ldr	$Tlo,[sp,
+	ldr	$Thi,[sp,
+	ldr	$t0, [$ctx,
+	ldr	$t1, [$ctx,
+	ldr	$t2, [$ctx,
+	ldr	$t3, [$ctx,
 	adds	$t0,$Alo,$t0
-	str	$t0, [$ctx,#$Goff+$lo]
+	str	$t0, [$ctx,
 	adc	$t1,$Ahi,$t1
-	str	$t1, [$ctx,#$Goff+$hi]
+	str	$t1, [$ctx,
 	adds	$t2,$Tlo,$t2
-	str	$t2, [$ctx,#$Hoff+$lo]
+	str	$t2, [$ctx,
 	adc	$t3,$Thi,$t3
-	str	$t3, [$ctx,#$Hoff+$hi]
-
-	add	sp,sp,#640
-	sub	$Ktbl,$Ktbl,#640
-
+	str	$t3, [$ctx,
+	add	sp,sp,
+	sub	$Ktbl,$Ktbl,
 	teq	$inp,$len
 	bne	.Loop
-
-	add	sp,sp,#8*9		@ destroy frame
-#if __ARM_ARCH__>=5
+	add	sp,sp,
 	ldmia	sp!,{r4-r12,pc}
-#else
 	ldmia	sp!,{r4-r12,lr}
-	tst	lr,#1
+	tst	lr,
 	moveq	pc,lr			@ be binary compatible with V4, yet
 	bx	lr			@ interoperable with Thumb ISA:-)
-#endif
 .size	sha512_block_data_order,.-sha512_block_data_order
 ___
-
 {
 my @Sigma0=(28,34,39);
 my @Sigma1=(14,18,41);
 my @sigma0=(1, 8, 7);
 my @sigma1=(19,61,6);
-
 my $Ktbl="r3";
-my $cnt="r12";	# volatile register known as ip, intra-procedure-call scratch
-
+my $cnt="r12";	
 my @X=map("d$_",(0..15));
 my @V=($A,$B,$C,$D,$E,$F,$G,$H)=map("d$_",(16..23));
-
 sub NEON_00_15() {
 my $i=shift;
 my ($a,$b,$c,$d,$e,$f,$g,$h)=@_;
-my ($t0,$t1,$t2,$T1,$K,$Ch,$Maj)=map("d$_",(24..31));	# temps
-
+my ($t0,$t1,$t2,$T1,$K,$Ch,$Maj)=map("d$_",(24..31));	
 $code.=<<___ if ($i<16 || $i&1);
-	vshr.u64	$t0,$e,#@Sigma1[0]	@ $i
-#if $i<16
+	vshr.u64	$t0,$e,
 	vld1.64		{@X[$i%16]},[$inp]!	@ handles unaligned
-#endif
-	vshr.u64	$t1,$e,#@Sigma1[1]
-#if $i>0
+	vshr.u64	$t1,$e,
 	 vadd.i64	$a,$Maj			@ h+=Maj from the past
-#endif
-	vshr.u64	$t2,$e,#@Sigma1[2]
+	vshr.u64	$t2,$e,
 ___
 $code.=<<___;
 	vld1.64		{$K},[$Ktbl,:64]!	@ K[i++]
-	vsli.64		$t0,$e,#`64-@Sigma1[0]`
-	vsli.64		$t1,$e,#`64-@Sigma1[1]`
+	vsli.64		$t0,$e,
+	vsli.64		$t1,$e,
 	vmov		$Ch,$e
-	vsli.64		$t2,$e,#`64-@Sigma1[2]`
-#if $i<16 && defined(__ARMEL__)
+	vsli.64		$t2,$e,
 	vrev64.8	@X[$i],@X[$i]
-#endif
 	veor		$t1,$t0
 	vbsl		$Ch,$f,$g		@ Ch(e,f,g)
-	vshr.u64	$t0,$a,#@Sigma0[0]
+	vshr.u64	$t0,$a,
 	veor		$t2,$t1			@ Sigma1(e)
 	vadd.i64	$T1,$Ch,$h
-	vshr.u64	$t1,$a,#@Sigma0[1]
-	vsli.64		$t0,$a,#`64-@Sigma0[0]`
+	vshr.u64	$t1,$a,
+	vsli.64		$t0,$a,
 	vadd.i64	$T1,$t2
-	vshr.u64	$t2,$a,#@Sigma0[2]
+	vshr.u64	$t2,$a,
 	vadd.i64	$K,@X[$i%16]
-	vsli.64		$t1,$a,#`64-@Sigma0[1]`
+	vsli.64		$t1,$a,
 	veor		$Maj,$a,$b
-	vsli.64		$t2,$a,#`64-@Sigma0[2]`
+	vsli.64		$t2,$a,
 	veor		$h,$t0,$t1
 	vadd.i64	$T1,$K
 	vbsl		$Maj,$c,$b		@ Maj(a,b,c)
@@ -548,58 +409,51 @@ $code.=<<___;
 	@ vadd.i64	$h,$Maj
 ___
 }
-
 sub NEON_16_79() {
 my $i=shift;
-
 if ($i&1)	{ &NEON_00_15($i,@_); return; }
-
-# 2x-vectorized, therefore runs every 2nd round
-my @X=map("q$_",(0..7));			# view @X as 128-bit vector
-my ($t0,$t1,$s0,$s1) = map("q$_",(12..15));	# temps
-my ($d0,$d1,$d2) = map("d$_",(24..26));		# temps from NEON_00_15
-my $e=@_[4];					# $e from NEON_00_15
+my @X=map("q$_",(0..7));			
+my ($t0,$t1,$s0,$s1) = map("q$_",(12..15));	
+my ($d0,$d1,$d2) = map("d$_",(24..26));		
+my $e=@_[4];					
 $i /= 2;
 $code.=<<___;
-	vshr.u64	$t0,@X[($i+7)%8],#@sigma1[0]
-	vshr.u64	$t1,@X[($i+7)%8],#@sigma1[1]
+	vshr.u64	$t0,@X[($i+7)%8],
+	vshr.u64	$t1,@X[($i+7)%8],
 	 vadd.i64	@_[0],d30			@ h+=Maj from the past
-	vshr.u64	$s1,@X[($i+7)%8],#@sigma1[2]
-	vsli.64		$t0,@X[($i+7)%8],#`64-@sigma1[0]`
-	vext.8		$s0,@X[$i%8],@X[($i+1)%8],#8	@ X[i+1]
-	vsli.64		$t1,@X[($i+7)%8],#`64-@sigma1[1]`
+	vshr.u64	$s1,@X[($i+7)%8],
+	vsli.64		$t0,@X[($i+7)%8],
+	vext.8		$s0,@X[$i%8],@X[($i+1)%8],
+	vsli.64		$t1,@X[($i+7)%8],
 	veor		$s1,$t0
-	vshr.u64	$t0,$s0,#@sigma0[0]
+	vshr.u64	$t0,$s0,
 	veor		$s1,$t1				@ sigma1(X[i+14])
-	vshr.u64	$t1,$s0,#@sigma0[1]
+	vshr.u64	$t1,$s0,
 	vadd.i64	@X[$i%8],$s1
-	vshr.u64	$s1,$s0,#@sigma0[2]
-	vsli.64		$t0,$s0,#`64-@sigma0[0]`
-	vsli.64		$t1,$s0,#`64-@sigma0[1]`
-	vext.8		$s0,@X[($i+4)%8],@X[($i+5)%8],#8	@ X[i+9]
+	vshr.u64	$s1,$s0,
+	vsli.64		$t0,$s0,
+	vsli.64		$t1,$s0,
+	vext.8		$s0,@X[($i+4)%8],@X[($i+5)%8],
 	veor		$s1,$t0
-	vshr.u64	$d0,$e,#@Sigma1[0]		@ from NEON_00_15
+	vshr.u64	$d0,$e,
 	vadd.i64	@X[$i%8],$s0
-	vshr.u64	$d1,$e,#@Sigma1[1]		@ from NEON_00_15
+	vshr.u64	$d1,$e,
 	veor		$s1,$t1				@ sigma0(X[i+1])
-	vshr.u64	$d2,$e,#@Sigma1[2]		@ from NEON_00_15
+	vshr.u64	$d2,$e,
 	vadd.i64	@X[$i%8],$s1
 ___
 	&NEON_00_15(2*$i,@_);
 }
-
 $code.=<<___;
-#if __ARM_MAX_ARCH__>=7
 .arch	armv7-a
 .fpu	neon
-
 .global	sha512_block_data_order_neon
 .type	sha512_block_data_order_neon,%function
 .align	4
 sha512_block_data_order_neon:
 .LNEON:
-	dmb				@ errata #451034 on early Cortex A8
-	add	$len,$inp,$len,lsl#7	@ len to point at the end of inp
+	dmb				@ errata 
+	add	$len,$inp,$len,lsl
 	VFP_ABI_PUSH
 	adr	$Ktbl,.Lsha512_block_data_order
 	sub	$Ktbl,$Ktbl,.Lsha512_block_data_order-K512
@@ -608,14 +462,13 @@ sha512_block_data_order_neon:
 ___
 for($i=0;$i<16;$i++)	{ &NEON_00_15($i,@V); unshift(@V,pop(@V)); }
 $code.=<<___;
-	mov		$cnt,#4
+	mov		$cnt,
 .L16_79_neon:
-	subs		$cnt,#1
+	subs		$cnt,
 ___
 for(;$i<32;$i++)	{ &NEON_16_79($i,@V); unshift(@V,pop(@V)); }
 $code.=<<___;
 	bne		.L16_79_neon
-
 	 vadd.i64	$A,d30		@ h+=Maj from the past
 	vldmia		$ctx,{d24-d31}	@ load context to temp
 	vadd.i64	q8,q12		@ vectorized accumulate
@@ -624,34 +477,27 @@ $code.=<<___;
 	vadd.i64	q11,q15
 	vstmia		$ctx,{$A-$H}	@ save context
 	teq		$inp,$len
-	sub		$Ktbl,#640	@ rewind K512
+	sub		$Ktbl,
 	bne		.Loop_neon
-
 	VFP_ABI_POP
 	ret				@ bx lr
 .size	sha512_block_data_order_neon,.-sha512_block_data_order_neon
-#endif
 ___
 }
 $code.=<<___;
 .asciz	"SHA512 block transform for ARMv4/NEON, CRYPTOGAMS by <appro\@openssl.org>"
 .align	2
-#if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
 .comm	OPENSSL_armcap_P,4,4
-#endif
 ___
-
 $code =~ s/\`([^\`]*)\`/eval $1/gem;
-$code =~ s/\bbx\s+lr\b/.word\t0xe12fff1e/gm;	# make it possible to compile with -march=armv4
+$code =~ s/\bbx\s+lr\b/.word\t0xe12fff1e/gm;	
 $code =~ s/\bret\b/bx	lr/gm;
-
 open SELF,$0;
 while(<SELF>) {
-	next if (/^#!/);
-	last if (!s/^#/@/ and !/^$/);
+	next if (/^
+	last if (!s/^
 	print;
 }
 close SELF;
-
 print $code;
-close STDOUT; # enforce flush
+close STDOUT; 

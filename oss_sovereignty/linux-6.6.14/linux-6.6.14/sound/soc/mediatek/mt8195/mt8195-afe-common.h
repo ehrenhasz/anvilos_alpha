@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-afe-common.h  --  Mediatek 8195 audio driver definitions
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
-
 #ifndef _MT_8195_AFE_COMMON_H_
 #define _MT_8195_AFE_COMMON_H_
-
 #include <sound/soc.h>
 #include <linux/list.h>
 #include <linux/regmap.h>
 #include "../common/mtk-base-afe.h"
-
 enum {
 	MT8195_DAI_START,
 	MT8195_AFE_MEMIF_START = MT8195_DAI_START,
@@ -57,14 +46,12 @@ enum {
 	MT8195_DAI_END = MT8195_AFE_IO_END,
 	MT8195_DAI_NUM = (MT8195_DAI_END - MT8195_DAI_START),
 };
-
 enum {
 	MT8195_TOP_CG_A1SYS_TIMING,
 	MT8195_TOP_CG_A2SYS_TIMING,
 	MT8195_TOP_CG_26M_TIMING,
 	MT8195_TOP_CG_NUM,
 };
-
 enum {
 	MT8195_AFE_IRQ_1,
 	MT8195_AFE_IRQ_2,
@@ -90,7 +77,6 @@ enum {
 	MT8195_AFE_IRQ_28,
 	MT8195_AFE_IRQ_NUM,
 };
-
 enum {
 	MT8195_ETDM_OUT1_1X_EN = 9,
 	MT8195_ETDM_OUT2_1X_EN = 10,
@@ -100,18 +86,15 @@ enum {
 	MT8195_ETDM_IN1_NX_EN = 25,
 	MT8195_ETDM_IN2_NX_EN = 26,
 };
-
 enum {
 	MT8195_MTKAIF_MISO_0,
 	MT8195_MTKAIF_MISO_1,
 	MT8195_MTKAIF_MISO_2,
 	MT8195_MTKAIF_MISO_NUM,
 };
-
 struct mtk_dai_memif_irq_priv {
 	unsigned int asys_timing_sel;
 };
-
 struct mtkaif_param {
 	bool mtkaif_calibration_ok;
 	int mtkaif_chosen_phase[MT8195_MTKAIF_MISO_NUM];
@@ -119,9 +102,7 @@ struct mtkaif_param {
 	int mtkaif_dmic_on;
 	int mtkaif_adda6_only;
 };
-
 struct clk;
-
 struct mt8195_afe_private {
 	struct clk **clk;
 	struct clk_lookup **lookup;
@@ -132,20 +113,15 @@ struct mt8195_afe_private {
 #endif
 	int afe_on_ref_cnt;
 	int top_cg_ref_cnt[MT8195_TOP_CG_NUM];
-	spinlock_t afe_ctrl_lock;	/* Lock for afe control */
+	spinlock_t afe_ctrl_lock;	 
 	struct mtk_dai_memif_irq_priv irq_priv[MT8195_AFE_IRQ_NUM];
 	struct mtkaif_param mtkaif_params;
-
-	/* dai */
 	void *dai_priv[MT8195_DAI_NUM];
 };
-
 int mt8195_afe_fs_timing(unsigned int rate);
-/* dai register */
 int mt8195_dai_adda_register(struct mtk_base_afe *afe);
 int mt8195_dai_etdm_register(struct mtk_base_afe *afe);
 int mt8195_dai_pcm_register(struct mtk_base_afe *afe);
-
 #define MT8195_SOC_ENUM_EXT(xname, xenum, xhandler_get, xhandler_put, id) \
 { \
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
@@ -154,5 +130,4 @@ int mt8195_dai_pcm_register(struct mtk_base_afe *afe);
 	.device = id, \
 	.private_value = (unsigned long)&xenum, \
 }
-
 #endif

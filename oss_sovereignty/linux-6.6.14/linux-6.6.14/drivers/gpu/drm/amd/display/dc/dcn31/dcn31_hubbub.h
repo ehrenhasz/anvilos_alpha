@@ -1,33 +1,6 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_HUBBUB_DCN31_H__
 #define __DC_HUBBUB_DCN31_H__
-
 #include "dcn21/dcn21_hubbub.h"
-
 #define HUBBUB_REG_LIST_DCN31(id)\
 	HUBBUB_REG_LIST_DCN30(id),\
 	SR(DCHVM_CTRL0),\
@@ -54,7 +27,6 @@
 	SR(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_C),\
 	SR(DCHUBBUB_ARB_ALLOW_SR_ENTER_WATERMARK_Z8_D),\
 	SR(DCHUBBUB_ARB_ALLOW_SR_EXIT_WATERMARK_Z8_D)
-
 #define HUBBUB_MASK_SH_LIST_DCN31(mask_sh)\
 	HUBBUB_MASK_SH_LIST_DCN_COMMON(mask_sh), \
 	HUBBUB_MASK_SH_LIST_STUTTER(mask_sh), \
@@ -129,12 +101,9 @@
 	HUBBUB_SF(DCHUBBUB_CLOCK_CNTL, DCFCLK_R_DCHUBBUB_GATE_DIS, mask_sh),\
 	HUBBUB_SF(DCHUBBUB_SDPIF_CFG0, SDPIF_PORT_CONTROL, mask_sh),\
 	HUBBUB_SF(DCHUBBUB_MEM_PWR_MODE_CTRL, DET_MEM_PWR_LS_MODE, mask_sh)
-
 int hubbub31_init_dchub_sys_ctx(struct hubbub *hubbub,
 		struct dcn_hubbub_phys_addr_config *pa_config);
-
 void hubbub31_init(struct hubbub *hubbub);
-
 void hubbub31_construct(struct dcn20_hubbub *hubbub3,
 	struct dc_context *ctx,
 	const struct dcn_hubbub_registers *hubbub_regs,
@@ -143,5 +112,4 @@ void hubbub31_construct(struct dcn20_hubbub *hubbub3,
 	int det_size_kb,
 	int pixel_chunk_size_kb,
 	int config_return_buffer_size_kb);
-
 #endif

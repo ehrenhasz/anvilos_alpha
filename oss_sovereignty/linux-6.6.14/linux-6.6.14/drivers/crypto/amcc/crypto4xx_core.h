@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMCC SoC PPC4xx Crypto Driver
- *
- * Copyright (c) 2008 Applied Micro Circuits Corporation.
- * All rights reserved. James Hsiao <jhsiao@amcc.com>
- *
- * This is the header file for AMCC Crypto offload Linux device driver for
- * use with Linux CryptoAPI.
-
- */
-
 #ifndef __CRYPTO4XX_CORE_H__
 #define __CRYPTO4XX_CORE_H__
-
 #include <linux/ratelimit.h>
 #include <linux/mutex.h>
 #include <linux/scatterlist.h>
@@ -22,14 +9,12 @@
 #include <crypto/internal/skcipher.h>
 #include "crypto4xx_reg_def.h"
 #include "crypto4xx_sa.h"
-
 #define PPC460SX_SDR0_SRST                      0x201
 #define PPC405EX_SDR0_SRST                      0x200
 #define PPC460EX_SDR0_SRST                      0x201
 #define PPC460EX_CE_RESET                       0x08000000
 #define PPC460SX_CE_RESET                       0x20000000
 #define PPC405EX_CE_RESET                       0x00000008
-
 #define CRYPTO4XX_CRYPTO_PRIORITY		300
 #define PPC4XX_NUM_PD				256
 #define PPC4XX_LAST_PD				(PPC4XX_NUM_PD - 1)
@@ -38,54 +23,40 @@
 #define PPC4XX_NUM_SD				256
 #define PPC4XX_LAST_SD				(PPC4XX_NUM_SD - 1)
 #define PPC4XX_SD_BUFFER_SIZE			2048
-
 #define PD_ENTRY_BUSY				BIT(1)
 #define PD_ENTRY_INUSE				BIT(0)
 #define PD_ENTRY_FREE				0
 #define ERING_WAS_FULL				0xffffffff
-
 struct crypto4xx_device;
-
 union shadow_sa_buf {
 	struct dynamic_sa_ctl sa;
-
-	/* alloc 256 bytes which is enough for any kind of dynamic sa */
 	u8 buf[256];
 } __packed;
-
 struct pd_uinfo {
 	struct crypto4xx_device *dev;
 	u32   state;
-	u32 first_gd;		/* first gather discriptor
-				used by this packet */
-	u32 num_gd;             /* number of gather discriptor
-				used by this packet */
-	u32 first_sd;		/* first scatter discriptor
-				used by this packet */
-	u32 num_sd;		/* number of scatter discriptors
-				used by this packet */
-	struct dynamic_sa_ctl *sa_va;	/* shadow sa */
-	struct sa_state_record *sr_va;	/* state record for shadow sa */
+	u32 first_gd;		 
+	u32 num_gd;              
+	u32 first_sd;		 
+	u32 num_sd;		 
+	struct dynamic_sa_ctl *sa_va;	 
+	struct sa_state_record *sr_va;	 
 	u32 sr_pa;
 	struct scatterlist *dest_va;
-	struct crypto_async_request *async_req; 	/* base crypto request
-							for this packet */
+	struct crypto_async_request *async_req; 	 
 };
-
 struct crypto4xx_device {
 	struct crypto4xx_core_device *core_dev;
 	void __iomem *ce_base;
 	void __iomem *trng_base;
-
-	struct ce_pd *pdr;	/* base address of packet descriptor ring */
-	dma_addr_t pdr_pa;	/* physical address of pdr_base_register */
-	struct ce_gd *gdr;	/* gather descriptor ring */
-	dma_addr_t gdr_pa;	/* physical address of gdr_base_register */
-	struct ce_sd *sdr;	/* scatter descriptor ring */
-	dma_addr_t sdr_pa;	/* physical address of sdr_base_register */
+	struct ce_pd *pdr;	 
+	dma_addr_t pdr_pa;	 
+	struct ce_gd *gdr;	 
+	dma_addr_t gdr_pa;	 
+	struct ce_sd *sdr;	 
+	dma_addr_t sdr_pa;	 
 	void *scatter_buffer_va;
 	dma_addr_t scatter_buffer_pa;
-
 	union shadow_sa_buf *shadow_sa_pool;
 	dma_addr_t shadow_sa_pool_pa;
 	struct sa_state_record *shadow_sr_pool;
@@ -97,12 +68,10 @@ struct crypto4xx_device {
 	u32 sdr_tail;
 	u32 sdr_head;
 	struct pd_uinfo *pdr_uinfo;
-	struct list_head alg_list;	/* List of algorithm supported
-					by this device */
+	struct list_head alg_list;	 
 	struct ratelimit_state aead_ratelimit;
 	bool is_revb;
 };
-
 struct crypto4xx_core_device {
 	struct device *device;
 	struct platform_device *ofdev;
@@ -114,7 +83,6 @@ struct crypto4xx_core_device {
 	spinlock_t lock;
 	struct mutex rng_lock;
 };
-
 struct crypto4xx_ctx {
 	struct crypto4xx_device *dev;
 	struct dynamic_sa_ctl *sa_in;
@@ -126,11 +94,9 @@ struct crypto4xx_ctx {
 		struct crypto_aead *aead;
 	} sw_cipher;
 };
-
 struct crypto4xx_aead_reqctx {
 	struct scatterlist dst[2];
 };
-
 struct crypto4xx_alg_common {
 	u32 type;
 	union {
@@ -140,13 +106,11 @@ struct crypto4xx_alg_common {
 		struct rng_alg rng;
 	} u;
 };
-
 struct crypto4xx_alg {
 	struct list_head  entry;
 	struct crypto4xx_alg_common alg;
 	struct crypto4xx_device *dev;
 };
-
 int crypto4xx_alloc_sa(struct crypto4xx_ctx *ctx, u32 size);
 void crypto4xx_free_sa(struct crypto4xx_ctx *ctx);
 void crypto4xx_free_ctx(struct crypto4xx_ctx *ctx);
@@ -187,19 +151,13 @@ int crypto4xx_hash_digest(struct ahash_request *req);
 int crypto4xx_hash_final(struct ahash_request *req);
 int crypto4xx_hash_update(struct ahash_request *req);
 int crypto4xx_hash_init(struct ahash_request *req);
-
-/*
- * Note: Only use this function to copy items that is word aligned.
- */
 static inline void crypto4xx_memcpy_swab32(u32 *dst, const void *buf,
 					   size_t len)
 {
 	for (; len >= 4; buf += 4, len -= 4)
 		*dst++ = __swab32p((u32 *) buf);
-
 	if (len) {
 		const u8 *tmp = (u8 *)buf;
-
 		switch (len) {
 		case 3:
 			*dst = (tmp[2] << 16) |
@@ -218,19 +176,16 @@ static inline void crypto4xx_memcpy_swab32(u32 *dst, const void *buf,
 		}
 	}
 }
-
 static inline void crypto4xx_memcpy_from_le32(u32 *dst, const void *buf,
 					      size_t len)
 {
 	crypto4xx_memcpy_swab32(dst, buf, len);
 }
-
 static inline void crypto4xx_memcpy_to_le32(__le32 *dst, const void *buf,
 					    size_t len)
 {
 	crypto4xx_memcpy_swab32((u32 *)dst, buf, len);
 }
-
 int crypto4xx_setauthsize_aead(struct crypto_aead *ciper,
 			       unsigned int authsize);
 int crypto4xx_setkey_aes_ccm(struct crypto_aead *cipher,
@@ -241,5 +196,4 @@ int crypto4xx_setkey_aes_gcm(struct crypto_aead *cipher,
 			     const u8 *key, unsigned int keylen);
 int crypto4xx_encrypt_aes_gcm(struct aead_request *req);
 int crypto4xx_decrypt_aes_gcm(struct aead_request *req);
-
 #endif

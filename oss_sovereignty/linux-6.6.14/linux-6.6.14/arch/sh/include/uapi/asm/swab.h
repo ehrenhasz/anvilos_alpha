@@ -1,15 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef __ASM_SH_SWAB_H
 #define __ASM_SH_SWAB_H
-
-/*
- * Copyright (C) 1999  Niibe Yutaka
- * Copyright (C) 2000, 2001  Paolo Alberelli
- */
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <asm-generic/swab.h>
-
 static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
 {
 	__asm__(
@@ -18,22 +11,18 @@ static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
 		"swap.b		%0, %0"
 		: "=r" (x)
 		: "r" (x));
-
 	return x;
 }
 #define __arch_swab32 __arch_swab32
-
 static inline __attribute_const__ __u16 __arch_swab16(__u16 x)
 {
 	__asm__(
 		"swap.b		%1, %0"
 		: "=r" (x)
 		:  "r" (x));
-
 	return x;
 }
 #define __arch_swab16 __arch_swab16
-
 static inline __u64 __arch_swab64(__u64 val)
 {
 	union {
@@ -46,5 +35,4 @@ static inline __u64 __arch_swab64(__u64 val)
 	return w.u;
 }
 #define __arch_swab64 __arch_swab64
-
-#endif /* __ASM_SH_SWAB_H */
+#endif  

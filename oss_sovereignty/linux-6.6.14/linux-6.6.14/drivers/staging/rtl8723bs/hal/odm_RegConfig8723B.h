@@ -1,38 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
 #ifndef __INC_ODM_REGCONFIG_H_8723B
 #define __INC_ODM_REGCONFIG_H_8723B
-
 void odm_ConfigRFReg_8723B(struct dm_odm_t *pDM_Odm,
 			   u32 Addr,
 			   u32 Data,
 			   enum rf_path RF_PATH,
 			   u32 RegAddr
 );
-
 void odm_ConfigRF_RadioA_8723B(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data);
-
 void odm_ConfigMAC_8723B(struct dm_odm_t *pDM_Odm, u32 Addr, u8 Data);
-
 void odm_ConfigBB_AGC_8723B(struct dm_odm_t *pDM_Odm,
 			    u32 Addr,
 			    u32 Bitmask,
 			    u32 Data
 );
-
 void odm_ConfigBB_PHY_REG_PG_8723B(struct dm_odm_t *pDM_Odm, u32 RfPath, u32 Addr,
 				   u32 Bitmask, u32 Data);
-
 void odm_ConfigBB_PHY_8723B(struct dm_odm_t *pDM_Odm,
 			    u32 Addr,
 			    u32 Bitmask,
 			    u32 Data
 );
-
 void odm_ConfigBB_TXPWR_LMT_8723B(struct dm_odm_t *pDM_Odm,
 				  u8 *Regulation,
 				  u8 *Bandwidth,
@@ -41,5 +28,4 @@ void odm_ConfigBB_TXPWR_LMT_8723B(struct dm_odm_t *pDM_Odm,
 				  u8 *Channel,
 				  u8 *PowerLimit
 );
-
 #endif

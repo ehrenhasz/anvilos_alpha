@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Qualcomm SC8180x interconnect IDs
- *
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_SC8180X_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_SC8180X_H
-
 #define MASTER_A1NOC_CFG			0
 #define MASTER_UFS_CARD				1
 #define MASTER_UFS_GEN4				2
@@ -17,7 +9,6 @@
 #define MASTER_USB3_2				6
 #define A1NOC_SNOC_SLV				7
 #define SLAVE_SERVICE_A1NOC			8
-
 #define MASTER_A2NOC_CFG			0
 #define MASTER_QDSS_BAM				1
 #define MASTER_QSPI_0				2
@@ -39,15 +30,12 @@
 #define A2NOC_SNOC_SLV				18
 #define SLAVE_ANOC_PCIE_GEM_NOC			19
 #define SLAVE_SERVICE_A2NOC			20
-
 #define MASTER_CAMNOC_HF0_UNCOMP		0
 #define MASTER_CAMNOC_HF1_UNCOMP		1
 #define MASTER_CAMNOC_SF_UNCOMP			2
 #define SLAVE_CAMNOC_UNCOMP			3
-
 #define MASTER_NPU				0
 #define SLAVE_CDSP_MEM_NOC			1
-
 #define SNOC_CNOC_MAS				0
 #define SLAVE_A1NOC_CFG				1
 #define SLAVE_A2NOC_CFG				2
@@ -105,11 +93,9 @@
 #define SLAVE_VENUS_CFG				54
 #define SLAVE_VSENSE_CTRL_CFG			55
 #define SLAVE_SERVICE_CNOC			56
-
 #define MASTER_CNOC_DC_NOC			0
 #define SLAVE_GEM_NOC_CFG			1
 #define SLAVE_LLCC_CFG				2
-
 #define MASTER_AMPSS_M0				0
 #define MASTER_GPU_TCU				1
 #define MASTER_SYS_TCU				2
@@ -128,10 +114,8 @@
 #define SLAVE_LLCC				15
 #define SLAVE_SERVICE_GEM_NOC			16
 #define SLAVE_SERVICE_GEM_NOC_1			17
-
 #define MASTER_LLCC				0
 #define SLAVE_EBI_CH0				1
-
 #define MASTER_CNOC_MNOC_CFG			0
 #define MASTER_CAMNOC_HF0			1
 #define MASTER_CAMNOC_HF1			2
@@ -145,7 +129,6 @@
 #define SLAVE_MNOC_SF_MEM_NOC			10
 #define SLAVE_MNOC_HF_MEM_NOC			11
 #define SLAVE_SERVICE_MNOC			12
-
 #define MASTER_SNOC_CFG				0
 #define A1NOC_SNOC_MAS				1
 #define A2NOC_SNOC_MAS				2
@@ -165,25 +148,20 @@
 #define SLAVE_PCIE_3				16
 #define SLAVE_QDSS_STM				17
 #define SLAVE_TCU				18
-
 #define MASTER_MNOC_HF_MEM_NOC_DISPLAY		0
 #define MASTER_MNOC_SF_MEM_NOC_DISPLAY		1
 #define SLAVE_LLCC_DISPLAY			2
-
 #define MASTER_LLCC_DISPLAY			0
 #define SLAVE_EBI_CH0_DISPLAY			1
-
 #define MASTER_MDP_PORT0_DISPLAY		0
 #define MASTER_MDP_PORT1_DISPLAY		1
 #define MASTER_ROTATOR_DISPLAY			2
 #define SLAVE_MNOC_SF_MEM_NOC_DISPLAY		3
 #define SLAVE_MNOC_HF_MEM_NOC_DISPLAY		4
-
 #define MASTER_QUP_CORE_0			0
 #define MASTER_QUP_CORE_1			1
 #define MASTER_QUP_CORE_2			2
 #define SLAVE_QUP_CORE_0			3
 #define SLAVE_QUP_CORE_1			4
 #define SLAVE_QUP_CORE_2			5
-
 #endif

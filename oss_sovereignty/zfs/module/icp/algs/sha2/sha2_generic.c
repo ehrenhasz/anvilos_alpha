@@ -1,44 +1,10 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
-/*
- * Based on public domain code in cppcrypto 0.10.
- * Copyright (c) 2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
-
 #include <sys/zfs_context.h>
 #include <sys/zfs_impl.h>
 #include <sys/sha2.h>
-
 #include <sha2/sha2_impl.h>
-
-/*
- * On i386, gcc brings this for sha512_generic():
- * error: the frame size of 1040 bytes is larger than 1024
- */
 #if defined(__GNUC__) && defined(_ILP32)
 #pragma GCC diagnostic ignored "-Wframe-larger-than="
 #endif
-
-/* SHA256 */
 static const uint32_t SHA256_K[64] = {
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 	0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -57,40 +23,32 @@ static const uint32_t SHA256_K[64] = {
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
-
 #define	Ch(x, y, z)	((z) ^ ((x) & ((y) ^ (z))))
 #define	Maj(x, y, z)	(((y) & (z)) | (((y) | (z)) & (x)))
-
 #define	rotr32(x, n)	(((x) >> n) | ((x) << (32 - n)))
 #define	sum0(x)		(rotr32((x),  2) ^ rotr32((x), 13) ^ rotr32((x), 22))
 #define	sum1(x)		(rotr32((x),  6) ^ rotr32((x), 11) ^ rotr32((x), 25))
 #define	sigma0(x)	(rotr32((x),  7) ^ rotr32((x), 18) ^ ((x) >> 3))
 #define	sigma1(x)	(rotr32((x), 17) ^ rotr32((x), 19) ^ ((x) >> 10))
-
 #define	WU(j) (W[j & 15] += sigma1(W[(j + 14) & 15]) \
 	+ W[(j + 9) & 15] + sigma0(W[(j + 1) & 15]))
-
 #define	COMPRESS(i, j, K) \
 	T1 = h + sum1(e) + Ch(e, f, g) + K[i + j] + (i? WU(j): W[j]); \
 	T2 = sum0(a) + Maj(a, b, c); \
 	h = g, g = f, f = e, e = d + T1; \
 	d = c, c = b, b = a, a = T1 + T2;
-
 static void sha256_generic(uint32_t state[8], const void *data, size_t num_blks)
 {
 	uint64_t blk;
-
 	for (blk = 0; blk < num_blks; blk++) {
 		uint32_t W[16];
 		uint32_t a, b, c, d, e, f, g, h;
 		uint32_t T1, T2;
 		int i;
-
 		for (i = 0; i < 16; i++) {
 			W[i] = BE_32( \
 			    (((const uint32_t *)(data))[blk * 16 + i]));
 		}
-
 		a = state[0];
 		b = state[1];
 		c = state[2];
@@ -99,7 +57,6 @@ static void sha256_generic(uint32_t state[8], const void *data, size_t num_blks)
 		f = state[5];
 		g = state[6];
 		h = state[7];
-
 		for (i = 0; i <= 63; i += 16) {
 			COMPRESS(i, 0, SHA256_K);
 			COMPRESS(i, 1, SHA256_K);
@@ -118,7 +75,6 @@ static void sha256_generic(uint32_t state[8], const void *data, size_t num_blks)
 			COMPRESS(i, 14, SHA256_K);
 			COMPRESS(i, 15, SHA256_K);
 		}
-
 		state[0] += a;
 		state[1] += b;
 		state[2] += c;
@@ -129,19 +85,15 @@ static void sha256_generic(uint32_t state[8], const void *data, size_t num_blks)
 		state[7] += h;
 	}
 }
-
 #undef sum0
 #undef sum1
 #undef sigma0
 #undef sigma1
-
 #define	rotr64(x, n)	(((x) >> n) | ((x) << (64 - n)))
 #define	sum0(x)		(rotr64((x), 28) ^ rotr64((x), 34) ^ rotr64((x), 39))
 #define	sum1(x)		(rotr64((x), 14) ^ rotr64((x), 18) ^ rotr64((x), 41))
 #define	sigma0(x)	(rotr64((x),  1) ^ rotr64((x),  8) ^ ((x) >> 7))
 #define	sigma1(x)	(rotr64((x), 19) ^ rotr64((x), 61) ^ ((x) >> 6))
-
-/* SHA512 */
 static const uint64_t SHA512_K[80] = {
 	0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f,
 	0xe9b5dba58189dbbc, 0x3956c25bf348b538, 0x59f111f1b605d019,
@@ -171,22 +123,18 @@ static const uint64_t SHA512_K[80] = {
 	0x431d67c49c100d4c, 0x4cc5d4becb3e42b6, 0x597f299cfc657e2a,
 	0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
-
 static void sha512_generic(uint64_t state[8], const void *data, size_t num_blks)
 {
 	uint64_t blk;
-
 	for (blk = 0; blk < num_blks; blk++) {
 		uint64_t W[16];
 		uint64_t a, b, c, d, e, f, g, h;
 		uint64_t T1, T2;
 		int i;
-
 		for (i = 0; i < 16; i++) {
 			W[i] = BE_64( \
 			    (((const uint64_t *)(data))[blk * 16 + i]));
 		}
-
 		a = state[0];
 		b = state[1];
 		c = state[2];
@@ -195,7 +143,6 @@ static void sha512_generic(uint64_t state[8], const void *data, size_t num_blks)
 		f = state[5];
 		g = state[6];
 		h = state[7];
-
 		for (i = 0; i <= 79; i += 16) {
 			COMPRESS(i, 0, SHA512_K);
 			COMPRESS(i, 1, SHA512_K);
@@ -224,14 +171,12 @@ static void sha512_generic(uint64_t state[8], const void *data, size_t num_blks)
 		state[7] += h;
 	}
 }
-
 static void sha256_update(sha256_ctx *ctx, const uint8_t *data, size_t len)
 {
 	uint64_t pos = ctx->count[0];
 	uint64_t total = ctx->count[1];
 	uint8_t *m = ctx->wbuf;
 	const sha256_ops_t *ops = ctx->ops;
-
 	if (pos && pos + len >= 64) {
 		memcpy(m + pos, data, 64 - pos);
 		ops->transform(ctx->state, m, 1);
@@ -240,7 +185,6 @@ static void sha256_update(sha256_ctx *ctx, const uint8_t *data, size_t len)
 		data += 64 - pos;
 		pos = 0;
 	}
-
 	if (len >= 64) {
 		uint32_t blocks = len / 64;
 		uint32_t bytes = blocks * 64;
@@ -250,20 +194,17 @@ static void sha256_update(sha256_ctx *ctx, const uint8_t *data, size_t len)
 		data += bytes;
 	}
 	memcpy(m + pos, data, len);
-
 	pos += len;
 	total += len * 8;
 	ctx->count[0] = pos;
 	ctx->count[1] = total;
 }
-
 static void sha512_update(sha512_ctx *ctx, const uint8_t *data, size_t len)
 {
 	uint64_t pos = ctx->count[0];
 	uint64_t total = ctx->count[1];
 	uint8_t *m = ctx->wbuf;
 	const sha512_ops_t *ops = ctx->ops;
-
 	if (pos && pos + len >= 128) {
 		memcpy(m + pos, data, 128 - pos);
 		ops->transform(ctx->state, m, 1);
@@ -272,7 +213,6 @@ static void sha512_update(sha512_ctx *ctx, const uint8_t *data, size_t len)
 		data += 128 - pos;
 		pos = 0;
 	}
-
 	if (len >= 128) {
 		uint64_t blocks = len / 128;
 		uint64_t bytes = blocks * 128;
@@ -282,34 +222,29 @@ static void sha512_update(sha512_ctx *ctx, const uint8_t *data, size_t len)
 		data += bytes;
 	}
 	memcpy(m + pos, data, len);
-
 	pos += len;
 	total += len * 8;
 	ctx->count[0] = pos;
 	ctx->count[1] = total;
 }
-
 static void sha256_final(sha256_ctx *ctx, uint8_t *result, int bits)
 {
 	uint64_t mlen, pos = ctx->count[0];
 	uint8_t *m = ctx->wbuf;
 	uint32_t *R = (uint32_t *)result;
 	const sha256_ops_t *ops = ctx->ops;
-
 	m[pos++] = 0x80;
 	if (pos > 56) {
 		memset(m + pos, 0, 64 - pos);
 		ops->transform(ctx->state, m, 1);
 		pos = 0;
 	}
-
 	memset(m + pos, 0, 64 - pos);
 	mlen = BE_64(ctx->count[1]);
 	memcpy(m + (64 - 8), &mlen, 64 / 8);
 	ops->transform(ctx->state, m, 1);
-
 	switch (bits) {
-	case 224: /* 28 - unused currently /TR */
+	case 224:  
 		R[0] = BE_32(ctx->state[0]);
 		R[1] = BE_32(ctx->state[1]);
 		R[2] = BE_32(ctx->state[2]);
@@ -318,7 +253,7 @@ static void sha256_final(sha256_ctx *ctx, uint8_t *result, int bits)
 		R[5] = BE_32(ctx->state[5]);
 		R[6] = BE_32(ctx->state[6]);
 		break;
-	case 256: /* 32 */
+	case 256:  
 		R[0] = BE_32(ctx->state[0]);
 		R[1] = BE_32(ctx->state[1]);
 		R[2] = BE_32(ctx->state[2]);
@@ -329,48 +264,42 @@ static void sha256_final(sha256_ctx *ctx, uint8_t *result, int bits)
 		R[7] = BE_32(ctx->state[7]);
 		break;
 	}
-
 	memset(ctx, 0, sizeof (*ctx));
 }
-
 static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 {
 	uint64_t mlen, pos = ctx->count[0];
 	uint8_t *m = ctx->wbuf, *r;
 	uint64_t *R = (uint64_t *)result;
 	const sha512_ops_t *ops = ctx->ops;
-
 	m[pos++] = 0x80;
 	if (pos > 112) {
 		memset(m + pos, 0, 128 - pos);
 		ops->transform(ctx->state, m, 1);
 		pos = 0;
 	}
-
 	memset(m + pos, 0, 128 - pos);
 	mlen = BE_64(ctx->count[1]);
 	memcpy(m + (128 - 8), &mlen, 64 / 8);
 	ops->transform(ctx->state, m, 1);
-
 	switch (bits) {
-	case 224: /* 28 => 3,5 x 8 */
+	case 224:  
 		r = result + 24;
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
-		/* last 4 bytes are special here */
 		*r++ = (uint8_t)(ctx->state[3] >> 56);
 		*r++ = (uint8_t)(ctx->state[3] >> 48);
 		*r++ = (uint8_t)(ctx->state[3] >> 40);
 		*r++ = (uint8_t)(ctx->state[3] >> 32);
 		break;
-	case 256: /* 32 */
+	case 256:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
 		R[3] = BE_64(ctx->state[3]);
 		break;
-	case 384: /* 48 */
+	case 384:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
@@ -378,7 +307,7 @@ static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 		R[4] = BE_64(ctx->state[4]);
 		R[5] = BE_64(ctx->state[5]);
 		break;
-	case 512: /* 64 */
+	case 512:  
 		R[0] = BE_64(ctx->state[0]);
 		R[1] = BE_64(ctx->state[1]);
 		R[2] = BE_64(ctx->state[2]);
@@ -389,20 +318,15 @@ static void sha512_final(sha512_ctx *ctx, uint8_t *result, int bits)
 		R[7] = BE_64(ctx->state[7]);
 		break;
 	}
-
 	memset(ctx, 0, sizeof (*ctx));
 }
-
-/* SHA2 Init function */
 void
 SHA2Init(int algotype, SHA2_CTX *ctx)
 {
 	sha256_ctx *ctx256 = &ctx->sha256;
 	sha512_ctx *ctx512 = &ctx->sha512;
-
 	ASSERT3S(algotype, >=, SHA256_MECH_INFO_TYPE);
 	ASSERT3S(algotype, <=, SHA512_256_MECH_INFO_TYPE);
-
 	memset(ctx, 0, sizeof (*ctx));
 	ctx->algotype = algotype;
 	switch (ctx->algotype) {
@@ -478,17 +402,12 @@ SHA2Init(int algotype, SHA2_CTX *ctx)
 			break;
 	}
 }
-
-/* SHA2 Update function */
 void
 SHA2Update(SHA2_CTX *ctx, const void *data, size_t len)
 {
-	/* check for zero input length */
 	if (len == 0)
 		return;
-
 	ASSERT3P(data, !=, NULL);
-
 	switch (ctx->algotype) {
 		case SHA256_MECH_INFO_TYPE:
 		case SHA256_HMAC_MECH_INFO_TYPE:
@@ -513,8 +432,6 @@ SHA2Update(SHA2_CTX *ctx, const void *data, size_t len)
 			break;
 	}
 }
-
-/* SHA2Final function */
 void
 SHA2Final(void *digest, SHA2_CTX *ctx)
 {
@@ -542,19 +459,15 @@ SHA2Final(void *digest, SHA2_CTX *ctx)
 			break;
 	}
 }
-
-/* the generic implementation is always okay */
 static boolean_t sha2_is_supported(void)
 {
 	return (B_TRUE);
 }
-
 const sha256_ops_t sha256_generic_impl = {
 	.name = "generic",
 	.transform = sha256_generic,
 	.is_supported = sha2_is_supported
 };
-
 const sha512_ops_t sha512_generic_impl = {
 	.name = "generic",
 	.transform = sha512_generic,

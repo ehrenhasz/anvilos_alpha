@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _ATH11K_DEBUGFS_H_
 #define _ATH11K_DEBUGFS_H_
-
 #include "hal_tx.h"
-
 #define ATH11K_TX_POWER_MAX_VAL	70
 #define ATH11K_TX_POWER_MIN_VAL	0
-
-/* htt_dbg_ext_stats_type */
 enum ath11k_dbg_htt_ext_stats_type {
 	ATH11K_DBG_HTT_EXT_STATS_RESET                      =  0,
 	ATH11K_DBG_HTT_EXT_STATS_PDEV_TX                    =  1,
@@ -42,41 +33,32 @@ enum ath11k_dbg_htt_ext_stats_type {
 	ATH11K_DBG_HTT_EXT_STATS_PDEV_TX_RATE_TXBF_STATS    =  31,
 	ATH11K_DBG_HTT_EXT_STATS_TXBF_OFDMA		    =  32,
 	ATH11K_DBG_HTT_EXT_PHY_COUNTERS_AND_PHY_STATS	    =  37,
-
-	/* keep this last */
 	ATH11K_DBG_HTT_NUM_EXT_STATS,
 };
-
 #define ATH11K_DEBUG_DBR_ENTRIES_MAX 512
-
 enum ath11k_dbg_dbr_event {
 	ATH11K_DBG_DBR_EVENT_INVALID,
 	ATH11K_DBG_DBR_EVENT_RX,
 	ATH11K_DBG_DBR_EVENT_REPLENISH,
 	ATH11K_DBG_DBR_EVENT_MAX,
 };
-
 struct ath11k_dbg_dbr_entry {
 	u32 hp;
 	u32 tp;
 	u64 timestamp;
 	enum ath11k_dbg_dbr_event event;
 };
-
 struct ath11k_dbg_dbr_data {
-	/* protects ath11k_db_ring_debug data */
 	spinlock_t lock;
 	struct ath11k_dbg_dbr_entry *entries;
 	u32 dbr_debug_idx;
 	u32 num_ring_debug_entries;
 };
-
 struct ath11k_debug_dbr {
 	struct ath11k_dbg_dbr_data dbr_dbg_data;
 	struct dentry *dbr_debugfs;
 	bool dbr_debug_enabled;
 };
-
 struct debug_htt_stats_req {
 	bool done;
 	u8 pdev_id;
@@ -86,7 +68,6 @@ struct debug_htt_stats_req {
 	u32 buf_len;
 	u8 buf[];
 };
-
 struct ath_pktlog_hdr {
 	u16 flags;
 	u16 missed_cnt;
@@ -96,12 +77,9 @@ struct ath_pktlog_hdr {
 	u32 type_specific_data;
 	u8 payload[];
 };
-
 #define ATH11K_HTT_PEER_STATS_RESET BIT(16)
-
 #define ATH11K_HTT_STATS_BUF_SIZE (1024 * 512)
 #define ATH11K_FW_STATS_BUF_SIZE (1024 * 1024)
-
 enum ath11k_pktlog_filter {
 	ATH11K_PKTLOG_RX		= 0x000000001,
 	ATH11K_PKTLOG_TX		= 0x000000002,
@@ -111,12 +89,10 @@ enum ath11k_pktlog_filter {
 	ATH11K_PKTLOG_EVENT_SW		= 0x000000040,
 	ATH11K_PKTLOG_ANY		= 0x00000006f,
 };
-
 enum ath11k_pktlog_mode {
 	ATH11K_PKTLOG_MODE_LITE = 1,
 	ATH11K_PKTLOG_MODE_FULL = 2,
 };
-
 enum ath11k_pktlog_enum {
 	ATH11K_PKTLOG_TYPE_INVALID      = 0,
 	ATH11K_PKTLOG_TYPE_TX_CTRL      = 1,
@@ -131,13 +107,11 @@ enum ath11k_pktlog_enum {
 	ATH11K_PKTLOG_TYPE_PPDU_STATS   = 23,
 	ATH11K_PKTLOG_TYPE_LITE_RX      = 24,
 };
-
 enum ath11k_dbg_aggr_mode {
 	ATH11K_DBG_AGGR_MODE_AUTO,
 	ATH11K_DBG_AGGR_MODE_MANUAL,
 	ATH11K_DBG_AGGR_MODE_MAX,
 };
-
 enum fw_dbglog_wlan_module_id {
 	WLAN_MODULE_ID_MIN = 0,
 	WLAN_MODULE_INF = WLAN_MODULE_ID_MIN,
@@ -230,11 +204,9 @@ enum fw_dbglog_wlan_module_id {
 	WLAN_MODULE_MLO_MGR,
 	WLAN_MODULE_PEER_INIT,
 	WLAN_MODULE_STA_MLO_PS,
-
 	WLAN_MODULE_ID_MAX,
 	WLAN_MODULE_ID_INVALID = WLAN_MODULE_ID_MAX,
 };
-
 enum fw_dbglog_log_level {
 	ATH11K_FW_DBGLOG_ML = 0,
 	ATH11K_FW_DBGLOG_VERBOSE = 0,
@@ -245,23 +217,16 @@ enum fw_dbglog_log_level {
 	ATH11K_FW_DBGLOG_ERR,
 	ATH11K_FW_DBGLOG_LVL_MAX
 };
-
 struct ath11k_fw_dbglog {
 	enum wmi_debug_log_param param;
 	union {
 		struct {
-			/* log_level values are given in enum fw_dbglog_log_level */
 			u16 log_level;
-			/* module_id values are given in  enum fw_dbglog_wlan_module_id */
 			u16 module_id;
 		};
-		/* value is either log_level&module_id/vdev_id/vdev_id_bitmap/log_level
-		 * according to param
-		 */
 		u32 value;
 	};
 };
-
 #ifdef CONFIG_ATH11K_DEBUGFS
 int ath11k_debugfs_soc_create(struct ath11k_base *ab);
 void ath11k_debugfs_soc_destroy(struct ath11k_base *ab);
@@ -270,130 +235,104 @@ void ath11k_debugfs_pdev_destroy(struct ath11k_base *ab);
 int ath11k_debugfs_register(struct ath11k *ar);
 void ath11k_debugfs_unregister(struct ath11k *ar);
 void ath11k_debugfs_fw_stats_process(struct ath11k *ar, struct ath11k_fw_stats *stats);
-
 void ath11k_debugfs_fw_stats_init(struct ath11k *ar);
 int ath11k_debugfs_get_fw_stats(struct ath11k *ar, u32 pdev_id,
 				u32 vdev_id, u32 stats_id);
-
 static inline bool ath11k_debugfs_is_pktlog_lite_mode_enabled(struct ath11k *ar)
 {
 	return (ar->debug.pktlog_mode == ATH11K_PKTLOG_MODE_LITE);
 }
-
 static inline bool ath11k_debugfs_is_pktlog_rx_stats_enabled(struct ath11k *ar)
 {
 	return (!ar->debug.pktlog_peer_valid && ar->debug.pktlog_mode);
 }
-
 static inline bool ath11k_debugfs_is_pktlog_peer_valid(struct ath11k *ar, u8 *addr)
 {
 	return (ar->debug.pktlog_peer_valid && ar->debug.pktlog_mode &&
 		ether_addr_equal(addr, ar->debug.pktlog_peer_addr));
 }
-
 static inline int ath11k_debugfs_is_extd_tx_stats_enabled(struct ath11k *ar)
 {
 	return ar->debug.extd_tx_stats;
 }
-
 static inline int ath11k_debugfs_is_extd_rx_stats_enabled(struct ath11k *ar)
 {
 	return ar->debug.extd_rx_stats;
 }
-
 static inline int ath11k_debugfs_rx_filter(struct ath11k *ar)
 {
 	return ar->debug.rx_filter;
 }
-
 void ath11k_debugfs_add_interface(struct ath11k_vif *arvif);
 void ath11k_debugfs_remove_interface(struct ath11k_vif *arvif);
 void ath11k_debugfs_add_dbring_entry(struct ath11k *ar,
 				     enum wmi_direct_buffer_module id,
 				     enum ath11k_dbg_dbr_event event,
 				     struct hal_srng *srng);
-
 #else
 static inline int ath11k_debugfs_soc_create(struct ath11k_base *ab)
 {
 	return 0;
 }
-
 static inline void ath11k_debugfs_soc_destroy(struct ath11k_base *ab)
 {
 }
-
 static inline int ath11k_debugfs_pdev_create(struct ath11k_base *ab)
 {
 	return 0;
 }
-
 static inline void ath11k_debugfs_pdev_destroy(struct ath11k_base *ab)
 {
 }
-
 static inline int ath11k_debugfs_register(struct ath11k *ar)
 {
 	return 0;
 }
-
 static inline void ath11k_debugfs_unregister(struct ath11k *ar)
 {
 }
-
 static inline void ath11k_debugfs_fw_stats_process(struct ath11k *ar,
 						   struct ath11k_fw_stats *stats)
 {
 }
-
 static inline void ath11k_debugfs_fw_stats_init(struct ath11k *ar)
 {
 }
-
 static inline int ath11k_debugfs_is_extd_tx_stats_enabled(struct ath11k *ar)
 {
 	return 0;
 }
-
 static inline int ath11k_debugfs_is_extd_rx_stats_enabled(struct ath11k *ar)
 {
 	return 0;
 }
-
 static inline bool ath11k_debugfs_is_pktlog_lite_mode_enabled(struct ath11k *ar)
 {
 	return false;
 }
-
 static inline bool ath11k_debugfs_is_pktlog_rx_stats_enabled(struct ath11k *ar)
 {
 	return false;
 }
-
 static inline bool ath11k_debugfs_is_pktlog_peer_valid(struct ath11k *ar, u8 *addr)
 {
 	return false;
 }
-
 static inline int ath11k_debugfs_rx_filter(struct ath11k *ar)
 {
 	return 0;
 }
-
 static inline int ath11k_debugfs_get_fw_stats(struct ath11k *ar,
 					      u32 pdev_id, u32 vdev_id, u32 stats_id)
 {
 	return 0;
 }
-
 static inline void ath11k_debugfs_add_interface(struct ath11k_vif *arvif)
 {
 }
-
 static inline void ath11k_debugfs_remove_interface(struct ath11k_vif *arvif)
 {
 }
-
 static inline void
 ath11k_debugfs_add_dbring_entry(struct ath11k *ar,
 				enum wmi_direct_buffer_module id,
@@ -401,6 +340,5 @@ ath11k_debugfs_add_dbring_entry(struct ath11k *ar,
 				struct hal_srng *srng)
 {
 }
-#endif /* CONFIG_ATH11K_DEBUGFS*/
-
-#endif /* _ATH11K_DEBUGFS_H_ */
+#endif  
+#endif  

@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
- */
-
 #ifndef _PARISC_ASMREGS_H
 #define _PARISC_ASMREGS_H
-
 ;! General Registers
-
 rp:	.reg	%r2
 arg3:	.reg	%r23
 arg2:	.reg	%r24
@@ -18,9 +11,7 @@ ret0:	.reg	%r28
 ret1:	.reg	%r29
 sl:	.reg	%r29
 sp:	.reg	%r30
-
 #if 0
-/* PA20_REVISIT */
 arg7:	.reg	r19
 arg6:	.reg	r20
 arg5:	.reg	r21
@@ -28,8 +19,6 @@ arg4:	.reg	r22
 gp:	.reg	r27
 ap:	.reg	r29
 #endif
-
-
 r0:	.reg	%r0
 r1:	.reg	%r1
 r2:	.reg	%r2
@@ -62,10 +51,7 @@ r28:	.reg	%r28
 r29:	.reg	%r29
 r30:	.reg	%r30
 r31:	.reg	%r31
-
-
 ;! Space Registers
-
 sr0:	.reg	%sr0
 sr1:	.reg	%sr1
 sr2:	.reg	%sr2
@@ -74,10 +60,7 @@ sr4:	.reg	%sr4
 sr5:	.reg	%sr5
 sr6:	.reg	%sr6
 sr7:	.reg	%sr7
-
-
 ;! Floating Point Registers
-
 fr0:	.reg	%fr0
 fr1:	.reg	%fr1
 fr2:	.reg	%fr2
@@ -110,10 +93,7 @@ fr28:	.reg	%fr28
 fr29:	.reg	%fr29
 fr30:	.reg	%fr30
 fr31:	.reg	%fr31
-
-
 ;! Control Registers
-
 rctr:	.reg	%cr0
 pidr1:	.reg	%cr8
 pidr2:	.reg	%cr9
@@ -139,8 +119,6 @@ tr4:	.reg	%cr28
 tr5:	.reg	%cr29
 tr6:	.reg	%cr30
 tr7:	.reg	%cr31
-
-
 cr0:	.reg	%cr0
 cr8:	.reg	%cr8
 cr9:	.reg	%cr9
@@ -166,5 +144,4 @@ cr28:	.reg	%cr28
 cr29:	.reg	%cr29
 cr30:	.reg	%cr30
 cr31:	.reg	%cr31
-
 #endif

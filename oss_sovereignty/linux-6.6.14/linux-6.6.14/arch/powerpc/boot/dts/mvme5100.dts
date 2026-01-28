@@ -1,34 +1,19 @@
-/*
- * Device Tree Source for Motorola/Emerson MVME5100.
- *
- * Copyright 2013 CSC Australia Pty. Ltd.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without
- * any warranty of any kind, whether express or implied.
- */
-
 /dts-v1/;
-
 / {
 	model = "MVME5100";
 	compatible = "MVME5100";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		serial0 = &serial0;
 		pci0 = &pci0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,7410 {
 			device_type = "cpu";
 			reg = <0x0>;
-			/* Following required by dtc but not used */
 			d-cache-line-size = <32>;
 			i-cache-line-size = <32>;
 			i-cache-size = <32768>;
@@ -38,19 +23,16 @@
 			bus-frequency = <100000000>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x0 0x20000000>;
 	};
-
 	hawk@fef80000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "hawk-bridge", "simple-bus";
 		ranges = <0x0 0xfef80000 0x10000>;
 		reg = <0xfef80000 0x10000>;
-
 		serial0: serial@8000 {
 			device_type = "serial";
 			compatible = "ns16550";
@@ -58,10 +40,9 @@
 			reg-shift = <4>;
 			clock-frequency = <1843200>;
 			current-speed = <9600>;
-			interrupts = <1 1>; // IRQ1 Level Active Low.
+			interrupts = <1 1>;  
 			interrupt-parent = <&mpic>;
 		};
-
 		serial1: serial@8200 {
 			device_type = "serial";
 			compatible = "ns16550";
@@ -69,10 +50,9 @@
 			reg-shift = <4>;
 			clock-frequency = <1843200>;
 			current-speed = <9600>;
-			interrupts = <1 1>; // IRQ1 Level Active Low.
+			interrupts = <1 1>;  
 			interrupt-parent = <&mpic>;
 		};
-
 		mpic: interrupt-controller@f3f80000 {
 			#interrupt-cells = <2>;
 			#address-cells = <0>;
@@ -82,7 +62,6 @@
 			reg = <0xf3f80000 0x40000>;
 		};
 	};
-
 	pci0: pci@feff0000 {
 		#address-cells = <3>;
 		#size-cells = <2>;
@@ -98,60 +77,29 @@
 		interrupt-parent = <&mpic>;
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-
-			/*
-			 * This definition (IDSEL 11) duplicates the
-			 * interrupts definition in the i8259
-			 * interrupt controller below.
-			 *
-			 * Do not change the interrupt sense/polarity from
-			 * 0x2 to anything else, doing so will cause endless
-			 * "spurious" i8259 interrupts to be fielded.
-			 */
-			// IDSEL 11 - iPMC712 PCI/ISA Bridge
 			0x5800 0x0 0x0 0x1 &mpic 0x0 0x2
 			0x5800 0x0 0x0 0x2 &mpic 0x0 0x2
 			0x5800 0x0 0x0 0x3 &mpic 0x0 0x2
 			0x5800 0x0 0x0 0x4 &mpic 0x0 0x2
-
-			/* IDSEL 12 - Not Used */
-
-			/* IDSEL 13 - Universe VME Bridge */
 			0x6800 0x0 0x0 0x1 &mpic 0x5 0x1
 			0x6800 0x0 0x0 0x2 &mpic 0x6 0x1
 			0x6800 0x0 0x0 0x3 &mpic 0x7 0x1
 			0x6800 0x0 0x0 0x4 &mpic 0x8 0x1
-
-			/* IDSEL 14 - ENET 1 */
 			0x7000 0x0 0x0 0x1 &mpic 0x2 0x1
-
-			/* IDSEL 15 - Not Used */
-
-			/* IDSEL 16 - PMC Slot 1 */
 			0x8000 0x0 0x0 0x1 &mpic 0x9 0x1
 			0x8000 0x0 0x0 0x2 &mpic 0xa 0x1
 			0x8000 0x0 0x0 0x3 &mpic 0xb 0x1
 			0x8000 0x0 0x0 0x4 &mpic 0xc 0x1
-
-			/* IDSEL 17 - PMC Slot 2 */
 			0x8800 0x0 0x0 0x1 &mpic 0xc 0x1
 			0x8800 0x0 0x0 0x2 &mpic 0x9 0x1
 			0x8800 0x0 0x0 0x3 &mpic 0xa 0x1
 			0x8800 0x0 0x0 0x4 &mpic 0xb 0x1
-
-			/* IDSEL 18 - Not Used */
-
-			/* IDSEL 19 - ENET 2 */
 			0x9800 0x0 0x0 0x1 &mpic 0xd 0x1
-
-			/* IDSEL 20 - PMCSPAN (PCI-X) */
 			0xa000 0x0 0x0 0x1 &mpic 0x9 0x1
 			0xa000 0x0 0x0 0x2 &mpic 0xa 0x1
 			0xa000 0x0 0x0 0x3 &mpic 0xb 0x1
 			0xa000 0x0 0x0 0x4 &mpic 0xc 0x1
-
 		>;
-
 		isa {
 			#address-cells = <2>;
 			#size-cells = <1>;
@@ -160,7 +108,6 @@
 			compatible = "isa";
 			ranges = <0x00000001 0 0x01000000 0 0x00000000 0x00001000>;
 			interrupt-parent = <&i8259>;
-
 			i8259: interrupt-controller@20 {
 				#interrupt-cells = <2>;
 				#address-cells = <0>;
@@ -173,13 +120,9 @@
                                        1 0x000004d0 0x00000002>;
 				interrupt-parent = <&mpic>;
 			};
-
 		};
-
 	};
-
 	chosen {
 		stdout-path = &serial0;
         };
-
 };

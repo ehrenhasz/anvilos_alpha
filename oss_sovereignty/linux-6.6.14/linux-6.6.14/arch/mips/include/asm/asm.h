@@ -1,45 +1,13 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 1995, 1996, 1997, 1999, 2001 by Ralf Baechle
- * Copyright (C) 1999 by Silicon Graphics, Inc.
- * Copyright (C) 2001 MIPS Technologies, Inc.
- * Copyright (C) 2002  Maciej W. Rozycki
- *
- * Some useful macros for MIPS assembler code
- *
- * Some of the routines below contain useless nops that will be optimized
- * away by gas in -O mode. These nops are however required to fill delay
- * slots in noreorder mode.
- */
 #ifndef __ASM_ASM_H
 #define __ASM_ASM_H
-
 #include <asm/sgidefs.h>
 #include <asm/asm-eva.h>
 #include <asm/isa-rev.h>
-
 #ifndef __VDSO__
-/*
- * Emit CFI data in .debug_frame sections, not .eh_frame sections.
- * We don't do DWARF unwinding at runtime, so only the offline DWARF
- * information is useful to anyone. Note we should change this if we
- * ever decide to enable DWARF unwinding at runtime.
- */
 #define CFI_SECTIONS	.cfi_sections .debug_frame
 #else
- /*
-  * For the vDSO, emit both runtime unwind information and debug
-  * symbols for the .dbg file.
-  */
 #define CFI_SECTIONS
 #endif
-
-/*
- * LEAF - declare leaf routine
- */
 #define LEAF(symbol)					\
 		CFI_SECTIONS;				\
 		.globl	symbol;				\
@@ -49,10 +17,6 @@
 symbol:		.frame	sp, 0, ra;			\
 		.cfi_startproc;				\
 		.insn
-
-/*
- * NESTED - declare nested routine entry point
- */
 #define NESTED(symbol, framesize, rpc)			\
 		CFI_SECTIONS;				\
 		.globl	symbol;				\
@@ -62,42 +26,24 @@ symbol:		.frame	sp, 0, ra;			\
 symbol:		.frame	sp, framesize, rpc;		\
 		.cfi_startproc;				\
 		.insn
-
-/*
- * END - mark end of function
- */
 #define END(function)					\
 		.cfi_endproc;				\
 		.end	function;			\
 		.size	function, .-function
-
-/*
- * EXPORT - export definition of symbol
- */
 #define EXPORT(symbol)					\
 		.globl	symbol;				\
 symbol:
-
-/*
- * FEXPORT - export definition of a function symbol
- */
 #define FEXPORT(symbol)					\
 		.globl	symbol;				\
 		.type	symbol, @function;		\
 symbol:		.insn
-
-/*
- * ABS - export absolute symbol
- */
 #define ABS(symbol,value)				\
 		.globl	symbol;				\
 symbol		=	value
-
 #define TEXT(msg)					\
 		.pushsection .data;			\
 8:		.asciiz msg;				\
 		.popsection;
-
 #define ASM_PANIC(msg)					\
 		.set	push;				\
 		.set	reorder;			\
@@ -106,10 +52,6 @@ symbol		=	value
 9:		b	9b;				\
 		.set	pop;				\
 		TEXT(msg)
-
-/*
- * Print formatted string
- */
 #ifdef CONFIG_PRINTK
 #define ASM_PRINT(string)				\
 		.set	push;				\
@@ -121,10 +63,6 @@ symbol		=	value
 #else
 #define ASM_PRINT(string)
 #endif
-
-/*
- * Stack alignment
- */
 #if (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define ALSZ	7
 #define ALMASK	~7
@@ -133,24 +71,11 @@ symbol		=	value
 #define ALSZ	15
 #define ALMASK	~15
 #endif
-
-/*
- * Macros to handle different pointer/register sizes for 32/64-bit code
- */
-
-/*
- * Size of a register
- */
 #ifdef __mips64
 #define SZREG	8
 #else
 #define SZREG	4
 #endif
-
-/*
- * Use the following macros in assemblercode to load/store registers,
- * pointers etc.
- */
 #if (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define REG_S		sw
 #define REG_L		lw
@@ -163,10 +88,6 @@ symbol		=	value
 #define REG_SUBU	dsubu
 #define REG_ADDU	daddu
 #endif
-
-/*
- * How to add/sub/load/store/shift C int variables.
- */
 #if (_MIPS_SZINT == 32)
 #define INT_ADD		add
 #define INT_ADDU	addu
@@ -183,7 +104,6 @@ symbol		=	value
 #define INT_SRA		sra
 #define INT_SRAV	srav
 #endif
-
 #if (_MIPS_SZINT == 64)
 #define INT_ADD		dadd
 #define INT_ADDU	daddu
@@ -200,10 +120,6 @@ symbol		=	value
 #define INT_SRA		dsra
 #define INT_SRAV	dsrav
 #endif
-
-/*
- * How to add/sub/load/store/shift C long variables.
- */
 #if (_MIPS_SZLONG == 32)
 #define LONG_ADD	add
 #define LONG_ADDU	addu
@@ -224,7 +140,6 @@ symbol		=	value
 #define LONG_SRAV	srav
 #define LONG_INS	ins
 #define LONG_EXT	ext
-
 #ifdef __ASSEMBLY__
 #define LONG		.word
 #endif
@@ -232,7 +147,6 @@ symbol		=	value
 #define LONGMASK	3
 #define LONGLOG		2
 #endif
-
 #if (_MIPS_SZLONG == 64)
 #define LONG_ADD	dadd
 #define LONG_ADDU	daddu
@@ -253,7 +167,6 @@ symbol		=	value
 #define LONG_SRAV	dsrav
 #define LONG_INS	dins
 #define LONG_EXT	dext
-
 #ifdef __ASSEMBLY__
 #define LONG		.dword
 #endif
@@ -261,10 +174,6 @@ symbol		=	value
 #define LONGMASK	7
 #define LONGLOG		3
 #endif
-
-/*
- * How to add/sub/load/store/shift pointers.
- */
 #if (_MIPS_SZPTR == 32)
 #define PTR_ADD		add
 #define PTR_ADDU	addu
@@ -282,14 +191,11 @@ symbol		=	value
 #define PTR_SRLV	srlv
 #define PTR_SRA		sra
 #define PTR_SRAV	srav
-
 #define PTR_SCALESHIFT	2
-
 #define PTR_WD		.word
 #define PTRSIZE		4
 #define PTRLOG		2
 #endif
-
 #if (_MIPS_SZPTR == 64)
 #define PTR_ADD		dadd
 #define PTR_ADDU	daddu
@@ -307,17 +213,11 @@ symbol		=	value
 #define PTR_SRLV	dsrlv
 #define PTR_SRA		dsra
 #define PTR_SRAV	dsrav
-
 #define PTR_SCALESHIFT	3
-
 #define PTR_WD		.dword
 #define PTRSIZE		8
 #define PTRLOG		3
 #endif
-
-/*
- * Some cp0 registers were extended to 64bit for MIPS III.
- */
 #if (_MIPS_SIM == _MIPS_SIM_ABI32)
 #define MFC0		mfc0
 #define MTC0		mtc0
@@ -326,14 +226,7 @@ symbol		=	value
 #define MFC0		dmfc0
 #define MTC0		dmtc0
 #endif
-
 #define SSNOP		sll zero, zero, 1
-
-/*
- * Using a branch-likely instruction to check the result of an sc instruction
- * works around a bug present in R10000 CPUs prior to revision 3.0 that could
- * cause ll-sc sequences to execute non-atomically.
- */
 #ifdef CONFIG_WAR_R10000_LLSC
 # define SC_BEQZ	beqzl
 #elif !defined(CONFIG_CC_HAS_BROKEN_INLINE_COMPAT_BRANCH) && MIPS_ISA_REV >= 6
@@ -341,13 +234,10 @@ symbol		=	value
 #else
 # define SC_BEQZ	beqz
 #endif
-
 #ifdef CONFIG_SGI_IP28
-/* Inhibit speculative stores to volatile (e.g.DMA) or invalid addresses. */
 #include <asm/cacheops.h>
 #define R10KCBARRIER(addr)  cache   Cache_Barrier, addr;
 #else
 #define R10KCBARRIER(addr)
 #endif
-
-#endif /* __ASM_ASM_H */
+#endif  

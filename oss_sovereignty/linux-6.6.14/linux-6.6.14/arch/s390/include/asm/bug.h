@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_S390_BUG_H
 #define _ASM_S390_BUG_H
-
 #include <linux/compiler.h>
-
 #ifdef CONFIG_BUG
-
 #ifdef CONFIG_DEBUG_BUGVERBOSE
-
 #define __EMIT_BUG(x) do {					\
 	asm_inline volatile(					\
 		"0:	mc	0,0\n"				\
@@ -24,9 +19,7 @@
 		    "i" (x),					\
 		    "i" (sizeof(struct bug_entry)));		\
 } while (0)
-
-#else /* CONFIG_DEBUG_BUGVERBOSE */
-
+#else  
 #define __EMIT_BUG(x) do {					\
 	asm_inline volatile(					\
 		"0:	mc	0,0\n"				\
@@ -38,18 +31,14 @@
 		: : "i" (x),					\
 		    "i" (sizeof(struct bug_entry)));		\
 } while (0)
-
-#endif /* CONFIG_DEBUG_BUGVERBOSE */
-
+#endif  
 #define BUG() do {					\
 	__EMIT_BUG(0);					\
 	unreachable();					\
 } while (0)
-
 #define __WARN_FLAGS(flags) do {			\
 	__EMIT_BUG(BUGFLAG_WARNING|(flags));		\
 } while (0)
-
 #define WARN_ON(x) ({					\
 	int __ret_warn_on = !!(x);			\
 	if (__builtin_constant_p(__ret_warn_on)) {	\
@@ -61,11 +50,8 @@
 	}						\
 	unlikely(__ret_warn_on);			\
 })
-
 #define HAVE_ARCH_BUG
 #define HAVE_ARCH_WARN_ON
-#endif /* CONFIG_BUG */
-
+#endif  
 #include <asm-generic/bug.h>
-
-#endif /* _ASM_S390_BUG_H */
+#endif  

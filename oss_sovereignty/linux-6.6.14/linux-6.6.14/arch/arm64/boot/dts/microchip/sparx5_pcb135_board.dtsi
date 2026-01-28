@@ -1,18 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
- */
-
 /dts-v1/;
 #include "sparx5_pcb_common.dtsi"
-
 /{
 	gpio-restart {
 		compatible = "gpio-restart";
 		gpios = <&gpio 37 GPIO_ACTIVE_LOW>;
 		priority = <200>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		led@0 {
@@ -57,7 +50,6 @@
 		};
 	};
 };
-
 &gpio {
 	i2cmux_pins_i: i2cmux-pins {
 	       pins = "GPIO_35", "GPIO_36",
@@ -86,7 +78,6 @@
 		output-high;
 	};
 };
-
 &spi0 {
 	status = "okay";
 	flash@0 {
@@ -95,7 +86,6 @@
 		reg = <0>;
 	};
 };
-
 &spi0 {
 	status = "okay";
 	spi@0 {
@@ -103,15 +93,14 @@
 		mux-controls = <&mux>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		reg = <0>; /* CS0 */
+		reg = <0>;  
 		flash@9 {
 			compatible = "jedec,spi-nor";
 			spi-max-frequency = <8000000>;
-			reg = <0x9>; /* SPI */
+			reg = <0x9>;  
 		};
 	};
 };
-
 &sgpio1 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <24 31>;
@@ -122,12 +111,10 @@
 		ngpios = <64>;
 	};
 };
-
 &sgpio2 {
 	status = "okay";
 	microchip,sgpio-port-ranges = <0 0>, <16 18>, <28 31>;
 };
-
 &axi {
 	i2c0_imux: i2c0-imux@0 {
 		compatible = "i2c-mux-pinctrl";
@@ -136,7 +123,6 @@
 		i2c-parent = <&i2c0>;
 	};
 };
-
 &i2c0_imux {
 	pinctrl-names =
 		"i2c_sfp1", "i2c_sfp2", "i2c_sfp3", "i2c_sfp4",
@@ -167,7 +153,6 @@
 		#size-cells = <0>;
 	};
 };
-
 &axi {
 	sfp_eth60: sfp-eth60 {
 		compatible	 = "sff,sfp";
@@ -206,7 +191,6 @@
 		tx-fault-gpios = <&sgpio_in2 31 2 GPIO_ACTIVE_HIGH>;
 	};
 };
-
 &mdio0 {
 	status = "okay";
 	phy0: ethernet-phy@0 {
@@ -282,7 +266,6 @@
 		reg = <23>;
 	};
 };
-
 &mdio1 {
 	status = "okay";
 	phy24: ethernet-phy@24 {
@@ -358,19 +341,16 @@
 		reg = <23>;
 	};
 };
-
 &mdio3 {
 	status = "okay";
 	phy64: ethernet-phy@64 {
 		reg = <28>;
 	};
 };
-
 &switch {
 	ethernet-ports {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		port0: port@0 {
 			reg = <0>;
 			microchip,bandwidth = <1000>;
@@ -707,7 +687,6 @@
 			phy-handle = <&phy47>;
 			phy-mode = "qsgmii";
 		};
-		/* Then the 25G interfaces */
 		port60: port@60 {
 			reg = <60>;
 			microchip,bandwidth = <25000>;
@@ -740,7 +719,6 @@
 			sfp = <&sfp_eth63>;
 			managed = "in-band-status";
 		};
-		/* Finally the Management interface */
 		port64: port@64 {
 			reg = <64>;
 			microchip,bandwidth = <1000>;

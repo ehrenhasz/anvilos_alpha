@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Inc.
- *
- * Contact: support@cavium.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2014 Cavium Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Inc. for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_RST_DEFS_H__
 #define __CVMX_RST_DEFS_H__
-
 #define CVMX_RST_BOOT (CVMX_ADD_IO_SEG(0x0001180006001600ull))
 #define CVMX_RST_CFG (CVMX_ADD_IO_SEG(0x0001180006001610ull))
 #define CVMX_RST_CKILL (CVMX_ADD_IO_SEG(0x0001180006001638ull))
@@ -40,7 +12,6 @@
 #define CVMX_RST_PP_POWER (CVMX_ADD_IO_SEG(0x0001180006001700ull))
 #define CVMX_RST_SOFT_PRSTX(offset) (CVMX_ADD_IO_SEG(0x00011800060016C0ull) + ((offset) & 3) * 8)
 #define CVMX_RST_SOFT_RST (CVMX_ADD_IO_SEG(0x0001180006001680ull))
-
 union cvmx_rst_boot {
 	uint64_t u64;
 	struct cvmx_rst_boot_s {
@@ -81,7 +52,6 @@ union cvmx_rst_boot {
 #endif
 	} s;
 };
-
 union cvmx_rst_cfg {
 	uint64_t u64;
 	struct cvmx_rst_cfg_s {
@@ -100,7 +70,6 @@ union cvmx_rst_cfg {
 #endif
 	} s;
 };
-
 union cvmx_rst_ckill {
 	uint64_t u64;
 	struct cvmx_rst_ckill_s {
@@ -113,7 +82,6 @@ union cvmx_rst_ckill {
 #endif
 	} s;
 };
-
 union cvmx_rst_ctlx {
 	uint64_t u64;
 	struct cvmx_rst_ctlx_s {
@@ -142,7 +110,6 @@ union cvmx_rst_ctlx {
 #endif
 	} s;
 };
-
 union cvmx_rst_delay {
 	uint64_t u64;
 	struct cvmx_rst_delay_s {
@@ -157,7 +124,6 @@ union cvmx_rst_delay {
 #endif
 	} s;
 };
-
 union cvmx_rst_eco {
 	uint64_t u64;
 	struct cvmx_rst_eco_s {
@@ -170,7 +136,6 @@ union cvmx_rst_eco {
 #endif
 	} s;
 };
-
 union cvmx_rst_int {
 	uint64_t u64;
 	struct cvmx_rst_int_s {
@@ -200,7 +165,6 @@ union cvmx_rst_int {
 #endif
 	} cn70xx;
 };
-
 union cvmx_rst_ocx {
 	uint64_t u64;
 	struct cvmx_rst_ocx_s {
@@ -213,7 +177,6 @@ union cvmx_rst_ocx {
 #endif
 	} s;
 };
-
 union cvmx_rst_power_dbg {
 	uint64_t u64;
 	struct cvmx_rst_power_dbg_s {
@@ -226,7 +189,6 @@ union cvmx_rst_power_dbg {
 #endif
 	} s;
 };
-
 union cvmx_rst_pp_power {
 	uint64_t u64;
 	struct cvmx_rst_pp_power_s {
@@ -248,7 +210,6 @@ union cvmx_rst_pp_power {
 #endif
 	} cn70xx;
 };
-
 union cvmx_rst_soft_prstx {
 	uint64_t u64;
 	struct cvmx_rst_soft_prstx_s {
@@ -261,7 +222,6 @@ union cvmx_rst_soft_prstx {
 #endif
 	} s;
 };
-
 union cvmx_rst_soft_rst {
 	uint64_t u64;
 	struct cvmx_rst_soft_rst_s {
@@ -274,5 +234,4 @@ union cvmx_rst_soft_rst {
 #endif
 	} s;
 };
-
 #endif

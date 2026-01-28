@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2019-2020 NXP
- */
-
 /dts-v1/;
-
 #include "imx8mm-evk.dtsi"
-
 / {
 	model = "FSL i.MX8MM EVKB";
 	compatible = "fsl,imx8mm-evkb", "fsl,imx8mm";
 };
-
 &i2c1 {
 	/delete-node/ pmic@4b;
-
 	pmic@25 {
 		compatible = "nxp,pca9450a";
 		reg = <0x25>;
@@ -22,9 +13,7 @@
 		pinctrl-names = "default";
 		interrupt-parent = <&gpio1>;
 		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
-
 		regulators {
-			/* VDD_SOC with PCIe */
 			buck1_reg: BUCK1 {
 				regulator-name = "BUCK1";
 				regulator-min-microvolt = <850000>;
@@ -33,8 +22,6 @@
 				regulator-always-on;
 				regulator-ramp-delay = <3125>;
 			};
-
-			/* VDD_ARM */
 			buck2_reg: BUCK2 {
 				regulator-name = "BUCK2";
 				regulator-min-microvolt = <850000>;
@@ -44,8 +31,6 @@
 				regulator-ramp-delay = <3125>;
 				nxp,dvs-standby-voltage = <850000>;
 			};
-
-			/* VDD_GPU, VDD_VPU, VDD_DRAM */
 			buck3_reg: BUCK3 {
 				regulator-name = "BUCK3";
 				regulator-min-microvolt = <850000>;
@@ -53,8 +38,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* NVCC_3V3 */
 			buck4_reg: BUCK4 {
 				regulator-name = "BUCK4";
 				regulator-min-microvolt = <3300000>;
@@ -62,8 +45,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* VDD_1V8, NVCC_1V8, NVCC_ENET */
 			buck5_reg: BUCK5 {
 				regulator-name = "BUCK5";
 				regulator-min-microvolt = <1800000>;
@@ -71,8 +52,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* NVCC_DRAM for LPDDR4 */
 			buck6_reg: BUCK6 {
 				regulator-name = "BUCK6";
 				regulator-min-microvolt = <1100000>;
@@ -80,8 +59,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* NVCC_SNVS_1P8 */
 			ldo1_reg: LDO1 {
 				regulator-name = "LDO1";
 				regulator-min-microvolt = <1800000>;
@@ -89,8 +66,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* VDD_SNVS_0P8 */
 			ldo2_reg: LDO2 {
 				regulator-name = "LDO2";
 				regulator-min-microvolt = <800000>;
@@ -98,8 +73,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* VDD_*_1V8 */
 			ldo3_reg: LDO3 {
 				regulator-name = "LDO3";
 				regulator-min-microvolt = <1800000>;
@@ -107,8 +80,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* VDD_PHY_0V9 */
 			ldo4_reg: LDO4 {
 				regulator-name = "LDO4";
 				regulator-min-microvolt = <900000>;
@@ -116,8 +87,6 @@
 				regulator-boot-on;
 				regulator-always-on;
 			};
-
-			/* NVCC_SD2 */
 			ldo5_reg: LDO5 {
 				regulator-name = "LDO5";
 				regulator-min-microvolt = <1800000>;

@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt711-sdw-sdca.h -- RT711 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2021 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT711_SDW_SDCA_H__
 #define __RT711_SDW_SDCA_H__
-
 #include <linux/regmap.h>
 #include <linux/soundwire/sdw_registers.h>
-
 static const struct reg_default rt711_sdca_reg_defaults[] = {
 	{ 0x201a, 0x00 },
 	{ 0x201e, 0x00 },
@@ -67,7 +58,6 @@ static const struct reg_default rt711_sdca_reg_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT711_SDCA_ENT_USER_FU1E, RT711_SDCA_CTL_FU_MUTE, CH_L), 0x01 },
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT711_SDCA_ENT_USER_FU1E, RT711_SDCA_CTL_FU_MUTE, CH_R), 0x01 },
 };
-
 static const struct reg_default rt711_sdca_mbq_defaults[] = {
 	{ 0x2000009, 0x1029 },
 	{ 0x2000011, 0x007a },
@@ -95,5 +85,4 @@ static const struct reg_default rt711_sdca_mbq_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT711_SDCA_ENT_PLATFORM_FU15, RT711_SDCA_CTL_FU_CH_GAIN, CH_L), 0x00 },
 	{ SDW_SDCA_CTL(FUNC_NUM_MIC_ARRAY, RT711_SDCA_ENT_PLATFORM_FU15, RT711_SDCA_CTL_FU_CH_GAIN, CH_R), 0x00 },
 };
-
-#endif /* __RT711_SDW_SDCA_H__ */
+#endif  

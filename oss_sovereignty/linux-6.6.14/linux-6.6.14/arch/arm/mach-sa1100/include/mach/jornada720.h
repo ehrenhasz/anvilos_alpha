@@ -1,14 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * arch/arm/mach-sa1100/include/mach/jornada720.h
- *
- * SSP/MCU communication definitions for HP Jornada 710/720/728
- *
- * Copyright 2007,2008 Kristoffer Ericson <Kristoffer.Ericson@gmail.com>
- *  Copyright 2000 John Ankcorn <jca@lcs.mit.edu>
- */
-
- /* HP Jornada 7xx microprocessor commands */
 #define GETBATTERYDATA		0xc0
 #define GETSCANKEYCODE		0x90
 #define GETTOUCHSAMPLES		0xa0
@@ -21,7 +10,6 @@
 #define PWMOFF			0xDF
 #define TXDUMMY			0x11
 #define ERRORCODE		0x00
-
 extern void jornada_ssp_start(void);
 extern void jornada_ssp_end(void);
 extern int jornada_ssp_inout(u8 byte);

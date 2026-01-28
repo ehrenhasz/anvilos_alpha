@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Hardware definitions for SSI.
- *
- * Copyright (C) 2010 Nokia Corporation. All rights reserved.
- *
- * Contact: Carlos Chinea <carlos.chinea@nokia.com>
- */
-
 #ifndef __OMAP_SSI_REGS_H__
 #define __OMAP_SSI_REGS_H__
-
-/*
- * SSI SYS registers
- */
 #define SSI_REVISION_REG    0
 #  define SSI_REV_MAJOR    0xf0
 #  define SSI_REV_MINOR    0xf
@@ -43,10 +31,6 @@
 #define SSI_SET_WAKE_REG(port)    (0xc08 + ((port) * 0x10))
 #  define SSI_WAKE(channel)  (1 << (channel))
 #  define SSI_WAKE_MASK    0xff
-
-/*
- * SSI SST registers
- */
 #define SSI_SST_ID_REG      0
 #define SSI_SST_MODE_REG    4
 #  define SSI_MODE_VAL_MASK  3
@@ -70,10 +54,6 @@
 #  define SSI_ARBMODE_PRIORITY  1
 #define SSI_SST_BUFFER_CH_REG(channel)  (0x80 + ((channel) * 4))
 #define SSI_SST_SWAPBUF_CH_REG(channel)  (0xc0 + ((channel) * 4))
-
-/*
- * SSI SSR registers
- */
 #define SSI_SSR_ID_REG      0
 #define SSI_SSR_MODE_REG    4
 #define SSI_SSR_FRAMESIZE_REG    8
@@ -90,10 +70,6 @@
 #define SSI_SSR_CHANNELS_REG    0x28
 #define SSI_SSR_BUFFER_CH_REG(channel)  (0x80 + ((channel) * 4))
 #define SSI_SSR_SWAPBUF_CH_REG(channel)  (0xc0 + ((channel) * 4))
-
-/*
- * SSI GDD registers
- */
 #define SSI_GDD_HW_ID_REG    0
 #define SSI_GDD_PPORT_ID_REG    0x10
 #define SSI_GDD_MPORT_ID_REG    0x14
@@ -154,5 +130,4 @@
 #  define SSI_ENABLE_LNK    (1 << 15)
 #  define SSI_STOP_LNK    (1 << 14)
 #  define SSI_NEXT_CH_ID_MASK  0xf
-
-#endif /* __OMAP_SSI_REGS_H__ */
+#endif  

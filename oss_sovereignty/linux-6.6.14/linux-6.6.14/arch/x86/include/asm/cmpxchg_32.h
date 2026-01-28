@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_CMPXCHG_32_H
 #define _ASM_X86_CMPXCHG_32_H
-
-/*
- * Note: if you use set64_bit(), __cmpxchg64(), or their variants,
- *       you need to test for the feature in boot_cpu_data.
- */
-
 #ifdef CONFIG_X86_CMPXCHG64
 #define arch_cmpxchg64(ptr, o, n)					\
 	((__typeof__(*(ptr)))__cmpxchg64((ptr), (unsigned long long)(o), \
@@ -18,7 +11,6 @@
 	__try_cmpxchg64((ptr), (unsigned long long *)(po), \
 			(unsigned long long)(n))
 #endif
-
 static inline u64 __cmpxchg64(volatile u64 *ptr, u64 old, u64 new)
 {
 	u64 prev;
@@ -31,7 +23,6 @@ static inline u64 __cmpxchg64(volatile u64 *ptr, u64 old, u64 new)
 		     : "memory");
 	return prev;
 }
-
 static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
 {
 	u64 prev;
@@ -44,7 +35,6 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
 		     : "memory");
 	return prev;
 }
-
 static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 {
 	bool success;
@@ -57,18 +47,11 @@ static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 		     : "b" ((u32)new),
 		       "c" ((u32)(new >> 32))
 		     : "memory");
-
 	if (unlikely(!success))
 		*pold = old;
 	return success;
 }
-
 #ifndef CONFIG_X86_CMPXCHG64
-/*
- * Building a kernel capable running on 80386 and 80486. It may be necessary
- * to simulate the cmpxchg8b on the 80386 and 80486 CPU.
- */
-
 #define arch_cmpxchg64(ptr, o, n)				\
 ({								\
 	__typeof__(*(ptr)) __ret;				\
@@ -84,8 +67,6 @@ static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 		       "c" ((unsigned int)(__new>>32))		\
 		       : "memory");				\
 	__ret; })
-
-
 #define arch_cmpxchg64_local(ptr, o, n)				\
 ({								\
 	__typeof__(*(ptr)) __ret;				\
@@ -100,9 +81,6 @@ static inline bool __try_cmpxchg64(volatile u64 *ptr, u64 *pold, u64 new)
 		       "c" ((unsigned int)(__new>>32))		\
 		       : "memory");				\
 	__ret; })
-
 #endif
-
 #define system_has_cmpxchg64()		boot_cpu_has(X86_FEATURE_CX8)
-
-#endif /* _ASM_X86_CMPXCHG_32_H */
+#endif  

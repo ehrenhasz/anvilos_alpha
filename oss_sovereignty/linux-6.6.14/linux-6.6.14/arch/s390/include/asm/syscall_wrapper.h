@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * syscall_wrapper.h - s390 specific wrappers to syscall definitions
- *
- */
-
 #ifndef _ASM_S390_SYSCALL_WRAPPER_H
 #define _ASM_S390_SYSCALL_WRAPPER_H
-
-/* Mapping of registers to parameters for syscalls */
 #define SC_S390_REGS_TO_ARGS(x, ...)					\
 	__MAP(x, __SC_ARGS						\
 	      ,, regs->orig_gpr2,, regs->gprs[3],, regs->gprs[4]	\
 	      ,, regs->gprs[5],, regs->gprs[6],, regs->gprs[7])
-
 #ifdef CONFIG_COMPAT
-
 #define __SC_COMPAT_CAST(t, a)						\
 ({									\
 	long __ReS = a;							\
@@ -32,16 +22,10 @@
 		return -ENOSYS;						\
 	(t)__ReS;							\
 })
-
-/*
- * To keep the naming coherent, re-define SYSCALL_DEFINE0 to create an alias
- * named __s390x_sys_*()
- */
 #define COMPAT_SYSCALL_DEFINE0(sname)					\
 	long __s390_compat_sys_##sname(void);				\
 	ALLOW_ERROR_INJECTION(__s390_compat_sys_##sname, ERRNO);	\
 	long __s390_compat_sys_##sname(void)
-
 #define SYSCALL_DEFINE0(sname)						\
 	SYSCALL_METADATA(_##sname, 0);					\
 	long __s390_sys_##sname(void);					\
@@ -58,11 +42,9 @@
 		return __do_sys_##sname();				\
 	}								\
 	static inline long __do_sys_##sname(void)
-
 #define COND_SYSCALL(name)						\
 	cond_syscall(__s390x_sys_##name);				\
 	cond_syscall(__s390_sys_##name)
-
 #define COMPAT_SYSCALL_DEFINEx(x, name, ...)						\
 	long __s390_compat_sys##name(struct pt_regs *regs);				\
 	ALLOW_ERROR_INJECTION(__s390_compat_sys##name, ERRNO);				\
@@ -78,14 +60,8 @@
 		return __do_compat_sys##name(__MAP(x, __SC_DELOUSE, __VA_ARGS__));	\
 	}										\
 	static inline long __do_compat_sys##name(__MAP(x, __SC_DECL, __VA_ARGS__))
-
-/*
- * As some compat syscalls may not be implemented, we need to expand
- * COND_SYSCALL_COMPAT in kernel/sys_ni.c to cover this case as well.
- */
 #define COND_SYSCALL_COMPAT(name)					\
 	cond_syscall(__s390_compat_sys_##name)
-
 #define __S390_SYS_STUBx(x, name, ...)						\
 	long __s390_sys##name(struct pt_regs *regs);				\
 	ALLOW_ERROR_INJECTION(__s390_sys##name, ERRNO);				\
@@ -99,9 +75,7 @@
 		__MAP(x, __SC_TEST, __VA_ARGS__);				\
 		return __do_sys##name(__MAP(x, __SC_COMPAT_CAST, __VA_ARGS__));	\
 	}
-
-#else /* CONFIG_COMPAT */
-
+#else  
 #define SYSCALL_DEFINE0(sname)						\
 	SYSCALL_METADATA(_##sname, 0);					\
 	long __s390x_sys_##sname(void);					\
@@ -112,14 +86,10 @@
 		return __do_sys_##sname();				\
 	}								\
 	static inline long __do_sys_##sname(void)
-
 #define COND_SYSCALL(name)						\
 	cond_syscall(__s390x_sys_##name)
-
 #define __S390_SYS_STUBx(x, fullname, name, ...)
-
-#endif /* CONFIG_COMPAT */
-
+#endif  
 #define __SYSCALL_DEFINEx(x, name, ...)						\
 	long __s390x_sys##name(struct pt_regs *regs);				\
 	ALLOW_ERROR_INJECTION(__s390x_sys##name, ERRNO);			\
@@ -136,5 +106,4 @@
 		return __do_sys##name(__MAP(x, __SC_CAST, __VA_ARGS__));	\
 	}									\
 	static inline long __do_sys##name(__MAP(x, __SC_DECL, __VA_ARGS__))
-
-#endif /* _ASM_S390_SYSCALL_WRAPPER_H */
+#endif  

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-
 #ifndef DT_BINDINGS_ASPEED_CLOCK_H
 #define DT_BINDINGS_ASPEED_CLOCK_H
-
 #define ASPEED_CLK_GATE_ECLK		0
 #define ASPEED_CLK_GATE_GCLK		1
 #define ASPEED_CLK_GATE_MCLK		2
@@ -41,7 +38,6 @@
 #define ASPEED_CLK_24M			35
 #define ASPEED_CLK_MAC1RCLK		36
 #define ASPEED_CLK_MAC2RCLK		37
-
 #define ASPEED_RESET_XDMA		0
 #define ASPEED_RESET_MCTP		1
 #define ASPEED_RESET_ADC		2
@@ -53,5 +49,4 @@
 #define ASPEED_RESET_AHB		8
 #define ASPEED_RESET_CRT1		9
 #define ASPEED_RESET_HACE		10
-
 #endif

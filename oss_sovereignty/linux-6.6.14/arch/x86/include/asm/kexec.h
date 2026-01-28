@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_KEXEC_H
 #define _ASM_X86_KEXEC_H
-
 #ifdef CONFIG_X86_32
 # define PA_CONTROL_PAGE	0
 # define VA_CONTROL_PAGE	1
@@ -15,62 +13,28 @@
 # define PA_SWAP_PAGE		3
 # define PAGES_NR		4
 #endif
-
 # define KEXEC_CONTROL_CODE_MAX_SIZE	2048
-
 #ifndef __ASSEMBLY__
-
 #include <linux/string.h>
 #include <linux/kernel.h>
-
 #include <asm/page.h>
 #include <asm/ptrace.h>
 #include <asm/bootparam.h>
-
 struct kimage;
-
-/*
- * KEXEC_SOURCE_MEMORY_LIMIT maximum page get_free_page can return.
- * I.e. Maximum page that is mapped directly into kernel memory,
- * and kmap is not required.
- *
- * So far x86_64 is limited to 40 physical address bits.
- */
 #ifdef CONFIG_X86_32
-/* Maximum physical address we can use pages from */
 # define KEXEC_SOURCE_MEMORY_LIMIT (-1UL)
-/* Maximum address we can reach in physical address mode */
 # define KEXEC_DESTINATION_MEMORY_LIMIT (-1UL)
-/* Maximum address we can use for the control code buffer */
 # define KEXEC_CONTROL_MEMORY_LIMIT TASK_SIZE
-
 # define KEXEC_CONTROL_PAGE_SIZE	4096
-
-/* The native architecture */
 # define KEXEC_ARCH KEXEC_ARCH_386
-
-/* We can also handle crash dumps from 64 bit kernel. */
 # define vmcore_elf_check_arch_cross(x) ((x)->e_machine == EM_X86_64)
 #else
-/* Maximum physical address we can use pages from */
 # define KEXEC_SOURCE_MEMORY_LIMIT      (MAXMEM-1)
-/* Maximum address we can reach in physical address mode */
 # define KEXEC_DESTINATION_MEMORY_LIMIT (MAXMEM-1)
-/* Maximum address we can use for the control pages */
 # define KEXEC_CONTROL_MEMORY_LIMIT     (MAXMEM-1)
-
-/* Allocate one page for the pdp and the second for the code */
 # define KEXEC_CONTROL_PAGE_SIZE  (4096UL + 4096UL)
-
-/* The native architecture */
 # define KEXEC_ARCH KEXEC_ARCH_X86_64
 #endif
-
-/*
- * This function is responsible for capturing register states if coming
- * via panic otherwise just fix up the ss and sp if coming via kernel
- * mode exception.
- */
 static inline void crash_setup_regs(struct pt_regs *newregs,
 				    struct pt_regs *oldregs)
 {
@@ -115,7 +79,6 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 		newregs->ip = _THIS_IP_;
 	}
 }
-
 #ifdef CONFIG_X86_32
 asmlinkage unsigned long
 relocate_kernel(unsigned long indirection_page,
@@ -131,9 +94,7 @@ relocate_kernel(unsigned long indirection_page,
 		unsigned int preserve_context,
 		unsigned int host_mem_enc_active);
 #endif
-
 #define ARCH_HAS_KIMAGE_ARCH
-
 #ifdef CONFIG_X86_32
 struct kimage_arch {
 	pgd_t *pgd;
@@ -151,14 +112,8 @@ struct kimage_arch {
 	pmd_t *pmd;
 	pte_t *pte;
 };
-#endif /* CONFIG_X86_32 */
-
+#endif  
 #ifdef CONFIG_X86_64
-/*
- * Number of elements and order of elements in this structure should match
- * with the ones in arch/x86/purgatory/entry64.S. If you make a change here
- * make an appropriate change in purgatory too.
- */
 struct kexec_entry64_regs {
 	uint64_t rax;
 	uint64_t rcx;
@@ -178,20 +133,15 @@ struct kexec_entry64_regs {
 	uint64_t r15;
 	uint64_t rip;
 };
-
 extern int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages,
 				       gfp_t gfp);
 #define arch_kexec_post_alloc_pages arch_kexec_post_alloc_pages
-
 extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
 #define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
-
 void arch_kexec_protect_crashkres(void);
 #define arch_kexec_protect_crashkres arch_kexec_protect_crashkres
-
 void arch_kexec_unprotect_crashkres(void);
 #define arch_kexec_unprotect_crashkres arch_kexec_unprotect_crashkres
-
 #ifdef CONFIG_KEXEC_FILE
 struct purgatory_info;
 int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
@@ -199,32 +149,24 @@ int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
 				     const Elf_Shdr *relsec,
 				     const Elf_Shdr *symtab);
 #define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
-
 int arch_kimage_file_post_load_cleanup(struct kimage *image);
 #define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
 #endif
 #endif
-
 extern void kdump_nmi_shootdown_cpus(void);
-
 #ifdef CONFIG_CRASH_HOTPLUG
 void arch_crash_handle_hotplug_event(struct kimage *image);
 #define arch_crash_handle_hotplug_event arch_crash_handle_hotplug_event
-
 #ifdef CONFIG_HOTPLUG_CPU
 int arch_crash_hotplug_cpu_support(void);
 #define crash_hotplug_cpu_support arch_crash_hotplug_cpu_support
 #endif
-
 #ifdef CONFIG_MEMORY_HOTPLUG
 int arch_crash_hotplug_memory_support(void);
 #define crash_hotplug_memory_support arch_crash_hotplug_memory_support
 #endif
-
 unsigned int arch_crash_get_elfcorehdr_size(void);
 #define crash_get_elfcorehdr_size arch_crash_get_elfcorehdr_size
 #endif
-
-#endif /* __ASSEMBLY__ */
-
-#endif /* _ASM_X86_KEXEC_H */
+#endif  
+#endif  

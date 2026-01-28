@@ -1,34 +1,5 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
 #ifndef __RS690D_H__
 #define __RS690D_H__
-
-/* Registers */
 #define R_00001E_K8_FB_LOCATION                      0x00001E
 #define R_00005F_MC_MISC_UMA_CNTL                    0x00005F
 #define   G_00005F_K8_ADDR_EXT(x)                      (((x) >> 0) & 0xFF)
@@ -238,8 +209,6 @@
 #define   S_006D58_LB_D2_MAX_REQ_OUTSTANDING(x)        (((x) & 0xF) << 16)
 #define   G_006D58_LB_D2_MAX_REQ_OUTSTANDING(x)        (((x) >> 16) & 0xF)
 #define   C_006D58_LB_D2_MAX_REQ_OUTSTANDING           0xFFF0FFFF
-
-
 #define R_000090_MC_SYSTEM_STATUS                    0x000090
 #define   S_000090_MC_SYSTEM_IDLE(x)                   (((x) & 0x1) << 0)
 #define   G_000090_MC_SYSTEM_IDLE(x)                   (((x) >> 0) & 0x1)
@@ -309,5 +278,4 @@
 #define   S_000104_MC_GLOBW_INIT_LAT(x)                (((x) & 0xF) << 28)
 #define   G_000104_MC_GLOBW_INIT_LAT(x)                (((x) >> 28) & 0xF)
 #define   C_000104_MC_GLOBW_INIT_LAT                   0x0FFFFFFF
-
 #endif

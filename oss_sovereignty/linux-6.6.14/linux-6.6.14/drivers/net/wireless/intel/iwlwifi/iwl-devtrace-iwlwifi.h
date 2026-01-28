@@ -1,20 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2009 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015 Intel Mobile Communications GmbH
- * Copyright(c) 2016 - 2017 Intel Deutschland GmbH
- * Copyright(c) 2018        Intel Corporation
- *****************************************************************************/
-
 #if !defined(__IWLWIFI_DEVICE_TRACE_IWLWIFI) || defined(TRACE_HEADER_MULTI_READ)
 #define __IWLWIFI_DEVICE_TRACE_IWLWIFI
-
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM iwlwifi
-
 TRACE_EVENT(iwlwifi_dev_hcmd,
 	TP_PROTO(const struct device *dev,
 		 struct iwl_host_cmd *cmd, u16 total_size,
@@ -27,14 +15,11 @@ TRACE_EVENT(iwlwifi_dev_hcmd,
 	),
 	TP_fast_assign(
 		int i, offset = sizeof(struct iwl_cmd_header);
-
 		if (hdr->group_id)
 			offset = sizeof(struct iwl_cmd_header_wide);
-
 		DEV_ASSIGN;
 		__entry->flags = cmd->flags;
 		memcpy(__get_dynamic_array(hcmd), hdr, offset);
-
 		for (i = 0; i < IWL_MAX_CMD_TBS_PER_TFD; i++) {
 			if (!cmd->len[i])
 				continue;
@@ -48,7 +33,6 @@ TRACE_EVENT(iwlwifi_dev_hcmd,
 		  ((u8 *)__get_dynamic_array(hcmd))[0],
 		  __entry->flags & CMD_ASYNC ? "a" : "")
 );
-
 TRACE_EVENT(iwlwifi_dev_rx,
 	TP_PROTO(const struct device *dev, const struct iwl_trans *trans,
 		 struct iwl_rx_packet *pkt, size_t len),
@@ -62,7 +46,6 @@ TRACE_EVENT(iwlwifi_dev_rx,
 	),
 	TP_fast_assign(
 		size_t hdr_offset = 0;
-
 		DEV_ASSIGN;
 		__entry->cmd = WIDE_ID(pkt->hdr.group_id, pkt->hdr.cmd);
 		memcpy(__get_dynamic_array(rxbuf), pkt,
@@ -72,7 +55,6 @@ TRACE_EVENT(iwlwifi_dev_rx,
 	TP_printk("[%s] RX cmd %#.2x",
 		  __get_str(dev), __entry->cmd)
 );
-
 TRACE_EVENT(iwlwifi_dev_tx,
 	TP_PROTO(const struct device *dev, struct sk_buff *skb,
 		 void *tfd, size_t tfdlen,
@@ -84,12 +66,6 @@ TRACE_EVENT(iwlwifi_dev_tx,
 		__field(void *, skbaddr)
 		__field(size_t, framelen)
 		__dynamic_array(u8, tfd, tfdlen)
-
-		/*
-		 * Do not insert between or below these items,
-		 * we want to keep the frame together (except
-		 * for the possible padding).
-		 */
 		__dynamic_array(u8, buf0, buf0_len)
 		__dynamic_array(u8, buf1, hdr_len > 0 && iwl_trace_data(skb) ?
 						0 : skb->len - hdr_len)
@@ -111,13 +87,11 @@ TRACE_EVENT(iwlwifi_dev_tx,
 		  __get_str(dev), ((u8 *)__get_dynamic_array(buf0))[0],
 		  __entry->framelen, __entry->skbaddr)
 );
-
 TRACE_EVENT(iwlwifi_dev_ucode_event,
 	TP_PROTO(const struct device *dev, u32 time, u32 data, u32 ev),
 	TP_ARGS(dev, time, data, ev),
 	TP_STRUCT__entry(
 		DEV_ENTRY
-
 		__field(u32, time)
 		__field(u32, data)
 		__field(u32, ev)
@@ -131,8 +105,7 @@ TRACE_EVENT(iwlwifi_dev_ucode_event,
 	TP_printk("[%s] EVT_LOGT:%010u:0x%08x:%04u",
 		  __get_str(dev), __entry->time, __entry->data, __entry->ev)
 );
-#endif /* __IWLWIFI_DEVICE_TRACE_IWLWIFI */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE

@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef __ICP_QAT_HAL_H
 #define __ICP_QAT_HAL_H
 #include "icp_qat_fw_loader_handle.h"
-
 enum hal_global_csr {
 	MISC_CONTROL = 0xA04,
 	ICP_RESET = 0xA0c,
 	ICP_GLOBAL_CLK_ENABLE = 0xA50
 };
-
 enum {
 	MISC_CONTROL_C4XXX = 0xAA0,
 	ICP_RESET_CPP0 = 0x938,
@@ -17,7 +13,6 @@ enum {
 	ICP_GLOBAL_CLK_ENABLE_CPP0 = 0x964,
 	ICP_GLOBAL_CLK_ENABLE_CPP1 = 0x968
 };
-
 enum hal_ae_csr {
 	USTORE_ADDRESS = 0x000,
 	USTORE_DATA_LOWER = 0x004,
@@ -50,7 +45,6 @@ enum hal_ae_csr {
 	AE_MISC_CONTROL = 0x160,
 	LOCAL_CSR_STATUS = 0x180,
 };
-
 enum fcu_csr {
 	FCU_CONTROL           = 0x8c0,
 	FCU_STATUS            = 0x8c4,
@@ -60,7 +54,6 @@ enum fcu_csr {
 	FCU_RAMBASE_ADDR_HI   = 0x8d4,
 	FCU_RAMBASE_ADDR_LO   = 0x8d8
 };
-
 enum fcu_csr_4xxx {
 	FCU_CONTROL_4XXX           = 0x1000,
 	FCU_STATUS_4XXX            = 0x1004,
@@ -69,14 +62,12 @@ enum fcu_csr_4xxx {
 	FCU_DRAM_ADDR_LO_4XXX      = 0x1014,
 	FCU_DRAM_ADDR_HI_4XXX      = 0x1018,
 };
-
 enum fcu_cmd {
 	FCU_CTRL_CMD_NOOP  = 0,
 	FCU_CTRL_CMD_AUTH  = 1,
 	FCU_CTRL_CMD_LOAD  = 2,
 	FCU_CTRL_CMD_START = 3
 };
-
 enum fcu_sts {
 	FCU_STS_NO_STS    = 0,
 	FCU_STS_VERI_DONE = 1,
@@ -85,7 +76,6 @@ enum fcu_sts {
 	FCU_STS_LOAD_FAIL = 4,
 	FCU_STS_BUSY      = 5
 };
-
 #define ALL_AE_MASK                 0xFFFFFFFF
 #define UA_ECS                      (0x1 << 31)
 #define ACS_ABO_BITPOS              31
@@ -119,7 +109,7 @@ enum fcu_sts {
 #define ICP_QAT_CAP_OFFSET (ICP_QAT_AE_OFFSET + 0x10000)
 #define LOCAL_TO_XFER_REG_OFFSET 0x800
 #define ICP_QAT_EP_OFFSET 0x3a000
-#define ICP_QAT_EP_OFFSET_4XXX   0x200000 /* HI MMIO CSRs */
+#define ICP_QAT_EP_OFFSET_4XXX   0x200000  
 #define ICP_QAT_AE_OFFSET_4XXX   0x600000
 #define ICP_QAT_CAP_OFFSET_4XXX  0x640000
 #define SET_CAP_CSR(handle, csr, val) \

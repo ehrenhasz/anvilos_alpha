@@ -1,32 +1,14 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-#
-# Test for cpuset v2 partition root state (PRS)
-#
-# The sched verbose flag is set, if available, so that the console log
-# can be examined for the correct setting of scheduling domain.
-#
-
 skip_test() {
 	echo "$1"
 	echo "Test SKIPPED"
-	exit 4 # ksft_skip
+	exit 4 
 }
-
 [[ $(id -u) -eq 0 ]] || skip_test "Test must be run as root!"
-
-
-# Get wait_inotify location
 WAIT_INOTIFY=$(cd $(dirname $0); pwd)/wait_inotify
-
-# Find cgroup v2 mount point
 CGROUP2=$(mount -t cgroup2 | head -1 | awk -e '{print $3}')
 [[ -n "$CGROUP2" ]] || skip_test "Cgroup v2 mount point not found!"
-
 CPUS=$(lscpu | grep "^CPU(s):" | sed -e "s/.*:[[:space:]]*//")
 [[ $CPUS -lt 8 ]] && skip_test "Test needs at least 8 cpus available!"
-
-# Set verbose flag and delay factor
 PROG=$1
 VERBOSE=
 DELAY_FACTOR=1
@@ -35,7 +17,6 @@ while [[ "$1" = -* ]]
 do
 	case "$1" in
 		-v) VERBOSE=1
-		    # Enable sched/verbose can slow thing down
 		    [[ $DELAY_FACTOR -eq 1 ]] &&
 			DELAY_FACTOR=2
 		    break
@@ -50,20 +31,15 @@ do
 	esac
 	shift
 done
-
-# Set sched verbose flag if available when "-v" option is specified
 if [[ -n "$VERBOSE" && -d /sys/kernel/debug/sched ]]
 then
-	# Used to restore the original setting during cleanup
 	SCHED_DEBUG=$(cat /sys/kernel/debug/sched/verbose)
 	echo Y > /sys/kernel/debug/sched/verbose
 fi
-
 cd $CGROUP2
 echo +cpuset > cgroup.subtree_control
 [[ -d test ]] || mkdir test
 cd test
-
 cleanup()
 {
 	online_cpus
@@ -73,8 +49,6 @@ cleanup()
 	[[ -n "$SCHED_DEBUG" ]] &&
 		echo "$SCHED_DEBUG" > /sys/kernel/debug/sched/verbose
 }
-
-# Pause in ms
 pause()
 {
 	DELAY=$1
@@ -86,7 +60,6 @@ pause()
 	done
 	return 0
 }
-
 console_msg()
 {
 	MSG=$1
@@ -95,7 +68,6 @@ console_msg()
 	echo "$MSG" > /dev/console
 	pause 0.01
 }
-
 test_partition()
 {
 	EXPECTED_VAL=$1
@@ -108,7 +80,6 @@ test_partition()
 		exit 1
 	}
 }
-
 test_effective_cpus()
 {
 	EXPECTED_VAL=$1
@@ -119,8 +90,6 @@ test_effective_cpus()
 		exit 1
 	}
 }
-
-# Adding current process to cgroup.procs as a test
 test_add_proc()
 {
 	OUTSTR="$1"
@@ -131,43 +100,28 @@ test_add_proc()
 		echo "Test FAILED"
 		exit 1
 	}
-	echo $$ > $CGROUP2/cgroup.procs	# Move out the task
+	echo $$ > $CGROUP2/cgroup.procs	
 }
-
-#
-# Testing the new "isolated" partition root type
-#
 test_isolated()
 {
 	echo 2-3 > cpuset.cpus
 	TYPE=$(cat cpuset.cpus.partition)
 	[[ $TYPE = member ]] || echo member > cpuset.cpus.partition
-
 	console_msg "Change from member to root"
 	test_partition root
-
 	console_msg "Change from root to isolated"
 	test_partition isolated
-
 	console_msg "Change from isolated to member"
 	test_partition member
-
 	console_msg "Change from member to isolated"
 	test_partition isolated
-
 	console_msg "Change from isolated to root"
 	test_partition root
-
 	console_msg "Change from root to member"
 	test_partition member
-
-	#
-	# Testing partition root with no cpu
-	#
 	console_msg "Distribute all cpus to child partition"
 	echo +cpuset > cgroup.subtree_control
 	test_partition root
-
 	mkdir A1
 	cd A1
 	echo 2-3 > cpuset.cpus
@@ -175,13 +129,11 @@ test_isolated()
 	test_effective_cpus 2-3
 	cd ..
 	test_effective_cpus ""
-
 	console_msg "Moving task to partition test"
 	test_add_proc "No space left"
 	cd A1
 	test_add_proc ""
 	cd ..
-
 	console_msg "Shrink and expand child partition"
 	cd A1
 	echo 2 > cpuset.cpus
@@ -191,31 +143,12 @@ test_isolated()
 	echo 2-3 > cpuset.cpus
 	cd ..
 	test_effective_cpus ""
-
-	# Cleaning up
 	console_msg "Cleaning up"
 	echo $$ > $CGROUP2/cgroup.procs
 	[[ -d A1 ]] && rmdir A1
 }
-
-#
-# Cpuset controller state transition test matrix.
-#
-# Cgroup test hierarchy
-#
-# test -- A1 -- A2 -- A3
-#      \- B1
-#
-#  P<v> = set cpus.partition (0:member, 1:root, 2:isolated, -1:root invalid)
-#  C<l> = add cpu-list
-#  S<p> = use prefix in subtree_control
-#  T    = put a task into cgroup
-#  O<c>-<v> = Write <v> to CPU online file of <c>
-#
 SETUP_A123_PARTITIONS="C1-3:P1:S+ C2-3:P1:S+ C3:P1"
 TEST_MATRIX=(
-	# test  old-A1 old-A2 old-A3 old-B1 new-A1 new-A2 new-A3 new-B1 fail ECPUs Pstate
-	# ----  ------ ------ ------ ------ ------ ------ ------ ------ ---- ----- ------
 	"  S+    C0-1     .      .    C2-3    S+    C4-5     .      .     0 A2:0-1"
 	"  S+    C0-1     .      .    C2-3    P1      .      .      .     0 "
 	"  S+    C0-1     .      .    C2-3   P1:S+ C0-1:P1   .      .     0 "
@@ -235,8 +168,6 @@ TEST_MATRIX=(
 	"  S+ C2-3:P1:S+  C2:P1  .      .     C2-4    .      .      .     0 A1:3-4,A2:2"
 	"  S+ C2-3:P1:S+  C3:P1  .      .     C3      .      .     C0-2   0 A1:,B1:0-2 A1:P1,A2:P1"
 	"  S+ $SETUP_A123_PARTITIONS    .     C2-3    .      .      .     0 A1:,A2:2,A3:3 A1:P1,A2:P1,A3:P1"
-
-	# CPU offlining cases:
 	"  S+    C0-1     .      .    C2-3    S+    C4-5     .     O2-0   0 A1:0-1,B1:3"
 	"  S+ C0-3:P1:S+ C2-3:P1 .      .     O2-0    .      .      .     0 A1:0-1,A2:3"
 	"  S+ C0-3:P1:S+ C2-3:P1 .      .     O2-0   O2-1    .      .     0 A1:0-1,A2:2-3"
@@ -261,67 +192,28 @@ TEST_MATRIX=(
 	"  S+ $SETUP_A123_PARTITIONS    .      .      .    T:O3-0  O3-1   0 A1:1,A2:2,A3:3 A1:P1,A2:P1,A3:P1"
 	"  S+ $SETUP_A123_PARTITIONS    .    T:O1-0  O2-0   O1-1    .     0 A1:1,A2:,A3:3 A1:P1,A2:P1,A3:P1"
 	"  S+ $SETUP_A123_PARTITIONS    .    T:O1-0  O2-0   O2-1    .     0 A1:2-3,A2:2-3,A3:3 A1:P1,A2:P-1,A3:P-1"
-
-	# test  old-A1 old-A2 old-A3 old-B1 new-A1 new-A2 new-A3 new-B1 fail ECPUs Pstate
-	# ----  ------ ------ ------ ------ ------ ------ ------ ------ ---- ----- ------
-	#
-	# Incorrect change to cpuset.cpus invalidates partition root
-	#
-	# Adding CPUs to partition root that are not in parent's
-	# cpuset.cpus is allowed, but those extra CPUs are ignored.
 	"  S+ C2-3:P1:S+ C3:P1   .      .      .     C2-4    .      .     0 A1:,A2:2-3 A1:P1,A2:P1"
-
-	# Taking away all CPUs from parent or itself if there are tasks
-	# will make the partition invalid.
 	"  S+ C2-3:P1:S+  C3:P1  .      .      T     C2-3    .      .     0 A1:2-3,A2:2-3 A1:P1,A2:P-1"
 	"  S+  C3:P1:S+    C3    .      .      T      P1     .      .     0 A1:3,A2:3 A1:P1,A2:P-1"
 	"  S+ $SETUP_A123_PARTITIONS    .    T:C2-3   .      .      .     0 A1:2-3,A2:2-3,A3:3 A1:P1,A2:P-1,A3:P-1"
 	"  S+ $SETUP_A123_PARTITIONS    . T:C2-3:C1-3 .      .      .     0 A1:1,A2:2,A3:3 A1:P1,A2:P1,A3:P1"
-
-	# Changing a partition root to member makes child partitions invalid
 	"  S+ C2-3:P1:S+  C3:P1  .      .      P0     .      .      .     0 A1:2-3,A2:3 A1:P0,A2:P-1"
 	"  S+ $SETUP_A123_PARTITIONS    .     C2-3    P0     .      .     0 A1:2-3,A2:2-3,A3:3 A1:P1,A2:P0,A3:P-1"
-
-	# cpuset.cpus can contains cpus not in parent's cpuset.cpus as long
-	# as they overlap.
 	"  S+ C2-3:P1:S+  .      .      .      .   C3-4:P1   .      .     0 A1:2,A2:3 A1:P1,A2:P1"
-
-	# Deletion of CPUs distributed to child cgroup is allowed.
 	"  S+ C0-1:P1:S+ C1      .    C2-3   C4-5     .      .      .     0 A1:4-5,A2:4-5"
-
-	# To become a valid partition root, cpuset.cpus must overlap parent's
-	# cpuset.cpus.
 	"  S+   C0-1:P1   .      .    C2-3    S+   C4-5:P1   .      .     0 A1:0-1,A2:0-1 A1:P1,A2:P-1"
-
-	# Enabling partition with child cpusets is allowed
 	"  S+   C0-1:S+  C1      .    C2-3    P1      .      .      .     0 A1:0-1,A2:1 A1:P1"
-
-	# A partition root with non-partition root parent is invalid, but it
-	# can be made valid if its parent becomes a partition root too.
 	"  S+   C0-1:S+  C1      .    C2-3     .      P2     .      .     0 A1:0-1,A2:1 A1:P0,A2:P-2"
 	"  S+   C0-1:S+ C1:P2    .    C2-3     P1     .      .      .     0 A1:0,A2:1 A1:P1,A2:P2"
-
-	# A non-exclusive cpuset.cpus change will invalidate partition and its siblings
 	"  S+   C0-1:P1   .      .    C2-3   C0-2     .      .      .     0 A1:0-2,B1:2-3 A1:P-1,B1:P0"
 	"  S+   C0-1:P1   .      .  P1:C2-3  C0-2   .      .      .     0 A1:0-2,B1:2-3 A1:P-1,B1:P-1"
 	"  S+    C0-1     .      .  P1:C2-3  C0-2   .      .      .     0 A1:0-2,B1:2-3 A1:P0,B1:P-1"
-
-	# test  old-A1 old-A2 old-A3 old-B1 new-A1 new-A2 new-A3 new-B1 fail ECPUs Pstate
-	# ----  ------ ------ ------ ------ ------ ------ ------ ------ ---- ----- ------
-	# Failure cases:
-
-	# A task cannot be added to a partition with no cpu
 	"  S+ C2-3:P1:S+  C3:P1  .      .    O2-0:T   .      .      .     1 A1:,A2:3 A1:P1,A2:P1"
 )
-
-#
-# Write to the cpu online file
-#  $1 - <c>-<v> where <c> = cpu number, <v> value to be written
-#
 write_cpu_online()
 {
 	CPU=${1%-*}
-	VAL=${1#*-}
+	VAL=${1
 	CPUFILE=//sys/devices/system/cpu/cpu${CPU}/online
 	if [[ $VAL -eq 0 ]]
 	then
@@ -335,15 +227,6 @@ write_cpu_online()
 	echo $VAL > $CPUFILE
 	pause 0.01
 }
-
-#
-# Set controller state
-#  $1 - cgroup directory
-#  $2 - state
-#  $3 - showerr
-#
-# The presence of ":" in state means transition from one to the next.
-#
 set_ctrl_state()
 {
 	TMPMSG=/tmp/.msg_$$
@@ -354,7 +237,6 @@ set_ctrl_state()
 	HASERR=0
 	REDIRECT="2> $TMPMSG"
 	[[ -z "$STATE" || "$STATE" = '.' ]] && return 0
-
 	rm -f $TMPMSG
 	for CMD in $(echo $STATE | sed -e "s/:/ /g")
 	do
@@ -365,17 +247,17 @@ set_ctrl_state()
 		S=$(expr substr $CMD 1 1)
 		if [[ $S = S ]]
 		then
-			PREFIX=${CMD#?}
+			PREFIX=${CMD
 			COMM="echo ${PREFIX}${CTRL} > $SFILE"
 			eval $COMM $REDIRECT
 		elif [[ $S = C ]]
 		then
-			CPUS=${CMD#?}
+			CPUS=${CMD
 			COMM="echo $CPUS > $CFILE"
 			eval $COMM $REDIRECT
 		elif [[ $S = P ]]
 		then
-			VAL=${CMD#?}
+			VAL=${CMD
 			case $VAL in
 			0)  VAL=member
 			    ;;
@@ -392,7 +274,7 @@ set_ctrl_state()
 			eval $COMM $REDIRECT
 		elif [[ $S = O ]]
 		then
-			VAL=${CMD#?}
+			VAL=${CMD
 			write_cpu_online $VAL
 		elif [[ $S = T ]]
 		then
@@ -412,7 +294,6 @@ set_ctrl_state()
 	done
 	return $HASERR
 }
-
 set_ctrl_state_noerr()
 {
 	CGRP=$1
@@ -424,7 +305,6 @@ set_ctrl_state_noerr()
 		exit 1
 	}
 }
-
 online_cpus()
 {
 	[[ -n "OFFLINE_CPUS" ]] && {
@@ -434,10 +314,6 @@ online_cpus()
 		done
 	}
 }
-
-#
-# Return 1 if the list of effective cpus isn't the same as the initial list.
-#
 reset_cgroup_states()
 {
 	echo 0 > $CGROUP2/cgroup.procs
@@ -446,7 +322,6 @@ reset_cgroup_states()
 	set_ctrl_state . S-
 	pause 0.01
 }
-
 dump_states()
 {
 	for DIR in A1 A1/A2 A1/A2/A3 B1
@@ -457,11 +332,6 @@ dump_states()
 		[[ -e $PRS   ]] && echo "$PRS: $(cat $PRS)"
 	done
 }
-
-#
-# Check effective cpus
-# $1 - check string, format: <cgroup>:<cpu-list>[,<cgroup>:<cpu-list>]*
-#
 check_effective_cpus()
 {
 	CHK_STR=$1
@@ -477,11 +347,6 @@ check_effective_cpus()
 		[[ $CPUS = $(cat $FILE) ]] || return 1
 	done
 }
-
-#
-# Check cgroup states
-#  $1 - check string, format: <cgroup>:<state>[,<cgroup>:<state>]*
-#
 check_cgroup_states()
 {
 	CHK_STR=$1
@@ -494,7 +359,6 @@ check_cgroup_states()
 		EVAL=$(expr substr $STATE 2 2)
 		[[ $CGRP = A2 ]] && CGRP=A1/A2
 		[[ $CGRP = A3 ]] && CGRP=A1/A2/A3
-
 		case $STATE in
 			P*) FILE=$CGRP/cpuset.cpus.partition
 			    ;;
@@ -503,7 +367,6 @@ check_cgroup_states()
 			    ;;
 		esac
 		VAL=$(cat $FILE)
-
 		case "$VAL" in
 			member) VAL=0
 				;;
@@ -523,15 +386,6 @@ check_cgroup_states()
 	done
 	return 0
 }
-
-#
-# Run cpuset state transition test
-#  $1 - test matrix name
-#
-# This test is somewhat fragile as delays (sleep x) are added in various
-# places to make sure state changes are fully propagated before the next
-# action. These delays may need to be adjusted if running in a slower machine.
-#
 run_state_test()
 {
 	TEST=$1
@@ -539,12 +393,10 @@ run_state_test()
 	CPULIST=0-6
 	I=0
 	eval CNT="\${#$TEST[@]}"
-
 	reset_cgroup_states
 	echo $CPULIST > cpuset.cpus
 	echo root > cpuset.cpus.partition
 	console_msg "Running state transition test ..."
-
 	while [[ $I -lt $CNT ]]
 	do
 		echo "Running test $I ..." > /dev/console
@@ -561,7 +413,6 @@ run_state_test()
 		RESULT=${10}
 		ECPUS=${11}
 		STATES=${12}
-
 		set_ctrl_state_noerr .        $ROOT
 		set_ctrl_state_noerr A1       $OLD_A1
 		set_ctrl_state_noerr A1/A2    $OLD_A2
@@ -572,14 +423,12 @@ run_state_test()
 		set_ctrl_state A1/A2    $NEW_A2; ((RETVAL += $?))
 		set_ctrl_state A1/A2/A3 $NEW_A3; ((RETVAL += $?))
 		set_ctrl_state B1       $NEW_B1; ((RETVAL += $?))
-
 		[[ $RETVAL -ne $RESULT ]] && {
 			echo "Test $TEST[$I] failed result check!"
 			eval echo \"\${$TEST[$I]}\"
 			dump_states
 			exit 1
 		}
-
 		[[ -n "$ECPUS" && "$ECPUS" != . ]] && {
 			check_effective_cpus $ECPUS
 			[[ $? -ne 0 ]] && {
@@ -590,7 +439,6 @@ run_state_test()
 				exit 1
 			}
 		}
-
 		[[ -n "$STATES" ]] && {
 			check_cgroup_states $STATES
 			[[ $? -ne 0 ]] && {
@@ -601,11 +449,7 @@ run_state_test()
 				exit 1
 			}
 		}
-
 		reset_cgroup_states
-		#
-		# Check to see if effective cpu list changes
-		#
 		pause 0.05
 		NEWLIST=$(cat cpuset.cpus.effective)
 		[[ $NEWLIST != $CPULIST ]] && {
@@ -616,28 +460,15 @@ run_state_test()
 		((I++))
 	done
 	echo "All $I tests of $TEST PASSED."
-
 	echo member > cpuset.cpus.partition
 }
-
-#
-# Wait for inotify event for the given file and read it
-# $1: cgroup file to wait for
-# $2: file to store the read result
-#
 wait_inotify()
 {
 	CGROUP_FILE=$1
 	OUTPUT_FILE=$2
-
 	$WAIT_INOTIFY $CGROUP_FILE
 	cat $CGROUP_FILE > $OUTPUT_FILE
 }
-
-#
-# Test if inotify events are properly generated when going into and out of
-# invalid partition state.
-#
 test_inotify()
 {
 	ERR=0
@@ -646,7 +477,6 @@ test_inotify()
 		echo "wait_inotify not found, inotify test SKIPPED."
 		return
 	}
-
 	pause 0.01
 	echo 1 > cpuset.cpus
 	echo 0 > cgroup.procs
@@ -683,7 +513,6 @@ test_inotify()
 		echo "Inotify test PASSED"
 	fi
 }
-
 trap cleanup 0 2 3 6
 run_state_test TEST_MATRIX
 test_isolated

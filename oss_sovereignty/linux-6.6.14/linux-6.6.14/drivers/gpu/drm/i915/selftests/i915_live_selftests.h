@@ -1,21 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef selftest
 #define selftest(x, y)
 #endif
-
-/*
- * List each unit test as selftest(name, function)
- *
- * The name is used as both an enum and expanded as subtest__name to create
- * a module parameter. It must be unique and legal for a C identifier.
- *
- * The function should be of type int function(void). It may be conditionally
- * compiled using #if IS_ENABLED(CONFIG_DRM_I915_SELFTEST).
- *
- * Tests are executed in order by igt/i915_selftest
- */
-selftest(sanitycheck, i915_live_sanitycheck) /* keep first (igt selfcheck) */
+selftest(sanitycheck, i915_live_sanitycheck)  
 selftest(uncore, intel_uncore_live_selftests)
 selftest(workarounds, intel_workarounds_live_selftests)
 selftest(gt_engines, intel_engine_live_selftests)
@@ -51,5 +37,4 @@ selftest(slpc, intel_slpc_live_selftests)
 selftest(guc, intel_guc_live_selftests)
 selftest(guc_multi_lrc, intel_guc_multi_lrc_live_selftests)
 selftest(guc_hang, intel_guc_hang_check)
-/* Here be dragons: keep last to run last! */
 selftest(late_gt_pm, intel_gt_pm_late_selftests)

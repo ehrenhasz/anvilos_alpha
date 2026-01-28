@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI Offload Driver
- * Copyright (c) 2016 Cavium Inc.
- */
-
 #ifndef _QEDI_FW_SCSI_H_
 #define _QEDI_FW_SCSI_H_
-
 #include <linux/types.h>
 #include <asm/byteorder.h>
 #include "qedi_hsi.h"
 #include <linux/qed/qed_if.h>
-
 struct scsi_sgl_task_params {
 	struct scsi_sge	*sgl;
 	struct regpair	sgl_phys_addr;
@@ -19,7 +11,6 @@ struct scsi_sgl_task_params {
 	u16		num_sges;
 	bool		small_mid_sge;
 };
-
 struct scsi_dif_task_params {
 	u32	initial_ref_tag;
 	bool	initial_ref_tag_is_valid;
@@ -44,7 +35,6 @@ struct scsi_dif_task_params {
 	bool	forward_app_tag_with_mask;
 	bool	forward_ref_tag_with_mask;
 };
-
 struct scsi_initiator_cmd_params {
 	struct scsi_sge	extended_cdb_sge;
 	struct regpair	sense_data_buffer_phys_addr;

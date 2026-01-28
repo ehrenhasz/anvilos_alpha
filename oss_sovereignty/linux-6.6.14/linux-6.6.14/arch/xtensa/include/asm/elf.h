@@ -1,28 +1,9 @@
-/*
- * include/asm-xtensa/elf.h
- *
- * ELF register definitions
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2001 - 2005 Tensilica Inc.
- */
-
 #ifndef _XTENSA_ELF_H
 #define _XTENSA_ELF_H
-
 #include <asm/ptrace.h>
 #include <asm/coprocessor.h>
 #include <linux/elf-em.h>
-
-/* Xtensa processor ELF architecture-magic number */
-
 #define EM_XTENSA_OLD	0xABC7
-
-/* Xtensa relocations defined by the ABIs */
-
 #define R_XTENSA_NONE           0
 #define R_XTENSA_32             1
 #define R_XTENSA_RTLD           2
@@ -70,37 +51,18 @@
 #define R_XTENSA_SLOT12_ALT	47
 #define R_XTENSA_SLOT13_ALT	48
 #define R_XTENSA_SLOT14_ALT	49
-
-/* ELF register definitions. This is needed for core dump support.  */
-
 typedef unsigned long elf_greg_t;
-
 typedef struct user_pt_regs xtensa_gregset_t;
-
 #define ELF_NGREG	(sizeof(xtensa_gregset_t) / sizeof(elf_greg_t))
-
 typedef elf_greg_t elf_gregset_t[ELF_NGREG];
-
 #define ELF_NFPREG	18
-
 typedef unsigned int elf_fpreg_t;
 typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
-
-/*
- * This is used to ensure we don't load something for the wrong architecture.
- */
-
 #define elf_check_arch(x) ( ( (x)->e_machine == EM_XTENSA )  || \
 			    ( (x)->e_machine == EM_XTENSA_OLD ) )
-
 #define ELFOSABI_XTENSA_FDPIC 65
 #define elf_check_fdpic(x) ((x)->e_ident[EI_OSABI] == ELFOSABI_XTENSA_FDPIC)
 #define ELF_FDPIC_CORE_EFLAGS 0
-
-/*
- * These are used to set parameters in the core dumps.
- */
-
 #ifdef __XTENSA_EL__
 # define ELF_DATA	ELFDATA2LSB
 #elif defined(__XTENSA_EB__)
@@ -108,57 +70,16 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 #else
 # error processor byte order undefined!
 #endif
-
 #define ELF_CLASS	ELFCLASS32
 #define ELF_ARCH	EM_XTENSA
-
 #define ELF_EXEC_PAGESIZE	PAGE_SIZE
 #define CORE_DUMP_USE_REGSET
-
-/*
- * This is the location that an ET_DYN program is loaded if exec'ed.  Typical
- * use of this is to invoke "./ld.so someprog" to test out a new version of
- * the loader.  We need to make sure that it is out of the way of the program
- * that it will "exec", and that there is sufficient room for the brk.
- */
-
 #define ELF_ET_DYN_BASE         (2 * TASK_SIZE / 3)
-
-/*
- * This yields a mask that user programs can use to figure out what
- * instruction set this CPU supports.  This could be done in user space,
- * but it's not easy, and we've already done it here.
- */
-
 #define ELF_HWCAP	(0)
-
-/*
- * This yields a string that ld.so will use to load implementation
- * specific libraries for optimization.  This is more specific in
- * intent than poking at uname or /proc/cpuinfo.
- * For the moment, we have only optimizations for the Intel generations,
- * but that could change...
- */
-
 #define ELF_PLATFORM  (NULL)
-
-/*
- * The Xtensa processor ABI says that when the program starts, a2
- * contains a pointer to a function which might be registered using
- * `atexit'.  This provides a mean for the dynamic linker to call
- * DT_FINI functions for shared libraries that have been loaded before
- * the code runs.
- *
- * A value of 0 tells we have no such handler.
- *
- * We might as well make sure everything else is cleared too (except
- * for the stack pointer in a1), just to make things more
- * deterministic.  Also, clearing a0 terminates debugger backtraces.
- */
-
 #define ELF_PLAT_INIT(_r, load_addr) \
 	do { \
-		(_r)->areg[0]  = 0; /*(_r)->areg[1] = 0;*/ \
+		(_r)->areg[0]  = 0;   \
 		(_r)->areg[2]  = 0; (_r)->areg[3]  = 0; \
 		(_r)->areg[4]  = 0; (_r)->areg[5]  = 0; \
 		(_r)->areg[6]  = 0; (_r)->areg[7]  = 0; \
@@ -167,14 +88,12 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
 		(_r)->areg[12] = 0; (_r)->areg[13] = 0; \
 		(_r)->areg[14] = 0; (_r)->areg[15] = 0; \
 	} while (0)
-
 #define ELF_FDPIC_PLAT_INIT(_r, _exec_map_addr, _interp_map_addr, dynamic_addr) \
 	do { \
 		(_r)->areg[4] = _exec_map_addr; \
 		(_r)->areg[5] = _interp_map_addr; \
 		(_r)->areg[6] = dynamic_addr; \
 	} while (0)
-
 typedef struct {
 	xtregs_opt_t	opt;
 	xtregs_user_t	user;
@@ -189,8 +108,6 @@ typedef struct {
 	xtregs_cp7_t	cp7;
 #endif
 } elf_xtregs_t;
-
 #define SET_PERSONALITY(ex) \
 	set_personality(PER_LINUX_32BIT | (current->personality & (~PER_MASK)))
-
-#endif	/* _XTENSA_ELF_H */
+#endif	 

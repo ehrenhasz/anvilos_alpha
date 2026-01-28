@@ -1,9 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Chunhui Dai <chunhui.dai@mediatek.com>
- */
-
 #ifndef _MTK_HDMI_PHY_H
 #define _MTK_HDMI_PHY_H
 #include <linux/clk.h>
@@ -14,9 +8,7 @@
 #include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 #include <linux/types.h>
-
 struct mtk_hdmi_phy;
-
 struct mtk_hdmi_phy_conf {
 	unsigned long flags;
 	bool pll_default_off;
@@ -25,7 +17,6 @@ struct mtk_hdmi_phy_conf {
 	void (*hdmi_phy_disable_tmds)(struct mtk_hdmi_phy *hdmi_phy);
 	int (*hdmi_phy_configure)(struct phy *phy, union phy_configure_opts *opts);
 };
-
 struct mtk_hdmi_phy {
 	void __iomem *regs;
 	struct device *dev;
@@ -41,11 +32,8 @@ struct mtk_hdmi_phy {
 	unsigned int ibias_up;
 	bool tmds_over_340M;
 };
-
 struct mtk_hdmi_phy *to_mtk_hdmi_phy(struct clk_hw *hw);
-
 extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8195_conf;
 extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_8173_conf;
 extern struct mtk_hdmi_phy_conf mtk_hdmi_phy_2701_conf;
-
-#endif /* _MTK_HDMI_PHY_H */
+#endif  

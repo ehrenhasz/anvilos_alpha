@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt700-sdw.h -- RT700 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT700_SDW_H__
 #define __RT700_SDW_H__
-
 static const struct reg_default rt700_reg_defaults[] = {
 	{ 0x0000, 0x0000 },
 	{ 0x0001, 0x0000 },
@@ -331,5 +323,4 @@ static const struct reg_default rt700_reg_defaults[] = {
 	{ 0x75204a, 0xa83b },
 	{ 0x75206b, 0x5064 },
 };
-
-#endif /* __RT700_H__ */
+#endif  

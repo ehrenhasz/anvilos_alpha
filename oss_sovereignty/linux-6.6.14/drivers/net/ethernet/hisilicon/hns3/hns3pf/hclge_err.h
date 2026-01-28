@@ -1,25 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*  Copyright (c) 2016-2017 Hisilicon Limited. */
-
 #ifndef __HCLGE_ERR_H
 #define __HCLGE_ERR_H
-
 #include "hclge_main.h"
 #include "hnae3.h"
-
 #define HCLGE_MPF_RAS_INT_MIN_BD_NUM	10
 #define HCLGE_PF_RAS_INT_MIN_BD_NUM	4
 #define HCLGE_MPF_MSIX_INT_MIN_BD_NUM	10
 #define HCLGE_PF_MSIX_INT_MIN_BD_NUM	4
-
 #define HCLGE_RAS_PF_OTHER_INT_STS_REG   0x20B00
 #define HCLGE_RAS_REG_NFE_MASK   0xFF00
 #define HCLGE_RAS_REG_ROCEE_ERR_MASK   0x3000000
 #define HCLGE_RAS_REG_ERR_MASK \
 	(HCLGE_RAS_REG_NFE_MASK | HCLGE_RAS_REG_ROCEE_ERR_MASK)
-
 #define HCLGE_VECTOR0_REG_MSIX_MASK   0x1FF00
-
 #define HCLGE_IMP_TCM_ECC_ERR_INT_EN	0xFFFF0000
 #define HCLGE_IMP_TCM_ECC_ERR_INT_EN_MASK	0xFFFF0000
 #define HCLGE_IMP_ITCM4_ECC_ERR_INT_EN	0x300
@@ -84,7 +76,6 @@
 #define HCLGE_SSU_PORT_BASED_ERR_INT_EN_MASK	0x0BFF0000
 #define HCLGE_SSU_FIFO_OVERFLOW_ERR_INT_EN	GENMASK(23, 0)
 #define HCLGE_SSU_FIFO_OVERFLOW_ERR_INT_EN_MASK	GENMASK(23, 0)
-
 #define HCLGE_SSU_COMMON_ERR_INT_MASK	GENMASK(9, 0)
 #define HCLGE_SSU_PORT_INT_MSIX_MASK	0x7BFF
 #define HCLGE_IGU_INT_MASK		GENMASK(3, 0)
@@ -98,7 +89,6 @@
 #define HCLGE_QCN_FIFO_INT_MASK		GENMASK(17, 0)
 #define HCLGE_QCN_ECC_INT_MASK		GENMASK(21, 0)
 #define HCLGE_NCSI_ECC_INT_MASK		GENMASK(1, 0)
-
 #define HCLGE_ROCEE_RAS_NFE_INT_EN		0xF
 #define HCLGE_ROCEE_RAS_CE_INT_EN		0x1
 #define HCLGE_ROCEE_RAS_NFE_INT_EN_MASK		0xF
@@ -110,18 +100,15 @@
 #define HCLGE_ROCEE_OVF_INT_MASK		BIT(3)
 #define HCLGE_ROCEE_OVF_ERR_INT_MASK		0x10000
 #define HCLGE_ROCEE_OVF_ERR_TYPE_MASK		0x3F
-
 #define HCLGE_DESC_DATA_MAX			8
 #define HCLGE_REG_NUM_MAX			256
 #define HCLGE_DESC_NO_DATA_LEN			8
-
 enum hclge_err_int_type {
 	HCLGE_ERR_INT_MSIX = 0,
 	HCLGE_ERR_INT_RAS_CE = 1,
 	HCLGE_ERR_INT_RAS_NFE = 2,
 	HCLGE_ERR_INT_RAS_FE = 3,
 };
-
 enum hclge_mod_name_list {
 	MODULE_NONE		= 0,
 	MODULE_BIOS_COMMON	= 1,
@@ -139,7 +126,6 @@ enum hclge_mod_name_list {
 	MODULE_TXDMA		= 13,
 	MODULE_MASTER		= 14,
 	MODULE_HIMAC		= 15,
-	/* add new MODULE NAME for NIC here in order */
 	MODULE_ROCEE_TOP	= 40,
 	MODULE_ROCEE_TIMER	= 41,
 	MODULE_ROCEE_MDB	= 42,
@@ -150,9 +136,7 @@ enum hclge_mod_name_list {
 	MODULE_ROCEE_GEN_AC	= 47,
 	MODULE_ROCEE_QMM	= 48,
 	MODULE_ROCEE_LSAN	= 49,
-	/* add new MODULE NAME for RoCEE here in order */
 };
-
 enum hclge_err_type_list {
 	NONE_ERROR		= 0,
 	FIFO_ERROR		= 1,
@@ -169,54 +153,44 @@ enum hclge_err_type_list {
 	GLB_ERROR		= 12,
 	LINK_ERROR		= 13,
 	PTP_ERROR		= 14,
-	/* add new ERROR TYPE for NIC here in order */
 	ROCEE_NORMAL_ERR	= 40,
 	ROCEE_OVF_ERR		= 41,
 	ROCEE_BUS_ERR		= 42,
-	/* add new ERROR TYPE for ROCEE here in order */
 };
-
 struct hclge_hw_blk {
 	u32 msk;
 	const char *name;
 	int (*config_err_int)(struct hclge_dev *hdev, bool en);
 };
-
 struct hclge_hw_error {
 	u32 int_msk;
 	const char *msg;
 	enum hnae3_reset_type reset_level;
 };
-
 struct hclge_hw_module_id {
 	enum hclge_mod_name_list module_id;
 	const char *msg;
 };
-
 struct hclge_hw_type_id {
 	enum hclge_err_type_list type_id;
 	const char *msg;
 };
-
 struct hclge_sum_err_info {
 	u8 reset_type;
 	u8 mod_num;
 	u8 rsv[2];
 };
-
 struct hclge_mod_err_info {
 	u8 mod_id;
 	u8 err_num;
 	u8 rsv[2];
 };
-
 struct hclge_type_reg_err_info {
 	u8 type_id;
 	u8 reg_num;
 	u8 rsv[2];
 	u32 hclge_reg[HCLGE_REG_NUM_MAX];
 };
-
 int hclge_config_mac_tnl_int(struct hclge_dev *hdev, bool en);
 int hclge_config_nic_hw_error(struct hclge_dev *hdev, bool state);
 int hclge_config_rocee_ras_interrupt(struct hclge_dev *hdev, bool en);

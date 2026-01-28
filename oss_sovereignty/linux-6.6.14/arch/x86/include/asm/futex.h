@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_FUTEX_H
 #define _ASM_X86_FUTEX_H
-
 #ifdef __KERNEL__
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
-
 #include <asm/asm.h>
 #include <asm/errno.h>
 #include <asm/processor.h>
 #include <asm/smap.h>
-
 #define unsafe_atomic_op1(insn, oval, uaddr, oparg, label)	\
 do {								\
 	int oldval = 0, ret;					\
@@ -24,8 +19,6 @@ do {								\
 		goto label;					\
 	*oval = oldval;						\
 } while(0)
-
-
 #define unsafe_atomic_op2(insn, oval, uaddr, oparg, label)	\
 do {								\
 	int oldval = 0, ret, tem;				\
@@ -44,13 +37,11 @@ do {								\
 		goto label;					\
 	*oval = oldval;						\
 } while(0)
-
 static __always_inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		u32 __user *uaddr)
 {
 	if (!user_access_begin(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		unsafe_atomic_op1("xchgl %0, %2", oval, uaddr, oparg, Efault);
@@ -78,12 +69,10 @@ Efault:
 	user_access_end();
 	return -EFAULT;
 }
-
 static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 						u32 oldval, u32 newval)
 {
 	int ret = 0;
-
 	if (!user_access_begin(uaddr, sizeof(u32)))
 		return -EFAULT;
 	asm volatile("\n"
@@ -98,6 +87,5 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	*uval = oldval;
 	return ret;
 }
-
 #endif
-#endif /* _ASM_X86_FUTEX_H */
+#endif  

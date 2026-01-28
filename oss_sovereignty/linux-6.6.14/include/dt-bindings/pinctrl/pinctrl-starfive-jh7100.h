@@ -1,36 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
-
 #ifndef __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__
 #define __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__
-
 #define PAD_GPIO_OFFSET		0
 #define PAD_FUNC_SHARE_OFFSET	64
 #define PAD_GPIO(x)		(PAD_GPIO_OFFSET + (x))
 #define PAD_FUNC_SHARE(x)	(PAD_FUNC_SHARE_OFFSET + (x))
-
-/*
- * GPIOMUX bits:
- *  | 31 - 24 | 23 - 16 | 15 - 8 |     7    |     6    |  5 - 0  |
- *  |  dout   |  doen   |  din   | dout rev | doen rev | gpio nr |
- *
- * dout:     output signal
- * doen:     output enable signal
- * din:      optional input signal, 0xff = none
- * dout rev: output signal reverse bit
- * doen rev: output enable signal reverse bit
- * gpio nr:  gpio number, 0 - 63
- */
 #define GPIOMUX(n, dout, doen, din) ( \
 		(((dout) & 0x80000000) >> (31 - 7)) | (((dout) & 0xff) << 24) | \
 		(((doen) & 0x80000000) >> (31 - 6)) | (((doen) & 0xff) << 16) | \
 		(((din) & 0xff) << 8) | \
 		((n) & 0x3f))
-
 #define GPO_REVERSE				0x80000000
-
 #define GPO_LOW					0
 #define GPO_HIGH				1
 #define GPO_ENABLE				0
@@ -193,7 +172,6 @@
 #define GPO_UART2_PAD_SOUT			131
 #define GPO_UART3_PAD_SOUT			132
 #define GPO_USB_DRV_BUS				133
-
 #define GPI_CPU_JTAG_TCK			0
 #define GPI_CPU_JTAG_TDI			1
 #define GPI_CPU_JTAG_TMS			2
@@ -269,7 +247,5 @@
 #define GPI_UART2_PAD_SIN			72
 #define GPI_UART3_PAD_SIN			73
 #define GPI_USB_OVER_CURRENT			74
-
 #define GPI_NONE				0xff
-
-#endif /* __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__ */
+#endif  

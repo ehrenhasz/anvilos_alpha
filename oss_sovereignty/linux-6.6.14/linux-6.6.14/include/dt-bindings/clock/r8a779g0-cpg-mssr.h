@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
 #ifndef __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
 #define __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__
-
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
-
-/* r8a779g0 CPG Core Clocks */
-
 #define R8A779G0_CLK_ZX			0
 #define R8A779G0_CLK_ZS			1
 #define R8A779G0_CLK_ZT			2
@@ -86,5 +78,4 @@
 #define R8A779G0_CLK_CPEX		74
 #define R8A779G0_CLK_CBFUSA		75
 #define R8A779G0_CLK_R			76
-
-#endif /* __DT_BINDINGS_CLOCK_R8A779G0_CPG_MSSR_H__ */
+#endif  

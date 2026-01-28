@@ -1,28 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- * Copyright (C) 2012 ARM Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 #ifndef _UAPI__ASM_HWCAP_H
 #define _UAPI__ASM_HWCAP_H
-
-/*
- * HWCAP flags - for AT_HWCAP
- *
- * Bits 62 and 63 are reserved for use by libc.
- * Bits 32-61 are unallocated for potential use by libc.
- */
 #define HWCAP_FP		(1 << 0)
 #define HWCAP_ASIMD		(1 << 1)
 #define HWCAP_EVTSTRM		(1 << 2)
@@ -55,10 +32,6 @@
 #define HWCAP_SB		(1 << 29)
 #define HWCAP_PACA		(1 << 30)
 #define HWCAP_PACG		(1UL << 31)
-
-/*
- * HWCAP2 flags - for AT_HWCAP2
- */
 #define HWCAP2_DCPODP		(1 << 0)
 #define HWCAP2_SVE2		(1 << 1)
 #define HWCAP2_SVEAES		(1 << 2)
@@ -104,5 +77,4 @@
 #define HWCAP2_SME_F16F16	(1UL << 42)
 #define HWCAP2_MOPS		(1UL << 43)
 #define HWCAP2_HBC		(1UL << 44)
-
-#endif /* _UAPI__ASM_HWCAP_H */
+#endif  

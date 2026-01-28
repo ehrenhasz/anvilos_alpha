@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8660_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8660_H
-
 #define AFAB_CLK_SRC				0
 #define AFAB_CORE_CLK				1
 #define SCSS_A_CLK				2
@@ -264,5 +258,4 @@
 #define PLL10					255
 #define PLL11					256
 #define PLL12					257
-
 #endif

@@ -1,21 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
 #include "imx28.dtsi"
-
 / {
 	model = "Bluegiga APX4 Development Kit";
 	compatible = "bluegiga,apx4devkit", "fsl,imx28";
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x40000000 0x04000000>;
 	};
-
 	regulators {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		reg_3p3v: regulator@0 {
 			compatible = "regulator-fixed";
 			reg = <0>;
@@ -25,7 +20,6 @@
 			regulator-always-on;
 		};
 	};
-
 	sound {
 		compatible = "bluegiga,apx4devkit-sgtl5000",
 			     "fsl,mxs-audio-sgtl5000";
@@ -33,10 +27,8 @@
 		saif-controllers = <&saif0 &saif1>;
 		audio-codec = <&sgtl5000>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		user {
 			label = "Heartbeat";
 			gpios = <&gpio3 28 0>;
@@ -44,48 +36,40 @@
 		};
 	};
 };
-
 &auart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&auart0_pins_a>;
 	status = "okay";
 };
-
 &auart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&auart1_2pins_a>;
 	status = "okay";
 };
-
 &auart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&auart2_2pins_a>;
 	status = "okay";
 };
-
 &duart {
 	pinctrl-names = "default";
 	pinctrl-0 = <&duart_pins_a>;
 	status = "okay";
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&gpmi_pins_a &gpmi_status_cfg>;
 	status = "okay";
 };
-
 &lcdif {
 	pinctrl-names = "default";
 	pinctrl-0 = <&lcdif_24bit_pins_a
 		     &lcdif_pins_apx4>;
 	display = <&display0>;
 	status = "okay";
-
 	display0: display0 {
 		bits-per-pixel = <32>;
 		bus-width = <24>;
-
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing0 {
@@ -106,12 +90,10 @@
 		};
 	};
 };
-
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins_a>;
 	status = "okay";
-
 	sgtl5000: codec@a {
 		compatible = "fsl,sgtl5000";
 		reg = <0x0a>;
@@ -120,31 +102,27 @@
 		VDDIO-supply = <&reg_3p3v>;
 		clocks = <&saif0>;
 	};
-
 	pcf8563: rtc@51 {
 		compatible = "phg,pcf8563";
 		reg = <0x51>;
 	};
 };
-
 &mac0 {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
 	pinctrl-0 = <&mac0_pins_a>;
 	status = "okay";
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <&hog_pins_a>;
-
 	hog_pins_a: hog@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
 			MX28_PAD_GPMI_CE1N__GPIO_0_17
 			MX28_PAD_GPMI_RDY1__GPIO_0_21
 			MX28_PAD_SSP2_MISO__GPIO_2_18
-			MX28_PAD_SSP2_SS0__AUART3_TX /* was: 0x2131 - MX28_PAD_SSP2_SS0__GPIO_2_19 */
+			MX28_PAD_SSP2_SS0__AUART3_TX  
 			MX28_PAD_PWM3__GPIO_3_28
 			MX28_PAD_LCD_RESET__GPIO_3_30
 			MX28_PAD_JTAG_RTCK__GPIO_4_20
@@ -153,7 +131,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	lcdif_pins_apx4: lcdif-apx4@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -166,7 +143,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
-
 	mmc2_4bit_pins_apx4: mmc2-4bit-apx4@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -181,7 +157,6 @@
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_ENABLE>;
 	};
-
 	mmc2_sck_cfg_apx4: mmc2-sck-cfg-apx4@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -191,20 +166,17 @@
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
 };
-
 &saif0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&saif0_pins_a>;
 	status = "okay";
 };
-
 &saif1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&saif1_pins_a>;
 	fsl,saif-master = <&saif0>;
 	status = "okay";
 };
-
 &ssp0 {
 	compatible = "fsl,imx28-mmc";
 	pinctrl-names = "default";
@@ -212,7 +184,6 @@
 	bus-width = <4>;
 	status = "okay";
 };
-
 &ssp2 {
 	compatible = "fsl,imx28-mmc";
 	pinctrl-names = "default";
@@ -220,11 +191,9 @@
 	bus-width = <4>;
 	status = "okay";
 };
-
 &usb1 {
       status = "okay";
 };
-
 &usbphy1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&usb1_pins_a>;

@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PCSXX_DEFS_H__
 #define __CVMX_PCSXX_DEFS_H__
-
 static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -43,7 +15,6 @@ static inline uint64_t CVMX_PCSXX_10GBX_STATUS_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000828ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -59,7 +30,6 @@ static inline uint64_t CVMX_PCSXX_BIST_STATUS_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000870ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -75,7 +45,6 @@ static inline uint64_t CVMX_PCSXX_BIT_LOCK_STATUS_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000850ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -91,7 +60,6 @@ static inline uint64_t CVMX_PCSXX_CONTROL1_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000800ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -107,7 +75,6 @@ static inline uint64_t CVMX_PCSXX_CONTROL2_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000818ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -123,7 +90,6 @@ static inline uint64_t CVMX_PCSXX_INT_EN_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000860ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -139,7 +105,6 @@ static inline uint64_t CVMX_PCSXX_INT_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000858ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -155,7 +120,6 @@ static inline uint64_t CVMX_PCSXX_LOG_ANL_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000868ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -171,7 +135,6 @@ static inline uint64_t CVMX_PCSXX_MISC_CTL_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000848ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -187,7 +150,6 @@ static inline uint64_t CVMX_PCSXX_RX_SYNC_STATES_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000838ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -203,7 +165,6 @@ static inline uint64_t CVMX_PCSXX_SPD_ABIL_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000810ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -219,7 +180,6 @@ static inline uint64_t CVMX_PCSXX_STATUS1_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000808ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -235,7 +195,6 @@ static inline uint64_t CVMX_PCSXX_STATUS2_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000820ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -251,7 +210,6 @@ static inline uint64_t CVMX_PCSXX_TX_RX_POLARITY_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000840ull) + (block_id) * 0x1000000ull;
 }
-
 static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -267,9 +225,7 @@ static inline uint64_t CVMX_PCSXX_TX_RX_STATES_REG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800B0000830ull) + (block_id) * 0x1000000ull;
 }
-
 void __cvmx_interrupt_pcsxx_int_en_reg_enable(int index);
-
 union cvmx_pcsxx_10gbx_status_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_10gbx_status_reg_s {
@@ -294,7 +250,6 @@ union cvmx_pcsxx_10gbx_status_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_bist_status_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_bist_status_reg_s {
@@ -307,7 +262,6 @@ union cvmx_pcsxx_bist_status_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_bit_lock_status_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_bit_lock_status_reg_s {
@@ -326,7 +280,6 @@ union cvmx_pcsxx_bit_lock_status_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_control1_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_control1_reg_s {
@@ -355,7 +308,6 @@ union cvmx_pcsxx_control1_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_control2_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_control2_reg_s {
@@ -368,7 +320,6 @@ union cvmx_pcsxx_control2_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_int_en_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_int_en_reg_s {
@@ -412,7 +363,6 @@ union cvmx_pcsxx_int_en_reg {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pcsxx_int_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_int_reg_s {
@@ -456,7 +406,6 @@ union cvmx_pcsxx_int_reg {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pcsxx_log_anl_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_log_anl_reg_s {
@@ -477,7 +426,6 @@ union cvmx_pcsxx_log_anl_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_misc_ctl_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_misc_ctl_reg_s {
@@ -496,7 +444,6 @@ union cvmx_pcsxx_misc_ctl_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_rx_sync_states_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_rx_sync_states_reg_s {
@@ -515,7 +462,6 @@ union cvmx_pcsxx_rx_sync_states_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_spd_abil_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_spd_abil_reg_s {
@@ -530,7 +476,6 @@ union cvmx_pcsxx_spd_abil_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_status1_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_status1_reg_s {
@@ -551,7 +496,6 @@ union cvmx_pcsxx_status1_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_status2_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_status2_reg_s {
@@ -578,7 +522,6 @@ union cvmx_pcsxx_status2_reg {
 #endif
 	} s;
 };
-
 union cvmx_pcsxx_tx_rx_polarity_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_tx_rx_polarity_reg_s {
@@ -608,7 +551,6 @@ union cvmx_pcsxx_tx_rx_polarity_reg {
 #endif
 	} cn52xxp1;
 };
-
 union cvmx_pcsxx_tx_rx_states_reg {
 	uint64_t u64;
 	struct cvmx_pcsxx_tx_rx_states_reg_s {
@@ -660,5 +602,4 @@ union cvmx_pcsxx_tx_rx_states_reg {
 #endif
 	} cn52xxp1;
 };
-
 #endif

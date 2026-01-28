@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Abilis Systems TB100 SOC device tree
- *
- * Copyright (C) Abilis Systems 2013
- *
- * Author: Christian Ruppert <christian.ruppert@abilis.com>
- */
-
 /include/ "abilis_tb10x.dtsi"
-
-
 / {
 	soc100 {
 		bus-frequency	= <166666666>;
-
 		pll0: oscillator {
 			clock-frequency  = <1000000000>;
 		};
@@ -25,114 +13,103 @@
 			clock-mult = <1>;
 			clock-div = <6>;
 		};
-
 		iomux: iomux@ff10601c {
-			/* Port 1 */
-			pctl_tsin_s0: pctl-tsin-s0 {   /* Serial TS-in 0 */
+			pctl_tsin_s0: pctl-tsin-s0 {    
 				abilis,function = "mis0";
 			};
-			pctl_tsin_s1: pctl-tsin-s1 {   /* Serial TS-in 1 */
+			pctl_tsin_s1: pctl-tsin-s1 {    
 				abilis,function = "mis1";
 			};
-			pctl_gpio_a: pctl-gpio-a {     /* GPIO bank A */
+			pctl_gpio_a: pctl-gpio-a {      
 				abilis,function = "gpioa";
 			};
-			pctl_tsin_p1: pctl-tsin-p1 {   /* Parallel TS-in 1 */
+			pctl_tsin_p1: pctl-tsin-p1 {    
 				abilis,function = "mip1";
 			};
-			/* Port 2 */
-			pctl_tsin_s2: pctl-tsin-s2 {   /* Serial TS-in 2 */
+			pctl_tsin_s2: pctl-tsin-s2 {    
 				abilis,function = "mis2";
 			};
-			pctl_tsin_s3: pctl-tsin-s3 {   /* Serial TS-in 3 */
+			pctl_tsin_s3: pctl-tsin-s3 {    
 				abilis,function = "mis3";
 			};
-			pctl_gpio_c: pctl-gpio-c {     /* GPIO bank C */
+			pctl_gpio_c: pctl-gpio-c {      
 				abilis,function = "gpioc";
 			};
-			pctl_tsin_p3: pctl-tsin-p3 {   /* Parallel TS-in 3 */
+			pctl_tsin_p3: pctl-tsin-p3 {    
 				abilis,function = "mip3";
 			};
-			/* Port 3 */
-			pctl_tsin_s4: pctl-tsin-s4 {   /* Serial TS-in 4 */
+			pctl_tsin_s4: pctl-tsin-s4 {    
 				abilis,function = "mis4";
 			};
-			pctl_tsin_s5: pctl-tsin-s5 {   /* Serial TS-in 5 */
+			pctl_tsin_s5: pctl-tsin-s5 {    
 				abilis,function = "mis5";
 			};
-			pctl_gpio_e: pctl-gpio-e {     /* GPIO bank E */
+			pctl_gpio_e: pctl-gpio-e {      
 				abilis,function = "gpioe";
 			};
-			pctl_tsin_p5: pctl-tsin-p5 {   /* Parallel TS-in 5 */
+			pctl_tsin_p5: pctl-tsin-p5 {    
 				abilis,function = "mip5";
 			};
-			/* Port 4 */
-			pctl_tsin_s6: pctl-tsin-s6 {   /* Serial TS-in 6 */
+			pctl_tsin_s6: pctl-tsin-s6 {    
 				abilis,function = "mis6";
 			};
-			pctl_tsin_s7: pctl-tsin-s7 {   /* Serial TS-in 7 */
+			pctl_tsin_s7: pctl-tsin-s7 {    
 				abilis,function = "mis7";
 			};
-			pctl_gpio_g: pctl-gpio-g {     /* GPIO bank G */
+			pctl_gpio_g: pctl-gpio-g {      
 				abilis,function = "gpiog";
 			};
-			pctl_tsin_p7: pctl-tsin-p7 {   /* Parallel TS-in 7 */
+			pctl_tsin_p7: pctl-tsin-p7 {    
 				abilis,function = "mip7";
 			};
-			/* Port 5 */
-			pctl_gpio_j: pctl-gpio-j {     /* GPIO bank J */
+			pctl_gpio_j: pctl-gpio-j {      
 				abilis,function = "gpioj";
 			};
-			pctl_gpio_k: pctl-gpio-k {     /* GPIO bank K */
+			pctl_gpio_k: pctl-gpio-k {      
 				abilis,function = "gpiok";
 			};
-			pctl_ciplus: pctl-ciplus {     /* CI+ interface */
+			pctl_ciplus: pctl-ciplus {      
 				abilis,function = "ciplus";
 			};
-			pctl_mcard: pctl-mcard {       /* M-Card interface */
+			pctl_mcard: pctl-mcard {        
 				abilis,function = "mcard";
 			};
-			/* Port 6 */
-			pctl_tsout_p: pctl-tsout-p {   /* Parallel TS-out */
+			pctl_tsout_p: pctl-tsout-p {    
 				abilis,function = "mop";
 			};
-			pctl_tsout_s0: pctl-tsout-s0 { /* Serial TS-out 0 */
+			pctl_tsout_s0: pctl-tsout-s0 {  
 				abilis,function = "mos0";
 			};
-			pctl_tsout_s1: pctl-tsout-s1 { /* Serial TS-out 1 */
+			pctl_tsout_s1: pctl-tsout-s1 {  
 				abilis,function = "mos1";
 			};
-			pctl_tsout_s2: pctl-tsout-s2 { /* Serial TS-out 2 */
+			pctl_tsout_s2: pctl-tsout-s2 {  
 				abilis,function = "mos2";
 			};
-			pctl_tsout_s3: pctl-tsout-s3 { /* Serial TS-out 3 */
+			pctl_tsout_s3: pctl-tsout-s3 {  
 				abilis,function = "mos3";
 			};
-			/* Port 7 */
-			pctl_uart0: pctl-uart0 {       /* UART 0 */
+			pctl_uart0: pctl-uart0 {        
 				abilis,function = "uart0";
 			};
-			pctl_uart1: pctl-uart1 {       /* UART 1 */
+			pctl_uart1: pctl-uart1 {        
 				abilis,function = "uart1";
 			};
-			pctl_gpio_l: pctl-gpio-l {     /* GPIO bank L */
+			pctl_gpio_l: pctl-gpio-l {      
 				abilis,function = "gpiol";
 			};
-			pctl_gpio_m: pctl-gpio-m {     /* GPIO bank M */
+			pctl_gpio_m: pctl-gpio-m {      
 				abilis,function = "gpiom";
 			};
-			/* Port 8 */
 			pctl_spi3: pctl-spi3 {
 				abilis,function = "spi3";
 			};
-			/* Port 9 */
 			pctl_spi1: pctl-spi1 {
 				abilis,function = "spi1";
 			};
 			pctl_gpio_n: pctl-gpio-n {
 				abilis,function = "gpion";
 			};
-			/* Unmuxed GPIOs */
 			pctl_gpio_b: pctl-gpio-b {
 				abilis,function = "gpiob";
 			};
@@ -149,7 +126,6 @@
 				abilis,function = "gpioi";
 			};
 		};
-
 		gpioa: gpio@ff140000 {
 			compatible = "abilis,tb10x-gpio";
 			interrupt-controller;

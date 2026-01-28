@@ -1,26 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Further private data for which no space exists in mips_fpu_struct.
- * This should be subsumed into the mips_fpu_struct structure as
- * defined in processor.h as soon as the absurd wired absolute assembler
- * offsets become dynamic at compile time.
- *
- * Kevin D. Kissell, kevink@mips.com and Carsten Langgaard, carstenl@mips.com
- * Copyright (C) 2000 MIPS Technologies, Inc.  All rights reserved.
- */
 #ifndef _ASM_FPU_EMULATOR_H
 #define _ASM_FPU_EMULATOR_H
-
 #include <linux/sched.h>
 #include <asm/dsemul.h>
 #include <asm/thread_info.h>
 #include <asm/inst.h>
 #include <asm/local.h>
 #include <asm/processor.h>
-
 #ifdef CONFIG_DEBUG_FS
-
 struct mips_fpu_emulator_stats {
 	unsigned long emulated;
 	unsigned long loads;
@@ -35,7 +21,6 @@ struct mips_fpu_emulator_stats {
 	unsigned long ieee754_zerodiv;
 	unsigned long ieee754_invalidop;
 	unsigned long ds_emul;
-
 	unsigned long abs_s;
 	unsigned long abs_d;
 	unsigned long add_s;
@@ -151,20 +136,16 @@ struct mips_fpu_emulator_stats {
 	unsigned long trunc_l_s;
 	unsigned long trunc_l_d;
 };
-
 DECLARE_PER_CPU(struct mips_fpu_emulator_stats, fpuemustats);
-
 #define MIPS_FPU_EMU_INC_STATS(M)					\
 do {									\
 	preempt_disable();						\
 	__this_cpu_inc(fpuemustats.M);					\
 	preempt_enable();						\
 } while (0)
-
 #else
 #define MIPS_FPU_EMU_INC_STATS(M) do { } while (0)
-#endif /* CONFIG_DEBUG_FS */
-
+#endif  
 extern int fpu_emulator_cop1Handler(struct pt_regs *xcp,
 				    struct mips_fpu_struct *ctx, int has_fpu,
 				    void __user **fault_addr);
@@ -172,16 +153,10 @@ void force_fcr31_sig(unsigned long fcr31, void __user *fault_addr,
 		     struct task_struct *tsk);
 int process_fpemu_return(int sig, void __user *fault_addr,
 			 unsigned long fcr31);
-
-/*
- * Mask the FCSR Cause bits according to the Enable bits, observing
- * that Unimplemented is always enabled.
- */
 static inline unsigned long mask_fcr31_x(unsigned long fcr31)
 {
 	return fcr31 & (FPU_CSR_UNI_X |
 			((fcr31 & FPU_CSR_ALL_E) <<
 			 (ffs(FPU_CSR_ALL_X) - ffs(FPU_CSR_ALL_E))));
 }
-
-#endif /* _ASM_FPU_EMULATOR_H */
+#endif  

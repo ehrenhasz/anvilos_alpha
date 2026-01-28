@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
-/*
- * Realtek RTD1195 reset controllers
- *
- * Copyright (c) 2017 Andreas Färber
- */
 #ifndef DT_BINDINGS_RESET_RTD1195_H
 #define DT_BINDINGS_RESET_RTD1195_H
-
-/* soft reset 1 */
 #define RTD1195_RSTN_MISC		0
 #define RTD1195_RSTN_RNG		1
 #define RTD1195_RSTN_USB3_POW		2
@@ -36,8 +28,6 @@
 #define RTD1195_RSTN_AE			28
 #define RTD1195_RSTN_NF			29
 #define RTD1195_RSTN_MIPI		30
-
-/* soft reset 2 */
 #define RTD1195_RSTN_ACPU		0
 #define RTD1195_RSTN_VCPU		1
 #define RTD1195_RSTN_PCR		9
@@ -51,11 +41,7 @@
 #define RTD1195_RSTN_I2C_2		25
 #define RTD1195_RSTN_I2C_1		26
 #define RTD1195_RSTN_UR1		28
-
-/* soft reset 3 */
 #define RTD1195_RSTN_SB2		0
-
-/* iso soft reset */
 #define RTD1195_ISO_RSTN_VFD		0
 #define RTD1195_ISO_RSTN_IR		1
 #define RTD1195_ISO_RSTN_CEC0		2
@@ -70,5 +56,4 @@
 #define RTD1195_ISO_RSTN_I2C_0		11
 #define RTD1195_ISO_RSTN_I2C_6		12
 #define RTD1195_ISO_RSTN_CBUS		13
-
 #endif

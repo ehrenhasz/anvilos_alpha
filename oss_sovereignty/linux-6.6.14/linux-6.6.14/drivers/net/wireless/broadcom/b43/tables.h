@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef B43_TABLES_H_
 #define B43_TABLES_H_
-
 #define B43_TAB_ROTOR_SIZE	53
 extern const u32 b43_tab_rotor[];
 #define B43_TAB_RETARD_SIZE	53
@@ -31,5 +29,4 @@ extern const u16 b43_tab_sigmasqr2[];
 extern const u16 b43_tab_rssiagc1[];
 #define B43_TAB_RSSIAGC2_SIZE	48
 extern const u16 b43_tab_rssiagc2[];
-
-#endif /* B43_TABLES_H_ */
+#endif  

@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2010 Juergen Beisert, Pengutronix
- * Copyright (C) 2016 Marek Vasut <marex@denx.de>
- *
- * i.MX23/i.MX28/i.MX6SX MXSFB LCD controller driver.
- */
-
 #ifndef __MXSFB_REGS_H__
 #define __MXSFB_REGS_H__
-
 #define REG_SET	4
 #define REG_CLR	8
-
 #define LCDC_CTRL			0x00
 #define LCDC_CTRL1			0x10
 #define LCDC_V3_TRANSFER_COUNT		0x20
@@ -34,7 +24,6 @@
 #define LCDC_AS_NEXT_BUF		0x230
 #define LCDC_AS_CLRKEYLOW		0x240
 #define LCDC_AS_CLRKEYHIGH		0x250
-
 #define CTRL_SFTRST			BIT(31)
 #define CTRL_CLKGATE			BIT(30)
 #define CTRL_BYPASS_COUNT		BIT(19)
@@ -55,26 +44,22 @@
 #define CTRL_DF18			BIT(2)
 #define CTRL_DF24			BIT(1)
 #define CTRL_RUN			BIT(0)
-
 #define CTRL1_RECOVER_ON_UNDERFLOW	BIT(24)
 #define CTRL1_FIFO_CLEAR		BIT(21)
 #define CTRL1_SET_BYTE_PACKAGING(x)	(((x) & 0xf) << 16)
 #define CTRL1_GET_BYTE_PACKAGING(x)	(((x) >> 16) & 0xf)
 #define CTRL1_CUR_FRAME_DONE_IRQ_EN	BIT(13)
 #define CTRL1_CUR_FRAME_DONE_IRQ	BIT(9)
-
 #define CTRL2_SET_OUTSTANDING_REQS_1	0
 #define CTRL2_SET_OUTSTANDING_REQS_2	(0x1 << 21)
 #define CTRL2_SET_OUTSTANDING_REQS_4	(0x2 << 21)
 #define CTRL2_SET_OUTSTANDING_REQS_8	(0x3 << 21)
 #define CTRL2_SET_OUTSTANDING_REQS_16	(0x4 << 21)
 #define CTRL2_SET_OUTSTANDING_REQS_MASK	(0x7 << 21)
-
 #define TRANSFER_COUNT_SET_VCOUNT(x)	(((x) & 0xffff) << 16)
 #define TRANSFER_COUNT_GET_VCOUNT(x)	(((x) >> 16) & 0xffff)
 #define TRANSFER_COUNT_SET_HCOUNT(x)	((x) & 0xffff)
 #define TRANSFER_COUNT_GET_HCOUNT(x)	((x) & 0xffff)
-
 #define VDCTRL0_ENABLE_PRESENT		BIT(28)
 #define VDCTRL0_VSYNC_ACT_HIGH		BIT(27)
 #define VDCTRL0_HSYNC_ACT_HIGH		BIT(26)
@@ -86,25 +71,20 @@
 #define VDCTRL0_HALF_LINE_MODE		BIT(18)
 #define VDCTRL0_SET_VSYNC_PULSE_WIDTH(x) ((x) & 0x3ffff)
 #define VDCTRL0_GET_VSYNC_PULSE_WIDTH(x) ((x) & 0x3ffff)
-
 #define VDCTRL2_SET_HSYNC_PERIOD(x)	((x) & 0x3ffff)
 #define VDCTRL2_GET_HSYNC_PERIOD(x)	((x) & 0x3ffff)
-
 #define VDCTRL3_MUX_SYNC_SIGNALS	BIT(29)
 #define VDCTRL3_VSYNC_ONLY		BIT(28)
 #define SET_HOR_WAIT_CNT(x)		(((x) & 0xfff) << 16)
 #define GET_HOR_WAIT_CNT(x)		(((x) >> 16) & 0xfff)
 #define SET_VERT_WAIT_CNT(x)		((x) & 0xffff)
 #define GET_VERT_WAIT_CNT(x)		((x) & 0xffff)
-
-#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29) /* v4 only */
-#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7) /* v4 only */
+#define VDCTRL4_SET_DOTCLK_DLY(x)	(((x) & 0x7) << 29)  
+#define VDCTRL4_GET_DOTCLK_DLY(x)	(((x) >> 29) & 0x7)  
 #define VDCTRL4_SYNC_SIGNALS_ON		BIT(18)
 #define SET_DOTCLK_H_VALID_DATA_CNT(x)	((x) & 0x3ffff)
-
 #define DEBUG0_HSYNC			BIT(26)
 #define DEBUG0_VSYNC			BIT(25)
-
 #define AS_CTRL_PS_DISABLE		BIT(23)
 #define AS_CTRL_ALPHA_INVERT		BIT(20)
 #define AS_CTRL_ALPHA(a)		(((a) & 0xff) << 8)
@@ -121,10 +101,8 @@
 #define AS_CTRL_ALPHA_CTRL_OVERRIDE	(1 << 1)
 #define AS_CTRL_ALPHA_CTRL_EMBEDDED	(0 << 1)
 #define AS_CTRL_AS_ENABLE		BIT(0)
-
 #define MXSFB_MIN_XRES			120
 #define MXSFB_MIN_YRES			120
 #define MXSFB_MAX_XRES			0xffff
 #define MXSFB_MAX_YRES			0xffff
-
-#endif /* __MXSFB_REGS_H__ */
+#endif  

@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef _DT_BINDINGS_STE_PRCC_RESET
 #define _DT_BINDINGS_STE_PRCC_RESET
-
 #define DB8500_PRCC_1				1
 #define DB8500_PRCC_2				2
 #define DB8500_PRCC_3				3
 #define DB8500_PRCC_6				6
-
-/* Reset lines on PRCC 1 */
 #define DB8500_PRCC_1_RESET_UART0		0
 #define DB8500_PRCC_1_RESET_UART1		1
 #define DB8500_PRCC_1_RESET_I2C1		2
@@ -24,8 +19,6 @@
 #define DB8500_PRCC_1_RESET_PER_MSP1		12
 #define DB8500_PRCC_1_RESET_PER_MSP0		13
 #define DB8500_PRCC_1_RESET_PER_SLIMBUS		14
-
-/* Reset lines on PRCC 2 */
 #define DB8500_PRCC_2_RESET_I2C3		0
 #define DB8500_PRCC_2_RESET_PWL			1
 #define DB8500_PRCC_2_RESET_SDI4		2
@@ -35,8 +28,6 @@
 #define DB8500_PRCC_2_RESET_HSIRX		6
 #define DB8500_PRCC_2_RESET_HSITX		7
 #define DB8500_PRCC_1_RESET_PER_MSP2		8
-
-/* Reset lines on PRCC 3 */
 #define DB8500_PRCC_3_RESET_SSP0		1
 #define DB8500_PRCC_3_RESET_SSP1		2
 #define DB8500_PRCC_3_RESET_I2C0		3
@@ -44,8 +35,5 @@
 #define DB8500_PRCC_3_RESET_SKE			5
 #define DB8500_PRCC_3_RESET_UART2		6
 #define DB8500_PRCC_3_RESET_SDI5		7
-
-/* Reset lines on PRCC 6 */
 #define DB8500_PRCC_3_RESET_RNG			0
-
 #endif

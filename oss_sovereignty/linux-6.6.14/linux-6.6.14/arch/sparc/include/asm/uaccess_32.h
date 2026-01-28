@@ -1,53 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * uaccess.h: User space memore access functions.
- *
- * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
- * Copyright (C) 1996,1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
- */
 #ifndef _ASM_UACCESS_H
 #define _ASM_UACCESS_H
-
 #include <linux/compiler.h>
 #include <linux/string.h>
-
 #include <asm/processor.h>
 #include <asm-generic/access_ok.h>
-
-/* Uh, these should become the main single-value transfer routines..
- * They automatically use the right size if we just have the right
- * pointer type..
- *
- * This gets kind of ugly. We want to return _two_ values in "get_user()"
- * and yet we don't want to do any pointers, because that is too much
- * of a performance impact. Thus we have a few rather ugly macros here,
- * and hide all the ugliness from the user.
- */
 #define put_user(x, ptr) ({ \
 	void __user *__pu_addr = (ptr); \
 	__chk_user_ptr(ptr); \
 	__put_user_check((__typeof__(*(ptr)))(x), __pu_addr, sizeof(*(ptr))); \
 })
-
 #define get_user(x, ptr) ({ \
 	const void __user *__gu_addr = (ptr); \
 	__chk_user_ptr(ptr); \
 	__get_user_check((x), __gu_addr, sizeof(*(ptr)), __typeof__(*(ptr))); \
 })
-
-/*
- * The "__xxx" versions do not do address space checking, useful when
- * doing multiple accesses to the same area (the user has to do the
- * checks by hand with "access_ok()")
- */
 #define __put_user(x, ptr) \
 	__put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
 #define __get_user(x, ptr) \
     __get_user_nocheck((x), (ptr), sizeof(*(ptr)), __typeof__(*(ptr)))
-
 struct __large_struct { unsigned long buf[100]; };
 #define __m(x) ((struct __large_struct __user *)(x))
-
 #define __put_user_check(x, addr, size) ({ \
 	register int __pu_ret; \
 	if (__access_ok(addr, size)) { \
@@ -73,7 +45,6 @@ struct __large_struct { unsigned long buf[100]; };
 	} \
 	__pu_ret; \
 })
-
 #define __put_user_nocheck(x, addr, size) ({			\
 	register int __pu_ret;					\
 	switch (size) {						\
@@ -85,7 +56,6 @@ struct __large_struct { unsigned long buf[100]; };
 	} \
 	__pu_ret; \
 })
-
 #define __put_user_asm(x, size, addr, ret)				\
 __asm__ __volatile__(							\
 		"/* Put user asm, inline. */\n"				\
@@ -104,9 +74,7 @@ __asm__ __volatile__(							\
 		".previous\n\n\t"					\
 	       : "=&r" (ret) : "r" (x), "m" (*__m(addr)),		\
 		 "i" (-EFAULT))
-
 int __put_user_bad(void);
-
 #define __get_user_check(x, addr, size, type) ({ \
 	register int __gu_ret; \
 	register unsigned long __gu_val; \
@@ -136,7 +104,6 @@ int __put_user_bad(void);
 	x = (__force type) __gu_val; \
 	__gu_ret; \
 })
-
 #define __get_user_nocheck(x, addr, size, type) ({			\
 	register int __gu_ret;						\
 	register unsigned long __gu_val;				\
@@ -153,7 +120,6 @@ int __put_user_bad(void);
 	x = (__force type) __gu_val;					\
 	__gu_ret;							\
 })
-
 #define __get_user_asm(x, size, addr, ret)				\
 __asm__ __volatile__(							\
 		"/* Get user asm, inline. */\n"				\
@@ -173,28 +139,21 @@ __asm__ __volatile__(							\
 		".previous\n\t"						\
 	       : "=&r" (ret), "=&r" (x) : "m" (*__m(addr)),		\
 		 "i" (-EFAULT))
-
 int __get_user_bad(void);
-
 unsigned long __copy_user(void __user *to, const void __user *from, unsigned long size);
-
 static inline unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	return __copy_user(to, (__force void __user *) from, n);
 }
-
 static inline unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	return __copy_user((__force void __user *) to, from, n);
 }
-
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
-
 static inline unsigned long __clear_user(void __user *addr, unsigned long size)
 {
 	unsigned long ret;
-
 	__asm__ __volatile__ (
 		"mov %2, %%o1\n"
 		"call __bzero\n\t"
@@ -203,10 +162,8 @@ static inline unsigned long __clear_user(void __user *addr, unsigned long size)
 		: "=r" (ret) : "r" (addr), "r" (size) :
 		"o0", "o1", "o2", "o3", "o4", "o5", "o7",
 		"g1", "g2", "g3", "g4", "g5", "g7", "cc");
-
 	return ret;
 }
-
 static inline unsigned long clear_user(void __user *addr, unsigned long n)
 {
 	if (n && __access_ok(addr, n))
@@ -214,7 +171,5 @@ static inline unsigned long clear_user(void __user *addr, unsigned long n)
 	else
 		return n;
 }
-
 __must_check long strnlen_user(const char __user *str, long n);
-
-#endif /* _ASM_UACCESS_H */
+#endif  

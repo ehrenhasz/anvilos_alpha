@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_NPI_DEFS_H__
 #define __CVMX_NPI_DEFS_H__
-
 #define CVMX_NPI_BASE_ADDR_INPUT0 CVMX_NPI_BASE_ADDR_INPUTX(0)
 #define CVMX_NPI_BASE_ADDR_INPUT1 CVMX_NPI_BASE_ADDR_INPUTX(1)
 #define CVMX_NPI_BASE_ADDR_INPUT2 CVMX_NPI_BASE_ADDR_INPUTX(2)
@@ -148,7 +120,6 @@
 #define CVMX_NPI_SIZE_INPUT3 CVMX_NPI_SIZE_INPUTX(3)
 #define CVMX_NPI_SIZE_INPUTX(offset) (CVMX_ADD_IO_SEG(0x00011F0000000078ull) + ((offset) & 3) * 16)
 #define CVMX_NPI_WIN_READ_TO (CVMX_ADD_IO_SEG(0x00011F00000001E0ull))
-
 union cvmx_npi_base_addr_inputx {
 	uint64_t u64;
 	struct cvmx_npi_base_addr_inputx_s {
@@ -161,7 +132,6 @@ union cvmx_npi_base_addr_inputx {
 #endif
 	} s;
 };
-
 union cvmx_npi_base_addr_outputx {
 	uint64_t u64;
 	struct cvmx_npi_base_addr_outputx_s {
@@ -174,7 +144,6 @@ union cvmx_npi_base_addr_outputx {
 #endif
 	} s;
 };
-
 union cvmx_npi_bist_status {
 	uint64_t u64;
 	struct cvmx_npi_bist_status_s {
@@ -313,7 +282,6 @@ union cvmx_npi_bist_status {
 #endif
 	} cn50xx;
 };
-
 union cvmx_npi_buff_size_outputx {
 	uint64_t u64;
 	struct cvmx_npi_buff_size_outputx_s {
@@ -328,7 +296,6 @@ union cvmx_npi_buff_size_outputx {
 #endif
 	} s;
 };
-
 union cvmx_npi_comp_ctl {
 	uint64_t u64;
 	struct cvmx_npi_comp_ctl_s {
@@ -343,7 +310,6 @@ union cvmx_npi_comp_ctl {
 #endif
 	} s;
 };
-
 union cvmx_npi_ctl_status {
 	uint64_t u64;
 	struct cvmx_npi_ctl_status_s {
@@ -470,7 +436,6 @@ union cvmx_npi_ctl_status {
 #endif
 	} cn31xx;
 };
-
 union cvmx_npi_dbg_select {
 	uint64_t u64;
 	struct cvmx_npi_dbg_select_s {
@@ -483,7 +448,6 @@ union cvmx_npi_dbg_select {
 #endif
 	} s;
 };
-
 union cvmx_npi_dma_control {
 	uint64_t u64;
 	struct cvmx_npi_dma_control_s {
@@ -518,7 +482,6 @@ union cvmx_npi_dma_control {
 #endif
 	} s;
 };
-
 union cvmx_npi_dma_highp_counts {
 	uint64_t u64;
 	struct cvmx_npi_dma_highp_counts_s {
@@ -533,7 +496,6 @@ union cvmx_npi_dma_highp_counts {
 #endif
 	} s;
 };
-
 union cvmx_npi_dma_highp_naddr {
 	uint64_t u64;
 	struct cvmx_npi_dma_highp_naddr_s {
@@ -548,7 +510,6 @@ union cvmx_npi_dma_highp_naddr {
 #endif
 	} s;
 };
-
 union cvmx_npi_dma_lowp_counts {
 	uint64_t u64;
 	struct cvmx_npi_dma_lowp_counts_s {
@@ -563,7 +524,6 @@ union cvmx_npi_dma_lowp_counts {
 #endif
 	} s;
 };
-
 union cvmx_npi_dma_lowp_naddr {
 	uint64_t u64;
 	struct cvmx_npi_dma_lowp_naddr_s {
@@ -578,7 +538,6 @@ union cvmx_npi_dma_lowp_naddr {
 #endif
 	} s;
 };
-
 union cvmx_npi_highp_dbell {
 	uint64_t u64;
 	struct cvmx_npi_highp_dbell_s {
@@ -591,7 +550,6 @@ union cvmx_npi_highp_dbell {
 #endif
 	} s;
 };
-
 union cvmx_npi_highp_ibuff_saddr {
 	uint64_t u64;
 	struct cvmx_npi_highp_ibuff_saddr_s {
@@ -604,7 +562,6 @@ union cvmx_npi_highp_ibuff_saddr {
 #endif
 	} s;
 };
-
 union cvmx_npi_input_control {
 	uint64_t u64;
 	struct cvmx_npi_input_control_s {
@@ -656,7 +613,6 @@ union cvmx_npi_input_control {
 #endif
 	} cn30xx;
 };
-
 union cvmx_npi_int_enb {
 	uint64_t u64;
 	struct cvmx_npi_int_enb_s {
@@ -1090,7 +1046,6 @@ union cvmx_npi_int_enb {
 #endif
 	} cn38xxp2;
 };
-
 union cvmx_npi_int_sum {
 	uint64_t u64;
 	struct cvmx_npi_int_sum_s {
@@ -1524,7 +1479,6 @@ union cvmx_npi_int_sum {
 #endif
 	} cn38xxp2;
 };
-
 union cvmx_npi_lowp_dbell {
 	uint64_t u64;
 	struct cvmx_npi_lowp_dbell_s {
@@ -1537,7 +1491,6 @@ union cvmx_npi_lowp_dbell {
 #endif
 	} s;
 };
-
 union cvmx_npi_lowp_ibuff_saddr {
 	uint64_t u64;
 	struct cvmx_npi_lowp_ibuff_saddr_s {
@@ -1550,7 +1503,6 @@ union cvmx_npi_lowp_ibuff_saddr {
 #endif
 	} s;
 };
-
 union cvmx_npi_mem_access_subidx {
 	uint64_t u64;
 	struct cvmx_npi_mem_access_subidx_s {
@@ -1600,7 +1552,6 @@ union cvmx_npi_mem_access_subidx {
 #endif
 	} cn31xx;
 };
-
 union cvmx_npi_msi_rcv {
 	uint64_t u64;
 	struct cvmx_npi_msi_rcv_s {
@@ -1611,7 +1562,6 @@ union cvmx_npi_msi_rcv {
 #endif
 	} s;
 };
-
 union cvmx_npi_num_desc_outputx {
 	uint64_t u64;
 	struct cvmx_npi_num_desc_outputx_s {
@@ -1624,7 +1574,6 @@ union cvmx_npi_num_desc_outputx {
 #endif
 	} s;
 };
-
 union cvmx_npi_output_control {
 	uint64_t u64;
 	struct cvmx_npi_output_control_s {
@@ -1931,7 +1880,6 @@ union cvmx_npi_output_control {
 #endif
 	} cn50xx;
 };
-
 union cvmx_npi_px_dbpair_addr {
 	uint64_t u64;
 	struct cvmx_npi_px_dbpair_addr_s {
@@ -1946,7 +1894,6 @@ union cvmx_npi_px_dbpair_addr {
 #endif
 	} s;
 };
-
 union cvmx_npi_px_instr_addr {
 	uint64_t u64;
 	struct cvmx_npi_px_instr_addr_s {
@@ -1959,7 +1906,6 @@ union cvmx_npi_px_instr_addr {
 #endif
 	} s;
 };
-
 union cvmx_npi_px_instr_cnts {
 	uint64_t u64;
 	struct cvmx_npi_px_instr_cnts_s {
@@ -1974,7 +1920,6 @@ union cvmx_npi_px_instr_cnts {
 #endif
 	} s;
 };
-
 union cvmx_npi_px_pair_cnts {
 	uint64_t u64;
 	struct cvmx_npi_px_pair_cnts_s {
@@ -1989,7 +1934,6 @@ union cvmx_npi_px_pair_cnts {
 #endif
 	} s;
 };
-
 union cvmx_npi_pci_burst_size {
 	uint64_t u64;
 	struct cvmx_npi_pci_burst_size_s {
@@ -2004,7 +1948,6 @@ union cvmx_npi_pci_burst_size {
 #endif
 	} s;
 };
-
 union cvmx_npi_pci_int_arb_cfg {
 	uint64_t u64;
 	struct cvmx_npi_pci_int_arb_cfg_s {
@@ -2040,7 +1983,6 @@ union cvmx_npi_pci_int_arb_cfg {
 #endif
 	} cn30xx;
 };
-
 union cvmx_npi_pci_read_cmd {
 	uint64_t u64;
 	struct cvmx_npi_pci_read_cmd_s {
@@ -2053,7 +1995,6 @@ union cvmx_npi_pci_read_cmd {
 #endif
 	} s;
 };
-
 union cvmx_npi_port32_instr_hdr {
 	uint64_t u64;
 	struct cvmx_npi_port32_instr_hdr_s {
@@ -2088,7 +2029,6 @@ union cvmx_npi_port32_instr_hdr {
 #endif
 	} s;
 };
-
 union cvmx_npi_port33_instr_hdr {
 	uint64_t u64;
 	struct cvmx_npi_port33_instr_hdr_s {
@@ -2123,7 +2063,6 @@ union cvmx_npi_port33_instr_hdr {
 #endif
 	} s;
 };
-
 union cvmx_npi_port34_instr_hdr {
 	uint64_t u64;
 	struct cvmx_npi_port34_instr_hdr_s {
@@ -2158,7 +2097,6 @@ union cvmx_npi_port34_instr_hdr {
 #endif
 	} s;
 };
-
 union cvmx_npi_port35_instr_hdr {
 	uint64_t u64;
 	struct cvmx_npi_port35_instr_hdr_s {
@@ -2193,7 +2131,6 @@ union cvmx_npi_port35_instr_hdr {
 #endif
 	} s;
 };
-
 union cvmx_npi_port_bp_control {
 	uint64_t u64;
 	struct cvmx_npi_port_bp_control_s {
@@ -2208,7 +2145,6 @@ union cvmx_npi_port_bp_control {
 #endif
 	} s;
 };
-
 union cvmx_npi_rsl_int_blocks {
 	uint64_t u64;
 	struct cvmx_npi_rsl_int_blocks_s {
@@ -2484,7 +2420,6 @@ union cvmx_npi_rsl_int_blocks {
 #endif
 	} cn50xx;
 };
-
 union cvmx_npi_size_inputx {
 	uint64_t u64;
 	struct cvmx_npi_size_inputx_s {
@@ -2497,7 +2432,6 @@ union cvmx_npi_size_inputx {
 #endif
 	} s;
 };
-
 union cvmx_npi_win_read_to {
 	uint64_t u64;
 	struct cvmx_npi_win_read_to_s {
@@ -2510,5 +2444,4 @@ union cvmx_npi_win_read_to {
 #endif
 	} s;
 };
-
 #endif

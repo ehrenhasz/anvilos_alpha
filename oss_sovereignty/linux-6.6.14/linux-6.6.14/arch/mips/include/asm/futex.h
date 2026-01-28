@@ -1,15 +1,6 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (c) 2006  Ralf Baechle (ralf@linux-mips.org)
- */
 #ifndef _ASM_FUTEX_H
 #define _ASM_FUTEX_H
-
 #ifdef __KERNEL__
-
 #include <linux/futex.h>
 #include <linux/uaccess.h>
 #include <asm/asm-eva.h>
@@ -17,11 +8,9 @@
 #include <asm/compiler.h>
 #include <asm/errno.h>
 #include <asm/sync.h>
-
 #define arch_futex_atomic_op_inuser arch_futex_atomic_op_inuser
 #define futex_atomic_cmpxchg_inatomic futex_atomic_cmpxchg_inatomic
 #include <asm-generic/futex.h>
-
 #define __futex_atomic_op(op, insn, ret, oldval, uaddr, oparg)		\
 {									\
 	if (cpu_has_llsc && IS_ENABLED(CONFIG_WAR_R10000_LLSC)) {	\
@@ -84,24 +73,20 @@
 		  "i" (-EFAULT)						\
 		: "memory");						\
 	} else {							\
-		/* fallback for non-SMP */				\
+		 				\
 		ret = futex_atomic_op_inuser_local(op, oparg, oval, uaddr);	\
 	}								\
 }
-
 static inline int
 arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 {
 	int oldval = 0, ret;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op(op, "move $1, %z5", ret, oldval, uaddr, oparg);
 		break;
-
 	case FUTEX_OP_ADD:
 		__futex_atomic_op(op, "addu $1, %1, %z5",
 				  ret, oldval, uaddr, oparg);
@@ -121,23 +106,18 @@ arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
 	default:
 		ret = -ENOSYS;
 	}
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 			      u32 oldval, u32 newval)
 {
 	int ret = 0;
 	u32 val;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 	if (cpu_has_llsc && IS_ENABLED(CONFIG_WAR_R10000_LLSC)) {
 		__asm__ __volatile__(
 		"# futex_atomic_cmpxchg_inatomic			\n"
@@ -201,10 +181,8 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	} else {
 		return futex_atomic_cmpxchg_inatomic_local(uval, uaddr, oldval, newval);
 	}
-
 	*uval = val;
 	return ret;
 }
-
 #endif
-#endif /* _ASM_FUTEX_H */
+#endif  

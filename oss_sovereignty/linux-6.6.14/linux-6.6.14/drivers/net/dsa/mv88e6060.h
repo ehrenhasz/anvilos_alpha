@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/net/dsa/mv88e6060.h - Marvell 88e6060 switch chip support
- * Copyright (c) 2015 Neil Armstrong
- *
- * Based on mv88e6xxx.h
- * Copyright (c) 2008 Marvell Semiconductor
- */
-
 #ifndef __MV88E6060_H
 #define __MV88E6060_H
-
 #define MV88E6060_PORTS	6
-
 #define REG_PORT(p)		(0x8 + (p))
 #define PORT_STATUS		0x00
 #define PORT_STATUS_PAUSE_EN	BIT(15)
@@ -47,7 +36,6 @@
 #define PORT_ASSOC_VECTOR_PAV_MASK	0x1f
 #define PORT_RX_CNTR		0x10
 #define PORT_TX_CNTR		0x11
-
 #define REG_GLOBAL		0x0f
 #define GLOBAL_STATUS		0x00
 #define GLOBAL_STATUS_SW_MODE_MASK	(0x3 << 12)
@@ -103,17 +91,9 @@
 #define GLOBAL_ATU_MAC_01	0x0d
 #define GLOBAL_ATU_MAC_23	0x0e
 #define GLOBAL_ATU_MAC_45	0x0f
-
 struct mv88e6060_priv {
-	/* MDIO bus and address on bus to use. When in single chip
-	 * mode, address is 0, and the switch uses multiple addresses
-	 * on the bus.  When in multi-chip mode, the switch uses a
-	 * single address which contains two registers used for
-	 * indirect access to more registers.
-	 */
 	struct mii_bus *bus;
 	int sw_addr;
 	struct dsa_switch *ds;
 };
-
 #endif

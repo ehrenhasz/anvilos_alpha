@@ -1,12 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-
 #include <dt-bindings/leds/common.h>
 #include "qcom-ipq4018-ap120c-ac.dtsi"
-
 / {
 	leds {
 		compatible = "gpio-leds";
-
 		status: led-status {
 			label = "ap120c-ac:blue:status";
 			function = LED_FUNCTION_STATUS;
@@ -14,7 +10,6 @@
 			gpios = <&tlmm 5 GPIO_ACTIVE_LOW>;
 			default-state = "keep";
 		};
-
 		led-wlan2g {
 			label = "ap120c-ac:green:wlan2g";
 			function = LED_FUNCTION_WLAN;
@@ -22,7 +17,6 @@
 			gpios = <&tlmm 3 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "phy0tpt";
 		};
-
 		led-wlan5g {
 			label = "ap120c-ac:red:wlan5g";
 			function = LED_FUNCTION_WLAN;

@@ -1,20 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-/*
- * Copyright 2014-2020 Toradex
- */
-
 #include "vf500.dtsi"
 #include "vf-colibri.dtsi"
-
 / {
 	model = "Toradex Colibri VF50 COM";
 	compatible = "toradex,vf500-colibri_vf50", "fsl,vf500";
-
 	memory@80000000 {
 		device_type = "memory";
 		reg = <0x80000000 0x8000000>;
 	};
-
 	touchscreen: vf50-touchscreen {
 		compatible = "toradex,vf50-touchscreen";
 		io-channels = <&adc1 0>,<&adc0 0>,
@@ -33,12 +25,10 @@
 		status = "disabled";
 	};
 };
-
 &nfc {
 	assigned-clocks = <&clks VF610_CLK_NFC>;
 	assigned-clock-rates = <33000000>;
 };
-
 &iomuxc {
 	vf610-colibri {
 		pinctrl_touchctrl_idle: touchctrl_idle {
@@ -47,7 +37,6 @@
 				VF610_PAD_PTA19__GPIO_9		0x006c
 				>;
 		};
-
 		pinctrl_touchctrl_default: touchctrl_default {
 			fsl,pins = <
 				VF610_PAD_PTA18__ADC0_SE0	0x0040
@@ -56,7 +45,6 @@
 				VF610_PAD_PTB2__ADC1_SE2	0x0040
 				>;
 		};
-
 		pinctrl_touchctrl_gpios: touchctrl_gpios {
 			fsl,pins = <
 				VF610_PAD_PTA23__GPIO_13	0x22e9

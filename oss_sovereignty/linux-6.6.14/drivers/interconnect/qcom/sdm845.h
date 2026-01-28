@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SDM845_H__
 #define __DRIVERS_INTERCONNECT_QCOM_SDM845_H__
-
 #define SDM845_MASTER_A1NOC_CFG				1
 #define SDM845_MASTER_BLSP_1				2
 #define SDM845_MASTER_TSIF				3
@@ -136,5 +130,4 @@
 #define SDM845_SLAVE_SERVICE_SNOC			128
 #define SDM845_SLAVE_QDSS_STM				129
 #define SDM845_SLAVE_TCU				130
-
-#endif /* __DRIVERS_INTERCONNECT_QCOM_SDM845_H__ */
+#endif  

@@ -1,6 +1,4 @@
-# SPDX-License-Identifier: GPL-2.0-only
 from ..qemu_config import QemuArchParams
-
 QEMU_ARCH = QemuArchParams(linux_arch='sh',
 			   kconfig='''
 CONFIG_CPU_SUBTYPE_SH7751R=y

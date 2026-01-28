@@ -1,21 +1,11 @@
-/*
- * Spreadtrum SC9860 SoC
- *
- * Copyright (C) 2016, Spreadtrum Communications Inc.
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/gpio/gpio.h>
 #include "whale2.dtsi"
-
 / {
 	cpus {
 		#address-cells = <2>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -31,7 +21,6 @@
 					cpu = <&CPU3>;
 				};
 			};
-
 			cluster1 {
 				core0 {
 					cpu = <&CPU4>;
@@ -47,7 +36,6 @@
 				};
 			};
 		};
-
 		CPU0: cpu@530000 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -55,7 +43,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU1: cpu@530001 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -63,7 +50,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU2: cpu@530002 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -71,7 +57,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU3: cpu@530003 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -79,7 +64,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU4: cpu@530100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -87,7 +71,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU5: cpu@530101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -95,7 +78,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU6: cpu@530102 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -103,7 +85,6 @@
 			enable-method = "psci";
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
-
 		CPU7: cpu@530103 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -112,10 +93,8 @@
 			cpu-idle-states = <&CORE_PD &CLUSTER_PD>;
 		};
 	};
-
 	idle-states{
 		entry-method = "psci";
-
 		CORE_PD: core_pd {
 			compatible = "arm,idle-state";
 			entry-latency-us = <1000>;
@@ -124,7 +103,6 @@
 			local-timer-stop;
 			arm,psci-suspend-param = <0x00010002>;
 		};
-
 		CLUSTER_PD: cluster_pd {
 			compatible = "arm,idle-state";
 			entry-latency-us = <1000>;
@@ -134,7 +112,6 @@
 			arm,psci-suspend-param = <0x01010003>;
 		};
 	};
-
 	gic: interrupt-controller@12001000 {
 		compatible = "arm,gic-400";
 		reg = <0 0x12001000 0 0x1000>,
@@ -146,12 +123,10 @@
 		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(8)
 					| IRQ_TYPE_LEVEL_HIGH)>;
 	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8)
@@ -163,7 +138,6 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8)
 					 | IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a53-pmu", "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH>,
@@ -183,22 +157,19 @@
 				     <&CPU6>,
 				     <&CPU7>;
 	};
-
 	soc {
 		pmu_gate: pmu-gate {
 			compatible = "sprd,sc9860-pmu-gate";
-			sprd,syscon = <&pmu_regs>; /* 0x402b0000 */
+			sprd,syscon = <&pmu_regs>;  
 			clocks = <&ext_26m>;
 			#clock-cells = <1>;
 		};
-
 		pll: pll {
 			compatible = "sprd,sc9860-pll";
-			sprd,syscon = <&ana_regs>; /* 0x40400000 */
+			sprd,syscon = <&ana_regs>;  
 			clocks = <&pmu_gate 0>;
 			#clock-cells = <1>;
 		};
-
 		ap_clk: clock-controller@20000000 {
 			compatible = "sprd,sc9860-ap-clk";
 			reg = <0 0x20000000 0 0x400>;
@@ -206,7 +177,6 @@
 				 <&pmu_gate 0>;
 			#clock-cells = <1>;
 		};
-
 		aon_prediv: aon-prediv {
 			compatible = "sprd,sc9860-aon-prediv";
 			reg = <0 0x402d0000 0 0x400>;
@@ -214,92 +184,79 @@
 				 <&pmu_gate 0>;
 			#clock-cells = <1>;
 		};
-
 		apahb_gate: apahb-gate {
 			compatible = "sprd,sc9860-apahb-gate";
-			sprd,syscon = <&ap_ahb_regs>; /* 0x20210000 */
+			sprd,syscon = <&ap_ahb_regs>;  
 			clocks = <&aon_prediv 0>;
 			#clock-cells = <1>;
 		};
-
 		aon_gate: aon-gate {
 			compatible = "sprd,sc9860-aon-gate";
-			sprd,syscon = <&aon_regs>; /* 0x402e0000 */
+			sprd,syscon = <&aon_regs>;  
 			clocks = <&aon_prediv 0>;
 			#clock-cells = <1>;
 		};
-
 		aonsecure_clk: clock-controller@40880000 {
 			compatible = "sprd,sc9860-aonsecure-clk";
 			reg = <0 0x40880000 0 0x400>;
 			clocks = <&ext_26m>, <&pll 0>;
 			#clock-cells = <1>;
 		};
-
 		agcp_gate: agcp-gate {
 			compatible = "sprd,sc9860-agcp-gate";
-			sprd,syscon = <&agcp_regs>; /* 0x415e0000 */
+			sprd,syscon = <&agcp_regs>;  
 			clocks = <&aon_prediv 0>;
 			#clock-cells = <1>;
 		};
-
 		gpu_clk: clock-controller@60200000 {
 			compatible = "sprd,sc9860-gpu-clk";
 			reg = <0 0x60200000 0 0x400>;
 			clocks = <&pll 0>;
 			#clock-cells = <1>;
 		};
-
 		vsp_clk: clock-controller@61000000 {
 			compatible = "sprd,sc9860-vsp-clk";
 			reg = <0 0x61000000 0 0x400>;
 			clocks = <&ext_26m>, <&pll 0>;
 			#clock-cells = <1>;
 		};
-
 		vsp_gate: vsp-gate {
 			compatible = "sprd,sc9860-vsp-gate";
-			sprd,syscon = <&vsp_regs>; /* 0x61100000 */
+			sprd,syscon = <&vsp_regs>;  
 			clocks = <&vsp_clk 0>;
 			#clock-cells = <1>;
 		};
-
 		cam_clk: clock-controller@62000000 {
 			compatible = "sprd,sc9860-cam-clk";
 			reg = <0 0x62000000 0 0x4000>;
 			clocks = <&ext_26m>, <&pll 0>;
 			#clock-cells = <1>;
 		};
-
 		cam_gate: cam-gate {
 			compatible = "sprd,sc9860-cam-gate";
-			sprd,syscon = <&cam_regs>; /* 0x62100000 */
+			sprd,syscon = <&cam_regs>;  
 			clocks = <&cam_clk 0>;
 			#clock-cells = <1>;
 		};
-
 		disp_clk: clock-controller@63000000 {
 			compatible = "sprd,sc9860-disp-clk";
 			reg = <0 0x63000000 0 0x400>;
 			clocks = <&ext_26m>, <&pll 0>;
 			#clock-cells = <1>;
 		};
-
 		disp_gate: disp-gate {
 			compatible = "sprd,sc9860-disp-gate";
-			sprd,syscon = <&disp_regs>; /* 0x63100000 */
+			sprd,syscon = <&disp_regs>;  
 			clocks = <&disp_clk 0>;
 			#clock-cells = <1>;
 		};
-
 		apapb_gate: apapb-gate {
 			compatible = "sprd,sc9860-apapb-gate";
-			sprd,syscon = <&ap_apb_regs>; /* 0x70b00000 */
+			sprd,syscon = <&ap_apb_regs>;  
 			clocks = <&ap_clk 0>;
 			#clock-cells = <1>;
 		};
-
-		funnel@10001000 { /* SoC Funnel */
+		funnel@10001000 {  
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x10001000 0 0x1000>;
 			clocks = <&ext_26m>;
@@ -311,11 +268,9 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					soc_funnel_in_port0: endpoint {
@@ -323,7 +278,6 @@
 						<&main_funnel_out_port>;
 					};
 				};
-
 				port@4 {
 					reg = <4>;
 					soc_funnel_in_port1: endpoint {
@@ -333,7 +287,6 @@
 				};
 			};
 		};
-
 		etb@10003000 {
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x10003000 0 0x1000>;
@@ -348,7 +301,6 @@
 				};
 			};
 		};
-
 		stm@10006000 {
 			compatible = "arm,coresight-stm", "arm,primecell";
 			reg = <0 0x10006000 0 0x1000>,
@@ -365,8 +317,7 @@
 				};
 			};
 		};
-
-		funnel@11001000 { /* Cluster0 Funnel */
+		funnel@11001000 {  
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x11001000 0 0x1000>;
 			clocks = <&ext_26m>;
@@ -379,32 +330,27 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					cluster0_funnel_in_port0: endpoint {
 						remote-endpoint = <&etm0_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					cluster0_funnel_in_port1: endpoint {
 						remote-endpoint = <&etm1_out>;
 					};
 				};
-
 				port@2 {
 					reg = <2>;
 					cluster0_funnel_in_port2: endpoint {
 						remote-endpoint = <&etm2_out>;
 					};
 				};
-
 				port@4 {
 					reg = <4>;
 					cluster0_funnel_in_port3: endpoint {
@@ -413,8 +359,7 @@
 				};
 			};
 		};
-
-		funnel@11002000 { /* Cluster1 Funnel */
+		funnel@11002000 {  
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x11002000 0 0x1000>;
 			clocks = <&ext_26m>;
@@ -427,32 +372,27 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					cluster1_funnel_in_port0: endpoint {
 						remote-endpoint = <&etm4_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					cluster1_funnel_in_port1: endpoint {
 						remote-endpoint = <&etm5_out>;
 					};
 				};
-
 				port@2 {
 					reg = <2>;
 					cluster1_funnel_in_port2: endpoint {
 						remote-endpoint = <&etm6_out>;
 					};
 				};
-
 				port@3 {
 					reg = <3>;
 					cluster1_funnel_in_port3: endpoint {
@@ -461,13 +401,11 @@
 				};
 			};
 		};
-
-		etf@11003000 { /*  ETF on Cluster0 */
+		etf@11003000 {  
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x11003000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					cluster0_etf_out: endpoint {
@@ -476,7 +414,6 @@
 					};
 				};
 			};
-
 			in-ports {
 				port {
 					cluster0_etf_in: endpoint {
@@ -486,13 +423,11 @@
 				};
 			};
 		};
-
-		etf@11004000 { /* ETF on Cluster1 */
+		etf@11004000 {  
 			compatible = "arm,coresight-tmc", "arm,primecell";
 			reg = <0 0x11004000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					cluster1_etf_out: endpoint {
@@ -501,7 +436,6 @@
 					};
 				};
 			};
-
 			in-ports {
 				port {
 					cluster1_etf_in: endpoint {
@@ -511,13 +445,11 @@
 				};
 			};
 		};
-
-		funnel@11005000 { /* Main Funnel */
+		funnel@11005000 {  
 			compatible = "arm,coresight-dynamic-funnel", "arm,primecell";
 			reg = <0 0x11005000 0 0x1000>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					main_funnel_out_port: endpoint {
@@ -526,11 +458,9 @@
 					};
 				};
 			};
-
 			in-ports {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				port@0 {
 					reg = <0>;
 					main_funnel_in_port0: endpoint {
@@ -538,7 +468,6 @@
 							<&cluster0_etf_out>;
 					};
 				};
-
 				port@1 {
 					reg = <1>;
 					main_funnel_in_port1: endpoint {
@@ -548,14 +477,12 @@
 				};
 			};
 		};
-
 		etm@11440000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11440000 0 0x1000>;
 			cpu = <&CPU0>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm0_out: endpoint {
@@ -565,14 +492,12 @@
 				};
 			};
 		};
-
 		etm@11540000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11540000 0 0x1000>;
 			cpu = <&CPU1>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm1_out: endpoint {
@@ -582,14 +507,12 @@
 				};
 			};
 		};
-
 		etm@11640000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11640000 0 0x1000>;
 			cpu = <&CPU2>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm2_out: endpoint {
@@ -599,14 +522,12 @@
 				};
 			};
 		};
-
 		etm@11740000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11740000 0 0x1000>;
 			cpu = <&CPU3>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm3_out: endpoint {
@@ -616,14 +537,12 @@
 				};
 			};
 		};
-
 		etm@11840000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11840000 0 0x1000>;
 			cpu = <&CPU4>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm4_out: endpoint {
@@ -633,14 +552,12 @@
 				};
 			};
 		};
-
 		etm@11940000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11940000 0 0x1000>;
 			cpu = <&CPU5>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm5_out: endpoint {
@@ -650,14 +567,12 @@
 				};
 			};
 		};
-
 		etm@11a40000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11a40000 0 0x1000>;
 			cpu = <&CPU6>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm6_out: endpoint {
@@ -667,14 +582,12 @@
 				};
 			};
 		};
-
 		etm@11b40000 {
 			compatible = "arm,coresight-etm4x", "arm,primecell";
 			reg = <0 0x11b40000 0 0x1000>;
 			cpu = <&CPU7>;
 			clocks = <&ext_26m>;
 			clock-names = "apb_pclk";
-
 			out-ports {
 				port {
 					etm7_out: endpoint {
@@ -684,10 +597,8 @@
 				};
 			};
 		};
-
 		gpio-keys {
 			compatible = "gpio-keys";
-
 			key-volumedown {
 				label = "Volume Down Key";
 				linux,code = <KEY_VOLUMEDOWN>;
@@ -695,7 +606,6 @@
 				debounce-interval = <2>;
 				wakeup-source;
 			};
-
 			key-volumeup {
 				label = "Volume Up Key";
 				linux,code = <KEY_VOLUMEUP>;
@@ -703,7 +613,6 @@
 				debounce-interval = <2>;
 				wakeup-source;
 			};
-
 			key-power {
 				label = "Power Key";
 				linux,code = <KEY_POWER>;

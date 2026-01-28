@@ -1,12 +1,8 @@
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fsi_master_ast_cf
-
 #if !defined(_TRACE_FSI_MASTER_ACF_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_FSI_MASTER_ACF_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(fsi_master_acf_copro_command,
 	TP_PROTO(const struct fsi_master_acf *master, uint32_t op),
 	TP_ARGS(master, op),
@@ -22,7 +18,6 @@ TRACE_EVENT(fsi_master_acf_copro_command,
 		  __entry->master_idx, __entry->op
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_send_request,
 	TP_PROTO(const struct fsi_master_acf *master, const struct fsi_msg *cmd, u8 rbits),
 	TP_ARGS(master, cmd, rbits),
@@ -43,7 +38,6 @@ TRACE_EVENT(fsi_master_acf_send_request,
 		__entry->bits, __entry->rbits
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_copro_response,
 	TP_PROTO(const struct fsi_master_acf *master, u8 rtag, u8 rcrc, __be32 rdata, bool crc_ok),
 	TP_ARGS(master, rtag, rcrc, rdata, crc_ok),
@@ -66,7 +60,6 @@ TRACE_EVENT(fsi_master_acf_copro_response,
 		__entry->rdata, __entry->crc_ok ? ' ' : '!'
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_crc_rsp_error,
 	TP_PROTO(const struct fsi_master_acf *master, int retries),
 	TP_ARGS(master, retries),
@@ -82,7 +75,6 @@ TRACE_EVENT(fsi_master_acf_crc_rsp_error,
 		__entry->master_idx, __entry->retries
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_poll_response_busy,
 	TP_PROTO(const struct fsi_master_acf *master, int busy_count),
 	TP_ARGS(master, busy_count),
@@ -98,7 +90,6 @@ TRACE_EVENT(fsi_master_acf_poll_response_busy,
 		__entry->master_idx, __entry->busy_count
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_cmd_abs_addr,
 	TP_PROTO(const struct fsi_master_acf *master, u32 addr),
 	TP_ARGS(master, addr),
@@ -114,7 +105,6 @@ TRACE_EVENT(fsi_master_acf_cmd_abs_addr,
 		__entry->master_idx, __entry->addr
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_cmd_rel_addr,
 	TP_PROTO(const struct fsi_master_acf *master, u32 rel_addr),
 	TP_ARGS(master, rel_addr),
@@ -130,7 +120,6 @@ TRACE_EVENT(fsi_master_acf_cmd_rel_addr,
 		__entry->master_idx, __entry->rel_addr
 	)
 );
-
 TRACE_EVENT(fsi_master_acf_cmd_same_addr,
 	TP_PROTO(const struct fsi_master_acf *master),
 	TP_ARGS(master),
@@ -144,7 +133,5 @@ TRACE_EVENT(fsi_master_acf_cmd_same_addr,
 		__entry->master_idx
 	)
 );
-
-#endif /* _TRACE_FSI_MASTER_ACF_H */
-
+#endif  
 #include <trace/define_trace.h>

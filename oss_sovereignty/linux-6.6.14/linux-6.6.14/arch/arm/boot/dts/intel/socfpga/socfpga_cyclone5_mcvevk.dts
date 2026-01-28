@@ -1,53 +1,37 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Marek Vasut <marex@denx.de>
- */
-
 #include "socfpga_cyclone5_mcv.dtsi"
-
 / {
 	model = "Aries/DENX MCV EVK";
 	compatible = "denx,mcvevk", "altr,socfpga-cyclone5", "altr,socfpga";
-
 	aliases {
 		ethernet0 = &gmac0;
 		stmpe-i2c0 = &stmpe1;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
 };
-
 &can0 {
 	status = "okay";
 };
-
 &can1 {
 	status = "okay";
 };
-
 &gmac0 {
 	phy-mode = "rgmii";
 	status = "okay";
 };
-
-&gpio0 {	/* GPIO  0 ... 28 */
+&gpio0 {	 
 	status = "okay";
 };
-
-&gpio1 {	/* GPIO 29 ... 57 */
+&gpio1 {	 
 	status = "okay";
 };
-
-&gpio2 {	/* GPIO 58..66 (HLGPI 0..13 at offset 13) */
+&gpio2 {	 
 	status = "okay";
 };
-
 &i2c0 {
 	status = "okay";
 	clock-frequency = <100000>;
-
 	stmpe1: stmpe811@41 {
 		compatible = "st,stmpe811";
 		#address-cells = <1>;
@@ -55,8 +39,7 @@
 		reg = <0x41>;
 		id = <0>;
 		blocks = <0x5>;
-		irq-gpio = <&portb 28 0x4>;     /* GPIO 57, trig. level HI */
-
+		irq-gpio = <&portb 28 0x4>;      
 		stmpe_touchscreen {
 			compatible = "st,stmpe-ts";
 			ts,sample-time = <4>;
@@ -71,11 +54,9 @@
 		};
 	};
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &usb1 {
 	status = "okay";
 };

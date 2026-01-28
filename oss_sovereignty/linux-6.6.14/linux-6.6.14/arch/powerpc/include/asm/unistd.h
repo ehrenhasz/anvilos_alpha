@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * This file contains the system call numbers.
- */
 #ifndef _ASM_POWERPC_UNISTD_H_
 #define _ASM_POWERPC_UNISTD_H_
-
 #include <uapi/asm/unistd.h>
-
 #define NR_syscalls	__NR_syscalls
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
 #include <linux/compiler.h>
 #include <linux/linkage.h>
-
 #define __ARCH_WANT_NEW_STAT
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_STAT64
@@ -52,6 +43,5 @@
 #define __ARCH_WANT_SYS_VFORK
 #define __ARCH_WANT_SYS_CLONE
 #define __ARCH_WANT_SYS_CLONE3
-
-#endif		/* __ASSEMBLY__ */
-#endif /* _ASM_POWERPC_UNISTD_H_ */
+#endif		 
+#endif  

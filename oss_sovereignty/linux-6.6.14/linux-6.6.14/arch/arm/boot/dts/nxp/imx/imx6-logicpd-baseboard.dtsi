@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2019 Logic PD, Inc.
-
 / {
 	keyboard {
 		compatible = "gpio-keys";
-
 		button-0 {
 			gpios = <&pcf8575 0 GPIO_ACTIVE_LOW>;
 			label = "btn0";
@@ -13,7 +8,6 @@
 			debounce-interval = <10>;
 			wakeup-source;
 		};
-
 		button-1 {
 			gpios = <&pcf8575 1 GPIO_ACTIVE_LOW>;
 			label = "btn1";
@@ -21,7 +15,6 @@
 			debounce-interval = <10>;
 			wakeup-source;
 		};
-
 		button-2 {
 			gpios = <&pcf8575 2 GPIO_ACTIVE_LOW>;
 			label = "btn2";
@@ -29,7 +22,6 @@
 			debounce-interval = <10>;
 			wakeup-source;
 		};
-
 		button-3 {
 			gpios = <&pcf8575 3 GPIO_ACTIVE_LOW>;
 			label = "btn3";
@@ -37,12 +29,9 @@
 			debounce-interval = <10>;
 			wakeup-source;
 		};
-
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		gen-led0 {
 			label = "led0";
 			pinctrl-names = "default";
@@ -50,25 +39,21 @@
 			gpios = <&gpio1 30 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "cpu0";
 		};
-
 		gen-led1 {
 			label = "led1";
 			gpios = <&pcf8575 8 GPIO_ACTIVE_HIGH>;
 		};
-
 		gen-led2 {
 			label = "led2";
 			gpios = <&pcf8575 9 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
 		};
-
 		gen-led3 {
 			label = "led3";
 			gpios = <&pcf8575 10 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "default-on";
 		};
 	};
-
 	reg_usb_otg_vbus: regulator-otg-vbus {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_usb_otg>;
@@ -79,7 +64,6 @@
 		gpio = <&gpio4 15 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_usb_h1_vbus: regulator-usb-h1-vbus {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_usb_h1_vbus>;
@@ -91,7 +75,6 @@
 		startup-delay-us = <70000>;
 		enable-active-high;
 	};
-
 	reg_3v3: regulator-3v3 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_3v3>;
@@ -104,7 +87,6 @@
 		enable-active-high;
 		regulator-always-on;
 	};
-
 	reg_enet: regulator-ethernet {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_enet>;
@@ -117,7 +99,6 @@
 		enable-active-high;
 		vin-supply = <&sw4_reg>;
 	};
-
 	reg_audio: regulator-audio {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_audio>;
@@ -129,7 +110,6 @@
 		enable-active-high;
 		vin-supply = <&reg_3v3>;
 	};
-
 	reg_hdmi: regulator-hdmi {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_hdmi>;
@@ -141,7 +121,6 @@
 		enable-active-high;
 		vin-supply = <&reg_3v3>;
 	};
-
 	reg_uart3: regulator-uart3 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_uart3>;
@@ -152,7 +131,6 @@
 		regulator-always-on;
 		vin-supply = <&reg_3v3>;
 	};
-
 	reg_1v8: regulator-1v8 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_1v8>;
@@ -163,7 +141,6 @@
 		regulator-always-on;
 		vin-supply = <&reg_3v3>;
 	};
-
 	reg_pcie: regulator-pcie {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -174,7 +151,6 @@
 		gpio = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_mipi: regulator-mipi {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -185,7 +161,6 @@
 		gpio = <&gpio3 19 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	sound {
 		compatible = "fsl,imx-audio-wm8962";
 		model = "wm8962-audio";
@@ -202,20 +177,17 @@
 		mux-ext-port = <4>;
 	};
 };
-
 &audmux {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_audmux>;
 	status = "okay";
 };
-
 &ecspi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_ecspi1>;
 	cs-gpios = <&gpio4 9 GPIO_ACTIVE_LOW>;
 	status = "disabled";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -227,13 +199,11 @@
 	interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	clock-frequency = <400000>;
 	status = "okay";
-
 	wm8962: audio-codec@1a {
 		compatible = "wlf,wm8962";
 		reg = <0x1a>;
@@ -247,16 +217,15 @@
 		SPKVDD1-supply = <&reg_audio>;
 		SPKVDD2-supply = <&reg_audio>;
 		gpio-cfg = <
-			0x0000 /* 0:Default */
-			0x0000 /* 1:Default */
-			0x0000 /* 2:FN_DMICCLK */
-			0x0000 /* 3:Default */
-			0x0000 /* 4:FN_DMICCDAT */
-			0x0000 /* 5:Default */
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
 		>;
 	};
 };
-
 &i2c3 {
 	ov5640: camera@10 {
 		compatible = "ovti,ov5640";
@@ -270,7 +239,6 @@
 		DVDD-supply = <&reg_mipi>;
 		reset-gpios = <&gpio3 26 GPIO_ACTIVE_LOW>;
 		powerdown-gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;
-
 		port {
 			ov5640_to_mipi_csi2: endpoint {
 				remote-endpoint = <&mipi_csi2_in>;
@@ -279,7 +247,6 @@
 			};
 		};
 	};
-
 	pcf8575: gpio@20 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_pcf8574>;
@@ -295,18 +262,14 @@
 		wakeup-source;
 	};
 };
-
 &ipu1_csi1_from_mipi_vc1 {
 	clock-lanes = <0>;
 	data-lanes = <1 2>;
 };
-
 &mipi_csi {
 	status = "okay";
-
 	port@0 {
 		reg = <0>;
-
 		mipi_csi2_in: endpoint {
 			remote-endpoint = <&ov5640_to_mipi_csi2>;
 			clock-lanes = <0>;
@@ -314,7 +277,6 @@
 		};
 	};
 };
-
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
@@ -322,31 +284,25 @@
 	vpcie-supply = <&reg_pcie>;
 	status = "okay";
 };
-
 &pwm3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm3>;
 };
-
 &snvs_pwrkey {
 	status = "okay";
 };
-
 &ssi2 {
 	status = "okay";
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 };
-
 &usbh1 {
 	vbus-supply = <&reg_usb_h1_vbus>;
 	status = "okay";
 };
-
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
@@ -355,7 +311,6 @@
 	dr_mode = "otg";
 	status = "okay";
 };
-
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2>;
@@ -367,7 +322,6 @@
 	cd-gpios = <&gpio1 4 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_audmux: audmuxgrp {
 		fsl,pins = <
@@ -377,7 +331,6 @@
 			MX6QDL_PAD_DISP0_DAT23__AUD4_RXD  0x130b0
 		>;
 	};
-
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_COL0__ECSPI1_SCLK	0x100b1
@@ -386,7 +339,6 @@
 			MX6QDL_PAD_KEY_ROW1__GPIO4_IO09		0x1b0b0
 		>;
 	};
-
 	pinctrl_enet: enetgrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_MDIO__ENET_MDIO		0x1b8b0
@@ -405,108 +357,91 @@
 			MX6QDL_PAD_RGMII_RD2__RGMII_RD2		0x1b030
 			MX6QDL_PAD_RGMII_RD3__RGMII_RD3		0x1b030
 			MX6QDL_PAD_RGMII_RX_CTL__RGMII_RX_CTL	0x13030
-			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25	0x1b0b0	/* ENET_INT */
-			MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24	0x1b0b0	/* ETHR_nRST */
+			MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25	0x1b0b0	 
+			MX6QDL_PAD_ENET_RX_ER__GPIO1_IO24	0x1b0b0	 
 		>;
 	};
-
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D21__I2C1_SCL	0x4001b8b1
 			MX6QDL_PAD_EIM_D28__I2C1_SDA	0x4001b8b1
 		>;
 	};
-
 	pinctrl_led0: led0grp {
 	    fsl,pins = <
 		MX6QDL_PAD_ENET_TXD0__GPIO1_IO30	0x1b0b0
 	    >;
 	};
-
 	pinctrl_ov5640: ov5640grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D26__GPIO3_IO26	0x1b0b1
 			MX6QDL_PAD_EIM_D27__GPIO3_IO27	0x1b0b1
 		>;
 	};
-
 	pinctrl_pcf8574: pcf8575grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_BCLK__GPIO6_IO31 0x1b0b0
 		>;
 	};
-
 	pinctrl_pcie: pciegrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_8__GPIO1_IO08 0x1b0b0
 			MX6QDL_PAD_GPIO_9__GPIO1_IO09 0x1b0b0
 		>;
 	};
-
 	pinctrl_pwm3: pwm3grp {
 	    fsl,pins = <
 		MX6QDL_PAD_SD4_DAT1__PWM3_OUT		0x1b0b1
 	    >;
 	};
-
 	pinctrl_reg_1v8: reg1v8grp {
 	    fsl,pins = <
 		MX6QDL_PAD_EIM_D30__GPIO3_IO30		0x1b0b0
 	    >;
 	};
-
 	pinctrl_reg_3v3: reg3v3grp {
 	    fsl,pins = <
 		MX6QDL_PAD_ENET_RXD1__GPIO1_IO26	0x1b0b0
 	    >;
 	};
-
 	pinctrl_reg_audio: reg-audiogrp {
 		fsl,pins = <
 			MX6QDL_PAD_ENET_TXD1__GPIO1_IO29 0x1b0b0
 		>;
 	};
-
 	pinctrl_reg_enet: reg-enetgrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D31__GPIO3_IO31	0x1b0b0
 		>;
 	};
-
 	pinctrl_reg_hdmi: reg-hdmigrp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D20__GPIO3_IO20	0x1b0b0
 		>;
 	};
-
 	pinctrl_reg_mipi: reg-mipigrp {
 		fsl,pins = <MX6QDL_PAD_EIM_D19__GPIO3_IO19 0x1b0b1>;
 	};
-
 	pinctrl_reg_pcie: reg-pciegrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_2__GPIO1_IO02	0x1b0b0
 			>;
 	};
-
 	pinctrl_reg_uart3: reguart3grp {
 	    fsl,pins = <
 		MX6QDL_PAD_ENET_TX_EN__GPIO1_IO28	0x1b0b0
 	    >;
 	};
-
 	pinctrl_reg_usb_h1_vbus: usbh1grp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_17__GPIO7_IO12		0x1b0b0
 		>;
 	};
-
 	pinctrl_reg_usb_otg: reg-usb-otggrp {
 		fsl,pins = <
 			MX6QDL_PAD_KEY_ROW4__GPIO4_IO15		0x1b0b0
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX6QDL_PAD_EIM_D23__UART3_CTS_B		0x1b0b1
@@ -515,16 +450,14 @@
 			MX6QDL_PAD_EIM_EB3__UART3_RTS_B		0x1b0b1
 		>;
 	};
-
 	pinctrl_usbotg: usbotggrp {
 		fsl,pins = <
 			MX6QDL_PAD_GPIO_1__USB_OTG_ID	0xd17059
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
-			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	/* CD */
+			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	 
 			MX6QDL_PAD_SD2_CMD__SD2_CMD		0x17069
 			MX6QDL_PAD_SD2_CLK__SD2_CLK		0x10069
 			MX6QDL_PAD_SD2_DAT0__SD2_DATA0		0x17069
@@ -533,10 +466,9 @@
 			MX6QDL_PAD_SD2_DAT3__SD2_DATA3		0x17069
 		>;
 	};
-
 	pinctrl_usdhc2_100mhz: h100-usdhc2-100mhz {
 		fsl,pins = <
-			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	/* CD */
+			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	 
 			MX6QDL_PAD_SD2_CMD__SD2_CMD		0x170b9
 			MX6QDL_PAD_SD2_CLK__SD2_CLK		0x100b9
 			MX6QDL_PAD_SD2_DAT0__SD2_DATA0		0x170b9
@@ -545,10 +477,9 @@
 			MX6QDL_PAD_SD2_DAT3__SD2_DATA3		0x170b9
 		>;
 	};
-
 	pinctrl_usdhc2_200mhz: h100-usdhc2-200mhz {
 		fsl,pins = <
-			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	/* CD */
+			MX6QDL_PAD_GPIO_4__GPIO1_IO04		0x1b0b0	 
 			MX6QDL_PAD_SD2_CMD__SD2_CMD		0x170f9
 			MX6QDL_PAD_SD2_CLK__SD2_CLK		0x100f9
 			MX6QDL_PAD_SD2_DAT0__SD2_DATA0		0x170f9
@@ -557,5 +488,4 @@
 			MX6QDL_PAD_SD2_DAT3__SD2_DATA3		0x170f9
 		>;
 	};
-
 };

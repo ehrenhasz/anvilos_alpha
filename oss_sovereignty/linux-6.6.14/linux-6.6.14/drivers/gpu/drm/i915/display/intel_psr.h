@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_PSR_H__
 #define __INTEL_PSR_H__
-
 #include <linux/types.h>
-
 enum fb_op_origin;
 struct drm_connector;
 struct drm_connector_state;
@@ -20,7 +13,6 @@ struct intel_dp;
 struct intel_encoder;
 struct intel_plane;
 struct intel_plane_state;
-
 void intel_psr_init_dpcd(struct intel_dp *intel_dp);
 void intel_psr_pre_plane_update(struct intel_atomic_state *state,
 				struct intel_crtc *crtc);
@@ -54,15 +46,12 @@ void intel_psr2_program_plane_sel_fetch_noarm(struct intel_plane *plane,
 void intel_psr2_program_plane_sel_fetch_arm(struct intel_plane *plane,
 					    const struct intel_crtc_state *crtc_state,
 					    const struct intel_plane_state *plane_state);
-
 void intel_psr2_disable_plane_sel_fetch_arm(struct intel_plane *plane,
 					    const struct intel_crtc_state *crtc_state);
 void intel_psr_pause(struct intel_dp *intel_dp);
 void intel_psr_resume(struct intel_dp *intel_dp);
-
 void intel_psr_lock(const struct intel_crtc_state *crtc_state);
 void intel_psr_unlock(const struct intel_crtc_state *crtc_state);
 void intel_psr_connector_debugfs_add(struct intel_connector *connector);
 void intel_psr_debugfs_register(struct drm_i915_private *i915);
-
-#endif /* __INTEL_PSR_H__ */
+#endif  

@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ISCSI_TARGET_UTIL_H
 #define ISCSI_TARGET_UTIL_H
-
 #include <linux/types.h>
-#include <scsi/iscsi_proto.h>        /* itt_t */
-
+#include <scsi/iscsi_proto.h>         
 #define MARKER_SIZE	8
-
 struct iscsit_cmd;
 struct iscsit_conn;
 struct iscsi_conn_recovery;
 struct iscsit_session;
-
 extern int iscsit_add_r2t_to_list(struct iscsit_cmd *, u32, u32, int, u32);
 extern struct iscsi_r2t *iscsit_get_r2t_for_eos(struct iscsit_cmd *, u32, u32);
 extern struct iscsi_r2t *iscsit_get_r2t_from_list(struct iscsit_cmd *);
@@ -72,5 +67,4 @@ extern int tx_data(struct iscsit_conn *, struct kvec *, int, int);
 extern void iscsit_collect_login_stats(struct iscsit_conn *, u8, u8);
 extern struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsit_conn *);
 extern void iscsit_fill_cxn_timeout_err_stats(struct iscsit_session *);
-
-#endif /*** ISCSI_TARGET_UTIL_H ***/
+#endif  

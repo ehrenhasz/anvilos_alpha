@@ -1,10 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for K2G Netcp driver
- *
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
- */
-
 qmss: qmss@4020000 {
 	compatible = "ti,66ak2g-navss-qm";
 	dma-coherent;
@@ -17,7 +10,6 @@ qmss: qmss@4020000 {
 	queue-range = <0 0x80>;
 	linkram0 = <0x4020000 0x7ff>;
 	status = "disabled";
-
 	qmgrs {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -31,7 +23,6 @@ qmss: qmss@4020000 {
 			reg-names = "peek", "config",
 				    "region", "push";
 		};
-
 	};
 	queue-pools {
 		qpend {
@@ -53,19 +44,17 @@ qmss: qmss@4020000 {
 			};
 		};
 	};
-
 	descriptor-regions {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
 		region-12 {
 			id = <12>;
-			region-spec = <1023 128>; /* num_desc desc_size */
+			region-spec = <1023 128>;  
 			link-index = <0x400>;
 		};
 	};
-}; /* qmss */
-
+};  
 knav_dmas: knav_dmas@0 {
 	compatible = "ti,keystone-navigator-dma";
 	#address-cells = <1>;
@@ -76,19 +65,16 @@ knav_dmas: knav_dmas@0 {
 	clock-names = "nss_vclk";
 	ranges;
 	ti,navigator-cloud-address = <0x40c0000 0x40c0000 0x40c0000 0x40c0000>;
-
 	dma_gbe: dma_gbe@0 {
 		reg = <0x4010000 0x100>,
-		      <0x4011000 0x2a0>, /* 21 Tx channels */
-		      <0x4012000 0x400>, /* 32 Rx channels */
+		      <0x4011000 0x2a0>,  
+		      <0x4012000 0x400>,  
 		      <0x4010100 0x80>,
-		      <0x4013000 0x400>; /* 32 Rx flows */
+		      <0x4013000 0x400>;  
 		reg-names = "global", "txchan", "rxchan",
 			    "txsched", "rxflow";
 	};
-
 };
-
 netcp: netcp@4000000 {
 	reg = <0x2620110 0x8>;
 	reg-names = "efuse";
@@ -99,15 +85,10 @@ netcp: netcp@4000000 {
 	power-domains = <&k2g_pds 0x0018>;
 	clocks = <&k2g_clks 0x0018 3>, <&k2g_clks 0x0018 8>;
 	clock-names = "ethss_clk", "cpts";
-
-	/* NetCP address range */
 	ranges = <0 0x4000000 0x1000000>;
-
 	dma-coherent;
-
 	ti,navigator-dmas = <&dma_gbe 0>, <&dma_gbe 5>;
 	ti,navigator-dma-names = "netrx0", "nettx";
-
 	netcp-devices {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -121,7 +102,6 @@ netcp: netcp@4000000 {
 			tx-channel = "nettx";
 			cpts-rftclk-sel = <0>;
 			cpts-ext-ts-inputs = <8>;
-
 			interfaces {
 				gbe0: interface-0 {
 					slave-port = <0>;
@@ -130,7 +110,6 @@ netcp: netcp@4000000 {
 			};
 		};
 	};
-
 	netcp-interfaces {
 		interface-0 {
 			rx-channel = "netrx0";

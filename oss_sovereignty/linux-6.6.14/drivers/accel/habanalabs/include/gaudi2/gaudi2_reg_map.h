@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
 #ifndef GAUDI2_REG_MAP_H_
 #define GAUDI2_REG_MAP_H_
-
-/*
- * PSOC scratch-pad registers
- */
 #define mmHW_STATE				mmCPU_IF_KMD_HW_DIRTY_STATUS
 #define mmPID_STATUS_REG			mmPSOC_GLOBAL_CONF_SCRATCHPAD_1
 #define mmARM_STATUS_REG			mmPSOC_GLOBAL_CONF_SCRATCHPAD_2
@@ -25,11 +14,6 @@
 #define mmGIC_HOST_INTS_IRQ_POLL_REG		mmPSOC_GLOBAL_CONF_SCRATCHPAD_11
 #define mmGIC_HOST_SOFT_RST_IRQ_POLL_REG	mmPSOC_GLOBAL_CONF_SCRATCHPAD_12
 #define mmCPU_RST_STATUS_TO_HOST		mmPSOC_GLOBAL_CONF_SCRATCHPAD_14
-/*
- *  Single scratchpad register used for all ARCs to notify dccm queue full event to FW.
- *  So a new event would overwrite any unhandled previous event. In other words, incase
- *  of multiple events before previous ones are handled, last one would be considered.
- */
 #define mmENGINE_ARC_IRQ_CTRL_POLL_REG		mmPSOC_GLOBAL_CONF_SCRATCHPAD_15
 #define mmPID_CFG_REG				mmPSOC_GLOBAL_CONF_SCRATCHPAD_18
 #define mmGIC_RAZWI_STATUS_REG			mmPSOC_GLOBAL_CONF_SCRATCHPAD_19
@@ -57,5 +41,4 @@
 #define mmWD_GPIO_OUTSET_REG			mmPSOC_GPIO3_OUTENSET
 #define mmWD_GPIO_DATAOUT_REG			mmPSOC_GPIO3_DATAOUT
 #define mmSTM_PROFILER_SPE_REG			mmPSOC_STM_STMSPER
-
-#endif /* GAUDI2_REG_MAP_H_ */
+#endif  

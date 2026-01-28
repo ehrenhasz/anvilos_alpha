@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
-
 #ifndef __INTEL_DVO_REGS_H__
 #define __INTEL_DVO_REGS_H__
-
 #include "intel_display_reg_defs.h"
-
 #define _DVOA			0x61120
 #define _DVOB			0x61140
 #define _DVOC			0x61160
@@ -39,9 +32,8 @@
 #define   DVO_VSYNC_ACTIVE_HIGH			REG_BIT(4)
 #define   DVO_HSYNC_ACTIVE_HIGH			REG_BIT(3)
 #define   DVO_BLANK_ACTIVE_HIGH			REG_BIT(2)
-#define   DVO_OUTPUT_CSTATE_PIXELS		REG_BIT(1) /* SDG only */
-#define   DVO_OUTPUT_SOURCE_SIZE_PIXELS		REG_BIT(0) /* SDG only */
-
+#define   DVO_OUTPUT_CSTATE_PIXELS		REG_BIT(1)  
+#define   DVO_OUTPUT_SOURCE_SIZE_PIXELS		REG_BIT(0)  
 #define _DVOA_SRCDIM		0x61124
 #define _DVOB_SRCDIM		0x61144
 #define _DVOC_SRCDIM		0x61164
@@ -50,5 +42,4 @@
 #define   DVO_SRCDIM_HORIZONTAL(x)		REG_FIELD_PREP(DVO_SRCDIM_HORIZONTAL_MASK, (x))
 #define   DVO_SRCDIM_VERTICAL_MASK		REG_GENMASK(10, 0)
 #define   DVO_SRCDIM_VERTICAL(x)		REG_FIELD_PREP(DVO_SRCDIM_VERTICAL_MASK, (x))
-
-#endif /* __INTEL_DVO_REGS_H__ */
+#endif  

@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * MFD core driver for Ricoh RN5T618 PMIC
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- */
-
 #ifndef __LINUX_MFD_RN5T618_H
 #define __LINUX_MFD_RN5T618_H
-
 #include <linux/regmap.h>
-
 #define RN5T618_LSIVER			0x00
 #define RN5T618_OTPVER			0x01
 #define RN5T618_IODAC			0x02
@@ -139,7 +130,6 @@
 #define RN5T618_INTPOL			0x9c
 #define RN5T618_INTEN			0x9d
 #define RN5T618_INTMON			0x9e
-
 #define RN5T618_RTC_SECONDS     0xA0
 #define RN5T618_RTC_MDAY        0xA4
 #define RN5T618_RTC_MONTH       0xA5
@@ -149,7 +139,6 @@
 #define RN5T618_RTC_DAL_MONTH   0xAC
 #define RN5T618_RTC_CTRL1       0xAE
 #define RN5T618_RTC_CTRL2       0xAF
-
 #define RN5T618_PREVINDAC		0xb0
 #define RN5T618_BATDAC			0xb1
 #define RN5T618_CHGCTL1			0xb3
@@ -219,14 +208,12 @@
 #define RN5T618_CC_AVEREG1		0xfb
 #define RN5T618_CC_AVEREG0		0xfc
 #define RN5T618_MAX_REG			0xfc
-
 #define RN5T618_REPCNT_REPWRON		BIT(0)
 #define RN5T618_SLPCNT_SWPWROFF		BIT(0)
 #define RN5T618_WATCHDOG_WDOGEN		BIT(2)
 #define RN5T618_WATCHDOG_WDOGTIM_M	(BIT(0) | BIT(1))
 #define RN5T618_WATCHDOG_WDOGTIM_S	0
 #define RN5T618_PWRIRQ_IR_WDOG		BIT(6)
-
 #define RN5T618_POFFHIS_PWRON		BIT(0)
 #define RN5T618_POFFHIS_TSHUT		BIT(1)
 #define RN5T618_POFFHIS_VINDET		BIT(2)
@@ -235,7 +222,6 @@
 #define RN5T618_POFFHIS_WDG		BIT(5)
 #define RN5T618_POFFHIS_DCLIM		BIT(6)
 #define RN5T618_POFFHIS_N_OE		BIT(7)
-
 enum {
 	RN5T618_DCDC1,
 	RN5T618_DCDC2,
@@ -256,14 +242,11 @@ enum {
 	RN5T618_LDORTC2,
 	RN5T618_REG_NUM,
 };
-
 enum {
 	RN5T567 = 0,
 	RN5T618,
 	RC5T619,
 };
-
-/* RN5T618 IRQ definitions */
 enum {
 	RN5T618_IRQ_SYS = 0,
 	RN5T618_IRQ_DCDC,
@@ -273,14 +256,11 @@ enum {
 	RN5T618_IRQ_CHG,
 	RN5T618_NR_IRQS,
 };
-
 struct rn5t618 {
 	struct regmap *regmap;
 	struct device *dev;
 	long variant;
-
 	int irq;
 	struct regmap_irq_chip_data *irq_data;
 };
-
-#endif /* __LINUX_MFD_RN5T618_H */
+#endif  

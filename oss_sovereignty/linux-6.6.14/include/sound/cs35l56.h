@@ -1,18 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common definitions for Cirrus Logic CS35L56 smart amp
- *
- * Copyright (C) 2023 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
-
 #ifndef __CS35L56_H
 #define __CS35L56_H
-
 #include <linux/firmware/cirrus/cs_dsp.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regmap.h>
-
 #define CS35L56_DEVID					0x0000000
 #define CS35L56_REVID					0x0000004
 #define CS35L56_RELID					0x000000C
@@ -98,28 +88,18 @@
 #define CS35L56_DSP1_YMEM_UNPACKED24_6141		0x3405FF4
 #define CS35L56_DSP1_PMEM_0				0x3800000
 #define CS35L56_DSP1_PMEM_5114				0x3804FE8
-
-/* DEVID */
 #define CS35L56_DEVID_MASK				0x00FFFFFF
-
-/* REVID */
 #define CS35L56_AREVID_MASK				0x000000F0
 #define CS35L56_MTLREVID_MASK				0x0000000F
 #define CS35L56_REVID_B0				0x000000B0
-
-/* ASP_ENABLES1 */
 #define CS35L56_ASP_RX2_EN_SHIFT			17
 #define CS35L56_ASP_RX1_EN_SHIFT			16
 #define CS35L56_ASP_TX4_EN_SHIFT			3
 #define CS35L56_ASP_TX3_EN_SHIFT			2
 #define CS35L56_ASP_TX2_EN_SHIFT			1
 #define CS35L56_ASP_TX1_EN_SHIFT			0
-
-/* ASP_CONTROL1 */
 #define CS35L56_ASP_BCLK_FREQ_MASK			0x0000003F
 #define CS35L56_ASP_BCLK_FREQ_SHIFT			0
-
-/* ASP_CONTROL2 */
 #define CS35L56_ASP_RX_WIDTH_MASK			0xFF000000
 #define CS35L56_ASP_RX_WIDTH_SHIFT			24
 #define CS35L56_ASP_TX_WIDTH_MASK			0x00FF0000
@@ -128,38 +108,16 @@
 #define CS35L56_ASP_FMT_SHIFT				8
 #define CS35L56_ASP_BCLK_INV_MASK			0x00000040
 #define CS35L56_ASP_FSYNC_INV_MASK			0x00000004
-
-/* ASP_CONTROL3 */
 #define CS35L56_ASP1_DOUT_HIZ_CTRL_MASK			0x00000003
-
-/* ASP_DATA_CONTROL1 */
 #define CS35L56_ASP_TX_WL_MASK				0x0000003F
-
-/* ASP_DATA_CONTROL5 */
 #define CS35L56_ASP_RX_WL_MASK				0x0000003F
-
-/* ASPTXn_INPUT */
 #define CS35L56_ASP_TXn_SRC_MASK			0x0000007F
-
-/* SWIRETX[1..7]_SRC SDWTXn INPUT */
 #define CS35L56_SWIRETXn_SRC_MASK			0x0000007F
-
-/* IRQ1_STATUS */
 #define CS35L56_IRQ1_STS_MASK				0x00000001
-
-/* IRQ1_EINT_1 */
 #define CS35L56_AMP_SHORT_ERR_EINT1_MASK		0x80000000
-
-/* IRQ1_EINT_2 */
 #define CS35L56_DSP_VIRTUAL2_MBOX_WR_EINT1_MASK		0x00200000
-
-/* IRQ1_EINT_4 */
 #define CS35L56_OTP_BOOT_DONE_MASK			0x00000002
-
-/* IRQ1_EINT_8 */
 #define CS35L56_TEMP_ERR_EINT1_MASK			0x80000000
-
-/* Mixer input sources */
 #define CS35L56_INPUT_SRC_NONE				0x00
 #define CS35L56_INPUT_SRC_ASP1RX1			0x08
 #define CS35L56_INPUT_SRC_ASP1RX2			0x09
@@ -182,45 +140,25 @@
 #define CS35L56_INPUT_SRC_SWIRE_DP1_CHANNEL1		0x44
 #define CS35L56_INPUT_SRC_SWIRE_DP1_CHANNEL2		0x45
 #define CS35L56_INPUT_MASK				0x7F
-
 #define CS35L56_NUM_INPUT_SRC				21
-
-/* ASP formats */
 #define CS35L56_ASP_FMT_DSP_A				0
 #define CS35L56_ASP_FMT_I2S				2
-
-/* ASP HiZ modes */
 #define CS35L56_ASP_UNUSED_HIZ_OFF_HIZ			3
-
-/* MAIN_RENDER_ACTUAL_PS */
 #define CS35L56_PS0					0
 #define CS35L56_PS3					3
-
-/* CS35L56_DSP_RESTRICT_STS1 */
 #define CS35L56_RESTRICTED_MASK				0x7
-
-/* CS35L56_MAIN_RENDER_USER_MUTE */
 #define CS35L56_MAIN_RENDER_USER_MUTE_MASK		1
-
-/* CS35L56_MAIN_RENDER_USER_VOLUME */
 #define CS35L56_MAIN_RENDER_USER_VOLUME_MIN		-400
 #define CS35L56_MAIN_RENDER_USER_VOLUME_MAX		400
 #define CS35L56_MAIN_RENDER_USER_VOLUME_MASK		0x0000FFC0
 #define CS35L56_MAIN_RENDER_USER_VOLUME_SHIFT		6
 #define CS35L56_MAIN_RENDER_USER_VOLUME_SIGNBIT		9
-
-/* CS35L56_MAIN_POSTURE_NUMBER */
 #define CS35L56_MAIN_POSTURE_MIN			0
 #define CS35L56_MAIN_POSTURE_MAX			255
 #define CS35L56_MAIN_POSTURE_MASK			CS35L56_MAIN_POSTURE_MAX
-
-/* CS35L56_PROTECTION_STATUS */
 #define CS35L56_FIRMWARE_MISSING			BIT(0)
-
-/* Software Values */
 #define CS35L56_HALO_STATE_SHUTDOWN			1
 #define CS35L56_HALO_STATE_BOOT_DONE			2
-
 #define CS35L56_MBOX_CMD_AUDIO_PLAY			0x0B000001
 #define CS35L56_MBOX_CMD_AUDIO_PAUSE			0x0B000002
 #define CS35L56_MBOX_CMD_AUDIO_REINIT			0x0B000003
@@ -230,28 +168,22 @@
 #define CS35L56_MBOX_CMD_ALLOW_AUTO_HIBERNATE		0x02000004
 #define CS35L56_MBOX_CMD_SHUTDOWN			0x02000005
 #define CS35L56_MBOX_CMD_SYSTEM_RESET			0x02000007
-
 #define CS35L56_MBOX_TIMEOUT_US				5000
 #define CS35L56_MBOX_POLL_US				250
-
 #define CS35L56_PS0_POLL_US				500
 #define CS35L56_PS0_TIMEOUT_US				50000
 #define CS35L56_PS3_POLL_US				500
 #define CS35L56_PS3_TIMEOUT_US				300000
-
 #define CS35L56_CONTROL_PORT_READY_US			2200
 #define CS35L56_HALO_STATE_POLL_US			1000
 #define CS35L56_HALO_STATE_TIMEOUT_US			50000
 #define CS35L56_HIBERNATE_WAKE_POLL_US			500
 #define CS35L56_HIBERNATE_WAKE_TIMEOUT_US		5000
 #define CS35L56_RESET_PULSE_MIN_US			1100
-
 #define CS35L56_SDW1_PLAYBACK_PORT			1
 #define CS35L56_SDW1_CAPTURE_PORT			3
-
 #define CS35L56_NUM_BULK_SUPPLIES			3
 #define CS35L56_NUM_DSP_REGIONS				5
-
 struct cs35l56_base {
 	struct device *dev;
 	struct regmap *regmap;
@@ -264,14 +196,11 @@ struct cs35l56_base {
 	bool can_hibernate;
 	struct gpio_desc *reset_gpio;
 };
-
 extern struct regmap_config cs35l56_regmap_i2c;
 extern struct regmap_config cs35l56_regmap_spi;
 extern struct regmap_config cs35l56_regmap_sdw;
-
 extern const char * const cs35l56_tx_input_texts[CS35L56_NUM_INPUT_SRC];
 extern const unsigned int cs35l56_tx_input_values[CS35L56_NUM_INPUT_SRC];
-
 int cs35l56_set_patch(struct cs35l56_base *cs35l56_base);
 int cs35l56_mbox_send(struct cs35l56_base *cs35l56_base, unsigned int command);
 int cs35l56_firmware_shutdown(struct cs35l56_base *cs35l56_base);
@@ -288,5 +217,4 @@ void cs35l56_init_cs_dsp(struct cs35l56_base *cs35l56_base, struct cs_dsp *cs_ds
 int cs35l56_hw_init(struct cs35l56_base *cs35l56_base);
 int cs35l56_get_bclk_freq_id(unsigned int freq);
 void cs35l56_fill_supply_names(struct regulator_bulk_data *data);
-
-#endif /* ifndef __CS35L56_H */
+#endif  

@@ -1,34 +1,6 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
-
 #ifndef _DCE_DMCU_H_
 #define _DCE_DMCU_H_
-
 #include "dmcu.h"
-
 #define DMCU_COMMON_REG_LIST_DCE_BASE() \
 	SR(DMCU_CTRL), \
 	SR(DMCU_STATUS), \
@@ -49,7 +21,6 @@
 	SR(DMCU_INTERRUPT_TO_UC_EN_MASK), \
 	SR(SMU_INTERRUPT_CONTROL), \
 	SR(DC_DMCU_SCRATCH)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define DMCU_DCE60_REG_LIST() \
 	SR(DMCU_CTRL), \
@@ -67,7 +38,6 @@
 	SR(DMCU_INTERRUPT_TO_UC_EN_MASK), \
 	SR(DC_DMCU_SCRATCH)
 #endif
-
 #define DMCU_DCE80_REG_LIST() \
 	SR(DMCU_CTRL), \
 	SR(DMCU_STATUS), \
@@ -84,22 +54,17 @@
 	SR(DMCU_INTERRUPT_TO_UC_EN_MASK), \
 	SR(SMU_INTERRUPT_CONTROL), \
 	SR(DC_DMCU_SCRATCH)
-
 #define DMCU_DCE110_COMMON_REG_LIST() \
 	DMCU_COMMON_REG_LIST_DCE_BASE(), \
 	SR(DCI_MEM_PWR_STATUS)
-
 #define DMCU_DCN10_REG_LIST()\
 	DMCU_COMMON_REG_LIST_DCE_BASE(), \
 	SR(DMU_MEM_PWR_CNTL)
-
 #define DMCU_DCN20_REG_LIST()\
 	DMCU_DCN10_REG_LIST(), \
 	SR(DMCUB_SCRATCH15)
-
 #define DMCU_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define DMCU_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	DMCU_SF(DMCU_CTRL, \
 			DMCU_ENABLE, mask_sh), \
@@ -126,7 +91,6 @@
 	DMCU_SF(DMCU_INTERRUPT_TO_UC_EN_MASK, \
 			STATIC_SCREEN4_INT_TO_UC_EN, mask_sh), \
 	DMCU_SF(SMU_INTERRUPT_CONTROL, DC_SMU_INT_ENABLE, mask_sh)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define DMCU_MASK_SH_LIST_DCE60(mask_sh) \
 	DMCU_SF(DMCU_CTRL, \
@@ -145,7 +109,6 @@
 			MASTER_COMM_CMD_REG_BYTE0, mask_sh), \
 	DMCU_SF(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, mask_sh)
 #endif
-
 #define DMCU_MASK_SH_LIST_DCE80(mask_sh) \
 	DMCU_SF(DMCU_CTRL, \
 			DMCU_ENABLE, mask_sh), \
@@ -163,17 +126,14 @@
 			MASTER_COMM_CMD_REG_BYTE0, mask_sh), \
 	DMCU_SF(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, mask_sh), \
 	DMCU_SF(SMU_INTERRUPT_CONTROL, DC_SMU_INT_ENABLE, mask_sh)
-
 #define DMCU_MASK_SH_LIST_DCE110(mask_sh) \
 	DMCU_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	DMCU_SF(DCI_MEM_PWR_STATUS, \
 		DMCU_IRAM_MEM_PWR_STATE, mask_sh)
-
 #define DMCU_MASK_SH_LIST_DCN10(mask_sh) \
 	DMCU_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	DMCU_SF(DMU_MEM_PWR_CNTL, \
 			DMCU_IRAM_MEM_PWR_STATE, mask_sh)
-
 #define DMCU_REG_FIELD_LIST(type) \
 	type DMCU_IRAM_MEM_PWR_STATE; \
 	type IRAM_HOST_ACCESS_EN; \
@@ -194,15 +154,12 @@
 	type DP_SEC_GSP0_LINE_NUM; \
 	type DP_SEC_GSP0_PRIORITY; \
 	type DC_SMU_INT_ENABLE
-
 struct dce_dmcu_shift {
 	DMCU_REG_FIELD_LIST(uint8_t);
 };
-
 struct dce_dmcu_mask {
 	DMCU_REG_FIELD_LIST(uint32_t);
 };
-
 struct dce_dmcu_registers {
 	uint32_t DMCU_CTRL;
 	uint32_t DMCU_STATUS;
@@ -211,7 +168,6 @@ struct dce_dmcu_registers {
 	uint32_t DMU_MEM_PWR_CNTL;
 	uint32_t DMCU_IRAM_WR_CTRL;
 	uint32_t DMCU_IRAM_WR_DATA;
-
 	uint32_t MASTER_COMM_DATA_REG1;
 	uint32_t MASTER_COMM_DATA_REG2;
 	uint32_t MASTER_COMM_DATA_REG3;
@@ -229,103 +185,73 @@ struct dce_dmcu_registers {
 	uint32_t DC_DMCU_SCRATCH;
 	uint32_t DMCUB_SCRATCH15;
 };
-
 struct dce_dmcu {
 	struct dmcu base;
 	const struct dce_dmcu_registers *regs;
 	const struct dce_dmcu_shift *dmcu_shift;
 	const struct dce_dmcu_mask *dmcu_mask;
 };
-
-/*******************************************************************
- *   MASTER_COMM_DATA_REG1   Bit position    Data
- *                           7:0	            hyst_frames[7:0]
- *                           14:8	        hyst_lines[6:0]
- *                           15	            RFB_UPDATE_AUTO_EN
- *                           18:16	        phy_num[2:0]
- *                           21:19	        dcp_sel[2:0]
- *                           22	            phy_type
- *                           23	            frame_cap_ind
- *                           26:24	        aux_chan[2:0]
- *                           30:27	        aux_repeat[3:0]
- *                           31:31	        reserved[31:31]
- ******************************************************************/
 union dce_dmcu_psr_config_data_reg1 {
 	struct {
-		unsigned int timehyst_frames:8;                  /*[7:0]*/
-		unsigned int hyst_lines:7;                       /*[14:8]*/
-		unsigned int rfb_update_auto_en:1;               /*[15:15]*/
-		unsigned int dp_port_num:3;                      /*[18:16]*/
-		unsigned int dcp_sel:3;                          /*[21:19]*/
-		unsigned int phy_type:1;                         /*[22:22]*/
-		unsigned int frame_cap_ind:1;                    /*[23:23]*/
-		unsigned int aux_chan:3;                         /*[26:24]*/
-		unsigned int aux_repeat:4;                       /*[30:27]*/
-		unsigned int allow_smu_optimizations:1;         /*[31:31]*/
+		unsigned int timehyst_frames:8;                   
+		unsigned int hyst_lines:7;                        
+		unsigned int rfb_update_auto_en:1;                
+		unsigned int dp_port_num:3;                       
+		unsigned int dcp_sel:3;                           
+		unsigned int phy_type:1;                          
+		unsigned int frame_cap_ind:1;                     
+		unsigned int aux_chan:3;                          
+		unsigned int aux_repeat:4;                        
+		unsigned int allow_smu_optimizations:1;          
 	} bits;
 	unsigned int u32All;
 };
-
-/*******************************************************************
- *   MASTER_COMM_DATA_REG2
- *******************************************************************/
 union dce_dmcu_psr_config_data_reg2 {
 	struct {
-		unsigned int dig_fe:3;                  /*[2:0]*/
-		unsigned int dig_be:3;                  /*[5:3]*/
-		unsigned int skip_wait_for_pll_lock:1;  /*[6:6]*/
-		unsigned int reserved:9;                /*[15:7]*/
-		unsigned int frame_delay:8;             /*[23:16]*/
-		unsigned int smu_phy_id:4;              /*[27:24]*/
-		unsigned int num_of_controllers:4;      /*[31:28]*/
+		unsigned int dig_fe:3;                   
+		unsigned int dig_be:3;                   
+		unsigned int skip_wait_for_pll_lock:1;   
+		unsigned int reserved:9;                 
+		unsigned int frame_delay:8;              
+		unsigned int smu_phy_id:4;               
+		unsigned int num_of_controllers:4;       
 	} bits;
 	unsigned int u32All;
 };
-
-/*******************************************************************
- *   MASTER_COMM_DATA_REG3
- *******************************************************************/
 union dce_dmcu_psr_config_data_reg3 {
 	struct {
-		unsigned int psr_level:16;      /*[15:0]*/
-		unsigned int link_rate:4;       /*[19:16]*/
-		unsigned int reserved:12;        /*[31:20]*/
+		unsigned int psr_level:16;       
+		unsigned int link_rate:4;        
+		unsigned int reserved:12;         
 	} bits;
 	unsigned int u32All;
 };
-
 union dce_dmcu_psr_config_data_wait_loop_reg1 {
 	struct {
-		unsigned int wait_loop:16; /* [15:0] */
-		unsigned int reserved:16; /* [31:16] */
+		unsigned int wait_loop:16;  
+		unsigned int reserved:16;  
 	} bits;
 	unsigned int u32;
 };
-
 struct dmcu *dce_dmcu_create(
 	struct dc_context *ctx,
 	const struct dce_dmcu_registers *regs,
 	const struct dce_dmcu_shift *dmcu_shift,
 	const struct dce_dmcu_mask *dmcu_mask);
-
 struct dmcu *dcn10_dmcu_create(
 	struct dc_context *ctx,
 	const struct dce_dmcu_registers *regs,
 	const struct dce_dmcu_shift *dmcu_shift,
 	const struct dce_dmcu_mask *dmcu_mask);
-
 struct dmcu *dcn20_dmcu_create(
 	struct dc_context *ctx,
 	const struct dce_dmcu_registers *regs,
 	const struct dce_dmcu_shift *dmcu_shift,
 	const struct dce_dmcu_mask *dmcu_mask);
-
 struct dmcu *dcn21_dmcu_create(
 	struct dc_context *ctx,
 	const struct dce_dmcu_registers *regs,
 	const struct dce_dmcu_shift *dmcu_shift,
 	const struct dce_dmcu_mask *dmcu_mask);
-
 void dce_dmcu_destroy(struct dmcu **dmcu);
-
-#endif /* _DCE_ABM_H_ */
+#endif  

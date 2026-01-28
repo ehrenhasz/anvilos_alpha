@@ -1,18 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- */
-
-/*
- *  sof_sdw_amp_coeff_tables.h - related coefficients for amplifier parameters
- */
-
 #ifndef SND_SOC_SOF_SDW_AMP_COEFF_H
 #define SND_SOC_SOF_SDW_AMP_COEFF_H
-
 #define RT1308_MAX_BQ_REG 480
 #define RT1316_MAX_BQ_REG 580
-
 static const u8 __maybe_unused dell_0a5d_bq_params[] = {
-	0xb0, 0xc5, 0x00,  /* address: 0xc5b0; data: 0x00 */
+	0xb0, 0xc5, 0x00,   
 	0xb1, 0xc5, 0x32,
 	0xb2, 0xc5, 0x44,
 	0xb3, 0xc5, 0x19,
@@ -159,7 +150,6 @@ static const u8 __maybe_unused dell_0a5d_bq_params[] = {
 	0x93, 0xc5, 0x00,
 	0x50, 0xc5, 0x01,
 };
-
 static const u8 __maybe_unused dell_0b00_bq_params[] = {
 	0x03, 0xc2, 0x00,
 	0x04, 0xc2, 0xb2,
@@ -296,5 +286,4 @@ static const u8 __maybe_unused dell_0b00_bq_params[] = {
 	0x70, 0xc2, 0x00,
 	0x00, 0xc2, 0xc0,
 };
-
 #endif

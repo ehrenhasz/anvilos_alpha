@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef __LINUX_PKT_CLS_H
 #define __LINUX_PKT_CLS_H
-
 #include <linux/types.h>
 #include <linux/pkt_sched.h>
-
 #define TC_COOKIE_MAX_SIZE 16
-
-/* Action attributes */
 enum {
 	TCA_ACT_UNSPEC,
 	TCA_ACT_KIND,
@@ -22,34 +17,11 @@ enum {
 	TCA_ACT_IN_HW_COUNT,
 	__TCA_ACT_MAX
 };
-
-/* See other TCA_ACT_FLAGS_ * flags in include/net/act_api.h. */
-#define TCA_ACT_FLAGS_NO_PERCPU_STATS (1 << 0) /* Don't use percpu allocator for
-						* actions stats.
-						*/
-#define TCA_ACT_FLAGS_SKIP_HW	(1 << 1) /* don't offload action to HW */
-#define TCA_ACT_FLAGS_SKIP_SW	(1 << 2) /* don't use action in SW */
-
-/* tca HW stats type
- * When user does not pass the attribute, he does not care.
- * It is the same as if he would pass the attribute with
- * all supported bits set.
- * In case no bits are set, user is not interested in getting any HW statistics.
- */
-#define TCA_ACT_HW_STATS_IMMEDIATE (1 << 0) /* Means that in dump, user
-					     * gets the current HW stats
-					     * state from the device
-					     * queried at the dump time.
-					     */
-#define TCA_ACT_HW_STATS_DELAYED (1 << 1) /* Means that in dump, user gets
-					   * HW stats that might be out of date
-					   * for some time, maybe couple of
-					   * seconds. This is the case when
-					   * driver polls stats updates
-					   * periodically or when it gets async
-					   * stats update from the device.
-					   */
-
+#define TCA_ACT_FLAGS_NO_PERCPU_STATS (1 << 0)  
+#define TCA_ACT_FLAGS_SKIP_HW	(1 << 1)  
+#define TCA_ACT_FLAGS_SKIP_SW	(1 << 2)  
+#define TCA_ACT_HW_STATS_IMMEDIATE (1 << 0)  
+#define TCA_ACT_HW_STATS_DELAYED (1 << 1)  
 #define TCA_ACT_MAX __TCA_ACT_MAX
 #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
 #define TCA_ACT_MAX_PRIO 32
@@ -59,7 +31,6 @@ enum {
 #define TCA_ACT_NOUNBIND	0
 #define TCA_ACT_REPLACE		1
 #define TCA_ACT_NOREPLACE	0
-
 #define TC_ACT_UNSPEC	(-1)
 #define TC_ACT_OK		0
 #define TC_ACT_RECLASSIFY	1
@@ -69,35 +40,16 @@ enum {
 #define TC_ACT_QUEUED		5
 #define TC_ACT_REPEAT		6
 #define TC_ACT_REDIRECT		7
-#define TC_ACT_TRAP		8 /* For hw path, this means "trap to cpu"
-				   * and don't further process the frame
-				   * in hardware. For sw path, this is
-				   * equivalent of TC_ACT_STOLEN - drop
-				   * the skb and act like everything
-				   * is alright.
-				   */
+#define TC_ACT_TRAP		8  
 #define TC_ACT_VALUE_MAX	TC_ACT_TRAP
-
-/* There is a special kind of actions called "extended actions",
- * which need a value parameter. These have a local opcode located in
- * the highest nibble, starting from 1. The rest of the bits
- * are used to carry the value. These two parts together make
- * a combined opcode.
- */
 #define __TC_ACT_EXT_SHIFT 28
 #define __TC_ACT_EXT(local) ((local) << __TC_ACT_EXT_SHIFT)
 #define TC_ACT_EXT_VAL_MASK ((1 << __TC_ACT_EXT_SHIFT) - 1)
 #define TC_ACT_EXT_OPCODE(combined) ((combined) & (~TC_ACT_EXT_VAL_MASK))
 #define TC_ACT_EXT_CMP(combined, opcode) (TC_ACT_EXT_OPCODE(combined) == opcode)
-
 #define TC_ACT_JUMP __TC_ACT_EXT(1)
 #define TC_ACT_GOTO_CHAIN __TC_ACT_EXT(2)
 #define TC_ACT_EXT_OPCODE_MAX	TC_ACT_GOTO_CHAIN
-
-/* These macros are put here for binary compatibility with userspace apps that
- * make use of them. For kernel code and new userspace apps, use the TCA_ID_*
- * versions.
- */
 #define TCA_ACT_GACT 5
 #define TCA_ACT_IPT 6
 #define TCA_ACT_PEDIT 7
@@ -114,8 +66,6 @@ enum {
 #define TCA_ACT_SIMP 22
 #define TCA_ACT_IFE 25
 #define TCA_ACT_SAMPLE 26
-
-/* Action type identifiers*/
 enum tca_id {
 	TCA_ID_UNSPEC = 0,
 	TCA_ID_POLICE = 1,
@@ -139,12 +89,9 @@ enum tca_id {
 	TCA_ID_MPLS,
 	TCA_ID_CT,
 	TCA_ID_GATE,
-	/* other actions go here */
 	__TCA_ID_MAX = 255
 };
-
 #define TCA_ID_MAX __TCA_ID_MAX
-
 struct tc_police {
 	__u32			index;
 	int			action;
@@ -153,7 +100,6 @@ struct tc_police {
 #define TC_POLICE_RECLASSIFY	TC_ACT_RECLASSIFY
 #define TC_POLICE_SHOT		TC_ACT_SHOT
 #define TC_POLICE_PIPE		TC_ACT_PIPE
-
 	__u32			limit;
 	__u32			burst;
 	__u32			mtu;
@@ -163,26 +109,22 @@ struct tc_police {
 	int			bindcnt;
 	__u32			capab;
 };
-
 struct tcf_t {
 	__u64   install;
 	__u64   lastuse;
 	__u64   expires;
 	__u64   firstuse;
 };
-
 struct tc_cnt {
 	int                   refcnt;
 	int                   bindcnt;
 };
-
 #define tc_gen \
 	__u32                 index; \
 	__u32                 capab; \
 	int                   action; \
 	int                   refcnt; \
 	int                   bindcnt
-
 enum {
 	TCA_POLICE_UNSPEC,
 	TCA_POLICE_TBF,
@@ -199,18 +141,12 @@ enum {
 	__TCA_POLICE_MAX
 #define TCA_POLICE_RESULT TCA_POLICE_RESULT
 };
-
 #define TCA_POLICE_MAX (__TCA_POLICE_MAX - 1)
-
-/* tca flags definitions */
-#define TCA_CLS_FLAGS_SKIP_HW	(1 << 0) /* don't offload filter to HW */
-#define TCA_CLS_FLAGS_SKIP_SW	(1 << 1) /* don't use filter in SW */
-#define TCA_CLS_FLAGS_IN_HW	(1 << 2) /* filter is offloaded to HW */
-#define TCA_CLS_FLAGS_NOT_IN_HW (1 << 3) /* filter isn't offloaded to HW */
-#define TCA_CLS_FLAGS_VERBOSE	(1 << 4) /* verbose logging */
-
-/* U32 filters */
-
+#define TCA_CLS_FLAGS_SKIP_HW	(1 << 0)  
+#define TCA_CLS_FLAGS_SKIP_SW	(1 << 1)  
+#define TCA_CLS_FLAGS_IN_HW	(1 << 2)  
+#define TCA_CLS_FLAGS_NOT_IN_HW (1 << 3)  
+#define TCA_CLS_FLAGS_VERBOSE	(1 << 4)  
 #define TC_U32_HTID(h) ((h)&0xFFF00000)
 #define TC_U32_USERHTID(h) (TC_U32_HTID(h)>>20)
 #define TC_U32_HASH(h) (((h)>>12)&0xFF)
@@ -218,7 +154,6 @@ enum {
 #define TC_U32_KEY(h) ((h)&0xFFFFF)
 #define TC_U32_UNSPEC	0
 #define TC_U32_ROOT	(0xFFF00000)
-
 enum {
 	TCA_U32_UNSPEC,
 	TCA_U32_CLASSID,
@@ -235,54 +170,39 @@ enum {
 	TCA_U32_PAD,
 	__TCA_U32_MAX
 };
-
 #define TCA_U32_MAX (__TCA_U32_MAX - 1)
-
 struct tc_u32_key {
 	__be32		mask;
 	__be32		val;
 	int		off;
 	int		offmask;
 };
-
 struct tc_u32_sel {
 	unsigned char		flags;
 	unsigned char		offshift;
 	unsigned char		nkeys;
-
 	__be16			offmask;
 	__u16			off;
 	short			offoff;
-
 	short			hoff;
 	__be32			hmask;
 	struct tc_u32_key	keys[];
 };
-
 struct tc_u32_mark {
 	__u32		val;
 	__u32		mask;
 	__u32		success;
 };
-
 struct tc_u32_pcnt {
 	__u64 rcnt;
 	__u64 rhit;
 	__u64 kcnts[];
 };
-
-/* Flags */
-
 #define TC_U32_TERMINAL		1
 #define TC_U32_OFFSET		2
 #define TC_U32_VAROFFSET	4
 #define TC_U32_EAT		8
-
 #define TC_U32_MAXDEPTH 8
-
-
-/* RSVP filter */
-
 enum {
 	TCA_RSVP_UNSPEC,
 	TCA_RSVP_CLASSID,
@@ -293,15 +213,12 @@ enum {
 	TCA_RSVP_ACT,
 	__TCA_RSVP_MAX
 };
-
 #define TCA_RSVP_MAX (__TCA_RSVP_MAX - 1 )
-
 struct tc_rsvp_gpi {
 	__u32	key;
 	__u32	mask;
 	int	offset;
 };
-
 struct tc_rsvp_pinfo {
 	struct tc_rsvp_gpi dpi;
 	struct tc_rsvp_gpi spi;
@@ -310,9 +227,6 @@ struct tc_rsvp_pinfo {
 	__u8	tunnelhdr;
 	__u8	pad;
 };
-
-/* ROUTE filter */
-
 enum {
 	TCA_ROUTE4_UNSPEC,
 	TCA_ROUTE4_CLASSID,
@@ -323,26 +237,17 @@ enum {
 	TCA_ROUTE4_ACT,
 	__TCA_ROUTE4_MAX
 };
-
 #define TCA_ROUTE4_MAX (__TCA_ROUTE4_MAX - 1)
-
-
-/* FW filter */
-
 enum {
 	TCA_FW_UNSPEC,
 	TCA_FW_CLASSID,
 	TCA_FW_POLICE,
 	TCA_FW_INDEV,
-	TCA_FW_ACT, /* used by CONFIG_NET_CLS_ACT */
+	TCA_FW_ACT,  
 	TCA_FW_MASK,
 	__TCA_FW_MAX
 };
-
 #define TCA_FW_MAX (__TCA_FW_MAX - 1)
-
-/* TC index filter */
-
 enum {
 	TCA_TCINDEX_UNSPEC,
 	TCA_TCINDEX_HASH,
@@ -354,11 +259,7 @@ enum {
 	TCA_TCINDEX_ACT,
 	__TCA_TCINDEX_MAX
 };
-
 #define TCA_TCINDEX_MAX     (__TCA_TCINDEX_MAX - 1)
-
-/* Flow filter */
-
 enum {
 	FLOW_KEY_SRC,
 	FLOW_KEY_DST,
@@ -380,14 +281,11 @@ enum {
 	FLOW_KEY_RXHASH,
 	__FLOW_KEY_MAX,
 };
-
 #define FLOW_KEY_MAX	(__FLOW_KEY_MAX - 1)
-
 enum {
 	FLOW_MODE_MAP,
 	FLOW_MODE_HASH,
 };
-
 enum {
 	TCA_FLOW_UNSPEC,
 	TCA_FLOW_KEYS,
@@ -404,16 +302,11 @@ enum {
 	TCA_FLOW_PERTURB,
 	__TCA_FLOW_MAX
 };
-
 #define TCA_FLOW_MAX	(__TCA_FLOW_MAX - 1)
-
-/* Basic filter */
-
 struct tc_basic_pcnt {
 	__u64 rcnt;
 	__u64 rhit;
 };
-
 enum {
 	TCA_BASIC_UNSPEC,
 	TCA_BASIC_CLASSID,
@@ -424,12 +317,7 @@ enum {
 	TCA_BASIC_PAD,
 	__TCA_BASIC_MAX
 };
-
 #define TCA_BASIC_MAX (__TCA_BASIC_MAX - 1)
-
-
-/* Cgroup classifier */
-
 enum {
 	TCA_CGROUP_UNSPEC,
 	TCA_CGROUP_ACT,
@@ -437,13 +325,8 @@ enum {
 	TCA_CGROUP_EMATCHES,
 	__TCA_CGROUP_MAX,
 };
-
 #define TCA_CGROUP_MAX (__TCA_CGROUP_MAX - 1)
-
-/* BPF classifier */
-
 #define TCA_BPF_FLAG_ACT_DIRECT		(1 << 0)
-
 enum {
 	TCA_BPF_UNSPEC,
 	TCA_BPF_ACT,
@@ -459,238 +342,179 @@ enum {
 	TCA_BPF_ID,
 	__TCA_BPF_MAX,
 };
-
 #define TCA_BPF_MAX (__TCA_BPF_MAX - 1)
-
-/* Flower classifier */
-
 enum {
 	TCA_FLOWER_UNSPEC,
 	TCA_FLOWER_CLASSID,
 	TCA_FLOWER_INDEV,
 	TCA_FLOWER_ACT,
-	TCA_FLOWER_KEY_ETH_DST,		/* ETH_ALEN */
-	TCA_FLOWER_KEY_ETH_DST_MASK,	/* ETH_ALEN */
-	TCA_FLOWER_KEY_ETH_SRC,		/* ETH_ALEN */
-	TCA_FLOWER_KEY_ETH_SRC_MASK,	/* ETH_ALEN */
-	TCA_FLOWER_KEY_ETH_TYPE,	/* be16 */
-	TCA_FLOWER_KEY_IP_PROTO,	/* u8 */
-	TCA_FLOWER_KEY_IPV4_SRC,	/* be32 */
-	TCA_FLOWER_KEY_IPV4_SRC_MASK,	/* be32 */
-	TCA_FLOWER_KEY_IPV4_DST,	/* be32 */
-	TCA_FLOWER_KEY_IPV4_DST_MASK,	/* be32 */
-	TCA_FLOWER_KEY_IPV6_SRC,	/* struct in6_addr */
-	TCA_FLOWER_KEY_IPV6_SRC_MASK,	/* struct in6_addr */
-	TCA_FLOWER_KEY_IPV6_DST,	/* struct in6_addr */
-	TCA_FLOWER_KEY_IPV6_DST_MASK,	/* struct in6_addr */
-	TCA_FLOWER_KEY_TCP_SRC,		/* be16 */
-	TCA_FLOWER_KEY_TCP_DST,		/* be16 */
-	TCA_FLOWER_KEY_UDP_SRC,		/* be16 */
-	TCA_FLOWER_KEY_UDP_DST,		/* be16 */
-
+	TCA_FLOWER_KEY_ETH_DST,		 
+	TCA_FLOWER_KEY_ETH_DST_MASK,	 
+	TCA_FLOWER_KEY_ETH_SRC,		 
+	TCA_FLOWER_KEY_ETH_SRC_MASK,	 
+	TCA_FLOWER_KEY_ETH_TYPE,	 
+	TCA_FLOWER_KEY_IP_PROTO,	 
+	TCA_FLOWER_KEY_IPV4_SRC,	 
+	TCA_FLOWER_KEY_IPV4_SRC_MASK,	 
+	TCA_FLOWER_KEY_IPV4_DST,	 
+	TCA_FLOWER_KEY_IPV4_DST_MASK,	 
+	TCA_FLOWER_KEY_IPV6_SRC,	 
+	TCA_FLOWER_KEY_IPV6_SRC_MASK,	 
+	TCA_FLOWER_KEY_IPV6_DST,	 
+	TCA_FLOWER_KEY_IPV6_DST_MASK,	 
+	TCA_FLOWER_KEY_TCP_SRC,		 
+	TCA_FLOWER_KEY_TCP_DST,		 
+	TCA_FLOWER_KEY_UDP_SRC,		 
+	TCA_FLOWER_KEY_UDP_DST,		 
 	TCA_FLOWER_FLAGS,
-	TCA_FLOWER_KEY_VLAN_ID,		/* be16 */
-	TCA_FLOWER_KEY_VLAN_PRIO,	/* u8   */
-	TCA_FLOWER_KEY_VLAN_ETH_TYPE,	/* be16 */
-
-	TCA_FLOWER_KEY_ENC_KEY_ID,	/* be32 */
-	TCA_FLOWER_KEY_ENC_IPV4_SRC,	/* be32 */
-	TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK,/* be32 */
-	TCA_FLOWER_KEY_ENC_IPV4_DST,	/* be32 */
-	TCA_FLOWER_KEY_ENC_IPV4_DST_MASK,/* be32 */
-	TCA_FLOWER_KEY_ENC_IPV6_SRC,	/* struct in6_addr */
-	TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK,/* struct in6_addr */
-	TCA_FLOWER_KEY_ENC_IPV6_DST,	/* struct in6_addr */
-	TCA_FLOWER_KEY_ENC_IPV6_DST_MASK,/* struct in6_addr */
-
-	TCA_FLOWER_KEY_TCP_SRC_MASK,	/* be16 */
-	TCA_FLOWER_KEY_TCP_DST_MASK,	/* be16 */
-	TCA_FLOWER_KEY_UDP_SRC_MASK,	/* be16 */
-	TCA_FLOWER_KEY_UDP_DST_MASK,	/* be16 */
-	TCA_FLOWER_KEY_SCTP_SRC_MASK,	/* be16 */
-	TCA_FLOWER_KEY_SCTP_DST_MASK,	/* be16 */
-
-	TCA_FLOWER_KEY_SCTP_SRC,	/* be16 */
-	TCA_FLOWER_KEY_SCTP_DST,	/* be16 */
-
-	TCA_FLOWER_KEY_ENC_UDP_SRC_PORT,	/* be16 */
-	TCA_FLOWER_KEY_ENC_UDP_SRC_PORT_MASK,	/* be16 */
-	TCA_FLOWER_KEY_ENC_UDP_DST_PORT,	/* be16 */
-	TCA_FLOWER_KEY_ENC_UDP_DST_PORT_MASK,	/* be16 */
-
-	TCA_FLOWER_KEY_FLAGS,		/* be32 */
-	TCA_FLOWER_KEY_FLAGS_MASK,	/* be32 */
-
-	TCA_FLOWER_KEY_ICMPV4_CODE,	/* u8 */
-	TCA_FLOWER_KEY_ICMPV4_CODE_MASK,/* u8 */
-	TCA_FLOWER_KEY_ICMPV4_TYPE,	/* u8 */
-	TCA_FLOWER_KEY_ICMPV4_TYPE_MASK,/* u8 */
-	TCA_FLOWER_KEY_ICMPV6_CODE,	/* u8 */
-	TCA_FLOWER_KEY_ICMPV6_CODE_MASK,/* u8 */
-	TCA_FLOWER_KEY_ICMPV6_TYPE,	/* u8 */
-	TCA_FLOWER_KEY_ICMPV6_TYPE_MASK,/* u8 */
-
-	TCA_FLOWER_KEY_ARP_SIP,		/* be32 */
-	TCA_FLOWER_KEY_ARP_SIP_MASK,	/* be32 */
-	TCA_FLOWER_KEY_ARP_TIP,		/* be32 */
-	TCA_FLOWER_KEY_ARP_TIP_MASK,	/* be32 */
-	TCA_FLOWER_KEY_ARP_OP,		/* u8 */
-	TCA_FLOWER_KEY_ARP_OP_MASK,	/* u8 */
-	TCA_FLOWER_KEY_ARP_SHA,		/* ETH_ALEN */
-	TCA_FLOWER_KEY_ARP_SHA_MASK,	/* ETH_ALEN */
-	TCA_FLOWER_KEY_ARP_THA,		/* ETH_ALEN */
-	TCA_FLOWER_KEY_ARP_THA_MASK,	/* ETH_ALEN */
-
-	TCA_FLOWER_KEY_MPLS_TTL,	/* u8 - 8 bits */
-	TCA_FLOWER_KEY_MPLS_BOS,	/* u8 - 1 bit */
-	TCA_FLOWER_KEY_MPLS_TC,		/* u8 - 3 bits */
-	TCA_FLOWER_KEY_MPLS_LABEL,	/* be32 - 20 bits */
-
-	TCA_FLOWER_KEY_TCP_FLAGS,	/* be16 */
-	TCA_FLOWER_KEY_TCP_FLAGS_MASK,	/* be16 */
-
-	TCA_FLOWER_KEY_IP_TOS,		/* u8 */
-	TCA_FLOWER_KEY_IP_TOS_MASK,	/* u8 */
-	TCA_FLOWER_KEY_IP_TTL,		/* u8 */
-	TCA_FLOWER_KEY_IP_TTL_MASK,	/* u8 */
-
-	TCA_FLOWER_KEY_CVLAN_ID,	/* be16 */
-	TCA_FLOWER_KEY_CVLAN_PRIO,	/* u8   */
-	TCA_FLOWER_KEY_CVLAN_ETH_TYPE,	/* be16 */
-
-	TCA_FLOWER_KEY_ENC_IP_TOS,	/* u8 */
-	TCA_FLOWER_KEY_ENC_IP_TOS_MASK,	/* u8 */
-	TCA_FLOWER_KEY_ENC_IP_TTL,	/* u8 */
-	TCA_FLOWER_KEY_ENC_IP_TTL_MASK,	/* u8 */
-
+	TCA_FLOWER_KEY_VLAN_ID,		 
+	TCA_FLOWER_KEY_VLAN_PRIO,	 
+	TCA_FLOWER_KEY_VLAN_ETH_TYPE,	 
+	TCA_FLOWER_KEY_ENC_KEY_ID,	 
+	TCA_FLOWER_KEY_ENC_IPV4_SRC,	 
+	TCA_FLOWER_KEY_ENC_IPV4_SRC_MASK, 
+	TCA_FLOWER_KEY_ENC_IPV4_DST,	 
+	TCA_FLOWER_KEY_ENC_IPV4_DST_MASK, 
+	TCA_FLOWER_KEY_ENC_IPV6_SRC,	 
+	TCA_FLOWER_KEY_ENC_IPV6_SRC_MASK, 
+	TCA_FLOWER_KEY_ENC_IPV6_DST,	 
+	TCA_FLOWER_KEY_ENC_IPV6_DST_MASK, 
+	TCA_FLOWER_KEY_TCP_SRC_MASK,	 
+	TCA_FLOWER_KEY_TCP_DST_MASK,	 
+	TCA_FLOWER_KEY_UDP_SRC_MASK,	 
+	TCA_FLOWER_KEY_UDP_DST_MASK,	 
+	TCA_FLOWER_KEY_SCTP_SRC_MASK,	 
+	TCA_FLOWER_KEY_SCTP_DST_MASK,	 
+	TCA_FLOWER_KEY_SCTP_SRC,	 
+	TCA_FLOWER_KEY_SCTP_DST,	 
+	TCA_FLOWER_KEY_ENC_UDP_SRC_PORT,	 
+	TCA_FLOWER_KEY_ENC_UDP_SRC_PORT_MASK,	 
+	TCA_FLOWER_KEY_ENC_UDP_DST_PORT,	 
+	TCA_FLOWER_KEY_ENC_UDP_DST_PORT_MASK,	 
+	TCA_FLOWER_KEY_FLAGS,		 
+	TCA_FLOWER_KEY_FLAGS_MASK,	 
+	TCA_FLOWER_KEY_ICMPV4_CODE,	 
+	TCA_FLOWER_KEY_ICMPV4_CODE_MASK, 
+	TCA_FLOWER_KEY_ICMPV4_TYPE,	 
+	TCA_FLOWER_KEY_ICMPV4_TYPE_MASK, 
+	TCA_FLOWER_KEY_ICMPV6_CODE,	 
+	TCA_FLOWER_KEY_ICMPV6_CODE_MASK, 
+	TCA_FLOWER_KEY_ICMPV6_TYPE,	 
+	TCA_FLOWER_KEY_ICMPV6_TYPE_MASK, 
+	TCA_FLOWER_KEY_ARP_SIP,		 
+	TCA_FLOWER_KEY_ARP_SIP_MASK,	 
+	TCA_FLOWER_KEY_ARP_TIP,		 
+	TCA_FLOWER_KEY_ARP_TIP_MASK,	 
+	TCA_FLOWER_KEY_ARP_OP,		 
+	TCA_FLOWER_KEY_ARP_OP_MASK,	 
+	TCA_FLOWER_KEY_ARP_SHA,		 
+	TCA_FLOWER_KEY_ARP_SHA_MASK,	 
+	TCA_FLOWER_KEY_ARP_THA,		 
+	TCA_FLOWER_KEY_ARP_THA_MASK,	 
+	TCA_FLOWER_KEY_MPLS_TTL,	 
+	TCA_FLOWER_KEY_MPLS_BOS,	 
+	TCA_FLOWER_KEY_MPLS_TC,		 
+	TCA_FLOWER_KEY_MPLS_LABEL,	 
+	TCA_FLOWER_KEY_TCP_FLAGS,	 
+	TCA_FLOWER_KEY_TCP_FLAGS_MASK,	 
+	TCA_FLOWER_KEY_IP_TOS,		 
+	TCA_FLOWER_KEY_IP_TOS_MASK,	 
+	TCA_FLOWER_KEY_IP_TTL,		 
+	TCA_FLOWER_KEY_IP_TTL_MASK,	 
+	TCA_FLOWER_KEY_CVLAN_ID,	 
+	TCA_FLOWER_KEY_CVLAN_PRIO,	 
+	TCA_FLOWER_KEY_CVLAN_ETH_TYPE,	 
+	TCA_FLOWER_KEY_ENC_IP_TOS,	 
+	TCA_FLOWER_KEY_ENC_IP_TOS_MASK,	 
+	TCA_FLOWER_KEY_ENC_IP_TTL,	 
+	TCA_FLOWER_KEY_ENC_IP_TTL_MASK,	 
 	TCA_FLOWER_KEY_ENC_OPTS,
 	TCA_FLOWER_KEY_ENC_OPTS_MASK,
-
 	TCA_FLOWER_IN_HW_COUNT,
-
-	TCA_FLOWER_KEY_PORT_SRC_MIN,	/* be16 */
-	TCA_FLOWER_KEY_PORT_SRC_MAX,	/* be16 */
-	TCA_FLOWER_KEY_PORT_DST_MIN,	/* be16 */
-	TCA_FLOWER_KEY_PORT_DST_MAX,	/* be16 */
-
-	TCA_FLOWER_KEY_CT_STATE,	/* u16 */
-	TCA_FLOWER_KEY_CT_STATE_MASK,	/* u16 */
-	TCA_FLOWER_KEY_CT_ZONE,		/* u16 */
-	TCA_FLOWER_KEY_CT_ZONE_MASK,	/* u16 */
-	TCA_FLOWER_KEY_CT_MARK,		/* u32 */
-	TCA_FLOWER_KEY_CT_MARK_MASK,	/* u32 */
-	TCA_FLOWER_KEY_CT_LABELS,	/* u128 */
-	TCA_FLOWER_KEY_CT_LABELS_MASK,	/* u128 */
-
+	TCA_FLOWER_KEY_PORT_SRC_MIN,	 
+	TCA_FLOWER_KEY_PORT_SRC_MAX,	 
+	TCA_FLOWER_KEY_PORT_DST_MIN,	 
+	TCA_FLOWER_KEY_PORT_DST_MAX,	 
+	TCA_FLOWER_KEY_CT_STATE,	 
+	TCA_FLOWER_KEY_CT_STATE_MASK,	 
+	TCA_FLOWER_KEY_CT_ZONE,		 
+	TCA_FLOWER_KEY_CT_ZONE_MASK,	 
+	TCA_FLOWER_KEY_CT_MARK,		 
+	TCA_FLOWER_KEY_CT_MARK_MASK,	 
+	TCA_FLOWER_KEY_CT_LABELS,	 
+	TCA_FLOWER_KEY_CT_LABELS_MASK,	 
 	TCA_FLOWER_KEY_MPLS_OPTS,
-
-	TCA_FLOWER_KEY_HASH,		/* u32 */
-	TCA_FLOWER_KEY_HASH_MASK,	/* u32 */
-
-	TCA_FLOWER_KEY_NUM_OF_VLANS,    /* u8 */
-
-	TCA_FLOWER_KEY_PPPOE_SID,	/* be16 */
-	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
-
-	TCA_FLOWER_KEY_L2TPV3_SID,	/* be32 */
-
-	TCA_FLOWER_L2_MISS,		/* u8 */
-
-	TCA_FLOWER_KEY_CFM,		/* nested */
-
-	TCA_FLOWER_KEY_SPI,		/* be32 */
-	TCA_FLOWER_KEY_SPI_MASK,	/* be32 */
-
+	TCA_FLOWER_KEY_HASH,		 
+	TCA_FLOWER_KEY_HASH_MASK,	 
+	TCA_FLOWER_KEY_NUM_OF_VLANS,     
+	TCA_FLOWER_KEY_PPPOE_SID,	 
+	TCA_FLOWER_KEY_PPP_PROTO,	 
+	TCA_FLOWER_KEY_L2TPV3_SID,	 
+	TCA_FLOWER_L2_MISS,		 
+	TCA_FLOWER_KEY_CFM,		 
+	TCA_FLOWER_KEY_SPI,		 
+	TCA_FLOWER_KEY_SPI_MASK,	 
 	__TCA_FLOWER_MAX,
 };
-
 #define TCA_FLOWER_MAX (__TCA_FLOWER_MAX - 1)
-
 enum {
-	TCA_FLOWER_KEY_CT_FLAGS_NEW = 1 << 0, /* Beginning of a new connection. */
-	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
-	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
-	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
-	TCA_FLOWER_KEY_CT_FLAGS_INVALID = 1 << 4, /* Conntrack is invalid. */
-	TCA_FLOWER_KEY_CT_FLAGS_REPLY = 1 << 5, /* Packet is in the reply direction. */
+	TCA_FLOWER_KEY_CT_FLAGS_NEW = 1 << 0,  
+	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1,  
+	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2,  
+	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3,  
+	TCA_FLOWER_KEY_CT_FLAGS_INVALID = 1 << 4,  
+	TCA_FLOWER_KEY_CT_FLAGS_REPLY = 1 << 5,  
 	__TCA_FLOWER_KEY_CT_FLAGS_MAX,
 };
-
 enum {
 	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
-	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
-					 * TCA_FLOWER_KEY_ENC_OPT_GENEVE_
-					 * attributes
-					 */
-	TCA_FLOWER_KEY_ENC_OPTS_VXLAN,	/* Nested
-					 * TCA_FLOWER_KEY_ENC_OPT_VXLAN_
-					 * attributes
-					 */
-	TCA_FLOWER_KEY_ENC_OPTS_ERSPAN,	/* Nested
-					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
-					 * attributes
-					 */
-	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
-					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
-					 * attributes
-					 */
+	TCA_FLOWER_KEY_ENC_OPTS_GENEVE,  
+	TCA_FLOWER_KEY_ENC_OPTS_VXLAN,	 
+	TCA_FLOWER_KEY_ENC_OPTS_ERSPAN,	 
+	TCA_FLOWER_KEY_ENC_OPTS_GTP,	 
 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
 };
-
 #define TCA_FLOWER_KEY_ENC_OPTS_MAX (__TCA_FLOWER_KEY_ENC_OPTS_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_ENC_OPT_GENEVE_UNSPEC,
-	TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS,            /* u16 */
-	TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE,             /* u8 */
-	TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA,             /* 4 to 128 bytes */
-
+	TCA_FLOWER_KEY_ENC_OPT_GENEVE_CLASS,             
+	TCA_FLOWER_KEY_ENC_OPT_GENEVE_TYPE,              
+	TCA_FLOWER_KEY_ENC_OPT_GENEVE_DATA,              
 	__TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX,
 };
-
 #define TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX \
 		(__TCA_FLOWER_KEY_ENC_OPT_GENEVE_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_ENC_OPT_VXLAN_UNSPEC,
-	TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP,		/* u32 */
+	TCA_FLOWER_KEY_ENC_OPT_VXLAN_GBP,		 
 	__TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX,
 };
-
 #define TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX \
 		(__TCA_FLOWER_KEY_ENC_OPT_VXLAN_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_UNSPEC,
-	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER,              /* u8 */
-	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX,            /* be32 */
-	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,              /* u8 */
-	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,             /* u8 */
+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_VER,               
+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_INDEX,             
+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_DIR,               
+	TCA_FLOWER_KEY_ENC_OPT_ERSPAN_HWID,              
 	__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX,
 };
-
 #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
-	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
-	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
-
+	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		 
+	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			 
 	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
 };
-
 #define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
 		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
 	__TCA_FLOWER_KEY_MPLS_OPTS_MAX,
 };
-
 #define TCA_FLOWER_KEY_MPLS_OPTS_MAX (__TCA_FLOWER_KEY_MPLS_OPTS_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_MPLS_OPT_LSE_UNSPEC,
 	TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH,
@@ -700,32 +524,23 @@ enum {
 	TCA_FLOWER_KEY_MPLS_OPT_LSE_LABEL,
 	__TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX,
 };
-
 #define TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX \
 		(__TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX - 1)
-
 enum {
 	TCA_FLOWER_KEY_FLAGS_IS_FRAGMENT = (1 << 0),
 	TCA_FLOWER_KEY_FLAGS_FRAG_IS_FIRST = (1 << 1),
 };
-
 enum {
 	TCA_FLOWER_KEY_CFM_OPT_UNSPEC,
 	TCA_FLOWER_KEY_CFM_MD_LEVEL,
 	TCA_FLOWER_KEY_CFM_OPCODE,
 	__TCA_FLOWER_KEY_CFM_OPT_MAX,
 };
-
 #define TCA_FLOWER_KEY_CFM_OPT_MAX (__TCA_FLOWER_KEY_CFM_OPT_MAX - 1)
-
-#define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0) /* Range-based match */
-
-/* Match-all classifier */
-
+#define TCA_FLOWER_MASK_FLAGS_RANGE	(1 << 0)  
 struct tc_matchall_pcnt {
 	__u64 rhit;
 };
-
 enum {
 	TCA_MATCHALL_UNSPEC,
 	TCA_MATCHALL_CLASSID,
@@ -735,16 +550,11 @@ enum {
 	TCA_MATCHALL_PAD,
 	__TCA_MATCHALL_MAX,
 };
-
 #define TCA_MATCHALL_MAX (__TCA_MATCHALL_MAX - 1)
-
-/* Extended Matches */
-
 struct tcf_ematch_tree_hdr {
 	__u16		nmatches;
 	__u16		progid;
 };
-
 enum {
 	TCA_EMATCH_TREE_UNSPEC,
 	TCA_EMATCH_TREE_HDR,
@@ -752,37 +562,19 @@ enum {
 	__TCA_EMATCH_TREE_MAX
 };
 #define TCA_EMATCH_TREE_MAX (__TCA_EMATCH_TREE_MAX - 1)
-
 struct tcf_ematch_hdr {
 	__u16		matchid;
 	__u16		kind;
 	__u16		flags;
-	__u16		pad; /* currently unused */
+	__u16		pad;  
 };
-
-/*  0                   1
- *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 
- * +-----------------------+-+-+---+
- * |         Unused        |S|I| R |
- * +-----------------------+-+-+---+
- *
- * R(2) ::= relation to next ematch
- *          where: 0 0 END (last ematch)
- *                 0 1 AND
- *                 1 0 OR
- *                 1 1 Unused (invalid)
- * I(1) ::= invert result
- * S(1) ::= simple payload
- */
 #define TCF_EM_REL_END	0
 #define TCF_EM_REL_AND	(1<<0)
 #define TCF_EM_REL_OR	(1<<1)
 #define TCF_EM_INVERT	(1<<2)
 #define TCF_EM_SIMPLE	(1<<3)
-
 #define TCF_EM_REL_MASK	3
 #define TCF_EM_REL_VALID(v) (((v) & TCF_EM_REL_MASK) != TCF_EM_REL_MASK)
-
 enum {
 	TCF_LAYER_LINK,
 	TCF_LAYER_NETWORK,
@@ -790,11 +582,6 @@ enum {
 	__TCF_LAYER_MAX
 };
 #define TCF_LAYER_MAX (__TCF_LAYER_MAX - 1)
-
-/* Ematch type assignments
- *   1..32767		Reserved for ematches inside kernel tree
- *   32768..65535	Free to use, not reliable
- */
 #define	TCF_EM_CONTAINER	0
 #define	TCF_EM_CMP		1
 #define	TCF_EM_NBYTE		2
@@ -806,15 +593,12 @@ enum {
 #define	TCF_EM_IPSET		8
 #define	TCF_EM_IPT		9
 #define	TCF_EM_MAX		9
-
 enum {
 	TCF_EM_PROG_TC
 };
-
 enum {
 	TCF_EM_OPND_EQ,
 	TCF_EM_OPND_GT,
 	TCF_EM_OPND_LT
 };
-
 #endif

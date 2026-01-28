@@ -1,39 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * kgdb support for ARC
- *
- * Copyright (C) 2012 Synopsys, Inc. (www.synopsys.com)
- */
-
 #ifndef __ARC_KGDB_H__
 #define __ARC_KGDB_H__
-
 #ifdef CONFIG_KGDB
-
 #include <asm/ptrace.h>
-
-/* to ensure compatibility with Linux 2.6.35, we don't implement the get/set
- * register API yet */
 #undef DBG_MAX_REG_NUM
-
 #define GDB_MAX_REGS		87
-
 #define BREAK_INSTR_SIZE	2
 #define CACHE_FLUSH_IS_SAFE	1
 #define NUMREGBYTES		(GDB_MAX_REGS * 4)
 #define BUFMAX			2048
-
 static inline void arch_kgdb_breakpoint(void)
 {
 	__asm__ __volatile__ ("trap_s	0x4\n");
 }
-
 extern void kgdb_trap(struct pt_regs *regs);
-
-/* This is the numbering of registers according to the GDB. See GDB's
- * arc-tdep.h for details.
- *
- * Registers are ordered for GDB 7.5. It is incompatible with GDB 6.8. */
 enum arc_linux_regnums {
 	_R0		= 0,
 	_R1, _R2, _R3, _R4, _R5, _R6, _R7, _R8, _R9, _R10, _R11, _R12, _R13,
@@ -52,9 +31,7 @@ enum arc_linux_regnums {
 	_ECR		= 76,
 	_BTA		= 82,
 };
-
 #else
 #define kgdb_trap(regs)
 #endif
-
-#endif	/* __ARC_KGDB_H__ */
+#endif	 

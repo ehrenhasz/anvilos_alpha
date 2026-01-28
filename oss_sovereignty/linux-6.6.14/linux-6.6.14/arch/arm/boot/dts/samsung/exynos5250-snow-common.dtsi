@@ -1,87 +1,66 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Google Snow board device tree source
- *
- * Copyright (c) 2012 Google, Inc
- */
-
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/clock/maxim,max77686.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/sound/samsung-i2s.h>
 #include "exynos5250.dtsi"
-
 / {
 	aliases {
 		i2c104 = &i2c_104;
-		mmc0 = &mmc_0; /* eMMC */
-		mmc1 = &mmc_2; /* SD */
-		mmc2 = &mmc_3; /* WiFi */
+		mmc0 = &mmc_0;  
+		mmc1 = &mmc_2;  
+		mmc2 = &mmc_3;  
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x40000000 0x80000000>;
 	};
-
 	chosen {
 		bootargs = "console=tty1";
 		stdout-path = "serial3:115200n8";
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
 		pinctrl-0 = <&power_key_irq &lid_irq>;
-
 		power-key {
 			label = "Power";
 			gpios = <&gpx1 3 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_POWER>;
 			wakeup-source;
 		};
-
 		lid-switch {
 			label = "Lid";
 			gpios = <&gpx3 5 GPIO_ACTIVE_LOW>;
-			linux,input-type = <5>; /* EV_SW */
-			linux,code = <0>; /* SW_LID */
+			linux,input-type = <5>;  
+			linux,code = <0>;  
 			debounce-interval = <1>;
 			wakeup-source;
 		};
 	};
-
 	vbat: vbat-fixed-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vbat-supply";
 		regulator-boot-on;
 	};
-
 	i2c-arbitrator {
 		compatible = "i2c-arb-gpio-challenge";
 		i2c-parent = <&i2c_4>;
-
 		our-claim-gpios = <&gpf0 3 GPIO_ACTIVE_LOW>;
 		their-claim-gpios = <&gpe0 4 GPIO_ACTIVE_LOW>;
 		slew-delay-us = <10>;
 		wait-retry-us = <3000>;
 		wait-free-us = <50000>;
-
 		pinctrl-names = "default";
 		pinctrl-0 = <&arb_our_claim &arb_their_claim>;
-
-		/* Use ID 104 as a hint that we're on physical bus 4 */
 		i2c_104: i2c-arb {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			battery: sbs-battery@b {
 				compatible = "sbs,sbs-battery";
 				reg = <0xb>;
 				sbs,poll-retry-count = <1>;
 			};
-
 			cros_ec: embedded-controller@1e {
 				compatible = "google,cros-ec-i2c";
 				reg = <0x1e>;
@@ -91,18 +70,11 @@
 				pinctrl-0 = <&ec_irq>;
 				wakeup-source;
 			};
-
 			power-regulator@48 {
 				compatible = "ti,tps65090";
 				reg = <0x48>;
-
-				/*
-				 * Config irq to disable internal pulls
-				 * even though we run in polling mode.
-				 */
 				pinctrl-names = "default";
 				pinctrl-0 = <&tps65090_irq>;
-
 				vsys1-supply = <&vbat>;
 				vsys2-supply = <&vbat>;
 				vsys3-supply = <&vbat>;
@@ -115,7 +87,6 @@
 				infet7-supply = <&vbat>;
 				vsys-l1-supply = <&vbat>;
 				vsys-l2-supply = <&vbat>;
-
 				regulators {
 					dcdc1 {
 						ti,enable-ext-control;
@@ -163,18 +134,15 @@
 					ldo2 {
 					};
 				};
-
 				charger {
 					compatible = "ti,tps65090-charger";
 				};
 			};
 		};
 	};
-
 	sound {
 		samsung,i2s-controller = <&i2s0>;
 	};
-
 	usb3_vbus_reg: regulator-usb3 {
 		compatible = "regulator-fixed";
 		regulator-name = "P5.0V_USB3CON";
@@ -185,14 +153,12 @@
 		pinctrl-0 = <&usb3_vbus_en>;
 		enable-active-high;
 	};
-
 	fixed-rate-clocks {
 		xxti {
 			compatible = "samsung,clock-xxti";
 			clock-frequency = <24000000>;
 		};
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm 0 1000000 0>;
@@ -203,42 +169,35 @@
 		pinctrl-0 = <&pwm0_out>;
 		pinctrl-names = "default";
 	};
-
 	panel: panel {
 		compatible = "auo,b116xw03";
 		power-supply = <&fet6>;
 		backlight = <&backlight>;
-
 		port {
 			panel_in: endpoint {
 				remote-endpoint = <&bridge_out>;
 			};
 		};
 	};
-
 	mmc3_pwrseq: mmc3-pwrseq {
 		compatible = "mmc-pwrseq-simple";
-		reset-gpios = <&gpx0 2 GPIO_ACTIVE_LOW>, /* WIFI_RSTn */
-			      <&gpx0 1 GPIO_ACTIVE_LOW>; /* WIFI_EN */
+		reset-gpios = <&gpx0 2 GPIO_ACTIVE_LOW>,  
+			      <&gpx0 1 GPIO_ACTIVE_LOW>;  
 		clocks = <&max77686 MAX77686_CLK_PMIC>;
 		clock-names = "ext_clock";
 	};
 };
-
 &clock {
 	assigned-clocks = <&clock CLK_FOUT_EPLL>;
 	assigned-clock-rates = <49152000>;
 };
-
 &clock_audss {
 	assigned-clocks = <&clock_audss EXYNOS_MOUT_AUDSS>;
 	assigned-clock-parents = <&clock CLK_FOUT_EPLL>;
 };
-
 &cpu0 {
 	cpu0-supply = <&buck2_reg>;
 };
-
 &dp {
 	status = "okay";
 	pinctrl-names = "default";
@@ -248,7 +207,6 @@
 	samsung,link-rate = <0x0a>;
 	samsung,lane-count = <2>;
 	hpd-gpios = <&gpx0 7 GPIO_ACTIVE_HIGH>;
-
 	ports {
 		port {
 			dp_out: endpoint {
@@ -257,16 +215,13 @@
 		};
 	};
 };
-
 &ehci {
 	samsung,vbus-gpio = <&gpx1 1 GPIO_ACTIVE_HIGH>;
 };
-
 &fimd {
 	status = "okay";
 	samsung,invert-vclk;
 };
-
 &hdmi {
 	status = "okay";
 	hpd-gpios = <&gpx3 7 GPIO_ACTIVE_HIGH>;
@@ -278,16 +233,13 @@
 	vdd_osc-supply = <&ldo10_reg>;
 	vdd_pll-supply = <&ldo8_reg>;
 };
-
 &hdmicec {
 	status = "okay";
 };
-
 &i2c_0 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <378000>;
-
 	max77686: pmic@9 {
 		compatible = "maxim,max77686";
 		interrupt-parent = <&gpx3>;
@@ -297,7 +249,6 @@
 		wakeup-source;
 		reg = <0x09>;
 		#clock-cells = <1>;
-
 		voltage-regulators {
 			ldo1_reg: LDO1 {
 				regulator-name = "P1.0V_LDO_OUT1";
@@ -305,70 +256,60 @@
 				regulator-max-microvolt = <1000000>;
 				regulator-always-on;
 			};
-
 			ldo2_reg: LDO2 {
 				regulator-name = "P1.8V_LDO_OUT2";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
 			};
-
 			ldo3_reg: LDO3 {
 				regulator-name = "P1.8V_LDO_OUT3";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
 			};
-
 			ldo7_reg: LDO7 {
 				regulator-name = "P1.1V_LDO_OUT7";
 				regulator-min-microvolt = <1100000>;
 				regulator-max-microvolt = <1100000>;
 				regulator-always-on;
 			};
-
 			ldo8_reg: LDO8 {
 				regulator-name = "P1.0V_LDO_OUT8";
 				regulator-min-microvolt = <1000000>;
 				regulator-max-microvolt = <1000000>;
 				regulator-always-on;
 			};
-
 			ldo10_reg: LDO10 {
 				regulator-name = "P1.8V_LDO_OUT10";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
 			};
-
 			ldo12_reg: LDO12 {
 				regulator-name = "P3.0V_LDO_OUT12";
 				regulator-min-microvolt = <3000000>;
 				regulator-max-microvolt = <3000000>;
 				regulator-always-on;
 			};
-
 			ldo14_reg: LDO14 {
 				regulator-name = "P1.8V_LDO_OUT14";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
 			};
-
 			ldo15_reg: LDO15 {
 				regulator-name = "P1.0V_LDO_OUT15";
 				regulator-min-microvolt = <1000000>;
 				regulator-max-microvolt = <1000000>;
 				regulator-always-on;
 			};
-
 			ldo16_reg: LDO16 {
 				regulator-name = "P1.8V_LDO_OUT16";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <1800000>;
 				regulator-always-on;
 			};
-
 			buck1_reg: BUCK1 {
 				regulator-name = "vdd_mif";
 				regulator-min-microvolt = <950000>;
@@ -376,7 +317,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			buck2_reg: BUCK2 {
 				regulator-name = "vdd_arm";
 				regulator-min-microvolt = <850000>;
@@ -384,7 +324,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			buck3_reg: BUCK3 {
 				regulator-name = "vdd_int";
 				regulator-min-microvolt = <900000>;
@@ -392,7 +331,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			buck4_reg: BUCK4 {
 				regulator-name = "vdd_g3d";
 				regulator-min-microvolt = <850000>;
@@ -400,7 +338,6 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			buck5_reg: BUCK5 {
 				regulator-name = "P1.8V_BUCK_OUT5";
 				regulator-min-microvolt = <1800000>;
@@ -408,21 +345,18 @@
 				regulator-always-on;
 				regulator-boot-on;
 			};
-
 			buck6_reg: BUCK6 {
 				regulator-name = "P1.35V_BUCK_OUT6";
 				regulator-min-microvolt = <1350000>;
 				regulator-max-microvolt = <1350000>;
 				regulator-always-on;
 			};
-
 			buck7_reg: BUCK7 {
 				regulator-name = "P2.0V_BUCK_OUT7";
 				regulator-min-microvolt = <2000000>;
 				regulator-max-microvolt = <2000000>;
 				regulator-always-on;
 			};
-
 			buck8_reg: BUCK8 {
 				regulator-name = "P2.85V_BUCK_OUT8";
 				regulator-min-microvolt = <2850000>;
@@ -432,12 +366,10 @@
 		};
 	};
 };
-
 &i2c_1 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <378000>;
-
 	trackpad@67 {
 		reg = <0x67>;
 		compatible = "cypress,cyapa";
@@ -446,67 +378,50 @@
 		wakeup-source;
 	};
 };
-
-/*
- * Disabled pullups since external part has its own pullups and
- * double-pulling gets us out of spec in some cases.
- */
 &i2c2_bus {
 	samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 };
-
 &i2c_2 {
 	status = "okay";
-	/* used by HDMI DDC */
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
 };
-
 &i2c_3 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
 };
-
 &i2c_4 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
 };
-
 &i2c_5 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
 };
-
 &i2c_7 {
 	status = "okay";
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <66000>;
-
 	ptn3460: lvds-bridge@20 {
 		compatible = "nxp,ptn3460";
 		reg = <0x20>;
 		powerdown-gpios = <&gpy2 5 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpx1 5 GPIO_ACTIVE_HIGH>;
 		edid-emulation = <5>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
-
 				bridge_out: endpoint {
 					remote-endpoint = <&panel_in>;
 				};
 			};
-
 			port@1 {
 				reg = <1>;
-
 				bridge_in: endpoint {
 					remote-endpoint = <&dp_out>;
 				};
@@ -514,30 +429,23 @@
 		};
 	};
 };
-
 &i2c_8 {
 	status = "okay";
-	/* used by HDMI PHY */
 	samsung,i2c-sda-delay = <100>;
 	samsung,i2c-max-bus-freq = <378000>;
 };
-
 &i2s0 {
 	assigned-clocks = <&i2s0 CLK_I2S_RCLK_SRC>;
 	assigned-clock-parents = <&clock_audss EXYNOS_I2S_BUS>;
 	status = "okay";
 };
-
 &mali {
 	mali-supply = <&buck4_reg>;
 	status = "okay";
 };
-
 &mixer {
 	status = "okay";
 };
-
-/* eMMC flash */
 &mmc_0 {
 	status = "okay";
 	non-removable;
@@ -550,8 +458,6 @@
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
 };
-
-/* uSD card */
 &mmc_2 {
 	status = "okay";
 	card-detect-delay = <200>;
@@ -564,13 +470,6 @@
 	wp-gpios = <&gpc2 1 GPIO_ACTIVE_HIGH>;
 	cap-sd-highspeed;
 };
-
-/*
- * On Snow we've got SIP WiFi and so can keep drive strengths low to
- * reduce EMI.
- *
- * WiFi SDIO module
- */
 &mmc_3 {
 	status = "okay";
 	non-removable;
@@ -585,7 +484,6 @@
 	cap-sd-highspeed;
 	mmc-pwrseq = <&mmc3_pwrseq>;
 };
-
 &pinctrl_0 {
 	wifi_en: wifi-en-pins {
 		samsung,pins = "gpx0-1";
@@ -593,56 +491,48 @@
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	wifi_rst: wifi-rst-pins {
 		samsung,pins = "gpx0-2";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	power_key_irq: power-key-irq-pins {
 		samsung,pins = "gpx1-3";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	ec_irq: ec-irq-pins {
 		samsung,pins = "gpx1-6";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	tps65090_irq: tps65090-irq-pins {
 		samsung,pins = "gpx2-6";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	usb3_vbus_en: usb3-vbus-en-pins {
 		samsung,pins = "gpx2-7";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	max77686_irq: max77686-irq-pins {
 		samsung,pins = "gpx3-2";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	lid_irq: lid-irq-pins {
 		samsung,pins = "gpx3-5";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	hdmi_hpd_irq: hdmi-hpd-irq-pins {
 		samsung,pins = "gpx3-7";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
@@ -650,7 +540,6 @@
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
 };
-
 &pinctrl_1 {
 	arb_their_claim: arb-their-claim-pins {
 		samsung,pins = "gpe0-4";
@@ -658,7 +547,6 @@
 		samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
-
 	arb_our_claim: arb-our-claim-pins {
 		samsung,pins = "gpf0-3";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
@@ -666,49 +554,39 @@
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
 };
-
 &pmu_system_controller {
 	assigned-clocks = <&pmu_system_controller 0>;
 	assigned-clock-parents = <&clock CLK_FIN_PLL>;
 };
-
 &rtc {
 	status = "okay";
 	clocks = <&clock CLK_RTC>, <&max77686 MAX77686_CLK_AP>;
 	clock-names = "rtc", "rtc_src";
 };
-
 &sd3_bus4 {
 	samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 };
-
 &sd3_clk {
 	samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 };
-
 &sd3_cmd {
 	samsung,pin-pud = <EXYNOS_PIN_PULL_UP>;
 	samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 };
-
 &spi_1 {
 	status = "okay";
 	samsung,spi-src-clk = <0>;
 	num-cs = <1>;
 	cs-gpios = <&gpa2 5 GPIO_ACTIVE_HIGH>;
 };
-
 &usbdrd {
 	vdd10-supply = <&ldo15_reg>;
 	vdd33-supply = <&ldo12_reg>;
 };
-
 &usbdrd_dwc3 {
 	dr_mode = "host";
 };
-
 &usbdrd_phy {
 	vbus-supply = <&usb3_vbus_reg>;
 };
-
 #include "../cros-ec-keyboard.dtsi"

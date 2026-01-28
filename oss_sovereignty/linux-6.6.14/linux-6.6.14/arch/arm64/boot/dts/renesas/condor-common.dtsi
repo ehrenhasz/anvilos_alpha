@@ -1,12 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for the Condor board with R-Car V3H
- *
- * Copyright (C) 2018 Renesas Electronics Corp.
- * Copyright (C) 2018 Cogent Embedded, Inc.
- */
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	aliases {
 		i2c0 = &i2c0;
@@ -18,12 +10,10 @@
 		serial0 = &scif0;
 		ethernet0 = &gether;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 		bootargs = "ignore_loglevel rw root=/dev/nfs ip=on";
 	};
-
 	d1_8v: regulator-2 {
 		compatible = "regulator-fixed";
 		regulator-name = "D1.8V";
@@ -32,7 +22,6 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
-
 	d3_3v: regulator-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "D3.3V";
@@ -41,33 +30,27 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
-
 	hdmi-out {
 		compatible = "hdmi-connector";
 		type = "a";
-
 		port {
 			hdmi_con: endpoint {
 				remote-endpoint = <&adv7511_out>;
 			};
 		};
 	};
-
 	lvds-decoder {
 		compatible = "thine,thc63lvd1024";
 		vcc-supply = <&d3_3v>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
 				thc63lvd1024_in: endpoint {
 					remote-endpoint = <&lvds0_out>;
 				};
 			};
-
 			port@2 {
 				reg = <2>;
 				thc63lvd1024_out: endpoint {
@@ -76,13 +59,10 @@
 			};
 		};
 	};
-
 	memory@48000000 {
 		device_type = "memory";
-		/* first 128MB is reserved for secure area. */
 		reg = <0 0x48000000 0 0x78000000>;
 	};
-
 	vddq_vin01: regulator-1 {
 		compatible = "regulator-fixed";
 		regulator-name = "VDDQ_VIN01";
@@ -91,27 +71,22 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
-
 	x1_clk: x1-clock {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <148500000>;
 	};
 };
-
 &canfd {
 	pinctrl-0 = <&canfd0_pins>;
 	pinctrl-names = "default";
 	status = "okay";
-
 	channel0 {
 		status = "okay";
 	};
 };
-
 &csi40 {
 	status = "okay";
-
 	ports {
 		port@0 {
 			csi40_in: endpoint {
@@ -122,10 +97,8 @@
 		};
 	};
 };
-
 &csi41 {
 	status = "okay";
-
 	ports {
 		port@0 {
 			csi41_in: endpoint {
@@ -136,31 +109,25 @@
 		};
 	};
 };
-
 &du {
 	clocks = <&cpg CPG_MOD 724>,
 		 <&x1_clk>;
 	clock-names = "du.0", "dclkin.0";
 	status = "okay";
 };
-
 &extal_clk {
 	clock-frequency = <16666666>;
 };
-
 &extalr_clk {
 	clock-frequency = <32768>;
 };
-
 &gether {
 	pinctrl-0 = <&gether_pins>;
 	pinctrl-names = "default";
-
 	phy-mode = "rgmii-id";
 	phy-handle = <&phy0>;
 	renesas,no-ether-link;
 	status = "okay";
-
 	phy0: ethernet-phy@0 {
 		compatible = "ethernet-phy-id0022.1622",
 			     "ethernet-phy-ieee802.3-c22";
@@ -171,28 +138,23 @@
 		reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &i2c0 {
 	pinctrl-0 = <&i2c0_pins>;
 	pinctrl-names = "default";
-
 	status = "okay";
 	clock-frequency = <400000>;
-
 	io_expander0: gpio@20 {
 		compatible = "onnn,pca9654";
 		reg = <0x20>;
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
-
 	io_expander1: gpio@21 {
 		compatible = "onnn,pca9654";
 		reg = <0x21>;
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
-
 	hdmi@39 {
 		compatible = "adi,adv7511w";
 		reg = <0x39>;
@@ -203,22 +165,18 @@
 		pvdd-supply = <&d1_8v>;
 		bgvdd-supply = <&d1_8v>;
 		dvdd-3v-supply = <&d3_3v>;
-
 		adi,input-depth = <8>;
 		adi,input-colorspace = "rgb";
 		adi,input-clock = "1x";
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
 				adv7511_in: endpoint {
 					remote-endpoint = <&thc63lvd1024_out>;
 				};
 			};
-
 			port@1 {
 				reg = <1>;
 				adv7511_out: endpoint {
@@ -228,41 +186,31 @@
 		};
 	};
 };
-
 &i2c1 {
 	pinctrl-0 = <&i2c1_pins>;
 	pinctrl-names = "default";
-
 	status = "okay";
 	clock-frequency = <400000>;
-
 	gmsl0: gmsl-deserializer@48 {
 		compatible = "maxim,max9286";
 		reg = <0x48>;
-
 		maxim,gpio-poc = <0 GPIO_ACTIVE_LOW>;
 		enable-gpios = <&io_expander0 0 GPIO_ACTIVE_HIGH>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
 			};
-
 			port@1 {
 				reg = <1>;
 			};
-
 			port@2 {
 				reg = <2>;
 			};
-
 			port@3 {
 				reg = <3>;
 			};
-
 			port@4 {
 				reg = <4>;
 				max9286_out0: endpoint {
@@ -272,72 +220,55 @@
 				};
 			};
 		};
-
 		i2c-mux {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			i2c@0 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <0>;
-
 				status = "disabled";
 			};
-
 			i2c@1 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <1>;
-
 				status = "disabled";
 			};
-
 			i2c@2 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <2>;
-
 				status = "disabled";
 			};
-
 			i2c@3 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <3>;
-
 				status = "disabled";
 			};
 		};
 	};
-
 	gmsl1: gmsl-deserializer@4a {
 		compatible = "maxim,max9286";
 		reg = <0x4a>;
-
 		maxim,gpio-poc = <0 GPIO_ACTIVE_LOW>;
 		enable-gpios = <&io_expander1 0 GPIO_ACTIVE_HIGH>;
-
 		ports {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			port@0 {
 				reg = <0>;
 			};
-
 			port@1 {
 				reg = <1>;
 			};
-
 			port@2 {
 				reg = <2>;
 			};
-
 			port@3 {
 				reg = <3>;
 			};
-
 			port@4 {
 				reg = <4>;
 				max9286_out1: endpoint {
@@ -347,49 +278,38 @@
 				};
 			};
 		};
-
 		i2c-mux {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			i2c@0 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <0>;
-
 				status = "disabled";
 			};
-
 			i2c@1 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <1>;
-
 				status = "disabled";
 			};
-
 			i2c@2 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <2>;
-
 				status = "disabled";
 			};
-
 			i2c@3 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				reg = <3>;
-
 				status = "disabled";
 			};
 		};
 	};
 };
-
 &lvds0 {
 	status = "okay";
-
 	ports {
 		port@1 {
 			lvds0_out: endpoint {
@@ -398,12 +318,10 @@
 		};
 	};
 };
-
 &mmc0 {
 	pinctrl-0 = <&mmc_pins>;
 	pinctrl-1 = <&mmc_pins>;
 	pinctrl-names = "default", "state_uhs";
-
 	vmmc-supply = <&d3_3v>;
 	vqmmc-supply = <&vddq_vin01>;
 	mmc-hs200-1_8v;
@@ -413,80 +331,64 @@
 	non-removable;
 	status = "okay";
 };
-
 &pciec {
 	status = "okay";
 };
-
 &pcie_bus_clk {
 	clock-frequency = <100000000>;
 };
-
 &pcie_phy {
 	status = "okay";
 };
-
 &pfc {
 	canfd0_pins: canfd0 {
 		groups = "canfd0_data_a";
 		function = "canfd0";
 	};
-
 	gether_pins: gether {
 		groups = "gether_mdio_a", "gether_rgmii",
 			 "gether_txcrefclk", "gether_txcrefclk_mega";
 		function = "gether";
 	};
-
 	i2c0_pins: i2c0 {
 		groups = "i2c0";
 		function = "i2c0";
 	};
-
 	i2c1_pins: i2c1 {
 		groups = "i2c1";
 		function = "i2c1";
 	};
-
 	mmc_pins: mmc {
 		groups = "mmc_data8", "mmc_ctrl", "mmc_ds";
 		function = "mmc";
 		power-source = <1800>;
 	};
-
 	qspi0_pins: qspi0 {
 		groups = "qspi0_ctrl", "qspi0_data4";
 		function = "qspi0";
 	};
-
 	scif0_pins: scif0 {
 		groups = "scif0_data";
 		function = "scif0";
 	};
-
 	scif_clk_pins: scif_clk {
 		groups = "scif_clk_b";
 		function = "scif_clk";
 	};
 };
-
 &rpc {
 	pinctrl-0 = <&qspi0_pins>;
 	pinctrl-names = "default";
-
 	status = "okay";
-
 	flash@0 {
 		compatible = "spansion,s25fs512s", "jedec,spi-nor";
 		reg = <0>;
 		spi-max-frequency = <50000000>;
 		spi-rx-bus-width = <4>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			bootparam@0 {
 				reg = <0x00000000 0x040000>;
 				read-only;
@@ -531,19 +433,15 @@
 		};
 	};
 };
-
 &rwdt {
 	timeout-sec = <60>;
 	status = "okay";
 };
-
 &scif0 {
 	pinctrl-0 = <&scif0_pins>, <&scif_clk_pins>;
 	pinctrl-names = "default";
-
 	status = "okay";
 };
-
 &scif_clk {
 	clock-frequency = <14745600>;
 };

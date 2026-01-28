@@ -1,18 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
-
 #include "meson-g12-common.dtsi"
 #include <dt-bindings/clock/axg-audio-clkc.h>
 #include <dt-bindings/power/meson-sm1-power.h>
 #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
 #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
-
 / {
 	compatible = "amlogic,sm1";
-
 	tdmif_a: audio-controller-0 {
 		compatible = "amlogic,axg-tdm-iface";
 		#sound-dai-cells = <0>;
@@ -23,7 +15,6 @@
 		clock-names = "mclk", "sclk", "lrclk";
 		status = "disabled";
 	};
-
 	tdmif_b: audio-controller-1 {
 		compatible = "amlogic,axg-tdm-iface";
 		#sound-dai-cells = <0>;
@@ -34,7 +25,6 @@
 		clock-names = "mclk", "sclk", "lrclk";
 		status = "disabled";
 	};
-
 	tdmif_c: audio-controller-2 {
 		compatible = "amlogic,axg-tdm-iface";
 		#sound-dai-cells = <0>;
@@ -45,11 +35,9 @@
 		clock-names = "mclk", "sclk", "lrclk";
 		status = "disabled";
 	};
-
 	cpus {
 		#address-cells = <0x2>;
 		#size-cells = <0x0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -58,7 +46,6 @@
 			next-level-cache = <&l2>;
 			#cooling-cells = <2>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -67,7 +54,6 @@
 			next-level-cache = <&l2>;
 			#cooling-cells = <2>;
 		};
-
 		cpu2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -76,7 +62,6 @@
 			next-level-cache = <&l2>;
 			#cooling-cells = <2>;
 		};
-
 		cpu3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a55";
@@ -85,60 +70,49 @@
 			next-level-cache = <&l2>;
 			#cooling-cells = <2>;
 		};
-
 		l2: l2-cache0 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
 	};
-
 	cpu_opp_table: opp-table {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp-1000000000 {
 			opp-hz = /bits/ 64 <1000000000>;
 			opp-microvolt = <770000>;
 		};
-
 		opp-1200000000 {
 			opp-hz = /bits/ 64 <1200000000>;
 			opp-microvolt = <780000>;
 		};
-
 		opp-1404000000 {
 			opp-hz = /bits/ 64 <1404000000>;
 			opp-microvolt = <790000>;
 		};
-
 		opp-1500000000 {
 			opp-hz = /bits/ 64 <1500000000>;
 			opp-microvolt = <800000>;
 		};
-
 		opp-1608000000 {
 			opp-hz = /bits/ 64 <1608000000>;
 			opp-microvolt = <810000>;
 		};
-
 		opp-1704000000 {
 			opp-hz = /bits/ 64 <1704000000>;
 			opp-microvolt = <850000>;
 		};
-
 		opp-1800000000 {
 			opp-hz = /bits/ 64 <1800000000>;
 			opp-microvolt = <900000>;
 		};
-
 		opp-1908000000 {
 			opp-hz = /bits/ 64 <1908000000>;
 			opp-microvolt = <950000>;
 		};
 	};
 };
-
 &apb {
 	audio: bus@60000 {
 		compatible = "simple-bus";
@@ -146,14 +120,12 @@
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges = <0x0 0x0 0x0 0x60000 0x0 0x1000>;
-
 		clkc_audio: clock-controller@0 {
 			status = "disabled";
 			compatible = "amlogic,sm1-audio-clkc";
 			reg = <0x0 0x0 0x0 0xb4>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
-
 			clocks = <&clkc CLKID_AUDIO>,
 				 <&clkc CLKID_MPLL0>,
 				 <&clkc CLKID_MPLL1>,
@@ -172,10 +144,8 @@
 				      "mst_in5",
 				      "mst_in6",
 				      "mst_in7";
-
 			resets = <&reset RESET_AUDIO>;
 		};
-
 		toddr_a: audio-controller@100 {
 			compatible = "amlogic,sm1-toddr",
 				     "amlogic,axg-toddr";
@@ -190,7 +160,6 @@
 			amlogic,fifo-depth = <8192>;
 			status = "disabled";
 		};
-
 		toddr_b: audio-controller@140 {
 			compatible = "amlogic,sm1-toddr",
 				     "amlogic,axg-toddr";
@@ -205,7 +174,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		toddr_c: audio-controller@180 {
 			compatible = "amlogic,sm1-toddr",
 				     "amlogic,axg-toddr";
@@ -220,7 +188,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		frddr_a: audio-controller@1c0 {
 			compatible = "amlogic,sm1-frddr",
 				     "amlogic,axg-frddr";
@@ -235,7 +202,6 @@
 			amlogic,fifo-depth = <512>;
 			status = "disabled";
 		};
-
 		frddr_b: audio-controller@200 {
 			compatible = "amlogic,sm1-frddr",
 				     "amlogic,axg-frddr";
@@ -250,7 +216,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		frddr_c: audio-controller@240 {
 			compatible = "amlogic,sm1-frddr",
 				     "amlogic,axg-frddr";
@@ -265,7 +230,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		arb: reset-controller@280 {
 			status = "disabled";
 			compatible = "amlogic,meson-sm1-audio-arb";
@@ -273,7 +237,6 @@
 			#reset-cells = <1>;
 			clocks = <&clkc_audio AUD_CLKID_DDR_ARB>;
 		};
-
 		tdmin_a: audio-controller@300 {
 			compatible = "amlogic,sm1-tdmin",
 				     "amlogic,axg-tdmin";
@@ -289,7 +252,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_b: audio-controller@340 {
 			compatible = "amlogic,sm1-tdmin",
 				     "amlogic,axg-tdmin";
@@ -305,7 +267,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_c: audio-controller@380 {
 			compatible = "amlogic,sm1-tdmin",
 				     "amlogic,axg-tdmin";
@@ -321,7 +282,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_lb: audio-controller@3c0 {
 			compatible = "amlogic,sm1-tdmin",
 				     "amlogic,axg-tdmin";
@@ -337,7 +297,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		spdifin: audio-controller@400 {
 			compatible = "amlogic,g12a-spdifin",
 				     "amlogic,axg-spdifin";
@@ -351,7 +310,6 @@
 			resets = <&clkc_audio AUD_RESET_SPDIFIN>;
 			status = "disabled";
 		};
-
 		spdifout_a: audio-controller@480 {
 			compatible = "amlogic,g12a-spdifout",
 				     "amlogic,axg-spdifout";
@@ -364,7 +322,6 @@
 			resets = <&clkc_audio AUD_RESET_SPDIFOUT>;
 			status = "disabled";
 		};
-
 		tdmout_a: audio-controller@500 {
 			compatible = "amlogic,sm1-tdmout";
 			reg = <0x0 0x500 0x0 0x40>;
@@ -379,7 +336,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmout_b: audio-controller@540 {
 			compatible = "amlogic,sm1-tdmout";
 			reg = <0x0 0x540 0x0 0x40>;
@@ -394,7 +350,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmout_c: audio-controller@580 {
 			compatible = "amlogic,sm1-tdmout";
 			reg = <0x0 0x580 0x0 0x40>;
@@ -409,7 +364,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		toacodec: audio-controller@740 {
 			compatible = "amlogic,sm1-toacodec",
 				     "amlogic,g12a-toacodec";
@@ -419,7 +373,6 @@
 			resets = <&clkc_audio AUD_RESET_TOACODEC>;
 			status = "disabled";
 		};
-
 		tohdmitx: audio-controller@744 {
 			compatible = "amlogic,sm1-tohdmitx",
 				     "amlogic,g12a-tohdmitx";
@@ -429,7 +382,6 @@
 			resets = <&clkc_audio AUD_RESET_TOHDMITX>;
 			status = "disabled";
 		};
-
 		toddr_d: audio-controller@840 {
 			compatible = "amlogic,sm1-toddr",
 				     "amlogic,axg-toddr";
@@ -444,7 +396,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		frddr_d: audio-controller@880 {
 			 compatible = "amlogic,sm1-frddr",
 				      "amlogic,axg-frddr";
@@ -460,7 +411,6 @@
 			status = "disabled";
 		};
 	};
-
 	pdm: audio-controller@61000 {
 		compatible = "amlogic,sm1-pdm",
 			     "amlogic,axg-pdm";
@@ -475,20 +425,15 @@
 		status = "disabled";
 	};
 };
-
 &cecb_AO {
 	compatible = "amlogic,meson-sm1-ao-cec";
 };
-
 &clk_msr {
 	compatible = "amlogic,meson-sm1-clk-measure";
 };
-
-
 &clkc {
 	compatible = "amlogic,sm1-clkc";
 };
-
 &cpu_thermal {
 	cooling-maps {
 		map0 {
@@ -498,7 +443,6 @@
 					<&cpu2 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
 					<&cpu3 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 		};
-
 		map1 {
 			trip = <&cpu_hot>;
 			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
@@ -508,48 +452,37 @@
 		};
 	};
 };
-
 &ethmac {
 	power-domains = <&pwrc PWRC_SM1_ETH_ID>;
 };
-
 &gpio_intc {
 	compatible = "amlogic,meson-sm1-gpio-intc",
 		     "amlogic,meson-gpio-intc";
 };
-
 &pcie {
 	power-domains = <&pwrc PWRC_SM1_PCIE_ID>;
 };
-
 &pmu {
 	compatible = "amlogic,sm1-ddr-pmu";
 };
-
 &pwrc {
 	compatible = "amlogic,meson-sm1-pwrc";
 };
-
 &simplefb_cvbs {
 	power-domains = <&pwrc PWRC_SM1_VPU_ID>;
 };
-
 &simplefb_hdmi {
 	power-domains = <&pwrc PWRC_SM1_VPU_ID>;
 };
-
 &vdec {
 	compatible = "amlogic,sm1-vdec";
 };
-
 &vpu {
 	power-domains = <&pwrc PWRC_SM1_VPU_ID>;
 };
-
 &usb {
 	power-domains = <&pwrc PWRC_SM1_USB_ID>;
 };
-
 &npu {
 	power-domains = <&pwrc PWRC_SM1_NNA_ID>;
 };

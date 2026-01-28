@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
-
 #ifndef __MFD_MT6359P_REGISTERS_H__
 #define __MFD_MT6359P_REGISTERS_H__
-
 #define MT6359P_CHIP_VER 0x5930
-
-/* PMIC Registers */
 #define MT6359P_HWCID                         0x8
 #define MT6359P_TOP_TRAP                      0x50
 #define MT6359P_TOP_TMA_KEY                   0x3a8
@@ -116,7 +108,6 @@
 #define MT6359P_VXO22_ANA_CON0                0x2088
 #define MT6359P_VRFCK_ANA_CON0                0x208c
 #define MT6359P_VBBCK_ANA_CON0                0x2096
-
 #define MT6359P_RG_BUCK_VCORE_VOSEL_ADDR         MT6359P_BUCK_VCORE_ELR0
 #define MT6359P_RG_BUCK_VGPU11_SSHUB_EN_ADDR     MT6359P_BUCK_VGPU11_SSHUB_CON0
 #define MT6359P_RG_BUCK_VGPU11_VOSEL_ADDR        MT6359P_BUCK_VGPU11_ELR0
@@ -243,7 +234,5 @@
 #define MT6359P_RG_VBBCK_VOSEL_SHIFT             4
 #define MT6359P_VM_MODE_ADDR                     MT6359P_TOP_TRAP
 #define MT6359P_TMA_KEY_ADDR                     MT6359P_TOP_TMA_KEY
-
 #define TMA_KEY 0x9CA6
-
-#endif /* __MFD_MT6359P_REGISTERS_H__ */
+#endif  

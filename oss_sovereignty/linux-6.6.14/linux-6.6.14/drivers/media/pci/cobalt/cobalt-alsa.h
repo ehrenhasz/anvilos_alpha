@@ -1,13 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  ALSA interface to cobalt PCM capture streams
- *
- *  Copyright 2014-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
-
 struct snd_card;
-
 struct snd_cobalt_card {
 	struct cobalt_stream *s;
 	struct snd_card *sc;
@@ -15,7 +6,6 @@ struct snd_cobalt_card {
 	unsigned int hwptr_done_capture;
 	unsigned alsa_record_cnt;
 	struct snd_pcm_substream *capture_pcm_substream;
-
 	unsigned int pb_size;
 	unsigned int pb_count;
 	unsigned int pb_pos;
@@ -24,6 +14,5 @@ struct snd_cobalt_card {
 	unsigned alsa_playback_cnt;
 	struct snd_pcm_substream *playback_pcm_substream;
 };
-
 int cobalt_alsa_init(struct cobalt_stream *s);
 void cobalt_alsa_exit(struct cobalt_stream *s);

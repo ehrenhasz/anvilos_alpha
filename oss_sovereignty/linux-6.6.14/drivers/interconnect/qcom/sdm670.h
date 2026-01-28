@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm #define SDM670 interconnect IDs
- *
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
-
 #ifndef __DRIVERS_INTERCONNECT_QCOM_SDM670_H
 #define __DRIVERS_INTERCONNECT_QCOM_SDM670_H
-
 #define SDM670_MASTER_A1NOC_CFG			0
 #define SDM670_MASTER_A1NOC_SNOC		1
 #define SDM670_MASTER_A2NOC_CFG			2
@@ -124,5 +116,4 @@
 #define SDM670_SLAVE_USB3			113
 #define SDM670_SLAVE_VENUS_CFG			114
 #define SDM670_SLAVE_VSENSE_CTRL_CFG		115
-
 #endif

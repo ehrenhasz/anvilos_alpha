@@ -1,7 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 2016-2023 Broadcom Inc. All rights reserved.
- */
 #ifndef MPI30_INIT_H
 #define MPI30_INIT_H     1
 struct mpi3_scsi_io_cdb_eedp32 {
@@ -11,13 +7,11 @@ struct mpi3_scsi_io_cdb_eedp32 {
 	__le16             primary_application_tag_mask;
 	__le32             transfer_length;
 };
-
 union mpi3_scsi_io_cdb_union {
 	u8                         cdb32[32];
 	struct mpi3_scsi_io_cdb_eedp32 eedp32;
 	struct mpi3_sge_common         sge;
 };
-
 struct mpi3_scsi_io_request {
 	__le16                     host_tag;
 	u8                         ioc_use_only02;
@@ -34,7 +28,6 @@ struct mpi3_scsi_io_request {
 	union mpi3_scsi_io_cdb_union  cdb;
 	union mpi3_sge_union          sgl[4];
 };
-
 #define MPI3_SCSIIO_MSGFLAGS_METASGL_VALID                  (0x80)
 #define MPI3_SCSIIO_MSGFLAGS_DIVERT_TO_FIRMWARE             (0x40)
 #define MPI3_SCSIIO_FLAGS_LARGE_CDB                         (0x60000000)
@@ -83,7 +76,6 @@ struct mpi3_scsi_io_reply {
 	__le32                     eedp_observed_ref_tag;
 	__le64                     sense_data_buffer_address;
 };
-
 #define MPI3_SCSIIO_REPLY_MSGFLAGS_REFTAG_OBSERVED_VALID        (0x01)
 #define MPI3_SCSIIO_REPLY_MSGFLAGS_APPTAG_OBSERVED_VALID        (0x02)
 #define MPI3_SCSIIO_REPLY_MSGFLAGS_GUARD_OBSERVED_VALID         (0x04)

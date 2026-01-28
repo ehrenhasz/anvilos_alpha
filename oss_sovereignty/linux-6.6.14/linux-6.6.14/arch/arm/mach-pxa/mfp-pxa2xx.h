@@ -1,63 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_ARCH_MFP_PXA2XX_H
 #define __ASM_ARCH_MFP_PXA2XX_H
-
 #include <linux/soc/pxa/mfp.h>
-
-/*
- * the following MFP_xxx bit definitions in mfp.h are re-used for pxa2xx:
- *
- *  MFP_PIN(x)
- *  MFP_AFx
- *  MFP_LPM_DRIVE_{LOW, HIGH}
- *  MFP_LPM_EDGE_x
- *
- * other MFP_x bit definitions will be ignored
- *
- * and adds the below two bits specifically for pxa2xx:
- *
- * bit     23 - Input/Output (PXA2xx specific)
- * bit     24 - Wakeup Enable(PXA2xx specific)
- * bit     25 - Keep Output  (PXA2xx specific)
- */
-
 #define MFP_DIR_IN		(0x0 << 23)
 #define MFP_DIR_OUT		(0x1 << 23)
 #define MFP_DIR_MASK		(0x1 << 23)
 #define MFP_DIR(x)		(((x) >> 23) & 0x1)
-
 #define MFP_LPM_CAN_WAKEUP	(0x1 << 24)
-
-/*
- * MFP_LPM_KEEP_OUTPUT must be specified for pins that need to
- * retain their last output level (low or high).
- * Note: MFP_LPM_KEEP_OUTPUT has no effect on pins configured for input.
- */
 #define MFP_LPM_KEEP_OUTPUT	(0x1 << 25)
-
 #define WAKEUP_ON_EDGE_RISE	(MFP_LPM_CAN_WAKEUP | MFP_LPM_EDGE_RISE)
 #define WAKEUP_ON_EDGE_FALL	(MFP_LPM_CAN_WAKEUP | MFP_LPM_EDGE_FALL)
 #define WAKEUP_ON_EDGE_BOTH	(MFP_LPM_CAN_WAKEUP | MFP_LPM_EDGE_BOTH)
-
-/* specifically for enabling wakeup on keypad GPIOs */
 #define WAKEUP_ON_LEVEL_HIGH	(MFP_LPM_CAN_WAKEUP)
-
 #define MFP_CFG_IN(pin, af)		\
 	((MFP_CFG_DEFAULT & ~(MFP_AF_MASK | MFP_DIR_MASK)) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af | MFP_DIR_IN))
-
-/* NOTE:  pins configured as output _must_ provide a low power state,
- * and this state should help to minimize the power dissipation.
- */
 #define MFP_CFG_OUT(pin, af, state)	\
 	((MFP_CFG_DEFAULT & ~(MFP_AF_MASK | MFP_DIR_MASK | MFP_LPM_STATE_MASK)) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af | MFP_DIR_OUT | MFP_LPM_##state))
-
-/* Common configurations for pxa25x and pxa27x
- *
- * Note: pins configured as GPIO are always initialized to input
- * so not to cause any side effect
- */
 #define GPIO0_GPIO	MFP_CFG_IN(GPIO0, AF0)
 #define GPIO1_GPIO	MFP_CFG_IN(GPIO1, AF0)
 #define GPIO9_GPIO	MFP_CFG_IN(GPIO9, AF0)
@@ -136,8 +95,7 @@
 #define GPIO82_GPIO	MFP_CFG_IN(GPIO82, AF0)
 #define GPIO83_GPIO	MFP_CFG_IN(GPIO83, AF0)
 #define GPIO84_GPIO	MFP_CFG_IN(GPIO84, AF0)
-
 extern void pxa2xx_mfp_config(unsigned long *mfp_cfgs, int num);
 extern void pxa2xx_mfp_set_lpm(int mfp, unsigned long lpm);
 extern int gpio_set_wake(unsigned int gpio, unsigned int on);
-#endif /* __ASM_ARCH_MFP_PXA2XX_H */
+#endif  

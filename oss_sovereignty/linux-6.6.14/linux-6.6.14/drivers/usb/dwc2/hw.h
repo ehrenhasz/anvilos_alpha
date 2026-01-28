@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/*
- * hw.h - DesignWare HS OTG Controller hardware definitions
- *
- * Copyright 2004-2013 Synopsys, Inc.
- */
-
 #ifndef __DWC2_HW_H__
 #define __DWC2_HW_H__
-
 #define HSOTG_REG(x)	(x)
-
 #define GOTGCTL				HSOTG_REG(0x000)
 #define GOTGCTL_CHIRPEN			BIT(27)
 #define GOTGCTL_MULT_VALID_BC_MASK	(0x1f << 22)
@@ -33,7 +24,6 @@
 #define GOTGCTL_VBVALOEN		BIT(2)
 #define GOTGCTL_SESREQ			BIT(1)
 #define GOTGCTL_SESREQSCS		BIT(0)
-
 #define GOTGINT				HSOTG_REG(0x004)
 #define GOTGINT_DBNCE_DONE		BIT(19)
 #define GOTGINT_A_DEV_TOUT_CHG		BIT(18)
@@ -41,7 +31,6 @@
 #define GOTGINT_HST_NEG_SUC_STS_CHNG	BIT(9)
 #define GOTGINT_SES_REQ_SUC_STS_CHNG	BIT(8)
 #define GOTGINT_SES_END_DET		BIT(2)
-
 #define GAHBCFG				HSOTG_REG(0x008)
 #define GAHBCFG_AHB_SINGLE		BIT(23)
 #define GAHBCFG_NOTI_ALL_DMA_WRIT	BIT(22)
@@ -61,7 +50,6 @@
 					 GAHBCFG_NP_TXF_EMP_LVL | \
 					 GAHBCFG_DMA_EN | \
 					 GAHBCFG_GLBL_INTR_EN)
-
 #define GUSBCFG				HSOTG_REG(0x00C)
 #define GUSBCFG_FORCEDEVMODE		BIT(30)
 #define GUSBCFG_FORCEHOSTMODE		BIT(29)
@@ -93,7 +81,6 @@
 #define GUSBCFG_TOUTCAL_SHIFT		0
 #define GUSBCFG_TOUTCAL_LIMIT		0x7
 #define GUSBCFG_TOUTCAL(_x)		((_x) << 0)
-
 #define GRSTCTL				HSOTG_REG(0x010)
 #define GRSTCTL_AHBIDLE			BIT(31)
 #define GRSTCTL_DMAREQ			BIT(30)
@@ -108,7 +95,6 @@
 #define GRSTCTL_FRMCNTRRST		BIT(2)
 #define GRSTCTL_HSFTRST			BIT(1)
 #define GRSTCTL_CSFTRST			BIT(0)
-
 #define GINTSTS				HSOTG_REG(0x014)
 #define GINTMSK				HSOTG_REG(0x018)
 #define GINTSTS_WKUPINT			BIT(31)
@@ -144,7 +130,6 @@
 #define GINTSTS_OTGINT			BIT(2)
 #define GINTSTS_MODEMIS			BIT(1)
 #define GINTSTS_CURMODE_HOST		BIT(0)
-
 #define GRXSTSR				HSOTG_REG(0x01C)
 #define GRXSTSP				HSOTG_REG(0x020)
 #define GRXSTS_FN_MASK			(0x7f << 25)
@@ -168,14 +153,10 @@
 #define GRXSTS_BYTECNT_SHIFT		4
 #define GRXSTS_EPNUM_MASK		(0xf << 0)
 #define GRXSTS_EPNUM_SHIFT		0
-
 #define GRXFSIZ				HSOTG_REG(0x024)
 #define GRXFSIZ_DEPTH_MASK		(0xffff << 0)
 #define GRXFSIZ_DEPTH_SHIFT		0
-
 #define GNPTXFSIZ			HSOTG_REG(0x028)
-/* Use FIFOSIZE_* constants to access this register */
-
 #define GNPTXSTS			HSOTG_REG(0x02C)
 #define GNPTXSTS_NP_TXQ_TOP_MASK		(0x7f << 24)
 #define GNPTXSTS_NP_TXQ_TOP_SHIFT		24
@@ -185,7 +166,6 @@
 #define GNPTXSTS_NP_TXF_SPC_AVAIL_MASK		(0xffff << 0)
 #define GNPTXSTS_NP_TXF_SPC_AVAIL_SHIFT		0
 #define GNPTXSTS_NP_TXF_SPC_AVAIL_GET(_v)	(((_v) >> 0) & 0xffff)
-
 #define GI2CCTL				HSOTG_REG(0x0030)
 #define GI2CCTL_BSYDNE			BIT(31)
 #define GI2CCTL_RW			BIT(30)
@@ -201,18 +181,15 @@
 #define GI2CCTL_REGADDR_SHIFT		8
 #define GI2CCTL_RWDATA_MASK		(0xff << 0)
 #define GI2CCTL_RWDATA_SHIFT		0
-
 #define GPVNDCTL			HSOTG_REG(0x0034)
 #define GGPIO				HSOTG_REG(0x0038)
 #define GGPIO_STM32_OTG_GCCFG_PWRDWN	BIT(16)
 #define GGPIO_STM32_OTG_GCCFG_VBDEN	BIT(21)
 #define GGPIO_STM32_OTG_GCCFG_IDEN	BIT(22)
-
 #define GUID				HSOTG_REG(0x003c)
 #define GSNPSID				HSOTG_REG(0x0040)
 #define GHWCFG1				HSOTG_REG(0x0044)
 #define GSNPSID_ID_MASK			GENMASK(31, 16)
-
 #define GHWCFG2				HSOTG_REG(0x0048)
 #define GHWCFG2_OTG_ENABLE_IC_USB		BIT(31)
 #define GHWCFG2_DEV_TOKEN_Q_DEPTH_MASK		(0x1f << 26)
@@ -256,7 +233,6 @@
 #define GHWCFG2_OP_MODE_SRP_CAPABLE_HOST	5
 #define GHWCFG2_OP_MODE_NO_SRP_CAPABLE_HOST	6
 #define GHWCFG2_OP_MODE_UNDEFINED		7
-
 #define GHWCFG3				HSOTG_REG(0x004c)
 #define GHWCFG3_DFIFO_DEPTH_MASK		(0xffff << 16)
 #define GHWCFG3_DFIFO_DEPTH_SHIFT		16
@@ -273,7 +249,6 @@
 #define GHWCFG3_PACKET_SIZE_CNTR_WIDTH_SHIFT	4
 #define GHWCFG3_XFER_SIZE_CNTR_WIDTH_MASK	(0xf << 0)
 #define GHWCFG3_XFER_SIZE_CNTR_WIDTH_SHIFT	0
-
 #define GHWCFG4				HSOTG_REG(0x0050)
 #define GHWCFG4_DESC_DMA_DYN			BIT(31)
 #define GHWCFG4_DESC_DMA			BIT(30)
@@ -302,7 +277,6 @@
 #define GHWCFG4_POWER_OPTIMIZ			BIT(4)
 #define GHWCFG4_NUM_DEV_PERIO_IN_EP_MASK	(0xf << 0)
 #define GHWCFG4_NUM_DEV_PERIO_IN_EP_SHIFT	0
-
 #define GLPMCFG				HSOTG_REG(0x0054)
 #define GLPMCFG_INVSELHSIC		BIT(31)
 #define GLPMCFG_HSICCON			BIT(30)
@@ -330,7 +304,6 @@
 #define GLPMCFG_HIRD_SHIFT		2
 #define GLPMCFG_APPL1RES		BIT(1)
 #define GLPMCFG_LPMCAP			BIT(0)
-
 #define GPWRDN				HSOTG_REG(0x0058)
 #define GPWRDN_MULT_VAL_ID_BC_MASK	(0x1f << 24)
 #define GPWRDN_MULT_VAL_ID_BC_SHIFT	24
@@ -358,13 +331,11 @@
 #define GPWRDN_RESTORE			BIT(2)
 #define GPWRDN_PMUACTV			BIT(1)
 #define GPWRDN_PMUINTSEL		BIT(0)
-
 #define GDFIFOCFG			HSOTG_REG(0x005c)
 #define GDFIFOCFG_EPINFOBASE_MASK	(0xffff << 16)
 #define GDFIFOCFG_EPINFOBASE_SHIFT	16
 #define GDFIFOCFG_GDFIFOCFG_MASK	(0xffff << 0)
 #define GDFIFOCFG_GDFIFOCFG_SHIFT	0
-
 #define ADPCTL				HSOTG_REG(0x0060)
 #define ADPCTL_AR_MASK			(0x3 << 27)
 #define ADPCTL_AR_SHIFT			27
@@ -386,35 +357,23 @@
 #define ADPCTL_PRB_DELTA_SHIFT		2
 #define ADPCTL_PRB_DSCHRG_MASK		(0x3 << 0)
 #define ADPCTL_PRB_DSCHRG_SHIFT		0
-
 #define GREFCLK				    HSOTG_REG(0x0064)
 #define GREFCLK_REFCLKPER_MASK		    (0x1ffff << 15)
 #define GREFCLK_REFCLKPER_SHIFT		    15
 #define GREFCLK_REF_CLK_MODE		    BIT(14)
 #define GREFCLK_SOF_CNT_WKUP_ALERT_MASK	    (0x3ff)
 #define GREFCLK_SOF_CNT_WKUP_ALERT_SHIFT    0
-
 #define GINTMSK2			HSOTG_REG(0x0068)
 #define GINTMSK2_WKUP_ALERT_INT_MSK	BIT(0)
-
 #define GINTSTS2			HSOTG_REG(0x006c)
 #define GINTSTS2_WKUP_ALERT_INT		BIT(0)
-
 #define HPTXFSIZ			HSOTG_REG(0x100)
-/* Use FIFOSIZE_* constants to access this register */
-
 #define DPTXFSIZN(_a)			HSOTG_REG(0x104 + (((_a) - 1) * 4))
-/* Use FIFOSIZE_* constants to access this register */
-
-/* These apply to the GNPTXFSIZ, HPTXFSIZ and DPTXFSIZN registers */
 #define FIFOSIZE_DEPTH_MASK		(0xffff << 16)
 #define FIFOSIZE_DEPTH_SHIFT		16
 #define FIFOSIZE_STARTADDR_MASK		(0xffff << 0)
 #define FIFOSIZE_STARTADDR_SHIFT	0
 #define FIFOSIZE_DEPTH_GET(_x)		(((_x) >> 16) & 0xffff)
-
-/* Device mode registers */
-
 #define DCFG				HSOTG_REG(0x800)
 #define DCFG_DESCDMA_EN			BIT(23)
 #define DCFG_EPMISCNT_MASK		(0x1f << 18)
@@ -437,7 +396,6 @@
 #define DCFG_DEVSPD_FS			1
 #define DCFG_DEVSPD_LS			2
 #define DCFG_DEVSPD_FS48		3
-
 #define DCTL				HSOTG_REG(0x804)
 #define DCTL_SERVICE_INTERVAL_SUPPORTED BIT(19)
 #define DCTL_PWRONPRGDONE		BIT(11)
@@ -451,7 +409,6 @@
 #define DCTL_GNPINNAKSTS		BIT(2)
 #define DCTL_SFTDISCON			BIT(1)
 #define DCTL_RMTWKUPSIG			BIT(0)
-
 #define DSTS				HSOTG_REG(0x808)
 #define DSTS_SOFFN_MASK			(0x3fff << 8)
 #define DSTS_SOFFN_SHIFT		8
@@ -465,7 +422,6 @@
 #define DSTS_ENUMSPD_LS			2
 #define DSTS_ENUMSPD_FS48		3
 #define DSTS_SUSPSTS			BIT(0)
-
 #define DIEPMSK				HSOTG_REG(0x810)
 #define DIEPMSK_NAKMSK			BIT(13)
 #define DIEPMSK_BNAININTRMSK		BIT(9)
@@ -478,7 +434,6 @@
 #define DIEPMSK_AHBERRMSK		BIT(2)
 #define DIEPMSK_EPDISBLDMSK		BIT(1)
 #define DIEPMSK_XFERCOMPLMSK		BIT(0)
-
 #define DOEPMSK				HSOTG_REG(0x814)
 #define DOEPMSK_BNAMSK			BIT(9)
 #define DOEPMSK_BACK2BACKSETUP		BIT(6)
@@ -488,40 +443,28 @@
 #define DOEPMSK_AHBERRMSK		BIT(2)
 #define DOEPMSK_EPDISBLDMSK		BIT(1)
 #define DOEPMSK_XFERCOMPLMSK		BIT(0)
-
 #define DAINT				HSOTG_REG(0x818)
 #define DAINTMSK			HSOTG_REG(0x81C)
 #define DAINT_OUTEP_SHIFT		16
 #define DAINT_OUTEP(_x)			(1 << ((_x) + 16))
 #define DAINT_INEP(_x)			(1 << (_x))
-
 #define DTKNQR1				HSOTG_REG(0x820)
 #define DTKNQR2				HSOTG_REG(0x824)
 #define DTKNQR3				HSOTG_REG(0x830)
 #define DTKNQR4				HSOTG_REG(0x834)
 #define DIEPEMPMSK			HSOTG_REG(0x834)
-
 #define DVBUSDIS			HSOTG_REG(0x828)
 #define DVBUSPULSE			HSOTG_REG(0x82C)
-
 #define DIEPCTL0			HSOTG_REG(0x900)
 #define DIEPCTL(_a)			HSOTG_REG(0x900 + ((_a) * 0x20))
-
 #define DOEPCTL0			HSOTG_REG(0xB00)
 #define DOEPCTL(_a)			HSOTG_REG(0xB00 + ((_a) * 0x20))
-
-/* EP0 specialness:
- * bits[29..28] - reserved (no SetD0PID, SetD1PID)
- * bits[25..22] - should always be zero, this isn't a periodic endpoint
- * bits[10..0]  - MPS setting different for EP0
- */
 #define D0EPCTL_MPS_MASK		(0x3 << 0)
 #define D0EPCTL_MPS_SHIFT		0
 #define D0EPCTL_MPS_64			0
 #define D0EPCTL_MPS_32			1
 #define D0EPCTL_MPS_16			2
 #define D0EPCTL_MPS_8			3
-
 #define DXEPCTL_EPENA			BIT(31)
 #define DXEPCTL_EPDIS			BIT(30)
 #define DXEPCTL_SETD1PID		BIT(29)
@@ -541,7 +484,6 @@
 #define DXEPCTL_EPTYPE_ISO		(0x1 << 18)
 #define DXEPCTL_EPTYPE_BULK		(0x2 << 18)
 #define DXEPCTL_EPTYPE_INTERRUPT	(0x3 << 18)
-
 #define DXEPCTL_NAKSTS			BIT(17)
 #define DXEPCTL_DPID			BIT(16)
 #define DXEPCTL_EOFRNUM			BIT(16)
@@ -554,7 +496,6 @@
 #define DXEPCTL_MPS_SHIFT		0
 #define DXEPCTL_MPS_LIMIT		0x7ff
 #define DXEPCTL_MPS(_x)			((_x) << 0)
-
 #define DIEPINT(_a)			HSOTG_REG(0x908 + ((_a) * 0x20))
 #define DOEPINT(_a)			HSOTG_REG(0xB08 + ((_a) * 0x20))
 #define DXEPINT_SETUP_RCVD		BIT(15)
@@ -577,7 +518,6 @@
 #define DXEPINT_AHBERR			BIT(2)
 #define DXEPINT_EPDISBLD		BIT(1)
 #define DXEPINT_XFERCOMPL		BIT(0)
-
 #define DIEPTSIZ0			HSOTG_REG(0x910)
 #define DIEPTSIZ0_PKTCNT_MASK		(0x3 << 19)
 #define DIEPTSIZ0_PKTCNT_SHIFT		19
@@ -587,7 +527,6 @@
 #define DIEPTSIZ0_XFERSIZE_SHIFT	0
 #define DIEPTSIZ0_XFERSIZE_LIMIT	0x7f
 #define DIEPTSIZ0_XFERSIZE(_x)		((_x) << 0)
-
 #define DOEPTSIZ0			HSOTG_REG(0xB10)
 #define DOEPTSIZ0_SUPCNT_MASK		(0x3 << 29)
 #define DOEPTSIZ0_SUPCNT_SHIFT		29
@@ -596,7 +535,6 @@
 #define DOEPTSIZ0_PKTCNT		BIT(19)
 #define DOEPTSIZ0_XFERSIZE_MASK		(0x7f << 0)
 #define DOEPTSIZ0_XFERSIZE_SHIFT	0
-
 #define DIEPTSIZ(_a)			HSOTG_REG(0x910 + ((_a) * 0x20))
 #define DOEPTSIZ(_a)			HSOTG_REG(0xB10 + ((_a) * 0x20))
 #define DXEPTSIZ_MC_MASK		(0x3 << 29)
@@ -613,12 +551,9 @@
 #define DXEPTSIZ_XFERSIZE_LIMIT		0x7ffff
 #define DXEPTSIZ_XFERSIZE_GET(_v)	(((_v) >> 0) & 0x7ffff)
 #define DXEPTSIZ_XFERSIZE(_x)		((_x) << 0)
-
 #define DIEPDMA(_a)			HSOTG_REG(0x914 + ((_a) * 0x20))
 #define DOEPDMA(_a)			HSOTG_REG(0xB14 + ((_a) * 0x20))
-
 #define DTXFSTS(_a)			HSOTG_REG(0x918 + ((_a) * 0x20))
-
 #define PCGCTL				HSOTG_REG(0x0e00)
 #define PCGCTL_IF_DEV_MODE		BIT(31)
 #define PCGCTL_P2HD_PRT_SPD_MASK	(0x3 << 29)
@@ -646,15 +581,10 @@
 #define PCGCTL_PWRCLMP			BIT(2)
 #define PCGCTL_GATEHCLK			BIT(1)
 #define PCGCTL_STOPPCLK			BIT(0)
-
 #define PCGCCTL1                        HSOTG_REG(0xe04)
 #define PCGCCTL1_TIMER                  (0x3 << 1)
 #define PCGCCTL1_GATEEN                 BIT(0)
-
 #define EPFIFO(_a)			HSOTG_REG(0x1000 + ((_a) * 0x1000))
-
-/* Host Mode Registers */
-
 #define HCFG				HSOTG_REG(0x0400)
 #define HCFG_MODECHTIMEN		BIT(31)
 #define HCFG_PERSCHEDENA		BIT(26)
@@ -678,19 +608,16 @@
 #define HCFG_FSLSPCLKSEL_30_60_MHZ	0
 #define HCFG_FSLSPCLKSEL_48_MHZ		1
 #define HCFG_FSLSPCLKSEL_6_MHZ		2
-
 #define HFIR				HSOTG_REG(0x0404)
 #define HFIR_FRINT_MASK			(0xffff << 0)
 #define HFIR_FRINT_SHIFT		0
 #define HFIR_RLDCTRL			BIT(16)
-
 #define HFNUM				HSOTG_REG(0x0408)
 #define HFNUM_FRREM_MASK		(0xffff << 16)
 #define HFNUM_FRREM_SHIFT		16
 #define HFNUM_FRNUM_MASK		(0xffff << 0)
 #define HFNUM_FRNUM_SHIFT		0
 #define HFNUM_MAX_FRNUM			0x3fff
-
 #define HPTXSTS				HSOTG_REG(0x0410)
 #define TXSTS_QTOP_ODD			BIT(31)
 #define TXSTS_QTOP_CHNEP_MASK		(0xf << 27)
@@ -702,11 +629,9 @@
 #define TXSTS_QSPCAVAIL_SHIFT		16
 #define TXSTS_FSPCAVAIL_MASK		(0xffff << 0)
 #define TXSTS_FSPCAVAIL_SHIFT		0
-
 #define HAINT				HSOTG_REG(0x0414)
 #define HAINTMSK			HSOTG_REG(0x0418)
 #define HFLBADDR			HSOTG_REG(0x041c)
-
 #define HPRT0				HSOTG_REG(0x0440)
 #define HPRT0_SPD_MASK			(0x3 << 17)
 #define HPRT0_SPD_SHIFT			17
@@ -727,7 +652,6 @@
 #define HPRT0_ENA			BIT(2)
 #define HPRT0_CONNDET			BIT(1)
 #define HPRT0_CONNSTS			BIT(0)
-
 #define HCCHAR(_ch)			HSOTG_REG(0x0500 + 0x20 * (_ch))
 #define HCCHAR_CHENA			BIT(31)
 #define HCCHAR_CHDIS			BIT(30)
@@ -744,7 +668,6 @@
 #define HCCHAR_EPNUM_SHIFT		11
 #define HCCHAR_MPS_MASK			(0x7ff << 0)
 #define HCCHAR_MPS_SHIFT		0
-
 #define HCSPLT(_ch)			HSOTG_REG(0x0504 + 0x20 * (_ch))
 #define HCSPLT_SPLTENA			BIT(31)
 #define HCSPLT_COMPSPLT			BIT(16)
@@ -758,7 +681,6 @@
 #define HCSPLT_HUBADDR_SHIFT		7
 #define HCSPLT_PRTADDR_MASK		(0x7f << 0)
 #define HCSPLT_PRTADDR_SHIFT		0
-
 #define HCINT(_ch)			HSOTG_REG(0x0508 + 0x20 * (_ch))
 #define HCINTMSK(_ch)			HSOTG_REG(0x050c + 0x20 * (_ch))
 #define HCINTMSK_RESERVED14_31		(0x3ffff << 14)
@@ -776,7 +698,6 @@
 #define HCINTMSK_AHBERR			BIT(2)
 #define HCINTMSK_CHHLTD			BIT(1)
 #define HCINTMSK_XFERCOMPL		BIT(0)
-
 #define HCTSIZ(_ch)			HSOTG_REG(0x0510 + 0x20 * (_ch))
 #define TSIZ_DOPNG			BIT(31)
 #define TSIZ_SC_MC_PID_MASK		(0x3 << 29)
@@ -794,30 +715,13 @@
 #define TSIZ_SCHINFO_SHIFT		0
 #define TSIZ_XFERSIZE_MASK		(0x7ffff << 0)
 #define TSIZ_XFERSIZE_SHIFT		0
-
 #define HCDMA(_ch)			HSOTG_REG(0x0514 + 0x20 * (_ch))
-
 #define HCDMAB(_ch)			HSOTG_REG(0x051c + 0x20 * (_ch))
-
 #define HCFIFO(_ch)			HSOTG_REG(0x1000 + 0x1000 * (_ch))
-
-/**
- * struct dwc2_dma_desc - DMA descriptor structure,
- * used for both host and gadget modes
- *
- * @status: DMA descriptor status quadlet
- * @buf:    DMA descriptor data buffer pointer
- *
- * DMA Descriptor structure contains two quadlets:
- * Status quadlet and Data buffer pointer.
- */
 struct dwc2_dma_desc {
 	u32 status;
 	u32 buf;
 } __packed;
-
-/* Host Mode DMA descriptor status quadlet */
-
 #define HOST_DMA_A			BIT(31)
 #define HOST_DMA_STS_MASK		(0x3 << 28)
 #define HOST_DMA_STS_SHIFT		28
@@ -833,9 +737,6 @@ struct dwc2_dma_desc {
 #define HOST_DMA_NBYTES_MASK		(0x1ffff << 0)
 #define HOST_DMA_NBYTES_SHIFT		0
 #define HOST_DMA_NBYTES_LIMIT		131071
-
-/* Device Mode DMA descriptor status quadlet */
-
 #define DEV_DMA_BUFF_STS_MASK		(0x3 << 30)
 #define DEV_DMA_BUFF_STS_SHIFT		30
 #define DEV_DMA_BUFF_STS_HREADY		0
@@ -868,8 +769,6 @@ struct dwc2_dma_desc {
 #define DEV_DMA_NBYTES_MASK		(0xffff << 0)
 #define DEV_DMA_NBYTES_SHIFT		0
 #define DEV_DMA_NBYTES_LIMIT		0xffff
-
 #define MAX_DMA_DESC_NUM_GENERIC	64
 #define MAX_DMA_DESC_NUM_HS_ISOC	256
-
-#endif /* __DWC2_HW_H__ */
+#endif  

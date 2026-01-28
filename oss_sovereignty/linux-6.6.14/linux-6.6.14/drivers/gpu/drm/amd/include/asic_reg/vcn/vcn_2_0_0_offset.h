@@ -1,30 +1,5 @@
-/*
- * Copyright (C) 2019  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _vcn_2_0_0_OFFSET_HEADER
 #define _vcn_2_0_0_OFFSET_HEADER
-
-
-
-// addressBlock: uvd0_jpegnpdec
-// base address: 0x1e200
 #define mmUVD_JPEG_CNTL                                                                                0x0080
 #define mmUVD_JPEG_CNTL_BASE_IDX                                                                       0
 #define mmUVD_JPEG_RB_BASE                                                                             0x0081
@@ -69,10 +44,6 @@
 #define mmUVD_JPEG_SCRATCH1_BASE_IDX                                                                   0
 #define mmUVD_JPEG_DEC_SOFT_RST                                                                        0x00af
 #define mmUVD_JPEG_DEC_SOFT_RST_BASE_IDX                                                               0
-
-
-// addressBlock: uvd0_uvd_jpeg_enc_dec
-// base address: 0x1e300
 #define mmUVD_JPEG_ENC_INT_EN                                                                          0x00c1
 #define mmUVD_JPEG_ENC_INT_EN_BASE_IDX                                                                 0
 #define mmUVD_JPEG_ENC_INT_STATUS                                                                      0x00c2
@@ -81,10 +52,6 @@
 #define mmUVD_JPEG_ENC_ENGINE_CNTL_BASE_IDX                                                            0
 #define mmUVD_JPEG_ENC_SCRATCH1                                                                        0x00ce
 #define mmUVD_JPEG_ENC_SCRATCH1_BASE_IDX                                                               0
-
-
-// addressBlock: uvd0_uvd_jpeg_enc_sclk_dec
-// base address: 0x1e380
 #define mmUVD_JPEG_ENC_STATUS                                                                          0x00e5
 #define mmUVD_JPEG_ENC_STATUS_BASE_IDX                                                                 0
 #define mmUVD_JPEG_ENC_PITCH                                                                           0x00e6
@@ -115,10 +82,6 @@
 #define mmUVD_JPEG_ENC_SCRATCH0_BASE_IDX                                                               0
 #define mmUVD_JPEG_ENC_SOFT_RST                                                                        0x00f7
 #define mmUVD_JPEG_ENC_SOFT_RST_BASE_IDX                                                               0
-
-
-// addressBlock: uvd0_uvd_jrbc_dec
-// base address: 0x1e400
 #define mmUVD_JRBC_RB_WPTR                                                                             0x0100
 #define mmUVD_JRBC_RB_WPTR_BASE_IDX                                                                    0
 #define mmUVD_JRBC_RB_CNTL                                                                             0x0101
@@ -157,10 +120,6 @@
 #define mmUVD_JRBC_RB_SIZE_BASE_IDX                                                                    0
 #define mmUVD_JRBC_SCRATCH0                                                                            0x0114
 #define mmUVD_JRBC_SCRATCH0_BASE_IDX                                                                   0
-
-
-// addressBlock: uvd0_uvd_jrbc_enc_dec
-// base address: 0x1e480
 #define mmUVD_JRBC_ENC_RB_WPTR                                                                         0x0120
 #define mmUVD_JRBC_ENC_RB_WPTR_BASE_IDX                                                                0
 #define mmUVD_JRBC_ENC_RB_CNTL                                                                         0x0121
@@ -199,10 +158,6 @@
 #define mmUVD_JRBC_ENC_RB_SIZE_BASE_IDX                                                                0
 #define mmUVD_JRBC_ENC_SCRATCH0                                                                        0x0134
 #define mmUVD_JRBC_ENC_SCRATCH0_BASE_IDX                                                               0
-
-
-// addressBlock: uvd0_uvd_jmi_dec
-// base address: 0x1e500
 #define mmUVD_JMI_CTRL                                                                                 0x0145
 #define mmUVD_JMI_CTRL_BASE_IDX                                                                        0
 #define mmUVD_LMI_JRBC_CTRL                                                                            0x0146
@@ -323,10 +278,6 @@
 #define mmUVD_JMI_HUFF_FENCE_64BIT_BAR_HIGH_BASE_IDX                                                   0
 #define mmUVD_JMI_DEC_SWAP_CNTL2                                                                       0x019c
 #define mmUVD_JMI_DEC_SWAP_CNTL2_BASE_IDX                                                              0
-
-
-// addressBlock: uvd0_uvd_jpeg_common_dec
-// base address: 0x1e700
 #define mmJPEG_SOFT_RESET_STATUS                                                                       0x01c0
 #define mmJPEG_SOFT_RESET_STATUS_BASE_IDX                                                              0
 #define mmJPEG_SYS_INT_EN                                                                              0x01c1
@@ -341,10 +292,6 @@
 #define mmJPEG_IH_CTRL_BASE_IDX                                                                        0
 #define mmJRBBM_ARB_CTRL                                                                               0x01cb
 #define mmJRBBM_ARB_CTRL_BASE_IDX                                                                      0
-
-
-// addressBlock: uvd0_uvd_jpeg_common_sclk_dec
-// base address: 0x1e780
 #define mmJPEG_CGC_GATE                                                                                0x01e0
 #define mmJPEG_CGC_GATE_BASE_IDX                                                                       0
 #define mmJPEG_CGC_CTRL                                                                                0x01e1
@@ -373,10 +320,6 @@
 #define mmJPEG_PERF_BANK_COUNT2_BASE_IDX                                                               0
 #define mmJPEG_PERF_BANK_COUNT3                                                                        0x01ed
 #define mmJPEG_PERF_BANK_COUNT3_BASE_IDX                                                               0
-
-
-// addressBlock: uvd0_uvd_pg_dec
-// base address: 0x1f800
 #define mmUVD_PGFSM_CONFIG                                                                             0x0000
 #define mmUVD_PGFSM_CONFIG_BASE_IDX                                                                    1
 #define mmUVD_PGFSM_STATUS                                                                             0x0001
@@ -469,10 +412,6 @@
 #define mmUVD_TSC_LOWER_BASE_IDX                                                                       1
 #define mmUVD_TSC_UPPER                                                                                0x0058
 #define mmUVD_TSC_UPPER_BASE_IDX                                                                       1
-
-
-// addressBlock: uvd0_uvddec
-// base address: 0x1ff00
 #define mmUVD_SEMA_CNTL                                                                                0x01c0
 #define mmUVD_SEMA_CNTL_BASE_IDX                                                                       1
 #define mmUVD_RB_RPTR3                                                                                 0x01db
@@ -797,10 +736,6 @@
 #define mmUVD_HEIGHT_BASE_IDX                                                                          1
 #define mmUVD_PICCOUNT                                                                                 0x02bf
 #define mmUVD_PICCOUNT_BASE_IDX                                                                        1
-
-
-// addressBlock: uvd0_uvdnpdec
-// base address: 0x20700
 #define mmUVD_SEMA_ADDR_LOW                                                                            0x0580
 #define mmUVD_SEMA_ADDR_LOW_BASE_IDX                                                                   1
 #define mmUVD_SEMA_ADDR_HIGH                                                                           0x0581
@@ -959,10 +894,6 @@
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_HIGH_BASE_IDX                                                       1
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_LOW                                                                 0x0629
 #define mmUVD_LMI_RBC_RB_64BIT_BAR_LOW_BASE_IDX                                                        1
-
-
-// addressBlock: uvd0_uvdnp2dec
-// base address: 0x21100
 #define mmUVD_LMI_MMSCH_NC0_64BIT_BAR_LOW                                                              0x0640
 #define mmUVD_LMI_MMSCH_NC0_64BIT_BAR_LOW_BASE_IDX                                                     1
 #define mmUVD_LMI_MMSCH_NC0_64BIT_BAR_HIGH                                                             0x0641
@@ -1003,6 +934,4 @@
 #define mmUVD_MMSCH_SOFT_RESET_BASE_IDX                                                                1
 #define mmUVD_LMI_ARB_CTRL2                                                                            0x0662
 #define mmUVD_LMI_ARB_CTRL2_BASE_IDX                                                                   1
-
-
 #endif

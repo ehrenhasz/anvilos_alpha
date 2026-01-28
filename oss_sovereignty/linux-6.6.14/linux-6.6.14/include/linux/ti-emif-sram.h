@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI AM33XX EMIF Routines
- *
- * Copyright (C) 2016-2017 Texas Instruments Inc.
- *	Dave Gerlach
- */
 #ifndef __LINUX_TI_EMIF_H
 #define __LINUX_TI_EMIF_H
-
 #include <linux/kbuild.h>
 #include <linux/types.h>
 #ifndef __ASSEMBLY__
-
 struct emif_regs_amx3 {
 	u32 emif_sdcfg_val;
 	u32 emif_timing1_val;
@@ -35,7 +26,6 @@ struct emif_regs_amx3 {
 	u32 emif_ddr_phy_ctlr_1;
 	u32 emif_ext_phy_ctrl_vals[120];
 };
-
 struct ti_emif_pm_data {
 	void __iomem *ti_emif_base_addr_virt;
 	phys_addr_t ti_emif_base_addr_phys;
@@ -43,7 +33,6 @@ struct ti_emif_pm_data {
 	struct emif_regs_amx3 *regs_virt;
 	phys_addr_t regs_phys;
 } __packed __aligned(8);
-
 struct ti_emif_pm_functions {
 	u32 save_context;
 	u32 restore_context;
@@ -52,7 +41,6 @@ struct ti_emif_pm_functions {
 	u32 exit_sr;
 	u32 abort_sr;
 } __packed __aligned(8);
-
 static inline void ti_emif_asm_offsets(void)
 {
 	DEFINE(EMIF_SDCFG_VAL_OFFSET,
@@ -98,9 +86,7 @@ static inline void ti_emif_asm_offsets(void)
 	DEFINE(EMIF_EXT_PHY_CTRL_VALS_OFFSET,
 	       offsetof(struct emif_regs_amx3, emif_ext_phy_ctrl_vals));
 	DEFINE(EMIF_REGS_AMX3_SIZE, sizeof(struct emif_regs_amx3));
-
 	BLANK();
-
 	DEFINE(EMIF_PM_BASE_ADDR_VIRT_OFFSET,
 	       offsetof(struct ti_emif_pm_data, ti_emif_base_addr_virt));
 	DEFINE(EMIF_PM_BASE_ADDR_PHYS_OFFSET,
@@ -112,9 +98,7 @@ static inline void ti_emif_asm_offsets(void)
 	DEFINE(EMIF_PM_REGS_PHYS_OFFSET,
 	       offsetof(struct ti_emif_pm_data, regs_phys));
 	DEFINE(EMIF_PM_DATA_SIZE, sizeof(struct ti_emif_pm_data));
-
 	BLANK();
-
 	DEFINE(EMIF_PM_SAVE_CONTEXT_OFFSET,
 	       offsetof(struct ti_emif_pm_functions, save_context));
 	DEFINE(EMIF_PM_RESTORE_CONTEXT_OFFSET,
@@ -129,11 +113,8 @@ static inline void ti_emif_asm_offsets(void)
 	       offsetof(struct ti_emif_pm_functions, abort_sr));
 	DEFINE(EMIF_PM_FUNCTIONS_SIZE, sizeof(struct ti_emif_pm_functions));
 }
-
 struct gen_pool;
-
 int ti_emif_copy_pm_function_table(struct gen_pool *sram_pool, void *dst);
 int ti_emif_get_mem_type(void);
-
 #endif
-#endif /* __LINUX_TI_EMIF_H */
+#endif  

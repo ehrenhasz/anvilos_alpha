@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * max9867.h -- MAX9867 ALSA SoC Audio driver
- *
- * Copyright 2013-2015 Maxim Integrated Products
- */
-
 #ifndef _MAX9867_H
 #define _MAX9867_H
-
-/* MAX9867 register space */
-
 #define MAX9867_STATUS        0x00
 #define MAX9867_JACKSTATUS   0x01
 #define MAX9867_AUXHIGH      0x02
@@ -61,7 +51,5 @@
 #define MAX9867_PWRMAN       0x17
 #define MAX9867_PWRMAN_SHDN  (1<<7)
 #define MAX9867_REVISION     0xff
-
 #define MAX9867_CACHEREGNUM 10
-
 #endif

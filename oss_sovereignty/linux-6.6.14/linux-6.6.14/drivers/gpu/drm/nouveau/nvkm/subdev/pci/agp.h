@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: MIT */
 #include "priv.h"
 #if defined(CONFIG_AGP) || (defined(CONFIG_AGP_MODULE) && defined(MODULE))
 #ifndef __NVKM_PCI_AGP_H__
 #define __NVKM_PCI_AGP_H__
-
 void nvkm_agp_ctor(struct nvkm_pci *);
 void nvkm_agp_dtor(struct nvkm_pci *);
 void nvkm_agp_preinit(struct nvkm_pci *);

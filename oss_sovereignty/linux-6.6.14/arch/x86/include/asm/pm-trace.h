@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PM_TRACE_H
 #define _ASM_X86_PM_TRACE_H
-
 #include <asm/asm.h>
-
 #define TRACE_RESUME(user)					\
 do {								\
 	if (pm_trace_enabled) {					\
@@ -18,7 +15,5 @@ do {								\
 		generate_pm_trace(tracedata, user);		\
 	}							\
 } while (0)
-
 #define TRACE_SUSPEND(user)	TRACE_RESUME(user)
-
-#endif /* _ASM_X86_PM_TRACE_H */
+#endif  

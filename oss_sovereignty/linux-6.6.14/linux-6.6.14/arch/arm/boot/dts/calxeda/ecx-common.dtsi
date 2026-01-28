@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011-2012 Calxeda, Inc.
- */
-
 / {
 	chosen {
 		bootargs = "console=ttyAMA0";
 	};
-
 	psci {
 		compatible = "arm,psci";
 		method = "smc";
@@ -15,13 +9,11 @@
 		cpu_off = <0x84000004>;
 		cpu_on = <0x84000006>;
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&intc>;
-
 		sata@ffe08000 {
 			compatible = "calxeda,hb-ahci";
 			reg = <0xffe08000 0x10000>;
@@ -34,7 +26,6 @@
 					    <&gpioh 7 1>;
 			calxeda,led-order = <4 0 1 2 3>;
 		};
-
 		sdhci@ffe0e000 {
 			compatible = "calxeda,hb-sdhci";
 			reg = <0xffe0e000 0x1000>;
@@ -42,7 +33,6 @@
 			clocks = <&eclk>;
 			status = "disabled";
 		};
-
 		ipc@fff20000 {
 			compatible = "arm,pl320", "arm,primecell";
 			reg = <0xfff20000 0x1000>;
@@ -50,7 +40,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		gpioe: gpio@fff30000 {
 			#gpio-cells = <2>;
 			compatible = "arm,pl061", "arm,primecell";
@@ -61,7 +50,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpiof: gpio@fff31000 {
 			#gpio-cells = <2>;
 			compatible = "arm,pl061", "arm,primecell";
@@ -72,7 +60,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpiog: gpio@fff32000 {
 			#gpio-cells = <2>;
 			compatible = "arm,pl061", "arm,primecell";
@@ -83,7 +70,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		gpioh: gpio@fff33000 {
 			#gpio-cells = <2>;
 			compatible = "arm,pl061", "arm,primecell";
@@ -94,7 +80,6 @@
 			clock-names = "apb_pclk";
 			status = "disabled";
 		};
-
 		timer@fff34000 {
 			compatible = "arm,sp804", "arm,primecell";
 			reg = <0xfff34000 0x1000>;
@@ -102,7 +87,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		rtc@fff35000 {
 			compatible = "arm,pl031", "arm,primecell";
 			reg = <0xfff35000 0x1000>;
@@ -110,7 +94,6 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		serial@fff36000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0xfff36000 0x1000>;
@@ -118,7 +101,6 @@
 			clocks = <&pclk>, <&pclk>;
 			clock-names = "uartclk", "apb_pclk";
 		};
-
 		smic@fff3a000 {
 			compatible = "ipmi-smic";
 			device_type = "ipmi";
@@ -127,63 +109,53 @@
 			reg-size = <4>;
 			reg-spacing = <4>;
 		};
-
 		sregs@fff3c000 {
 			compatible = "calxeda,hb-sregs";
 			reg = <0xfff3c000 0x1000>;
-
 			clocks {
 				#address-cells = <1>;
 				#size-cells = <0>;
-
 				osc: oscillator {
 					#clock-cells = <0>;
 					compatible = "fixed-clock";
 					clock-frequency = <33333000>;
 				};
-
 				ddrpll: ddrpll {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-pll-clock";
 					clocks = <&osc>;
 					reg = <0x108>;
 				};
-
 				a9pll: a9pll {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-pll-clock";
 					clocks = <&osc>;
 					reg = <0x100>;
 				};
-
 				a9periphclk: a9periphclk {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-a9periph-clock";
 					clocks = <&a9pll>;
 					reg = <0x104>;
 				};
-
 				a9bclk: a9bclk {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-a9bus-clock";
 					clocks = <&a9pll>;
 					reg = <0x104>;
 				};
-
 				emmcpll: emmcpll {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-pll-clock";
 					clocks = <&osc>;
 					reg = <0x10C>;
 				};
-
 				eclk: eclk {
 					#clock-cells = <0>;
 					compatible = "calxeda,hb-emmc-clock";
 					clocks = <&emmcpll>;
 					reg = <0x114>;
 				};
-
 				pclk: pclk {
 					#clock-cells = <0>;
 					compatible = "fixed-clock";
@@ -191,7 +163,6 @@
 				};
 			};
 		};
-
 		dma@fff3d000 {
 			compatible = "arm,pl330", "arm,primecell";
 			reg = <0xfff3d000 0x1000>;
@@ -199,28 +170,24 @@
 			clocks = <&pclk>;
 			clock-names = "apb_pclk";
 		};
-
 		ethernet@fff50000 {
 			compatible = "calxeda,hb-xgmac";
 			reg = <0xfff50000 0x1000>;
 			interrupts = <0 77 4>, <0 78 4>, <0 79 4>;
 			dma-coherent;
 		};
-
 		ethernet@fff51000 {
 			compatible = "calxeda,hb-xgmac";
 			reg = <0xfff51000 0x1000>;
 			interrupts = <0 80 4>, <0 81 4>, <0 82 4>;
 			dma-coherent;
 		};
-
 		combophy0: combo-phy@fff58000 {
 			compatible = "calxeda,hb-combophy";
 			#phy-cells = <1>;
 			reg = <0xfff58000 0x1000>;
 			phydev = <5>;
 		};
-
 		combophy5: combo-phy@fff5d000 {
 			compatible = "calxeda,hb-combophy";
 			#phy-cells = <1>;

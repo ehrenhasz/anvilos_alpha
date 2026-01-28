@@ -1,38 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
-
 #ifndef __XGENE_ENET_XGMAC_H__
 #define __XGENE_ENET_XGMAC_H__
-
 #define X2_BLOCK_ETH_MAC_CSR_OFFSET	0x3000
 #define BLOCK_AXG_MAC_OFFSET		0x0800
 #define BLOCK_AXG_STATS_OFFSET		0x0800
 #define BLOCK_AXG_MAC_CSR_OFFSET	0x2000
 #define BLOCK_PCS_OFFSET		0x3800
-
 #define XGENET_CONFIG_REG_ADDR		0x20
 #define XGENET_SRST_ADDR		0x00
 #define XGENET_CLKEN_ADDR		0x08
-
 #define CSR_CLK		BIT(0)
 #define XGENET_CLK	BIT(1)
 #define PCS_CLK		BIT(3)
 #define AN_REF_CLK	BIT(4)
 #define AN_CLK		BIT(5)
 #define AD_CLK		BIT(6)
-
 #define CSR_RST		BIT(0)
 #define XGENET_RST	BIT(1)
 #define PCS_RST		BIT(3)
 #define AN_REF_RST	BIT(4)
 #define AN_RST		BIT(5)
 #define AD_RST		BIT(6)
-
 #define AXGMAC_CONFIG_0			0x0000
 #define AXGMAC_CONFIG_1			0x0004
 #define HSTMACRST			BIT(31)
@@ -46,7 +33,6 @@
 #define HSTMACADR_LSW_ADDR		0x0010
 #define HSTMACADR_MSW_ADDR		0x0014
 #define HSTMAXFRAME_LENGTH_ADDR		0x0020
-
 #define XG_MCX_RX_DV_GATE_REG_0_ADDR	0x0004
 #define XG_MCX_ECM_CFG_0_ADDR		0x0074
 #define XG_MCX_MULTI_DPF0_ADDR		0x007c
@@ -79,11 +65,8 @@
 #define XG_RXBUF_PAUSE_THRESH		0x0020
 #define XG_MCX_ICM_CONFIG0_REG_0_ADDR	0x00e0
 #define XG_MCX_ICM_CONFIG2_REG_0_ADDR	0x00e8
-
 #define PCS_CONTROL_1			0x0000
 #define PCS_CTRL_PCS_RST		BIT(15)
-
 extern const struct xgene_mac_ops xgene_xgmac_ops;
 extern const struct xgene_port_ops xgene_xgport_ops;
-
-#endif /* __XGENE_ENET_XGMAC_H__ */
+#endif  

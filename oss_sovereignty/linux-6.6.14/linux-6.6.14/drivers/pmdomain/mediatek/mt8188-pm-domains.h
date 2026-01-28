@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
-
 #ifndef __SOC_MEDIATEK_MT8188_PM_DOMAINS_H
 #define __SOC_MEDIATEK_MT8188_PM_DOMAINS_H
-
 #include "mtk-pm-domains.h"
 #include <dt-bindings/power/mediatek,mt8188-power.h>
-
-/*
- * MT8188 power domain support
- */
-
 static const struct scpsys_domain_data scpsys_domain_data_mt8188[] = {
 	[MT8188_POWER_DOMAIN_MFG0] = {
 		.name = "mfg0",
@@ -614,10 +602,8 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8188[] = {
 		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
 	},
 };
-
 static const struct scpsys_soc_data mt8188_scpsys_data = {
 	.domains_data = scpsys_domain_data_mt8188,
 	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8188),
 };
-
-#endif /* __SOC_MEDIATEK_MT8188_PM_DOMAINS_H */
+#endif  

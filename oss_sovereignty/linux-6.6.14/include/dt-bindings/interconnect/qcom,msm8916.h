@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Qualcomm interconnect IDs
- *
- * Copyright (c) 2019, Linaro Ltd.
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
-
 #ifndef __DT_BINDINGS_INTERCONNECT_QCOM_MSM8916_H
 #define __DT_BINDINGS_INTERCONNECT_QCOM_MSM8916_H
-
 #define BIMC_SNOC_SLV			0
 #define MASTER_JPEG			1
 #define MASTER_MDP_PORT0		2
@@ -35,7 +26,6 @@
 #define SNOC_INT_BIMC			23
 #define SNOC_PCNOC_MAS			24
 #define SNOC_QDSS_INT			25
-
 #define BIMC_SNOC_MAS			0
 #define MASTER_AMPSS_M0			1
 #define MASTER_GRAPHICS_3D		2
@@ -45,7 +35,6 @@
 #define SLAVE_EBI_CH0			6
 #define SNOC_BIMC_0_SLV			7
 #define SNOC_BIMC_1_SLV			8
-
 #define MASTER_BLSP_1			0
 #define MASTER_DEHR			1
 #define MASTER_LPASS			2
@@ -96,5 +85,4 @@
 #define SLAVE_USB_HS			47
 #define SLAVE_VENUS_CFG			48
 #define SNOC_PCNOC_SLV			49
-
 #endif

@@ -1,28 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef USBUSX2Y_H
 #define USBUSX2Y_H
 #include "../usbaudio.h"
 #include "../midi.h"
 #include "usbus428ctldefs.h"
-
 #define NRURBS	        2
-
-
 #define URBS_ASYNC_SEQ 10
 #define URB_DATA_LEN_ASYNC_SEQ 32
 struct snd_usx2y_async_seq {
 	struct urb	*urb[URBS_ASYNC_SEQ];
 	char		*buffer;
 };
-
 struct snd_usx2y_urb_seq {
 	int	submitted;
 	int	len;
 	struct urb	*urb[];
 };
-
 #include "usx2yhwdeppcm.h"
-
 struct usx2ydev {
 	struct usb_device	*dev;
 	int			card_index;
@@ -48,15 +41,11 @@ struct usx2ydev {
 	struct list_head	midi_list;
 	int			pcm_devs;
 };
-
-
 struct snd_usx2y_substream {
 	struct usx2ydev	*usx2y;
 	struct snd_pcm_substream *pcm_substream;
-
 	int			endpoint;
-	unsigned int		maxpacksize;		/* max packet size in bytes */
-
+	unsigned int		maxpacksize;		 
 	atomic_t		state;
 #define STATE_STOPPED	0
 #define STATE_STARTING1 1
@@ -65,24 +54,16 @@ struct snd_usx2y_substream {
 #define STATE_PREPARED	4
 #define STATE_PRERUNNING  6
 #define STATE_RUNNING	8
-
-	int			hwptr;			/* free frame position in the buffer (only for playback) */
-	int			hwptr_done;		/* processed frame position in the buffer */
-	int			transfer_done;		/* processed frames since last period update */
-
-	struct urb		*urb[NRURBS];	/* data urb table */
+	int			hwptr;			 
+	int			hwptr_done;		 
+	int			transfer_done;		 
+	struct urb		*urb[NRURBS];	 
 	struct urb		*completed_urb;
-	char			*tmpbuf;			/* temporary buffer for playback */
+	char			*tmpbuf;			 
 };
-
-
 #define usx2y(c) ((struct usx2ydev *)(c)->private_data)
-
 int usx2y_audio_create(struct snd_card *card);
-
 int usx2y_async_seq04_init(struct usx2ydev *usx2y);
 int usx2y_in04_init(struct usx2ydev *usx2y);
-
 #define NAME_ALLCAPS "US-X2Y"
-
 #endif

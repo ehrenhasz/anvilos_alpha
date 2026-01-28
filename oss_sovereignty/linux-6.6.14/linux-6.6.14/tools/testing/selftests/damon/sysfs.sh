@@ -1,15 +1,9 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
-# Kselftest frmework requirement - SKIP code is 4.
 ksft_skip=4
-
 ensure_write_succ()
 {
 	file=$1
 	content=$2
 	reason=$3
-
 	if ! echo "$content" > "$file"
 	then
 		echo "writing $content to $file failed"
@@ -17,13 +11,11 @@ ensure_write_succ()
 		exit 1
 	fi
 }
-
 ensure_write_fail()
 {
 	file=$1
 	content=$2
 	reason=$3
-
 	if (echo "$content" > "$file") 2> /dev/null
 	then
 		echo "writing $content to $file succeed ($fail_reason)"
@@ -31,7 +23,6 @@ ensure_write_fail()
 		exit 1
 	fi
 }
-
 ensure_dir()
 {
 	dir=$1
@@ -46,7 +37,6 @@ ensure_dir()
 		exit 1
 	fi
 }
-
 ensure_file()
 {
 	file=$1
@@ -71,7 +61,6 @@ ensure_file()
 		exit 1
 	fi
 }
-
 test_range()
 {
 	range_dir=$1
@@ -79,14 +68,12 @@ test_range()
 	ensure_file "$range_dir/min" "exist" 600
 	ensure_file "$range_dir/max" "exist" 600
 }
-
 test_tried_regions()
 {
 	tried_regions_dir=$1
 	ensure_dir "$tried_regions_dir" "exist"
 	ensure_file "$tried_regions_dir/total_bytes" "exist" "400"
 }
-
 test_stats()
 {
 	stats_dir=$1
@@ -96,7 +83,6 @@ test_stats()
 		ensure_file "$stats_dir/$f" "exist" "400"
 	done
 }
-
 test_filter()
 {
 	filter_dir=$1
@@ -112,7 +98,6 @@ test_filter()
 	ensure_file "$filter_dir/addr_end" "exist" "600"
 	ensure_file "$filter_dir/damon_target_idx" "exist" "600"
 }
-
 test_filters()
 {
 	filters_dir=$1
@@ -120,16 +105,13 @@ test_filters()
 	ensure_file "$filters_dir/nr_filters" "exist" "600"
 	ensure_write_succ  "$filters_dir/nr_filters" "1" "valid input"
 	test_filter "$filters_dir/0"
-
 	ensure_write_succ  "$filters_dir/nr_filters" "2" "valid input"
 	test_filter "$filters_dir/0"
 	test_filter "$filters_dir/1"
-
 	ensure_write_succ "$filters_dir/nr_filters" "0" "valid input"
 	ensure_dir "$filters_dir/0" "not_exist"
 	ensure_dir "$filters_dir/1" "not_exist"
 }
-
 test_watermarks()
 {
 	watermarks_dir=$1
@@ -140,7 +122,6 @@ test_watermarks()
 	ensure_file "$watermarks_dir/mid" "exist" "600"
 	ensure_file "$watermarks_dir/low" "exist" "600"
 }
-
 test_weights()
 {
 	weights_dir=$1
@@ -149,7 +130,6 @@ test_weights()
 	ensure_file "$weights_dir/nr_accesses_permil" "exist" "600"
 	ensure_file "$weights_dir/age_permil" "exist" "600"
 }
-
 test_quotas()
 {
 	quotas_dir=$1
@@ -159,7 +139,6 @@ test_quotas()
 	ensure_file "$quotas_dir/reset_interval_ms" "exist" 600
 	test_weights "$quotas_dir/weights"
 }
-
 test_access_pattern()
 {
 	access_pattern_dir=$1
@@ -168,7 +147,6 @@ test_access_pattern()
 	test_range "$access_pattern_dir/nr_accesses"
 	test_range "$access_pattern_dir/sz"
 }
-
 test_scheme()
 {
 	scheme_dir=$1
@@ -181,25 +159,20 @@ test_scheme()
 	test_stats "$scheme_dir/stats"
 	test_tried_regions "$scheme_dir/tried_regions"
 }
-
 test_schemes()
 {
 	schemes_dir=$1
 	ensure_dir "$schemes_dir" "exist"
 	ensure_file "$schemes_dir/nr_schemes" "exist" 600
-
 	ensure_write_succ  "$schemes_dir/nr_schemes" "1" "valid input"
 	test_scheme "$schemes_dir/0"
-
 	ensure_write_succ  "$schemes_dir/nr_schemes" "2" "valid input"
 	test_scheme "$schemes_dir/0"
 	test_scheme "$schemes_dir/1"
-
 	ensure_write_succ "$schemes_dir/nr_schemes" "0" "valid input"
 	ensure_dir "$schemes_dir/0" "not_exist"
 	ensure_dir "$schemes_dir/1" "not_exist"
 }
-
 test_region()
 {
 	region_dir=$1
@@ -207,25 +180,20 @@ test_region()
 	ensure_file "$region_dir/start" "exist" 600
 	ensure_file "$region_dir/end" "exist" 600
 }
-
 test_regions()
 {
 	regions_dir=$1
 	ensure_dir "$regions_dir" "exist"
 	ensure_file "$regions_dir/nr_regions" "exist" 600
-
 	ensure_write_succ  "$regions_dir/nr_regions" "1" "valid input"
 	test_region "$regions_dir/0"
-
 	ensure_write_succ  "$regions_dir/nr_regions" "2" "valid input"
 	test_region "$regions_dir/0"
 	test_region "$regions_dir/1"
-
 	ensure_write_succ "$regions_dir/nr_regions" "0" "valid input"
 	ensure_dir "$regions_dir/0" "not_exist"
 	ensure_dir "$regions_dir/1" "not_exist"
 }
-
 test_target()
 {
 	target_dir=$1
@@ -233,25 +201,20 @@ test_target()
 	ensure_file "$target_dir/pid_target" "exist" "600"
 	test_regions "$target_dir/regions"
 }
-
 test_targets()
 {
 	targets_dir=$1
 	ensure_dir "$targets_dir" "exist"
 	ensure_file "$targets_dir/nr_targets" "exist" 600
-
 	ensure_write_succ  "$targets_dir/nr_targets" "1" "valid input"
 	test_target "$targets_dir/0"
-
 	ensure_write_succ  "$targets_dir/nr_targets" "2" "valid input"
 	test_target "$targets_dir/0"
 	test_target "$targets_dir/1"
-
 	ensure_write_succ "$targets_dir/nr_targets" "0" "valid input"
 	ensure_dir "$targets_dir/0" "not_exist"
 	ensure_dir "$targets_dir/1" "not_exist"
 }
-
 test_intervals()
 {
 	intervals_dir=$1
@@ -260,7 +223,6 @@ test_intervals()
 	ensure_file "$intervals_dir/sample_us" "exist" "600"
 	ensure_file "$intervals_dir/update_us" "exist" "600"
 }
-
 test_monitoring_attrs()
 {
 	monitoring_attrs_dir=$1
@@ -268,7 +230,6 @@ test_monitoring_attrs()
 	test_intervals "$monitoring_attrs_dir/intervals"
 	test_range "$monitoring_attrs_dir/nr_regions"
 }
-
 test_context()
 {
 	context_dir=$1
@@ -279,23 +240,18 @@ test_context()
 	test_targets "$context_dir/targets"
 	test_schemes "$context_dir/schemes"
 }
-
 test_contexts()
 {
 	contexts_dir=$1
 	ensure_dir "$contexts_dir" "exist"
 	ensure_file "$contexts_dir/nr_contexts" "exist" 600
-
 	ensure_write_succ  "$contexts_dir/nr_contexts" "1" "valid input"
 	test_context "$contexts_dir/0"
-
 	ensure_write_fail "$contexts_dir/nr_contexts" "2" "only 0/1 are supported"
 	test_context "$contexts_dir/0"
-
 	ensure_write_succ "$contexts_dir/nr_contexts" "0" "valid input"
 	ensure_dir "$contexts_dir/0" "not_exist"
 }
-
 test_kdamond()
 {
 	kdamond_dir=$1
@@ -304,26 +260,20 @@ test_kdamond()
 	ensure_file "$kdamond_dir/pid" "exist" 400
 	test_contexts "$kdamond_dir/contexts"
 }
-
 test_kdamonds()
 {
 	kdamonds_dir=$1
 	ensure_dir "$kdamonds_dir" "exist"
-
 	ensure_file "$kdamonds_dir/nr_kdamonds" "exist" "600"
-
 	ensure_write_succ  "$kdamonds_dir/nr_kdamonds" "1" "valid input"
 	test_kdamond "$kdamonds_dir/0"
-
 	ensure_write_succ  "$kdamonds_dir/nr_kdamonds" "2" "valid input"
 	test_kdamond "$kdamonds_dir/0"
 	test_kdamond "$kdamonds_dir/1"
-
 	ensure_write_succ "$kdamonds_dir/nr_kdamonds" "0" "valid input"
 	ensure_dir "$kdamonds_dir/0" "not_exist"
 	ensure_dir "$kdamonds_dir/1" "not_exist"
 }
-
 test_damon_sysfs()
 {
 	damon_sysfs=$1
@@ -332,10 +282,8 @@ test_damon_sysfs()
 		echo "$damon_sysfs not found"
 		exit $ksft_skip
 	fi
-
 	test_kdamonds "$damon_sysfs/kdamonds"
 }
-
 check_dependencies()
 {
 	if [ $EUID -ne 0 ]
@@ -344,6 +292,5 @@ check_dependencies()
 		exit $ksft_skip
 	fi
 }
-
 check_dependencies
 test_damon_sysfs "/sys/kernel/mm/damon/admin"

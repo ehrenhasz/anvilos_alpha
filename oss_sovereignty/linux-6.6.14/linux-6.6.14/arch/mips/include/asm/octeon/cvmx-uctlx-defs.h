@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_UCTLX_DEFS_H__
 #define __CVMX_UCTLX_DEFS_H__
-
 #define CVMX_UCTLX_BIST_STATUS(block_id) (CVMX_ADD_IO_SEG(0x000118006F0000A0ull))
 #define CVMX_UCTLX_CLK_RST_CTL(block_id) (CVMX_ADD_IO_SEG(0x000118006F000000ull))
 #define CVMX_UCTLX_EHCI_CTL(block_id) (CVMX_ADD_IO_SEG(0x000118006F000080ull))
@@ -41,7 +13,6 @@
 #define CVMX_UCTLX_PPAF_WM(block_id) (CVMX_ADD_IO_SEG(0x000118006F000038ull))
 #define CVMX_UCTLX_UPHY_CTL_STATUS(block_id) (CVMX_ADD_IO_SEG(0x000118006F000008ull))
 #define CVMX_UCTLX_UPHY_PORTX_CTL_STATUS(offset, block_id) (CVMX_ADD_IO_SEG(0x000118006F000010ull) + (((offset) & 1) + ((block_id) & 0) * 0x0ull) * 8)
-
 union cvmx_uctlx_bist_status {
 	uint64_t u64;
 	struct cvmx_uctlx_bist_status_s {
@@ -64,7 +35,6 @@ union cvmx_uctlx_bist_status {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_clk_rst_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_clk_rst_ctl_s {
@@ -115,7 +85,6 @@ union cvmx_uctlx_clk_rst_ctl {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_ehci_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_ehci_ctl_s {
@@ -148,7 +117,6 @@ union cvmx_uctlx_ehci_ctl {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_ehci_fla {
 	uint64_t u64;
 	struct cvmx_uctlx_ehci_fla_s {
@@ -161,7 +129,6 @@ union cvmx_uctlx_ehci_fla {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_erto_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_erto_ctl_s {
@@ -176,7 +143,6 @@ union cvmx_uctlx_erto_ctl {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_if_ena {
 	uint64_t u64;
 	struct cvmx_uctlx_if_ena_s {
@@ -189,7 +155,6 @@ union cvmx_uctlx_if_ena {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_int_ena {
 	uint64_t u64;
 	struct cvmx_uctlx_int_ena_s {
@@ -216,7 +181,6 @@ union cvmx_uctlx_int_ena {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_int_reg {
 	uint64_t u64;
 	struct cvmx_uctlx_int_reg_s {
@@ -243,7 +207,6 @@ union cvmx_uctlx_int_reg {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_ohci_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_ohci_ctl_s {
@@ -274,7 +237,6 @@ union cvmx_uctlx_ohci_ctl {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_orto_ctl {
 	uint64_t u64;
 	struct cvmx_uctlx_orto_ctl_s {
@@ -289,7 +251,6 @@ union cvmx_uctlx_orto_ctl {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_ppaf_wm {
 	uint64_t u64;
 	struct cvmx_uctlx_ppaf_wm_s {
@@ -302,7 +263,6 @@ union cvmx_uctlx_ppaf_wm {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_uphy_ctl_status {
 	uint64_t u64;
 	struct cvmx_uctlx_uphy_ctl_status_s {
@@ -333,7 +293,6 @@ union cvmx_uctlx_uphy_ctl_status {
 #endif
 	} s;
 };
-
 union cvmx_uctlx_uphy_portx_ctl_status {
 	uint64_t u64;
 	struct cvmx_uctlx_uphy_portx_ctl_status_s {
@@ -382,5 +341,4 @@ union cvmx_uctlx_uphy_portx_ctl_status {
 #endif
 	} s;
 };
-
 #endif

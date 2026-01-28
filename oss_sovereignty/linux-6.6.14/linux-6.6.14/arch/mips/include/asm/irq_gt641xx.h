@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Galileo/Marvell GT641xx IRQ definitions.
- *
- *  Copyright (C) 2007  Yoichi Yuasa <yuasa@linux-mips.org>
- */
 #ifndef _ASM_IRQ_GT641XX_H
 #define _ASM_IRQ_GT641XX_H
-
 #ifndef GT641XX_IRQ_BASE
 #define GT641XX_IRQ_BASE		8
 #endif
-
 #define GT641XX_MEMORY_OUT_OF_RANGE_IRQ		(GT641XX_IRQ_BASE + 1)
 #define GT641XX_DMA_OUT_OF_RANGE_IRQ		(GT641XX_IRQ_BASE + 2)
 #define GT641XX_CPU_ACCESS_OUT_OF_RANGE_IRQ	(GT641XX_IRQ_BASE + 3)
@@ -40,8 +32,6 @@
 #define GT641XX_PCI_INT1_IRQ			(GT641XX_IRQ_BASE + 27)
 #define GT641XX_PCI_INT2_IRQ			(GT641XX_IRQ_BASE + 28)
 #define GT641XX_PCI_INT3_IRQ			(GT641XX_IRQ_BASE + 29)
-
 extern void gt641xx_irq_dispatch(void);
 extern void gt641xx_irq_init(void);
-
-#endif /* _ASM_IRQ_GT641XX_H */
+#endif  

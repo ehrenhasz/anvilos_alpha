@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_8_1_SM8450_H
 #define _DPU_8_1_SM8450_H
-
 static const struct dpu_caps sm8450_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0xb,
@@ -18,7 +11,6 @@ static const struct dpu_caps sm8450_dpu_caps = {
 	.max_linewidth = 5120,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg sm8450_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -35,8 +27,6 @@ static const struct dpu_mdp_cfg sm8450_mdp = {
 		[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
 	},
 };
-
-/* FIXME: get rid of DPU_CTL_SPLIT_DISPLAY in favour of proper ACTIVE_CTL support */
 static const struct dpu_ctl_cfg sm8450_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -70,7 +60,6 @@ static const struct dpu_ctl_cfg sm8450_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
 	},
 };
-
 static const struct dpu_sspp_cfg sm8450_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -138,7 +127,6 @@ static const struct dpu_sspp_cfg sm8450_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg sm8450_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -188,7 +176,6 @@ static const struct dpu_lm_cfg sm8450_lm[] = {
 		.pingpong = PINGPONG_5,
 	},
 };
-
 static const struct dpu_dspp_cfg sm8450_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -212,7 +199,6 @@ static const struct dpu_dspp_cfg sm8450_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sm8450_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -280,7 +266,6 @@ static const struct dpu_pingpong_cfg sm8450_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_merge_3d_cfg sm8450_merge_3d[] = {
 	{
 		.name = "merge_3d_0", .id = MERGE_3D_0,
@@ -296,12 +281,6 @@ static const struct dpu_merge_3d_cfg sm8450_merge_3d[] = {
 		.base = 0x65f00, .len = 0x8,
 	},
 };
-
-/*
- * NOTE: Each display compression engine (DCE) contains dual hard
- * slice DSC encoders so both share same base address but with
- * its own different sub block address.
- */
 static const struct dpu_dsc_cfg sm8450_dsc[] = {
 	{
 		.name = "dce_0_0", .id = DSC_0,
@@ -325,7 +304,6 @@ static const struct dpu_dsc_cfg sm8450_dsc[] = {
 		.sblk = &dsc_sblk_1,
 	},
 };
-
 static const struct dpu_intf_cfg sm8450_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -369,7 +347,6 @@ static const struct dpu_intf_cfg sm8450_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_perf_cfg sm8450_perf_data = {
 	.max_bw_low = 13600000,
 	.max_bw_high = 18200000,
@@ -377,7 +354,6 @@ static const struct dpu_perf_cfg sm8450_perf_data = {
 	.min_llcc_ib = 0,
 	.min_dram_ib = 800000,
 	.min_prefill_lines = 35,
-	/* FIXME: lut tables */
 	.danger_lut_tbl = {0x3ffff, 0x3ffff, 0x0},
 	.safe_lut_tbl = {0xfe00, 0xfe00, 0xffff},
 	.qos_lut_tbl = {
@@ -390,7 +366,6 @@ static const struct dpu_perf_cfg sm8450_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},
@@ -399,12 +374,10 @@ static const struct dpu_perf_cfg sm8450_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sm8450_mdss_ver = {
 	.core_major_ver = 8,
 	.core_minor_ver = 1,
 };
-
 const struct dpu_mdss_cfg dpu_sm8450_cfg = {
 	.mdss_ver = &sm8450_mdss_ver,
 	.caps = &sm8450_dpu_caps,
@@ -429,5 +402,4 @@ const struct dpu_mdss_cfg dpu_sm8450_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sm8450_perf_data,
 };
-
 #endif

@@ -1,22 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- */
-
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include "imx6q.dtsi"
-
 / {
 	model = "Freescale i.MX6 Quad Armadillo2 Board";
 	compatible = "fsl,imx6q-arm2", "fsl,imx6q";
-
 	memory@10000000 {
 		device_type = "memory";
 		reg = <0x10000000 0x80000000>;
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -24,7 +15,6 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	reg_usb_otg_vbus: regulator-usb-otg-vbus {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_otg_vbus";
@@ -33,10 +23,8 @@
 		gpio = <&gpio3 22 0>;
 		enable-active-high;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		debug-led {
 			label = "Heartbeat";
 			gpios = <&gpio3 25 0>;
@@ -44,24 +32,20 @@
 		};
 	};
 };
-
 &gpmi {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpmi_nand>;
-	status = "disabled"; /* gpmi nand conflicts with SD */
+	status = "disabled";  
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	imx6q-arm2 {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D25__GPIO3_IO25 0x80000000
 			>;
 		};
-
 		pinctrl_enet: enetgrp {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL1__ENET_MDIO		0x1b0b0
@@ -82,7 +66,6 @@
 				MX6QDL_PAD_GPIO_6__ENET_IRQ		0x000b1
 			>;
 		};
-
 		pinctrl_gpmi_nand: gpminandgrp {
 			fsl,pins = <
 				MX6QDL_PAD_NANDF_CLE__NAND_CLE		0xb0b1
@@ -104,7 +87,6 @@
 				MX6QDL_PAD_SD4_DAT0__NAND_DQS		0x00b1
 			>;
 		};
-
 		pinctrl_uart2: uart2grp {
 			fsl,pins = <
 				MX6QDL_PAD_EIM_D26__UART2_RX_DATA	0x1b0b1
@@ -113,20 +95,17 @@
 				MX6QDL_PAD_EIM_D29__UART2_DTE_RTS_B	0x1b0b1
 			>;
 		};
-
 		pinctrl_uart4: uart4grp {
 			fsl,pins = <
 				MX6QDL_PAD_KEY_COL0__UART4_TX_DATA	0x1b0b1
 				MX6QDL_PAD_KEY_ROW0__UART4_RX_DATA	0x1b0b1
 			>;
 		};
-
 		pinctrl_usbotg: usbotggrp {
 			fsl,pins = <
 				MX6QDL_PAD_GPIO_1__USB_OTG_ID		0x17059
 			>;
 		};
-
 		pinctrl_usdhc3: usdhc3grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD3_CMD__SD3_CMD		0x17059
@@ -141,14 +120,12 @@
 				MX6QDL_PAD_SD3_DAT7__SD3_DATA7		0x17059
 			>;
 		};
-
 		pinctrl_usdhc3_cdwp: usdhc3cdwp {
 			fsl,pins = <
 				MX6QDL_PAD_NANDF_CS0__GPIO6_IO11 0x80000000
 				MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x80000000
 			>;
 		};
-
 		pinctrl_usdhc4: usdhc4grp {
 			fsl,pins = <
 				MX6QDL_PAD_SD4_CMD__SD4_CMD		0x17059
@@ -165,7 +142,6 @@
 		};
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_enet>;
@@ -176,7 +152,6 @@
 	fsl,err006687-workaround-present;
 	status = "okay";
 };
-
 &usbotg {
 	vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
@@ -184,7 +159,6 @@
 	disable-over-current;
 	status = "okay";
 };
-
 &usdhc3 {
 	cd-gpios = <&gpio6 11 GPIO_ACTIVE_LOW>;
 	wp-gpios = <&gpio6 14 GPIO_ACTIVE_HIGH>;
@@ -194,7 +168,6 @@
 		     &pinctrl_usdhc3_cdwp>;
 	status = "okay";
 };
-
 &usdhc4 {
 	non-removable;
 	vmmc-supply = <&reg_3p3v>;
@@ -202,7 +175,6 @@
 	pinctrl-0 = <&pinctrl_usdhc4>;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
@@ -210,7 +182,6 @@
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;

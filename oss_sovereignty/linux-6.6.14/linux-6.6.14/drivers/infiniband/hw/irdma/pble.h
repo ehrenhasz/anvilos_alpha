@@ -1,48 +1,38 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2019 Intel Corporation */
 #ifndef IRDMA_PBLE_H
 #define IRDMA_PBLE_H
-
 #define PBLE_SHIFT		6
 #define PBLE_PER_PAGE		512
 #define HMC_PAGED_BP_SHIFT	12
 #define PBLE_512_SHIFT		9
 #define PBLE_INVALID_IDX	0xffffffff
-
 enum irdma_pble_level {
 	PBLE_LEVEL_0 = 0,
 	PBLE_LEVEL_1 = 1,
 	PBLE_LEVEL_2 = 2,
 };
-
 enum irdma_alloc_type {
 	PBLE_NO_ALLOC	  = 0,
 	PBLE_SD_CONTIGOUS = 1,
 	PBLE_SD_PAGED	  = 2,
 };
-
 struct irdma_chunk;
-
 struct irdma_pble_chunkinfo {
 	struct irdma_chunk *pchunk;
 	u64 bit_idx;
 	u64 bits_used;
 };
-
 struct irdma_pble_info {
 	u64 *addr;
 	u32 idx;
 	u32 cnt;
 	struct irdma_pble_chunkinfo chunkinfo;
 };
-
 struct irdma_pble_level2 {
 	struct irdma_pble_info root;
 	struct irdma_pble_info *leaf;
 	struct irdma_virt_mem leafmem;
 	u32 leaf_cnt;
 };
-
 struct irdma_pble_alloc {
 	u32 total_cnt;
 	enum irdma_pble_level level;
@@ -51,13 +41,11 @@ struct irdma_pble_alloc {
 		struct irdma_pble_level2 level2;
 	};
 };
-
 struct sd_pd_idx {
 	u32 sd_idx;
 	u32 pd_idx;
 	u32 rel_pd_idx;
 };
-
 struct irdma_add_page_info {
 	struct irdma_chunk *chunk;
 	struct irdma_hmc_sd_entry *sd_entry;
@@ -65,12 +53,10 @@ struct irdma_add_page_info {
 	struct sd_pd_idx idx;
 	u32 pages;
 };
-
 struct irdma_chunk {
 	struct list_head list;
 	struct irdma_dma_info dmainfo;
 	unsigned long *bitmapbuf;
-
 	u32 sizeofbitmap;
 	u64 size;
 	void *vaddr;
@@ -80,18 +66,16 @@ struct irdma_chunk {
 	struct irdma_sc_dev *dev;
 	struct irdma_virt_mem chunkmem;
 };
-
 struct irdma_pble_prm {
 	struct list_head clist;
-	spinlock_t prm_lock; /* protect prm bitmap */
+	spinlock_t prm_lock;  
 	u64 total_pble_alloc;
 	u64 free_pble_cnt;
 	u8 pble_shift;
 };
-
 struct irdma_hmc_pble_rsrc {
 	u32 unallocated_pble;
-	struct mutex pble_mutex_lock; /* protect PBLE resource */
+	struct mutex pble_mutex_lock;  
 	struct irdma_sc_dev *dev;
 	u64 fpm_base_addr;
 	u64 next_fpm_addr;
@@ -106,7 +90,6 @@ struct irdma_hmc_pble_rsrc {
 	u64 stats_lvl1;
 	u64 stats_lvl2;
 };
-
 void irdma_destroy_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc);
 int irdma_hmc_init_pble(struct irdma_sc_dev *dev,
 			struct irdma_hmc_pble_rsrc *pble_rsrc);
@@ -129,4 +112,4 @@ void irdma_pble_release_lock(struct irdma_hmc_pble_rsrc *pble_rsrc,
 void irdma_pble_free_paged_mem(struct irdma_chunk *chunk);
 int irdma_pble_get_paged_mem(struct irdma_chunk *chunk, u32 pg_cnt);
 void irdma_prm_rem_bitmapmem(struct irdma_hw *hw, struct irdma_chunk *chunk);
-#endif /* IRDMA_PBLE_H */
+#endif  

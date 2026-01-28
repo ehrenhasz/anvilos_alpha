@@ -1,34 +1,24 @@
-// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
-/*
- * Copyright 2017-2022 Toradex
- */
-
 / {
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
-	/* fixed crystal dedicated to mcp2515 */
 	clk16m: clk16m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <16000000>;
 	};
-
 	reg_3v3: regulator-3v3 {
 		compatible = "regulator-fixed";
 		regulator-name = "3.3V";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	reg_5v0: regulator-5v0 {
 		compatible = "regulator-fixed";
 		regulator-name = "5V";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 	};
-
 	reg_usbh_vbus: regulator-usbh-vbus {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -40,14 +30,11 @@
 		vin-supply = <&reg_5v0>;
 	};
 };
-
 &adc1 {
 	status = "okay";
 };
-
 &ecspi1 {
 	status = "okay";
-
 	mcp2515: can@0 {
 		compatible = "microchip,mcp2515";
 		pinctrl-names = "default";
@@ -62,61 +49,44 @@
 		status = "okay";
 	};
 };
-
 &i2c1 {
 	status = "okay";
-
-	/* M41T0M6 real time clock on carrier board */
 	m41t0m6: rtc@68 {
 		compatible = "st,m41t0";
 		reg = <0x68>;
 	};
 };
-
-/* PWM <A> */
 &pwm4 {
 	status = "okay";
 };
-
-/* PWM <B> */
 &pwm5 {
 	status = "okay";
 };
-
-/* PWM <C> */
 &pwm6 {
 	status = "okay";
 };
-
-/* PWM <D> */
 &pwm7 {
 	status = "okay";
 };
-
 &uart1 {
 	status = "okay";
 };
-
 &uart2 {
 	status = "okay";
 };
-
 &uart5 {
 	status = "okay";
 };
-
 &usbotg1 {
 	disable-over-current;
 	vbus-supply = <&reg_usbh_vbus>;
 	status = "okay";
 };
-
 &usbotg2 {
 	disable-over-current;
 	vbus-supply = <&reg_usbh_vbus>;
 	status = "okay";
 };
-
 &usdhc1 {
 	vmmc-supply = <&reg_3v3>;
 	status = "okay";

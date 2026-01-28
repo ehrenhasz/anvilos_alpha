@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
-
 #ifndef __KSMBD_TRANSPORT_IPC_H__
 #define __KSMBD_TRANSPORT_IPC_H__
-
 #include <linux/wait.h>
-
 #define KSMBD_IPC_MAX_PAYLOAD	4096
-
 struct ksmbd_login_response *
 ksmbd_ipc_login_request(const char *account);
-
 struct ksmbd_session;
 struct ksmbd_share_config;
 struct ksmbd_tree_connect;
 struct sockaddr;
-
 struct ksmbd_tree_connect_response *
 ksmbd_ipc_tree_connect_request(struct ksmbd_session *sess,
 			       struct ksmbd_share_config *share,
@@ -44,4 +34,4 @@ struct ksmbd_rpc_command *ksmbd_rpc_rap(struct ksmbd_session *sess, void *payloa
 void ksmbd_ipc_release(void);
 void ksmbd_ipc_soft_reset(void);
 int ksmbd_ipc_init(void);
-#endif /* __KSMBD_TRANSPORT_IPC_H__ */
+#endif  

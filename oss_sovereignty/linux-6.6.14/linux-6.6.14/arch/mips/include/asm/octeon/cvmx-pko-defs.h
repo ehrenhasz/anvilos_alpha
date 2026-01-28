@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PKO_DEFS_H__
 #define __CVMX_PKO_DEFS_H__
-
 #define CVMX_PKO_MEM_COUNT0 (CVMX_ADD_IO_SEG(0x0001180050001080ull))
 #define CVMX_PKO_MEM_COUNT1 (CVMX_ADD_IO_SEG(0x0001180050001088ull))
 #define CVMX_PKO_MEM_DEBUG0 (CVMX_ADD_IO_SEG(0x0001180050001100ull))
@@ -85,7 +57,6 @@
 #define CVMX_PKO_REG_READ_IDX (CVMX_ADD_IO_SEG(0x0001180050000008ull))
 #define CVMX_PKO_REG_THROTTLE (CVMX_ADD_IO_SEG(0x0001180050000078ull))
 #define CVMX_PKO_REG_TIMESTAMP (CVMX_ADD_IO_SEG(0x0001180050000060ull))
-
 union cvmx_pko_mem_count0 {
 	uint64_t u64;
 	struct cvmx_pko_mem_count0_s {
@@ -98,7 +69,6 @@ union cvmx_pko_mem_count0 {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_count1 {
 	uint64_t u64;
 	struct cvmx_pko_mem_count1_s {
@@ -111,7 +81,6 @@ union cvmx_pko_mem_count1 {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_debug0 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug0_s {
@@ -128,7 +97,6 @@ union cvmx_pko_mem_debug0 {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_debug1 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug1_s {
@@ -147,7 +115,6 @@ union cvmx_pko_mem_debug1 {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_debug10 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug10_s {
@@ -184,7 +151,6 @@ union cvmx_pko_mem_debug10 {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_mem_debug11 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug11_s {
@@ -239,7 +205,6 @@ union cvmx_pko_mem_debug11 {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_mem_debug12 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug12_s {
@@ -277,7 +242,6 @@ union cvmx_pko_mem_debug12 {
 #endif
 	} cn68xx;
 };
-
 union cvmx_pko_mem_debug13 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug13_s {
@@ -323,7 +287,6 @@ union cvmx_pko_mem_debug13 {
 #endif
 	} cn68xx;
 };
-
 union cvmx_pko_mem_debug14 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug14_s {
@@ -350,7 +313,6 @@ union cvmx_pko_mem_debug14 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pko_mem_debug2 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug2_s {
@@ -369,7 +331,6 @@ union cvmx_pko_mem_debug2 {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_debug3 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug3_s {
@@ -402,7 +363,6 @@ union cvmx_pko_mem_debug3 {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_mem_debug4 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug4_s {
@@ -492,7 +452,6 @@ union cvmx_pko_mem_debug4 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pko_mem_debug5 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug5_s {
@@ -608,7 +567,6 @@ union cvmx_pko_mem_debug5 {
 #endif
 	} cn68xx;
 };
-
 union cvmx_pko_mem_debug6 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug6_s {
@@ -700,7 +658,6 @@ union cvmx_pko_mem_debug6 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pko_mem_debug7 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug7_s {
@@ -758,7 +715,6 @@ union cvmx_pko_mem_debug7 {
 #endif
 	} cn68xx;
 };
-
 union cvmx_pko_mem_debug8 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug8_s {
@@ -886,7 +842,6 @@ union cvmx_pko_mem_debug8 {
 #endif
 	} cn68xx;
 };
-
 union cvmx_pko_mem_debug9 {
 	uint64_t u64;
 	struct cvmx_pko_mem_debug9_s {
@@ -950,7 +905,6 @@ union cvmx_pko_mem_debug9 {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_mem_iport_ptrs {
 	uint64_t u64;
 	struct cvmx_pko_mem_iport_ptrs_s {
@@ -985,7 +939,6 @@ union cvmx_pko_mem_iport_ptrs {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_iport_qos {
 	uint64_t u64;
 	struct cvmx_pko_mem_iport_qos_s {
@@ -1006,7 +959,6 @@ union cvmx_pko_mem_iport_qos {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_iqueue_ptrs {
 	uint64_t u64;
 	struct cvmx_pko_mem_iqueue_ptrs_s {
@@ -1035,7 +987,6 @@ union cvmx_pko_mem_iqueue_ptrs {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_iqueue_qos {
 	uint64_t u64;
 	struct cvmx_pko_mem_iqueue_qos_s {
@@ -1054,7 +1005,6 @@ union cvmx_pko_mem_iqueue_qos {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_port_ptrs {
 	uint64_t u64;
 	struct cvmx_pko_mem_port_ptrs_s {
@@ -1077,7 +1027,6 @@ union cvmx_pko_mem_port_ptrs {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_port_qos {
 	uint64_t u64;
 	struct cvmx_pko_mem_port_qos_s {
@@ -1096,7 +1045,6 @@ union cvmx_pko_mem_port_qos {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_port_rate0 {
 	uint64_t u64;
 	struct cvmx_pko_mem_port_rate0_s {
@@ -1130,7 +1078,6 @@ union cvmx_pko_mem_port_rate0 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pko_mem_port_rate1 {
 	uint64_t u64;
 	struct cvmx_pko_mem_port_rate1_s {
@@ -1160,7 +1107,6 @@ union cvmx_pko_mem_port_rate1 {
 #endif
 	} cn52xx;
 };
-
 union cvmx_pko_mem_queue_ptrs {
 	uint64_t u64;
 	struct cvmx_pko_mem_queue_ptrs_s {
@@ -1187,7 +1133,6 @@ union cvmx_pko_mem_queue_ptrs {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_queue_qos {
 	uint64_t u64;
 	struct cvmx_pko_mem_queue_qos_s {
@@ -1206,7 +1151,6 @@ union cvmx_pko_mem_queue_qos {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_throttle_int {
 	uint64_t u64;
 	struct cvmx_pko_mem_throttle_int_s {
@@ -1227,7 +1171,6 @@ union cvmx_pko_mem_throttle_int {
 #endif
 	} s;
 };
-
 union cvmx_pko_mem_throttle_pipe {
 	uint64_t u64;
 	struct cvmx_pko_mem_throttle_pipe_s {
@@ -1248,7 +1191,6 @@ union cvmx_pko_mem_throttle_pipe {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_bist_result {
 	uint64_t u64;
 	struct cvmx_pko_reg_bist_result_s {
@@ -1450,7 +1392,6 @@ union cvmx_pko_reg_bist_result {
 #endif
 	} cn68xxp1;
 };
-
 union cvmx_pko_reg_cmd_buf {
 	uint64_t u64;
 	struct cvmx_pko_reg_cmd_buf_s {
@@ -1467,7 +1408,6 @@ union cvmx_pko_reg_cmd_buf {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_crc_ctlx {
 	uint64_t u64;
 	struct cvmx_pko_reg_crc_ctlx_s {
@@ -1482,7 +1422,6 @@ union cvmx_pko_reg_crc_ctlx {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_crc_enable {
 	uint64_t u64;
 	struct cvmx_pko_reg_crc_enable_s {
@@ -1495,7 +1434,6 @@ union cvmx_pko_reg_crc_enable {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_crc_ivx {
 	uint64_t u64;
 	struct cvmx_pko_reg_crc_ivx_s {
@@ -1508,7 +1446,6 @@ union cvmx_pko_reg_crc_ivx {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_debug0 {
 	uint64_t u64;
 	struct cvmx_pko_reg_debug0_s {
@@ -1528,7 +1465,6 @@ union cvmx_pko_reg_debug0 {
 #endif
 	} cn30xx;
 };
-
 union cvmx_pko_reg_debug1 {
 	uint64_t u64;
 	struct cvmx_pko_reg_debug1_s {
@@ -1539,7 +1475,6 @@ union cvmx_pko_reg_debug1 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_debug2 {
 	uint64_t u64;
 	struct cvmx_pko_reg_debug2_s {
@@ -1550,7 +1485,6 @@ union cvmx_pko_reg_debug2 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_debug3 {
 	uint64_t u64;
 	struct cvmx_pko_reg_debug3_s {
@@ -1561,7 +1495,6 @@ union cvmx_pko_reg_debug3 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_debug4 {
 	uint64_t u64;
 	struct cvmx_pko_reg_debug4_s {
@@ -1572,7 +1505,6 @@ union cvmx_pko_reg_debug4 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_engine_inflight {
 	uint64_t u64;
 	struct cvmx_pko_reg_engine_inflight_s {
@@ -1706,7 +1638,6 @@ union cvmx_pko_reg_engine_inflight {
 #endif
 	} cn63xx;
 };
-
 union cvmx_pko_reg_engine_inflight1 {
 	uint64_t u64;
 	struct cvmx_pko_reg_engine_inflight1_s {
@@ -1725,7 +1656,6 @@ union cvmx_pko_reg_engine_inflight1 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_engine_storagex {
 	uint64_t u64;
 	struct cvmx_pko_reg_engine_storagex_s {
@@ -1766,7 +1696,6 @@ union cvmx_pko_reg_engine_storagex {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_engine_thresh {
 	uint64_t u64;
 	struct cvmx_pko_reg_engine_thresh_s {
@@ -1806,7 +1735,6 @@ union cvmx_pko_reg_engine_thresh {
 #endif
 	} cn63xx;
 };
-
 union cvmx_pko_reg_error {
 	uint64_t u64;
 	struct cvmx_pko_reg_error_s {
@@ -1849,7 +1777,6 @@ union cvmx_pko_reg_error {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_reg_flags {
 	uint64_t u64;
 	struct cvmx_pko_reg_flags_s {
@@ -1935,7 +1862,6 @@ union cvmx_pko_reg_flags {
 #endif
 	} cn68xxp1;
 };
-
 union cvmx_pko_reg_gmx_port_mode {
 	uint64_t u64;
 	struct cvmx_pko_reg_gmx_port_mode_s {
@@ -1950,7 +1876,6 @@ union cvmx_pko_reg_gmx_port_mode {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_int_mask {
 	uint64_t u64;
 	struct cvmx_pko_reg_int_mask_s {
@@ -1993,7 +1918,6 @@ union cvmx_pko_reg_int_mask {
 #endif
 	} cn50xx;
 };
-
 union cvmx_pko_reg_loopback_bpid {
 	uint64_t u64;
 	struct cvmx_pko_reg_loopback_bpid_s {
@@ -2036,7 +1960,6 @@ union cvmx_pko_reg_loopback_bpid {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_loopback_pkind {
 	uint64_t u64;
 	struct cvmx_pko_reg_loopback_pkind_s {
@@ -2079,7 +2002,6 @@ union cvmx_pko_reg_loopback_pkind {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_min_pkt {
 	uint64_t u64;
 	struct cvmx_pko_reg_min_pkt_s {
@@ -2104,7 +2026,6 @@ union cvmx_pko_reg_min_pkt {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_preempt {
 	uint64_t u64;
 	struct cvmx_pko_reg_preempt_s {
@@ -2117,7 +2038,6 @@ union cvmx_pko_reg_preempt {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_queue_mode {
 	uint64_t u64;
 	struct cvmx_pko_reg_queue_mode_s {
@@ -2130,7 +2050,6 @@ union cvmx_pko_reg_queue_mode {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_queue_preempt {
 	uint64_t u64;
 	struct cvmx_pko_reg_queue_preempt_s {
@@ -2145,7 +2064,6 @@ union cvmx_pko_reg_queue_preempt {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_queue_ptrs1 {
 	uint64_t u64;
 	struct cvmx_pko_reg_queue_ptrs1_s {
@@ -2160,7 +2078,6 @@ union cvmx_pko_reg_queue_ptrs1 {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_read_idx {
 	uint64_t u64;
 	struct cvmx_pko_reg_read_idx_s {
@@ -2175,7 +2092,6 @@ union cvmx_pko_reg_read_idx {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_throttle {
 	uint64_t u64;
 	struct cvmx_pko_reg_throttle_s {
@@ -2188,7 +2104,6 @@ union cvmx_pko_reg_throttle {
 #endif
 	} s;
 };
-
 union cvmx_pko_reg_timestamp {
 	uint64_t u64;
 	struct cvmx_pko_reg_timestamp_s {
@@ -2201,5 +2116,4 @@ union cvmx_pko_reg_timestamp {
 #endif
 	} s;
 };
-
 #endif

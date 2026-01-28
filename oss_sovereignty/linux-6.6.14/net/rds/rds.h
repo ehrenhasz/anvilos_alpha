@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _RDS_RDS_H
 #define _RDS_RDS_H
-
 #include <net/sock.h>
 #include <linux/scatterlist.h>
 #include <linux/highmem.h>
@@ -11,12 +9,7 @@
 #include <linux/rhashtable.h>
 #include <linux/refcount.h>
 #include <linux/in6.h>
-
 #include "info.h"
-
-/*
- * RDS Network protocol version
- */
 #define RDS_PROTOCOL_3_0	0x0300
 #define RDS_PROTOCOL_3_1	0x0301
 #define RDS_PROTOCOL_4_0	0x0400
@@ -26,40 +19,24 @@
 #define RDS_PROTOCOL_MINOR(v)	((v) & 255)
 #define RDS_PROTOCOL(maj, min)	(((maj) << 8) | min)
 #define RDS_PROTOCOL_COMPAT_VERSION	RDS_PROTOCOL_3_1
-
-/* The following ports, 16385, 18634, 18635, are registered with IANA as
- * the ports to be used for RDS over TCP and UDP.  Currently, only RDS over
- * TCP and RDS over IB/RDMA are implemented.  18634 is the historical value
- * used for the RDMA_CM listener port.  RDS/TCP uses port 16385.  After
- * IPv6 work, RDMA_CM also uses 16385 as the listener port.  18634 is kept
- * to ensure compatibility with older RDS modules.  Those ports are defined
- * in each transport's header file.
- */
 #define RDS_PORT	18634
-
 #ifdef ATOMIC64_INIT
 #define KERNEL_HAS_ATOMIC64
 #endif
 #ifdef RDS_DEBUG
 #define rdsdebug(fmt, args...) pr_debug("%s(): " fmt, __func__ , ##args)
 #else
-/* sigh, pr_debug() causes unused variable warnings */
 static inline __printf(1, 2)
 void rdsdebug(char *fmt, ...)
 {
 }
 #endif
-
 #define RDS_FRAG_SHIFT	12
 #define RDS_FRAG_SIZE	((unsigned int)(1 << RDS_FRAG_SHIFT))
-
-/* Used to limit both RDMA and non-RDMA RDS message to 1MB */
 #define RDS_MAX_MSG_SIZE	((unsigned int)(1 << 20))
-
 #define RDS_CONG_MAP_BYTES	(65536 / 8)
 #define RDS_CONG_MAP_PAGES	(PAGE_ALIGN(RDS_CONG_MAP_BYTES) / PAGE_SIZE)
 #define RDS_CONG_MAP_PAGE_BITS	(PAGE_SIZE * 8)
-
 struct rds_cong_map {
 	struct rb_node		m_rb_node;
 	struct in6_addr		m_addr;
@@ -67,14 +44,6 @@ struct rds_cong_map {
 	struct list_head	m_conn_list;
 	unsigned long		m_page_addrs[RDS_CONG_MAP_PAGES];
 };
-
-
-/*
- * This is how we will track the connection state:
- * A connection is always in one of the following
- * states. Updates to the state are atomic and imply
- * a memory barrier.
- */
 enum {
 	RDS_CONN_DOWN = 0,
 	RDS_CONN_CONNECTING,
@@ -83,22 +52,15 @@ enum {
 	RDS_CONN_RESETTING,
 	RDS_CONN_ERROR,
 };
-
-/* Bits for c_flags */
 #define RDS_LL_SEND_FULL	0
 #define RDS_RECONNECT_PENDING	1
 #define RDS_IN_XMIT		2
 #define RDS_RECV_REFILL		3
 #define	RDS_DESTROY_PENDING	4
-
-/* Max number of multipaths per RDS connection. Must be a power of 2 */
 #define	RDS_MPATH_WORKERS	8
 #define	RDS_MPATH_HASH(rs, n) (jhash_1word((rs)->rs_bound_port, \
 			       (rs)->rs_hash_initval) & ((n) - 1))
-
 #define IS_CANONICAL(laddr, faddr) (htonl(laddr) < htonl(faddr))
-
-/* Per mpath connection state */
 struct rds_conn_path {
 	struct rds_connection	*cp_conn;
 	struct rds_message	*cp_xmit_rm;
@@ -108,16 +70,12 @@ struct rds_conn_path {
 	unsigned int		cp_xmit_atomic_sent;
 	unsigned int		cp_xmit_rdma_sent;
 	unsigned int		cp_xmit_data_sent;
-
-	spinlock_t		cp_lock;		/* protect msg queues */
+	spinlock_t		cp_lock;		 
 	u64			cp_next_tx_seq;
 	struct list_head	cp_send_queue;
 	struct list_head	cp_retrans;
-
 	u64			cp_next_rx_seq;
-
 	void			*cp_transport_data;
-
 	atomic_t		cp_state;
 	unsigned long		cp_send_gen;
 	unsigned long		cp_flags;
@@ -126,21 +84,18 @@ struct rds_conn_path {
 	struct delayed_work	cp_recv_w;
 	struct delayed_work	cp_conn_w;
 	struct work_struct	cp_down_w;
-	struct mutex		cp_cm_lock;	/* protect cp_state & cm */
+	struct mutex		cp_cm_lock;	 
 	wait_queue_head_t	cp_waitq;
-
 	unsigned int		cp_unacked_packets;
 	unsigned int		cp_unacked_bytes;
 	unsigned int		cp_index;
 };
-
-/* One rds_connection per RDS address pair */
 struct rds_connection {
 	struct hlist_node	c_hash_node;
 	struct in6_addr		c_laddr;
 	struct in6_addr		c_faddr;
-	int			c_dev_if; /* ifindex used for this conn */
-	int			c_bound_if; /* ifindex of c_laddr */
+	int			c_dev_if;  
+	int			c_bound_if;  
 	unsigned int		c_loopback:1,
 				c_isv6:1,
 				c_ping_triggered:1,
@@ -148,61 +103,38 @@ struct rds_connection {
 	int			c_npaths;
 	struct rds_connection	*c_passive;
 	struct rds_transport	*c_trans;
-
 	struct rds_cong_map	*c_lcong;
 	struct rds_cong_map	*c_fcong;
-
-	/* Protocol version */
 	unsigned int		c_proposed_version;
 	unsigned int		c_version;
 	possible_net_t		c_net;
-
-	/* TOS */
 	u8			c_tos;
-
 	struct list_head	c_map_item;
 	unsigned long		c_map_queued;
-
 	struct rds_conn_path	*c_path;
-	wait_queue_head_t	c_hs_waitq; /* handshake waitq */
-
+	wait_queue_head_t	c_hs_waitq;  
 	u32			c_my_gen_num;
 	u32			c_peer_gen_num;
 };
-
 static inline
 struct net *rds_conn_net(struct rds_connection *conn)
 {
 	return read_pnet(&conn->c_net);
 }
-
 static inline
 void rds_conn_net_set(struct rds_connection *conn, struct net *net)
 {
 	write_pnet(&conn->c_net, net);
 }
-
 #define RDS_FLAG_CONG_BITMAP	0x01
 #define RDS_FLAG_ACK_REQUIRED	0x02
 #define RDS_FLAG_RETRANSMITTED	0x04
 #define RDS_MAX_ADV_CREDIT	255
-
-/* RDS_FLAG_PROBE_PORT is the reserved sport used for sending a ping
- * probe to exchange control information before establishing a connection.
- * Currently the control information that is exchanged is the number of
- * supported paths. If the peer is a legacy (older kernel revision) peer,
- * it would return a pong message without additional control information
- * that would then alert the sender that the peer was an older rev.
- */
 #define RDS_FLAG_PROBE_PORT	1
 #define	RDS_HS_PROBE(sport, dport) \
 		((sport == RDS_FLAG_PROBE_PORT && dport == 0) || \
 		 (sport == 0 && dport == RDS_FLAG_PROBE_PORT))
-/*
- * Maximum space available for extension headers.
- */
 #define RDS_HEADER_EXT_SPACE	16
-
 struct rds_header {
 	__be64	h_sequence;
 	__be64	h_ack;
@@ -213,69 +145,34 @@ struct rds_header {
 	u8	h_credit;
 	u8	h_padding[4];
 	__sum16	h_csum;
-
 	u8	h_exthdr[RDS_HEADER_EXT_SPACE];
 };
-
-/*
- * Reserved - indicates end of extensions
- */
 #define RDS_EXTHDR_NONE		0
-
-/*
- * This extension header is included in the very
- * first message that is sent on a new connection,
- * and identifies the protocol level. This will help
- * rolling updates if a future change requires breaking
- * the protocol.
- * NB: This is no longer true for IB, where we do a version
- * negotiation during the connection setup phase (protocol
- * version information is included in the RDMA CM private data).
- */
 #define RDS_EXTHDR_VERSION	1
 struct rds_ext_header_version {
 	__be32			h_version;
 };
-
-/*
- * This extension header is included in the RDS message
- * chasing an RDMA operation.
- */
 #define RDS_EXTHDR_RDMA		2
 struct rds_ext_header_rdma {
 	__be32			h_rdma_rkey;
 };
-
-/*
- * This extension header tells the peer about the
- * destination <R_Key,offset> of the requested RDMA
- * operation.
- */
 #define RDS_EXTHDR_RDMA_DEST	3
 struct rds_ext_header_rdma_dest {
 	__be32			h_rdma_rkey;
 	__be32			h_rdma_offset;
 };
-
-/* Extension header announcing number of paths.
- * Implicit length = 2 bytes.
- */
 #define RDS_EXTHDR_NPATHS	5
 #define RDS_EXTHDR_GEN_NUM	6
-
-#define __RDS_EXTHDR_MAX	16 /* for now */
+#define __RDS_EXTHDR_MAX	16  
 #define RDS_RX_MAX_TRACES	(RDS_MSG_RX_DGRAM_TRACE_MAX + 1)
 #define	RDS_MSG_RX_HDR		0
 #define	RDS_MSG_RX_START	1
 #define	RDS_MSG_RX_END		2
 #define	RDS_MSG_RX_CMSG		3
-
-/* The following values are whitelisted for usercopy */
 struct rds_inc_usercopy {
 	rds_rdma_cookie_t	rdma_cookie;
 	ktime_t			rx_tstamp;
 };
-
 struct rds_incoming {
 	refcount_t		i_refcount;
 	struct list_head	i_item;
@@ -284,74 +181,34 @@ struct rds_incoming {
 	struct rds_header	i_hdr;
 	unsigned long		i_rx_jiffies;
 	struct in6_addr		i_saddr;
-
 	struct rds_inc_usercopy i_usercopy;
 	u64			i_rx_lat_trace[RDS_RX_MAX_TRACES];
 };
-
 struct rds_mr {
 	struct rb_node		r_rb_node;
 	struct kref		r_kref;
 	u32			r_key;
-
-	/* A copy of the creation flags */
 	unsigned int		r_use_once:1;
 	unsigned int		r_invalidate:1;
 	unsigned int		r_write:1;
-
-	struct rds_sock		*r_sock; /* back pointer to the socket that owns us */
+	struct rds_sock		*r_sock;  
 	struct rds_transport	*r_trans;
 	void			*r_trans_private;
 };
-
 static inline rds_rdma_cookie_t rds_rdma_make_cookie(u32 r_key, u32 offset)
 {
 	return r_key | (((u64) offset) << 32);
 }
-
 static inline u32 rds_rdma_cookie_key(rds_rdma_cookie_t cookie)
 {
 	return cookie;
 }
-
 static inline u32 rds_rdma_cookie_offset(rds_rdma_cookie_t cookie)
 {
 	return cookie >> 32;
 }
-
-/* atomic operation types */
 #define RDS_ATOMIC_TYPE_CSWP		0
 #define RDS_ATOMIC_TYPE_FADD		1
-
-/*
- * m_sock_item and m_conn_item are on lists that are serialized under
- * conn->c_lock.  m_sock_item has additional meaning in that once it is empty
- * the message will not be put back on the retransmit list after being sent.
- * messages that are canceled while being sent rely on this.
- *
- * m_inc is used by loopback so that it can pass an incoming message straight
- * back up into the rx path.  It embeds a wire header which is also used by
- * the send path, which is kind of awkward.
- *
- * m_sock_item indicates the message's presence on a socket's send or receive
- * queue.  m_rs will point to that socket.
- *
- * m_daddr is used by cancellation to prune messages to a given destination.
- *
- * The RDS_MSG_ON_SOCK and RDS_MSG_ON_CONN flags are used to avoid lock
- * nesting.  As paths iterate over messages on a sock, or conn, they must
- * also lock the conn, or sock, to remove the message from those lists too.
- * Testing the flag to determine if the message is still on the lists lets
- * us avoid testing the list_head directly.  That means each path can use
- * the message's list_head to keep it on a local list while juggling locks
- * without confusing the other path.
- *
- * m_ack_seq is an optional field set by transports who need a different
- * sequence number range to invalidate.  They can use this in a callback
- * that they pass to rds_send_drop_acked() to see if each message has been
- * acked.  The HAS_ACK_SEQ flag can be used to detect messages which haven't
- * had ack_seq set yet.
- */
 #define RDS_MSG_ON_SOCK		1
 #define RDS_MSG_ON_CONN		2
 #define RDS_MSG_HAS_ACK_SEQ	3
@@ -360,12 +217,10 @@ static inline u32 rds_rdma_cookie_offset(rds_rdma_cookie_t cookie)
 #define RDS_MSG_MAPPED		6
 #define RDS_MSG_PAGEVEC		7
 #define RDS_MSG_FLUSH		8
-
 struct rds_znotifier {
 	struct mmpin		z_mmp;
 	u32			z_cookie;
 };
-
 struct rds_msg_zcopy_info {
 	struct list_head rs_zcookie_next;
 	union {
@@ -373,30 +228,25 @@ struct rds_msg_zcopy_info {
 		struct rds_zcopy_cookies zcookies;
 	};
 };
-
 struct rds_msg_zcopy_queue {
 	struct list_head zcookie_head;
-	spinlock_t lock; /* protects zcookie_head queue */
+	spinlock_t lock;  
 };
-
 static inline void rds_message_zcopy_queue_init(struct rds_msg_zcopy_queue *q)
 {
 	spin_lock_init(&q->lock);
 	INIT_LIST_HEAD(&q->zcookie_head);
 }
-
 struct rds_iov_vector {
 	struct rds_iovec *iov;
 	int               len;
 };
-
 struct rds_iov_vector_arr {
 	struct rds_iov_vector *vec;
 	int                    len;
 	int                    indx;
 	int                    incr;
 };
-
 struct rds_message {
 	refcount_t		m_refcount;
 	struct list_head	m_sock_item;
@@ -405,25 +255,13 @@ struct rds_message {
 	u64			m_ack_seq;
 	struct in6_addr		m_daddr;
 	unsigned long		m_flags;
-
-	/* Never access m_rs without holding m_rs_lock.
-	 * Lock nesting is
-	 *  rm->m_rs_lock
-	 *   -> rs->rs_lock
-	 */
 	spinlock_t		m_rs_lock;
 	wait_queue_head_t	m_flush_wait;
-
 	struct rds_sock		*m_rs;
-
-	/* cookie to send to remote, in rds header */
 	rds_rdma_cookie_t	m_rdma_cookie;
-
 	unsigned int		m_used_sgs;
 	unsigned int		m_total_sgs;
-
 	void			*m_final_op;
-
 	struct {
 		struct rm_atomic_op {
 			int			op_type;
@@ -439,7 +277,6 @@ struct rds_message {
 					uint64_t	nocarry_mask;
 				} op_m_fadd;
 			};
-
 			u32			op_rkey;
 			u64			op_remote_addr;
 			unsigned int		op_notify:1;
@@ -449,7 +286,6 @@ struct rds_message {
 			unsigned int		op_active:1;
 			struct scatterlist	*op_sg;
 			struct rds_notifier	*op_notifier;
-
 			struct rds_mr		*op_rdma_mr;
 		} atomic;
 		struct rm_rdma_op {
@@ -467,9 +303,7 @@ struct rds_message {
 			unsigned int		op_count;
 			struct scatterlist	*op_sg;
 			struct rds_notifier	*op_notifier;
-
 			struct rds_mr		*op_rdma_mr;
-
 			u64			op_odp_addr;
 			struct rds_mr		*op_odp_mr;
 		} rdma;
@@ -483,55 +317,14 @@ struct rds_message {
 			struct scatterlist	*op_sg;
 		} data;
 	};
-
 	struct rds_conn_path *m_conn_path;
 };
-
-/*
- * The RDS notifier is used (optionally) to tell the application about
- * completed RDMA operations. Rather than keeping the whole rds message
- * around on the queue, we allocate a small notifier that is put on the
- * socket's notifier_list. Notifications are delivered to the application
- * through control messages.
- */
 struct rds_notifier {
 	struct list_head	n_list;
 	uint64_t		n_user_token;
 	int			n_status;
 };
-
-/* Available as part of RDS core, so doesn't need to participate
- * in get_preferred transport etc
- */
 #define	RDS_TRANS_LOOP	3
-
-/**
- * struct rds_transport -  transport specific behavioural hooks
- *
- * @xmit: .xmit is called by rds_send_xmit() to tell the transport to send
- *        part of a message.  The caller serializes on the send_sem so this
- *        doesn't need to be reentrant for a given conn.  The header must be
- *        sent before the data payload.  .xmit must be prepared to send a
- *        message with no data payload.  .xmit should return the number of
- *        bytes that were sent down the connection, including header bytes.
- *        Returning 0 tells the caller that it doesn't need to perform any
- *        additional work now.  This is usually the case when the transport has
- *        filled the sending queue for its connection and will handle
- *        triggering the rds thread to continue the send when space becomes
- *        available.  Returning -EAGAIN tells the caller to retry the send
- *        immediately.  Returning -ENOMEM tells the caller to retry the send at
- *        some point in the future.
- *
- * @conn_shutdown: conn_shutdown stops traffic on the given connection.  Once
- *                 it returns the connection can not call rds_recv_incoming().
- *                 This will only be called once after conn_connect returns
- *                 non-zero success and will The caller serializes this with
- *                 the send and connecting paths (xmit_* and conn_*).  The
- *                 transport is responsible for other serialization, including
- *                 rds_recv_incoming().  This is called in process context but
- *                 should try hard not to block.
- */
-
 struct rds_transport {
 	char			t_name[TRANSNAMSIZ];
 	struct list_head	t_item;
@@ -539,7 +332,6 @@ struct rds_transport {
 	unsigned int		t_prefer_loopback:1,
 				t_mp_capable:1;
 	unsigned int		t_type;
-
 	int (*laddr_check)(struct net *net, const struct in6_addr *addr,
 			   __u32 scope_id);
 	int (*conn_alloc)(struct rds_connection *conn, gfp_t gfp);
@@ -555,13 +347,11 @@ struct rds_transport {
 	int (*recv_path)(struct rds_conn_path *cp);
 	int (*inc_copy_to_user)(struct rds_incoming *inc, struct iov_iter *to);
 	void (*inc_free)(struct rds_incoming *inc);
-
 	int (*cm_handle_connect)(struct rdma_cm_id *cm_id,
 				 struct rdma_cm_event *event, bool isv6);
 	int (*cm_initiate_connect)(struct rdma_cm_id *cm_id, bool isv6);
 	void (*cm_connect_complete)(struct rds_connection *conn,
 				    struct rdma_cm_event *event);
-
 	unsigned int (*stats_info_copy)(struct rds_info_iterator *iter,
 					unsigned int avail);
 	void (*exit)(void);
@@ -575,23 +365,12 @@ struct rds_transport {
 	bool (*t_unloading)(struct rds_connection *conn);
 	u8 (*get_tos_map)(u8 tos);
 };
-
-/* Bind hash table key length.  It is the sum of the size of a struct
- * in6_addr, a scope_id  and a port.
- */
 #define RDS_BOUND_KEY_LEN \
 	(sizeof(struct in6_addr) + sizeof(__u32) + sizeof(__be16))
-
 struct rds_sock {
 	struct sock		rs_sk;
-
 	u64			rs_user_addr;
 	u64			rs_user_bytes;
-
-	/*
-	 * bound_addr used for both incoming and outgoing, no INADDR_ANY
-	 * support.
-	 */
 	struct rhash_head	rs_bound_node;
 	u8			rs_bound_key[RDS_BOUND_KEY_LEN];
 	struct sockaddr_in6	rs_bound_sin6;
@@ -603,61 +382,31 @@ struct rds_sock {
 #define rs_conn_addr_v4		rs_conn_addr.s6_addr32[3]
 	__be16			rs_conn_port;
 	struct rds_transport    *rs_transport;
-
-	/*
-	 * rds_sendmsg caches the conn it used the last time around.
-	 * This helps avoid costly lookups.
-	 */
 	struct rds_connection	*rs_conn;
-
-	/* flag indicating we were congested or not */
 	int			rs_congested;
-	/* seen congestion (ENOBUFS) when sending? */
 	int			rs_seen_congestion;
-
-	/* rs_lock protects all these adjacent members before the newline */
 	spinlock_t		rs_lock;
 	struct list_head	rs_send_queue;
 	u32			rs_snd_bytes;
 	int			rs_rcv_bytes;
-	struct list_head	rs_notify_queue;	/* currently used for failed RDMAs */
-
-	/* Congestion wake_up. If rs_cong_monitor is set, we use cong_mask
-	 * to decide whether the application should be woken up.
-	 * If not set, we use rs_cong_track to find out whether a cong map
-	 * update arrived.
-	 */
+	struct list_head	rs_notify_queue;	 
 	uint64_t		rs_cong_mask;
 	uint64_t		rs_cong_notify;
 	struct list_head	rs_cong_list;
 	unsigned long		rs_cong_track;
-
-	/*
-	 * rs_recv_lock protects the receive queue, and is
-	 * used to serialize with rds_release.
-	 */
 	rwlock_t		rs_recv_lock;
 	struct list_head	rs_recv_queue;
-
-	/* just for stats reporting */
 	struct list_head	rs_item;
-
-	/* these have their own lock */
 	spinlock_t		rs_rdma_lock;
 	struct rb_root		rs_rdma_keys;
-
-	/* Socket options - in case there will be more */
 	unsigned char		rs_recverr,
 				rs_cong_monitor;
 	u32			rs_hash_initval;
-
-	/* Socket receive path trace points*/
 	u8			rs_rx_traces;
 	u8			rs_rx_trace[RDS_MSG_RX_DGRAM_TRACE_MAX];
 	struct rds_msg_zcopy_queue rs_zcookie_queue;
 	u8			rs_tos;
 };
-
 static inline struct rds_sock *rds_sk_to_rs(const struct sock *sk)
 {
 	return container_of(sk, struct rds_sock, rs_sk);
@@ -666,12 +415,6 @@ static inline struct sock *rds_rs_to_sk(struct rds_sock *rs)
 {
 	return &rs->rs_sk;
 }
-
-/*
- * The stack assigns sk_sndbuf and sk_rcvbuf to twice the specified value
- * to account for overhead.  We don't account for overhead, we just apply
- * the number of payload bytes to the specified value.
- */
 static inline int rds_sk_sndbuf(struct rds_sock *rs)
 {
 	return rds_rs_to_sk(rs)->sk_sndbuf / 2;
@@ -680,7 +423,6 @@ static inline int rds_sk_rcvbuf(struct rds_sock *rs)
 {
 	return rds_rs_to_sk(rs)->sk_rcvbuf / 2;
 }
-
 struct rds_statistics {
 	uint64_t	s_conn_reset;
 	uint64_t	s_recv_drop_bad_checksum;
@@ -719,30 +461,22 @@ struct rds_statistics {
 	uint64_t	s_recv_bytes_removed_from_socket;
 	uint64_t	s_send_stuck_rm;
 };
-
-/* af_rds.c */
 void rds_sock_addref(struct rds_sock *rs);
 void rds_sock_put(struct rds_sock *rs);
 void rds_wake_sk_sleep(struct rds_sock *rs);
 static inline void __rds_wake_sk_sleep(struct sock *sk)
 {
 	wait_queue_head_t *waitq = sk_sleep(sk);
-
 	if (!sock_flag(sk, SOCK_DEAD) && waitq)
 		wake_up(waitq);
 }
 extern wait_queue_head_t rds_poll_waitq;
-
-
-/* bind.c */
 int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
 void rds_remove_bound(struct rds_sock *rs);
 struct rds_sock *rds_find_bound(const struct in6_addr *addr, __be16 port,
 				__u32 scope_id);
 int rds_bind_lock_init(void);
 void rds_bind_lock_destroy(void);
-
-/* cong.c */
 int rds_cong_get_maps(struct rds_connection *conn);
 void rds_cong_add_conn(struct rds_connection *conn);
 void rds_cong_remove_conn(struct rds_connection *conn);
@@ -756,8 +490,6 @@ void rds_cong_add_socket(struct rds_sock *);
 void rds_cong_remove_socket(struct rds_sock *);
 void rds_cong_exit(void);
 struct rds_message *rds_cong_update_alloc(struct rds_connection *conn);
-
-/* connection.c */
 extern u32 rds_gen_num;
 int rds_conn_init(void);
 void rds_conn_exit(void);
@@ -785,71 +517,59 @@ void rds_for_each_conn_info(struct socket *sock, unsigned int len,
 			  int (*visitor)(struct rds_connection *, void *),
 			  u64 *buffer,
 			  size_t item_len);
-
 __printf(2, 3)
 void __rds_conn_path_error(struct rds_conn_path *cp, const char *, ...);
 #define rds_conn_path_error(cp, fmt...) \
 	__rds_conn_path_error(cp, KERN_WARNING "RDS: " fmt)
-
 static inline int
 rds_conn_path_transition(struct rds_conn_path *cp, int old, int new)
 {
 	return atomic_cmpxchg(&cp->cp_state, old, new) == old;
 }
-
 static inline int
 rds_conn_transition(struct rds_connection *conn, int old, int new)
 {
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_transition(&conn->c_path[0], old, new);
 }
-
 static inline int
 rds_conn_path_state(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state);
 }
-
 static inline int
 rds_conn_state(struct rds_connection *conn)
 {
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_state(&conn->c_path[0]);
 }
-
 static inline int
 rds_conn_path_up(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state) == RDS_CONN_UP;
 }
-
 static inline int
 rds_conn_path_down(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state) == RDS_CONN_DOWN;
 }
-
 static inline int
 rds_conn_up(struct rds_connection *conn)
 {
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_up(&conn->c_path[0]);
 }
-
 static inline int
 rds_conn_path_connecting(struct rds_conn_path *cp)
 {
 	return atomic_read(&cp->cp_state) == RDS_CONN_CONNECTING;
 }
-
 static inline int
 rds_conn_connecting(struct rds_connection *conn)
 {
 	WARN_ON(conn->c_trans->t_mp_capable);
 	return rds_conn_path_connecting(&conn->c_path[0]);
 }
-
-/* message.c */
 struct rds_message *rds_message_alloc(unsigned int nents, gfp_t gfp);
 struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents);
 int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
@@ -868,25 +588,18 @@ void rds_message_put(struct rds_message *rm);
 void rds_message_wait(struct rds_message *rm);
 void rds_message_unmapped(struct rds_message *rm);
 void rds_notify_msg_zcopy_purge(struct rds_msg_zcopy_queue *info);
-
 static inline void rds_message_make_checksum(struct rds_header *hdr)
 {
 	hdr->h_csum = 0;
 	hdr->h_csum = ip_fast_csum((void *) hdr, sizeof(*hdr) >> 2);
 }
-
 static inline int rds_message_verify_checksum(const struct rds_header *hdr)
 {
 	return !hdr->h_csum || ip_fast_csum((void *) hdr, sizeof(*hdr) >> 2) == 0;
 }
-
-
-/* page.c */
 int rds_page_remainder_alloc(struct scatterlist *scat, unsigned long bytes,
 			     gfp_t gfp);
 void rds_page_exit(void);
-
-/* recv.c */
 void rds_inc_init(struct rds_incoming *inc, struct rds_connection *conn,
 		  struct in6_addr *saddr);
 void rds_inc_path_init(struct rds_incoming *inc, struct rds_conn_path *conn,
@@ -906,8 +619,6 @@ void rds6_inc_info_copy(struct rds_incoming *inc,
 			struct rds_info_iterator *iter,
 			struct in6_addr *saddr, struct in6_addr *daddr,
 			int flip);
-
-/* send.c */
 int rds_sendmsg(struct socket *sock, struct msghdr *msg, size_t payload_len);
 void rds_send_path_reset(struct rds_conn_path *conn);
 int rds_send_xmit(struct rds_conn_path *cp);
@@ -920,8 +631,6 @@ void rds_send_path_drop_acked(struct rds_conn_path *cp, u64 ack,
 			      is_acked_func is_acked);
 void rds_send_ping(struct rds_connection *conn, int cp_index);
 int rds_send_pong(struct rds_conn_path *cp, __be16 dport);
-
-/* rdma.c */
 void rds_rdma_unuse(struct rds_sock *rs, u32 r_key, int force);
 int rds_get_mr(struct rds_sock *rs, sockptr_t optval, int optlen);
 int rds_get_mr_for_dest(struct rds_sock *rs, sockptr_t optval, int optlen);
@@ -942,22 +651,17 @@ void rds_rdma_send_complete(struct rds_message *rm, int wc_status);
 void rds_atomic_send_complete(struct rds_message *rm, int wc_status);
 int rds_cmsg_atomic(struct rds_sock *rs, struct rds_message *rm,
 		    struct cmsghdr *cmsg);
-
 void __rds_put_mr_final(struct kref *kref);
-
 static inline bool rds_destroy_pending(struct rds_connection *conn)
 {
 	return !check_net(rds_conn_net(conn)) ||
 	       (conn->c_trans->t_unloading && conn->c_trans->t_unloading(conn));
 }
-
 enum {
 	ODP_NOT_NEEDED,
 	ODP_ZEROBASED,
 	ODP_VIRTUAL
 };
-
-/* stats.c */
 DECLARE_PER_CPU_SHARED_ALIGNED(struct rds_statistics, rds_stats);
 #define rds_stats_inc_which(which, member) do {		\
 	per_cpu(which, get_cpu()).member++;		\
@@ -974,8 +678,6 @@ void rds_stats_exit(void);
 void rds_stats_info_copy(struct rds_info_iterator *iter,
 			 uint64_t *values, const char *const *names,
 			 size_t nr);
-
-/* sysctl.c */
 int rds_sysctl_init(void);
 void rds_sysctl_exit(void);
 extern unsigned long rds_sysctl_sndbuf_min;
@@ -988,8 +690,6 @@ extern unsigned int  rds_sysctl_max_unacked_bytes;
 extern unsigned int  rds_sysctl_ping_enable;
 extern unsigned long rds_sysctl_trace_flags;
 extern unsigned int  rds_sysctl_trace_level;
-
-/* threads.c */
 int rds_threads_init(void);
 void rds_threads_exit(void);
 extern struct workqueue_struct *rds_wq;
@@ -1001,8 +701,6 @@ void rds_recv_worker(struct work_struct *);
 void rds_connect_path_complete(struct rds_conn_path *conn, int curr);
 void rds_connect_complete(struct rds_connection *conn);
 int rds_addr_cmp(const struct in6_addr *a1, const struct in6_addr *a2);
-
-/* transport.c */
 void rds_trans_register(struct rds_transport *trans);
 void rds_trans_unregister(struct rds_transport *trans);
 struct rds_transport *rds_trans_get_preferred(struct net *net,
@@ -1012,5 +710,4 @@ void rds_trans_put(struct rds_transport *trans);
 unsigned int rds_trans_stats_info_copy(struct rds_info_iterator *iter,
 				       unsigned int avail);
 struct rds_transport *rds_trans_get(int t_type);
-
 #endif

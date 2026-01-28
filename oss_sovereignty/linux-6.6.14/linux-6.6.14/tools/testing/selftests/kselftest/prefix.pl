@@ -1,15 +1,8 @@
-#!/usr/bin/env perl
-# SPDX-License-Identifier: GPL-2.0
-# Prefix all lines with "# ", unbuffered. Command being piped in may need
-# to have unbuffering forced with "stdbuf -i0 -o0 -e0 $cmd".
 use strict;
 use IO::Handle;
-
 binmode STDIN;
 binmode STDOUT;
-
 STDOUT->autoflush(1);
-
 my $needed = 1;
 while (1) {
 	my $char;

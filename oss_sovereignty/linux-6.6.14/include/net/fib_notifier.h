@@ -1,17 +1,13 @@
 #ifndef __NET_FIB_NOTIFIER_H
 #define __NET_FIB_NOTIFIER_H
-
 #include <linux/types.h>
 #include <linux/notifier.h>
 #include <net/net_namespace.h>
-
 struct module;
-
 struct fib_notifier_info {
 	int family;
 	struct netlink_ext_ack  *extack;
 };
-
 enum fib_event_type {
 	FIB_EVENT_ENTRY_REPLACE,
 	FIB_EVENT_ENTRY_APPEND,
@@ -24,7 +20,6 @@ enum fib_event_type {
 	FIB_EVENT_VIF_ADD,
 	FIB_EVENT_VIF_DEL,
 };
-
 struct fib_notifier_ops {
 	int family;
 	struct list_head list;
@@ -34,7 +29,6 @@ struct fib_notifier_ops {
 	struct module *owner;
 	struct rcu_head rcu;
 };
-
 int call_fib_notifier(struct notifier_block *nb,
 		      enum fib_event_type event_type,
 		      struct fib_notifier_info *info);
@@ -47,5 +41,4 @@ int unregister_fib_notifier(struct net *net, struct notifier_block *nb);
 struct fib_notifier_ops *
 fib_notifier_ops_register(const struct fib_notifier_ops *tmpl, struct net *net);
 void fib_notifier_ops_unregister(struct fib_notifier_ops *ops);
-
 #endif

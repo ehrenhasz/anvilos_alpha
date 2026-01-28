@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
-
 #ifndef _AMPHION_VPU_WINDSOR_H
 #define _AMPHION_VPU_WINDSOR_H
-
 u32 vpu_windsor_get_data_size(void);
 void vpu_windsor_init_rpc(struct vpu_shared_addr *shared,
 			  struct vpu_buffer *rpc, dma_addr_t boot_addr);
@@ -33,5 +27,4 @@ int vpu_windsor_set_encode_params(struct vpu_shared_addr *shared,
 int vpu_windsor_input_frame(struct vpu_shared_addr *shared,
 			    struct vpu_inst *inst, struct vb2_buffer *vb);
 u32 vpu_windsor_get_max_instance_count(struct vpu_shared_addr *shared);
-
 #endif

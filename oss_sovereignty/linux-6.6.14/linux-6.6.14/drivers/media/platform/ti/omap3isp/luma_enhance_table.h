@@ -1,16 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * luma_enhance_table.h
- *
- * TI OMAP3 ISP - Luminance enhancement table
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
-
 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552,
 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552,
 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552, 1047552,

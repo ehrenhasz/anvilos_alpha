@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2018 NXP
- *   Dong Aisheng <aisheng.dong@nxp.com>
- */
-
 #ifndef _IMX8QXP_LPCG_H
 #define _IMX8QXP_LPCG_H
-
-/*LSIO SS */
 #define LSIO_PWM_0_LPCG			0x00000
 #define LSIO_PWM_1_LPCG			0x10000
 #define LSIO_PWM_2_LPCG			0x20000
@@ -34,8 +26,6 @@
 #define LSIO_OCRAM_LPCG			0x190000
 #define LSIO_KPP_LPCG			0x1a0000
 #define LSIO_ROMCP_LPCG			0x100000
-
-/* Connectivity SS */
 #define CONN_USDHC_0_LPCG		0x00000
 #define CONN_USDHC_1_LPCG		0x10000
 #define CONN_USDHC_2_LPCG		0x20000
@@ -47,8 +37,6 @@
 #define CONN_USB_3_LPCG			0x80000
 #define CONN_NAND_LPCG			0x90000
 #define CONN_EDMA_LPCG			0xa0000
-
-/* ADMA SS */
 #define ADMA_ASRC_0_LPCG		0x400000
 #define ADMA_ESAI_0_LPCG		0x410000
 #define ADMA_SPDIF_0_LPCG		0x420000
@@ -98,5 +86,4 @@
 #define ADMA_FLEXCAN_0_LPCG		0x1cd0000
 #define ADMA_FLEXCAN_1_LPCG		0x1ce0000
 #define ADMA_FLEXCAN_2_LPCG		0x1cf0000
-
-#endif /* _IMX8QXP_LPCG_H */
+#endif  

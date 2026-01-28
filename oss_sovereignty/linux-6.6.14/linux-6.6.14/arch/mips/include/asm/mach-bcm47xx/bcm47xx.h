@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2007 Aurelien Jarno <aurelien@aurel32.net>
- */
-
 #ifndef __ASM_BCM47XX_H
 #define __ASM_BCM47XX_H
-
 #include <linux/ssb/ssb.h>
 #include <linux/bcma/bcma.h>
 #include <linux/bcma/bcma_soc.h>
 #include <linux/bcm47xx_nvram.h>
 #include <linux/bcm47xx_sprom.h>
-
 enum bcm47xx_bus_type {
 #ifdef CONFIG_BCM47XX_SSB
 	BCM47XX_BUS_TYPE_SSB,
@@ -20,7 +13,6 @@ enum bcm47xx_bus_type {
 	BCM47XX_BUS_TYPE_BCMA,
 #endif
 };
-
 union bcm47xx_bus {
 #ifdef CONFIG_BCM47XX_SSB
 	struct ssb_bus ssb;
@@ -29,10 +21,7 @@ union bcm47xx_bus {
 	struct bcma_soc bcma;
 #endif
 };
-
 extern union bcm47xx_bus bcm47xx_bus;
 extern enum bcm47xx_bus_type bcm47xx_bus_type;
-
 void bcm47xx_set_system_type(u16 chip_id);
-
-#endif /* __ASM_BCM47XX_H */
+#endif  

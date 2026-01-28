@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020-2021 NXP
- */
-
 #ifndef _AMPHION_VPU_CMDS_H
 #define _AMPHION_VPU_CMDS_H
-
 int vpu_session_configure_codec(struct vpu_inst *inst);
 int vpu_session_start(struct vpu_inst *inst);
 int vpu_session_stop(struct vpu_inst *inst);
@@ -21,5 +15,4 @@ int vpu_core_sw_reset(struct vpu_core *core);
 int vpu_response_cmd(struct vpu_inst *inst, u32 response, u32 handled);
 void vpu_clear_request(struct vpu_inst *inst);
 int vpu_session_debug(struct vpu_inst *inst);
-
 #endif

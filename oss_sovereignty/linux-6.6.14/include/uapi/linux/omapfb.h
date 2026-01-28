@@ -1,41 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * File: include/linux/omapfb.h
- *
- * Framebuffer driver for TI OMAP boards
- *
- * Copyright (C) 2004 Nokia Corporation
- * Author: Imre Deak <imre.deak@nokia.com>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 #ifndef _UAPI__LINUX_OMAPFB_H__
 #define _UAPI__LINUX_OMAPFB_H__
-
 #include <linux/fb.h>
 #include <linux/ioctl.h>
 #include <linux/types.h>
-
-/* IOCTL commands. */
-
 #define OMAP_IOW(num, dtype)	_IOW('O', num, dtype)
 #define OMAP_IOR(num, dtype)	_IOR('O', num, dtype)
 #define OMAP_IOWR(num, dtype)	_IOWR('O', num, dtype)
 #define OMAP_IO(num)		_IO('O', num)
-
 #define OMAPFB_MIRROR		OMAP_IOW(31, int)
 #define OMAPFB_SYNC_GFX		OMAP_IO(37)
 #define OMAPFB_VSYNC		OMAP_IO(38)
@@ -59,11 +30,9 @@
 #define OMAPFB_GET_VRAM_INFO	OMAP_IOR(61, struct omapfb_vram_info)
 #define OMAPFB_SET_TEARSYNC	OMAP_IOW(62, struct omapfb_tearsync_info)
 #define OMAPFB_GET_DISPLAY_INFO	OMAP_IOR(63, struct omapfb_display_info)
-
 #define OMAPFB_CAPS_GENERIC_MASK	0x00000fff
 #define OMAPFB_CAPS_LCDC_MASK		0x00fff000
 #define OMAPFB_CAPS_PANEL_MASK		0xff000000
-
 #define OMAPFB_CAPS_MANUAL_UPDATE	0x00001000
 #define OMAPFB_CAPS_TEARSYNC		0x00002000
 #define OMAPFB_CAPS_PLANE_RELOCATE_MEM	0x00004000
@@ -73,22 +42,17 @@
 #define OMAPFB_CAPS_WINDOW_OVERLAY	0x00040000
 #define OMAPFB_CAPS_WINDOW_ROTATE	0x00080000
 #define OMAPFB_CAPS_SET_BACKLIGHT	0x01000000
-
-/* Values from DSP must map to lower 16-bits */
 #define OMAPFB_FORMAT_MASK		0x00ff
 #define OMAPFB_FORMAT_FLAG_DOUBLE	0x0100
 #define OMAPFB_FORMAT_FLAG_TEARSYNC	0x0200
 #define OMAPFB_FORMAT_FLAG_FORCE_VSYNC	0x0400
 #define OMAPFB_FORMAT_FLAG_ENABLE_OVERLAY	0x0800
 #define OMAPFB_FORMAT_FLAG_DISABLE_OVERLAY	0x1000
-
 #define OMAPFB_MEMTYPE_SDRAM		0
 #define OMAPFB_MEMTYPE_SRAM		1
 #define OMAPFB_MEMTYPE_MAX		1
-
 #define OMAPFB_MEM_IDX_ENABLED	0x80
 #define OMAPFB_MEM_IDX_MASK	0x7f
-
 enum omapfb_color_format {
 	OMAPFB_COLOR_RGB565 = 0,
 	OMAPFB_COLOR_YUV422,
@@ -99,15 +63,13 @@ enum omapfb_color_format {
 	OMAPFB_COLOR_CLUT_1BPP,
 	OMAPFB_COLOR_RGB444,
 	OMAPFB_COLOR_YUY422,
-
 	OMAPFB_COLOR_ARGB16,
-	OMAPFB_COLOR_RGB24U,	/* RGB24, 32-bit container */
-	OMAPFB_COLOR_RGB24P,	/* RGB24, 24-bit container */
+	OMAPFB_COLOR_RGB24U,	 
+	OMAPFB_COLOR_RGB24P,	 
 	OMAPFB_COLOR_ARGB32,
 	OMAPFB_COLOR_RGBA32,
 	OMAPFB_COLOR_RGBX32,
 };
-
 struct omapfb_update_window {
 	__u32 x, y;
 	__u32 width, height;
@@ -116,24 +78,20 @@ struct omapfb_update_window {
 	__u32 out_width, out_height;
 	__u32 reserved[8];
 };
-
 struct omapfb_update_window_old {
 	__u32 x, y;
 	__u32 width, height;
 	__u32 format;
 };
-
 enum omapfb_plane {
 	OMAPFB_PLANE_GFX = 0,
 	OMAPFB_PLANE_VID1,
 	OMAPFB_PLANE_VID2,
 };
-
 enum omapfb_channel_out {
 	OMAPFB_CHANNEL_OUT_LCD = 0,
 	OMAPFB_CHANNEL_OUT_DIGIT,
 };
-
 struct omapfb_plane_info {
 	__u32 pos_x;
 	__u32 pos_y;
@@ -145,38 +103,32 @@ struct omapfb_plane_info {
 	__u32 out_height;
 	__u32 reserved2[12];
 };
-
 struct omapfb_mem_info {
 	__u32 size;
 	__u8  type;
 	__u8  reserved[3];
 };
-
 struct omapfb_caps {
 	__u32 ctrl;
 	__u32 plane_color;
 	__u32 wnd_color;
 };
-
 enum omapfb_color_key_type {
 	OMAPFB_COLOR_KEY_DISABLED = 0,
 	OMAPFB_COLOR_KEY_GFX_DST,
 	OMAPFB_COLOR_KEY_VID_SRC,
 };
-
 struct omapfb_color_key {
 	__u8  channel_out;
 	__u32 background;
 	__u32 trans_key;
 	__u8  key_type;
 };
-
 enum omapfb_update_mode {
 	OMAPFB_UPDATE_DISABLED = 0,
 	OMAPFB_AUTO_UPDATE,
 	OMAPFB_MANUAL_UPDATE
 };
-
 struct omapfb_memory_read {
 	__u16 x;
 	__u16 y;
@@ -185,7 +137,6 @@ struct omapfb_memory_read {
 	size_t buffer_size;
 	void __user *buffer;
 };
-
 struct omapfb_ovl_colormode {
 	__u8 overlay_idx;
 	__u8 mode_idx;
@@ -196,28 +147,23 @@ struct omapfb_ovl_colormode {
 	struct fb_bitfield blue;
 	struct fb_bitfield transp;
 };
-
 struct omapfb_vram_info {
 	__u32 total;
 	__u32 free;
 	__u32 largest_free_block;
 	__u32 reserved[5];
 };
-
 struct omapfb_tearsync_info {
 	__u8 enabled;
 	__u8 reserved1[3];
 	__u16 line;
 	__u16 reserved2;
 };
-
 struct omapfb_display_info {
 	__u16 xres;
 	__u16 yres;
-	__u32 width;	/* phys width of the display in micrometers */
-	__u32 height;	/* phys height of the display in micrometers */
+	__u32 width;	 
+	__u32 height;	 
 	__u32 reserved[5];
 };
-
-
-#endif /* _UAPI__LINUX_OMAPFB_H__ */
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_FB_REGS_04_H__
 #define __NVKM_FB_REGS_04_H__
-
 #define NV04_PFB_BOOT_0						0x00100000
 #	define NV04_PFB_BOOT_0_RAM_AMOUNT			0x00000003
 #	define NV04_PFB_BOOT_0_RAM_AMOUNT_32MB			0x00000000
@@ -19,5 +17,4 @@
 #	define NV04_PFB_BOOT_0_UMA_ENABLE			0x00000100
 #	define NV04_PFB_BOOT_0_UMA_SIZE				0x0000f000
 #define NV04_PFB_CFG0						0x00100200
-
 #endif

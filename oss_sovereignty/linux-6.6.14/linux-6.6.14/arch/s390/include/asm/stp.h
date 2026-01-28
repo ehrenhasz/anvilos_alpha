@@ -1,28 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright IBM Corp. 2006
- *  Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com)
- */
 #ifndef __S390_STP_H
 #define __S390_STP_H
-
 #include <linux/compiler.h>
-
-/* notifier for syncs */
 extern struct atomic_notifier_head s390_epoch_delta_notifier;
-
-/* STP interruption parameter */
 struct stp_irq_parm {
 	u32		: 14;
-	u32 tsc		:  1;	/* Timing status change */
-	u32 lac		:  1;	/* Link availability change */
-	u32 tcpc	:  1;	/* Time control parameter change */
+	u32 tsc		:  1;	 
+	u32 lac		:  1;	 
+	u32 tcpc	:  1;	 
 	u32		: 15;
 } __packed;
-
 #define STP_OP_SYNC	1
 #define STP_OP_CTRL	3
-
 struct stp_sstpi {
 	u32		: 32;
 	u32 tu		:  1;
@@ -47,7 +35,6 @@ struct stp_sstpi {
 	u64 todoff;
 	u32 rsvd[50];
 } __packed;
-
 struct stp_tzib {
 	u32 tzan	: 16;
 	u32		: 16;
@@ -58,7 +45,6 @@ struct stp_tzib {
 	u64 dst_on_alg;
 	u64 dst_off_alg;
 } __packed;
-
 struct stp_tcpib {
 	u32 atcode	: 4;
 	u32 ntcode	: 4;
@@ -73,7 +59,6 @@ struct stp_tcpib {
 	u64 ntzib_update;
 	u64 ndsto_update;
 } __packed;
-
 struct stp_lsoib {
 	u32 p		: 1;
 	u32		: 31;
@@ -81,7 +66,6 @@ struct stp_lsoib {
 	s32 nlso	: 16;
 	u64 nlsout;
 } __packed;
-
 struct stp_stzi {
 	u32 rsvd0[3];
 	u64 data_ts;
@@ -89,10 +73,7 @@ struct stp_stzi {
 	struct stp_tcpib tcpib;
 	struct stp_lsoib lsoib;
 } __packed;
-
-/* Functions needed by the machine check handler */
 int stp_sync_check(void);
 int stp_island_check(void);
 void stp_queue_work(void);
-
-#endif /* __S390_STP_H */
+#endif  

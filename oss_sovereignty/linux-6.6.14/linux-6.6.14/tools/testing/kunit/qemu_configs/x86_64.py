@@ -1,5 +1,4 @@
 from ..qemu_config import QemuArchParams
-
 QEMU_ARCH = QemuArchParams(linux_arch='x86_64',
 			   kconfig='''
 CONFIG_SERIAL_8250=y

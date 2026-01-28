@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_VF610_PINFUNC_H
 #define __DTS_VF610_PINFUNC_H
-
-/*
- * The pin function ID for VF610 is a tuple of:
- * <mux_reg input_reg mux_mode input_val>
- */
-
 #define ALT0	0x0
 #define ALT1	0x1
 #define ALT2	0x2
@@ -19,8 +8,6 @@
 #define ALT5	0x5
 #define ALT6	0x6
 #define ALT7	0x7
-
-
 #define VF610_PAD_PTA6__GPIO_0			0x000 0x000 ALT0 0x0
 #define VF610_PAD_PTA6__RMII_CLKOUT		0x000 0x000 ALT1 0x0
 #define VF610_PAD_PTA6__RMII_CLKIN		0x000 0x2F0 ALT2 0x0
@@ -852,5 +839,4 @@
 #define VF610_PAD_DDR_ODT0__DDR_ODT_1		0x2d8 0x000 ALT0 0x0
 #define VF610_PAD_DDR_DDRBYTE1__DDR_DDRBYTE1	0x2dc 0x000 ALT0 0x0
 #define VF610_PAD_DDR_DDRBYTE2__DDR_DDRBYTE2	0x2e0 0x000 ALT0 0x0
-
 #endif

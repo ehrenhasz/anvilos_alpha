@@ -1,43 +1,31 @@
-/* SPDX-License-Identifier: MIT */
-
 #include "radeon.h"
-
 #define R100_TRACK_MAX_TEXTURE 3
 #define R200_TRACK_MAX_TEXTURE 6
 #define R300_TRACK_MAX_TEXTURE 16
-
 #define R100_MAX_CB 1
 #define R300_MAX_CB 4
-
-/*
- * CS functions
- */
 struct r100_cs_track_cb {
 	struct radeon_bo	*robj;
 	unsigned		pitch;
 	unsigned		cpp;
 	unsigned		offset;
 };
-
 struct r100_cs_track_array {
 	struct radeon_bo	*robj;
 	unsigned		esize;
 };
-
 struct r100_cs_cube_info {
 	struct radeon_bo	*robj;
 	unsigned		offset;
 	unsigned		width;
 	unsigned		height;
 };
-
 #define R100_TRACK_COMP_NONE   0
 #define R100_TRACK_COMP_DXT1   1
 #define R100_TRACK_COMP_DXT35  2
-
 struct r100_cs_track_texture {
 	struct radeon_bo	*robj;
-	struct r100_cs_cube_info cube_info[5]; /* info for 5 non-primary faces */
+	struct r100_cs_cube_info cube_info[5];  
 	unsigned		pitch;
 	unsigned		width;
 	unsigned		height;
@@ -54,7 +42,6 @@ struct r100_cs_track_texture {
 	bool			roundup_h;
 	unsigned                compress_format;
 };
-
 struct r100_cs_track {
 	unsigned			num_cb;
 	unsigned                        num_texture;
@@ -81,16 +68,12 @@ struct r100_cs_track {
 	bool				aa_dirty;
 	bool				aaresolve;
 };
-
 int r100_cs_track_check(struct radeon_device *rdev, struct r100_cs_track *track);
 void r100_cs_track_clear(struct radeon_device *rdev, struct r100_cs_track *track);
-
 int r100_cs_packet_parse_vline(struct radeon_cs_parser *p);
-
 int r200_packet0_check(struct radeon_cs_parser *p,
 		       struct radeon_cs_packet *pkt,
 		       unsigned idx, unsigned reg);
-
 int r100_reloc_pitch_offset(struct radeon_cs_parser *p,
 			    struct radeon_cs_packet *pkt,
 			    unsigned idx,

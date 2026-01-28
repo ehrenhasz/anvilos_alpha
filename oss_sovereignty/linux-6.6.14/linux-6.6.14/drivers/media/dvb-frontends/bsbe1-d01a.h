@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * bsbe1-d01a.h - ALPS BSBE1-D01A tuner support
- *
- * Copyright (C) 2011 Oliver Endriss <o.endriss@gmx.de>
- *
- * the project's page is at https://linuxtv.org
- */
-
 #ifndef BSBE1_D01A_H
 #define BSBE1_D01A_H
-
 #include "stb6000.h"
 #include "stv0288.h"
-
 static u8 stv0288_bsbe1_d01a_inittab[] = {
 	0x01, 0x15,
 	0x02, 0x20,
@@ -119,11 +108,9 @@ static u8 stv0288_bsbe1_d01a_inittab[] = {
 	0xf2, 0xc0,
 	0xff, 0xff,
 };
-
 static struct stv0288_config stv0288_bsbe1_d01a_config = {
 	.demod_address = 0x68,
 	.min_delay_ms = 100,
 	.inittab = stv0288_bsbe1_d01a_inittab,
 };
-
 #endif

@@ -1,61 +1,19 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
-/*! \file  cn66xx_device.h
- *  \brief Host Driver: Routines that perform CN66XX specific operations.
- */
-
 #ifndef __CN66XX_DEVICE_H__
 #define  __CN66XX_DEVICE_H__
-
-/* Register address and configuration for a CN6XXX devices.
- * If device specific changes need to be made then add a struct to include
- * device specific fields as shown in the commented section
- */
 struct octeon_cn6xxx {
-	/** PCI interrupt summary register */
 	u8 __iomem *intr_sum_reg64;
-
-	/** PCI interrupt enable register */
 	u8 __iomem *intr_enb_reg64;
-
-	/** The PCI interrupt mask used by interrupt handler */
 	u64 intr_mask64;
-
 	struct octeon_config *conf;
-
-	/* Example additional fields - not used currently
-	 *  struct {
-	 *  }cn6xyz;
-	 */
-
-	/* For the purpose of atomic access to interrupt enable reg */
 	spinlock_t lock_for_droq_int_enb_reg;
-
 };
-
 enum octeon_pcie_mps {
-	PCIE_MPS_DEFAULT = -1,	/* Use the default setup by BIOS */
+	PCIE_MPS_DEFAULT = -1,	 
 	PCIE_MPS_128B = 0,
 	PCIE_MPS_256B = 1
 };
-
 enum octeon_pcie_mrrs {
-	PCIE_MRRS_DEFAULT = -1,	/* Use the default setup by BIOS */
+	PCIE_MRRS_DEFAULT = -1,	 
 	PCIE_MRRS_128B = 0,
 	PCIE_MRRS_256B = 1,
 	PCIE_MRRS_512B = 2,
@@ -63,8 +21,6 @@ enum octeon_pcie_mrrs {
 	PCIE_MRRS_2048B = 4,
 	PCIE_MRRS_4096B = 5
 };
-
-/* Common functions for 66xx and 68xx */
 int lio_cn6xxx_soft_reset(struct octeon_device *oct);
 void lio_cn6xxx_enable_error_reporting(struct octeon_device *oct);
 void lio_cn6xxx_setup_pcie_mps(struct octeon_device *oct,
@@ -94,5 +50,4 @@ u32 lio_cn6xxx_get_oq_ticks(struct octeon_device *oct, u32 time_intr_in_us);
 int lio_setup_cn66xx_octeon_device(struct octeon_device *oct);
 int lio_validate_cn6xxx_config_info(struct octeon_device *oct,
 				    struct octeon_config *conf6xxx);
-
 #endif

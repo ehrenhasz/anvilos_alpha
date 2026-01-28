@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_6_2_SC7180_H
 #define _DPU_6_2_SC7180_H
-
 static const struct dpu_caps sc7180_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0x9,
@@ -16,7 +9,6 @@ static const struct dpu_caps sc7180_dpu_caps = {
 	.max_linewidth = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
 };
-
 static const struct dpu_mdp_cfg sc7180_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x494,
@@ -28,7 +20,6 @@ static const struct dpu_mdp_cfg sc7180_mdp = {
 		[DPU_CLK_CTRL_WB2] = { .reg_off = 0x2bc, .bit_off = 16 },
 	},
 };
-
 static const struct dpu_ctl_cfg sc7180_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -47,7 +38,6 @@ static const struct dpu_ctl_cfg sc7180_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 11),
 	},
 };
-
 static const struct dpu_sspp_cfg sc7180_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -83,7 +73,6 @@ static const struct dpu_sspp_cfg sc7180_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA2,
 	},
 };
-
 static const struct dpu_lm_cfg sc7180_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -102,7 +91,6 @@ static const struct dpu_lm_cfg sc7180_lm[] = {
 		.pingpong = PINGPONG_1,
 	},
 };
-
 static const struct dpu_dspp_cfg sc7180_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -111,7 +99,6 @@ static const struct dpu_dspp_cfg sc7180_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sc7180_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -131,7 +118,6 @@ static const struct dpu_pingpong_cfg sc7180_pp[] = {
 		.intr_rdptr = -1,
 	},
 };
-
 static const struct dpu_intf_cfg sc7180_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -155,7 +141,6 @@ static const struct dpu_intf_cfg sc7180_intf[] = {
 		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2),
 	},
 };
-
 static const struct dpu_wb_cfg sc7180_wb[] = {
 	{
 		.name = "wb_2", .id = WB_2,
@@ -170,7 +155,6 @@ static const struct dpu_wb_cfg sc7180_wb[] = {
 		.intr_wb_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 4),
 	},
 };
-
 static const struct dpu_perf_cfg sc7180_perf_data = {
 	.max_bw_low = 6800000,
 	.max_bw_high = 6800000,
@@ -198,12 +182,10 @@ static const struct dpu_perf_cfg sc7180_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sc7180_mdss_ver = {
 	.core_major_ver = 6,
 	.core_minor_ver = 2,
 };
-
 const struct dpu_mdss_cfg dpu_sc7180_cfg = {
 	.mdss_ver = &sc7180_mdss_ver,
 	.caps = &sc7180_dpu_caps,
@@ -226,5 +208,4 @@ const struct dpu_mdss_cfg dpu_sc7180_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sc7180_perf_data,
 };
-
 #endif

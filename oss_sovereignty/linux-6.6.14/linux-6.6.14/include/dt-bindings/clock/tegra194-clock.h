@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved. */
-
 #ifndef __ABI_MACH_T194_CLOCK_H
 #define __ABI_MACH_T194_CLOCK_H
-
 #define TEGRA194_CLK_ACTMON			1
 #define TEGRA194_CLK_ADSP			2
 #define TEGRA194_CLK_ADSPNEON			3
@@ -317,5 +313,4 @@
 #define TEGRA194_CLK_PEX0_CORE_4M		323
 #define TEGRA194_CLK_PEX1_CORE_5M		324
 #define TEGRA194_CLK_PLLE_HPS			326
-
 #endif

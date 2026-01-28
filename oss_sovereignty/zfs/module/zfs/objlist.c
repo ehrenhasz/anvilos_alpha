@@ -1,24 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2018 by Delphix. All rights reserved.
- */
-
 #include	<sys/objlist.h>
 #include	<sys/zfs_context.h>
-
 objlist_t *
 objlist_create(void)
 {
@@ -28,7 +9,6 @@ objlist_create(void)
 	list->ol_last_lookup = 0;
 	return (list);
 }
-
 void
 objlist_destroy(objlist_t *list)
 {
@@ -39,15 +19,6 @@ objlist_destroy(objlist_t *list)
 	list_destroy(&list->ol_list);
 	kmem_free(list, sizeof (*list));
 }
-
-/*
- * This function looks through the objlist to see if the specified object number
- * is contained in the objlist.  In the process, it will remove all object
- * numbers in the list that are smaller than the specified object number.  Thus,
- * any lookup of an object number smaller than a previously looked up object
- * number will always return false; therefore, all lookups should be done in
- * ascending order.
- */
 boolean_t
 objlist_exists(objlist_t *list, uint64_t object)
 {
@@ -61,14 +32,6 @@ objlist_exists(objlist_t *list, uint64_t object)
 	}
 	return (node != NULL && node->on_object == object);
 }
-
-/*
- * The objlist is a list of object numbers stored in ascending order.  However,
- * the insertion of new object numbers does not seek out the correct location to
- * store a new object number; instead, it appends it to the list for simplicity.
- * Thus, any users must take care to only insert new object numbers in ascending
- * order.
- */
 void
 objlist_insert(objlist_t *list, uint64_t object)
 {

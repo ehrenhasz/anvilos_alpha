@@ -1,29 +1,5 @@
-/*
- * Copyright (c) 1993-2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _cl907d_h_
 #define _cl907d_h_
-
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_4                                       0x00000004
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_4_DONE                                  0:0
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_4_DONE_FALSE                            0x00000000
@@ -66,9 +42,6 @@
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_CAP_SOR0_20_DP_INTERLACE_FALSE          0x00000000
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_CAP_SOR0_20_DP_INTERLACE_TRUE           0x00000001
 #define NV907D_CORE_NOTIFIER_3_CAPABILITIES_CAP_SOR0_20_R6                          31:27
-
-
-// class methods
 #define NV907D_DAC_SET_CONTROL(a)                                               (0x00000180 + (a)*0x00000020)
 #define NV907D_DAC_SET_CONTROL_OWNER_MASK                                       3:0
 #define NV907D_DAC_SET_CONTROL_OWNER_MASK_NONE                                  (0x00000000)
@@ -79,7 +52,6 @@
 #define NV907D_DAC_SET_CONTROL_PROTOCOL                                         12:8
 #define NV907D_DAC_SET_CONTROL_PROTOCOL_RGB_CRT                                 (0x00000000)
 #define NV907D_DAC_SET_CONTROL_PROTOCOL_YUV_CRT                                 (0x00000013)
-
 #define NV907D_SOR_SET_CONTROL(a)                                               (0x00000200 + (a)*0x00000020)
 #define NV907D_SOR_SET_CONTROL_OWNER_MASK                                       3:0
 #define NV907D_SOR_SET_CONTROL_OWNER_MASK_NONE                                  (0x00000000)
@@ -102,7 +74,6 @@
 #define NV907D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_OFF                         (0x00000000)
 #define NV907D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_X2                          (0x00000001)
 #define NV907D_SOR_SET_CONTROL_PIXEL_REPLICATE_MODE_X4                          (0x00000002)
-
 #define NV907D_HEAD_SET_CONTROL_OUTPUT_RESOURCE(a)                              (0x00000404 + (a)*0x00000300)
 #define NV907D_HEAD_SET_CONTROL_OUTPUT_RESOURCE_CRC_MODE                        1:0
 #define NV907D_HEAD_SET_CONTROL_OUTPUT_RESOURCE_CRC_MODE_ACTIVE_RASTER          (0x00000000)
@@ -433,4 +404,4 @@
 #define NV907D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH_BPP_16                 (0x00000001)
 #define NV907D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH_BPP_32                 (0x00000003)
 #define NV907D_HEAD_SET_OVERLAY_USAGE_BOUNDS_PIXEL_DEPTH_BPP_64                 (0x00000005)
-#endif // _cl907d_h
+#endif  

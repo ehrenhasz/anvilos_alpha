@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2019-2020 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
-
 &lsio_gpio0 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 0 6>,
 		      <&iomuxc 6 7 22>,
 		      <&iomuxc 28 36 4>;
 };
-
 &lsio_gpio1 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 40 4>,
@@ -18,14 +11,12 @@
 		      <&iomuxc 16 63 8>,
 		      <&iomuxc 24 72 8>;
 };
-
 &lsio_gpio2 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 80 4>,
 		      <&iomuxc 4 85 18>,
 		      <&iomuxc 22 104 10>;
 };
-
 &lsio_gpio3 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 114 2>,
@@ -41,7 +32,6 @@
 		      <&iomuxc 26 142 3>,
 		      <&iomuxc 29 146 3>;
 };
-
 &lsio_gpio4 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 149 3>,
@@ -51,7 +41,6 @@
 		      <&iomuxc 19 172 8>,
 		      <&iomuxc 27 198 5>;
 };
-
 &lsio_gpio5 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 203 1>,
@@ -63,45 +52,35 @@
 		      <&iomuxc 24 236 6>,
 		      <&iomuxc 30 243 2>;
 };
-
 &lsio_gpio6 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 	gpio-ranges = <&iomuxc 0 245 10>,
 		      <&iomuxc 10 256 12>;
 };
-
 &lsio_gpio7 {
 	compatible = "fsl,imx8qm-gpio", "fsl,imx35-gpio";
 };
-
 &lsio_mu0 {
 	compatible = "fsl,imx8-mu-scu", "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu1 {
 	compatible = "fsl,imx8-mu-scu", "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu2 {
 	compatible = "fsl,imx8-mu-scu", "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu3 {
 	compatible = "fsl,imx8-mu-scu", "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu4 {
 	compatible = "fsl,imx8-mu-scu", "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu5 {
 	compatible = "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu6 {
 	compatible = "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };
-
 &lsio_mu13 {
 	compatible = "fsl,imx8qm-mu", "fsl,imx6sx-mu";
 };

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ARCH_PERF_BOOK3S_HV_HCALLS_H
 #define ARCH_PERF_BOOK3S_HV_HCALLS_H
-
-/*
- * PowerPC HCALL codes : hcall code to name mapping
- */
 #define kvm_trace_symbol_hcall \
 	{0x4, "H_REMOVE"},					\
 	{0x8, "H_ENTER"},					\
@@ -120,5 +115,4 @@
 	{0x314, "H_GET_MPP_X"},					\
 	{0x31c, "H_SET_MODE"},					\
 	{0xf000, "H_RTAS"}					\
-
 #endif

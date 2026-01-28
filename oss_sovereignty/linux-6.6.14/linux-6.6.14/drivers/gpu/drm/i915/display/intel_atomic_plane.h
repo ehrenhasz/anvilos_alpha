@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_ATOMIC_PLANE_H__
 #define __INTEL_ATOMIC_PLANE_H__
-
 #include <linux/types.h>
-
 struct drm_plane;
 struct drm_property;
 struct drm_rect;
@@ -17,13 +10,11 @@ struct intel_crtc_state;
 struct intel_plane;
 struct intel_plane_state;
 enum plane_id;
-
 unsigned int intel_adjusted_rate(const struct drm_rect *src,
 				 const struct drm_rect *dst,
 				 unsigned int rate);
 unsigned int intel_plane_pixel_rate(const struct intel_crtc_state *crtc_state,
 				    const struct intel_plane_state *plane_state);
-
 unsigned int intel_plane_data_rate(const struct intel_crtc_state *crtc_state,
 				   const struct intel_plane_state *plane_state,
 				   int color_plane);
@@ -66,5 +57,4 @@ int intel_plane_check_src_coordinates(struct intel_plane_state *plane_state);
 void intel_plane_set_invisible(struct intel_crtc_state *crtc_state,
 			       struct intel_plane_state *plane_state);
 void intel_plane_helper_add(struct intel_plane *plane);
-
-#endif /* __INTEL_ATOMIC_PLANE_H__ */
+#endif  

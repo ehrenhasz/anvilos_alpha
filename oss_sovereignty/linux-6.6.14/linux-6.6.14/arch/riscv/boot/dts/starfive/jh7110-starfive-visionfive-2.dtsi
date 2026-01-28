@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- * Copyright (C) 2022 Emil Renner Berthing <kernel@esmil.dk>
- */
-
 /dts-v1/;
 #include "jh7110.dtsi"
 #include "jh7110-pinfunc.h"
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	aliases {
 		ethernet0 = &gmac0;
@@ -21,115 +14,90 @@
 		mmc1 = &mmc1;
 		serial0 = &uart0;
 	};
-
 	chosen {
 		stdout-path = "serial0:115200n8";
 	};
-
 	cpus {
 		timebase-frequency = <4000000>;
 	};
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x0 0x40000000 0x1 0x0>;
 	};
-
 	gpio-restart {
 		compatible = "gpio-restart";
 		gpios = <&sysgpio 35 GPIO_ACTIVE_HIGH>;
 		priority = <224>;
 	};
 };
-
 &dvp_clk {
 	clock-frequency = <74250000>;
 };
-
 &gmac0_rgmii_rxin {
 	clock-frequency = <125000000>;
 };
-
 &gmac0_rmii_refin {
 	clock-frequency = <50000000>;
 };
-
 &gmac1_rgmii_rxin {
 	clock-frequency = <125000000>;
 };
-
 &gmac1_rmii_refin {
 	clock-frequency = <50000000>;
 };
-
 &hdmitx0_pixelclk {
 	clock-frequency = <297000000>;
 };
-
 &i2srx_bclk_ext {
 	clock-frequency = <12288000>;
 };
-
 &i2srx_lrck_ext {
 	clock-frequency = <192000>;
 };
-
 &i2stx_bclk_ext {
 	clock-frequency = <12288000>;
 };
-
 &i2stx_lrck_ext {
 	clock-frequency = <192000>;
 };
-
 &mclk_ext {
 	clock-frequency = <12288000>;
 };
-
 &osc {
 	clock-frequency = <24000000>;
 };
-
 &rtc_osc {
 	clock-frequency = <32768>;
 };
-
 &tdm_ext {
 	clock-frequency = <49152000>;
 };
-
 &gmac0 {
 	phy-handle = <&phy0>;
 	phy-mode = "rgmii-id";
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "snps,dwmac-mdio";
-
 		phy0: ethernet-phy@0 {
 			reg = <0>;
 		};
 	};
 };
-
 &gmac1 {
 	phy-handle = <&phy1>;
 	phy-mode = "rgmii-id";
 	status = "okay";
-
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
 		compatible = "snps,dwmac-mdio";
-
 		phy1: ethernet-phy@1 {
 			reg = <0>;
 		};
 	};
 };
-
 &i2c0 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -139,7 +107,6 @@
 	pinctrl-0 = <&i2c0_pins>;
 	status = "okay";
 };
-
 &i2c2 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -149,7 +116,6 @@
 	pinctrl-0 = <&i2c2_pins>;
 	status = "okay";
 };
-
 &i2c5 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -158,14 +124,12 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c5_pins>;
 	status = "okay";
-
 	axp15060: pmic@36 {
 		compatible = "x-powers,axp15060";
 		reg = <0x36>;
 		interrupts = <0>;
 		interrupt-controller;
 		#interrupt-cells = <1>;
-
 		regulators {
 			vcc_3v3: dcdc1 {
 				regulator-boot-on;
@@ -174,14 +138,12 @@
 				regulator-max-microvolt = <3300000>;
 				regulator-name = "vcc_3v3";
 			};
-
 			vdd_cpu: dcdc2 {
 				regulator-always-on;
 				regulator-min-microvolt = <500000>;
 				regulator-max-microvolt = <1540000>;
 				regulator-name = "vdd-cpu";
 			};
-
 			emmc_vdd: aldo4 {
 				regulator-boot-on;
 				regulator-always-on;
@@ -192,7 +154,6 @@
 		};
 	};
 };
-
 &i2c6 {
 	clock-frequency = <100000>;
 	i2c-sda-hold-time-ns = <300>;
@@ -202,7 +163,6 @@
 	pinctrl-0 = <&i2c6_pins>;
 	status = "okay";
 };
-
 &mmc0 {
 	max-frequency = <100000000>;
 	bus-width = <8>;
@@ -218,7 +178,6 @@
 	vqmmc-supply = <&emmc_vdd>;
 	status = "okay";
 };
-
 &mmc1 {
 	max-frequency = <100000000>;
 	bus-width = <4>;
@@ -231,12 +190,10 @@
 	pinctrl-0 = <&mmc1_pins>;
 	status = "okay";
 };
-
 &qspi {
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-
 	nor_flash: flash@0 {
 		compatible = "jedec,spi-nor";
 		reg = <0>;
@@ -246,12 +203,10 @@
 		cdns,tsd2d-ns = <1>;
 		cdns,tchsh-ns = <1>;
 		cdns,tslch-ns = <1>;
-
 		partitions {
 			compatible = "fixed-partitions";
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			spl@0 {
 				reg = <0x0 0x80000>;
 			};
@@ -267,19 +222,16 @@
 		};
 	};
 };
-
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi0_pins>;
 	status = "okay";
-
 	spi_dev0: spi@0 {
 		compatible = "rohm,dh2228fv";
 		reg = <0>;
 		spi-max-frequency = <10000000>;
 	};
 };
-
 &sysgpio {
 	i2c0_pins: i2c0-0 {
 		i2c-pins {
@@ -289,12 +241,11 @@
 				 <GPIOMUX(58, GPOUT_LOW,
 					      GPOEN_SYS_I2C0_DATA,
 					      GPI_SYS_I2C0_DATA)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	i2c2_pins: i2c2-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(3, GPOUT_LOW,
@@ -303,12 +254,11 @@
 				 <GPIOMUX(2, GPOUT_LOW,
 					     GPOEN_SYS_I2C2_DATA,
 					     GPI_SYS_I2C2_DATA)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	i2c5_pins: i2c5-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(19, GPOUT_LOW,
@@ -317,12 +267,11 @@
 				 <GPIOMUX(20, GPOUT_LOW,
 					      GPOEN_SYS_I2C5_DATA,
 					      GPI_SYS_I2C5_DATA)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	i2c6_pins: i2c6-0 {
 		i2c-pins {
 			pinmux = <GPIOMUX(16, GPOUT_LOW,
@@ -331,12 +280,11 @@
 				 <GPIOMUX(17, GPOUT_LOW,
 					      GPOEN_SYS_I2C6_DATA,
 					      GPI_SYS_I2C6_DATA)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			input-enable;
 			input-schmitt-enable;
 		};
 	};
-
 	mmc0_pins: mmc0-0 {
 		 rst-pins {
 			pinmux = <GPIOMUX(62, GPOUT_SYS_SDIO0_RST,
@@ -348,7 +296,6 @@
 			input-schmitt-disable;
 			slew-rate = <0>;
 		};
-
 		mmc-pins {
 			pinmux = <PINMUX(64, 0)>,
 				 <PINMUX(65, 0)>,
@@ -365,7 +312,6 @@
 			input-enable;
 		};
 	};
-
 	mmc1_pins: mmc1-0 {
 		clk-pins {
 			pinmux = <GPIOMUX(10, GPOUT_SYS_SDIO1_CLK,
@@ -377,7 +323,6 @@
 			input-schmitt-disable;
 			slew-rate = <0>;
 		};
-
 		mmc-pins {
 			pinmux = <GPIOMUX(9, GPOUT_SYS_SDIO1_CMD,
 					     GPOEN_SYS_SDIO1_CMD,
@@ -401,7 +346,6 @@
 			slew-rate = <0>;
 		};
 	};
-
 	spi0_pins: spi0-0 {
 		mosi-pins {
 			pinmux = <GPIOMUX(52, GPOUT_SYS_SPI0_TXD,
@@ -411,7 +355,6 @@
 			input-disable;
 			input-schmitt-disable;
 		};
-
 		miso-pins {
 			pinmux = <GPIOMUX(53, GPOUT_LOW,
 					      GPOEN_DISABLE,
@@ -420,7 +363,6 @@
 			input-enable;
 			input-schmitt-enable;
 		};
-
 		sck-pins {
 			pinmux = <GPIOMUX(48, GPOUT_SYS_SPI0_CLK,
 					      GPOEN_ENABLE,
@@ -429,7 +371,6 @@
 			input-disable;
 			input-schmitt-disable;
 		};
-
 		ss-pins {
 			pinmux = <GPIOMUX(49, GPOUT_SYS_SPI0_FSS,
 					      GPOEN_ENABLE,
@@ -439,7 +380,6 @@
 			input-schmitt-disable;
 		};
 	};
-
 	tdm_pins: tdm-0 {
 		tx-pins {
 			pinmux = <GPIOMUX(44, GPOUT_SYS_TDM_TXD,
@@ -451,21 +391,18 @@
 			input-schmitt-disable;
 			slew-rate = <0>;
 		};
-
 		rx-pins {
 			pinmux = <GPIOMUX(61, GPOUT_HIGH,
 					      GPOEN_DISABLE,
 					      GPI_SYS_TDM_RXD)>;
 			input-enable;
 		};
-
 		sync-pins {
 			pinmux = <GPIOMUX(63, GPOUT_HIGH,
 					      GPOEN_DISABLE,
 					      GPI_SYS_TDM_SYNC)>;
 			input-enable;
 		};
-
 		pcmclk-pins {
 			pinmux = <GPIOMUX(38, GPOUT_HIGH,
 					      GPOEN_DISABLE,
@@ -473,7 +410,6 @@
 			input-enable;
 		};
 	};
-
 	uart0_pins: uart0-0 {
 		tx-pins {
 			pinmux = <GPIOMUX(5, GPOUT_SYS_UART0_TX,
@@ -485,12 +421,11 @@
 			input-schmitt-disable;
 			slew-rate = <0>;
 		};
-
 		rx-pins {
 			pinmux = <GPIOMUX(6, GPOUT_LOW,
 					     GPOEN_DISABLE,
 					     GPI_SYS_UART0_RX)>;
-			bias-disable; /* external pull-up */
+			bias-disable;  
 			drive-strength = <2>;
 			input-enable;
 			input-schmitt-enable;
@@ -498,36 +433,29 @@
 		};
 	};
 };
-
 &tdm {
 	pinctrl-names = "default";
 	pinctrl-0 = <&tdm_pins>;
 	status = "okay";
 };
-
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_pins>;
 	status = "okay";
 };
-
 &usb0 {
 	dr_mode = "peripheral";
 	status = "okay";
 };
-
 &U74_1 {
 	cpu-supply = <&vdd_cpu>;
 };
-
 &U74_2 {
 	cpu-supply = <&vdd_cpu>;
 };
-
 &U74_3 {
 	cpu-supply = <&vdd_cpu>;
 };
-
 &U74_4 {
 	cpu-supply = <&vdd_cpu>;
 };

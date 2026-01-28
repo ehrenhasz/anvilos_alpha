@@ -1,24 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- */
 /dts-v1/;
-
 #include "dra74x.dtsi"
 #include "dra7-evm-common.dtsi"
 #include "dra74x-mmc-iodelay.dtsi"
-
 / {
 	model = "TI DRA742";
 	compatible = "ti,dra7-evm", "ti,dra742", "ti,dra74", "ti,dra7";
-
 	memory@0 {
 		device_type = "memory";
-		reg = <0x0 0x80000000 0x0 0x60000000>; /* 1536 MB */
+		reg = <0x0 0x80000000 0x0 0x60000000>;  
 	};
-
 	evm_12v0: fixedregulator-evm_12v0 {
-		/* main supply */
 		compatible = "regulator-fixed";
 		regulator-name = "evm_12v0";
 		regulator-min-microvolt = <12000000>;
@@ -26,7 +17,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	evm_1v8_sw: fixedregulator-evm_1v8 {
 		compatible = "regulator-fixed";
 		regulator-name = "evm_1v8";
@@ -34,33 +24,28 @@
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		ipu2_memory_region: ipu2-memory@95800000 {
 			compatible = "shared-dma-pool";
 			reg = <0x0 0x95800000 0x0 0x3800000>;
 			reusable;
 			status = "okay";
 		};
-
 		dsp1_memory_region: dsp1-memory@99000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x0 0x99000000 0x0 0x4000000>;
 			reusable;
 			status = "okay";
 		};
-
 		ipu1_memory_region: ipu1-memory@9d000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x0 0x9d000000 0x0 0x2000000>;
 			reusable;
 			status = "okay";
 		};
-
 		dsp2_memory_region: dsp2-memory@9f000000 {
 			compatible = "shared-dma-pool";
 			reg = <0x0 0x9f000000 0x0 0x800000>;
@@ -68,7 +53,6 @@
 			status = "okay";
 		};
 	};
-
 	evm_3v3_sd: fixedregulator-sd {
 		compatible = "regulator-fixed";
 		regulator-name = "evm_3v3_sd";
@@ -77,7 +61,6 @@
 		enable-active-high;
 		gpio = <&pcf_gpio_21 5 GPIO_ACTIVE_HIGH>;
 	};
-
 	evm_3v3_sw: fixedregulator-evm_3v3_sw {
 		compatible = "regulator-fixed";
 		regulator-name = "evm_3v3_sw";
@@ -85,18 +68,14 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 	};
-
 	aic_dvdd: fixedregulator-aic_dvdd {
-		/* TPS77018DBVT */
 		compatible = "regulator-fixed";
 		regulator-name = "aic_dvdd";
 		vin-supply = <&evm_3v3_sw>;
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
 	};
-
 	vsys_3v3: fixedregulator-vsys3v3 {
-		/* Output of Cntlr A of TPS43351-Q1 on dra7-evm */
 		compatible = "regulator-fixed";
 		regulator-name = "vsys_3v3";
 		regulator-min-microvolt = <3300000>;
@@ -105,9 +84,7 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	evm_5v0: fixedregulator-evm_5v0 {
-		/* Output of Cntlr B of TPS43351-Q1 on dra7-evm */
 		compatible = "regulator-fixed";
 		regulator-name = "evm_5v0";
 		regulator-min-microvolt = <5000000>;
@@ -116,7 +93,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	evm_3v6: fixedregulator-evm_3v6 {
 		compatible = "regulator-fixed";
 		regulator-name = "evm_3v6";
@@ -126,7 +102,6 @@
 		regulator-always-on;
 		regulator-boot-on;
 	};
-
 	vmmcwl_fixed: fixedregulator-mmcwl {
 		compatible = "regulator-fixed";
 		regulator-name = "vmmcwl_fixed";
@@ -136,7 +111,6 @@
 		startup-delay-us = <70000>;
 		enable-active-high;
 	};
-
 	vtt_fixed: fixedregulator-vtt {
 		compatible = "regulator-fixed";
 		regulator-name = "vtt_fixed";
@@ -148,123 +122,96 @@
 		vin-supply = <&sysen2>;
 		gpio = <&gpio7 11 GPIO_ACTIVE_HIGH>;
 	};
-
 };
-
 &dra7_pmx_core {
 	dcan1_pins_default: dcan1-default-pins {
 		pinctrl-single,pins = <
-			DRA7XX_CORE_IOPAD(0x37d0, PIN_OUTPUT_PULLUP | MUX_MODE0) /* dcan1_tx */
-			DRA7XX_CORE_IOPAD(0x3818, PULL_UP | MUX_MODE1) /* wakeup0.dcan1_rx */
+			DRA7XX_CORE_IOPAD(0x37d0, PIN_OUTPUT_PULLUP | MUX_MODE0)  
+			DRA7XX_CORE_IOPAD(0x3818, PULL_UP | MUX_MODE1)  
 		>;
 	};
-
 	dcan1_pins_sleep: dcan1-sleep-pins {
 		pinctrl-single,pins = <
-			DRA7XX_CORE_IOPAD(0x37d0, MUX_MODE15 | PULL_UP)	/* dcan1_tx.off */
-			DRA7XX_CORE_IOPAD(0x3818, MUX_MODE15 | PULL_UP)	/* wakeup0.off */
+			DRA7XX_CORE_IOPAD(0x37d0, MUX_MODE15 | PULL_UP)	 
+			DRA7XX_CORE_IOPAD(0x3818, MUX_MODE15 | PULL_UP)	 
 		>;
 	};
 };
-
 &i2c1 {
 	status = "okay";
 	clock-frequency = <400000>;
-
 	tps659038: tps659038@58 {
 		compatible = "ti,tps659038";
 		reg = <0x58>;
 		ti,palmas-override-powerhold;
 		ti,system-power-controller;
-
 		tps659038_pmic {
 			compatible = "ti,tps659038-pmic";
-
 			regulators {
 				smps123_reg: smps123 {
-					/* VDD_MPU */
 					regulator-name = "smps123";
 					regulator-min-microvolt = < 850000>;
 					regulator-max-microvolt = <1250000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				smps45_reg: smps45 {
-					/* VDD_DSPEVE */
 					regulator-name = "smps45";
 					regulator-min-microvolt = < 850000>;
 					regulator-max-microvolt = <1250000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				smps6_reg: smps6 {
-					/* VDD_GPU - over VDD_SMPS6 */
 					regulator-name = "smps6";
 					regulator-min-microvolt = <850000>;
 					regulator-max-microvolt = <1250000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				smps7_reg: smps7 {
-					/* CORE_VDD */
 					regulator-name = "smps7";
 					regulator-min-microvolt = <850000>;
 					regulator-max-microvolt = <1150000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				smps8_reg: smps8 {
-					/* VDD_IVAHD */
 					regulator-name = "smps8";
 					regulator-min-microvolt = < 850000>;
 					regulator-max-microvolt = <1250000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				smps9_reg: smps9 {
-					/* VDDS1V8 */
 					regulator-name = "smps9";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldo1_reg: ldo1 {
-					/* LDO1_OUT --> SDIO  */
 					regulator-name = "ldo1";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldo2_reg: ldo2 {
-					/* VDD_RTCIO */
-					/* LDO2 -> VDDSHV5, LDO2 also goes to CAN_PHY_3V3 */
 					regulator-name = "ldo2";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldo3_reg: ldo3 {
-					/* VDDA_1V8_PHY */
 					regulator-name = "ldo3";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldo9_reg: ldo9 {
-					/* VDD_RTC */
 					regulator-name = "ldo9";
 					regulator-min-microvolt = <1050000>;
 					regulator-max-microvolt = <1050000>;
@@ -272,44 +219,30 @@
 					regulator-boot-on;
 					regulator-allow-bypass;
 				};
-
 				ldoln_reg: ldoln {
-					/* VDDA_1V8_PLL */
 					regulator-name = "ldoln";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
 					regulator-always-on;
 					regulator-boot-on;
 				};
-
 				ldousb_reg: ldousb {
-					/* VDDA_3V_USB: VDDA_USBHS33 */
 					regulator-name = "ldousb";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
 					regulator-boot-on;
 				};
-
-				/* REGEN1 is unused */
-
 				regen2: regen2 {
-					/* Needed for PMIC internal resources */
 					regulator-name = "regen2";
 					regulator-boot-on;
 					regulator-always-on;
 				};
-
-				/* REGEN3 is unused */
-
 				sysen1: sysen1 {
-					/* PMIC_REGEN_3V3 */
 					regulator-name = "sysen1";
 					regulator-boot-on;
 					regulator-always-on;
 				};
-
 				sysen2: sysen2 {
-					/* PMIC_REGEN_DDR */
 					regulator-name = "sysen2";
 					regulator-boot-on;
 					regulator-always-on;
@@ -317,7 +250,6 @@
 			};
 		};
 	};
-
 	pcf_lcd: gpio@20 {
 		compatible = "nxp,pcf8575";
 		reg = <0x20>;
@@ -328,7 +260,6 @@
 		interrupt-controller;
 		#interrupt-cells = <2>;
 	};
-
 	pcf_gpio_21: gpio@21 {
 		compatible = "nxp,pcf8575";
 		reg = <0x21>;
@@ -340,34 +271,28 @@
 		interrupt-controller;
 		#interrupt-cells = <2>;
 	};
-
 	tlv320aic3106: tlv320aic3106@19 {
 		#sound-dai-cells = <0>;
 		compatible = "ti,tlv320aic3106";
 		reg = <0x19>;
 		adc-settle-ms = <40>;
-		ai3x-micbias-vg = <1>;		/* 2.0V */
+		ai3x-micbias-vg = <1>;		 
 		status = "okay";
-
-		/* Regulators */
 		AVDD-supply = <&evm_3v3_sw>;
 		IOVDD-supply = <&evm_3v3_sw>;
 		DRVDD-supply = <&evm_3v3_sw>;
 		DVDD-supply = <&aic_dvdd>;
 	};
 };
-
 &i2c2 {
 	status = "okay";
 	clock-frequency = <400000>;
-
 	pcf_hdmi: gpio@26 {
 		compatible = "nxp,pcf8575";
 		reg = <0x26>;
 		gpio-controller;
 		#gpio-cells = <2>;
 		hdmi-audio-hog {
-			/* vin6_sel_s0: high: VIN6, low: audio */
 			gpio-hog;
 			gpios = <1 GPIO_ACTIVE_HIGH>;
 			output-low;
@@ -375,16 +300,11 @@
 		};
 	};
 };
-
 &mmc1 {
 	status = "okay";
 	vmmc-supply = <&evm_3v3_sd>;
 	vqmmc-supply = <&ldo1_reg>;
 	bus-width = <4>;
-	/*
-	 * SDCD signal is not being used here - using the fact that GPIO mode
-	 * is always hardwired.
-	 */
 	cd-gpios = <&gpio6 27 GPIO_ACTIVE_LOW>;
 	pinctrl-names = "default", "hs", "sdr12", "sdr25", "sdr50", "ddr50-rev11", "sdr104-rev11", "ddr50", "sdr104";
 	pinctrl-0 = <&mmc1_pins_default>;
@@ -397,7 +317,6 @@
 	pinctrl-7 = <&mmc1_pins_ddr50 &mmc1_iodelay_ddr_rev20_conf>;
 	pinctrl-8 = <&mmc1_pins_sdr104 &mmc1_iodelay_sdr104_rev20_conf>;
 };
-
 &mmc2 {
 	status = "okay";
 	vmmc-supply = <&evm_1v8_sw>;
@@ -412,7 +331,6 @@
 	pinctrl-4 = <&mmc2_pins_hs200 &mmc2_iodelay_hs200_rev11_conf>;
 	pinctrl-5 = <&mmc2_pins_hs200 &mmc2_iodelay_hs200_rev20_conf>;
 };
-
 &mmc4 {
 	status = "okay";
 	vmmc-supply = <&evm_3v6>;
@@ -427,30 +345,22 @@
 	pinctrl-6 = <&mmc4_pins_sdr25 &mmc4_iodelay_sdr12_hs_sdr25_rev11_conf>;
 	pinctrl-7 = <&mmc4_pins_sdr25 &mmc4_iodelay_sdr12_hs_sdr25_rev20_conf>;
 };
-
 &cpu0 {
 	vdd-supply = <&smps123_reg>;
 };
-
 &elm {
 	status = "okay";
 };
-
 &gpmc {
-	/*
-	* For the existing IOdelay configuration via U-Boot we don't
-	* support NAND on dra7-evm. Keep it disabled. Enabling it
-	* requires a different configuration by U-Boot.
-	*/
 	status = "disabled";
-	ranges = <0 0 0x08000000 0x01000000>;	/* minimum GPMC partition = 16MB */
+	ranges = <0 0 0x08000000 0x01000000>;	 
 	nand@0,0 {
 		compatible = "ti,omap2-nand";
-		reg = <0 0 4>;		/* device IO registers */
+		reg = <0 0 4>;		 
 		interrupt-parent = <&gpmc>;
-		interrupts = <0 IRQ_TYPE_NONE>, /* fifoevent */
-			     <1 IRQ_TYPE_NONE>; /* termcount */
-		rb-gpios = <&gpmc 0 GPIO_ACTIVE_HIGH>; /* gpmc_wait0 pin */
+		interrupts = <0 IRQ_TYPE_NONE>,  
+			     <1 IRQ_TYPE_NONE>;  
+		rb-gpios = <&gpmc 0 GPIO_ACTIVE_HIGH>;  
 		ti,nand-xfer-type = "prefetch-dma";
 		ti,nand-ecc-opt = "bch8";
 		ti,elm-id = <&elm>;
@@ -475,10 +385,6 @@
 		gpmc,cycle2cycle-delay-ns = <0>;
 		gpmc,clk-activation-ns = <0>;
 		gpmc,wr-data-mux-bus-ns = <0>;
-		/* MTD partition table */
-		/* All SPL-* partitions are sized to minimal length
-		 * which can be independently programmable. For
-		 * NAND flash this is equal to size of erase-block */
 		#address-cells = <1>;
 		#size-cells = <1>;
 		partition@0 {
@@ -523,46 +429,37 @@
 		};
 	};
 };
-
 &usb2_phy1 {
 	phy-supply = <&ldousb_reg>;
 };
-
 &usb2_phy2 {
 	phy-supply = <&ldousb_reg>;
 };
-
 &gpio7_target {
 	ti,no-reset-on-init;
 	ti,no-idle-on-init;
 };
-
 &mac_sw {
 	status = "okay";
 };
-
 &cpsw_port1 {
 	phy-handle = <&ethphy0>;
 	phy-mode = "rgmii";
 	ti,dual-emac-pvid = <1>;
 };
-
 &cpsw_port2 {
 	phy-handle = <&ethphy1>;
 	phy-mode = "rgmii";
 	ti,dual-emac-pvid = <2>;
 };
-
 &davinci_mdio_sw {
 	ethphy0: ethernet-phy@2 {
 		reg = <2>;
 	};
-
 	ethphy1: ethernet-phy@3 {
 		reg = <3>;
 	};
 };
-
 &dcan1 {
 	status = "okay";
 	pinctrl-names = "default", "sleep", "active";
@@ -570,22 +467,18 @@
 	pinctrl-1 = <&dcan1_pins_sleep>;
 	pinctrl-2 = <&dcan1_pins_default>;
 };
-
 &ipu2 {
 	status = "okay";
 	memory-region = <&ipu2_memory_region>;
 };
-
 &ipu1 {
 	status = "okay";
 	memory-region = <&ipu1_memory_region>;
 };
-
 &dsp1 {
 	status = "okay";
 	memory-region = <&dsp1_memory_region>;
 };
-
 &dsp2 {
 	status = "okay";
 	memory-region = <&dsp2_memory_region>;

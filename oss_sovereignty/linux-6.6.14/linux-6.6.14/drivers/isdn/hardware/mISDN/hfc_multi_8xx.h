@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * For License see notice in hfc_multi.c
- *
- * special IO and init functions for the embedded XHFC board
- * from Speech Design
- *
- */
-
 #include <asm/cpm1.h>
-
-/* Change this to the value used by your board */
 #ifndef IMAP_ADDR
 #define IMAP_ADDR	0xFFF00000
 #endif
-
 static void
 #ifdef HFC_REGISTER_DEBUG
 HFC_outb_embsd(struct hfc_multi *hc, u_char reg, u_char val,
@@ -64,8 +52,6 @@ HFC_wait_embsd(struct hfc_multi *hc, const char *function, int line)
 	while (readb(hc->xhfc_memdata) & V_BUSY)
 		cpu_relax();
 }
-
-/* write fifo data (EMBSD) */
 void
 write_fifo_embsd(struct hfc_multi *hc, u_char *data, int len)
 {
@@ -78,8 +64,6 @@ write_fifo_embsd(struct hfc_multi *hc, u_char *data, int len)
 		len--;
 	}
 }
-
-/* read fifo data (EMBSD) */
 void
 read_fifo_embsd(struct hfc_multi *hc, u_char *data, int len)
 {
@@ -92,35 +76,29 @@ read_fifo_embsd(struct hfc_multi *hc, u_char *data, int len)
 		len--;
 	}
 }
-
 static int
 setup_embedded(struct hfc_multi *hc, struct hm_map *m)
 {
 	printk(KERN_INFO
 	       "HFC-multi: card manufacturer: '%s' card name: '%s' clock: %s\n",
 	       m->vendor_name, m->card_name, m->clock2 ? "double" : "normal");
-
 	hc->pci_dev = NULL;
 	if (m->clock2)
 		test_and_set_bit(HFC_CHIP_CLOCK2, &hc->chip);
-
 	hc->leds = m->leds;
 	hc->ledstate = 0xAFFEAFFE;
 	hc->opticalsupport = m->opticalsupport;
-
 	hc->pci_iobase = 0;
 	hc->pci_membase = 0;
 	hc->xhfc_membase = NULL;
 	hc->xhfc_memaddr = NULL;
 	hc->xhfc_memdata = NULL;
-
-	/* set memory access methods */
-	if (m->io_mode) /* use mode from card config */
+	if (m->io_mode)  
 		hc->io_mode = m->io_mode;
 	switch (hc->io_mode) {
 	case HFC_IO_MODE_EMBSD:
 		test_and_set_bit(HFC_CHIP_EMBSD, &hc->chip);
-		hc->slots = 128; /* required */
+		hc->slots = 128;  
 		hc->HFC_outb = HFC_outb_embsd;
 		hc->HFC_inb = HFC_inb_embsd;
 		hc->HFC_inw = HFC_inw_embsd;
@@ -148,20 +126,13 @@ setup_embedded(struct hfc_multi *hc, struct hm_map *m)
 		printk(KERN_WARNING "HFC-multi: Invalid IO mode.\n");
 		return -EIO;
 	}
-
-	/* Prepare the MPC8XX PortA 10 as output (address/data selector) */
 	hc->immap = (struct immap *)(IMAP_ADDR);
 	hc->immap->im_ioport.iop_papar &= ~(PA_XHFC_A0);
 	hc->immap->im_ioport.iop_paodr &= ~(PA_XHFC_A0);
 	hc->immap->im_ioport.iop_padir |=   PA_XHFC_A0;
-
-	/* Prepare the MPC8xx PortB __X__ as input (ISDN__X__IRQ) */
 	hc->pb_irqmsk = (PB_XHFC_IRQ1 << hc->id);
 	hc->immap->im_cpm.cp_pbpar &= ~(hc->pb_irqmsk);
 	hc->immap->im_cpm.cp_pbodr &= ~(hc->pb_irqmsk);
 	hc->immap->im_cpm.cp_pbdir &= ~(hc->pb_irqmsk);
-
-	/* At this point the needed config is done */
-	/* fifos are still not enabled */
 	return 0;
 }

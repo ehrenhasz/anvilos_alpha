@@ -1,14 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019 MediaTek Inc.
- */
-
 #ifndef __SND_SOC_MT6660_H
 #define __SND_SOC_MT6660_H
-
 #include <linux/mutex.h>
 #include <linux/regmap.h>
-
 #pragma pack(push, 1)
 struct mt6660_platform_data {
 	u8 init_setting_num;
@@ -16,7 +9,6 @@ struct mt6660_platform_data {
 	u32 *init_setting_mask;
 	u32 *init_setting_val;
 };
-
 struct mt6660_chip {
 	struct i2c_client *i2c;
 	struct device *dev;
@@ -27,7 +19,6 @@ struct mt6660_chip {
 	u16 chip_rev;
 };
 #pragma pack(pop)
-
 #define MT6660_REG_DEVID		(0x00)
 #define MT6660_REG_SYSTEM_CTRL		(0x03)
 #define MT6660_REG_IRQ_STATUS1		(0x05)
@@ -73,5 +64,4 @@ struct mt6660_chip {
 #define MT6660_REG_RESV23		(0xBD)
 #define MT6660_REG_RESV31		(0xD3)
 #define MT6660_REG_RESV40		(0xE0)
-
-#endif /* __SND_SOC_MT6660_H */
+#endif  

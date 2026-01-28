@@ -1,31 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
-
 #if !defined(__MT7601U_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __MT7601U_TRACE_H
-
 #include <linux/tracepoint.h>
 #include "mt7601u.h"
 #include "mac.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mt7601u
-
 #define MAXNAME		32
 #define DEV_ENTRY	__array(char, wiphy_name, 32)
 #define DEV_ASSIGN	strscpy(__entry->wiphy_name,			\
 				wiphy_name(dev->hw->wiphy), MAXNAME)
 #define DEV_PR_FMT	"%s "
 #define DEV_PR_ARG	__entry->wiphy_name
-
 #define REG_ENTRY	__field(u32, reg) __field(u32, val)
 #define REG_ASSIGN	__entry->reg = reg; __entry->val = val
 #define REG_PR_FMT	"%04x=%08x"
 #define REG_PR_ARG	__entry->reg, __entry->val
-
 DECLARE_EVENT_CLASS(dev_reg_evtu,
 	TP_PROTO(struct mt7601u_dev *dev, u32 reg, u32 val),
 	TP_ARGS(dev, reg, val),
@@ -42,17 +31,14 @@ DECLARE_EVENT_CLASS(dev_reg_evtu,
 		DEV_PR_ARG, REG_PR_ARG
 	)
 );
-
 DEFINE_EVENT(dev_reg_evtu, reg_read,
 	TP_PROTO(struct mt7601u_dev *dev, u32 reg, u32 val),
 	TP_ARGS(dev, reg, val)
 );
-
 DEFINE_EVENT(dev_reg_evtu, reg_write,
 	TP_PROTO(struct mt7601u_dev *dev, u32 reg, u32 val),
 	TP_ARGS(dev, reg, val)
 );
-
 TRACE_EVENT(mt_submit_urb,
 	TP_PROTO(struct mt7601u_dev *dev, struct urb *u),
 	TP_ARGS(dev, u),
@@ -67,14 +53,12 @@ TRACE_EVENT(mt_submit_urb,
 	TP_printk(DEV_PR_FMT "p:%08x len:%u",
 		  DEV_PR_ARG, __entry->pipe, __entry->len)
 );
-
 #define trace_mt_submit_urb_sync(__dev, __pipe, __len) ({	\
 	struct urb u;					\
 	u.pipe = __pipe;				\
 	u.transfer_buffer_length = __len;		\
 	trace_mt_submit_urb(__dev, &u);			\
 })
-
 TRACE_EVENT(mt_mcu_msg_send,
 	TP_PROTO(struct mt7601u_dev *dev,
 		 struct sk_buff *skb, u32 csum, bool resp),
@@ -94,7 +78,6 @@ TRACE_EVENT(mt_mcu_msg_send,
 	TP_printk(DEV_PR_FMT "i:%08x c:%08x r:%d",
 		  DEV_PR_ARG, __entry->info, __entry->csum, __entry->resp)
 );
-
 TRACE_EVENT(mt_vend_req,
 	TP_PROTO(struct mt7601u_dev *dev, unsigned pipe, u8 req, u8 req_type,
 		 u16 val, u16 offset, void *buf, size_t buflen, int ret),
@@ -122,7 +105,6 @@ TRACE_EVENT(mt_vend_req,
 		  __entry->req_type, __entry->val, __entry->offset,
 		  !!__entry->buf, __entry->buflen)
 );
-
 TRACE_EVENT(ee_read,
 	TP_PROTO(struct mt7601u_dev *dev, int offset, u16 val),
 	TP_ARGS(dev, offset, val),
@@ -137,7 +119,6 @@ TRACE_EVENT(ee_read,
 	),
 	TP_printk(DEV_PR_FMT "%04x=%04x", DEV_PR_ARG, __entry->o, __entry->v)
 );
-
 DECLARE_EVENT_CLASS(dev_rf_reg_evt,
 	TP_PROTO(struct mt7601u_dev *dev, u8 bank, u8 reg, u8 val),
 	TP_ARGS(dev, bank, reg, val),
@@ -157,17 +138,14 @@ DECLARE_EVENT_CLASS(dev_rf_reg_evt,
 		DEV_PR_ARG, __entry->bank, __entry->reg, __entry->val
 	)
 );
-
 DEFINE_EVENT(dev_rf_reg_evt, rf_read,
 	TP_PROTO(struct mt7601u_dev *dev, u8 bank, u8 reg, u8 val),
 	TP_ARGS(dev, bank, reg, val)
 );
-
 DEFINE_EVENT(dev_rf_reg_evt, rf_write,
 	TP_PROTO(struct mt7601u_dev *dev, u8 bank, u8 reg, u8 val),
 	TP_ARGS(dev, bank, reg, val)
 );
-
 DECLARE_EVENT_CLASS(dev_bbp_reg_evt,
 	TP_PROTO(struct mt7601u_dev *dev, u8 reg, u8 val),
 	TP_ARGS(dev, reg, val),
@@ -185,17 +163,14 @@ DECLARE_EVENT_CLASS(dev_bbp_reg_evt,
 		DEV_PR_ARG, __entry->reg, __entry->val
 	)
 );
-
 DEFINE_EVENT(dev_bbp_reg_evt, bbp_read,
 	TP_PROTO(struct mt7601u_dev *dev, u8 reg, u8 val),
 	TP_ARGS(dev, reg, val)
 );
-
 DEFINE_EVENT(dev_bbp_reg_evt, bbp_write,
 	TP_PROTO(struct mt7601u_dev *dev, u8 reg, u8 val),
 	TP_ARGS(dev, reg, val)
 );
-
 DECLARE_EVENT_CLASS(dev_simple_evt,
 	TP_PROTO(struct mt7601u_dev *dev, u8 val),
 	TP_ARGS(dev, val),
@@ -211,22 +186,18 @@ DECLARE_EVENT_CLASS(dev_simple_evt,
 		DEV_PR_FMT "%02hhx", DEV_PR_ARG, __entry->val
 	)
 );
-
 DEFINE_EVENT(dev_simple_evt, temp_mode,
 	TP_PROTO(struct mt7601u_dev *dev, u8 val),
 	TP_ARGS(dev, val)
 );
-
 DEFINE_EVENT(dev_simple_evt, read_temp,
 	TP_PROTO(struct mt7601u_dev *dev, u8 val),
 	TP_ARGS(dev, val)
 );
-
 DEFINE_EVENT(dev_simple_evt, freq_cal_adjust,
 	TP_PROTO(struct mt7601u_dev *dev, u8 val),
 	TP_ARGS(dev, val)
 );
-
 TRACE_EVENT(freq_cal_offset,
 	TP_PROTO(struct mt7601u_dev *dev, u8 phy_mode, s8 freq_off),
 	TP_ARGS(dev, phy_mode, freq_off),
@@ -243,7 +214,6 @@ TRACE_EVENT(freq_cal_offset,
 	TP_printk(DEV_PR_FMT "phy:%02hhx off:%02hhx",
 		  DEV_PR_ARG, __entry->phy_mode, __entry->freq_off)
 );
-
 TRACE_EVENT(mt_rx,
 	TP_PROTO(struct mt7601u_dev *dev, struct mt7601u_rxwi *rxwi, u32 f),
 	TP_ARGS(dev, rxwi, f),
@@ -273,7 +243,6 @@ TRACE_EVENT(mt_rx,
 		  __entry->rxwi.resv2, __entry->rxwi.expert_ant,
 		  __entry->fce_info)
 );
-
 TRACE_EVENT(mt_tx,
 	TP_PROTO(struct mt7601u_dev *dev, struct sk_buff *skb,
 		 struct mt76_sta *sta, struct mt76_txwi *h),
@@ -298,7 +267,6 @@ TRACE_EVENT(mt_tx,
 		  __entry->h.ack_ctl, __entry->h.wcid,
 		  le16_to_cpu(__entry->h.len_ctl))
 );
-
 TRACE_EVENT(mt_tx_dma_done,
 	TP_PROTO(struct mt7601u_dev *dev, struct sk_buff *skb),
 	TP_ARGS(dev, skb),
@@ -312,7 +280,6 @@ TRACE_EVENT(mt_tx_dma_done,
 	),
 	TP_printk(DEV_PR_FMT "%p", DEV_PR_ARG, __entry->skb)
 );
-
 TRACE_EVENT(mt_tx_status_cleaned,
 	TP_PROTO(struct mt7601u_dev *dev, int cleaned),
 	TP_ARGS(dev, cleaned),
@@ -326,7 +293,6 @@ TRACE_EVENT(mt_tx_status_cleaned,
 	),
 	TP_printk(DEV_PR_FMT "%d", DEV_PR_ARG, __entry->cleaned)
 );
-
 TRACE_EVENT(mt_tx_status,
 	TP_PROTO(struct mt7601u_dev *dev, u32 stat1, u32 stat2),
 	TP_ARGS(dev, stat1, stat2),
@@ -342,7 +308,6 @@ TRACE_EVENT(mt_tx_status,
 	TP_printk(DEV_PR_FMT "%08x %08x",
 		  DEV_PR_ARG, __entry->stat1, __entry->stat2)
 );
-
 TRACE_EVENT(mt_rx_dma_aggr,
 	TP_PROTO(struct mt7601u_dev *dev, int cnt, bool paged),
 	TP_ARGS(dev, cnt, paged),
@@ -359,12 +324,10 @@ TRACE_EVENT(mt_rx_dma_aggr,
 	TP_printk(DEV_PR_FMT "cnt:%d paged:%d",
 		  DEV_PR_ARG, __entry->cnt, __entry->paged)
 );
-
 DEFINE_EVENT(dev_simple_evt, set_key,
 	TP_PROTO(struct mt7601u_dev *dev, u8 val),
 	TP_ARGS(dev, val)
 );
-
 TRACE_EVENT(set_shared_key,
 	TP_PROTO(struct mt7601u_dev *dev, u8 vid, u8 key),
 	TP_ARGS(dev, vid, key),
@@ -381,12 +344,9 @@ TRACE_EVENT(set_shared_key,
 	TP_printk(DEV_PR_FMT "phy:%02hhx off:%02hhx",
 		  DEV_PR_ARG, __entry->vid, __entry->key)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
 #include <trace/define_trace.h>

@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (C) 2003-2018 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_SPXX_DEFS_H__
 #define __CVMX_SPXX_DEFS_H__
-
 #define CVMX_SPXX_BCKPRS_CNT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000340ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SPXX_BIST_STAT(block_id) (CVMX_ADD_IO_SEG(0x00011800900007F8ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SPXX_CLK_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000348ull) + ((block_id) & 1) * 0x8000000ull)
@@ -44,9 +16,7 @@
 #define CVMX_SPXX_TPA_MAX(block_id) (CVMX_ADD_IO_SEG(0x0001180090000330ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SPXX_TPA_SEL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000328ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SPXX_TRN4_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000360ull) + ((block_id) & 1) * 0x8000000ull)
-
 void __cvmx_interrupt_spxx_int_msk_enable(int index);
-
 union cvmx_spxx_bckprs_cnt {
 	uint64_t u64;
 	struct cvmx_spxx_bckprs_cnt_s {
@@ -59,7 +29,6 @@ union cvmx_spxx_bckprs_cnt {
 #endif
 	} s;
 };
-
 union cvmx_spxx_bist_stat {
 	uint64_t u64;
 	struct cvmx_spxx_bist_stat_s {
@@ -76,7 +45,6 @@ union cvmx_spxx_bist_stat {
 #endif
 	} s;
 };
-
 union cvmx_spxx_clk_ctl {
 	uint64_t u64;
 	struct cvmx_spxx_clk_ctl_s {
@@ -107,7 +75,6 @@ union cvmx_spxx_clk_ctl {
 #endif
 	} s;
 };
-
 union cvmx_spxx_clk_stat {
 	uint64_t u64;
 	struct cvmx_spxx_clk_stat_s {
@@ -134,7 +101,6 @@ union cvmx_spxx_clk_stat {
 #endif
 	} s;
 };
-
 union cvmx_spxx_dbg_deskew_ctl {
 	uint64_t u64;
 	struct cvmx_spxx_dbg_deskew_ctl_s {
@@ -175,7 +141,6 @@ union cvmx_spxx_dbg_deskew_ctl {
 #endif
 	} s;
 };
-
 union cvmx_spxx_dbg_deskew_state {
 	uint64_t u64;
 	struct cvmx_spxx_dbg_deskew_state_s {
@@ -194,7 +159,6 @@ union cvmx_spxx_dbg_deskew_state {
 #endif
 	} s;
 };
-
 union cvmx_spxx_drv_ctl {
 	uint64_t u64;
 	struct cvmx_spxx_drv_ctl_s {
@@ -233,7 +197,6 @@ union cvmx_spxx_drv_ctl {
 #endif
 	} cn58xx;
 };
-
 union cvmx_spxx_err_ctl {
 	uint64_t u64;
 	struct cvmx_spxx_err_ctl_s {
@@ -254,7 +217,6 @@ union cvmx_spxx_err_ctl {
 #endif
 	} s;
 };
-
 union cvmx_spxx_int_dat {
 	uint64_t u64;
 	struct cvmx_spxx_int_dat_s {
@@ -275,7 +237,6 @@ union cvmx_spxx_int_dat {
 #endif
 	} s;
 };
-
 union cvmx_spxx_int_msk {
 	uint64_t u64;
 	struct cvmx_spxx_int_msk_s {
@@ -308,7 +269,6 @@ union cvmx_spxx_int_msk {
 #endif
 	} s;
 };
-
 union cvmx_spxx_int_reg {
 	uint64_t u64;
 	struct cvmx_spxx_int_reg_s {
@@ -345,7 +305,6 @@ union cvmx_spxx_int_reg {
 #endif
 	} s;
 };
-
 union cvmx_spxx_int_sync {
 	uint64_t u64;
 	struct cvmx_spxx_int_sync_s {
@@ -378,7 +337,6 @@ union cvmx_spxx_int_sync {
 #endif
 	} s;
 };
-
 union cvmx_spxx_tpa_acc {
 	uint64_t u64;
 	struct cvmx_spxx_tpa_acc_s {
@@ -391,7 +349,6 @@ union cvmx_spxx_tpa_acc {
 #endif
 	} s;
 };
-
 union cvmx_spxx_tpa_max {
 	uint64_t u64;
 	struct cvmx_spxx_tpa_max_s {
@@ -404,7 +361,6 @@ union cvmx_spxx_tpa_max {
 #endif
 	} s;
 };
-
 union cvmx_spxx_tpa_sel {
 	uint64_t u64;
 	struct cvmx_spxx_tpa_sel_s {
@@ -417,7 +373,6 @@ union cvmx_spxx_tpa_sel {
 #endif
 	} s;
 };
-
 union cvmx_spxx_trn4_ctl {
 	uint64_t u64;
 	struct cvmx_spxx_trn4_ctl_s {
@@ -442,5 +397,4 @@ union cvmx_spxx_trn4_ctl {
 #endif
 	} s;
 };
-
 #endif

@@ -1,44 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright 2012-2021 VMware, Inc.
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies
- * of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
-
-/*
- * svga3d_types.h --
- *
- *    SVGA 3d hardware definitions for basic types
- */
-
-
-
 #ifndef _SVGA3D_TYPES_H_
 #define _SVGA3D_TYPES_H_
-
 #include "vm_basic_types.h"
-
 #define SVGA3D_INVALID_ID ((uint32)-1)
-
 #define SVGA3D_RESOURCE_TYPE_MIN 1
 #define SVGA3D_RESOURCE_BUFFER 1
 #define SVGA3D_RESOURCE_TEXTURE1D 2
@@ -49,20 +12,16 @@
 #define SVGA3D_RESOURCE_BUFFEREX 6
 #define SVGA3D_RESOURCE_TYPE_MAX 7
 typedef uint32 SVGA3dResourceType;
-
 typedef uint8 SVGABool8;
 typedef uint32 SVGA3dBool;
 typedef uint32 SVGA3dColor;
-
 typedef uint32 SVGA3dSurfaceId;
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 numerator;
 	uint32 denominator;
 } SVGA3dFraction64;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct SVGA3dCopyRect {
 	uint32 x;
@@ -73,7 +32,6 @@ typedef struct SVGA3dCopyRect {
 	uint32 srcy;
 } SVGA3dCopyRect;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct SVGA3dCopyBox {
 	uint32 x;
@@ -87,7 +45,6 @@ typedef struct SVGA3dCopyBox {
 	uint32 srcz;
 } SVGA3dCopyBox;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct SVGA3dRect {
 	uint32 x;
@@ -96,7 +53,6 @@ typedef struct SVGA3dRect {
 	uint32 h;
 } SVGA3dRect;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 x;
@@ -107,7 +63,6 @@ typedef struct {
 	uint32 d;
 } SVGA3dBox;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	int32 x;
@@ -118,7 +73,6 @@ typedef struct {
 	int32 d;
 } SVGA3dSignedBox;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 x;
@@ -126,7 +80,6 @@ typedef struct {
 	uint32 z;
 } SVGA3dPoint;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef union {
 	struct {
@@ -135,80 +88,57 @@ typedef union {
 		float b;
 		float a;
 	};
-
 	float value[4];
 } SVGA3dRGBAFloat;
 #pragma pack(pop)
-
 typedef enum SVGA3dSurfaceFormat {
 	SVGA3D_FORMAT_INVALID = 0,
-
 	SVGA3D_X8R8G8B8 = 1,
 	SVGA3D_FORMAT_MIN = 1,
-
 	SVGA3D_A8R8G8B8 = 2,
-
 	SVGA3D_R5G6B5 = 3,
 	SVGA3D_X1R5G5B5 = 4,
 	SVGA3D_A1R5G5B5 = 5,
 	SVGA3D_A4R4G4B4 = 6,
-
 	SVGA3D_Z_D32 = 7,
 	SVGA3D_Z_D16 = 8,
 	SVGA3D_Z_D24S8 = 9,
 	SVGA3D_Z_D15S1 = 10,
-
 	SVGA3D_LUMINANCE8 = 11,
 	SVGA3D_LUMINANCE4_ALPHA4 = 12,
 	SVGA3D_LUMINANCE16 = 13,
 	SVGA3D_LUMINANCE8_ALPHA8 = 14,
-
 	SVGA3D_DXT1 = 15,
 	SVGA3D_DXT2 = 16,
 	SVGA3D_DXT3 = 17,
 	SVGA3D_DXT4 = 18,
 	SVGA3D_DXT5 = 19,
-
 	SVGA3D_BUMPU8V8 = 20,
 	SVGA3D_BUMPL6V5U5 = 21,
 	SVGA3D_BUMPX8L8V8U8 = 22,
 	SVGA3D_FORMAT_DEAD1 = 23,
-
 	SVGA3D_ARGB_S10E5 = 24,
 	SVGA3D_ARGB_S23E8 = 25,
-
 	SVGA3D_A2R10G10B10 = 26,
-
 	SVGA3D_V8U8 = 27,
 	SVGA3D_Q8W8V8U8 = 28,
 	SVGA3D_CxV8U8 = 29,
-
 	SVGA3D_X8L8V8U8 = 30,
 	SVGA3D_A2W10V10U10 = 31,
-
 	SVGA3D_ALPHA8 = 32,
-
 	SVGA3D_R_S10E5 = 33,
 	SVGA3D_R_S23E8 = 34,
 	SVGA3D_RG_S10E5 = 35,
 	SVGA3D_RG_S23E8 = 36,
-
 	SVGA3D_BUFFER = 37,
-
 	SVGA3D_Z_D24X8 = 38,
-
 	SVGA3D_V16U16 = 39,
-
 	SVGA3D_G16R16 = 40,
 	SVGA3D_A16B16G16R16 = 41,
-
 	SVGA3D_UYVY = 42,
 	SVGA3D_YUY2 = 43,
-
 	SVGA3D_NV12 = 44,
-
 	SVGA3D_FORMAT_DEAD2 = 45,
-
 	SVGA3D_R32G32B32A32_TYPELESS = 46,
 	SVGA3D_R32G32B32A32_UINT = 47,
 	SVGA3D_R32G32B32A32_SINT = 48,
@@ -281,13 +211,10 @@ typedef enum SVGA3dSurfaceFormat {
 	SVGA3D_B8G8R8A8_UNORM_SRGB = 115,
 	SVGA3D_B8G8R8X8_TYPELESS = 116,
 	SVGA3D_B8G8R8X8_UNORM_SRGB = 117,
-
 	SVGA3D_Z_DF16 = 118,
 	SVGA3D_Z_DF24 = 119,
 	SVGA3D_Z_D24S8_INT = 120,
-
 	SVGA3D_YV12 = 121,
-
 	SVGA3D_R32G32B32A32_FLOAT = 122,
 	SVGA3D_R16G16B16A16_FLOAT = 123,
 	SVGA3D_R16G16B16A16_UNORM = 124,
@@ -312,23 +239,17 @@ typedef enum SVGA3dSurfaceFormat {
 	SVGA3D_BC4_UNORM = 143,
 	SVGA3D_BC5_UNORM = 144,
 	SVGA3D_B4G4R4A4_UNORM = 145,
-
 	SVGA3D_BC6H_TYPELESS = 146,
 	SVGA3D_BC6H_UF16 = 147,
 	SVGA3D_BC6H_SF16 = 148,
 	SVGA3D_BC7_TYPELESS = 149,
 	SVGA3D_BC7_UNORM = 150,
 	SVGA3D_BC7_UNORM_SRGB = 151,
-
 	SVGA3D_AYUV = 152,
-
 	SVGA3D_R11G11B10_TYPELESS = 153,
-
 	SVGA3D_FORMAT_MAX
 } SVGA3dSurfaceFormat;
-
 #define SVGA3D_SURFACE_CUBEMAP (1 << 0)
-
 #define SVGA3D_SURFACE_HINT_STATIC (CONST64U(1) << 1)
 #define SVGA3D_SURFACE_HINT_DYNAMIC (CONST64U(1) << 2)
 #define SVGA3D_SURFACE_HINT_INDEXBUFFER (CONST64U(1) << 3)
@@ -339,22 +260,15 @@ typedef enum SVGA3dSurfaceFormat {
 #define SVGA3D_SURFACE_HINT_WRITEONLY (CONST64U(1) << 8)
 #define SVGA3D_SURFACE_DEAD2 (CONST64U(1) << 9)
 #define SVGA3D_SURFACE_AUTOGENMIPMAPS (CONST64U(1) << 10)
-
 #define SVGA3D_SURFACE_DEAD1 (CONST64U(1) << 11)
-
 #define SVGA3D_SURFACE_MOB_PITCH (CONST64U(1) << 12)
-
 #define SVGA3D_SURFACE_INACTIVE (CONST64U(1) << 13)
 #define SVGA3D_SURFACE_HINT_RT_LOCKABLE (CONST64U(1) << 14)
 #define SVGA3D_SURFACE_VOLUME (CONST64U(1) << 15)
-
 #define SVGA3D_SURFACE_SCREENTARGET (CONST64U(1) << 16)
-
 #define SVGA3D_SURFACE_ALIGN16 (CONST64U(1) << 17)
-
 #define SVGA3D_SURFACE_1D (CONST64U(1) << 18)
 #define SVGA3D_SURFACE_ARRAY (CONST64U(1) << 19)
-
 #define SVGA3D_SURFACE_BIND_VERTEX_BUFFER (CONST64U(1) << 20)
 #define SVGA3D_SURFACE_BIND_INDEX_BUFFER (CONST64U(1) << 21)
 #define SVGA3D_SURFACE_BIND_CONSTANT_BUFFER (CONST64U(1) << 22)
@@ -362,40 +276,26 @@ typedef enum SVGA3dSurfaceFormat {
 #define SVGA3D_SURFACE_BIND_RENDER_TARGET (CONST64U(1) << 24)
 #define SVGA3D_SURFACE_BIND_DEPTH_STENCIL (CONST64U(1) << 25)
 #define SVGA3D_SURFACE_BIND_STREAM_OUTPUT (CONST64U(1) << 26)
-
 #define SVGA3D_SURFACE_STAGING_UPLOAD (CONST64U(1) << 27)
 #define SVGA3D_SURFACE_STAGING_DOWNLOAD (CONST64U(1) << 28)
 #define SVGA3D_SURFACE_HINT_INDIRECT_UPDATE (CONST64U(1) << 29)
-
 #define SVGA3D_SURFACE_TRANSFER_FROM_BUFFER (CONST64U(1) << 30)
-
 #define SVGA3D_SURFACE_RESERVED1 (CONST64U(1) << 31)
-
 #define SVGA3D_SURFACE_MULTISAMPLE (CONST64U(1) << 32)
-
 #define SVGA3D_SURFACE_BIND_UAVIEW (CONST64U(1) << 33)
-
 #define SVGA3D_SURFACE_TRANSFER_TO_BUFFER (CONST64U(1) << 34)
-
 #define SVGA3D_SURFACE_BIND_LOGICOPS (CONST64U(1) << 35)
-
 #define SVGA3D_SURFACE_BIND_RAW_VIEWS (CONST64U(1) << 36)
 #define SVGA3D_SURFACE_BUFFER_STRUCTURED (CONST64U(1) << 37)
-
 #define SVGA3D_SURFACE_DRAWINDIRECT_ARGS (CONST64U(1) << 38)
 #define SVGA3D_SURFACE_RESOURCE_CLAMP (CONST64U(1) << 39)
-
 #define SVGA3D_SURFACE_STAGING_COPY (CONST64U(1) << 40)
-
 #define SVGA3D_SURFACE_FLAG_MAX (CONST64U(1) << 44)
-
 typedef uint32 SVGA3dSurface1Flags;
 typedef uint32 SVGA3dSurface2Flags;
 typedef uint64 SVGA3dSurfaceAllFlags;
-
 #define SVGA3D_SURFACE_FLAGS1_MASK ((uint64)MAX_UINT32)
 #define SVGA3D_SURFACE_FLAGS2_MASK (MAX_UINT64 & ~SVGA3D_SURFACE_FLAGS1_MASK)
-
 #define SVGA3D_SURFACE_HB_DISALLOWED_MASK                                      \
 	(SVGA3D_SURFACE_MOB_PITCH | SVGA3D_SURFACE_SCREENTARGET |              \
 	 SVGA3D_SURFACE_ALIGN16 | SVGA3D_SURFACE_BIND_CONSTANT_BUFFER |        \
@@ -409,11 +309,9 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_RESOURCE_CLAMP | SVGA3D_SURFACE_STAGING_COPY |         \
 	 SVGA3D_SURFACE_RESTRICT_UPDATE | SVGA3D_SURFACE_BIND_TENSOR |         \
 	 SVGA3D_SURFACE_LO_STAGING)
-
 #define SVGA3D_SURFACE_HB_PRESENT_DISALLOWED_MASK                              \
 	(SVGA3D_SURFACE_1D | SVGA3D_SURFACE_MULTISAMPLE |                      \
 	 SVGA3D_SURFACE_STAGING_COPY)
-
 #define SVGA3D_SURFACE_2D_DISALLOWED_MASK                                      \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_AUTOGENMIPMAPS |              \
 	 SVGA3D_SURFACE_VOLUME | SVGA3D_SURFACE_1D |                           \
@@ -427,12 +325,10 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_BIND_RAW_VIEWS | SVGA3D_SURFACE_BUFFER_STRUCTURED |    \
 	 SVGA3D_SURFACE_DRAWINDIRECT_ARGS | SVGA3D_SURFACE_RESOURCE_CLAMP |    \
 	 SVGA3D_SURFACE_BIND_TENSOR)
-
 #define SVGA3D_SURFACE_BASICOPS_DISALLOWED_MASK                                \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_AUTOGENMIPMAPS |              \
 	 SVGA3D_SURFACE_VOLUME | SVGA3D_SURFACE_1D |                           \
 	 SVGA3D_SURFACE_MULTISAMPLE)
-
 #define SVGA3D_SURFACE_SCREENTARGET_DISALLOWED_MASK                            \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_AUTOGENMIPMAPS |              \
 	 SVGA3D_SURFACE_VOLUME | SVGA3D_SURFACE_1D |                           \
@@ -448,13 +344,11 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_BUFFER_STRUCTURED | SVGA3D_SURFACE_DRAWINDIRECT_ARGS | \
 	 SVGA3D_SURFACE_RESOURCE_CLAMP | SVGA3D_SURFACE_STAGING_COPY |         \
 	 SVGA3D_SURFACE_BIND_TENSOR | SVGA3D_SURFACE_LO_STAGING)
-
 #define SVGA3D_SURFACE_BUFFER_DISALLOWED_MASK                                  \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_AUTOGENMIPMAPS |              \
 	 SVGA3D_SURFACE_VOLUME | SVGA3D_SURFACE_1D | SVGA3D_SURFACE_DEAD2 |    \
 	 SVGA3D_SURFACE_ARRAY | SVGA3D_SURFACE_MULTISAMPLE |                   \
 	 SVGA3D_SURFACE_MOB_PITCH | SVGA3D_SURFACE_RESOURCE_CLAMP)
-
 #define SVGA3D_SURFACE_MULTISAMPLE_DISALLOWED_MASK                             \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_AUTOGENMIPMAPS |              \
 	 SVGA3D_SURFACE_VOLUME | SVGA3D_SURFACE_1D |                           \
@@ -463,20 +357,16 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_TRANSFER_TO_BUFFER | SVGA3D_SURFACE_BIND_LOGICOPS |    \
 	 SVGA3D_SURFACE_BIND_RAW_VIEWS | SVGA3D_SURFACE_BUFFER_STRUCTURED |    \
 	 SVGA3D_SURFACE_DRAWINDIRECT_ARGS | SVGA3D_SURFACE_STAGING_COPY)
-
 #define SVGA3D_SURFACE_DX_ONLY_MASK                                            \
 	(SVGA3D_SURFACE_BIND_STREAM_OUTPUT | SVGA3D_SURFACE_STAGING_UPLOAD |   \
 	 SVGA3D_SURFACE_STAGING_DOWNLOAD |                                     \
 	 SVGA3D_SURFACE_TRANSFER_FROM_BUFFER |                                 \
 	 SVGA3D_SURFACE_TRANSFER_TO_BUFFER)
-
 #define SVGA3D_SURFACE_ANY_STAGING_MASK                                        \
 	(SVGA3D_SURFACE_STAGING_UPLOAD | SVGA3D_SURFACE_STAGING_DOWNLOAD |     \
 	 SVGA3D_SURFACE_STAGING_COPY | SVGA3D_SURFACE_LO_STAGING)
-
 #define SVGA3D_SURFACE_ANY_NONHINT_STAGING_MASK                                \
 	(SVGA3D_SURFACE_ANY_STAGING_MASK & ~(SVGA3D_SURFACE_LO_STAGING))
-
 #define SVGA3D_SURFACE_BIND_MASK                                               \
 	(SVGA3D_SURFACE_BIND_VERTEX_BUFFER |                                   \
 	 SVGA3D_SURFACE_BIND_INDEX_BUFFER |                                    \
@@ -487,19 +377,16 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_BIND_STREAM_OUTPUT | SVGA3D_SURFACE_BIND_UAVIEW |      \
 	 SVGA3D_SURFACE_BIND_LOGICOPS | SVGA3D_SURFACE_BIND_RAW_VIEWS |        \
 	 SVGA3D_SURFACE_BIND_TENSOR)
-
 #define SVGA3D_SURFACE_STAGING_DISALLOWED_MASK                                 \
 	(SVGA3D_SURFACE_BIND_MASK | SVGA3D_SURFACE_AUTOGENMIPMAPS |            \
 	 SVGA3D_SURFACE_SCREENTARGET | SVGA3D_SURFACE_HINT_RENDERTARGET |      \
 	 SVGA3D_SURFACE_HINT_INDIRECT_UPDATE | SVGA3D_SURFACE_MULTISAMPLE |    \
 	 SVGA3D_SURFACE_DRAWINDIRECT_ARGS | SVGA3D_SURFACE_RESOURCE_CLAMP |    \
 	 SVGA3D_SURFACE_BIND_TENSOR)
-
 #define SVGA3D_SURFACE_STAGING_COPY_DISALLOWED_MASK                            \
 	(SVGA3D_SURFACE_STAGING_DISALLOWED_MASK |                              \
 	 SVGA3D_SURFACE_TRANSFER_TO_BUFFER |                                   \
 	 SVGA3D_SURFACE_TRANSFER_FROM_BUFFER)
-
 #define SVGA3D_SURFACE_LOGICOPS_DISALLOWED_MASK                                \
 	(SVGA3D_SURFACE_CUBEMAP | SVGA3D_SURFACE_DEAD2 |                       \
 	 SVGA3D_SURFACE_AUTOGENMIPMAPS | SVGA3D_SURFACE_VOLUME |               \
@@ -513,14 +400,11 @@ typedef uint64 SVGA3dSurfaceAllFlags;
 	 SVGA3D_SURFACE_BIND_RAW_VIEWS | SVGA3D_SURFACE_BUFFER_STRUCTURED |    \
 	 SVGA3D_SURFACE_DRAWINDIRECT_ARGS | SVGA3D_SURFACE_RESOURCE_CLAMP |    \
 	 SVGA3D_SURFACE_STAGING_COPY)
-
 #define SVGA3D_SURFACE_SM5_MASK                                                \
 	(SVGA3D_SURFACE_DRAWINDIRECT_ARGS | SVGA3D_SURFACE_BUFFER_STRUCTURED | \
 	 SVGA3D_SURFACE_BIND_RAW_VIEWS | SVGA3D_SURFACE_BIND_UAVIEW |          \
 	 SVGA3D_SURFACE_RESOURCE_CLAMP)
-
 #define SVGA3D_BUFFER_STRUCTURED_STRIDE_MAX 2048
-
 typedef enum {
 	SVGA3DFORMAT_OP_TEXTURE = 0x00000001,
 	SVGA3DFORMAT_OP_VOLUMETEXTURE = 0x00000002,
@@ -529,40 +413,23 @@ typedef enum {
 	SVGA3DFORMAT_OP_SAME_FORMAT_RENDERTARGET = 0x00000010,
 	SVGA3DFORMAT_OP_ZSTENCIL = 0x00000040,
 	SVGA3DFORMAT_OP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH = 0x00000080,
-
 	SVGA3DFORMAT_OP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET = 0x00000100,
-
 	SVGA3DFORMAT_OP_DISPLAYMODE = 0x00000400,
-
 	SVGA3DFORMAT_OP_3DACCELERATION = 0x00000800,
-
 	SVGA3DFORMAT_OP_PIXELSIZE = 0x00001000,
-
 	SVGA3DFORMAT_OP_CONVERT_TO_ARGB = 0x00002000,
-
 	SVGA3DFORMAT_OP_OFFSCREENPLAIN = 0x00004000,
-
 	SVGA3DFORMAT_OP_SRGBREAD = 0x00008000,
-
 	SVGA3DFORMAT_OP_BUMPMAP = 0x00010000,
-
 	SVGA3DFORMAT_OP_DMAP = 0x00020000,
-
 	SVGA3DFORMAT_OP_NOFILTER = 0x00040000,
-
 	SVGA3DFORMAT_OP_MEMBEROFGROUP_ARGB = 0x00080000,
-
 	SVGA3DFORMAT_OP_SRGBWRITE = 0x00100000,
-
 	SVGA3DFORMAT_OP_NOALPHABLEND = 0x00200000,
-
 	SVGA3DFORMAT_OP_AUTOGENMIPMAP = 0x00400000,
-
 	SVGA3DFORMAT_OP_VERTEXTEXTURE = 0x00800000,
-
 	SVGA3DFORMAT_OP_NOTEXCOORDWRAPNORMIP = 0x01000000
 } SVGA3dFormatOp;
-
 #define SVGA3D_FORMAT_POSITIVE                                                 \
 	(SVGA3DFORMAT_OP_TEXTURE | SVGA3DFORMAT_OP_VOLUMETEXTURE |             \
 	 SVGA3DFORMAT_OP_CUBETEXTURE |                                         \
@@ -576,11 +443,9 @@ typedef enum {
 	 SVGA3DFORMAT_OP_BUMPMAP | SVGA3DFORMAT_OP_DMAP |                      \
 	 SVGA3DFORMAT_OP_MEMBEROFGROUP_ARGB | SVGA3DFORMAT_OP_SRGBWRITE |      \
 	 SVGA3DFORMAT_OP_AUTOGENMIPMAP | SVGA3DFORMAT_OP_VERTEXTEXTURE)
-
 #define SVGA3D_FORMAT_NEGATIVE                                                 \
 	(SVGA3DFORMAT_OP_NOFILTER | SVGA3DFORMAT_OP_NOALPHABLEND |             \
 	 SVGA3DFORMAT_OP_NOTEXCOORDWRAPNORMIP)
-
 typedef union {
 	uint32 value;
 	struct {
@@ -611,7 +476,6 @@ typedef union {
 		uint32 noTexCoordWrapNorMip : 1;
 	};
 } SVGA3dSurfaceFormatCaps;
-
 typedef enum {
 	SVGA3D_RS_INVALID = 0,
 	SVGA3D_RS_MIN = 1,
@@ -679,7 +543,6 @@ typedef enum {
 	SVGA3D_RS_VERTEXBLEND = 62,
 	SVGA3D_RS_SLOPESCALEDEPTHBIAS = 63,
 	SVGA3D_RS_DEPTHBIAS = 64,
-
 	SVGA3D_RS_OUTPUTGAMMA = 65,
 	SVGA3D_RS_ZVISIBLE = 66,
 	SVGA3D_RS_LASTPIXEL = 67,
@@ -716,21 +579,18 @@ typedef enum {
 	SVGA3D_RS_LINEWIDTH = 98,
 	SVGA3D_RS_MAX
 } SVGA3dRenderStateName;
-
 typedef enum {
 	SVGA3D_TRANSPARENCYANTIALIAS_NORMAL = 0,
 	SVGA3D_TRANSPARENCYANTIALIAS_ALPHATOCOVERAGE = 1,
 	SVGA3D_TRANSPARENCYANTIALIAS_SUPERSAMPLE = 2,
 	SVGA3D_TRANSPARENCYANTIALIAS_MAX
 } SVGA3dTransparencyAntialiasType;
-
 typedef enum {
 	SVGA3D_VERTEXMATERIAL_NONE = 0,
 	SVGA3D_VERTEXMATERIAL_DIFFUSE = 1,
 	SVGA3D_VERTEXMATERIAL_SPECULAR = 2,
 	SVGA3D_VERTEXMATERIAL_MAX = 3,
 } SVGA3dVertexMaterial;
-
 typedef enum {
 	SVGA3D_FILLMODE_INVALID = 0,
 	SVGA3D_FILLMODE_MIN = 1,
@@ -739,7 +599,6 @@ typedef enum {
 	SVGA3D_FILLMODE_FILL = 3,
 	SVGA3D_FILLMODE_MAX
 } SVGA3dFillModeType;
-
 #pragma pack(push, 1)
 typedef union {
 	struct {
@@ -749,7 +608,6 @@ typedef union {
 	uint32 uintValue;
 } SVGA3dFillMode;
 #pragma pack(pop)
-
 typedef enum {
 	SVGA3D_SHADEMODE_INVALID = 0,
 	SVGA3D_SHADEMODE_FLAT = 1,
@@ -757,7 +615,6 @@ typedef enum {
 	SVGA3D_SHADEMODE_PHONG = 3,
 	SVGA3D_SHADEMODE_MAX
 } SVGA3dShadeMode;
-
 #pragma pack(push, 1)
 typedef union {
 	struct {
@@ -767,7 +624,6 @@ typedef union {
 	uint32 uintValue;
 } SVGA3dLinePattern;
 #pragma pack(pop)
-
 typedef enum {
 	SVGA3D_BLENDOP_INVALID = 0,
 	SVGA3D_BLENDOP_MIN = 1,
@@ -792,7 +648,6 @@ typedef enum {
 	SVGA3D_BLENDOP_INVBLENDFACTORALPHA = 19,
 	SVGA3D_BLENDOP_MAX
 } SVGA3dBlendOp;
-
 typedef enum {
 	SVGA3D_BLENDEQ_INVALID = 0,
 	SVGA3D_BLENDEQ_MIN = 1,
@@ -803,7 +658,6 @@ typedef enum {
 	SVGA3D_BLENDEQ_MAXIMUM = 5,
 	SVGA3D_BLENDEQ_MAX
 } SVGA3dBlendEquation;
-
 typedef enum {
 	SVGA3D_DX11_LOGICOP_MIN = 0,
 	SVGA3D_DX11_LOGICOP_CLEAR = 0,
@@ -824,7 +678,6 @@ typedef enum {
 	SVGA3D_DX11_LOGICOP_OR_INVERTED = 15,
 	SVGA3D_DX11_LOGICOP_MAX
 } SVGA3dDX11LogicOp;
-
 typedef enum {
 	SVGA3D_FRONTWINDING_INVALID = 0,
 	SVGA3D_FRONTWINDING_CW = 1,
@@ -832,7 +685,6 @@ typedef enum {
 	SVGA3D_FRONTWINDING_CCW = 2,
 	SVGA3D_FRONTWINDING_MAX
 } SVGA3dFrontWinding;
-
 typedef enum {
 	SVGA3D_FACE_INVALID = 0,
 	SVGA3D_FACE_NONE = 1,
@@ -842,7 +694,6 @@ typedef enum {
 	SVGA3D_FACE_FRONT_BACK = 4,
 	SVGA3D_FACE_MAX
 } SVGA3dFace;
-
 typedef enum {
 	SVGA3D_CMP_INVALID = 0,
 	SVGA3D_CMP_NEVER = 1,
@@ -855,7 +706,6 @@ typedef enum {
 	SVGA3D_CMP_ALWAYS = 8,
 	SVGA3D_CMP_MAX
 } SVGA3dCmpFunc;
-
 typedef enum {
 	SVGA3D_FOGFUNC_INVALID = 0,
 	SVGA3D_FOGFUNC_EXP = 1,
@@ -863,21 +713,18 @@ typedef enum {
 	SVGA3D_FOGFUNC_LINEAR = 3,
 	SVGA3D_FOGFUNC_PER_VERTEX = 4
 } SVGA3dFogFunction;
-
 typedef enum {
 	SVGA3D_FOGTYPE_INVALID = 0,
 	SVGA3D_FOGTYPE_VERTEX = 1,
 	SVGA3D_FOGTYPE_PIXEL = 2,
 	SVGA3D_FOGTYPE_MAX = 3
 } SVGA3dFogType;
-
 typedef enum {
 	SVGA3D_FOGBASE_INVALID = 0,
 	SVGA3D_FOGBASE_DEPTHBASED = 1,
 	SVGA3D_FOGBASE_RANGEBASED = 2,
 	SVGA3D_FOGBASE_MAX = 3
 } SVGA3dFogBase;
-
 typedef enum {
 	SVGA3D_STENCILOP_INVALID = 0,
 	SVGA3D_STENCILOP_MIN = 1,
@@ -891,7 +738,6 @@ typedef enum {
 	SVGA3D_STENCILOP_DECR = 8,
 	SVGA3D_STENCILOP_MAX
 } SVGA3dStencilOp;
-
 typedef enum {
 	SVGA3D_CLIPPLANE_0 = (1 << 0),
 	SVGA3D_CLIPPLANE_1 = (1 << 1),
@@ -900,15 +746,12 @@ typedef enum {
 	SVGA3D_CLIPPLANE_4 = (1 << 4),
 	SVGA3D_CLIPPLANE_5 = (1 << 5),
 } SVGA3dClipPlanes;
-
 typedef enum {
 	SVGA3D_CLEAR_COLOR = 0x1,
 	SVGA3D_CLEAR_DEPTH = 0x2,
 	SVGA3D_CLEAR_STENCIL = 0x4,
-
 	SVGA3D_CLEAR_COLORFILL = 0x8
 } SVGA3dClearFlag;
-
 typedef enum {
 	SVGA3D_RT_DEPTH = 0,
 	SVGA3D_RT_MIN = 0,
@@ -924,9 +767,7 @@ typedef enum {
 	SVGA3D_RT_MAX,
 	SVGA3D_RT_INVALID = ((uint32)-1),
 } SVGA3dRenderTargetType;
-
 #define SVGA3D_MAX_RT_COLOR (SVGA3D_RT_COLOR7 - SVGA3D_RT_COLOR0 + 1)
-
 #pragma pack(push, 1)
 typedef union {
 	struct {
@@ -938,7 +779,6 @@ typedef union {
 	uint32 uintValue;
 } SVGA3dColorMask;
 #pragma pack(pop)
-
 typedef enum {
 	SVGA3D_VBLEND_DISABLE = 0,
 	SVGA3D_VBLEND_1WEIGHT = 1,
@@ -946,7 +786,6 @@ typedef enum {
 	SVGA3D_VBLEND_3WEIGHT = 3,
 	SVGA3D_VBLEND_MAX = 4,
 } SVGA3dVertexBlendFlags;
-
 typedef enum {
 	SVGA3D_WRAPCOORD_0 = 1 << 0,
 	SVGA3D_WRAPCOORD_1 = 1 << 1,
@@ -954,7 +793,6 @@ typedef enum {
 	SVGA3D_WRAPCOORD_3 = 1 << 3,
 	SVGA3D_WRAPCOORD_ALL = 0xF,
 } SVGA3dWrapFlags;
-
 typedef enum {
 	SVGA3D_TS_INVALID = 0,
 	SVGA3D_TS_MIN = 1,
@@ -982,7 +820,6 @@ typedef enum {
 	SVGA3D_TS_TEXTURE_LOD_BIAS = 22,
 	SVGA3D_TS_TEXTURE_ANISOTROPIC_LEVEL = 23,
 	SVGA3D_TS_ADDRESSW = 24,
-
 	SVGA3D_TS_GAMMA = 25,
 	SVGA3D_TS_BUMPENVLSCALE = 26,
 	SVGA3D_TS_BUMPENVLOFFSET = 27,
@@ -994,7 +831,6 @@ typedef enum {
 	SVGA3D_TS_COLOR_KEY = 32,
 	SVGA3D_TS_MAX
 } SVGA3dTextureStateName;
-
 typedef enum {
 	SVGA3D_TC_INVALID = 0,
 	SVGA3D_TC_DISABLE = 1,
@@ -1025,10 +861,8 @@ typedef enum {
 	SVGA3D_TC_LERP = 26,
 	SVGA3D_TC_MAX
 } SVGA3dTextureCombiner;
-
 #define SVGA3D_TC_CAP_BIT(svga3d_tc_op)                                        \
 	(svga3d_tc_op ? (1 << (svga3d_tc_op - 1)) : 0)
-
 typedef enum {
 	SVGA3D_TEX_ADDRESS_INVALID = 0,
 	SVGA3D_TEX_ADDRESS_MIN = 1,
@@ -1040,7 +874,6 @@ typedef enum {
 	SVGA3D_TEX_ADDRESS_EDGE = 6,
 	SVGA3D_TEX_ADDRESS_MAX
 } SVGA3dTextureAddress;
-
 typedef enum {
 	SVGA3D_TEX_FILTER_NONE = 0,
 	SVGA3D_TEX_FILTER_MIN = 0,
@@ -1053,7 +886,6 @@ typedef enum {
 	SVGA3D_TEX_FILTER_GAUSSIANQUAD = 7,
 	SVGA3D_TEX_FILTER_MAX
 } SVGA3dTextureFilter;
-
 typedef enum {
 	SVGA3D_TEX_TRANSFORM_OFF = 0,
 	SVGA3D_TEX_TRANSFORM_S = (1 << 0),
@@ -1062,7 +894,6 @@ typedef enum {
 	SVGA3D_TEX_TRANSFORM_Q = (1 << 3),
 	SVGA3D_TEX_PROJECTED = (1 << 15),
 } SVGA3dTexTransformFlags;
-
 typedef enum {
 	SVGA3D_TEXCOORD_GEN_OFF = 0,
 	SVGA3D_TEXCOORD_GEN_EYE_POSITION = 1,
@@ -1071,7 +902,6 @@ typedef enum {
 	SVGA3D_TEXCOORD_GEN_SPHERE = 4,
 	SVGA3D_TEXCOORD_GEN_MAX
 } SVGA3dTextureCoordGen;
-
 typedef enum {
 	SVGA3D_TA_INVALID = 0,
 	SVGA3D_TA_TFACTOR = 1,
@@ -1082,15 +912,12 @@ typedef enum {
 	SVGA3D_TA_CONSTANT = 6,
 	SVGA3D_TA_MAX
 } SVGA3dTextureArgData;
-
 #define SVGA3D_TM_MASK_LEN 4
-
 typedef enum {
 	SVGA3D_TM_NONE = 0,
 	SVGA3D_TM_ALPHA = (1 << SVGA3D_TM_MASK_LEN),
 	SVGA3D_TM_ONE_MINUS = (2 << SVGA3D_TM_MASK_LEN),
 } SVGA3dTextureArgModifier;
-
 typedef enum {
 	SVGA3D_DECLUSAGE_POSITION = 0,
 	SVGA3D_DECLUSAGE_BLENDWEIGHT,
@@ -1108,7 +935,6 @@ typedef enum {
 	SVGA3D_DECLUSAGE_SAMPLE,
 	SVGA3D_DECLUSAGE_MAX
 } SVGA3dDeclUsage;
-
 typedef enum {
 	SVGA3D_DECLMETHOD_DEFAULT = 0,
 	SVGA3D_DECLMETHOD_PARTIALU,
@@ -1118,7 +944,6 @@ typedef enum {
 	SVGA3D_DECLMETHOD_LOOKUP,
 	SVGA3D_DECLMETHOD_LOOKUPPRESAMPLED,
 } SVGA3dDeclMethod;
-
 typedef enum {
 	SVGA3D_DECLTYPE_FLOAT1 = 0,
 	SVGA3D_DECLTYPE_FLOAT2 = 1,
@@ -1139,21 +964,15 @@ typedef enum {
 	SVGA3D_DECLTYPE_FLOAT16_4 = 16,
 	SVGA3D_DECLTYPE_MAX,
 } SVGA3dDeclType;
-
 typedef union {
 	struct {
 		uint32 count : 30;
-
 		uint32 indexedData : 1;
-
 		uint32 instanceData : 1;
 	};
-
 	uint32 value;
 } SVGA3dVertexDivisor;
-
 typedef enum {
-
 	SVGA3D_PRIMITIVE_INVALID = 0,
 	SVGA3D_PRIMITIVE_MIN = 0,
 	SVGA3D_PRIMITIVE_TRIANGLELIST = 1,
@@ -1202,14 +1021,12 @@ typedef enum {
 	SVGA3D_PRIMITIVE_32_CONTROL_POINT_PATCH = 42,
 	SVGA3D_PRIMITIVE_MAX = 43
 } SVGA3dPrimitiveType;
-
 typedef enum {
 	SVGA3D_COORDINATE_INVALID = 0,
 	SVGA3D_COORDINATE_LEFTHANDED = 1,
 	SVGA3D_COORDINATE_RIGHTHANDED = 2,
 	SVGA3D_COORDINATE_MAX
 } SVGA3dCoordinateType;
-
 typedef enum {
 	SVGA3D_TRANSFORM_INVALID = 0,
 	SVGA3D_TRANSFORM_WORLD = 1,
@@ -1229,7 +1046,6 @@ typedef enum {
 	SVGA3D_TRANSFORM_WORLD3 = 14,
 	SVGA3D_TRANSFORM_MAX
 } SVGA3dTransformType;
-
 typedef enum {
 	SVGA3D_LIGHTTYPE_INVALID = 0,
 	SVGA3D_LIGHTTYPE_MIN = 1,
@@ -1239,7 +1055,6 @@ typedef enum {
 	SVGA3D_LIGHTTYPE_DIRECTIONAL = 4,
 	SVGA3D_LIGHTTYPE_MAX
 } SVGA3dLightType;
-
 typedef enum {
 	SVGA3D_CUBEFACE_POSX = 0,
 	SVGA3D_CUBEFACE_NEGX = 1,
@@ -1248,7 +1063,6 @@ typedef enum {
 	SVGA3D_CUBEFACE_POSZ = 4,
 	SVGA3D_CUBEFACE_NEGZ = 5,
 } SVGA3dCubeFace;
-
 typedef enum {
 	SVGA3D_SHADERTYPE_INVALID = 0,
 	SVGA3D_SHADERTYPE_MIN = 1,
@@ -1262,15 +1076,11 @@ typedef enum {
 	SVGA3D_SHADERTYPE_CS = 6,
 	SVGA3D_SHADERTYPE_MAX = 7
 } SVGA3dShaderType;
-
 #define SVGA3D_NUM_SHADERTYPE_PREDX                                            \
 	(SVGA3D_SHADERTYPE_PREDX_MAX - SVGA3D_SHADERTYPE_MIN)
-
 #define SVGA3D_NUM_SHADERTYPE_DX10                                             \
 	(SVGA3D_SHADERTYPE_DX10_MAX - SVGA3D_SHADERTYPE_MIN)
-
 #define SVGA3D_NUM_SHADERTYPE (SVGA3D_SHADERTYPE_MAX - SVGA3D_SHADERTYPE_MIN)
-
 typedef enum {
 	SVGA3D_CONST_TYPE_MIN = 0,
 	SVGA3D_CONST_TYPE_FLOAT = 0,
@@ -1278,17 +1088,14 @@ typedef enum {
 	SVGA3D_CONST_TYPE_BOOL = 2,
 	SVGA3D_CONST_TYPE_MAX = 3,
 } SVGA3dShaderConstType;
-
 #define SVGA3D_CONSTREG_MAX 256
 #define SVGA3D_CONSTINTREG_MAX 16
 #define SVGA3D_CONSTBOOLREG_MAX 16
-
 typedef enum {
 	SVGA3D_STRETCH_BLT_POINT = 0,
 	SVGA3D_STRETCH_BLT_LINEAR = 1,
 	SVGA3D_STRETCH_BLT_MAX
 } SVGA3dStretchBltMode;
-
 typedef enum {
 	SVGA3D_QUERYTYPE_INVALID = ((uint8)-1),
 	SVGA3D_QUERYTYPE_MIN = 0,
@@ -1311,38 +1118,30 @@ typedef enum {
 	SVGA3D_QUERYTYPE_SOP_STREAM3 = 15,
 	SVGA3D_QUERYTYPE_MAX
 } SVGA3dQueryType;
-
 typedef uint8 SVGA3dQueryTypeUint8;
-
 #define SVGA3D_NUM_QUERYTYPE (SVGA3D_QUERYTYPE_MAX - SVGA3D_QUERYTYPE_MIN)
-
 #define SVGA3D_MAX_QUERY 64
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 samplesRendered;
 } SVGADXOcclusionQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 passed;
 } SVGADXEventQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint64 timestamp;
 } SVGADXTimestampQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint64 realFrequency;
 	uint32 disjoint;
 } SVGADXTimestampDisjointQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint64 inputAssemblyVertices;
@@ -1358,32 +1157,27 @@ typedef struct {
 	uint64 computeShaderInvocations;
 } SVGADXPipelineStatisticsQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 anySamplesRendered;
 } SVGADXOcclusionPredicateQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint64 numPrimitivesWritten;
 	uint64 numPrimitivesRequired;
 } SVGADXStreamOutStatisticsQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 overflowed;
 } SVGADXStreamOutPredicateQueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint64 samplesRendered;
 } SVGADXOcclusion64QueryResult;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef union SVGADXQueryResultUnion {
 	SVGADXOcclusionQueryResult occ;
@@ -1397,22 +1191,18 @@ typedef union SVGADXQueryResultUnion {
 	SVGADXOcclusion64QueryResult occ64;
 } SVGADXQueryResultUnion;
 #pragma pack(pop)
-
 typedef enum {
 	SVGA3D_QUERYSTATE_PENDING = 0,
 	SVGA3D_QUERYSTATE_SUCCEEDED = 1,
 	SVGA3D_QUERYSTATE_FAILED = 2,
 	SVGA3D_QUERYSTATE_NEW = 3,
 } SVGA3dQueryState;
-
 typedef enum {
 	SVGA3D_WRITE_HOST_VRAM = 1,
 	SVGA3D_READ_HOST_VRAM = 2,
 } SVGA3dTransferType;
-
 #define SVGA3D_LOGICOP_INVALID 0
 #define SVGA3D_LOGICOP_COPY 1
-
 #define SVGA3D_LOGICOP_MIN 1
 #define SVGA3D_LOGICOP_NOT 2
 #define SVGA3D_LOGICOP_AND 3
@@ -1420,17 +1210,12 @@ typedef enum {
 #define SVGA3D_LOGICOP_XOR 5
 #define SVGA3D_LOGICOP_NXOR 6
 #define SVGA3D_LOGICOP_ROP3 7
-
 #define SVGA3D_LOGICOP_MAX 8
-
 typedef uint16 SVGA3dLogicOp;
-
 #define SVGA3D_LOGICOP_ROP3_INVALID ((uint16)-1)
 #define SVGA3D_LOGICOP_ROP3_MIN 0
 #define SVGA3D_LOGICOP_ROP3_MAX 256
-
 typedef uint16 SVGA3dLogicOpRop3;
-
 #pragma pack(push, 1)
 typedef struct {
 	union {
@@ -1443,7 +1228,6 @@ typedef struct {
 	};
 } SVGA3dFogMode;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct SVGA3dSurfaceImageId {
 	uint32 sid;
@@ -1451,14 +1235,12 @@ typedef struct SVGA3dSurfaceImageId {
 	uint32 mipmap;
 } SVGA3dSurfaceImageId;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct SVGA3dSubSurfaceId {
 	uint32 sid;
 	uint32 subResourceId;
 } SVGA3dSubSurfaceId;
 #pragma pack(pop)
-
 #pragma pack(push, 1)
 typedef struct {
 	uint32 width;
@@ -1466,7 +1248,6 @@ typedef struct {
 	uint32 depth;
 } SVGA3dSize;
 #pragma pack(pop)
-
 typedef enum {
 	SVGA_OTABLE_MOB = 0,
 	SVGA_OTABLE_MIN = 0,
@@ -1474,20 +1255,15 @@ typedef enum {
 	SVGA_OTABLE_CONTEXT = 2,
 	SVGA_OTABLE_SHADER = 3,
 	SVGA_OTABLE_SCREENTARGET = 4,
-
 	SVGA_OTABLE_DX9_MAX = 5,
-
 	SVGA_OTABLE_DXCONTEXT = 5,
 	SVGA_OTABLE_DX_MAX = 6,
-
 	SVGA_OTABLE_DEVEL_MAX = 6,
 	SVGA_OTABLE_MAX = 6,
-
 	SVGA_OTABLE_RESERVED1 = 6,
 	SVGA_OTABLE_RESERVED2 = 7,
 	SVGA_OTABLE_BUG_1952836_MAX = 8,
 } SVGAOTableType;
-
 typedef enum {
 	SVGA_COTABLE_MIN = 0,
 	SVGA_COTABLE_RTVIEW = 0,
@@ -1505,9 +1281,7 @@ typedef enum {
 	SVGA_COTABLE_UAVIEW = 11,
 	SVGA_COTABLE_MAX = 12,
 } SVGACOTableType;
-
 #define SVGA_COTABLE_MAX_IDS (MAX_UINT16 - 2)
-
 typedef enum SVGAMobFormat {
 	SVGA3D_MOBFMT_INVALID = SVGA3D_INVALID_ID,
 	SVGA3D_MOBFMT_PT_0 = 0,
@@ -1520,14 +1294,10 @@ typedef enum SVGAMobFormat {
 	SVGA3D_MOBFMT_PT64_2 = 6,
 	SVGA3D_MOBFMT_PREDX_MAX = 7,
 	SVGA3D_MOBFMT_EMPTY = 7,
-
 	SVGA3D_MOBFMT_MAX,
-
 	SVGA3D_MOBFMT_HB,
 } SVGAMobFormat;
-
 #define SVGA3D_MOB_EMPTY_BASE 1
-
 typedef enum SVGA3dMSPattern {
 	SVGA3D_MS_PATTERN_NONE = 0,
 	SVGA3D_MS_PATTERN_MIN = 0,
@@ -1535,7 +1305,6 @@ typedef enum SVGA3dMSPattern {
 	SVGA3D_MS_PATTERN_CENTER = 2,
 	SVGA3D_MS_PATTERN_MAX = 3,
 } SVGA3dMSPattern;
-
 typedef enum SVGA3dMSQualityLevel {
 	SVGA3D_MS_QUALITY_NONE = 0,
 	SVGA3D_MS_QUALITY_MIN = 0,
@@ -1543,7 +1312,6 @@ typedef enum SVGA3dMSQualityLevel {
 	SVGA3D_MS_QUALITY_RESOLVED = 2,
 	SVGA3D_MS_QUALITY_MAX = 3,
 } SVGA3dMSQualityLevel;
-
 typedef enum SVGA3dFrameUpdateType {
 	SVGA3D_FRAME_END = 0,
 	SVGA3D_FRAME_MIN = 0,
@@ -1551,5 +1319,4 @@ typedef enum SVGA3dFrameUpdateType {
 	SVGA3D_FRAME_UNKNOWN = 2,
 	SVGA3D_FRAME_MAX = 3,
 } SVGA3dFrameUpdateType;
-
 #endif

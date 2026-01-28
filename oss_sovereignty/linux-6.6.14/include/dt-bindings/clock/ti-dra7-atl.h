@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This header provides constants for DRA7 ATL (Audio Tracking Logic)
- *
- * The constants defined in this header are used in dts files
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_DRA7_ATL_H
 #define _DT_BINDINGS_CLK_DRA7_ATL_H
-
 #define DRA7_ATL_WS_MCASP1_FSR		0
 #define DRA7_ATL_WS_MCASP1_FSX		1
 #define DRA7_ATL_WS_MCASP2_FSR		2
@@ -28,5 +16,4 @@
 #define DRA7_ATL_WS_XREF_CLK1		13
 #define DRA7_ATL_WS_XREF_CLK2		14
 #define DRA7_ATL_WS_OSC1_X1		15
-
 #endif

@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
-
 #ifndef __AUTH_H__
 #define __AUTH_H__
-
 #include "ntlmssp.h"
-
 #ifdef CONFIG_SMB_SERVER_KERBEROS5
 #define AUTH_GSS_LENGTH		96
 #define AUTH_GSS_PADDING	0
@@ -15,27 +8,19 @@
 #define AUTH_GSS_LENGTH		74
 #define AUTH_GSS_PADDING	6
 #endif
-
 #define CIFS_HMAC_MD5_HASH_SIZE	(16)
 #define CIFS_NTHASH_SIZE	(16)
-
-/*
- * Size of the ntlm client response
- */
 #define CIFS_AUTH_RESP_SIZE		24
 #define CIFS_SMB1_SIGNATURE_SIZE	8
 #define CIFS_SMB1_SESSKEY_SIZE		16
-
 #define KSMBD_AUTH_NTLMSSP	0x0001
 #define KSMBD_AUTH_KRB5		0x0002
 #define KSMBD_AUTH_MSKRB5	0x0004
 #define KSMBD_AUTH_KRB5U2U	0x0008
-
 struct ksmbd_session;
 struct ksmbd_conn;
 struct ksmbd_work;
 struct kvec;
-
 int ksmbd_crypt_message(struct ksmbd_work *work, struct kvec *iov,
 			unsigned int nvec, int enc);
 void ksmbd_copy_gss_neg_header(void *buf);

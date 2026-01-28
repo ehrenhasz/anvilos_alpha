@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2016-2017 Fuzhou Rockchip Electronics Co., Ltd
- */
-
 / {
 	cluster0_opp: opp-table-0 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp00 {
 			opp-hz = /bits/ 64 <408000000>;
 			opp-microvolt = <800000>;
@@ -38,11 +32,9 @@
 			opp-microvolt = <1150000>;
 		};
 	};
-
 	cluster1_opp: opp-table-1 {
 		compatible = "operating-points-v2";
 		opp-shared;
-
 		opp00 {
 			opp-hz = /bits/ 64 <408000000>;
 			opp-microvolt = <800000>;
@@ -81,10 +73,8 @@
 			opp-microvolt = <1250000>;
 		};
 	};
-
 	gpu_opp_table: opp-table-2 {
 		compatible = "operating-points-v2";
-
 		opp00 {
 			opp-hz = /bits/ 64 <200000000>;
 			opp-microvolt = <800000>;
@@ -110,10 +100,8 @@
 			opp-microvolt = <1075000>;
 		};
 	};
-
 	dmc_opp_table: opp-table-3 {
 		compatible = "operating-points-v2";
-
 		opp00 {
 			opp-hz = /bits/ 64 <400000000>;
 			opp-microvolt = <900000>;
@@ -132,35 +120,27 @@
 		};
 	};
 };
-
 &cpu_l0 {
 	operating-points-v2 = <&cluster0_opp>;
 };
-
 &cpu_l1 {
 	operating-points-v2 = <&cluster0_opp>;
 };
-
 &cpu_l2 {
 	operating-points-v2 = <&cluster0_opp>;
 };
-
 &cpu_l3 {
 	operating-points-v2 = <&cluster0_opp>;
 };
-
 &cpu_b0 {
 	operating-points-v2 = <&cluster1_opp>;
 };
-
 &cpu_b1 {
 	operating-points-v2 = <&cluster1_opp>;
 };
-
 &dmc {
 	operating-points-v2 = <&dmc_opp_table>;
 };
-
 &gpu {
 	operating-points-v2 = <&gpu_opp_table>;
 };

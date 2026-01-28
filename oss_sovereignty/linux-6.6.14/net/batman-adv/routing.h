@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) B.A.T.M.A.N. contributors:
- *
- * Marek Lindner, Simon Wunderlich
- */
-
 #ifndef _NET_BATMAN_ADV_ROUTING_H_
 #define _NET_BATMAN_ADV_ROUTING_H_
-
 #include "main.h"
-
 #include <linux/skbuff.h>
 #include <linux/types.h>
-
 bool batadv_check_management_packet(struct sk_buff *skb,
 				    struct batadv_hard_iface *hard_iface,
 				    int header_len);
@@ -38,5 +29,4 @@ batadv_find_router(struct batadv_priv *bat_priv,
 bool batadv_window_protected(struct batadv_priv *bat_priv, s32 seq_num_diff,
 			     s32 seq_old_max_diff, unsigned long *last_reset,
 			     bool *protection_started);
-
-#endif /* _NET_BATMAN_ADV_ROUTING_H_ */
+#endif  

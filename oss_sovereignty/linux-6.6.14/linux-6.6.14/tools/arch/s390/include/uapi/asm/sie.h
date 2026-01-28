@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_ASM_S390_SIE_H
 #define _UAPI_ASM_S390_SIE_H
-
 #define diagnose_codes						\
 	{ 0x10, "DIAG (0x10) release pages" },			\
 	{ 0x44, "DIAG (0x44) time slice end" },			\
@@ -12,7 +10,6 @@
 	{ 0x308, "DIAG (0x308) ipl functions" },		\
 	{ 0x500, "DIAG (0x500) KVM virtio functions" },		\
 	{ 0x501, "DIAG (0x501) KVM breakpoint" }
-
 #define sigp_order_codes					\
 	{ 0x01, "SIGP sense" },					\
 	{ 0x02, "SIGP external call" },				\
@@ -30,7 +27,6 @@
 	{ 0x15, "SIGP sense running" },				\
 	{ 0x16, "SIGP set multithreading"},			\
 	{ 0x17, "SIGP store additional status at address"}
-
 #define icpt_prog_codes						\
 	{ 0x0001, "Prog Operation" },				\
 	{ 0x0002, "Prog Privileged Operation" },		\
@@ -84,12 +80,10 @@
 	{ 0x0040, "Prog Monitor event" },			\
 	{ 0x0080, "Prog PER event" },				\
 	{ 0x0119, "Prog Crypto operation" }
-
 #define exit_code_ipa0(ipa0, opcode, mnemonic)		\
 	{ (ipa0 << 8 | opcode), #ipa0 " " mnemonic }
 #define exit_code(opcode, mnemonic)			\
 	{ opcode, mnemonic }
-
 #define icpt_insn_codes				\
 	exit_code_ipa0(0x01, 0x01, "PR"),	\
 	exit_code_ipa0(0x01, 0x04, "PTFF"),	\
@@ -198,7 +192,6 @@
 	exit_code(0xb6, "STCTL"),		\
 	exit_code(0xb7, "LCTL"),		\
 	exit_code(0xee, "PLO")
-
 #define sie_intercept_code					\
 	{ 0x00, "Host interruption" },				\
 	{ 0x04, "Instruction" },				\
@@ -215,29 +208,10 @@
 	{ 0x3c, "I/O interruption" },				\
 	{ 0x40, "I/O instruction" },				\
 	{ 0x48, "Timing subset" }
-
-/*
- * This is the simple interceptable instructions decoder.
- *
- * It will be used as userspace interface and it can be used in places
- * that does not allow to use general decoder functions,
- * such as trace events declarations.
- *
- * Some userspace tools may want to parse this code
- * and would be confused by switch(), if() and other statements,
- * but they can understand conditional operator.
- */
 #define INSN_DECODE_IPA0(ipa0, insn, rshift, mask)		\
 	(insn >> 56) == (ipa0) ?				\
 		((ipa0 << 8) | ((insn >> rshift) & mask)) :
-
 #define INSN_DECODE(insn) (insn >> 56)
-
-/*
- * The macro icpt_insn_decoder() takes an intercepted instruction
- * and returns a key, which can be used to find a mnemonic name
- * of the instruction in the icpt_insn_codes table.
- */
 #define icpt_insn_decoder(insn) (		\
 	INSN_DECODE_IPA0(0x01, insn, 48, 0xff)	\
 	INSN_DECODE_IPA0(0xaa, insn, 48, 0x0f)	\
@@ -248,5 +222,4 @@
 	INSN_DECODE_IPA0(0xeb, insn, 16, 0xff)	\
 	INSN_DECODE_IPA0(0xc8, insn, 48, 0x0f)	\
 	INSN_DECODE(insn))
-
-#endif /* _UAPI_ASM_S390_SIE_H */
+#endif  

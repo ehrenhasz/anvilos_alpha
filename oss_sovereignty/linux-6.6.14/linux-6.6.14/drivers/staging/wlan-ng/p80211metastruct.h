@@ -1,31 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
-/* --------------------------------------------------------------------
- *
- * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
- * --------------------------------------------------------------------
- *
- * linux-wlan
- *
- * --------------------------------------------------------------------
- *
- * Inquiries regarding the linux-wlan Open Source project can be
- * made directly to:
- *
- * AbsoluteValue Systems Inc.
- * info@linux-wlan.com
- * http://www.linux-wlan.com
- *
- * --------------------------------------------------------------------
- *
- * Portions of the development of this software were funded by
- * Intersil Corporation as part of PRISM(R) chipset product development.
- *
- * --------------------------------------------------------------------
- */
-
 #ifndef _P80211MKMETASTRUCT_H
 #define _P80211MKMETASTRUCT_H
-
 struct p80211msg_dot11req_mibget {
 	u32 msgcode;
 	u32 msglen;
@@ -33,7 +7,6 @@ struct p80211msg_dot11req_mibget {
 	struct p80211item_unk392 mibattribute;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_dot11req_mibset {
 	u32 msgcode;
 	u32 msglen;
@@ -41,7 +14,6 @@ struct p80211msg_dot11req_mibset {
 	struct p80211item_unk392 mibattribute;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_dot11req_scan {
 	u32 msgcode;
 	u32 msglen;
@@ -61,7 +33,6 @@ struct p80211msg_dot11req_scan {
 	struct p80211item_uint32 numbss;
 	struct p80211item_uint32 append;
 } __packed;
-
 struct p80211msg_dot11req_scan_results {
 	u32 msgcode;
 	u32 msglen;
@@ -96,7 +67,6 @@ struct p80211msg_dot11req_scan_results {
 	struct p80211item_uint32 basicrate[8];
 	struct p80211item_uint32 supprate[8];
 } __packed;
-
 struct p80211msg_dot11req_start {
 	u32 msgcode;
 	u32 msglen;
@@ -134,7 +104,6 @@ struct p80211msg_dot11req_start {
 	struct p80211item_uint32 operationalrate8;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_lnxreq_ifstate {
 	u32 msgcode;
 	u32 msglen;
@@ -142,7 +111,6 @@ struct p80211msg_lnxreq_ifstate {
 	struct p80211item_uint32 ifstate;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_lnxreq_wlansniff {
 	u32 msgcode;
 	u32 msglen;
@@ -156,7 +124,6 @@ struct p80211msg_lnxreq_wlansniff {
 	struct p80211item_uint32 packet_trunc;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_lnxreq_hostwep {
 	u32 msgcode;
 	u32 msglen;
@@ -165,7 +132,6 @@ struct p80211msg_lnxreq_hostwep {
 	struct p80211item_uint32 decrypt;
 	struct p80211item_uint32 encrypt;
 } __packed;
-
 struct p80211msg_lnxreq_commsquality {
 	u32 msgcode;
 	u32 msglen;
@@ -177,7 +143,6 @@ struct p80211msg_lnxreq_commsquality {
 	struct p80211item_uint32 noise;
 	struct p80211item_uint32 txrate;
 } __packed;
-
 struct p80211msg_lnxreq_autojoin {
 	u32 msgcode;
 	u32 msglen;
@@ -187,7 +152,6 @@ struct p80211msg_lnxreq_autojoin {
 	struct p80211item_uint32 authtype;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_p2req_readpda {
 	u32 msgcode;
 	u32 msglen;
@@ -195,7 +159,6 @@ struct p80211msg_p2req_readpda {
 	struct p80211item_unk1024 pda;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_p2req_ramdl_state {
 	u32 msgcode;
 	u32 msglen;
@@ -204,7 +167,6 @@ struct p80211msg_p2req_ramdl_state {
 	struct p80211item_uint32 exeaddr;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_p2req_ramdl_write {
 	u32 msgcode;
 	u32 msglen;
@@ -214,7 +176,6 @@ struct p80211msg_p2req_ramdl_write {
 	struct p80211item_unk4096 data;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_p2req_flashdl_state {
 	u32 msgcode;
 	u32 msglen;
@@ -222,7 +183,6 @@ struct p80211msg_p2req_flashdl_state {
 	struct p80211item_uint32 enable;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 struct p80211msg_p2req_flashdl_write {
 	u32 msgcode;
 	u32 msglen;
@@ -232,5 +192,4 @@ struct p80211msg_p2req_flashdl_write {
 	struct p80211item_unk4096 data;
 	struct p80211item_uint32 resultcode;
 } __packed;
-
 #endif

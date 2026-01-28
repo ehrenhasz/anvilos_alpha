@@ -1,39 +1,28 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018-2019 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
-
 #include <dt-bindings/clock/imx8-lpcg.h>
 #include <dt-bindings/firmware/imx/rsrc.h>
-
 conn_subsys: bus@5b000000 {
 	compatible = "simple-bus";
 	#address-cells = <1>;
 	#size-cells = <1>;
 	ranges = <0x5b000000 0x0 0x5b000000 0x1000000>;
-
 	conn_axi_clk: clock-conn-axi {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <333333333>;
 		clock-output-names = "conn_axi_clk";
 	};
-
 	conn_ahb_clk: clock-conn-ahb {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <166666666>;
 		clock-output-names = "conn_ahb_clk";
 	};
-
 	conn_ipg_clk: clock-conn-ipg {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <83333333>;
 		clock-output-names = "conn_ipg_clk";
 	};
-
 	usbotg1: usb@5b0d0000 {
 		compatible = "fsl,imx7ulp-usb", "fsl,imx6ul-usb", "fsl,imx27-usb";
 		reg = <0x5b0d0000 0x200>;
@@ -48,13 +37,11 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_USB_0>;
 		status = "disabled";
 	};
-
 	usbmisc1: usbmisc@5b0d0200 {
 		#index-cells = <1>;
 		compatible = "fsl,imx7ulp-usbmisc", "fsl,imx7d-usbmisc", "fsl,imx6q-usbmisc";
 		reg = <0x5b0d0200 0x200>;
 	};
-
 	usbphy1: usbphy@5b100000 {
 		compatible = "fsl,imx7ulp-usbphy";
 		reg = <0x5b100000 0x1000>;
@@ -62,7 +49,6 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_USB_0_PHY>;
 		status = "disabled";
 	};
-
 	usdhc1: mmc@5b010000 {
 		interrupts = <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>;
 		reg = <0x5b010000 0x10000>;
@@ -73,7 +59,6 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_SDHC_0>;
 		status = "disabled";
 	};
-
 	usdhc2: mmc@5b020000 {
 		interrupts = <GIC_SPI 233 IRQ_TYPE_LEVEL_HIGH>;
 		reg = <0x5b020000 0x10000>;
@@ -86,7 +71,6 @@ conn_subsys: bus@5b000000 {
 		fsl,tuning-step = <2>;
 		status = "disabled";
 	};
-
 	usdhc3: mmc@5b030000 {
 		interrupts = <GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>;
 		reg = <0x5b030000 0x10000>;
@@ -97,7 +81,6 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_SDHC_2>;
 		status = "disabled";
 	};
-
 	fec1: ethernet@5b040000 {
 		reg = <0x5b040000 0x10000>;
 		interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH>,
@@ -117,7 +100,6 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_ENET_0>;
 		status = "disabled";
 	};
-
 	fec2: ethernet@5b050000 {
 		reg = <0x5b050000 0x10000>;
 		interrupts = <GIC_SPI 262 IRQ_TYPE_LEVEL_HIGH>,
@@ -137,7 +119,6 @@ conn_subsys: bus@5b000000 {
 		power-domains = <&pd IMX_SC_R_ENET_1>;
 		status = "disabled";
 	};
-
 	usbotg3: usb@5b110000 {
 		compatible = "fsl,imx8qm-usb3";
 		reg = <0x5b110000 0x10000>;
@@ -154,12 +135,11 @@ conn_subsys: bus@5b000000 {
 		assigned-clock-rates = <250000000>;
 		power-domains = <&pd IMX_SC_R_USB_2>;
 		status = "disabled";
-
 		usbotg3_cdns3: usb@5b120000 {
 			compatible = "cdns,usb3";
-			reg = <0x5b120000 0x10000>,   /* memory area for OTG/DRD registers */
-			      <0x5b130000 0x10000>,   /* memory area for HOST registers */
-			      <0x5b140000 0x10000>;   /* memory area for DEVICE registers */
+			reg = <0x5b120000 0x10000>,    
+			      <0x5b130000 0x10000>,    
+			      <0x5b140000 0x10000>;    
 			reg-names = "otg", "xhci", "dev";
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>,
@@ -173,7 +153,6 @@ conn_subsys: bus@5b000000 {
 			status = "disabled";
 		};
 	};
-
 	usb3_phy: usb-phy@5b160000 {
 		compatible = "nxp,salvo-phy";
 		reg = <0x5b160000 0x40000>;
@@ -183,8 +162,6 @@ conn_subsys: bus@5b000000 {
 		#phy-cells = <0>;
 		status = "disabled";
 	};
-
-	/* LPCG clocks */
 	sdhc0_lpcg: clock-controller@5b200000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b200000 0x10000>;
@@ -198,7 +175,6 @@ conn_subsys: bus@5b000000 {
 				     "sdhc0_lpcg_ahb_clk";
 		power-domains = <&pd IMX_SC_R_SDHC_0>;
 	};
-
 	sdhc1_lpcg: clock-controller@5b210000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b210000 0x10000>;
@@ -212,7 +188,6 @@ conn_subsys: bus@5b000000 {
 				     "sdhc1_lpcg_ahb_clk";
 		power-domains = <&pd IMX_SC_R_SDHC_1>;
 	};
-
 	sdhc2_lpcg: clock-controller@5b220000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b220000 0x10000>;
@@ -226,7 +201,6 @@ conn_subsys: bus@5b000000 {
 				     "sdhc2_lpcg_ahb_clk";
 		power-domains = <&pd IMX_SC_R_SDHC_2>;
 	};
-
 	enet0_lpcg: clock-controller@5b230000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b230000 0x10000>;
@@ -248,7 +222,6 @@ conn_subsys: bus@5b000000 {
 				     "enet0_lpcg_ipg_s_clk";
 		power-domains = <&pd IMX_SC_R_ENET_0>;
 	};
-
 	enet1_lpcg: clock-controller@5b240000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b240000 0x10000>;
@@ -270,7 +243,6 @@ conn_subsys: bus@5b000000 {
 				     "enet1_lpcg_ipg_s_clk";
 		power-domains = <&pd IMX_SC_R_ENET_1>;
 	};
-
 	usb2_lpcg: clock-controller@5b270000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b270000 0x10000>;
@@ -280,7 +252,6 @@ conn_subsys: bus@5b000000 {
 		clock-output-names = "usboh3_ahb_clk", "usboh3_phy_ipg_clk";
 		power-domains = <&pd IMX_SC_R_USB_0_PHY>;
 	};
-
 	usb3_lpcg: clock-controller@5b280000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5b280000 0x10000>;

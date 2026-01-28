@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- */
-
 #ifndef __DTS_IMX53_PINFUNC_H
 #define __DTS_IMX53_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <mux_reg conf_reg input_reg mux_mode input_val>
- */
 #define MX53_PAD_GPIO_19__KPP_COL_5				0x020 0x348 0x840 0x0 0x0
 #define MX53_PAD_GPIO_19__GPIO4_5				0x020 0x348 0x000 0x1 0x0
 #define MX53_PAD_GPIO_19__CCM_CLKO				0x020 0x348 0x000 0x2 0x0
@@ -1185,5 +1175,4 @@
 #define MX53_PAD_GPIO_18__CCM_ASRC_EXT_CLK			0x344 0x6d4 0x768 0x5 0x1
 #define MX53_PAD_GPIO_18__ESDHC1_LCTL				0x344 0x6d4 0x000 0x6 0x0
 #define MX53_PAD_GPIO_18__SRC_SYSTEM_RST			0x344 0x6d4 0x000 0x7 0x0
-
-#endif /* __DTS_IMX53_PINFUNC_H */
+#endif  

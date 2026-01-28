@@ -1,28 +1,5 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef RV740_H
 #define RV740_H
-
 #define	CG_SPLL_FUNC_CNTL				0x600
 #define		SPLL_RESET				(1 << 0)
 #define		SPLL_SLEEP				(1 << 1)
@@ -38,10 +15,8 @@
 #define		SPLL_FB_DIV(x)				((x) << 0)
 #define		SPLL_FB_DIV_MASK			(0x3ffffff << 0)
 #define		SPLL_DITHEN				(1 << 28)
-
 #define	MPLL_CNTL_MODE					0x61c
 #define		SS_SSEN					(1 << 24)
-
 #define	MPLL_AD_FUNC_CNTL				0x624
 #define		CLKF(x)					((x) << 0)
 #define		CLKF_MASK				(0x7f << 0)
@@ -62,7 +37,6 @@
 #define		VCO_MODE				(1 << 29)
 #define	MPLL_DQ_FUNC_CNTL				0x62c
 #define	MPLL_DQ_FUNC_CNTL_2				0x630
-
 #define	MCLK_PWRMGT_CNTL				0x648
 #define		DLL_SPEED(x)				((x) << 0)
 #define		DLL_SPEED_MASK				(0x1f << 0)
@@ -98,7 +72,6 @@
 #       define MRDCKC1_BYPASS                           (1 << 29)
 #       define MRDCKD0_BYPASS                           (1 << 30)
 #       define MRDCKD1_BYPASS                           (1 << 31)
-
 #define	CG_SPLL_SPREAD_SPECTRUM				0x790
 #define		SSEN					(1 << 0)
 #define		CLK_S(x)				((x) << 4)
@@ -106,12 +79,10 @@
 #define	CG_SPLL_SPREAD_SPECTRUM_2			0x794
 #define		CLK_V(x)				((x) << 0)
 #define		CLK_V_MASK				(0x3ffffff << 0)
-
 #define	MPLL_SS1					0x85c
 #define		CLKV(x)					((x) << 0)
 #define		CLKV_MASK				(0x3ffffff << 0)
 #define	MPLL_SS2					0x860
 #define		CLKS(x)					((x) << 0)
 #define		CLKS_MASK				(0xfff << 0)
-
 #endif

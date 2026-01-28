@@ -1,32 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2018 by Delphix. All rights reserved.
- * Copyright 2016 Nexenta Systems, Inc.  All rights reserved.
- */
-
 #ifndef	_SYS_DSL_POOL_H
 #define	_SYS_DSL_POOL_H
-
 #include <sys/spa.h>
 #include <sys/txg.h>
 #include <sys/txg_impl.h>
@@ -41,13 +14,10 @@
 #include <sys/dsl_synctask.h>
 #include <sys/mmp.h>
 #include <sys/aggsum.h>
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
 extern int zfs_txg_synctime_ms;
-
 struct objset;
 struct dsl_dir;
 struct dsl_dataset;
@@ -56,7 +26,6 @@ struct dmu_tx;
 struct dsl_scan;
 struct dsl_crypto_params;
 struct dsl_deadlist;
-
 extern uint64_t zfs_dirty_data_max;
 extern uint64_t zfs_dirty_data_max_max;
 extern uint64_t zfs_wrlog_data_max;
@@ -64,12 +33,9 @@ extern uint_t zfs_dirty_data_max_percent;
 extern uint_t zfs_dirty_data_max_max_percent;
 extern uint_t zfs_delay_min_dirty_percent;
 extern uint64_t zfs_delay_scale;
-
-/* These macros are for indexing into the zfs_all_blkstats_t. */
 #define	DMU_OT_DEFERRED	DMU_OT_NONE
-#define	DMU_OT_OTHER	DMU_OT_NUMTYPES /* place holder for DMU_OT() types */
+#define	DMU_OT_OTHER	DMU_OT_NUMTYPES  
 #define	DMU_OT_TOTAL	(DMU_OT_NUMTYPES + 1)
-
 typedef struct zfs_blkstat {
 	uint64_t	zb_count;
 	uint64_t	zb_asize;
@@ -80,14 +46,10 @@ typedef struct zfs_blkstat {
 	uint64_t	zb_ditto_2_of_3_samevdev;
 	uint64_t	zb_ditto_3_of_3_samevdev;
 } zfs_blkstat_t;
-
 typedef struct zfs_all_blkstats {
 	zfs_blkstat_t	zab_type[DN_MAX_LEVELS + 1][DMU_OT_TOTAL + 1];
 } zfs_all_blkstats_t;
-
-
 typedef struct dsl_pool {
-	/* Immutable */
 	spa_t *dp_spa;
 	struct objset *dp_meta_objset;
 	struct dsl_dir *dp_root_dir;
@@ -98,18 +60,13 @@ typedef struct dsl_pool {
 	uint64_t dp_root_dir_obj;
 	struct taskq *dp_zrele_taskq;
 	struct taskq *dp_unlinked_drain_taskq;
-
-	/* No lock needed - sync context only */
 	blkptr_t dp_meta_rootbp;
 	uint64_t dp_tmp_userrefs_obj;
 	bpobj_t dp_free_bpobj;
 	uint64_t dp_bptree_obj;
 	uint64_t dp_empty_bpobj;
 	bpobj_t dp_obsolete_bpobj;
-
 	struct dsl_scan *dp_scan;
-
-	/* Uses dp_lock */
 	kmutex_t dp_lock;
 	kcondvar_t dp_spaceavail_cv;
 	uint64_t dp_dirty_pertxg[TXG_SIZE];
@@ -118,17 +75,9 @@ typedef struct dsl_pool {
 	uint64_t dp_mos_used_delta;
 	uint64_t dp_mos_compressed_delta;
 	uint64_t dp_mos_uncompressed_delta;
-
 	aggsum_t dp_wrlog_pertxg[TXG_SIZE];
 	aggsum_t dp_wrlog_total;
-
-	/*
-	 * Time of most recently scheduled (furthest in the future)
-	 * wakeup for delayed transactions.
-	 */
 	hrtime_t dp_last_wakeup;
-
-	/* Has its own locking */
 	tx_state_t dp_tx;
 	txg_list_t dp_dirty_datasets;
 	txg_list_t dp_dirty_zilogs;
@@ -137,19 +86,9 @@ typedef struct dsl_pool {
 	txg_list_t dp_early_sync_tasks;
 	taskq_t *dp_sync_taskq;
 	taskq_t *dp_zil_clean_taskq;
-
-	/*
-	 * Protects administrative changes (properties, namespace)
-	 *
-	 * It is only held for write in syncing context.  Therefore
-	 * syncing context does not need to ever have it for read, since
-	 * nobody else could possibly have it for write.
-	 */
 	rrwlock_t dp_config_rwlock;
-
 	zfs_all_blkstats_t *dp_blkstats;
 } dsl_pool_t;
-
 int dsl_pool_init(spa_t *spa, uint64_t txg, dsl_pool_t **dpp);
 int dsl_pool_open(dsl_pool_t *dp);
 void dsl_pool_close(dsl_pool_t *dp);
@@ -182,10 +121,8 @@ void dsl_pool_config_enter_prio(dsl_pool_t *dp, const void *tag);
 void dsl_pool_config_exit(dsl_pool_t *dp, const void *tag);
 boolean_t dsl_pool_config_held(dsl_pool_t *dp);
 boolean_t dsl_pool_config_held_writer(dsl_pool_t *dp);
-
 taskq_t *dsl_pool_zrele_taskq(dsl_pool_t *dp);
 taskq_t *dsl_pool_unlinked_drain_taskq(dsl_pool_t *dp);
-
 int dsl_pool_user_hold(dsl_pool_t *dp, uint64_t dsobj,
     const char *tag, uint64_t now, dmu_tx_t *tx);
 int dsl_pool_user_release(dsl_pool_t *dp, uint64_t dsobj,
@@ -194,12 +131,9 @@ void dsl_pool_clean_tmp_userrefs(dsl_pool_t *dp);
 int dsl_pool_open_special_dir(dsl_pool_t *dp, const char *name, dsl_dir_t **);
 int dsl_pool_hold(const char *name, const void *tag, dsl_pool_t **dp);
 void dsl_pool_rele(dsl_pool_t *dp, const void *tag);
-
 void dsl_pool_create_obsolete_bpobj(dsl_pool_t *dp, dmu_tx_t *tx);
 void dsl_pool_destroy_obsolete_bpobj(dsl_pool_t *dp, dmu_tx_t *tx);
-
 #ifdef	__cplusplus
 }
 #endif
-
-#endif /* _SYS_DSL_POOL_H */
+#endif  

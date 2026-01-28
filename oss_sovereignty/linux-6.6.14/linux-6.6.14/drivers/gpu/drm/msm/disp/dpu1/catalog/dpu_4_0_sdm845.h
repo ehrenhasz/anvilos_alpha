@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DPU_4_0_SDM845_H
 #define _DPU_4_0_SDM845_H
-
 static const struct dpu_caps sdm845_dpu_caps = {
 	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
 	.max_mixer_blendstages = 0xb,
@@ -20,7 +13,6 @@ static const struct dpu_caps sdm845_dpu_caps = {
 	.max_hdeci_exp = MAX_HORZ_DECIMATION,
 	.max_vdeci_exp = MAX_VERT_DECIMATION,
 };
-
 static const struct dpu_mdp_cfg sdm845_mdp = {
 	.name = "top_0",
 	.base = 0x0, .len = 0x45c,
@@ -36,7 +28,6 @@ static const struct dpu_mdp_cfg sdm845_mdp = {
 		[DPU_CLK_CTRL_DMA3] = { .reg_off = 0x2c4, .bit_off = 8 },
 	},
 };
-
 static const struct dpu_ctl_cfg sdm845_ctl[] = {
 	{
 		.name = "ctl_0", .id = CTL_0,
@@ -62,7 +53,6 @@ static const struct dpu_ctl_cfg sdm845_ctl[] = {
 		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 13),
 	},
 };
-
 static const struct dpu_sspp_cfg sdm845_sspp[] = {
 	{
 		.name = "sspp_0", .id = SSPP_VIG0,
@@ -130,7 +120,6 @@ static const struct dpu_sspp_cfg sdm845_sspp[] = {
 		.clk_ctrl = DPU_CLK_CTRL_DMA3,
 	},
 };
-
 static const struct dpu_lm_cfg sdm845_lm[] = {
 	{
 		.name = "lm_0", .id = LM_0,
@@ -178,7 +167,6 @@ static const struct dpu_lm_cfg sdm845_lm[] = {
 		.pingpong = PINGPONG_3,
 	},
 };
-
 static const struct dpu_dspp_cfg sdm845_dspp[] = {
 	{
 		.name = "dspp_0", .id = DSPP_0,
@@ -202,7 +190,6 @@ static const struct dpu_dspp_cfg sdm845_dspp[] = {
 		.sblk = &sdm845_dspp_sblk,
 	},
 };
-
 static const struct dpu_pingpong_cfg sdm845_pp[] = {
 	{
 		.name = "pingpong_0", .id = PINGPONG_0,
@@ -234,7 +221,6 @@ static const struct dpu_pingpong_cfg sdm845_pp[] = {
 		.intr_rdptr = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 15),
 	},
 };
-
 static const struct dpu_dsc_cfg sdm845_dsc[] = {
 	{
 		.name = "dsc_0", .id = DSC_0,
@@ -250,7 +236,6 @@ static const struct dpu_dsc_cfg sdm845_dsc[] = {
 		.base = 0x80c00, .len = 0x140,
 	},
 };
-
 static const struct dpu_intf_cfg sdm845_intf[] = {
 	{
 		.name = "intf_0", .id = INTF_0,
@@ -290,7 +275,6 @@ static const struct dpu_intf_cfg sdm845_intf[] = {
 		.intr_tear_rd_ptr = -1,
 	},
 };
-
 static const struct dpu_perf_cfg sdm845_perf_data = {
 	.max_bw_low = 6800000,
 	.max_bw_high = 6800000,
@@ -326,12 +310,10 @@ static const struct dpu_perf_cfg sdm845_perf_data = {
 	.clk_inefficiency_factor = 105,
 	.bw_inefficiency_factor = 120,
 };
-
 static const struct dpu_mdss_version sdm845_mdss_ver = {
 	.core_major_ver = 4,
 	.core_minor_ver = 0,
 };
-
 const struct dpu_mdss_cfg dpu_sdm845_cfg = {
 	.mdss_ver = &sdm845_mdss_ver,
 	.caps = &sdm845_dpu_caps,
@@ -354,5 +336,4 @@ const struct dpu_mdss_cfg dpu_sdm845_cfg = {
 	.vbif = sdm845_vbif,
 	.perf = &sdm845_perf_data,
 };
-
 #endif

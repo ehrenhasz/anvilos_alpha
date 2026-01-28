@@ -1,28 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * arch/arm/mach-footbridge/include/mach/irqs.h
- *
- * Copyright (C) 1998 Russell King
- * Copyright (C) 1998 Phil Blundell
- *
- * Changelog:
- *  20-Jan-1998	RMK	Started merge of EBSA286, CATS and NetWinder
- *  01-Feb-1999	PJB	ISA IRQs start at 0 not 16
- */
 #include <asm/mach-types.h>
-
 #define NR_IRQS			36
 #define NR_DC21285_IRQS		16
-
 #define _ISA_IRQ(x)		(0 + (x))
 #define _ISA_INR(x)		((x) - 0)
 #define _DC21285_IRQ(x)		(16 + (x))
 #define _DC21285_INR(x)		((x) - 16)
-
-/*
- * This is a list of all interrupts that the 21285
- * can generate and we handle.
- */
 #define IRQ_CONRX		_DC21285_IRQ(0)
 #define IRQ_CONTX		_DC21285_IRQ(1)
 #define IRQ_TIMER1		_DC21285_IRQ(2)
@@ -43,7 +25,6 @@
 #define IRQ_DISCARD_TIMER	_DC21285_IRQ(17)
 #define IRQ_PCI_DPERR		_DC21285_IRQ(18)
 #define IRQ_PCI_PERR		_DC21285_IRQ(19)
-
 #define IRQ_ISA_TIMER		_ISA_IRQ(0)
 #define IRQ_ISA_KEYBOARD	_ISA_IRQ(1)
 #define IRQ_ISA_CASCADE		_ISA_IRQ(2)
@@ -56,7 +37,6 @@
 #define IRQ_ISA_PS2MOUSE	_ISA_IRQ(12)
 #define IRQ_ISA_HARDDISK1	_ISA_IRQ(14)
 #define IRQ_ISA_HARDDISK2	_ISA_IRQ(15)
-
 #define IRQ_MASK_UART_RX	(1 << 2)
 #define IRQ_MASK_UART_TX	(1 << 3)
 #define IRQ_MASK_TIMER1		(1 << 4)
@@ -77,10 +57,6 @@
 #define IRQ_MASK_DISCARD_TIMER	(1 << 27)
 #define IRQ_MASK_PCI_DPERR	(1 << 28)
 #define IRQ_MASK_PCI_PERR	(1 << 31)
-
-/*
- * Netwinder interrupt allocations
- */
 #define IRQ_NETWINDER_ETHER10	IRQ_IN0
 #define IRQ_NETWINDER_ETHER100	IRQ_IN1
 #define IRQ_NETWINDER_VIDCOMP	IRQ_IN2
@@ -89,9 +65,7 @@
 #define IRQ_NETWINDER_BUTTON	_ISA_IRQ(10)
 #define IRQ_NETWINDER_VGA	_ISA_IRQ(11)
 #define IRQ_NETWINDER_SOUND	_ISA_IRQ(12)
-
 #define I8042_KBD_IRQ	IRQ_ISA_KEYBOARD
 #define I8042_AUX_IRQ	(machine_is_netwinder() ? IRQ_NETWINDER_PS2MOUSE : IRQ_ISA_PS2MOUSE)
 #define IRQ_FLOPPYDISK	IRQ_ISA_FLOPPY
-
 #define irq_canonicalize(_i)	(((_i) == IRQ_ISA_CASCADE) ? IRQ_ISA_2 : _i)

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 #ifndef TEST_MODULES_H
 #define TEST_MODULES_H
-
 #define __REPEAT_10000_3(f, x) \
 	f(x ## 0); \
 	f(x ## 1); \
@@ -46,8 +44,6 @@
 	__REPEAT_10000_1(f, 7); \
 	__REPEAT_10000_1(f, 8); \
 	__REPEAT_10000_1(f, 9)
-
 #define DECLARE_RETURN(i) int test_modules_return_ ## i(void)
 REPEAT_10000(DECLARE_RETURN);
-
 #endif

@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020-2022 MaxLinear, Inc.
- * Copyright (C) 2020 Intel Corporation.
- * Zhu Yixin <yzhu@maxlinear.com>
- * Rahul Tanwar <rtanwar@maxlinear.com>
- */
-
 #ifndef __CLK_CGU_H
 #define __CLK_CGU_H
-
 #include <linux/regmap.h>
-
 struct lgm_clk_mux {
 	struct clk_hw hw;
 	struct regmap *membase;
@@ -19,7 +9,6 @@ struct lgm_clk_mux {
 	u8 width;
 	unsigned long flags;
 };
-
 struct lgm_clk_divider {
 	struct clk_hw hw;
 	struct regmap *membase;
@@ -31,7 +20,6 @@ struct lgm_clk_divider {
 	unsigned long flags;
 	const struct clk_div_table *table;
 };
-
 struct lgm_clk_ddiv {
 	struct clk_hw hw;
 	struct regmap *membase;
@@ -48,7 +36,6 @@ struct lgm_clk_ddiv {
 	unsigned int div;
 	unsigned long flags;
 };
-
 struct lgm_clk_gate {
 	struct clk_hw hw;
 	struct regmap *membase;
@@ -56,7 +43,6 @@ struct lgm_clk_gate {
 	u8 shift;
 	unsigned long flags;
 };
-
 enum lgm_clk_type {
 	CLK_TYPE_FIXED,
 	CLK_TYPE_MUX,
@@ -65,27 +51,17 @@ enum lgm_clk_type {
 	CLK_TYPE_GATE,
 	CLK_TYPE_NONE,
 };
-
-/**
- * struct lgm_clk_provider
- * @membase: IO mem base address for CGU.
- * @np: device node
- * @dev: device
- * @clk_data: array of hw clocks and clk number.
- */
 struct lgm_clk_provider {
 	struct regmap *membase;
 	struct device_node *np;
 	struct device *dev;
 	struct clk_hw_onecell_data clk_data;
 };
-
 enum pll_type {
 	TYPE_ROPLL,
 	TYPE_LJPLL,
 	TYPE_NONE,
 };
-
 struct lgm_clk_pll {
 	struct clk_hw hw;
 	struct regmap *membase;
@@ -93,17 +69,6 @@ struct lgm_clk_pll {
 	unsigned long flags;
 	enum pll_type type;
 };
-
-/**
- * struct lgm_pll_clk_data
- * @id: platform specific id of the clock.
- * @name: name of this pll clock.
- * @parent_data: parent clock data.
- * @num_parents: number of parents.
- * @flags: optional flags for basic clock.
- * @type: platform type of pll.
- * @reg: offset of the register.
- */
 struct lgm_pll_clk_data {
 	unsigned int id;
 	const char *name;
@@ -113,7 +78,6 @@ struct lgm_pll_clk_data {
 	enum pll_type type;
 	int reg;
 };
-
 #define LGM_PLL(_id, _name, _pdata, _flags,		\
 		_reg, _type)				\
 	{						\
@@ -125,7 +89,6 @@ struct lgm_pll_clk_data {
 		.reg = _reg,				\
 		.type = _type,				\
 	}
-
 struct lgm_clk_ddiv_data {
 	unsigned int id;
 	const char *name;
@@ -142,7 +105,6 @@ struct lgm_clk_ddiv_data {
 	u8 ex_shift;
 	u8 ex_width;
 };
-
 #define LGM_DDIV(_id, _name, _pname, _flags, _reg,		\
 		 _shft0, _wdth0, _shft1, _wdth1,		\
 		 _shft_gate, _wdth_gate, _xshft, _df)		\
@@ -165,7 +127,6 @@ struct lgm_clk_ddiv_data {
 		.ex_width = 1,					\
 		.div_flags = _df,				\
 	}
-
 struct lgm_clk_branch {
 	unsigned int id;
 	enum lgm_clk_type type;
@@ -193,13 +154,10 @@ struct lgm_clk_branch {
 	unsigned int mult;
 	unsigned int div;
 };
-
-/* clock flags definition */
 #define CLOCK_FLAG_VAL_INIT	BIT(16)
 #define MUX_CLK_SW		BIT(17)
 #define GATE_CLK_HW		BIT(18)
 #define DIV_CLK_NO_MASK		BIT(19)
-
 #define LGM_MUX(_id, _name, _pdata, _f, _reg,		\
 		_shift, _width, _cf, _v)		\
 	{						\
@@ -215,7 +173,6 @@ struct lgm_clk_branch {
 		.mux_flags = _cf,			\
 		.mux_val = _v,				\
 	}
-
 #define LGM_DIV(_id, _name, _pname, _f, _reg, _shift, _width,	\
 		_shift_gate, _width_gate, _cf, _v, _dtable)	\
 	{							\
@@ -237,7 +194,6 @@ struct lgm_clk_branch {
 		.div_val = _v,					\
 		.div_table = _dtable,				\
 	}
-
 #define LGM_GATE(_id, _name, _pname, _f, _reg,			\
 		 _shift, _cf, _v)				\
 	{							\
@@ -255,7 +211,6 @@ struct lgm_clk_branch {
 		.gate_flags = _cf,				\
 		.gate_val = _v,					\
 	}
-
 #define LGM_FIXED(_id, _name, _pname, _f, _reg,			\
 		  _shift, _width, _cf, _freq, _v)		\
 	{							\
@@ -275,7 +230,6 @@ struct lgm_clk_branch {
 		.div_val = _v,					\
 		.mux_flags = _freq,				\
 	}
-
 #define LGM_FIXED_FACTOR(_id, _name, _pname, _f, _reg,		\
 			 _shift, _width, _cf, _v, _m, _d)	\
 	{							\
@@ -296,33 +250,24 @@ struct lgm_clk_branch {
 		.mult = _m,					\
 		.div = _d,					\
 	}
-
 static inline void lgm_set_clk_val(struct regmap *membase, u32 reg,
 				   u8 shift, u8 width, u32 set_val)
 {
 	u32 mask = (GENMASK(width - 1, 0) << shift);
-
 	regmap_update_bits(membase, reg, mask, set_val << shift);
 }
-
 static inline u32 lgm_get_clk_val(struct regmap *membase, u32 reg,
 				  u8 shift, u8 width)
 {
 	u32 mask = (GENMASK(width - 1, 0) << shift);
 	u32 val;
-
 	if (regmap_read(membase, reg, &val)) {
 		WARN_ONCE(1, "Failed to read clk reg: 0x%x\n", reg);
 		return 0;
 	}
-
 	val = (val & mask) >> shift;
-
 	return val;
 }
-
-
-
 int lgm_clk_register_branches(struct lgm_clk_provider *ctx,
 			      const struct lgm_clk_branch *list,
 			      unsigned int nr_clk);
@@ -332,4 +277,4 @@ int lgm_clk_register_plls(struct lgm_clk_provider *ctx,
 int lgm_clk_register_ddiv(struct lgm_clk_provider *ctx,
 			  const struct lgm_clk_ddiv_data *list,
 			  unsigned int nr_clk);
-#endif	/* __CLK_CGU_H */
+#endif	 

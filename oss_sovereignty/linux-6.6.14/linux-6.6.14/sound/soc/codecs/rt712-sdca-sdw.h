@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt712-sdca-sdw.h -- RT712 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2023 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT712_SDW_H__
 #define __RT712_SDW_H__
-
 #include <linux/regmap.h>
 #include <linux/soundwire/sdw_registers.h>
-
 static const struct reg_default rt712_sdca_reg_defaults[] = {
 	{ 0x201a, 0x00 },
 	{ 0x201b, 0x00 },
@@ -69,7 +60,6 @@ static const struct reg_default rt712_sdca_reg_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT712_SDCA_ENT_USER_FU06, RT712_SDCA_CTL_FU_MUTE, CH_R), 0x01 },
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT712_SDCA_ENT_OT23, RT712_SDCA_CTL_VENDOR_DEF, 0), 0x00 },
 };
-
 static const struct reg_default rt712_sdca_mbq_defaults[] = {
 	{ 0x2000004, 0xaa01 },
 	{ 0x200000e, 0x21e0 },
@@ -104,5 +94,4 @@ static const struct reg_default rt712_sdca_mbq_defaults[] = {
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT712_SDCA_ENT_USER_FU06, RT712_SDCA_CTL_FU_VOLUME, CH_L), 0x0000 },
 	{ SDW_SDCA_CTL(FUNC_NUM_AMP, RT712_SDCA_ENT_USER_FU06, RT712_SDCA_CTL_FU_VOLUME, CH_R), 0x0000 },
 };
-
-#endif /* __RT712_SDW_H__ */
+#endif  

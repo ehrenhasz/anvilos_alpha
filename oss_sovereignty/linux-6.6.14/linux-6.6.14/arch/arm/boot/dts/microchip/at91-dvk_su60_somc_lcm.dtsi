@@ -1,12 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * at91-dvk_su60_somc_lcm.dtsi - Device Tree file for the DVK SOM60 LCD board
- *
- *  Copyright (C) 2018 Laird,
- *		  2018 Ben Whitten <ben.whitten@lairdtech.com>
- *
- */
-
 / {
 	backlight: backlight {
 		compatible = "pwm-backlight";
@@ -15,7 +6,6 @@
 		default-brightness-level = <6>;
 		status = "okay";
 	};
-
 	panel: panel {
 		compatible = "winstar,wf70gtiagdng0", "innolux,at070tn92";
 		backlight = <&backlight>;
@@ -23,19 +13,16 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "okay";
-
 		port@0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0>;
-
 			panel_input: endpoint@0 {
 				reg = <0>;
 				remote-endpoint = <&hlcdc_panel_output>;
 			};
 		};
 	};
-
 	vcc_lcd_reg: fixedregulator_lcd {
 		compatible = "regulator-fixed";
 		regulator-name = "VCC LCM";
@@ -46,7 +33,6 @@
 		status = "okay";
 	};
 };
-
 &pinctrl {
 	board {
 		pinctrl_lcd_ctp_int: lcd_ctp_int {
@@ -55,31 +41,24 @@
 		};
 	};
 };
-
 &i2c1 {
 	status = "okay";
-
 	ft5426@38 {
 		compatible = "focaltech,ft5426", "edt,edt-ft5406";
 		reg = <0x38>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_lcd_ctp_int>;
-
 		interrupt-parent = <&pioC>;
 		interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
-
 		touchscreen-size-x = <800>;
 		touchscreen-size-y = <480>;
 	};
 };
-
 &hlcdc {
 	status = "okay";
-
 	hlcdc-display-controller {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_lcd_base &pinctrl_lcd_rgb888>;
-
 		port@0 {
 			hlcdc_panel_output: endpoint@0 {
 				reg = <0>;

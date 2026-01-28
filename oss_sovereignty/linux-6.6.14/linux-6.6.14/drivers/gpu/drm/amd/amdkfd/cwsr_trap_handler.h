@@ -1,25 +1,3 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
-
 static const uint32_t cwsr_trap_gfx8_hex[] = {
 	0xbf820001, 0xbf820121,
 	0xb8f4f802, 0x89748674,
@@ -271,8 +249,6 @@ static const uint32_t cwsr_trap_gfx8_hex[] = {
 	0xb9740002, 0xbf8a0000,
 	0x95807370, 0xbf810000,
 };
-
-
 static const uint32_t cwsr_trap_gfx9_hex[] = {
 	0xbf820001, 0xbf820258,
 	0xb8f8f802, 0x8978ff78,
@@ -676,7 +652,6 @@ static const uint32_t cwsr_trap_gfx9_hex[] = {
 	0xb97a0002, 0xbf8a0000,
 	0xbe801f6c, 0xbf810000,
 };
-
 static const uint32_t cwsr_trap_nv1x_hex[] = {
 	0xbf820001, 0xbf8201f5,
 	0xb0804004, 0xb978f802,
@@ -1096,7 +1071,6 @@ static const uint32_t cwsr_trap_nv1x_hex[] = {
 	0xbf9f0000, 0xbf9f0000,
 	0xbf9f0000, 0x00000000,
 };
-
 static const uint32_t cwsr_trap_arcturus_hex[] = {
 	0xbf820001, 0xbf8202d4,
 	0xb8f8f802, 0x8978ff78,
@@ -1576,7 +1550,6 @@ static const uint32_t cwsr_trap_arcturus_hex[] = {
 	0xb97a0002, 0xbf8a0000,
 	0xbe801f6c, 0xbf810000,
 };
-
 static const uint32_t cwsr_trap_aldebaran_hex[] = {
 	0xbf820001, 0xbf8202df,
 	0xb8f8f802, 0x8978ff78,
@@ -2067,7 +2040,6 @@ static const uint32_t cwsr_trap_aldebaran_hex[] = {
 	0xb97a0002, 0xbf8a0000,
 	0xbe801f6c, 0xbf810000,
 };
-
 static const uint32_t cwsr_trap_gfx10_hex[] = {
 	0xbf820001, 0xbf820220,
 	0xb0804004, 0xb978f802,
@@ -2504,7 +2476,6 @@ static const uint32_t cwsr_trap_gfx10_hex[] = {
 	0xbf9f0000, 0xbf9f0000,
 	0xbf9f0000, 0x00000000,
 };
-
 static const uint32_t cwsr_trap_gfx11_hex[] = {
 	0xbfa00001, 0xbfa00225,
 	0xb0804006, 0xb8f8f802,
@@ -2949,7 +2920,6 @@ static const uint32_t cwsr_trap_gfx11_hex[] = {
 	0xbf9f0000, 0xbf9f0000,
 	0xbf9f0000, 0x00000000,
 };
-
 static const uint32_t cwsr_trap_gfx9_4_3_hex[] = {
 	0xbf820001, 0xbf8202db,
 	0xb8f8f802, 0x8978ff78,

@@ -1,36 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
-
 #ifndef __DTS_IMX1_PINFUNC_H
 #define __DTS_IMX1_PINFUNC_H
-
-/*
- * The pin function ID is a tuple of
- * <pin mux_id>
- * mux_id consists of
- * function + (direction << 2) + (gpio_oconf << 4) + (gpio_iconfa << 8) + (gpio_iconfb << 10)
- *
- * function:      0 - Primary function
- *                1 - Alternate function
- *                2 - GPIO
- * direction:     0 - Input
- *                1 - Output
- * gpio_oconf:    0 - A_IN
- *                1 - B_IN
- *                2 - A_OUT
- *                3 - Data Register
- * gpio_iconfa/b: 0 - GPIO_IN
- *                1 - Interrupt Status Register
- *                2 - 0
- *                3 - 1
- *
- * 'pin' is an integer between 0 and 0xbf. i.MX1 has 4 ports with 32
- * configurable pins each. 'pin' is PORT * 32 + PORT_PIN, PORT_PIN is
- * the pin number on the specific port (between 0 and 31).
- */
-
 #define MX1_PAD_A24__A24			0x00 0x004
 #define MX1_PAD_A24__GPIO1_0			0x00 0x032
 #define MX1_PAD_A24__SPI2_CLK			0x00 0x006
@@ -292,5 +261,4 @@
 #define MX1_PAD_TMR2OUT__TMR2OUT		0x7f 0x000
 #define MX1_PAD_TMR2OUT__GPIO4_31		0x7f 0x032
 #define MX1_PAD_TMR2OUT__SPI2_TXD		0x7f 0x006
-
 #endif

@@ -1,35 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_STRING_32_H
 #define _ASM_X86_STRING_32_H
-
 #ifdef __KERNEL__
-
-/* Let gcc decide whether to inline or use the out of line functions */
-
 #define __HAVE_ARCH_STRCPY
 extern char *strcpy(char *dest, const char *src);
-
 #define __HAVE_ARCH_STRNCPY
 extern char *strncpy(char *dest, const char *src, size_t count);
-
 #define __HAVE_ARCH_STRCAT
 extern char *strcat(char *dest, const char *src);
-
 #define __HAVE_ARCH_STRNCAT
 extern char *strncat(char *dest, const char *src, size_t count);
-
 #define __HAVE_ARCH_STRCMP
 extern int strcmp(const char *cs, const char *ct);
-
 #define __HAVE_ARCH_STRNCMP
 extern int strncmp(const char *cs, const char *ct, size_t count);
-
 #define __HAVE_ARCH_STRCHR
 extern char *strchr(const char *s, int c);
-
 #define __HAVE_ARCH_STRLEN
 extern size_t strlen(const char *s);
-
 static __always_inline void *__memcpy(void *to, const void *from, size_t n)
 {
 	int d0, d1, d2;
@@ -44,18 +31,12 @@ static __always_inline void *__memcpy(void *to, const void *from, size_t n)
 		     : "memory");
 	return to;
 }
-
-/*
- * This looks ugly, but the compiler can optimize it totally,
- * as the count is constant.
- */
 static __always_inline void *__constant_memcpy(void *to, const void *from,
 					       size_t n)
 {
 	long esi, edi;
 	if (!n)
 		return to;
-
 	switch (n) {
 	case 1:
 		*(char *)to = *(char *)from;
@@ -83,11 +64,9 @@ static __always_inline void *__constant_memcpy(void *to, const void *from,
 		*((int *)to + 1) = *((int *)from + 1);
 		return to;
 	}
-
 	esi = (long)from;
 	edi = (long)to;
 	if (n >= 5 * 4) {
-		/* large block: use rep prefix */
 		int ecx;
 		asm volatile("rep ; movsl"
 			     : "=&c" (ecx), "=&D" (edi), "=&S" (esi)
@@ -95,7 +74,6 @@ static __always_inline void *__constant_memcpy(void *to, const void *from,
 			     : "memory"
 		);
 	} else {
-		/* small block: don't clobber ecx + smaller code */
 		if (n >= 4 * 4)
 			asm volatile("movsl"
 				     : "=&D"(edi), "=&S"(esi)
@@ -118,7 +96,6 @@ static __always_inline void *__constant_memcpy(void *to, const void *from,
 				     : "memory");
 	}
 	switch (n % 4) {
-		/* tail */
 	case 0:
 		return to;
 	case 1:
@@ -141,27 +118,19 @@ static __always_inline void *__constant_memcpy(void *to, const void *from,
 		return to;
 	}
 }
-
 #define __HAVE_ARCH_MEMCPY
 extern void *memcpy(void *, const void *, size_t);
-
 #ifndef CONFIG_FORTIFY_SOURCE
-
 #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-
-#endif /* !CONFIG_FORTIFY_SOURCE */
-
+#endif  
 #define __HAVE_ARCH_MEMMOVE
 void *memmove(void *dest, const void *src, size_t n);
-
 extern int memcmp(const void *, const void *, size_t);
 #ifndef CONFIG_FORTIFY_SOURCE
 #define memcmp __builtin_memcmp
 #endif
-
 #define __HAVE_ARCH_MEMCHR
 extern void *memchr(const void *cs, int c, size_t count);
-
 static inline void *__memset_generic(void *s, char c, size_t count)
 {
 	int d0, d1;
@@ -172,29 +141,20 @@ static inline void *__memset_generic(void *s, char c, size_t count)
 		     : "memory");
 	return s;
 }
-
-/* we might want to write optimized versions of these later */
 #define __constant_count_memset(s, c, count) __memset_generic((s), (c), (count))
-
-/* Added by Gertjan van Wingerde to make minix and sysv module work */
 #define __HAVE_ARCH_STRNLEN
 extern size_t strnlen(const char *s, size_t count);
-/* end of additional stuff */
-
 #define __HAVE_ARCH_STRSTR
 extern char *strstr(const char *cs, const char *ct);
-
 #define __memset(s, c, count)				\
 	(__builtin_constant_p(count)			\
 	 ? __constant_count_memset((s), (c), (count))	\
 	 : __memset_generic((s), (c), (count)))
-
 #define __HAVE_ARCH_MEMSET
 extern void *memset(void *, int, size_t);
 #ifndef CONFIG_FORTIFY_SOURCE
 #define memset(s, c, count) __builtin_memset(s, c, count)
-#endif /* !CONFIG_FORTIFY_SOURCE */
-
+#endif  
 #define __HAVE_ARCH_MEMSET16
 static inline void *memset16(uint16_t *s, uint16_t v, size_t n)
 {
@@ -206,7 +166,6 @@ static inline void *memset16(uint16_t *s, uint16_t v, size_t n)
 		     : "memory");
 	return s;
 }
-
 #define __HAVE_ARCH_MEMSET32
 static inline void *memset32(uint32_t *s, uint32_t v, size_t n)
 {
@@ -218,13 +177,7 @@ static inline void *memset32(uint32_t *s, uint32_t v, size_t n)
 		     : "memory");
 	return s;
 }
-
-/*
- * find the first occurrence of byte 'c', or 1 past the area if none
- */
 #define __HAVE_ARCH_MEMSCAN
 extern void *memscan(void *addr, int c, size_t size);
-
-#endif /* __KERNEL__ */
-
-#endif /* _ASM_X86_STRING_32_H */
+#endif  
+#endif  

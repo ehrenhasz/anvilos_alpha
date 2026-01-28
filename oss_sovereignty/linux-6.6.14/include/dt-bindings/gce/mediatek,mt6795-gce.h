@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2023 Collabora Ltd.
- * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
 #ifndef _DT_BINDINGS_GCE_MT6795_H
 #define _DT_BINDINGS_GCE_MT6795_H
-
-/* GCE HW thread priority */
 #define CMDQ_THR_PRIO_LOWEST			0
 #define CMDQ_THR_PRIO_NORMAL			1
 #define CMDQ_THR_PRIO_NORMAL_2			2
@@ -15,8 +8,6 @@
 #define CMDQ_THR_PRIO_HIGH			5
 #define CMDQ_THR_PRIO_HIGHER			6
 #define CMDQ_THR_PRIO_HIGHEST			7
-
-/* GCE SUBSYS */
 #define SUBSYS_1300XXXX				0
 #define SUBSYS_1400XXXX				1
 #define SUBSYS_1401XXXX				2
@@ -40,8 +31,6 @@
 #define SUBSYS_1124XXXX				20
 #define SUBSYS_1125XXXX				21
 #define SUBSYS_1126XXXX				22
-
-/* GCE HW EVENT */
 #define CMDQ_EVENT_MDP_RDMA0_SOF		0
 #define CMDQ_EVENT_MDP_RDMA1_SOF		1
 #define CMDQ_EVENT_MDP_DSI0_TE_SOF		2
@@ -119,5 +108,4 @@
 #define CMDQ_EVENT_JPGENC_PASS2_EOF		257
 #define CMDQ_EVENT_JPGENC_PASS1_EOF		258
 #define CMDQ_EVENT_JPGDEC_EOF			259
-
 #endif

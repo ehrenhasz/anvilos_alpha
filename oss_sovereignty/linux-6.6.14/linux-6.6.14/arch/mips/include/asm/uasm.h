@@ -1,67 +1,39 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2004, 2005, 2006, 2008	 Thiemo Seufer
- * Copyright (C) 2005  Maciej W. Rozycki
- * Copyright (C) 2006  Ralf Baechle (ralf@linux-mips.org)
- * Copyright (C) 2012, 2013  MIPS Technologies, Inc.  All rights reserved.
- */
-
 #ifndef __ASM_UASM_H
 #define __ASM_UASM_H
-
 #include <linux/types.h>
-
 #ifdef CONFIG_EXPORT_UASM
 #include <linux/export.h>
 #define UASM_EXPORT_SYMBOL(sym) EXPORT_SYMBOL(sym)
 #else
 #define UASM_EXPORT_SYMBOL(sym)
 #endif
-
 #define Ip_u1u2u3(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, unsigned int c)
-
 #define Ip_u2u1u3(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, unsigned int c)
-
 #define Ip_u3u2u1(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, unsigned int c)
-
 #define Ip_u3u1u2(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, unsigned int c)
-
 #define Ip_u1u2s3(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, signed int c)
-
 #define Ip_u2s3u1(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, signed int b, unsigned int c)
-
 #define Ip_s3s1s2(op)							\
 void uasm_i##op(u32 **buf, int a, int b, int c)
-
 #define Ip_u2u1s3(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, signed int c)
-
 #define Ip_u2u1msbu3(op)						\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b, unsigned int c, \
 	   unsigned int d)
-
 #define Ip_u1u2(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b)
-
 #define Ip_u2u1(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, unsigned int b)
-
 #define Ip_u1s2(op)							\
 void uasm_i##op(u32 **buf, unsigned int a, signed int b)
-
 #define Ip_u1(op) void uasm_i##op(u32 **buf, unsigned int a)
-
 #define Ip_0(op) void uasm_i##op(u32 **buf)
-
 Ip_u2u1s3(_addiu);
 Ip_u3u1u2(_addu);
 Ip_u3u1u2(_and);
@@ -184,13 +156,10 @@ Ip_u2u1u3(_xori);
 Ip_u2u1(_yield);
 Ip_u1u2(_ldpte);
 Ip_u2u1u3(_lddir);
-
-/* Handle labels. */
 struct uasm_label {
 	u32 *addr;
 	int lab;
 };
-
 void uasm_build_label(struct uasm_label **lab, u32 *addr,
 			int lid);
 #ifdef CONFIG_64BIT
@@ -200,14 +169,11 @@ int uasm_rel_hi(long val);
 int uasm_rel_lo(long val);
 void UASM_i_LA_mostly(u32 **buf, unsigned int rs, long addr);
 void UASM_i_LA(u32 **buf, unsigned int rs, long addr);
-
 #define UASM_L_LA(lb)							\
 static inline void uasm_l##lb(struct uasm_label **lab, u32 *addr)	\
 {									\
 	uasm_build_label(lab, addr, label##lb);				\
 }
-
-/* convenience macros for instructions */
 #ifdef CONFIG_64BIT
 # define UASM_i_ADDIU(buf, rs, rt, val) uasm_i_daddiu(buf, rs, rt, val)
 # define UASM_i_ADDU(buf, rs, rt, rd) uasm_i_daddu(buf, rs, rt, rd)
@@ -241,7 +207,6 @@ static inline void uasm_l##lb(struct uasm_label **lab, u32 *addr)	\
 # define UASM_i_SUBU(buf, rs, rt, rd) uasm_i_subu(buf, rs, rt, rd)
 # define UASM_i_SW(buf, rs, rt, off) uasm_i_sw(buf, rs, rt, off)
 #endif
-
 #define uasm_i_b(buf, off) uasm_i_beq(buf, 0, 0, off)
 #define uasm_i_beqz(buf, rs, off) uasm_i_beq(buf, rs, 0, off)
 #define uasm_i_beqzl(buf, rs, off) uasm_i_beql(buf, rs, 0, off)
@@ -255,7 +220,6 @@ static inline void uasm_l##lb(struct uasm_label **lab, u32 *addr)	\
 #define uasm_i_nop(buf) uasm_i_sll(buf, 0, 0, 0)
 #endif
 #define uasm_i_ssnop(buf) uasm_i_sll(buf, 0, 0, 1)
-
 static inline void uasm_i_drotr_safe(u32 **p, unsigned int a1,
 				     unsigned int a2, unsigned int a3)
 {
@@ -264,7 +228,6 @@ static inline void uasm_i_drotr_safe(u32 **p, unsigned int a1,
 	else
 		uasm_i_drotr32(p, a1, a2, a3 - 32);
 }
-
 static inline void uasm_i_dsll_safe(u32 **p, unsigned int a1,
 				    unsigned int a2, unsigned int a3)
 {
@@ -273,7 +236,6 @@ static inline void uasm_i_dsll_safe(u32 **p, unsigned int a1,
 	else
 		uasm_i_dsll32(p, a1, a2, a3 - 32);
 }
-
 static inline void uasm_i_dsrl_safe(u32 **p, unsigned int a1,
 				    unsigned int a2, unsigned int a3)
 {
@@ -282,7 +244,6 @@ static inline void uasm_i_dsrl_safe(u32 **p, unsigned int a1,
 	else
 		uasm_i_dsrl32(p, a1, a2, a3 - 32);
 }
-
 static inline void uasm_i_dsra_safe(u32 **p, unsigned int a1,
 				    unsigned int a2, unsigned int a3)
 {
@@ -291,17 +252,12 @@ static inline void uasm_i_dsra_safe(u32 **p, unsigned int a1,
 	else
 		uasm_i_dsra32(p, a1, a2, a3 - 32);
 }
-
-/* Handle relocations. */
 struct uasm_reloc {
 	u32 *addr;
 	unsigned int type;
 	int lab;
 };
-
-/* This is zero so we can use zeroed label arrays. */
 #define UASM_LABEL_INVALID 0
-
 void uasm_r_mips_pc16(struct uasm_reloc **rel, u32 *addr, int lid);
 void uasm_resolve_relocs(struct uasm_reloc *rel, struct uasm_label *lab);
 void uasm_move_relocs(struct uasm_reloc *rel, u32 *first, u32 *end, long off);
@@ -309,8 +265,6 @@ void uasm_move_labels(struct uasm_label *lab, u32 *first, u32 *end, long off);
 void uasm_copy_handler(struct uasm_reloc *rel, struct uasm_label *lab,
 	u32 *first, u32 *end, u32 *target);
 int uasm_insn_has_bdelay(struct uasm_reloc *rel, u32 *addr);
-
-/* Convenience functions for labeled branches. */
 void uasm_il_b(u32 **p, struct uasm_reloc **r, int lid);
 void uasm_il_bbit0(u32 **p, struct uasm_reloc **r, unsigned int reg,
 		   unsigned int bit, int lid);
@@ -326,5 +280,4 @@ void uasm_il_bltz(u32 **p, struct uasm_reloc **r, unsigned int reg, int lid);
 void uasm_il_bne(u32 **p, struct uasm_reloc **r, unsigned int reg1,
 		 unsigned int reg2, int lid);
 void uasm_il_bnez(u32 **p, struct uasm_reloc **r, unsigned int reg, int lid);
-
-#endif /* __ASM_UASM_H */
+#endif  

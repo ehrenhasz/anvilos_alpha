@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
-
-/*
- * This file was generated automatically.
- * DON'T EDIT THIS FILE.
- */
-
 #ifndef GAUDI2_SPECIAL_BLOCKS_H
 #define GAUDI2_SPECIAL_BLOCKS_H
-
 #define GAUDI2_SPECIAL_BLOCKS { \
 	{ GAUDI2_BLOCK_TYPE_TPC, 0xfc008000, 4, 6, 0, 0x200000, 0x10000, 0x0 }, \
 	{ GAUDI2_BLOCK_TYPE_TPC, 0xfc00a000, 4, 6, 0, 0x200000, 0x10000, 0x0 }, \
@@ -153,5 +141,4 @@
 	{ GAUDI2_BLOCK_TYPE_NIC, 0xfd468000, 12, 0, 0, 0x80000, 0x0, 0x0 }, \
 	{ GAUDI2_BLOCK_TYPE_NIC, 0xfd469000, 12, 0, 0, 0x80000, 0x0, 0x0 }, \
 }
-
 #endif

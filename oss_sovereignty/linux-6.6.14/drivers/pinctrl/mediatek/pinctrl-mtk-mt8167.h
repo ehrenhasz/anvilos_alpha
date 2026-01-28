@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 MediaTek Inc.
- */
 #ifndef __PINCTRL_MTK_MT8167_H
 #define __PINCTRL_MTK_MT8167_H
-
 #include <linux/pinctrl/pinctrl.h>
 #include "pinctrl-mtk-common.h"
-
 static const struct mtk_desc_pin mtk_pins_mt8167[] = {
 	MTK_PIN(
 		PINCTRL_PIN(0, "EINT0"),
@@ -1244,5 +1238,4 @@ static const struct mtk_desc_pin mtk_pins_mt8167[] = {
 		MTK_FUNCTION(1, "HDMISD")
 	),
 };
-
-#endif /* __PINCTRL_MTK_MT8167_H */
+#endif  

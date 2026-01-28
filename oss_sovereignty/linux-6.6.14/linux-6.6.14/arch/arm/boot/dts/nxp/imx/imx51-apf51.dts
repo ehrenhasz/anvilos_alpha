@@ -1,32 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Armadeus Systems - <support@armadeus.com>
- * Copyright 2012 Laurent Cans <laurent.cans@gmail.com>
- *
- * Based on mx51-babbage.dts
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- */
-
 /dts-v1/;
 #include "imx51.dtsi"
-
 / {
 	model = "Armadeus Systems APF51 module";
 	compatible = "armadeus,imx51-apf51", "fsl,imx51";
-
 	memory@90000000 {
 		device_type = "memory";
 		reg = <0x90000000 0x20000000>;
 	};
-
 	clocks {
 		osc {
 			clock-frequency = <33554432>;
 		};
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
@@ -35,7 +21,6 @@
 	phy-reset-duration = <1>;
 	status = "okay";
 };
-
 &iomuxc {
 	imx51-apf51 {
 		pinctrl_fec: fecgrp {
@@ -60,7 +45,6 @@
 				MX51_PAD_DISP2_DAT15__FEC_TDATA0	0x80000000
 			>;
 		};
-
 		pinctrl_uart3: uart3grp {
 			fsl,pins = <
 				MX51_PAD_UART3_RXD__UART3_RXD		0x1c5
@@ -69,14 +53,12 @@
 		};
 	};
 };
-
 &nfc {
 	nand-bus-width = <8>;
 	nand-ecc-mode = "hw";
 	nand-on-flash-bbt;
 	status = "okay";
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;

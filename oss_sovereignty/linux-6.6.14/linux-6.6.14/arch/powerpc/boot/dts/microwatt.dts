@@ -1,26 +1,21 @@
 /dts-v1/;
-
 / {
 	#size-cells = <0x02>;
 	#address-cells = <0x02>;
 	model-name = "microwatt";
 	compatible = "microwatt-soc";
-
 	aliases {
 		serial0 = &UART0;
 	};
-
 	reserved-memory {
 		#size-cells = <0x02>;
 		#address-cells = <0x02>;
 		ranges;
 	};
-
 	memory@0 {
 		device_type = "memory";
 		reg = <0x00000000 0x00000000 0x00000000 0x10000000>;
 	};
-
 	clocks {
 		sys_clk: litex_sys_clk {
 			#clock-cells = <0>;
@@ -28,50 +23,41 @@
 			clock-frequency = <100000000>;
 		};
 	};
-
 	cpus {
 		#size-cells = <0x00>;
 		#address-cells = <0x01>;
-
 		ibm,powerpc-cpu-features {
 			display-name = "Microwatt";
 			isa = <3000>;
 			device_type = "cpu-features";
 			compatible = "ibm,powerpc-cpu-features";
-
 			mmu-radix {
 				isa = <3000>;
 				usable-privilege = <2>;
 			};
-
 			little-endian {
 				isa = <2050>;
 				usable-privilege = <3>;
 				hwcap-bit-nr = <1>;
 			};
-
 			cache-inhibited-large-page {
 				isa = <2040>;
 				usable-privilege = <2>;
 			};
-
 			fixed-point-v3 {
 				isa = <3000>;
 				usable-privilege = <3>;
 			};
-
 			no-execute {
 				isa = <2010>;
 				usable-privilege = <2>;
 			};
-
 			floating-point {
 				hwcap-bit-nr = <27>;
 				isa = <0>;
 				usable-privilege = <3>;
 			};
 		};
-
 		PowerPC,Microwatt@0 {
 			i-cache-sets = <2>;
 			ibm,dec-bits = <64>;
@@ -102,21 +88,17 @@
 			ibm,mmu-pid-bits = <20>;
 		};
 	};
-
 	soc@c0000000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		interrupt-parent = <&ICS>;
-
 		ranges = <0 0 0xc0000000 0x40000000>;
-
 		interrupt-controller@4000 {
 			compatible = "openpower,xics-presentation", "ibm,ppc-xicp";
 			ibm,interrupt-server-ranges = <0x0 0x1>;
 			reg = <0x4000 0x100>;
 		};
-
 		ICS: interrupt-controller@5000 {
 			compatible = "openpower,xics-sources";
 			interrupt-controller;
@@ -126,7 +108,6 @@
 			#size-cells = <0>;
 			#interrupt-cells = <2>;
 		};
-
 		UART0: serial@2000 {
 			device_type = "serial";
 			compatible = "ns16550";
@@ -137,7 +118,6 @@
 			fifo-size = <16>;
 			interrupts = <0x10 0x1>;
 		};
-
 		ethernet@8020000 {
 			compatible = "litex,liteeth";
 			reg = <0x8021000 0x100
@@ -149,7 +129,6 @@
 			litex,slot-size = <0x800>;
 			interrupts = <0x11 0x1>;
 		};
-
 		mmc@8040000 {
 			compatible = "litex,mmc";
 			reg = <0x8042800 0x800
@@ -164,7 +143,6 @@
 			clocks = <&sys_clk>;
 		};
 	};
-
 	chosen {
 		bootargs = "";
 		ibm,architecture-vec-5 = [19 00 10 00 00 00 00 00 00 00 00 00 00 00 00 00

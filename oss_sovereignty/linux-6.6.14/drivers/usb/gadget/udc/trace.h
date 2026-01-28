@@ -1,22 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * udc.c - Core UDC Framework
- *
- * Copyright (C) 2016 Intel Corporation
- * Author: Felipe Balbi <felipe.balbi@linux.intel.com>
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM gadget
-
 #if !defined(__UDC_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __UDC_TRACE_H
-
 #include <linux/types.h>
 #include <linux/tracepoint.h>
 #include <asm/byteorder.h>
 #include <linux/usb/gadget.h>
-
 DECLARE_EVENT_CLASS(udc_log_gadget,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret),
@@ -80,67 +69,54 @@ DECLARE_EVENT_CLASS(udc_log_gadget,
 		__entry->connected ? "connected" : "disconnected",
 		__entry->ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_frame_number,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_wakeup,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_set_remote_wakeup,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_set_selfpowered,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_clear_selfpowered,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_vbus_connect,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_vbus_draw,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_vbus_disconnect,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_connect,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_disconnect,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_deactivate,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DEFINE_EVENT(udc_log_gadget, usb_gadget_activate,
 	TP_PROTO(struct usb_gadget *g, int ret),
 	TP_ARGS(g, ret)
 );
-
 DECLARE_EVENT_CLASS(udc_log_ep,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret),
@@ -174,47 +150,38 @@ DECLARE_EVENT_CLASS(udc_log_ep,
 		__entry->address, __entry->claimed ? "claimed:" : "released:",
 		__entry->enabled ? "enabled" : "disabled", ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_set_maxpacket_limit,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_enable,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_disable,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_set_halt,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_clear_halt,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_set_wedge,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_fifo_status,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DEFINE_EVENT(udc_log_ep, usb_ep_fifo_flush,
 	TP_PROTO(struct usb_ep *ep, int ret),
 	TP_ARGS(ep, ret)
 );
-
 DECLARE_EVENT_CLASS(udc_log_req,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret),
@@ -255,40 +222,29 @@ DECLARE_EVENT_CLASS(udc_log_req,
 		__entry->status, __entry->ret
 	)
 );
-
 DEFINE_EVENT(udc_log_req, usb_ep_alloc_request,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret)
 );
-
 DEFINE_EVENT(udc_log_req, usb_ep_free_request,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret)
 );
-
 DEFINE_EVENT(udc_log_req, usb_ep_queue,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret)
 );
-
 DEFINE_EVENT(udc_log_req, usb_ep_dequeue,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret)
 );
-
 DEFINE_EVENT(udc_log_req, usb_gadget_giveback_request,
 	TP_PROTO(struct usb_ep *ep, struct usb_request *req, int ret),
 	TP_ARGS(ep, req, ret)
 );
-
-#endif /* __UDC_TRACE_H */
-
-/* this part has to be here */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
 #include <trace/define_trace.h>

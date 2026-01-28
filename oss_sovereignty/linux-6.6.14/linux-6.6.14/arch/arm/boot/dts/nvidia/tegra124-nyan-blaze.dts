@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 /dts-v1/;
-
 #include "tegra124-nyan.dtsi"
-
 #include "tegra124-nyan-blaze-emc.dtsi"
-
 / {
 	model = "HP Chromebook 14";
 	compatible = "google,nyan-blaze-rev10", "google,nyan-blaze-rev9",
@@ -14,7 +10,6 @@
 		     "google,nyan-blaze-rev2", "google,nyan-blaze-rev1",
 		     "google,nyan-blaze-rev0", "google,nyan-blaze",
 		     "google,nyan", "nvidia,tegra124";
-
 	host1x@50000000 {
 		dpaux@545c0000 {
 			aux-bus {
@@ -26,11 +21,9 @@
 			};
 		};
 	};
-
 	pinmux@70000868 {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinmux_default>;
-
 		pinmux_default: pinmux {
 			clk_32k_out_pa0 {
 				nvidia,pins = "clk_32k_out_pa0";
@@ -1336,7 +1329,6 @@
 			};
 		};
 	};
-
 	sound {
 		compatible = "nvidia,tegra-audio-max98090-nyan-blaze",
 			     "nvidia,tegra-audio-max98090-nyan",

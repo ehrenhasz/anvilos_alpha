@@ -1,39 +1,11 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef VEGA20_PP_SMC_H
 #define VEGA20_PP_SMC_H
-
 #pragma pack(push, 1)
-
-// SMU Response Codes:
 #define PPSMC_Result_OK                    0x1
 #define PPSMC_Result_Failed                0xFF
 #define PPSMC_Result_UnknownCmd            0xFE
 #define PPSMC_Result_CmdRejectedPrereq     0xFD
 #define PPSMC_Result_CmdRejectedBusy       0xFC
-
-// Message Definitions:
 #define PPSMC_MSG_TestMessage                    0x1
 #define PPSMC_MSG_GetSmuVersion                  0x2
 #define PPSMC_MSG_GetDriverIfVersion             0x3
@@ -86,7 +58,6 @@
 #define PPSMC_MSG_NotifyPowerSource              0x38
 #define PPSMC_MSG_SetUclkFastSwitch              0x39
 #define PPSMC_MSG_SetUclkDownHyst                0x3A
-//#define PPSMC_MSG_GfxDeviceDriverReset           0x3B
 #define PPSMC_MSG_GetCurrentRpm                  0x3C
 #define PPSMC_MSG_SetVideoFps                    0x3D
 #define PPSMC_MSG_SetTjMax                       0x3E
@@ -106,7 +77,6 @@
 #define PPSMC_MSG_SetSystemVirtualDramAddrLow    0x4C
 #define PPSMC_MSG_WaflTest                       0x4D
 #define PPSMC_MSG_SetFclkGfxClkRatio             0x4E
-// Unused ID 0x4F to 0x50
 #define PPSMC_MSG_AllowGfxOff                    0x51
 #define PPSMC_MSG_DisallowGfxOff                 0x52
 #define PPSMC_MSG_GetPptLimit                    0x53
@@ -122,10 +92,7 @@
 #define PPSMC_MSG_BacoWorkAroundFlushVDCI        0x60
 #define PPSMC_MSG_DFCstateControl                0x63
 #define PPSMC_Message_Count                      0x64
-
 typedef uint32_t PPSMC_Result;
 typedef uint32_t PPSMC_Msg;
-
 #pragma pack(pop)
-
 #endif

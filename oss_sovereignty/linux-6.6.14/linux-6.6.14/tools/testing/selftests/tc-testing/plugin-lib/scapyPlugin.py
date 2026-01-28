@@ -1,14 +1,10 @@
-#!/usr/bin/env python3
-
 import os
 import signal
 from string import Template
 import subprocess
 import time
 from TdcPlugin import TdcPlugin
-
 from tdc_config import *
-
 try:
     from scapy.all import *
 except ImportError:
@@ -16,23 +12,18 @@ except ImportError:
     print("\nIf not already installed, you may do so with:")
     print("\t\tpip3 install scapy==2.4.2")
     exit(1)
-
 class SubPlugin(TdcPlugin):
     def __init__(self):
         self.sub_class = 'scapy/SubPlugin'
         super().__init__()
-
     def post_execute(self):
         if 'scapy' not in self.args.caseinfo:
             if self.args.verbose:
                 print('{}.post_execute: no scapy info in test case'.format(self.sub_class))
             return
-
-        # Check for required fields
         lscapyinfo = self.args.caseinfo['scapy']
         if type(lscapyinfo) != list:
             lscapyinfo = [ lscapyinfo, ]
-
         for scapyinfo in lscapyinfo:
             scapy_keys = ['iface', 'count', 'packet']
             missing_keys = []
@@ -45,7 +36,6 @@ class SubPlugin(TdcPlugin):
                 print('{}: Scapy block present in the test, but is missing info:'
                     .format(self.sub_class))
                 print('{}'.format(missing_keys))
-
             pkt = eval(scapyinfo['packet'])
             if '$' in scapyinfo['iface']:
                 tpl = Template(scapyinfo['iface'])

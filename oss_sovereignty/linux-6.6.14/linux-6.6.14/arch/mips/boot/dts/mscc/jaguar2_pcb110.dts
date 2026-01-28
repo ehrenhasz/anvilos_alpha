@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2020 Microsemi Corporation
- */
-
 /dts-v1/;
 #include "jaguar2_common.dtsi"
 #include <dt-bindings/gpio/gpio.h>
-
 / {
 	model = "Jaguar2 Cu8-Sfp16 PCB110 Reference Board";
 	compatible = "mscc,jr2-pcb110", "mscc,jr2";
-
 	aliases {
 		i2c0    = &i2c0;
 		i2c108  = &i2c108;
@@ -168,15 +161,12 @@
 		};
 	};
 };
-
 &gpio {
 	synce_pins: synce-pins {
-		// GPIO 16 == SI_nCS1
 		pins = "GPIO_16";
 		function = "si";
 	};
 	synce_builtin_pins: synce-builtin-pins {
-		// GPIO 49 == SI_nCS13
 		pins = "GPIO_49";
 		function = "si";
 	};
@@ -206,7 +196,6 @@
 		output-high;
 	};
 };
-
 &i2c0 {
 	i2c-mux@70 {
 		compatible = "nxp,pca9545";
@@ -220,7 +209,6 @@
 			reg = <0>;
 		};
 		i2c125: i2c@1 {
-			/* FMC B */
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;
@@ -248,7 +236,6 @@
 			reg = <0>;
 		};
 		i2c129: i2c@1 {
-			/* FMC B */
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <1>;

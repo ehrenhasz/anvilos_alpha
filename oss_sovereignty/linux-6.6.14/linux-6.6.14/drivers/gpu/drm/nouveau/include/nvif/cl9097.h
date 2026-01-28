@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVIF_CL9097_H__
 #define __NVIF_CL9097_H__
-
 #define FERMI_A_ZBC_COLOR                                                  0x00
 #define FERMI_A_ZBC_DEPTH                                                  0x01
-
 struct fermi_a_zbc_color_v0 {
 	__u8  version;
 #define FERMI_A_ZBC_COLOR_V0_FMT_ZERO                                      0x01
@@ -32,7 +29,6 @@ struct fermi_a_zbc_color_v0 {
 	__u32 ds[4];
 	__u32 l2[4];
 };
-
 struct fermi_a_zbc_depth_v0 {
 	__u8  version;
 #define FERMI_A_ZBC_DEPTH_V0_FMT_FP32                                      0x01

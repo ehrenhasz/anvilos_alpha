@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __RTL92DE_HW_H__
 #define __RTL92DE_HW_H__
-
 void rtl92de_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl92de_read_eeprom_info(struct ieee80211_hw *hw);
 void rtl92de_interrupt_recognized(struct ieee80211_hw *hw,
@@ -29,12 +25,10 @@ void rtl92de_enable_hw_security_config(struct ieee80211_hw *hw);
 void rtl92de_set_key(struct ieee80211_hw *hw, u32 key_index,
 		     u8 *p_macaddr, bool is_group, u8 enc_algo,
 		     bool is_wepkey, bool clear_all);
-
 void rtl92de_write_dword_dbi(struct ieee80211_hw *hw, u16 offset, u32 value,
 			     u8 direct);
 u32 rtl92de_read_dword_dbi(struct ieee80211_hw *hw, u16 offset, u8 direct);
 void rtl92de_suspend(struct ieee80211_hw *hw);
 void rtl92de_resume(struct ieee80211_hw *hw);
 void rtl92d_linked_set_reg(struct ieee80211_hw *hw);
-
 #endif

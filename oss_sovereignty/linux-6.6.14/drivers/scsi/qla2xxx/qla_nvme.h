@@ -1,32 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2017 QLogic Corporation
- */
 #ifndef __QLA_NVME_H
 #define __QLA_NVME_H
-
 #include <uapi/scsi/fc/fc_fs.h>
 #include <uapi/scsi/fc/fc_els.h>
 #include <linux/nvme-fc-driver.h>
-
 #include "qla_def.h"
 #include "qla_dsd.h"
-
 #define MIN_NVME_HW_QUEUES 1
 #define DEF_NVME_HW_QUEUES 8
-
 #define NVME_ATIO_CMD_OFF 32
 #define NVME_FIRST_PACKET_CMDLEN (64 - NVME_ATIO_CMD_OFF)
 #define Q2T_NVME_NUM_TAGS 2048
 #define QLA_MAX_FC_SEGMENTS 64
-
 struct qla_nvme_unsol_ctx;
 struct scsi_qla_host;
 struct qla_hw_data;
 struct req_que;
 struct srb;
-
 struct nvme_private {
 	struct srb	*sp;
 	struct nvmefc_ls_req *fd;
@@ -35,52 +24,40 @@ struct nvme_private {
 	int comp_status;
 	spinlock_t cmd_lock;
 };
-
 struct qla_nvme_rport {
 	struct fc_port *fcport;
 	struct qla_nvme_unsol_ctx *uctx;
 };
-
-#define COMMAND_NVME    0x88            /* Command Type FC-NVMe IOCB */
+#define COMMAND_NVME    0x88             
 struct cmd_nvme {
-	uint8_t entry_type;             /* Entry type. */
-	uint8_t entry_count;            /* Entry count. */
-	uint8_t sys_define;             /* System defined. */
-	uint8_t entry_status;           /* Entry Status. */
-
-	uint32_t handle;                /* System handle. */
-	__le16	nport_handle;		/* N_PORT handle. */
-	__le16	timeout;		/* Command timeout. */
-
-	__le16	dseg_count;		/* Data segment count. */
-	__le16	nvme_rsp_dsd_len;	/* NVMe RSP DSD length */
-
+	uint8_t entry_type;              
+	uint8_t entry_count;             
+	uint8_t sys_define;              
+	uint8_t entry_status;            
+	uint32_t handle;                 
+	__le16	nport_handle;		 
+	__le16	timeout;		 
+	__le16	dseg_count;		 
+	__le16	nvme_rsp_dsd_len;	 
 	uint64_t rsvd;
-
-	__le16	control_flags;		/* Control Flags */
+	__le16	control_flags;		 
 #define CF_ADMIN_ASYNC_EVENT		BIT_13
 #define CF_NVME_FIRST_BURST_ENABLE	BIT_11
 #define CF_DIF_SEG_DESCR_ENABLE         BIT_3
 #define CF_DATA_SEG_DESCR_ENABLE        BIT_2
 #define CF_READ_DATA                    BIT_1
 #define CF_WRITE_DATA                   BIT_0
-
-	__le16	nvme_cmnd_dseg_len;             /* Data segment length. */
-	__le64	 nvme_cmnd_dseg_address __packed;/* Data segment address. */
-	__le64	 nvme_rsp_dseg_address __packed; /* Data segment address. */
-
-	__le32	byte_count;		/* Total byte count. */
-
-	uint8_t port_id[3];             /* PortID of destination port. */
+	__le16	nvme_cmnd_dseg_len;              
+	__le64	 nvme_cmnd_dseg_address __packed; 
+	__le64	 nvme_rsp_dseg_address __packed;  
+	__le32	byte_count;		 
+	uint8_t port_id[3];              
 	uint8_t vp_index;
-
 	struct dsd64 nvme_dsd;
 };
-
 #define PURLS_MSLEEP_INTERVAL	1
 #define PURLS_RETRY_COUNT	5
-
-#define PT_LS4_REQUEST 0x89	/* Link Service pass-through IOCB (request) */
+#define PT_LS4_REQUEST 0x89	 
 struct pt_ls4_request {
 	uint8_t entry_type;
 	uint8_t entry_count;
@@ -98,7 +75,6 @@ struct pt_ls4_request {
 #define CF_LS4_ORIGINATOR	0
 #define CF_LS4_RESPONDER	1
 #define CF_LS4_RESPONDER_TERM	2
-
 	__le16	rx_dseg_count;
 	__le16	rsvd2;
 	__le32	exchange_address;
@@ -107,8 +83,7 @@ struct pt_ls4_request {
 	__le32	tx_byte_count;
 	struct dsd64 dsd[2];
 };
-
-#define PT_LS4_UNSOL 0x56	/* pass-up unsolicited rec FC-NVMe request */
+#define PT_LS4_UNSOL 0x56	 
 struct pt_ls4_rx_unsol {
 	uint8_t entry_type;
 	uint8_t entry_count;
@@ -137,10 +112,6 @@ struct pt_ls4_rx_unsol {
 #define PT_LS4_FIRST_PACKET_LEN 20
 	__le32 payload[5];
 };
-
-/*
- * Global functions prototype in qla_nvme.c source file.
- */
 int qla_nvme_register_hba(struct scsi_qla_host *);
 int  qla_nvme_register_remote(struct scsi_qla_host *, struct fc_port *);
 void qla_nvme_delete(struct scsi_qla_host *);

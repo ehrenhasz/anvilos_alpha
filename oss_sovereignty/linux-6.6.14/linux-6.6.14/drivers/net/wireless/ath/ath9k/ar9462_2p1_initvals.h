@@ -1,65 +1,25 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef INITVALS_9462_2P1_H
 #define INITVALS_9462_2P1_H
-
-/* AR9462 2.1 */
-
 #define ar9462_2p1_mac_postamble ar9462_2p0_mac_postamble
-
 #define ar9462_2p1_baseband_core ar9462_2p0_baseband_core
-
 #define ar9462_2p1_radio_core ar9462_2p0_radio_core
-
 #define ar9462_2p1_radio_postamble ar9462_2p0_radio_postamble
-
 #define ar9462_2p1_soc_postamble ar9462_2p0_soc_postamble
-
 #define ar9462_2p1_radio_postamble_sys2ant ar9462_2p0_radio_postamble_sys2ant
-
 #define ar9462_2p1_common_rx_gain ar9462_2p0_common_rx_gain
-
 #define ar9462_2p1_common_mixed_rx_gain ar9462_2p0_common_mixed_rx_gain
-
 #define ar9462_2p1_common_5g_xlna_only_rxgain ar9462_2p0_common_5g_xlna_only_rxgain
-
 #define ar9462_2p1_baseband_core_mix_rxgain ar9462_2p0_baseband_core_mix_rxgain
-
 #define ar9462_2p1_baseband_postamble_mix_rxgain ar9462_2p0_baseband_postamble_mix_rxgain
-
 #define ar9462_2p1_baseband_postamble_5g_xlna ar9462_2p0_baseband_postamble_5g_xlna
-
 #define ar9462_2p1_common_wo_xlna_rx_gain ar9462_2p0_common_wo_xlna_rx_gain
-
 #define ar9462_2p1_modes_low_ob_db_tx_gain ar9462_2p0_modes_low_ob_db_tx_gain
-
 #define ar9462_2p1_modes_high_ob_db_tx_gain ar9462_2p0_modes_high_ob_db_tx_gain
-
 #define ar9462_2p1_modes_mix_ob_db_tx_gain ar9462_2p0_modes_mix_ob_db_tx_gain
-
 #define ar9462_2p1_modes_fast_clock ar9462_2p0_modes_fast_clock
-
 #define ar9462_2p1_baseband_core_txfir_coeff_japan_2484 ar9462_2p0_baseband_core_txfir_coeff_japan_2484
-
 #define ar9462_2p1_pciephy_clkreq_disable_L1 ar9462_2p0_pciephy_clkreq_disable_L1
-
 static const u32 ar9462_2p1_mac_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00000008, 0x00000000},
 	{0x00000030, 0x000e0085},
 	{0x00000034, 0x00000005},
@@ -220,9 +180,7 @@ static const u32 ar9462_2p1_mac_core[][2] = {
 	{0x000083cc, 0x00000200},
 	{0x000083d0, 0x000301ff},
 };
-
 static const u32 ar9462_2p1_baseband_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a800d},
 	{0x00009820, 0x206a022e, 0x206a022e, 0x206a012e, 0x206a01ae},
 	{0x00009824, 0x63c640de, 0x5ac640d0, 0x5ac640d0, 0x63c640da},
@@ -279,13 +237,10 @@ static const u32 ar9462_2p1_baseband_postamble[][5] = {
 	{0x0000ae20, 0x000001a6, 0x000001a6, 0x000001aa, 0x000001aa},
 	{0x0000b284, 0x00000000, 0x00000000, 0x00000550, 0x00000550},
 };
-
 static const u32 ar9462_2p1_soc_preamble[][2] = {
-	/* Addr      allmodes  */
 	{0x000040a4, 0x00a0c9c9},
 	{0x00007020, 0x00000000},
 	{0x00007034, 0x00000002},
 	{0x00007038, 0x000004c2},
 };
-
-#endif /* INITVALS_9462_2P1_H */
+#endif  

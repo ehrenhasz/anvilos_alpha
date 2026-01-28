@@ -1,34 +1,14 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef MAC_H
 #define MAC_H
 #include <net/cfg80211.h>
-
 #define set11nTries(_series, _index) \
 	(SM((_series)[_index].Tries, AR_XmitDataTries##_index))
-
 #define set11nRate(_series, _index) \
 	(SM((_series)[_index].Rate, AR_XmitRate##_index))
-
 #define set11nPktDurRTSCTS(_series, _index)				\
 	(SM((_series)[_index].PktDuration, AR_PacketDur##_index) |	\
 	 ((_series)[_index].RateFlags & ATH9K_RATESERIES_RTS_CTS   ?	\
 	  AR_RTSCTSQual##_index : 0))
-
 #define set11nRateFlags(_series, _index)				\
 	(((_series)[_index].RateFlags & ATH9K_RATESERIES_2040 ?		\
 	  AR_2040_##_index : 0)						\
@@ -36,29 +16,23 @@
 	   AR_GI##_index : 0)						\
 	 |((_series)[_index].RateFlags & ATH9K_RATESERIES_STBC ?	\
 	   AR_STBC##_index : 0))
-
 #define set11nChainSel(_series, _index)					\
 	(SM((_series)[_index].ChSel, AR_ChainSel##_index))
-
 #define CCK_SIFS_TIME        10
 #define CCK_PREAMBLE_BITS   144
 #define CCK_PLCP_BITS        48
-
 #define OFDM_SIFS_TIME        16
 #define OFDM_PREAMBLE_TIME    20
 #define OFDM_PLCP_BITS        22
 #define OFDM_SYMBOL_TIME      4
-
 #define OFDM_SIFS_TIME_HALF     32
 #define OFDM_PREAMBLE_TIME_HALF 40
 #define OFDM_PLCP_BITS_HALF     22
 #define OFDM_SYMBOL_TIME_HALF   8
-
 #define OFDM_SIFS_TIME_QUARTER      64
 #define OFDM_PREAMBLE_TIME_QUARTER  80
 #define OFDM_PLCP_BITS_QUARTER      22
 #define OFDM_SYMBOL_TIME_QUARTER    16
-
 #define INIT_AIFS       2
 #define INIT_CWMIN      15
 #define INIT_CWMIN_11B  31
@@ -67,7 +41,6 @@
 #define INIT_LG_RETRY   10
 #define INIT_SSH_RETRY  32
 #define INIT_SLG_RETRY  32
-
 #define ATH9K_TXERR_XRETRY         0x01
 #define ATH9K_TXERR_FILT           0x02
 #define ATH9K_TXERR_FIFO           0x04
@@ -78,24 +51,14 @@
 #define ATH9K_TXERR_MASK						\
 	(ATH9K_TXERR_XRETRY | ATH9K_TXERR_FILT | ATH9K_TXERR_FIFO |	\
 	 ATH9K_TXERR_XTXOP | ATH9K_TXERR_TIMER_EXPIRED | ATH9K_TX_FLUSH)
-
 #define ATH9K_TX_BA                0x01
 #define ATH9K_TX_PWRMGMT           0x02
 #define ATH9K_TX_DESC_CFG_ERR      0x04
 #define ATH9K_TX_DATA_UNDERRUN     0x08
 #define ATH9K_TX_DELIM_UNDERRUN    0x10
 #define ATH9K_TX_SW_FILTERED       0x80
-
-/* 64 bytes */
 #define MIN_TX_FIFO_THRESHOLD   0x1
-
-/*
- * Single stream device AR9285 and AR9271 require 2 KB
- * to work around a hardware issue, all other devices
- * have can use the max 4 KB limit.
- */
 #define MAX_TX_FIFO_THRESHOLD   ((4096 / 64) - 1)
-
 struct ath_tx_status {
 	u32 ts_tstamp;
 	u16 ts_seqnum;
@@ -124,7 +87,6 @@ struct ath_tx_status {
 	u32 evm2;
 	u32 duration;
 };
-
 struct ath_rx_status {
 	u32 rs_tstamp;
 	u16 rs_datalen;
@@ -151,7 +113,6 @@ struct ath_rx_status {
 	u16 enc_flags;
 	enum rate_info_bw bw;
 };
-
 struct ath_htc_rx_status {
 	__be64 rs_tstamp;
 	__be16 rs_datalen;
@@ -169,12 +130,10 @@ struct ath_htc_rx_status {
 	u8 rs_num_delims;
 	u8 rs_flags;
 	u8 rs_dummy;
-	/* FIXME: evm* never used? */
 	__be32 evm0;
 	__be32 evm1;
 	__be32 evm2;
 };
-
 #define ATH9K_RXERR_CRC           0x01
 #define ATH9K_RXERR_PHY           0x02
 #define ATH9K_RXERR_FIFO          0x04
@@ -182,7 +141,6 @@ struct ath_htc_rx_status {
 #define ATH9K_RXERR_MIC           0x10
 #define ATH9K_RXERR_KEYMISS       0x20
 #define ATH9K_RXERR_CORRUPT_DESC  0x40
-
 #define ATH9K_RX_MORE             0x01
 #define ATH9K_RX_MORE_AGGR        0x02
 #define ATH9K_RX_GI               0x04
@@ -190,20 +148,17 @@ struct ath_htc_rx_status {
 #define ATH9K_RX_DELIM_CRC_PRE    0x10
 #define ATH9K_RX_DELIM_CRC_POST   0x20
 #define ATH9K_RX_DECRYPT_BUSY     0x40
-
 #define ATH9K_RXKEYIX_INVALID	((u8)-1)
 #define ATH9K_TXKEYIX_INVALID	((u8)-1)
-
 enum ath9k_phyerr {
-	ATH9K_PHYERR_UNDERRUN             = 0,  /* Transmit underrun */
-	ATH9K_PHYERR_TIMING               = 1,  /* Timing error */
-	ATH9K_PHYERR_PARITY               = 2,  /* Illegal parity */
-	ATH9K_PHYERR_RATE                 = 3,  /* Illegal rate */
-	ATH9K_PHYERR_LENGTH               = 4,  /* Illegal length */
-	ATH9K_PHYERR_RADAR                = 5,  /* Radar detect */
-	ATH9K_PHYERR_SERVICE              = 6,  /* Illegal service */
-	ATH9K_PHYERR_TOR                  = 7,  /* Transmit override receive */
-
+	ATH9K_PHYERR_UNDERRUN             = 0,   
+	ATH9K_PHYERR_TIMING               = 1,   
+	ATH9K_PHYERR_PARITY               = 2,   
+	ATH9K_PHYERR_RATE                 = 3,   
+	ATH9K_PHYERR_LENGTH               = 4,   
+	ATH9K_PHYERR_RADAR                = 5,   
+	ATH9K_PHYERR_SERVICE              = 6,   
+	ATH9K_PHYERR_TOR                  = 7,   
 	ATH9K_PHYERR_OFDM_TIMING          = 17,
 	ATH9K_PHYERR_OFDM_SIGNAL_PARITY   = 18,
 	ATH9K_PHYERR_OFDM_RATE_ILLEGAL    = 19,
@@ -211,7 +166,6 @@ enum ath9k_phyerr {
 	ATH9K_PHYERR_OFDM_POWER_DROP      = 21,
 	ATH9K_PHYERR_OFDM_SERVICE         = 22,
 	ATH9K_PHYERR_OFDM_RESTART         = 23,
-
 	ATH9K_PHYERR_CCK_BLOCKER          = 24,
 	ATH9K_PHYERR_CCK_TIMING           = 25,
 	ATH9K_PHYERR_CCK_HEADER_CRC       = 26,
@@ -220,19 +174,15 @@ enum ath9k_phyerr {
 	ATH9K_PHYERR_CCK_POWER_DROP       = 29,
 	ATH9K_PHYERR_CCK_SERVICE          = 30,
 	ATH9K_PHYERR_CCK_RESTART          = 31,
-
 	ATH9K_PHYERR_HT_CRC_ERROR         = 32,
 	ATH9K_PHYERR_HT_LENGTH_ILLEGAL    = 33,
 	ATH9K_PHYERR_HT_RATE_ILLEGAL      = 34,
 	ATH9K_PHYERR_HT_ZLF               = 35,
-
 	ATH9K_PHYERR_FALSE_RADAR_EXT      = 36,
 	ATH9K_PHYERR_GREEN_FIELD          = 37,
 	ATH9K_PHYERR_SPECTRAL             = 38,
-
 	ATH9K_PHYERR_MAX                  = 39,
 };
-
 struct ath_desc {
 	u32 ds_link;
 	u32 ds_data;
@@ -241,23 +191,9 @@ struct ath_desc {
 	u32 ds_hw[20];
 	void *ds_vdata;
 } __packed __aligned(4);
-
 #define ATH9K_TXDESC_NOACK		0x0002
 #define ATH9K_TXDESC_RTSENA		0x0004
 #define ATH9K_TXDESC_CTSENA		0x0008
-/* ATH9K_TXDESC_INTREQ forces a tx interrupt to be generated for
- * the descriptor its marked on.  We take a tx interrupt to reap
- * descriptors when the h/w hits an EOL condition or
- * when the descriptor is specifically marked to generate
- * an interrupt with this flag. Descriptors should be
- * marked periodically to insure timely replenishing of the
- * supply needed for sending frames. Defering interrupts
- * reduces system load and potentially allows more concurrent
- * work to be done but if done to aggressively can cause
- * senders to backup. When the hardware queue is left too
- * large rate control information may also be too out of
- * date. An Alternative for this is TX interrupt mitigation
- * but this needs more testing. */
 #define ATH9K_TXDESC_INTREQ		0x0010
 #define ATH9K_TXDESC_VEOL		0x0020
 #define ATH9K_TXDESC_EXT_ONLY		0x0040
@@ -267,12 +203,9 @@ struct ath_desc {
 #define ATH9K_TXDESC_LOWRXCHAIN		0x0400
 #define ATH9K_TXDESC_LDPC		0x0800
 #define ATH9K_TXDESC_CLRDMASK		0x1000
-
 #define ATH9K_TXDESC_PAPRD		0x70000
 #define ATH9K_TXDESC_PAPRD_S		16
-
 #define ATH9K_RXDESC_INTREQ		0x0020
-
 struct ar5416_desc {
 	u32 ds_link;
 	u32 ds_data;
@@ -314,10 +247,8 @@ struct ar5416_desc {
 		} rx;
 	} u;
 } __packed __aligned(4);
-
 #define AR5416DESC(_ds)         ((struct ar5416_desc *)(_ds))
 #define AR5416DESC_CONST(_ds)   ((const struct ar5416_desc *)(_ds))
-
 #define ds_ctl2     u.tx.ctl2
 #define ds_ctl3     u.tx.ctl3
 #define ds_ctl4     u.tx.ctl4
@@ -328,7 +259,6 @@ struct ar5416_desc {
 #define ds_ctl9     u.tx.ctl9
 #define ds_ctl10    u.tx.ctl10
 #define ds_ctl11    u.tx.ctl11
-
 #define ds_txstatus0    u.tx.status0
 #define ds_txstatus1    u.tx.status1
 #define ds_txstatus2    u.tx.status2
@@ -339,7 +269,6 @@ struct ar5416_desc {
 #define ds_txstatus7    u.tx.status7
 #define ds_txstatus8    u.tx.status8
 #define ds_txstatus9    u.tx.status9
-
 #define ds_rxstatus0    u.rx.status0
 #define ds_rxstatus1    u.rx.status1
 #define ds_rxstatus2    u.rx.status2
@@ -349,7 +278,6 @@ struct ar5416_desc {
 #define ds_rxstatus6    u.rx.status6
 #define ds_rxstatus7    u.rx.status7
 #define ds_rxstatus8    u.rx.status8
-
 #define AR_FrameLen         0x00000fff
 #define AR_VirtMoreFrag     0x00001000
 #define AR_TxCtlRsvd00      0x0000e000
@@ -368,7 +296,6 @@ struct ar5416_desc {
 #define AR_TxIntrReq        0x20000000
 #define AR_DestIdxValid     0x40000000
 #define AR_CTSEnable        0x80000000
-
 #define AR_TxMore           0x00001000
 #define AR_DestIdx          0x000fe000
 #define AR_DestIdx_S        13
@@ -381,7 +308,6 @@ struct ar5416_desc {
 #define AR_ExtAndCtl        0x10000000
 #define AR_MoreAggr         0x20000000
 #define AR_IsAggr           0x40000000
-
 #define AR_BurstDur         0x00007fff
 #define AR_BurstDur_S       0
 #define AR_DurUpdateEna     0x00008000
@@ -393,7 +319,6 @@ struct ar5416_desc {
 #define AR_XmitDataTries2_S 24
 #define AR_XmitDataTries3   0xf0000000
 #define AR_XmitDataTries3_S 28
-
 #define AR_XmitRate0        0x000000ff
 #define AR_XmitRate0_S      0
 #define AR_XmitRate1        0x0000ff00
@@ -402,21 +327,18 @@ struct ar5416_desc {
 #define AR_XmitRate2_S      16
 #define AR_XmitRate3        0xff000000
 #define AR_XmitRate3_S      24
-
 #define AR_PacketDur0       0x00007fff
 #define AR_PacketDur0_S     0
 #define AR_RTSCTSQual0      0x00008000
 #define AR_PacketDur1       0x7fff0000
 #define AR_PacketDur1_S     16
 #define AR_RTSCTSQual1      0x80000000
-
 #define AR_PacketDur2       0x00007fff
 #define AR_PacketDur2_S     0
 #define AR_RTSCTSQual2      0x00008000
 #define AR_PacketDur3       0x7fff0000
 #define AR_PacketDur3_S     16
 #define AR_RTSCTSQual3      0x80000000
-
 #define AR_AggrLen          0x0000ffff
 #define AR_AggrLen_S        0
 #define AR_TxCtlRsvd60      0x00030000
@@ -426,7 +348,6 @@ struct ar5416_desc {
 #define AR_EncrType_S       26
 #define AR_TxCtlRsvd61      0xf0000000
 #define AR_LDPC             0x80000000
-
 #define AR_2040_0           0x00000001
 #define AR_GI0              0x00000002
 #define AR_ChainSel0        0x0000001c
@@ -449,7 +370,6 @@ struct ar5416_desc {
 #define AR_STBC1            0x20000000
 #define AR_STBC2            0x40000000
 #define AR_STBC3            0x80000000
-
 #define AR_TxRSSIAnt00      0x000000ff
 #define AR_TxRSSIAnt00_S    0
 #define AR_TxRSSIAnt01      0x0000ff00
@@ -459,12 +379,6 @@ struct ar5416_desc {
 #define AR_TxStatusRsvd00   0x3f000000
 #define AR_TxBaStatus       0x40000000
 #define AR_TxStatusRsvd01   0x80000000
-
-/*
- * AR_FrmXmitOK - Frame transmission success flag. If set, the frame was
- * transmitted successfully. If clear, no ACK or BA was received to indicate
- * successful transmission when we were expecting an ACK or BA.
- */
 #define AR_FrmXmitOK            0x00000001
 #define AR_ExcessiveRetries     0x00000002
 #define AR_FIFOUnderrun         0x00000004
@@ -480,11 +394,9 @@ struct ar5416_desc {
 #define AR_DescCfgErr           0x00040000
 #define AR_TxTimerExpired       0x00080000
 #define AR_TxStatusRsvd10       0xfff00000
-
 #define AR_SendTimestamp    ds_txstatus2
 #define AR_BaBitmapLow      ds_txstatus3
 #define AR_BaBitmapHigh     ds_txstatus4
-
 #define AR_TxRSSIAnt10      0x000000ff
 #define AR_TxRSSIAnt10_S    0
 #define AR_TxRSSIAnt11      0x0000ff00
@@ -493,14 +405,11 @@ struct ar5416_desc {
 #define AR_TxRSSIAnt12_S    16
 #define AR_TxRSSICombined   0xff000000
 #define AR_TxRSSICombined_S 24
-
 #define AR_TxTid	0xf0000000
 #define AR_TxTid_S	28
-
 #define AR_TxEVM0           ds_txstatus5
 #define AR_TxEVM1           ds_txstatus6
 #define AR_TxEVM2           ds_txstatus7
-
 #define AR_TxDone           0x00000001
 #define AR_SeqNum           0x00001ffe
 #define AR_SeqNum_S         1
@@ -512,13 +421,10 @@ struct ar5416_desc {
 #define AR_TxStatusRsvd82   0x01800000
 #define AR_PowerMgmt        0x02000000
 #define AR_TxStatusRsvd83   0xfc000000
-
 #define AR_RxCTLRsvd00  0xffffffff
-
 #define AR_RxCtlRsvd00  0x00001000
 #define AR_RxIntrReq    0x00002000
 #define AR_RxCtlRsvd01  0xffffc000
-
 #define AR_RxRSSIAnt00      0x000000ff
 #define AR_RxRSSIAnt00_S    0
 #define AR_RxRSSIAnt01      0x0000ff00
@@ -528,24 +434,20 @@ struct ar5416_desc {
 #define AR_RxRate           0xff000000
 #define AR_RxRate_S         24
 #define AR_RxStatusRsvd00   0xff000000
-
 #define AR_DataLen          0x00000fff
 #define AR_RxMore           0x00001000
 #define AR_NumDelim         0x003fc000
 #define AR_NumDelim_S       14
 #define AR_RxStatusRsvd10   0xff800000
-
 #define AR_RcvTimestamp     ds_rxstatus2
-
 #define AR_GI               0x00000001
 #define AR_2040             0x00000002
 #define AR_Parallel40       0x00000004
 #define AR_Parallel40_S     2
-#define AR_STBC             0x00000008 /* on ar9280 and later */
+#define AR_STBC             0x00000008  
 #define AR_RxStatusRsvd30   0x000000f0
 #define AR_RxAntenna	    0xffffff00
 #define AR_RxAntenna_S	    8
-
 #define AR_RxRSSIAnt10            0x000000ff
 #define AR_RxRSSIAnt10_S          0
 #define AR_RxRSSIAnt11            0x0000ff00
@@ -554,11 +456,9 @@ struct ar5416_desc {
 #define AR_RxRSSIAnt12_S          16
 #define AR_RxRSSICombined         0xff000000
 #define AR_RxRSSICombined_S       24
-
 #define AR_RxEVM0           ds_rxstatus4
 #define AR_RxEVM1           ds_rxstatus5
 #define AR_RxEVM2           ds_rxstatus6
-
 #define AR_RxDone           0x00000001
 #define AR_RxFrameOK        0x00000002
 #define AR_CRCErr           0x00000004
@@ -579,7 +479,6 @@ struct ar5416_desc {
 #define AR_RxFirstAggr      0x20000000
 #define AR_DecryptBusyErr   0x40000000
 #define AR_KeyMiss          0x80000000
-
 enum ath9k_tx_queue {
 	ATH9K_TX_QUEUE_INACTIVE = 0,
 	ATH9K_TX_QUEUE_DATA,
@@ -588,12 +487,8 @@ enum ath9k_tx_queue {
 	ATH9K_TX_QUEUE_UAPSD,
 	ATH9K_TX_QUEUE_PSPOLL
 };
-
 #define	ATH9K_NUM_TX_QUEUES 10
-
-/* Used as a queue subtype instead of a WMM AC */
 #define ATH9K_WME_UPSD	4
-
 enum ath9k_tx_queue_flags {
 	TXQ_FLAG_TXINT_ENABLE = 0x0001,
 	TXQ_FLAG_TXDESCINT_ENABLE = 0x0002,
@@ -604,12 +499,9 @@ enum ath9k_tx_queue_flags {
 	TXQ_FLAG_RDYTIME_EXP_POLICY_ENABLE = 0x0040,
 	TXQ_FLAG_FRAG_BURST_BACKOFF_ENABLE = 0x0080,
 };
-
 #define ATH9K_TXQ_USEDEFAULT ((u32) -1)
 #define ATH9K_TXQ_USE_LOCKOUT_BKOFF_DIS 0x00000001
-
 #define ATH9K_DECOMP_MASK_SIZE     128
-
 enum ath9k_pkt_type {
 	ATH9K_PKT_TYPE_NORMAL = 0,
 	ATH9K_PKT_TYPE_ATIM,
@@ -619,7 +511,6 @@ enum ath9k_pkt_type {
 	ATH9K_PKT_TYPE_CHIRP,
 	ATH9K_PKT_TYPE_GRP_POLL,
 };
-
 struct ath9k_tx_queue_info {
 	u32 tqi_ver;
 	enum ath9k_tx_queue tqi_type;
@@ -638,7 +529,6 @@ struct ath9k_tx_queue_info {
 	u32 tqi_physCompBuf;
 	u32 tqi_intFlags;
 };
-
 enum ath9k_rx_filter {
 	ATH9K_RX_FILTER_UCAST = 0x00000001,
 	ATH9K_RX_FILTER_MCAST = 0x00000002,
@@ -658,12 +548,10 @@ enum ath9k_rx_filter {
 	ATH9K_RX_FILTER_CONTROL_WRAPPER = 0x00080000,
 	ATH9K_RX_FILTER_4ADDRESS = 0x00100000,
 };
-
 #define ATH9K_RATESERIES_RTS_CTS  0x0001
 #define ATH9K_RATESERIES_2040     0x0002
 #define ATH9K_RATESERIES_HALFGI   0x0004
 #define ATH9K_RATESERIES_STBC     0x0008
-
 struct ath9k_11n_rate_series {
 	u32 Tries;
 	u32 Rate;
@@ -671,52 +559,41 @@ struct ath9k_11n_rate_series {
 	u32 ChSel;
 	u32 RateFlags;
 };
-
 enum aggr_type {
 	AGGR_BUF_NONE,
 	AGGR_BUF_FIRST,
 	AGGR_BUF_MIDDLE,
 	AGGR_BUF_LAST,
 };
-
 enum ath9k_key_type {
 	ATH9K_KEY_TYPE_CLEAR,
 	ATH9K_KEY_TYPE_WEP,
 	ATH9K_KEY_TYPE_AES,
 	ATH9K_KEY_TYPE_TKIP,
 };
-
 struct ath_tx_info {
 	u8 qcu;
-
 	bool is_first;
 	bool is_last;
-
 	enum aggr_type aggr;
 	u8 ndelim;
 	u16 aggr_len;
-
 	dma_addr_t link;
 	int pkt_len;
 	u32 flags;
-
 	dma_addr_t buf_addr[4];
 	int buf_len[4];
-
 	struct ath9k_11n_rate_series rates[4];
 	u8 rtscts_rate;
 	bool dur_update;
-
 	enum ath9k_pkt_type type;
 	enum ath9k_key_type keytype;
 	u8 keyix;
 	u8 txpower[4];
 };
-
 struct ath_hw;
 struct ath9k_channel;
 enum ath9k_int;
-
 u32 ath9k_hw_gettxbuf(struct ath_hw *ah, u32 q);
 void ath9k_hw_puttxbuf(struct ath_hw *ah, u32 q, u32 txdp);
 void ath9k_hw_txstart(struct ath_hw *ah, u32 q);
@@ -743,15 +620,11 @@ void ath9k_hw_abortpcurecv(struct ath_hw *ah);
 bool ath9k_hw_stopdmarecv(struct ath_hw *ah, bool *reset);
 int ath9k_hw_beaconq_setup(struct ath_hw *ah);
 void ath9k_hw_set_tx_filter(struct ath_hw *ah, u8 destidx, bool set);
-
-/* Interrupt Handling */
 bool ath9k_hw_intrpend(struct ath_hw *ah);
 void ath9k_hw_set_interrupts(struct ath_hw *ah);
 void ath9k_hw_enable_interrupts(struct ath_hw *ah);
 void ath9k_hw_disable_interrupts(struct ath_hw *ah);
 void ath9k_hw_kill_interrupts(struct ath_hw *ah);
 void ath9k_hw_resume_interrupts(struct ath_hw *ah);
-
 void ar9002_hw_attach_mac_ops(struct ath_hw *ah);
-
-#endif /* MAC_H */
+#endif  

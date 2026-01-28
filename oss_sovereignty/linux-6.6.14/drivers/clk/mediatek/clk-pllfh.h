@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Edward-JW Yang <edward-jw.yang@mediatek.com>
- */
-
 #ifndef __CLK_PLLFH_H
 #define __CLK_PLLFH_H
-
 #include "clk-pll.h"
-
 struct fh_pll_state {
 	void __iomem *base;
 	u32 fh_enable;
 	u32 ssc_rate;
 };
-
 struct fh_pll_data {
 	int pll_id;
 	int fh_id;
@@ -35,12 +26,10 @@ struct fh_pll_data {
 	u32 msk_frddsx_dys;
 	u32 msk_frddsx_dts;
 };
-
 struct mtk_pllfh_data {
 	struct fh_pll_state state;
 	const struct fh_pll_data data;
 };
-
 struct fh_pll_regs {
 	void __iomem *reg_hp_en;
 	void __iomem *reg_clk_con;
@@ -53,7 +42,6 @@ struct fh_pll_regs {
 	void __iomem *reg_dvfs;
 	void __iomem *reg_mon;
 };
-
 struct mtk_fh {
 	struct mtk_clk_pll clk_pll;
 	struct fh_pll_regs regs;
@@ -61,23 +49,18 @@ struct mtk_fh {
 	const struct fh_operation *ops;
 	spinlock_t *lock;
 };
-
 struct fh_operation {
 	int (*hopping)(struct mtk_fh *fh, unsigned int new_dds,
 		       unsigned int postdiv);
 	int (*ssc_enable)(struct mtk_fh *fh, u32 rate);
 };
-
 int mtk_clk_register_pllfhs(struct device_node *node,
 			    const struct mtk_pll_data *plls, int num_plls,
 			    struct mtk_pllfh_data *pllfhs, int num_pllfhs,
 			    struct clk_hw_onecell_data *clk_data);
-
 void mtk_clk_unregister_pllfhs(const struct mtk_pll_data *plls, int num_plls,
 			       struct mtk_pllfh_data *pllfhs, int num_fhs,
 			       struct clk_hw_onecell_data *clk_data);
-
 void fhctl_parse_dt(const u8 *compatible_node, struct mtk_pllfh_data *pllfhs,
 		    int num_pllfhs);
-
-#endif /* __CLK_PLLFH_H */
+#endif  

@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header providing constants for i.MX23 pinctrl bindings.
- *
- * Copyright (C) 2013 Lothar Waßmann <LW@KARO-electronics.de>
- */
-
 #ifndef __DT_BINDINGS_MX23_PINCTRL_H__
 #define __DT_BINDINGS_MX23_PINCTRL_H__
-
 #include "mxs-pinfunc.h"
-
 #define MX23_PAD_GPMI_D00__GPMI_D00			0x0000
 #define MX23_PAD_GPMI_D01__GPMI_D01			0x0010
 #define MX23_PAD_GPMI_D02__GPMI_D02			0x0020
@@ -323,5 +314,4 @@
 #define MX23_PAD_EMI_CKE__GPIO_2_29			0x21d3
 #define MX23_PAD_EMI_RASN__GPIO_2_30			0x21e3
 #define MX23_PAD_EMI_WEN__GPIO_2_31			0x21f3
-
-#endif /* __DT_BINDINGS_MX23_PINCTRL_H__ */
+#endif  

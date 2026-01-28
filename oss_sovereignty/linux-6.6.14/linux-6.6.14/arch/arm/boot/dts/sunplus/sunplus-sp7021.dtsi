@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device Tree Source for Sunplus SP7021
- *
- * Copyright (C) 2021 Sunplus Technology Co.
- */
-
 #include <dt-bindings/clock/sunplus,sp7021-clkc.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/reset/sunplus,sp7021-reset.h>
 #include <dt-bindings/pinctrl/sppctl-sp7021.h>
 #include <dt-bindings/gpio/gpio.h>
-
 #define XTAL	27000000
-
 / {
 	compatible = "sunplus,sp7021";
 	model = "Sunplus SP7021";
-
 	clocks {
 		extclk: osc0 {
 			compatible = "fixed-clock";
@@ -25,14 +15,12 @@
 			clock-output-names = "extclk";
 		};
 	};
-
 	soc@9c000000 {
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0x9c000000 0x400000>;
 		interrupt-parent = <&intc>;
-
 		clkc: clock-controller@4 {
 			compatible = "sunplus,sp7021-clkc";
 			reg = <0x4 0x28>,
@@ -41,14 +29,12 @@
 			clocks = <&extclk>;
 			#clock-cells = <1>;
 		};
-
 		intc: interrupt-controller@780 {
 			compatible = "sunplus,sp7021-intc";
 			reg = <0x780 0x80>, <0xa80 0x80>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		otp: otp@af00 {
 			compatible = "sunplus,sp7021-ocotp";
 			reg = <0xaf00 0x34>, <0xaf80 0x58>;
@@ -57,7 +43,6 @@
 			resets = <&rstc RST_OTPRX>;
 			#address-cells = <1>;
 			#size-cells = <1>;
-
 			therm_calib: thermal-calibration@14 {
 				reg = <0x14 0x3>;
 			};
@@ -71,7 +56,6 @@
 				reg = <0x3a 0x6>;
 			};
 		};
-
 		pctl: pinctrl@100 {
 			compatible = "sunplus,sp7021-pctl";
 			reg = <0x100 0x100>,
@@ -83,7 +67,6 @@
 			#gpio-cells = <2>;
 			clocks = <&clkc CLK_GPIO>;
 			resets = <&rstc RST_GPIO>;
-
 			emac_pins: pinmux-emac-pins {
 				sunplus,pins = <
 					SPPCTL_IOPAD(49,SPPCTL_PCTL_G_PMUX,MUXF_L2SW_CLK_OUT,0)
@@ -112,22 +95,18 @@
 					MUXF_DAISY_MODE
 				>;
 			};
-
 			emmc_pins: pinmux-emmc-pins {
 				function = "CARD0_EMMC";
 				groups = "CARD0_EMMC";
 			};
-
 			leds_pins: pinmux-leds-pins {
 				sunplus,pins = < SPPCTL_IOPAD(0,SPPCTL_PCTL_G_GPIO,0,SPPCTL_PCTL_L_OUT) >;
 			};
-
 			sdcard_pins: pinmux-sdcard-pins {
 				function = "SD_CARD";
 				groups = "SD_CARD";
 				sunplus,pins = < SPPCTL_IOPAD(91, SPPCTL_PCTL_G_GPIO, 0, 0) >;
 			};
-
 			spi0_pins: pinmux-spi0-pins {
 				sunplus,pins = <
 					SPPCTL_IOPAD(26,SPPCTL_PCTL_G_GPIO,0,0)
@@ -137,19 +116,16 @@
 					SPPCTL_IOPAD(27,SPPCTL_PCTL_G_PMUX,MUXF_SPI0S_CLK,0)
 				>;
 			};
-
 			uart0_pins: pinmux-uart0-pins {
 				function = "UA0";
 				groups = "UA0";
 			};
-
 			uart1_pins: pinmux-uart1-pins {
 				sunplus,pins = <
 					SPPCTL_IOPAD(14,SPPCTL_PCTL_G_PMUX,MUXF_UA4_TX,0)
 					SPPCTL_IOPAD(16,SPPCTL_PCTL_G_PMUX,MUXF_UA4_RX,0)
 				>;
 			};
-
 			uart2_pins: pinmux-uart2-pins {
 				sunplus,pins = <
 					SPPCTL_IOPAD(16,SPPCTL_PCTL_G_PMUX,MUXF_UA2_TX,0)
@@ -158,7 +134,6 @@
 					SPPCTL_IOPAD(19,SPPCTL_PCTL_G_PMUX,MUXF_UA2_CTS,0)
 				>;
 			};
-
 			uart4_pins: pinmux-uart4-pins {
 				sunplus,pins = <
 					SPPCTL_IOPAD(22,SPPCTL_PCTL_G_PMUX,MUXF_UA4_TX,0)
@@ -168,13 +143,11 @@
 				>;
 			};
 		};
-
 		rstc: reset@54 {
 			compatible = "sunplus,sp7021-reset";
 			reg = <0x54 0x28>;
 			#reset-cells = <1>;
 		};
-
 		rtc: rtc@3a00 {
 			compatible = "sunplus,sp7021-rtc";
 			reg = <0x3a00 0x80>;
@@ -183,7 +156,6 @@
 			resets = <&rstc RST_RTC>;
 			interrupts = <163 IRQ_TYPE_EDGE_RISING>;
 		};
-
 		spi_controller0: spi@2d80 {
 			compatible = "sunplus,sp7021-spi";
 			reg = <0x2d80 0x80>, <0x2e00 0x80>;
@@ -194,13 +166,11 @@
 			interrupt-names = "dma_w", "master_risc", "slave_risc";
 			clocks = <&clkc CLK_SPI_COMBO_0>;
 			resets = <&rstc RST_SPI_COMBO_0>;
-
 			pinctrl-names = "default";
 			pinctrl-0 = <&spi0_pins>;
 			cs-gpios = <&pctl 26 GPIO_ACTIVE_LOW>,
 				   <&pctl 28 GPIO_ACTIVE_LOW>;
 		};
-
 		spi_controller1: spi@f480 {
 			compatible = "sunplus,sp7021-spi";
 			reg = <0xf480 0x80>, <0xf500 0x80>;
@@ -213,7 +183,6 @@
 			resets = <&rstc RST_SPI_COMBO_1>;
 			status = "disabled";
 		};
-
 		spi_controller2: spi@f600 {
 			compatible = "sunplus,sp7021-spi";
 			reg = <0xf600 0x80>, <0xf680 0x80>;
@@ -226,7 +195,6 @@
 			resets = <&rstc RST_SPI_COMBO_2>;
 			status = "disabled";
 		};
-
 		spi_controller3: spi@f780 {
 			compatible = "sunplus,sp7021-spi";
 			reg = <0xf780 0x80>, <0xf800 0x80>;
@@ -239,7 +207,6 @@
 			resets = <&rstc RST_SPI_COMBO_3>;
 			status = "disabled";
 		};
-
 		uart0: serial@900 {
 			compatible = "sunplus,sp7021-uart";
 			reg = <0x900 0x80>;
@@ -249,7 +216,6 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&uart0_pins>;
 		};
-
 		uart1: serial@980 {
 			compatible = "sunplus,sp7021-uart";
 			reg = <0x980 0x80>;
@@ -260,7 +226,6 @@
 			pinctrl-0 = <&uart1_pins>;
 			status = "disabled";
 		};
-
 		uart2: serial@800 {
 			compatible = "sunplus,sp7021-uart";
 			reg = <0x800 0x80>;
@@ -271,7 +236,6 @@
 			pinctrl-0 = <&uart2_pins>;
 			status = "disabled";
 		};
-
 		uart3: serial@880 {
 			compatible = "sunplus,sp7021-uart";
 			reg = <0x880 0x80>;
@@ -280,7 +244,6 @@
 			resets = <&rstc RST_UA3>;
 			status = "disabled";
 		};
-
 		uart4: serial@8780 {
 			compatible = "sunplus,sp7021-uart";
 			reg = <0x8780 0x80>;
@@ -292,7 +255,6 @@
 			status = "disabled";
 		};
 	};
-
 	leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";

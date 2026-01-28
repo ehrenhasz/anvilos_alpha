@@ -1,31 +1,23 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2021 Intel Corporation */
 #ifndef IRDMA_OSDEP_H
 #define IRDMA_OSDEP_H
-
 #include <linux/pci.h>
 #include <linux/bitfield.h>
 #include <linux/net/intel/iidc.h>
 #include <crypto/hash.h>
 #include <rdma/ib_verbs.h>
-
 #define STATS_TIMER_DELAY	60000
-
 struct irdma_dma_info {
 	dma_addr_t *dmaaddrs;
 };
-
 struct irdma_dma_mem {
 	void *va;
 	dma_addr_t pa;
 	u32 size;
 } __packed;
-
 struct irdma_virt_mem {
 	void *va;
 	u32 size;
 } __packed;
-
 struct irdma_sc_vsi;
 struct irdma_sc_dev;
 struct irdma_sc_qp;
@@ -36,7 +28,6 @@ struct irdma_hmc_fcn_info;
 struct irdma_manage_vf_pble_info;
 struct irdma_hw;
 struct irdma_pci_f;
-
 struct ib_device *to_ibdev(struct irdma_sc_dev *dev);
 void irdma_ieq_mpa_crc_ae(struct irdma_sc_dev *dev, struct irdma_sc_qp *qp);
 enum irdma_status_code irdma_vf_wait_vchnl_resp(struct irdma_sc_dev *dev);
@@ -79,4 +70,4 @@ u64 rd64(struct irdma_hw *hw, u32 reg);
 int irdma_map_vm_page_list(struct irdma_hw *hw, void *va, dma_addr_t *pg_dma,
 			   u32 pg_cnt);
 void irdma_unmap_vm_page_list(struct irdma_hw *hw, dma_addr_t *pg_dma, u32 pg_cnt);
-#endif /* IRDMA_OSDEP_H */
+#endif  

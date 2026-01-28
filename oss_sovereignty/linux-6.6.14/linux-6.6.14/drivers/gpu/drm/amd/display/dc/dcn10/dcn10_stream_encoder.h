@@ -1,36 +1,8 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_STREAM_ENCODER_DCN10_H__
 #define __DC_STREAM_ENCODER_DCN10_H__
-
 #include "stream_encoder.h"
-
 #define DCN10STRENC_FROM_STRENC(stream_encoder)\
 	container_of(stream_encoder, struct dcn10_stream_encoder, base)
-
 #define SE_COMMON_DCN_REG_LIST(id) \
 	SRI(AFMT_CNTL, DIG, id), \
 	SRI(AFMT_GENERIC_0, DIG, id), \
@@ -97,11 +69,8 @@
 	SRI(DP_SEC_AUD_M_READBACK, DP, id), \
 	SRI(DP_SEC_TIMESTAMP, DP, id), \
 	SRI(DIG_CLOCK_PATTERN, DIG, id)
-
 #define SE_DCN_REG_LIST(id)\
 	SE_COMMON_DCN_REG_LIST(id)
-
-
 struct dcn10_stream_enc_registers {
 	uint32_t AFMT_CNTL;
 	uint32_t AFMT_AVI_INFO0;
@@ -189,11 +158,8 @@ struct dcn10_stream_enc_registers {
 	uint32_t DIG_CLOCK_PATTERN;
 	uint32_t DIG_FIFO_CTRL0;
 };
-
-
 #define SE_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define SE_COMMON_MASK_SH_LIST_SOC(mask_sh)\
 	SE_SF(DIG0_AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_INDEX, mask_sh),\
 	SE_SF(DIG0_AFMT_GENERIC_HDR, AFMT_GENERIC_HB0, mask_sh),\
@@ -339,7 +305,6 @@ struct dcn10_stream_enc_registers {
 	SE_SF(DP0_DP_VID_TIMING, DP_VID_N_MUL, mask_sh),\
 	SE_SF(DIG0_DIG_FE_CNTL, DIG_SOURCE_SELECT, mask_sh),\
 	SE_SF(DIG0_DIG_CLOCK_PATTERN, DIG_CLOCK_PATTERN, mask_sh)
-
 #define SE_COMMON_MASK_SH_LIST_DCN10(mask_sh)\
 	SE_COMMON_MASK_SH_LIST_SOC(mask_sh),\
 	SE_SF(DIG0_HDMI_GENERIC_PACKET_CONTROL0, HDMI_GENERIC0_CONT, mask_sh),\
@@ -348,8 +313,6 @@ struct dcn10_stream_enc_registers {
 	SE_SF(DIG0_HDMI_GENERIC_PACKET_CONTROL0, HDMI_GENERIC1_CONT, mask_sh),\
 	SE_SF(DIG0_HDMI_GENERIC_PACKET_CONTROL0, HDMI_GENERIC1_SEND, mask_sh),\
 	SE_SF(DIG0_HDMI_GENERIC_PACKET_CONTROL0, HDMI_GENERIC1_LINE, mask_sh)
-
-
 #define SE_REG_FIELD_LIST_DCN1_0(type) \
 	type AFMT_GENERIC_INDEX;\
 	type AFMT_GENERIC_HB0;\
@@ -521,7 +484,6 @@ struct dcn10_stream_enc_registers {
 	type DIG_FIFO_FORCE_RECAL_AVERAGE;\
 	type DIG_FIFO_FORCE_RECOMP_MINMAX;\
 	type DIG_CLOCK_PATTERN
-
 #define SE_REG_FIELD_LIST_DCN2_0(type) \
 	type DP_DSC_MODE;\
 	type DP_DSC_SLICE_WIDTH;\
@@ -540,7 +502,6 @@ struct dcn10_stream_enc_registers {
 	type DOLBY_VISION_EN;\
 	type DP_PIXEL_COMBINE;\
 	type DP_SST_SDP_SPLITTING
-
 #define SE_REG_FIELD_LIST_DCN3_0(type) \
 	type HDMI_GENERIC8_CONT;\
 	type HDMI_GENERIC8_SEND;\
@@ -566,7 +527,6 @@ struct dcn10_stream_enc_registers {
 	type DP_SEC_GSP11_PPS;\
 	type DP_SEC_GSP11_ENABLE;\
 	type DP_SEC_GSP11_LINE_NUM
-
 #define SE_REG_FIELD_LIST_DCN3_2(type) \
 	type DIG_FIFO_OUTPUT_PIXEL_MODE;\
 	type DP_PIXEL_PER_CYCLE_PROCESSING_MODE;\
@@ -575,32 +535,26 @@ struct dcn10_stream_enc_registers {
 	type DIG_FIFO_ENABLE;\
 	type DIG_FIFO_RESET;\
 	type DIG_FIFO_RESET_DONE
-
 struct dcn10_stream_encoder_shift {
 	SE_REG_FIELD_LIST_DCN1_0(uint8_t);
 	uint8_t HDMI_ACP_SEND;
 	SE_REG_FIELD_LIST_DCN2_0(uint8_t);
 	SE_REG_FIELD_LIST_DCN3_0(uint8_t);
 	SE_REG_FIELD_LIST_DCN3_2(uint8_t);
-
 };
-
 struct dcn10_stream_encoder_mask {
 	SE_REG_FIELD_LIST_DCN1_0(uint32_t);
 	uint32_t HDMI_ACP_SEND;
 	SE_REG_FIELD_LIST_DCN2_0(uint32_t);
 	SE_REG_FIELD_LIST_DCN3_0(uint32_t);
 	SE_REG_FIELD_LIST_DCN3_2(uint32_t);
-
 };
-
 struct dcn10_stream_encoder {
 	struct stream_encoder base;
 	const struct dcn10_stream_enc_registers *regs;
 	const struct dcn10_stream_encoder_shift *se_shift;
 	const struct dcn10_stream_encoder_mask *se_mask;
 };
-
 void dcn10_stream_encoder_construct(
 	struct dcn10_stream_encoder *enc1,
 	struct dc_context *ctx,
@@ -609,120 +563,92 @@ void dcn10_stream_encoder_construct(
 	const struct dcn10_stream_enc_registers *regs,
 	const struct dcn10_stream_encoder_shift *se_shift,
 	const struct dcn10_stream_encoder_mask *se_mask);
-
 void enc1_update_generic_info_packet(
 	struct dcn10_stream_encoder *enc1,
 	uint32_t packet_index,
 	const struct dc_info_packet *info_packet);
-
 void enc1_stream_encoder_dp_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
 	enum dc_color_space output_color_space,
 	bool use_vsc_sdp_for_colorimetry,
 	uint32_t enable_sdp_splitting);
-
 void enc1_stream_encoder_hdmi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
 	int actual_pix_clk_khz,
 	bool enable_audio);
-
 void enc1_stream_encoder_dvi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
 	bool is_dual_link);
-
 void enc1_stream_encoder_set_throttled_vcp_size(
 	struct stream_encoder *enc,
 	struct fixed31_32 avg_time_slots_per_mtp);
-
 void enc1_stream_encoder_update_dp_info_packets(
 	struct stream_encoder *enc,
 	const struct encoder_info_frame *info_frame);
-
 void enc1_stream_encoder_send_immediate_sdp_message(
 	struct stream_encoder *enc,
 	const uint8_t *custom_sdp_message,
 				unsigned int sdp_message_size);
-
 void enc1_stream_encoder_stop_dp_info_packets(
 	struct stream_encoder *enc);
-
 void enc1_stream_encoder_reset_fifo(
 	struct stream_encoder *enc);
-
 void enc1_stream_encoder_dp_blank(
 	struct dc_link *link,
 	struct stream_encoder *enc);
-
 void enc1_stream_encoder_dp_unblank(
 	struct dc_link *link,
 	struct stream_encoder *enc,
 	const struct encoder_unblank_param *param);
-
 void enc1_setup_stereo_sync(
 	struct stream_encoder *enc,
 	int tg_inst, bool enable);
-
 void enc1_stream_encoder_set_avmute(
 	struct stream_encoder *enc,
 	bool enable);
-
 void enc1_se_audio_mute_control(
 	struct stream_encoder *enc,
 	bool mute);
-
 void enc1_se_dp_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info);
-
 void enc1_se_dp_audio_enable(
 	struct stream_encoder *enc);
-
 void enc1_se_dp_audio_disable(
 	struct stream_encoder *enc);
-
 void enc1_se_hdmi_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info,
 	struct audio_crtc_info *audio_crtc_info);
-
 void enc1_se_hdmi_audio_disable(
 	struct stream_encoder *enc);
-
 void enc1_dig_connect_to_otg(
 	struct stream_encoder *enc,
 	int tg_inst);
-
 unsigned int enc1_dig_source_otg(
 	struct stream_encoder *enc);
-
 void enc1_stream_encoder_set_stream_attribute_helper(
 	struct dcn10_stream_encoder *enc1,
 	struct dc_crtc_timing *crtc_timing);
-
 void enc1_se_enable_audio_clock(
 	struct stream_encoder *enc,
 	bool enable);
-
 void enc1_se_enable_dp_audio(
 	struct stream_encoder *enc);
-
 void get_audio_clock_info(
 	enum dc_color_depth color_depth,
 	uint32_t crtc_pixel_clock_100Hz,
 	uint32_t actual_pixel_clock_100Hz,
 	struct audio_clock_info *audio_clock_info);
-
 void enc1_reset_hdmi_stream_attribute(
 	struct stream_encoder *enc);
-
 bool enc1_stream_encoder_dp_get_pixel_format(
 	struct stream_encoder *enc,
 	enum dc_pixel_encoding *encoding,
 	enum dc_color_depth *depth);
-
-#endif /* __DC_STREAM_ENCODER_DCN10_H__ */
+#endif  

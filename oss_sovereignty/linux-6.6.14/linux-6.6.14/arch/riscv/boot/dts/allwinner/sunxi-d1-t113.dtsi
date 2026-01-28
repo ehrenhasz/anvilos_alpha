@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ or MIT)
-// Copyright (C) 2021-2022 Samuel Holland <samuel@sholland.org>
-
 / {
 	soc {
 		dsp_wdt: watchdog@1700400 {

@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _R819XU_PHYREG_H
 #define _R819XU_PHYREG_H
-
-#define   RF_DATA				0x1d4					/* FW will write RF data in the register.*/
-
-/* page8 */
-#define rFPGA0_RFMOD				0x800  /* RF mode & CCK TxSC */
+#define   RF_DATA				0x1d4					 
+#define rFPGA0_RFMOD				0x800   
 #define rFPGA0_TxGainStage			0x80c
 #define rFPGA0_XA_HSSIParameter1	0x820
 #define rFPGA0_XA_HSSIParameter2	0x824
@@ -37,32 +33,26 @@
 #define rFPGA0_XD_LSSIReadBack		0x8ac
 #define rFPGA0_XAB_RFInterfaceRB	0x8e0
 #define rFPGA0_XCD_RFInterfaceRB	0x8e4
-
-/* page 9 */
-#define rFPGA1_RFMOD				0x900  /* RF mode & OFDM TxSC */
-
-/* page a */
+#define rFPGA1_RFMOD				0x900   
 #define rCCK0_System				0xa00
 #define rCCK0_AFESetting			0xa04
 #define rCCK0_CCA					0xa08
 #define rCCK0_TxFilter1				0xa20
 #define rCCK0_TxFilter2				0xa24
-#define rCCK0_DebugPort				0xa28  /* debug port and Tx filter3 */
-
-/* page c */
+#define rCCK0_DebugPort				0xa28   
 #define rOFDM0_TRxPathEnable		0xc04
-#define rOFDM0_XARxAFE				0xc10  /* RxIQ DC offset, Rx digital filter, DC notch filter */
-#define rOFDM0_XARxIQImbalance		0xc14  /* RxIQ imbalance matrix */
+#define rOFDM0_XARxAFE				0xc10   
+#define rOFDM0_XARxIQImbalance		0xc14   
 #define rOFDM0_XBRxAFE				0xc18
 #define rOFDM0_XBRxIQImbalance		0xc1c
 #define rOFDM0_XCRxAFE				0xc20
 #define rOFDM0_XCRxIQImbalance		0xc24
 #define rOFDM0_XDRxAFE				0xc28
 #define rOFDM0_XDRxIQImbalance		0xc2c
-#define rOFDM0_RxDetector1			0xc30  /* PD,BW & SBD */
-#define rOFDM0_RxDetector2			0xc34  /* SBD & Fame Sync.*/
-#define rOFDM0_RxDetector3			0xc38  /* Frame Sync.*/
-#define rOFDM0_ECCAThreshold		0xc4c /* energy CCA */
+#define rOFDM0_RxDetector1			0xc30   
+#define rOFDM0_RxDetector2			0xc34   
+#define rOFDM0_RxDetector3			0xc38   
+#define rOFDM0_ECCAThreshold		0xc4c  
 #define rOFDM0_XAAGCCore1		0xc50
 #define rOFDM0_XAAGCCore2		0xc54
 #define rOFDM0_XBAGCCore1		0xc58
@@ -79,12 +69,8 @@
 #define rOFDM0_XCTxAFE				0xc94
 #define rOFDM0_XDTxIQImbalance		0xc98
 #define rOFDM0_XDTxAFE				0xc9c
-
-/* page d */
 #define rOFDM1_LSTF				0xd00
 #define rOFDM1_TRxPathEnable		0xd04
-
-/* page e */
 #define rTxAGC_Rate18_06			0xe00
 #define rTxAGC_Rate54_24			0xe04
 #define rTxAGC_CCK_Mcs32			0xe08
@@ -92,18 +78,8 @@
 #define rTxAGC_Mcs07_Mcs04			0xe14
 #define rTxAGC_Mcs11_Mcs08			0xe18
 #define rTxAGC_Mcs15_Mcs12			0xe1c
-
-/* RF
- * Zebra1
- */
 #define rZebra1_Channel				0x7
-
-/* Zebra4 */
 #define rGlobalCtrl				0
-
-/* Bit Mask
- * page-8
- */
 #define bRFMOD						0x1
 #define bCCKEn						0x1000000
 #define bOFDMEn						0x2000000
@@ -112,32 +88,18 @@
 #define b3WireDataLength			0x800
 #define b3WireAddressLength			0x400
 #define bRFSI_RFENV				0x10
-#define bLSSIReadAddress			0x3f000000   /* LSSI "Read" Address */
-#define bLSSIReadEdge				0x80000000   /* LSSI "Read" edge signal */
+#define bLSSIReadAddress			0x3f000000    
+#define bLSSIReadEdge				0x80000000    
 #define bLSSIReadBackData			0xfff
 #define bXtalCap					0x0f000000
-
-/* page-a */
 #define bCCKSideBand				0x10
-
-/* page e */
 #define bTxAGCRateCCK			0x7f00
-
-/* RF
- * Zebra1
- */
 #define bZebra1_ChannelNum        0xf80
-
-/* RTL8258 */
-/* for PutRegsetting & GetRegSetting BitMask */
 #define bMaskByte0                0xff
 #define bMaskByte1                0xff00
 #define bMaskByte2                0xff0000
 #define bMaskHWord                0xffff0000
 #define bMaskLWord                0x0000ffff
 #define bMaskDWord                0xffffffff
-
-/* for PutRFRegsetting & GetRFRegSetting BitMask */
 #define bMask12Bits               0xfff
-
-#endif	/* __INC_HAL8190PCIPHYREG_H */
+#endif	 

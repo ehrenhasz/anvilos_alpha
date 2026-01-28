@@ -1,32 +1,22 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright 2020 Compass Electronics Group, LLC
- */
-
 #include <dt-bindings/phy/phy-imx8-pcie.h>
-
 / {
 	leds {
 		compatible = "gpio-leds";
-
 		led0 {
 			label = "gen_led0";
 			gpios = <&pca6416_1 4 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		led1 {
 			label = "gen_led1";
 			gpios = <&pca6416_1 5 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		led2 {
 			label = "gen_led2";
 			gpios = <&pca6416_1 6 GPIO_ACTIVE_HIGH>;
 			default-state = "off";
 		};
-
 		led3 {
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_led3>;
@@ -35,20 +25,17 @@
 			linux,default-trigger = "heartbeat";
 		};
 	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <100000000>;
 	};
-
 	pcie0_refclk_gated:  pcie0-refclk-gated {
 		compatible = "gpio-gate-clock";
 		clocks = <&pcie0_refclk>;
 		#clock-cells = <0>;
 		enable-gpios = <&pca6416_1 2 GPIO_ACTIVE_LOW>;
 	};
-
 	reg_audio: regulator-audio {
 		compatible = "regulator-fixed";
 		regulator-name = "3v3_aud";
@@ -57,7 +44,6 @@
 		gpio = <&pca6416_1 11 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_usbotg1: regulator-usbotg1 {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -68,7 +54,6 @@
 		gpio = <&gpio4 29 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	reg_camera: regulator-camera {
 		compatible = "regulator-fixed";
 		regulator-name = "mipi_pwr";
@@ -78,7 +63,6 @@
 		enable-active-high;
 		startup-delay-us = <100000>;
 	};
-
 	reg_pcie0: regulator-pcie {
 		compatible = "regulator-fixed";
 		regulator-name = "pci_pwr_en";
@@ -88,7 +72,6 @@
 		gpio = <&pca6416_1 1 GPIO_ACTIVE_HIGH>;
 		startup-delay-us = <100000>;
 	};
-
 	reg_usdhc2_vmmc: regulator-usdhc2 {
 		compatible = "regulator-fixed";
 		regulator-name = "VSD_3V3";
@@ -97,7 +80,6 @@
 		gpio = <&gpio2 19 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	sound {
 		compatible = "fsl,imx-audio-wm8962";
 		model = "wm8962-audio";
@@ -112,17 +94,14 @@
 			"IN3R", "AMIC";
 	};
 };
-
 &csi {
 	status = "okay";
 };
-
 &ecspi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_espi2>;
 	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 	status = "okay";
-
 	eeprom@0 {
 		compatible = "microchip,at25160bn", "atmel,at25";
 		reg = <0>;
@@ -134,13 +113,11 @@
 		address-width = <16>;
 	};
 };
-
 &i2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	camera@10 {
 		compatible = "ovti,ov5640";
 		pinctrl-names = "default";
@@ -151,12 +128,10 @@
 		assigned-clocks = <&clk IMX8MM_CLK_CLKO1>;
 		assigned-clock-parents = <&clk IMX8MM_CLK_24M>;
 		assigned-clock-rates = <24000000>;
-		AVDD-supply = <&reg_camera>;  /* 2.8v */
+		AVDD-supply = <&reg_camera>;   
 		powerdown-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
 		reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
-
 		port {
-			/* MIPI CSI-2 bus endpoint */
 			ov5640_to_mipi_csi2: endpoint {
 				remote-endpoint = <&imx8mm_mipi_csi_in>;
 				clock-lanes = <0>;
@@ -165,13 +140,11 @@
 		};
 	};
 };
-
 &i2c4 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c4>;
 	status = "okay";
-
 	wm8962: audio-codec@1a {
 		compatible = "wlf,wm8962";
 		reg = <0x1a>;
@@ -185,15 +158,14 @@
 		SPKVDD1-supply = <&reg_audio>;
 		SPKVDD2-supply = <&reg_audio>;
 		gpio-cfg = <
-			0x0000 /* 0:Default */
-			0x0000 /* 1:Default */
-			0x0000 /* 2:FN_DMICCLK */
-			0x0000 /* 3:Default */
-			0x0000 /* 4:FN_DMICCDAT */
-			0x0000 /* 5:Default */
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
+			0x0000  
 		>;
 	};
-
 	pca6416_0: gpio@20 {
 		compatible = "nxp,pcal6416";
 		reg = <0x20>;
@@ -204,7 +176,6 @@
 		interrupt-parent = <&gpio4>;
 		interrupts = <27 IRQ_TYPE_LEVEL_LOW>;
 	};
-
 	pca6416_1: gpio@21 {
 		compatible = "nxp,pcal6416";
 		reg = <0x21>;
@@ -214,7 +185,6 @@
 		interrupts = <27 IRQ_TYPE_LEVEL_LOW>;
 	};
 };
-
 &mipi_csi {
 	status = "okay";
 	ports {
@@ -226,7 +196,6 @@
 		};
 	};
 };
-
 &pcie_phy {
 	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
 	fsl,tx-deemph-gen1 = <0x2d>;
@@ -236,7 +205,6 @@
 	clock-names = "ref";
 	status = "okay";
 };
-
 &pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
@@ -251,7 +219,6 @@
 	vpcie-supply = <&reg_pcie0>;
 	status = "okay";
 };
-
 &sai3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai3>;
@@ -261,17 +228,14 @@
 	fsl,sai-mclk-direction-output;
 	status = "okay";
 };
-
 &snvs_pwrkey {
 	status = "okay";
 };
-
-&uart2 { /* console */
+&uart2 {  
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
@@ -280,24 +244,20 @@
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &usbotg1 {
 	vbus-supply = <&reg_usbotg1>;
 	disable-over-current;
 	dr_mode = "otg";
 	status = "okay";
 };
-
 &usbotg2 {
 	disable-over-current;
 	dr_mode = "host";
 	status = "okay";
 };
-
 &usbphynop2 {
 	reset-gpios = <&pca6416_1 7 GPIO_ACTIVE_HIGH>;
 };
-
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
 	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
@@ -307,7 +267,6 @@
 	vmmc-supply = <&reg_usdhc2_vmmc>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl_espi2: espi2grp {
 		fsl,pins = <
@@ -317,27 +276,23 @@
 			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13              0x41
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C2_SCL_I2C2_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C2_SDA_I2C2_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_i2c4: i2c4grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SCL_I2C4_SCL		0x400001c3
 			MX8MM_IOMUXC_I2C4_SDA_I2C4_SDA		0x400001c3
 		>;
 	};
-
 	pinctrl_led3: led3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI3_RXFS_GPIO4_IO28	0x41
 		>;
 	};
-
 	pinctrl_ov5640: ov5640grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO07_GPIO1_IO7		0x19
@@ -345,25 +300,21 @@
 			MX8MM_IOMUXC_GPIO1_IO14_CCMSRCGPCMIX_CLKO1	0x59
 		>;
 	};
-
 	pinctrl_pcal6414: pcal6414-gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27		0x19
 		>;
 	};
-
 	pinctrl_reg_usb_otg1: usbotg1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI3_RXC_GPIO4_IO29     0x19
 		>;
 	};
-
 	pinctrl_pcie0: pcie0grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI2_RXFS_GPIO4_IO21       0x41
 		>;
 	};
-
 	pinctrl_sai3: sai3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC     0xd6
@@ -373,14 +324,12 @@
 			MX8MM_IOMUXC_SAI3_RXD_SAI3_RX_DATA0	0xd6
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
 			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX	0x140
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX	0x40
@@ -389,14 +338,12 @@
 			MX8MM_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B	0x40
 		>;
 	};
-
 	pinctrl_usdhc2_gpio: usdhc2gpiogrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CD_B_USDHC2_CD_B	0x41
 			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19	0x41
 		>;
 	};
-
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK	0x190
@@ -408,7 +355,6 @@
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT	0x1d0
 		>;
 	};
-
 	pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK	0x194
@@ -420,7 +366,6 @@
 			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT	0x1d0
 		>;
 	};
-
 	pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK	0x196

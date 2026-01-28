@@ -1,25 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018-2019 NXP
- *	Dong Aisheng <aisheng.dong@nxp.com>
- */
-
 #include <dt-bindings/clock/imx8-lpcg.h>
 #include <dt-bindings/firmware/imx/rsrc.h>
-
 dma_subsys: bus@5a000000 {
 	compatible = "simple-bus";
 	#address-cells = <1>;
 	#size-cells = <1>;
 	ranges = <0x5a000000 0x0 0x5a000000 0x1000000>;
-
 	dma_ipg_clk: clock-dma-ipg {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <120000000>;
 		clock-output-names = "dma_ipg_clk";
 	};
-
 	lpspi0: spi@5a000000 {
 		compatible = "fsl,imx7ulp-spi";
 		reg = <0x5a000000 0x10000>;
@@ -35,7 +26,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_SPI_0>;
 		status = "disabled";
 	};
-
 	lpspi1: spi@5a010000 {
 		compatible = "fsl,imx7ulp-spi";
 		reg = <0x5a010000 0x10000>;
@@ -51,7 +41,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_SPI_1>;
 		status = "disabled";
 	};
-
 	lpspi2: spi@5a020000 {
 		compatible = "fsl,imx7ulp-spi";
 		reg = <0x5a020000 0x10000>;
@@ -67,7 +56,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_SPI_2>;
 		status = "disabled";
 	};
-
 	lpspi3: spi@5a030000 {
 		compatible = "fsl,imx7ulp-spi";
 		reg = <0x5a030000 0x10000>;
@@ -83,7 +71,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_SPI_3>;
 		status = "disabled";
 	};
-
 	lpuart0: serial@5a060000 {
 		reg = <0x5a060000 0x1000>;
 		interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
@@ -95,7 +82,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_UART_0>;
 		status = "disabled";
 	};
-
 	lpuart1: serial@5a070000 {
 		reg = <0x5a070000 0x1000>;
 		interrupts = <GIC_SPI 226 IRQ_TYPE_LEVEL_HIGH>;
@@ -107,7 +93,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_UART_1>;
 		status = "disabled";
 	};
-
 	lpuart2: serial@5a080000 {
 		reg = <0x5a080000 0x1000>;
 		interrupts = <GIC_SPI 227 IRQ_TYPE_LEVEL_HIGH>;
@@ -119,7 +104,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_UART_2>;
 		status = "disabled";
 	};
-
 	lpuart3: serial@5a090000 {
 		reg = <0x5a090000 0x1000>;
 		interrupts = <GIC_SPI 228 IRQ_TYPE_LEVEL_HIGH>;
@@ -131,7 +115,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_UART_3>;
 		status = "disabled";
 	};
-
 	spi0_lpcg: clock-controller@5a400000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a400000 0x10000>;
@@ -143,7 +126,6 @@ dma_subsys: bus@5a000000 {
 				     "spi0_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_SPI_0>;
 	};
-
 	spi1_lpcg: clock-controller@5a410000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a410000 0x10000>;
@@ -155,7 +137,6 @@ dma_subsys: bus@5a000000 {
 				     "spi1_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_SPI_1>;
 	};
-
 	spi2_lpcg: clock-controller@5a420000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a420000 0x10000>;
@@ -167,7 +148,6 @@ dma_subsys: bus@5a000000 {
 				     "spi2_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_SPI_2>;
 	};
-
 	spi3_lpcg: clock-controller@5a430000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a430000 0x10000>;
@@ -179,7 +159,6 @@ dma_subsys: bus@5a000000 {
 				     "spi3_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_SPI_3>;
 	};
-
 	uart0_lpcg: clock-controller@5a460000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a460000 0x10000>;
@@ -191,7 +170,6 @@ dma_subsys: bus@5a000000 {
 				     "uart0_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_UART_0>;
 	};
-
 	uart1_lpcg: clock-controller@5a470000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a470000 0x10000>;
@@ -203,7 +181,6 @@ dma_subsys: bus@5a000000 {
 				     "uart1_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_UART_1>;
 	};
-
 	uart2_lpcg: clock-controller@5a480000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a480000 0x10000>;
@@ -215,7 +192,6 @@ dma_subsys: bus@5a000000 {
 				     "uart2_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_UART_2>;
 	};
-
 	uart3_lpcg: clock-controller@5a490000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5a490000 0x10000>;
@@ -227,7 +203,6 @@ dma_subsys: bus@5a000000 {
 				     "uart3_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_UART_3>;
 	};
-
 	i2c0: i2c@5a800000 {
 		reg = <0x5a800000 0x4000>;
 		interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH>;
@@ -239,7 +214,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_I2C_0>;
 		status = "disabled";
 	};
-
 	i2c1: i2c@5a810000 {
 		reg = <0x5a810000 0x4000>;
 		interrupts = <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
@@ -251,7 +225,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_I2C_1>;
 		status = "disabled";
 	};
-
 	i2c2: i2c@5a820000 {
 		reg = <0x5a820000 0x4000>;
 		interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>;
@@ -263,7 +236,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_I2C_2>;
 		status = "disabled";
 	};
-
 	i2c3: i2c@5a830000 {
 		reg = <0x5a830000 0x4000>;
 		interrupts = <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
@@ -275,7 +247,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_I2C_3>;
 		status = "disabled";
 	};
-
 	adc0: adc@5a880000 {
 		compatible = "nxp,imx8qxp-adc";
 		#io-channel-cells = <1>;
@@ -290,7 +261,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_ADC_0>;
 		status = "disabled";
 	 };
-
 	adc1: adc@5a890000 {
 		compatible = "nxp,imx8qxp-adc";
 		#io-channel-cells = <1>;
@@ -305,7 +275,6 @@ dma_subsys: bus@5a000000 {
 		power-domains = <&pd IMX_SC_R_ADC_1>;
 		status = "disabled";
 	};
-
 	flexcan1: can@5a8d0000 {
 		compatible = "fsl,imx8qm-flexcan";
 		reg = <0x5a8d0000 0x10000>;
@@ -317,54 +286,40 @@ dma_subsys: bus@5a000000 {
 		assigned-clocks = <&clk IMX_SC_R_CAN_0 IMX_SC_PM_CLK_PER>;
 		assigned-clock-rates = <40000000>;
 		power-domains = <&pd IMX_SC_R_CAN_0>;
-		/* SLSlice[4] */
 		fsl,clk-source = /bits/ 8 <0>;
 		fsl,scu-index = /bits/ 8 <0>;
 		status = "disabled";
 	};
-
 	flexcan2: can@5a8e0000 {
 		compatible = "fsl,imx8qm-flexcan";
 		reg = <0x5a8e0000 0x10000>;
 		interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-parent = <&gic>;
-		/* CAN0 clock and PD is shared among all CAN instances as
-		 * CAN1 shares CAN0's clock and to enable CAN0's clock it
-		 * has to be powered on.
-		 */
 		clocks = <&can0_lpcg 1>,
 			 <&can0_lpcg 0>;
 		clock-names = "ipg", "per";
 		assigned-clocks = <&clk IMX_SC_R_CAN_0 IMX_SC_PM_CLK_PER>;
 		assigned-clock-rates = <40000000>;
 		power-domains = <&pd IMX_SC_R_CAN_1>;
-		/* SLSlice[4] */
 		fsl,clk-source = /bits/ 8 <0>;
 		fsl,scu-index = /bits/ 8 <1>;
 		status = "disabled";
 	};
-
 	flexcan3: can@5a8f0000 {
 		compatible = "fsl,imx8qm-flexcan";
 		reg = <0x5a8f0000 0x10000>;
 		interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-parent = <&gic>;
-		/* CAN0 clock and PD is shared among all CAN instances as
-		 * CAN2 shares CAN0's clock and to enable CAN0's clock it
-		 * has to be powered on.
-		 */
 		clocks = <&can0_lpcg 1>,
 			 <&can0_lpcg 0>;
 		clock-names = "ipg", "per";
 		assigned-clocks = <&clk IMX_SC_R_CAN_0 IMX_SC_PM_CLK_PER>;
 		assigned-clock-rates = <40000000>;
 		power-domains = <&pd IMX_SC_R_CAN_2>;
-		/* SLSlice[4] */
 		fsl,clk-source = /bits/ 8 <0>;
 		fsl,scu-index = /bits/ 8 <2>;
 		status = "disabled";
 	};
-
 	i2c0_lpcg: clock-controller@5ac00000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac00000 0x10000>;
@@ -376,7 +331,6 @@ dma_subsys: bus@5a000000 {
 				     "i2c0_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_I2C_0>;
 	};
-
 	i2c1_lpcg: clock-controller@5ac10000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac10000 0x10000>;
@@ -388,7 +342,6 @@ dma_subsys: bus@5a000000 {
 				     "i2c1_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_I2C_1>;
 	};
-
 	i2c2_lpcg: clock-controller@5ac20000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac20000 0x10000>;
@@ -400,7 +353,6 @@ dma_subsys: bus@5a000000 {
 				     "i2c2_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_I2C_2>;
 	};
-
 	i2c3_lpcg: clock-controller@5ac30000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac30000 0x10000>;
@@ -412,7 +364,6 @@ dma_subsys: bus@5a000000 {
 				     "i2c3_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_I2C_3>;
 	};
-
 	adc0_lpcg: clock-controller@5ac80000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac80000 0x10000>;
@@ -424,7 +375,6 @@ dma_subsys: bus@5a000000 {
 				     "adc0_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_ADC_0>;
 	};
-
 	adc1_lpcg: clock-controller@5ac90000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5ac90000 0x10000>;
@@ -436,7 +386,6 @@ dma_subsys: bus@5a000000 {
 				     "adc1_lpcg_ipg_clk";
 		power-domains = <&pd IMX_SC_R_ADC_1>;
 	};
-
 	can0_lpcg: clock-controller@5acd0000 {
 		compatible = "fsl,imx8qxp-lpcg";
 		reg = <0x5acd0000 0x10000>;

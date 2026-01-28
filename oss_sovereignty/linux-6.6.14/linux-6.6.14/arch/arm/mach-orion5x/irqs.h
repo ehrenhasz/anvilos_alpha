@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * IRQ definitions for Orion SoC
- *
- *  Maintainer: Tzachi Perelstein <tzachi@marvell.com>
- */
-
 #ifndef __ASM_ARCH_IRQS_H
 #define __ASM_ARCH_IRQS_H
-
-/*
- * Orion Main Interrupt Controller
- */
 #define IRQ_ORION5X_BRIDGE		(1 + 0)
 #define IRQ_ORION5X_DOORBELL_H2C	(1 + 1)
 #define IRQ_ORION5X_DOORBELL_C2H	(1 + 2)
@@ -42,14 +31,7 @@
 #define IRQ_ORION5X_SATA		(1 + 29)
 #define IRQ_ORION5X_XOR0		(1 + 30)
 #define IRQ_ORION5X_XOR1		(1 + 31)
-
-/*
- * Orion General Purpose Pins
- */
 #define IRQ_ORION5X_GPIO_START	33
 #define NR_GPIO_IRQS		32
-
 #define ORION5X_NR_IRQS		(IRQ_ORION5X_GPIO_START + NR_GPIO_IRQS)
-
-
 #endif

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 Pengutronix, Michael Tretter <kernel@pengutronix.de>
- */
-
 #ifndef __XLNX_VCU_H
 #define __XLNX_VCU_H
-
 #define VCU_ECODER_ENABLE		0x00
 #define VCU_DECODER_ENABLE		0x04
 #define VCU_MEMORY_DEPTH		0x08
@@ -35,5 +29,4 @@
 #define VCU_NUM_CORE			0x6c
 #define VCU_GASKET_INIT			0x74
 #define VCU_GASKET_VALUE		0x03
-
-#endif /* __XLNX_VCU_H */
+#endif  

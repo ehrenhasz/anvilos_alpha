@@ -1,13 +1,11 @@
 |
 |	fpsp.h 3.3 3.3
 |
-
 |		Copyright (C) Motorola, Inc. 1990
 |			All Rights Reserved
 |
 |       For details on the license for this file, please see the
 |       file, README, in this same directory.
-
 |	fpsp.h --- stack frame offsets during FPSP exception handling
 |
 |	These equates are used to access the exception frame, the fsave

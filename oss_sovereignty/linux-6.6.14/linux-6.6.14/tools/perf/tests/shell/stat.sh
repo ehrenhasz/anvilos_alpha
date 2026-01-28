@@ -1,9 +1,4 @@
-#!/bin/sh
-# perf stat tests
-# SPDX-License-Identifier: GPL-2.0
-
 set -e
-
 err=0
 test_default_stat() {
   echo "Basic stat command test"
@@ -15,7 +10,6 @@ test_default_stat() {
   fi
   echo "Basic stat command test [Success]"
 }
-
 test_stat_record_report() {
   echo "stat record and report test"
   if ! perf stat record -o - true | perf stat report -i - 2>&1 | \
@@ -27,7 +21,6 @@ test_stat_record_report() {
   fi
   echo "stat record and report test [Success]"
 }
-
 test_stat_record_script() {
   echo "stat record and script test"
   if ! perf stat record -o - true | perf script -i - 2>&1 | \
@@ -39,7 +32,6 @@ test_stat_record_script() {
   fi
   echo "stat record and script test [Success]"
 }
-
 test_stat_repeat_weak_groups() {
   echo "stat repeat weak groups test"
   if ! perf stat -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}' \
@@ -57,10 +49,7 @@ test_stat_repeat_weak_groups() {
   fi
   echo "stat repeat weak groups test [Success]"
 }
-
 test_topdown_groups() {
-  # Topdown events must be grouped with the slots event first. Test that
-  # parse-events reorders this.
   echo "Topdown event group test"
   if ! perf stat -e '{slots,topdown-retiring}' true > /dev/null 2>&1
   then
@@ -81,11 +70,7 @@ test_topdown_groups() {
   fi
   echo "Topdown event group test [Success]"
 }
-
 test_topdown_weak_groups() {
-  # Weak groups break if the perf_event_open of multiple grouped events
-  # fails. Breaking a topdown group causes the events to fail. Test a very large
-  # grouping to see that the topdown events aren't broken out.
   echo "Topdown weak groups test"
   ok_grouping="{slots,topdown-bad-spec,topdown-be-bound,topdown-fe-bound,topdown-retiring},branch-instructions,branch-misses,bus-cycles,cache-misses,cache-references,cpu-cycles,instructions,mem-loads,mem-stores,ref-cycles,cache-misses,cache-references"
   if ! perf stat --no-merge -e "$ok_grouping" true > /dev/null 2>&1
@@ -102,20 +87,14 @@ test_topdown_weak_groups() {
   fi
   echo "Topdown weak groups test [Success]"
 }
-
 test_cputype() {
-  # Test --cputype argument.
   echo "cputype test"
-
-  # Bogus PMU should fail.
   if perf stat --cputype="123" -e instructions true > /dev/null 2>&1
   then
     echo "cputype test [Bogus PMU didn't fail]"
     err=1
     return
   fi
-
-  # Find a known PMU for cputype.
   pmu=""
   for i in cpu cpu_atom armv8_pmuv3_0
   do
@@ -135,8 +114,6 @@ test_cputype() {
     echo "cputype test [Skipped known PMU not found]"
     return
   fi
-
-  # Test running with cputype produces output.
   if ! perf stat --cputype="$pmu" -e instructions true 2>&1 | grep -E -q "instructions"
   then
     echo "cputype test [Failed count missed with given filter]"
@@ -145,7 +122,6 @@ test_cputype() {
   fi
   echo "cputype test [Success]"
 }
-
 test_default_stat
 test_stat_record_report
 test_stat_record_script

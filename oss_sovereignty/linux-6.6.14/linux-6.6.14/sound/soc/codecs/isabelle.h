@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * isabelle.h - Low power high fidelity audio codec driver header file
- *
- * Copyright (c) 2012 Texas Instruments, Inc
- */
-
 #ifndef _ISABELLE_H
 #define _ISABELLE_H
-
 #include <linux/bitops.h>
-
-/* ISABELLE REGISTERS */
-
 #define ISABELLE_PWR_CFG_REG		0x01
 #define ISABELLE_PWR_EN_REG		0x02
 #define ISABELLE_PS_EN1_REG		0x03
@@ -107,22 +96,15 @@
 #define ISABELLE_PDMOUT_R_WM_REG	0x61
 #define ISABELLE_HF_NG_CFG1_REG		0x62
 #define ISABELLE_HF_NG_CFG2_REG		0x63
-
-/* ISABELLE_PWR_EN_REG (0x02h) */
 #define ISABELLE_CHIP_EN		BIT(0)
-
-/* ISABELLE DAI FORMATS */
 #define ISABELLE_AIF_FMT_MASK		0x70
 #define ISABELLE_I2S_MODE		0x0
 #define ISABELLE_LEFT_J_MODE		0x1
 #define ISABELLE_PDM_MODE		0x2
-
 #define ISABELLE_AIF_LENGTH_MASK	0x30
 #define ISABELLE_AIF_LENGTH_20		0x00
 #define ISABELLE_AIF_LENGTH_32		0x10
-
 #define ISABELLE_AIF_MS			0x80
-
 #define ISABELLE_FS_RATE_MASK		0xF
 #define ISABELLE_FS_RATE_8		0x0
 #define ISABELLE_FS_RATE_11		0x1
@@ -133,7 +115,5 @@
 #define ISABELLE_FS_RATE_32		0x8
 #define ISABELLE_FS_RATE_44		0x9
 #define ISABELLE_FS_RATE_48		0xA
-
 #define ISABELLE_MAX_REGISTER		0xFF
-
 #endif

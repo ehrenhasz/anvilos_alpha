@@ -1,7 +1,3 @@
-#!/bin/bash
-# perf all metrics test
-# SPDX-License-Identifier: GPL-2.0
-
 err=0
 for m in $(perf list --raw-dump metrics); do
   echo "Testing $m"
@@ -10,14 +6,11 @@ for m in $(perf list --raw-dump metrics); do
   then
     continue
   fi
-  # Failed so try system wide.
   result=$(perf stat -M "$m" -a sleep 0.01 2>&1)
   if [[ "$result" =~ ${m:0:50} ]]
   then
     continue
   fi
-  # Failed again, possibly the workload was too small so retry with something
-  # longer.
   result=$(perf stat -M "$m" perf bench internals synthesize 2>&1)
   if [[ "$result" =~ ${m:0:50} ]]
   then
@@ -39,5 +32,4 @@ for m in $(perf list --raw-dump metrics); do
     fi
   fi
 done
-
 exit "$err"

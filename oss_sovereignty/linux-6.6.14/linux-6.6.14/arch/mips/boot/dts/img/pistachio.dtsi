@@ -1,27 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015, 2016 Imagination Technologies Ltd.
- * Copyright (C) 2015 Google, Inc.
- */
-
 #include <dt-bindings/clock/pistachio-clk.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/interrupt-controller/mips-gic.h>
 #include <dt-bindings/reset/pistachio-resets.h>
-
 / {
 	compatible = "img,pistachio";
-
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	interrupt-parent = <&gic>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "mti,interaptiv";
@@ -30,7 +19,6 @@
 			clock-names = "cpu";
 			clock-latency = <1000>;
 			operating-points = <
-				/* kHz    uV(dummy) */
 				546000 1150000
 				520000 1100000
 				494000 1000000
@@ -40,7 +28,6 @@
 			>;
 		};
 	};
-
 	i2c0: i2c@18100000 {
 		compatible = "img,scb-i2c";
 		reg = <0x18100000 0x200>;
@@ -54,11 +41,9 @@
 		status = "disabled";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c0_pins>;
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	i2c1: i2c@18100200 {
 		compatible = "img,scb-i2c";
 		reg = <0x18100200 0x200>;
@@ -72,11 +57,9 @@
 		status = "disabled";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c1_pins>;
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	i2c2: i2c@18100400 {
 		compatible = "img,scb-i2c";
 		reg = <0x18100400 0x200>;
@@ -90,11 +73,9 @@
 		status = "disabled";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c2_pins>;
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	i2c3: i2c@18100600 {
 		compatible = "img,scb-i2c";
 		reg = <0x18100600 0x200>;
@@ -108,11 +89,9 @@
 		status = "disabled";
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2c3_pins>;
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	i2s_in: i2s-in@18100800 {
 		compatible = "img,i2s-in";
 		reg = <0x18100800 0x200>;
@@ -125,10 +104,8 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&i2s_in_pins>;
 		status = "disabled";
-
 		#sound-dai-cells = <0>;
 	};
-
 	i2s_out: i2s-out@18100a00 {
 		compatible = "img,i2s-out";
 		reg = <0x18100a00 0x200>;
@@ -148,7 +125,6 @@
 		reset-names = "rst";
 		#sound-dai-cells = <0>;
 	};
-
 	parallel_out: parallel-audio-out@18100c00 {
 		compatible = "img,parallel-out";
 		reg = <0x18100c00 0x100>;
@@ -165,7 +141,6 @@
 		reset-names = "rst";
 		#sound-dai-cells = <0>;
 	};
-
 	spdif_out: spdif-out@18100d00 {
 		compatible = "img,spdif-out";
 		reg = <0x18100d00 0x100>;
@@ -184,7 +159,6 @@
 		reset-names = "rst";
 		#sound-dai-cells = <0>;
 	};
-
 	spdif_in: spdif-in@18100e00 {
 		compatible = "img,spdif-in";
 		reg = <0x18100e00 0x100>;
@@ -196,18 +170,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&spdif_in_pin>;
 		status = "disabled";
-
 		#sound-dai-cells = <0>;
 	};
-
 	internal_dac: internal-dac {
 		compatible = "img,pistachio-internal-dac";
 		img,cr-top = <&cr_top>;
 		img,voltage-select = <1>;
-
 		#sound-dai-cells = <0>;
 	};
-
 	spfi0: spi@18100f00 {
 		compatible = "img,spfi";
 		reg = <0x18100f00 0x100>;
@@ -218,11 +188,9 @@
 		dma-names = "rx", "tx";
 		spfi-max-frequency = <50000000>;
 		status = "disabled";
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	spfi1: spi@18101000 {
 		compatible = "img,spfi";
 		reg = <0x18101000 0x100>;
@@ -234,11 +202,9 @@
 		img,supports-quad-mode;
 		spfi-max-frequency = <50000000>;
 		status = "disabled";
-
 		#address-cells = <1>;
 		#size-cells = <0>;
 	};
-
 	pwm: pwm@18101300 {
 		compatible = "img,pistachio-pwm";
 		reg = <0x18101300 0x100>;
@@ -249,7 +215,6 @@
 		#pwm-cells = <2>;
 		status = "disabled";
 	};
-
 	uart0: uart@18101400 {
 		compatible = "snps,dw-apb-uart";
 		reg = <0x18101400 0x100>;
@@ -264,7 +229,6 @@
 		pinctrl-names = "default";
 		status = "disabled";
 	};
-
 	uart1: uart@18101500 {
 		compatible = "snps,dw-apb-uart";
 		reg = <0x18101500 0x100>;
@@ -280,7 +244,6 @@
 		pinctrl-names = "default";
 		status = "disabled";
 	};
-
 	adc: adc@18101600 {
 		compatible = "cosmic,10001-adc";
 		reg = <0x18101600 0x24>;
@@ -291,80 +254,59 @@
 				  <&clk_core CLK_AUX_ADC_DIV>;
 		assigned-clock-rates = <100000000>, <1000000>;
 		status = "disabled";
-
 		#io-channel-cells = <1>;
 	};
-
 	pinctrl: pinctrl@18101c00 {
 		compatible = "img,pistachio-system-pinctrl";
 		reg = <0x18101c00 0x400>;
-
 		gpio0: gpio0 {
 			interrupts = <GIC_SHARED 71 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 0 16>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio1: gpio1 {
 			interrupts = <GIC_SHARED 72 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 16 16>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio2: gpio2 {
 			interrupts = <GIC_SHARED 73 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 32 16>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio3: gpio3 {
 			interrupts = <GIC_SHARED 74 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 48 16>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio4: gpio4 {
 			interrupts = <GIC_SHARED 75 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 64 16>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio5: gpio5 {
 			interrupts = <GIC_SHARED 76 IRQ_TYPE_LEVEL_HIGH>;
-
 			gpio-controller;
 			#gpio-cells = <2>;
 			gpio-ranges = <&pinctrl 0 80 10>;
-
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		i2c0_pins: i2c0-pins {
 			pin_i2c0: i2c0 {
 				pins = "mfio28", "mfio29";
@@ -372,7 +314,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		i2c1_pins: i2c1-pins {
 			pin_i2c1: i2c1 {
 				pins = "mfio30", "mfio31";
@@ -380,7 +321,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		i2c2_pins: i2c2-pins {
 			pin_i2c2: i2c2 {
 				pins = "mfio32", "mfio33";
@@ -388,7 +328,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		i2c3_pins: i2c3-pins {
 			pin_i2c3: i2c3 {
 				pins = "mfio34", "mfio35";
@@ -396,7 +335,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		spim0_pins: spim0-pins {
 			pin_spim0: spim0 {
 				pins = "mfio9", "mfio10";
@@ -409,63 +347,54 @@
 				drive-strength = <4>;
 			};
 		};
-
 		spim0_cs0_alt_pin: spim0-cs0-alt-pin {
 			spim0-cs0 {
 				pins = "mfio2";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs1_pin: spim0-cs1-pin {
 			spim0-cs1 {
 				pins = "mfio1";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs2_pin: spim0-cs2-pin {
 			spim0-cs2 {
 				pins = "mfio55";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs2_alt_pin: spim0-cs2-alt-pin {
 			spim0-cs2 {
 				pins = "mfio28";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs3_pin: spim0-cs3-pin {
 			spim0-cs3 {
 				pins = "mfio56";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs3_alt_pin: spim0-cs3-alt-pin {
 			spim0-cs3 {
 				pins = "mfio29";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs4_pin: spim0-cs4-pin {
 			spim0-cs4 {
 				pins = "mfio57";
 				drive-strength = <2>;
 			};
 		};
-
 		spim0_cs4_alt_pin: spim0-cs4-alt-pin {
 			spim0-cs4 {
 				pins = "mfio30";
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_pins: spim1-pins {
 			spim1 {
 				pins = "mfio3", "mfio4", "mfio5";
@@ -473,7 +402,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_quad_pins: spim1-quad-pins {
 			spim1-quad {
 				pins = "mfio6", "mfio7";
@@ -481,7 +409,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs0_pin: spim1-cs0-pins {
 			spim1-cs0 {
 				pins = "mfio0";
@@ -489,7 +416,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs1_pin: spim1-cs1-pin {
 			spim1-cs1 {
 				pins = "mfio1";
@@ -497,7 +423,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs1_alt_pin: spim1-cs1-alt-pin {
 			spim1-cs1 {
 				pins = "mfio58";
@@ -505,7 +430,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs2_pin: spim1-cs2-pin {
 			spim1-cs2 {
 				pins = "mfio2";
@@ -513,7 +437,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs2_alt0_pin: spim1-cs2-alt0-pin {
 			spim1-cs2 {
 				pins = "mfio31";
@@ -521,7 +444,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs2_alt1_pin: spim1-cs2-alt1-pin {
 			spim1-cs2 {
 				pins = "mfio55";
@@ -529,7 +451,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs3_pin: spim1-cs3-pin {
 			spim1-cs3 {
 				pins = "mfio56";
@@ -537,7 +458,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spim1_cs4_pin: spim1-cs4-pin {
 			spim1-cs4 {
 				pins = "mfio57";
@@ -545,7 +465,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		uart0_pins: uart0-pins {
 			uart0 {
 				pins = "mfio55", "mfio56";
@@ -553,7 +472,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		uart0_rts_cts_pins: uart0-rts-cts-pins {
 			uart0-rts-cts {
 				pins = "mfio57", "mfio58";
@@ -561,7 +479,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		uart1_pins: uart1-pins {
 			uart1 {
 				pins = "mfio59", "mfio60";
@@ -569,7 +486,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		uart1_rts_cts_pins: uart1-rts-cts-pins {
 			uart1-rts-cts {
 				  pins = "mfio1", "mfio2";
@@ -577,7 +493,6 @@
 				  drive-strength = <2>;
 			};
 		};
-
 		enet_pins: enet-pins {
 			pin_enet: enet {
 				pins = "mfio63", "mfio64", "mfio65", "mfio66",
@@ -593,7 +508,6 @@
 				drive-strength = <8>;
 			};
 		};
-
 		sdhost_pins: sdhost-pins {
 			pin_sdhost_clk: sdhost-clk {
 				pins = "mfio15";
@@ -631,7 +545,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		ir_pin: ir-pin {
 			ir-data {
 				pins = "mfio72";
@@ -639,7 +552,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		pwmpdm0_pin: pwmpdm0-pin {
 			pwmpdm0 {
 				pins = "mfio73";
@@ -647,7 +559,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		pwmpdm1_pin: pwmpdm1-pin {
 			pwmpdm1 {
 				pins = "mfio74";
@@ -655,7 +566,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		pwmpdm2_pin: pwmpdm2-pin {
 			pwmpdm2 {
 				pins = "mfio75";
@@ -663,7 +573,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		pwmpdm3_pin: pwmpdm3-pin {
 			pwmpdm3 {
 				pins = "mfio76";
@@ -671,7 +580,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		dac_clk_pin: dac-clk-pin {
 			pin_dac_clk: dac-clk {
 				pins = "mfio45";
@@ -679,7 +587,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		i2s_mclk_pin: i2s-mclk-pin {
 			pin_i2s_mclk: i2s-mclk {
 				pins = "mfio36";
@@ -687,7 +594,6 @@
 				drive-strength = <4>;
 			};
 		};
-
 		spdif_out_pin: spdif-out-pin {
 			spdif-out {
 				pins = "mfio61";
@@ -696,7 +602,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		spdif_in_pin: spdif-in-pin {
 			spdif-in {
 				pins = "mfio62";
@@ -704,7 +609,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		i2s_out_pins: i2s-out-pins {
 			pins_i2s_out_clk: i2s-out-clk {
 				pins = "mfio37", "mfio38";
@@ -719,7 +623,6 @@
 				drive-strength = <2>;
 			};
 		};
-
 		i2s_in_pins: i2s-in-pins {
 			i2s-in {
 				pins = "mfio47", "mfio48", "mfio49",
@@ -730,7 +633,6 @@
 			};
 		};
 	};
-
 	timer: timer@18102000 {
 		compatible = "img,pistachio-gptimer";
 		reg = <0x18102000 0x100>;
@@ -740,7 +642,6 @@
 		clock-names = "fast", "sys";
 		img,cr-periph = <&cr_periph>;
 	};
-
 	wdt: watchdog@18102100 {
 		compatible = "img,pdc-wdt";
 		reg = <0x18102100 0x100>;
@@ -751,7 +652,6 @@
 				  <&clk_periph PERIPH_CLK_WD_DIV>;
 		assigned-clock-rates = <4000000>, <32768>;
 	};
-
 	ir: ir@18102200 {
 		compatible = "img,ir-rev1";
 		reg = <0x18102200 0x100>;
@@ -765,7 +665,6 @@
 		pinctrl-names = "default";
 		status = "disabled";
 	};
-
 	usb: usb@18120000 {
 		compatible = "snps,dwc2";
 		reg = <0x18120000 0x1c000>;
@@ -775,7 +674,6 @@
 		g-tx-fifo-size = <256 256 256 256>;
 		status = "disabled";
 	};
-
 	enet: ethernet@18140000 {
 		compatible = "snps,dwmac";
 		reg = <0x18140000 0x2000>;
@@ -792,7 +690,6 @@
 		phy-mode = "rmii";
 		status = "disabled";
 	};
-
 	sdhost: mmc@18142000 {
 		compatible = "img,pistachio-dw-mshc";
 		reg = <0x18142000 0x400>;
@@ -808,12 +705,10 @@
 		cap-sd-highspeed;
 		status = "disabled";
 	};
-
 	sram: sram@1b000000 {
 		compatible = "mmio-sram";
 		reg = <0x1b000000 0x10000>;
 	};
-
 	mdc: dma-controller@18143000 {
 		compatible = "img,pistachio-mdc-dma";
 		reg = <0x18143000 0x1000>;
@@ -831,13 +726,10 @@
 			     <GIC_SHARED 38 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&cr_periph SYS_CLK_MDC>;
 		clock-names = "sys";
-
 		img,max-burst-multiplier = <16>;
 		img,cr-periph = <&cr_periph>;
-
 		#dma-cells = <3>;
 	};
-
 	clk_core: clk@18144000 {
 		compatible = "img,pistachio-clk", "syscon";
 		clocks = <&xtal>, <&cr_top EXT_CLK_AUDIO_IN>,
@@ -847,7 +739,6 @@
 		reg = <0x18144000 0x800>;
 		#clock-cells = <1>;
 	};
-
 	clk_periph: clk@18144800 {
 		compatible = "img,pistachio-clk-periph";
 		reg = <0x18144800 0x1000>;
@@ -855,26 +746,22 @@
 		clock-names = "periph_sys_core";
 		#clock-cells = <1>;
 	};
-
 	cr_periph: clk@18148000 {
 		compatible = "img,pistachio-cr-periph", "syscon", "simple-bus";
 		reg = <0x18148000 0x1000>;
 		clocks = <&clk_periph PERIPH_CLK_SYS>;
 		clock-names = "sys";
 		#clock-cells = <1>;
-
 		pistachio_reset: reset-controller {
 			compatible = "img,pistachio-reset";
 			#reset-cells = <1>;
 		};
 	};
-
 	cr_top: clk@18149000 {
 		compatible = "img,pistachio-cr-top", "syscon";
 		reg = <0x18149000 0x200>;
 		#clock-cells = <1>;
 	};
-
 	hash: hash@18149600 {
 		compatible = "img,hash-accelerator";
 		reg = <0x18149600 0x100>, <0x18101100 0x4>;
@@ -885,31 +772,25 @@
 			 <&clk_periph PERIPH_CLK_ROM>;
 		clock-names = "sys", "hash";
 	};
-
 	gic: interrupt-controller@1bdc0000 {
 		compatible = "mti,gic";
 		reg = <0x1bdc0000 0x20000>;
-
 		interrupt-controller;
 		#interrupt-cells = <3>;
-
 		timer {
 			compatible = "mti,gic-timer";
 			interrupts = <GIC_LOCAL 1 IRQ_TYPE_NONE>;
 			clocks = <&clk_core CLK_MIPS>;
 		};
 	};
-
 	cpc: cpc@1bde0000 {
 		compatible = "mti,mips-cpc";
 		reg = <0x1bde0000 0x10000>;
 	};
-
 	cdmm: cdmm@1bdf0000 {
 		compatible = "mti,mips-cdmm";
 		reg = <0x1bdf0000 0x10000>;
 	};
-
 	usb_phy: usb-phy {
 		compatible = "img,pistachio-usb-phy";
 		clocks = <&clk_core CLK_USB_PHY>;
@@ -920,7 +801,6 @@
 		img,cr-top = <&cr_top>;
 		#phy-cells = <0>;
 	};
-
 	xtal: xtal {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;

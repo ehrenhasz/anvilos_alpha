@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
-
 #include "meson-g12b-odroid.dtsi"
-
 / {
 	aliases {
 		rtc0 = &rtc;
 	};
-
 	dio2133: audio-amplifier-0 {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
@@ -18,19 +10,15 @@
 		sound-name-prefix = "U19";
 		status = "okay";
 	};
-
 	hub_5v: regulator-hub_5v {
 		compatible = "regulator-fixed";
 		regulator-name = "HUB_5V";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&vcc_5v>;
-
-		/* Connected to the Hub CHIPENABLE, LOW sets low power state */
 		gpio = <&gpio GPIOH_5 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	sound {
 		compatible = "amlogic,axg-sound-card";
 		model = "ODROID-N2";
@@ -70,7 +58,6 @@
 				"U19 INR", "ACODEC LORP",
 				"Lineout", "U19 OUTL",
 				"Lineout", "U19 OUTR";
-
 		assigned-clocks = <&clkc CLKID_MPLL2>,
 				  <&clkc CLKID_MPLL0>,
 				  <&clkc CLKID_MPLL1>;
@@ -78,32 +65,24 @@
 		assigned-clock-rates = <294912000>,
 				       <270950400>,
 				       <393216000>;
-
 		dai-link-0 {
 			sound-dai = <&frddr_a>;
 		};
-
 		dai-link-1 {
 			sound-dai = <&frddr_b>;
 		};
-
 		dai-link-2 {
 			sound-dai = <&frddr_c>;
 		};
-
 		dai-link-3 {
 			sound-dai = <&toddr_a>;
 		};
-
 		dai-link-4 {
 			sound-dai = <&toddr_b>;
 		};
-
 		dai-link-5 {
 			sound-dai = <&toddr_c>;
 		};
-
-		/* 8ch hdmi interface */
 		dai-link-6 {
 			sound-dai = <&tdmif_b>;
 			dai-format = "i2s";
@@ -112,57 +91,43 @@
 			dai-tdm-slot-tx-mask-2 = <1 1>;
 			dai-tdm-slot-tx-mask-3 = <1 1>;
 			mclk-fs = <256>;
-
 			codec-0 {
 				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_B>;
 			};
-
 			codec-1 {
 				sound-dai = <&toacodec TOACODEC_IN_B>;
 			};
 		};
-
-		/* i2s jack output interface */
 		dai-link-7 {
 			sound-dai = <&tdmif_c>;
 			dai-format = "i2s";
 			dai-tdm-slot-tx-mask-0 = <1 1>;
 			mclk-fs = <256>;
-
 			codec-0 {
 				sound-dai = <&tohdmitx TOHDMITX_I2S_IN_C>;
 			};
-
 			codec-1 {
 				sound-dai = <&toacodec TOACODEC_IN_C>;
 			};
 		};
-
-		/* hdmi glue */
 		dai-link-8 {
 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
-
 			codec {
 				sound-dai = <&hdmi_tx>;
 			};
 		};
-
-		/* acodec glue */
 		dai-link-9 {
 			sound-dai = <&toacodec TOACODEC_OUT>;
-
 			codec {
 				sound-dai = <&acodec>;
 			};
 		};
 	};
 };
-
 &acodec {
 	AVDD-supply = <&vddao_1v8>;
 	status = "okay";
 };
-
 &ethmac {
 	pinctrl-0 = <&eth_pins>, <&eth_rgmii_pins>;
 	pinctrl-names = "default";
@@ -171,75 +136,57 @@
 	phy-handle = <&external_phy>;
 	amlogic,tx-delay-ns = <2>;
 };
-
 &ext_mdio {
 	external_phy: ethernet-phy@0 {
-		/* Realtek RTL8211F (0x001cc916) */
 		reg = <0>;
 		max-speed = <1000>;
-
 		reset-assert-us = <10000>;
 		reset-deassert-us = <80000>;
 		reset-gpios = <&gpio GPIOZ_15 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
-
 		interrupt-parent = <&gpio_intc>;
-		/* MAC_INTR on GPIOZ_14 */
 		interrupts = <IRQID_GPIOZ_14 IRQ_TYPE_LEVEL_LOW>;
 	};
 };
-
 &gpio {
 	gpio-line-names =
-		/* GPIOZ */
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "",
-		/* GPIOH */
 		"", "", "", "", "", "", "", "",
 		"",
-		/* BOOT */
 		"", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "",
-		/* GPIOC */
 		"", "", "", "", "", "", "", "",
-		/* GPIOA */
-		"PIN_44", /* GPIOA_0 */
-		"PIN_46", /* GPIOA_1 */
-		"PIN_45", /* GPIOA_2 */
-		"PIN_47", /* GPIOA_3 */
-		"PIN_26", /* GPIOA_4 */
+		"PIN_44",  
+		"PIN_46",  
+		"PIN_45",  
+		"PIN_47",  
+		"PIN_26",  
 		"", "", "", "", "", "",
-		"PIN_42", /* GPIOA_11 */
-		"PIN_32", /* GPIOA_12 */
-		"PIN_7",  /* GPIOA_13 */
-		"PIN_27", /* GPIOA_14 */
-		"PIN_28", /* GPIOA_15 */
-		/* GPIOX */
-		"PIN_16", /* GPIOX_0 */
-		"PIN_18", /* GPIOX_1 */
-		"PIN_22", /* GPIOX_2 */
-		"PIN_11", /* GPIOX_3 */
-		"PIN_13", /* GPIOX_4 */
-		"PIN_33", /* GPIOX_5 */
-		"PIN_35", /* GPIOX_6 */
-		"PIN_15", /* GPIOX_7 */
-		"PIN_19", /* GPIOX_8 */
-		"PIN_21", /* GPIOX_9 */
-		"PIN_24", /* GPIOX_10 */
-		"PIN_23", /* GPIOX_11 */
-		"PIN_8",  /* GPIOX_12 */
-		"PIN_10", /* GPIOX_13 */
-		"PIN_29", /* GPIOX_14 */
-		"PIN_31", /* GPIOX_15 */
-		"PIN_12", /* GPIOX_16 */
-		"PIN_3",  /* GPIOX_17 */
-		"PIN_5",  /* GPIOX_18 */
-		"PIN_36"; /* GPIOX_19 */
-	/*
-	 * WARNING: The USB Hub on the Odroid-N2 needs a reset signal
-	 * to be turned high in order to be detected by the USB Controller
-	 * This signal should be handled by a USB specific power sequence
-	 * in order to reset the Hub when USB bus is powered down.
-	 */
+		"PIN_42",  
+		"PIN_32",  
+		"PIN_7",   
+		"PIN_27",  
+		"PIN_28",  
+		"PIN_16",  
+		"PIN_18",  
+		"PIN_22",  
+		"PIN_11",  
+		"PIN_13",  
+		"PIN_33",  
+		"PIN_35",  
+		"PIN_15",  
+		"PIN_19",  
+		"PIN_21",  
+		"PIN_24",  
+		"PIN_23",  
+		"PIN_8",   
+		"PIN_10",  
+		"PIN_29",  
+		"PIN_31",  
+		"PIN_12",  
+		"PIN_3",   
+		"PIN_5",   
+		"PIN_36";  
 	usb-hub-hog {
 		gpio-hog;
 		gpios = <GPIOH_4 GPIO_ACTIVE_HIGH>;
@@ -247,38 +194,26 @@
 		line-name = "usb-hub-reset";
 	};
 };
-
 &i2c3 {
 	status = "okay";
 	pinctrl-0 = <&i2c3_sda_a_pins>, <&i2c3_sck_a_pins>;
 	pinctrl-names = "default";
-
 	rtc: rtc@51 {
 		compatible = "nxp,pcf8563";
 		reg = <0x51>;
 		wakeup-source;
 	};
 };
-
 &ir {
 	status = "okay";
 	pinctrl-0 = <&remote_input_ao_pins>;
 	pinctrl-names = "default";
 	linux,rc-map-name = "rc-odroid";
 };
-
-/*
- * EMMC_D4, EMMC_D5, EMMC_D6 and EMMC_D7 pins are shared between SPI NOR pins
- * and eMMC Data 4 to 7 pins.
- * Replace emmc_data_8b_pins to emmc_data_4b_pins from sd_emmc_c pinctrl-0,
- * and change bus-width to 4 then spifc can be enabled.
- * The SW1 slide should also be set to the correct position.
- */
 &spifc {
 	status = "disabled";
 	pinctrl-0 = <&nor_pins>;
 	pinctrl-names = "default";
-
 	mx25u64: flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -287,16 +222,12 @@
 		spi-max-frequency = <104000000>;
 	};
 };
-
 &toacodec {
 	status = "okay";
 };
-
 &usb {
 	vbus-supply = <&usb_pwr_en>;
 };
-
 &usb2_phy1 {
-	/* Enable the hub which is connected to this port */
 	phy-supply = <&hub_5v>;
 };

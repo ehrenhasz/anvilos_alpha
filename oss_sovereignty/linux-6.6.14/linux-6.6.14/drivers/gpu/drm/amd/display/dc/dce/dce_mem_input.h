@@ -1,36 +1,9 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef __DCE_MEM_INPUT_H__
 #define __DCE_MEM_INPUT_H__
-
 #include "dc_hw_types.h"
 #include "mem_input.h"
-
 #define TO_DCE_MEM_INPUT(mem_input)\
 	container_of(mem_input, struct dce_mem_input, base)
-
 #define MI_DCE_BASE_REG_LIST(id)\
 	SRI(GRPH_ENABLE, DCP, id),\
 	SRI(GRPH_CONTROL, DCP, id),\
@@ -53,11 +26,9 @@
 	SRI(DPG_PIPE_URGENCY_CONTROL, DMIF_PG, id),\
 	SRI(DPG_PIPE_STUTTER_CONTROL, DMIF_PG, id),\
 	SRI(DMIF_BUFFER_CONTROL, PIPE, id)
-
 #define MI_DCE_PTE_REG_LIST(id)\
 	SRI(DVMM_PTE_CONTROL, DCP, id),\
 	SRI(DVMM_PTE_ARB_CONTROL, DCP, id)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define MI_DCE6_REG_LIST(id)\
 	SRI(GRPH_ENABLE, DCP, id),\
@@ -82,19 +53,15 @@
 	SRI(DPG_PIPE_STUTTER_CONTROL, DMIF_PG, id),\
 	SRI(DMIF_BUFFER_CONTROL, PIPE, id)
 #endif
-
 #define MI_DCE8_REG_LIST(id)\
 	MI_DCE_BASE_REG_LIST(id),\
 	SRI(DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, DMIF_PG, id)
-
 #define MI_DCE11_2_REG_LIST(id)\
 	MI_DCE8_REG_LIST(id),\
 	SRI(GRPH_PIPE_OUTSTANDING_REQUEST_LIMIT, DCP, id)
-
 #define MI_DCE11_REG_LIST(id)\
 	MI_DCE11_2_REG_LIST(id),\
 	MI_DCE_PTE_REG_LIST(id)
-
 #define MI_DCE12_REG_LIST(id)\
 	MI_DCE_BASE_REG_LIST(id),\
 	MI_DCE_PTE_REG_LIST(id),\
@@ -105,9 +72,7 @@
 	SR(DCHUB_AGP_BASE),\
 	SR(DCHUB_AGP_BOT),\
 	SR(DCHUB_AGP_TOP)
-
 struct dce_mem_input_registers {
-	/* DCP */
 	uint32_t GRPH_ENABLE;
 	uint32_t GRPH_CONTROL;
 	uint32_t GRPH_X_START;
@@ -127,7 +92,6 @@ struct dce_mem_input_registers {
 	uint32_t GRPH_PRIMARY_SURFACE_ADDRESS_HIGH;
 	uint32_t GRPH_SECONDARY_SURFACE_ADDRESS;
 	uint32_t GRPH_SECONDARY_SURFACE_ADDRESS_HIGH;
-	/* DMIF_PG */
 	uint32_t DPG_PIPE_ARBITRATION_CONTROL1;
 #if defined(CONFIG_DRM_AMD_DC_SI)
 	uint32_t DPG_PIPE_ARBITRATION_CONTROL3;
@@ -139,21 +103,15 @@ struct dce_mem_input_registers {
 	uint32_t DPG_PIPE_LOW_POWER_CONTROL;
 	uint32_t DPG_PIPE_STUTTER_CONTROL;
 	uint32_t DPG_PIPE_STUTTER_CONTROL2;
-	/* DCI */
 	uint32_t DMIF_BUFFER_CONTROL;
-	/* MC_HUB */
 	uint32_t MC_HUB_RDREQ_DMIF_LIMIT;
-	/*DCHUB*/
 	uint32_t DCHUB_FB_LOCATION;
 	uint32_t DCHUB_AGP_BASE;
 	uint32_t DCHUB_AGP_BOT;
 	uint32_t DCHUB_AGP_TOP;
 };
-
-/* Set_Filed_for_Block */
 #define SFB(blk_name, reg_name, field_name, post_fix)\
 	.field_name = blk_name ## reg_name ## __ ## field_name ## post_fix
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define MI_GFX6_TILE_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, GRPH_CONTROL, GRPH_NUM_BANKS, mask_sh),\
@@ -165,7 +123,6 @@ struct dce_mem_input_registers {
 	SFB(blk, GRPH_CONTROL, GRPH_ARRAY_MODE, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_COLOR_EXPANSION_MODE, mask_sh)
 #endif
-
 #define MI_GFX8_TILE_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, GRPH_CONTROL, GRPH_NUM_BANKS, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_BANK_WIDTH, mask_sh),\
@@ -176,7 +133,6 @@ struct dce_mem_input_registers {
 	SFB(blk, GRPH_CONTROL, GRPH_PIPE_CONFIG, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_ARRAY_MODE, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_COLOR_EXPANSION_MODE, mask_sh)
-
 #define MI_DCP_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, GRPH_ENABLE, GRPH_ENABLE, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_DEPTH, mask_sh),\
@@ -200,7 +156,6 @@ struct dce_mem_input_registers {
 	SFB(blk, GRPH_UPDATE, GRPH_SURFACE_UPDATE_PENDING, mask_sh),\
 	SFB(blk, GRPH_UPDATE, GRPH_UPDATE_LOCK, mask_sh),\
 	SFB(blk, GRPH_FLIP_CONTROL, GRPH_SURFACE_UPDATE_H_RETRACE_EN, mask_sh)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define MI_DCP_MASK_SH_LIST_DCE6(mask_sh, blk)\
 	SFB(blk, GRPH_ENABLE, GRPH_ENABLE, mask_sh),\
@@ -225,17 +180,14 @@ struct dce_mem_input_registers {
 	SFB(blk, GRPH_UPDATE, GRPH_UPDATE_LOCK, mask_sh),\
 	SFB(blk, GRPH_FLIP_CONTROL, GRPH_SURFACE_UPDATE_H_RETRACE_EN, mask_sh)
 #endif
-
 #define MI_DCP_DCE11_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, GRPH_PIPE_OUTSTANDING_REQUEST_LIMIT, GRPH_PIPE_OUTSTANDING_REQUEST_LIMIT, mask_sh)
-
 #define MI_DCP_PTE_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, DVMM_PTE_CONTROL, DVMM_PAGE_WIDTH, mask_sh),\
 	SFB(blk, DVMM_PTE_CONTROL, DVMM_PAGE_HEIGHT, mask_sh),\
 	SFB(blk, DVMM_PTE_CONTROL, DVMM_MIN_PTE_BEFORE_FLIP, mask_sh),\
 	SFB(blk, DVMM_PTE_ARB_CONTROL, DVMM_PTE_REQ_PER_CHUNK, mask_sh),\
 	SFB(blk, DVMM_PTE_ARB_CONTROL, DVMM_MAX_PTE_REQ_OUTSTANDING, mask_sh)
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 #define MI_DMIF_PG_MASK_SH_LIST_DCE6(mask_sh, blk)\
 	SFB(blk, DPG_PIPE_ARBITRATION_CONTROL1, PIXEL_DURATION, mask_sh),\
@@ -245,7 +197,6 @@ struct dce_mem_input_registers {
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL, STUTTER_IGNORE_FBC, mask_sh),\
 	SF(PIPE0_DMIF_BUFFER_CONTROL, DMIF_BUFFERS_ALLOCATED, mask_sh),\
 	SF(PIPE0_DMIF_BUFFER_CONTROL, DMIF_BUFFERS_ALLOCATION_COMPLETED, mask_sh)
-
 #define MI_DMIF_PG_MASK_SH_DCE6(mask_sh, blk)\
 	SFB(blk, DPG_PIPE_ARBITRATION_CONTROL3, URGENCY_WATERMARK_MASK, mask_sh),\
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL, STUTTER_EXIT_SELF_REFRESH_WATERMARK_MASK, mask_sh),\
@@ -255,14 +206,12 @@ struct dce_mem_input_registers {
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_URGENT_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_NOT_SELF_REFRESH_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_WATERMARK, mask_sh)
-
 #define MI_DCE6_MASK_SH_LIST(mask_sh)\
 	MI_DCP_MASK_SH_LIST_DCE6(mask_sh, ),\
 	MI_DMIF_PG_MASK_SH_LIST_DCE6(mask_sh, ),\
 	MI_DMIF_PG_MASK_SH_DCE6(mask_sh, ),\
 	MI_GFX6_TILE_MASK_SH_LIST(mask_sh, )
 #endif
-
 #define MI_DMIF_PG_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, DPG_PIPE_ARBITRATION_CONTROL1, PIXEL_DURATION, mask_sh),\
 	SFB(blk, DPG_WATERMARK_MASK_CONTROL, URGENCY_WATERMARK_MASK, mask_sh),\
@@ -273,7 +222,6 @@ struct dce_mem_input_registers {
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL, STUTTER_IGNORE_FBC, mask_sh),\
 	SF(PIPE0_DMIF_BUFFER_CONTROL, DMIF_BUFFERS_ALLOCATED, mask_sh),\
 	SF(PIPE0_DMIF_BUFFER_CONTROL, DMIF_BUFFERS_ALLOCATION_COMPLETED, mask_sh)
-
 #define MI_DMIF_PG_MASK_SH_DCE(mask_sh, blk)\
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL, STUTTER_EXIT_SELF_REFRESH_WATERMARK, mask_sh),\
 	SFB(blk, DPG_WATERMARK_MASK_CONTROL, NB_PSTATE_CHANGE_WATERMARK_MASK, mask_sh),\
@@ -281,21 +229,17 @@ struct dce_mem_input_registers {
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_URGENT_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_NOT_SELF_REFRESH_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_NB_PSTATE_CHANGE_CONTROL, NB_PSTATE_CHANGE_WATERMARK, mask_sh)
-
 #define MI_DCE8_MASK_SH_LIST(mask_sh)\
 	MI_DCP_MASK_SH_LIST(mask_sh, ),\
 	MI_DMIF_PG_MASK_SH_LIST(mask_sh, ),\
 	MI_DMIF_PG_MASK_SH_DCE(mask_sh, ),\
 	MI_GFX8_TILE_MASK_SH_LIST(mask_sh, )
-
 #define MI_DCE11_2_MASK_SH_LIST(mask_sh)\
 	MI_DCE8_MASK_SH_LIST(mask_sh),\
 	MI_DCP_DCE11_MASK_SH_LIST(mask_sh, )
-
 #define MI_DCE11_MASK_SH_LIST(mask_sh)\
 	MI_DCE11_2_MASK_SH_LIST(mask_sh),\
 	MI_DCP_PTE_MASK_SH_LIST(mask_sh, )
-
 #define MI_GFX9_TILE_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, GRPH_CONTROL, GRPH_NUM_BANKS, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_SW_MODE, mask_sh),\
@@ -303,7 +247,6 @@ struct dce_mem_input_registers {
 	SFB(blk, GRPH_CONTROL, GRPH_NUM_SHADER_ENGINES, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_NUM_PIPES, mask_sh),\
 	SFB(blk, GRPH_CONTROL, GRPH_COLOR_EXPANSION_MODE, mask_sh)
-
 #define MI_DCE12_DMIF_PG_MASK_SH_LIST(mask_sh, blk)\
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL2, STUTTER_EXIT_SELF_REFRESH_WATERMARK, mask_sh),\
 	SFB(blk, DPG_PIPE_STUTTER_CONTROL2, STUTTER_ENTER_SELF_REFRESH_WATERMARK, mask_sh),\
@@ -316,14 +259,12 @@ struct dce_mem_input_registers {
 	SFB(blk, DPG_PIPE_LOW_POWER_CONTROL, PSTATE_CHANGE_URGENT_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_LOW_POWER_CONTROL, PSTATE_CHANGE_NOT_SELF_REFRESH_DURING_REQUEST, mask_sh),\
 	SFB(blk, DPG_PIPE_LOW_POWER_CONTROL, PSTATE_CHANGE_WATERMARK, mask_sh)
-
 #define MI_GFX9_DCHUB_MASK_SH_LIST(mask_sh)\
 	SF(DCHUB_FB_LOCATION, FB_TOP, mask_sh),\
 	SF(DCHUB_FB_LOCATION, FB_BASE, mask_sh),\
 	SF(DCHUB_AGP_BASE, AGP_BASE, mask_sh),\
 	SF(DCHUB_AGP_BOT, AGP_BOT, mask_sh),\
 	SF(DCHUB_AGP_TOP, AGP_TOP, mask_sh)
-
 #define MI_DCE12_MASK_SH_LIST(mask_sh)\
 	MI_DCP_MASK_SH_LIST(mask_sh, DCP0_),\
 	SF(DCP0_GRPH_SECONDARY_SURFACE_ADDRESS, GRPH_SECONDARY_DFQ_ENABLE, mask_sh),\
@@ -333,7 +274,6 @@ struct dce_mem_input_registers {
 	MI_DCE12_DMIF_PG_MASK_SH_LIST(mask_sh, DMIF_PG0_),\
 	MI_GFX9_TILE_MASK_SH_LIST(mask_sh, DCP0_),\
 	MI_GFX9_DCHUB_MASK_SH_LIST(mask_sh)
-
 #define MI_REG_FIELD_LIST(type) \
 	type GRPH_ENABLE; \
 	type GRPH_X_START; \
@@ -400,35 +340,28 @@ struct dce_mem_input_registers {
 	type STUTTER_ENTER_SELF_REFRESH_WATERMARK; \
 	type DMIF_BUFFERS_ALLOCATED; \
 	type DMIF_BUFFERS_ALLOCATION_COMPLETED; \
-	type ENABLE; /* MC_HUB_RDREQ_DMIF_LIMIT */\
+	type ENABLE;  \
 	type FB_BASE; \
 	type FB_TOP; \
 	type AGP_BASE; \
 	type AGP_TOP; \
 	type AGP_BOT; \
-
 struct dce_mem_input_shift {
 	MI_REG_FIELD_LIST(uint8_t)
 };
-
 struct dce_mem_input_mask {
 	MI_REG_FIELD_LIST(uint32_t)
 };
-
 struct dce_mem_input_wa {
 	uint8_t single_head_rdreq_dmif_limit;
 };
-
 struct dce_mem_input {
 	struct mem_input base;
-
 	const struct dce_mem_input_registers *regs;
 	const struct dce_mem_input_shift *shifts;
 	const struct dce_mem_input_mask *masks;
-
 	struct dce_mem_input_wa wa;
 };
-
 void dce_mem_input_construct(
 	struct dce_mem_input *dce_mi,
 	struct dc_context *ctx,
@@ -436,7 +369,6 @@ void dce_mem_input_construct(
 	const struct dce_mem_input_registers *regs,
 	const struct dce_mem_input_shift *mi_shift,
 	const struct dce_mem_input_mask *mi_mask);
-
 #if defined(CONFIG_DRM_AMD_DC_SI)
 void dce60_mem_input_construct(
 	struct dce_mem_input *dce_mi,
@@ -446,7 +378,6 @@ void dce60_mem_input_construct(
 	const struct dce_mem_input_shift *mi_shift,
 	const struct dce_mem_input_mask *mi_mask);
 #endif
-
 void dce112_mem_input_construct(
 	struct dce_mem_input *dce_mi,
 	struct dc_context *ctx,
@@ -454,7 +385,6 @@ void dce112_mem_input_construct(
 	const struct dce_mem_input_registers *regs,
 	const struct dce_mem_input_shift *mi_shift,
 	const struct dce_mem_input_mask *mi_mask);
-
 void dce120_mem_input_construct(
 	struct dce_mem_input *dce_mi,
 	struct dc_context *ctx,
@@ -462,5 +392,4 @@ void dce120_mem_input_construct(
 	const struct dce_mem_input_registers *regs,
 	const struct dce_mem_input_shift *mi_shift,
 	const struct dce_mem_input_mask *mi_mask);
-
-#endif /*__DCE_MEM_INPUT_H__*/
+#endif  

@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_ASMARM_SIGNAL_H
 #define _UAPI_ASMARM_SIGNAL_H
-
 #include <linux/types.h>
-
-/* Avoid too many header ordering problems.  */
 struct siginfo;
-
 #ifndef __KERNEL__
-/* Here we must cater to libcs that poke about in kernel headers.  */
-
 #define NSIG		32
 typedef unsigned long sigset_t;
-
-#endif /* __KERNEL__ */
-
+#endif  
 #define SIGHUP		 1
 #define SIGINT		 2
 #define SIGQUIT		 3
@@ -46,35 +37,18 @@ typedef unsigned long sigset_t;
 #define SIGWINCH	28
 #define SIGIO		29
 #define SIGPOLL		SIGIO
-/*
-#define SIGLOST		29
-*/
 #define SIGPWR		30
 #define SIGSYS		31
 #define	SIGUNUSED	31
-
-/* These should not be considered constants from userland.  */
 #define SIGRTMIN	32
 #define SIGRTMAX	_NSIG
-
 #define SIGSWI		32
-
-/*
- * SA_THIRTYTWO historically meant deliver the signal in 32-bit mode, even if
- * the task is running in 26-bit. But since the kernel no longer supports
- * 26-bit mode, the flag has no effect.
- */
 #define SA_THIRTYTWO	0x02000000
 #define SA_RESTORER	0x04000000
-
 #define MINSIGSTKSZ	2048
 #define SIGSTKSZ	8192
-
 #include <asm-generic/signal-defs.h>
-
 #ifndef __KERNEL__
-/* Here we must cater to libcs that poke about in kernel headers.  */
-
 struct sigaction {
 	union {
 	  __sighandler_t _sa_handler;
@@ -84,17 +58,12 @@ struct sigaction {
 	unsigned long sa_flags;
 	void (*sa_restorer)(void);
 };
-
 #define sa_handler	_u._sa_handler
 #define sa_sigaction	_u._sa_sigaction
-
-#endif /* __KERNEL__ */
-
+#endif  
 typedef struct sigaltstack {
 	void __user *ss_sp;
 	int ss_flags;
 	__kernel_size_t ss_size;
 } stack_t;
-
-
-#endif /* _UAPI_ASMARM_SIGNAL_H */
+#endif  

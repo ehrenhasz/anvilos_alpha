@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _RDS_RDS_SINGLE_H
 #define _RDS_RDS_SINGLE_H
-
 #define	c_xmit_rm		c_path[0].cp_xmit_rm
 #define	c_xmit_sg		c_path[0].cp_xmit_sg
 #define	c_xmit_hdr_off		c_path[0].cp_xmit_hdr_off
@@ -27,5 +25,4 @@
 #define c_waitq			c_path[0].cp_waitq
 #define c_unacked_packets	c_path[0].cp_unacked_packets
 #define c_unacked_bytes		c_path[0].cp_unacked_bytes
-
-#endif /* _RDS_RDS_SINGLE_H */
+#endif  

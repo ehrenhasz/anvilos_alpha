@@ -1,9 +1,7 @@
 OUTPUT_ARCH(xtensa)
-
 SECTIONS
 {
 	.start 0xD1000000 : { *(.start) }
-
 	.text :
 	{
 		__reloc_start = . ;
@@ -11,13 +9,11 @@ SECTIONS
 		*(.literal .text.literal .text)
 		_text_end = . ;
 	}
-
 	.rodata ALIGN(0x04):
 	{
 		*(.rodata)
 		*(.rodata1)
 	}
-
 	.data ALIGN(0x04):
 	{
 		*(.data)
@@ -28,9 +24,7 @@ SECTIONS
 		*(.got)
 		*(.dynamic)
 	}
-
 	__reloc_end = . ;
-
 	. = ALIGN(0x10);
 	__image_load = . ;
 	.image 0xd0003000: AT(__image_load)
@@ -40,8 +34,6 @@ SECTIONS
 		. = (. + 3) & ~ 3;
 		_image_end = .	;
 	}
-
-
 	.bss ((LOADADDR(.image) + SIZEOF(.image) + 3) & ~ 3):
 	{
 		__bss_start = .;
@@ -53,7 +45,5 @@ SECTIONS
 	}
 	_end = .;
 	_param_start = .;
-
-
 	PROVIDE (end = .);
 }

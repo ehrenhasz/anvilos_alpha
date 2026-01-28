@@ -1,17 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Driver for Microsemi VSC85xx PHYs
- *
- * Copyright (c) 2020 Microsemi Corporation
- */
-
 #ifndef _MSCC_PHY_MACSEC_H_
 #define _MSCC_PHY_MACSEC_H_
-
 #include <net/macsec.h>
-
 #define MSCC_MS_MAX_FLOWS		16
-
 #define CONTROL_TYPE_EGRESS		0x6
 #define CONTROL_TYPE_INGRESS		0xf
 #define CONTROL_IV0			BIT(5)
@@ -32,34 +22,29 @@
 #define CONTROL_SEQ_TYPE(x)		((x) << 28)
 #define CONTROL_SEQ_MASK		BIT(30)
 #define CONTROL_CONTEXT_ID		BIT(31)
-
 enum mscc_macsec_destination_ports {
 	MSCC_MS_PORT_COMMON		= 0,
 	MSCC_MS_PORT_RSVD		= 1,
 	MSCC_MS_PORT_CONTROLLED		= 2,
 	MSCC_MS_PORT_UNCONTROLLED	= 3,
 };
-
 enum mscc_macsec_drop_actions {
 	MSCC_MS_ACTION_BYPASS_CRC	= 0,
 	MSCC_MS_ACTION_BYPASS_BAD	= 1,
 	MSCC_MS_ACTION_DROP		= 2,
 	MSCC_MS_ACTION_BYPASS		= 3,
 };
-
 enum mscc_macsec_flow_types {
 	MSCC_MS_FLOW_BYPASS		= 0,
 	MSCC_MS_FLOW_DROP		= 1,
 	MSCC_MS_FLOW_INGRESS		= 2,
 	MSCC_MS_FLOW_EGRESS		= 3,
 };
-
 enum mscc_macsec_validate_levels {
 	MSCC_MS_VALIDATE_DISABLED	= 0,
 	MSCC_MS_VALIDATE_CHECK		= 1,
 	MSCC_MS_VALIDATE_STRICT		= 2,
 };
-
 enum macsec_bank {
 	FC_BUFFER   = 0x04,
 	HOST_MAC    = 0x05,
@@ -69,7 +54,6 @@ enum macsec_bank {
 	MACSEC_INGR = 0x38,
 	MACSEC_EGR  = 0x3c,
 };
-
 struct macsec_flow {
 	struct list_head list;
 	enum mscc_macsec_destination_ports port;
@@ -77,44 +61,32 @@ struct macsec_flow {
 	u32 index;
 	int assoc_num;
 	bool has_transformation;
-
-	/* Highest takes precedence [0..15] */
 	u8 priority;
-
 	union {
 		struct macsec_rx_sa *rx_sa;
 		struct macsec_tx_sa *tx_sa;
 	};
-
-	/* Matching */
 	struct {
 		u8 sci:1;
 		u8 tagged:1;
 		u8 untagged:1;
 		u8 etype:1;
 	} match;
-
 	u16 etype;
-
-	/* Action */
 	struct {
 		u8 bypass:1;
 		u8 drop:1;
 	} action;
 };
-
 #define MSCC_EXT_PAGE_MACSEC_17		17
 #define MSCC_EXT_PAGE_MACSEC_18		18
-
 #define MSCC_EXT_PAGE_MACSEC_19		19
 #define MSCC_PHY_MACSEC_19_REG_ADDR(x)	(x)
 #define MSCC_PHY_MACSEC_19_TARGET(x)	((x) << 12)
 #define MSCC_PHY_MACSEC_19_READ		BIT(14)
 #define MSCC_PHY_MACSEC_19_CMD		BIT(15)
-
 #define MSCC_EXT_PAGE_MACSEC_20		20
 #define MSCC_PHY_MACSEC_20_TARGET(x)	(x)
-
 #define MSCC_MS_XFORM_REC(x, y)		(((x) << 5) + (y))
 #define MSCC_MS_ENA_CFG			0x800
 #define MSCC_MS_FC_CFG			0x804
@@ -141,16 +113,12 @@ struct macsec_flow {
 #define MSCC_MS_INTR_CTRL_STATUS	0x3d04
 #define MSCC_MS_BLOCK_CTX_UPDATE	0x3d0c
 #define MSCC_MS_AIC_CTRL		0x3e02
-
-/* MACSEC_ENA_CFG */
 #define MSCC_MS_ENA_CFG_CLK_ENA				BIT(0)
 #define MSCC_MS_ENA_CFG_SW_RST				BIT(1)
 #define MSCC_MS_ENA_CFG_MACSEC_BYPASS_ENA		BIT(8)
 #define MSCC_MS_ENA_CFG_MACSEC_ENA			BIT(9)
 #define MSCC_MS_ENA_CFG_MACSEC_SPEED_MODE(x)		((x) << 10)
 #define MSCC_MS_ENA_CFG_MACSEC_SPEED_MODE_M		GENMASK(12, 10)
-
-/* MACSEC_FC_CFG */
 #define MSCC_MS_FC_CFG_FCBUF_ENA			BIT(0)
 #define MSCC_MS_FC_CFG_USE_PKT_EXPANSION_INDICATION	BIT(1)
 #define MSCC_MS_FC_CFG_LOW_THRESH(x)			((x) << 4)
@@ -161,12 +129,8 @@ struct macsec_flow {
 #define MSCC_MS_FC_CFG_LOW_BYTES_VAL_M			GENMASK(14, 12)
 #define MSCC_MS_FC_CFG_HIGH_BYTES_VAL(x)		((x) << 16)
 #define MSCC_MS_FC_CFG_HIGH_BYTES_VAL_M			GENMASK(18, 16)
-
-/* MSCC_MS_SAM_MAC_SA_MATCH_HI */
 #define MSCC_MS_SAM_MAC_SA_MATCH_HI_ETYPE(x)		((x) << 16)
 #define MSCC_MS_SAM_MAC_SA_MATCH_HI_ETYPE_M		GENMASK(31, 16)
-
-/* MACSEC_SAM_MISC_MATCH */
 #define MSCC_MS_SAM_MISC_MATCH_VLAN_VALID		BIT(0)
 #define MSCC_MS_SAM_MISC_MATCH_QINQ_FOUND		BIT(1)
 #define MSCC_MS_SAM_MISC_MATCH_STAG_VALID		BIT(2)
@@ -184,8 +148,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_MISC_MATCH_PRIORITY_M		GENMASK(19, 16)
 #define MSCC_MS_SAM_MISC_MATCH_AN(x)			((x) << 24)
 #define MSCC_MS_SAM_MISC_MATCH_TCI(x)			((x) << 26)
-
-/* MACSEC_SAM_MASK */
 #define MSCC_MS_SAM_MASK_MAC_SA_MASK(x)			(x)
 #define MSCC_MS_SAM_MASK_MAC_SA_MASK_M			GENMASK(5, 0)
 #define MSCC_MS_SAM_MASK_MAC_DA_MASK(x)			((x) << 6)
@@ -204,8 +166,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_MASK_SCI_MASK			BIT(23)
 #define MSCC_MS_SAM_MASK_AN_MASK(x)			((x) << 24)
 #define MSCC_MS_SAM_MASK_TCI_MASK(x)			((x) << 26)
-
-/* MACSEC_SAM_FLOW_CTRL_EGR */
 #define MSCC_MS_SAM_FLOW_CTRL_FLOW_TYPE(x)		(x)
 #define MSCC_MS_SAM_FLOW_CTRL_FLOW_TYPE_M		GENMASK(1, 0)
 #define MSCC_MS_SAM_FLOW_CTRL_DEST_PORT(x)		((x) << 2)
@@ -229,8 +189,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_FLOW_CTRL_CONFIDENTIALITY_OFFSET(x)	((x) << 24)
 #define MSCC_MS_SAM_FLOW_CTRL_CONFIDENTIALITY_OFFSET_M	GENMASK(30, 24)
 #define MSCC_MS_SAM_FLOW_CTRL_CONF_PROTECT		BIT(31)
-
-/* MACSEC_SAM_CP_TAG */
 #define MSCC_MS_SAM_CP_TAG_MAP_TBL(x)			(x)
 #define MSCC_MS_SAM_CP_TAG_MAP_TBL_M			GENMASK(23, 0)
 #define MSCC_MS_SAM_CP_TAG_DEF_UP(x)			((x) << 24)
@@ -240,8 +198,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_CP_TAG_PARSE_QINQ			BIT(29)
 #define MSCC_MS_SAM_CP_TAG_PARSE_STAG			BIT(30)
 #define MSCC_MS_SAM_CP_TAG_PARSE_QTAG			BIT(31)
-
-/* MACSEC_SAM_NM_FLOW_NCP */
 #define MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_FLOW_TYPE(x)	(x)
 #define MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_DEST_PORT(x)	((x) << 2)
 #define MSCC_MS_SAM_NM_FLOW_NCP_UNTAGGED_DROP_ACTION(x)	((x) << 6)
@@ -254,8 +210,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_NM_FLOW_NCP_KAY_FLOW_TYPE(x)	((x) << 24)
 #define MSCC_MS_SAM_NM_FLOW_NCP_KAY_DEST_PORT(x)	((x) << 26)
 #define MSCC_MS_SAM_NM_FLOW_NCP_KAY_DROP_ACTION(x)	((x) << 30)
-
-/* MACSEC_SAM_NM_FLOW_CP */
 #define MSCC_MS_SAM_NM_FLOW_CP_UNTAGGED_FLOW_TYPE(x)	(x)
 #define MSCC_MS_SAM_NM_FLOW_CP_UNTAGGED_DEST_PORT(x)	((x) << 2)
 #define MSCC_MS_SAM_NM_FLOW_CP_UNTAGGED_DROP_ACTION(x)	((x) << 6)
@@ -268,8 +222,6 @@ struct macsec_flow {
 #define MSCC_MS_SAM_NM_FLOW_CP_KAY_FLOW_TYPE(x)		((x) << 24)
 #define MSCC_MS_SAM_NM_FLOW_CP_KAY_DEST_PORT(x)		((x) << 26)
 #define MSCC_MS_SAM_NM_FLOW_CP_KAY_DROP_ACTION(x)	((x) << 30)
-
-/* MACSEC_MISC_CONTROL */
 #define MSCC_MS_MISC_CONTROL_MC_LATENCY_FIX(x)		(x)
 #define MSCC_MS_MISC_CONTROL_MC_LATENCY_FIX_M		GENMASK(5, 0)
 #define MSCC_MS_MISC_CONTROL_STATIC_BYPASS		BIT(8)
@@ -278,18 +230,12 @@ struct macsec_flow {
 #define MSCC_MS_MISC_CONTROL_VALIDATE_FRAMES_M		GENMASK(11, 10)
 #define MSCC_MS_MISC_CONTROL_XFORM_REC_SIZE(x)		((x) << 24)
 #define MSCC_MS_MISC_CONTROL_XFORM_REC_SIZE_M		GENMASK(25, 24)
-
-/* MACSEC_COUNT_CONTROL */
 #define MSCC_MS_COUNT_CONTROL_RESET_ALL			BIT(0)
 #define MSCC_MS_COUNT_CONTROL_DEBUG_ACCESS		BIT(1)
 #define MSCC_MS_COUNT_CONTROL_SATURATE_CNTRS		BIT(2)
 #define MSCC_MS_COUNT_CONTROL_AUTO_CNTR_RESET		BIT(3)
-
-/* MACSEC_PARAMS2_IG_CC_CONTROL */
 #define MSCC_MS_PARAMS2_IG_CC_CONTROL_NON_MATCH_CTRL_ACT	BIT(14)
 #define MSCC_MS_PARAMS2_IG_CC_CONTROL_NON_MATCH_ACT	BIT(15)
-
-/* MACSEC_PARAMS2_IG_CP_TAG */
 #define MSCC_MS_PARAMS2_IG_CP_TAG_MAP_TBL(x)		(x)
 #define MSCC_MS_PARAMS2_IG_CP_TAG_MAP_TBL_M		GENMASK(23, 0)
 #define MSCC_MS_PARAMS2_IG_CP_TAG_DEF_UP(x)		((x) << 24)
@@ -299,25 +245,16 @@ struct macsec_flow {
 #define MSCC_MS_PARAMS2_IG_CP_TAG_PARSE_QINQ		BIT(29)
 #define MSCC_MS_PARAMS2_IG_CP_TAG_PARSE_STAG		BIT(30)
 #define MSCC_MS_PARAMS2_IG_CP_TAG_PARSE_QTAG		BIT(31)
-
-/* MACSEC_VLAN_MTU_CHECK */
 #define MSCC_MS_VLAN_MTU_CHECK_MTU_COMPARE(x)		(x)
 #define MSCC_MS_VLAN_MTU_CHECK_MTU_COMPARE_M		GENMASK(14, 0)
 #define MSCC_MS_VLAN_MTU_CHECK_MTU_COMP_DROP		BIT(15)
-
-/* MACSEC_NON_VLAN_MTU_CHECK */
 #define MSCC_MS_NON_VLAN_MTU_CHECK_NV_MTU_COMPARE(x)	(x)
 #define MSCC_MS_NON_VLAN_MTU_CHECK_NV_MTU_COMPARE_M	GENMASK(14, 0)
 #define MSCC_MS_NON_VLAN_MTU_CHECK_NV_MTU_COMP_DROP	BIT(15)
-
-/* MACSEC_PP_CTRL */
 #define MSCC_MS_PP_CTRL_MACSEC_OCTET_INCR_MODE		BIT(0)
-
-/* MACSEC_INTR_CTRL_STATUS */
 #define MSCC_MS_INTR_CTRL_STATUS_INTR_CLR_STATUS(x)	(x)
 #define MSCC_MS_INTR_CTRL_STATUS_INTR_CLR_STATUS_M	GENMASK(15, 0)
 #define MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE(x)		((x) << 16)
 #define MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE_M		GENMASK(31, 16)
 #define MACSEC_INTR_CTRL_STATUS_ROLLOVER		BIT(5)
-
-#endif /* _MSCC_PHY_MACSEC_H_ */
+#endif  

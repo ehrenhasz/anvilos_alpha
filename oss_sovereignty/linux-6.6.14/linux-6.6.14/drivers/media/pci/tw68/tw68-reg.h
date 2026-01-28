@@ -1,25 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  tw68-reg.h - TW68xx register offsets
- *
- *  Much of this code is derived from the cx88 and sa7134 drivers, which
- *  were in turn derived from the bt87x driver.  The original work was by
- *  Gerd Knorr; more recently the code was enhanced by Mauro Carvalho Chehab,
- *  Hans Verkuil, Andy Walls and many others.  Their work is gratefully
- *  acknowledged.  Full credit goes to them - any problems within this code
- *  are mine.
- *
- *  Copyright (C) William M. Brack
- *
- *  Refactored and updated to the latest v4l core frameworks:
- *
- *  Copyright (C) 2014 Hans Verkuil <hverkuil@xs4all.nl>
-*/
-
 #ifndef _TW68_REG_H_
 #define _TW68_REG_H_
-
-/* ---------------------------------------------------------------------- */
 #define	TW68_DMAC		0x000
 #define	TW68_DMAP_SA		0x004
 #define	TW68_DMAP_EXE		0x008
@@ -38,10 +18,8 @@
 #define	TW68_SUBSYS		0x054
 #define	TW68_I2C_RST		0x064
 #define	TW68_VBIINST		0x06C
-/* define bits in FIFO and DMAP Control reg */
 #define	TW68_DMAP_EN		(1 << 0)
 #define	TW68_FIFO_EN		(1 << 1)
-/* define the Interrupt Status Register bits */
 #define	TW68_SBDONE		(1 << 0)
 #define	TW68_DMAPI		(1 << 1)
 #define	TW68_GPINT		(1 << 2)
@@ -62,7 +40,6 @@
 #define	TW68_HLOCK		(1 << 22)
 #define	TW68_VDLOSS		(1 << 23)
 #define	TW68_SBERR		(1 << 24)
-/* define the i2c control register bits */
 #define	TW68_SBMODE		(0)
 #define	TW68_WREN		(1)
 #define	TW68_SSCLK		(6)
@@ -72,13 +49,11 @@
 #define	TW68_RDLEN		(20)
 #define	TW68_SBRW		(24)
 #define	TW68_SBDEV		(25)
-
 #define	TW68_SBMODE_B		(1 << TW68_SBMODE)
 #define	TW68_WREN_B		(1 << TW68_WREN)
 #define	TW68_SSCLK_B		(1 << TW68_SSCLK)
 #define	TW68_SSDAT_B		(1 << TW68_SSDAT)
 #define	TW68_SBRW_B		(1 << TW68_SBRW)
-
 #define	TW68_GPDATA		0x100
 #define	TW68_STATUS1		0x204
 #define	TW68_INFORM		0x208
@@ -132,8 +107,6 @@
 #define	TW68_CLMD		0x2CC
 #define	TW68_IDCNTL		0x2D0
 #define	TW68_CLCNTL1		0x2D4
-
-/* Audio */
 #define	TW68_ACKI1		0x300
 #define	TW68_ACKI2		0x304
 #define	TW68_ACKI3		0x308
@@ -143,10 +116,8 @@
 #define	TW68_SDIV		0x318
 #define	TW68_LRDIV		0x31C
 #define	TW68_ACCNTL		0x320
-
 #define	TW68_VSCTL		0x3B8
 #define	TW68_CHROMAGVAL		0x3BC
-
 #define	TW68_F2CROP_HI		0x3DC
 #define	TW68_F2VDELAY_LO	0x3E0
 #define	TW68_F2VACTIVE_LO	0x3E4
@@ -156,14 +127,12 @@
 #define	TW68_F2VSCALE_LO	0x3F4
 #define	TW68_F2SCALE_HI		0x3F8
 #define	TW68_F2HSCALE_LO	0x3FC
-
 #define	RISC_INT_BIT		0x08000000
 #define	RISC_SYNCO		0xC0000000
 #define	RISC_SYNCE		0xD0000000
 #define	RISC_JUMP		0xB0000000
 #define	RISC_LINESTART		0x90000000
 #define	RISC_INLINE		0xA0000000
-
 #define VideoFormatNTSC		 0
 #define VideoFormatNTSCJapan	 0
 #define VideoFormatPALBDGHI	 1
@@ -174,7 +143,6 @@
 #define VideoFormatPALNC	 5
 #define VideoFormatPAL60	 6
 #define VideoFormatAuto		 7
-
 #define ColorFormatRGB32	 0x00
 #define ColorFormatRGB24	 0x10
 #define ColorFormatRGB16	 0x20

@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020 Emil Renner Berthing
- *
- * Based on arch/arm64/include/asm/jump_label.h
- */
 #ifndef __ASM_JUMP_LABEL_H
 #define __ASM_JUMP_LABEL_H
-
 #ifndef __ASSEMBLY__
-
 #include <linux/types.h>
 #include <asm/asm.h>
-
 #define JUMP_LABEL_NOP_SIZE 4
-
 static __always_inline bool arch_static_branch(struct static_key * const key,
 					       const bool branch)
 {
@@ -30,12 +20,10 @@ static __always_inline bool arch_static_branch(struct static_key * const key,
 		"	" RISCV_PTR "	%0 - .			\n\t"
 		"	.popsection				\n\t"
 		:  :  "i"(&((char *)key)[branch]) :  : label);
-
 	return false;
 label:
 	return true;
 }
-
 static __always_inline bool arch_static_branch_jump(struct static_key * const key,
 						    const bool branch)
 {
@@ -52,11 +40,9 @@ static __always_inline bool arch_static_branch_jump(struct static_key * const ke
 		"	" RISCV_PTR "	%0 - .			\n\t"
 		"	.popsection				\n\t"
 		:  :  "i"(&((char *)key)[branch]) :  : label);
-
 	return false;
 label:
 	return true;
 }
-
-#endif  /* __ASSEMBLY__ */
-#endif	/* __ASM_JUMP_LABEL_H */
+#endif   
+#endif	 

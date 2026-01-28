@@ -1,39 +1,10 @@
-/*
- * Copyright 2012-16 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
-
 #ifndef _DCE_ABM_H_
 #define _DCE_ABM_H_
-
 #include "abm.h"
-
 #define ABM_COMMON_REG_LIST_DCE_BASE() \
 	SR(MASTER_COMM_CNTL_REG), \
 	SR(MASTER_COMM_CMD_REG), \
 	SR(MASTER_COMM_DATA_REG1)
-
 #define ABM_DCE110_COMMON_REG_LIST() \
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SR(DC_ABM1_HG_SAMPLE_RATE), \
@@ -49,7 +20,6 @@
 	SR(DC_ABM1_ACE_OFFSET_SLOPE_0), \
 	SR(DC_ABM1_ACE_THRES_12), \
 	SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN10_REG_LIST(id)\
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SRI(DC_ABM1_HG_SAMPLE_RATE, ABM, id), \
@@ -65,7 +35,6 @@
 	SRI(DC_ABM1_ACE_OFFSET_SLOPE_0, ABM, id), \
 	SRI(DC_ABM1_ACE_THRES_12, ABM, id), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN20_REG_LIST() \
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SR(DC_ABM1_HG_SAMPLE_RATE), \
@@ -81,7 +50,6 @@
 	SR(DC_ABM1_ACE_OFFSET_SLOPE_0), \
 	SR(DC_ABM1_ACE_THRES_12), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN301_REG_LIST(id)\
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SRI(DC_ABM1_HG_SAMPLE_RATE, ABM, id), \
@@ -95,7 +63,6 @@
 	SRI(DC_ABM1_LS_MIN_MAX_PIXEL_VALUE_THRES, ABM, id), \
 	SRI(DC_ABM1_HGLS_REG_READ_PROGRESS, ABM, id), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN302_REG_LIST(id)\
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SRI(DC_ABM1_HG_SAMPLE_RATE, ABM, id), \
@@ -111,7 +78,6 @@
 	SRI(DC_ABM1_ACE_OFFSET_SLOPE_0, ABM, id), \
 	SRI(DC_ABM1_ACE_THRES_12, ABM, id), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN30_REG_LIST(id)\
 	ABM_COMMON_REG_LIST_DCE_BASE(), \
 	SRI(DC_ABM1_HG_SAMPLE_RATE, ABM, id), \
@@ -127,7 +93,6 @@
 	SRI(DC_ABM1_ACE_OFFSET_SLOPE_0, ABM, id), \
 	SRI(DC_ABM1_ACE_THRES_12, ABM, id), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_DCN32_REG_LIST(id)\
 	SRI(DC_ABM1_HG_SAMPLE_RATE, ABM, id), \
 	SRI(DC_ABM1_LS_SAMPLE_RATE, ABM, id), \
@@ -142,16 +107,13 @@
 	SRI(DC_ABM1_ACE_OFFSET_SLOPE_0, ABM, id), \
 	SRI(DC_ABM1_ACE_THRES_12, ABM, id), \
 	NBIO_SR(BIOS_SCRATCH_2)
-
 #define ABM_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define ABM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh) \
 	ABM_SF(MASTER_COMM_CNTL_REG, MASTER_COMM_INTERRUPT, mask_sh), \
 	ABM_SF(MASTER_COMM_CMD_REG, MASTER_COMM_CMD_REG_BYTE0, mask_sh), \
 	ABM_SF(MASTER_COMM_CMD_REG, MASTER_COMM_CMD_REG_BYTE1, mask_sh), \
 	ABM_SF(MASTER_COMM_CMD_REG, MASTER_COMM_CMD_REG_BYTE2, mask_sh)
-
 #define ABM_MASK_SH_LIST_DCE110(mask_sh) \
 	ABM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	ABM_SF(DC_ABM1_HG_MISC_CTRL, \
@@ -182,7 +144,6 @@
 			ABM1_LS_REG_READ_MISSED_FRAME_CLEAR, mask_sh), \
 	ABM_SF(DC_ABM1_HGLS_REG_READ_PROGRESS, \
 			ABM1_BL_REG_READ_MISSED_FRAME_CLEAR, mask_sh)
-
 #define ABM_MASK_SH_LIST_DCN10(mask_sh) \
 	ABM_COMMON_MASK_SH_LIST_DCE_COMMON_BASE(mask_sh), \
 	ABM_SF(ABM0_DC_ABM1_HG_MISC_CTRL, \
@@ -213,11 +174,8 @@
 			ABM1_LS_REG_READ_MISSED_FRAME_CLEAR, mask_sh), \
 	ABM_SF(ABM0_DC_ABM1_HGLS_REG_READ_PROGRESS, \
 			ABM1_BL_REG_READ_MISSED_FRAME_CLEAR, mask_sh)
-
 #define ABM_MASK_SH_LIST_DCN20(mask_sh) ABM_MASK_SH_LIST_DCE110(mask_sh)
-
 #define ABM_MASK_SH_LIST_DCN30(mask_sh) ABM_MASK_SH_LIST_DCN10(mask_sh)
-
 #define ABM_MASK_SH_LIST_DCN32(mask_sh) \
 	ABM_SF(ABM0_DC_ABM1_HG_MISC_CTRL, \
 			ABM1_HG_NUM_OF_BINS_SEL, mask_sh), \
@@ -247,7 +205,6 @@
 			ABM1_LS_REG_READ_MISSED_FRAME_CLEAR, mask_sh), \
 	ABM_SF(ABM0_DC_ABM1_HGLS_REG_READ_PROGRESS, \
 			ABM1_BL_REG_READ_MISSED_FRAME_CLEAR, mask_sh)
-
 #define ABM_REG_FIELD_LIST(type) \
 	type ABM1_HG_NUM_OF_BINS_SEL; \
 	type ABM1_HG_VMAX_SEL; \
@@ -284,15 +241,12 @@
 	type ABM1_ACE_LOCK; \
 	type ABM1_ACE_THRES_DATA_1; \
 	type ABM1_ACE_THRES_DATA_2
-
 struct dce_abm_shift {
 	ABM_REG_FIELD_LIST(uint8_t);
 };
-
 struct dce_abm_mask {
 	ABM_REG_FIELD_LIST(uint32_t);
 };
-
 struct dce_abm_registers {
 	uint32_t DC_ABM1_HG_SAMPLE_RATE;
 	uint32_t DC_ABM1_LS_SAMPLE_RATE;
@@ -321,20 +275,16 @@ struct dce_abm_registers {
 	uint32_t MASTER_COMM_DATA_REG1;
 	uint32_t BIOS_SCRATCH_2;
 };
-
 struct dce_abm {
 	struct abm base;
 	const struct dce_abm_registers *regs;
 	const struct dce_abm_shift *abm_shift;
 	const struct dce_abm_mask *abm_mask;
 };
-
 struct abm *dce_abm_create(
 	struct dc_context *ctx,
 	const struct dce_abm_registers *regs,
 	const struct dce_abm_shift *abm_shift,
 	const struct dce_abm_mask *abm_mask);
-
 void dce_abm_destroy(struct abm **abm);
-
-#endif /* _DCE_ABM_H_ */
+#endif  

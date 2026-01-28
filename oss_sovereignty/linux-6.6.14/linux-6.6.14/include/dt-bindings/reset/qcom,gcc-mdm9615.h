@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- * Copyright (c) BayLibre, SAS.
- * Author : Neil Armstrong <narmstrong@baylibre.com>
- */
-
 #ifndef _DT_BINDINGS_RESET_GCC_MDM9615_H
 #define _DT_BINDINGS_RESET_GCC_MDM9615_H
-
 #define SFAB_MSS_Q6_SW_RESET				0
 #define SFAB_MSS_Q6_FW_RESET				1
 #define QDSS_STM_RESET					2
@@ -124,5 +116,4 @@
 #define CE3_SLEEP_RESET					113
 #define GSS_SLP_RESET					114
 #define GSS_RESET					115
-
 #endif

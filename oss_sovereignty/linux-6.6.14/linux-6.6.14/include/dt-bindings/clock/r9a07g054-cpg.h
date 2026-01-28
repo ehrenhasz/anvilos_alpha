@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
 #ifndef __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__
 #define __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__
-
 #include <dt-bindings/clock/renesas-cpg-mssr.h>
-
-/* R9A07G054 CPG Core Clocks */
 #define R9A07G054_CLK_I			0
 #define R9A07G054_CLK_I2		1
 #define R9A07G054_CLK_G			2
@@ -34,8 +27,6 @@
 #define R9A07G054_CLK_DRP_M		23
 #define R9A07G054_CLK_DRP_D		24
 #define R9A07G054_CLK_DRP_A		25
-
-/* R9A07G054 Module Clocks */
 #define R9A07G054_CA55_SCLK		0
 #define R9A07G054_CA55_PCLK		1
 #define R9A07G054_CA55_ATCLK		2
@@ -138,8 +129,6 @@
 #define R9A07G054_STPAI_MCLK		99
 #define R9A07G054_STPAI_DCLKIN		100
 #define R9A07G054_STPAI_ACLK_DRP	101
-
-/* R9A07G054 Resets */
 #define R9A07G054_CA55_RST_1_0		0
 #define R9A07G054_CA55_RST_1_1		1
 #define R9A07G054_CA55_RST_3_0		2
@@ -225,5 +214,4 @@
 #define R9A07G054_ADC_ADRST_N		82
 #define R9A07G054_TSU_PRESETN		83
 #define R9A07G054_STPAI_ARESETN		84
-
-#endif /* __DT_BINDINGS_CLOCK_R9A07G054_CPG_H__ */
+#endif  

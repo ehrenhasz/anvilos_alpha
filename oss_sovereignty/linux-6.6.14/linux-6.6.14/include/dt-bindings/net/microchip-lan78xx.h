@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _DT_BINDINGS_MICROCHIP_LAN78XX_H
 #define _DT_BINDINGS_MICROCHIP_LAN78XX_H
-
-/* LED modes for LAN7800/LAN7850 embedded PHY */
-
 #define LAN78XX_LINK_ACTIVITY           0
 #define LAN78XX_LINK_1000_ACTIVITY      1
 #define LAN78XX_LINK_100_ACTIVITY       2
@@ -17,5 +13,4 @@
 #define LAN78XX_AUTONEG_FAULT           12
 #define LAN78XX_FORCE_LED_OFF           14
 #define LAN78XX_FORCE_LED_ON            15
-
 #endif

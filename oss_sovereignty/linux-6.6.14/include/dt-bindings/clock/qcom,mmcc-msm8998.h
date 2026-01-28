@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_MMCC_8998_H
 #define _DT_BINDINGS_CLK_MSM_MMCC_8998_H
-
 #define MMPLL0						0
 #define MMPLL0_OUT_EVEN					1
 #define MMPLL1						2
@@ -152,7 +146,6 @@
 #define MNOC_MAXI_CLK					143
 #define VMEM_MAXI_CLK					144
 #define VMEM_AHB_CLK					145
-
 #define SPDM_BCR					0
 #define SPDM_RM_BCR					1
 #define MISC_BCR					2
@@ -196,7 +189,6 @@
 #define MNOC_MAXI_BCR					40
 #define VMEM_BCR					41
 #define BTO_BCR						42
-
 #define VIDEO_TOP_GDSC		1
 #define VIDEO_SUBCORE0_GDSC	2
 #define VIDEO_SUBCORE1_GDSC	3
@@ -206,5 +198,4 @@
 #define CAMSS_VFE1_GDSC		7
 #define CAMSS_CPP_GDSC		8
 #define BIMC_SMMU_GDSC		9
-
 #endif

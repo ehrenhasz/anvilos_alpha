@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
 #ifndef _CQ_EXCH_DESC_H_
 #define _CQ_EXCH_DESC_H_
-
 #include "cq_desc.h"
-
-/* Exchange completion queue descriptor: 16B */
 struct cq_exch_wq_desc {
 	u16 completed_index;
 	u16 q_number;
@@ -20,17 +12,14 @@ struct cq_exch_wq_desc {
 	u8  reserved2[2];
 	u8  type_color;
 };
-
 #define CQ_EXCH_WQ_STATUS_BITS      2
 #define CQ_EXCH_WQ_STATUS_MASK      ((1 << CQ_EXCH_WQ_STATUS_BITS) - 1)
-
 enum cq_exch_status_types {
 	CQ_EXCH_WQ_STATUS_TYPE_COMPLETE = 0,
 	CQ_EXCH_WQ_STATUS_TYPE_ABORT = 1,
 	CQ_EXCH_WQ_STATUS_TYPE_SGL_EOF = 2,
 	CQ_EXCH_WQ_STATUS_TYPE_TMPL_ERR = 3,
 };
-
 static inline void cq_exch_wq_desc_dec(struct cq_exch_wq_desc *desc_ptr,
 				       u8  *type,
 				       u8  *color,
@@ -42,7 +31,6 @@ static inline void cq_exch_wq_desc_dec(struct cq_exch_wq_desc *desc_ptr,
 		    color, q_number, completed_index);
 	*exch_status = desc_ptr->exch_status & CQ_EXCH_WQ_STATUS_MASK;
 }
-
 struct cq_fcp_rq_desc {
 	u16 completed_index_eop_sop_prt;
 	u16 q_number;
@@ -55,7 +43,6 @@ struct cq_fcp_rq_desc {
 	u8  fcs_fer_fck;
 	u8  type_color;
 };
-
 #define CQ_FCP_RQ_DESC_FLAGS_SOP		(1 << 15)
 #define CQ_FCP_RQ_DESC_FLAGS_EOP		(1 << 14)
 #define CQ_FCP_RQ_DESC_FLAGS_PRT		(1 << 12)
@@ -70,7 +57,6 @@ struct cq_fcp_rq_desc {
 #define CQ_FCP_RQ_DESC_FCOE_ERR_MASK (1 << CQ_FCP_RQ_DESC_FCOE_ERR_SHIFT)
 #define CQ_FCP_RQ_DESC_FCS_OK_SHIFT		7
 #define CQ_FCP_RQ_DESC_FCS_OK_MASK (1 << CQ_FCP_RQ_DESC_FCS_OK_SHIFT)
-
 static inline void cq_fcp_rq_desc_dec(struct cq_fcp_rq_desc *desc_ptr,
 				      u8  *type,
 				      u8  *color,
@@ -120,7 +106,6 @@ static inline void cq_fcp_rq_desc_dec(struct cq_fcp_rq_desc *desc_ptr,
 		(desc_ptr->fcs_fer_fck & CQ_FCP_RQ_DESC_FCS_OK_MASK) >>
 		CQ_FCP_RQ_DESC_FCS_OK_SHIFT;
 }
-
 struct cq_sgl_desc {
 	u16 exchange_id;
 	u16 q_number;
@@ -130,23 +115,20 @@ struct cq_sgl_desc {
 	u8  sgl_err;
 	u8  type_color;
 };
-
 enum cq_sgl_err_types {
 	CQ_SGL_ERR_NO_ERROR = 0,
-	CQ_SGL_ERR_OVERFLOW,         /* data ran beyond end of SGL */
-	CQ_SGL_ERR_SGL_LCL_ADDR_ERR, /* sgl access to local vnic addr illegal*/
-	CQ_SGL_ERR_ADDR_RSP_ERR,     /* sgl address error */
-	CQ_SGL_ERR_DATA_RSP_ERR,     /* sgl data rsp error */
-	CQ_SGL_ERR_CNT_ZERO_ERR,     /* SGL count is 0 */
-	CQ_SGL_ERR_CNT_MAX_ERR,      /* SGL count is larger than supported */
-	CQ_SGL_ERR_ORDER_ERR,        /* frames recv on both ports, order err */
-	CQ_SGL_ERR_DATA_LCL_ADDR_ERR,/* sgl data buf to local vnic addr ill */
-	CQ_SGL_ERR_HOST_CQ_ERR,      /* host cq entry to local vnic addr ill */
+	CQ_SGL_ERR_OVERFLOW,          
+	CQ_SGL_ERR_SGL_LCL_ADDR_ERR,  
+	CQ_SGL_ERR_ADDR_RSP_ERR,      
+	CQ_SGL_ERR_DATA_RSP_ERR,      
+	CQ_SGL_ERR_CNT_ZERO_ERR,      
+	CQ_SGL_ERR_CNT_MAX_ERR,       
+	CQ_SGL_ERR_ORDER_ERR,         
+	CQ_SGL_ERR_DATA_LCL_ADDR_ERR, 
+	CQ_SGL_ERR_HOST_CQ_ERR,       
 };
-
 #define CQ_SGL_SGL_ERR_MASK             0x1f
 #define CQ_SGL_TMPL_MASK                0x1f
-
 static inline void cq_sgl_desc_dec(struct cq_sgl_desc *desc_ptr,
 				   u8  *type,
 				   u8  *color,
@@ -157,8 +139,6 @@ static inline void cq_sgl_desc_dec(struct cq_sgl_desc *desc_ptr,
 				   u16 *tmpl,
 				   u8  *sgl_err)
 {
-	/* Cheat a little by assuming exchange_id is the same as completed
-	   index */
 	cq_desc_dec((struct cq_desc *)desc_ptr, type, color, q_number,
 		    exchange_id);
 	*active_burst_offset = desc_ptr->active_burst_offset;
@@ -166,5 +146,4 @@ static inline void cq_sgl_desc_dec(struct cq_sgl_desc *desc_ptr,
 	*tmpl = desc_ptr->tmpl & CQ_SGL_TMPL_MASK;
 	*sgl_err = desc_ptr->sgl_err & CQ_SGL_SGL_ERR_MASK;
 }
-
-#endif /* _CQ_EXCH_DESC_H_ */
+#endif  

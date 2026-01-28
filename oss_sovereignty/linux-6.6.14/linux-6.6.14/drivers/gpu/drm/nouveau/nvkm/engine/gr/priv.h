@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_GR_PRIV_H__
 #define __NVKM_GR_PRIV_H__
 #define nvkm_gr(p) container_of((p), struct nvkm_gr, engine)
@@ -6,12 +5,9 @@
 #include <core/enum.h>
 struct nvkm_fb_tile;
 struct nvkm_chan;
-
 int nvkm_gr_ctor(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,
 		 bool enable, struct nvkm_gr *);
-
 bool nv04_gr_idle(struct nvkm_gr *);
-
 struct nvkm_gr_func {
 	void *(*dtor)(struct nvkm_gr *);
 	int (*oneinit)(struct nvkm_gr *);
@@ -25,8 +21,6 @@ struct nvkm_gr_func {
 	int (*chan_new)(struct nvkm_gr *, struct nvkm_chan *,
 			const struct nvkm_oclass *, struct nvkm_object **);
 	int (*object_get)(struct nvkm_gr *, int, struct nvkm_sclass *);
-	/* Returns chipset-specific counts of units packed into an u64.
-	 */
 	u64 (*units)(struct nvkm_gr *);
 	bool (*chsw_load)(struct nvkm_gr *);
 	struct {
@@ -36,12 +30,9 @@ struct nvkm_gr_func {
 	} ctxsw;
 	struct nvkm_sclass sclass[];
 };
-
 extern const struct nvkm_bitfield nv04_gr_nsource[];
 extern const struct nvkm_object_func nv04_gr_object;
-
 extern const struct nvkm_bitfield nv10_gr_intr_name[];
 extern const struct nvkm_bitfield nv10_gr_nstatus[];
-
 extern const struct nvkm_enum nv50_data_error_names[];
 #endif

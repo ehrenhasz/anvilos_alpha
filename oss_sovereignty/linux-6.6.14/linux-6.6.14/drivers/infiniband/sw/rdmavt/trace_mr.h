@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
 #if !defined(__RVT_TRACE_MR_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __RVT_TRACE_MR_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include <rdma/ib_verbs.h>
 #include <rdma/rdma_vt.h>
 #include <rdma/rdmavt_mr.h>
-
 #include "mr.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rvt_mr
 DECLARE_EVENT_CLASS(
@@ -61,22 +53,18 @@ DECLARE_EVENT_CLASS(
 		__entry->offset
 	)
 );
-
 DEFINE_EVENT(
 	rvt_mr_template, rvt_mr_page_seg,
 	TP_PROTO(struct rvt_mregion *mr, u16 m, u16 n, void *v, size_t len),
 	TP_ARGS(mr, m, n, v, len));
-
 DEFINE_EVENT(
 	rvt_mr_template, rvt_mr_fmr_seg,
 	TP_PROTO(struct rvt_mregion *mr, u16 m, u16 n, void *v, size_t len),
 	TP_ARGS(mr, m, n, v, len));
-
 DEFINE_EVENT(
 	rvt_mr_template, rvt_mr_user_seg,
 	TP_PROTO(struct rvt_mregion *mr, u16 m, u16 n, void *v, size_t len),
 	TP_ARGS(mr, m, n, v, len));
-
 DECLARE_EVENT_CLASS(
 	rvt_sge_template,
 	TP_PROTO(struct rvt_sge *sge, struct ib_sge *isge),
@@ -128,17 +116,14 @@ DECLARE_EVENT_CLASS(
 		__entry->user
 	)
 );
-
 DEFINE_EVENT(
 	rvt_sge_template, rvt_sge_adjacent,
 	TP_PROTO(struct rvt_sge *sge, struct ib_sge *isge),
 	TP_ARGS(sge, isge));
-
 DEFINE_EVENT(
 	rvt_sge_template, rvt_sge_new,
 	TP_PROTO(struct rvt_sge *sge, struct ib_sge *isge),
 	TP_ARGS(sge, isge));
-
 TRACE_EVENT(
 	rvt_map_mr_sg,
 	TP_PROTO(struct ib_mr *ibmr, int sg_nents, unsigned int *sg_offset),
@@ -172,9 +157,7 @@ TRACE_EVENT(
 		__entry->sg_offset
 	)
 );
-
-#endif /* __RVT_TRACE_MR_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

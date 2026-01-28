@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8188-audsys-clkid.h  --  MediaTek 8188 audsys clock id definition
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Chun-Chia Chiu <chun-chia.chiu@mediatek.com>
- */
-
 #ifndef _MT8188_AUDSYS_CLKID_H_
 #define _MT8188_AUDSYS_CLKID_H_
-
 enum{
 	CLK_AUD_AFE,
 	CLK_AUD_LRCK_CNT,
@@ -79,5 +70,4 @@ enum{
 	CLK_AUD_GASRC11,
 	CLK_AUD_NR_CLK,
 };
-
 #endif

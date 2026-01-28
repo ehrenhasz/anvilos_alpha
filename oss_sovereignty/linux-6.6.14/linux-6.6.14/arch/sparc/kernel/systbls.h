@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SYSTBLS_H
 #define _SYSTBLS_H
-
 #include <linux/signal.h>
 #include <linux/kernel.h>
 #include <linux/compat.h>
 #include <linux/types.h>
-
 #include <asm/utrap.h>
-
 asmlinkage long sys_getpagesize(void);
 asmlinkage long sys_sparc_pipe(void);
 asmlinkage long sys_nis_syscall(void);
@@ -18,7 +14,6 @@ asmlinkage long sys_mmap(unsigned long addr, unsigned long len,
 			 unsigned long prot, unsigned long flags,
 			 unsigned long fd, unsigned long off);
 asmlinkage void sparc_breakpoint(struct pt_regs *regs);
-
 #ifdef CONFIG_SPARC32
 asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
 			  unsigned long prot, unsigned long flags,
@@ -26,9 +21,7 @@ asmlinkage long sys_mmap2(unsigned long addr, unsigned long len,
 long sys_sparc_remap_file_pages(unsigned long start, unsigned long size,
 			    unsigned long prot, unsigned long pgoff,
 			    unsigned long flags);
-
-#endif /* CONFIG_SPARC32 */
-
+#endif  
 #ifdef CONFIG_SPARC64
 asmlinkage long sys_sparc_ipc(unsigned int call, int first,
 			      unsigned long second,
@@ -99,5 +92,5 @@ asmlinkage long compat_sys_fstatat64(unsigned int dfd,
 				     const char __user *filename,
 				     struct compat_stat64 __user * statbuf,
 				     int flag);
-#endif /* CONFIG_SPARC64 */
-#endif /* _SYSTBLS_H */
+#endif  
+#endif  

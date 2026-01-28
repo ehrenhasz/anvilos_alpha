@@ -1,17 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright 2015 Technexion Ltd.
-//
-// Author: Wig Cheng  <wig.cheng@technexion.com>
-//	   Richard Hu <richard.hu@technexion.com>
-//	   Tapani Utriainen <tapani@technexion.com>
 /dts-v1/;
-
 #include "imx7d-pico.dtsi"
 / {
 	model = "TechNexion PICO-IMX7D and DWARF baseboard";
 	compatible = "technexion,imx7d-pico-dwarf", "fsl,imx7d";
-
 	sound {
 		compatible = "fsl,imx-audio-sgtl5000";
 		model = "imx7d-sgtl5000";
@@ -23,20 +14,17 @@
 			"Mic Jack", "Mic Bias",
 			"Headphone Jack", "HP_OUT";
 	};
-
 	sys_mclk: clock-sys-mclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <24576000>;
 	};
 };
-
 &i2c1 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	sgtl5000: audio-codec@a {
 		reg = <0x0a>;
 		compatible = "fsl,sgtl5000";
@@ -45,19 +33,16 @@
 		VDDA-supply = <&reg_2p5v>;
 		VDDIO-supply = <&reg_3p3v>;
 	};
-
 	pressure-sensor@60 {
 		compatible = "fsl,mpl3115";
 		reg = <0x60>;
 	};
 };
-
 &i2c4 {
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	pca9554: io-expander@25 {
 		compatible = "nxp,pca9554";
 		gpio-controller;
@@ -65,7 +50,6 @@
 		#interrupt-cells = <2>;
 		reg = <0x25>;
 	};
-
 	touchscreen@38 {
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
@@ -78,7 +62,6 @@
 		touchscreen-size-y = <480>;
 	};
 };
-
 &iomuxc {
 	pinctrl_touchscreen: touchscreengrp {
 		fsl,pins = <

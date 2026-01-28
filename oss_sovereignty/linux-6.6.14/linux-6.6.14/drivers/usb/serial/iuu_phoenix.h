@@ -1,21 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Infinity Unlimited USB Phoenix driver
- *
- * Copyright (C) 2007 Alain Degreffe (eczema@ecze.com)
- *
- *
- * Original code taken from iuutool ( Copyright (C) 2006 Juan Carlos Borrás )
- *
- *  And tested with help of WB Electronics
- */
-
 #define   IUU_USB_VENDOR_ID  0x104f
 #define   IUU_USB_PRODUCT_ID  0x0004
 #define   IUU_USB_OP_TIMEOUT  0x0200
-
-/* Programmer commands */
-
 #define IUU_NO_OPERATION   0x00
 #define IUU_GET_FIRMWARE_VERSION   0x01
 #define IUU_GET_PRODUCT_NAME   0x02
@@ -77,7 +62,6 @@
 #define IUU_UART_CHANGE   0x02
 #define IUU_UART_TX   0x04
 #define IUU_DELAY_MS   0x06
-
 #define IUU_OPERATION_OK   0x00
 #define IUU_DEVICE_NOT_FOUND   0x01
 #define IUU_INVALID_HANDLE   0x02
@@ -89,7 +73,6 @@
 #define IUU_READ_ERROR   0x08
 #define IUU_TX_ERROR   0x09
 #define IUU_RX_ERROR   0x0A
-
 #define IUU_PARITY_NONE   0x00
 #define IUU_PARITY_EVEN   0x01
 #define IUU_PARITY_ODD   0x02

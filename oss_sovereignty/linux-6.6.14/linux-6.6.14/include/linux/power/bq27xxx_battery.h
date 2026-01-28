@@ -1,33 +1,30 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __LINUX_BQ27X00_BATTERY_H__
 #define __LINUX_BQ27X00_BATTERY_H__
-
 #include <linux/power_supply.h>
-
 enum bq27xxx_chip {
-	BQ27000 = 1, /* bq27000, bq27200 */
-	BQ27010, /* bq27010, bq27210 */
-	BQ2750X, /* bq27500 deprecated alias */
-	BQ2751X, /* bq27510, bq27520 deprecated alias */
+	BQ27000 = 1,  
+	BQ27010,  
+	BQ2750X,  
+	BQ2751X,  
 	BQ2752X,
-	BQ27500, /* bq27500/1 */
-	BQ27510G1, /* bq27510G1 */
-	BQ27510G2, /* bq27510G2 */
-	BQ27510G3, /* bq27510G3 */
-	BQ27520G1, /* bq27520G1 */
-	BQ27520G2, /* bq27520G2 */
-	BQ27520G3, /* bq27520G3 */
-	BQ27520G4, /* bq27520G4 */
-	BQ27521, /* bq27521 */
-	BQ27530, /* bq27530, bq27531 */
+	BQ27500,  
+	BQ27510G1,  
+	BQ27510G2,  
+	BQ27510G3,  
+	BQ27520G1,  
+	BQ27520G2,  
+	BQ27520G3,  
+	BQ27520G4,  
+	BQ27521,  
+	BQ27530,  
 	BQ27531,
-	BQ27541, /* bq27541, bq27542, bq27546, bq27742 */
+	BQ27541,  
 	BQ27542,
 	BQ27546,
 	BQ27742,
-	BQ27545, /* bq27545 */
+	BQ27545,  
 	BQ27411,
-	BQ27421, /* bq27421, bq27441, bq27621 */
+	BQ27421,  
 	BQ27425,
 	BQ27426,
 	BQ27441,
@@ -37,7 +34,6 @@ enum bq27xxx_chip {
 	BQ34Z100,
 	BQ78Z100,
 };
-
 struct bq27xxx_device_info;
 struct bq27xxx_access_methods {
 	int (*read)(struct bq27xxx_device_info *di, u8 reg, bool single);
@@ -45,7 +41,6 @@ struct bq27xxx_access_methods {
 	int (*read_bulk)(struct bq27xxx_device_info *di, u8 reg, u8 *data, int len);
 	int (*write_bulk)(struct bq27xxx_device_info *di, u8 reg, u8 *data, int len);
 };
-
 struct bq27xxx_reg_cache {
 	int temperature;
 	int time_to_empty;
@@ -58,7 +53,6 @@ struct bq27xxx_reg_cache {
 	int flags;
 	int health;
 };
-
 struct bq27xxx_device_info {
 	struct device *dev;
 	int id;
@@ -79,9 +73,7 @@ struct bq27xxx_device_info {
 	struct mutex lock;
 	u8 *regs;
 };
-
 void bq27xxx_battery_update(struct bq27xxx_device_info *di);
 int bq27xxx_battery_setup(struct bq27xxx_device_info *di);
 void bq27xxx_battery_teardown(struct bq27xxx_device_info *di);
-
 #endif

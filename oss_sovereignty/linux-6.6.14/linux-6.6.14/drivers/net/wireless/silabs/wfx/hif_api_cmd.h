@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
-/*
- * WF200 hardware interface definitions
- *
- * Copyright (c) 2018-2020, Silicon Laboratories Inc.
- */
-
 #ifndef WFX_HIF_API_CMD_H
 #define WFX_HIF_API_CMD_H
-
 #include "hif_api_general.h"
-
 enum wfx_hif_requests_ids {
 	HIF_REQ_ID_RESET                = 0x0a,
 	HIF_REQ_ID_READ_MIB             = 0x05,
@@ -28,7 +19,6 @@ enum wfx_hif_requests_ids {
 	HIF_REQ_ID_UPDATE_IE            = 0x1b,
 	HIF_REQ_ID_MAP_LINK             = 0x1c,
 };
-
 enum wfx_hif_confirmations_ids {
 	HIF_CNF_ID_RESET                = 0x0a,
 	HIF_CNF_ID_READ_MIB             = 0x05,
@@ -48,7 +38,6 @@ enum wfx_hif_confirmations_ids {
 	HIF_CNF_ID_UPDATE_IE            = 0x1b,
 	HIF_CNF_ID_MAP_LINK             = 0x1c,
 };
-
 enum wfx_hif_indications_ids {
 	HIF_IND_ID_RX                   = 0x84,
 	HIF_IND_ID_SCAN_CMPL            = 0x86,
@@ -57,40 +46,33 @@ enum wfx_hif_indications_ids {
 	HIF_IND_ID_SUSPEND_RESUME_TX    = 0x8c,
 	HIF_IND_ID_EVENT                = 0x85
 };
-
 struct wfx_hif_req_reset {
 	u8     reset_stat:1;
 	u8     reset_all_int:1;
 	u8     reserved1:6;
 	u8     reserved2[3];
 } __packed;
-
 struct wfx_hif_cnf_reset {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_read_mib {
 	__le16 mib_id;
 	__le16 reserved;
 } __packed;
-
 struct wfx_hif_cnf_read_mib {
 	__le32 status;
 	__le16 mib_id;
 	__le16 length;
 	u8     mib_data[];
 } __packed;
-
 struct wfx_hif_req_write_mib {
 	__le16 mib_id;
 	__le16 length;
 	u8     mib_data[];
 } __packed;
-
 struct wfx_hif_cnf_write_mib {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_update_ie {
 	u8     beacon:1;
 	u8     probe_resp:1;
@@ -100,19 +82,15 @@ struct wfx_hif_req_update_ie {
 	__le16 num_ies;
 	u8     ie[];
 } __packed;
-
 struct wfx_hif_cnf_update_ie {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_ssid_def {
 	__le32 ssid_length;
 	u8     ssid[IEEE80211_MAX_SSID_LEN];
 } __packed;
-
 #define HIF_API_MAX_NB_SSIDS                           2
 #define HIF_API_MAX_NB_CHANNELS                       14
-
 struct wfx_hif_req_start_scan_alt {
 	u8     band;
 	u8     maintain_current_bss:1;
@@ -132,49 +110,39 @@ struct wfx_hif_req_start_scan_alt {
 	u8     num_of_channels;
 	__le32 min_channel_time;
 	__le32 max_channel_time;
-	__le32 tx_power_level; /* signed value */
+	__le32 tx_power_level;  
 	struct wfx_hif_ssid_def ssid_def[HIF_API_MAX_NB_SSIDS];
 	u8     channel_list[];
 } __packed;
-
 struct wfx_hif_cnf_start_scan {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_cnf_stop_scan {
 	__le32 status;
 } __packed;
-
 enum wfx_hif_pm_mode_status {
 	HIF_PM_MODE_ACTIVE                         = 0x0,
 	HIF_PM_MODE_PS                             = 0x1,
 	HIF_PM_MODE_UNDETERMINED                   = 0x2
 };
-
 struct wfx_hif_ind_scan_cmpl {
 	__le32 status;
 	u8     pm_mode;
 	u8     num_channels_completed;
 	__le16 reserved;
 } __packed;
-
 enum wfx_hif_queue_id {
 	HIF_QUEUE_ID_BACKGROUND                    = 0x0,
 	HIF_QUEUE_ID_BESTEFFORT                    = 0x1,
 	HIF_QUEUE_ID_VIDEO                         = 0x2,
 	HIF_QUEUE_ID_VOICE                         = 0x3
 };
-
 enum wfx_hif_frame_format {
 	HIF_FRAME_FORMAT_NON_HT                    = 0x0,
 	HIF_FRAME_FORMAT_MIXED_FORMAT_HT           = 0x1,
 	HIF_FRAME_FORMAT_GF_HT_11N                 = 0x2
 };
-
 struct wfx_hif_req_tx {
-	/* packet_id is not interpreted by the device, so it is not necessary to declare it little
-	 * endian
-	 */
 	u32    packet_id;
 	u8     max_tx_rate;
 	u8     queue_id:2;
@@ -200,19 +168,14 @@ struct wfx_hif_req_tx {
 	u8     reserved8;
 	u8     frame[];
 } __packed;
-
 enum wfx_hif_qos_ackplcy {
 	HIF_QOS_ACKPLCY_NORMAL                         = 0x0,
 	HIF_QOS_ACKPLCY_TXNOACK                        = 0x1,
 	HIF_QOS_ACKPLCY_NOEXPACK                       = 0x2,
 	HIF_QOS_ACKPLCY_BLCKACK                        = 0x3
 };
-
 struct wfx_hif_cnf_tx {
 	__le32 status;
-	/* packet_id is copied from struct wfx_hif_req_tx without been interpreted by the device, so
-	 * it is not necessary to declare it little endian
-	 */
 	u32    packet_id;
 	u8     txed_rate;
 	u8     ack_failures;
@@ -225,13 +188,11 @@ struct wfx_hif_cnf_tx {
 	__le32 media_delay;
 	__le32 tx_queue_delay;
 } __packed;
-
 struct wfx_hif_cnf_multi_transmit {
 	u8     num_tx_confs;
 	u8     reserved[3];
 	struct wfx_hif_cnf_tx tx_conf_payload[];
 } __packed;
-
 enum wfx_hif_ri_flags_encrypt {
 	HIF_RI_FLAGS_UNENCRYPTED                   = 0x0,
 	HIF_RI_FLAGS_WEP_ENCRYPTED                 = 0x1,
@@ -239,7 +200,6 @@ enum wfx_hif_ri_flags_encrypt {
 	HIF_RI_FLAGS_AES_ENCRYPTED                 = 0x3,
 	HIF_RI_FLAGS_WAPI_ENCRYPTED                = 0x4
 };
-
 struct wfx_hif_ind_rx {
 	__le32 status;
 	u8     channel_number;
@@ -271,7 +231,6 @@ struct wfx_hif_ind_rx {
 	u8     reserved5:1;
 	u8     frame[];
 } __packed;
-
 struct wfx_hif_req_edca_queue_params {
 	u8     queue_id;
 	u8     reserved1;
@@ -283,11 +242,9 @@ struct wfx_hif_req_edca_queue_params {
 	__le16 allowed_medium_time;
 	__le32 reserved3;
 } __packed;
-
 struct wfx_hif_cnf_edca_queue_params {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_join {
 	u8     infrastructure_bss_mode:1;
 	u8     reserved1:7;
@@ -309,15 +266,12 @@ struct wfx_hif_req_join {
 	__le32 beacon_interval;
 	__le32 basic_rate_set;
 } __packed;
-
 struct wfx_hif_cnf_join {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_ind_join_complete {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_set_bss_params {
 	u8     lost_count_only:1;
 	u8     reserved:7;
@@ -325,11 +279,9 @@ struct wfx_hif_req_set_bss_params {
 	__le16 aid;
 	__le32 operational_rate_set;
 } __packed;
-
 struct wfx_hif_cnf_set_bss_params {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_set_pm_mode {
 	u8     enter_psm:1;
 	u8     reserved:6;
@@ -338,17 +290,14 @@ struct wfx_hif_req_set_pm_mode {
 	u8     ap_psm_change_period;
 	u8     min_auto_ps_poll_period;
 } __packed;
-
 struct wfx_hif_cnf_set_pm_mode {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_ind_set_pm_mode_cmpl {
 	__le32 status;
 	u8     pm_mode;
 	u8     reserved[3];
 } __packed;
-
 struct wfx_hif_req_start {
 	u8     mode;
 	u8     band;
@@ -364,23 +313,18 @@ struct wfx_hif_req_start {
 	u8     ssid[IEEE80211_MAX_SSID_LEN];
 	__le32 basic_rate_set;
 } __packed;
-
 struct wfx_hif_cnf_start {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_beacon_transmit {
 	u8     enable_beaconing;
 	u8     reserved[3];
 } __packed;
-
 struct wfx_hif_cnf_beacon_transmit {
 	__le32 status;
 } __packed;
-
 #define HIF_LINK_ID_MAX            14
 #define HIF_LINK_ID_NOT_ASSOCIATED (HIF_LINK_ID_MAX + 1)
-
 struct wfx_hif_req_map_link {
 	u8     mac_addr[ETH_ALEN];
 	u8     unmap:1;
@@ -388,11 +332,9 @@ struct wfx_hif_req_map_link {
 	u8     reserved:6;
 	u8     peer_sta_id;
 } __packed;
-
 struct wfx_hif_cnf_map_link {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_ind_suspend_resume_tx {
 	u8     resume:1;
 	u8     reserved1:2;
@@ -401,8 +343,6 @@ struct wfx_hif_ind_suspend_resume_tx {
 	u8     reserved3;
 	__le16 peer_sta_set;
 } __packed;
-
-
 #define MAX_KEY_ENTRIES         24
 #define HIF_API_WEP_KEY_DATA_SIZE                       16
 #define HIF_API_TKIP_KEY_DATA_SIZE                      16
@@ -414,7 +354,6 @@ struct wfx_hif_ind_suspend_resume_tx {
 #define HIF_API_IGTK_KEY_DATA_SIZE                      16
 #define HIF_API_RX_SEQUENCE_COUNTER_SIZE                8
 #define HIF_API_IPN_SIZE                                8
-
 enum wfx_hif_key_type {
 	HIF_KEY_TYPE_WEP_DEFAULT                   = 0x0,
 	HIF_KEY_TYPE_WEP_PAIRWISE                  = 0x1,
@@ -427,21 +366,18 @@ enum wfx_hif_key_type {
 	HIF_KEY_TYPE_IGTK_GROUP                    = 0x8,
 	HIF_KEY_TYPE_NONE                          = 0x9
 };
-
 struct wfx_hif_wep_pairwise_key {
 	u8     peer_address[ETH_ALEN];
 	u8     reserved;
 	u8     key_length;
 	u8     key_data[HIF_API_WEP_KEY_DATA_SIZE];
 } __packed;
-
 struct wfx_hif_wep_group_key {
 	u8     key_id;
 	u8     key_length;
 	u8     reserved[2];
 	u8     key_data[HIF_API_WEP_KEY_DATA_SIZE];
 } __packed;
-
 struct wfx_hif_tkip_pairwise_key {
 	u8     peer_address[ETH_ALEN];
 	u8     reserved[2];
@@ -449,7 +385,6 @@ struct wfx_hif_tkip_pairwise_key {
 	u8     rx_mic_key[HIF_API_RX_MIC_KEY_SIZE];
 	u8     tx_mic_key[HIF_API_TX_MIC_KEY_SIZE];
 } __packed;
-
 struct wfx_hif_tkip_group_key {
 	u8     tkip_key_data[HIF_API_TKIP_KEY_DATA_SIZE];
 	u8     rx_mic_key[HIF_API_RX_MIC_KEY_SIZE];
@@ -457,20 +392,17 @@ struct wfx_hif_tkip_group_key {
 	u8     reserved[3];
 	u8     rx_sequence_counter[HIF_API_RX_SEQUENCE_COUNTER_SIZE];
 } __packed;
-
 struct wfx_hif_aes_pairwise_key {
 	u8     peer_address[ETH_ALEN];
 	u8     reserved[2];
 	u8     aes_key_data[HIF_API_AES_KEY_DATA_SIZE];
 } __packed;
-
 struct wfx_hif_aes_group_key {
 	u8     aes_key_data[HIF_API_AES_KEY_DATA_SIZE];
 	u8     key_id;
 	u8     reserved[3];
 	u8     rx_sequence_counter[HIF_API_RX_SEQUENCE_COUNTER_SIZE];
 } __packed;
-
 struct wfx_hif_wapi_pairwise_key {
 	u8     peer_address[ETH_ALEN];
 	u8     key_id;
@@ -478,21 +410,18 @@ struct wfx_hif_wapi_pairwise_key {
 	u8     wapi_key_data[HIF_API_WAPI_KEY_DATA_SIZE];
 	u8     mic_key_data[HIF_API_MIC_KEY_DATA_SIZE];
 } __packed;
-
 struct wfx_hif_wapi_group_key {
 	u8     wapi_key_data[HIF_API_WAPI_KEY_DATA_SIZE];
 	u8     mic_key_data[HIF_API_MIC_KEY_DATA_SIZE];
 	u8     key_id;
 	u8     reserved[3];
 } __packed;
-
 struct wfx_hif_igtk_group_key {
 	u8     igtk_key_data[HIF_API_IGTK_KEY_DATA_SIZE];
 	u8     key_id;
 	u8     reserved[3];
 	u8     ipn[HIF_API_IPN_SIZE];
 } __packed;
-
 struct wfx_hif_req_add_key {
 	u8     type;
 	u8     entry_index;
@@ -511,20 +440,16 @@ struct wfx_hif_req_add_key {
 		struct wfx_hif_igtk_group_key    igtk_group_key;
 	} key;
 } __packed;
-
 struct wfx_hif_cnf_add_key {
 	__le32 status;
 } __packed;
-
 struct wfx_hif_req_remove_key {
 	u8     entry_index;
 	u8     reserved[3];
 } __packed;
-
 struct wfx_hif_cnf_remove_key {
 	__le32 status;
 } __packed;
-
 enum wfx_hif_event_ind {
 	HIF_EVENT_IND_BSSLOST                      = 0x1,
 	HIF_EVENT_IND_BSSREGAINED                  = 0x2,
@@ -532,7 +457,6 @@ enum wfx_hif_event_ind {
 	HIF_EVENT_IND_PS_MODE_ERROR                = 0x4,
 	HIF_EVENT_IND_INACTIVITY                   = 0x5
 };
-
 enum wfx_hif_ps_mode_error {
 	HIF_PS_ERROR_NO_ERROR                      = 0,
 	HIF_PS_ERROR_AP_NOT_RESP_TO_POLL           = 1,
@@ -540,7 +464,6 @@ enum wfx_hif_ps_mode_error {
 	HIF_PS_ERROR_AP_SENT_UNICAST_IN_DOZE       = 3,
 	HIF_PS_ERROR_AP_NO_DATA_AFTER_TIM          = 4
 };
-
 struct wfx_hif_ind_event {
 	__le32 event_id;
 	union {
@@ -549,5 +472,4 @@ struct wfx_hif_ind_event {
 		__le32 peer_sta_set;
 	} event_data;
 } __packed;
-
 #endif

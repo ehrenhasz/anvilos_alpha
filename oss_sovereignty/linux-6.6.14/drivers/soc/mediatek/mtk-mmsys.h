@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __SOC_MEDIATEK_MTK_MMSYS_H
 #define __SOC_MEDIATEK_MTK_MMSYS_H
-
 #define DISP_REG_CONFIG_DISP_OVL0_MOUT_EN	0x040
 #define DISP_REG_CONFIG_DISP_OVL1_MOUT_EN	0x044
 #define DISP_REG_CONFIG_DISP_OD_MOUT_EN		0x048
@@ -17,12 +14,10 @@
 #define DISP_REG_CONFIG_DISP_RDMA0_SOUT_EN	0x0c4
 #define DISP_REG_CONFIG_DISP_RDMA1_SOUT_EN	0x0c8
 #define DISP_REG_CONFIG_MMSYS_CG_CON0		0x100
-
 #define DISP_REG_CONFIG_DISP_OVL_MOUT_EN	0x030
 #define DISP_REG_CONFIG_OUT_SEL			0x04c
 #define DISP_REG_CONFIG_DSI_SEL			0x050
 #define DISP_REG_CONFIG_DPI_SEL			0x064
-
 #define OVL0_MOUT_EN_COLOR0			0x1
 #define OD_MOUT_EN_RDMA0			0x1
 #define OD1_MOUT_EN_RDMA1			BIT(16)
@@ -67,7 +62,6 @@
 #define DSI3_SEL_IN_RDMA2			(0x4 << 16)
 #define DSI3_SEL_IN_MASK			(0x7 << 16)
 #define COLOR1_SEL_IN_OVL1			0x1
-
 #define OVL_MOUT_EN_RDMA			0x1
 #define BLS_TO_DSI_RDMA1_TO_DPI1		0x8
 #define BLS_TO_DPI_RDMA1_TO_DSI			0x2
@@ -77,7 +71,6 @@
 #define DPI_SEL_IN_MASK				0x1
 #define DSI_SEL_IN_RDMA				0x1
 #define DSI_SEL_IN_MASK				0x1
-
 struct mtk_mmsys_routes {
 	u32 from_comp;
 	u32 to_comp;
@@ -85,7 +78,6 @@ struct mtk_mmsys_routes {
 	u32 mask;
 	u32 val;
 };
-
 struct mtk_mmsys_driver_data {
 	const char *clk_driver;
 	const struct mtk_mmsys_routes *routes;
@@ -94,16 +86,6 @@ struct mtk_mmsys_driver_data {
 	const u32 num_resets;
 	const bool is_vppsys;
 };
-
-/*
- * Routes in mt2701 and mt2712 are different. That means
- * in the same register address, it controls different input/output
- * selection for each SoC. But, right now, they use the same table as
- * default routes meet their requirements. But we don't have the complete
- * route information for these three SoC, so just keep them in the same
- * table. After we've more information, we could separate mt2701, mt2712
- * to an independent table.
- */
 static const struct mtk_mmsys_routes mmsys_default_routing_table[] = {
 	{
 		DDP_COMPONENT_BLS, DDP_COMPONENT_DSI0,
@@ -271,5 +253,4 @@ static const struct mtk_mmsys_routes mmsys_default_routing_table[] = {
 		UFOE_MOUT_EN_DSI0
 	}
 };
-
-#endif /* __SOC_MEDIATEK_MTK_MMSYS_H */
+#endif  

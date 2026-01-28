@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2021 Cadence Design Systems Inc. */
-
 #ifndef _XTENSA_PLATFORM_ISS_SIMCALL_GDBIO_H
 #define _XTENSA_PLATFORM_ISS_SIMCALL_GDBIO_H
-
-/*
- *  System call like services offered by the GDBIO host.
- */
-
 #define SYS_open	-2
 #define SYS_close	-3
 #define SYS_read	-4
 #define SYS_write	-5
 #define SYS_lseek	-6
-
 static int errno;
-
 static inline int __simc(int a, int b, int c, int d)
 {
 	register int a1 asm("a2") = a;
@@ -30,5 +20,4 @@ static inline int __simc(int a, int b, int c, int d)
 	errno = c1;
 	return a1;
 }
-
-#endif /* _XTENSA_PLATFORM_ISS_SIMCALL_GDBIO_H */
+#endif  

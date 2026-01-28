@@ -1,21 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- */
-
 #ifndef _CCU_SUN9I_A80_H_
 #define _CCU_SUN9I_A80_H_
-
 #include <dt-bindings/clock/sun9i-a80-ccu.h>
 #include <dt-bindings/reset/sun9i-a80-ccu.h>
-
 #define CLK_PLL_C0CPUX		0
 #define CLK_PLL_C1CPUX		1
-
-/* pll-audio and pll-periph0 are exported to the PRCM block */
-
 #define CLK_PLL_VE		4
 #define CLK_PLL_DDR		5
 #define CLK_PLL_VIDEO0		6
@@ -24,9 +12,6 @@
 #define CLK_PLL_DE		9
 #define CLK_PLL_ISP		10
 #define CLK_PLL_PERIPH1		11
-
-/* The CPUX clocks are exported */
-
 #define CLK_ATB0		14
 #define CLK_AXI0		15
 #define CLK_ATB1		16
@@ -40,9 +25,5 @@
 #define CLK_CCI400		24
 #define CLK_ATS			25
 #define CLK_TRACE		26
-
-/* module clocks and bus gates exported */
-
 #define CLK_NUMBER		(CLK_BUS_UART5 + 1)
-
-#endif /* _CCU_SUN9I_A80_H_ */
+#endif  

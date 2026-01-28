@@ -1,15 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
-
 #include "meson-g12-common.dtsi"
 #include <dt-bindings/clock/axg-audio-clkc.h>
 #include <dt-bindings/power/meson-g12a-power.h>
 #include <dt-bindings/reset/amlogic,meson-axg-audio-arb.h>
 #include <dt-bindings/reset/amlogic,meson-g12a-audio-reset.h>
-
 / {
 	tdmif_a: audio-controller-0 {
 		compatible = "amlogic,axg-tdm-iface";
@@ -21,7 +14,6 @@
 		clock-names = "mclk", "sclk", "lrclk";
 		status = "disabled";
 	};
-
 	tdmif_b: audio-controller-1 {
 		compatible = "amlogic,axg-tdm-iface";
 		#sound-dai-cells = <0>;
@@ -32,7 +24,6 @@
 		clock-names = "mclk", "sclk", "lrclk";
 		status = "disabled";
 	};
-
 	tdmif_c: audio-controller-2 {
 		compatible = "amlogic,axg-tdm-iface";
 		#sound-dai-cells = <0>;
@@ -44,7 +35,6 @@
 		status = "disabled";
 	};
 };
-
 &apb {
 	pdm: audio-controller@40000 {
 		compatible = "amlogic,g12a-pdm",
@@ -59,21 +49,18 @@
 		resets = <&clkc_audio AUD_RESET_PDM>;
 		status = "disabled";
 	};
-
 	audio: bus@42000 {
 		compatible = "simple-bus";
 		reg = <0x0 0x42000 0x0 0x2000>;
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges = <0x0 0x0 0x0 0x42000 0x0 0x2000>;
-
 		clkc_audio: clock-controller@0 {
 			status = "disabled";
 			compatible = "amlogic,g12a-audio-clkc";
 			reg = <0x0 0x0 0x0 0xb4>;
 			#clock-cells = <1>;
 			#reset-cells = <1>;
-
 			clocks = <&clkc CLKID_AUDIO>,
 				 <&clkc CLKID_MPLL0>,
 				 <&clkc CLKID_MPLL1>,
@@ -92,10 +79,8 @@
 				      "mst_in5",
 				      "mst_in6",
 				      "mst_in7";
-
 			resets = <&reset RESET_AUDIO>;
 		};
-
 		toddr_a: audio-controller@100 {
 			compatible = "amlogic,g12a-toddr",
 				     "amlogic,axg-toddr";
@@ -110,7 +95,6 @@
 			amlogic,fifo-depth = <512>;
 			status = "disabled";
 		};
-
 		toddr_b: audio-controller@140 {
 			compatible = "amlogic,g12a-toddr",
 				     "amlogic,axg-toddr";
@@ -125,7 +109,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		toddr_c: audio-controller@180 {
 			compatible = "amlogic,g12a-toddr",
 				     "amlogic,axg-toddr";
@@ -140,7 +123,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		frddr_a: audio-controller@1c0 {
 			compatible = "amlogic,g12a-frddr",
 				     "amlogic,axg-frddr";
@@ -155,7 +137,6 @@
 			amlogic,fifo-depth = <512>;
 			status = "disabled";
 		};
-
 		frddr_b: audio-controller@200 {
 			compatible = "amlogic,g12a-frddr",
 				     "amlogic,axg-frddr";
@@ -170,7 +151,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		frddr_c: audio-controller@240 {
 			compatible = "amlogic,g12a-frddr",
 				     "amlogic,axg-frddr";
@@ -185,7 +165,6 @@
 			amlogic,fifo-depth = <256>;
 			status = "disabled";
 		};
-
 		arb: reset-controller@280 {
 			status = "disabled";
 			compatible = "amlogic,meson-axg-audio-arb";
@@ -193,7 +172,6 @@
 			#reset-cells = <1>;
 			clocks = <&clkc_audio AUD_CLKID_DDR_ARB>;
 		};
-
 		tdmin_a: audio-controller@300 {
 			compatible = "amlogic,g12a-tdmin",
 				     "amlogic,axg-tdmin";
@@ -209,7 +187,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_b: audio-controller@340 {
 			compatible = "amlogic,g12a-tdmin",
 				     "amlogic,axg-tdmin";
@@ -225,7 +202,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_c: audio-controller@380 {
 			compatible = "amlogic,g12a-tdmin",
 				     "amlogic,axg-tdmin";
@@ -241,7 +217,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmin_lb: audio-controller@3c0 {
 			compatible = "amlogic,g12a-tdmin",
 				     "amlogic,axg-tdmin";
@@ -257,7 +232,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		spdifin: audio-controller@400 {
 			compatible = "amlogic,g12a-spdifin",
 				     "amlogic,axg-spdifin";
@@ -271,7 +245,6 @@
 			resets = <&clkc_audio AUD_RESET_SPDIFIN>;
 			status = "disabled";
 		};
-
 		spdifout: audio-controller@480 {
 			compatible = "amlogic,g12a-spdifout",
 				     "amlogic,axg-spdifout";
@@ -284,7 +257,6 @@
 			resets = <&clkc_audio AUD_RESET_SPDIFOUT>;
 			status = "disabled";
 		};
-
 		tdmout_a: audio-controller@500 {
 			compatible = "amlogic,g12a-tdmout";
 			reg = <0x0 0x500 0x0 0x40>;
@@ -299,7 +271,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmout_b: audio-controller@540 {
 			compatible = "amlogic,g12a-tdmout";
 			reg = <0x0 0x540 0x0 0x40>;
@@ -314,7 +285,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		tdmout_c: audio-controller@580 {
 			compatible = "amlogic,g12a-tdmout";
 			reg = <0x0 0x580 0x0 0x40>;
@@ -329,7 +299,6 @@
 				      "lrclk", "lrclk_sel";
 			status = "disabled";
 		};
-
 		spdifout_b: audio-controller@680 {
 			compatible = "amlogic,g12a-spdifout",
 				     "amlogic,axg-spdifout";
@@ -342,7 +311,6 @@
 			resets = <&clkc_audio AUD_RESET_SPDIFOUT_B>;
 			status = "disabled";
 		};
-
 		toacodec: audio-controller@740 {
 			compatible = "amlogic,g12a-toacodec";
 			reg = <0x0 0x740 0x0 0x4>;
@@ -351,7 +319,6 @@
 			resets = <&clkc_audio AUD_RESET_TOACODEC>;
 			status = "disabled";
 		};
-
 		tohdmitx: audio-controller@744 {
 			compatible = "amlogic,g12a-tohdmitx";
 			reg = <0x0 0x744 0x0 0x4>;
@@ -362,24 +329,18 @@
 		};
 	};
 };
-
 &ethmac {
 	power-domains = <&pwrc PWRC_G12A_ETH_ID>;
 };
-
 &vpu {
 	power-domains = <&pwrc PWRC_G12A_VPU_ID>;
 };
-
 &sd_emmc_a {
 	amlogic,dram-access-quirk;
 };
-
 &simplefb_cvbs {
 	power-domains = <&pwrc PWRC_G12A_VPU_ID>;
 };
-
 &simplefb_hdmi {
 	power-domains = <&pwrc PWRC_G12A_VPU_ID>;
 };
-

@@ -1,28 +1,16 @@
-#!/usr/bin/env perl
-# SPDX-License-Identifier: GPL-2.0
-
-# PowerPC assembler distiller by <appro>.
-
 my $flavour = shift;
 my $output = shift;
 open STDOUT,">$output" || die "can't open $output: $!";
-
 my %GLOBALS;
 my $dotinlocallabels=($flavour=~/linux/)?1:0;
 my $elfv2abi=(($flavour =~ /linux-ppc64le/) or ($flavour =~ /linux-ppc64-elfv2/))?1:0;
 my $dotfunctions=($elfv2abi=~1)?0:1;
-
-################################################################
-# directives which need special treatment on different platforms
-################################################################
 my $globl = sub {
     my $junk = shift;
     my $name = shift;
     my $global = \$GLOBALS{$name};
     my $ret;
-
     $name =~ s|^[\.\_]||;
- 
     SWITCH: for ($flavour) {
 	/aix/		&& do { $name = ".$name";
 				last;
@@ -35,7 +23,6 @@ my $globl = sub {
 				last;
 			      };
     }
-
     $ret = ".globl	$name\nalign 5\n$name:" if (!$ret);
     $$global = $name;
     $ret;
@@ -81,10 +68,9 @@ my $quad = sub {
 	if (/^0x([0-9a-f]*?)([0-9a-f]{1,8})$/io)
 	{  $hi=$1?"0x$1":"0"; $lo="0x$2";  }
 	elsif (/^([0-9]+)$/o)
-	{  $hi=$1>>32; $lo=$1&0xffffffff;  } # error-prone with 32-bit perl
+	{  $hi=$1>>32; $lo=$1&0xffffffff;  } 
 	else
 	{  $hi=undef; $lo=$_; }
-
 	if (defined($hi))
 	{  push(@ret,$flavour=~/le$/o?".long\t$lo,$hi":".long\t$hi,$lo");  }
 	else
@@ -92,46 +78,39 @@ my $quad = sub {
     }
     join("\n",@ret);
 };
-
-################################################################
-# simplified mnemonics not handled by at least one assembler
-################################################################
 my $cmplw = sub {
     my $f = shift;
-    my $cr = 0; $cr = shift if ($#_>1);
-    # Some out-of-date 32-bit GNU assembler just can't handle cmplw...
+    my $cr = 0; $cr = shift if ($
     ($flavour =~ /linux.*32/) ?
 	"	.long	".sprintf "0x%x",31<<26|$cr<<23|$_[0]<<16|$_[1]<<11|64 :
 	"	cmplw	".join(',',$cr,@_);
 };
 my $bdnz = sub {
     my $f = shift;
-    my $bo = $f=~/[\+\-]/ ? 16+9 : 16;	# optional "to be taken" hint
+    my $bo = $f=~/[\+\-]/ ? 16+9 : 16;	
     "	bc	$bo,0,".shift;
 } if ($flavour!~/linux/);
 my $bltlr = sub {
     my $f = shift;
-    my $bo = $f=~/\-/ ? 12+2 : 12;	# optional "not to be taken" hint
-    ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
+    my $bo = $f=~/\-/ ? 12+2 : 12;	
+    ($flavour =~ /linux/) ?		
 	"	.long	".sprintf "0x%x",19<<26|$bo<<21|16<<1 :
 	"	bclr	$bo,0";
 };
 my $bnelr = sub {
     my $f = shift;
-    my $bo = $f=~/\-/ ? 4+2 : 4;	# optional "not to be taken" hint
-    ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
+    my $bo = $f=~/\-/ ? 4+2 : 4;	
+    ($flavour =~ /linux/) ?		
 	"	.long	".sprintf "0x%x",19<<26|$bo<<21|2<<16|16<<1 :
 	"	bclr	$bo,2";
 };
 my $beqlr = sub {
     my $f = shift;
-    my $bo = $f=~/-/ ? 12+2 : 12;	# optional "not to be taken" hint
-    ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
+    my $bo = $f=~/-/ ? 12+2 : 12;	
+    ($flavour =~ /linux/) ?		
 	"	.long	".sprintf "0x%X",19<<26|$bo<<21|2<<16|16<<1 :
 	"	bclr	$bo,2";
 };
-# GNU assembler can't handle extrdi rA,rS,16,48, or when sum of last two
-# arguments is 64, with "operand out of range" error.
 my $extrdi = sub {
     my ($f,$ra,$rs,$n,$b) = @_;
     $b = ($b+$n)&63; $n = 64-$n;
@@ -141,9 +120,6 @@ my $vmr = sub {
     my ($f,$vx,$vy) = @_;
     "	vor	$vx,$vy,$vy";
 };
-
-# Some ABIs specify vrsave, special-purpose register #256, as reserved
-# for system use.
 my $no_vrsave = ($elfv2abi);
 my $mtspr = sub {
     my ($f,$idx,$ra) = @_;
@@ -161,21 +137,16 @@ my $mfspr = sub {
 	"	mfspr	$rd,$idx";
     }
 };
-
-# PowerISA 2.06 stuff
 sub vsxmem_op {
     my ($f, $vrt, $ra, $rb, $op) = @_;
     "	.long	".sprintf "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|($rb<<11)|($op*2+1);
 }
-# made-up unaligned memory reference AltiVec/VMX instructions
-my $lvx_u	= sub {	vsxmem_op(@_, 844); };	# lxvd2x
-my $stvx_u	= sub {	vsxmem_op(@_, 972); };	# stxvd2x
-my $lvdx_u	= sub {	vsxmem_op(@_, 588); };	# lxsdx
-my $stvdx_u	= sub {	vsxmem_op(@_, 716); };	# stxsdx
-my $lvx_4w	= sub { vsxmem_op(@_, 780); };	# lxvw4x
-my $stvx_4w	= sub { vsxmem_op(@_, 908); };	# stxvw4x
-
-# PowerISA 2.07 stuff
+my $lvx_u	= sub {	vsxmem_op(@_, 844); };	
+my $stvx_u	= sub {	vsxmem_op(@_, 972); };	
+my $lvdx_u	= sub {	vsxmem_op(@_, 588); };	
+my $stvdx_u	= sub {	vsxmem_op(@_, 716); };	
+my $lvx_4w	= sub { vsxmem_op(@_, 780); };	
+my $stvx_4w	= sub { vsxmem_op(@_, 908); };	
 sub vcrypto_op {
     my ($f, $vrt, $vra, $vrb, $op) = @_;
     "	.long	".sprintf "0x%X",(4<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|$op;
@@ -193,26 +164,20 @@ my $vpmsubh	= sub { vcrypto_op(@_, 1096); };
 my $vpmsumw	= sub { vcrypto_op(@_, 1160); };
 my $vaddudm	= sub { vcrypto_op(@_, 192);  };
 my $vadduqm	= sub { vcrypto_op(@_, 256);  };
-
 my $mtsle	= sub {
     my ($f, $arg) = @_;
     "	.long	".sprintf "0x%X",(31<<26)|($arg<<21)|(147*2);
 };
-
 print "#include <asm/ppc_asm.h>\n" if $flavour =~ /linux/;
-
 while($line=<>) {
-
-    $line =~ s|[#!;].*$||;	# get rid of asm-style comments...
-    $line =~ s|/\*.*\*/||;	# ... and C-style comments...
-    $line =~ s|^\s+||;		# ... and skip white spaces in beginning...
-    $line =~ s|\s+$||;		# ... and at the end
-
+    $line =~ s|[
+    $line =~ s|/\*.*\*/||;	
+    $line =~ s|^\s+||;		
+    $line =~ s|\s+$||;		
     {
-	$line =~ s|\b\.L(\w+)|L$1|g;	# common denominator for Locallabel
+	$line =~ s|\b\.L(\w+)|L$1|g;	
 	$line =~ s|\bL(\w+)|\.L$1|g	if ($dotinlocallabels);
     }
-
     {
 	$line =~ s|^\s*(\.?)(\w+)([\.\+\-]?)\s*||;
 	my $c = $1; $c = "\t" if ($c eq "");
@@ -223,9 +188,7 @@ while($line=<>) {
 	if (ref($opcode) eq 'CODE') { $line = &$opcode($f,split(',',$line)); }
 	elsif ($mnemonic)           { $line = $c.$mnemonic.$f."\t".$line; }
     }
-
     print $line if ($line);
     print "\n";
 }
-
 close STDOUT;

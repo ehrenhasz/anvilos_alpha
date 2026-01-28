@@ -1,33 +1,5 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
 #ifndef R420D_H
 #define R420D_H
-
 #define R_0001F8_MC_IND_INDEX                        0x0001F8
 #define   S_0001F8_MC_IND_ADDR(x)                      (((x) & 0x7F) << 0)
 #define   G_0001F8_MC_IND_ADDR(x)                      (((x) >> 0) & 0x7F)
@@ -152,8 +124,6 @@
 #define   S_000E40_GUI_ACTIVE(x)                       (((x) & 0x1) << 31)
 #define   G_000E40_GUI_ACTIVE(x)                       (((x) >> 31) & 0x1)
 #define   C_000E40_GUI_ACTIVE                          0x7FFFFFFF
-
-/* CLK registers */
 #define R_00000D_SCLK_CNTL                           0x00000D
 #define   S_00000D_SCLK_SRC_SEL(x)                     (((x) & 0x7) << 0)
 #define   G_00000D_SCLK_SRC_SEL(x)                     (((x) >> 0) & 0x7)
@@ -245,5 +215,4 @@
 #define   S_00000D_FORCE_OV0(x)                        (((x) & 0x1) << 31)
 #define   G_00000D_FORCE_OV0(x)                        (((x) >> 31) & 0x1)
 #define   C_00000D_FORCE_OV0                           0x7FFFFFFF
-
 #endif

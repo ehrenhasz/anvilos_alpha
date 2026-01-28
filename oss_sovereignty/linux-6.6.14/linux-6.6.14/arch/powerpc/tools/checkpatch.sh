@@ -1,11 +1,4 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0+
-# Copyright 2018, Michael Ellerman, IBM Corporation.
-#
-# Wrapper around checkpatch that uses our preferred settings
-
 script_base=$(realpath $(dirname $0))
-
 exec $script_base/../../../scripts/checkpatch.pl \
 	--subjective \
 	--no-summary \

@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_EXCEPTION_H
 #define __ASM_EXCEPTION_H
-
 #include <asm/ptrace.h>
 #include <linux/kprobes.h>
-
 void show_registers(struct pt_regs *regs);
-
 asmlinkage void cache_parity_error(void);
 asmlinkage void noinstr do_ade(struct pt_regs *regs);
 asmlinkage void noinstr do_ale(struct pt_regs *regs);
@@ -25,7 +20,6 @@ asmlinkage void noinstr do_reserved(struct pt_regs *regs);
 asmlinkage void noinstr do_vint(struct pt_regs *regs, unsigned long sp);
 asmlinkage void __kprobes do_page_fault(struct pt_regs *regs,
 				unsigned long write, unsigned long address);
-
 asmlinkage void handle_ade(void);
 asmlinkage void handle_ale(void);
 asmlinkage void handle_bce(void);
@@ -41,5 +35,4 @@ asmlinkage void handle_watch(void);
 asmlinkage void handle_reserved(void);
 asmlinkage void handle_vint(void);
 asmlinkage void noinstr handle_loongarch_irq(struct pt_regs *regs);
-
-#endif	/* __ASM_EXCEPTION_H */
+#endif	 

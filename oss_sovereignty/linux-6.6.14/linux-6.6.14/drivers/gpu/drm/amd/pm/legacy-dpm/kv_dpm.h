@@ -1,64 +1,32 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __KV_DPM_H__
 #define __KV_DPM_H__
-
 #define SMU__NUM_SCLK_DPM_STATE  8
 #define SMU__NUM_MCLK_DPM_LEVELS 4
 #define SMU__NUM_LCLK_DPM_LEVELS 8
-#define SMU__NUM_PCIE_DPM_LEVELS 0 /* ??? */
+#define SMU__NUM_PCIE_DPM_LEVELS 0  
 #include "smu7_fusion.h"
 #include "ppsmc.h"
-
 #define SUMO_MAX_HARDWARE_POWERLEVELS 5
-
 #define SUMO_MAX_NUMBER_VOLTAGES    4
-
 struct sumo_vid_mapping_entry {
 	u16 vid_2bit;
 	u16 vid_7bit;
 };
-
 struct sumo_vid_mapping_table {
 	u32 num_entries;
 	struct sumo_vid_mapping_entry entries[SUMO_MAX_NUMBER_VOLTAGES];
 };
-
 struct sumo_sclk_voltage_mapping_entry {
 	u32 sclk_frequency;
 	u16 vid_2bit;
 	u16 rsv;
 };
-
 struct sumo_sclk_voltage_mapping_table {
 	u32 num_max_dpm_entries;
 	struct sumo_sclk_voltage_mapping_entry entries[SUMO_MAX_HARDWARE_POWERLEVELS];
 };
-
 #define TRINITY_AT_DFLT            30
-
 #define KV_NUM_NBPSTATES   4
-
 enum kv_pt_config_reg_type {
 	KV_CONFIGREG_MMR = 0,
 	KV_CONFIGREG_SMC_IND,
@@ -66,7 +34,6 @@ enum kv_pt_config_reg_type {
 	KV_CONFIGREG_CACHE,
 	KV_CONFIGREG_MAX
 };
-
 struct kv_pt_config_reg {
 	u32 offset;
 	u32 mask;
@@ -74,13 +41,11 @@ struct kv_pt_config_reg {
 	u32 value;
 	enum kv_pt_config_reg_type type;
 };
-
 struct kv_lcac_config_values {
 	u32 block_id;
 	u32 signal_id;
 	u32 t;
 };
-
 struct kv_lcac_config_reg {
 	u32 cntl;
 	u32 block_mask;
@@ -92,7 +57,6 @@ struct kv_lcac_config_reg {
 	u32 enable_mask;
 	u32 enable_shift;
 };
-
 struct kv_pl {
 	u32 sclk;
 	u8 vddc_index;
@@ -103,7 +67,6 @@ struct kv_pl {
 	u8 display_wm;
 	u8 vce_wm;
 };
-
 struct kv_ps {
 	struct kv_pl levels[SUMO_MAX_HARDWARE_POWERLEVELS];
 	u32 num_levels;
@@ -113,7 +76,6 @@ struct kv_ps {
 	u8 dpmx_nb_ps_lo;
 	u8 dpmx_nb_ps_hi;
 };
-
 struct kv_sys_info {
 	u32 bootup_uma_clk;
 	u32 bootup_sclk;
@@ -128,7 +90,6 @@ struct kv_sys_info {
 	struct sumo_vid_mapping_table vid_mapping_table;
 	u32 uma_channel_number;
 };
-
 struct kv_power_info {
 	u32 at[SUMO_MAX_HARDWARE_POWERLEVELS];
 	u32 voltage_drop_t;
@@ -143,11 +104,9 @@ struct kv_power_info {
 	u16 high_voltage_t;
 	bool cac_enabled;
 	bool bapm_enable;
-	/* smc offsets */
 	u32 sram_end;
 	u32 dpm_table_start;
 	u32 soft_regs_start;
-	/* dpm SMU tables */
 	u8 graphics_dpm_level_count;
 	u8 uvd_level_count;
 	u8 vce_level_count;
@@ -181,12 +140,10 @@ struct kv_power_info {
 	bool acp_power_gated;
 	bool samu_power_gated;
 	bool nb_dpm_enabled;
-	/* flags */
 	bool enable_didt;
 	bool enable_dpm;
 	bool enable_auto_thermal_throttling;
 	bool enable_nb_dpm;
-	/* caps */
 	bool caps_cac;
 	bool caps_power_containment;
 	bool caps_sq_ramping;
@@ -208,12 +165,8 @@ struct kv_power_info {
 	struct amdgpu_ps requested_rps;
 	struct kv_ps requested_ps;
 };
-
-/* XXX are these ok? */
 #define KV_TEMP_RANGE_MIN (90 * 1000)
 #define KV_TEMP_RANGE_MAX (120 * 1000)
-
-/* kv_smc.c */
 int amdgpu_kv_notify_message_to_smu(struct amdgpu_device *adev, u32 id);
 int amdgpu_kv_dpm_get_enable_mask(struct amdgpu_device *adev, u32 *enable_mask);
 int amdgpu_kv_send_msg_to_smc_with_parameter(struct amdgpu_device *adev,
@@ -225,5 +178,4 @@ int amdgpu_kv_smc_bapm_enable(struct amdgpu_device *adev, bool enable);
 int amdgpu_kv_copy_bytes_to_smc(struct amdgpu_device *adev,
 			 u32 smc_start_address,
 			 const u8 *src, u32 byte_count, u32 limit);
-
 #endif

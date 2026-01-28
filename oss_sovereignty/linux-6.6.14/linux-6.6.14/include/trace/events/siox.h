@@ -1,11 +1,8 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM siox
-
 #if !defined(_TRACE_SIOX_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SIOX_H
-
 #include <linux/tracepoint.h>
-
 TRACE_EVENT(siox_set_data,
 	    TP_PROTO(const struct siox_master *smaster,
 		     const struct siox_device *sdevice,
@@ -30,7 +27,6 @@ TRACE_EVENT(siox_set_data,
 		      (int)__entry->inbytes, __get_dynamic_array(buf)
 		     )
 );
-
 TRACE_EVENT(siox_get_data,
 	    TP_PROTO(const struct siox_master *smaster,
 		     const struct siox_device *sdevice,
@@ -59,8 +55,5 @@ TRACE_EVENT(siox_get_data,
 		      (int)__entry->outbytes, __get_dynamic_array(buf)
 		     )
 );
-
-#endif /* if !defined(_TRACE_SIOX_H) || defined(TRACE_HEADER_MULTI_READ) */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

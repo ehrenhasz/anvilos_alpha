@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2014 - 2020 Intel Corporation */
 #ifndef ADF_CFG_STRINGS_H_
 #define ADF_CFG_STRINGS_H_
-
 #define ADF_GENERAL_SEC "GENERAL"
 #define ADF_KERNEL_SEC "KERNEL"
 #define ADF_ACCEL_SEC "Accelerator"
@@ -49,5 +46,4 @@
 	ADF_ETRMGR_BANK "%d" ADF_ETRMGR_CORE_AFFINITY
 #define ADF_ACCEL_STR "Accelerator%d"
 #define ADF_HEARTBEAT_TIMER  "HeartbeatTimer"
-
 #endif

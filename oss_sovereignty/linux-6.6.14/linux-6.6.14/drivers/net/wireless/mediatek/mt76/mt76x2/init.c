@@ -1,85 +1,60 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
-
 #include "mt76x2.h"
 #include "eeprom.h"
 #include "../mt76x02_phy.h"
-
 int mt76x2_set_sar_specs(struct ieee80211_hw *hw,
 			 const struct cfg80211_sar_specs *sar)
 {
 	int err = -EINVAL, power = hw->conf.power_level * 2;
 	struct mt76x02_dev *dev = hw->priv;
 	struct mt76_phy *mphy = &dev->mphy;
-
 	mutex_lock(&dev->mt76.mutex);
 	if (!cfg80211_chandef_valid(&mphy->chandef))
 		goto out;
-
 	err = mt76_init_sar_power(hw, sar);
 	if (err)
 		goto out;
-
 	dev->txpower_conf = mt76_get_sar_power(mphy, mphy->chandef.chan,
 					       power);
-	/* convert to per-chain power for 2x2 devices */
 	dev->txpower_conf -= 6;
-
 	if (test_bit(MT76_STATE_RUNNING, &mphy->state))
 		mt76x2_phy_set_txpower(dev);
 out:
 	mutex_unlock(&dev->mt76.mutex);
-
 	return err;
 }
 EXPORT_SYMBOL_GPL(mt76x2_set_sar_specs);
-
 static void
 mt76x2_set_wlan_state(struct mt76x02_dev *dev, bool enable)
 {
 	u32 val = mt76_rr(dev, MT_WLAN_FUN_CTRL);
-
 	if (enable)
 		val |= (MT_WLAN_FUN_CTRL_WLAN_EN |
 			MT_WLAN_FUN_CTRL_WLAN_CLK_EN);
 	else
 		val &= ~(MT_WLAN_FUN_CTRL_WLAN_EN |
 			 MT_WLAN_FUN_CTRL_WLAN_CLK_EN);
-
 	mt76_wr(dev, MT_WLAN_FUN_CTRL, val);
 	udelay(20);
 }
-
 void mt76x2_reset_wlan(struct mt76x02_dev *dev, bool enable)
 {
 	u32 val;
-
 	if (!enable)
 		goto out;
-
 	val = mt76_rr(dev, MT_WLAN_FUN_CTRL);
-
 	val &= ~MT_WLAN_FUN_CTRL_FRC_WL_ANT_SEL;
-
 	if (val & MT_WLAN_FUN_CTRL_WLAN_EN) {
 		val |= MT_WLAN_FUN_CTRL_WLAN_RESET_RF;
 		mt76_wr(dev, MT_WLAN_FUN_CTRL, val);
 		udelay(20);
-
 		val &= ~MT_WLAN_FUN_CTRL_WLAN_RESET_RF;
 	}
-
 	mt76_wr(dev, MT_WLAN_FUN_CTRL, val);
 	udelay(20);
-
 out:
 	mt76x2_set_wlan_state(dev, enable);
 }
 EXPORT_SYMBOL_GPL(mt76x2_reset_wlan);
-
 void mt76_write_mac_initvals(struct mt76x02_dev *dev)
 {
 #define DEFAULT_PROT_CFG_CCK				\
@@ -87,27 +62,22 @@ void mt76_write_mac_initvals(struct mt76x02_dev *dev)
 	 FIELD_PREP(MT_PROT_CFG_NAV, 1) |		\
 	 FIELD_PREP(MT_PROT_CFG_TXOP_ALLOW, 0x3f) |	\
 	 MT_PROT_CFG_RTS_THRESH)
-
 #define DEFAULT_PROT_CFG_OFDM				\
 	(FIELD_PREP(MT_PROT_CFG_RATE, 0x2004) |		\
 	 FIELD_PREP(MT_PROT_CFG_NAV, 1) |			\
 	 FIELD_PREP(MT_PROT_CFG_TXOP_ALLOW, 0x3f) |	\
 	 MT_PROT_CFG_RTS_THRESH)
-
 #define DEFAULT_PROT_CFG_20				\
 	(FIELD_PREP(MT_PROT_CFG_RATE, 0x2004) |		\
 	 FIELD_PREP(MT_PROT_CFG_CTRL, 1) |		\
 	 FIELD_PREP(MT_PROT_CFG_NAV, 1) |			\
 	 FIELD_PREP(MT_PROT_CFG_TXOP_ALLOW, 0x17))
-
 #define DEFAULT_PROT_CFG_40				\
 	(FIELD_PREP(MT_PROT_CFG_RATE, 0x2084) |		\
 	 FIELD_PREP(MT_PROT_CFG_CTRL, 1) |		\
 	 FIELD_PREP(MT_PROT_CFG_NAV, 1) |			\
 	 FIELD_PREP(MT_PROT_CFG_TXOP_ALLOW, 0x3f))
-
 	static const struct mt76_reg_pair vals[] = {
-		/* Copied from MediaTek reference source */
 		{ MT_PBF_SYS_CTRL,		0x00080c00 },
 		{ MT_PBF_CFG,			0x1efebcff },
 		{ MT_FCE_PSE_CTRL,		0x00000001 },
@@ -171,12 +141,10 @@ void mt76_write_mac_initvals(struct mt76x02_dev *dev)
 		{ MT_GF20_PROT_CFG,		DEFAULT_PROT_CFG_20 },
 		{ MT_GF40_PROT_CFG,		DEFAULT_PROT_CFG_40 },
 	};
-
 	mt76_wr_rp(dev, 0, vals, ARRAY_SIZE(vals));
 	mt76_wr_rp(dev, 0, prot_vals, ARRAY_SIZE(prot_vals));
 }
 EXPORT_SYMBOL_GPL(mt76_write_mac_initvals);
-
 void mt76x2_init_txpower(struct mt76x02_dev *dev,
 			 struct ieee80211_supported_band *sband)
 {
@@ -184,18 +152,13 @@ void mt76x2_init_txpower(struct mt76x02_dev *dev,
 	struct mt76x2_tx_power_info txp;
 	struct mt76x02_rate_power t = {};
 	int i;
-
 	for (i = 0; i < sband->n_channels; i++) {
 		chan = &sband->channels[i];
-
 		mt76x2_get_power_info(dev, &txp, chan);
 		mt76x2_get_rate_power(dev, &t, chan);
-
 		chan->orig_mpwr = mt76x02_get_max_rate_power(&t) +
 				  txp.target_power;
 		chan->orig_mpwr = DIV_ROUND_UP(chan->orig_mpwr, 2);
-
-		/* convert to combined output power on 2x2 devices */
 		chan->orig_mpwr += 3;
 		chan->max_power = min_t(int, chan->max_reg_power,
 					chan->orig_mpwr);

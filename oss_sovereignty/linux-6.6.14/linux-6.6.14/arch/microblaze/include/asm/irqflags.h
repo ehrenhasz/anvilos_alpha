@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2006 Atmark Techno, Inc.
- */
-
 #ifndef _ASM_MICROBLAZE_IRQFLAGS_H
 #define _ASM_MICROBLAZE_IRQFLAGS_H
-
 #include <linux/types.h>
 #include <asm/registers.h>
-
 #if CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR
-
 static inline notrace unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags;
@@ -21,29 +13,23 @@ static inline notrace unsigned long arch_local_irq_save(void)
 		     : "memory");
 	return flags;
 }
-
 static inline notrace void arch_local_irq_disable(void)
 {
-	/* this uses r0 without declaring it - is that correct? */
 	asm volatile("	msrclr r0, %0	\n"
 		     "	nop		\n"
 		     :
 		     : "i"(MSR_IE)
 		     : "memory");
 }
-
 static inline notrace void arch_local_irq_enable(void)
 {
-	/* this uses r0 without declaring it - is that correct? */
 	asm volatile("	msrset	r0, %0	\n"
 		     "	nop		\n"
 		     :
 		     : "i"(MSR_IE)
 		     : "memory");
 }
-
-#else /* !CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR */
-
+#else  
 static inline notrace unsigned long arch_local_irq_save(void)
 {
 	unsigned long flags, tmp;
@@ -57,7 +43,6 @@ static inline notrace unsigned long arch_local_irq_save(void)
 		      : "memory");
 	return flags;
 }
-
 static inline notrace void arch_local_irq_disable(void)
 {
 	unsigned long tmp;
@@ -70,7 +55,6 @@ static inline notrace void arch_local_irq_disable(void)
 		     : "i"(~MSR_IE)
 		     : "memory");
 }
-
 static inline notrace void arch_local_irq_enable(void)
 {
 	unsigned long tmp;
@@ -83,9 +67,7 @@ static inline notrace void arch_local_irq_enable(void)
 		     : "i"(MSR_IE)
 		     : "memory");
 }
-
-#endif /* CONFIG_XILINX_MICROBLAZE0_USE_MSR_INSTR */
-
+#endif  
 static inline notrace unsigned long arch_local_save_flags(void)
 {
 	unsigned long flags;
@@ -96,7 +78,6 @@ static inline notrace unsigned long arch_local_save_flags(void)
 		     : "memory");
 	return flags;
 }
-
 static inline notrace void arch_local_irq_restore(unsigned long flags)
 {
 	asm volatile("	mts	rmsr, %0	\n"
@@ -105,15 +86,12 @@ static inline notrace void arch_local_irq_restore(unsigned long flags)
 		     : "r"(flags)
 		     : "memory");
 }
-
 static inline notrace bool arch_irqs_disabled_flags(unsigned long flags)
 {
 	return (flags & MSR_IE) == 0;
 }
-
 static inline notrace bool arch_irqs_disabled(void)
 {
 	return arch_irqs_disabled_flags(arch_local_save_flags());
 }
-
-#endif /* _ASM_MICROBLAZE_IRQFLAGS_H */
+#endif  

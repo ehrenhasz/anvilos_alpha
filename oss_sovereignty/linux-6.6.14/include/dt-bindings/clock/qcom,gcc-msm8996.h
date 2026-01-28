@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8996_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8996_H
-
 #define GPLL0_EARLY						0
 #define GPLL0							1
 #define GPLL1_EARLY						2
@@ -236,7 +230,6 @@
 #define GCC_AGGRE0_NOC_MPU_CFG_AHB_CLK				227
 #define GCC_MMSS_GPLL0_DIV_CLK					228
 #define GCC_MSS_GPLL0_DIV_CLK					229
-
 #define GCC_SYSTEM_NOC_BCR					0
 #define GCC_CONFIG_NOC_BCR					1
 #define GCC_PERIPH_NOC_BCR					2
@@ -343,9 +336,6 @@
 #define GCC_USB3_PHY_BCR					103
 #define GCC_USB3PHY_PHY_BCR					104
 #define GCC_MSS_RESTART						105
-
-
-/* Indexes for GDSCs */
 #define AGGRE0_NOC_GDSC			0
 #define HLOS1_VOTE_AGGRE0_NOC_GDSC	1
 #define HLOS1_VOTE_LPASS_ADSP_GDSC	2
@@ -355,5 +345,4 @@
 #define PCIE1_GDSC			6
 #define PCIE2_GDSC			7
 #define UFS_GDSC			8
-
 #endif

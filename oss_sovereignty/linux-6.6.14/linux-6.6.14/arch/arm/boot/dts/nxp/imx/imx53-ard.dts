@@ -1,29 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- */
-
 /dts-v1/;
 #include <dt-bindings/input/input.h>
 #include "imx53.dtsi"
-
 / {
 	model = "Freescale i.MX53 Automotive Reference Design Board";
 	compatible = "fsl,imx53-ard", "fsl,imx53";
-
 	memory@70000000 {
 		device_type = "memory";
 		reg = <0x70000000 0x40000000>;
 	};
-
 	eim-cs1@f4000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "fsl,eim-bus", "simple-bus";
 		reg = <0xf4000000 0x3ff0000>;
 		ranges;
-
 		ethernet@f4000000 {
 			compatible = "smsc,lan9220", "smsc,lan9115";
 			reg = <0xf4000000 0x2000000>;
@@ -31,18 +21,11 @@
 			interrupt-parent = <&gpio2>;
 			interrupts = <31 0x8>;
 			reg-io-width = <4>;
-			/*
-			 * VDD33A and VDDVARIO of LAN9220 are supplied by
-			 * SW4_3V3 of LTC3589.  Before the regulator driver
-			 * for this PMIC is available, we use a fixed dummy
-			 * 3V3 regulator to get LAN9220 driver probing work.
-			 */
 			vdd33a-supply = <&reg_3p3v>;
 			vddvario-supply = <&reg_3p3v>;
 			smsc,irq-push-pull;
 		};
 	};
-
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
 		regulator-name = "3P3V";
@@ -50,37 +33,31 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-
 	gpio-keys {
 		compatible = "gpio-keys";
-
 		key-home {
 			label = "Home";
 			gpios = <&gpio5 10 0>;
 			linux,code = <KEY_HOME>;
 			wakeup-source;
 		};
-
 		key-back {
 			label = "Back";
 			gpios = <&gpio5 11 0>;
 			linux,code = <KEY_BACK>;
 			wakeup-source;
 		};
-
 		key-program {
 			label = "Program";
 			gpios = <&gpio5 12 0>;
 			linux,code = <KEY_PROGRAM >;
 			wakeup-source;
 		};
-
 		key-volume-up {
 			label = "Volume Up";
 			gpios = <&gpio5 13 0>;
 			linux,code = <KEY_VOLUMEUP>;
 		};
-
 		key-volume-down {
 			label = "Volume Down";
 			gpios = <&gpio4 0 0>;
@@ -88,7 +65,6 @@
 		};
 	};
 };
-
 &esdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc1>;
@@ -96,11 +72,9 @@
 	wp-gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
-
 	imx53-ard {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
@@ -140,7 +114,6 @@
 				MX53_PAD_EIM_CS1__EMI_WEIM_CS_1	     0x80000000
 			>;
 		};
-
 		pinctrl_esdhc1: esdhc1grp {
 			fsl,pins = <
 				MX53_PAD_SD1_DATA0__ESDHC1_DAT0		0x1d5
@@ -155,7 +128,6 @@
 				MX53_PAD_SD1_CLK__ESDHC1_CLK		0x1d5
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX53_PAD_PATA_DIOW__UART1_TXD_MUX	0x1e4
@@ -164,7 +136,6 @@
 		};
 	};
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;

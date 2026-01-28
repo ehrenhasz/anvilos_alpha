@@ -1,43 +1,31 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
-
 /dts-v1/;
 #include "imx1.dtsi"
-
 / {
 	model = "Freescale MX1 ADS";
 	compatible = "fsl,imx1ads", "fsl,imx1";
-
 	chosen {
 		stdout-path = &uart1;
 	};
-
 	memory@8000000 {
 		device_type = "memory";
 		reg = <0x08000000 0x04000000>;
 	};
 };
-
 &cspi1 {
 	pinctrl-0 = <&pinctrl_cspi1>;
 	cs-gpios = <&gpio3 15 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &i2c {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c>;
 	status = "okay";
-
 	extgpio0: pcf8575@22 {
 		compatible = "nxp,pcf8575";
 		reg = <0x22>;
 		gpio-controller;
 		#gpio-cells = <2>;
 	};
-
 	extgpio1: pcf8575@24 {
 		compatible = "nxp,pcf8575";
 		reg = <0x24>;
@@ -45,26 +33,22 @@
 		#gpio-cells = <2>;
 	};
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	uart-has-rtscts;
 	status = "okay";
 };
-
 &weim {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_weim>;
 	status = "okay";
-
 	nor: nor@0,0 {
 		compatible = "cfi-flash";
 		reg = <0 0x00000000 0x02000000>;
@@ -74,7 +58,6 @@
 		#size-cells = <1>;
 	};
 };
-
 &iomuxc {
 	imx1-ads {
 		pinctrl_cspi1: cspi1grp {
@@ -86,14 +69,12 @@
 				MX1_PAD_SPI1_SS__GPIO3_15	0x0
 			>;
 		};
-
 		pinctrl_i2c: i2cgrp {
 			fsl,pins = <
 				MX1_PAD_I2C_SCL__I2C_SCL	0x0
 				MX1_PAD_I2C_SDA__I2C_SDA	0x0
 			>;
 		};
-
 		pinctrl_uart1: uart1grp {
 			fsl,pins = <
 				MX1_PAD_UART1_TXD__UART1_TXD	0x0
@@ -102,7 +83,6 @@
 				MX1_PAD_UART1_RTS__UART1_RTS	0x0
 			>;
 		};
-
 		pinctrl_uart2: uart2grp {
 			fsl,pins = <
 				MX1_PAD_UART2_TXD__UART2_TXD	0x0
@@ -111,7 +91,6 @@
 				MX1_PAD_UART2_RTS__UART2_RTS	0x0
 			>;
 		};
-
 		pinctrl_weim: weimgrp {
 			fsl,pins = <
 				MX1_PAD_A0__A0			0x0

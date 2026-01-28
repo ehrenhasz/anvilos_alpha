@@ -1,48 +1,37 @@
-// SPDX-License-Identifier: GPL-2.0+
 /dts-v1/;
-
 #include "aspeed-g5.dtsi"
 #include <dt-bindings/gpio/aspeed-gpio.h>
-
 / {
 	model = "HXT StarDragon 4800 REP2 AST2520";
 	compatible = "hxt,stardragon4800-rep2-bmc", "aspeed,ast2500";
-
 	chosen {
 		stdout-path = &uart5;
 		bootargs = "console=ttyS4,115200 earlycon";
 	};
-
 	memory@80000000 {
 		reg = <0x80000000 0x40000000>;
 	};
-
 	iio-hwmon {
 		compatible = "iio-hwmon";
 		io-channels = <&adc 0>, <&adc 1>, <&adc 2>, <&adc 3>,
 						<&adc 4>, <&adc 5>, <&adc 6>, <&adc 8>;
 	};
-
 	iio-hwmon-battery {
 		compatible = "iio-hwmon";
 		io-channels = <&adc 7>;
 	};
-
 	leds {
 		compatible = "gpio-leds";
-
 		system_fault1 {
 			label = "System_fault1";
 			gpios = <&gpio ASPEED_GPIO(I, 3) GPIO_ACTIVE_LOW>;
 		};
-
 		system_fault2 {
 			label = "System_fault2";
 			gpios = <&gpio ASPEED_GPIO(I, 2) GPIO_ACTIVE_LOW>;
 		};
 	};
 };
-
 &fmc {
 	status = "okay";
 	flash@0 {
@@ -52,7 +41,6 @@
 #include "openbmc-flash-layout.dtsi"
 	};
 };
-
 &spi1 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -61,7 +49,6 @@
 		status = "okay";
 	};
 };
-
 &spi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_spi2ck_default
@@ -69,25 +56,20 @@
 			&pinctrl_spi2mosi_default
 			&pinctrl_spi2cs0_default>;
 };
-
 &uart3 {
 	status = "okay";
-
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_txd3_default &pinctrl_rxd3_default>;
 	current-speed = <115200>;
 };
-
 &uart5 {
 	status = "okay";
 };
-
 &mac0 {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_rgmii1_default &pinctrl_mdio1_default>;
 };
-
 &mac1 {
 	status = "okay";
 	pinctrl-names = "default";
@@ -97,14 +79,11 @@
 	clock-names = "MACCLK", "RCLK";
 	use-ncsi;
 };
-
 &i2c0 {
 	status = "okay";
 };
-
 &i2c1 {
 	status = "okay";
-
 	tmp421@1e {
 		compatible = "ti,tmp421";
 		reg = <0x1e>;
@@ -118,26 +97,20 @@
 		reg = <0x1c>;
 	};
 };
-
 &i2c2 {
 	status = "okay";
 };
-
 &i2c3 {
 	status = "okay";
 };
-
 &i2c4 {
 	status = "okay";
 };
-
 &i2c5 {
 	status = "okay";
 };
-
 &i2c6 {
 	status = "okay";
-
 	tmp421@1f {
 		compatible = "ti,tmp421";
 		reg = <0x1f>;
@@ -152,14 +125,11 @@
 		pagesize = <128>;
 	};
 };
-
 &i2c7 {
 	status = "okay";
 };
-
 &i2c8 {
 	status = "okay";
-
 	pca9641@70 {
 		compatible = "nxp,pca9641";
 		reg = <0x70>;
@@ -176,34 +146,27 @@
 			};
 		};
 	};
-
 	dps650ab@58 {
 		compatible = "delta,dps650ab";
 		reg = <0x58>;
 	};
-
 	dps650ab@59 {
 		compatible = "delta,dps650ab";
 		reg = <0x59>;
 	};
 };
-
 &i2c9 {
 	status = "okay";
 };
-
 &vuart {
 	status = "okay";
 };
-
 &gfx {
 	status = "okay";
 };
-
 &pinctrl {
 	aspeed,external-nodes = <&gfx &lhc>;
 };
-
 &gpio {
 	pin_gpio_c7 {
 		gpio-hog;

@@ -1,33 +1,6 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DCN20_DCCG_H__
 #define __DCN20_DCCG_H__
-
 #include "dccg.h"
-
 #define DCCG_COMMON_REG_LIST_DCN_BASE() \
 	SR(DPPCLK_DTO_CTRL),\
 	DCCG_SRII(DTO_PARAM, DPPCLK, 0),\
@@ -38,7 +11,6 @@
 	DCCG_SRII(PIXEL_RATE_CNTL, OTG, 0),\
 	DCCG_SRII(PIXEL_RATE_CNTL, OTG, 1),\
 	SR(DISPCLK_FREQ_CHANGE_CNTL)
-
 #define DCCG_REG_LIST_DCN2() \
 	DCCG_COMMON_REG_LIST_DCN_BASE(),\
 	DCCG_SRII(DTO_PARAM, DPPCLK, 4),\
@@ -47,16 +19,12 @@
 	DCCG_SRII(PIXEL_RATE_CNTL, OTG, 3),\
 	DCCG_SRII(PIXEL_RATE_CNTL, OTG, 4),\
 	DCCG_SRII(PIXEL_RATE_CNTL, OTG, 5)
-
 #define DCCG_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
 #define DCCG_SFI(reg_name, field_name, field_prefix, inst, post_fix)\
 	.field_prefix ## _ ## field_name[inst] = reg_name ## __ ## field_prefix ## inst ## _ ## field_name ## post_fix
-
 #define DCCG_SFII(block, reg_name, field_prefix, field_name, inst, post_fix)\
 	.field_prefix ## _ ## field_name[inst] = block ## inst ## _ ## reg_name ## __ ## field_prefix ## inst ## _ ## field_name ## post_fix
-
 #define DCCG_COMMON_MASK_SH_LIST_DCN_COMMON_BASE(mask_sh) \
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 0, mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_DB_EN, DPPCLK, 0, mask_sh),\
@@ -82,10 +50,6 @@
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, ADD_PIXEL, 1, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 0, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 1, mask_sh)
-
-
-
-
 #define DCCG_MASK_SH_LIST_DCN2(mask_sh) \
 	DCCG_COMMON_MASK_SH_LIST_DCN_COMMON_BASE(mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 4, mask_sh),\
@@ -100,7 +64,6 @@
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 3, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 4, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 5, mask_sh)
-
 #define DCCG_MASK_SH_LIST_DCN2_1(mask_sh) \
 	DCCG_COMMON_MASK_SH_LIST_DCN_COMMON_BASE(mask_sh),\
 	DCCG_SFI(DPPCLK_DTO_CTRL, DTO_ENABLE, DPPCLK, 4, mask_sh),\
@@ -111,8 +74,6 @@
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, ADD_PIXEL, 3, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 2, mask_sh),\
 	DCCG_SFII(OTG, PIXEL_RATE_CNTL, OTG, DROP_PIXEL, 3, mask_sh)
-
-
 #define DCCG_REG_FIELD_LIST(type) \
 	type DPPCLK0_DTO_PHASE;\
 	type DPPCLK0_DTO_MODULO;\
@@ -131,7 +92,6 @@
 	type DISPCLK_FREQ_CHANGE_CNTL;\
 	type OTG_ADD_PIXEL[MAX_PIPES];\
 	type OTG_DROP_PIXEL[MAX_PIPES];
-
 #define DCCG3_REG_FIELD_LIST(type) \
 	type HDMICHARCLK0_EN;\
 	type HDMICHARCLK0_SRC_SEL;\
@@ -141,7 +101,6 @@
 	type PHYBSYMCLK_FORCE_SRC_SEL;\
 	type PHYCSYMCLK_FORCE_EN;\
 	type PHYCSYMCLK_FORCE_SRC_SEL;
-
 #define DCCG31_REG_FIELD_LIST(type) \
 	type PHYDSYMCLK_FORCE_EN;\
 	type PHYDSYMCLK_FORCE_SRC_SEL;\
@@ -204,14 +163,12 @@
 	type PHYCSYMCLK_GATE_DISABLE; \
 	type PHYDSYMCLK_GATE_DISABLE; \
 	type PHYESYMCLK_GATE_DISABLE;
-
 #define DCCG314_REG_FIELD_LIST(type) \
 	type DSCCLK3_DTO_PHASE;\
 	type DSCCLK3_DTO_MODULO;\
 	type DSCCLK3_DTO_ENABLE;\
 	type DENTIST_DISPCLK_RDIVIDER;\
 	type DENTIST_DISPCLK_WDIVIDER;
-
 #define DCCG32_REG_FIELD_LIST(type) \
 	type DPSTREAMCLK0_EN;\
 	type DPSTREAMCLK1_EN;\
@@ -239,7 +196,6 @@
 	type DTBCLK_P3_SRC_SEL;\
 	type DTBCLK_P3_EN;\
 	type DENTIST_DISPCLK_CHG_DONE;
-
 struct dccg_shift {
 	DCCG_REG_FIELD_LIST(uint8_t)
 	DCCG3_REG_FIELD_LIST(uint8_t)
@@ -247,7 +203,6 @@ struct dccg_shift {
 	DCCG314_REG_FIELD_LIST(uint8_t)
 	DCCG32_REG_FIELD_LIST(uint8_t)
 };
-
 struct dccg_mask {
 	DCCG_REG_FIELD_LIST(uint32_t)
 	DCCG3_REG_FIELD_LIST(uint32_t)
@@ -255,7 +210,6 @@ struct dccg_mask {
 	DCCG314_REG_FIELD_LIST(uint32_t)
 	DCCG32_REG_FIELD_LIST(uint32_t)
 };
-
 struct dccg_registers {
 	uint32_t DPPCLK_DTO_CTRL;
 	uint32_t DPPCLK_DTO_PARAM[6];
@@ -293,36 +247,27 @@ struct dccg_registers {
 	uint32_t OTG_PIXEL_RATE_DIV;
 	uint32_t DTBCLK_P_CNTL;
 };
-
 struct dcn_dccg {
 	struct dccg base;
 	const struct dccg_registers *regs;
 	const struct dccg_shift *dccg_shift;
 	const struct dccg_mask *dccg_mask;
 };
-
 void dccg2_update_dpp_dto(struct dccg *dccg, int dpp_inst, int req_dppclk);
-
 void dccg2_get_dccg_ref_freq(struct dccg *dccg,
 		unsigned int xtalin_freq_inKhz,
 		unsigned int *dccg_ref_freq_inKhz);
-
 void dccg2_set_fifo_errdet_ovr_en(struct dccg *dccg,
 		bool en);
 void dccg2_otg_add_pixel(struct dccg *dccg,
 		uint32_t otg_inst);
 void dccg2_otg_drop_pixel(struct dccg *dccg,
 		uint32_t otg_inst);
-
-
 void dccg2_init(struct dccg *dccg);
-
 struct dccg *dccg2_create(
 	struct dc_context *ctx,
 	const struct dccg_registers *regs,
 	const struct dccg_shift *dccg_shift,
 	const struct dccg_mask *dccg_mask);
-
 void dcn_dccg_destroy(struct dccg **dccg);
-
-#endif //__DCN20_DCCG_H__
+#endif  

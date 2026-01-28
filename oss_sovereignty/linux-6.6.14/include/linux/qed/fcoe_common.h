@@ -1,19 +1,6 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015 QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
-
 #ifndef __FCOE_COMMON__
 #define __FCOE_COMMON__
-
-/*********************/
-/* FCOE FW CONSTANTS */
-/*********************/
-
 #define FC_ABTS_REPLY_MAX_PAYLOAD_LEN	12
-
-/* The fcoe storm task context protection-information of Ystorm */
 struct protection_info_ctx {
 	__le16 flags;
 #define PROTECTION_INFO_CTX_HOST_INTERFACE_MASK		0x3
@@ -31,41 +18,27 @@ struct protection_info_ctx {
 	u8 dix_block_size;
 	u8 dst_size;
 };
-
-/* The fcoe storm task context protection-information of Ystorm */
 union protection_info_union_ctx {
 	struct protection_info_ctx info;
 	__le32 value;
 };
-
-/* FCP CMD payload */
 struct fcoe_fcp_cmd_payload {
 	__le32 opaque[8];
 };
-
-/* FCP RSP payload */
 struct fcoe_fcp_rsp_payload {
 	__le32 opaque[6];
 };
-
-/* FCP RSP payload */
 struct fcp_rsp_payload_padded {
 	struct fcoe_fcp_rsp_payload rsp_payload;
 	__le32 reserved[2];
 };
-
-/* FCP RSP payload */
 struct fcoe_fcp_xfer_payload {
 	__le32 opaque[3];
 };
-
-/* FCP RSP payload */
 struct fcp_xfer_payload_padded {
 	struct fcoe_fcp_xfer_payload xfer_payload;
 	__le32 reserved[5];
 };
-
-/* Task params */
 struct fcoe_tx_data_params {
 	__le32 data_offset;
 	__le32 offset_in_io;
@@ -85,8 +58,6 @@ struct fcoe_tx_data_params {
 	__le16 seq_id;
 	__le16 reserved3;
 };
-
-/* Middle path parameters: FC header fields provided by the driver */
 struct fcoe_tx_mid_path_params {
 	__le32 parameter;
 	u8 r_ctl;
@@ -96,22 +67,16 @@ struct fcoe_tx_mid_path_params {
 	__le16 rx_id;
 	__le16 ox_id;
 };
-
-/* Task params */
 struct fcoe_tx_params {
 	struct fcoe_tx_data_params data;
 	struct fcoe_tx_mid_path_params mid_path;
 };
-
-/* Union of FCP CMD payload \ TX params \ ABTS \ Cleanup */
 union fcoe_tx_info_union_ctx {
 	struct fcoe_fcp_cmd_payload fcp_cmd_payload;
 	struct fcp_rsp_payload_padded fcp_rsp_payload;
 	struct fcp_xfer_payload_padded fcp_xfer_payload;
 	struct fcoe_tx_params tx_params;
 };
-
-/* Data sgl */
 struct fcoe_slow_sgl_ctx {
 	struct regpair base_sgl_addr;
 	__le16 curr_sge_off;
@@ -119,14 +84,10 @@ struct fcoe_slow_sgl_ctx {
 	__le16 curr_sgl_index;
 	__le16 reserved;
 };
-
-/* Union of DIX SGL \ cached DIX sges */
 union fcoe_dix_desc_ctx {
 	struct fcoe_slow_sgl_ctx dix_sgl;
 	struct scsi_sge cached_dix_sge;
 };
-
-/* The fcoe storm task context of Ystorm */
 struct ystorm_fcoe_task_st_ctx {
 	u8 task_type;
 	u8 sgl_mode;
@@ -149,7 +110,6 @@ struct ystorm_fcoe_task_st_ctx {
 	__le32 task_rety_identifier;
 	u8 reserved2[8];
 };
-
 struct ystorm_fcoe_task_ag_ctx {
 	u8 byte0;
 	u8 byte1;
@@ -205,7 +165,6 @@ struct ystorm_fcoe_task_ag_ctx {
 	__le32 reg1;
 	__le32 reg2;
 };
-
 struct tstorm_fcoe_task_ag_ctx {
 	u8 reserved;
 	u8 byte1;
@@ -284,28 +243,20 @@ struct tstorm_fcoe_task_ag_ctx {
 	__le32 data_offset_end_of_seq;
 	__le32 data_offset_next;
 };
-
-/* Cached data sges */
 struct fcoe_exp_ro {
 	__le32 data_offset;
 	__le32 reserved;
 };
-
-/* Union of Cleanup address \ expected relative offsets */
 union fcoe_cleanup_addr_exp_ro_union {
 	struct regpair abts_rsp_fc_payload_hi;
 	struct fcoe_exp_ro exp_ro;
 };
-
-/* Fields coppied from ABTSrsp pckt */
 struct fcoe_abts_pkt {
 	__le32 abts_rsp_fc_payload_lo;
 	__le16 abts_rsp_rx_id;
 	u8 abts_rsp_rctl;
 	u8 reserved2;
 };
-
-/* FW read- write (modifyable) part The fcoe task storm context of Tstorm */
 struct fcoe_tstorm_fcoe_task_st_ctx_read_write {
 	union fcoe_cleanup_addr_exp_ro_union cleanup_addr_exp_ro_union;
 	__le16 flags;
@@ -334,8 +285,6 @@ struct fcoe_tstorm_fcoe_task_st_ctx_read_write {
 	__le16 ooo_rx_seq_cnt;
 	__le16 reserved1;
 };
-
-/* FW read only part The fcoe task storm context of Tstorm */
 struct fcoe_tstorm_fcoe_task_st_ctx_read_only {
 	u8 task_type;
 	u8 dev_type;
@@ -345,13 +294,10 @@ struct fcoe_tstorm_fcoe_task_st_ctx_read_only {
 	__le32 fcp_cmd_trns_size;
 	__le32 rsrv;
 };
-
-/** The fcoe task storm context of Tstorm */
 struct tstorm_fcoe_task_st_ctx {
 	struct fcoe_tstorm_fcoe_task_st_ctx_read_write read_write;
 	struct fcoe_tstorm_fcoe_task_st_ctx_read_only read_only;
 };
-
 struct mstorm_fcoe_task_ag_ctx {
 	u8 byte0;
 	u8 byte1;
@@ -407,8 +353,6 @@ struct mstorm_fcoe_task_ag_ctx {
 	__le32 expected_bytes;
 	__le32 reg2;
 };
-
-/* The fcoe task storm context of Mstorm */
 struct mstorm_fcoe_task_st_ctx {
 	struct regpair rsp_buf_addr;
 	__le32 rsrv[2];
@@ -439,7 +383,6 @@ struct mstorm_fcoe_task_st_ctx {
 #define MSTORM_FCOE_TASK_ST_CTX_RESERVED_SHIFT			14
 	struct scsi_cached_sges data_desc;
 };
-
 struct ustorm_fcoe_task_ag_ctx {
 	u8 reserved;
 	u8 byte1;
@@ -497,8 +440,6 @@ struct ustorm_fcoe_task_ag_ctx {
 	__le32 reg4;
 	__le32 reg5;
 };
-
-/* FCoE task context */
 struct fcoe_task_context {
 	struct ystorm_fcoe_task_st_ctx ystorm_st_context;
 	struct regpair ystorm_st_padding[2];
@@ -513,31 +454,23 @@ struct fcoe_task_context {
 	struct ustorm_fcoe_task_ag_ctx ustorm_ag_context;
 	struct rdif_task_context rdif_context;
 };
-
-/* FCoE additional WQE (Sq/XferQ) information */
 union fcoe_additional_info_union {
 	__le32 previous_tid;
 	__le32 parent_tid;
 	__le32 burst_length;
 	__le32 seq_rec_updated_offset;
 };
-
-/* FCoE Ramrod Command IDs */
 enum fcoe_completion_status {
 	FCOE_COMPLETION_STATUS_SUCCESS,
 	FCOE_COMPLETION_STATUS_FCOE_VER_ERR,
 	FCOE_COMPLETION_STATUS_SRC_MAC_ADD_ARR_ERR,
 	MAX_FCOE_COMPLETION_STATUS
 };
-
-/* FC address (SID/DID) network presentation */
 struct fc_addr_nw {
 	u8 addr_lo;
 	u8 addr_mid;
 	u8 addr_hi;
 };
-
-/* FCoE connection offload */
 struct fcoe_conn_offload_ramrod_data {
 	struct regpair sq_pbl_addr;
 	struct regpair sq_curr_page_addr;
@@ -588,28 +521,20 @@ struct fcoe_conn_offload_ramrod_data {
 	u8 def_q_idx;
 	u8 reserved[5];
 };
-
-/* FCoE terminate connection request */
 struct fcoe_conn_terminate_ramrod_data {
 	struct regpair terminate_params_addr;
 };
-
-/* FCoE device type */
 enum fcoe_device_type {
 	FCOE_TASK_DEV_TYPE_DISK,
 	FCOE_TASK_DEV_TYPE_TAPE,
 	MAX_FCOE_DEVICE_TYPE
 };
-
-/* Data sgl */
 struct fcoe_fast_sgl_ctx {
 	struct regpair sgl_start_addr;
 	__le32 sgl_byte_offset;
 	__le16 task_reuse_cnt;
 	__le16 init_offset_in_first_sge;
 };
-
-/* FCoE firmware function init */
 struct fcoe_init_func_ramrod_data {
 	struct scsi_init_func_params func_params;
 	struct scsi_init_func_queues q_params;
@@ -617,16 +542,12 @@ struct fcoe_init_func_ramrod_data {
 	__le16 sq_num_pages_in_pbl;
 	__le32 reserved[3];
 };
-
-/* FCoE: Mode of the connection: Target or Initiator or both */
 enum fcoe_mode_type {
 	FCOE_INITIATOR_MODE = 0x0,
 	FCOE_TARGET_MODE = 0x1,
 	FCOE_BOTH_OR_NOT_CHOSEN = 0x3,
 	MAX_FCOE_MODE_TYPE
 };
-
-/* Per PF FCoE receive path statistics - tStorm RAM structure */
 struct fcoe_rx_stat {
 	struct regpair fcoe_rx_byte_cnt;
 	struct regpair fcoe_rx_data_pkt_cnt;
@@ -639,8 +560,6 @@ struct fcoe_rx_stat {
 	__le32 fcoe_silent_drop_total_pkt_cnt;
 	__le32 rsrv;
 };
-
-/* FCoE SQE request type */
 enum fcoe_sqe_request_type {
 	SEND_FCOE_CMD,
 	SEND_FCOE_MIDPATH,
@@ -656,13 +575,9 @@ enum fcoe_sqe_request_type {
 	SEND_FCOE_TARGET_ABTS_RSP,
 	MAX_FCOE_SQE_REQUEST_TYPE
 };
-
-/* FCoe statistics request */
 struct fcoe_stat_ramrod_data {
 	struct regpair stat_params_addr;
 };
-
-/* FCoE task type */
 enum fcoe_task_type {
 	FCOE_TASK_TYPE_WRITE_INITIATOR,
 	FCOE_TASK_TYPE_READ_INITIATOR,
@@ -679,16 +594,12 @@ enum fcoe_task_type {
 	FCOE_TASK_TYPE_ENUM_SIZE,
 	MAX_FCOE_TASK_TYPE
 };
-
-/* Per PF FCoE transmit path statistics - pStorm RAM structure */
 struct fcoe_tx_stat {
 	struct regpair fcoe_tx_byte_cnt;
 	struct regpair fcoe_tx_data_pkt_cnt;
 	struct regpair fcoe_tx_xfer_pkt_cnt;
 	struct regpair fcoe_tx_other_pkt_cnt;
 };
-
-/* FCoE SQ/XferQ element */
 struct fcoe_wqe {
 	__le16 task_id;
 	__le16 flags;
@@ -708,8 +619,6 @@ struct fcoe_wqe {
 #define FCOE_WQE_RESERVED1_SHIFT	12
 	union fcoe_additional_info_union additional_info_union;
 };
-
-/* FCoE XFRQ element */
 struct xfrqe_prot_flags {
 	u8 flags;
 #define XFRQE_PROT_FLAGS_PROT_INTERVAL_SIZE_LOG_MASK	0xF
@@ -721,8 +630,6 @@ struct xfrqe_prot_flags {
 #define XFRQE_PROT_FLAGS_RESERVED_MASK			0x1
 #define XFRQE_PROT_FLAGS_RESERVED_SHIFT			7
 };
-
-/* FCoE doorbell data */
 struct fcoe_db_data {
 	u8 params;
 #define FCOE_DB_DATA_DEST_MASK		0x3
@@ -738,5 +645,4 @@ struct fcoe_db_data {
 	u8 agg_flags;
 	__le16 sq_prod;
 };
-
-#endif /* __FCOE_COMMON__ */
+#endif  

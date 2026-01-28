@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_FPA_DEFS_H__
 #define __CVMX_FPA_DEFS_H__
-
 #define CVMX_FPA_ADDR_RANGE_ERROR (CVMX_ADD_IO_SEG(0x0001180028000458ull))
 #define CVMX_FPA_BIST_STATUS (CVMX_ADD_IO_SEG(0x00011800280000E8ull))
 #define CVMX_FPA_CTL_STATUS (CVMX_ADD_IO_SEG(0x0001180028000050ull))
@@ -67,7 +39,6 @@
 #define CVMX_FPA_WART_STATUS (CVMX_ADD_IO_SEG(0x00011800280000E0ull))
 #define CVMX_FPA_WQE_THRESHOLD (CVMX_ADD_IO_SEG(0x0001180028000468ull))
 #define CVMX_FPA_CLK_COUNT (CVMX_ADD_IO_SEG(0x00012800000000F0ull))
-
 union cvmx_fpa_addr_range_error {
 	uint64_t u64;
 	struct cvmx_fpa_addr_range_error_s {
@@ -82,7 +53,6 @@ union cvmx_fpa_addr_range_error {
 #endif
 	} s;
 };
-
 union cvmx_fpa_bist_status {
 	uint64_t u64;
 	struct cvmx_fpa_bist_status_s {
@@ -103,7 +73,6 @@ union cvmx_fpa_bist_status {
 #endif
 	} s;
 };
-
 union cvmx_fpa_ctl_status {
 	uint64_t u64;
 	struct cvmx_fpa_ctl_status_s {
@@ -151,7 +120,6 @@ union cvmx_fpa_ctl_status {
 #endif
 	} cn30xx;
 };
-
 union cvmx_fpa_fpfx_marks {
 	uint64_t u64;
 	struct cvmx_fpa_fpfx_marks_s {
@@ -166,7 +134,6 @@ union cvmx_fpa_fpfx_marks {
 #endif
 	} s;
 };
-
 union cvmx_fpa_fpfx_size {
 	uint64_t u64;
 	struct cvmx_fpa_fpfx_size_s {
@@ -179,7 +146,6 @@ union cvmx_fpa_fpfx_size {
 #endif
 	} s;
 };
-
 union cvmx_fpa_fpf0_marks {
 	uint64_t u64;
 	struct cvmx_fpa_fpf0_marks_s {
@@ -194,7 +160,6 @@ union cvmx_fpa_fpf0_marks {
 #endif
 	} s;
 };
-
 union cvmx_fpa_fpf0_size {
 	uint64_t u64;
 	struct cvmx_fpa_fpf0_size_s {
@@ -207,7 +172,6 @@ union cvmx_fpa_fpf0_size {
 #endif
 	} s;
 };
-
 union cvmx_fpa_fpf8_marks {
 	uint64_t u64;
 	struct cvmx_fpa_fpf8_marks_s {
@@ -222,7 +186,6 @@ union cvmx_fpa_fpf8_marks {
 #endif
 	} s;
 };
-
 union cvmx_fpa_fpf8_size {
 	uint64_t u64;
 	struct cvmx_fpa_fpf8_size_s {
@@ -235,7 +198,6 @@ union cvmx_fpa_fpf8_size {
 #endif
 	} s;
 };
-
 union cvmx_fpa_int_enb {
 	uint64_t u64;
 	struct cvmx_fpa_int_enb_s {
@@ -702,7 +664,6 @@ union cvmx_fpa_int_enb {
 #endif
 	} cn68xx;
 };
-
 union cvmx_fpa_int_sum {
 	uint64_t u64;
 	struct cvmx_fpa_int_sum_s {
@@ -1070,7 +1031,6 @@ union cvmx_fpa_int_sum {
 #endif
 	} cn63xx;
 };
-
 union cvmx_fpa_packet_threshold {
 	uint64_t u64;
 	struct cvmx_fpa_packet_threshold_s {
@@ -1083,7 +1043,6 @@ union cvmx_fpa_packet_threshold {
 #endif
 	} s;
 };
-
 union cvmx_fpa_poolx_end_addr {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_end_addr_s {
@@ -1096,7 +1055,6 @@ union cvmx_fpa_poolx_end_addr {
 #endif
 	} s;
 };
-
 union cvmx_fpa_poolx_start_addr {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_start_addr_s {
@@ -1109,7 +1067,6 @@ union cvmx_fpa_poolx_start_addr {
 #endif
 	} s;
 };
-
 union cvmx_fpa_poolx_threshold {
 	uint64_t u64;
 	struct cvmx_fpa_poolx_threshold_s {
@@ -1131,7 +1088,6 @@ union cvmx_fpa_poolx_threshold {
 #endif
 	} cn61xx;
 };
-
 union cvmx_fpa_quex_available {
 	uint64_t u64;
 	struct cvmx_fpa_quex_available_s {
@@ -1153,7 +1109,6 @@ union cvmx_fpa_quex_available {
 #endif
 	} cn30xx;
 };
-
 union cvmx_fpa_quex_page_index {
 	uint64_t u64;
 	struct cvmx_fpa_quex_page_index_s {
@@ -1166,7 +1121,6 @@ union cvmx_fpa_quex_page_index {
 #endif
 	} s;
 };
-
 union cvmx_fpa_que8_page_index {
 	uint64_t u64;
 	struct cvmx_fpa_que8_page_index_s {
@@ -1179,7 +1133,6 @@ union cvmx_fpa_que8_page_index {
 #endif
 	} s;
 };
-
 union cvmx_fpa_que_act {
 	uint64_t u64;
 	struct cvmx_fpa_que_act_s {
@@ -1194,7 +1147,6 @@ union cvmx_fpa_que_act {
 #endif
 	} s;
 };
-
 union cvmx_fpa_que_exp {
 	uint64_t u64;
 	struct cvmx_fpa_que_exp_s {
@@ -1209,7 +1161,6 @@ union cvmx_fpa_que_exp {
 #endif
 	} s;
 };
-
 union cvmx_fpa_wart_ctl {
 	uint64_t u64;
 	struct cvmx_fpa_wart_ctl_s {
@@ -1222,7 +1173,6 @@ union cvmx_fpa_wart_ctl {
 #endif
 	} s;
 };
-
 union cvmx_fpa_wart_status {
 	uint64_t u64;
 	struct cvmx_fpa_wart_status_s {
@@ -1235,7 +1185,6 @@ union cvmx_fpa_wart_status {
 #endif
 	} s;
 };
-
 union cvmx_fpa_wqe_threshold {
 	uint64_t u64;
 	struct cvmx_fpa_wqe_threshold_s {
@@ -1248,5 +1197,4 @@ union cvmx_fpa_wqe_threshold {
 #endif
 	} s;
 };
-
 #endif

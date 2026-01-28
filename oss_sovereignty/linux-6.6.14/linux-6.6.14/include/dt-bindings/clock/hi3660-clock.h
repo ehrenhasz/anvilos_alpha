@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2016-2017 Linaro Ltd.
- * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
- */
-
 #ifndef __DTS_HI3660_CLOCK_H
 #define __DTS_HI3660_CLOCK_H
-
-/* fixed rate clocks */
 #define HI3660_CLKIN_SYS		0
 #define HI3660_CLKIN_REF		1
 #define HI3660_CLK_FLL_SRC		2
@@ -23,8 +15,6 @@
 #define HI3660_OSC19M			12
 #define HI3660_CLK_480M			13
 #define HI3660_CLK_INV			14
-
-/* clk in crgctrl */
 #define HI3660_FACTOR_UART3		15
 #define HI3660_CLK_FACTOR_MMC		16
 #define HI3660_CLK_GATE_I2C0		17
@@ -167,15 +157,9 @@
 #define HI3660_CLK_ANGT_ISP_SNCLK	154
 #define HI3660_CLK_MUX_ISP_SNCLK	155
 #define HI3660_CLK_DIV_ISP_SNCLK	156
-
-/* clk in pmuctrl */
 #define HI3660_GATE_ABB_192		0
-
-/* clk in pctrl */
 #define HI3660_GATE_UFS_TCXO_EN		0
 #define HI3660_GATE_USB_TCXO_EN		1
-
-/* clk in sctrl */
 #define HI3660_PCLK_AO_GPIO0		0
 #define HI3660_PCLK_AO_GPIO1		1
 #define HI3660_PCLK_AO_GPIO2		2
@@ -196,19 +180,14 @@
 #define HI3660_PCLK_DIV_MMBUF		17
 #define HI3660_ACLK_DIV_MMBUF		18
 #define HI3660_CLK_DIV_PCIEPHY		19
-
-/* clk in iomcu */
 #define HI3660_CLK_I2C0_IOMCU		0
 #define HI3660_CLK_I2C1_IOMCU		1
 #define HI3660_CLK_I2C2_IOMCU		2
 #define HI3660_CLK_I2C6_IOMCU		3
 #define HI3660_CLK_IOMCU_PERI0		4
-
-/* clk in stub clock */
 #define HI3660_CLK_STUB_CLUSTER0	0
 #define HI3660_CLK_STUB_CLUSTER1	1
 #define HI3660_CLK_STUB_GPU		2
 #define HI3660_CLK_STUB_DDR		3
 #define HI3660_CLK_STUB_NUM		4
-
-#endif	/* __DTS_HI3660_CLOCK_H */
+#endif	 

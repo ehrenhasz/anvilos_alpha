@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2005 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
-
 #ifndef __RECOVER_DOT_H__
 #define __RECOVER_DOT_H__
-
 int dlm_wait_function(struct dlm_ls *ls, int (*testfn) (struct dlm_ls *ls));
 uint32_t dlm_recover_status(struct dlm_ls *ls);
 void dlm_set_recover_status(struct dlm_ls *ls, uint32_t status);
@@ -27,6 +15,4 @@ int dlm_create_root_list(struct dlm_ls *ls);
 void dlm_release_root_list(struct dlm_ls *ls);
 void dlm_clear_toss(struct dlm_ls *ls);
 void dlm_recover_rsbs(struct dlm_ls *ls);
-
-#endif				/* __RECOVER_DOT_H__ */
-
+#endif				 

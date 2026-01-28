@@ -1,28 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
 #if defined(_KERNEL) && defined(HAVE_QAT)
 #include <sys/zfs_context.h>
 #include <sys/qat.h>
-
 qat_stats_t qat_stats = {
 	{ "comp_requests",			KSTAT_DATA_UINT64 },
 	{ "comp_total_in_bytes",		KSTAT_DATA_UINT64 },
@@ -42,9 +20,7 @@ qat_stats_t qat_stats = {
 	{ "cksum_total_in_bytes",		KSTAT_DATA_UINT64 },
 	{ "cksum_fails",			KSTAT_DATA_UINT64 },
 };
-
 static kstat_t *qat_ksp = NULL;
-
 CpaStatus
 qat_mem_alloc_contig(void **pp_mem_addr, Cpa32U size_bytes)
 {
@@ -53,7 +29,6 @@ qat_mem_alloc_contig(void **pp_mem_addr, Cpa32U size_bytes)
 		return (CPA_STATUS_RESOURCE);
 	return (CPA_STATUS_SUCCESS);
 }
-
 void
 qat_mem_free_contig(void **pp_mem_addr)
 {
@@ -62,7 +37,6 @@ qat_mem_free_contig(void **pp_mem_addr)
 		*pp_mem_addr = NULL;
 	}
 }
-
 int
 qat_init(void)
 {
@@ -73,23 +47,14 @@ qat_init(void)
 		qat_ksp->ks_data = &qat_stats;
 		kstat_install(qat_ksp);
 	}
-
-	/*
-	 * Just set the disable flag when qat init failed, qat can be
-	 * turned on again in post-process after zfs module is loaded, e.g.:
-	 * echo 0 > /sys/module/zfs/parameters/zfs_qat_compress_disable
-	 */
 	if (qat_dc_init() != 0)
 		zfs_qat_compress_disable = 1;
-
 	if (qat_cy_init() != 0) {
 		zfs_qat_checksum_disable = 1;
 		zfs_qat_encrypt_disable = 1;
 	}
-
 	return (0);
 }
-
 void
 qat_fini(void)
 {
@@ -97,9 +62,7 @@ qat_fini(void)
 		kstat_delete(qat_ksp);
 		qat_ksp = NULL;
 	}
-
 	qat_cy_fini();
 	qat_dc_fini();
 }
-
 #endif

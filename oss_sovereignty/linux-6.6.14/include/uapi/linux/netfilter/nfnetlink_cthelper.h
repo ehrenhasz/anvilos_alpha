@@ -1,17 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _NFNL_CTHELPER_H_
 #define _NFNL_CTHELPER_H_
-
 #define NFCT_HELPER_STATUS_DISABLED	0
 #define NFCT_HELPER_STATUS_ENABLED	1
-
 enum nfnl_cthelper_msg_types {
 	NFNL_MSG_CTHELPER_NEW,
 	NFNL_MSG_CTHELPER_GET,
 	NFNL_MSG_CTHELPER_DEL,
 	NFNL_MSG_CTHELPER_MAX
 };
-
 enum nfnl_cthelper_type {
 	NFCTH_UNSPEC,
 	NFCTH_NAME,
@@ -23,7 +19,6 @@ enum nfnl_cthelper_type {
 	__NFCTH_MAX
 };
 #define NFCTH_MAX (__NFCTH_MAX - 1)
-
 enum nfnl_cthelper_policy_type {
 	NFCTH_POLICY_SET_UNSPEC,
 	NFCTH_POLICY_SET_NUM,
@@ -35,7 +30,6 @@ enum nfnl_cthelper_policy_type {
 	__NFCTH_POLICY_SET_MAX
 };
 #define NFCTH_POLICY_SET_MAX (__NFCTH_POLICY_SET_MAX - 1)
-
 enum nfnl_cthelper_pol_type {
 	NFCTH_POLICY_UNSPEC,
 	NFCTH_POLICY_NAME,
@@ -44,7 +38,6 @@ enum nfnl_cthelper_pol_type {
 	__NFCTH_POLICY_MAX
 };
 #define NFCTH_POLICY_MAX (__NFCTH_POLICY_MAX - 1)
-
 enum nfnl_cthelper_tuple_type {
 	NFCTH_TUPLE_UNSPEC,
 	NFCTH_TUPLE_L3PROTONUM,
@@ -52,5 +45,4 @@ enum nfnl_cthelper_tuple_type {
 	__NFCTH_TUPLE_MAX,
 };
 #define NFCTH_TUPLE_MAX (__NFCTH_TUPLE_MAX - 1)
-
-#endif /* _NFNL_CTHELPER_H */
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *   Timers Module
- */
-
 #ifndef __ASM_MACH_REGS_TIMERS_H
 #define __ASM_MACH_REGS_TIMERS_H
-
 #define TMR_CCR		(0x0000)
 #define TMR_TN_MM(n, m)	(0x0004 + ((n) << 3) + (((n) + (m)) << 2))
 #define TMR_CR(n)	(0x0028 + ((n) << 2))
@@ -26,9 +20,7 @@
 #define TMR_WFAR	(0x009c)
 #define TMR_WSAR	(0x00A0)
 #define TMR_CVWR(n)	(0x00A4 + ((n) << 2))
-
 #define TMR_CCR_CS_0(x)	(((x) & 0x3) << 0)
 #define TMR_CCR_CS_1(x)	(((x) & 0x7) << 2)
 #define TMR_CCR_CS_2(x)	(((x) & 0x3) << 5)
-
-#endif /* __ASM_MACH_REGS_TIMERS_H */
+#endif  

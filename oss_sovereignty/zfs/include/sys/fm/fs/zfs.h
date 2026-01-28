@@ -1,41 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
-
-/*
- *  Copyright (c) 2020 by Delphix. All rights reserved.
- */
-
 #ifndef	_SYS_FM_FS_ZFS_H
 #define	_SYS_FM_FS_ZFS_H
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
 #define	ZFS_ERROR_CLASS				"fs.zfs"
-
 #define	FM_EREPORT_ZFS_CHECKSUM			"checksum"
 #define	FM_EREPORT_ZFS_AUTHENTICATION		"authentication"
 #define	FM_EREPORT_ZFS_IO			"io"
@@ -55,7 +23,6 @@ extern "C" {
 #define	FM_EREPORT_ZFS_PROBE_FAILURE		"probe_failure"
 #define	FM_EREPORT_ZFS_LOG_REPLAY		"log_replay"
 #define	FM_EREPORT_ZFS_CONFIG_CACHE_WRITE	"config_cache_write"
-
 #define	FM_EREPORT_PAYLOAD_ZFS_POOL		"pool"
 #define	FM_EREPORT_PAYLOAD_ZFS_POOL_FAILMODE	"pool_failmode"
 #define	FM_EREPORT_PAYLOAD_ZFS_POOL_GUID	"pool_guid"
@@ -114,22 +81,17 @@ extern "C" {
 #define	FM_EREPORT_PAYLOAD_ZFS_DEVICE_NAME	"device_name"
 #define	FM_EREPORT_PAYLOAD_ZFS_RAW_DEVICE_NAME	"raw_name"
 #define	FM_EREPORT_PAYLOAD_ZFS_VOLUME	"volume"
-
 #define	FM_EREPORT_FAILMODE_WAIT		"wait"
 #define	FM_EREPORT_FAILMODE_CONTINUE		"continue"
 #define	FM_EREPORT_FAILMODE_PANIC		"panic"
-
 #define	FM_RESOURCE_REMOVED			"removed"
 #define	FM_RESOURCE_AUTOREPLACE			"autoreplace"
 #define	FM_RESOURCE_STATECHANGE			"statechange"
-
 #define	FM_RESOURCE_ZFS_SNAPSHOT_MOUNT		"snapshot_mount"
 #define	FM_RESOURCE_ZFS_SNAPSHOT_UNMOUNT		"snapshot_unmount"
 #define	FM_RESOURCE_ZVOL_CREATE_SYMLINK		"zvol_create"
 #define	FM_RESOURCE_ZVOL_REMOVE_SYMLINK		"zvol_remove"
-
 #ifdef	__cplusplus
 }
 #endif
-
-#endif	/* _SYS_FM_FS_ZFS_H */
+#endif	 

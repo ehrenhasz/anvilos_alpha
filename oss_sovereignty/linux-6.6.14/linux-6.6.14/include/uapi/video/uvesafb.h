@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _UAPI_UVESAFB_H
 #define _UAPI_UVESAFB_H
-
 #include <linux/types.h>
-
 struct v86_regs {
 	__u32 ebx;
 	__u32 ecx;
@@ -22,26 +19,18 @@ struct v86_regs {
 	__u16 fs;
 	__u16 gs;
 };
-
-/* Task flags */
 #define TF_VBEIB	0x01
 #define TF_BUF_ESDI	0x02
 #define TF_BUF_ESBX	0x04
 #define TF_BUF_RET	0x08
 #define TF_EXIT		0x10
-
 struct uvesafb_task {
 	__u8 flags;
 	int buf_len;
 	struct v86_regs regs;
 };
-
-/* Constants for the capabilities field
- * in vbe_ib */
 #define VBE_CAP_CAN_SWITCH_DAC	0x01
 #define VBE_CAP_VGACOMPAT	0x02
-
-/* The VBE Info Block */
 struct vbe_ib {
 	char  vbe_signature[4];
 	__u16 vbe_version;
@@ -57,5 +46,4 @@ struct vbe_ib {
 	char  oem_data[256];
 	char  misc_data[512];
 } __attribute__ ((packed));
-
-#endif /* _UAPI_UVESAFB_H */
+#endif  

@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ___ASM_SPARC_STRING_H
 #define ___ASM_SPARC_STRING_H
 #if defined(__sparc__) && defined(__arch64__)
@@ -6,19 +5,13 @@
 #else
 #include <asm/string_32.h>
 #endif
-
-/* First the mem*() things. */
 #define __HAVE_ARCH_MEMMOVE
 void *memmove(void *, const void *, __kernel_size_t);
-
 #define __HAVE_ARCH_MEMCPY
 #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-
 #define __HAVE_ARCH_MEMSET
 #define memset(s, c, count) __builtin_memset(s, c, count)
-
 #define __HAVE_ARCH_MEMSCAN
-
 #define memscan(__arg0, __char, __arg2)						\
 ({										\
 	void *__memscan_zero(void *, size_t);					\
@@ -33,15 +26,10 @@ void *memmove(void *, const void *, __kernel_size_t);
 										\
 	__retval;								\
 })
-
 #define __HAVE_ARCH_MEMCMP
 int memcmp(const void *,const void *,__kernel_size_t);
-
-/* Now the str*() stuff... */
 #define __HAVE_ARCH_STRLEN
 __kernel_size_t strlen(const char *);
-
 #define __HAVE_ARCH_STRNCMP
 int strncmp(const char *, const char *, __kernel_size_t);
-
 #endif

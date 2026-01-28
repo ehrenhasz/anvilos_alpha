@@ -1,20 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TQM 8555 Device Tree Source
- *
- * Copyright 2008 Freescale Semiconductor Inc.
- */
-
 /dts-v1/;
-
 /include/ "fsl/e500v1_power_isa.dtsi"
-
 / {
 	model = "tqc,tqm8555";
 	compatible = "tqc,tqm8555";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		ethernet0 = &enet0;
 		ethernet1 = &enet1;
@@ -22,11 +12,9 @@
 		serial1 = &serial1;
 		pci0 = &pci0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8555@0 {
 			device_type = "cpu";
 			reg = <0>;
@@ -40,12 +28,10 @@
 			next-level-cache = <&L2>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x10000000>;
 	};
-
 	soc@e0000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -53,36 +39,31 @@
 		ranges = <0x0 0xe0000000 0x100000>;
 		bus-frequency = <0>;
 		compatible = "fsl,mpc8555-immr", "simple-bus";
-
 		ecm-law@0 {
 			compatible = "fsl,ecm-law";
 			reg = <0x0 0x1000>;
 			fsl,num-laws = <8>;
 		};
-
 		ecm@1000 {
 			compatible = "fsl,mpc8555-ecm", "fsl,ecm";
 			reg = <0x1000 0x1000>;
 			interrupts = <17 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		memory-controller@2000 {
 			compatible = "fsl,mpc8540-memory-controller";
 			reg = <0x2000 0x1000>;
 			interrupt-parent = <&mpic>;
 			interrupts = <18 2>;
 		};
-
 		L2: l2-cache-controller@20000 {
 			compatible = "fsl,mpc8540-l2-cache-controller";
 			reg = <0x20000 0x1000>;
 			cache-line-size = <32>;
-			cache-size = <0x40000>;	// L2, 256K
+			cache-size = <0x40000>;	 
 			interrupt-parent = <&mpic>;
 			interrupts = <16 2>;
 		};
-
 		i2c@3000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -92,18 +73,15 @@
 			interrupts = <43 2>;
 			interrupt-parent = <&mpic>;
 			dfsrr;
-
 			dtt@48 {
 				compatible = "national,lm75";
 				reg = <0x48>;
 			};
-
 			rtc@68 {
 				compatible = "dallas,ds1337";
 				reg = <0x68>;
 			};
 		};
-
 		dma@21300 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -144,7 +122,6 @@
 				interrupts = <23 2>;
 			};
 		};
-
 		enet0: ethernet@24000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -159,13 +136,11 @@
 			interrupt-parent = <&mpic>;
 			tbi-handle = <&tbi0>;
 			phy-handle = <&phy2>;
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-mdio";
 				reg = <0x520 0x20>;
-
 				phy1: ethernet-phy@1 {
 					interrupt-parent = <&mpic>;
 					interrupts = <8 1>;
@@ -187,7 +162,6 @@
 				};
 			};
 		};
-
 		enet1: ethernet@25000 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -202,40 +176,35 @@
 			interrupt-parent = <&mpic>;
 			tbi-handle = <&tbi1>;
 			phy-handle = <&phy1>;
-
 			mdio@520 {
 				#address-cells = <1>;
 				#size-cells = <0>;
 				compatible = "fsl,gianfar-tbi";
 				reg = <0x520 0x20>;
-
 				tbi1: tbi-phy@11 {
 					reg = <0x11>;
 					device_type = "tbi-phy";
 				};
 			};
 		};
-
 		serial0: serial@4500 {
 			cell-index = <0>;
 			device_type = "serial";
 			compatible = "fsl,ns16550", "ns16550";
-			reg = <0x4500 0x100>; 	// reg base, size
-			clock-frequency = <0>; 	// should we fill in in uboot?
+			reg = <0x4500 0x100>; 	 
+			clock-frequency = <0>; 	 
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		serial1: serial@4600 {
 			cell-index = <1>;
 			device_type = "serial";
 			compatible = "fsl,ns16550", "ns16550";
-			reg = <0x4600 0x100>;	// reg base, size
-			clock-frequency = <0>; 	// should we fill in in uboot?
+			reg = <0x4600 0x100>;	 
+			clock-frequency = <0>; 	 
 			interrupts = <42 2>;
 			interrupt-parent = <&mpic>;
 		};
-
 		crypto@30000 {
 			compatible = "fsl,sec2.0";
 			reg = <0x30000 0x10000>;
@@ -246,7 +215,6 @@
 			fsl,exec-units-mask = <0x7e>;
 			fsl,descriptor-types-mask = <0x01010ebf>;
 		};
-
 		mpic: pic@40000 {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -255,25 +223,21 @@
 			device_type = "open-pic";
 			compatible = "chrp,open-pic";
 		};
-
 		cpm@919c0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
 			compatible = "fsl,mpc8555-cpm", "fsl,cpm2", "simple-bus";
 			reg = <0x919c0 0x30>;
 			ranges;
-
 			muram@80000 {
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0 0x80000 0x10000>;
-
 				data@0 {
 					compatible = "fsl,cpm-muram-data";
 					reg = <0 0x2000 0x9000 0x1000>;
 				};
 			};
-
 			brg@919f0 {
 				compatible = "fsl,mpc8555-brg",
 				             "fsl,cpm2-brg",
@@ -281,7 +245,6 @@
 				reg = <0x919f0 0x10 0x915f0 0x10>;
 				clock-frequency = <0>;
 			};
-
 			cpmpic: pic@90c00 {
 				interrupt-controller;
 				#address-cells = <0>;
@@ -293,7 +256,6 @@
 			};
 		};
 	};
-
 	pci0: pci@e0008000 {
 		#interrupt-cells = <1>;
 		#size-cells = <2>;
@@ -304,17 +266,13 @@
 		clock-frequency = <66666666>;
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-				/* IDSEL 28 */
 				 0xe000 0 0 1 &mpic 2 1
 				 0xe000 0 0 2 &mpic 3 1
 				 0xe000 0 0 3 &mpic 6 1
 				 0xe000 0 0 4 &mpic 5 1
-
-				/* IDSEL 11 */
 				 0x5800 0 0 1 &mpic 6 1
 				 0x5800 0 0 2 &mpic 5 1
 				 >;
-
 		interrupt-parent = <&mpic>;
 		interrupts = <24 2>;
 		bus-range = <0 0>;

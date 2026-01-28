@@ -1,23 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
-
 #ifndef _WG_PEER_H
 #define _WG_PEER_H
-
 #include "device.h"
 #include "noise.h"
 #include "cookie.h"
-
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <linux/spinlock.h>
 #include <linux/kref.h>
 #include <net/dst_cache.h>
-
 struct wg_device;
-
 struct endpoint {
 	union {
 		struct sockaddr addr;
@@ -27,13 +18,11 @@ struct endpoint {
 	union {
 		struct {
 			struct in_addr src4;
-			/* Essentially the same as addr6->scope_id */
 			int src_if4;
 		};
 		struct in6_addr src6;
 	};
 };
-
 struct wg_peer {
 	struct wg_device *device;
 	struct prev_queue tx_queue, rx_queue;
@@ -65,11 +54,9 @@ struct wg_peer {
 	struct napi_struct napi;
 	u64 internal_id;
 };
-
 struct wg_peer *wg_peer_create(struct wg_device *wg,
 			       const u8 public_key[NOISE_PUBLIC_KEY_LEN],
 			       const u8 preshared_key[NOISE_SYMMETRIC_KEY_LEN]);
-
 struct wg_peer *__must_check wg_peer_get_maybe_zero(struct wg_peer *peer);
 static inline struct wg_peer *wg_peer_get(struct wg_peer *peer)
 {
@@ -79,8 +66,6 @@ static inline struct wg_peer *wg_peer_get(struct wg_peer *peer)
 void wg_peer_put(struct wg_peer *peer);
 void wg_peer_remove(struct wg_peer *peer);
 void wg_peer_remove_all(struct wg_device *wg);
-
 int wg_peer_init(void);
 void wg_peer_uninit(void);
-
-#endif /* _WG_PEER_H */
+#endif  

@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2016 Endless Computers, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
-
 #include "meson-gxl.dtsi"
-
 / {
 	compatible = "amlogic,meson-gxm";
-
 	cpus {
 		cpu-map {
 			cluster0 {
@@ -25,7 +17,6 @@
 					cpu = <&cpu3>;
 				};
 			};
-
 			cluster1 {
 				core0 {
 					cpu = <&cpu4>;
@@ -41,23 +32,18 @@
 				};
 			};
 		};
-
 		cpu0: cpu@0 {
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu1: cpu@1 {
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu2: cpu@2 {
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu3: cpu@3 {
 			capacity-dmips-mhz = <1024>;
 		};
-
 		cpu4: cpu@100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -68,7 +54,6 @@
 			clocks = <&scpi_dvfs 1>;
 			#cooling-cells = <2>;
 		};
-
 		cpu5: cpu@101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -79,7 +64,6 @@
 			clocks = <&scpi_dvfs 1>;
 			#cooling-cells = <2>;
 		};
-
 		cpu6: cpu@102 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -90,7 +74,6 @@
 			clocks = <&scpi_dvfs 1>;
 			#cooling-cells = <2>;
 		};
-
 		cpu7: cpu@103 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a53";
@@ -102,10 +85,8 @@
 			#cooling-cells = <2>;
 		};
 	};
-
 	gpu_opp_table: opp-table {
 		compatible = "operating-points-v2";
-
 		opp-125000000 {
 			opp-hz = /bits/ 64 <125000000>;
 			opp-microvolt = <950000>;
@@ -132,7 +113,6 @@
 		};
 	};
 };
-
 &apb {
 	usb2_phy2: phy@78040 {
 		compatible = "amlogic,meson-gxl-usb2-phy";
@@ -144,7 +124,6 @@
 		reset-names = "phy";
 		status = "okay";
 	};
-
 	mali: gpu@c0000 {
 		compatible = "amlogic,meson-gxm-mali", "arm,mali-t820";
 		reg = <0x0 0xc0000 0x0 0x40000>;
@@ -158,11 +137,9 @@
 		operating-points-v2 = <&gpu_opp_table>;
 	};
 };
-
 &clkc_AO {
 	compatible = "amlogic,meson-gxm-aoclkc", "amlogic,meson-gx-aoclkc";
 };
-
 &cpu_cooling_maps {
 	map0 {
 		cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
@@ -174,7 +151,6 @@
 				 <&cpu6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
 				 <&cpu7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 	};
-
 	map1 {
 		cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
 				 <&cpu1 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
@@ -186,31 +162,24 @@
 				 <&cpu7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 	};
 };
-
 &saradc {
 	compatible = "amlogic,meson-gxm-saradc", "amlogic,meson-saradc";
 };
-
 &scpi_dvfs {
 	clock-indices = <0 1>;
 	clock-output-names = "vbig", "vlittle";
 };
-
 &vpu {
 	compatible = "amlogic,meson-gxm-vpu", "amlogic,meson-gx-vpu";
 };
-
 &hdmi_tx {
 	compatible = "amlogic,meson-gxm-dw-hdmi", "amlogic,meson-gx-dw-hdmi";
 };
-
 &usb {
 	compatible = "amlogic,meson-gxm-usb-ctrl";
-
 	phy-names = "usb2-phy0", "usb2-phy1", "usb2-phy2";
 	phys = <&usb2_phy0>, <&usb2_phy1>, <&usb2_phy2>;
 };
-
 &vdec {
 	compatible = "amlogic,gxm-vdec", "amlogic,gx-vdec";
 };

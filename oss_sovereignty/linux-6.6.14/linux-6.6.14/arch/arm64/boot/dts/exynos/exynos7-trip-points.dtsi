@@ -1,50 +1,42 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Device tree sources for default Exynos7 thermal zone definition
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- */
-
 trips {
 	cpu-alert-0 {
-		temperature = <75000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <75000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-1 {
-		temperature = <80000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <80000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-2 {
-		temperature = <85000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <85000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-3 {
-		temperature = <90000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <90000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-4 {
-		temperature = <95000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <95000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-5 {
-		temperature = <100000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <100000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-alert-6 {
-		temperature = <110000>; /* millicelsius */
-		hysteresis = <10000>; /* millicelsius */
+		temperature = <110000>;  
+		hysteresis = <10000>;  
 		type = "passive";
 	};
 	cpu-crit-0 {
-		temperature = <115000>; /* millicelsius */
-		hysteresis = <0>; /* millicelsius */
+		temperature = <115000>;  
+		hysteresis = <0>;  
 		type = "critical";
 	};
 };

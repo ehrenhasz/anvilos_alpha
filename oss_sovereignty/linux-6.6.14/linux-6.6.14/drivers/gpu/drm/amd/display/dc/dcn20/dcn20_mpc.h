@@ -1,35 +1,8 @@
-/* Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MPCC_DCN20_H__
 #define __DC_MPCC_DCN20_H__
-
 #include "dcn10/dcn10_mpc.h"
-
 #define TO_DCN20_MPC(mpc_base) \
 	container_of(mpc_base, struct dcn20_mpc, base)
-
 #define MPC_REG_LIST_DCN2_0(inst)\
 	MPC_COMMON_REG_LIST_DCN1_0(inst),\
 	SRII(MPCC_TOP_GAIN, MPCC, inst),\
@@ -68,7 +41,6 @@
 	SRII(MPCC_OGAM_LUT_RAM_CONTROL, MPCC_OGAM, inst),\
 	SRII(MPCC_OGAM_LUT_DATA, MPCC_OGAM, inst),\
 	SRII(MPCC_OGAM_MODE, MPCC_OGAM, inst)
-
 #define MPC_OUT_MUX_REG_LIST_DCN2_0(inst) \
 	MPC_OUT_MUX_COMMON_REG_LIST_DCN1_0(inst),\
 	SRII(CSC_MODE, MPC_OUT, inst),\
@@ -79,11 +51,9 @@
 	SRII(DENORM_CONTROL, MPC_OUT, inst),\
 	SRII(DENORM_CLAMP_G_Y, MPC_OUT, inst),\
 	SRII(DENORM_CLAMP_B_CB, MPC_OUT, inst)
-
 #define MPC_DBG_REG_LIST_DCN2_0() \
 	SR(MPC_OCSC_TEST_DEBUG_DATA),\
 	SR(MPC_OCSC_TEST_DEBUG_INDEX)
-
 #define MPC_REG_VARIABLE_LIST_DCN2_0 \
 	MPC_COMMON_REG_VARIABLE_LIST \
 	uint32_t MPCC_TOP_GAIN[MAX_MPCC]; \
@@ -132,7 +102,6 @@
 	uint32_t DENORM_CONTROL[MAX_OPP]; \
 	uint32_t DENORM_CLAMP_G_Y[MAX_OPP]; \
 	uint32_t DENORM_CLAMP_B_CB[MAX_OPP];
-
 #define MPC_COMMON_MASK_SH_LIST_DCN2_0(mask_sh) \
 	MPC_COMMON_MASK_SH_LIST_DCN1_0(mask_sh),\
 	SF(MPCC0_MPCC_CONTROL, MPCC_BG_BPC, mask_sh),\
@@ -181,21 +150,11 @@
 	SF(MPC_OUT0_DENORM_CLAMP_B_CB, MPC_OUT_DENORM_CLAMP_MAX_B_CB, mask_sh),\
 	SF(MPC_OUT0_DENORM_CLAMP_B_CB, MPC_OUT_DENORM_CLAMP_MIN_B_CB, mask_sh),\
 	SF(CUR_VUPDATE_LOCK_SET0, CUR_VUPDATE_LOCK_SET, mask_sh)
-
-/*
- *	DCN2 MPC_OCSC debug status register:
- *
- *		Status index including current OCSC Mode is 1
- *			OCSC Mode: [1..0]
- */
 #define MPC_OCSC_TEST_DEBUG_DATA_STATUS_IDX 1
-
 #define MPC_DEBUG_REG_LIST_SH_DCN20 \
 	.MPC_OCSC_TEST_DEBUG_DATA_OCSC_MODE = 0
-
 #define MPC_DEBUG_REG_LIST_MASK_DCN20 \
 	.MPC_OCSC_TEST_DEBUG_DATA_OCSC_MODE = 0x3
-
 #define MPC_REG_FIELD_LIST_DCN2_0(type) \
 	MPC_REG_FIELD_LIST(type)\
 	type MPCC_BG_BPC;\
@@ -244,68 +203,55 @@
 	type MPC_OUT_DENORM_CLAMP_MIN_B_CB;\
 	type MPCC_DISABLED;\
 	type MPCC_OGAM_MEM_PWR_DIS;
-
 struct dcn20_mpc_registers {
 	MPC_REG_VARIABLE_LIST_DCN2_0
 };
-
 struct dcn20_mpc_shift {
 	MPC_REG_FIELD_LIST_DCN2_0(uint8_t)
 };
-
 struct dcn20_mpc_mask {
 	MPC_REG_FIELD_LIST_DCN2_0(uint32_t)
 };
-
 struct dcn20_mpc {
 	struct mpc base;
-
 	int mpcc_in_use_mask;
 	int num_mpcc;
 	const struct dcn20_mpc_registers *mpc_regs;
 	const struct dcn20_mpc_shift *mpc_shift;
 	const struct dcn20_mpc_mask *mpc_mask;
 };
-
 void dcn20_mpc_construct(struct dcn20_mpc *mpcc20,
 	struct dc_context *ctx,
 	const struct dcn20_mpc_registers *mpc_regs,
 	const struct dcn20_mpc_shift *mpc_shift,
 	const struct dcn20_mpc_mask *mpc_mask,
 	int num_mpcc);
-
 void mpc2_update_blending(
 	struct mpc *mpc,
 	struct mpcc_blnd_cfg *blnd_cfg,
 	int mpcc_id);
-
 void mpc2_set_denorm(
 	struct mpc *mpc,
 	int opp_id,
 	enum dc_color_depth output_depth);
-
 void mpc2_set_denorm_clamp(
 	struct mpc *mpc,
 	int opp_id,
 	struct mpc_denorm_clamp denorm_clamp);
-
 void mpc2_set_output_csc(
 	struct mpc *mpc,
 	int opp_id,
 	const uint16_t *regval,
 	enum mpc_output_csc_mode ocsc_mode);
-
 void mpc2_set_ocsc_default(
 	struct mpc *mpc,
 	int opp_id,
 	enum dc_color_space color_space,
 	enum mpc_output_csc_mode ocsc_mode);
-
 void mpc2_set_output_gamma(
 	struct mpc *mpc,
 	int mpcc_id,
 	const struct pwl_params *params);
-
 void mpc2_assert_idle_mpcc(struct mpc *mpc, int id);
 void mpc2_assert_mpcc_idle_before_connect(struct mpc *mpc, int mpcc_id);
 void mpc20_power_on_ogam_lut(struct mpc *mpc, int mpcc_id, bool power_on);

@@ -1,12 +1,8 @@
 #ifndef _VC4_HDMI_REGS_H_
 #define _VC4_HDMI_REGS_H_
-
 #include <linux/pm_runtime.h>
-
 #include "vc4_hdmi.h"
-
 #define VC4_HDMI_PACKET_STRIDE			0x24
-
 enum vc4_hdmi_regs {
 	VC4_INVALID = 0,
 	VC4_HDMI,
@@ -18,7 +14,6 @@ enum vc4_hdmi_regs {
 	VC5_RAM,
 	VC5_RM,
 };
-
 enum vc4_hdmi_field {
 	HDMI_AUDIO_PACKET_CONFIG,
 	HDMI_CEC_CNTRL_1,
@@ -32,11 +27,6 @@ enum vc4_hdmi_field {
 	HDMI_CEC_CPU_MASK_STATUS,
 	HDMI_CEC_CPU_STATUS,
 	HDMI_CEC_CPU_SET,
-
-	/*
-	 * Transmit data, first byte is low byte of the 32-bit reg.
-	 * MSB of each byte transmitted first.
-	 */
 	HDMI_CEC_RX_DATA_1,
 	HDMI_CEC_RX_DATA_2,
 	HDMI_CEC_RX_DATA_3,
@@ -56,11 +46,6 @@ enum vc4_hdmi_field {
 	HDMI_CSC_34_33,
 	HDMI_CSC_CHANNEL_CTL,
 	HDMI_CSC_CTL,
-
-	/*
-	 * 20-bit fields containing CTS values to be transmitted if
-	 * !EXTERNAL_CTS_EN
-	 */
 	HDMI_CTS_0,
 	HDMI_CTS_1,
 	HDMI_DEEP_COLOR_CONFIG_1,
@@ -73,25 +58,11 @@ enum vc4_hdmi_field {
 	HDMI_HORZB,
 	HDMI_HOTPLUG,
 	HDMI_HOTPLUG_INT,
-
-	/*
-	 * 3 bits per field, where each field maps from that
-	 * corresponding MAI bus channel to the given HDMI channel.
-	 */
 	HDMI_MAI_CHANNEL_MAP,
 	HDMI_MAI_CONFIG,
 	HDMI_MAI_CTL,
-
-	/*
-	 * Register for DMAing in audio data to be transported over
-	 * the MAI bus to the Falcon core.
-	 */
 	HDMI_MAI_DATA,
-
-	/* Format header to be placed on the MAI data. Unused. */
 	HDMI_MAI_FMT,
-
-	/* Last received format word on the MAI bus. */
 	HDMI_MAI_FORMAT,
 	HDMI_MAI_SMP,
 	HDMI_MAI_THR,
@@ -139,20 +110,17 @@ enum vc4_hdmi_field {
 	HDMI_FORMAT_DET_9,
 	HDMI_FORMAT_DET_10,
 };
-
 struct vc4_hdmi_register {
 	char *name;
 	enum vc4_hdmi_regs reg;
 	unsigned int offset;
 };
-
 #define _VC4_REG(_base, _reg, _offset)	\
 	[_reg] = {				\
 		.name = #_reg,			\
 		.reg = _base,			\
 		.offset = _offset,		\
 	}
-
 #define VC4_HD_REG(reg, offset)		_VC4_REG(VC4_HD, reg, offset)
 #define VC4_HDMI_REG(reg, offset)	_VC4_REG(VC4_HDMI, reg, offset)
 #define VC5_CEC_REG(reg, offset)	_VC4_REG(VC5_CEC, reg, offset)
@@ -161,7 +129,6 @@ struct vc4_hdmi_register {
 #define VC5_PHY_REG(reg, offset)	_VC4_REG(VC5_PHY, reg, offset)
 #define VC5_RAM_REG(reg, offset)	_VC4_REG(VC5_RAM, reg, offset)
 #define VC5_RM_REG(reg, offset)		_VC4_REG(VC5_RM, reg, offset)
-
 static const struct vc4_hdmi_register __maybe_unused vc4_hdmi_fields[] = {
 	VC4_HD_REG(HDMI_M_CTL, 0x000c),
 	VC4_HD_REG(HDMI_MAI_CTL, 0x0014),
@@ -178,7 +145,6 @@ static const struct vc4_hdmi_register __maybe_unused vc4_hdmi_fields[] = {
 	VC4_HD_REG(HDMI_CSC_32_31, 0x0054),
 	VC4_HD_REG(HDMI_CSC_34_33, 0x0058),
 	VC4_HD_REG(HDMI_FRAME_COUNT, 0x0068),
-
 	VC4_HDMI_REG(HDMI_CORE_REV, 0x0000),
 	VC4_HDMI_REG(HDMI_SW_RESET_CONTROL, 0x0004),
 	VC4_HDMI_REG(HDMI_HOTPLUG_INT, 0x0008),
@@ -224,7 +190,6 @@ static const struct vc4_hdmi_register __maybe_unused vc4_hdmi_fields[] = {
 	VC4_HDMI_REG(HDMI_CEC_CPU_MASK_CLEAR, 0x0354),
 	VC4_HDMI_REG(HDMI_RAM_PACKET_START, 0x0400),
 };
-
 static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC4_HD_REG(HDMI_DVP_CTL, 0x0000),
 	VC4_HD_REG(HDMI_MAI_CTL, 0x0010),
@@ -234,7 +199,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC4_HD_REG(HDMI_MAI_SMP, 0x0020),
 	VC4_HD_REG(HDMI_VID_CTL, 0x0044),
 	VC4_HD_REG(HDMI_FRAME_COUNT, 0x0060),
-
 	VC4_HDMI_REG(HDMI_FIFO_CTL, 0x074),
 	VC4_HDMI_REG(HDMI_AUDIO_PACKET_CONFIG, 0x0b8),
 	VC4_HDMI_REG(HDMI_RAM_PACKET_CONFIG, 0x0bc),
@@ -267,11 +231,9 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC4_HDMI_REG(HDMI_GCP_WORD_1, 0x17c),
 	VC4_HDMI_REG(HDMI_HOTPLUG, 0x1a8),
 	VC4_HDMI_REG(HDMI_SCRAMBLER_CTL, 0x1c4),
-
 	VC5_DVP_REG(HDMI_CLOCK_STOP, 0x0bc),
 	VC5_DVP_REG(HDMI_VEC_INTERFACE_CFG, 0x0ec),
 	VC5_DVP_REG(HDMI_VEC_INTERFACE_XBAR, 0x0f0),
-
 	VC5_PHY_REG(HDMI_TX_PHY_RESET_CTL, 0x000),
 	VC5_PHY_REG(HDMI_TX_PHY_POWERDOWN_CTL, 0x004),
 	VC5_PHY_REG(HDMI_TX_PHY_CTL_0, 0x008),
@@ -287,13 +249,10 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_1, 0x050),
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_2, 0x054),
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_4, 0x05c),
-
 	VC5_RM_REG(HDMI_RM_CONTROL, 0x000),
 	VC5_RM_REG(HDMI_RM_OFFSET, 0x018),
 	VC5_RM_REG(HDMI_RM_FORMAT, 0x01c),
-
 	VC5_RAM_REG(HDMI_RAM_PACKET_START, 0x000),
-
 	VC5_CEC_REG(HDMI_CEC_CNTRL_1, 0x010),
 	VC5_CEC_REG(HDMI_CEC_CNTRL_2, 0x014),
 	VC5_CEC_REG(HDMI_CEC_CNTRL_3, 0x018),
@@ -307,7 +266,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_2, 0x03c),
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_3, 0x040),
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_4, 0x044),
-
 	VC5_CSC_REG(HDMI_CSC_CTL, 0x000),
 	VC5_CSC_REG(HDMI_CSC_12_11, 0x004),
 	VC5_CSC_REG(HDMI_CSC_14_13, 0x008),
@@ -317,7 +275,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi0_fields[] = {
 	VC5_CSC_REG(HDMI_CSC_34_33, 0x018),
 	VC5_CSC_REG(HDMI_CSC_CHANNEL_CTL, 0x02c),
 };
-
 static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC4_HD_REG(HDMI_DVP_CTL, 0x0000),
 	VC4_HD_REG(HDMI_MAI_CTL, 0x0030),
@@ -327,7 +284,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC4_HD_REG(HDMI_MAI_SMP, 0x0040),
 	VC4_HD_REG(HDMI_VID_CTL, 0x0048),
 	VC4_HD_REG(HDMI_FRAME_COUNT, 0x0064),
-
 	VC4_HDMI_REG(HDMI_FIFO_CTL, 0x074),
 	VC4_HDMI_REG(HDMI_AUDIO_PACKET_CONFIG, 0x0b8),
 	VC4_HDMI_REG(HDMI_RAM_PACKET_CONFIG, 0x0bc),
@@ -360,11 +316,9 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC4_HDMI_REG(HDMI_GCP_WORD_1, 0x17c),
 	VC4_HDMI_REG(HDMI_HOTPLUG, 0x1a8),
 	VC4_HDMI_REG(HDMI_SCRAMBLER_CTL, 0x1c4),
-
 	VC5_DVP_REG(HDMI_CLOCK_STOP, 0x0bc),
 	VC5_DVP_REG(HDMI_VEC_INTERFACE_CFG, 0x0ec),
 	VC5_DVP_REG(HDMI_VEC_INTERFACE_XBAR, 0x0f0),
-
 	VC5_PHY_REG(HDMI_TX_PHY_RESET_CTL, 0x000),
 	VC5_PHY_REG(HDMI_TX_PHY_POWERDOWN_CTL, 0x004),
 	VC5_PHY_REG(HDMI_TX_PHY_CTL_0, 0x008),
@@ -380,13 +334,10 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_1, 0x050),
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_2, 0x054),
 	VC5_PHY_REG(HDMI_TX_PHY_PLL_CALIBRATION_CONFIG_4, 0x05c),
-
 	VC5_RM_REG(HDMI_RM_CONTROL, 0x000),
 	VC5_RM_REG(HDMI_RM_OFFSET, 0x018),
 	VC5_RM_REG(HDMI_RM_FORMAT, 0x01c),
-
 	VC5_RAM_REG(HDMI_RAM_PACKET_START, 0x000),
-
 	VC5_CEC_REG(HDMI_CEC_CNTRL_1, 0x010),
 	VC5_CEC_REG(HDMI_CEC_CNTRL_2, 0x014),
 	VC5_CEC_REG(HDMI_CEC_CNTRL_3, 0x018),
@@ -400,7 +351,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_2, 0x03c),
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_3, 0x040),
 	VC5_CEC_REG(HDMI_CEC_RX_DATA_4, 0x044),
-
 	VC5_CSC_REG(HDMI_CSC_CTL, 0x000),
 	VC5_CSC_REG(HDMI_CSC_12_11, 0x004),
 	VC5_CSC_REG(HDMI_CSC_14_13, 0x008),
@@ -410,7 +360,6 @@ static const struct vc4_hdmi_register __maybe_unused vc5_hdmi_hdmi1_fields[] = {
 	VC5_CSC_REG(HDMI_CSC_34_33, 0x018),
 	VC5_CSC_REG(HDMI_CSC_CHANNEL_CTL, 0x02c),
 };
-
 static inline
 void __iomem *__vc4_hdmi_get_field_base(struct vc4_hdmi *hdmi,
 					enum vc4_hdmi_regs reg)
@@ -418,52 +367,38 @@ void __iomem *__vc4_hdmi_get_field_base(struct vc4_hdmi *hdmi,
 	switch (reg) {
 	case VC4_HD:
 		return hdmi->hd_regs;
-
 	case VC4_HDMI:
 		return hdmi->hdmicore_regs;
-
 	case VC5_CSC:
 		return hdmi->csc_regs;
-
 	case VC5_CEC:
 		return hdmi->cec_regs;
-
 	case VC5_DVP:
 		return hdmi->dvp_regs;
-
 	case VC5_PHY:
 		return hdmi->phy_regs;
-
 	case VC5_RAM:
 		return hdmi->ram_regs;
-
 	case VC5_RM:
 		return hdmi->rm_regs;
-
 	default:
 		return NULL;
 	}
-
 	return NULL;
 }
-
 static inline u32 vc4_hdmi_read(struct vc4_hdmi *hdmi,
 				enum vc4_hdmi_field reg)
 {
 	const struct vc4_hdmi_register *field;
 	const struct vc4_hdmi_variant *variant = hdmi->variant;
 	void __iomem *base;
-
 	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
-
 	kunit_fail_current_test("Accessing an HDMI register in a unit test!\n");
-
 	if (reg >= variant->num_registers) {
 		dev_warn(&hdmi->pdev->dev,
 			 "Invalid register ID %u\n", reg);
 		return 0;
 	}
-
 	field = &variant->registers[reg];
 	base = __vc4_hdmi_get_field_base(hdmi, field->reg);
 	if (!base) {
@@ -471,11 +406,9 @@ static inline u32 vc4_hdmi_read(struct vc4_hdmi *hdmi,
 			 "Unknown register ID %u\n", reg);
 		return 0;
 	}
-
 	return readl(base + field->offset);
 }
 #define HDMI_READ(reg)		vc4_hdmi_read(vc4_hdmi, reg)
-
 static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
 				  enum vc4_hdmi_field reg,
 				  u32 value)
@@ -483,26 +416,19 @@ static inline void vc4_hdmi_write(struct vc4_hdmi *hdmi,
 	const struct vc4_hdmi_register *field;
 	const struct vc4_hdmi_variant *variant = hdmi->variant;
 	void __iomem *base;
-
 	lockdep_assert_held(&hdmi->hw_lock);
-
 	WARN_ON(pm_runtime_status_suspended(&hdmi->pdev->dev));
-
 	kunit_fail_current_test("Accessing an HDMI register in a unit test!\n");
-
 	if (reg >= variant->num_registers) {
 		dev_warn(&hdmi->pdev->dev,
 			 "Invalid register ID %u\n", reg);
 		return;
 	}
-
 	field = &variant->registers[reg];
 	base = __vc4_hdmi_get_field_base(hdmi, field->reg);
 	if (!base)
 		return;
-
 	writel(value, base + field->offset);
 }
 #define HDMI_WRITE(reg, val)	vc4_hdmi_write(vc4_hdmi, reg, val)
-
-#endif /* _VC4_HDMI_REGS_H_ */
+#endif  

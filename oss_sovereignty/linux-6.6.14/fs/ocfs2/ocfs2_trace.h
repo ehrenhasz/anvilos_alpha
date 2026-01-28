@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ocfs2
-
 #if !defined(_TRACE_OCFS2_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_OCFS2_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(ocfs2__int,
 	TP_PROTO(int num),
 	TP_ARGS(num),
@@ -18,12 +14,10 @@ DECLARE_EVENT_CLASS(ocfs2__int,
 	),
 	TP_printk("%d", __entry->num)
 );
-
 #define DEFINE_OCFS2_INT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__int, name,	\
 	TP_PROTO(int num),	\
 	TP_ARGS(num))
-
 DECLARE_EVENT_CLASS(ocfs2__uint,
 	TP_PROTO(unsigned int num),
 	TP_ARGS(num),
@@ -35,12 +29,10 @@ DECLARE_EVENT_CLASS(ocfs2__uint,
 	),
 	TP_printk("%u", __entry->num)
 );
-
 #define DEFINE_OCFS2_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__uint, name,	\
 	TP_PROTO(unsigned int num),	\
 	TP_ARGS(num))
-
 DECLARE_EVENT_CLASS(ocfs2__ull,
 	TP_PROTO(unsigned long long blkno),
 	TP_ARGS(blkno),
@@ -52,12 +44,10 @@ DECLARE_EVENT_CLASS(ocfs2__ull,
 	),
 	TP_printk("%llu", __entry->blkno)
 );
-
 #define DEFINE_OCFS2_ULL_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull, name,	\
 	TP_PROTO(unsigned long long num),	\
 	TP_ARGS(num))
-
 DECLARE_EVENT_CLASS(ocfs2__pointer,
 	TP_PROTO(void *pointer),
 	TP_ARGS(pointer),
@@ -69,12 +59,10 @@ DECLARE_EVENT_CLASS(ocfs2__pointer,
 	),
 	TP_printk("%p", __entry->pointer)
 );
-
 #define DEFINE_OCFS2_POINTER_EVENT(name)	\
 DEFINE_EVENT(ocfs2__pointer, name,	\
 	TP_PROTO(void *pointer),	\
 	TP_ARGS(pointer))
-
 DECLARE_EVENT_CLASS(ocfs2__string,
 	TP_PROTO(const char *name),
 	TP_ARGS(name),
@@ -86,12 +74,10 @@ DECLARE_EVENT_CLASS(ocfs2__string,
 	),
 	TP_printk("%s", __get_str(name))
 );
-
 #define DEFINE_OCFS2_STRING_EVENT(name)	\
 DEFINE_EVENT(ocfs2__string, name,	\
 	TP_PROTO(const char *name),	\
 	TP_ARGS(name))
-
 DECLARE_EVENT_CLASS(ocfs2__int_int,
 	TP_PROTO(int value1, int value2),
 	TP_ARGS(value1, value2),
@@ -105,12 +91,10 @@ DECLARE_EVENT_CLASS(ocfs2__int_int,
 	),
 	TP_printk("%d %d", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_INT_INT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__int_int, name,	\
 	TP_PROTO(int val1, int val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__uint_int,
 	TP_PROTO(unsigned int value1, int value2),
 	TP_ARGS(value1, value2),
@@ -124,12 +108,10 @@ DECLARE_EVENT_CLASS(ocfs2__uint_int,
 	),
 	TP_printk("%u %d", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_UINT_INT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__uint_int, name,	\
 	TP_PROTO(unsigned int val1, int val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__uint_uint,
 	TP_PROTO(unsigned int value1, unsigned int value2),
 	TP_ARGS(value1, value2),
@@ -143,12 +125,10 @@ DECLARE_EVENT_CLASS(ocfs2__uint_uint,
 	),
 	TP_printk("%u %u", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_UINT_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__uint_uint, name,	\
 	TP_PROTO(unsigned int val1, unsigned int val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_uint,
 	TP_PROTO(unsigned long long value1, unsigned int value2),
 	TP_ARGS(value1, value2),
@@ -162,12 +142,10 @@ DECLARE_EVENT_CLASS(ocfs2__ull_uint,
 	),
 	TP_printk("%llu %u", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_ULL_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_uint, name,	\
 	TP_PROTO(unsigned long long val1, unsigned int val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_int,
 	TP_PROTO(unsigned long long value1, int value2),
 	TP_ARGS(value1, value2),
@@ -181,12 +159,10 @@ DECLARE_EVENT_CLASS(ocfs2__ull_int,
 	),
 	TP_printk("%llu %d", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_ULL_INT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_int, name,	\
 	TP_PROTO(unsigned long long val1, int val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_ull,
 	TP_PROTO(unsigned long long value1, unsigned long long value2),
 	TP_ARGS(value1, value2),
@@ -200,12 +176,10 @@ DECLARE_EVENT_CLASS(ocfs2__ull_ull,
 	),
 	TP_printk("%llu %llu", __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_ULL_ULL_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_ull, name,	\
 	TP_PROTO(unsigned long long val1, unsigned long long val2),	\
 	TP_ARGS(val1, val2))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_ull_uint,
 	TP_PROTO(unsigned long long value1,
 		 unsigned long long value2, unsigned int value3),
@@ -223,13 +197,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_ull_uint,
 	TP_printk("%llu %llu %u",
 		  __entry->value1, __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_ULL_ULL_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_ull_uint, name,	\
 	TP_PROTO(unsigned long long val1,	\
 		 unsigned long long val2, unsigned int val3),	\
 	TP_ARGS(val1, val2, val3))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_uint_uint,
 	TP_PROTO(unsigned long long value1,
 		 unsigned int value2, unsigned int value3),
@@ -247,13 +219,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_uint_uint,
 	TP_printk("%llu %u %u", __entry->value1,
 		  __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_ULL_UINT_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_uint_uint, name,	\
 	TP_PROTO(unsigned long long val1,	\
 		 unsigned int val2, unsigned int val3),	\
 	TP_ARGS(val1, val2, val3))
-
 DECLARE_EVENT_CLASS(ocfs2__uint_uint_uint,
 	TP_PROTO(unsigned int value1, unsigned int value2,
 		 unsigned int value3),
@@ -270,13 +240,11 @@ DECLARE_EVENT_CLASS(ocfs2__uint_uint_uint,
 	),
 	TP_printk("%u %u %u", __entry->value1, __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_UINT_UINT_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__uint_uint_uint, name,	\
 	TP_PROTO(unsigned int value1, unsigned int value2,	\
 		 unsigned int value3),	\
 	TP_ARGS(value1, value2, value3))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_ull_ull,
 	TP_PROTO(unsigned long long value1,
 		 unsigned long long value2, unsigned long long value3),
@@ -294,13 +262,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_ull_ull,
 	TP_printk("%llu %llu %llu",
 		  __entry->value1, __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_ULL_ULL_ULL_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_ull_ull, name,	\
 	TP_PROTO(unsigned long long value1, unsigned long long value2,	\
 		 unsigned long long value3),	\
 	TP_ARGS(value1, value2, value3))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_int_int_int,
 	TP_PROTO(unsigned long long ull, int value1, int value2, int value3),
 	TP_ARGS(ull, value1, value2, value3),
@@ -320,13 +286,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_int_int_int,
 		  __entry->ull, __entry->value1,
 		  __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_int_int_int, name,	\
 	TP_PROTO(unsigned long long ull, int value1,	\
 		 int value2, int value3),	\
 	TP_ARGS(ull, value1, value2, value3))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_uint_uint_uint,
 	TP_PROTO(unsigned long long ull, unsigned int value1,
 		 unsigned int value2, unsigned int value3),
@@ -347,13 +311,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_uint_uint_uint,
 		  __entry->ull, __entry->value1,
 		  __entry->value2, __entry->value3)
 );
-
 #define DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_uint_uint_uint, name,	\
 	TP_PROTO(unsigned long long ull, unsigned int value1,	\
 		 unsigned int value2, unsigned int value3),	\
 	TP_ARGS(ull, value1, value2, value3))
-
 DECLARE_EVENT_CLASS(ocfs2__ull_ull_uint_uint,
 	TP_PROTO(unsigned long long value1, unsigned long long value2,
 		 unsigned int value3, unsigned int value4),
@@ -374,14 +336,11 @@ DECLARE_EVENT_CLASS(ocfs2__ull_ull_uint_uint,
 		  __entry->value1, __entry->value2,
 		  __entry->value3, __entry->value4)
 );
-
 #define DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(name)	\
 DEFINE_EVENT(ocfs2__ull_ull_uint_uint, name,	\
 	TP_PROTO(unsigned long long ull, unsigned long long ull1,	\
 		 unsigned int value2, unsigned int value3),	\
 	TP_ARGS(ull, ull1, value2, value3))
-
-/* Trace events for fs/ocfs2/alloc.c. */
 DECLARE_EVENT_CLASS(ocfs2__btree_ops,
 	TP_PROTO(unsigned long long owner,\
 		 unsigned int value1, unsigned int value2),
@@ -399,27 +358,18 @@ DECLARE_EVENT_CLASS(ocfs2__btree_ops,
 	TP_printk("%llu %u %u",
 		  __entry->owner, __entry->value1, __entry->value2)
 );
-
 #define DEFINE_OCFS2_BTREE_EVENT(name)	\
 DEFINE_EVENT(ocfs2__btree_ops, name,	\
 	TP_PROTO(unsigned long long owner,	\
 		 unsigned int value1, unsigned int value2),	\
 	TP_ARGS(owner, value1, value2))
-
 DEFINE_OCFS2_BTREE_EVENT(ocfs2_adjust_rightmost_branch);
-
 DEFINE_OCFS2_BTREE_EVENT(ocfs2_rotate_tree_right);
-
 DEFINE_OCFS2_BTREE_EVENT(ocfs2_append_rec_to_path);
-
 DEFINE_OCFS2_BTREE_EVENT(ocfs2_insert_extent_start);
-
 DEFINE_OCFS2_BTREE_EVENT(ocfs2_add_clusters_in_btree);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_num_free_extents);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_complete_edge_insert);
-
 TRACE_EVENT(ocfs2_grow_tree,
 	TP_PROTO(unsigned long long owner, int depth),
 	TP_ARGS(owner, depth),
@@ -433,7 +383,6 @@ TRACE_EVENT(ocfs2_grow_tree,
 	),
 	TP_printk("%llu %d", __entry->owner, __entry->depth)
 );
-
 TRACE_EVENT(ocfs2_rotate_subtree,
 	TP_PROTO(int subtree_root, unsigned long long blkno,
 		 int depth),
@@ -451,7 +400,6 @@ TRACE_EVENT(ocfs2_rotate_subtree,
 	TP_printk("%d %llu %d", __entry->subtree_root,
 		  __entry->blkno, __entry->depth)
 );
-
 TRACE_EVENT(ocfs2_insert_extent,
 	TP_PROTO(unsigned int ins_appending, unsigned int ins_contig,
 		 int ins_contig_index, int free_records, int ins_tree_depth),
@@ -476,7 +424,6 @@ TRACE_EVENT(ocfs2_insert_extent,
 		  __entry->ins_contig_index, __entry->free_records,
 		  __entry->ins_tree_depth)
 );
-
 TRACE_EVENT(ocfs2_split_extent,
 	TP_PROTO(int split_index, unsigned int c_contig_type,
 		 unsigned int c_has_empty_extent,
@@ -498,7 +445,6 @@ TRACE_EVENT(ocfs2_split_extent,
 	TP_printk("%d %u %u %u", __entry->split_index, __entry->c_contig_type,
 		  __entry->c_has_empty_extent, __entry->c_split_covers_rec)
 );
-
 TRACE_EVENT(ocfs2_remove_extent,
 	TP_PROTO(unsigned long long owner, unsigned int cpos,
 		 unsigned int len, int index,
@@ -524,7 +470,6 @@ TRACE_EVENT(ocfs2_remove_extent,
 		  __entry->owner, __entry->cpos, __entry->len, __entry->index,
 		  __entry->e_cpos, __entry->clusters)
 );
-
 TRACE_EVENT(ocfs2_commit_truncate,
 	TP_PROTO(unsigned long long ino, unsigned int new_cpos,
 		 unsigned int clusters, unsigned int depth),
@@ -545,7 +490,6 @@ TRACE_EVENT(ocfs2_commit_truncate,
 		  __entry->ino, __entry->new_cpos,
 		  __entry->clusters, __entry->depth)
 );
-
 TRACE_EVENT(ocfs2_validate_extent_block,
 	TP_PROTO(unsigned long long blkno),
 	TP_ARGS(blkno),
@@ -557,7 +501,6 @@ TRACE_EVENT(ocfs2_validate_extent_block,
 	),
 	TP_printk("%llu ", __entry->blkno)
 );
-
 TRACE_EVENT(ocfs2_rotate_leaf,
 	TP_PROTO(unsigned int insert_cpos, int insert_index,
 		 int has_empty, int next_free,
@@ -582,7 +525,6 @@ TRACE_EVENT(ocfs2_rotate_leaf,
 		  __entry->insert_index, __entry->has_empty,
 		  __entry->next_free, __entry->l_count)
 );
-
 TRACE_EVENT(ocfs2_add_clusters_in_btree_ret,
 	TP_PROTO(int status, int reason, int err),
 	TP_ARGS(status, reason, err),
@@ -599,7 +541,6 @@ TRACE_EVENT(ocfs2_add_clusters_in_btree_ret,
 	TP_printk("%d %d %d", __entry->status,
 		  __entry->reason, __entry->err)
 );
-
 TRACE_EVENT(ocfs2_mark_extent_written,
 	TP_PROTO(unsigned long long owner, unsigned int cpos,
 		 unsigned int len, unsigned int phys),
@@ -620,7 +561,6 @@ TRACE_EVENT(ocfs2_mark_extent_written,
 		  __entry->owner, __entry->cpos,
 		  __entry->len, __entry->phys)
 );
-
 DECLARE_EVENT_CLASS(ocfs2__truncate_log_ops,
 	TP_PROTO(unsigned long long blkno, int index,
 		 unsigned int start, unsigned int num),
@@ -641,31 +581,20 @@ DECLARE_EVENT_CLASS(ocfs2__truncate_log_ops,
 		  __entry->blkno, __entry->index,
 		  __entry->start, __entry->num)
 );
-
 #define DEFINE_OCFS2_TRUNCATE_LOG_OPS_EVENT(name)	\
 DEFINE_EVENT(ocfs2__truncate_log_ops, name,	\
 	TP_PROTO(unsigned long long blkno, int index,	\
 		 unsigned int start, unsigned int num),	\
 	TP_ARGS(blkno, index, start, num))
-
 DEFINE_OCFS2_TRUNCATE_LOG_OPS_EVENT(ocfs2_truncate_log_append);
-
 DEFINE_OCFS2_TRUNCATE_LOG_OPS_EVENT(ocfs2_replay_truncate_records);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_flush_truncate_log);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_begin_truncate_log_recovery);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_truncate_log_recovery_num);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_complete_truncate_log_recovery);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_free_cached_blocks);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_cache_cluster_dealloc);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_run_deallocs);
-
 TRACE_EVENT(ocfs2_cache_block_dealloc,
 	TP_PROTO(int type, int slot, unsigned long long suballoc,
 		 unsigned long long blkno, unsigned int bit),
@@ -688,7 +617,6 @@ TRACE_EVENT(ocfs2_cache_block_dealloc,
 		  __entry->type, __entry->slot, __entry->suballoc,
 		  __entry->blkno, __entry->bit)
 );
-
 TRACE_EVENT(ocfs2_trim_extent,
 	TP_PROTO(struct super_block *sb, unsigned long long blk,
 		 unsigned long long count),
@@ -709,35 +637,18 @@ TRACE_EVENT(ocfs2_trim_extent,
 		  __entry->dev_major, __entry->dev_minor,
 		  __entry->blk, __entry->count)
 );
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_trim_group);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_trim_mainbm);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_trim_fs);
-
-/* End of trace events for fs/ocfs2/alloc.c. */
-
-/* Trace events for fs/ocfs2/localalloc.c. */
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_la_set_sizes);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_alloc_should_use_local);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_load_local_alloc);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_begin_local_alloc_recovery);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_reserve_local_alloc_bits);
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_local_alloc_count_bits);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_local_alloc_find_clear_bits_search_bitmap);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_local_alloc_find_clear_bits);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_sync_local_to_main);
-
 TRACE_EVENT(ocfs2_sync_local_to_main_free,
 	TP_PROTO(int count, int bit, unsigned long long start_blk,
 		 unsigned long long blkno),
@@ -758,41 +669,19 @@ TRACE_EVENT(ocfs2_sync_local_to_main_free,
 		  __entry->count, __entry->bit, __entry->start_blk,
 		  __entry->blkno)
 );
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_local_alloc_new_window);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_local_alloc_new_window_result);
-
-/* End of trace events for fs/ocfs2/localalloc.c. */
-
-/* Trace events for fs/ocfs2/resize.c. */
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_update_last_group_and_inode);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_group_extend);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_group_add);
-
-/* End of trace events for fs/ocfs2/resize.c. */
-
-/* Trace events for fs/ocfs2/suballoc.c. */
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_group_descriptor);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_block_group_alloc_contig);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_block_group_alloc_discontig);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_block_group_alloc);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_reserve_suballoc_bits_nospc);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_reserve_suballoc_bits_no_new_group);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_reserve_new_inode_new_group);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_block_group_set_bits);
-
 TRACE_EVENT(ocfs2_relink_block_group,
 	TP_PROTO(unsigned long long i_blkno, unsigned int chain,
 		 unsigned long long bg_blkno,
@@ -814,25 +703,15 @@ TRACE_EVENT(ocfs2_relink_block_group,
 		  __entry->i_blkno, __entry->chain, __entry->bg_blkno,
 		  __entry->prev_blkno)
 );
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_cluster_group_search_wrong_max_bits);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_cluster_group_search_max_block);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_block_group_search_max_block);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_search_chain_begin);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_search_chain_succ);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_search_chain_end);
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_claim_suballoc_bits);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_claim_new_inode_at_loc);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_block_group_clear_bits);
-
 TRACE_EVENT(ocfs2_free_suballoc_bits,
 	TP_PROTO(unsigned long long inode, unsigned long long group,
 		 unsigned int start_bit, unsigned int count),
@@ -852,7 +731,6 @@ TRACE_EVENT(ocfs2_free_suballoc_bits,
 	TP_printk("%llu %llu %u %u", __entry->inode, __entry->group,
 		  __entry->start_bit, __entry->count)
 );
-
 TRACE_EVENT(ocfs2_free_clusters,
 	TP_PROTO(unsigned long long bg_blkno, unsigned long long start_blk,
 		 unsigned int start_bit, unsigned int count),
@@ -872,33 +750,17 @@ TRACE_EVENT(ocfs2_free_clusters,
 	TP_printk("%llu %llu %u %u", __entry->bg_blkno, __entry->start_blk,
 		  __entry->start_bit, __entry->count)
 );
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_get_suballoc_slot_bit);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_test_suballoc_bit);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_test_inode_bit);
-
-/* End of trace events for fs/ocfs2/suballoc.c. */
-
-/* Trace events for fs/ocfs2/refcounttree.c. */
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_refcount_block);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_purge_refcount_trees);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_create_refcount_tree);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_create_refcount_tree_blkno);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_change_refcount_rec);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_expand_inline_ref_root);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_divide_leaf_refcount_block);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_new_leaf_refcount_block);
-
 DECLARE_EVENT_CLASS(ocfs2__refcount_tree_ops,
 	TP_PROTO(unsigned long long blkno, int index,
 		 unsigned long long cpos,
@@ -921,16 +783,13 @@ DECLARE_EVENT_CLASS(ocfs2__refcount_tree_ops,
 	TP_printk("%llu %d %llu %u %u", __entry->blkno, __entry->index,
 		  __entry->cpos, __entry->clusters, __entry->refcount)
 );
-
 #define DEFINE_OCFS2_REFCOUNT_TREE_OPS_EVENT(name)	\
 DEFINE_EVENT(ocfs2__refcount_tree_ops, name,		\
 	TP_PROTO(unsigned long long blkno, int index,	\
 		 unsigned long long cpos,		\
 		 unsigned int count, unsigned int refcount),	\
 	TP_ARGS(blkno, index, cpos, count, refcount))
-
 DEFINE_OCFS2_REFCOUNT_TREE_OPS_EVENT(ocfs2_insert_refcount_rec);
-
 TRACE_EVENT(ocfs2_split_refcount_rec,
 	TP_PROTO(unsigned long long cpos,
 		 unsigned int clusters, unsigned int refcount,
@@ -959,23 +818,14 @@ TRACE_EVENT(ocfs2_split_refcount_rec,
 		  __entry->split_cpos, __entry->split_clusters,
 		  __entry->split_refcount)
 );
-
 DEFINE_OCFS2_REFCOUNT_TREE_OPS_EVENT(ocfs2_split_refcount_rec_insert);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_increase_refcount_begin);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_increase_refcount_change);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_increase_refcount_insert);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_increase_refcount_split);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_remove_refcount_extent);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_restore_refcount_block);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_decrease_refcount_rec);
-
 TRACE_EVENT(ocfs2_decrease_refcount,
 	TP_PROTO(unsigned long long owner,
 		 unsigned long long cpos,
@@ -996,11 +846,8 @@ TRACE_EVENT(ocfs2_decrease_refcount,
 	TP_printk("%llu %llu %u %d",
 		  __entry->owner, __entry->cpos, __entry->len, __entry->delete)
 );
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_mark_extent_refcounted);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_calc_refcount_meta_credits);
-
 TRACE_EVENT(ocfs2_calc_refcount_meta_credits_iterate,
 	TP_PROTO(int recs_add, unsigned long long cpos,
 		 unsigned int clusters, unsigned long long r_cpos,
@@ -1029,17 +876,11 @@ TRACE_EVENT(ocfs2_calc_refcount_meta_credits_iterate,
 		  __entry->r_cpos, __entry->r_clusters,
 		  __entry->refcount, __entry->index)
 );
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_add_refcount_flag);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_prepare_refcount_change_for_del);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_lock_refcount_allocators);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_duplicate_clusters_by_page);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_duplicate_clusters_by_jbd);
-
 TRACE_EVENT(ocfs2_clear_ext_refcount,
 	TP_PROTO(unsigned long long ino, unsigned int cpos,
 		 unsigned int len, unsigned int p_cluster,
@@ -1063,7 +904,6 @@ TRACE_EVENT(ocfs2_clear_ext_refcount,
 		  __entry->ino, __entry->cpos, __entry->len,
 		  __entry->p_cluster, __entry->ext_flags)
 );
-
 TRACE_EVENT(ocfs2_replace_clusters,
 	TP_PROTO(unsigned long long ino, unsigned int cpos,
 		 unsigned int old, unsigned int new, unsigned int len,
@@ -1089,9 +929,7 @@ TRACE_EVENT(ocfs2_replace_clusters,
 		  __entry->ino, __entry->cpos, __entry->old, __entry->new,
 		  __entry->len, __entry->ext_flags)
 );
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_make_clusters_writable);
-
 TRACE_EVENT(ocfs2_refcount_cow_hunk,
 	TP_PROTO(unsigned long long ino, unsigned int cpos,
 		 unsigned int write_len, unsigned int max_cpos,
@@ -1117,11 +955,6 @@ TRACE_EVENT(ocfs2_refcount_cow_hunk,
 		  __entry->ino, __entry->cpos, __entry->write_len,
 		  __entry->max_cpos, __entry->cow_start, __entry->cow_len)
 );
-
-/* End of trace events for fs/ocfs2/refcounttree.c. */
-
-/* Trace events for fs/ocfs2/aops.c. */
-
 DECLARE_EVENT_CLASS(ocfs2__get_block,
 	TP_PROTO(unsigned long long ino, unsigned long long iblock,
 		 void *bh_result, int create),
@@ -1142,25 +975,17 @@ DECLARE_EVENT_CLASS(ocfs2__get_block,
 		  __entry->ino, __entry->iblock,
 		  __entry->bh_result, __entry->create)
 );
-
 #define DEFINE_OCFS2_GET_BLOCK_EVENT(name)	\
 DEFINE_EVENT(ocfs2__get_block, name,	\
 	TP_PROTO(unsigned long long ino, unsigned long long iblock,	\
 		 void *bh_result, int create),	\
 	TP_ARGS(ino, iblock, bh_result, create))
-
 DEFINE_OCFS2_GET_BLOCK_EVENT(ocfs2_symlink_get_block);
-
 DEFINE_OCFS2_GET_BLOCK_EVENT(ocfs2_get_block);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_get_block_end);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_readpage);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_writepage);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_bmap);
-
 TRACE_EVENT(ocfs2_try_to_write_inline_data,
 	TP_PROTO(unsigned long long ino, unsigned int len,
 		 unsigned long long pos, unsigned int flags),
@@ -1180,7 +1005,6 @@ TRACE_EVENT(ocfs2_try_to_write_inline_data,
 	TP_printk("%llu %u %llu 0x%x",
 		  __entry->ino, __entry->len, __entry->pos, __entry->flags)
 );
-
 TRACE_EVENT(ocfs2_write_begin_nolock,
 	TP_PROTO(unsigned long long ino,
 		 long long i_size, unsigned int i_clusters,
@@ -1217,7 +1041,6 @@ TRACE_EVENT(ocfs2_write_begin_nolock,
 		  __entry->flags, __entry->page, __entry->clusters,
 		  __entry->extents_to_split)
 );
-
 TRACE_EVENT(ocfs2_write_end_inline,
 	TP_PROTO(unsigned long long ino,
 		 unsigned long long pos, unsigned int copied,
@@ -1241,11 +1064,6 @@ TRACE_EVENT(ocfs2_write_end_inline,
 		  __entry->ino, __entry->pos, __entry->copied,
 		  __entry->id_count, __entry->features)
 );
-
-/* End of trace events for fs/ocfs2/aops.c. */
-
-/* Trace events for fs/ocfs2/mmap.c. */
-
 TRACE_EVENT(ocfs2_fault,
 	TP_PROTO(unsigned long long ino,
 		 void *area, void *page, unsigned long pgoff),
@@ -1265,11 +1083,6 @@ TRACE_EVENT(ocfs2_fault,
 	TP_printk("%llu %p %p %lu",
 		  __entry->ino, __entry->area, __entry->page, __entry->pgoff)
 );
-
-/* End of trace events for fs/ocfs2/mmap.c. */
-
-/* Trace events for fs/ocfs2/file.c. */
-
 DECLARE_EVENT_CLASS(ocfs2__file_ops,
 	TP_PROTO(void *inode, void *file, void *dentry,
 		 unsigned long long ino,
@@ -1298,7 +1111,6 @@ DECLARE_EVENT_CLASS(ocfs2__file_ops,
 		  __entry->dentry, __entry->ino, __entry->para,
 		  __entry->d_len, __get_str(d_name))
 );
-
 #define DEFINE_OCFS2_FILE_OPS(name)				\
 DEFINE_EVENT(ocfs2__file_ops, name,				\
 TP_PROTO(void *inode, void *file, void *dentry,			\
@@ -1306,23 +1118,14 @@ TP_PROTO(void *inode, void *file, void *dentry,			\
 	 unsigned int d_len, const unsigned char *d_name,	\
 	 unsigned long long mode),				\
 	TP_ARGS(inode, file, dentry, ino, d_len, d_name, mode))
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_open);
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_release);
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_sync_file);
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_write_iter);
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_read_iter);
-
 DEFINE_OCFS2_FILE_OPS(ocfs2_file_splice_read);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_truncate_file);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_truncate_file_error);
-
 TRACE_EVENT(ocfs2_extend_allocation,
 	TP_PROTO(unsigned long long ip_blkno, unsigned long long size,
 		 unsigned int clusters, unsigned int clusters_to_add,
@@ -1348,7 +1151,6 @@ TRACE_EVENT(ocfs2_extend_allocation,
 		  __entry->ip_blkno, __entry->size, __entry->clusters,
 		  __entry->clusters_to_add, __entry->why, __entry->restart_func)
 );
-
 TRACE_EVENT(ocfs2_extend_allocation_end,
 	TP_PROTO(unsigned long long ino,
 		 unsigned int di_clusters, unsigned long long di_size,
@@ -1371,7 +1173,6 @@ TRACE_EVENT(ocfs2_extend_allocation_end,
 	TP_printk("%llu %u %llu %u %llu", __entry->ino, __entry->di_clusters,
 		  __entry->di_size, __entry->ip_clusters, __entry->i_size)
 );
-
 TRACE_EVENT(ocfs2_write_zero_page,
 	TP_PROTO(unsigned long long ino,
 		 unsigned long long abs_from, unsigned long long abs_to,
@@ -1398,11 +1199,8 @@ TRACE_EVENT(ocfs2_write_zero_page,
 		  __entry->abs_from, __entry->abs_to,
 		  __entry->index, __entry->zero_from, __entry->zero_to)
 );
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_zero_extend_range);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_zero_extend);
-
 TRACE_EVENT(ocfs2_setattr,
 	TP_PROTO(void *inode, void *dentry,
 		 unsigned long long ino,
@@ -1438,17 +1236,11 @@ TRACE_EVENT(ocfs2_setattr,
 		  __get_str(d_name), __entry->ia_valid, __entry->ia_mode,
 		  __entry->ia_uid, __entry->ia_gid)
 );
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_write_remove_suid);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_zero_partial_clusters);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_zero_partial_clusters_range1);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_zero_partial_clusters_range2);
-
 DEFINE_OCFS2_ULL_ULL_ULL_EVENT(ocfs2_remove_inode_range);
-
 TRACE_EVENT(ocfs2_prepare_inode_for_write,
 	TP_PROTO(unsigned long long ino, unsigned long long saved_pos,
 		 unsigned long count, int wait),
@@ -1468,14 +1260,8 @@ TRACE_EVENT(ocfs2_prepare_inode_for_write,
 	TP_printk("%llu %llu %lu %d", __entry->ino,
 		  __entry->saved_pos, __entry->count, __entry->wait)
 );
-
 DEFINE_OCFS2_INT_EVENT(generic_file_read_iter_ret);
 DEFINE_OCFS2_INT_EVENT(filemap_splice_read_ret);
-
-/* End of trace events for fs/ocfs2/file.c. */
-
-/* Trace events for fs/ocfs2/inode.c. */
-
 TRACE_EVENT(ocfs2_iget_begin,
 	TP_PROTO(unsigned long long ino, unsigned int flags, int sysfile_type),
 	TP_ARGS(ino, flags, sysfile_type),
@@ -1492,9 +1278,7 @@ TRACE_EVENT(ocfs2_iget_begin,
 	TP_printk("%llu %u %d", __entry->ino,
 		  __entry->flags, __entry->sysfile_type)
 );
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_iget5_locked);
-
 TRACE_EVENT(ocfs2_iget_end,
 	TP_PROTO(void *inode, unsigned long long ino),
 	TP_ARGS(inode, ino),
@@ -1508,7 +1292,6 @@ TRACE_EVENT(ocfs2_iget_end,
 	),
 	TP_printk("%p %llu", __entry->inode, __entry->ino)
 );
-
 TRACE_EVENT(ocfs2_find_actor,
 	TP_PROTO(void *inode, unsigned long long ino,
 		 void *args,  unsigned long long fi_blkno),
@@ -1528,17 +1311,12 @@ TRACE_EVENT(ocfs2_find_actor,
 	TP_printk("%p %llu %p %llu", __entry->inode, __entry->ino,
 		  __entry->args, __entry->fi_blkno)
 );
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_populate_inode);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_read_locked_inode);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_check_orphan_recovery_state);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_inode_block);
 DEFINE_OCFS2_ULL_EVENT(ocfs2_filecheck_validate_inode_block);
 DEFINE_OCFS2_ULL_EVENT(ocfs2_filecheck_repair_inode_block);
-
 TRACE_EVENT(ocfs2_inode_is_valid_to_delete,
 	TP_PROTO(void *task, void *dc_task, unsigned long long ino,
 		 unsigned int flags),
@@ -1558,21 +1336,13 @@ TRACE_EVENT(ocfs2_inode_is_valid_to_delete,
 	TP_printk("%p %p %llu %u", __entry->task, __entry->dc_task,
 		  __entry->ino, __entry->flags)
 );
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_query_inode_wipe_begin);
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_query_inode_wipe_succ);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_query_inode_wipe_end);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_cleanup_delete_inode);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_delete_inode);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_clear_inode);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_drop_inode);
-
 TRACE_EVENT(ocfs2_inode_revalidate,
 	TP_PROTO(void *inode, unsigned long long ino,
 		 unsigned int flags),
@@ -1589,13 +1359,7 @@ TRACE_EVENT(ocfs2_inode_revalidate,
 	),
 	TP_printk("%p %llu %u", __entry->inode, __entry->ino, __entry->flags)
 );
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_mark_inode_dirty);
-
-/* End of trace events for fs/ocfs2/inode.c. */
-
-/* Trace events for fs/ocfs2/extent_map.c. */
-
 TRACE_EVENT(ocfs2_read_virt_blocks,
 	TP_PROTO(void *inode, unsigned long long vblock, int nr,
 		 void *bhs, unsigned int flags, void *validate),
@@ -1619,29 +1383,11 @@ TRACE_EVENT(ocfs2_read_virt_blocks,
 	TP_printk("%p %llu %d %p %x %p", __entry->inode, __entry->vblock,
 		  __entry->nr, __entry->bhs, __entry->flags, __entry->validate)
 );
-
-/* End of trace events for fs/ocfs2/extent_map.c. */
-
-/* Trace events for fs/ocfs2/slot_map.c. */
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_refresh_slot_info);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_map_slot_buffers);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_map_slot_buffers_block);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_find_slot);
-
-/* End of trace events for fs/ocfs2/slot_map.c. */
-
-/* Trace events for fs/ocfs2/heartbeat.c. */
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_do_node_down);
-
-/* End of trace events for fs/ocfs2/heartbeat.c. */
-
-/* Trace events for fs/ocfs2/super.c. */
-
 TRACE_EVENT(ocfs2_remount,
 	TP_PROTO(unsigned long s_flags, unsigned long osb_flags, int flags),
 	TP_ARGS(s_flags, osb_flags, flags),
@@ -1658,7 +1404,6 @@ TRACE_EVENT(ocfs2_remount,
 	TP_printk("%lu %lu %d", __entry->s_flags,
 		  __entry->osb_flags, __entry->flags)
 );
-
 TRACE_EVENT(ocfs2_fill_super,
 	TP_PROTO(void *sb, void *data, int silent),
 	TP_ARGS(sb, data, silent),
@@ -1675,7 +1420,6 @@ TRACE_EVENT(ocfs2_fill_super,
 	TP_printk("%p %p %d", __entry->sb,
 		  __entry->data, __entry->silent)
 );
-
 TRACE_EVENT(ocfs2_parse_options,
 	TP_PROTO(int is_remount, char *options),
 	TP_ARGS(is_remount, options),
@@ -1689,9 +1433,7 @@ TRACE_EVENT(ocfs2_parse_options,
 	),
 	TP_printk("%d %s", __entry->is_remount, __get_str(options))
 );
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_put_super);
-
 TRACE_EVENT(ocfs2_statfs,
 	TP_PROTO(void *sb, void *buf),
 	TP_ARGS(sb, buf),
@@ -1705,9 +1447,7 @@ TRACE_EVENT(ocfs2_statfs,
 	),
 	TP_printk("%p %p", __entry->sb, __entry->buf)
 );
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_dismount_volume);
-
 TRACE_EVENT(ocfs2_initialize_super,
 	TP_PROTO(char *label, char *uuid_str, unsigned long long root_dir,
 		 unsigned long long system_dir, int cluster_bits),
@@ -1729,15 +1469,8 @@ TRACE_EVENT(ocfs2_initialize_super,
 	TP_printk("%s %s %llu %llu %d", __get_str(label), __get_str(uuid_str),
 		  __entry->root_dir, __entry->system_dir, __entry->cluster_bits)
 );
-
-/* End of trace events for fs/ocfs2/super.c. */
-
-/* Trace events for fs/ocfs2/xattr.c. */
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_xattr_block);
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_xattr_extend_allocation);
-
 TRACE_EVENT(ocfs2_init_xattr_set_ctxt,
 	TP_PROTO(const char *name, int meta, int clusters, int credits),
 	TP_ARGS(name, meta, clusters, credits),
@@ -1756,7 +1489,6 @@ TRACE_EVENT(ocfs2_init_xattr_set_ctxt,
 	TP_printk("%s %d %d %d", __get_str(name), __entry->meta,
 		  __entry->clusters, __entry->credits)
 );
-
 DECLARE_EVENT_CLASS(ocfs2__xattr_find,
 	TP_PROTO(unsigned long long ino, const char *name, int name_index,
 		 unsigned int hash, unsigned long long location,
@@ -1782,84 +1514,45 @@ DECLARE_EVENT_CLASS(ocfs2__xattr_find,
 		  __entry->name_index, __entry->hash, __entry->location,
 		  __entry->xe_index)
 );
-
 #define DEFINE_OCFS2_XATTR_FIND_EVENT(name)					\
 DEFINE_EVENT(ocfs2__xattr_find, name,					\
 TP_PROTO(unsigned long long ino, const char *name, int name_index,	\
 	 unsigned int hash, unsigned long long bucket,			\
 	 int xe_index),							\
 	TP_ARGS(ino, name, name_index, hash, bucket, xe_index))
-
 DEFINE_OCFS2_XATTR_FIND_EVENT(ocfs2_xattr_bucket_find);
-
 DEFINE_OCFS2_XATTR_FIND_EVENT(ocfs2_xattr_index_block_find);
-
 DEFINE_OCFS2_XATTR_FIND_EVENT(ocfs2_xattr_index_block_find_rec);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_iterate_xattr_buckets);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_iterate_xattr_bucket);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_cp_xattr_block_to_bucket_begin);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_cp_xattr_block_to_bucket_end);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_xattr_create_index_block_begin);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_xattr_create_index_block);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_defrag_xattr_bucket);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_mv_xattr_bucket_cross_cluster);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_divide_xattr_bucket_begin);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_divide_xattr_bucket_move);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_cp_xattr_bucket);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_mv_xattr_buckets);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_adjust_xattr_cross_cluster);
-
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_add_new_xattr_cluster_begin);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_add_new_xattr_cluster);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_add_new_xattr_cluster_insert);
-
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_extend_xattr_bucket);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_add_new_xattr_bucket);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_xattr_bucket_value_truncate);
-
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_rm_xattr_cluster);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_reflink_xattr_header);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_create_empty_xattr_block);
-
 DEFINE_OCFS2_STRING_EVENT(ocfs2_xattr_set_entry_bucket);
-
 DEFINE_OCFS2_STRING_EVENT(ocfs2_xattr_set_entry_index_block);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_xattr_bucket_value_refcount);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_reflink_xattr_buckets);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_reflink_xattr_rec);
-
-/* End of trace events for fs/ocfs2/xattr.c. */
-
-/* Trace events for fs/ocfs2/reservations.c. */
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_resv_insert);
-
 DEFINE_OCFS2_ULL_UINT_UINT_UINT_EVENT(ocfs2_resmap_find_free_bits_begin);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_resmap_find_free_bits_end);
-
 TRACE_EVENT(ocfs2_resv_find_window_begin,
 	TP_PROTO(unsigned int r_start, unsigned int r_end, unsigned int goal,
 		 unsigned int wanted, int empty_root),
@@ -1881,13 +1574,9 @@ TRACE_EVENT(ocfs2_resv_find_window_begin,
 	TP_printk("%u %u %u %u %d", __entry->r_start, __entry->r_end,
 		  __entry->goal, __entry->wanted, __entry->empty_root)
 );
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_resv_find_window_prev);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_resv_find_window_next);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_cannibalize_resv_begin);
-
 TRACE_EVENT(ocfs2_cannibalize_resv_end,
 	TP_PROTO(unsigned int start, unsigned int end, unsigned int len,
 		 unsigned int last_start, unsigned int last_len),
@@ -1909,9 +1598,7 @@ TRACE_EVENT(ocfs2_cannibalize_resv_end,
 	TP_printk("%u %u %u %u %u", __entry->start, __entry->end,
 		  __entry->len, __entry->last_start, __entry->last_len)
 );
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_resmap_resv_bits);
-
 TRACE_EVENT(ocfs2_resmap_claimed_bits_begin,
 	TP_PROTO(unsigned int cstart, unsigned int cend, unsigned int clen,
 		 unsigned int r_start, unsigned int r_end, unsigned int r_len,
@@ -1943,7 +1630,6 @@ TRACE_EVENT(ocfs2_resmap_claimed_bits_begin,
 		  __entry->r_start, __entry->r_end, __entry->r_len,
 		  __entry->last_start, __entry->last_len)
 );
-
 TRACE_EVENT(ocfs2_resmap_claimed_bits_end,
 	TP_PROTO(unsigned int start, unsigned int end, unsigned int len,
 		 unsigned int last_start, unsigned int last_len),
@@ -1965,23 +1651,10 @@ TRACE_EVENT(ocfs2_resmap_claimed_bits_end,
 	TP_printk("%u %u %u %u %u", __entry->start, __entry->end,
 		  __entry->len, __entry->last_start, __entry->last_len)
 );
-
-/* End of trace events for fs/ocfs2/reservations.c. */
-
-/* Trace events for fs/ocfs2/quota_local.c. */
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_recover_local_quota_file);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_finish_quota_recovery);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(olq_set_dquot);
-
-/* End of trace events for fs/ocfs2/quota_local.c. */
-
-/* Trace events for fs/ocfs2/quota_global.c. */
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_quota_block);
-
 TRACE_EVENT(ocfs2_sync_dquot,
 	TP_PROTO(unsigned int dq_id, long long dqb_curspace,
 		 long long spacechange, long long curinodes,
@@ -2005,12 +1678,10 @@ TRACE_EVENT(ocfs2_sync_dquot,
 		  __entry->dqb_curspace, __entry->spacechange,
 		  __entry->curinodes, __entry->inodechange)
 );
-
 TRACE_EVENT(ocfs2_sync_dquot_helper,
 	TP_PROTO(unsigned int dq_id, unsigned int dq_type, unsigned long type,
 		 const char *s_id),
 	TP_ARGS(dq_id, dq_type, type, s_id),
-
 	TP_STRUCT__entry(
 		__field(unsigned int, dq_id)
 		__field(unsigned int, dq_type)
@@ -2026,26 +1697,14 @@ TRACE_EVENT(ocfs2_sync_dquot_helper,
 	TP_printk("%u %u %lu %s", __entry->dq_id, __entry->dq_type,
 		  __entry->type, __get_str(s_id))
 );
-
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_write_dquot);
-
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_release_dquot);
-
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_acquire_dquot);
-
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_get_next_id);
-
 DEFINE_OCFS2_UINT_INT_EVENT(ocfs2_mark_dquot_dirty);
-
-/* End of trace events for fs/ocfs2/quota_global.c. */
-
-/* Trace events for fs/ocfs2/dir.c. */
 DEFINE_OCFS2_INT_EVENT(ocfs2_search_dirblock);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_validate_dir_block);
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_find_entry_el);
-
 TRACE_EVENT(ocfs2_dx_dir_search,
 	TP_PROTO(unsigned long long ino, int namelen, const char *name,
 		 unsigned int major_hash, unsigned int minor_hash,
@@ -2071,13 +1730,9 @@ TRACE_EVENT(ocfs2_dx_dir_search,
 		   __entry->namelen, __get_str(name),
 		  __entry->major_hash, __entry->minor_hash, __entry->blkno)
 );
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_dx_dir_search_leaf_info);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_delete_entry_dx);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_readdir);
-
 TRACE_EVENT(ocfs2_find_files_on_disk,
 	TP_PROTO(int namelen, const char *name, void *blkno,
 		 unsigned long long dir),
@@ -2097,7 +1752,6 @@ TRACE_EVENT(ocfs2_find_files_on_disk,
 	TP_printk("%.*s %p %llu", __entry->namelen, __get_str(name),
 		  __entry->blkno, __entry->dir)
 );
-
 TRACE_EVENT(ocfs2_check_dir_for_entry,
 	TP_PROTO(unsigned long long dir, int namelen, const char *name),
 	TP_ARGS(dir, namelen, name),
@@ -2114,11 +1768,8 @@ TRACE_EVENT(ocfs2_check_dir_for_entry,
 	TP_printk("%llu %.*s", __entry->dir,
 		  __entry->namelen, __get_str(name))
 );
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_dx_dir_attach_index);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_dx_dir_format_cluster);
-
 TRACE_EVENT(ocfs2_dx_dir_index_root_block,
 	TP_PROTO(unsigned long long dir,
 		 unsigned int major_hash, unsigned int minor_hash,
@@ -2144,19 +1795,10 @@ TRACE_EVENT(ocfs2_dx_dir_index_root_block,
 		  __entry->major_hash, __entry->minor_hash,
 		   __entry->namelen, __get_str(name), __entry->num_used)
 );
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_extend_dir);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_dx_dir_rebalance);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_dx_dir_rebalance_split);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_prepare_dir_for_insert);
-
-/* End of trace events for fs/ocfs2/dir.c. */
-
-/* Trace events for fs/ocfs2/namei.c. */
-
 DECLARE_EVENT_CLASS(ocfs2__dentry_ops,
 	TP_PROTO(void *dir, void *dentry, int name_len, const char *name,
 		 unsigned long long dir_blkno, unsigned long long extra),
@@ -2181,27 +1823,18 @@ DECLARE_EVENT_CLASS(ocfs2__dentry_ops,
 		  __entry->name_len, __get_str(name),
 		  __entry->dir_blkno, __entry->extra)
 );
-
 #define DEFINE_OCFS2_DENTRY_OPS(name)					\
 DEFINE_EVENT(ocfs2__dentry_ops, name,					\
 TP_PROTO(void *dir, void *dentry, int name_len, const char *name,	\
 	 unsigned long long dir_blkno, unsigned long long extra),	\
 	TP_ARGS(dir, dentry, name_len, name, dir_blkno, extra))
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_lookup);
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_mkdir);
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_create);
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_unlink);
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_symlink_create);
-
 DEFINE_OCFS2_DENTRY_OPS(ocfs2_mv_orphaned_inode_to_new);
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_lookup_ret);
-
 TRACE_EVENT(ocfs2_mknod,
 	TP_PROTO(void *dir, void *dentry, int name_len, const char *name,
 		 unsigned long long dir_blkno, unsigned long dev, int mode),
@@ -2228,7 +1861,6 @@ TRACE_EVENT(ocfs2_mknod,
 		  __entry->name_len, __get_str(name),
 		  __entry->dir_blkno, __entry->dev, __entry->mode)
 );
-
 TRACE_EVENT(ocfs2_link,
 	TP_PROTO(unsigned long long ino, int old_len, const char *old_name,
 		 int name_len, const char *name),
@@ -2251,13 +1883,9 @@ TRACE_EVENT(ocfs2_link,
 		  __entry->old_len, __get_str(old_name),
 		  __entry->name_len, __get_str(name))
 );
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_unlink_noent);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_double_lock);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_double_lock_end);
-
 TRACE_EVENT(ocfs2_rename,
 	TP_PROTO(void *old_dir, void *old_dentry,
 		 void *new_dir, void *new_dentry,
@@ -2291,9 +1919,7 @@ TRACE_EVENT(ocfs2_rename,
 		  __entry->old_len, __get_str(old_name),
 		  __entry->new_len, __get_str(new_name))
 );
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_rename_not_permitted);
-
 TRACE_EVENT(ocfs2_rename_target_exists,
 	TP_PROTO(int new_len, const char *new_name),
 	TP_ARGS(new_len, new_name),
@@ -2307,9 +1933,7 @@ TRACE_EVENT(ocfs2_rename_target_exists,
 	),
 	TP_printk("%.*s", __entry->new_len, __get_str(new_name))
 );
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_rename_disagree);
-
 TRACE_EVENT(ocfs2_rename_over_existing,
 	TP_PROTO(unsigned long long new_blkno, void *new_bh,
 		 unsigned long long newdi_blkno),
@@ -2327,9 +1951,7 @@ TRACE_EVENT(ocfs2_rename_over_existing,
 	TP_printk("%llu %p %llu", __entry->new_blkno, __entry->new_bh,
 		  __entry->newdi_blkno)
 );
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_create_symlink_data);
-
 TRACE_EVENT(ocfs2_symlink_begin,
 	TP_PROTO(void *dir, void *dentry, const char *symname,
 		 int len, const char *name),
@@ -2351,7 +1973,6 @@ TRACE_EVENT(ocfs2_symlink_begin,
 	TP_printk("%p %p %s %.*s", __entry->dir, __entry->dentry,
 		  __entry->symname, __entry->len, __get_str(name))
 );
-
 TRACE_EVENT(ocfs2_blkno_stringify,
 	TP_PROTO(unsigned long long blkno, const char *name, int namelen),
 	TP_ARGS(blkno, name, namelen),
@@ -2368,11 +1989,8 @@ TRACE_EVENT(ocfs2_blkno_stringify,
 	TP_printk("%llu %s %d", __entry->blkno, __get_str(name),
 		  __entry->namelen)
 );
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_orphan_add_begin);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_orphan_add_end);
-
 TRACE_EVENT(ocfs2_orphan_del,
 	TP_PROTO(unsigned long long dir, const char *name, int namelen),
 	TP_ARGS(dir, name, namelen),
@@ -2389,11 +2007,6 @@ TRACE_EVENT(ocfs2_orphan_del,
 	TP_printk("%llu %s %d", __entry->dir, __get_str(name),
 		  __entry->namelen)
 );
-
-/* End of trace events for fs/ocfs2/namei.c. */
-
-/* Trace events for fs/ocfs2/dcache.c. */
-
 TRACE_EVENT(ocfs2_dentry_revalidate,
 	TP_PROTO(void *dentry, int len, const char *name),
 	TP_ARGS(dentry, len, name),
@@ -2409,7 +2022,6 @@ TRACE_EVENT(ocfs2_dentry_revalidate,
 	),
 	TP_printk("%p %.*s", __entry->dentry, __entry->len, __get_str(name))
 );
-
 TRACE_EVENT(ocfs2_dentry_revalidate_negative,
 	TP_PROTO(int len, const char *name, unsigned long pgen,
 		 unsigned long gen),
@@ -2429,15 +2041,10 @@ TRACE_EVENT(ocfs2_dentry_revalidate_negative,
 	TP_printk("%.*s %lu %lu", __entry->len, __get_str(name),
 		  __entry->pgen, __entry->gen)
 );
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_dentry_revalidate_delete);
-
 DEFINE_OCFS2_ULL_INT_EVENT(ocfs2_dentry_revalidate_orphaned);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_dentry_revalidate_nofsdata);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_dentry_revalidate_ret);
-
 TRACE_EVENT(ocfs2_find_local_alias,
 	TP_PROTO(int len, const char *name),
 	TP_ARGS(len, name),
@@ -2451,7 +2058,6 @@ TRACE_EVENT(ocfs2_find_local_alias,
 	),
 	TP_printk("%.*s", __entry->len, __get_str(name))
 );
-
 TRACE_EVENT(ocfs2_dentry_attach_lock,
 	TP_PROTO(int len, const char *name,
 		 unsigned long long parent, void *fsdata),
@@ -2471,7 +2077,6 @@ TRACE_EVENT(ocfs2_dentry_attach_lock,
 	TP_printk("%.*s %llu %p", __entry->len, __get_str(name),
 		  __entry->parent, __entry->fsdata)
 );
-
 TRACE_EVENT(ocfs2_dentry_attach_lock_found,
 	TP_PROTO(const char *name, unsigned long long parent,
 		 unsigned long long ino),
@@ -2488,10 +2093,6 @@ TRACE_EVENT(ocfs2_dentry_attach_lock_found,
 	),
 	TP_printk("%s %llu %llu", __get_str(name), __entry->parent, __entry->ino)
 );
-/* End of trace events for fs/ocfs2/dcache.c. */
-
-/* Trace events for fs/ocfs2/export.c. */
-
 TRACE_EVENT(ocfs2_get_dentry_begin,
 	TP_PROTO(void *sb, void *handle, unsigned long long blkno),
 	TP_ARGS(sb, handle, blkno),
@@ -2507,15 +2108,10 @@ TRACE_EVENT(ocfs2_get_dentry_begin,
 	),
 	TP_printk("%p %p %llu", __entry->sb, __entry->handle, __entry->blkno)
 );
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_get_dentry_test_bit);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_get_dentry_stale);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_get_dentry_generation);
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_get_dentry_end);
-
 TRACE_EVENT(ocfs2_get_parent,
 	TP_PROTO(void *child, int len, const char *name,
 		 unsigned long long ino),
@@ -2535,9 +2131,7 @@ TRACE_EVENT(ocfs2_get_parent,
 	TP_printk("%p %.*s %llu", __entry->child, __entry->len,
 		  __get_str(name), __entry->ino)
 );
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_get_parent_end);
-
 TRACE_EVENT(ocfs2_encode_fh_begin,
 	TP_PROTO(void *dentry, int name_len, const char *name,
 		 void *fh, int len, int connectable),
@@ -2562,43 +2156,22 @@ TRACE_EVENT(ocfs2_encode_fh_begin,
 		  __get_str(name), __entry->fh, __entry->len,
 		  __entry->connectable)
 );
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_encode_fh_self);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_encode_fh_parent);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_encode_fh_type);
-
-/* End of trace events for fs/ocfs2/export.c. */
-
-/* Trace events for fs/ocfs2/journal.c. */
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_commit_cache_begin);
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_commit_cache_end);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_extend_trans);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_extend_trans_restart);
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_allocate_extend_trans);
-
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_journal_access);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_journal_dirty);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_journal_init);
-
 DEFINE_OCFS2_UINT_EVENT(ocfs2_journal_init_maxlen);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_journal_shutdown);
-
 DEFINE_OCFS2_POINTER_EVENT(ocfs2_journal_shutdown_wait);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_complete_recovery);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_complete_recovery_end);
-
 TRACE_EVENT(ocfs2_complete_recovery_slot,
 	TP_PROTO(int slot, unsigned long long la_ino,
 		 unsigned long long tl_ino, void *qrec),
@@ -2618,11 +2191,8 @@ TRACE_EVENT(ocfs2_complete_recovery_slot,
 	TP_printk("%d %llu %llu %p", __entry->slot, __entry->la_ino,
 		  __entry->tl_ino, __entry->qrec)
 );
-
 DEFINE_OCFS2_INT_INT_EVENT(ocfs2_recovery_thread_node);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_recovery_thread_end);
-
 TRACE_EVENT(ocfs2_recovery_thread,
 	TP_PROTO(int node_num, int osb_node_num, int disable,
 		 void *recovery_thread, int map_set),
@@ -2645,45 +2215,23 @@ TRACE_EVENT(ocfs2_recovery_thread,
 		   __entry->osb_node_num, __entry->disable,
 		   __entry->recovery_thread, __entry->map_set)
 );
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_replay_journal_recovered);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_replay_journal_lock_err);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_replay_journal_skip);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_recover_node);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_recover_node_skip);
-
 DEFINE_OCFS2_UINT_UINT_EVENT(ocfs2_mark_dead_nodes);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_queue_orphan_scan_begin);
-
 DEFINE_OCFS2_UINT_UINT_UINT_EVENT(ocfs2_queue_orphan_scan_end);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_orphan_filldir);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_recover_orphans);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_recover_orphans_iput);
-
 DEFINE_OCFS2_INT_EVENT(ocfs2_wait_on_mount);
-
-/* End of trace events for fs/ocfs2/journal.c. */
-
-/* Trace events for fs/ocfs2/buffer_head_io.c. */
-
 DEFINE_OCFS2_ULL_UINT_EVENT(ocfs2_read_blocks_sync);
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_read_blocks_sync_jbd);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_read_blocks_from_disk);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_read_blocks_bh);
-
 DEFINE_OCFS2_ULL_INT_INT_INT_EVENT(ocfs2_read_blocks_end);
-
 TRACE_EVENT(ocfs2_write_block,
 	TP_PROTO(unsigned long long block, void *ci),
 	TP_ARGS(block, ci),
@@ -2697,7 +2245,6 @@ TRACE_EVENT(ocfs2_write_block,
 	),
 	TP_printk("%llu %p", __entry->block, __entry->ci)
 );
-
 TRACE_EVENT(ocfs2_read_blocks_begin,
 	TP_PROTO(void *ci, unsigned long long block,
 		 unsigned int nr, int flags),
@@ -2717,17 +2264,9 @@ TRACE_EVENT(ocfs2_read_blocks_begin,
 	TP_printk("%p %llu %u %d", __entry->ci, __entry->block,
 		  __entry->nr, __entry->flags)
 );
-
-/* End of trace events for fs/ocfs2/buffer_head_io.c. */
-
-/* Trace events for fs/ocfs2/uptodate.c. */
-
 DEFINE_OCFS2_ULL_EVENT(ocfs2_purge_copied_metadata_tree);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_metadata_cache_purge);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_buffer_cached_begin);
-
 TRACE_EVENT(ocfs2_buffer_cached_end,
 	TP_PROTO(int index, void *item),
 	TP_ARGS(index, item),
@@ -2741,27 +2280,15 @@ TRACE_EVENT(ocfs2_buffer_cached_end,
 	),
 	TP_printk("%d %p", __entry->index, __entry->item)
 );
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_append_cache_array);
-
 DEFINE_OCFS2_ULL_ULL_UINT_EVENT(ocfs2_insert_cache_tree);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_expand_cache);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_set_buffer_uptodate);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_set_buffer_uptodate_begin);
-
 DEFINE_OCFS2_ULL_UINT_UINT_EVENT(ocfs2_remove_metadata_array);
-
 DEFINE_OCFS2_ULL_ULL_EVENT(ocfs2_remove_metadata_tree);
-
 DEFINE_OCFS2_ULL_ULL_UINT_UINT_EVENT(ocfs2_remove_block_from_cache);
-
-/* End of trace events for fs/ocfs2/uptodate.c. */
-#endif /* _TRACE_OCFS2_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE ocfs2_trace

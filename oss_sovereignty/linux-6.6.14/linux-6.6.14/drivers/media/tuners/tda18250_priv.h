@@ -1,62 +1,53 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NXP TDA18250BHN silicon tuner driver
- *
- * Copyright (C) 2017 Olli Salonen <olli.salonen@iki.fi>
- */
-
 #ifndef TDA18250_PRIV_H
 #define TDA18250_PRIV_H
-
 #include "tda18250.h"
-
-#define R00_ID1		0x00	/* ID byte 1 */
-#define R01_ID2		0x01	/* ID byte 2 */
-#define R02_ID3		0x02	/* ID byte 3 */
-#define R03_THERMO1	0x03	/* Thermo byte 1 */
-#define R04_THERMO2	0x04	/* Thermo byte 2 */
-#define R05_POWER1	0x05	/* Power byte 1 */
-#define R06_POWER2	0x06	/* Power byte 2 */
-#define R07_GPIO	0x07	/* GPIO */
-#define R08_IRQ1	0x08	/* IRQ */
-#define R09_IRQ2	0x09	/* IRQ */
-#define R0A_IRQ3	0x0a	/* IRQ */
-#define R0B_IRQ4	0x0b	/* IRQ */
-#define R0C_AGC11	0x0c	/* AGC1 byte 1 */
-#define R0D_AGC12	0x0d	/* AGC1 byte 2 */
-#define R0E_AGC13	0x0e	/* AGC1 byte 3 */
-#define R0F_AGC14	0x0f	/* AGC1 byte 4 */
-#define R10_LT1		0x10	/* LT byte 1 */
-#define R11_LT2		0x11	/* LT byte 2 */
-#define R12_AGC21	0x12	/* AGC2 byte 1 */
-#define R13_AGC22	0x13	/* AGC2 byte 2 */
-#define R14_AGC23	0x14	/* AGC2 byte 3 */
-#define R15_AGC24	0x15	/* AGC2 byte 4 */
-#define R16_AGC25	0x16	/* AGC2 byte 5 */
-#define R17_AGC31	0x17	/* AGC3 byte 1 */
-#define R18_AGC32	0x18	/* AGC3 byte 2 */
-#define R19_AGC33	0x19	/* AGC3 byte 3 */
+#define R00_ID1		0x00	 
+#define R01_ID2		0x01	 
+#define R02_ID3		0x02	 
+#define R03_THERMO1	0x03	 
+#define R04_THERMO2	0x04	 
+#define R05_POWER1	0x05	 
+#define R06_POWER2	0x06	 
+#define R07_GPIO	0x07	 
+#define R08_IRQ1	0x08	 
+#define R09_IRQ2	0x09	 
+#define R0A_IRQ3	0x0a	 
+#define R0B_IRQ4	0x0b	 
+#define R0C_AGC11	0x0c	 
+#define R0D_AGC12	0x0d	 
+#define R0E_AGC13	0x0e	 
+#define R0F_AGC14	0x0f	 
+#define R10_LT1		0x10	 
+#define R11_LT2		0x11	 
+#define R12_AGC21	0x12	 
+#define R13_AGC22	0x13	 
+#define R14_AGC23	0x14	 
+#define R15_AGC24	0x15	 
+#define R16_AGC25	0x16	 
+#define R17_AGC31	0x17	 
+#define R18_AGC32	0x18	 
+#define R19_AGC33	0x19	 
 #define R1A_AGCK	0x1a
 #define R1B_GAIN1	0x1b
 #define R1C_GAIN2	0x1c
 #define R1D_GAIN3	0x1d
-#define R1E_WI_FI	0x1e	/* Wireless Filter */
-#define R1F_RF_BPF	0x1f	/* RF Band Pass Filter */
-#define R20_IR_MIX	0x20	/* IR Mixer */
+#define R1E_WI_FI	0x1e	 
+#define R1F_RF_BPF	0x1f	 
+#define R20_IR_MIX	0x20	 
 #define R21_IF_AGC	0x21
-#define R22_IF1		0x22	/* IF byte 1 */
-#define R23_IF2		0x23	/* IF byte 2 */
-#define R24_IF3		0x24	/* IF byte 3 */
-#define R25_REF		0x25	/* reference byte */
-#define R26_IF		0x26	/* IF frequency */
-#define R27_RF1		0x27	/* RF frequency byte 1 */
-#define R28_RF2		0x28	/* RF frequency byte 2 */
-#define R29_RF3		0x29	/* RF frequency byte 3 */
+#define R22_IF1		0x22	 
+#define R23_IF2		0x23	 
+#define R24_IF3		0x24	 
+#define R25_REF		0x25	 
+#define R26_IF		0x26	 
+#define R27_RF1		0x27	 
+#define R28_RF2		0x28	 
+#define R29_RF3		0x29	 
 #define R2A_MSM1	0x2a
 #define R2B_MSM2	0x2b
-#define R2C_PS1		0x2c	/* power saving mode byte 1 */
-#define R2D_PS2		0x2d	/* power saving mode byte 2 */
-#define R2E_PS3		0x2e	/* power saving mode byte 3 */
+#define R2C_PS1		0x2c	 
+#define R2D_PS2		0x2d	 
+#define R2E_PS3		0x2e	 
 #define R2F_RSSI1	0x2f
 #define R30_RSSI2	0x30
 #define R31_IRQ_CTRL	0x31
@@ -77,14 +68,14 @@
 #define R40_IRCAL3	0x40
 #define R41_IRCAL4	0x41
 #define R42_IRCAL5	0x42
-#define R43_PD1		0x43	/* power down byte 1 */
-#define R44_PD2		0x44	/* power down byte 2 */
-#define R45_PD		0x45	/* power down */
-#define R46_CPUMP	0x46	/* charge pump */
-#define R47_LNAPOL	0x47	/* LNA polar casc */
-#define R48_SMOOTH1	0x48	/* smooth test byte 1 */
-#define R49_SMOOTH2	0x49	/* smooth test byte 2 */
-#define R4A_SMOOTH3	0x4a	/* smooth test byte 3 */
+#define R43_PD1		0x43	 
+#define R44_PD2		0x44	 
+#define R45_PD		0x45	 
+#define R46_CPUMP	0x46	 
+#define R47_LNAPOL	0x47	 
+#define R48_SMOOTH1	0x48	 
+#define R49_SMOOTH2	0x49	 
+#define R4A_SMOOTH3	0x4a	 
 #define R4B_XTALOSC1	0x4b
 #define R4C_XTALOSC2	0x4c
 #define R4D_XTALFLX1	0x4d
@@ -103,23 +94,18 @@
 #define R5A_H3H5	0x5a
 #define R5B_AGC_AUTO	0x5b
 #define R5C_AGC_DEBUG	0x5c
-
 #define TDA18250_NUM_REGS 93
-
 #define TDA18250_POWER_STANDBY 0
 #define TDA18250_POWER_NORMAL 1
-
 #define TDA18250_IRQ_CAL     0x81
 #define TDA18250_IRQ_HW_INIT 0x82
 #define TDA18250_IRQ_TUNE    0x88
-
 struct tda18250_dev {
 	struct mutex i2c_mutex;
 	struct dvb_frontend *fe;
 	struct i2c_adapter *i2c;
 	struct regmap *regmap;
 	u8 xtal_freq;
-	/* IF in kHz */
 	u16 if_dvbt_6;
 	u16 if_dvbt_7;
 	u16 if_dvbt_8;
@@ -132,5 +118,4 @@ struct tda18250_dev {
 	bool warm;
 	u8 regs[TDA18250_NUM_REGS];
 };
-
 #endif

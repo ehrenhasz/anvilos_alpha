@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
 #include <linux/sched.h>
 #include <linux/ptrace.h>
 #include <stdint.h>
@@ -8,11 +6,9 @@
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include "bpf_misc.h"
-
 #define FUNCTION_NAME_LEN 64
 #define FILE_NAME_LEN 128
 #define TASK_COMM_LEN 16
-
 typedef struct {
 	int PyThreadState_frame;
 	int PyThreadState_thread;
@@ -24,23 +20,19 @@ typedef struct {
 	int String_data;
 	int String_size;
 } OffsetConfig;
-
 typedef struct {
 	uintptr_t current_state_addr;
 	uintptr_t tls_key_addr;
 	OffsetConfig offsets;
 	bool use_tls;
 } PidData;
-
 typedef struct {
 	uint32_t success;
 } Stats;
-
 typedef struct {
 	char name[FUNCTION_NAME_LEN];
 	char file[FILE_NAME_LEN];
 } Symbol;
-
 typedef struct {
 	uint32_t pid;
 	uint32_t tid;
@@ -52,22 +44,17 @@ typedef struct {
 	bool stack_complete;
 	int16_t stack_len;
 	int32_t stack[STACK_MAX_LEN];
-
 	int has_meta;
 	int metadata;
 	char dummy_safeguard;
 } Event;
-
-
 typedef int pid_t;
-
 typedef struct {
-	void* f_back; // PyFrameObject.f_back, previous frame
-	void* f_code; // PyFrameObject.f_code, pointer to PyCodeObject
-	void* co_filename; // PyCodeObject.co_filename
-	void* co_name; // PyCodeObject.co_name
+	void* f_back;  
+	void* f_code;  
+	void* co_filename;  
+	void* co_name;  
 } FrameData;
-
 #ifdef SUBPROGS
 __noinline
 #else
@@ -77,25 +64,20 @@ static void *get_thread_state(void *tls_base, PidData *pidData)
 {
 	void* thread_state;
 	int key;
-
 	bpf_probe_read_user(&key, sizeof(key), (void*)(long)pidData->tls_key_addr);
 	bpf_probe_read_user(&thread_state, sizeof(thread_state),
 			    tls_base + 0x310 + key * 0x10 + 0x08);
 	return thread_state;
 }
-
 static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 					   FrameData *frame, Symbol *symbol)
 {
-	// read data from PyFrameObject
 	bpf_probe_read_user(&frame->f_back,
 			    sizeof(frame->f_back),
 			    frame_ptr + pidData->offsets.PyFrameObject_back);
 	bpf_probe_read_user(&frame->f_code,
 			    sizeof(frame->f_code),
 			    frame_ptr + pidData->offsets.PyFrameObject_code);
-
-	// read data from PyCodeObject
 	if (!frame->f_code)
 		return false;
 	bpf_probe_read_user(&frame->co_filename,
@@ -104,7 +86,6 @@ static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 	bpf_probe_read_user(&frame->co_name,
 			    sizeof(frame->co_name),
 			    frame->f_code + pidData->offsets.PyCodeObject_name);
-	// read actual names into symbol
 	if (frame->co_filename)
 		bpf_probe_read_user_str(&symbol->file,
 					sizeof(symbol->file),
@@ -117,49 +98,42 @@ static __always_inline bool get_frame_data(void *frame_ptr, PidData *pidData,
 					pidData->offsets.String_data);
 	return true;
 }
-
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, 1);
 	__type(key, int);
 	__type(value, PidData);
 } pidmap SEC(".maps");
-
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, 1);
 	__type(key, int);
 	__type(value, Event);
 } eventmap SEC(".maps");
-
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(max_entries, 1);
 	__type(key, Symbol);
 	__type(value, int);
 } symbolmap SEC(".maps");
-
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__uint(max_entries, 1);
 	__type(key, int);
 	__type(value, Stats);
 } statsmap SEC(".maps");
-
 struct {
 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
 	__uint(max_entries, 32);
 	__uint(key_size, sizeof(int));
 	__uint(value_size, sizeof(int));
 } perfmap SEC(".maps");
-
 struct {
 	__uint(type, BPF_MAP_TYPE_STACK_TRACE);
 	__uint(max_entries, 1000);
 	__uint(key_size, sizeof(int));
 	__uint(value_size, sizeof(long long) * 127);
 } stackmap SEC(".maps");
-
 #ifdef USE_BPF_LOOP
 struct process_frame_ctx {
 	int cur_cpu;
@@ -171,7 +145,6 @@ struct process_frame_ctx {
 	Event *event;
 	bool done;
 };
-
 static int process_frame_callback(__u32 i, struct process_frame_ctx *ctx)
 {
 	int zero = 0;
@@ -182,11 +155,9 @@ static int process_frame_callback(__u32 i, struct process_frame_ctx *ctx)
 	int cur_cpu = ctx->cur_cpu;
 	Event *event = ctx->event;
 	Symbol *sym = ctx->sym;
-
 	if (frame_ptr && get_frame_data(frame_ptr, pidData, frame, sym)) {
 		int32_t new_symbol_id = *symbol_counter * 64 + cur_cpu;
 		int32_t *symbol_id = bpf_map_lookup_elem(&symbolmap, sym);
-
 		if (!symbol_id) {
 			bpf_map_update_elem(&symbolmap, sym, &zero, 0);
 			symbol_id = bpf_map_lookup_elem(&symbolmap, sym);
@@ -197,20 +168,16 @@ static int process_frame_callback(__u32 i, struct process_frame_ctx *ctx)
 		}
 		if (*symbol_id == new_symbol_id)
 			(*symbol_counter)++;
-
 		barrier_var(i);
 		if (i >= STACK_MAX_LEN)
 			return 1;
-
 		event->stack[i] = *symbol_id;
-
 		event->stack_len = i + 1;
 		frame_ptr = frame->f_back;
 	}
 	return 0;
 }
-#endif /* USE_BPF_LOOP */
-
+#endif  
 #ifdef GLOBAL_FUNC
 __noinline
 #elif defined(SUBPROGS)
@@ -225,38 +192,29 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 	PidData* pidData = bpf_map_lookup_elem(&pidmap, &pid);
 	if (!pidData)
 		return 0;
-
 	int zero = 0;
 	Event* event = bpf_map_lookup_elem(&eventmap, &zero);
 	if (!event)
 		return 0;
-
 	event->pid = pid;
-
 	event->tid = (pid_t)pid_tgid;
 	bpf_get_current_comm(&event->comm, sizeof(event->comm));
-
 	event->user_stack_id = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
 	event->kernel_stack_id = bpf_get_stackid(ctx, &stackmap, 0);
-
 	void* thread_state_current = (void*)0;
 	bpf_probe_read_user(&thread_state_current,
 			    sizeof(thread_state_current),
 			    (void*)(long)pidData->current_state_addr);
-
 	struct task_struct* task = (struct task_struct*)bpf_get_current_task();
 	void* tls_base = (void*)task;
-
 	void* thread_state = pidData->use_tls ? get_thread_state(tls_base, pidData)
 		: thread_state_current;
 	event->thread_current = thread_state == thread_state_current;
-
 	if (pidData->use_tls) {
 		uint64_t pthread_created;
 		uint64_t pthread_self;
 		bpf_probe_read_user(&pthread_self, sizeof(pthread_self),
 				    tls_base + 0x10);
-
 		bpf_probe_read_user(&pthread_created,
 				    sizeof(pthread_created),
 				    thread_state +
@@ -265,18 +223,15 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 	} else {
 		event->pthread_match = 1;
 	}
-
 	if (event->pthread_match || !pidData->use_tls) {
 		void* frame_ptr;
 		FrameData frame;
 		Symbol sym = {};
 		int cur_cpu = bpf_get_smp_processor_id();
-
 		bpf_probe_read_user(&frame_ptr,
 				    sizeof(frame_ptr),
 				    thread_state +
 				    pidData->offsets.PyThreadState_frame);
-
 		int32_t* symbol_counter = bpf_map_lookup_elem(&symbolmap, &sym);
 		if (symbol_counter == NULL)
 			return 0;
@@ -290,25 +245,22 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 		.sym = &sym,
 		.event = event,
 	};
-
 	bpf_loop(STACK_MAX_LEN, process_frame_callback, &ctx, 0);
 	if (ctx.done)
 		return 0;
 #else
 #if defined(USE_ITER)
-/* no for loop, no unrolling */
 #elif defined(NO_UNROLL)
 #pragma clang loop unroll(disable)
 #elif defined(UNROLL_COUNT)
 #pragma clang loop unroll_count(UNROLL_COUNT)
 #else
 #pragma clang loop unroll(full)
-#endif /* NO_UNROLL */
-		/* Unwind python stack */
+#endif  
 #ifdef USE_ITER
 		int i;
 		bpf_for(i, 0, STACK_MAX_LEN) {
-#else /* !USE_ITER */
+#else  
 		for (int i = 0; i < STACK_MAX_LEN; ++i) {
 #endif
 			if (frame_ptr && get_frame_data(frame_ptr, pidData, &frame, &sym)) {
@@ -327,21 +279,18 @@ int __on_event(struct bpf_raw_tracepoint_args *ctx)
 				frame_ptr = frame.f_back;
 			}
 		}
-#endif /* USE_BPF_LOOP */
+#endif  
 		event->stack_complete = frame_ptr == NULL;
 	} else {
 		event->stack_complete = 1;
 	}
-
 	Stats* stats = bpf_map_lookup_elem(&statsmap, &zero);
 	if (stats)
 		stats->success++;
-
 	event->has_meta = 0;
 	bpf_perf_event_output(ctx, &perfmap, 0, event, offsetof(Event, metadata));
 	return 0;
 }
-
 SEC("raw_tracepoint/kfree_skb")
 int on_event(struct bpf_raw_tracepoint_args* ctx)
 {
@@ -353,5 +302,4 @@ int on_event(struct bpf_raw_tracepoint_args* ctx)
 	ret |= __on_event(ctx);
 	return ret;
 }
-
 char _license[] SEC("license") = "GPL";

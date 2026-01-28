@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-/* Copyright (c) 2021 Facebook */
 #ifndef __BPF_GEN_INTERNAL_H
 #define __BPF_GEN_INTERNAL_H
-
 #include "bpf.h"
-
 struct ksym_relo_desc {
 	const char *name;
 	int kind;
@@ -13,21 +9,17 @@ struct ksym_relo_desc {
 	bool is_typeless;
 	bool is_ld64;
 };
-
 struct ksym_desc {
 	const char *name;
 	int ref;
 	int kind;
 	union {
-		/* used for kfunc */
 		int off;
-		/* used for typeless ksym */
 		bool typeless;
 	};
 	int insn;
 	bool is_ld64;
 };
-
 struct bpf_gen {
 	struct gen_loader_opts *opts;
 	void *data_start;
@@ -50,7 +42,6 @@ struct bpf_gen {
 	int fd_array;
 	int nr_fd_array;
 };
-
 void bpf_gen__init(struct bpf_gen *gen, int log_level, int nr_progs, int nr_maps);
 int bpf_gen__finish(struct bpf_gen *gen, int nr_progs, int nr_maps);
 void bpf_gen__free(struct bpf_gen *gen);
@@ -70,5 +61,4 @@ void bpf_gen__record_extern(struct bpf_gen *gen, const char *name, bool is_weak,
 			    bool is_typeless, bool is_ld64, int kind, int insn_idx);
 void bpf_gen__record_relo_core(struct bpf_gen *gen, const struct bpf_core_relo *core_relo);
 void bpf_gen__populate_outer_map(struct bpf_gen *gen, int outer_map_idx, int key, int inner_map_idx);
-
 #endif

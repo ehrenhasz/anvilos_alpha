@@ -1,41 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
-
 #ifndef __CPT_COMMON_H
 #define __CPT_COMMON_H
-
 #include <asm/byteorder.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
-
 #include "cpt_hw_types.h"
-
-/* Device ID */
 #define CPT_81XX_PCI_PF_DEVICE_ID 0xa040
 #define CPT_81XX_PCI_VF_DEVICE_ID 0xa041
-
-/* flags to indicate the features supported */
 #define CPT_FLAG_SRIOV_ENABLED BIT(1)
 #define CPT_FLAG_VF_DRIVER BIT(2)
 #define CPT_FLAG_DEVICE_READY BIT(3)
-
 #define cpt_sriov_enabled(cpt) ((cpt)->flags & CPT_FLAG_SRIOV_ENABLED)
 #define cpt_vf_driver(cpt) ((cpt)->flags & CPT_FLAG_VF_DRIVER)
 #define cpt_device_ready(cpt) ((cpt)->flags & CPT_FLAG_DEVICE_READY)
-
 #define CPT_MBOX_MSG_TYPE_ACK 1
 #define CPT_MBOX_MSG_TYPE_NACK 2
 #define CPT_MBOX_MSG_TIMEOUT 2000
 #define VF_STATE_DOWN 0
 #define VF_STATE_UP 1
-
-/*
- * CPT Registers map for 81xx
- */
-
-/* PF registers */
 #define CPTX_PF_CONSTANTS(a) (0x0ll + ((u64)(a) << 36))
 #define CPTX_PF_RESET(a) (0x100ll + ((u64)(a) << 36))
 #define CPTX_PF_DIAG(a) (0x120ll + ((u64)(a) << 36))
@@ -97,8 +78,6 @@
 	(0x8000100ll + ((u64)(a) << 36) + ((b) << 20))
 #define CPTX_PF_VFX_MBOXX(a, b, c) \
 	(0x8001000ll + ((u64)(a) << 36) + ((b) << 20) + ((c) << 8))
-
-/* VF registers */
 #define CPTX_VQX_CTL(a, b) (0x100ll + ((u64)(a) << 36) + ((b) << 20))
 #define CPTX_VQX_SADDR(a, b) (0x200ll + ((u64)(a) << 36) + ((b) << 20))
 #define CPTX_VQX_DONE_WAIT(a, b) (0x400ll + ((u64)(a) << 36) + ((b) << 20))
@@ -116,14 +95,11 @@
 #define CPTX_VQX_DOORBELL(a, b) (0x600ll + ((u64)(a) << 36) + ((b) << 20))
 #define CPTX_VFX_PF_MBOXX(a, b, c) \
 	(0x1000ll + ((u64)(a) << 36) + ((b) << 20) + ((c) << 3))
-
 enum vftype {
 	AE_TYPES = 1,
 	SE_TYPES = 2,
 	BAD_CPT_TYPES,
 };
-
-/* Max CPT devices supported */
 enum cpt_mbox_opcode {
 	CPT_MSG_VF_UP = 1,
 	CPT_MSG_VF_DOWN,
@@ -132,22 +108,17 @@ enum cpt_mbox_opcode {
 	CPT_MSG_QBIND_GRP,
 	CPT_MSG_VQ_PRIORITY,
 };
-
-/* CPT mailbox structure */
 struct cpt_mbox {
-	u64 msg; /* Message type MBOX[0] */
-	u64 data;/* Data         MBOX[1] */
+	u64 msg;  
+	u64 data; 
 };
-
-/* Register read/write APIs */
 static inline void cpt_write_csr64(u8 __iomem *hw_addr, u64 offset,
 				   u64 val)
 {
 	writeq(val, hw_addr + offset);
 }
-
 static inline u64 cpt_read_csr64(u8 __iomem *hw_addr, u64 offset)
 {
 	return readq(hw_addr + offset);
 }
-#endif /* __CPT_COMMON_H */
+#endif  

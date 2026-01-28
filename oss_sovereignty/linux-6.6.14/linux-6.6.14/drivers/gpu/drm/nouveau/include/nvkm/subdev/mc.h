@@ -1,22 +1,17 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_MC_H__
 #define __NVKM_MC_H__
 #include <core/subdev.h>
-
 struct nvkm_mc {
 	const struct nvkm_mc_func *func;
 	struct nvkm_subdev subdev;
-
 	struct nvkm_intr intr;
 };
-
 void nvkm_mc_enable(struct nvkm_device *, enum nvkm_subdev_type, int);
 void nvkm_mc_disable(struct nvkm_device *, enum nvkm_subdev_type, int);
 bool nvkm_mc_enabled(struct nvkm_device *, enum nvkm_subdev_type, int);
 void nvkm_mc_reset(struct nvkm_device *, enum nvkm_subdev_type, int);
 void nvkm_mc_intr_mask(struct nvkm_device *, enum nvkm_subdev_type, int, bool enable);
 void nvkm_mc_unk260(struct nvkm_device *, u32 data);
-
 int nv04_mc_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_mc **);
 int nv11_mc_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_mc **);
 int nv17_mc_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_mc **);

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
-
 #ifndef __RTW_REG_DEF_H__
 #define __RTW_REG_DEF_H__
-
 #define REG_SYS_FUNC_EN		0x0002
 #define BIT_FEN_EN_25_1		BIT(13)
 #define BIT_FEN_ELDR		BIT(12)
@@ -17,12 +12,10 @@
 #define BIT_PFM_WOWL		BIT(3)
 #define REG_SYS_CLK_CTRL	0x0008
 #define BIT_CPU_CLK_EN		BIT(14)
-
 #define REG_SYS_CLKR		0x0008
 #define BIT_ANA8M		BIT(1)
 #define BIT_WAKEPAD_EN		BIT(3)
 #define BIT_LOADER_CLK_EN	BIT(5)
-
 #define REG_RSV_CTRL		0x001C
 #define DISABLE_PI		0x3
 #define ENABLE_PI		0x2
@@ -32,7 +25,6 @@
 #define BIT_RF_SDM_RSTB		BIT(2)
 #define BIT_RF_RSTB		BIT(1)
 #define BIT_RF_EN		BIT(0)
-
 #define REG_AFE_CTRL1		0x0024
 #define BIT_MAC_CLK_SEL		(BIT(20) | BIT(21))
 #define REG_EFUSE_CTRL		0x0030
@@ -42,29 +34,23 @@
 #define BIT_MASK_EF_DATA	0xff
 #define BITS_EF_ADDR		(BIT_MASK_EF_ADDR << BIT_SHIFT_EF_ADDR)
 #define BITS_PLL		0xf0
-
 #define REG_AFE_XTAL_CTRL	0x24
 #define REG_AFE_PLL_CTRL	0x28
 #define REG_AFE_CTRL3		0x2c
 #define BIT_MASK_XTAL		0x00FFF000
 #define BIT_XTAL_GMP_BIT4	BIT(28)
-
 #define REG_LDO_EFUSE_CTRL	0x0034
 #define BIT_MASK_EFUSE_BANK_SEL	(BIT(8) | BIT(9))
-
 #define BIT_LDO25_VOLTAGE_V25	0x03
 #define BIT_MASK_LDO25_VOLTAGE	GENMASK(6, 4)
 #define BIT_SHIFT_LDO25_VOLTAGE	4
 #define BIT_LDO25_EN		BIT(7)
-
 #define REG_GPIO_MUXCFG		0x0040
 #define BIT_FSPI_EN		BIT(19)
 #define BIT_EN_SIC		BIT(12)
-
 #define BIT_PO_BT_PTA_PINS	BIT(9)
 #define BIT_BT_PTA_EN		BIT(5)
 #define BIT_WLRFE_4_5_EN	BIT(2)
-
 #define REG_LED_CFG		0x004C
 #define BIT_LNAON_SEL_EN	BIT(26)
 #define BIT_PAPE_SEL_EN		BIT(25)
@@ -88,36 +74,33 @@
 #define REG_HCI_OPT_CTRL	0x0074
 #define BIT_USB_SUS_DIS		BIT(8)
 #define BIT_SDIO_PAD_E5		BIT(18)
-
 #define REG_AFE_CTRL_4		0x0078
 #define BIT_CK320M_AFE_EN	BIT(4)
 #define BIT_EN_SYN		BIT(15)
-
 #define REG_LDO_SWR_CTRL	0x007C
 #define LDO_SEL			0xC3
 #define SPS_SEL			0x83
 #define BIT_XTA1		BIT(29)
 #define BIT_XTA0		BIT(28)
-
 #define REG_MCUFW_CTRL		0x0080
 #define BIT_ANA_PORT_EN		BIT(22)
 #define BIT_MAC_PORT_EN		BIT(21)
 #define BIT_BOOT_FSPI_EN	BIT(20)
 #define BIT_ROM_DLEN		BIT(19)
-#define BIT_ROM_PGE		GENMASK(18, 16)	/* legacy only */
+#define BIT_ROM_PGE		GENMASK(18, 16)	 
 #define BIT_SHIFT_ROM_PGE	16
 #define BIT_FW_INIT_RDY		BIT(15)
 #define BIT_FW_DW_RDY		BIT(14)
 #define BIT_RPWM_TOGGLE		BIT(7)
-#define BIT_RAM_DL_SEL		BIT(7)	/* legacy only */
+#define BIT_RAM_DL_SEL		BIT(7)	 
 #define BIT_DMEM_CHKSUM_OK	BIT(6)
-#define BIT_WINTINI_RDY		BIT(6)	/* legacy only */
+#define BIT_WINTINI_RDY		BIT(6)	 
 #define BIT_DMEM_DW_OK		BIT(5)
 #define BIT_IMEM_CHKSUM_OK	BIT(4)
 #define BIT_IMEM_DW_OK		BIT(3)
 #define BIT_IMEM_BOOT_LOAD_CHECKSUM_OK BIT(2)
-#define BIT_FWDL_CHK_RPT	BIT(2)	/* legacy only */
-#define BIT_MCUFWDL_RDY		BIT(1)	/* legacy only */
+#define BIT_FWDL_CHK_RPT	BIT(2)	 
+#define BIT_MCUFWDL_RDY		BIT(1)	 
 #define BIT_MCUFWDL_EN		BIT(0)
 #define BIT_CHECK_SUM_OK	(BIT(4) | BIT(6))
 #define FW_READY		(BIT_FW_INIT_RDY | BIT_FW_DW_RDY |             \
@@ -126,17 +109,13 @@
 #define FW_READY_LEGACY		(BIT_MCUFWDL_RDY | BIT_FWDL_CHK_RPT |	       \
 				 BIT_WINTINI_RDY | BIT_RAM_DL_SEL)
 #define FW_READY_MASK		0xffff
-
 #define REG_MCU_TST_CFG		0x84
 #define VAL_FW_TRIGGER		0x1
-
 #define REG_PMC_DBG_CTRL1	0xa8
 #define BITS_PMC_BT_IQK_STS	GENMASK(22, 21)
-
 #define REG_EFUSE_ACCESS	0x00CF
 #define EFUSE_ACCESS_ON		0x69
 #define EFUSE_ACCESS_OFF	0x00
-
 #define REG_WLRF1		0x00EC
 #define REG_WIFI_BT_INFO	0x00AA
 #define BIT_BT_INT_EN		BIT(15)
@@ -218,7 +197,6 @@
 #define MAC_CLK_HW_DEF_40M	1
 #define MAC_CLK_HW_DEF_20M	2
 #define MAC_CLK_SPEED		80
-
 #define REG_CR			0x0100
 #define REG_TRXFF_BNDY		0x0114
 #define REG_RXFF_BNDY		0x011C
@@ -238,7 +216,6 @@
 #define REG_HMEBOX1_EX		0x01F4
 #define REG_HMEBOX2_EX		0x01F8
 #define REG_HMEBOX3_EX		0x01FC
-
 #define REG_RQPN		0x0200
 #define BIT_MASK_HPQ		0xff
 #define BIT_SHIFT_HPQ		0
@@ -251,7 +228,6 @@
 #define BIT_RQPN_PUBQ(x)	(((x) & BIT_MASK_PUBQ) << BIT_SHIFT_PUBQ)
 #define BIT_RQPN_HLP(h, l, p)	(BIT_LD_RQPN | BIT_RQPN_HPQ(h) |	       \
 				 BIT_RQPN_LPQ(l) | BIT_RQPN_PUBQ(p))
-
 #define REG_FIFOPAGE_CTRL_2	0x0204
 #define BIT_BCN_VALID_V1	BIT(15)
 #define BIT_MASK_BCN_HEAD_1_V1	0xfff
@@ -263,7 +239,6 @@
 #define BIT_DROP_DATA_EN	BIT(9)
 #define REG_TXDMA_STATUS	0x0210
 #define BTI_PAGE_OVF		BIT(2)
-
 #define REG_RQPN_NPQ		0x0214
 #define BIT_MASK_NPQ		0xff
 #define BIT_SHIFT_NPQ		0
@@ -272,7 +247,6 @@
 #define BIT_RQPN_NPQ(x)		(((x) & BIT_MASK_NPQ) << BIT_SHIFT_NPQ)
 #define BIT_RQPN_EPQ(x)		(((x) & BIT_MASK_EPQ) << BIT_SHIFT_EPQ)
 #define BIT_RQPN_NE(n, e)	(BIT_RQPN_NPQ(n) | BIT_RQPN_EPQ(e))
-
 #define REG_AUTO_LLT		0x0224
 #define BIT_AUTO_INIT_LLT	BIT(16)
 #define REG_RQPN_CTRL_1		0x0228
@@ -300,18 +274,15 @@
 #define REG_RXDMA_MODE		0x0290
 #define BIT_DMA_MODE		BIT(1)
 #define REG_RXPKTNUM		0x02B0
-
 #define REG_INT_MIG		0x0304
 #define REG_HCI_MIX_CFG		0x03FC
 #define BIT_PCIE_EMAC_PDN_AUX_TO_FAST_CLK BIT(26)
-
 #define REG_BCNQ_INFO		0x0418
 #define BIT_MGQ_CPU_EMPTY	BIT(24)
 #define REG_FWHW_TXQ_CTRL	0x0420
 #define BIT_EN_BCNQ_DL		BIT(22)
 #define BIT_EN_WR_FREE_TAIL	BIT(20)
 #define REG_HWSEQ_CTRL		0x0423
-
 #define REG_BCNQ_BDNY_V1	0x0424
 #define REG_BCNQ_BDNY		0x0424
 #define REG_MGQ_BDNY		0x0425
@@ -357,7 +328,6 @@
 #define BIT_BTCCA_CTRL		(BIT(0) | BIT(1))
 #define BIT_EN_PRECNT		BIT(11)
 #define REG_DUMMY_PAGE4_V1	0x04FC
-
 #define REG_EDCA_VO_PARAM	0x0500
 #define REG_EDCA_VI_PARAM	0x0504
 #define REG_EDCA_BE_PARAM	0x0508
@@ -407,7 +377,6 @@
 #define BIT_HIQ_NO_LMT_EN_ROOT	BIT(0)
 #define REG_TIMER0_SRC_SEL	0x05B4
 #define BIT_TSFT_SEL_TIMER0	(BIT(4) | BIT(5) | BIT(6))
-
 #define REG_TCR			0x0604
 #define BIT_PWRMGT_HWDATA_EN	BIT(7)
 #define BIT_TCR_UPDATE_TIMIE	BIT(5)
@@ -475,7 +444,6 @@
 #define BIT_WKFMCAM_BC		BIT(26)
 #define BIT_WKFMCAM_MC		BIT(25)
 #define BIT_WKFMCAM_UC		BIT(24)
-
 #define REG_RXFLTMAP0		0x06A0
 #define REG_RXFLTMAP1		0x06A2
 #define REG_RXFLTMAP2		0x06A4
@@ -488,7 +456,6 @@
 #define REG_BT_COEX_TABLE_H2	0x06CE
 #define REG_BT_COEX_TABLE_H3	0x06CF
 #define REG_BBPSF_CTRL		0x06DC
-
 #define REG_BT_COEX_V2		0x0762
 #define BIT_GNT_BT_POLARITY	BIT(12)
 #define BIT_LTE_COEX_EN		BIT(7)
@@ -505,19 +472,15 @@
 #define REG_LTR_CTRL_BASIC	0x07A4
 #define REG_WMAC_OPTION_FUNCTION 0x07D0
 #define REG_WMAC_OPTION_FUNCTION_1 0x07D4
-
 #define REG_FPGA0_RFMOD		0x0800
 #define BIT_CCKEN		BIT(24)
 #define BIT_OFDMEN		BIT(25)
 #define REG_RX_GAIN_EN		0x081c
-
 #define REG_RFE_CTRL_E		0x0974
 #define REG_2ND_CCA_CTRL	0x0976
-
 #define REG_CCK0_FAREPORT	0xa2c
 #define BIT_CCK0_2RX		BIT(18)
 #define BIT_CCK0_MRC		BIT(22)
-
 #define REG_DIS_DPD		0x0a70
 #define DIS_DPD_MASK		GENMASK(9, 0)
 #define DIS_DPD_RATE6M		BIT(0)
@@ -531,28 +494,23 @@
 #define DIS_DPD_RATEVHT2SS_MCS0	BIT(8)
 #define DIS_DPD_RATEVHT2SS_MCS1	BIT(9)
 #define DIS_DPD_RATEALL		GENMASK(9, 0)
-
 #define REG_RFE_CTRL8		0x0cb4
 #define BIT_MASK_RFE_SEL89	GENMASK(7, 0)
 #define REG_RFE_INV8		0x0cbd
 #define BIT_MASK_RFE_INV89	GENMASK(1, 0)
 #define REG_RFE_INV16		0x0cbe
 #define BIT_RFE_BUF_EN		BIT(3)
-
 #define REG_ANAPAR_XTAL_0	0x1040
 #define BIT_XCAP_0		GENMASK(23, 10)
 #define REG_CPU_DMEM_CON	0x1080
 #define BIT_WL_PLATFORM_RST	BIT(16)
 #define BIT_WL_SECURITY_CLK	BIT(15)
 #define BIT_DDMA_EN		BIT(8)
-
 #define REG_H2C_PKT_READADDR	0x10D0
 #define REG_H2C_PKT_WRITEADDR	0x10D4
 #define REG_FW_DBG7		0x10FC
 #define FW_KEY_MASK		0xffffff00
-
 #define REG_CR_EXT		0x1100
-
 #define REG_DDMA_CH0SA		0x1200
 #define REG_DDMA_CH0DA		0x1204
 #define REG_DDMA_CH0CTRL	0x1208
@@ -563,45 +521,37 @@
 #define BIT_DDMACH0_RESET_CHKSUM_STS BIT(25)
 #define BIT_DDMACH0_CHKSUM_CONT	BIT(24)
 #define BIT_MASK_DDMACH0_DLEN	0x3ffff
-
 #define REG_H2CQ_CSR		0x1330
 #define BIT_H2CQ_FULL		BIT(31)
 #define REG_FAST_EDCA_VOVI_SETTING 0x1448
 #define REG_FAST_EDCA_BEBK_SETTING 0x144C
-
 #define REG_RXPSF_CTRL		0x1610
 #define BIT_RXGCK_FIFOTHR_EN	BIT(28)
-
 #define BIT_SHIFT_RXGCK_VHT_FIFOTHR 26
 #define BIT_MASK_RXGCK_VHT_FIFOTHR 0x3
 #define BIT_RXGCK_VHT_FIFOTHR(x)                                               \
 	(((x) & BIT_MASK_RXGCK_VHT_FIFOTHR) << BIT_SHIFT_RXGCK_VHT_FIFOTHR)
 #define BITS_RXGCK_VHT_FIFOTHR                                                 \
 	(BIT_MASK_RXGCK_VHT_FIFOTHR << BIT_SHIFT_RXGCK_VHT_FIFOTHR)
-
 #define BIT_SHIFT_RXGCK_HT_FIFOTHR 24
 #define BIT_MASK_RXGCK_HT_FIFOTHR 0x3
 #define BIT_RXGCK_HT_FIFOTHR(x)                                                \
 	(((x) & BIT_MASK_RXGCK_HT_FIFOTHR) << BIT_SHIFT_RXGCK_HT_FIFOTHR)
 #define BITS_RXGCK_HT_FIFOTHR                                                  \
 	(BIT_MASK_RXGCK_HT_FIFOTHR << BIT_SHIFT_RXGCK_HT_FIFOTHR)
-
 #define BIT_SHIFT_RXGCK_OFDM_FIFOTHR 22
 #define BIT_MASK_RXGCK_OFDM_FIFOTHR 0x3
 #define BIT_RXGCK_OFDM_FIFOTHR(x)                                              \
 	(((x) & BIT_MASK_RXGCK_OFDM_FIFOTHR) << BIT_SHIFT_RXGCK_OFDM_FIFOTHR)
 #define BITS_RXGCK_OFDM_FIFOTHR                                                \
 	(BIT_MASK_RXGCK_OFDM_FIFOTHR << BIT_SHIFT_RXGCK_OFDM_FIFOTHR)
-
 #define BIT_SHIFT_RXGCK_CCK_FIFOTHR 20
 #define BIT_MASK_RXGCK_CCK_FIFOTHR 0x3
 #define BIT_RXGCK_CCK_FIFOTHR(x)                                               \
 	(((x) & BIT_MASK_RXGCK_CCK_FIFOTHR) << BIT_SHIFT_RXGCK_CCK_FIFOTHR)
 #define BITS_RXGCK_CCK_FIFOTHR                                                 \
 	(BIT_MASK_RXGCK_CCK_FIFOTHR << BIT_SHIFT_RXGCK_CCK_FIFOTHR)
-
 #define BIT_RXGCK_OFDMCCA_EN BIT(16)
-
 #define BIT_SHIFT_RXPSF_PKTLENTHR 13
 #define BIT_MASK_RXPSF_PKTLENTHR 0x7
 #define BIT_RXPSF_PKTLENTHR(x)                                                 \
@@ -611,7 +561,6 @@
 #define BIT_CLEAR_RXPSF_PKTLENTHR(x) ((x) & (~BITS_RXPSF_PKTLENTHR))
 #define BIT_SET_RXPSF_PKTLENTHR(x, v)                                          \
 	(BIT_CLEAR_RXPSF_PKTLENTHR(x) | BIT_RXPSF_PKTLENTHR(v))
-
 #define BIT_RXPSF_CTRLEN	BIT(12)
 #define BIT_RXPSF_VHTCHKEN	BIT(11)
 #define BIT_RXPSF_HTCHKEN	BIT(10)
@@ -622,7 +571,6 @@
 #define BIT_RXPSF_MHCHKEN	BIT(5)
 #define BIT_RXPSF_CONT_ERRCHKEN	BIT(4)
 #define BIT_RXPSF_ALL_ERRCHKEN	BIT(3)
-
 #define BIT_SHIFT_RXPSF_ERRTHR 0
 #define BIT_MASK_RXPSF_ERRTHR 0x7
 #define BIT_RXPSF_ERRTHR(x)                                                    \
@@ -633,11 +581,9 @@
 	(((x) >> BIT_SHIFT_RXPSF_ERRTHR) & BIT_MASK_RXPSF_ERRTHR)
 #define BIT_SET_RXPSF_ERRTHR(x, v)                                             \
 	(BIT_CLEAR_RXPSF_ERRTHR(x) | BIT_RXPSF_ERRTHR(v))
-
 #define REG_RXPSF_TYPE_CTRL	0x1614
 #define REG_GENERAL_OPTION	0x1664
 #define BIT_DUMMY_FCS_READY_MASK_EN BIT(9)
-
 #define REG_WL2LTECOEX_INDIRECT_ACCESS_CTRL_V1		0x1700
 #define REG_WL2LTECOEX_INDIRECT_ACCESS_WRITE_DATA_V1	0x1704
 #define REG_WL2LTECOEX_INDIRECT_ACCESS_READ_DATA_V1	0x1708
@@ -645,11 +591,8 @@
 #define LTECOEX_ACCESS_CTRL REG_WL2LTECOEX_INDIRECT_ACCESS_CTRL_V1
 #define LTECOEX_WRITE_DATA REG_WL2LTECOEX_INDIRECT_ACCESS_WRITE_DATA_V1
 #define LTECOEX_READ_DATA REG_WL2LTECOEX_INDIRECT_ACCESS_READ_DATA_V1
-
 #define REG_IGN_GNT_BT1	0x1860
-
 #define REG_RFESEL_CTRL	0x1990
-
 #define REG_NOMASK_TXBT	0x1ca7
 #define REG_ANAPAR	0x1c30
 #define BIT_ANAPAR_BTPS	BIT(22)
@@ -657,14 +600,10 @@
 #define BIT_DAC_OFF_ENABLE	BIT(4)
 #define BIT_PI_IGNORE_GNT_BT	BIT(3)
 #define BIT_NOMASK_TXBT_ENABLE	BIT(3)
-
 #define REG_HRCV_MSG	0x1cf
-
 #define REG_EDCCA_REPORT	0x2d38
 #define BIT_EDCCA_FLAG		BIT(24)
-
 #define REG_IGN_GNTBT4	0x4160
-
 #define RF_MODE		0x00
 #define RF_MODOPT	0x01
 #define RF_WLINT	0x01
@@ -697,9 +636,7 @@
 #define BIT_TXA_TANK	BIT(4)
 #define RF_LUTWE2	0xee
 #define RF_LUTWE	0xef
-
 #define LTE_COEX_CTRL	0x38
 #define LTE_WL_TRX_CTRL	0xa0
 #define LTE_BT_TRX_CTRL	0xa4
-
 #endif

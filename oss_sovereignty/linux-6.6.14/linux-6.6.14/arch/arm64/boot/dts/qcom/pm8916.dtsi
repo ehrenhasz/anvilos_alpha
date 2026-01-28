@@ -1,23 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
 #include <dt-bindings/iio/qcom,spmi-vadc.h>
 #include <dt-bindings/input/linux-event-codes.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/spmi/spmi.h>
-
 &spmi_bus {
-
 	pm8916_0: pmic@0 {
 		compatible = "qcom,pm8916", "qcom,spmi-pmic";
 		reg = <0x0 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		pon@800 {
 			compatible = "qcom,pm8916-pon";
 			reg = <0x800>;
 			mode-bootloader = <0x2>;
 			mode-recovery = <0x1>;
-
 			pwrkey {
 				compatible = "qcom,pm8941-pwrkey";
 				interrupts = <0x0 0x8 0 IRQ_TYPE_EDGE_BOTH>;
@@ -25,7 +20,6 @@
 				bias-pull-up;
 				linux,code = <KEY_POWER>;
 			};
-
 			pm8916_resin: resin {
 				compatible = "qcom,pm8941-resin";
 				interrupts = <0x0 0x8 1 IRQ_TYPE_EDGE_BOTH>;
@@ -33,14 +27,12 @@
 				bias-pull-up;
 				status = "disabled";
 			};
-
 			watchdog {
 				compatible = "qcom,pm8916-wdt";
 				interrupts = <0x0 0x8 6 IRQ_TYPE_EDGE_RISING>;
 				timeout-sec = <60>;
 			};
 		};
-
 		pm8916_usbin: usb-detect@1300 {
 			compatible = "qcom,pm8941-misc";
 			reg = <0x1300>;
@@ -48,7 +40,6 @@
 			interrupt-names = "usb_vbus";
 			status = "disabled";
 		};
-
 		pm8916_temp: temp-alarm@2400 {
 			compatible = "qcom,spmi-temp-alarm";
 			reg = <0x2400>;
@@ -57,7 +48,6 @@
 			io-channel-names = "thermal";
 			#thermal-sensor-cells = <0>;
 		};
-
 		pm8916_vadc: adc@3100 {
 			compatible = "qcom,spmi-vadc";
 			reg = <0x3100>;
@@ -65,7 +55,6 @@
 			#address-cells = <1>;
 			#size-cells = <0>;
 			#io-channel-cells = <1>;
-
 			channel@0 {
 				reg = <VADC_USBIN>;
 				qcom,pre-scaling = <1 10>;
@@ -90,14 +79,12 @@
 				reg = <VADC_VDD_VADC>;
 			};
 		};
-
 		rtc@6000 {
 			compatible = "qcom,pm8941-rtc";
 			reg = <0x6000>, <0x6100>;
 			reg-names = "rtc", "alarm";
 			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
 		};
-
 		pm8916_mpps: mpps@a000 {
 			compatible = "qcom,pm8916-mpp", "qcom,spmi-mpp";
 			reg = <0xa000>;
@@ -107,7 +94,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		pm8916_gpios: gpio@c000 {
 			compatible = "qcom,pm8916-gpio", "qcom,spmi-gpio";
 			reg = <0xc000>;
@@ -118,27 +104,21 @@
 			#interrupt-cells = <2>;
 		};
 	};
-
 	pm8916_1: pmic@1 {
 		compatible = "qcom,pm8916", "qcom,spmi-pmic";
 		reg = <0x1 SPMI_USID>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		pm8916_pwm: pwm {
 			compatible = "qcom,pm8916-pwm";
-
 			#pwm-cells = <2>;
-
 			status = "disabled";
 		};
-
 		pm8916_vib: vibrator@c000 {
 			compatible = "qcom,pm8916-vib";
 			reg = <0xc000>;
 			status = "disabled";
 		};
-
 		pm8916_codec: audio-codec@f000 {
 			compatible = "qcom,pm8916-wcd-analog-codec";
 			reg = <0xf000>;

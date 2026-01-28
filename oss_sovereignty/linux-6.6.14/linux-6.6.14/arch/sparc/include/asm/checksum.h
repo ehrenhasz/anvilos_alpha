@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ___ASM_SPARC_CHECKSUM_H
 #define ___ASM_SPARC_CHECKSUM_H
 #define _HAVE_ARCH_CSUM_AND_COPY

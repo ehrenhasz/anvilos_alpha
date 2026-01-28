@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef BTRFS_FILE_H
 #define BTRFS_FILE_H
-
 extern const struct file_operations btrfs_file_operations;
-
 int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync);
 int btrfs_drop_extents(struct btrfs_trans_handle *trans,
 		       struct btrfs_root *root, struct btrfs_inode *inode,
@@ -29,5 +25,4 @@ void btrfs_check_nocow_unlock(struct btrfs_inode *inode);
 bool btrfs_find_delalloc_in_range(struct btrfs_inode *inode, u64 start, u64 end,
 				  struct extent_state **cached_state,
 				  u64 *delalloc_start_ret, u64 *delalloc_end_ret);
-
 #endif

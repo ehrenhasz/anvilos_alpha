@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2001
- */
 #ifndef	_H_JFS_INODE
 #define _H_JFS_INODE
-
 struct fid;
-
 extern struct inode *ialloc(struct inode *, umode_t);
 extern int jfs_fsync(struct file *, loff_t, loff_t, int);
 extern int jfs_fileattr_get(struct dentry *dentry, struct fileattr *fa);
@@ -29,7 +23,6 @@ extern struct dentry *jfs_fh_to_parent(struct super_block *sb, struct fid *fid,
 extern void jfs_set_inode_flags(struct inode *);
 extern int jfs_get_block(struct inode *, sector_t, struct buffer_head *, int);
 extern int jfs_setattr(struct mnt_idmap *, struct dentry *, struct iattr *);
-
 extern const struct address_space_operations jfs_aops;
 extern const struct inode_operations jfs_dir_inode_operations;
 extern const struct file_operations jfs_dir_operations;
@@ -38,4 +31,4 @@ extern const struct file_operations jfs_file_operations;
 extern const struct inode_operations jfs_symlink_inode_operations;
 extern const struct inode_operations jfs_fast_symlink_inode_operations;
 extern const struct dentry_operations jfs_ci_dentry_operations;
-#endif				/* _H_JFS_INODE */
+#endif				 

@@ -1,27 +1,20 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021 Nuvoton Technology tomer.maimon@nuvoton.com
-
 #include <dt-bindings/clock/nuvoton,npcm845-clk.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
-
 / {
 	#address-cells = <2>;
 	#size-cells = <2>;
 	interrupt-parent = <&gic>;
-
 	soc {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		ranges;
-
 		gcr: system-controller@f0800000 {
 			compatible = "nuvoton,npcm845-gcr", "syscon";
 			reg = <0x0 0xf0800000 0x0 0x1000>;
 		};
-
 		gic: interrupt-controller@dfff9000 {
 			compatible = "arm,gic-400";
 			reg = <0x0 0xdfff9000 0x0 0x1000>,
@@ -39,27 +32,23 @@
 			};
 		};
 	};
-
 	ahb {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		interrupt-parent = <&gic>;
 		ranges;
-
 		rstc: reset-controller@f0801000 {
 			compatible = "nuvoton,npcm845-reset";
 			reg = <0x0 0xf0801000 0x0 0x78>;
 			#reset-cells = <2>;
 			nuvoton,sysgcr = <&gcr>;
 		};
-
 		clk: clock-controller@f0801000 {
 			compatible = "nuvoton,npcm845-clk";
 			#clock-cells = <1>;
 			reg = <0x0 0xf0801000 0x0 0x1000>;
 		};
-
 		apb {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -67,7 +56,6 @@
 			interrupt-parent = <&gic>;
 			ranges = <0x0 0x0 0xf0000000 0x00300000>,
 				<0xfff00000 0x0 0xfff00000 0x00016000>;
-
 			peci: peci-controller@100000 {
 				compatible = "nuvoton,npcm845-peci";
 				reg = <0x100000 0x1000>;
@@ -76,7 +64,6 @@
 				cmd-timeout-ms = <1000>;
 				status = "disabled";
 			};
-
 			timer0: timer@8000 {
 				compatible = "nuvoton,npcm845-timer";
 				interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>;
@@ -84,7 +71,6 @@
 				clocks = <&clk NPCM8XX_CLK_REFCLK>;
 				clock-names = "refclk";
 			};
-
 			serial0: serial@0 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x0 0x1000>;
@@ -93,7 +79,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial1: serial@1000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x1000 0x1000>;
@@ -102,7 +87,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial2: serial@2000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x2000 0x1000>;
@@ -111,7 +95,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial3: serial@3000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x3000 0x1000>;
@@ -120,7 +103,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial4: serial@4000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x4000 0x1000>;
@@ -129,7 +111,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial5: serial@5000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x5000 0x1000>;
@@ -138,7 +119,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			serial6: serial@6000 {
 				compatible = "nuvoton,npcm845-uart", "nuvoton,npcm750-uart";
 				reg = <0x6000 0x1000>;
@@ -147,7 +127,6 @@
 				reg-shift = <2>;
 				status = "disabled";
 			};
-
 			watchdog0: watchdog@801c {
 				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
 				interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
@@ -156,7 +135,6 @@
 				clocks = <&clk NPCM8XX_CLK_REFCLK>;
 				syscon = <&gcr>;
 			};
-
 			watchdog1: watchdog@901c {
 				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
 				interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
@@ -165,7 +143,6 @@
 				clocks = <&clk NPCM8XX_CLK_REFCLK>;
 				syscon = <&gcr>;
 			};
-
 			watchdog2: watchdog@a01c {
 				compatible = "nuvoton,npcm845-wdt", "nuvoton,npcm750-wdt";
 				interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>;

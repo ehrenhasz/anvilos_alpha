@@ -1,25 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 #ifndef __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_
 #define __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_
-
 struct gaudi_async_events_ids_map {
 	int fc_id;
 	int cpu_id;
 	int valid;
 	char name[64];
 };
-
 static struct gaudi_async_events_ids_map gaudi_irq_map_table[] = {
 	{ .fc_id = 0, .cpu_id = 0, .valid = 0, .name = "" },
 	{ .fc_id = 1, .cpu_id = 1, .valid = 0, .name = "" },
@@ -706,5 +692,4 @@ static struct gaudi_async_events_ids_map gaudi_irq_map_table[] = {
 		.name = "FIX_THERMAL_ENV_E" },
 	{ .fc_id = 662, .cpu_id = 511, .valid = 1, .name = "RAZWI_OR_ADC_SW" },
 };
-
-#endif /* __GAUDI_ASYNC_IDS_MAP_EVENTS_EXT_H_ */
+#endif  

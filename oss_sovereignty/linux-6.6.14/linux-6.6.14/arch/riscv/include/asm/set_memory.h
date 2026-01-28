@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2019 SiFive
- */
-
 #ifndef _ASM_RISCV_SET_MEMORY_H
 #define _ASM_RISCV_SET_MEMORY_H
-
 #ifndef __ASSEMBLY__
-/*
- * Functions to change memory attributes.
- */
 #ifdef CONFIG_MMU
 int set_memory_ro(unsigned long addr, int numpages);
 int set_memory_rw(unsigned long addr, int numpages);
@@ -23,7 +14,6 @@ static __always_inline int set_kernel_memory(char *startp, char *endp,
 	unsigned long start = (unsigned long)startp;
 	unsigned long end = (unsigned long)endp;
 	int num_pages = PAGE_ALIGN(end - start) >> PAGE_SHIFT;
-
 	return set_memory(start, num_pages);
 }
 #else
@@ -39,24 +29,19 @@ static inline int set_kernel_memory(char *startp, char *endp,
 	return 0;
 }
 #endif
-
 int set_direct_map_invalid_noflush(struct page *page);
 int set_direct_map_default_noflush(struct page *page);
 bool kernel_page_present(struct page *page);
-
-#endif /* __ASSEMBLY__ */
-
+#endif  
 #ifdef CONFIG_STRICT_KERNEL_RWX
 #ifdef CONFIG_64BIT
 #define SECTION_ALIGN (1 << 21)
 #else
 #define SECTION_ALIGN (1 << 22)
 #endif
-#else /* !CONFIG_STRICT_KERNEL_RWX */
+#else  
 #define SECTION_ALIGN L1_CACHE_BYTES
-#endif /* CONFIG_STRICT_KERNEL_RWX */
-
+#endif  
 #define PECOFF_SECTION_ALIGNMENT        0x1000
 #define PECOFF_FILE_ALIGNMENT           0x200
-
-#endif /* _ASM_RISCV_SET_MEMORY_H */
+#endif  

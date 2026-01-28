@@ -1,24 +1,16 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Copyright (c) 2020 SiFive, Inc */
-
 /dts-v1/;
-
 #include <dt-bindings/clock/sifive-fu740-prci.h>
-
 / {
 	#address-cells = <2>;
 	#size-cells = <2>;
 	compatible = "sifive,fu740-c000", "sifive,fu740";
-
 	aliases {
 		serial0 = &uart0;
 		serial1 = &uart1;
 		ethernet0 = &eth0;
 	};
-
 	chosen {
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -134,25 +126,20 @@
 				interrupt-controller;
 			};
 		};
-
 		cpu-map {
 			cluster0 {
 				core0 {
 					cpu = <&cpu0>;
 				};
-
 				core1 {
 					cpu = <&cpu1>;
 				};
-
 				core2 {
 					cpu = <&cpu2>;
 				};
-
 				core3 {
 					cpu = <&cpu3>;
 				};
-
 				core4 {
 					cpu = <&cpu4>;
 				};
@@ -326,10 +313,10 @@
 			device_type = "pci";
 			dma-coherent;
 			bus-range = <0x0 0xff>;
-			ranges = <0x81000000  0x0 0x60080000  0x0 0x60080000 0x0 0x10000>,      /* I/O */
-				 <0x82000000  0x0 0x60090000  0x0 0x60090000 0x0 0xff70000>,    /* mem */
-				 <0x82000000  0x0 0x70000000  0x0 0x70000000 0x0 0x10000000>,    /* mem */
-				 <0xc3000000 0x20 0x00000000 0x20 0x00000000 0x20 0x00000000>;  /* mem prefetchable */
+			ranges = <0x81000000  0x0 0x60080000  0x0 0x60080000 0x0 0x10000>,       
+				 <0x82000000  0x0 0x60090000  0x0 0x60090000 0x0 0xff70000>,     
+				 <0x82000000  0x0 0x70000000  0x0 0x70000000 0x0 0x10000000>,     
+				 <0xc3000000 0x20 0x00000000 0x20 0x00000000 0x20 0x00000000>;   
 			num-lanes = <0x8>;
 			interrupts = <56>, <57>, <58>, <59>, <60>, <61>, <62>, <63>, <64>;
 			interrupt-names = "msi", "inta", "intb", "intc", "intd";

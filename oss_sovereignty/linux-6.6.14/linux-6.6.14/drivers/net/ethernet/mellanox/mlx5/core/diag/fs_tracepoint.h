@@ -1,50 +1,14 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 #if !defined(_MLX5_FS_TP_) || defined(TRACE_HEADER_MULTI_READ)
 #define _MLX5_FS_TP_
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
 #include "../fs_core.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
-
 #define __parse_fs_hdrs(match_criteria_enable, mouter, mmisc, minner, vouter, \
 			vinner, vmisc)					      \
 	parse_fs_hdrs(p, match_criteria_enable, mouter, mmisc, minner, vouter,\
 		      vinner, vmisc)
-
 const char *parse_fs_hdrs(struct trace_seq *p,
 			  u8 match_criteria_enable,
 			  const u32 *mask_outer,
@@ -53,14 +17,11 @@ const char *parse_fs_hdrs(struct trace_seq *p,
 			  const u32 *value_outer,
 			  const u32 *value_misc,
 			  const u32 *value_inner);
-
 #define __parse_fs_dst(dst, counter_id) \
 	parse_fs_dst(p, (const struct mlx5_flow_destination *)dst, counter_id)
-
 const char *parse_fs_dst(struct trace_seq *p,
 			 const struct mlx5_flow_destination *dst,
 			 u32 counter_id);
-
 TRACE_EVENT(mlx5_fs_add_ft,
 	    TP_PROTO(const struct mlx5_flow_table *ft),
 	    TP_ARGS(ft),
@@ -79,7 +40,6 @@ TRACE_EVENT(mlx5_fs_add_ft,
 	    TP_printk("ft=%p id=%u level=%u type=%u \n",
 		      __entry->ft, __entry->id, __entry->level, __entry->type)
 	    );
-
 TRACE_EVENT(mlx5_fs_del_ft,
 	    TP_PROTO(const struct mlx5_flow_table *ft),
 	    TP_ARGS(ft),
@@ -90,12 +50,10 @@ TRACE_EVENT(mlx5_fs_del_ft,
 	    TP_fast_assign(
 			   __entry->ft = ft;
 			   __entry->id = ft->id;
-
 	    ),
 	    TP_printk("ft=%p id=%u\n",
 		      __entry->ft, __entry->id)
 	    );
-
 TRACE_EVENT(mlx5_fs_add_fg,
 	    TP_PROTO(const struct mlx5_flow_group *fg),
 	    TP_ARGS(fg),
@@ -132,7 +90,6 @@ TRACE_EVENT(mlx5_fs_add_fg,
 					       &fg->mask.match_criteria,
 					       misc_parameters),
 				  sizeof(__entry->mask_misc));
-
 	    ),
 	    TP_printk("fg=%p ft=%p id=%u start=%u end=%u bit_mask=%02x %s\n",
 		      __entry->fg, __entry->ft, __entry->id,
@@ -146,7 +103,6 @@ TRACE_EVENT(mlx5_fs_add_fg,
 				      __entry->mask_misc,
 				      __entry->mask_inner))
 	    );
-
 TRACE_EVENT(mlx5_fs_del_fg,
 	    TP_PROTO(const struct mlx5_flow_group *fg),
 	    TP_ARGS(fg),
@@ -157,12 +113,10 @@ TRACE_EVENT(mlx5_fs_del_fg,
 	    TP_fast_assign(
 			   __entry->fg = fg;
 			   __entry->id = fg->id;
-
 	    ),
 	    TP_printk("fg=%p id=%u\n",
 		      __entry->fg, __entry->id)
 	    );
-
 #define ACTION_FLAGS \
 	{MLX5_FLOW_CONTEXT_ACTION_ALLOW,	 "ALLOW"},\
 	{MLX5_FLOW_CONTEXT_ACTION_DROP,		 "DROP"},\
@@ -176,7 +130,6 @@ TRACE_EVENT(mlx5_fs_del_fg,
 	{MLX5_FLOW_CONTEXT_ACTION_VLAN_PUSH_2,	 "VLAN_PUSH_2"},\
 	{MLX5_FLOW_CONTEXT_ACTION_VLAN_POP_2,	 "VLAN_POP_2"},\
 	{MLX5_FLOW_CONTEXT_ACTION_FWD_NEXT_PRIO, "NEXT_PRIO"}
-
 TRACE_EVENT(mlx5_fs_set_fte,
 	    TP_PROTO(const struct fs_fte *fte, int new_fte),
 	    TP_ARGS(fte, new_fte),
@@ -237,7 +190,6 @@ TRACE_EVENT(mlx5_fs_set_fte,
 					       &fte->val,
 					       misc_parameters),
 				  sizeof(__entry->value_misc));
-
 	    ),
 	    TP_printk("op=%s fte=%p fg=%p index=%u group_index=%u action=<%s> flow_tag=%x %s\n",
 		      __entry->new_fte ? "add" : "set",
@@ -253,7 +205,6 @@ TRACE_EVENT(mlx5_fs_set_fte,
 				      __entry->value_misc,
 				      __entry->value_inner))
 	    );
-
 TRACE_EVENT(mlx5_fs_del_fte,
 	    TP_PROTO(const struct fs_fte *fte),
 	    TP_ARGS(fte),
@@ -264,12 +215,10 @@ TRACE_EVENT(mlx5_fs_del_fte,
 	    TP_fast_assign(
 			   __entry->fte = fte;
 			   __entry->index = fte->index;
-
 	    ),
 	    TP_printk("fte=%p index=%u\n",
 		      __entry->fte, __entry->index)
 	    );
-
 TRACE_EVENT(mlx5_fs_add_rule,
 	    TP_PROTO(const struct mlx5_flow_rule *rule),
 	    TP_ARGS(rule),
@@ -299,7 +248,6 @@ TRACE_EVENT(mlx5_fs_add_rule,
 		      __print_flags(__entry->sw_action, "|", ACTION_FLAGS),
 		      __parse_fs_dst(__entry->destination, __entry->counter_id))
 	    );
-
 TRACE_EVENT(mlx5_fs_del_rule,
 	    TP_PROTO(const struct mlx5_flow_rule *rule),
 	    TP_ARGS(rule),
@@ -315,7 +263,6 @@ TRACE_EVENT(mlx5_fs_del_rule,
 		      __entry->rule, __entry->fte)
 	    );
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ./diag
 #undef TRACE_INCLUDE_FILE

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef QCOM_PHY_QMP_PCS_V2_H_
 #define QCOM_PHY_QMP_PCS_V2_H_
-
-/* Only for QMP V2 PHY - PCS registers */
 #define QPHY_V2_PCS_SW_RESET				0x000
 #define QPHY_V2_PCS_POWER_DOWN_CONTROL			0x004
 #define QPHY_V2_PCS_START_CONTROL			0x008
@@ -31,13 +24,11 @@
 #define QPHY_V2_PCS_AUTONOMOUS_MODE_CTRL		0x0d4
 #define QPHY_V2_PCS_LFPS_RXTERM_IRQ_CLEAR		0x0d8
 #define QPHY_V2_PCS_LFPS_RXTERM_IRQ_STATUS		0x178
-#define QPHY_V2_PCS_USB_PCS_STATUS			0x17c /* USB */
+#define QPHY_V2_PCS_USB_PCS_STATUS			0x17c  
 #define QPHY_V2_PCS_PLL_LOCK_CHK_DLY_TIME_AUXCLK_LSB	0x1a8
 #define QPHY_V2_PCS_OSC_DTCT_ACTIONS			0x1ac
 #define QPHY_V2_PCS_RX_SIGDET_LVL			0x1d8
 #define QPHY_V2_PCS_L1SS_WAKEUP_DLY_TIME_AUXCLK_LSB	0x1dc
 #define QPHY_V2_PCS_L1SS_WAKEUP_DLY_TIME_AUXCLK_MSB	0x1e0
-
-#define QPHY_V2_PCS_PCI_PCS_STATUS			0x174 /* PCI */
-
+#define QPHY_V2_PCS_PCI_PCS_STATUS			0x174  
 #endif

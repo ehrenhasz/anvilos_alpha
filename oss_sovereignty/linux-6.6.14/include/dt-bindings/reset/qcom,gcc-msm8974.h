@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_MSM_GCC_8974_H
 #define _DT_BINDINGS_RESET_MSM_GCC_8974_H
-
 #define GCC_SYSTEM_NOC_BCR			0
 #define GCC_CONFIG_NOC_BCR			1
 #define GCC_PERIPH_NOC_BCR			2
@@ -84,5 +78,4 @@
 #define GCC_LPASS_RESTART			75
 #define GCC_WCSS_RESTART			76
 #define GCC_VENUS_RESTART			77
-
 #endif

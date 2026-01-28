@@ -1,23 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef HOSTAP_H
 #define HOSTAP_H
-
 #include <linux/ethtool.h>
 #include <linux/kernel.h>
-
 #include "hostap_wlan.h"
 #include "hostap_ap.h"
-
 static const long __maybe_unused freq_list[] = {
 	2412, 2417, 2422, 2427, 2432, 2437, 2442,
 	2447, 2452, 2457, 2462, 2467, 2472, 2484
 };
 #define FREQ_COUNT ARRAY_SIZE(freq_list)
-
-/* hostap.c */
-
 extern struct proc_dir_entry *hostap_proc;
-
 u16 hostap_tx_callback_register(local_info_t *local,
 				void (*func)(struct sk_buff *, int ok, void *),
 				void *data);
@@ -56,10 +48,6 @@ int prism2_wds_add(local_info_t *local, u8 *remote_addr,
 		   int rtnl_locked);
 int prism2_wds_del(local_info_t *local, u8 *remote_addr,
 		   int rtnl_locked, int do_not_remove);
-
-
-/* hostap_ap.c */
-
 int ap_control_add_mac(struct mac_restrictions *mac_restrictions, u8 *mac);
 int ap_control_del_mac(struct mac_restrictions *mac_restrictions, u8 *mac);
 void ap_control_flush_macs(struct mac_restrictions *mac_restrictions);
@@ -73,27 +61,13 @@ int prism2_ap_get_sta_qual(local_info_t *local, struct sockaddr addr[],
 int prism2_ap_translate_scan(struct net_device *dev,
 			     struct iw_request_info *info, char *buffer);
 int prism2_hostapd(struct ap_data *ap, struct prism2_hostapd_param *param);
-
-
-/* hostap_proc.c */
-
 void hostap_init_proc(local_info_t *local);
 void hostap_remove_proc(local_info_t *local);
-
-
-/* hostap_info.c */
-
 void hostap_info_init(local_info_t *local);
 void hostap_info_process(local_info_t *local, struct sk_buff *skb);
-
-
-/* hostap_ioctl.c */
-
 extern const struct iw_handler_def hostap_iw_handler_def;
 extern const struct ethtool_ops prism2_ethtool_ops;
-
 int hostap_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
 int hostap_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			  void __user *data, int cmd);
-
-#endif /* HOSTAP_H */
+#endif  

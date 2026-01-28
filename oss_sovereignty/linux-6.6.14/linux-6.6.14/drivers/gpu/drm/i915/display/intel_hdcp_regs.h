@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
-
 #ifndef __INTEL_HDCP_REGS_H__
 #define __INTEL_HDCP_REGS_H__
-
 #include "intel_display_reg_defs.h"
-
-/* HDCP Key Registers */
 #define HDCP_KEY_CONF			_MMIO(0x66c00)
 #define  HDCP_AKSV_SEND_TRIGGER		REG_BIT(31)
 #define  HDCP_CLEAR_KEYS_TRIGGER	REG_BIT(30)
@@ -21,8 +13,6 @@
 #define  HDCP_KEY_LOAD_DONE		REG_BIT(0)
 #define HDCP_AKSV_LO			_MMIO(0x66c10)
 #define HDCP_AKSV_HI			_MMIO(0x66c14)
-
-/* HDCP Repeater Registers */
 #define HDCP_REP_CTL			_MMIO(0x66d00)
 #define  HDCP_TRANSA_REP_PRESENT	REG_BIT(31)
 #define  HDCP_TRANSB_REP_PRESENT	REG_BIT(30)
@@ -43,7 +33,7 @@
 #define  HDCP_DDIC_SHA1_M0		(3 << 20)
 #define  HDCP_DDID_SHA1_M0		(4 << 20)
 #define  HDCP_DDIF_SHA1_M0		(5 << 20)
-#define  HDCP_DDIE_SHA1_M0		(6 << 20) /* Bspec says 5? */
+#define  HDCP_DDIE_SHA1_M0		(6 << 20)  
 #define  HDCP_SHA1_BUSY			REG_BIT(16)
 #define  HDCP_SHA1_READY		REG_BIT(17)
 #define  HDCP_SHA1_COMPLETE		REG_BIT(18)
@@ -61,8 +51,6 @@
 #define HDCP_SHA_V_PRIME_H4		_MMIO(0x66d14)
 #define HDCP_SHA_V_PRIME(h)		_MMIO((0x66d04 + (h) * 4))
 #define HDCP_SHA_TEXT			_MMIO(0x66d18)
-
-/* HDCP Auth Registers */
 #define _PORTA_HDCP_AUTHENC		0x66800
 #define _PORTB_HDCP_AUTHENC		0x66500
 #define _PORTC_HDCP_AUTHENC		0x66600
@@ -85,7 +73,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_CONF(trans) : \
 					 PORT_HDCP_CONF(port))
-
 #define  HDCP_CONF_CAPTURE_AN		REG_BIT(0)
 #define  HDCP_CONF_AUTH_AND_ENC		(REG_BIT(1) | REG_BIT(0))
 #define PORT_HDCP_ANINIT(port)		_PORT_HDCP_AUTHENC(port, 0x4)
@@ -98,7 +85,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_ANINIT(trans) : \
 					 PORT_HDCP_ANINIT(port))
-
 #define PORT_HDCP_ANLO(port)		_PORT_HDCP_AUTHENC(port, 0x8)
 #define _TRANSA_HDCP_ANLO		0x66408
 #define _TRANSB_HDCP_ANLO		0x66508
@@ -108,7 +94,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_ANLO(trans) : \
 					 PORT_HDCP_ANLO(port))
-
 #define PORT_HDCP_ANHI(port)		_PORT_HDCP_AUTHENC(port, 0xC)
 #define _TRANSA_HDCP_ANHI		0x6640C
 #define _TRANSB_HDCP_ANHI		0x6650C
@@ -118,7 +103,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_ANHI(trans) : \
 					 PORT_HDCP_ANHI(port))
-
 #define PORT_HDCP_BKSVLO(port)		_PORT_HDCP_AUTHENC(port, 0x10)
 #define _TRANSA_HDCP_BKSVLO		0x66410
 #define _TRANSB_HDCP_BKSVLO		0x66510
@@ -129,7 +113,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_BKSVLO(trans) : \
 					 PORT_HDCP_BKSVLO(port))
-
 #define PORT_HDCP_BKSVHI(port)		_PORT_HDCP_AUTHENC(port, 0x14)
 #define _TRANSA_HDCP_BKSVHI		0x66414
 #define _TRANSB_HDCP_BKSVHI		0x66514
@@ -140,7 +123,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_BKSVHI(trans) : \
 					 PORT_HDCP_BKSVHI(port))
-
 #define PORT_HDCP_RPRIME(port)		_PORT_HDCP_AUTHENC(port, 0x18)
 #define _TRANSA_HDCP_RPRIME		0x66418
 #define _TRANSB_HDCP_RPRIME		0x66518
@@ -151,7 +133,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_RPRIME(trans) : \
 					 PORT_HDCP_RPRIME(port))
-
 #define PORT_HDCP_STATUS(port)		_PORT_HDCP_AUTHENC(port, 0x1C)
 #define _TRANSA_HDCP_STATUS		0x6641C
 #define _TRANSB_HDCP_STATUS		0x6651C
@@ -162,7 +143,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP_STATUS(trans) : \
 					 PORT_HDCP_STATUS(port))
-
 #define  HDCP_STATUS_STREAM_A_ENC	REG_BIT(31)
 #define  HDCP_STATUS_STREAM_B_ENC	REG_BIT(30)
 #define  HDCP_STATUS_STREAM_C_ENC	REG_BIT(29)
@@ -174,8 +154,6 @@
 #define  HDCP_STATUS_AN_READY		REG_BIT(17)
 #define  HDCP_STATUS_CIPHER		REG_BIT(16)
 #define  HDCP_STATUS_FRAME_CNT(x)	(((x) >> 8) & 0xff)
-
-/* HDCP2.2 Registers */
 #define _PORTA_HDCP2_BASE		0x66800
 #define _PORTB_HDCP2_BASE		0x66500
 #define _PORTC_HDCP2_BASE		0x66600
@@ -189,7 +167,6 @@
 					  _PORTD_HDCP2_BASE, \
 					  _PORTE_HDCP2_BASE, \
 					  _PORTF_HDCP2_BASE) + (x))
-
 #define PORT_HDCP2_AUTH(port)		_PORT_HDCP2_BASE(port, 0x98)
 #define _TRANSA_HDCP2_AUTH		0x66498
 #define _TRANSB_HDCP2_AUTH		0x66598
@@ -203,7 +180,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP2_AUTH(trans) : \
 					 PORT_HDCP2_AUTH(port))
-
 #define PORT_HDCP2_CTL(port)		_PORT_HDCP2_BASE(port, 0xB0)
 #define _TRANSA_HDCP2_CTL		0x664B0
 #define _TRANSB_HDCP2_CTL		0x665B0
@@ -214,7 +190,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP2_CTL(trans) : \
 					 PORT_HDCP2_CTL(port))
-
 #define PORT_HDCP2_STATUS(port)		_PORT_HDCP2_BASE(port, 0xB4)
 #define _TRANSA_HDCP2_STATUS		0x664B4
 #define _TRANSB_HDCP2_STATUS		0x665B4
@@ -228,7 +203,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP2_STATUS(trans) : \
 					 PORT_HDCP2_STATUS(port))
-
 #define _PIPEA_HDCP2_STREAM_STATUS	0x668C0
 #define _PIPEB_HDCP2_STREAM_STATUS	0x665C0
 #define _PIPEC_HDCP2_STREAM_STATUS	0x666C0
@@ -238,7 +212,6 @@
 						      _PIPEB_HDCP2_STREAM_STATUS, \
 						      _PIPEC_HDCP2_STREAM_STATUS, \
 						      _PIPED_HDCP2_STREAM_STATUS))
-
 #define _TRANSA_HDCP2_STREAM_STATUS		0x664C0
 #define _TRANSB_HDCP2_STREAM_STATUS		0x665C0
 #define TRANS_HDCP2_STREAM_STATUS(trans)	_MMIO_TRANS(trans, \
@@ -250,7 +223,6 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP2_STREAM_STATUS(trans) : \
 					 PIPE_HDCP2_STREAM_STATUS(pipe))
-
 #define _PORTA_HDCP2_AUTH_STREAM		0x66F00
 #define _PORTB_HDCP2_AUTH_STREAM		0x66F04
 #define PORT_HDCP2_AUTH_STREAM(port)	_MMIO_PORT(port, \
@@ -266,5 +238,4 @@
 					(GRAPHICS_VER(dev_priv) >= 12 ? \
 					 TRANS_HDCP2_AUTH_STREAM(trans) : \
 					 PORT_HDCP2_AUTH_STREAM(port))
-
-#endif /* __INTEL_HDCP_REGS_H__ */
+#endif  

@@ -1,21 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-//
-// ALSA SoC Texas Instruments TAS2781 Audio Smart Amplifier
-//
-// Copyright (C) 2022 - 2023 Texas Instruments Incorporated
-// https://www.ti.com
-//
-// The TAS2781 driver implements a flexible and configurable
-// algo coefficient setting for one, two, or even multiple
-// TAS2781 chips.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
-// Author: Kevin Lu <kevin-lu@ti.com>
-//
-
 #ifndef __TASDEVICE_DSP_H__
 #define __TASDEVICE_DSP_H__
-
 #define MAIN_ALL_DEVICES			0x0d
 #define MAIN_DEVICE_A				0x01
 #define MAIN_DEVICE_B				0x08
@@ -29,14 +13,11 @@
 #define PRE_DEVICE_B				0x0b
 #define PRE_DEVICE_C				0x12
 #define PRE_DEVICE_D				0x16
-
 #define PPC3_VERSION				0x4100
 #define PPC3_VERSION_TAS2781			0x14600
 #define TASDEVICE_DEVICE_SUM			8
 #define TASDEVICE_CONFIG_SUM			64
-
 #define TASDEVICE_MAX_CHANNELS			8
-
 enum tasdevice_dsp_dev_idx {
 	TASDEVICE_DSP_TAS_2555 = 0,
 	TASDEVICE_DSP_TAS_2555_STEREO,
@@ -53,20 +34,17 @@ enum tasdevice_dsp_dev_idx {
 	TASDEVICE_DSP_TAS_2781_QUAD,
 	TASDEVICE_DSP_TAS_MAX_DEVICE
 };
-
 struct tasdevice_fw_fixed_hdr {
 	unsigned int fwsize;
 	unsigned int ppcver;
 	unsigned int drv_ver;
 };
-
 struct tasdevice_dspfw_hdr {
 	struct tasdevice_fw_fixed_hdr fixed_hdr;
 	unsigned short device_family;
 	unsigned short device;
 	unsigned char ndev;
 };
-
 struct tasdev_blk {
 	int nr_retry;
 	unsigned int type;
@@ -79,28 +57,23 @@ struct tasdev_blk {
 	unsigned int nr_subblocks;
 	unsigned char *data;
 };
-
 struct tasdevice_data {
 	char name[64];
 	unsigned int nr_blk;
 	struct tasdev_blk *dev_blks;
 };
-
 struct tasdevice_prog {
 	unsigned int prog_size;
 	struct tasdevice_data dev_data;
 };
-
 struct tasdevice_config {
 	unsigned int cfg_size;
 	char name[64];
 	struct tasdevice_data dev_data;
 };
-
 struct tasdevice_calibration {
 	struct tasdevice_data dev_data;
 };
-
 struct tasdevice_fw {
 	struct tasdevice_dspfw_hdr fw_hdr;
 	unsigned short nr_programs;
@@ -111,14 +84,12 @@ struct tasdevice_fw {
 	struct tasdevice_calibration *calibrations;
 	struct device *dev;
 };
-
 enum tasdevice_dsp_fw_state {
 	TASDEVICE_DSP_FW_NONE = 0,
 	TASDEVICE_DSP_FW_PENDING,
 	TASDEVICE_DSP_FW_FAIL,
 	TASDEVICE_DSP_FW_ALL_OK,
 };
-
 enum tasdevice_bin_blk_type {
 	TASDEVICE_BIN_BLK_COEFF = 1,
 	TASDEVICE_BIN_BLK_POST_POWER_UP,
@@ -126,7 +97,6 @@ enum tasdevice_bin_blk_type {
 	TASDEVICE_BIN_BLK_PRE_POWER_UP,
 	TASDEVICE_BIN_BLK_POST_SHUTDOWN
 };
-
 struct tasdevice_rca_hdr {
 	unsigned int img_sz;
 	unsigned int checksum;
@@ -140,7 +110,6 @@ struct tasdevice_rca_hdr {
 	unsigned int nconfig;
 	unsigned int config_size[TASDEVICE_CONFIG_SUM];
 };
-
 struct tasdev_blk_data {
 	unsigned char dev_idx;
 	unsigned char block_type;
@@ -149,21 +118,18 @@ struct tasdev_blk_data {
 	unsigned int n_subblks;
 	unsigned char *regdata;
 };
-
 struct tasdevice_config_info {
 	unsigned int nblocks;
 	unsigned int real_nblocks;
 	unsigned char active_dev;
 	struct tasdev_blk_data **blk_data;
 };
-
 struct tasdevice_rca {
 	struct tasdevice_rca_hdr fw_hdr;
 	int ncfgs;
 	struct tasdevice_config_info **cfg_info;
 	int profile_cfg_id;
 };
-
 void tasdevice_select_cfg_blk(void *context, int conf_no,
 	unsigned char block_type);
 void tasdevice_config_info_remove(void *context);
@@ -179,5 +145,4 @@ int tasdevice_prmg_calibdata_load(void *context, int prm_no);
 void tasdevice_tuning_switch(void *context, int state);
 int tas2781_load_calibration(void *context, char *file_name,
 	unsigned short i);
-
 #endif

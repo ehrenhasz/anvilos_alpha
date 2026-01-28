@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_HOTPLUG_H__
 #define __INTEL_HOTPLUG_H__
-
 #include <linux/types.h>
-
 struct drm_i915_private;
 struct intel_connector;
 struct intel_digital_port;
 struct intel_encoder;
 enum port;
-
 void intel_hpd_poll_enable(struct drm_i915_private *dev_priv);
 void intel_hpd_poll_disable(struct drm_i915_private *dev_priv);
 enum intel_hotplug_state intel_encoder_hotplug(struct intel_encoder *encoder,
@@ -29,5 +21,4 @@ enum hpd_pin intel_hpd_pin_default(struct drm_i915_private *dev_priv,
 bool intel_hpd_disable(struct drm_i915_private *dev_priv, enum hpd_pin pin);
 void intel_hpd_enable(struct drm_i915_private *dev_priv, enum hpd_pin pin);
 void intel_hpd_debugfs_register(struct drm_i915_private *i915);
-
-#endif /* __INTEL_HOTPLUG_H__ */
+#endif  

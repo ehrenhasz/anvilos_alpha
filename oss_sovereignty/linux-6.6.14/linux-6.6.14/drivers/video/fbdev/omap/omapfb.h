@@ -1,80 +1,51 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * File: drivers/video/omap/omapfb.h
- *
- * Framebuffer driver for TI OMAP boards
- *
- * Copyright (C) 2004 Nokia Corporation
- * Author: Imre Deak <imre.deak@nokia.com>
- */
-
 #ifndef __OMAPFB_H
 #define __OMAPFB_H
-
 #include <linux/fb.h>
 #include <linux/mutex.h>
 #include <linux/omapfb.h>
-
 #define OMAPFB_EVENT_READY	1
 #define OMAPFB_EVENT_DISABLED	2
-
 #define OMAP_LCDC_INV_VSYNC             0x0001
 #define OMAP_LCDC_INV_HSYNC             0x0002
 #define OMAP_LCDC_INV_PIX_CLOCK         0x0004
 #define OMAP_LCDC_INV_OUTPUT_EN         0x0008
 #define OMAP_LCDC_HSVS_RISING_EDGE      0x0010
 #define OMAP_LCDC_HSVS_OPPOSITE         0x0020
-
 #define OMAP_LCDC_SIGNAL_MASK		0x003f
-
 #define OMAP_LCDC_PANEL_TFT		0x0100
-
 #define OMAPFB_PLANE_XRES_MIN		8
 #define OMAPFB_PLANE_YRES_MIN		8
-
 struct omapfb_device;
-
 #define OMAPFB_PLANE_NUM		1
-
 struct omapfb_mem_region {
 	u32		paddr;
 	void __iomem	*vaddr;
 	unsigned long	size;
-	u8		type;		/* OMAPFB_PLANE_MEM_* */
-	enum omapfb_color_format format;/* OMAPFB_COLOR_* */
-	unsigned	format_used:1;	/* Must be set when format is set.
-					 * Needed b/c of the badly chosen 0
-					 * base for OMAPFB_COLOR_* values
-					 */
-	unsigned	alloc:1;	/* allocated by the driver */
-	unsigned	map:1;		/* kernel mapped by the driver */
+	u8		type;		 
+	enum omapfb_color_format format; 
+	unsigned	format_used:1;	 
+	unsigned	alloc:1;	 
+	unsigned	map:1;		 
 };
-
 struct omapfb_mem_desc {
 	int				region_cnt;
 	struct omapfb_mem_region	region[OMAPFB_PLANE_NUM];
 };
-
 struct lcd_panel {
 	const char	*name;
-	int		config;		/* TFT/STN, signal inversion */
-	int		bpp;		/* Pixel format in fb mem */
-	int		data_lines;	/* Lines on LCD HW interface */
-
+	int		config;		 
+	int		bpp;		 
+	int		data_lines;	 
 	int		x_res, y_res;
-	int		pixel_clock;	/* In kHz */
-	int		hsw;		/* Horizontal synchronization
-					   pulse width */
-	int		hfp;		/* Horizontal front porch */
-	int		hbp;		/* Horizontal back porch */
-	int		vsw;		/* Vertical synchronization
-					   pulse width */
-	int		vfp;		/* Vertical front porch */
-	int		vbp;		/* Vertical back porch */
-	int		acb;		/* ac-bias pin frequency */
-	int		pcd;		/* pixel clock divider.
-					   Obsolete use pixel_clock instead */
-
+	int		pixel_clock;	 
+	int		hsw;		 
+	int		hfp;		 
+	int		hbp;		 
+	int		vsw;		 
+	int		vfp;		 
+	int		vbp;		 
+	int		acb;		 
+	int		pcd;		 
 	int		(*init)		(struct lcd_panel *panel,
 					 struct omapfb_device *fbdev);
 	void		(*cleanup)	(struct lcd_panel *panel);
@@ -87,7 +58,6 @@ struct lcd_panel {
 	unsigned int	(*get_bklight_max)  (struct lcd_panel *panel);
 	int		(*run_test)	(struct lcd_panel *panel, int test_num);
 };
-
 struct extif_timings {
 	int cs_on_time;
 	int cs_off_time;
@@ -99,14 +69,10 @@ struct extif_timings {
 	int re_cycle_time;
 	int cs_pulse_width;
 	int access_time;
-
 	int clk_div;
-
-	u32 tim[5];		/* set by extif->convert_timings */
-
+	u32 tim[5];		 
 	int converted;
 };
-
 struct lcd_ctrl_extif {
 	int  (*init)		(struct omapfb_device *fbdev);
 	void (*cleanup)		(void);
@@ -124,24 +90,19 @@ struct lcd_ctrl_extif {
 				 unsigned hs_pulse_time, unsigned vs_pulse_time,
 				 int hs_pol_inv, int vs_pol_inv, int div);
 	int  (*enable_tearsync) (int enable, unsigned line);
-
 	unsigned long		max_transmit_size;
 };
-
 struct omapfb_notifier_block {
 	struct notifier_block	nb;
 	void			*data;
 	int			plane_idx;
 };
-
 typedef int (*omapfb_notifier_callback_t)(struct notifier_block *,
 					  unsigned long event,
 					  void *fbi);
-
 struct lcd_ctrl {
 	const char	*name;
 	void		*data;
-
 	int		(*init)		  (struct omapfb_device *fbdev,
 					   int ext_mode,
 					   struct omapfb_mem_desc *req_md);
@@ -178,47 +139,36 @@ struct lcd_ctrl {
 	int		(*set_color_key)  (struct omapfb_color_key *ck);
 	int		(*get_color_key)  (struct omapfb_color_key *ck);
 };
-
 enum omapfb_state {
 	OMAPFB_DISABLED		= 0,
 	OMAPFB_SUSPENDED	= 99,
 	OMAPFB_ACTIVE		= 100
 };
-
 struct omapfb_plane_struct {
 	int				idx;
 	struct omapfb_plane_info	info;
 	enum omapfb_color_format	color_mode;
 	struct omapfb_device		*fbdev;
 };
-
 struct omapfb_device {
 	int			state;
-	int                     ext_lcdc;		/* Using external
-							   LCD controller */
+	int                     ext_lcdc;		 
 	struct mutex		rqueue_mutex;
-
 	int			palette_size;
 	u32			pseudo_palette[17];
-
-	struct lcd_panel	*panel;			/* LCD panel */
-	const struct lcd_ctrl	*ctrl;			/* LCD controller */
-	const struct lcd_ctrl	*int_ctrl;		/* internal LCD ctrl */
+	struct lcd_panel	*panel;			 
+	const struct lcd_ctrl	*ctrl;			 
+	const struct lcd_ctrl	*int_ctrl;		 
 	int			ext_irq;
 	int			int_irq;
-	struct lcd_ctrl_extif	*ext_if;		/* LCD ctrl external
-							   interface */
+	struct lcd_ctrl_extif	*ext_if;		 
 	struct device		*dev;
-	struct fb_var_screeninfo	new_var;	/* for mode changes */
-
+	struct fb_var_screeninfo	new_var;	 
 	struct omapfb_mem_desc		mem_desc;
 	struct fb_info			*fb_info[OMAPFB_PLANE_NUM];
-
-	struct platform_device	*dssdev;	/* dummy dev for clocks */
+	struct platform_device	*dssdev;	 
 };
-
 extern struct lcd_ctrl omap1_lcd_ctrl;
-
 extern void omapfb_register_panel(struct lcd_panel *panel);
 extern void omapfb_write_first_pixel(struct omapfb_device *fbdev, u16 pixval);
 extern void omapfb_notify_clients(struct omapfb_device *fbdev,
@@ -227,4 +177,4 @@ extern int  omapfb_register_client(struct omapfb_notifier_block *nb,
 				   omapfb_notifier_callback_t callback,
 				   void *callback_data);
 extern int  omapfb_unregister_client(struct omapfb_notifier_block *nb);
-#endif /* __OMAPFB_H */
+#endif  

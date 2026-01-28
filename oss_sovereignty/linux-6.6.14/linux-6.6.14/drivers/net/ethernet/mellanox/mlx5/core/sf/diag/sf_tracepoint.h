@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
-
 #if !defined(_MLX5_SF_TP_) || defined(TRACE_HEADER_MULTI_READ)
 #define _MLX5_SF_TP_
-
 #include <linux/tracepoint.h>
 #include <linux/mlx5/driver.h>
 #include "sf/vhca_event.h"
-
 TRACE_EVENT(mlx5_sf_add,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     unsigned int port_index,
@@ -34,7 +28,6 @@ TRACE_EVENT(mlx5_sf_add,
 		      __get_str(devname), __entry->port_index, __entry->controller,
 		      __entry->hw_fn_id, __entry->sfnum)
 );
-
 TRACE_EVENT(mlx5_sf_free,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     unsigned int port_index,
@@ -55,7 +48,6 @@ TRACE_EVENT(mlx5_sf_free,
 		      __get_str(devname), __entry->port_index, __entry->controller,
 		      __entry->hw_fn_id)
 );
-
 TRACE_EVENT(mlx5_sf_hwc_alloc,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     u32 controller,
@@ -76,7 +68,6 @@ TRACE_EVENT(mlx5_sf_hwc_alloc,
 		      __get_str(devname), __entry->controller, __entry->hw_fn_id,
 		      __entry->sfnum)
 );
-
 TRACE_EVENT(mlx5_sf_hwc_free,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     u16 hw_fn_id),
@@ -89,7 +80,6 @@ TRACE_EVENT(mlx5_sf_hwc_free,
 	    ),
 	    TP_printk("(%s) hw_id=0x%x\n", __get_str(devname), __entry->hw_fn_id)
 );
-
 TRACE_EVENT(mlx5_sf_hwc_deferred_free,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     u16 hw_fn_id),
@@ -102,7 +92,6 @@ TRACE_EVENT(mlx5_sf_hwc_deferred_free,
 	    ),
 	    TP_printk("(%s) hw_id=0x%x\n", __get_str(devname), __entry->hw_fn_id)
 );
-
 DECLARE_EVENT_CLASS(mlx5_sf_state_template,
 		    TP_PROTO(const struct mlx5_core_dev *dev,
 			     u32 port_index,
@@ -122,7 +111,6 @@ DECLARE_EVENT_CLASS(mlx5_sf_state_template,
 			      __get_str(devname), __entry->port_index, __entry->controller,
 			      __entry->hw_fn_id)
 );
-
 DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_activate,
 	     TP_PROTO(const struct mlx5_core_dev *dev,
 		      u32 port_index,
@@ -130,7 +118,6 @@ DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_activate,
 		      u16 hw_fn_id),
 	     TP_ARGS(dev, port_index, controller, hw_fn_id)
 	     );
-
 DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_deactivate,
 	     TP_PROTO(const struct mlx5_core_dev *dev,
 		      u32 port_index,
@@ -138,7 +125,6 @@ DEFINE_EVENT(mlx5_sf_state_template, mlx5_sf_deactivate,
 		      u16 hw_fn_id),
 	     TP_ARGS(dev, port_index, controller, hw_fn_id)
 	     );
-
 TRACE_EVENT(mlx5_sf_update_state,
 	    TP_PROTO(const struct mlx5_core_dev *dev,
 		     unsigned int port_index,
@@ -162,10 +148,7 @@ TRACE_EVENT(mlx5_sf_update_state,
 		      __get_str(devname), __entry->port_index, __entry->controller,
 		      __entry->hw_fn_id, __entry->state)
 );
-
-#endif /* _MLX5_SF_TP_ */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH sf/diag
 #undef TRACE_INCLUDE_FILE

@@ -1,19 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2008 by Sascha Hauer <kernel@pengutronix.de>
- */
-
 #ifndef __ARCH_ARM_MACH_MX3_CRM_REGS_H__
 #define __ARCH_ARM_MACH_MX3_CRM_REGS_H__
-
 #define CKIH_CLK_FREQ           26000000
 #define CKIH_CLK_FREQ_27MHZ     27000000
 #define CKIL_CLK_FREQ           32768
-
 extern void __iomem *mx3_ccm_base;
-
-/* Register addresses */
 #define MXC_CCM_CCMR		0x00
 #define MXC_CCM_PDR0		0x04
 #define MXC_CCM_PDR1		0x08
@@ -52,8 +42,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PMCR0		0x5C
 #define MXC_CCM_PMCR1		0x60
 #define MXC_CCM_PDR2		0x64
-
-/* Register bit definitions */
 #define MXC_CCM_CCMR_WBEN                       (1 << 27)
 #define MXC_CCM_CCMR_CSCS                       (1 << 25)
 #define MXC_CCM_CCMR_PERCS                      (1 << 24)
@@ -73,7 +61,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_CCMR_MPE                        (1 << 3)
 #define MXC_CCM_CCMR_PRCS_OFFSET                1
 #define MXC_CCM_CCMR_PRCS_MASK                  (0x3 << 1)
-
 #define MXC_CCM_PDR0_CSI_PODF_OFFSET            26
 #define MXC_CCM_PDR0_CSI_PODF_MASK              (0x3F << 26)
 #define MXC_CCM_PDR0_CSI_PRDF_OFFSET            23
@@ -90,7 +77,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PDR0_MAX_PODF_MASK              (0x7 << 3)
 #define MXC_CCM_PDR0_MCU_PODF_OFFSET            0
 #define MXC_CCM_PDR0_MCU_PODF_MASK              0x7
-
 #define MXC_CCM_PDR1_USB_PRDF_OFFSET            30
 #define MXC_CCM_PDR1_USB_PRDF_MASK              (0x3 << 30)
 #define MXC_CCM_PDR1_USB_PODF_OFFSET            27
@@ -107,23 +93,13 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PDR1_SSI1_PRE_PODF_MASK         (0x7 << 6)
 #define MXC_CCM_PDR1_SSI1_PODF_OFFSET           0
 #define MXC_CCM_PDR1_SSI1_PODF_MASK             0x3F
-
-/* Bit definitions for RCSR */
 #define MXC_CCM_RCSR_NF16B			0x80000000
-
-/*
- * LTR0 register offsets
- */
 #define MXC_CCM_LTR0_DIV3CK_OFFSET              1
 #define MXC_CCM_LTR0_DIV3CK_MASK                (0x3 << 1)
 #define MXC_CCM_LTR0_DNTHR_OFFSET               16
 #define MXC_CCM_LTR0_DNTHR_MASK                 (0x3F << 16)
 #define MXC_CCM_LTR0_UPTHR_OFFSET               22
 #define MXC_CCM_LTR0_UPTHR_MASK                 (0x3F << 22)
-
-/*
- * LTR1 register offsets
- */
 #define MXC_CCM_LTR1_PNCTHR_OFFSET              0
 #define MXC_CCM_LTR1_PNCTHR_MASK                0x3F
 #define MXC_CCM_LTR1_UPCNT_OFFSET               6
@@ -134,23 +110,14 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_LTR1_LTBRSR_OFFSET              22
 #define MXC_CCM_LTR1_LTBRSR                     0x400000
 #define MXC_CCM_LTR1_LTBRSH                     0x800000
-
-/*
- * LTR2 bit definitions. x ranges from 0 for WSW9 to 6 for WSW15
- */
 #define MXC_CCM_LTR2_WSW_OFFSET(x)              (11 + (x) * 3)
 #define MXC_CCM_LTR2_WSW_MASK(x)                (0x7 << \
 					MXC_CCM_LTR2_WSW_OFFSET((x)))
 #define MXC_CCM_LTR2_EMAC_OFFSET                0
 #define MXC_CCM_LTR2_EMAC_MASK                  0x1FF
-
-/*
- * LTR3 bit definitions. x ranges from 0 for WSW0 to 8 for WSW8
- */
 #define MXC_CCM_LTR3_WSW_OFFSET(x)              (5 + (x) * 3)
 #define MXC_CCM_LTR3_WSW_MASK(x)                (0x7 << \
 					MXC_CCM_LTR3_WSW_OFFSET((x)))
-
 #define MXC_CCM_PMCR0_DFSUP1                    0x80000000
 #define MXC_CCM_PMCR0_DFSUP1_SPLL               (0 << 31)
 #define MXC_CCM_PMCR0_DFSUP1_MPLL               (1 << 31)
@@ -158,7 +125,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PMCR0_DFSUP0_PLL                (0 << 30)
 #define MXC_CCM_PMCR0_DFSUP0_PDR                (1 << 30)
 #define MXC_CCM_PMCR0_DFSUP_MASK                (0x3 << 30)
-
 #define DVSUP_TURBO				0
 #define DVSUP_HIGH				1
 #define DVSUP_MEDIUM				2
@@ -173,7 +139,6 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PMCR0_UDSC_MASK                 (1 << 27)
 #define MXC_CCM_PMCR0_UDSC_UP                   (1 << 27)
 #define MXC_CCM_PMCR0_UDSC_DOWN                 (0 << 27)
-
 #define MXC_CCM_PMCR0_VSCNT_1                   (0x0 << 24)
 #define MXC_CCM_PMCR0_VSCNT_2                   (0x1 << 24)
 #define MXC_CCM_PMCR0_VSCNT_3                   (0x2 << 24)
@@ -213,36 +178,26 @@ extern void __iomem *mx3_ccm_base;
 #define MXC_CCM_PMCR0_PTVAI_OFFSET              1
 #define MXC_CCM_PMCR0_PTVAI_MASK                (0x3 << 1)
 #define MXC_CCM_PMCR0_DPTEN                     0x00000001
-
 #define MXC_CCM_PMCR1_DVGP_OFFSET               0
 #define MXC_CCM_PMCR1_DVGP_MASK                 (0xF)
-
 #define MXC_CCM_PMCR1_PLLRDIS                      (0x1 << 7)
 #define MXC_CCM_PMCR1_EMIRQ_EN                      (0x1 << 8)
-
 #define MXC_CCM_DCVR_ULV_MASK                   (0x3FF << 22)
 #define MXC_CCM_DCVR_ULV_OFFSET                 22
 #define MXC_CCM_DCVR_LLV_MASK                   (0x3FF << 12)
 #define MXC_CCM_DCVR_LLV_OFFSET                 12
 #define MXC_CCM_DCVR_ELV_MASK                   (0x3FF << 2)
 #define MXC_CCM_DCVR_ELV_OFFSET                 2
-
 #define MXC_CCM_PDR2_MST2_PDF_MASK              (0x3F << 7)
 #define MXC_CCM_PDR2_MST2_PDF_OFFSET            7
 #define MXC_CCM_PDR2_MST1_PDF_MASK              0x3F
 #define MXC_CCM_PDR2_MST1_PDF_OFFSET            0
-
 #define MXC_CCM_COSR_CLKOSEL_MASK               0x0F
 #define MXC_CCM_COSR_CLKOSEL_OFFSET             0
 #define MXC_CCM_COSR_CLKOUTDIV_MASK             (0x07 << 6)
 #define MXC_CCM_COSR_CLKOUTDIV_OFFSET           6
 #define MXC_CCM_COSR_CLKOEN                     (1 << 9)
-
-/*
- * PMCR0 register offsets
- */
 #define MXC_CCM_PMCR0_LBFL_OFFSET   20
 #define MXC_CCM_PMCR0_DFSUP0_OFFSET 30
 #define MXC_CCM_PMCR0_DFSUP1_OFFSET 31
-
-#endif				/* __ARCH_ARM_MACH_MX3_CRM_REGS_H__ */
+#endif				 

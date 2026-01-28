@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2017 Rockchip Electronics Co. Ltd.
- * Author: Elaine <zhangqing@rock-chips.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3128_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3128_H
-
-/* core clocks */
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_CPLL		3
@@ -15,8 +7,6 @@
 #define ARMCLK			5
 #define PLL_GPLL_DIV2		6
 #define PLL_GPLL_DIV3		7
-
-/* sclk gates (special clocks) */
 #define SCLK_SPI0		65
 #define SCLK_NANDC		67
 #define SCLK_SDMMC		68
@@ -66,12 +56,8 @@
 #define SCLK_CIF_OUT		152
 #define SCLK_SFC		153
 #define SCLK_USB480M		154
-
-/* dclk gates */
 #define DCLK_VOP		190
 #define DCLK_EBC		191
-
-/* aclk gates */
 #define ACLK_VIO0		192
 #define ACLK_VIO1		193
 #define ACLK_DMAC		194
@@ -86,8 +72,6 @@
 #define ACLK_VOP		211
 #define ACLK_GMAC		212
 #define ACLK_GPU		213
-
-/* pclk gates */
 #define PCLK_SARADC		318
 #define PCLK_WDT		319
 #define PCLK_GPIO0		320
@@ -116,8 +100,6 @@
 #define PCLK_GMAC		367
 #define PCLK_PMU_PRE		368
 #define PCLK_SIM_CARD		369
-
-/* hclk gates */
 #define HCLK_SPDIF		440
 #define HCLK_GPS		441
 #define HCLK_USBHOST		442
@@ -143,10 +125,7 @@
 #define HCLK_TSP		475
 #define HCLK_CRYPTO		476
 #define HCLK_PERI		478
-
 #define CLK_NR_CLKS		(HCLK_PERI + 1)
-
-/* soft-reset indices */
 #define SRST_CORE0_PO		0
 #define SRST_CORE1_PO		1
 #define SRST_CORE2_PO		2
@@ -163,7 +142,6 @@
 #define SRST_ACLK_CORE		13
 #define SRST_STRC_SYS_A		14
 #define SRST_L2C		15
-
 #define SRST_CPUSYS_H		18
 #define SRST_AHB2APBSYS_H	19
 #define SRST_SPDIF		20
@@ -177,7 +155,6 @@
 #define SRST_CORE_PVTM		29
 #define SRST_EFUSE_P		30
 #define SRST_ACODEC_P		31
-
 #define SRST_GPIO0		32
 #define SRST_GPIO1		33
 #define SRST_GPIO2		34
@@ -191,7 +168,6 @@
 #define SRST_I2C2		45
 #define SRST_I2C3		46
 #define SRST_SFC		47
-
 #define SRST_PWM		48
 #define SRST_DAP_PO		50
 #define SRST_DAP		51
@@ -206,7 +182,6 @@
 #define SRST_CPU_PERI		61
 #define SRST_EMEM_PERI		62
 #define SRST_USB_PERI		63
-
 #define SRST_DMA		64
 #define SRST_GPS		67
 #define SRST_NANDC		68
@@ -215,7 +190,6 @@
 #define SRST_USBOTG1		72
 #define SRST_OTGC1		74
 #define SRST_DDRMSCH		79
-
 #define SRST_SDMMC		81
 #define SRST_SDIO		82
 #define SRST_EMMC		83
@@ -229,7 +203,6 @@
 #define SRST_TSP		92
 #define SRST_TSP_CLKIN		93
 #define SRST_HOST0_ECHI		94
-
 #define SRST_HDMI_P		96
 #define SRST_VIO_ARBI_H		97
 #define SRST_VIO0_A		98
@@ -246,7 +219,6 @@
 #define SRST_RGA_H		109
 #define SRST_CIF0		110
 #define SRST_PMU		111
-
 #define SRST_VCODEC_A		112
 #define SRST_VCODEC_H		113
 #define SRST_VIO1_A		114
@@ -258,7 +230,6 @@
 #define SRST_GPU_NIU_A		122
 #define SRST_EBC_A		123
 #define SRST_EBC_H		124
-
 #define SRST_CORE_DBG		128
 #define SRST_DBG_P		129
 #define SRST_TIMER0		130
@@ -269,5 +240,4 @@
 #define SRST_TIMER5		135
 #define SRST_VIO_H2P		136
 #define SRST_VIO_MIPI_DSI	137
-
 #endif

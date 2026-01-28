@@ -1,20 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  arch/arm/mach-rpc/include/mach/uncompress.h
- *
- *  Copyright (C) 1996 Russell King
- */
 #define VIDMEM ((char *)SCREEN_START)
- 
 #include <linux/io.h>
 #include <mach/hardware.h>
 #include <asm/setup.h>
 #include <asm/page.h>
-
 int video_size_row;
 unsigned char bytes_per_char_h;
 extern unsigned long con_charconvtable[256];
-
 struct param_struct {
 	unsigned long page_size;
 	unsigned long nr_pages;
@@ -32,16 +23,15 @@ struct param_struct {
 	unsigned char bytes_per_char_v;
 	unsigned long unused[256/4-11];
 };
-
 static const unsigned long palette_4[16] = {
 	0x00000000,
 	0x000000cc,
-	0x0000cc00,             /* Green   */
-	0x0000cccc,             /* Yellow  */
-	0x00cc0000,             /* Blue    */
-	0x00cc00cc,             /* Magenta */
-	0x00cccc00,             /* Cyan    */
-	0x00cccccc,             /* White   */
+	0x0000cc00,              
+	0x0000cccc,              
+	0x00cc0000,              
+	0x00cc00cc,              
+	0x00cccc00,              
+	0x00cccccc,              
 	0x00000000,
 	0x000000ff,
 	0x0000ff00,
@@ -51,17 +41,10 @@ static const unsigned long palette_4[16] = {
 	0x00ffff00,
 	0x00ffffff
 };
-
 #define palette_setpixel(p)	*(unsigned long *)(IO_START+0x00400000) = 0x10000000|((p) & 255)
 #define palette_write(v)	*(unsigned long *)(IO_START+0x00400000) = 0x00000000|((v) & 0x00ffffff)
-
-/*
- * params_phys is a linker defined symbol - see
- * arch/arm/boot/compressed/Makefile
- */
 extern __attribute__((pure)) struct param_struct *params(void);
 #define params (params())
-
 #ifndef STANDALONE_DEBUG 
 unsigned long video_num_cols;
 unsigned long video_num_rows;
@@ -69,19 +52,13 @@ unsigned long video_x;
 unsigned long video_y;
 unsigned char bytes_per_char_v;
 int white;
-
-/*
- * This does not append a newline
- */
 static inline void putc(int c)
 {
 	extern void ll_write_char(char *, char c, char white);
 	int x,y;
 	char *ptr;
-
 	x = video_x;
 	y = video_y;
-
 	if (c == '\n') {
 		if (++y >= video_num_rows)
 			y--;
@@ -97,24 +74,17 @@ static inline void putc(int c)
 			}
 		}
 	}
-
 	video_x = x;
 	video_y = y;
 }
-
 static inline void flush(void)
 {
 }
-
-/*
- * Setup for decompression
- */
 static void arch_decomp_setup(void)
 {
 	int i;
 	struct tag *t = (struct tag *)params;
 	unsigned int nr_pages = 0, page_size = PAGE_SIZE;
-
 	if (t->hdr.tag == ATAG_CORE) {
 		for (; t->hdr.size; t = tag_next(t)) {
 			if (t->hdr.tag == ATAG_VIDEOTEXT) {
@@ -140,9 +110,7 @@ static void arch_decomp_setup(void)
 		bytes_per_char_h = params->bytes_per_char_h;
 		bytes_per_char_v = params->bytes_per_char_v;
 	}
-
 	video_size_row = video_num_cols * bytes_per_char_h;
-	
 	if (bytes_per_char_h == 4)
 		for (i = 0; i < 256; i++)
 			con_charconvtable[i] =
@@ -161,8 +129,6 @@ static void arch_decomp_setup(void)
 				(i & 4   ? 1 << 8  : 0) |
 				(i & 2   ? 1 << 16 : 0) |
 				(i & 1   ? 1 << 24 : 0);
-
-
 	palette_setpixel(0);
 	if (bytes_per_char_h == 1) {
 		palette_write (0);
@@ -175,7 +141,6 @@ static void arch_decomp_setup(void)
 			palette_write (i < 16 ? palette_4[i] : 0);
 		white = 7;
 	}
-
 	if (nr_pages * page_size < 4096*1024) error("<4M of mem\n");
 }
 #endif

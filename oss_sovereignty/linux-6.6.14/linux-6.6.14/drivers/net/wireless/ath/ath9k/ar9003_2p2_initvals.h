@@ -1,27 +1,6 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
 #ifndef INITVALS_9003_2P2_H
 #define INITVALS_9003_2P2_H
-
-/* AR9003 2.2 */
-
 static const u32 ar9300_2p2_radio_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0001609c, 0x0dd08f29, 0x0dd08f29, 0x0b283f31, 0x0b283f31},
 	{0x000160ac, 0xa4653c00, 0xa4653c00, 0x24652800, 0x24652800},
 	{0x000160b0, 0x03284f3e, 0x03284f3e, 0x05d08f20, 0x05d08f20},
@@ -32,9 +11,7 @@ static const u32 ar9300_2p2_radio_postamble[][5] = {
 	{0x0001690c, 0xc8000000, 0xc0000000, 0xc0000000, 0xc0000000},
 	{0x00016940, 0x10804008, 0x10804008, 0x50804008, 0x50804008},
 };
-
 static const u32 ar9300Modes_lowest_ob_db_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x00033800, 0x00033800, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0003c000, 0x0003c000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03fc0000, 0x03fc0000, 0x03f0f800, 0x03f0f800},
@@ -138,9 +115,7 @@ static const u32 ar9300Modes_lowest_ob_db_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x62480001, 0x62480001, 0x62480001, 0x62480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300Modes_fast_clock_2p2[][3] = {
-	/* Addr      5G_HT20     5G_HT40   */
 	{0x00001030, 0x00000268, 0x000004d0},
 	{0x00001070, 0x0000018c, 0x00000318},
 	{0x000010b0, 0x00000fd0, 0x00001fa0},
@@ -151,9 +126,7 @@ static const u32 ar9300Modes_fast_clock_2p2[][3] = {
 	{0x0000a230, 0x0000000b, 0x00000016},
 	{0x0000a254, 0x00000898, 0x00001130},
 };
-
 static const u32 ar9300_2p2_radio_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00016000, 0x36db6db6},
 	{0x00016004, 0x6db6db40},
 	{0x00016008, 0x73f00000},
@@ -295,9 +268,7 @@ static const u32 ar9300_2p2_radio_core[][2] = {
 	{0x00016bd0, 0x00000000},
 	{0x00016bd4, 0x00000000},
 };
-
 static const u32 ar9300_2p2_mac_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00001030, 0x00000230, 0x00000460, 0x000002c0, 0x00000160},
 	{0x00001070, 0x00000168, 0x000002d0, 0x00000318, 0x0000018c},
 	{0x000010b0, 0x00000e60, 0x00001cc0, 0x00007c70, 0x00003e38},
@@ -307,14 +278,10 @@ static const u32 ar9300_2p2_mac_postamble[][5] = {
 	{0x000081d0, 0x00003210, 0x00003210, 0x0000320a, 0x0000320a},
 	{0x00008318, 0x00003e80, 0x00007d00, 0x00006880, 0x00003440},
 };
-
 static const u32 ar9300_2p2_soc_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00007010, 0x00000023, 0x00000023, 0x00000023, 0x00000023},
 };
-
 static const u32 ar9300_2p2_baseband_postamble[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x00009810, 0xd00a8005, 0xd00a8005, 0xd00a8011, 0xd00a8011},
 	{0x00009820, 0x206a022e, 0x206a022e, 0x206a012e, 0x206a012e},
 	{0x00009824, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0, 0x5ac640d0},
@@ -368,9 +335,7 @@ static const u32 ar9300_2p2_baseband_postamble[][5] = {
 	{0x0000be20, 0x000001b5, 0x000001b5, 0x000001ce, 0x000001ce},
 	{0x0000c284, 0x00000000, 0x00000000, 0x00000150, 0x00000150},
 };
-
 static const u32 ar9300_2p2_baseband_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00009800, 0xafe68e30},
 	{0x00009804, 0xfd14e000},
 	{0x00009808, 0x9c0a9f6b},
@@ -531,9 +496,7 @@ static const u32 ar9300_2p2_baseband_core[][2] = {
 	{0x0000c40c, 0x00820820},
 	{0x0000c420, 0x00000000},
 };
-
 static const u32 ar9300Modes_high_power_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x000cfff0, 0x000cfff0, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x000f0000, 0x000f0000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03f00000, 0x03f00000, 0x03f0f800, 0x03f0f800},
@@ -637,9 +600,7 @@ static const u32 ar9300Modes_high_power_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x61200001, 0x61200001, 0x66480001, 0x66480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300Modes_high_ob_db_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x01feee00, 0x01feee00, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0000f000, 0x0000f000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x01ff0000, 0x01ff0000, 0x03f0f800, 0x03f0f800},
@@ -743,9 +704,7 @@ static const u32 ar9300Modes_high_ob_db_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x8e480001, 0x8e480001, 0x8e480001, 0x8e480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300Modes_mixed_ob_db_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x00033800, 0x00033800, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0003c000, 0x0003c000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03fc0000, 0x03fc0000, 0x03f0f800, 0x03f0f800},
@@ -849,9 +808,7 @@ static const u32 ar9300Modes_mixed_ob_db_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x66480001, 0x66480001, 0x8e480001, 0x8e480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300Modes_type5_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x000cfff0, 0x000cfff0, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x000f0000, 0x000f0000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03f00000, 0x03f00000, 0x03f0f800, 0x03f0f800},
@@ -923,9 +880,7 @@ static const u32 ar9300Modes_type5_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x65240001, 0x65240001, 0x66480001, 0x66480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300Common_rx_gain_table_2p2[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
 	{0x0000a008, 0x00050004},
@@ -1183,9 +1138,7 @@ static const u32 ar9300Common_rx_gain_table_2p2[][2] = {
 	{0x0000b1f8, 0x00000396},
 	{0x0000b1fc, 0x00000196},
 };
-
 static const u32 ar9300Modes_low_ob_db_tx_gain_table_2p2[][5] = {
-	/* Addr      5G_HT20     5G_HT40     2G_HT40     2G_HT20   */
 	{0x0000a2dc, 0x00033800, 0x00033800, 0x03aaa352, 0x03aaa352},
 	{0x0000a2e0, 0x0003c000, 0x0003c000, 0x03ccc584, 0x03ccc584},
 	{0x0000a2e4, 0x03fc0000, 0x03fc0000, 0x03f0f800, 0x03f0f800},
@@ -1289,9 +1242,7 @@ static const u32 ar9300Modes_low_ob_db_tx_gain_table_2p2[][5] = {
 	{0x00016848, 0x66480001, 0x66480001, 0x66480001, 0x66480001},
 	{0x00016868, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c, 0x6db6db6c},
 };
-
 static const u32 ar9300_2p2_mac_core[][2] = {
-	/* Addr      allmodes  */
 	{0x00000008, 0x00000000},
 	{0x00000030, 0x00020085},
 	{0x00000034, 0x00000005},
@@ -1446,9 +1397,7 @@ static const u32 ar9300_2p2_mac_core[][2] = {
 	{0x000083cc, 0x00000200},
 	{0x000083d0, 0x000301ff},
 };
-
 static const u32 ar9300Common_wo_xlna_rx_gain_table_2p2[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a000, 0x00010000},
 	{0x0000a004, 0x00030002},
 	{0x0000a008, 0x00050004},
@@ -1706,9 +1655,7 @@ static const u32 ar9300Common_wo_xlna_rx_gain_table_2p2[][2] = {
 	{0x0000b1f8, 0x00000396},
 	{0x0000b1fc, 0x00000196},
 };
-
 static const u32 ar9300_2p2_soc_preamble[][2] = {
-	/* Addr      allmodes  */
 	{0x000040a4, 0x00a0c1c9},
 	{0x00007008, 0x00000000},
 	{0x00007020, 0x00000000},
@@ -1716,26 +1663,19 @@ static const u32 ar9300_2p2_soc_preamble[][2] = {
 	{0x00007038, 0x000004c2},
 	{0x00007048, 0x00000008},
 };
-
 static const u32 ar9300PciePhy_pll_on_clkreq_disable_L1_2p2[][2] = {
-	/* Addr      allmodes  */
 	{0x00004040, 0x0821265e},
 	{0x00004040, 0x0008003b},
 	{0x00004044, 0x00000000},
 };
-
 static const u32 ar9300_2p2_baseband_core_txfir_coeff_japan_2484[][2] = {
-	/* Addr      allmodes  */
 	{0x0000a398, 0x00000000},
 	{0x0000a39c, 0x6f7f0301},
 	{0x0000a3a0, 0xca9228ee},
 };
-
 static const u32 ar9300_2p2_baseband_postamble_dfs_channel[][3] = {
-	/* Addr      5G          2G        */
 	{0x00009824, 0x5ac668d0, 0x5ac668d0},
 	{0x00009e0c, 0x6d4000e2, 0x6d4000e2},
 	{0x00009e14, 0x37b9625e, 0x37b9625e},
 };
-
-#endif /* INITVALS_9003_2P2_H */
+#endif  

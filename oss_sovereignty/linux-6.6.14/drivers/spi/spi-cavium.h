@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SPI_CAVIUM_H
 #define __SPI_CAVIUM_H
-
 #include <linux/clk.h>
-
 #define OCTEON_SPI_MAX_BYTES 9
 #define OCTEON_SPI_MAX_CLOCK_HZ 16000000
-
 struct octeon_spi_regs {
 	int config;
 	int status;
 	int tx;
 	int data;
 };
-
 struct octeon_spi {
 	void __iomem *register_base;
 	u64 last_cfg;
@@ -22,22 +17,16 @@ struct octeon_spi {
 	struct octeon_spi_regs regs;
 	struct clk *clk;
 };
-
 #define OCTEON_SPI_CFG(x)	(x->regs.config)
 #define OCTEON_SPI_STS(x)	(x->regs.status)
 #define OCTEON_SPI_TX(x)	(x->regs.tx)
 #define OCTEON_SPI_DAT0(x)	(x->regs.data)
-
 int octeon_spi_transfer_one_message(struct spi_master *master,
 				    struct spi_message *msg);
-
-/* MPI register descriptions */
-
 #define CVMX_MPI_CFG (CVMX_ADD_IO_SEG(0x0001070000001000ull))
 #define CVMX_MPI_DATX(offset) (CVMX_ADD_IO_SEG(0x0001070000001080ull) + ((offset) & 15) * 8)
 #define CVMX_MPI_STS (CVMX_ADD_IO_SEG(0x0001070000001008ull))
 #define CVMX_MPI_TX (CVMX_ADD_IO_SEG(0x0001070000001010ull))
-
 union cvmx_mpi_cfg {
 	uint64_t u64;
 	struct cvmx_mpi_cfg_s {
@@ -220,7 +209,6 @@ union cvmx_mpi_cfg {
 	} cn66xx;
 	struct cvmx_mpi_cfg_cn61xx cnf71xx;
 };
-
 union cvmx_mpi_datx {
 	uint64_t u64;
 	struct cvmx_mpi_datx_s {
@@ -239,7 +227,6 @@ union cvmx_mpi_datx {
 	struct cvmx_mpi_datx_s cn66xx;
 	struct cvmx_mpi_datx_s cnf71xx;
 };
-
 union cvmx_mpi_sts {
 	uint64_t u64;
 	struct cvmx_mpi_sts_s {
@@ -262,7 +249,6 @@ union cvmx_mpi_sts {
 	struct cvmx_mpi_sts_s cn66xx;
 	struct cvmx_mpi_sts_s cnf71xx;
 };
-
 union cvmx_mpi_tx {
 	uint64_t u64;
 	struct cvmx_mpi_tx_s {
@@ -329,5 +315,4 @@ union cvmx_mpi_tx {
 	struct cvmx_mpi_tx_s cn66xx;
 	struct cvmx_mpi_tx_cn61xx cnf71xx;
 };
-
-#endif /* __SPI_CAVIUM_H */
+#endif  

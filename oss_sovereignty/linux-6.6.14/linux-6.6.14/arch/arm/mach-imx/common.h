@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2004-2014 Freescale Semiconductor, Inc. All Rights Reserved.
- */
-
-
 #ifndef __ASM_ARCH_MXC_COMMON_H__
 #define __ASM_ARCH_MXC_COMMON_H__
-
 #include <linux/reboot.h>
-
 struct irq_data;
 struct platform_device;
 struct pt_regs;
@@ -16,7 +8,6 @@ struct clk;
 struct device_node;
 enum mxc_cpu_pwr_mode;
 struct of_device_id;
-
 void mx31_map_io(void);
 void mx35_map_io(void);
 void imx21_init_early(void);
@@ -42,24 +33,21 @@ void imx_gpc_set_arm_power_down_timing(u32 sw2iso, u32 sw);
 void imx25_pm_init(void);
 void imx27_pm_init(void);
 void imx5_pmu_init(void);
-
 enum mxc_cpu_pwr_mode {
-	WAIT_CLOCKED,		/* wfi only */
-	WAIT_UNCLOCKED,		/* WAIT */
-	WAIT_UNCLOCKED_POWER_OFF,	/* WAIT + SRPG */
-	STOP_POWER_ON,		/* just STOP */
-	STOP_POWER_OFF,		/* STOP + SRPG */
+	WAIT_CLOCKED,		 
+	WAIT_UNCLOCKED,		 
+	WAIT_UNCLOCKED_POWER_OFF,	 
+	STOP_POWER_ON,		 
+	STOP_POWER_OFF,		 
 };
-
 enum ulp_cpu_pwr_mode {
-	ULP_PM_HSRUN,    /* High speed run mode */
-	ULP_PM_RUN,      /* Run mode */
-	ULP_PM_WAIT,     /* Wait mode */
-	ULP_PM_STOP,     /* Stop mode */
-	ULP_PM_VLPS,     /* Very low power stop mode */
-	ULP_PM_VLLS,     /* very low leakage stop mode */
+	ULP_PM_HSRUN,     
+	ULP_PM_RUN,       
+	ULP_PM_WAIT,      
+	ULP_PM_STOP,      
+	ULP_PM_VLPS,      
+	ULP_PM_VLLS,      
 };
-
 void imx_enable_cpu(int cpu, bool enable);
 void imx_set_cpu_jump(int cpu, void *jump_addr);
 u32 imx_get_cpu_arg(int cpu);
@@ -88,10 +76,8 @@ int imx6_set_lpm(enum mxc_cpu_pwr_mode mode);
 void imx6_set_int_mem_clk_lpm(bool enable);
 int imx_mmdc_get_ddr_type(void);
 int imx7ulp_set_lpm(enum ulp_cpu_pwr_mode mode);
-
 void imx_cpu_die(unsigned int cpu);
 int imx_cpu_kill(unsigned int cpu);
-
 #ifdef CONFIG_SUSPEND
 void imx53_suspend(void __iomem *ocram_vbase);
 extern const u32 imx53_suspend_sz;
@@ -101,9 +87,7 @@ static inline void imx53_suspend(void __iomem *ocram_vbase) {}
 static const u32 imx53_suspend_sz;
 static inline void imx6_suspend(void __iomem *ocram_vbase) {}
 #endif
-
 void v7_cpu_resume(void);
-
 void imx6_pm_ccm_init(const char *ccm_compat);
 void imx6q_pm_init(void);
 void imx6dl_pm_init(void);
@@ -111,7 +95,6 @@ void imx6sl_pm_init(void);
 void imx6sx_pm_init(void);
 void imx6ul_pm_init(void);
 void imx7ulp_pm_init(void);
-
 #ifdef CONFIG_PM
 void imx51_pm_init(void);
 void imx53_pm_init(void);
@@ -119,21 +102,17 @@ void imx53_pm_init(void);
 static inline void imx51_pm_init(void) {}
 static inline void imx53_pm_init(void) {}
 #endif
-
 #ifdef CONFIG_NEON
 int mx51_neon_fixup(void);
 #else
 static inline int mx51_neon_fixup(void) { return 0; }
 #endif
-
 #ifdef CONFIG_CACHE_L2X0
 void imx_init_l2cache(void);
 #else
 static inline void imx_init_l2cache(void) {}
 #endif
-
 extern const struct smp_operations imx_smp_ops;
 extern const struct smp_operations imx7_smp_ops;
 extern const struct smp_operations ls1021a_smp_ops;
-
 #endif

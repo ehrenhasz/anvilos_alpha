@@ -1,19 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
 #ifndef EFX_MCDI_PORT_COMMON_H
 #define EFX_MCDI_PORT_COMMON_H
-
 #include "net_driver.h"
 #include "mcdi.h"
 #include "mcdi_pcol.h"
-
 struct efx_mcdi_phy_data {
 	u32 flags;
 	u32 type;
@@ -27,7 +16,6 @@ struct efx_mcdi_phy_data {
 	u8 revision[20];
 	u32 forced_cap;
 };
-
 int efx_mcdi_get_phy_cfg(struct efx_nic *efx, struct efx_mcdi_phy_data *cfg);
 void efx_link_set_advertising(struct efx_nic *efx,
 			      const unsigned long *advertising);
@@ -63,5 +51,4 @@ int efx_mcdi_mac_init_stats(struct efx_nic *efx);
 void efx_mcdi_mac_fini_stats(struct efx_nic *efx);
 int efx_mcdi_port_get_number(struct efx_nic *efx);
 void efx_mcdi_process_link_change(struct efx_nic *efx, efx_qword_t *ev);
-
 #endif

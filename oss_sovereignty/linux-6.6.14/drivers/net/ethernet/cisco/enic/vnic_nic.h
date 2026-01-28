@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
-
 #ifndef _VNIC_NIC_H_
 #define _VNIC_NIC_H_
-
 #define NIC_CFG_RSS_DEFAULT_CPU_MASK_FIELD	0xffUL
 #define NIC_CFG_RSS_DEFAULT_CPU_SHIFT		0
 #define NIC_CFG_RSS_HASH_TYPE			(0xffUL << 8)
@@ -27,7 +20,6 @@
 #define NIC_CFG_IG_VLAN_STRIP_EN		(1UL << 24)
 #define NIC_CFG_IG_VLAN_STRIP_EN_MASK_FIELD	1UL
 #define NIC_CFG_IG_VLAN_STRIP_EN_SHIFT		24
-
 #define NIC_CFG_RSS_HASH_TYPE_UDP_IPV4		(1 << 0)
 #define NIC_CFG_RSS_HASH_TYPE_IPV4		(1 << 1)
 #define NIC_CFG_RSS_HASH_TYPE_TCP_IPV4		(1 << 2)
@@ -36,7 +28,6 @@
 #define NIC_CFG_RSS_HASH_TYPE_IPV6_EX		(1 << 5)
 #define NIC_CFG_RSS_HASH_TYPE_TCP_IPV6_EX	(1 << 6)
 #define NIC_CFG_RSS_HASH_TYPE_UDP_IPV6		(1 << 7)
-
 static inline void vnic_set_nic_cfg(u32 *nic_cfg,
 	u8 rss_default_cpu, u8 rss_hash_type,
 	u8 rss_hash_bits, u8 rss_base_cpu,
@@ -57,5 +48,4 @@ static inline void vnic_set_nic_cfg(u32 *nic_cfg,
 		((ig_vlan_strip_en & NIC_CFG_IG_VLAN_STRIP_EN_MASK_FIELD)
 			<< NIC_CFG_IG_VLAN_STRIP_EN_SHIFT);
 }
-
-#endif /* _VNIC_NIC_H_ */
+#endif  

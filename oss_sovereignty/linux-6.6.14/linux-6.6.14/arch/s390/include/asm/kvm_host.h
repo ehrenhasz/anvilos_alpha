@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * definition for kernel virtual machines on s390
- *
- * Copyright IBM Corp. 2008, 2018
- *
- *    Author(s): Carsten Otte <cotte@de.ibm.com>
- */
-
-
 #ifndef ASM_KVM_HOST_H
 #define ASM_KVM_HOST_H
-
 #include <linux/types.h>
 #include <linux/hrtimer.h>
 #include <linux/interrupt.h>
@@ -26,21 +15,12 @@
 #include <asm/fpu/api.h>
 #include <asm/isc.h>
 #include <asm/guarded_storage.h>
-
 #define KVM_S390_BSCA_CPU_SLOTS 64
 #define KVM_S390_ESCA_CPU_SLOTS 248
 #define KVM_MAX_VCPUS 255
-
-/*
- * These seem to be used for allocating ->chip in the routing table, which we
- * don't use. 1 is as small as we can get to reduce the needed memory. If we
- * need to look at ->chip later on, we'll need to revisit this.
- */
 #define KVM_NR_IRQCHIPS 1
 #define KVM_IRQCHIP_NUM_PINS 1
 #define KVM_HALT_POLL_NS_DEFAULT 50000
-
-/* s390-specific vcpu->requests bit members */
 #define KVM_REQ_ENABLE_IBS	KVM_ARCH_REQ(0)
 #define KVM_REQ_DISABLE_IBS	KVM_ARCH_REQ(1)
 #define KVM_REQ_ICPT_OPEREXC	KVM_ARCH_REQ(2)
@@ -49,10 +29,8 @@
 #define KVM_REQ_VSIE_RESTART	KVM_ARCH_REQ(5)
 #define KVM_REQ_REFRESH_GUEST_PREFIX	\
 	KVM_ARCH_REQ_FLAGS(6, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
-
 #define SIGP_CTRL_C		0x80
 #define SIGP_CTRL_SCN_MASK	0x3f
-
 union bsca_sigp_ctrl {
 	__u8 value;
 	struct {
@@ -61,7 +39,6 @@ union bsca_sigp_ctrl {
 		__u8 scn : 6;
 	};
 };
-
 union esca_sigp_ctrl {
 	__u16 value;
 	struct {
@@ -70,14 +47,12 @@ union esca_sigp_ctrl {
 		__u8 scn;
 	};
 };
-
 struct esca_entry {
 	union esca_sigp_ctrl sigp_ctrl;
 	__u16   reserved1[3];
 	__u64   sda;
 	__u64   reserved2[6];
 };
-
 struct bsca_entry {
 	__u8	reserved0;
 	union bsca_sigp_ctrl	sigp_ctrl;
@@ -85,7 +60,6 @@ struct bsca_entry {
 	__u64	sda;
 	__u64	reserved2[2];
 };
-
 union ipte_control {
 	unsigned long val;
 	struct {
@@ -94,7 +68,6 @@ union ipte_control {
 		unsigned long kg : 32;
 	};
 };
-
 union sca_utility {
 	__u16 val;
 	struct {
@@ -102,7 +75,6 @@ union sca_utility {
 		__u16 reserved : 15;
 	};
 };
-
 struct bsca_block {
 	union ipte_control ipte_control;
 	__u64	reserved[5];
@@ -111,7 +83,6 @@ struct bsca_block {
 	__u8	reserved2[6];
 	struct bsca_entry cpu[KVM_S390_BSCA_CPU_SLOTS];
 };
-
 struct esca_block {
 	union ipte_control ipte_control;
 	__u64   reserved1[6];
@@ -121,31 +92,20 @@ struct esca_block {
 	__u64   reserved3[20];
 	struct esca_entry cpu[KVM_S390_ESCA_CPU_SLOTS];
 };
-
-/*
- * This struct is used to store some machine check info from lowcore
- * for machine checks that happen while the guest is running.
- * This info in host's lowcore might be overwritten by a second machine
- * check from host when host is in the machine check's high-level handling.
- * The size is 24 bytes.
- */
 struct mcck_volatile_info {
 	__u64 mcic;
 	__u64 failing_storage_address;
 	__u32 ext_damage_code;
 	__u32 reserved;
 };
-
 #define CR0_INITIAL_MASK (CR0_UNUSED_56 | CR0_INTERRUPT_KEY_SUBMASK | \
 			  CR0_MEASUREMENT_ALERT_SUBMASK)
 #define CR14_INITIAL_MASK (CR14_UNUSED_32 | CR14_UNUSED_33 | \
 			   CR14_EXTERNAL_DAMAGE_SUBMASK)
-
 #define SIDAD_SIZE_MASK		0xff
 #define sida_addr(sie_block) phys_to_virt((sie_block)->sidad & PAGE_MASK)
 #define sida_size(sie_block) \
 	((((sie_block)->sidad & SIDAD_SIZE_MASK) + 1) * PAGE_SIZE)
-
 #define CPUSTAT_STOPPED    0x80000000
 #define CPUSTAT_WAIT       0x10000000
 #define CPUSTAT_ECALL_PEND 0x08000000
@@ -169,18 +129,17 @@ struct mcck_volatile_info {
 #define CPUSTAT_GED        0x00000004
 #define CPUSTAT_J          0x00000002
 #define CPUSTAT_P          0x00000001
-
 struct kvm_s390_sie_block {
-	atomic_t cpuflags;		/* 0x0000 */
-	__u32 : 1;			/* 0x0004 */
+	atomic_t cpuflags;		 
+	__u32 : 1;			 
 	__u32 prefix : 18;
 	__u32 : 1;
 	__u32 ibc : 12;
-	__u8	reserved08[4];		/* 0x0008 */
+	__u8	reserved08[4];		 
 #define PROG_IN_SIE (1<<0)
-	__u32	prog0c;			/* 0x000c */
+	__u32	prog0c;			 
 	union {
-		__u8	reserved10[16];		/* 0x0010 */
+		__u8	reserved10[16];		 
 		struct {
 			__u64	pv_handle_cpu;
 			__u64	pv_handle_config;
@@ -188,20 +147,20 @@ struct kvm_s390_sie_block {
 	};
 #define PROG_BLOCK_SIE	(1<<0)
 #define PROG_REQUEST	(1<<1)
-	atomic_t prog20;		/* 0x0020 */
-	__u8	reserved24[4];		/* 0x0024 */
-	__u64	cputm;			/* 0x0028 */
-	__u64	ckc;			/* 0x0030 */
-	__u64	epoch;			/* 0x0038 */
-	__u32	svcc;			/* 0x0040 */
+	atomic_t prog20;		 
+	__u8	reserved24[4];		 
+	__u64	cputm;			 
+	__u64	ckc;			 
+	__u64	epoch;			 
+	__u32	svcc;			 
 #define LCTL_CR0	0x8000
 #define LCTL_CR6	0x0200
 #define LCTL_CR9	0x0040
 #define LCTL_CR10	0x0020
 #define LCTL_CR11	0x0010
 #define LCTL_CR14	0x0002
-	__u16   lctl;			/* 0x0044 */
-	__s16	icpua;			/* 0x0046 */
+	__u16   lctl;			 
+	__s16	icpua;			 
 #define ICTL_OPEREXC	0x80000000
 #define ICTL_PINT	0x20000000
 #define ICTL_LPSW	0x00400000
@@ -210,7 +169,7 @@ struct kvm_s390_sie_block {
 #define ICTL_SSKE	0x00002000
 #define ICTL_RRBE	0x00001000
 #define ICTL_TPROT	0x00000200
-	__u32	ictl;			/* 0x0048 */
+	__u32	ictl;			 
 #define ECA_CEI		0x80000000
 #define ECA_IB		0x40000000
 #define ECA_SIGPI	0x10000000
@@ -220,7 +179,7 @@ struct kvm_s390_sie_block {
 #define ECA_PROTEXCI	0x00002000
 #define ECA_APIE	0x00000008
 #define ECA_SII		0x00000001
-	__u32	eca;			/* 0x004c */
+	__u32	eca;			 
 #define ICPT_INST	0x04
 #define ICPT_PROGI	0x08
 #define ICPT_INSTPROGI	0x0C
@@ -239,10 +198,10 @@ struct kvm_s390_sie_block {
 #define ICPT_PV_INSTR	0x68
 #define ICPT_PV_NOTIFY	0x6c
 #define ICPT_PV_PREF	0x70
-	__u8	icptcode;		/* 0x0050 */
-	__u8	icptstatus;		/* 0x0051 */
-	__u16	ihcpu;			/* 0x0052 */
-	__u8	reserved54;		/* 0x0054 */
+	__u8	icptcode;		 
+	__u8	icptstatus;		 
+	__u16	ihcpu;			 
+	__u8	reserved54;		 
 #define IICTL_CODE_NONE		 0x00
 #define IICTL_CODE_MCHK		 0x01
 #define IICTL_CODE_EXT		 0x02
@@ -250,136 +209,133 @@ struct kvm_s390_sie_block {
 #define IICTL_CODE_RESTART	 0x04
 #define IICTL_CODE_SPECIFICATION 0x10
 #define IICTL_CODE_OPERAND	 0x11
-	__u8	iictl;			/* 0x0055 */
-	__u16	ipa;			/* 0x0056 */
-	__u32	ipb;			/* 0x0058 */
-	__u32	scaoh;			/* 0x005c */
+	__u8	iictl;			 
+	__u16	ipa;			 
+	__u32	ipb;			 
+	__u32	scaoh;			 
 #define FPF_BPBC 	0x20
-	__u8	fpf;			/* 0x0060 */
+	__u8	fpf;			 
 #define ECB_GS		0x40
 #define ECB_TE		0x10
 #define ECB_SPECI	0x08
 #define ECB_SRSI	0x04
 #define ECB_HOSTPROTINT	0x02
 #define ECB_PTF		0x01
-	__u8	ecb;			/* 0x0061 */
+	__u8	ecb;			 
 #define ECB2_CMMA	0x80
 #define ECB2_IEP	0x20
 #define ECB2_PFMFI	0x08
 #define ECB2_ESCA	0x04
 #define ECB2_ZPCI_LSI	0x02
-	__u8    ecb2;                   /* 0x0062 */
+	__u8    ecb2;                    
 #define ECB3_AISI	0x20
 #define ECB3_AISII	0x10
 #define ECB3_DEA 0x08
 #define ECB3_AES 0x04
 #define ECB3_RI  0x01
-	__u8    ecb3;			/* 0x0063 */
+	__u8    ecb3;			 
 #define ESCA_SCAOL_MASK ~0x3fU
-	__u32	scaol;			/* 0x0064 */
-	__u8	sdf;			/* 0x0068 */
-	__u8    epdx;			/* 0x0069 */
-	__u8	cpnc;			/* 0x006a */
-	__u8	reserved6b;		/* 0x006b */
-	__u32	todpr;			/* 0x006c */
+	__u32	scaol;			 
+	__u8	sdf;			 
+	__u8    epdx;			 
+	__u8	cpnc;			 
+	__u8	reserved6b;		 
+	__u32	todpr;			 
 #define GISA_FORMAT1 0x00000001
-	__u32	gd;			/* 0x0070 */
-	__u8	reserved74[12];		/* 0x0074 */
-	__u64	mso;			/* 0x0080 */
-	__u64	msl;			/* 0x0088 */
-	psw_t	gpsw;			/* 0x0090 */
-	__u64	gg14;			/* 0x00a0 */
-	__u64	gg15;			/* 0x00a8 */
-	__u8	reservedb0[8];		/* 0x00b0 */
+	__u32	gd;			 
+	__u8	reserved74[12];		 
+	__u64	mso;			 
+	__u64	msl;			 
+	psw_t	gpsw;			 
+	__u64	gg14;			 
+	__u64	gg15;			 
+	__u8	reservedb0[8];		 
 #define HPID_KVM	0x4
 #define HPID_VSIE	0x5
-	__u8	hpid;			/* 0x00b8 */
-	__u8	reservedb9[7];		/* 0x00b9 */
+	__u8	hpid;			 
+	__u8	reservedb9[7];		 
 	union {
 		struct {
-			__u32	eiparams;	/* 0x00c0 */
-			__u16	extcpuaddr;	/* 0x00c4 */
-			__u16	eic;		/* 0x00c6 */
+			__u32	eiparams;	 
+			__u16	extcpuaddr;	 
+			__u16	eic;		 
 		};
-		__u64	mcic;			/* 0x00c0 */
+		__u64	mcic;			 
 	} __packed;
-	__u32	reservedc8;		/* 0x00c8 */
+	__u32	reservedc8;		 
 	union {
 		struct {
-			__u16	pgmilc;		/* 0x00cc */
-			__u16	iprcc;		/* 0x00ce */
+			__u16	pgmilc;		 
+			__u16	iprcc;		 
 		};
-		__u32	edc;			/* 0x00cc */
+		__u32	edc;			 
 	} __packed;
 	union {
 		struct {
-			__u32	dxc;		/* 0x00d0 */
-			__u16	mcn;		/* 0x00d4 */
-			__u8	perc;		/* 0x00d6 */
-			__u8	peratmid;	/* 0x00d7 */
+			__u32	dxc;		 
+			__u16	mcn;		 
+			__u8	perc;		 
+			__u8	peratmid;	 
 		};
-		__u64	faddr;			/* 0x00d0 */
+		__u64	faddr;			 
 	} __packed;
-	__u64	peraddr;		/* 0x00d8 */
-	__u8	eai;			/* 0x00e0 */
-	__u8	peraid;			/* 0x00e1 */
-	__u8	oai;			/* 0x00e2 */
-	__u8	armid;			/* 0x00e3 */
-	__u8	reservede4[4];		/* 0x00e4 */
+	__u64	peraddr;		 
+	__u8	eai;			 
+	__u8	peraid;			 
+	__u8	oai;			 
+	__u8	armid;			 
+	__u8	reservede4[4];		 
 	union {
-		__u64	tecmc;		/* 0x00e8 */
+		__u64	tecmc;		 
 		struct {
-			__u16	subchannel_id;	/* 0x00e8 */
-			__u16	subchannel_nr;	/* 0x00ea */
-			__u32	io_int_parm;	/* 0x00ec */
-			__u32	io_int_word;	/* 0x00f0 */
+			__u16	subchannel_id;	 
+			__u16	subchannel_nr;	 
+			__u32	io_int_parm;	 
+			__u32	io_int_word;	 
 		};
 	} __packed;
-	__u8	reservedf4[8];		/* 0x00f4 */
+	__u8	reservedf4[8];		 
 #define CRYCB_FORMAT_MASK 0x00000003
 #define CRYCB_FORMAT0 0x00000000
 #define CRYCB_FORMAT1 0x00000001
 #define CRYCB_FORMAT2 0x00000003
-	__u32	crycbd;			/* 0x00fc */
-	__u64	gcr[16];		/* 0x0100 */
+	__u32	crycbd;			 
+	__u64	gcr[16];		 
 	union {
-		__u64	gbea;		/* 0x0180 */
+		__u64	gbea;		 
 		__u64	sidad;
 	};
-	__u8    reserved188[8];		/* 0x0188 */
-	__u64   sdnxo;			/* 0x0190 */
-	__u8    reserved198[8];		/* 0x0198 */
-	__u32	fac;			/* 0x01a0 */
-	__u8	reserved1a4[20];	/* 0x01a4 */
-	__u64	cbrlo;			/* 0x01b8 */
-	__u8	reserved1c0[8];		/* 0x01c0 */
+	__u8    reserved188[8];		 
+	__u64   sdnxo;			 
+	__u8    reserved198[8];		 
+	__u32	fac;			 
+	__u8	reserved1a4[20];	 
+	__u64	cbrlo;			 
+	__u8	reserved1c0[8];		 
 #define ECD_HOSTREGMGMT	0x20000000
 #define ECD_MEF		0x08000000
 #define ECD_ETOKENF	0x02000000
 #define ECD_ECC		0x00200000
-	__u32	ecd;			/* 0x01c8 */
-	__u8	reserved1cc[18];	/* 0x01cc */
-	__u64	pp;			/* 0x01de */
-	__u8	reserved1e6[2];		/* 0x01e6 */
-	__u64	itdba;			/* 0x01e8 */
-	__u64   riccbd;			/* 0x01f0 */
-	__u64	gvrd;			/* 0x01f8 */
+	__u32	ecd;			 
+	__u8	reserved1cc[18];	 
+	__u64	pp;			 
+	__u8	reserved1e6[2];		 
+	__u64	itdba;			 
+	__u64   riccbd;			 
+	__u64	gvrd;			 
 } __packed __aligned(512);
-
 struct kvm_s390_itdb {
 	__u8	data[256];
 };
-
 struct sie_page {
 	struct kvm_s390_sie_block sie_block;
-	struct mcck_volatile_info mcck_info;	/* 0x0200 */
-	__u8 reserved218[360];		/* 0x0218 */
-	__u64 pv_grregs[16];		/* 0x0380 */
-	__u8 reserved400[512];		/* 0x0400 */
-	struct kvm_s390_itdb itdb;	/* 0x0600 */
-	__u8 reserved700[2304];		/* 0x0700 */
+	struct mcck_volatile_info mcck_info;	 
+	__u8 reserved218[360];		 
+	__u64 pv_grregs[16];		 
+	__u8 reserved400[512];		 
+	struct kvm_s390_itdb itdb;	 
+	__u8 reserved700[2304];		 
 };
-
 struct kvm_vcpu_stat {
 	struct kvm_vcpu_stat_generic generic;
 	u64 exit_userspace;
@@ -476,7 +432,6 @@ struct kvm_vcpu_stat {
 	u64 instruction_diagnose_other;
 	u64 pfault_sync;
 };
-
 #define PGM_OPERATION			0x01
 #define PGM_PRIVILEGED_OP		0x02
 #define PGM_EXECUTE			0x03
@@ -530,8 +485,6 @@ struct kvm_vcpu_stat {
 #define PGM_MONITOR			0x40
 #define PGM_PER				0x80
 #define PGM_CRYPTO_OPERATION		0x119
-
-/* irq types in ascend order of priorities */
 enum irq_types {
 	IRQ_PEND_SET_PREFIX = 0,
 	IRQ_PEND_RESTART,
@@ -563,28 +516,16 @@ enum irq_types {
 	IRQ_PEND_MCHK_EX,
 	IRQ_PEND_COUNT
 };
-
-/* We have 2M for virtio device descriptor pages. Smallest amount of
- * memory per page is 24 bytes (1 queue), so (2048*1024) / 24 = 87381
- */
 #define KVM_S390_MAX_VIRTIO_IRQS 87381
-
-/*
- * Repressible (non-floating) machine check interrupts
- * subclass bits in MCIC
- */
 #define MCHK_EXTD_BIT 58
 #define MCHK_DEGR_BIT 56
 #define MCHK_WARN_BIT 55
 #define MCHK_REP_MASK ((1UL << MCHK_DEGR_BIT) | \
 		       (1UL << MCHK_EXTD_BIT) | \
 		       (1UL << MCHK_WARN_BIT))
-
-/* Exigent machine check interrupts subclass bits in MCIC */
 #define MCHK_SD_BIT 63
 #define MCHK_PD_BIT 62
 #define MCHK_EX_MASK ((1UL << MCHK_SD_BIT) | (1UL << MCHK_PD_BIT))
-
 #define IRQ_PEND_EXT_MASK ((1UL << IRQ_PEND_EXT_IRQ_KEY)    | \
 			   (1UL << IRQ_PEND_EXT_CLOCK_COMP) | \
 			   (1UL << IRQ_PEND_EXT_CPU_TIMER)  | \
@@ -598,7 +539,6 @@ enum irq_types {
 			   (1UL << IRQ_PEND_VIRTIO)         | \
 			   (1UL << IRQ_PEND_PFAULT_INIT)    | \
 			   (1UL << IRQ_PEND_PFAULT_DONE))
-
 #define IRQ_PEND_IO_MASK ((1UL << IRQ_PEND_IO_ISC_0) | \
 			  (1UL << IRQ_PEND_IO_ISC_1) | \
 			  (1UL << IRQ_PEND_IO_ISC_2) | \
@@ -607,17 +547,14 @@ enum irq_types {
 			  (1UL << IRQ_PEND_IO_ISC_5) | \
 			  (1UL << IRQ_PEND_IO_ISC_6) | \
 			  (1UL << IRQ_PEND_IO_ISC_7))
-
 #define IRQ_PEND_MCHK_MASK ((1UL << IRQ_PEND_MCHK_REP) | \
 			    (1UL << IRQ_PEND_MCHK_EX))
-
 #define IRQ_PEND_EXT_II_MASK ((1UL << IRQ_PEND_EXT_CPU_TIMER)  | \
 			      (1UL << IRQ_PEND_EXT_CLOCK_COMP) | \
 			      (1UL << IRQ_PEND_EXT_EMERGENCY)  | \
 			      (1UL << IRQ_PEND_EXT_EXTERNAL)   | \
 			      (1UL << IRQ_PEND_EXT_SERVICE)    | \
 			      (1UL << IRQ_PEND_EXT_SERVICE_EV))
-
 struct kvm_s390_interrupt_info {
 	struct list_head list;
 	u64	type;
@@ -632,7 +569,6 @@ struct kvm_s390_interrupt_info {
 		struct kvm_s390_mchk_info mchk;
 	};
 };
-
 struct kvm_s390_irq_payload {
 	struct kvm_s390_io_info io;
 	struct kvm_s390_ext_info ext;
@@ -643,14 +579,12 @@ struct kvm_s390_irq_payload {
 	struct kvm_s390_stop_info stop;
 	struct kvm_s390_mchk_info mchk;
 };
-
 struct kvm_s390_local_interrupt {
 	spinlock_t lock;
 	DECLARE_BITMAP(sigp_emerg_pending, KVM_MAX_VCPUS);
 	struct kvm_s390_irq_payload irq;
 	unsigned long pending_irqs;
 };
-
 #define FIRQ_LIST_IO_ISC_0 0
 #define FIRQ_LIST_IO_ISC_1 1
 #define FIRQ_LIST_IO_ISC_2 2
@@ -667,13 +601,9 @@ struct kvm_s390_local_interrupt {
 #define FIRQ_CNTR_VIRTIO   2
 #define FIRQ_CNTR_PFAULT   3
 #define FIRQ_MAX_COUNT     4
-
-/* mask the AIS mode for a given ISC */
 #define AIS_MODE_MASK(isc) (0x80 >> isc)
-
 #define KVM_S390_AIS_MODE_ALL    0
 #define KVM_S390_AIS_MODE_SINGLE 1
-
 struct kvm_s390_float_interrupt {
 	unsigned long pending_irqs;
 	unsigned long masked_irqs;
@@ -687,26 +617,17 @@ struct kvm_s390_float_interrupt {
 	u8 simm;
 	u8 nimm;
 };
-
 struct kvm_hw_wp_info_arch {
 	unsigned long addr;
 	unsigned long phys_addr;
 	int len;
 	char *old_data;
 };
-
 struct kvm_hw_bp_info_arch {
 	unsigned long addr;
 	int len;
 };
-
-/*
- * Only the upper 16 bits of kvm_guest_debug->control are arch specific.
- * Further KVM_GUESTDBG flags which an be used from userspace can be found in
- * arch/s390/include/uapi/asm/kvm.h
- */
 #define KVM_GUESTDBG_EXIT_PENDING 0x10000000
-
 #define guestdbg_enabled(vcpu) \
 		(vcpu->guest_debug & KVM_GUESTDBG_ENABLE)
 #define guestdbg_sstep_enabled(vcpu) \
@@ -715,11 +636,9 @@ struct kvm_hw_bp_info_arch {
 		(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP)
 #define guestdbg_exit_pending(vcpu) (guestdbg_enabled(vcpu) && \
 		(vcpu->guest_debug & KVM_GUESTDBG_EXIT_PENDING))
-
 #define KVM_GUESTDBG_VALID_MASK \
 		(KVM_GUESTDBG_ENABLE | KVM_GUESTDBG_SINGLESTEP |\
 		KVM_GUESTDBG_USE_HW_BP | KVM_GUESTDBG_EXIT_PENDING)
-
 struct kvm_guestdbg_info_arch {
 	unsigned long cr0;
 	unsigned long cr9;
@@ -731,15 +650,12 @@ struct kvm_guestdbg_info_arch {
 	int nr_hw_wp;
 	unsigned long last_bp;
 };
-
 struct kvm_s390_pv_vcpu {
 	u64 handle;
 	unsigned long stor_base;
 };
-
 struct kvm_vcpu_arch {
 	struct kvm_s390_sie_block *sie_block;
-	/* if vsie is active, currently executed shadow sie control block */
 	struct kvm_s390_sie_block *vsie_block;
 	unsigned int      host_acrs[NUM_ACRS];
 	struct gs_cb      *host_gscb;
@@ -748,19 +664,12 @@ struct kvm_vcpu_arch {
 	struct hrtimer    ckc_timer;
 	struct kvm_s390_pgm_info pgm;
 	struct gmap *gmap;
-	/* backup location for the currently enabled gmap when scheduled out */
 	struct gmap *enabled_gmap;
 	struct kvm_guestdbg_info_arch guestdbg;
 	unsigned long pfault_token;
 	unsigned long pfault_select;
 	unsigned long pfault_compare;
 	bool cputm_enabled;
-	/*
-	 * The seqcount protects updates to cputm_start and sie_block.cputm,
-	 * this way we can have non-blocking reads with consistent values.
-	 * Only the owning VCPU thread (vcpu->cpu) is allowed to change these
-	 * values and to start/stop/enable/disable cpu timer accounting.
-	 */
 	seqcount_t cputm_seqcount;
 	__u64 cputm_start;
 	bool gs_enabled;
@@ -768,7 +677,6 @@ struct kvm_vcpu_arch {
 	struct kvm_s390_pv_vcpu pv;
 	union diag318_info diag318_info;
 };
-
 struct kvm_vm_stat {
 	struct kvm_vm_stat_generic generic;
 	u64 inject_io;
@@ -778,17 +686,14 @@ struct kvm_vm_stat {
 	u64 inject_virtio;
 	u64 aen_forward;
 };
-
 struct kvm_arch_memory_slot {
 };
-
 struct s390_map_info {
 	struct list_head list;
 	__u64 guest_addr;
 	__u64 addr;
 	struct page *page;
 };
-
 struct s390_io_adapter {
 	unsigned int id;
 	int isc;
@@ -797,32 +702,23 @@ struct s390_io_adapter {
 	bool swap;
 	bool suppressible;
 };
-
 #define MAX_S390_IO_ADAPTERS ((MAX_ISC + 1) * 8)
 #define MAX_S390_ADAPTER_MAPS 256
-
-/* maximum size of facilities and facility mask is 2k bytes */
 #define S390_ARCH_FAC_LIST_SIZE_BYTE (1<<11)
 #define S390_ARCH_FAC_LIST_SIZE_U64 \
 	(S390_ARCH_FAC_LIST_SIZE_BYTE / sizeof(u64))
 #define S390_ARCH_FAC_MASK_SIZE_BYTE S390_ARCH_FAC_LIST_SIZE_BYTE
 #define S390_ARCH_FAC_MASK_SIZE_U64 \
 	(S390_ARCH_FAC_MASK_SIZE_BYTE / sizeof(u64))
-
 struct kvm_s390_cpu_model {
-	/* facility mask supported by kvm & hosting machine */
 	__u64 fac_mask[S390_ARCH_FAC_LIST_SIZE_U64];
 	struct kvm_s390_vm_cpu_subfunc subfuncs;
-	/* facility list requested by guest (in dma page) */
 	__u64 *fac_list;
 	u64 cpuid;
 	unsigned short ibc;
-	/* subset of available UV-features for pv-guests enabled by user space */
 	struct kvm_s390_vm_cpu_uv_feat uv_feat_guest;
 };
-
 typedef int (*crypto_hook)(struct kvm_vcpu *vcpu);
-
 struct kvm_s390_crypto {
 	struct kvm_s390_crypto_cb *crycb;
 	struct rw_semaphore pqap_hook_rwsem;
@@ -832,40 +728,36 @@ struct kvm_s390_crypto {
 	__u8 dea_kw;
 	__u8 apie;
 };
-
 #define APCB0_MASK_SIZE 1
 struct kvm_s390_apcb0 {
-	__u64 apm[APCB0_MASK_SIZE];		/* 0x0000 */
-	__u64 aqm[APCB0_MASK_SIZE];		/* 0x0008 */
-	__u64 adm[APCB0_MASK_SIZE];		/* 0x0010 */
-	__u64 reserved18;			/* 0x0018 */
+	__u64 apm[APCB0_MASK_SIZE];		 
+	__u64 aqm[APCB0_MASK_SIZE];		 
+	__u64 adm[APCB0_MASK_SIZE];		 
+	__u64 reserved18;			 
 };
-
 #define APCB1_MASK_SIZE 4
 struct kvm_s390_apcb1 {
-	__u64 apm[APCB1_MASK_SIZE];		/* 0x0000 */
-	__u64 aqm[APCB1_MASK_SIZE];		/* 0x0020 */
-	__u64 adm[APCB1_MASK_SIZE];		/* 0x0040 */
-	__u64 reserved60[4];			/* 0x0060 */
+	__u64 apm[APCB1_MASK_SIZE];		 
+	__u64 aqm[APCB1_MASK_SIZE];		 
+	__u64 adm[APCB1_MASK_SIZE];		 
+	__u64 reserved60[4];			 
 };
-
 struct kvm_s390_crypto_cb {
-	struct kvm_s390_apcb0 apcb0;		/* 0x0000 */
-	__u8   reserved20[0x0048 - 0x0020];	/* 0x0020 */
-	__u8   dea_wrapping_key_mask[24];	/* 0x0048 */
-	__u8   aes_wrapping_key_mask[32];	/* 0x0060 */
-	struct kvm_s390_apcb1 apcb1;		/* 0x0080 */
+	struct kvm_s390_apcb0 apcb0;		 
+	__u8   reserved20[0x0048 - 0x0020];	 
+	__u8   dea_wrapping_key_mask[24];	 
+	__u8   aes_wrapping_key_mask[32];	 
+	struct kvm_s390_apcb1 apcb1;		 
 };
-
 struct kvm_s390_gisa {
 	union {
-		struct { /* common to all formats */
+		struct {  
 			u32 next_alert;
 			u8  ipm;
 			u8  reserved01[2];
 			u8  iam;
 		};
-		struct { /* format 0 */
+		struct {  
 			u32 next_alert;
 			u8  ipm;
 			u8  reserved01;
@@ -876,7 +768,7 @@ struct kvm_s390_gisa {
 			u8  reserved02[4];
 			u32 airq_count;
 		} g0;
-		struct { /* format 1 */
+		struct {  
 			u32 next_alert;
 			u8  ipm;
 			u8  simm;
@@ -894,7 +786,6 @@ struct kvm_s390_gisa {
 		} u64;
 	};
 };
-
 struct kvm_s390_gib {
 	u32 alert_list_origin;
 	u32 reserved01;
@@ -903,19 +794,13 @@ struct kvm_s390_gib {
 	u8  reserved03[3];
 	u32 reserved04[5];
 };
-
-/*
- * sie_page2 has to be allocated as DMA because fac_list, crycb and
- * gisa need 31bit addresses in the sie control block.
- */
 struct sie_page2 {
-	__u64 fac_list[S390_ARCH_FAC_LIST_SIZE_U64];	/* 0x0000 */
-	struct kvm_s390_crypto_cb crycb;		/* 0x0800 */
-	struct kvm_s390_gisa gisa;			/* 0x0900 */
-	struct kvm *kvm;				/* 0x0920 */
-	u8 reserved928[0x1000 - 0x928];			/* 0x0928 */
+	__u64 fac_list[S390_ARCH_FAC_LIST_SIZE_U64];	 
+	struct kvm_s390_crypto_cb crycb;		 
+	struct kvm_s390_gisa gisa;			 
+	struct kvm *kvm;				 
+	u8 reserved928[0x1000 - 0x928];			 
 };
-
 struct kvm_s390_vsie {
 	struct mutex mutex;
 	struct radix_tree_root addr_to_page;
@@ -923,13 +808,11 @@ struct kvm_s390_vsie {
 	int next;
 	struct page *pages[KVM_MAX_VCPUS];
 };
-
 struct kvm_s390_gisa_iam {
 	u8 mask;
 	spinlock_t ref_lock;
 	u32 ref_count[MAX_ISC + 1];
 };
-
 struct kvm_s390_gisa_interrupt {
 	struct kvm_s390_gisa *origin;
 	struct kvm_s390_gisa_iam alert;
@@ -937,7 +820,6 @@ struct kvm_s390_gisa_interrupt {
 	u64 expires;
 	DECLARE_BITMAP(kicked_mask, KVM_MAX_VCPUS);
 };
-
 struct kvm_s390_pv {
 	u64 handle;
 	u64 guest_len;
@@ -948,7 +830,6 @@ struct kvm_s390_pv {
 	struct list_head need_cleanup;
 	struct mmu_notifier mmu_notifier;
 };
-
 struct kvm_arch{
 	void *sca;
 	int use_esca;
@@ -981,61 +862,44 @@ struct kvm_arch{
 	u64 epoch;
 	int migration_mode;
 	atomic64_t cmma_dirty_pages;
-	/* subset of available cpu features enabled by user space */
 	DECLARE_BITMAP(cpu_feat, KVM_S390_VM_CPU_FEAT_NR_BITS);
-	/* indexed by vcpu_idx */
 	DECLARE_BITMAP(idle_mask, KVM_MAX_VCPUS);
 	struct kvm_s390_gisa_interrupt gisa_int;
 	struct kvm_s390_pv pv;
 	struct list_head kzdev_list;
 	spinlock_t kzdev_list_lock;
 };
-
 #define KVM_HVA_ERR_BAD		(-1UL)
 #define KVM_HVA_ERR_RO_BAD	(-2UL)
-
 static inline bool kvm_is_error_hva(unsigned long addr)
 {
 	return IS_ERR_VALUE(addr);
 }
-
 #define ASYNC_PF_PER_VCPU	64
 struct kvm_arch_async_pf {
 	unsigned long pfault_token;
 };
-
 bool kvm_arch_can_dequeue_async_page_present(struct kvm_vcpu *vcpu);
-
 void kvm_arch_async_page_ready(struct kvm_vcpu *vcpu,
 			       struct kvm_async_pf *work);
-
 bool kvm_arch_async_page_not_present(struct kvm_vcpu *vcpu,
 				     struct kvm_async_pf *work);
-
 void kvm_arch_async_page_present(struct kvm_vcpu *vcpu,
 				 struct kvm_async_pf *work);
-
 static inline void kvm_arch_async_page_present_queued(struct kvm_vcpu *vcpu) {}
-
 void kvm_arch_crypto_clear_masks(struct kvm *kvm);
 void kvm_arch_crypto_set_masks(struct kvm *kvm, unsigned long *apm,
 			       unsigned long *aqm, unsigned long *adm);
-
 int __sie64a(phys_addr_t sie_block_phys, struct kvm_s390_sie_block *sie_block, u64 *rsa);
-
 static inline int sie64a(struct kvm_s390_sie_block *sie_block, u64 *rsa)
 {
 	return __sie64a(virt_to_phys(sie_block), sie_block, rsa);
 }
-
 extern char sie_exit;
-
 bool kvm_s390_pv_is_protected(struct kvm *kvm);
 bool kvm_s390_pv_cpu_is_protected(struct kvm_vcpu *vcpu);
-
 extern int kvm_s390_gisc_register(struct kvm *kvm, u32 gisc);
 extern int kvm_s390_gisc_unregister(struct kvm *kvm, u32 gisc);
-
 static inline void kvm_arch_sync_events(struct kvm *kvm) {}
 static inline void kvm_arch_sched_in(struct kvm_vcpu *vcpu, int cpu) {}
 static inline void kvm_arch_free_memslot(struct kvm *kvm,
@@ -1046,15 +910,11 @@ static inline void kvm_arch_flush_shadow_memslot(struct kvm *kvm,
 		struct kvm_memory_slot *slot) {}
 static inline void kvm_arch_vcpu_blocking(struct kvm_vcpu *vcpu) {}
 static inline void kvm_arch_vcpu_unblocking(struct kvm_vcpu *vcpu) {}
-
 #define __KVM_HAVE_ARCH_VM_FREE
 void kvm_arch_free_vm(struct kvm *kvm);
-
 struct zpci_kvm_hook {
 	int (*kvm_register)(void *opaque, struct kvm *kvm);
 	void (*kvm_unregister)(void *opaque);
 };
-
 extern struct zpci_kvm_hook zpci_kvm_hook;
-
 #endif

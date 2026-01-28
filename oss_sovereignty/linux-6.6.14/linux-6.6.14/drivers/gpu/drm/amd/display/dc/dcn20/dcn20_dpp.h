@@ -1,35 +1,8 @@
-/* Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DCN20_DPP_H__
 #define __DCN20_DPP_H__
-
 #include "dcn10/dcn10_dpp.h"
-
 #define TO_DCN20_DPP(dpp)\
 	container_of(dpp, struct dcn20_dpp, base)
-
 #define TF_REG_LIST_DCN20_COMMON_UPDATED(id) \
 	SRI(CM_BLNDGAM_LUT_WRITE_EN_MASK, CM, id), \
 	SRI(CM_BLNDGAM_RAMB_SLOPE_CNTL_B, CM, id), \
@@ -38,7 +11,6 @@
 	SRI(CM_BLNDGAM_RAMA_SLOPE_CNTL_B, CM, id), \
 	SRI(CM_BLNDGAM_RAMA_SLOPE_CNTL_G, CM, id), \
 	SRI(CM_BLNDGAM_RAMA_SLOPE_CNTL_R, CM, id)
-
 #define TF_REG_LIST_DCN20_COMMON(id) \
 	SRI(CM_BLNDGAM_CONTROL, CM, id), \
 	SRI(CM_BLNDGAM_RAMB_START_CNTL_B, CM, id), \
@@ -149,7 +121,6 @@
 	SRI(CM_SHAPER_RAMA_REGION_30_31, CM, id), \
 	SRI(CM_SHAPER_RAMA_REGION_32_33, CM, id), \
 	SRI(CM_SHAPER_LUT_INDEX, CM, id)
-
 #define TF_REG_LIST_DCN20_COMMON_APPEND(id) \
 	SRI(CM_GAMUT_REMAP_B_C11_C12, CM, id),\
 	SRI(CM_GAMUT_REMAP_B_C13_C14, CM, id),\
@@ -159,7 +130,6 @@
 	SRI(CM_GAMUT_REMAP_B_C33_C34, CM, id),\
 	SRI(CM_ICSC_B_C11_C12, CM, id), \
 	SRI(CM_ICSC_B_C33_C34, CM, id)
-
 #define TF_REG_LIST_DCN20(id) \
 	TF_REG_LIST_DCN(id), \
 	TF_REG_LIST_DCN20_COMMON(id), \
@@ -181,8 +151,6 @@
 	SRI(CURSOR_CONTROL, CURSOR0_, id),\
 	SRI(OBUF_MEM_PWR_CTRL, DSCL, id),\
 	SRI(DSCL_MEM_PWR_CTRL, DSCL, id)
-
-
 #define TF_REG_LIST_SH_MASK_DCN20_UPDATED(mask_sh)\
 	TF_SF(CM0_CM_BLNDGAM_RAMB_SLOPE_CNTL_B, CM_BLNDGAM_RAMB_EXP_REGION_LINEAR_SLOPE_B, mask_sh), \
 	TF_SF(CM0_CM_BLNDGAM_RAMB_SLOPE_CNTL_G, CM_BLNDGAM_RAMB_EXP_REGION_LINEAR_SLOPE_G, mask_sh), \
@@ -204,8 +172,6 @@
 	TF_SF(CM0_CM_BLNDGAM_LUT_WRITE_EN_MASK, CM_BLNDGAM_LUT_WRITE_SEL, mask_sh), \
 	TF_SF(CM0_CM_BLNDGAM_LUT_WRITE_EN_MASK, CM_BLNDGAM_CONFIG_STATUS, mask_sh), \
 	TF_SF(CM0_CM_SHAPER_CONTROL, CM_SHAPER_LUT_MODE, mask_sh)
-
-
 #define TF_REG_LIST_SH_MASK_DCN20_COMMON(mask_sh)\
 	TF_SF(CM0_CM_3DLUT_MODE, CM_3DLUT_MODE, mask_sh), \
 	TF_SF(CM0_CM_BLNDGAM_RAMB_START_CNTL_B, CM_BLNDGAM_RAMB_EXP_REGION_START_B, mask_sh), \
@@ -540,8 +506,6 @@
 	TF_SF(CM0_CM_SHAPER_LUT_WRITE_EN_MASK, CM_SHAPER_LUT_WRITE_SEL, mask_sh), \
 	TF_SF(CM0_CM_SHAPER_LUT_INDEX, CM_SHAPER_LUT_INDEX, mask_sh), \
 	TF_SF(CM0_CM_SHAPER_LUT_DATA, CM_SHAPER_LUT_DATA, mask_sh)
-
-
 #define TF_REG_LIST_SH_MASK_DCN20(mask_sh)\
 	TF_REG_LIST_SH_MASK_DCN(mask_sh), \
 	TF_REG_LIST_SH_MASK_DCN20_COMMON(mask_sh), \
@@ -581,25 +545,15 @@
 	TF_SF(CNVC_CUR0_CURSOR0_CONTROL, CUR0_ROM_EN, mask_sh),\
 	TF_SF(DSCL0_OBUF_MEM_PWR_CTRL, OBUF_MEM_PWR_FORCE, mask_sh),\
 	TF_SF(DSCL0_DSCL_MEM_PWR_CTRL, LUT_MEM_PWR_FORCE, mask_sh)
-
-/* DPP CM debug status register:
- *
- *		Status index including current ICSC, Gamut Remap Mode is 9
- *			ICSC Mode: [4..3]
- *			Gamut Remap Mode: [10..9]
- */
 #define CM_TEST_DEBUG_DATA_STATUS_IDX 9
-
 #define TF_DEBUG_REG_LIST_SH_DCN20 \
 	TF_DEBUG_REG_LIST_SH_DCN10, \
 	.CM_TEST_DEBUG_DATA_ICSC_MODE = 3, \
 	.CM_TEST_DEBUG_DATA_GAMUT_REMAP_MODE = 9
-
 #define TF_DEBUG_REG_LIST_MASK_DCN20 \
 	TF_DEBUG_REG_LIST_MASK_DCN10, \
 	.CM_TEST_DEBUG_DATA_ICSC_MODE = 0x18, \
 	.CM_TEST_DEBUG_DATA_GAMUT_REMAP_MODE = 0x600
-
 #define TF_REG_FIELD_LIST_DCN2_0(type) \
 	TF_REG_FIELD_LIST(type) \
 	type CM_BLNDGAM_LUT_DATA; \
@@ -633,16 +587,12 @@
 	type CUR0_PIXEL_ALPHA_MOD_EN; \
 	type CUR0_ROM_EN;\
 	type OBUF_MEM_PWR_FORCE
-
-
 struct dcn2_dpp_shift {
 	TF_REG_FIELD_LIST_DCN2_0(uint8_t);
 };
-
 struct dcn2_dpp_mask {
 	TF_REG_FIELD_LIST_DCN2_0(uint32_t);
 };
-
 #define DPP_DCN2_REG_VARIABLE_LIST \
 	DPP_COMMON_REG_VARIABLE_LIST \
 	uint32_t CM_BLNDGAM_LUT_DATA; \
@@ -659,7 +609,6 @@ struct dcn2_dpp_mask {
 	uint32_t COLOR_KEYER_GREEN; \
 	uint32_t COLOR_KEYER_BLUE; \
 	uint32_t OBUF_MEM_PWR_CTRL
-
 #define DPP_DCN2_REG_VARIABLE_LIST_CM_APPEND \
 	uint32_t CM_GAMUT_REMAP_B_C11_C12; \
 	uint32_t CM_GAMUT_REMAP_B_C13_C14; \
@@ -669,19 +618,15 @@ struct dcn2_dpp_mask {
 	uint32_t CM_GAMUT_REMAP_B_C33_C34; \
 	uint32_t CM_ICSC_B_C11_C12; \
 	uint32_t CM_ICSC_B_C33_C34
-
 struct dcn2_dpp_registers {
 	DPP_DCN2_REG_VARIABLE_LIST;
 	DPP_DCN2_REG_VARIABLE_LIST_CM_APPEND;
 };
-
 struct dcn20_dpp {
 	struct dpp base;
-
 	const struct dcn2_dpp_registers *tf_regs;
 	const struct dcn2_dpp_shift *tf_shift;
 	const struct dcn2_dpp_mask *tf_mask;
-
 	const uint16_t *filter_v;
 	const uint16_t *filter_h;
 	const uint16_t *filter_v_c;
@@ -693,86 +638,68 @@ struct dcn20_dpp {
 	struct scaler_data scl_data;
 	struct pwl_params pwl_data;
 };
-
 enum dcn20_input_csc_select {
 	DCN2_ICSC_SELECT_BYPASS = 0,
 	DCN2_ICSC_SELECT_ICSC_A = 1,
 	DCN2_ICSC_SELECT_ICSC_B = 2
 };
-
 enum dcn20_gamut_remap_select {
 	DCN2_GAMUT_REMAP_BYPASS = 0,
 	DCN2_GAMUT_REMAP_COEF_A = 1,
 	DCN2_GAMUT_REMAP_COEF_B = 2
 };
-
 void dpp20_read_state(struct dpp *dpp_base,
 		struct dcn_dpp_state *s);
-
 void dpp2_set_degamma_pwl(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
-
 void dpp2_set_degamma(
 		struct dpp *dpp_base,
 		enum ipp_degamma_mode mode);
-
 void dpp2_cm_set_gamut_remap(
 	struct dpp *dpp_base,
 	const struct dpp_grph_csc_adjustment *adjust);
-
 void dpp2_program_input_csc(
 		struct dpp *dpp_base,
 		enum dc_color_space color_space,
 		enum dcn20_input_csc_select input_select,
 		const struct out_csc_color_matrix *tbl_entry);
-
 bool dpp20_program_blnd_lut(
 	struct dpp *dpp_base, const struct pwl_params *params);
-
 bool dpp20_program_shaper(
 		struct dpp *dpp_base,
 		const struct pwl_params *params);
-
 bool dpp20_program_3dlut(
 		struct dpp *dpp_base,
 		struct tetrahedral_params *params);
-
 void dpp2_cnv_set_alpha_keyer(
 			struct dpp *dpp_base,
 			struct cnv_color_keyer_params *color_keyer);
-
 void dscl2_calc_lb_num_partitions(
 			const struct scaler_data *scl_data,
 			enum lb_memory_config lb_config,
 			int *num_part_y,
 			int *num_part_c);
-
 void dpp2_set_cursor_attributes(
 		struct dpp *dpp_base,
 		struct dc_cursor_attributes *cursor_attributes);
-
 void dpp2_dummy_program_input_lut(
 			struct dpp *dpp_base,
 			const struct dc_gamma *gamma);
-
 void oppn20_dummy_program_regamma_pwl(
 			struct dpp *dpp,
 			const struct pwl_params *params,
 			enum opp_regamma mode);
-
 void dpp2_set_hdr_multiplier(
 		struct dpp *dpp_base,
 		uint32_t multiplier);
-
 bool dpp2_construct(struct dcn20_dpp *dpp2,
 	struct dc_context *ctx,
 	uint32_t inst,
 	const struct dcn2_dpp_registers *tf_regs,
 	const struct dcn2_dpp_shift *tf_shift,
 	const struct dcn2_dpp_mask *tf_mask);
-
 void dpp2_power_on_obuf(
 		struct dpp *dpp_base,
 	bool power_on);
-#endif /* __DC_HWSS_DCN20_H__ */
+#endif  

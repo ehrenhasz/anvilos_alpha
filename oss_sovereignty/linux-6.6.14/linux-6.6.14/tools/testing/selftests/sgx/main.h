@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2016-20 Intel Corporation.
- */
-
 #ifndef MAIN_H
 #define MAIN_H
-
 #define ENCL_HEAP_SIZE_DEFAULT	4096
-
 struct encl_segment {
 	void *src;
 	off_t offset;
@@ -16,7 +9,6 @@ struct encl_segment {
 	unsigned int flags;
 	bool measure;
 };
-
 struct encl {
 	int fd;
 	void *bin;
@@ -30,17 +22,13 @@ struct encl {
 	struct sgx_secs secs;
 	struct sgx_sigstruct sigstruct;
 };
-
 extern unsigned char sign_key[];
 extern unsigned char sign_key_end[];
-
 void encl_delete(struct encl *ctx);
 bool encl_load(const char *path, struct encl *encl, unsigned long heap_size);
 bool encl_measure(struct encl *encl);
 bool encl_build(struct encl *encl);
 uint64_t encl_get_entry(struct encl *encl, const char *symbol);
-
 int sgx_enter_enclave(void *rdi, void *rsi, long rdx, u32 function, void *r8, void *r9,
 		      struct sgx_enclave_run *run);
-
-#endif /* MAIN_H */
+#endif  

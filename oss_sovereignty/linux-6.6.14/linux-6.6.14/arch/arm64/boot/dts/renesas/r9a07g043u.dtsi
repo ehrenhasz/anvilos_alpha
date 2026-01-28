@@ -1,21 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Device Tree Source for the RZ/G2UL SoC
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 #define SOC_PERIPHERAL_IRQ(nr)		GIC_SPI nr
-
 #include "r9a07g043.dtsi"
-
 / {
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a55";
 			reg = <0>;
@@ -26,7 +15,6 @@
 			clocks = <&cpg CPG_CORE R9A07G043_CLK_I>;
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		L3_CA55: cache-controller-0 {
 			compatible = "cache";
 			cache-unified;
@@ -34,17 +22,14 @@
 			cache-level = <3>;
 		};
 	};
-
 	pmu {
 		compatible = "arm,cortex-a55-pmu";
 		interrupts-extended = <&gic GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
 	};
-
 	psci {
 		compatible = "arm,psci-1.0", "arm,psci-0.2";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts-extended = <&gic GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
@@ -53,14 +38,11 @@
 				      <&gic GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
 	};
 };
-
 &pinctrl {
 	interrupt-parent = <&irqc>;
 };
-
 &soc {
 	interrupt-parent = <&gic>;
-
 	irqc: interrupt-controller@110a0000 {
 		compatible = "renesas,r9a07g043u-irqc",
 			     "renesas,rzg2l-irqc";
@@ -128,7 +110,6 @@
 		power-domains = <&cpg>;
 		resets = <&cpg R9A07G043_IA55_RESETN>;
 	};
-
 	gic: interrupt-controller@11900000 {
 		compatible = "arm,gic-v3";
 		#interrupt-cells = <3>;
@@ -139,7 +120,6 @@
 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_LOW>;
 	};
 };
-
 &sysc {
 	interrupts = <SOC_PERIPHERAL_IRQ(42) IRQ_TYPE_LEVEL_HIGH>,
 		     <SOC_PERIPHERAL_IRQ(43) IRQ_TYPE_LEVEL_HIGH>,

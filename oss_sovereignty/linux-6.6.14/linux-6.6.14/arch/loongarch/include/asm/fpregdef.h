@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Definitions for the FPU register names
- *
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
 #ifndef _ASM_FPREGDEF_H
 #define _ASM_FPREGDEF_H
-
-#define fa0	$f0	/* argument registers, fa0/fa1 reused as fv0/fv1 for return value */
+#define fa0	$f0	 
 #define fa1	$f1
 #define fa2	$f2
 #define fa3	$f3
@@ -15,7 +8,7 @@
 #define fa5	$f5
 #define fa6	$f6
 #define fa7	$f7
-#define ft0	$f8	/* caller saved */
+#define ft0	$f8	 
 #define ft1	$f9
 #define ft2	$f10
 #define ft3	$f11
@@ -31,7 +24,7 @@
 #define ft13	$f21
 #define ft14	$f22
 #define ft15	$f23
-#define fs0	$f24	/* callee saved */
+#define fs0	$f24	 
 #define fs1	$f25
 #define fs2	$f26
 #define fs3	$f27
@@ -39,12 +32,7 @@
 #define fs5	$f29
 #define fs6	$f30
 #define fs7	$f31
-
 #ifndef CONFIG_AS_HAS_FCSR_CLASS
-/*
- * Current binutils expects *GPRs* at FCSR position for the FCSR
- * operation instructions, so define aliases for those used.
- */
 #define fcsr0	$r0
 #define fcsr1	$r1
 #define fcsr2	$r2
@@ -55,5 +43,4 @@
 #define fcsr2	$fcsr2
 #define fcsr3	$fcsr3
 #endif
-
-#endif /* _ASM_FPREGDEF_H */
+#endif  

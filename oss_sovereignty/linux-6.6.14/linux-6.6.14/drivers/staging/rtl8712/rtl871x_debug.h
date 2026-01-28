@@ -1,22 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
 #ifndef __RTL871X_DEBUG_H__
 #define __RTL871X_DEBUG_H__
-
 #include "osdep_service.h"
 #include "drv_types.h"
-
 #define _drv_emerg_			1
 #define _drv_alert_			2
 #define _drv_crit_			3
@@ -26,7 +11,6 @@
 #define _drv_info_			7
 #define _drv_dump_			8
 #define	_drv_debug_			9
-
 #define _module_rtl871x_xmit_c_		BIT(0)
 #define _module_xmit_osdep_c_		BIT(1)
 #define _module_rtl871x_recv_c_		BIT(2)
@@ -58,9 +42,7 @@
 #define _module_rtl8712_efuse_c_	BIT(29)
 #define _module_rtl8712_recv_c_		BIT(30)
 #define _module_rtl8712_led_c_		BIT(31)
-
 #undef _MODULE_DEFINE_
-
 #if defined _RTL871X_XMIT_C_
 	#define _MODULE_DEFINE_	_module_rtl871x_xmit_c_
 #elif defined _XMIT_OSDEP_C_
@@ -126,5 +108,4 @@
 #else
 	#undef	_MODULE_DEFINE_
 #endif
-
-#endif	/*__RTL871X_DEBUG_H__*/
+#endif	 

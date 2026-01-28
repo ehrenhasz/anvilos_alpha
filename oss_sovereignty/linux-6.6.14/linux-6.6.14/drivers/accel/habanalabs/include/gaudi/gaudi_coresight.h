@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
 #ifndef GAUDI_CORESIGHT_H
 #define GAUDI_CORESIGHT_H
-
 enum gaudi_debug_stm_regs_index {
 	GAUDI_STM_FIRST = 0,
 	GAUDI_STM_MME0_ACC = GAUDI_STM_FIRST,
@@ -58,7 +50,6 @@ enum gaudi_debug_stm_regs_index {
 	GAUDI_STM_TPC7_EML,
 	GAUDI_STM_LAST = GAUDI_STM_TPC7_EML
 };
-
 enum gaudi_debug_etf_regs_index {
 	GAUDI_ETF_FIRST = 0,
 	GAUDI_ETF_MME0_ACC = GAUDI_ETF_FIRST,
@@ -111,7 +102,6 @@ enum gaudi_debug_etf_regs_index {
 	GAUDI_ETF_TPC7_EML,
 	GAUDI_ETF_LAST = GAUDI_ETF_TPC7_EML
 };
-
 enum gaudi_debug_funnel_regs_index {
 	GAUDI_FUNNEL_FIRST = 0,
 	GAUDI_FUNNEL_MME0_ACC = GAUDI_FUNNEL_FIRST,
@@ -192,7 +182,6 @@ enum gaudi_debug_funnel_regs_index {
 	GAUDI_FUNNEL_TPC7_EML,
 	GAUDI_FUNNEL_LAST = GAUDI_FUNNEL_TPC7_EML
 };
-
 enum gaudi_debug_bmon_regs_index {
 	GAUDI_BMON_FIRST = 0,
 	GAUDI_BMON_MME0_ACC_0 = GAUDI_BMON_FIRST,
@@ -318,7 +307,6 @@ enum gaudi_debug_bmon_regs_index {
 	GAUDI_BMON_TPC7_EML_3,
 	GAUDI_BMON_LAST = GAUDI_BMON_TPC7_EML_3
 };
-
 enum gaudi_debug_spmu_regs_index {
 	GAUDI_SPMU_FIRST = 0,
 	GAUDI_SPMU_MME0_ACC = GAUDI_SPMU_FIRST,
@@ -363,5 +351,4 @@ enum gaudi_debug_spmu_regs_index {
 	GAUDI_SPMU_TPC7_EML,
 	GAUDI_SPMU_LAST = GAUDI_SPMU_TPC7_EML
 };
-
-#endif /* GAUDI_CORESIGHT_H */
+#endif  

@@ -1,20 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * OSS compatible sequencer driver
- * read fifo queue
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
-
 #ifndef __SEQ_OSS_READQ_H
 #define __SEQ_OSS_READQ_H
-
 #include "seq_oss_device.h"
-
-
-/*
- * definition of read queue
- */
 struct seq_oss_readq {
 	union evrec *q;
 	int qlen;
@@ -25,7 +11,6 @@ struct seq_oss_readq {
 	wait_queue_head_t midi_sleep;
 	spinlock_t lock;
 };
-
 struct seq_oss_readq *snd_seq_oss_readq_new(struct seq_oss_devinfo *dp, int maxlen);
 void snd_seq_oss_readq_delete(struct seq_oss_readq *q);
 void snd_seq_oss_readq_clear(struct seq_oss_readq *readq);
@@ -38,8 +23,6 @@ int snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *readq, unsigned long c
 int snd_seq_oss_readq_pick(struct seq_oss_readq *q, union evrec *rec);
 void snd_seq_oss_readq_wait(struct seq_oss_readq *q);
 void snd_seq_oss_readq_free(struct seq_oss_readq *q);
-
 #define snd_seq_oss_readq_lock(q, flags) spin_lock_irqsave(&(q)->lock, flags)
 #define snd_seq_oss_readq_unlock(q, flags) spin_unlock_irqrestore(&(q)->lock, flags)
-
 #endif

@@ -1,35 +1,7 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DAL_DCN31_VPG_H__
 #define __DAL_DCN31_VPG_H__
-
-
 #define DCN31_VPG_FROM_VPG(vpg)\
 	container_of(vpg, struct dcn31_vpg, base)
-
 #define VPG_DCN31_REG_LIST(id) \
 	SRI(VPG_GENERIC_STATUS, VPG, id), \
 	SRI(VPG_GENERIC_PACKET_ACCESS_CTRL, VPG, id), \
@@ -37,7 +9,6 @@
 	SRI(VPG_GSP_FRAME_UPDATE_CTRL, VPG, id), \
 	SRI(VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG, id), \
 	SRI(VPG_MEM_PWR, VPG, id)
-
 struct dcn31_vpg_registers {
 	uint32_t VPG_GENERIC_STATUS;
 	uint32_t VPG_GENERIC_PACKET_ACCESS_CTRL;
@@ -46,7 +17,6 @@ struct dcn31_vpg_registers {
 	uint32_t VPG_GSP_IMMEDIATE_UPDATE_CTRL;
 	uint32_t VPG_MEM_PWR;
 };
-
 #define DCN31_VPG_MASK_SH_LIST(mask_sh)\
 	SE_SF(VPG0_VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_OCCURED, mask_sh),\
 	SE_SF(VPG0_VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_CLR, mask_sh),\
@@ -88,7 +58,6 @@ struct dcn31_vpg_registers {
 	SE_SF(VPG0_VPG_MEM_PWR, VPG_GSP_MEM_LIGHT_SLEEP_DIS, mask_sh),\
 	SE_SF(VPG0_VPG_MEM_PWR, VPG_GSP_LIGHT_SLEEP_FORCE, mask_sh),\
 	SE_SF(VPG0_VPG_MEM_PWR, VPG_GSP_MEM_PWR_STATE, mask_sh)
-
 #define VPG_DCN31_REG_FIELD_LIST(type) \
 	type VPG_GENERIC_CONFLICT_OCCURED;\
 	type VPG_GENERIC_CONFLICT_CLR;\
@@ -130,33 +99,26 @@ struct dcn31_vpg_registers {
 	type VPG_GSP_MEM_LIGHT_SLEEP_DIS;\
 	type VPG_GSP_LIGHT_SLEEP_FORCE;\
 	type VPG_GSP_MEM_PWR_STATE
-
 struct dcn31_vpg_shift {
 	VPG_DCN31_REG_FIELD_LIST(uint8_t);
 };
-
 struct dcn31_vpg_mask {
 	VPG_DCN31_REG_FIELD_LIST(uint32_t);
 };
-
 struct dcn31_vpg {
 	struct vpg base;
 	const struct dcn31_vpg_registers *regs;
 	const struct dcn31_vpg_shift *vpg_shift;
 	const struct dcn31_vpg_mask *vpg_mask;
 };
-
 void vpg31_poweron(
 		struct vpg *vpg);
-
 void vpg31_powerdown(
 		struct vpg *vpg);
-
 void vpg31_construct(struct dcn31_vpg *vpg31,
 	struct dc_context *ctx,
 	uint32_t inst,
 	const struct dcn31_vpg_registers *vpg_regs,
 	const struct dcn31_vpg_shift *vpg_shift,
 	const struct dcn31_vpg_mask *vpg_mask);
-
 #endif

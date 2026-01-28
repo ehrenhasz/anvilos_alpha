@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mt8195-afe-clk.h  --  Mediatek 8195 afe clock ctrl definition
- *
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Bicycle Tsai <bicycle.tsai@mediatek.com>
- *         Trevor Wu <trevor.wu@mediatek.com>
- */
-
 #ifndef _MT8195_AFE_CLK_H_
 #define _MT8195_AFE_CLK_H_
-
 enum {
-	/* xtal */
 	MT8195_CLK_XTAL_26M,
-	/* divider */
 	MT8195_CLK_TOP_APLL1,
 	MT8195_CLK_TOP_APLL2,
 	MT8195_CLK_TOP_APLL12_DIV0,
@@ -21,7 +9,6 @@ enum {
 	MT8195_CLK_TOP_APLL12_DIV2,
 	MT8195_CLK_TOP_APLL12_DIV3,
 	MT8195_CLK_TOP_APLL12_DIV9,
-	/* mux */
 	MT8195_CLK_TOP_A1SYS_HP_SEL,
 	MT8195_CLK_TOP_AUD_INTBUS_SEL,
 	MT8195_CLK_TOP_AUDIO_H_SEL,
@@ -31,7 +18,6 @@ enum {
 	MT8195_CLK_TOP_I2SO2_M_SEL,
 	MT8195_CLK_TOP_I2SI1_M_SEL,
 	MT8195_CLK_TOP_I2SI2_M_SEL,
-	/* clock gate */
 	MT8195_CLK_INFRA_AO_AUDIO_26M_B,
 	MT8195_CLK_SCP_ADSP_AUDIODSP,
 	MT8195_CLK_AUD_AFE,
@@ -74,7 +60,6 @@ enum {
 	MT8195_CLK_AUD_MEMIF_DL11,
 	MT8195_CLK_NUM,
 };
-
 enum {
 	MT8195_MCK_SEL_26M,
 	MT8195_MCK_SEL_APLL1,
@@ -85,7 +70,6 @@ enum {
 	MT8195_MCK_SEL_HDMIRX_APLL,
 	MT8195_MCK_SEL_NUM,
 };
-
 enum {
 	MT8195_AUD_PLL1,
 	MT8195_AUD_PLL2,
@@ -94,9 +78,7 @@ enum {
 	MT8195_AUD_PLL5,
 	MT8195_AUD_PLL_NUM,
 };
-
 struct mtk_base_afe;
-
 int mt8195_afe_get_mclk_source_clk_id(int sel);
 int mt8195_afe_get_mclk_source_rate(struct mtk_base_afe *afe, int apll);
 int mt8195_afe_get_default_mclk_source_by_rate(int rate);
@@ -115,5 +97,4 @@ int mt8195_afe_enable_main_clock(struct mtk_base_afe *afe);
 int mt8195_afe_disable_main_clock(struct mtk_base_afe *afe);
 int mt8195_afe_enable_reg_rw_clk(struct mtk_base_afe *afe);
 int mt8195_afe_disable_reg_rw_clk(struct mtk_base_afe *afe);
-
 #endif

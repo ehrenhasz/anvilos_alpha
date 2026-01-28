@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _ASM_ARM64_PERF_REGS_H
 #define _ASM_ARM64_PERF_REGS_H
-
 enum perf_event_arm_regs {
 	PERF_REG_ARM64_X0,
 	PERF_REG_ARM64_X1,
@@ -37,12 +35,8 @@ enum perf_event_arm_regs {
 	PERF_REG_ARM64_SP,
 	PERF_REG_ARM64_PC,
 	PERF_REG_ARM64_MAX,
-
-	/* Extended/pseudo registers */
-	PERF_REG_ARM64_VG = 46,				/* SVE Vector Granule */
+	PERF_REG_ARM64_VG = 46,				 
 	PERF_REG_ARM64_EXTENDED_MAX
 };
-
 #define PERF_REG_EXTENDED_MASK	(1ULL << PERF_REG_ARM64_VG)
-
-#endif /* _ASM_ARM64_PERF_REGS_H */
+#endif  

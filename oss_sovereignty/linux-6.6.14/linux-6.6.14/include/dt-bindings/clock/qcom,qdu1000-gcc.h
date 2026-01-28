@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
-/*
- * Copyright (c) 2021-2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_QDU1000_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_QDU1000_H
-
-/* GCC clocks */
 #define GCC_GPLL0					0
 #define GCC_GPLL0_OUT_EVEN				1
 #define GCC_GPLL1					2
@@ -140,8 +133,6 @@
 #define GCC_PCIE_0_PHY_AUX_CLK_SRC			130
 #define GCC_GPLL1_OUT_EVEN				131
 #define GCC_DDRSS_ECPRI_GSI_CLK				132
-
-/* GCC resets */
 #define GCC_ECPRI_CC_BCR				0
 #define GCC_ECPRI_SS_BCR				1
 #define GCC_ETH_WRAPPER_BCR				2
@@ -168,10 +159,7 @@
 #define GCC_USB3PHY_PHY_PRIM_BCR			23
 #define GCC_USB3PHY_PHY_SEC_BCR				24
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR			25
-
-/* GCC power domains */
 #define PCIE_0_GDSC					0
 #define PCIE_0_PHY_GDSC					1
 #define USB30_PRIM_GDSC					2
-
 #endif

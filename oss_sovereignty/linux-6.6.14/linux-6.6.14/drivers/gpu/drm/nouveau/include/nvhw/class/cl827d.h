@@ -1,30 +1,5 @@
-/*
- * Copyright (c) 1993-2014, NVIDIA CORPORATION. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- */
-
-
 #ifndef _cl827d_h_
 #define _cl827d_h_
-
-// class methods
 #define NV827D_HEAD_SET_BASE_LUT_LO(a)                                          (0x00000840 + (a)*0x00000400)
 #define NV827D_HEAD_SET_BASE_LUT_LO_ENABLE                                      31:31
 #define NV827D_HEAD_SET_BASE_LUT_LO_ENABLE_DISABLE                              (0x00000000)
@@ -103,4 +78,4 @@
 #define NV827D_HEAD_SET_VIEWPORT_POINT_IN(a,b)                                  (0x000008C0 + (a)*0x00000400 + (b)*0x00000004)
 #define NV827D_HEAD_SET_VIEWPORT_POINT_IN_X                                     14:0
 #define NV827D_HEAD_SET_VIEWPORT_POINT_IN_Y                                     30:16
-#endif // _cl827d_h
+#endif  

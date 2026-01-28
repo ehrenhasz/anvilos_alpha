@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Linaro Ltd.
- */
-
 #ifndef _DT_BINDINGS_CLK_QCOM_GCC_SC8180X_H
 #define _DT_BINDINGS_CLK_QCOM_GCC_SC8180X_H
-
 #define GCC_AGGRE_NOC_PCIE_TBU_CLK				0
 #define GCC_AGGRE_UFS_CARD_AXI_CLK				1
 #define GCC_AGGRE_UFS_CARD_AXI_HW_CTL_CLK			2
@@ -246,7 +239,6 @@
 #define GCC_PCIE_3_CLKREF_CLK					236
 #define GCC_USB3_PRIM_CLKREF_CLK				237
 #define GCC_USB3_SEC_CLKREF_CLK					238
-
 #define GCC_EMAC_BCR						0
 #define GCC_GPU_BCR						1
 #define GCC_MMSS_BCR						2
@@ -292,8 +284,6 @@
 #define GCC_VIDEO_AXI0_CLK_BCR					42
 #define GCC_VIDEO_AXI1_CLK_BCR					43
 #define GCC_USB3_DP_PHY_SEC_BCR					44
-
-/* GCC GDSCRs */
 #define EMAC_GDSC						0
 #define PCIE_0_GDSC						1
 #define PCIE_1_GDSC						2
@@ -305,5 +295,4 @@
 #define USB30_MP_GDSC						8
 #define USB30_PRIM_GDSC						9
 #define USB30_SEC_GDSC						10
-
 #endif

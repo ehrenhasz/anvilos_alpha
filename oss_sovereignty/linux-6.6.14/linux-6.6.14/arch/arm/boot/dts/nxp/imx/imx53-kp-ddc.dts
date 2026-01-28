@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright 2018
- * Lukasz Majewski, DENX Software Engineering, lukma@denx.de
- */
-
 /dts-v1/;
 #include "imx53-kp.dtsi"
-
 / {
 	model = "K+P imx53 DDC";
 	compatible = "kiebackpeter,imx53-ddc", "fsl,imx53";
-
 	backlight_lcd: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm2 0 50000>;
@@ -21,7 +13,6 @@
 				     80 84 88 92 96 100>;
 		default-brightness-level = <20>;
 	};
-
 	lcd_display: display {
 		compatible = "fsl,imx-parallel-display";
 		#address-cells = <1>;
@@ -29,36 +20,29 @@
 		interface-pix-fmt = "rgb24";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_disp>;
-
 		port@0 {
 			reg = <0>;
-
 			display1_in: endpoint {
 				remote-endpoint = <&ipu_di1_disp1>;
 			};
 		};
-
 		port@1 {
 			reg = <1>;
-
 			lcd_display_out: endpoint {
 				remote-endpoint = <&lcd_panel_in>;
 			};
 		};
 	};
-
 	lcd_panel: lcd-panel {
 		compatible = "koe,tx14d24vm1bpa";
 		backlight = <&backlight_lcd>;
 		power-supply = <&reg_3v3>;
-
 		port {
 			lcd_panel_in: endpoint {
 				remote-endpoint = <&lcd_display_out>;
 			};
 		};
 	};
-
 	reg_backlight: regulator-backlight {
 		compatible = "regulator-fixed";
 		regulator-name = "backlight-supply";
@@ -67,31 +51,26 @@
 		regulator-always-on;
 	};
 };
-
 &fec {
 	status = "okay";
 };
-
 &i2c3 {
 	adc@48 {
 		compatible = "ti,ads1015";
 		reg = <0x48>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		channel@4 {
 			reg = <4>;
 			ti,gain = <2>;
 			ti,datarate = <4>;
 		};
-
 		channel@6 {
 			reg = <6>;
 			ti,gain = <2>;
 			ti,datarate = <4>;
 		};
 	};
-
 	gpio-expander2@21 {
 		compatible = "nxp,pcf8574";
 		reg = <0x21>;
@@ -100,7 +79,6 @@
 		gpio-controller;
 	};
 };
-
 &iomuxc {
 	imx53-kp-ddc {
 		pinctrl_disp: dispgrp {
@@ -136,11 +114,9 @@
 		};
 	};
 };
-
 &ipu_di1_disp1 {
 	remote-endpoint = <&display1_in>;
 };
-
 &pmic {
 	fsl,mc13xxx-uses-touch;
 };

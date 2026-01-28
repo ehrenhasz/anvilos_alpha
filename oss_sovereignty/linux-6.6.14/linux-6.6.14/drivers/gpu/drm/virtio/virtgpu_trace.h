@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #if !defined(_VIRTGPU_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VIRTGPU_TRACE_H_
-
 #include <linux/tracepoint.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM virtio_gpu
 #define TRACE_INCLUDE_FILE virtgpu_trace
-
 DECLARE_EVENT_CLASS(virtio_gpu_cmd,
 	TP_PROTO(struct virtqueue *vq, struct virtio_gpu_ctrl_hdr *hdr, u32 seqno),
 	TP_ARGS(vq, hdr, seqno),
@@ -38,19 +34,15 @@ DECLARE_EVENT_CLASS(virtio_gpu_cmd,
 		  __entry->type, __entry->flags, __entry->fence_id,
 		  __entry->ctx_id, __entry->num_free, __entry->seqno)
 );
-
 DEFINE_EVENT(virtio_gpu_cmd, virtio_gpu_cmd_queue,
 	TP_PROTO(struct virtqueue *vq, struct virtio_gpu_ctrl_hdr *hdr, u32 seqno),
 	TP_ARGS(vq, hdr, seqno)
 );
-
 DEFINE_EVENT(virtio_gpu_cmd, virtio_gpu_cmd_response,
 	TP_PROTO(struct virtqueue *vq, struct virtio_gpu_ctrl_hdr *hdr, u32 seqno),
 	TP_ARGS(vq, hdr, seqno)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/virtio
 #include <trace/define_trace.h>

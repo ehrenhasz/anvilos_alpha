@@ -1,37 +1,9 @@
-/*
- * Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_MEM_INPUT_DCN201_H__
 #define __DC_MEM_INPUT_DCN201_H__
-
 #include "../dcn10/dcn10_hubp.h"
 #include "../dcn20/dcn20_hubp.h"
-
 #define TO_DCN201_HUBP(hubp)\
 	container_of(hubp, struct dcn201_hubp, base)
-
 #define HUBP_REG_LIST_DCN201(id)\
 	HUBP_REG_LIST_DCN(id),\
 	SRI(PREFETCH_SETTINGS, HUBPREQ, id),\
@@ -54,7 +26,6 @@
 	SRI(DMDATA_STATUS, CURSOR0_, id),\
 	SRI(FLIP_PARAMETERS_0, HUBPREQ, id),\
 	SRI(FLIP_PARAMETERS_2, HUBPREQ, id)
-
 #define HUBP_MASK_SH_LIST_DCN201(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN(mask_sh),\
 	HUBP_SF(HUBPREQ0_PREFETCH_SETTINGS, DST_Y_PREFETCH, mask_sh),\
@@ -94,25 +65,19 @@
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_VREADY_AT_OR_AFTER_VSYNC, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_DISABLE_STOP_DATA_DURING_VM, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCSURF_FLIP_CONTROL, HUBPREQ_MASTER_UPDATE_LOCK_STATUS, mask_sh)
-
 #define DCN201_HUBP_REG_VARIABLE_LIST \
 	DCN2_HUBP_REG_COMMON_VARIABLE_LIST
-
 #define DCN201_HUBP_REG_FIELD_VARIABLE_LIST(type) \
 	DCN2_HUBP_REG_FIELD_VARIABLE_LIST(type)
-
 struct dcn201_hubp_registers {
 	DCN201_HUBP_REG_VARIABLE_LIST;
 };
-
 struct dcn201_hubp_shift {
 	DCN201_HUBP_REG_FIELD_VARIABLE_LIST(uint8_t);
 };
-
 struct dcn201_hubp_mask {
 	DCN201_HUBP_REG_FIELD_VARIABLE_LIST(uint32_t);
 };
-
 struct dcn201_hubp {
 	struct hubp base;
 	struct dcn_hubp_state state;
@@ -120,7 +85,6 @@ struct dcn201_hubp {
 	const struct dcn201_hubp_shift *hubp_shift;
 	const struct dcn201_hubp_mask *hubp_mask;
 };
-
 bool dcn201_hubp_construct(
 	struct dcn201_hubp *hubp201,
 	struct dc_context *ctx,
@@ -128,5 +92,4 @@ bool dcn201_hubp_construct(
 	const struct dcn201_hubp_registers *hubp_regs,
 	const struct dcn201_hubp_shift *hubp_shift,
 	const struct dcn201_hubp_mask *hubp_mask);
-
-#endif /* __DC_HWSS_DCN20_H__ */
+#endif  

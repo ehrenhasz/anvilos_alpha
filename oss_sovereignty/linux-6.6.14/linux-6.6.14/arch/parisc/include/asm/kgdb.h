@@ -1,33 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PA-RISC KGDB support
- *
- * Copyright (c) 2019 Sven Schnelle <svens@stackframe.org>
- *
- */
-
 #ifndef __PARISC_KGDB_H__
 #define __PARISC_KGDB_H__
-
 #define BREAK_INSTR_SIZE		4
 #define PARISC_KGDB_COMPILED_BREAK_INSN	0x3ffc01f
 #define PARISC_KGDB_BREAK_INSN		0x3ffa01f
-
-
 #define NUMREGBYTES			sizeof(struct parisc_gdb_regs)
 #define BUFMAX				4096
-
 #define KGDB_MAX_BREAKPOINTS		40
-
 #define CACHE_FLUSH_IS_SAFE		1
-
 #ifndef __ASSEMBLY__
-
 static inline void arch_kgdb_breakpoint(void)
 {
 	asm(".word %0" : : "i"(PARISC_KGDB_COMPILED_BREAK_INSN) : "memory");
 }
-
 struct parisc_gdb_regs {
 	unsigned long gpr[32];
 	unsigned long sar;
@@ -62,9 +46,7 @@ struct parisc_gdb_regs {
 	unsigned long cr28;
 	unsigned long cr29;
 	unsigned long cr30;
-
 	u64 fr[32];
 };
-
 #endif
 #endif

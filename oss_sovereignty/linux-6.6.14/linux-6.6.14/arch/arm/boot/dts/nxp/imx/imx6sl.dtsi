@@ -1,21 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright 2013 Freescale Semiconductor, Inc.
-
 #include <dt-bindings/interrupt-controller/irq.h>
 #include "imx6sl-pinfunc.h"
 #include <dt-bindings/clock/imx6sl-clock.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-	/*
-	 * The decompressor and also some bootloaders rely on a
-	 * pre-existing /chosen node to be available to insert the
-	 * command line and merge other ATAGS info.
-	 */
 	chosen {};
-
 	aliases {
 		ethernet0 = &fec;
 		gpio0 = &gpio1;
@@ -45,27 +34,23 @@
 		usbphy0 = &usbphy1;
 		usbphy1 = &usbphy2;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			compatible = "arm,cortex-a9";
 			device_type = "cpu";
 			reg = <0x0>;
 			next-level-cache = <&L2>;
 			operating-points =
-				/* kHz    uV */
 				<996000  1275000>,
 				<792000  1175000>,
 				<396000  975000>;
 			fsl,soc-operating-points =
-				/* ARM kHz	SOC-PU uV */
 				<996000		1225000>,
 				<792000		1175000>,
 				<396000		1175000>;
-			clock-latency = <61036>; /* two CLK32 periods */
+			clock-latency = <61036>;  
 			#cooling-cells = <2>;
 			clocks = <&clks IMX6SL_CLK_ARM>, <&clks IMX6SL_CLK_PLL2_PFD2>,
 					<&clks IMX6SL_CLK_STEP>, <&clks IMX6SL_CLK_PLL1_SW>,
@@ -79,39 +64,33 @@
 			nvmem-cell-names = "speed_grade";
 		};
 	};
-
 	clocks {
 		ckil {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <32768>;
 		};
-
 		osc {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <24000000>;
 		};
 	};
-
 	pmu {
 		compatible = "arm,cortex-a9-pmu";
 		interrupt-parent = <&gpc>;
 		interrupts = <0 94 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	usbphynop1: usbphynop1 {
 		compatible = "usb-nop-xceiv";
 		#phy-cells = <0>;
 	};
-
 	soc {
 		#address-cells = <1>;
 		#size-cells = <1>;
 		compatible = "simple-bus";
 		interrupt-parent = <&gpc>;
 		ranges;
-
 		ocram: sram@900000 {
 			compatible = "mmio-sram";
 			reg = <0x00900000 0x20000>;
@@ -120,7 +99,6 @@
 			#size-cells = <1>;
 			clocks = <&clks IMX6SL_CLK_OCRAM>;
 		};
-
 		intc: interrupt-controller@a01000 {
 			compatible = "arm,cortex-a9-gic";
 			#interrupt-cells = <3>;
@@ -129,7 +107,6 @@
 			      <0x00a00100 0x100>;
 			interrupt-parent = <&intc>;
 		};
-
 		L2: cache-controller@a02000 {
 			compatible = "arm,pl310-cache";
 			reg = <0x00a02000 0x1000>;
@@ -139,21 +116,18 @@
 			arm,tag-latency = <4 2 3>;
 			arm,data-latency = <4 2 3>;
 		};
-
 		aips1: bus@2000000 {
 			compatible = "fsl,aips-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0x02000000 0x100000>;
 			ranges;
-
 			spba: spba-bus@2000000 {
 				compatible = "fsl,spba-bus", "simple-bus";
 				#address-cells = <1>;
 				#size-cells = <1>;
 				reg = <0x02000000 0x40000>;
 				ranges;
-
 				spdif: spdif@2004000 {
 					compatible = "fsl,imx6sl-spdif",
 						"fsl,imx35-spdif";
@@ -174,7 +148,6 @@
 						"rxtx7", "spba";
 					status = "disabled";
 				};
-
 				ecspi1: spi@2008000 {
 					#address-cells = <1>;
 					#size-cells = <0>;
@@ -186,7 +159,6 @@
 					clock-names = "ipg", "per";
 					status = "disabled";
 				};
-
 				ecspi2: spi@200c000 {
 					#address-cells = <1>;
 					#size-cells = <0>;
@@ -198,7 +170,6 @@
 					clock-names = "ipg", "per";
 					status = "disabled";
 				};
-
 				ecspi3: spi@2010000 {
 					#address-cells = <1>;
 					#size-cells = <0>;
@@ -210,7 +181,6 @@
 					clock-names = "ipg", "per";
 					status = "disabled";
 				};
-
 				ecspi4: spi@2014000 {
 					#address-cells = <1>;
 					#size-cells = <0>;
@@ -222,7 +192,6 @@
 					clock-names = "ipg", "per";
 					status = "disabled";
 				};
-
 				uart5: serial@2018000 {
 					compatible = "fsl,imx6sl-uart",
 						     "fsl,imx6q-uart", "fsl,imx21-uart";
@@ -235,7 +204,6 @@
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
-
 				uart1: serial@2020000 {
 					compatible = "fsl,imx6sl-uart",
 						     "fsl,imx6q-uart", "fsl,imx21-uart";
@@ -248,7 +216,6 @@
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
-
 				uart2: serial@2024000 {
 					compatible = "fsl,imx6sl-uart",
 						     "fsl,imx6q-uart", "fsl,imx21-uart";
@@ -261,7 +228,6 @@
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
-
 				ssi1: ssi@2028000 {
 					#sound-dai-cells = <0>;
 					compatible = "fsl,imx6sl-ssi",
@@ -277,7 +243,6 @@
 					fsl,fifo-depth = <15>;
 					status = "disabled";
 				};
-
 				ssi2: ssi@202c000 {
 					#sound-dai-cells = <0>;
 					compatible = "fsl,imx6sl-ssi",
@@ -293,7 +258,6 @@
 					fsl,fifo-depth = <15>;
 					status = "disabled";
 				};
-
 				ssi3: ssi@2030000 {
 					#sound-dai-cells = <0>;
 					compatible = "fsl,imx6sl-ssi",
@@ -309,7 +273,6 @@
 					fsl,fifo-depth = <15>;
 					status = "disabled";
 				};
-
 				uart3: serial@2034000 {
 					compatible = "fsl,imx6sl-uart",
 						     "fsl,imx6q-uart", "fsl,imx21-uart";
@@ -322,7 +285,6 @@
 					dma-names = "rx", "tx";
 					status = "disabled";
 				};
-
 				uart4: serial@2038000 {
 					compatible = "fsl,imx6sl-uart",
 						     "fsl,imx6q-uart", "fsl,imx21-uart";
@@ -336,7 +298,6 @@
 					status = "disabled";
 				};
 			};
-
 			pwm1: pwm@2080000 {
 				#pwm-cells = <3>;
 				compatible = "fsl,imx6sl-pwm", "fsl,imx27-pwm";
@@ -346,7 +307,6 @@
 					 <&clks IMX6SL_CLK_PWM1>;
 				clock-names = "ipg", "per";
 			};
-
 			pwm2: pwm@2084000 {
 				#pwm-cells = <3>;
 				compatible = "fsl,imx6sl-pwm", "fsl,imx27-pwm";
@@ -356,7 +316,6 @@
 					 <&clks IMX6SL_CLK_PWM2>;
 				clock-names = "ipg", "per";
 			};
-
 			pwm3: pwm@2088000 {
 				#pwm-cells = <3>;
 				compatible = "fsl,imx6sl-pwm", "fsl,imx27-pwm";
@@ -366,7 +325,6 @@
 					 <&clks IMX6SL_CLK_PWM3>;
 				clock-names = "ipg", "per";
 			};
-
 			pwm4: pwm@208c000 {
 				#pwm-cells = <3>;
 				compatible = "fsl,imx6sl-pwm", "fsl,imx27-pwm";
@@ -376,7 +334,6 @@
 					 <&clks IMX6SL_CLK_PWM4>;
 				clock-names = "ipg", "per";
 			};
-
 			gpt: timer@2098000 {
 				compatible = "fsl,imx6sl-gpt";
 				reg = <0x02098000 0x4000>;
@@ -385,7 +342,6 @@
 					 <&clks IMX6SL_CLK_GPT_SERIAL>;
 				clock-names = "ipg", "per";
 			};
-
 			gpio1: gpio@209c000 {
 				compatible = "fsl,imx6sl-gpio", "fsl,imx35-gpio";
 				reg = <0x0209c000 0x4000>;
@@ -402,7 +358,6 @@
 					      <&iomuxc 17 38 6>, <&iomuxc 23 68 4>,
 					      <&iomuxc 27 64 4>, <&iomuxc 31 52 1>;
 			};
-
 			gpio2: gpio@20a0000 {
 				compatible = "fsl,imx6sl-gpio", "fsl,imx35-gpio";
 				reg = <0x020a0000 0x4000>;
@@ -420,7 +375,6 @@
 					      <&iomuxc 20 108 2>, <&iomuxc 22 120 1>,
 					      <&iomuxc 23 125 7>, <&iomuxc 30 110 2>;
 			};
-
 			gpio3: gpio@20a4000 {
 				compatible = "fsl,imx6sl-gpio", "fsl,imx35-gpio";
 				reg = <0x020a4000 0x4000>;
@@ -439,7 +393,6 @@
 					      <&iomuxc 29 101 1>, <&iomuxc 30  94 1>,
 					      <&iomuxc 31 102 1>;
 			};
-
 			gpio4: gpio@20a8000 {
 				compatible = "fsl,imx6sl-gpio", "fsl,imx35-gpio";
 				reg = <0x020a8000 0x4000>;
@@ -465,7 +418,6 @@
 					      <&iomuxc 28 154 1>, <&iomuxc 29 157 1>,
 					      <&iomuxc 30 152 1>, <&iomuxc 31 156 1>;
 			};
-
 			gpio5: gpio@20ac000 {
 				compatible = "fsl,imx6sl-gpio", "fsl,imx35-gpio";
 				reg = <0x020ac000 0x4000>;
@@ -487,7 +439,6 @@
 					      <&iomuxc 19 162 1>, <&iomuxc 20 163 1>,
 					      <&iomuxc 21 161 1>;
 			};
-
 			kpp: keypad@20b8000 {
 				compatible = "fsl,imx6sl-kpp", "fsl,imx21-kpp";
 				reg = <0x020b8000 0x4000>;
@@ -495,14 +446,12 @@
 				clocks = <&clks IMX6SL_CLK_IPG>;
 				status = "disabled";
 			};
-
 			wdog1: watchdog@20bc000 {
 				compatible = "fsl,imx6sl-wdt", "fsl,imx21-wdt";
 				reg = <0x020bc000 0x4000>;
 				interrupts = <0 80 IRQ_TYPE_LEVEL_HIGH>;
 				clocks = <&clks IMX6SL_CLK_IPG>;
 			};
-
 			wdog2: watchdog@20c0000 {
 				compatible = "fsl,imx6sl-wdt", "fsl,imx21-wdt";
 				reg = <0x020c0000 0x4000>;
@@ -510,7 +459,6 @@
 				clocks = <&clks IMX6SL_CLK_IPG>;
 				status = "disabled";
 			};
-
 			clks: clock-controller@20c4000 {
 				compatible = "fsl,imx6sl-ccm";
 				reg = <0x020c4000 0x4000>;
@@ -518,7 +466,6 @@
 					     <0 88 IRQ_TYPE_LEVEL_HIGH>;
 				#clock-cells = <1>;
 			};
-
 			anatop: anatop@20c8000 {
 				compatible = "fsl,imx6sl-anatop",
 					     "fsl,imx6q-anatop",
@@ -527,7 +474,6 @@
 				interrupts = <0 49 IRQ_TYPE_LEVEL_HIGH>,
 					     <0 54 IRQ_TYPE_LEVEL_HIGH>,
 					     <0 127 IRQ_TYPE_LEVEL_HIGH>;
-
 				reg_vdd1p1: regulator-1p1 {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vdd1p1";
@@ -542,7 +488,6 @@
 					anatop-max-voltage = <1375000>;
 					anatop-enable-bit = <0>;
 				};
-
 				reg_vdd3p0: regulator-3p0 {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vdd3p0";
@@ -557,7 +502,6 @@
 					anatop-max-voltage = <3400000>;
 					anatop-enable-bit = <0>;
 				};
-
 				reg_vdd2p5: regulator-2p5 {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vdd2p5";
@@ -572,7 +516,6 @@
 					anatop-max-voltage = <2850000>;
 					anatop-enable-bit = <0>;
 				};
-
 				reg_arm: regulator-vddcore {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vddarm";
@@ -589,7 +532,6 @@
 					anatop-min-voltage = <725000>;
 					anatop-max-voltage = <1450000>;
 				};
-
 				reg_pu: regulator-vddpu {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vddpu";
@@ -605,7 +547,6 @@
 					anatop-min-voltage = <725000>;
 					anatop-max-voltage = <1450000>;
 				};
-
 				reg_soc: regulator-vddsoc {
 					compatible = "fsl,anatop-regulator";
 					regulator-name = "vddsoc";
@@ -622,7 +563,6 @@
 					anatop-min-voltage = <725000>;
 					anatop-max-voltage = <1450000>;
 				};
-
 				tempmon: tempmon {
 					compatible = "fsl,imx6q-tempmon";
 					interrupts = <0 49 IRQ_TYPE_LEVEL_HIGH>;
@@ -633,7 +573,6 @@
 					clocks = <&clks IMX6SL_CLK_PLL3_USB_OTG>;
 				};
 			};
-
 			usbphy1: usbphy@20c9000 {
 				compatible = "fsl,imx6sl-usbphy", "fsl,imx23-usbphy";
 				reg = <0x020c9000 0x1000>;
@@ -641,7 +580,6 @@
 				clocks = <&clks IMX6SL_CLK_USBPHY1>;
 				fsl,anatop = <&anatop>;
 			};
-
 			usbphy2: usbphy@20ca000 {
 				compatible = "fsl,imx6sl-usbphy", "fsl,imx23-usbphy";
 				reg = <0x020ca000 0x1000>;
@@ -649,11 +587,9 @@
 				clocks = <&clks IMX6SL_CLK_USBPHY2>;
 				fsl,anatop = <&anatop>;
 			};
-
 			snvs: snvs@20cc000 {
 				compatible = "fsl,sec-v4.0-mon", "syscon", "simple-mfd";
 				reg = <0x020cc000 0x4000>;
-
 				snvs_rtc: snvs-rtc-lp {
 					compatible = "fsl,sec-v4.0-mon-rtc-lp";
 					regmap = <&snvs>;
@@ -661,7 +597,6 @@
 					interrupts = <0 19 IRQ_TYPE_LEVEL_HIGH>,
 						     <0 20 IRQ_TYPE_LEVEL_HIGH>;
 				};
-
 				snvs_poweroff: snvs-poweroff {
 					compatible = "syscon-poweroff";
 					regmap = <&snvs>;
@@ -671,17 +606,14 @@
 					status = "disabled";
 				};
 			};
-
 			epit1: epit@20d0000 {
 				reg = <0x020d0000 0x4000>;
 				interrupts = <0 56 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			epit2: epit@20d4000 {
 				reg = <0x020d4000 0x4000>;
 				interrupts = <0 57 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			src: reset-controller@20d8000 {
 				compatible = "fsl,imx6sl-src", "fsl,imx51-src";
 				reg = <0x020d8000 0x4000>;
@@ -689,7 +621,6 @@
 					     <0 96 IRQ_TYPE_LEVEL_HIGH>;
 				#reset-cells = <1>;
 			};
-
 			gpc: gpc@20dc000 {
 				compatible = "fsl,imx6sl-gpc", "fsl,imx6q-gpc";
 				reg = <0x020dc000 0x4000>;
@@ -699,16 +630,13 @@
 				interrupt-parent = <&intc>;
 				clocks = <&clks IMX6SL_CLK_IPG>;
 				clock-names = "ipg";
-
 				pgc {
 					#address-cells = <1>;
 					#size-cells = <0>;
-
 					power-domain@0 {
 						reg = <0>;
 						#power-domain-cells = <0>;
 					};
-
 					pd_pu: power-domain@1 {
 						reg = <1>;
 						#power-domain-cells = <0>;
@@ -716,7 +644,6 @@
 						clocks = <&clks IMX6SL_CLK_GPU2D_OVG>,
 							 <&clks IMX6SL_CLK_GPU2D_PODF>;
 					};
-
 					pd_disp: power-domain@2 {
 						reg = <2>;
 						#power-domain-cells = <0>;
@@ -728,28 +655,23 @@
 					};
 				};
 			};
-
 			gpr: iomuxc-gpr@20e0000 {
 				compatible = "fsl,imx6sl-iomuxc-gpr",
 					     "fsl,imx6q-iomuxc-gpr", "syscon";
 				reg = <0x020e0000 0x38>;
 			};
-
 			iomuxc: pinctrl@20e0000 {
 				compatible = "fsl,imx6sl-iomuxc";
 				reg = <0x020e0000 0x4000>;
 			};
-
 			csi: csi@20e4000 {
 				reg = <0x020e4000 0x4000>;
 				interrupts = <0 7 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			spdc: spdc@20e8000 {
 				reg = <0x020e8000 0x4000>;
 				interrupts = <0 6 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			sdma: dma-controller@20ec000 {
 				compatible = "fsl,imx6sl-sdma", "fsl,imx6q-sdma";
 				reg = <0x020ec000 0x4000>;
@@ -758,20 +680,16 @@
 					 <&clks IMX6SL_CLK_AHB>;
 				clock-names = "ipg", "ahb";
 				#dma-cells = <3>;
-				/* imx6sl reuses imx6q sdma firmware */
 				fsl,sdma-ram-script-name = "imx/sdma/sdma-imx6q.bin";
 			};
-
 			pxp: pxp@20f0000 {
 				reg = <0x020f0000 0x4000>;
 				interrupts = <0 98 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			epdc: epdc@20f4000 {
 				reg = <0x020f4000 0x4000>;
 				interrupts = <0 97 IRQ_TYPE_LEVEL_HIGH>;
 			};
-
 			lcdif: lcdif@20f8000 {
 				compatible = "fsl,imx6sl-lcdif", "fsl,imx28-lcdif";
 				reg = <0x020f8000 0x4000>;
@@ -783,7 +701,6 @@
 				status = "disabled";
 				power-domains = <&pd_disp>;
 			};
-
 			dcp: crypto@20fc000 {
 				compatible = "fsl,imx6sl-dcp", "fsl,imx28-dcp";
 				reg = <0x020fc000 0x4000>;
@@ -792,14 +709,12 @@
 					     <0 101 IRQ_TYPE_LEVEL_HIGH>;
 			};
 		};
-
 		aips2: bus@2100000 {
 			compatible = "fsl,aips-bus", "simple-bus";
 			#address-cells = <1>;
 			#size-cells = <1>;
 			reg = <0x02100000 0x100000>;
 			ranges;
-
 			usbotg1: usb@2184000 {
 				compatible = "fsl,imx6sl-usb", "fsl,imx27-usb";
 				reg = <0x02184000 0x200>;
@@ -812,7 +727,6 @@
 				rx-burst-size-dword = <0x10>;
 				status = "disabled";
 			};
-
 			usbotg2: usb@2184200 {
 				compatible = "fsl,imx6sl-usb", "fsl,imx27-usb";
 				reg = <0x02184200 0x200>;
@@ -825,7 +739,6 @@
 				rx-burst-size-dword = <0x10>;
 				status = "disabled";
 			};
-
 			usbh: usb@2184400 {
 				compatible = "fsl,imx6sl-usb", "fsl,imx27-usb";
 				reg = <0x02184400 0x200>;
@@ -840,14 +753,12 @@
 				rx-burst-size-dword = <0x10>;
 				status = "disabled";
 			};
-
 			usbmisc: usbmisc@2184800 {
 				#index-cells = <1>;
 				compatible = "fsl,imx6sl-usbmisc", "fsl,imx6q-usbmisc";
 				reg = <0x02184800 0x200>;
 				clocks = <&clks IMX6SL_CLK_USBOH3>;
 			};
-
 			fec: ethernet@2188000 {
 				compatible = "fsl,imx6sl-fec", "fsl,imx25-fec";
 				reg = <0x02188000 0x4000>;
@@ -857,7 +768,6 @@
 				clock-names = "ipg", "ahb";
 				status = "disabled";
 			};
-
 			usdhc1: mmc@2190000 {
 				compatible = "fsl,imx6sl-usdhc", "fsl,imx6q-usdhc";
 				reg = <0x02190000 0x4000>;
@@ -869,7 +779,6 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
 			usdhc2: mmc@2194000 {
 				compatible = "fsl,imx6sl-usdhc", "fsl,imx6q-usdhc";
 				reg = <0x02194000 0x4000>;
@@ -881,7 +790,6 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
 			usdhc3: mmc@2198000 {
 				compatible = "fsl,imx6sl-usdhc", "fsl,imx6q-usdhc";
 				reg = <0x02198000 0x4000>;
@@ -893,7 +801,6 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
 			usdhc4: mmc@219c000 {
 				compatible = "fsl,imx6sl-usdhc", "fsl,imx6q-usdhc";
 				reg = <0x0219c000 0x4000>;
@@ -905,7 +812,6 @@
 				bus-width = <4>;
 				status = "disabled";
 			};
-
 			i2c1: i2c@21a0000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -915,7 +821,6 @@
 				clocks = <&clks IMX6SL_CLK_I2C1>;
 				status = "disabled";
 			};
-
 			i2c2: i2c@21a4000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -925,7 +830,6 @@
 				clocks = <&clks IMX6SL_CLK_I2C2>;
 				status = "disabled";
 			};
-
 			i2c3: i2c@21a8000 {
 				#address-cells = <1>;
 				#size-cells = <0>;
@@ -935,20 +839,17 @@
 				clocks = <&clks IMX6SL_CLK_I2C3>;
 				status = "disabled";
 			};
-
 			memory-controller@21b0000 {
 				compatible = "fsl,imx6sl-mmdc", "fsl,imx6q-mmdc";
 				reg = <0x021b0000 0x4000>;
 				clocks = <&clks IMX6SL_CLK_MMDC_P0_IPG>;
 			};
-
 			rngb: rngb@21b4000 {
 				compatible = "fsl,imx6sl-rngb", "fsl,imx25-rngb";
 				reg = <0x021b4000 0x4000>;
 				interrupts = <0 5 IRQ_TYPE_LEVEL_HIGH>;
 				clocks = <&clks IMX6SL_CLK_DUMMY>;
 			};
-
 			weim: weim@21b8000 {
 				#address-cells = <2>;
 				#size-cells = <1>;
@@ -957,34 +858,28 @@
 				fsl,weim-cs-gpr = <&gpr>;
 				status = "disabled";
 			};
-
 			ocotp: efuse@21bc000 {
 				compatible = "fsl,imx6sl-ocotp", "syscon";
 				reg = <0x021bc000 0x4000>;
 				clocks = <&clks IMX6SL_CLK_OCOTP>;
 				#address-cells = <1>;
 				#size-cells = <1>;
-
 				cpu_speed_grade: speed-grade@10 {
 					reg = <0x10 4>;
 				};
-
 				tempmon_calib: calib@38 {
 					reg = <0x38 4>;
 				};
-
 				tempmon_temp_grade: temp-grade@20 {
 					reg = <0x20 4>;
 				};
 			};
-
 			audmux: audmux@21d8000 {
 				compatible = "fsl,imx6sl-audmux", "fsl,imx31-audmux";
 				reg = <0x021d8000 0x4000>;
 				status = "disabled";
 			};
 		};
-
 		gpu_2d: gpu@2200000 {
 			compatible = "vivante,gc";
 			reg = <0x02200000 0x4000>;
@@ -994,7 +889,6 @@
 			clock-names = "bus", "core";
 			power-domains = <&pd_pu>;
 		};
-
 		gpu_vg: gpu@2204000 {
 			compatible = "vivante,gc";
 			reg = <0x02204000 0x4000>;

@@ -1,73 +1,46 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Trogdor board device tree source
- *
- * Copyright 2020 Google LLC.
- */
-
 /dts-v1/;
-
 #include "sc7180-trogdor.dtsi"
-/* Must come after sc7180-trogdor.dtsi to modify cros_ec */
 #include <arm/cros-ec-keyboard.dtsi>
 #include "sc7180-trogdor-ti-sn65dsi86.dtsi"
-
 / {
 	model = "Google Trogdor (rev1+)";
 	compatible = "google,trogdor", "qcom,sc7180";
 };
-
 &ap_tp_i2c {
 	status = "okay";
 };
-
 ap_ts_pen_1v8: &i2c4 {
 	status = "okay";
 	clock-frequency = <400000>;
-
 	ap_ts: touchscreen@10 {
 		compatible = "elan,ekth3500";
 		reg = <0x10>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&ts_int_l>, <&ts_reset_l>;
-
 		interrupt-parent = <&tlmm>;
 		interrupts = <9 IRQ_TYPE_LEVEL_LOW>;
-
 		vcc33-supply = <&pp3300_ts>;
-
 		reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
 	};
 };
-
 &panel {
 	compatible = "auo,b116xa01";
 };
-
 &sdhc_2 {
 	status = "okay";
 };
-
 &trackpad {
 	interrupts = <58 IRQ_TYPE_EDGE_FALLING>;
 };
-
 &usb_hub_2_x {
 	 vdd-supply = <&pp3300_l7c>;
 };
-
 &usb_hub_3_x {
 	 vdd-supply = <&pp3300_l7c>;
 };
-
-/* PINCTRL - modifications to sc7180-trogdor.dtsi */
-
 &trackpad_int_1v8_odl {
 	pins = "gpio58";
 };
-
-/* PINCTRL - board-specific pinctrl */
-
 &tlmm {
 	gpio-line-names = "ESIM_MISO",
 			  "ESIM_MOSI",
@@ -135,10 +108,6 @@ ap_ts_pen_1v8: &i2c4 {
 			  "AP_SPI_CLK",
 			  "AP_SPI_MOSI",
 			  "AP_SPI_MISO",
-			  /*
-			   * AP_FLASH_WP_L is crossystem ABI. Schematics
-			   * call it BIOS_FLASH_WP_L.
-			   */
 			  "AP_FLASH_WP_L",
 			  "DBG_SPI_HOLD_L",
 			  "AP_SPI_CS0_L",

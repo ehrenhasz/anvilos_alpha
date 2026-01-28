@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2012-2013 Hisilicon Limited.
- * Copyright (c) 2012-2013 Linaro Limited.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- *	   Xin Li <li.xin@linaro.org>
- */
-
 #ifndef __DTS_HI3620_CLOCK_H
 #define __DTS_HI3620_CLOCK_H
-
 #define HI3620_NONE_CLOCK	0
-
-/* fixed rate & fixed factor clocks */
 #define HI3620_OSC32K		1
 #define HI3620_OSC26M		2
 #define HI3620_PCLK		3
@@ -25,8 +13,6 @@
 #define HI3620_RCLK_TCXO	10
 #define HI3620_RCLK_CFGAXI	11
 #define HI3620_RCLK_PICO	12
-
-/* mux clocks */
 #define HI3620_TIMER0_MUX	32
 #define HI3620_TIMER1_MUX	33
 #define HI3620_TIMER2_MUX	34
@@ -62,8 +48,6 @@
 #define HI3620_RCLK_HSIC	64
 #define HI3620_MMC2_MUX		65
 #define HI3620_MMC3_MUX		66
-
-/* divider clocks */
 #define HI3620_SHAREAXI_DIV	128
 #define HI3620_CFGAXI_DIV	129
 #define HI3620_SD_DIV		130
@@ -71,8 +55,6 @@
 #define HI3620_HSIC_DIV		132
 #define HI3620_MMC2_DIV		133
 #define HI3620_MMC3_DIV		134
-
-/* gate clocks */
 #define HI3620_TIMERCLK01	160
 #define HI3620_TIMER_RCLK01	161
 #define HI3620_TIMERCLK23	162
@@ -132,12 +114,9 @@
 #define HI3620_MMC_CLK2		216
 #define HI3620_MMC_CLK3		217
 #define HI3620_MCU_CLK		218
-
 #define HI3620_SD_CIUCLK	0
 #define HI3620_MMC_CIUCLK1	1
 #define HI3620_MMC_CIUCLK2	2
 #define HI3620_MMC_CIUCLK3	3
-
 #define HI3620_NR_CLKS		219
-
-#endif	/* __DTS_HI3620_CLOCK_H */
+#endif	 

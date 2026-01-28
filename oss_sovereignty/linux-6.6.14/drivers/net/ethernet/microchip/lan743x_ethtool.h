@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (C) 2018 Microchip Technology Inc. */
-
 #ifndef _LAN743X_ETHTOOL_H
 #define _LAN743X_ETHTOOL_H
-
 #include "linux/ethtool.h"
-
 #define LAN743X_ETH_REG_VERSION         1
-
 enum {
 	ETH_PRIV_FLAGS,
 	ETH_ID_REV,
@@ -27,13 +21,9 @@ enum {
 	ETH_EEE_TX_LPI_REQ_DLY,
 	ETH_WUCSR,
 	ETH_WK_SRC,
-
-	/* Add new registers above */
 	MAX_LAN743X_ETH_COMMON_REGS
 };
-
 enum {
-	/* SGMII Register */
 	ETH_SR_VSMMD_DEV_ID1,
 	ETH_SR_VSMMD_DEV_ID2,
 	ETH_SR_VSMMD_PCS_ID1,
@@ -96,11 +86,7 @@ enum {
 	ETH_VR_MII_SNPS_CR_DATA,
 	ETH_VR_MII_DIG_CTRL2,
 	ETH_VR_MII_DIG_ERRCNT,
-
-	/* Add new registers above */
 	MAX_LAN743X_ETH_SGMII_REGS
 };
-
 extern const struct ethtool_ops lan743x_ethtool_ops;
-
-#endif /* _LAN743X_ETHTOOL_H */
+#endif  

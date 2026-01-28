@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_VERMAGIC_H
 #define _ASM_VERMAGIC_H
-
 #ifdef CONFIG_CPU_BMIPS
 #define MODULE_PROC_FAMILY "BMIPS "
 #elif defined CONFIG_CPU_MIPS32_R1
@@ -53,14 +51,11 @@
 #else
 #error MODULE_PROC_FAMILY undefined for your processor configuration
 #endif
-
 #ifdef CONFIG_32BIT
 #define MODULE_KERNEL_TYPE "32BIT "
 #elif defined CONFIG_64BIT
 #define MODULE_KERNEL_TYPE "64BIT "
 #endif
-
 #define MODULE_ARCH_VERMAGIC \
 	MODULE_PROC_FAMILY MODULE_KERNEL_TYPE
-
-#endif /* _ASM_VERMAGIC_H */
+#endif  

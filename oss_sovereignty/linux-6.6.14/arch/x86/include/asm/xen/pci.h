@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_XEN_PCI_H
 #define _ASM_X86_XEN_PCI_H
-
 #if defined(CONFIG_PCI_XEN)
 extern int __init pci_xen_init(void);
 extern int __init pci_xen_hvm_init(void);
@@ -22,21 +20,15 @@ static inline int __init pci_xen_initial_domain(void)
 	return -1;
 }
 #endif
-
 #if defined(CONFIG_PCI_MSI)
 #if defined(CONFIG_PCI_XEN)
-/* The drivers/pci/xen-pcifront.c sets this structure to
- * its own functions.
- */
 struct xen_pci_frontend_ops {
 	int (*enable_msi)(struct pci_dev *dev, int vectors[]);
 	void (*disable_msi)(struct pci_dev *dev);
 	int (*enable_msix)(struct pci_dev *dev, int vectors[], int nvec);
 	void (*disable_msix)(struct pci_dev *dev);
 };
-
 extern struct xen_pci_frontend_ops *xen_pci_frontend;
-
 static inline int xen_pci_frontend_enable_msi(struct pci_dev *dev,
 					      int vectors[])
 {
@@ -61,7 +53,6 @@ static inline void xen_pci_frontend_disable_msix(struct pci_dev *dev)
 	if (xen_pci_frontend && xen_pci_frontend->disable_msix)
 			xen_pci_frontend->disable_msix(dev);
 }
-#endif /* CONFIG_PCI_XEN */
-#endif /* CONFIG_PCI_MSI */
-
-#endif	/* _ASM_X86_XEN_PCI_H */
+#endif  
+#endif  
+#endif	 

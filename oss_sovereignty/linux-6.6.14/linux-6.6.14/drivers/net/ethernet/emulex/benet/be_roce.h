@@ -1,32 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005 - 2016 Broadcom
- * All rights reserved.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
-
 #ifndef BE_ROCE_H
 #define BE_ROCE_H
-
 #include <linux/pci.h>
 #include <linux/netdevice.h>
-
 #define BE_ROCE_ABI_VERSION	1
-
 struct ocrdma_dev;
-
 enum be_interrupt_mode {
 	BE_INTERRUPT_MODE_MSIX	= 0,
 	BE_INTERRUPT_MODE_INTX	= 1,
 	BE_INTERRUPT_MODE_MSI	= 2,
 };
-
 #define MAX_MSIX_VECTORS		32
 struct be_dev_info {
 	u8 __iomem *db;
@@ -46,8 +28,6 @@ struct be_dev_info {
 		u32 vector_list[MAX_MSIX_VECTORS];
 	} msix;
 };
-
-/* ocrdma driver register's the callback functions with nic driver. */
 struct ocrdma_driver {
 	unsigned char name[32];
 	u32 be_abi_version;
@@ -55,19 +35,11 @@ struct ocrdma_driver {
 	void (*remove) (struct ocrdma_dev *);
 	void (*state_change_handler) (struct ocrdma_dev *, u32 new_state);
 };
-
 enum be_roce_event {
 	BE_DEV_SHUTDOWN = 2
 };
-
-/* APIs for RoCE driver to register callback handlers,
- * which will be invoked when device is added, removed, ifup, ifdown
- */
 int be_roce_register_driver(struct ocrdma_driver *drv);
 void be_roce_unregister_driver(struct ocrdma_driver *drv);
-
-/* API for RoCE driver to issue mailbox commands */
 int be_roce_mcc_cmd(void *netdev_handle, void *wrb_payload,
 		    int wrb_payload_size, u16 *cmd_status, u16 *ext_status);
-
-#endif /* BE_ROCE_H */
+#endif  

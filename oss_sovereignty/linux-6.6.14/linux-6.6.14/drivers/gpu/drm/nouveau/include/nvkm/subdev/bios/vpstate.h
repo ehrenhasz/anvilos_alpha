@@ -1,16 +1,13 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVBIOS_VPSTATE_H__
 #define __NVBIOS_VPSTATE_H__
 struct nvbios_vpstate_header {
 	u32 offset;
-
 	u8 version;
 	u8 hlen;
 	u8 ecount;
 	u8 elen;
 	u8 scount;
 	u8 slen;
-
 	u8 base_id;
 	u8 boost_id;
 	u8 tdp_id;

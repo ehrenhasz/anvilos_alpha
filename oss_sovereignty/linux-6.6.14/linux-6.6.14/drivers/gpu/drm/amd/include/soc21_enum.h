@@ -1,28 +1,5 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #if !defined (_soc21_ENUM_HEADER)
 #define _soc21_ENUM_HEADER
-
 #ifndef _DRIVER_BUILD
 #ifndef GL_ZERO
 #define GL__ZERO                      BLEND_ZERO
@@ -42,125 +19,61 @@
 #define GL__ONE_MINUS_CONSTANT_ALPHA  BLEND_ONE_MINUS_CONSTANT_ALPHA
 #endif
 #endif
-
-/*******************************************************
- * Chip Enums
- *******************************************************/
-
-/*
- * DSM_DATA_SEL enum
- */
-
 typedef enum DSM_DATA_SEL {
 DSM_DATA_SEL_DISABLE                     = 0x00000000,
 DSM_DATA_SEL_0                           = 0x00000001,
 DSM_DATA_SEL_1                           = 0x00000002,
 DSM_DATA_SEL_BOTH                        = 0x00000003,
 } DSM_DATA_SEL;
-
-/*
- * DSM_ENABLE_ERROR_INJECT enum
- */
-
 typedef enum DSM_ENABLE_ERROR_INJECT {
 DSM_ENABLE_ERROR_INJECT_FED_IN           = 0x00000000,
 DSM_ENABLE_ERROR_INJECT_SINGLE           = 0x00000001,
 DSM_ENABLE_ERROR_INJECT_UNCORRECTABLE    = 0x00000002,
 DSM_ENABLE_ERROR_INJECT_UNCORRECTABLE_LIMITED = 0x00000003,
 } DSM_ENABLE_ERROR_INJECT;
-
-/*
- * DSM_SELECT_INJECT_DELAY enum
- */
-
 typedef enum DSM_SELECT_INJECT_DELAY {
 DSM_SELECT_INJECT_DELAY_NO_DELAY         = 0x00000000,
 DSM_SELECT_INJECT_DELAY_DELAY_ERROR      = 0x00000001,
 } DSM_SELECT_INJECT_DELAY;
-
-/*
- * DSM_SINGLE_WRITE enum
- */
-
 typedef enum DSM_SINGLE_WRITE {
 DSM_SINGLE_WRITE_DIS                     = 0x00000000,
 DSM_SINGLE_WRITE_EN                      = 0x00000001,
 } DSM_SINGLE_WRITE;
-
-/*
- * ENUM_NUM_SIMD_PER_CU enum
- */
-
 typedef enum ENUM_NUM_SIMD_PER_CU {
 NUM_SIMD_PER_CU                          = 0x00000004,
 } ENUM_NUM_SIMD_PER_CU;
-
-/*
- * GATCL1RequestType enum
- */
-
 typedef enum GATCL1RequestType {
 GATCL1_TYPE_NORMAL                       = 0x00000000,
 GATCL1_TYPE_SHOOTDOWN                    = 0x00000001,
 GATCL1_TYPE_BYPASS                       = 0x00000002,
 } GATCL1RequestType;
-
-/*
- * GL0V_CACHE_POLICIES enum
- */
-
 typedef enum GL0V_CACHE_POLICIES {
 GL0V_CACHE_POLICY_MISS_LRU               = 0x00000000,
 GL0V_CACHE_POLICY_MISS_EVICT             = 0x00000001,
 GL0V_CACHE_POLICY_HIT_LRU                = 0x00000002,
 GL0V_CACHE_POLICY_HIT_EVICT              = 0x00000003,
 } GL0V_CACHE_POLICIES;
-
-/*
- * GL1_CACHE_POLICIES enum
- */
-
 typedef enum GL1_CACHE_POLICIES {
 GL1_CACHE_POLICY_MISS_LRU                = 0x00000000,
 GL1_CACHE_POLICY_MISS_EVICT              = 0x00000001,
 GL1_CACHE_POLICY_HIT_LRU                 = 0x00000002,
 GL1_CACHE_POLICY_HIT_EVICT               = 0x00000003,
 } GL1_CACHE_POLICIES;
-
-/*
- * GL1_CACHE_STORE_POLICIES enum
- */
-
 typedef enum GL1_CACHE_STORE_POLICIES {
 GL1_CACHE_STORE_POLICY_BYPASS            = 0x00000000,
 } GL1_CACHE_STORE_POLICIES;
-
-/*
- * GL2_CACHE_POLICIES enum
- */
-
 typedef enum GL2_CACHE_POLICIES {
 GL2_CACHE_POLICY_LRU                     = 0x00000000,
 GL2_CACHE_POLICY_STREAM                  = 0x00000001,
 GL2_CACHE_POLICY_NOA                     = 0x00000002,
 GL2_CACHE_POLICY_BYPASS                  = 0x00000003,
 } GL2_CACHE_POLICIES;
-
-/*
- * Hdp_SurfaceEndian enum
- */
-
 typedef enum Hdp_SurfaceEndian {
 HDP_ENDIAN_NONE                          = 0x00000000,
 HDP_ENDIAN_8IN16                         = 0x00000001,
 HDP_ENDIAN_8IN32                         = 0x00000002,
 HDP_ENDIAN_8IN64                         = 0x00000003,
 } Hdp_SurfaceEndian;
-
-/*
- * MTYPE enum
- */
-
 typedef enum MTYPE {
 MTYPE_C_RW_US                            = 0x00000000,
 MTYPE_RESERVED_1                         = 0x00000001,
@@ -171,11 +84,6 @@ MTYPE_RESERVED_5                         = 0x00000005,
 MTYPE_C_RO_US                            = 0x00000006,
 MTYPE_RESERVED_7                         = 0x00000007,
 } MTYPE;
-
-/*
- * PERFMON_COUNTER_MODE enum
- */
-
 typedef enum PERFMON_COUNTER_MODE {
 PERFMON_COUNTER_MODE_ACCUM               = 0x00000000,
 PERFMON_COUNTER_MODE_ACTIVE_CYCLES       = 0x00000001,
@@ -189,11 +97,6 @@ PERFMON_COUNTER_MODE_CYCLES_EQ_HI        = 0x00000008,
 PERFMON_COUNTER_MODE_INACTIVE_CYCLES     = 0x00000009,
 PERFMON_COUNTER_MODE_RESERVED            = 0x0000000f,
 } PERFMON_COUNTER_MODE;
-
-/*
- * PERFMON_SPM_MODE enum
- */
-
 typedef enum PERFMON_SPM_MODE {
 PERFMON_SPM_MODE_OFF                     = 0x00000000,
 PERFMON_SPM_MODE_16BIT_CLAMP             = 0x00000001,
@@ -207,11 +110,6 @@ PERFMON_SPM_MODE_TEST_MODE_0             = 0x00000008,
 PERFMON_SPM_MODE_TEST_MODE_1             = 0x00000009,
 PERFMON_SPM_MODE_TEST_MODE_2             = 0x0000000a,
 } PERFMON_SPM_MODE;
-
-/*
- * RMI_CID enum
- */
-
 typedef enum RMI_CID {
 RMI_CID_CC                               = 0x00000000,
 RMI_CID_FC                               = 0x00000001,
@@ -222,22 +120,12 @@ RMI_CID_S                                = 0x00000005,
 RMI_CID_TILE                             = 0x00000006,
 RMI_CID_ZPCPSD                           = 0x00000007,
 } RMI_CID;
-
-/*
- * ReadPolicy enum
- */
-
 typedef enum ReadPolicy {
 CACHE_LRU_RD                             = 0x00000000,
 CACHE_STREAM_RD                          = 0x00000001,
 CACHE_NOA                                = 0x00000002,
 RESERVED_RDPOLICY                        = 0x00000003,
 } ReadPolicy;
-
-/*
- * SDMA_PERFMON_SEL enum
- */
-
 typedef enum SDMA_PERFMON_SEL {
 SDMA_PERFMON_SEL_CYCLE                   = 0x00000000,
 SDMA_PERFMON_SEL_IDLE                    = 0x00000001,
@@ -334,11 +222,6 @@ SDMA_PERFMON_SEL_GCR_RTN                 = 0x00000062,
 SDMA_PERFMON_SEL_UTCL1_TAG_DELAY_COUNTER = 0x00000063,
 SDMA_PERFMON_SEL_MMHUB_TAG_DELAY_COUNTER = 0x00000064,
 } SDMA_PERFMON_SEL;
-
-/*
- * SDMA_PERF_SEL enum
- */
-
 typedef enum SDMA_PERF_SEL {
 SDMA_PERF_SEL_CYCLE                      = 0x00000000,
 SDMA_PERF_SEL_IDLE                       = 0x00000001,
@@ -461,191 +344,92 @@ SDMA_PERF_SEL_CH_CE_WRRET_VALID          = 0x0000007c,
 SDMA_PERF_SEL_CE_CH_RDREQ_SEND           = 0x0000007d,
 SDMA_PERF_SEL_CH_CE_RDRET_VALID          = 0x0000007e,
 } SDMA_PERF_SEL;
-
-/*
- * TCC_CACHE_POLICIES enum
- */
-
 typedef enum TCC_CACHE_POLICIES {
 TCC_CACHE_POLICY_LRU                     = 0x00000000,
 TCC_CACHE_POLICY_STREAM                  = 0x00000001,
 } TCC_CACHE_POLICIES;
-
-/*
- * TCC_MTYPE enum
- */
-
 typedef enum TCC_MTYPE {
 MTYPE_NC                                 = 0x00000000,
 MTYPE_WC                                 = 0x00000001,
 MTYPE_CC                                 = 0x00000002,
 } TCC_MTYPE;
-
-/*
- * UTCL0FaultType enum
- */
-
 typedef enum UTCL0FaultType {
 UTCL0_XNACK_SUCCESS                      = 0x00000000,
 UTCL0_XNACK_RETRY                        = 0x00000001,
 UTCL0_XNACK_PRT                          = 0x00000002,
 UTCL0_XNACK_NO_RETRY                     = 0x00000003,
 } UTCL0FaultType;
-
-/*
- * UTCL0RequestType enum
- */
-
 typedef enum UTCL0RequestType {
 UTCL0_TYPE_NORMAL                        = 0x00000000,
 UTCL0_TYPE_SHOOTDOWN                     = 0x00000001,
 UTCL0_TYPE_BYPASS                        = 0x00000002,
 } UTCL0RequestType;
-
-/*
- * UTCL1FaultType enum
- */
-
 typedef enum UTCL1FaultType {
 UTCL1_XNACK_SUCCESS                      = 0x00000000,
 UTCL1_XNACK_RETRY                        = 0x00000001,
 UTCL1_XNACK_PRT                          = 0x00000002,
 UTCL1_XNACK_NO_RETRY                     = 0x00000003,
 } UTCL1FaultType;
-
-/*
- * UTCL1RequestType enum
- */
-
 typedef enum UTCL1RequestType {
 UTCL1_TYPE_NORMAL                        = 0x00000000,
 UTCL1_TYPE_SHOOTDOWN                     = 0x00000001,
 UTCL1_TYPE_BYPASS                        = 0x00000002,
 } UTCL1RequestType;
-
-/*
- * VMEMCMD_RETURN_ORDER enum
- */
-
 typedef enum VMEMCMD_RETURN_ORDER {
 VMEMCMD_RETURN_OUT_OF_ORDER              = 0x00000000,
 VMEMCMD_RETURN_IN_ORDER                  = 0x00000001,
 VMEMCMD_RETURN_IN_ORDER_READ             = 0x00000002,
 } VMEMCMD_RETURN_ORDER;
-
-/*
- * WritePolicy enum
- */
-
 typedef enum WritePolicy {
 CACHE_LRU_WR                             = 0x00000000,
 CACHE_STREAM                             = 0x00000001,
 CACHE_NOA_WR                             = 0x00000002,
 CACHE_BYPASS                             = 0x00000003,
 } WritePolicy;
-
-/*******************************************************
- * CNVC_CFG Enums
- *******************************************************/
-
-/*
- * CNVC_BYPASS enum
- */
-
 typedef enum CNVC_BYPASS {
 CNVC_BYPASS_DISABLE                      = 0x00000000,
 CNVC_BYPASS_EN                           = 0x00000001,
 } CNVC_BYPASS;
-
-/*
- * CNVC_COEF_FORMAT_ENUM enum
- */
-
 typedef enum CNVC_COEF_FORMAT_ENUM {
 CNVC_FIX_S2_13                           = 0x00000000,
 CNVC_FIX_S3_12                           = 0x00000001,
 } CNVC_COEF_FORMAT_ENUM;
-
-/*
- * CNVC_ENABLE enum
- */
-
 typedef enum CNVC_ENABLE {
 CNVC_DIS                                 = 0x00000000,
 CNVC_EN                                  = 0x00000001,
 } CNVC_ENABLE;
-
-/*
- * CNVC_PENDING enum
- */
-
 typedef enum CNVC_PENDING {
 CNVC_NOT_PENDING                         = 0x00000000,
 CNVC_YES_PENDING                         = 0x00000001,
 } CNVC_PENDING;
-
-/*
- * COLOR_KEYER_MODE enum
- */
-
 typedef enum COLOR_KEYER_MODE {
 FORCE_00                                 = 0x00000000,
 FORCE_FF                                 = 0x00000001,
 RANGE_00                                 = 0x00000002,
 RANGE_FF                                 = 0x00000003,
 } COLOR_KEYER_MODE;
-
-/*
- * DENORM_TRUNCATE enum
- */
-
 typedef enum DENORM_TRUNCATE {
 CNVC_ROUND                               = 0x00000000,
 CNVC_TRUNCATE                            = 0x00000001,
 } DENORM_TRUNCATE;
-
-/*
- * FORMAT_CROSSBAR enum
- */
-
 typedef enum FORMAT_CROSSBAR {
 FORMAT_CROSSBAR_R                        = 0x00000000,
 FORMAT_CROSSBAR_G                        = 0x00000001,
 FORMAT_CROSSBAR_B                        = 0x00000002,
 } FORMAT_CROSSBAR;
-
-/*
- * PIX_EXPAND_MODE enum
- */
-
 typedef enum PIX_EXPAND_MODE {
 PIX_DYNAMIC_EXPANSION                    = 0x00000000,
 PIX_ZERO_EXPANSION                       = 0x00000001,
 } PIX_EXPAND_MODE;
-
-/*
- * PRE_CSC_MODE_ENUM enum
- */
-
 typedef enum PRE_CSC_MODE_ENUM {
 PRE_CSC_BYPASS                           = 0x00000000,
 PRE_CSC_SET_A                            = 0x00000001,
 PRE_CSC_SET_B                            = 0x00000002,
 } PRE_CSC_MODE_ENUM;
-
-/*
- * PRE_DEGAM_MODE enum
- */
-
 typedef enum PRE_DEGAM_MODE {
 PRE_DEGAM_BYPASS                         = 0x00000000,
 PRE_DEGAM_ENABLE                         = 0x00000001,
 } PRE_DEGAM_MODE;
-
-/*
- * PRE_DEGAM_SELECT enum
- */
-
 typedef enum PRE_DEGAM_SELECT {
 PRE_DEGAM_SRGB                           = 0x00000000,
 PRE_DEGAM_GAMMA_22                       = 0x00000001,
@@ -655,11 +439,6 @@ PRE_DEGAM_BT2020                         = 0x00000004,
 PRE_DEGAM_BT2100PQ                       = 0x00000005,
 PRE_DEGAM_BT2100HLG                      = 0x00000006,
 } PRE_DEGAM_SELECT;
-
-/*
- * SURFACE_PIXEL_FORMAT enum
- */
-
 typedef enum SURFACE_PIXEL_FORMAT {
 ARGB1555                                 = 0x00000001,
 RGBA5551                                 = 0x00000002,
@@ -737,51 +516,22 @@ MONO_12MSB                               = 0x0000007b,
 MONO_12LSB                               = 0x0000007c,
 MONO_16                                  = 0x0000007d,
 } SURFACE_PIXEL_FORMAT;
-
-/*
- * XNORM enum
- */
-
 typedef enum XNORM {
 XNORM_A                                  = 0x00000000,
 XNORM_B                                  = 0x00000001,
 } XNORM;
-
-/*******************************************************
- * CNVC_CUR Enums
- *******************************************************/
-
-/*
- * CUR_ENABLE enum
- */
-
 typedef enum CUR_ENABLE {
 CUR_DIS                                  = 0x00000000,
 CUR_EN                                   = 0x00000001,
 } CUR_ENABLE;
-
-/*
- * CUR_EXPAND_MODE enum
- */
-
 typedef enum CUR_EXPAND_MODE {
 CUR_DYNAMIC_EXPANSION                    = 0x00000000,
 CUR_ZERO_EXPANSION                       = 0x00000001,
 } CUR_EXPAND_MODE;
-
-/*
- * CUR_INV_CLAMP enum
- */
-
 typedef enum CUR_INV_CLAMP {
 CUR_CLAMP_DIS                            = 0x00000000,
 CUR_CLAMP_EN                             = 0x00000001,
 } CUR_INV_CLAMP;
-
-/*
- * CUR_MODE enum
- */
-
 typedef enum CUR_MODE {
 MONO_2BIT                                = 0x00000000,
 COLOR_24BIT_1BIT_AND                     = 0x00000001,
@@ -790,42 +540,18 @@ COLOR_24BIT_8BIT_ALPHA_UNPREMULT         = 0x00000003,
 COLOR_64BIT_FP_PREMULT                   = 0x00000004,
 COLOR_64BIT_FP_UNPREMULT                 = 0x00000005,
 } CUR_MODE;
-
-/*
- * CUR_PENDING enum
- */
-
 typedef enum CUR_PENDING {
 CUR_NOT_PENDING                          = 0x00000000,
 CUR_YES_PENDING                          = 0x00000001,
 } CUR_PENDING;
-
-/*
- * CUR_ROM_EN enum
- */
-
 typedef enum CUR_ROM_EN {
 CUR_FP_NO_ROM                            = 0x00000000,
 CUR_FP_USE_ROM                           = 0x00000001,
 } CUR_ROM_EN;
-
-/*******************************************************
- * DSCL Enums
- *******************************************************/
-
-/*
- * COEF_RAM_SELECT_RD enum
- */
-
 typedef enum COEF_RAM_SELECT_RD {
 COEF_RAM_SELECT_BACK                     = 0x00000000,
 COEF_RAM_SELECT_CURRENT                  = 0x00000001,
 } COEF_RAM_SELECT_RD;
-
-/*
- * DSCL_MODE_SEL enum
- */
-
 typedef enum DSCL_MODE_SEL {
 DSCL_MODE_SCALING_444_BYPASS             = 0x00000000,
 DSCL_MODE_SCALING_444_RGB_ENABLE         = 0x00000001,
@@ -835,196 +561,92 @@ DSCL_MODE_LUMA_SCALING_BYPASS            = 0x00000004,
 DSCL_MODE_CHROMA_SCALING_BYPASS          = 0x00000005,
 DSCL_MODE_DSCL_BYPASS                    = 0x00000006,
 } DSCL_MODE_SEL;
-
-/*
- * LB_ALPHA_EN enum
- */
-
 typedef enum LB_ALPHA_EN {
 LB_ALPHA_DISABLE                         = 0x00000000,
 LB_ALPHA_ENABLE                          = 0x00000001,
 } LB_ALPHA_EN;
-
-/*
- * LB_INTERLEAVE_EN enum
- */
-
 typedef enum LB_INTERLEAVE_EN {
 LB_INTERLEAVE_DISABLE                    = 0x00000000,
 LB_INTERLEAVE_ENABLE                     = 0x00000001,
 } LB_INTERLEAVE_EN;
-
-/*
- * LB_MEMORY_CONFIG enum
- */
-
 typedef enum LB_MEMORY_CONFIG {
 LB_MEMORY_CONFIG_0                       = 0x00000000,
 LB_MEMORY_CONFIG_1                       = 0x00000001,
 LB_MEMORY_CONFIG_2                       = 0x00000002,
 LB_MEMORY_CONFIG_3                       = 0x00000003,
 } LB_MEMORY_CONFIG;
-
-/*
- * OBUF_BYPASS_SEL enum
- */
-
 typedef enum OBUF_BYPASS_SEL {
 OBUF_BYPASS_DIS                          = 0x00000000,
 OBUF_BYPASS_EN                           = 0x00000001,
 } OBUF_BYPASS_SEL;
-
-/*
- * OBUF_IS_HALF_RECOUT_WIDTH_SEL enum
- */
-
 typedef enum OBUF_IS_HALF_RECOUT_WIDTH_SEL {
 OBUF_FULL_RECOUT                         = 0x00000000,
 OBUF_HALF_RECOUT                         = 0x00000001,
 } OBUF_IS_HALF_RECOUT_WIDTH_SEL;
-
-/*
- * OBUF_USE_FULL_BUFFER_SEL enum
- */
-
 typedef enum OBUF_USE_FULL_BUFFER_SEL {
 OBUF_RECOUT                              = 0x00000000,
 OBUF_FULL                                = 0x00000001,
 } OBUF_USE_FULL_BUFFER_SEL;
-
-/*
- * SCL_2TAP_HARDCODE enum
- */
-
 typedef enum SCL_2TAP_HARDCODE {
 SCL_COEF_2TAP_HARDCODE_OFF               = 0x00000000,
 SCL_COEF_2TAP_HARDCODE_ON                = 0x00000001,
 } SCL_2TAP_HARDCODE;
-
-/*
- * SCL_ALPHA_COEF enum
- */
-
 typedef enum SCL_ALPHA_COEF {
 SCL_ALPHA_COEF_FIRST                     = 0x00000000,
 SCL_ALPHA_COEF_SECOND                    = 0x00000001,
 } SCL_ALPHA_COEF;
-
-/*
- * SCL_AUTOCAL_MODE enum
- */
-
 typedef enum SCL_AUTOCAL_MODE {
 AUTOCAL_MODE_OFF                         = 0x00000000,
 AUTOCAL_MODE_AUTOSCALE                   = 0x00000001,
 AUTOCAL_MODE_AUTOCENTER                  = 0x00000002,
 AUTOCAL_MODE_AUTOREPLICATE               = 0x00000003,
 } SCL_AUTOCAL_MODE;
-
-/*
- * SCL_BOUNDARY enum
- */
-
 typedef enum SCL_BOUNDARY {
 SCL_BOUNDARY_EDGE                        = 0x00000000,
 SCL_BOUNDARY_BLACK                       = 0x00000001,
 } SCL_BOUNDARY;
-
-/*
- * SCL_CHROMA_COEF enum
- */
-
 typedef enum SCL_CHROMA_COEF {
 SCL_CHROMA_COEF_FIRST                    = 0x00000000,
 SCL_CHROMA_COEF_SECOND                   = 0x00000001,
 } SCL_CHROMA_COEF;
-
-/*
- * SCL_COEF_FILTER_TYPE_SEL enum
- */
-
 typedef enum SCL_COEF_FILTER_TYPE_SEL {
 SCL_COEF_LUMA_VERT_FILTER                = 0x00000000,
 SCL_COEF_LUMA_HORZ_FILTER                = 0x00000001,
 SCL_COEF_CHROMA_VERT_FILTER              = 0x00000002,
 SCL_COEF_CHROMA_HORZ_FILTER              = 0x00000003,
 } SCL_COEF_FILTER_TYPE_SEL;
-
-/*
- * SCL_COEF_RAM_SEL enum
- */
-
 typedef enum SCL_COEF_RAM_SEL {
 SCL_COEF_RAM_SEL_0                       = 0x00000000,
 SCL_COEF_RAM_SEL_1                       = 0x00000001,
 } SCL_COEF_RAM_SEL;
-
-/*
- * SCL_SHARP_EN enum
- */
-
 typedef enum SCL_SHARP_EN {
 SCL_SHARP_DISABLE                        = 0x00000000,
 SCL_SHARP_ENABLE                         = 0x00000001,
 } SCL_SHARP_EN;
-
-/*******************************************************
- * CM Enums
- *******************************************************/
-
-/*
- * CMC_3DLUT_30BIT_ENUM enum
- */
-
 typedef enum CMC_3DLUT_30BIT_ENUM {
 CMC_3DLUT_36BIT                          = 0x00000000,
 CMC_3DLUT_30BIT                          = 0x00000001,
 } CMC_3DLUT_30BIT_ENUM;
-
-/*
- * CMC_3DLUT_RAM_SEL enum
- */
-
 typedef enum CMC_3DLUT_RAM_SEL {
 CMC_RAM0_ACCESS                          = 0x00000000,
 CMC_RAM1_ACCESS                          = 0x00000001,
 CMC_RAM2_ACCESS                          = 0x00000002,
 CMC_RAM3_ACCESS                          = 0x00000003,
 } CMC_3DLUT_RAM_SEL;
-
-/*
- * CMC_3DLUT_SIZE_ENUM enum
- */
-
 typedef enum CMC_3DLUT_SIZE_ENUM {
 CMC_3DLUT_17CUBE                         = 0x00000000,
 CMC_3DLUT_9CUBE                          = 0x00000001,
 } CMC_3DLUT_SIZE_ENUM;
-
-/*
- * CMC_LUT_2_CONFIG_ENUM enum
- */
-
 typedef enum CMC_LUT_2_CONFIG_ENUM {
 CMC_LUT_2CFG_NO_MEMORY                   = 0x00000000,
 CMC_LUT_2CFG_MEMORY_A                    = 0x00000001,
 CMC_LUT_2CFG_MEMORY_B                    = 0x00000002,
 } CMC_LUT_2_CONFIG_ENUM;
-
-/*
- * CMC_LUT_2_MODE_ENUM enum
- */
-
 typedef enum CMC_LUT_2_MODE_ENUM {
 CMC_LUT_2_MODE_BYPASS                    = 0x00000000,
 CMC_LUT_2_MODE_RAMA_LUT                  = 0x00000001,
 CMC_LUT_2_MODE_RAMB_LUT                  = 0x00000002,
 } CMC_LUT_2_MODE_ENUM;
-
-/*
- * CMC_LUT_NUM_SEG enum
- */
-
 typedef enum CMC_LUT_NUM_SEG {
 CMC_SEGMENTS_1                           = 0x00000000,
 CMC_SEGMENTS_2                           = 0x00000001,
@@ -1035,115 +657,55 @@ CMC_SEGMENTS_32                          = 0x00000005,
 CMC_SEGMENTS_64                          = 0x00000006,
 CMC_SEGMENTS_128                         = 0x00000007,
 } CMC_LUT_NUM_SEG;
-
-/*
- * CMC_LUT_RAM_SEL enum
- */
-
 typedef enum CMC_LUT_RAM_SEL {
 CMC_RAMA_ACCESS                          = 0x00000000,
 CMC_RAMB_ACCESS                          = 0x00000001,
 } CMC_LUT_RAM_SEL;
-
-/*
- * CM_BYPASS enum
- */
-
 typedef enum CM_BYPASS {
 NON_BYPASS                               = 0x00000000,
 BYPASS_EN                                = 0x00000001,
 } CM_BYPASS;
-
-/*
- * CM_COEF_FORMAT_ENUM enum
- */
-
 typedef enum CM_COEF_FORMAT_ENUM {
 FIX_S2_13                                = 0x00000000,
 FIX_S3_12                                = 0x00000001,
 } CM_COEF_FORMAT_ENUM;
-
-/*
- * CM_DATA_SIGNED enum
- */
-
 typedef enum CM_DATA_SIGNED {
 UNSIGNED                                 = 0x00000000,
 SIGNED                                   = 0x00000001,
 } CM_DATA_SIGNED;
-
-/*
- * CM_EN enum
- */
-
 typedef enum CM_EN {
 CM_DISABLE                               = 0x00000000,
 CM_ENABLE                                = 0x00000001,
 } CM_EN;
-
-/*
- * CM_GAMMA_LUT_MODE_ENUM enum
- */
-
 typedef enum CM_GAMMA_LUT_MODE_ENUM {
 BYPASS                                   = 0x00000000,
 RESERVED_1                               = 0x00000001,
 RAM_LUT                                  = 0x00000002,
 RESERVED_3                               = 0x00000003,
 } CM_GAMMA_LUT_MODE_ENUM;
-
-/*
- * CM_GAMMA_LUT_PWL_DISABLE_ENUM enum
- */
-
 typedef enum CM_GAMMA_LUT_PWL_DISABLE_ENUM {
 ENABLE_PWL                               = 0x00000000,
 DISABLE_PWL                              = 0x00000001,
 } CM_GAMMA_LUT_PWL_DISABLE_ENUM;
-
-/*
- * CM_GAMMA_LUT_SEL_ENUM enum
- */
-
 typedef enum CM_GAMMA_LUT_SEL_ENUM {
 RAMA                                     = 0x00000000,
 RAMB                                     = 0x00000001,
 } CM_GAMMA_LUT_SEL_ENUM;
-
-/*
- * CM_GAMUT_REMAP_MODE_ENUM enum
- */
-
 typedef enum CM_GAMUT_REMAP_MODE_ENUM {
 BYPASS_GAMUT                             = 0x00000000,
 GAMUT_COEF                               = 0x00000001,
 GAMUT_COEF_B                             = 0x00000002,
 } CM_GAMUT_REMAP_MODE_ENUM;
-
-/*
- * CM_LUT_2_CONFIG_ENUM enum
- */
-
 typedef enum CM_LUT_2_CONFIG_ENUM {
 LUT_2CFG_NO_MEMORY                       = 0x00000000,
 LUT_2CFG_MEMORY_A                        = 0x00000001,
 LUT_2CFG_MEMORY_B                        = 0x00000002,
 } CM_LUT_2_CONFIG_ENUM;
-
-/*
- * CM_LUT_2_MODE_ENUM enum
- */
-
 typedef enum CM_LUT_2_MODE_ENUM {
 LUT_2_MODE_BYPASS                        = 0x00000000,
 LUT_2_MODE_RAMA_LUT                      = 0x00000001,
 LUT_2_MODE_RAMB_LUT                      = 0x00000002,
 } CM_LUT_2_MODE_ENUM;
-
-/*
- * CM_LUT_4_CONFIG_ENUM enum
- */
-
 typedef enum CM_LUT_4_CONFIG_ENUM {
 LUT_4CFG_NO_MEMORY                       = 0x00000000,
 LUT_4CFG_ROM_A                           = 0x00000001,
@@ -1151,11 +713,6 @@ LUT_4CFG_ROM_B                           = 0x00000002,
 LUT_4CFG_MEMORY_A                        = 0x00000003,
 LUT_4CFG_MEMORY_B                        = 0x00000004,
 } CM_LUT_4_CONFIG_ENUM;
-
-/*
- * CM_LUT_4_MODE_ENUM enum
- */
-
 typedef enum CM_LUT_4_MODE_ENUM {
 LUT_4_MODE_BYPASS                        = 0x00000000,
 LUT_4_MODE_ROMA_LUT                      = 0x00000001,
@@ -1163,20 +720,10 @@ LUT_4_MODE_ROMB_LUT                      = 0x00000002,
 LUT_4_MODE_RAMA_LUT                      = 0x00000003,
 LUT_4_MODE_RAMB_LUT                      = 0x00000004,
 } CM_LUT_4_MODE_ENUM;
-
-/*
- * CM_LUT_CONFIG_MODE enum
- */
-
 typedef enum CM_LUT_CONFIG_MODE {
 DIFFERENT_RGB                            = 0x00000000,
 ALL_USE_R                                = 0x00000001,
 } CM_LUT_CONFIG_MODE;
-
-/*
- * CM_LUT_NUM_SEG enum
- */
-
 typedef enum CM_LUT_NUM_SEG {
 SEGMENTS_1                               = 0x00000000,
 SEGMENTS_2                               = 0x00000001,
@@ -1187,102 +734,48 @@ SEGMENTS_32                              = 0x00000005,
 SEGMENTS_64                              = 0x00000006,
 SEGMENTS_128                             = 0x00000007,
 } CM_LUT_NUM_SEG;
-
-/*
- * CM_LUT_RAM_SEL enum
- */
-
 typedef enum CM_LUT_RAM_SEL {
 RAMA_ACCESS                              = 0x00000000,
 RAMB_ACCESS                              = 0x00000001,
 } CM_LUT_RAM_SEL;
-
-/*
- * CM_LUT_READ_COLOR_SEL enum
- */
-
 typedef enum CM_LUT_READ_COLOR_SEL {
 BLUE_LUT                                 = 0x00000000,
 GREEN_LUT                                = 0x00000001,
 RED_LUT                                  = 0x00000002,
 } CM_LUT_READ_COLOR_SEL;
-
-/*
- * CM_LUT_READ_DBG enum
- */
-
 typedef enum CM_LUT_READ_DBG {
 DISABLE_DEBUG                            = 0x00000000,
 ENABLE_DEBUG                             = 0x00000001,
 } CM_LUT_READ_DBG;
-
-/*
- * CM_PENDING enum
- */
-
 typedef enum CM_PENDING {
 CM_NOT_PENDING                           = 0x00000000,
 CM_YES_PENDING                           = 0x00000001,
 } CM_PENDING;
-
-/*
- * CM_POST_CSC_MODE_ENUM enum
- */
-
 typedef enum CM_POST_CSC_MODE_ENUM {
 BYPASS_POST_CSC                          = 0x00000000,
 COEF_POST_CSC                            = 0x00000001,
 COEF_POST_CSC_B                          = 0x00000002,
 } CM_POST_CSC_MODE_ENUM;
-
-/*
- * CM_WRITE_BASE_ONLY enum
- */
-
 typedef enum CM_WRITE_BASE_ONLY {
 WRITE_BOTH                               = 0x00000000,
 WRITE_BASE_ONLY                          = 0x00000001,
 } CM_WRITE_BASE_ONLY;
-
-/*******************************************************
- * DPP_TOP Enums
- *******************************************************/
-
-/*
- * CRC_CUR_SEL enum
- */
-
 typedef enum CRC_CUR_SEL {
 CRC_CUR_0                                = 0x00000000,
 CRC_CUR_1                                = 0x00000001,
 } CRC_CUR_SEL;
-
-/*
- * CRC_INTERLACE_SEL enum
- */
-
 typedef enum CRC_INTERLACE_SEL {
 CRC_INTERLACE_0                          = 0x00000000,
 CRC_INTERLACE_1                          = 0x00000001,
 CRC_INTERLACE_2                          = 0x00000002,
 CRC_INTERLACE_3                          = 0x00000003,
 } CRC_INTERLACE_SEL;
-
-/*
- * CRC_IN_CUR_SEL enum
- */
-
 typedef enum CRC_IN_CUR_SEL {
 CRC_IN_CUR_0                             = 0x00000000,
 CRC_IN_CUR_1                             = 0x00000001,
 CRC_IN_CUR_2                             = 0x00000002,
 CRC_IN_CUR_3                             = 0x00000003,
 } CRC_IN_CUR_SEL;
-
-/*
- * CRC_IN_PIX_SEL enum
- */
-
 typedef enum CRC_IN_PIX_SEL {
 CRC_IN_PIX_0                             = 0x00000000,
 CRC_IN_PIX_1                             = 0x00000001,
@@ -1293,33 +786,18 @@ CRC_IN_PIX_5                             = 0x00000005,
 CRC_IN_PIX_6                             = 0x00000006,
 CRC_IN_PIX_7                             = 0x00000007,
 } CRC_IN_PIX_SEL;
-
-/*
- * CRC_SRC_SEL enum
- */
-
 typedef enum CRC_SRC_SEL {
 CRC_SRC_0                                = 0x00000000,
 CRC_SRC_1                                = 0x00000001,
 CRC_SRC_2                                = 0x00000002,
 CRC_SRC_3                                = 0x00000003,
 } CRC_SRC_SEL;
-
-/*
- * CRC_STEREO_SEL enum
- */
-
 typedef enum CRC_STEREO_SEL {
 CRC_STEREO_0                             = 0x00000000,
 CRC_STEREO_1                             = 0x00000001,
 CRC_STEREO_2                             = 0x00000002,
 CRC_STEREO_3                             = 0x00000003,
 } CRC_STEREO_SEL;
-
-/*
- * TEST_CLK_SEL enum
- */
-
 typedef enum TEST_CLK_SEL {
 TEST_CLK_SEL_0                           = 0x00000000,
 TEST_CLK_SEL_1                           = 0x00000001,
@@ -1330,112 +808,58 @@ TEST_CLK_SEL_5                           = 0x00000005,
 TEST_CLK_SEL_6                           = 0x00000006,
 TEST_CLK_SEL_7                           = 0x00000007,
 } TEST_CLK_SEL;
-
-/*******************************************************
- * DC_PERFMON Enums
- *******************************************************/
-
-/*
- * PERFCOUNTER_ACTIVE enum
- */
-
 typedef enum PERFCOUNTER_ACTIVE {
 PERFCOUNTER_IS_IDLE                      = 0x00000000,
 PERFCOUNTER_IS_ACTIVE                    = 0x00000001,
 } PERFCOUNTER_ACTIVE;
-
-/*
- * PERFCOUNTER_CNT0_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT0_STATE {
 PERFCOUNTER_CNT0_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT0_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT0_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT0_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT0_STATE;
-
-/*
- * PERFCOUNTER_CNT1_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT1_STATE {
 PERFCOUNTER_CNT1_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT1_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT1_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT1_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT1_STATE;
-
-/*
- * PERFCOUNTER_CNT2_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT2_STATE {
 PERFCOUNTER_CNT2_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT2_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT2_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT2_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT2_STATE;
-
-/*
- * PERFCOUNTER_CNT3_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT3_STATE {
 PERFCOUNTER_CNT3_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT3_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT3_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT3_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT3_STATE;
-
-/*
- * PERFCOUNTER_CNT4_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT4_STATE {
 PERFCOUNTER_CNT4_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT4_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT4_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT4_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT4_STATE;
-
-/*
- * PERFCOUNTER_CNT5_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT5_STATE {
 PERFCOUNTER_CNT5_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT5_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT5_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT5_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT5_STATE;
-
-/*
- * PERFCOUNTER_CNT6_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT6_STATE {
 PERFCOUNTER_CNT6_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT6_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT6_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT6_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT6_STATE;
-
-/*
- * PERFCOUNTER_CNT7_STATE enum
- */
-
 typedef enum PERFCOUNTER_CNT7_STATE {
 PERFCOUNTER_CNT7_STATE_RESET             = 0x00000000,
 PERFCOUNTER_CNT7_STATE_START             = 0x00000001,
 PERFCOUNTER_CNT7_STATE_FREEZE            = 0x00000002,
 PERFCOUNTER_CNT7_STATE_HW                = 0x00000003,
 } PERFCOUNTER_CNT7_STATE;
-
-/*
- * PERFCOUNTER_CNTL_SEL enum
- */
-
 typedef enum PERFCOUNTER_CNTL_SEL {
 PERFCOUNTER_CNTL_SEL_0                   = 0x00000000,
 PERFCOUNTER_CNTL_SEL_1                   = 0x00000001,
@@ -1446,30 +870,15 @@ PERFCOUNTER_CNTL_SEL_5                   = 0x00000005,
 PERFCOUNTER_CNTL_SEL_6                   = 0x00000006,
 PERFCOUNTER_CNTL_SEL_7                   = 0x00000007,
 } PERFCOUNTER_CNTL_SEL;
-
-/*
- * PERFCOUNTER_CNTOFF_START_DIS enum
- */
-
 typedef enum PERFCOUNTER_CNTOFF_START_DIS {
 PERFCOUNTER_CNTOFF_START_ENABLE          = 0x00000000,
 PERFCOUNTER_CNTOFF_START_DISABLE         = 0x00000001,
 } PERFCOUNTER_CNTOFF_START_DIS;
-
-/*
- * PERFCOUNTER_COUNTED_VALUE_TYPE enum
- */
-
 typedef enum PERFCOUNTER_COUNTED_VALUE_TYPE {
 PERFCOUNTER_COUNTED_VALUE_TYPE_ACC       = 0x00000000,
 PERFCOUNTER_COUNTED_VALUE_TYPE_MAX       = 0x00000001,
 PERFCOUNTER_COUNTED_VALUE_TYPE_MIN       = 0x00000002,
 } PERFCOUNTER_COUNTED_VALUE_TYPE;
-
-/*
- * PERFCOUNTER_CVALUE_SEL enum
- */
-
 typedef enum PERFCOUNTER_CVALUE_SEL {
 PERFCOUNTER_CVALUE_SEL_47_0              = 0x00000000,
 PERFCOUNTER_CVALUE_SEL_15_0              = 0x00000001,
@@ -1480,38 +889,18 @@ PERFCOUNTER_CVALUE_SEL_23_12             = 0x00000005,
 PERFCOUNTER_CVALUE_SEL_35_24             = 0x00000006,
 PERFCOUNTER_CVALUE_SEL_47_36             = 0x00000007,
 } PERFCOUNTER_CVALUE_SEL;
-
-/*
- * PERFCOUNTER_HW_CNTL_SEL enum
- */
-
 typedef enum PERFCOUNTER_HW_CNTL_SEL {
 PERFCOUNTER_HW_CNTL_SEL_RUNEN            = 0x00000000,
 PERFCOUNTER_HW_CNTL_SEL_CNTOFF           = 0x00000001,
 } PERFCOUNTER_HW_CNTL_SEL;
-
-/*
- * PERFCOUNTER_HW_STOP1_SEL enum
- */
-
 typedef enum PERFCOUNTER_HW_STOP1_SEL {
 PERFCOUNTER_HW_STOP1_0                   = 0x00000000,
 PERFCOUNTER_HW_STOP1_1                   = 0x00000001,
 } PERFCOUNTER_HW_STOP1_SEL;
-
-/*
- * PERFCOUNTER_HW_STOP2_SEL enum
- */
-
 typedef enum PERFCOUNTER_HW_STOP2_SEL {
 PERFCOUNTER_HW_STOP2_0                   = 0x00000000,
 PERFCOUNTER_HW_STOP2_1                   = 0x00000001,
 } PERFCOUNTER_HW_STOP2_SEL;
-
-/*
- * PERFCOUNTER_INC_MODE enum
- */
-
 typedef enum PERFCOUNTER_INC_MODE {
 PERFCOUNTER_INC_MODE_MULTI_BIT           = 0x00000000,
 PERFCOUNTER_INC_MODE_BOTH_EDGE           = 0x00000001,
@@ -1519,170 +908,76 @@ PERFCOUNTER_INC_MODE_LSB                 = 0x00000002,
 PERFCOUNTER_INC_MODE_POS_EDGE            = 0x00000003,
 PERFCOUNTER_INC_MODE_NEG_EDGE            = 0x00000004,
 } PERFCOUNTER_INC_MODE;
-
-/*
- * PERFCOUNTER_INT_EN enum
- */
-
 typedef enum PERFCOUNTER_INT_EN {
 PERFCOUNTER_INT_DISABLE                  = 0x00000000,
 PERFCOUNTER_INT_ENABLE                   = 0x00000001,
 } PERFCOUNTER_INT_EN;
-
-/*
- * PERFCOUNTER_INT_TYPE enum
- */
-
 typedef enum PERFCOUNTER_INT_TYPE {
 PERFCOUNTER_INT_TYPE_LEVEL               = 0x00000000,
 PERFCOUNTER_INT_TYPE_PULSE               = 0x00000001,
 } PERFCOUNTER_INT_TYPE;
-
-/*
- * PERFCOUNTER_OFF_MASK enum
- */
-
 typedef enum PERFCOUNTER_OFF_MASK {
 PERFCOUNTER_OFF_MASK_DISABLE             = 0x00000000,
 PERFCOUNTER_OFF_MASK_ENABLE              = 0x00000001,
 } PERFCOUNTER_OFF_MASK;
-
-/*
- * PERFCOUNTER_RESTART_EN enum
- */
-
 typedef enum PERFCOUNTER_RESTART_EN {
 PERFCOUNTER_RESTART_DISABLE              = 0x00000000,
 PERFCOUNTER_RESTART_ENABLE               = 0x00000001,
 } PERFCOUNTER_RESTART_EN;
-
-/*
- * PERFCOUNTER_RUNEN_MODE enum
- */
-
 typedef enum PERFCOUNTER_RUNEN_MODE {
 PERFCOUNTER_RUNEN_MODE_LEVEL             = 0x00000000,
 PERFCOUNTER_RUNEN_MODE_EDGE              = 0x00000001,
 } PERFCOUNTER_RUNEN_MODE;
-
-/*
- * PERFCOUNTER_STATE_SEL0 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL0 {
 PERFCOUNTER_STATE_SEL0_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL0_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL0;
-
-/*
- * PERFCOUNTER_STATE_SEL1 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL1 {
 PERFCOUNTER_STATE_SEL1_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL1_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL1;
-
-/*
- * PERFCOUNTER_STATE_SEL2 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL2 {
 PERFCOUNTER_STATE_SEL2_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL2_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL2;
-
-/*
- * PERFCOUNTER_STATE_SEL3 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL3 {
 PERFCOUNTER_STATE_SEL3_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL3_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL3;
-
-/*
- * PERFCOUNTER_STATE_SEL4 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL4 {
 PERFCOUNTER_STATE_SEL4_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL4_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL4;
-
-/*
- * PERFCOUNTER_STATE_SEL5 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL5 {
 PERFCOUNTER_STATE_SEL5_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL5_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL5;
-
-/*
- * PERFCOUNTER_STATE_SEL6 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL6 {
 PERFCOUNTER_STATE_SEL6_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL6_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL6;
-
-/*
- * PERFCOUNTER_STATE_SEL7 enum
- */
-
 typedef enum PERFCOUNTER_STATE_SEL7 {
 PERFCOUNTER_STATE_SEL7_GLOBAL            = 0x00000000,
 PERFCOUNTER_STATE_SEL7_LOCAL             = 0x00000001,
 } PERFCOUNTER_STATE_SEL7;
-
-/*
- * PERFMON_CNTOFF_AND_OR enum
- */
-
 typedef enum PERFMON_CNTOFF_AND_OR {
 PERFMON_CNTOFF_OR                        = 0x00000000,
 PERFMON_CNTOFF_AND                       = 0x00000001,
 } PERFMON_CNTOFF_AND_OR;
-
-/*
- * PERFMON_CNTOFF_INT_EN enum
- */
-
 typedef enum PERFMON_CNTOFF_INT_EN {
 PERFMON_CNTOFF_INT_DISABLE               = 0x00000000,
 PERFMON_CNTOFF_INT_ENABLE                = 0x00000001,
 } PERFMON_CNTOFF_INT_EN;
-
-/*
- * PERFMON_CNTOFF_INT_TYPE enum
- */
-
 typedef enum PERFMON_CNTOFF_INT_TYPE {
 PERFMON_CNTOFF_INT_TYPE_LEVEL            = 0x00000000,
 PERFMON_CNTOFF_INT_TYPE_PULSE            = 0x00000001,
 } PERFMON_CNTOFF_INT_TYPE;
-
-/*
- * PERFMON_STATE enum
- */
-
 typedef enum PERFMON_STATE {
 PERFMON_STATE_RESET                      = 0x00000000,
 PERFMON_STATE_START                      = 0x00000001,
 PERFMON_STATE_FREEZE                     = 0x00000002,
 PERFMON_STATE_HW                         = 0x00000003,
 } PERFMON_STATE;
-
-/*******************************************************
- * HUBP Enums
- *******************************************************/
-
-/*
- * BIGK_FRAGMENT_SIZE enum
- */
-
 typedef enum BIGK_FRAGMENT_SIZE {
 VM_PG_SIZE_4KB                           = 0x00000000,
 VM_PG_SIZE_8KB                           = 0x00000001,
@@ -1695,11 +990,6 @@ VM_PG_SIZE_512KB                         = 0x00000007,
 VM_PG_SIZE_1024KB                        = 0x00000008,
 VM_PG_SIZE_2048KB                        = 0x00000009,
 } BIGK_FRAGMENT_SIZE;
-
-/*
- * CHUNK_SIZE enum
- */
-
 typedef enum CHUNK_SIZE {
 CHUNK_SIZE_1KB                           = 0x00000000,
 CHUNK_SIZE_2KB                           = 0x00000001,
@@ -1709,22 +999,12 @@ CHUNK_SIZE_16KB                          = 0x00000004,
 CHUNK_SIZE_32KB                          = 0x00000005,
 CHUNK_SIZE_64KB                          = 0x00000006,
 } CHUNK_SIZE;
-
-/*
- * COMPAT_LEVEL enum
- */
-
 typedef enum COMPAT_LEVEL {
 ADDR_GEN_ZERO                            = 0x00000000,
 ADDR_GEN_ONE                             = 0x00000001,
 ADDR_GEN_TWO                             = 0x00000002,
 ADDR_RESERVED                            = 0x00000003,
 } COMPAT_LEVEL;
-
-/*
- * DPTE_GROUP_SIZE enum
- */
-
 typedef enum DPTE_GROUP_SIZE {
 DPTE_GROUP_SIZE_64B                      = 0x00000000,
 DPTE_GROUP_SIZE_128B                     = 0x00000001,
@@ -1733,85 +1013,40 @@ DPTE_GROUP_SIZE_512B                     = 0x00000003,
 DPTE_GROUP_SIZE_1024B                    = 0x00000004,
 DPTE_GROUP_SIZE_2048B                    = 0x00000005,
 } DPTE_GROUP_SIZE;
-
-/*
- * FORCE_ONE_ROW_FOR_FRAME enum
- */
-
 typedef enum FORCE_ONE_ROW_FOR_FRAME {
 FORCE_ONE_ROW_FOR_FRAME_0                = 0x00000000,
 FORCE_ONE_ROW_FOR_FRAME_1                = 0x00000001,
 } FORCE_ONE_ROW_FOR_FRAME;
-
-/*
- * HUBP_BLANK_EN enum
- */
-
 typedef enum HUBP_BLANK_EN {
 HUBP_BLANK_SW_DEASSERT                   = 0x00000000,
 HUBP_BLANK_SW_ASSERT                     = 0x00000001,
 } HUBP_BLANK_EN;
-
-/*
- * HUBP_IN_BLANK enum
- */
-
 typedef enum HUBP_IN_BLANK {
 HUBP_IN_ACTIVE                           = 0x00000000,
 HUBP_IN_VBLANK                           = 0x00000001,
 } HUBP_IN_BLANK;
-
-/*
- * HUBP_MEASURE_WIN_MODE_DCFCLK enum
- */
-
 typedef enum HUBP_MEASURE_WIN_MODE_DCFCLK {
 HUBP_MEASURE_WIN_MODE_DCFCLK_0           = 0x00000000,
 HUBP_MEASURE_WIN_MODE_DCFCLK_1           = 0x00000001,
 HUBP_MEASURE_WIN_MODE_DCFCLK_2           = 0x00000002,
 HUBP_MEASURE_WIN_MODE_DCFCLK_3           = 0x00000003,
 } HUBP_MEASURE_WIN_MODE_DCFCLK;
-
-/*
- * HUBP_NO_OUTSTANDING_REQ enum
- */
-
 typedef enum HUBP_NO_OUTSTANDING_REQ {
 OUTSTANDING_REQ                          = 0x00000000,
 NO_OUTSTANDING_REQ                       = 0x00000001,
 } HUBP_NO_OUTSTANDING_REQ;
-
-/*
- * HUBP_SOFT_RESET enum
- */
-
 typedef enum HUBP_SOFT_RESET {
 HUBP_SOFT_RESET_ON                       = 0x00000000,
 HUBP_SOFT_RESET_OFF                      = 0x00000001,
 } HUBP_SOFT_RESET;
-
-/*
- * HUBP_TTU_DISABLE enum
- */
-
 typedef enum HUBP_TTU_DISABLE {
 HUBP_TTU_ENABLED                         = 0x00000000,
 HUBP_TTU_DISABLED                        = 0x00000001,
 } HUBP_TTU_DISABLE;
-
-/*
- * HUBP_VREADY_AT_OR_AFTER_VSYNC enum
- */
-
 typedef enum HUBP_VREADY_AT_OR_AFTER_VSYNC {
 VREADY_BEFORE_VSYNC                      = 0x00000000,
 VREADY_AT_OR_AFTER_VSYNC                 = 0x00000001,
 } HUBP_VREADY_AT_OR_AFTER_VSYNC;
-
-/*
- * HUBP_VTG_SEL enum
- */
-
 typedef enum HUBP_VTG_SEL {
 VTG_SEL_0                                = 0x00000000,
 VTG_SEL_1                                = 0x00000001,
@@ -1820,89 +1055,44 @@ VTG_SEL_3                                = 0x00000003,
 VTG_SEL_4                                = 0x00000004,
 VTG_SEL_5                                = 0x00000005,
 } HUBP_VTG_SEL;
-
-/*
- * H_MIRROR_EN enum
- */
-
 typedef enum H_MIRROR_EN {
 HW_MIRRORING_DISABLE                     = 0x00000000,
 HW_MIRRORING_ENABLE                      = 0x00000001,
 } H_MIRROR_EN;
-
-/*
- * LEGACY_PIPE_INTERLEAVE enum
- */
-
 typedef enum LEGACY_PIPE_INTERLEAVE {
 LEGACY_PIPE_INTERLEAVE_256B              = 0x00000000,
 LEGACY_PIPE_INTERLEAVE_512B              = 0x00000001,
 } LEGACY_PIPE_INTERLEAVE;
-
-/*
- * META_CHUNK_SIZE enum
- */
-
 typedef enum META_CHUNK_SIZE {
 META_CHUNK_SIZE_1KB                      = 0x00000000,
 META_CHUNK_SIZE_2KB                      = 0x00000001,
 META_CHUNK_SIZE_4KB                      = 0x00000002,
 META_CHUNK_SIZE_8KB                      = 0x00000003,
 } META_CHUNK_SIZE;
-
-/*
- * META_LINEAR enum
- */
-
 typedef enum META_LINEAR {
 META_SURF_TILED                          = 0x00000000,
 META_SURF_LINEAR                         = 0x00000001,
 } META_LINEAR;
-
-/*
- * MIN_CHUNK_SIZE enum
- */
-
 typedef enum MIN_CHUNK_SIZE {
 NO_MIN_CHUNK_SIZE                        = 0x00000000,
 MIN_CHUNK_SIZE_256B                      = 0x00000001,
 MIN_CHUNK_SIZE_512B                      = 0x00000002,
 MIN_CHUNK_SIZE_1024B                     = 0x00000003,
 } MIN_CHUNK_SIZE;
-
-/*
- * MIN_META_CHUNK_SIZE enum
- */
-
 typedef enum MIN_META_CHUNK_SIZE {
 NO_MIN_META_CHUNK_SIZE                   = 0x00000000,
 MIN_META_CHUNK_SIZE_64B                  = 0x00000001,
 MIN_META_CHUNK_SIZE_128B                 = 0x00000002,
 MIN_META_CHUNK_SIZE_256B                 = 0x00000003,
 } MIN_META_CHUNK_SIZE;
-
-/*
- * PIPE_ALIGNED enum
- */
-
 typedef enum PIPE_ALIGNED {
 PIPE_UNALIGNED_SURF                      = 0x00000000,
 PIPE_ALIGNED_SURF                        = 0x00000001,
 } PIPE_ALIGNED;
-
-/*
- * PTE_BUFFER_MODE enum
- */
-
 typedef enum PTE_BUFFER_MODE {
 PTE_BUFFER_MODE_0                        = 0x00000000,
 PTE_BUFFER_MODE_1                        = 0x00000001,
 } PTE_BUFFER_MODE;
-
-/*
- * PTE_ROW_HEIGHT_LINEAR enum
- */
-
 typedef enum PTE_ROW_HEIGHT_LINEAR {
 PTE_ROW_HEIGHT_LINEAR_8L                 = 0x00000000,
 PTE_ROW_HEIGHT_LINEAR_16L                = 0x00000001,
@@ -1913,22 +1103,12 @@ PTE_ROW_HEIGHT_LINEAR_256L               = 0x00000005,
 PTE_ROW_HEIGHT_LINEAR_512L               = 0x00000006,
 PTE_ROW_HEIGHT_LINEAR_1024L              = 0x00000007,
 } PTE_ROW_HEIGHT_LINEAR;
-
-/*
- * ROTATION_ANGLE enum
- */
-
 typedef enum ROTATION_ANGLE {
 ROTATE_0_DEGREES                         = 0x00000000,
 ROTATE_90_DEGREES                        = 0x00000001,
 ROTATE_180_DEGREES                       = 0x00000002,
 ROTATE_270_DEGREES                       = 0x00000003,
 } ROTATION_ANGLE;
-
-/*
- * SWATH_HEIGHT enum
- */
-
 typedef enum SWATH_HEIGHT {
 SWATH_HEIGHT_1L                          = 0x00000000,
 SWATH_HEIGHT_2L                          = 0x00000001,
@@ -1936,47 +1116,22 @@ SWATH_HEIGHT_4L                          = 0x00000002,
 SWATH_HEIGHT_8L                          = 0x00000003,
 SWATH_HEIGHT_16L                         = 0x00000004,
 } SWATH_HEIGHT;
-
-/*
- * USE_MALL_FOR_CURSOR enum
- */
-
 typedef enum USE_MALL_FOR_CURSOR {
 USE_MALL_FOR_CURSOR_0                    = 0x00000000,
 USE_MALL_FOR_CURSOR_1                    = 0x00000001,
 } USE_MALL_FOR_CURSOR;
-
-/*
- * USE_MALL_FOR_PSTATE_CHANGE enum
- */
-
 typedef enum USE_MALL_FOR_PSTATE_CHANGE {
 USE_MALL_FOR_PSTATE_CHANGE_0             = 0x00000000,
 USE_MALL_FOR_PSTATE_CHANGE_1             = 0x00000001,
 } USE_MALL_FOR_PSTATE_CHANGE;
-
-/*
- * USE_MALL_FOR_STATIC_SCREEN enum
- */
-
 typedef enum USE_MALL_FOR_STATIC_SCREEN {
 USE_MALL_FOR_STATIC_SCREEN_0             = 0x00000000,
 USE_MALL_FOR_STATIC_SCREEN_1             = 0x00000001,
 } USE_MALL_FOR_STATIC_SCREEN;
-
-/*
- * VMPG_SIZE enum
- */
-
 typedef enum VMPG_SIZE {
 VMPG_SIZE_4KB                            = 0x00000000,
 VMPG_SIZE_64KB                           = 0x00000001,
 } VMPG_SIZE;
-
-/*
- * VM_GROUP_SIZE enum
- */
-
 typedef enum VM_GROUP_SIZE {
 VM_GROUP_SIZE_64B                        = 0x00000000,
 VM_GROUP_SIZE_128B                       = 0x00000001,
@@ -1985,15 +1140,6 @@ VM_GROUP_SIZE_512B                       = 0x00000003,
 VM_GROUP_SIZE_1024B                      = 0x00000004,
 VM_GROUP_SIZE_2048B                      = 0x00000005,
 } VM_GROUP_SIZE;
-
-/*******************************************************
- * HUBPREQ Enums
- *******************************************************/
-
-/*
- * DFQ_MIN_FREE_ENTRIES enum
- */
-
 typedef enum DFQ_MIN_FREE_ENTRIES {
 DFQ_MIN_FREE_ENTRIES_0                   = 0x00000000,
 DFQ_MIN_FREE_ENTRIES_1                   = 0x00000001,
@@ -2004,11 +1150,6 @@ DFQ_MIN_FREE_ENTRIES_5                   = 0x00000005,
 DFQ_MIN_FREE_ENTRIES_6                   = 0x00000006,
 DFQ_MIN_FREE_ENTRIES_7                   = 0x00000007,
 } DFQ_MIN_FREE_ENTRIES;
-
-/*
- * DFQ_NUM_ENTRIES enum
- */
-
 typedef enum DFQ_NUM_ENTRIES {
 DFQ_NUM_ENTRIES_0                        = 0x00000000,
 DFQ_NUM_ENTRIES_1                        = 0x00000001,
@@ -2020,11 +1161,6 @@ DFQ_NUM_ENTRIES_6                        = 0x00000006,
 DFQ_NUM_ENTRIES_7                        = 0x00000007,
 DFQ_NUM_ENTRIES_8                        = 0x00000008,
 } DFQ_NUM_ENTRIES;
-
-/*
- * DFQ_SIZE enum
- */
-
 typedef enum DFQ_SIZE {
 DFQ_SIZE_0                               = 0x00000000,
 DFQ_SIZE_1                               = 0x00000001,
@@ -2035,30 +1171,15 @@ DFQ_SIZE_5                               = 0x00000005,
 DFQ_SIZE_6                               = 0x00000006,
 DFQ_SIZE_7                               = 0x00000007,
 } DFQ_SIZE;
-
-/*
- * DMDATA_VM_DONE enum
- */
-
 typedef enum DMDATA_VM_DONE {
 DMDATA_VM_IS_NOT_DONE                    = 0x00000000,
 DMDATA_VM_IS_DONE                        = 0x00000001,
 } DMDATA_VM_DONE;
-
-/*
- * EXPANSION_MODE enum
- */
-
 typedef enum EXPANSION_MODE {
 EXPANSION_MODE_ZERO                      = 0x00000000,
 EXPANSION_MODE_CONSERVATIVE              = 0x00000001,
 EXPANSION_MODE_OPTIMAL                   = 0x00000002,
 } EXPANSION_MODE;
-
-/*
- * FLIP_RATE enum
- */
-
 typedef enum FLIP_RATE {
 FLIP_RATE_0                              = 0x00000000,
 FLIP_RATE_1                              = 0x00000001,
@@ -2069,159 +1190,74 @@ FLIP_RATE_5                              = 0x00000005,
 FLIP_RATE_6                              = 0x00000006,
 FLIP_RATE_7                              = 0x00000007,
 } FLIP_RATE;
-
-/*
- * INT_MASK enum
- */
-
 typedef enum INT_MASK {
 INT_DISABLED                             = 0x00000000,
 INT_ENABLED                              = 0x00000001,
 } INT_MASK;
-
-/*
- * PIPE_IN_FLUSH_URGENT enum
- */
-
 typedef enum PIPE_IN_FLUSH_URGENT {
 PIPE_IN_FLUSH_URGENT_ENABLE              = 0x00000000,
 PIPE_IN_FLUSH_URGENT_DISABLE             = 0x00000001,
 } PIPE_IN_FLUSH_URGENT;
-
-/*
- * PRQ_MRQ_FLUSH_URGENT enum
- */
-
 typedef enum PRQ_MRQ_FLUSH_URGENT {
 PRQ_MRQ_FLUSH_URGENT_ENABLE              = 0x00000000,
 PRQ_MRQ_FLUSH_URGENT_DISABLE             = 0x00000001,
 } PRQ_MRQ_FLUSH_URGENT;
-
-/*
- * ROW_TTU_MODE enum
- */
-
 typedef enum ROW_TTU_MODE {
 END_OF_ROW_MODE                          = 0x00000000,
 WATERMARK_MODE                           = 0x00000001,
 } ROW_TTU_MODE;
-
-/*
- * SURFACE_DCC enum
- */
-
 typedef enum SURFACE_DCC {
 SURFACE_IS_NOT_DCC                       = 0x00000000,
 SURFACE_IS_DCC                           = 0x00000001,
 } SURFACE_DCC;
-
-/*
- * SURFACE_DCC_IND_128B enum
- */
-
 typedef enum SURFACE_DCC_IND_128B {
 SURFACE_DCC_IS_NOT_IND_128B              = 0x00000000,
 SURFACE_DCC_IS_IND_128B                  = 0x00000001,
 } SURFACE_DCC_IND_128B;
-
-/*
- * SURFACE_DCC_IND_64B enum
- */
-
 typedef enum SURFACE_DCC_IND_64B {
 SURFACE_DCC_IS_NOT_IND_64B               = 0x00000000,
 SURFACE_DCC_IS_IND_64B                   = 0x00000001,
 } SURFACE_DCC_IND_64B;
-
-/*
- * SURFACE_DCC_IND_BLK enum
- */
-
 typedef enum SURFACE_DCC_IND_BLK {
 SURFACE_DCC_BLOCK_IS_UNCONSTRAINED       = 0x00000000,
 SURFACE_DCC_BLOCK_IS_IND_64B             = 0x00000001,
 SURFACE_DCC_BLOCK_IS_IND_128B            = 0x00000002,
 SURFACE_DCC_BLOCK_IS_IND_64B_NO_128BCL   = 0x00000003,
 } SURFACE_DCC_IND_BLK;
-
-/*
- * SURFACE_FLIP_AWAY_INT_TYPE enum
- */
-
 typedef enum SURFACE_FLIP_AWAY_INT_TYPE {
 SURFACE_FLIP_AWAY_INT_LEVEL              = 0x00000000,
 SURFACE_FLIP_AWAY_INT_PULSE              = 0x00000001,
 } SURFACE_FLIP_AWAY_INT_TYPE;
-
-/*
- * SURFACE_FLIP_EXEC_DEBUG_MODE enum
- */
-
 typedef enum SURFACE_FLIP_EXEC_DEBUG_MODE {
 SURFACE_FLIP_EXEC_NORMAL_MODE            = 0x00000000,
 SURFACE_FLIP_EXEC_DEBUG_MODE_ENABLE      = 0x00000001,
 } SURFACE_FLIP_EXEC_DEBUG_MODE;
-
-/*
- * SURFACE_FLIP_INT_TYPE enum
- */
-
 typedef enum SURFACE_FLIP_INT_TYPE {
 SURFACE_FLIP_INT_LEVEL                   = 0x00000000,
 SURFACE_FLIP_INT_PULSE                   = 0x00000001,
 } SURFACE_FLIP_INT_TYPE;
-
-/*
- * SURFACE_FLIP_IN_STEREOSYNC enum
- */
-
 typedef enum SURFACE_FLIP_IN_STEREOSYNC {
 SURFACE_FLIP_NOT_IN_STEREOSYNC_MODE      = 0x00000000,
 SURFACE_FLIP_IN_STEREOSYNC_MODE          = 0x00000001,
 } SURFACE_FLIP_IN_STEREOSYNC;
-
-/*
- * SURFACE_FLIP_MODE_FOR_STEREOSYNC enum
- */
-
 typedef enum SURFACE_FLIP_MODE_FOR_STEREOSYNC {
 FLIP_ANY_FRAME                           = 0x00000000,
 FLIP_LEFT_EYE                            = 0x00000001,
 FLIP_RIGHT_EYE                           = 0x00000002,
 SURFACE_FLIP_MODE_FOR_STEREOSYNC_RESERVED = 0x00000003,
 } SURFACE_FLIP_MODE_FOR_STEREOSYNC;
-
-/*
- * SURFACE_FLIP_STEREO_SELECT_DISABLE enum
- */
-
 typedef enum SURFACE_FLIP_STEREO_SELECT_DISABLE {
 SURFACE_FLIP_STEREO_SELECT_ENABLED       = 0x00000000,
 SURFACE_FLIP_STEREO_SELECT_DISABLED      = 0x00000001,
 } SURFACE_FLIP_STEREO_SELECT_DISABLE;
-
-/*
- * SURFACE_FLIP_STEREO_SELECT_POLARITY enum
- */
-
 typedef enum SURFACE_FLIP_STEREO_SELECT_POLARITY {
 SURFACE_FLIP_STEREO_SELECT_POLARITY_NOT_INVERT = 0x00000000,
 SURFACE_FLIP_STEREO_SELECT_POLARITY_INVERT = 0x00000001,
 } SURFACE_FLIP_STEREO_SELECT_POLARITY;
-
-/*
- * SURFACE_FLIP_TYPE enum
- */
-
 typedef enum SURFACE_FLIP_TYPE {
 SURFACE_V_FLIP                           = 0x00000000,
 SURFACE_I_FLIP                           = 0x00000001,
 } SURFACE_FLIP_TYPE;
-
-/*
- * SURFACE_FLIP_VUPDATE_SKIP_NUM enum
- */
-
 typedef enum SURFACE_FLIP_VUPDATE_SKIP_NUM {
 SURFACE_FLIP_VUPDATE_SKIP_NUM_0          = 0x00000000,
 SURFACE_FLIP_VUPDATE_SKIP_NUM_1          = 0x00000001,
@@ -2240,185 +1276,87 @@ SURFACE_FLIP_VUPDATE_SKIP_NUM_13         = 0x0000000d,
 SURFACE_FLIP_VUPDATE_SKIP_NUM_14         = 0x0000000e,
 SURFACE_FLIP_VUPDATE_SKIP_NUM_15         = 0x0000000f,
 } SURFACE_FLIP_VUPDATE_SKIP_NUM;
-
-/*
- * SURFACE_INUSE_RAED_NO_LATCH enum
- */
-
 typedef enum SURFACE_INUSE_RAED_NO_LATCH {
 SURFACE_INUSE_IS_LATCHED                 = 0x00000000,
 SURFACE_INUSE_IS_NOT_LATCHED             = 0x00000001,
 } SURFACE_INUSE_RAED_NO_LATCH;
-
-/*
- * SURFACE_TMZ enum
- */
-
 typedef enum SURFACE_TMZ {
 SURFACE_IS_NOT_TMZ                       = 0x00000000,
 SURFACE_IS_TMZ                           = 0x00000001,
 } SURFACE_TMZ;
-
-/*
- * SURFACE_UPDATE_LOCK enum
- */
-
 typedef enum SURFACE_UPDATE_LOCK {
 SURFACE_UPDATE_IS_UNLOCKED               = 0x00000000,
 SURFACE_UPDATE_IS_LOCKED                 = 0x00000001,
 } SURFACE_UPDATE_LOCK;
-
-/*******************************************************
- * HUBPRET Enums
- *******************************************************/
-
-/*
- * CROSSBAR_FOR_ALPHA enum
- */
-
 typedef enum CROSSBAR_FOR_ALPHA {
 ALPHA_DATA_ONTO_ALPHA_PORT               = 0x00000000,
 Y_G_DATA_ONTO_ALPHA_PORT                 = 0x00000001,
 CB_B_DATA_ONTO_ALPHA_PORT                = 0x00000002,
 CR_R_DATA_ONTO_ALPHA_PORT                = 0x00000003,
 } CROSSBAR_FOR_ALPHA;
-
-/*
- * CROSSBAR_FOR_CB_B enum
- */
-
 typedef enum CROSSBAR_FOR_CB_B {
 ALPHA_DATA_ONTO_CB_B_PORT                = 0x00000000,
 Y_G_DATA_ONTO_CB_B_PORT                  = 0x00000001,
 CB_B_DATA_ONTO_CB_B_PORT                 = 0x00000002,
 CR_R_DATA_ONTO_CB_B_PORT                 = 0x00000003,
 } CROSSBAR_FOR_CB_B;
-
-/*
- * CROSSBAR_FOR_CR_R enum
- */
-
 typedef enum CROSSBAR_FOR_CR_R {
 ALPHA_DATA_ONTO_CR_R_PORT                = 0x00000000,
 Y_G_DATA_ONTO_CR_R_PORT                  = 0x00000001,
 CB_B_DATA_ONTO_CR_R_PORT                 = 0x00000002,
 CR_R_DATA_ONTO_CR_R_PORT                 = 0x00000003,
 } CROSSBAR_FOR_CR_R;
-
-/*
- * CROSSBAR_FOR_Y_G enum
- */
-
 typedef enum CROSSBAR_FOR_Y_G {
 ALPHA_DATA_ONTO_Y_G_PORT                 = 0x00000000,
 Y_G_DATA_ONTO_Y_G_PORT                   = 0x00000001,
 CB_B_DATA_ONTO_Y_G_PORT                  = 0x00000002,
 CR_R_DATA_ONTO_Y_G_PORT                  = 0x00000003,
 } CROSSBAR_FOR_Y_G;
-
-/*
- * DETILE_BUFFER_PACKER_ENABLE enum
- */
-
 typedef enum DETILE_BUFFER_PACKER_ENABLE {
 DETILE_BUFFER_PACKER_IS_DISABLE          = 0x00000000,
 DETILE_BUFFER_PACKER_IS_ENABLE           = 0x00000001,
 } DETILE_BUFFER_PACKER_ENABLE;
-
-/*
- * MEM_PWR_DIS_MODE enum
- */
-
 typedef enum MEM_PWR_DIS_MODE {
 MEM_POWER_DIS_MODE_ENABLE                = 0x00000000,
 MEM_POWER_DIS_MODE_DISABLE               = 0x00000001,
 } MEM_PWR_DIS_MODE;
-
-/*
- * MEM_PWR_FORCE_MODE enum
- */
-
 typedef enum MEM_PWR_FORCE_MODE {
 MEM_POWER_FORCE_MODE_OFF                 = 0x00000000,
 MEM_POWER_FORCE_MODE_LIGHT_SLEEP         = 0x00000001,
 MEM_POWER_FORCE_MODE_DEEP_SLEEP          = 0x00000002,
 MEM_POWER_FORCE_MODE_SHUT_DOWN           = 0x00000003,
 } MEM_PWR_FORCE_MODE;
-
-/*
- * MEM_PWR_STATUS enum
- */
-
 typedef enum MEM_PWR_STATUS {
 MEM_POWER_STATUS_ON                      = 0x00000000,
 MEM_POWER_STATUS_LIGHT_SLEEP             = 0x00000001,
 MEM_POWER_STATUS_DEEP_SLEEP              = 0x00000002,
 MEM_POWER_STATUS_SHUT_DOWN               = 0x00000003,
 } MEM_PWR_STATUS;
-
-/*
- * PIPE_INT_MASK_MODE enum
- */
-
 typedef enum PIPE_INT_MASK_MODE {
 PIPE_INT_MASK_MODE_DISABLE               = 0x00000000,
 PIPE_INT_MASK_MODE_ENABLE                = 0x00000001,
 } PIPE_INT_MASK_MODE;
-
-/*
- * PIPE_INT_TYPE_MODE enum
- */
-
 typedef enum PIPE_INT_TYPE_MODE {
 PIPE_INT_TYPE_MODE_DISABLE               = 0x00000000,
 PIPE_INT_TYPE_MODE_ENABLE                = 0x00000001,
 } PIPE_INT_TYPE_MODE;
-
-/*
- * PIXCDC_MEM_PWR_LIGHT_SLEEP_MODE enum
- */
-
 typedef enum PIXCDC_MEM_PWR_LIGHT_SLEEP_MODE {
 PIXCDC_MEM_POWER_LIGHT_SLEEP_MODE_OFF    = 0x00000000,
 PIXCDC_MEM_POWER_LIGHT_SLEEP_MODE_1      = 0x00000001,
 } PIXCDC_MEM_PWR_LIGHT_SLEEP_MODE;
-
-/*******************************************************
- * CURSOR Enums
- *******************************************************/
-
-/*
- * CROB_MEM_PWR_LIGHT_SLEEP_MODE enum
- */
-
 typedef enum CROB_MEM_PWR_LIGHT_SLEEP_MODE {
 CROB_MEM_POWER_LIGHT_SLEEP_MODE_OFF      = 0x00000000,
 CROB_MEM_POWER_LIGHT_SLEEP_MODE_1        = 0x00000001,
 CROB_MEM_POWER_LIGHT_SLEEP_MODE_2        = 0x00000002,
 } CROB_MEM_PWR_LIGHT_SLEEP_MODE;
-
-/*
- * CURSOR_2X_MAGNIFY enum
- */
-
 typedef enum CURSOR_2X_MAGNIFY {
 CURSOR_2X_MAGNIFY_IS_DISABLE             = 0x00000000,
 CURSOR_2X_MAGNIFY_IS_ENABLE              = 0x00000001,
 } CURSOR_2X_MAGNIFY;
-
-/*
- * CURSOR_ENABLE enum
- */
-
 typedef enum CURSOR_ENABLE {
 CURSOR_IS_DISABLE                        = 0x00000000,
 CURSOR_IS_ENABLE                         = 0x00000001,
 } CURSOR_ENABLE;
-
-/*
- * CURSOR_LINES_PER_CHUNK enum
- */
-
 typedef enum CURSOR_LINES_PER_CHUNK {
 CURSOR_LINE_PER_CHUNK_1                  = 0x00000000,
 CURSOR_LINE_PER_CHUNK_2                  = 0x00000001,
@@ -2426,11 +1364,6 @@ CURSOR_LINE_PER_CHUNK_4                  = 0x00000002,
 CURSOR_LINE_PER_CHUNK_8                  = 0x00000003,
 CURSOR_LINE_PER_CHUNK_16                 = 0x00000004,
 } CURSOR_LINES_PER_CHUNK;
-
-/*
- * CURSOR_MODE enum
- */
-
 typedef enum CURSOR_MODE {
 CURSOR_MONO_2BIT                         = 0x00000000,
 CURSOR_COLOR_24BIT_1BIT_AND              = 0x00000001,
@@ -2439,160 +1372,71 @@ CURSOR_COLOR_24BIT_8BIT_ALPHA_UNPREMULT  = 0x00000003,
 CURSOR_COLOR_64BIT_FP_PREMULT            = 0x00000004,
 CURSOR_COLOR_64BIT_FP_UNPREMULT          = 0x00000005,
 } CURSOR_MODE;
-
-/*
- * CURSOR_PERFMON_LATENCY_MEASURE_EN enum
- */
-
 typedef enum CURSOR_PERFMON_LATENCY_MEASURE_EN {
 CURSOR_PERFMON_LATENCY_MEASURE_IS_DISABLED = 0x00000000,
 CURSOR_PERFMON_LATENCY_MEASURE_IS_ENABLED = 0x00000001,
 } CURSOR_PERFMON_LATENCY_MEASURE_EN;
-
-/*
- * CURSOR_PERFMON_LATENCY_MEASURE_SEL enum
- */
-
 typedef enum CURSOR_PERFMON_LATENCY_MEASURE_SEL {
 CURSOR_PERFMON_LATENCY_MEASURE_MC_LATENCY = 0x00000000,
 CURSOR_PERFMON_LATENCY_MEASURE_CROB_LATENCY = 0x00000001,
 } CURSOR_PERFMON_LATENCY_MEASURE_SEL;
-
-/*
- * CURSOR_PITCH enum
- */
-
 typedef enum CURSOR_PITCH {
 CURSOR_PITCH_64_PIXELS                   = 0x00000000,
 CURSOR_PITCH_128_PIXELS                  = 0x00000001,
 CURSOR_PITCH_256_PIXELS                  = 0x00000002,
 } CURSOR_PITCH;
-
-/*
- * CURSOR_REQ_MODE enum
- */
-
 typedef enum CURSOR_REQ_MODE {
 CURSOR_REQUEST_NORMALLY                  = 0x00000000,
 CURSOR_REQUEST_EARLY                     = 0x00000001,
 } CURSOR_REQ_MODE;
-
-/*
- * CURSOR_SNOOP enum
- */
-
 typedef enum CURSOR_SNOOP {
 CURSOR_IS_NOT_SNOOP                      = 0x00000000,
 CURSOR_IS_SNOOP                          = 0x00000001,
 } CURSOR_SNOOP;
-
-/*
- * CURSOR_STEREO_EN enum
- */
-
 typedef enum CURSOR_STEREO_EN {
 CURSOR_STEREO_IS_DISABLED                = 0x00000000,
 CURSOR_STEREO_IS_ENABLED                 = 0x00000001,
 } CURSOR_STEREO_EN;
-
-/*
- * CURSOR_SURFACE_TMZ enum
- */
-
 typedef enum CURSOR_SURFACE_TMZ {
 CURSOR_SURFACE_IS_NOT_TMZ                = 0x00000000,
 CURSOR_SURFACE_IS_TMZ                    = 0x00000001,
 } CURSOR_SURFACE_TMZ;
-
-/*
- * CURSOR_SYSTEM enum
- */
-
 typedef enum CURSOR_SYSTEM {
 CURSOR_IN_SYSTEM_PHYSICAL_ADDRESS        = 0x00000000,
 CURSOR_IN_GUEST_PHYSICAL_ADDRESS         = 0x00000001,
 } CURSOR_SYSTEM;
-
-/*
- * CURSOR_XY_POSITION_ROTATION_AND_MIRRORING_BYPASS enum
- */
-
 typedef enum CURSOR_XY_POSITION_ROTATION_AND_MIRRORING_BYPASS {
 CURSOR_XY_POSITION_ROTATION_AND_MIRRORING_BYPASS_0 = 0x00000000,
 CURSOR_XY_POSITION_ROTATION_AND_MIRRORING_BYPASS_1 = 0x00000001,
 } CURSOR_XY_POSITION_ROTATION_AND_MIRRORING_BYPASS;
-
-/*
- * DMDATA_DONE enum
- */
-
 typedef enum DMDATA_DONE {
 DMDATA_NOT_SENT_TO_DIG                   = 0x00000000,
 DMDATA_SENT_TO_DIG                       = 0x00000001,
 } DMDATA_DONE;
-
-/*
- * DMDATA_MODE enum
- */
-
 typedef enum DMDATA_MODE {
 DMDATA_SOFTWARE_UPDATE_MODE              = 0x00000000,
 DMDATA_HARDWARE_UPDATE_MODE              = 0x00000001,
 } DMDATA_MODE;
-
-/*
- * DMDATA_QOS_MODE enum
- */
-
 typedef enum DMDATA_QOS_MODE {
 DMDATA_QOS_LEVEL_FROM_TTU                = 0x00000000,
 DMDATA_QOS_LEVEL_FROM_SOFTWARE           = 0x00000001,
 } DMDATA_QOS_MODE;
-
-/*
- * DMDATA_REPEAT enum
- */
-
 typedef enum DMDATA_REPEAT {
 DMDATA_USE_FOR_CURRENT_FRAME_ONLY        = 0x00000000,
 DMDATA_USE_FOR_CURRENT_AND_FUTURE_FRAMES = 0x00000001,
 } DMDATA_REPEAT;
-
-/*
- * DMDATA_UNDERFLOW enum
- */
-
 typedef enum DMDATA_UNDERFLOW {
 DMDATA_NOT_UNDERFLOW                     = 0x00000000,
 DMDATA_UNDERFLOWED                       = 0x00000001,
 } DMDATA_UNDERFLOW;
-
-/*
- * DMDATA_UNDERFLOW_CLEAR enum
- */
-
 typedef enum DMDATA_UNDERFLOW_CLEAR {
 DMDATA_DONT_CLEAR                        = 0x00000000,
 DMDATA_CLEAR_UNDERFLOW_STATUS            = 0x00000001,
 } DMDATA_UNDERFLOW_CLEAR;
-
-/*
- * DMDATA_UPDATED enum
- */
-
 typedef enum DMDATA_UPDATED {
 DMDATA_NOT_UPDATED                       = 0x00000000,
 DMDATA_WAS_UPDATED                       = 0x00000001,
 } DMDATA_UPDATED;
-
-/*******************************************************
- * HUBBUB_SDPIF Enums
- *******************************************************/
-
-/*
- * RESPONSE_STATUS enum
- */
-
 typedef enum RESPONSE_STATUS {
 OKAY                                     = 0x00000000,
 EXOKAY                                   = 0x00000001,
@@ -2605,178 +1449,85 @@ TRANSERR                                 = 0x00000007,
 CMPTO                                    = 0x00000008,
 CRS                                      = 0x0000000c,
 } RESPONSE_STATUS;
-
-/*******************************************************
- * HUBBUB_RET_PATH Enums
- *******************************************************/
-
-/*
- * DCHUBBUB_DET_MEM_PWR_LIGHT_SLEEP_MODE enum
- */
-
 typedef enum DCHUBBUB_DET_MEM_PWR_LIGHT_SLEEP_MODE {
 DCHUBBUB_DET_MEM_POWER_LIGHT_SLEEP_MODE_OFF = 0x00000000,
 DCHUBBUB_DET_MEM_POWER_LIGHT_SLEEP_MODE_1 = 0x00000001,
 DCHUBBUB_DET_MEM_POWER_LIGHT_SLEEP_MODE_2 = 0x00000002,
 } DCHUBBUB_DET_MEM_PWR_LIGHT_SLEEP_MODE;
-
-/*
- * DCHUBBUB_MEM_PWR_DIS_MODE enum
- */
-
 typedef enum DCHUBBUB_MEM_PWR_DIS_MODE {
 DCHUBBUB_MEM_POWER_DIS_MODE_ENABLE       = 0x00000000,
 DCHUBBUB_MEM_POWER_DIS_MODE_DISABLE      = 0x00000001,
 } DCHUBBUB_MEM_PWR_DIS_MODE;
-
-/*
- * DCHUBBUB_MEM_PWR_MODE enum
- */
-
 typedef enum DCHUBBUB_MEM_PWR_MODE {
 DCHUBBUB_MEM_POWER_MODE_OFF              = 0x00000000,
 DCHUBBUB_MEM_POWER_MODE_LIGHT_SLEEP      = 0x00000001,
 DCHUBBUB_MEM_POWER_MODE_DEEP_SLEEP       = 0x00000002,
 DCHUBBUB_MEM_POWER_MODE_SHUT_DOWN        = 0x00000003,
 } DCHUBBUB_MEM_PWR_MODE;
-
-/*******************************************************
- * MPC_CFG Enums
- *******************************************************/
-
-/*
- * MPC_CFG_ADR_CFG_CUR_VUPDATE_LOCK_SET enum
- */
-
 typedef enum MPC_CFG_ADR_CFG_CUR_VUPDATE_LOCK_SET {
 MPC_CFG_ADR_CFG_CUR_VUPDATE_LOCK_SET_FALSE = 0x00000000,
 MPC_CFG_ADR_CFG_CUR_VUPDATE_LOCK_SET_TRUE = 0x00000001,
 } MPC_CFG_ADR_CFG_CUR_VUPDATE_LOCK_SET;
-
-/*
- * MPC_CFG_ADR_CFG_VUPDATE_LOCK_SET enum
- */
-
 typedef enum MPC_CFG_ADR_CFG_VUPDATE_LOCK_SET {
 MPC_CFG_ADR_CFG_VUPDATE_LOCK_SET_FALSE   = 0x00000000,
 MPC_CFG_ADR_CFG_VUPDATE_LOCK_SET_TRUE    = 0x00000001,
 } MPC_CFG_ADR_CFG_VUPDATE_LOCK_SET;
-
-/*
- * MPC_CFG_ADR_VUPDATE_LOCK_SET enum
- */
-
 typedef enum MPC_CFG_ADR_VUPDATE_LOCK_SET {
 MPC_CFG_ADR_VUPDATE_LOCK_SET_FALSE       = 0x00000000,
 MPC_CFG_ADR_VUPDATE_LOCK_SET_TRUE        = 0x00000001,
 } MPC_CFG_ADR_VUPDATE_LOCK_SET;
-
-/*
- * MPC_CFG_CFG_VUPDATE_LOCK_SET enum
- */
-
 typedef enum MPC_CFG_CFG_VUPDATE_LOCK_SET {
 MPC_CFG_CFG_VUPDATE_LOCK_SET_FALSE       = 0x00000000,
 MPC_CFG_CFG_VUPDATE_LOCK_SET_TRUE        = 0x00000001,
 } MPC_CFG_CFG_VUPDATE_LOCK_SET;
-
-/*
- * MPC_CFG_CUR_VUPDATE_LOCK_SET enum
- */
-
 typedef enum MPC_CFG_CUR_VUPDATE_LOCK_SET {
 MPC_CFG_CUR_VUPDATE_LOCK_SET_FALSE       = 0x00000000,
 MPC_CFG_CUR_VUPDATE_LOCK_SET_TRUE        = 0x00000001,
 } MPC_CFG_CUR_VUPDATE_LOCK_SET;
-
-/*
- * MPC_CFG_MPC_TEST_CLK_SEL enum
- */
-
 typedef enum MPC_CFG_MPC_TEST_CLK_SEL {
 MPC_CFG_MPC_TEST_CLK_SEL_0               = 0x00000000,
 MPC_CFG_MPC_TEST_CLK_SEL_1               = 0x00000001,
 MPC_CFG_MPC_TEST_CLK_SEL_2               = 0x00000002,
 MPC_CFG_MPC_TEST_CLK_SEL_3               = 0x00000003,
 } MPC_CFG_MPC_TEST_CLK_SEL;
-
-/*
- * MPC_CFG_TEST_DEBUG_INDEX_MPC_CFG_TEST_DEBUG_WRITE_EN enum
- */
-
 typedef enum MPC_CFG_TEST_DEBUG_INDEX_MPC_CFG_TEST_DEBUG_WRITE_EN {
 MPC_CFG_TEST_DEBUG_INDEX_MPC_CFG_TEST_DEBUG_WRITE_EN_FALSE = 0x00000000,
 MPC_CFG_TEST_DEBUG_INDEX_MPC_CFG_TEST_DEBUG_WRITE_EN_TRUE = 0x00000001,
 } MPC_CFG_TEST_DEBUG_INDEX_MPC_CFG_TEST_DEBUG_WRITE_EN;
-
-/*
- * MPC_CRC_CALC_INTERLACE_MODE enum
- */
-
 typedef enum MPC_CRC_CALC_INTERLACE_MODE {
 MPC_CRC_INTERLACE_MODE_TOP               = 0x00000000,
 MPC_CRC_INTERLACE_MODE_BOTTOM            = 0x00000001,
 MPC_CRC_INTERLACE_MODE_BOTH_RESET_BOTTOM = 0x00000002,
 MPC_CRC_INTERLACE_MODE_BOTH_RESET_EACH   = 0x00000003,
 } MPC_CRC_CALC_INTERLACE_MODE;
-
-/*
- * MPC_CRC_CALC_MODE enum
- */
-
 typedef enum MPC_CRC_CALC_MODE {
 MPC_CRC_ONE_SHOT_MODE                    = 0x00000000,
 MPC_CRC_CONTINUOUS_MODE                  = 0x00000001,
 } MPC_CRC_CALC_MODE;
-
-/*
- * MPC_CRC_CALC_STEREO_MODE enum
- */
-
 typedef enum MPC_CRC_CALC_STEREO_MODE {
 MPC_CRC_STEREO_MODE_LEFT                 = 0x00000000,
 MPC_CRC_STEREO_MODE_RIGHT                = 0x00000001,
 MPC_CRC_STEREO_MODE_BOTH_RESET_RIGHT     = 0x00000002,
 MPC_CRC_STEREO_MODE_BOTH_RESET_EACH      = 0x00000003,
 } MPC_CRC_CALC_STEREO_MODE;
-
-/*
- * MPC_CRC_SOURCE_SELECT enum
- */
-
 typedef enum MPC_CRC_SOURCE_SELECT {
 MPC_CRC_SOURCE_SEL_DPP                   = 0x00000000,
 MPC_CRC_SOURCE_SEL_OPP                   = 0x00000001,
 MPC_CRC_SOURCE_SEL_DWB                   = 0x00000002,
 MPC_CRC_SOURCE_SEL_OTHER                 = 0x00000003,
 } MPC_CRC_SOURCE_SELECT;
-
-/*
- * MPC_DEBUG_BUS1_DATA_SELECT enum
- */
-
 typedef enum MPC_DEBUG_BUS1_DATA_SELECT {
 MPC_DEBUG_BUS1_DATA_SELECT_MPC_CFG       = 0x00000000,
 MPC_DEBUG_BUS1_DATA_SELECT_MPC_CONT      = 0x00000001,
 MPC_DEBUG_BUS1_DATA_SELECT_MPC_RSV1      = 0x00000002,
 MPC_DEBUG_BUS1_DATA_SELECT_MPC_RSV       = 0x00000003,
 } MPC_DEBUG_BUS1_DATA_SELECT;
-
-/*
- * MPC_DEBUG_BUS2_DATA_SELECT enum
- */
-
 typedef enum MPC_DEBUG_BUS2_DATA_SELECT {
 MPC_DEBUG_BUS2_DATA_SELECT_MPCC          = 0x00000000,
 MPC_DEBUG_BUS2_DATA_SELECT_MPCC_CONT     = 0x00000001,
 MPC_DEBUG_BUS2_DATA_SELECT_MPCC_MCM      = 0x00000002,
 MPC_DEBUG_BUS2_DATA_SELECT_RES           = 0x00000003,
 } MPC_DEBUG_BUS2_DATA_SELECT;
-
-/*
- * MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT enum
- */
-
 typedef enum MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT {
 MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT_MPC_DEBUG_ID = 0x00000000,
 MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT_MPCC_DEBUG_ID = 0x00000001,
@@ -2787,55 +1538,26 @@ MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT_SFT_DEBUG_DATA = 0x00000005,
 MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT_RSV1 = 0x00000006,
 MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT_MPCC_MCM_DEBUG_ID = 0x00000007,
 } MPC_DEBUG_BUS_DIRECT_OUT_DATA_SELECT;
-
-/*
- * MPC_DEBUG_BUS_MPCC_BYTE_SELECT enum
- */
-
 typedef enum MPC_DEBUG_BUS_MPCC_BYTE_SELECT {
 MPC_DEBUG_BUS_MPCC_BYTE0                 = 0x00000000,
 MPC_DEBUG_BUS_MPCC_BYTE1                 = 0x00000001,
 MPC_DEBUG_BUS_MPCC_BYTE2                 = 0x00000002,
 MPC_DEBUG_BUS_MPCC_BYTE3                 = 0x00000003,
 } MPC_DEBUG_BUS_MPCC_BYTE_SELECT;
-
-/*******************************************************
- * MPC_OCSC Enums
- *******************************************************/
-
-/*
- * MPC_OCSC_COEF_FORMAT enum
- */
-
 typedef enum MPC_OCSC_COEF_FORMAT {
 MPC_OCSC_COEF_FORMAT_S2_13               = 0x00000000,
 MPC_OCSC_COEF_FORMAT_S3_12               = 0x00000001,
 } MPC_OCSC_COEF_FORMAT;
-
-/*
- * MPC_OCSC_TEST_DEBUG_INDEX_MPC_OCSC_TEST_DEBUG_WRITE_EN enum
- */
-
 typedef enum MPC_OCSC_TEST_DEBUG_INDEX_MPC_OCSC_TEST_DEBUG_WRITE_EN {
 MPC_OCSC_TEST_DEBUG_INDEX_MPC_OCSC_TEST_DEBUG_WRITE_EN_FALSE = 0x00000000,
 MPC_OCSC_TEST_DEBUG_INDEX_MPC_OCSC_TEST_DEBUG_WRITE_EN_TRUE = 0x00000001,
 } MPC_OCSC_TEST_DEBUG_INDEX_MPC_OCSC_TEST_DEBUG_WRITE_EN;
-
-/*
- * MPC_OUT_CSC_MODE enum
- */
-
 typedef enum MPC_OUT_CSC_MODE {
 MPC_OUT_CSC_MODE_0                       = 0x00000000,
 MPC_OUT_CSC_MODE_1                       = 0x00000001,
 MPC_OUT_CSC_MODE_2                       = 0x00000002,
 MPC_OUT_CSC_MODE_RSV                     = 0x00000003,
 } MPC_OUT_CSC_MODE;
-
-/*
- * MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_MODE enum
- */
-
 typedef enum MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_MODE {
 MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_BYPASS = 0x00000000,
 MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_6BITS = 0x00000001,
@@ -2846,24 +1568,10 @@ MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_11BITS = 0x00000005,
 MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_12BITS = 0x00000006,
 MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_PASSTHROUGH = 0x00000007,
 } MPC_OUT_DENORM_CONTROL_MPC_OUT_DENORM_MODE;
-
-/*
- * MPC_OUT_RATE_CONTROL_DISABLE_SET enum
- */
-
 typedef enum MPC_OUT_RATE_CONTROL_DISABLE_SET {
 MPC_OUT_RATE_CONTROL_SET_ENABLE          = 0x00000000,
 MPC_OUT_RATE_CONTROL_SET_DISABLE         = 0x00000001,
 } MPC_OUT_RATE_CONTROL_DISABLE_SET;
-
-/*******************************************************
- * MPCC Enums
- *******************************************************/
-
-/*
- * MPCC_BG_COLOR_BPC enum
- */
-
 typedef enum MPCC_BG_COLOR_BPC {
 MPCC_BG_COLOR_BPC_8bit                   = 0x00000000,
 MPCC_BG_COLOR_BPC_9bit                   = 0x00000001,
@@ -2871,238 +1579,114 @@ MPCC_BG_COLOR_BPC_10bit                  = 0x00000002,
 MPCC_BG_COLOR_BPC_11bit                  = 0x00000003,
 MPCC_BG_COLOR_BPC_12bit                  = 0x00000004,
 } MPCC_BG_COLOR_BPC;
-
-/*
- * MPCC_CONTROL_MPCC_ACTIVE_OVERLAP_ONLY enum
- */
-
 typedef enum MPCC_CONTROL_MPCC_ACTIVE_OVERLAP_ONLY {
 MPCC_CONTROL_MPCC_ACTIVE_OVERLAP_ONLY_FALSE = 0x00000000,
 MPCC_CONTROL_MPCC_ACTIVE_OVERLAP_ONLY_TRUE = 0x00000001,
 } MPCC_CONTROL_MPCC_ACTIVE_OVERLAP_ONLY;
-
-/*
- * MPCC_CONTROL_MPCC_ALPHA_BLND_MODE enum
- */
-
 typedef enum MPCC_CONTROL_MPCC_ALPHA_BLND_MODE {
 MPCC_CONTROL_MPCC_ALPHA_BLND_MODE_PER_PIXEL_ALPHA = 0x00000000,
 MPCC_CONTROL_MPCC_ALPHA_BLND_MODE_PER_PIXEL_ALPHA_COMBINED_GLOBAL_GAIN = 0x00000001,
 MPCC_CONTROL_MPCC_ALPHA_BLND_MODE_GLOBAL_ALPHA = 0x00000002,
 MPCC_CONTROL_MPCC_ALPHA_BLND_MODE_UNUSED = 0x00000003,
 } MPCC_CONTROL_MPCC_ALPHA_BLND_MODE;
-
-/*
- * MPCC_CONTROL_MPCC_ALPHA_MULTIPLIED_MODE enum
- */
-
 typedef enum MPCC_CONTROL_MPCC_ALPHA_MULTIPLIED_MODE {
 MPCC_CONTROL_MPCC_ALPHA_MULTIPLIED_MODE_FALSE = 0x00000000,
 MPCC_CONTROL_MPCC_ALPHA_MULTIPLIED_MODE_TRUE = 0x00000001,
 } MPCC_CONTROL_MPCC_ALPHA_MULTIPLIED_MODE;
-
-/*
- * MPCC_CONTROL_MPCC_BOT_GAIN_MODE enum
- */
-
 typedef enum MPCC_CONTROL_MPCC_BOT_GAIN_MODE {
 MPCC_CONTROL_MPCC_BOT_GAIN_MODE_0        = 0x00000000,
 MPCC_CONTROL_MPCC_BOT_GAIN_MODE_1        = 0x00000001,
 } MPCC_CONTROL_MPCC_BOT_GAIN_MODE;
-
-/*
- * MPCC_CONTROL_MPCC_MODE enum
- */
-
 typedef enum MPCC_CONTROL_MPCC_MODE {
 MPCC_CONTROL_MPCC_MODE_BYPASS            = 0x00000000,
 MPCC_CONTROL_MPCC_MODE_TOP_LAYER_PASSTHROUGH = 0x00000001,
 MPCC_CONTROL_MPCC_MODE_TOP_LAYER_ONLY    = 0x00000002,
 MPCC_CONTROL_MPCC_MODE_TOP_BOT_BLENDING  = 0x00000003,
 } MPCC_CONTROL_MPCC_MODE;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_EN enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_EN {
 MPCC_SM_CONTROL_MPCC_SM_EN_FALSE         = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_EN_TRUE          = 0x00000001,
 } MPCC_SM_CONTROL_MPCC_SM_EN;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_FIELD_ALT enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_FIELD_ALT {
 MPCC_SM_CONTROL_MPCC_SM_FIELD_ALT_FALSE  = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_FIELD_ALT_TRUE   = 0x00000001,
 } MPCC_SM_CONTROL_MPCC_SM_FIELD_ALT;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL {
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL_NO_FORCE = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL_RESERVED = 0x00000001,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL_FORCE_LOW = 0x00000002,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL_FORCE_HIGH = 0x00000003,
 } MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_FRAME_POL;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL {
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL_NO_FORCE = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL_RESERVED = 0x00000001,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL_FORCE_LOW = 0x00000002,
 MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL_FORCE_HIGH = 0x00000003,
 } MPCC_SM_CONTROL_MPCC_SM_FORCE_NEXT_TOP_POL;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_FRAME_ALT enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_FRAME_ALT {
 MPCC_SM_CONTROL_MPCC_SM_FRAME_ALT_FALSE  = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_FRAME_ALT_TRUE   = 0x00000001,
 } MPCC_SM_CONTROL_MPCC_SM_FRAME_ALT;
-
-/*
- * MPCC_SM_CONTROL_MPCC_SM_MODE enum
- */
-
 typedef enum MPCC_SM_CONTROL_MPCC_SM_MODE {
 MPCC_SM_CONTROL_MPCC_SM_MODE_SINGLE_PLANE = 0x00000000,
 MPCC_SM_CONTROL_MPCC_SM_MODE_ROW_SUBSAMPLING = 0x00000002,
 MPCC_SM_CONTROL_MPCC_SM_MODE_COLUMN_SUBSAMPLING = 0x00000004,
 MPCC_SM_CONTROL_MPCC_SM_MODE_CHECKERBOARD_SUBSAMPLING = 0x00000006,
 } MPCC_SM_CONTROL_MPCC_SM_MODE;
-
-/*
- * MPCC_TEST_DEBUG_INDEX_MPCC_TEST_DEBUG_WRITE_EN enum
- */
-
 typedef enum MPCC_TEST_DEBUG_INDEX_MPCC_TEST_DEBUG_WRITE_EN {
 MPCC_TEST_DEBUG_INDEX_MPCC_TEST_DEBUG_WRITE_EN_FALSE = 0x00000000,
 MPCC_TEST_DEBUG_INDEX_MPCC_TEST_DEBUG_WRITE_EN_TRUE = 0x00000001,
 } MPCC_TEST_DEBUG_INDEX_MPCC_TEST_DEBUG_WRITE_EN;
-
-/*******************************************************
- * MPCC_OGAM Enums
- *******************************************************/
-
-/*
- * MPCC_GAMUT_REMAP_COEF_FORMAT_ENUM enum
- */
-
 typedef enum MPCC_GAMUT_REMAP_COEF_FORMAT_ENUM {
 MPCC_GAMUT_REMAP_COEF_FORMAT_S2_13       = 0x00000000,
 MPCC_GAMUT_REMAP_COEF_FORMAT_S3_12       = 0x00000001,
 } MPCC_GAMUT_REMAP_COEF_FORMAT_ENUM;
-
-/*
- * MPCC_GAMUT_REMAP_MODE_ENUM enum
- */
-
 typedef enum MPCC_GAMUT_REMAP_MODE_ENUM {
 MPCC_GAMUT_REMAP_MODE_0                  = 0x00000000,
 MPCC_GAMUT_REMAP_MODE_1                  = 0x00000001,
 MPCC_GAMUT_REMAP_MODE_2                  = 0x00000002,
 MPCC_GAMUT_REMAP_MODE_RSV                = 0x00000003,
 } MPCC_GAMUT_REMAP_MODE_ENUM;
-
-/*
- * MPCC_OGAM_LUT_2_CONFIG_ENUM enum
- */
-
 typedef enum MPCC_OGAM_LUT_2_CONFIG_ENUM {
 MPCC_OGAM_LUT_2CFG_NO_MEMORY             = 0x00000000,
 MPCC_OGAM_LUT_2CFG_MEMORY_A              = 0x00000001,
 MPCC_OGAM_LUT_2CFG_MEMORY_B              = 0x00000002,
 } MPCC_OGAM_LUT_2_CONFIG_ENUM;
-
-/*
- * MPCC_OGAM_LUT_CONFIG_MODE enum
- */
-
 typedef enum MPCC_OGAM_LUT_CONFIG_MODE {
 MPCC_OGAM_DIFFERENT_RGB                  = 0x00000000,
 MPCC_OGAM_ALL_USE_R                      = 0x00000001,
 } MPCC_OGAM_LUT_CONFIG_MODE;
-
-/*
- * MPCC_OGAM_LUT_PWL_DISABLE_ENUM enum
- */
-
 typedef enum MPCC_OGAM_LUT_PWL_DISABLE_ENUM {
 MPCC_OGAM_ENABLE_PWL                     = 0x00000000,
 MPCC_OGAM_DISABLE_PWL                    = 0x00000001,
 } MPCC_OGAM_LUT_PWL_DISABLE_ENUM;
-
-/*
- * MPCC_OGAM_LUT_RAM_CONTROL_MPCC_OGAM_LUT_RAM_SEL enum
- */
-
 typedef enum MPCC_OGAM_LUT_RAM_CONTROL_MPCC_OGAM_LUT_RAM_SEL {
 MPCC_OGAM_LUT_RAM_CONTROL_MPCC_OGAM_LUT_RAM_SEL_RAMA = 0x00000000,
 MPCC_OGAM_LUT_RAM_CONTROL_MPCC_OGAM_LUT_RAM_SEL_RAMB = 0x00000001,
 } MPCC_OGAM_LUT_RAM_CONTROL_MPCC_OGAM_LUT_RAM_SEL;
-
-/*
- * MPCC_OGAM_LUT_RAM_SEL enum
- */
-
 typedef enum MPCC_OGAM_LUT_RAM_SEL {
 MPCC_OGAM_RAMA_ACCESS                    = 0x00000000,
 MPCC_OGAM_RAMB_ACCESS                    = 0x00000001,
 } MPCC_OGAM_LUT_RAM_SEL;
-
-/*
- * MPCC_OGAM_LUT_READ_COLOR_SEL enum
- */
-
 typedef enum MPCC_OGAM_LUT_READ_COLOR_SEL {
 MPCC_OGAM_BLUE_LUT                       = 0x00000000,
 MPCC_OGAM_GREEN_LUT                      = 0x00000001,
 MPCC_OGAM_RED_LUT                        = 0x00000002,
 } MPCC_OGAM_LUT_READ_COLOR_SEL;
-
-/*
- * MPCC_OGAM_LUT_READ_DBG enum
- */
-
 typedef enum MPCC_OGAM_LUT_READ_DBG {
 MPCC_OGAM_DISABLE_DEBUG                  = 0x00000000,
 MPCC_OGAM_ENABLE_DEBUG                   = 0x00000001,
 } MPCC_OGAM_LUT_READ_DBG;
-
-/*
- * MPCC_OGAM_LUT_SEL_ENUM enum
- */
-
 typedef enum MPCC_OGAM_LUT_SEL_ENUM {
 MPCC_OGAM_RAMA                           = 0x00000000,
 MPCC_OGAM_RAMB                           = 0x00000001,
 } MPCC_OGAM_LUT_SEL_ENUM;
-
-/*
- * MPCC_OGAM_MODE_MPCC_OGAM_MODE_ENUM enum
- */
-
 typedef enum MPCC_OGAM_MODE_MPCC_OGAM_MODE_ENUM {
 MPCC_OGAM_MODE_0                         = 0x00000000,
 MPCC_OGAM_MODE_RSV1                      = 0x00000001,
 MPCC_OGAM_MODE_2                         = 0x00000002,
 MPCC_OGAM_MODE_RSV                       = 0x00000003,
 } MPCC_OGAM_MODE_MPCC_OGAM_MODE_ENUM;
-
-/*
- * MPCC_OGAM_NUM_SEG enum
- */
-
 typedef enum MPCC_OGAM_NUM_SEG {
 MPCC_OGAM_SEGMENTS_1                     = 0x00000000,
 MPCC_OGAM_SEGMENTS_2                     = 0x00000001,
@@ -3113,101 +1697,47 @@ MPCC_OGAM_SEGMENTS_32                    = 0x00000005,
 MPCC_OGAM_SEGMENTS_64                    = 0x00000006,
 MPCC_OGAM_SEGMENTS_128                   = 0x00000007,
 } MPCC_OGAM_NUM_SEG;
-
-/*
- * MPCC_OGAM_TEST_DEBUG_INDEX_MPCC_OGAM_TEST_DEBUG_WRITE_EN enum
- */
-
 typedef enum MPCC_OGAM_TEST_DEBUG_INDEX_MPCC_OGAM_TEST_DEBUG_WRITE_EN {
 MPCC_OGAM_TEST_DEBUG_INDEX_MPCC_OGAM_TEST_DEBUG_WRITE_EN_FALSE = 0x00000000,
 MPCC_OGAM_TEST_DEBUG_INDEX_MPCC_OGAM_TEST_DEBUG_WRITE_EN_TRUE = 0x00000001,
 } MPCC_OGAM_TEST_DEBUG_INDEX_MPCC_OGAM_TEST_DEBUG_WRITE_EN;
-
-/*******************************************************
- * MPCC_MCM Enums
- *******************************************************/
-
-/*
- * MPCC_MCM_3DLUT_30BIT_ENUM enum
- */
-
 typedef enum MPCC_MCM_3DLUT_30BIT_ENUM {
 MPCC_MCM_3DLUT_36BIT                     = 0x00000000,
 MPCC_MCM_3DLUT_30BIT                     = 0x00000001,
 } MPCC_MCM_3DLUT_30BIT_ENUM;
-
-/*
- * MPCC_MCM_3DLUT_RAM_SEL enum
- */
-
 typedef enum MPCC_MCM_3DLUT_RAM_SEL {
 MPCC_MCM_RAM0_ACCESS                     = 0x00000000,
 MPCC_MCM_RAM1_ACCESS                     = 0x00000001,
 MPCC_MCM_RAM2_ACCESS                     = 0x00000002,
 MPCC_MCM_RAM3_ACCESS                     = 0x00000003,
 } MPCC_MCM_3DLUT_RAM_SEL;
-
-/*
- * MPCC_MCM_3DLUT_SIZE_ENUM enum
- */
-
 typedef enum MPCC_MCM_3DLUT_SIZE_ENUM {
 MPCC_MCM_3DLUT_17CUBE                    = 0x00000000,
 MPCC_MCM_3DLUT_9CUBE                     = 0x00000001,
 } MPCC_MCM_3DLUT_SIZE_ENUM;
-
-/*
- * MPCC_MCM_GAMMA_LUT_MODE_ENUM enum
- */
-
 typedef enum MPCC_MCM_GAMMA_LUT_MODE_ENUM {
 MPCC_MCM_GAMMA_LUT_BYPASS                = 0x00000000,
 MPCC_MCM_GAMMA_LUT_RESERVED_1            = 0x00000001,
 MPCC_MCM_GAMMA_LUT_RAM_LUT               = 0x00000002,
 MPCC_MCM_GAMMA_LUT_RESERVED_3            = 0x00000003,
 } MPCC_MCM_GAMMA_LUT_MODE_ENUM;
-
-/*
- * MPCC_MCM_GAMMA_LUT_PWL_DISABLE_ENUM enum
- */
-
 typedef enum MPCC_MCM_GAMMA_LUT_PWL_DISABLE_ENUM {
 MPCC_MCM_GAMMA_LUT_ENABLE_PWL            = 0x00000000,
 MPCC_MCM_GAMMA_LUT_DISABLE_PWL           = 0x00000001,
 } MPCC_MCM_GAMMA_LUT_PWL_DISABLE_ENUM;
-
-/*
- * MPCC_MCM_GAMMA_LUT_SEL_ENUM enum
- */
-
 typedef enum MPCC_MCM_GAMMA_LUT_SEL_ENUM {
 MPCC_MCM_GAMMA_LUT_RAMA                  = 0x00000000,
 MPCC_MCM_GAMMA_LUT_RAMB                  = 0x00000001,
 } MPCC_MCM_GAMMA_LUT_SEL_ENUM;
-
-/*
- * MPCC_MCM_LUT_2_MODE_ENUM enum
- */
-
 typedef enum MPCC_MCM_LUT_2_MODE_ENUM {
 MPCC_MCM_LUT_2_MODE_BYPASS               = 0x00000000,
 MPCC_MCM_LUT_2_MODE_RAMA_LUT             = 0x00000001,
 MPCC_MCM_LUT_2_MODE_RAMB_LUT             = 0x00000002,
 } MPCC_MCM_LUT_2_MODE_ENUM;
-
-/*
- * MPCC_MCM_LUT_CONFIG_MODE enum
- */
-
 typedef enum MPCC_MCM_LUT_CONFIG_MODE {
 MPCC_MCM_LUT_DIFFERENT_RGB               = 0x00000000,
 MPCC_MCM_LUT_ALL_USE_R                   = 0x00000001,
 } MPCC_MCM_LUT_CONFIG_MODE;
-
-/*
- * MPCC_MCM_LUT_NUM_SEG enum
- */
-
 typedef enum MPCC_MCM_LUT_NUM_SEG {
 MPCC_MCM_LUT_SEGMENTS_1                  = 0x00000000,
 MPCC_MCM_LUT_SEGMENTS_2                  = 0x00000001,
@@ -3218,107 +1748,49 @@ MPCC_MCM_LUT_SEGMENTS_32                 = 0x00000005,
 MPCC_MCM_LUT_SEGMENTS_64                 = 0x00000006,
 MPCC_MCM_LUT_SEGMENTS_128                = 0x00000007,
 } MPCC_MCM_LUT_NUM_SEG;
-
-/*
- * MPCC_MCM_LUT_RAM_SEL enum
- */
-
 typedef enum MPCC_MCM_LUT_RAM_SEL {
 MPCC_MCM_LUT_RAMA_ACCESS                 = 0x00000000,
 MPCC_MCM_LUT_RAMB_ACCESS                 = 0x00000001,
 } MPCC_MCM_LUT_RAM_SEL;
-
-/*
- * MPCC_MCM_LUT_READ_COLOR_SEL enum
- */
-
 typedef enum MPCC_MCM_LUT_READ_COLOR_SEL {
 MPCC_MCM_LUT_BLUE_LUT                    = 0x00000000,
 MPCC_MCM_LUT_GREEN_LUT                   = 0x00000001,
 MPCC_MCM_LUT_RED_LUT                     = 0x00000002,
 } MPCC_MCM_LUT_READ_COLOR_SEL;
-
-/*
- * MPCC_MCM_LUT_READ_DBG enum
- */
-
 typedef enum MPCC_MCM_LUT_READ_DBG {
 MPCC_MCM_LUT_DISABLE_DEBUG               = 0x00000000,
 MPCC_MCM_LUT_ENABLE_DEBUG                = 0x00000001,
 } MPCC_MCM_LUT_READ_DBG;
-
-/*
- * MPCC_MCM_MEM_PWR_FORCE_ENUM enum
- */
-
 typedef enum MPCC_MCM_MEM_PWR_FORCE_ENUM {
 MPCC_MCM_MEM_PWR_FORCE_DIS               = 0x00000000,
 MPCC_MCM_MEM_PWR_FORCE_LS                = 0x00000001,
 MPCC_MCM_MEM_PWR_FORCE_DS                = 0x00000002,
 MPCC_MCM_MEM_PWR_FORCE_SD                = 0x00000003,
 } MPCC_MCM_MEM_PWR_FORCE_ENUM;
-
-/*
- * MPCC_MCM_MEM_PWR_STATE_ENUM enum
- */
-
 typedef enum MPCC_MCM_MEM_PWR_STATE_ENUM {
 MPCC_MCM_MEM_PWR_STATE_ON                = 0x00000000,
 MPCC_MCM_MEM_PWR_STATE_LS                = 0x00000001,
 MPCC_MCM_MEM_PWR_STATE_DS                = 0x00000002,
 MPCC_MCM_MEM_PWR_STATE_SD                = 0x00000003,
 } MPCC_MCM_MEM_PWR_STATE_ENUM;
-
-/*******************************************************
- * ABM Enums
- *******************************************************/
-
-/*******************************************************
- * DPG Enums
- *******************************************************/
-
-/*
- * ENUM_DPG_BIT_DEPTH enum
- */
-
 typedef enum ENUM_DPG_BIT_DEPTH {
 ENUM_DPG_BIT_DEPTH_6BPC                  = 0x00000000,
 ENUM_DPG_BIT_DEPTH_8BPC                  = 0x00000001,
 ENUM_DPG_BIT_DEPTH_10BPC                 = 0x00000002,
 ENUM_DPG_BIT_DEPTH_12BPC                 = 0x00000003,
 } ENUM_DPG_BIT_DEPTH;
-
-/*
- * ENUM_DPG_DYNAMIC_RANGE enum
- */
-
 typedef enum ENUM_DPG_DYNAMIC_RANGE {
 ENUM_DPG_DYNAMIC_RANGE_VESA              = 0x00000000,
 ENUM_DPG_DYNAMIC_RANGE_CEA               = 0x00000001,
 } ENUM_DPG_DYNAMIC_RANGE;
-
-/*
- * ENUM_DPG_EN enum
- */
-
 typedef enum ENUM_DPG_EN {
 ENUM_DPG_DISABLE                         = 0x00000000,
 ENUM_DPG_ENABLE                          = 0x00000001,
 } ENUM_DPG_EN;
-
-/*
- * ENUM_DPG_FIELD_POLARITY enum
- */
-
 typedef enum ENUM_DPG_FIELD_POLARITY {
 ENUM_DPG_FIELD_POLARITY_TOP_EVEN_BOTTOM_ODD = 0x00000000,
 ENUM_DPG_FIELD_POLARITY_TOP_ODD_BOTTOM_EVEN = 0x00000001,
 } ENUM_DPG_FIELD_POLARITY;
-
-/*
- * ENUM_DPG_MODE enum
- */
-
 typedef enum ENUM_DPG_MODE {
 ENUM_DPG_MODE_RGB_COLOUR_BLOCK           = 0x00000000,
 ENUM_DPG_MODE_YCBCR_601_COLOUR_BLOCK     = 0x00000001,
@@ -3329,116 +1801,57 @@ ENUM_DPG_MODE_RGB_SINGLE_RAMP            = 0x00000005,
 ENUM_DPG_MODE_RGB_DUAL_RAMP              = 0x00000006,
 ENUM_DPG_MODE_RGB_XR_BIAS                = 0x00000007,
 } ENUM_DPG_MODE;
-
-/*******************************************************
- * FMT Enums
- *******************************************************/
-
-/*
- * FMTMEM_PWR_DIS_CTRL enum
- */
-
 typedef enum FMTMEM_PWR_DIS_CTRL {
 FMTMEM_ENABLE_MEM_PWR_CTRL               = 0x00000000,
 FMTMEM_DISABLE_MEM_PWR_CTRL              = 0x00000001,
 } FMTMEM_PWR_DIS_CTRL;
-
-/*
- * FMTMEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum FMTMEM_PWR_FORCE_CTRL {
 FMTMEM_NO_FORCE_REQUEST                  = 0x00000000,
 FMTMEM_FORCE_LIGHT_SLEEP_REQUEST         = 0x00000001,
 FMTMEM_FORCE_DEEP_SLEEP_REQUEST          = 0x00000002,
 FMTMEM_FORCE_SHUT_DOWN_REQUEST           = 0x00000003,
 } FMTMEM_PWR_FORCE_CTRL;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_25FRC_SEL enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_25FRC_SEL {
 FMT_BIT_DEPTH_CONTROL_25FRC_SEL_Ei       = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_25FRC_SEL_Fi       = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_25FRC_SEL_Gi       = 0x00000002,
 FMT_BIT_DEPTH_CONTROL_25FRC_SEL_RESERVED = 0x00000003,
 } FMT_BIT_DEPTH_CONTROL_25FRC_SEL;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_50FRC_SEL enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_50FRC_SEL {
 FMT_BIT_DEPTH_CONTROL_50FRC_SEL_A        = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_50FRC_SEL_B        = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_50FRC_SEL_C        = 0x00000002,
 FMT_BIT_DEPTH_CONTROL_50FRC_SEL_D        = 0x00000003,
 } FMT_BIT_DEPTH_CONTROL_50FRC_SEL;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_75FRC_SEL enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_75FRC_SEL {
 FMT_BIT_DEPTH_CONTROL_75FRC_SEL_E        = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_75FRC_SEL_F        = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_75FRC_SEL_G        = 0x00000002,
 FMT_BIT_DEPTH_CONTROL_75FRC_SEL_RESERVED = 0x00000003,
 } FMT_BIT_DEPTH_CONTROL_75FRC_SEL;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH {
 FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH_18BPP = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH_24BPP = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH_30BPP = 0x00000002,
 } FMT_BIT_DEPTH_CONTROL_SPATIAL_DITHER_DEPTH;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH {
 FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH_18BPP = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH_24BPP = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH_30BPP = 0x00000002,
 } FMT_BIT_DEPTH_CONTROL_TEMPORAL_DITHER_DEPTH;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_TEMPORAL_LEVEL enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_TEMPORAL_LEVEL {
 FMT_BIT_DEPTH_CONTROL_TEMPORAL_LEVEL_GREY_LEVEL2 = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_TEMPORAL_LEVEL_GREY_LEVEL4 = 0x00000001,
 } FMT_BIT_DEPTH_CONTROL_TEMPORAL_LEVEL;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH {
 FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH_18BPP = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH_24BPP = 0x00000001,
 FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH_30BPP = 0x00000002,
 } FMT_BIT_DEPTH_CONTROL_TRUNCATE_DEPTH;
-
-/*
- * FMT_BIT_DEPTH_CONTROL_TRUNCATE_MODE enum
- */
-
 typedef enum FMT_BIT_DEPTH_CONTROL_TRUNCATE_MODE {
 FMT_BIT_DEPTH_CONTROL_TRUNCATE_MODE_TRUNCATION = 0x00000000,
 FMT_BIT_DEPTH_CONTROL_TRUNCATE_MODE_ROUNDING = 0x00000001,
 } FMT_BIT_DEPTH_CONTROL_TRUNCATE_MODE;
-
-/*
- * FMT_CLAMP_CNTL_COLOR_FORMAT enum
- */
-
 typedef enum FMT_CLAMP_CNTL_COLOR_FORMAT {
 FMT_CLAMP_CNTL_COLOR_FORMAT_6BPC         = 0x00000000,
 FMT_CLAMP_CNTL_COLOR_FORMAT_8BPC         = 0x00000001,
@@ -3449,144 +1862,70 @@ FMT_CLAMP_CNTL_COLOR_FORMAT_RESERVED2    = 0x00000005,
 FMT_CLAMP_CNTL_COLOR_FORMAT_RESERVED3    = 0x00000006,
 FMT_CLAMP_CNTL_COLOR_FORMAT_PROGRAMMABLE = 0x00000007,
 } FMT_CLAMP_CNTL_COLOR_FORMAT;
-
-/*
- * FMT_CONTROL_CBCR_BIT_REDUCTION_BYPASS enum
- */
-
 typedef enum FMT_CONTROL_CBCR_BIT_REDUCTION_BYPASS {
 FMT_CONTROL_CBCR_BIT_REDUCTION_BYPASS_DISABLE = 0x00000000,
 FMT_CONTROL_CBCR_BIT_REDUCTION_BYPASS_ENABLE = 0x00000001,
 } FMT_CONTROL_CBCR_BIT_REDUCTION_BYPASS;
-
-/*
- * FMT_CONTROL_PIXEL_ENCODING enum
- */
-
 typedef enum FMT_CONTROL_PIXEL_ENCODING {
 FMT_CONTROL_PIXEL_ENCODING_RGB444_OR_YCBCR444 = 0x00000000,
 FMT_CONTROL_PIXEL_ENCODING_YCBCR422      = 0x00000001,
 FMT_CONTROL_PIXEL_ENCODING_YCBCR420      = 0x00000002,
 FMT_CONTROL_PIXEL_ENCODING_RESERVED      = 0x00000003,
 } FMT_CONTROL_PIXEL_ENCODING;
-
-/*
- * FMT_CONTROL_SUBSAMPLING_MODE enum
- */
-
 typedef enum FMT_CONTROL_SUBSAMPLING_MODE {
 FMT_CONTROL_SUBSAMPLING_MODE_DROP        = 0x00000000,
 FMT_CONTROL_SUBSAMPLING_MODE_AVERAGE     = 0x00000001,
 FMT_CONTROL_SUBSAMPLING_MOME_3_TAP       = 0x00000002,
 FMT_CONTROL_SUBSAMPLING_MOME_RESERVED    = 0x00000003,
 } FMT_CONTROL_SUBSAMPLING_MODE;
-
-/*
- * FMT_CONTROL_SUBSAMPLING_ORDER enum
- */
-
 typedef enum FMT_CONTROL_SUBSAMPLING_ORDER {
 FMT_CONTROL_SUBSAMPLING_ORDER_CB_BEFORE_CR = 0x00000000,
 FMT_CONTROL_SUBSAMPLING_ORDER_CR_BEFORE_CB = 0x00000001,
 } FMT_CONTROL_SUBSAMPLING_ORDER;
-
-/*
- * FMT_DEBUG_CNTL_COLOR_SELECT enum
- */
-
 typedef enum FMT_DEBUG_CNTL_COLOR_SELECT {
 FMT_DEBUG_CNTL_COLOR_SELECT_BLUE         = 0x00000000,
 FMT_DEBUG_CNTL_COLOR_SELECT_GREEN        = 0x00000001,
 FMT_DEBUG_CNTL_COLOR_SELECT_RED1         = 0x00000002,
 FMT_DEBUG_CNTL_COLOR_SELECT_RED2         = 0x00000003,
 } FMT_DEBUG_CNTL_COLOR_SELECT;
-
-/*
- * FMT_DYNAMIC_EXP_MODE enum
- */
-
 typedef enum FMT_DYNAMIC_EXP_MODE {
 FMT_DYNAMIC_EXP_MODE_10to12              = 0x00000000,
 FMT_DYNAMIC_EXP_MODE_8to12               = 0x00000001,
 } FMT_DYNAMIC_EXP_MODE;
-
-/*
- * FMT_FRAME_RANDOM_ENABLE_CONTROL enum
- */
-
 typedef enum FMT_FRAME_RANDOM_ENABLE_CONTROL {
 FMT_FRAME_RANDOM_ENABLE_RESET_EACH_FRAME = 0x00000000,
 FMT_FRAME_RANDOM_ENABLE_RESET_ONCE       = 0x00000001,
 } FMT_FRAME_RANDOM_ENABLE_CONTROL;
-
-/*
- * FMT_POWER_STATE_ENUM enum
- */
-
 typedef enum FMT_POWER_STATE_ENUM {
 FMT_POWER_STATE_ENUM_ON                  = 0x00000000,
 FMT_POWER_STATE_ENUM_LS                  = 0x00000001,
 FMT_POWER_STATE_ENUM_DS                  = 0x00000002,
 FMT_POWER_STATE_ENUM_SD                  = 0x00000003,
 } FMT_POWER_STATE_ENUM;
-
-/*
- * FMT_RGB_RANDOM_ENABLE_CONTROL enum
- */
-
 typedef enum FMT_RGB_RANDOM_ENABLE_CONTROL {
 FMT_RGB_RANDOM_ENABLE_CONTROL_DISABLE    = 0x00000000,
 FMT_RGB_RANDOM_ENABLE_CONTROL_ENABLE     = 0x00000001,
 } FMT_RGB_RANDOM_ENABLE_CONTROL;
-
-/*
- * FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_CONTROL enum
- */
-
 typedef enum FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_CONTROL {
 FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_NO_SWAP = 0x00000000,
 FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_1 = 0x00000001,
 FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_2 = 0x00000002,
 FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_RESERVED = 0x00000003,
 } FMT_SPATIAL_DITHER_FRAME_COUNTER_BIT_SWAP_CONTROL;
-
-/*
- * FMT_SPATIAL_DITHER_MODE enum
- */
-
 typedef enum FMT_SPATIAL_DITHER_MODE {
 FMT_SPATIAL_DITHER_MODE_0                = 0x00000000,
 FMT_SPATIAL_DITHER_MODE_1                = 0x00000001,
 FMT_SPATIAL_DITHER_MODE_2                = 0x00000002,
 FMT_SPATIAL_DITHER_MODE_3                = 0x00000003,
 } FMT_SPATIAL_DITHER_MODE;
-
-/*
- * FMT_STEREOSYNC_OVERRIDE_CONTROL enum
- */
-
 typedef enum FMT_STEREOSYNC_OVERRIDE_CONTROL {
 FMT_STEREOSYNC_OVERRIDE_CONTROL_0        = 0x00000000,
 FMT_STEREOSYNC_OVERRIDE_CONTROL_1        = 0x00000001,
 } FMT_STEREOSYNC_OVERRIDE_CONTROL;
-
-/*
- * FMT_TEMPORAL_DITHER_PATTERN_CONTROL_RGB1_BGR0 enum
- */
-
 typedef enum FMT_TEMPORAL_DITHER_PATTERN_CONTROL_RGB1_BGR0 {
 FMT_TEMPORAL_DITHER_PATTERN_CONTROL_RGB1_BGR0_BGR = 0x00000000,
 FMT_TEMPORAL_DITHER_PATTERN_CONTROL_RGB1_BGR0_RGB = 0x00000001,
 } FMT_TEMPORAL_DITHER_PATTERN_CONTROL_RGB1_BGR0;
-
-/*******************************************************
- * OPPBUF Enums
- *******************************************************/
-
-/*
- * OPPBUF_DISPLAY_SEGMENTATION enum
- */
-
 typedef enum OPPBUF_DISPLAY_SEGMENTATION {
 OPPBUF_DISPLAY_SEGMENTATION_1_SEGMENT    = 0x00000000,
 OPPBUF_DISPLAY_SEGMENTATION_2_SEGMENT    = 0x00000001,
@@ -3594,128 +1933,56 @@ OPPBUF_DISPLAY_SEGMENTATION_4_SEGMENT    = 0x00000002,
 OPPBUF_DISPLAY_SEGMENTATION_4_SEGMENT_SPLIT_LEFT = 0x00000003,
 OPPBUF_DISPLAY_SEGMENTATION_4_SEGMENT_SPLIT_RIGHT = 0x00000004,
 } OPPBUF_DISPLAY_SEGMENTATION;
-
-/*******************************************************
- * OPP_PIPE Enums
- *******************************************************/
-
-/*
- * OPP_PIPE_CLOCK_ENABLE_CONTROL enum
- */
-
 typedef enum OPP_PIPE_CLOCK_ENABLE_CONTROL {
 OPP_PIPE_CLOCK_DISABLE                   = 0x00000000,
 OPP_PIPE_CLOCK_ENABLE                    = 0x00000001,
 } OPP_PIPE_CLOCK_ENABLE_CONTROL;
-
-/*
- * OPP_PIPE_DIGTIAL_BYPASS_CONTROL enum
- */
-
 typedef enum OPP_PIPE_DIGTIAL_BYPASS_CONTROL {
 OPP_PIPE_DIGTIAL_BYPASS_DISABLE          = 0x00000000,
 OPP_PIPE_DIGTIAL_BYPASS_ENABLE           = 0x00000001,
 } OPP_PIPE_DIGTIAL_BYPASS_CONTROL;
-
-/*******************************************************
- * OPP_PIPE_CRC Enums
- *******************************************************/
-
-/*
- * OPP_PIPE_CRC_CONT_EN enum
- */
-
 typedef enum OPP_PIPE_CRC_CONT_EN {
 OPP_PIPE_CRC_MODE_ONE_SHOT               = 0x00000000,
 OPP_PIPE_CRC_MODE_CONTINUOUS             = 0x00000001,
 } OPP_PIPE_CRC_CONT_EN;
-
-/*
- * OPP_PIPE_CRC_EN enum
- */
-
 typedef enum OPP_PIPE_CRC_EN {
 OPP_PIPE_CRC_DISABLE                     = 0x00000000,
 OPP_PIPE_CRC_ENABLE                      = 0x00000001,
 } OPP_PIPE_CRC_EN;
-
-/*
- * OPP_PIPE_CRC_INTERLACE_EN enum
- */
-
 typedef enum OPP_PIPE_CRC_INTERLACE_EN {
 OPP_PIPE_CRC_INTERLACE_EN_INTERPRET_AS_PROGRESSIVE = 0x00000000,
 OPP_PIPE_CRC_INTERLACE_EN_INTERPRET_AS_INTERLACED = 0x00000001,
 } OPP_PIPE_CRC_INTERLACE_EN;
-
-/*
- * OPP_PIPE_CRC_INTERLACE_MODE enum
- */
-
 typedef enum OPP_PIPE_CRC_INTERLACE_MODE {
 OPP_PIPE_CRC_INTERLACE_MODE_TOP          = 0x00000000,
 OPP_PIPE_CRC_INTERLACE_MODE_BOTTOM       = 0x00000001,
 OPP_PIPE_CRC_INTERLACE_MODE_BOTH_RESET_AFTER_BOTTOM_FIELD = 0x00000002,
 OPP_PIPE_CRC_INTERLACE_MODE_BOTH_RESET_AFTER_EACH_FIELD = 0x00000003,
 } OPP_PIPE_CRC_INTERLACE_MODE;
-
-/*
- * OPP_PIPE_CRC_ONE_SHOT_PENDING enum
- */
-
 typedef enum OPP_PIPE_CRC_ONE_SHOT_PENDING {
 OPP_PIPE_CRC_ONE_SHOT_PENDING_NOT_PENDING = 0x00000000,
 OPP_PIPE_CRC_ONE_SHOT_PENDING_PENDING    = 0x00000001,
 } OPP_PIPE_CRC_ONE_SHOT_PENDING;
-
-/*
- * OPP_PIPE_CRC_PIXEL_SELECT enum
- */
-
 typedef enum OPP_PIPE_CRC_PIXEL_SELECT {
 OPP_PIPE_CRC_PIXEL_SELECT_ALL_PIXELS     = 0x00000000,
 OPP_PIPE_CRC_PIXEL_SELECT_RESERVED       = 0x00000001,
 OPP_PIPE_CRC_PIXEL_SELECT_EVEN_PIXELS    = 0x00000002,
 OPP_PIPE_CRC_PIXEL_SELECT_ODD_PIXELS     = 0x00000003,
 } OPP_PIPE_CRC_PIXEL_SELECT;
-
-/*
- * OPP_PIPE_CRC_SOURCE_SELECT enum
- */
-
 typedef enum OPP_PIPE_CRC_SOURCE_SELECT {
 OPP_PIPE_CRC_SOURCE_SELECT_FMT           = 0x00000000,
 OPP_PIPE_CRC_SOURCE_SELECT_SFT           = 0x00000001,
 } OPP_PIPE_CRC_SOURCE_SELECT;
-
-/*
- * OPP_PIPE_CRC_STEREO_EN enum
- */
-
 typedef enum OPP_PIPE_CRC_STEREO_EN {
 OPP_PIPE_CRC_STEREO_EN_INTERPRET_AS_NON_STEREO = 0x00000000,
 OPP_PIPE_CRC_STEREO_EN_INTERPRET_AS_STEREO = 0x00000001,
 } OPP_PIPE_CRC_STEREO_EN;
-
-/*
- * OPP_PIPE_CRC_STEREO_MODE enum
- */
-
 typedef enum OPP_PIPE_CRC_STEREO_MODE {
 OPP_PIPE_CRC_STEREO_MODE_LEFT            = 0x00000000,
 OPP_PIPE_CRC_STEREO_MODE_RIGHT           = 0x00000001,
 OPP_PIPE_CRC_STEREO_MODE_BOTH_RESET_AFTER_RIGHT_EYE = 0x00000002,
 OPP_PIPE_CRC_STEREO_MODE_BOTH_RESET_AFTER_EACH_EYE = 0x00000003,
 } OPP_PIPE_CRC_STEREO_MODE;
-
-/*******************************************************
- * OPP_TOP Enums
- *******************************************************/
-
-/*
- * OPP_ABM_DEBUG_BUS_SELECT_CONTROL enum
- */
-
 typedef enum OPP_ABM_DEBUG_BUS_SELECT_CONTROL {
 DEBUG_BUS_SELECT_ABM0                    = 0x00000000,
 DEBUG_BUS_SELECT_ABM1                    = 0x00000001,
@@ -3724,11 +1991,6 @@ DEBUG_BUS_SELECT_ABM3                    = 0x00000003,
 DEBUG_BUS_SELECT_ABM_RESERVED0           = 0x00000004,
 DEBUG_BUS_SELECT_ABM_RESERVED1           = 0x00000005,
 } OPP_ABM_DEBUG_BUS_SELECT_CONTROL;
-
-/*
- * OPP_DPG_DEBUG_BUS_SELECT_CONTROL enum
- */
-
 typedef enum OPP_DPG_DEBUG_BUS_SELECT_CONTROL {
 DEBUG_BUS_SELECT_DPG0                    = 0x00000000,
 DEBUG_BUS_SELECT_DPG1                    = 0x00000001,
@@ -3737,11 +1999,6 @@ DEBUG_BUS_SELECT_DPG3                    = 0x00000003,
 DEBUG_BUS_SELECT_DPG_RESERVED0           = 0x00000004,
 DEBUG_BUS_SELECT_DPG_RESERVED1           = 0x00000005,
 } OPP_DPG_DEBUG_BUS_SELECT_CONTROL;
-
-/*
- * OPP_FMT_DEBUG_BUS_SELECT_CONTROL enum
- */
-
 typedef enum OPP_FMT_DEBUG_BUS_SELECT_CONTROL {
 DEBUG_BUS_SELECT_FMT0                    = 0x00000000,
 DEBUG_BUS_SELECT_FMT1                    = 0x00000001,
@@ -3750,11 +2007,6 @@ DEBUG_BUS_SELECT_FMT3                    = 0x00000003,
 DEBUG_BUS_SELECT_FMT_RESERVED0           = 0x00000004,
 DEBUG_BUS_SELECT_FMT_RESERVED1           = 0x00000005,
 } OPP_FMT_DEBUG_BUS_SELECT_CONTROL;
-
-/*
- * OPP_OPPBUF_DEBUG_BUS_SELECT_CONTROL enum
- */
-
 typedef enum OPP_OPPBUF_DEBUG_BUS_SELECT_CONTROL {
 DEBUG_BUS_SELECT_OPPBUF0                 = 0x00000000,
 DEBUG_BUS_SELECT_OPPBUF1                 = 0x00000001,
@@ -3763,11 +2015,6 @@ DEBUG_BUS_SELECT_OPPBUF3                 = 0x00000003,
 DEBUG_BUS_SELECT_OPPBUF_RESERVED0        = 0x00000004,
 DEBUG_BUS_SELECT_OPPBUF_RESERVED1        = 0x00000005,
 } OPP_OPPBUF_DEBUG_BUS_SELECT_CONTROL;
-
-/*
- * OPP_OPP_PIPE_DEBUG_BUS_SELECT_CONTROL enum
- */
-
 typedef enum OPP_OPP_PIPE_DEBUG_BUS_SELECT_CONTROL {
 DEBUG_BUS_SELECT_OPP_PIPE0               = 0x00000000,
 DEBUG_BUS_SELECT_OPP_PIPE1               = 0x00000001,
@@ -3776,11 +2023,6 @@ DEBUG_BUS_SELECT_OPP_PIPE3               = 0x00000003,
 DEBUG_BUS_SELECT_OPP_PIPE_RESERVED0      = 0x00000004,
 DEBUG_BUS_SELECT_OPP_PIPE_RESERVED1      = 0x00000005,
 } OPP_OPP_PIPE_DEBUG_BUS_SELECT_CONTROL;
-
-/*
- * OPP_TEST_CLK_SEL_CONTROL enum
- */
-
 typedef enum OPP_TEST_CLK_SEL_CONTROL {
 OPP_TEST_CLK_SEL_DISPCLK_P               = 0x00000000,
 OPP_TEST_CLK_SEL_DISPCLK_R               = 0x00000001,
@@ -3797,55 +2039,22 @@ OPP_TEST_CLK_SEL_DISPCLK_OPP3            = 0x0000000b,
 OPP_TEST_CLK_SEL_RESERVED2               = 0x0000000c,
 OPP_TEST_CLK_SEL_RESERVED3               = 0x0000000d,
 } OPP_TEST_CLK_SEL_CONTROL;
-
-/*
- * OPP_TOP_CLOCK_ENABLE_STATUS enum
- */
-
 typedef enum OPP_TOP_CLOCK_ENABLE_STATUS {
 OPP_TOP_CLOCK_DISABLED_STATUS            = 0x00000000,
 OPP_TOP_CLOCK_ENABLED_STATUS             = 0x00000001,
 } OPP_TOP_CLOCK_ENABLE_STATUS;
-
-/*
- * OPP_TOP_CLOCK_GATING_CONTROL enum
- */
-
 typedef enum OPP_TOP_CLOCK_GATING_CONTROL {
 OPP_TOP_CLOCK_GATING_ENABLED             = 0x00000000,
 OPP_TOP_CLOCK_GATING_DISABLED            = 0x00000001,
 } OPP_TOP_CLOCK_GATING_CONTROL;
-
-/*******************************************************
- * DSCRM Enums
- *******************************************************/
-
-/*
- * ENUM_DSCRM_EN enum
- */
-
 typedef enum ENUM_DSCRM_EN {
 ENUM_DSCRM_DISABLE                       = 0x00000000,
 ENUM_DSCRM_ENABLE                        = 0x00000001,
 } ENUM_DSCRM_EN;
-
-/*******************************************************
- * OTG Enums
- *******************************************************/
-
-/*
- * MASTER_UPDATE_LOCK_MASTER_UPDATE_LOCK enum
- */
-
 typedef enum MASTER_UPDATE_LOCK_MASTER_UPDATE_LOCK {
 MASTER_UPDATE_LOCK_MASTER_UPDATE_LOCK_FALSE = 0x00000000,
 MASTER_UPDATE_LOCK_MASTER_UPDATE_LOCK_TRUE = 0x00000001,
 } MASTER_UPDATE_LOCK_MASTER_UPDATE_LOCK;
-
-/*
- * MASTER_UPDATE_LOCK_SEL enum
- */
-
 typedef enum MASTER_UPDATE_LOCK_SEL {
 MASTER_UPDATE_LOCK_SEL_0                 = 0x00000000,
 MASTER_UPDATE_LOCK_SEL_1                 = 0x00000001,
@@ -3854,193 +2063,93 @@ MASTER_UPDATE_LOCK_SEL_3                 = 0x00000003,
 MASTER_UPDATE_LOCK_SEL_RESERVED4         = 0x00000004,
 MASTER_UPDATE_LOCK_SEL_RESERVED5         = 0x00000005,
 } MASTER_UPDATE_LOCK_SEL;
-
-/*
- * MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE enum
- */
-
 typedef enum MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE {
 MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE_BOTH = 0x00000000,
 MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE_TOP = 0x00000001,
 MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE_BOTTOM = 0x00000002,
 MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE_RESERVED = 0x00000003,
 } MASTER_UPDATE_MODE_MASTER_UPDATE_INTERLACED_MODE;
-
-/*
- * OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN enum
- */
-
 typedef enum OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN {
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_FALSE = 0x00000000,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_TRUE = 0x00000001,
 } OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN;
-
-/*
- * OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_DB enum
- */
-
 typedef enum OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_DB {
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_DB_FALSE = 0x00000000,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_DB_TRUE = 0x00000001,
 } OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_EN_DB;
-
-/*
- * OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_STEREO_SEL_OVR enum
- */
-
 typedef enum OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_STEREO_SEL_OVR {
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_STEREO_SEL_OVR_FALSE = 0x00000000,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_STEREO_SEL_OVR_TRUE = 0x00000001,
 } OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_STEREO_SEL_OVR;
-
-/*
- * OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE enum
- */
-
 typedef enum OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE {
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE_BLOCK_BOTH = 0x00000000,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE_BLOCK_INTERLACE = 0x00000001,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE_BLOCK_PROGRASSIVE = 0x00000002,
 OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE_RESERVED = 0x00000003,
 } OTG_3D_STRUCTURE_CONTROL_OTG_3D_STRUCTURE_V_UPDATE_MODE;
-
-/*
- * OTG_CONTROL_OTG_DISABLE_POINT_CNTL enum
- */
-
 typedef enum OTG_CONTROL_OTG_DISABLE_POINT_CNTL {
 OTG_CONTROL_OTG_DISABLE_POINT_CNTL_DISABLE = 0x00000000,
 OTG_CONTROL_OTG_DISABLE_POINT_CNTL_DISABLE_CURRENT = 0x00000001,
 OTG_CONTROL_OTG_DISABLE_POINT_CNTL_DISABLE_VUPDATE = 0x00000002,
 OTG_CONTROL_OTG_DISABLE_POINT_CNTL_DISABLE_FIRST = 0x00000003,
 } OTG_CONTROL_OTG_DISABLE_POINT_CNTL;
-
-/*
- * OTG_CONTROL_OTG_FIELD_NUMBER_CNTL enum
- */
-
 typedef enum OTG_CONTROL_OTG_FIELD_NUMBER_CNTL {
 OTG_CONTROL_OTG_FIELD_NUMBER_CNTL_NORMAL = 0x00000000,
 OTG_CONTROL_OTG_FIELD_NUMBER_CNTL_DP     = 0x00000001,
 } OTG_CONTROL_OTG_FIELD_NUMBER_CNTL;
-
-/*
- * OTG_CONTROL_OTG_FIELD_NUMBER_POLARITY enum
- */
-
 typedef enum OTG_CONTROL_OTG_FIELD_NUMBER_POLARITY {
 OTG_CONTROL_OTG_FIELD_NUMBER_POLARITY_FALSE = 0x00000000,
 OTG_CONTROL_OTG_FIELD_NUMBER_POLARITY_TRUE = 0x00000001,
 } OTG_CONTROL_OTG_FIELD_NUMBER_POLARITY;
-
-/*
- * OTG_CONTROL_OTG_MASTER_EN enum
- */
-
 typedef enum OTG_CONTROL_OTG_MASTER_EN {
 OTG_CONTROL_OTG_MASTER_EN_FALSE          = 0x00000000,
 OTG_CONTROL_OTG_MASTER_EN_TRUE           = 0x00000001,
 } OTG_CONTROL_OTG_MASTER_EN;
-
-/*
- * OTG_CONTROL_OTG_OUT_MUX enum
- */
-
 typedef enum OTG_CONTROL_OTG_OUT_MUX {
 OTG_CONTROL_OTG_OUT_MUX_0                = 0x00000000,
 OTG_CONTROL_OTG_OUT_MUX_1                = 0x00000001,
 OTG_CONTROL_OTG_OUT_MUX_2                = 0x00000002,
 } OTG_CONTROL_OTG_OUT_MUX;
-
-/*
- * OTG_CONTROL_OTG_START_POINT_CNTL enum
- */
-
 typedef enum OTG_CONTROL_OTG_START_POINT_CNTL {
 OTG_CONTROL_OTG_START_POINT_CNTL_NORMAL  = 0x00000000,
 OTG_CONTROL_OTG_START_POINT_CNTL_DP      = 0x00000001,
 } OTG_CONTROL_OTG_START_POINT_CNTL;
-
-/*
- * OTG_COUNT_CONTROL_OTG_HORZ_COUNT_BY2_EN enum
- */
-
 typedef enum OTG_COUNT_CONTROL_OTG_HORZ_COUNT_BY2_EN {
 OTG_COUNT_CONTROL_OTG_HORZ_COUNT_BY2_EN_FALSE = 0x00000000,
 OTG_COUNT_CONTROL_OTG_HORZ_COUNT_BY2_EN_TRUE = 0x00000001,
 } OTG_COUNT_CONTROL_OTG_HORZ_COUNT_BY2_EN;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC1_EN enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC1_EN {
 OTG_CRC_CNTL_OTG_CRC1_EN_FALSE           = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC1_EN_TRUE            = 0x00000001,
 } OTG_CRC_CNTL_OTG_CRC1_EN;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_CONT_EN enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_CONT_EN {
 OTG_CRC_CNTL_OTG_CRC_CONT_EN_FALSE       = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_CONT_EN_TRUE        = 0x00000001,
 } OTG_CRC_CNTL_OTG_CRC_CONT_EN;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_CONT_MODE enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_CONT_MODE {
 OTG_CRC_CNTL_OTG_CRC_CONT_MODE_RESET     = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_CONT_MODE_NORESET   = 0x00000001,
 } OTG_CRC_CNTL_OTG_CRC_CONT_MODE;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_EN enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_EN {
 OTG_CRC_CNTL_OTG_CRC_EN_FALSE            = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_EN_TRUE             = 0x00000001,
 } OTG_CRC_CNTL_OTG_CRC_EN;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE {
 OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE_TOP  = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE_BOTTOM = 0x00000001,
 OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE_BOTH_BOTTOM = 0x00000002,
 OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE_BOTH_FIELD = 0x00000003,
 } OTG_CRC_CNTL_OTG_CRC_INTERLACE_MODE;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_STEREO_MODE enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_STEREO_MODE {
 OTG_CRC_CNTL_OTG_CRC_STEREO_MODE_LEFT    = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_STEREO_MODE_RIGHT   = 0x00000001,
 OTG_CRC_CNTL_OTG_CRC_STEREO_MODE_BOTH_EYES = 0x00000002,
 OTG_CRC_CNTL_OTG_CRC_STEREO_MODE_BOTH_FIELDS = 0x00000003,
 } OTG_CRC_CNTL_OTG_CRC_STEREO_MODE;
-
-/*
- * OTG_CRC_CNTL_OTG_CRC_USE_NEW_AND_REPEATED_PIXELS enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_CRC_USE_NEW_AND_REPEATED_PIXELS {
 OTG_CRC_CNTL_OTG_CRC_USE_NEW_AND_REPEATED_PIXELS_FALSE = 0x00000000,
 OTG_CRC_CNTL_OTG_CRC_USE_NEW_AND_REPEATED_PIXELS_TRUE = 0x00000001,
 } OTG_CRC_CNTL_OTG_CRC_USE_NEW_AND_REPEATED_PIXELS;
-
-/*
- * OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT {
 OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT_UAB     = 0x00000000,
 OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT_UA_B    = 0x00000001,
@@ -4051,11 +2160,6 @@ OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT_IA_B    = 0x00000005,
 OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT_I_AB    = 0x00000006,
 OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT_I_A_B   = 0x00000007,
 } OTG_CRC_CNTL_OTG_OTG_CRC0_SELECT;
-
-/*
- * OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT enum
- */
-
 typedef enum OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT {
 OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT_UAB     = 0x00000000,
 OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT_UA_B    = 0x00000001,
@@ -4066,78 +2170,38 @@ OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT_IA_B    = 0x00000005,
 OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT_I_AB    = 0x00000006,
 OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT_I_A_B   = 0x00000007,
 } OTG_CRC_CNTL_OTG_OTG_CRC1_SELECT;
-
-/*
- * OTG_DIG_UPDATE_VCOUNT_MODE enum
- */
-
 typedef enum OTG_DIG_UPDATE_VCOUNT_MODE {
 OTG_DIG_UPDATE_VCOUNT_0                  = 0x00000000,
 OTG_DIG_UPDATE_VCOUNT_1                  = 0x00000001,
 } OTG_DIG_UPDATE_VCOUNT_MODE;
-
-/*
- * OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE enum
- */
-
 typedef enum OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE {
 OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE_0 = 0x00000000,
 OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE_1 = 0x00000001,
 OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE_2 = 0x00000002,
 OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE_3 = 0x00000003,
 } OTG_DOUBLE_BUFFER_CONTROL_OTG_DRR_TIMING_DBUF_UPDATE_MODE;
-
-/*
- * OTG_DOUBLE_BUFFER_CONTROL_OTG_UPDATE_INSTANTLY enum
- */
-
 typedef enum OTG_DOUBLE_BUFFER_CONTROL_OTG_UPDATE_INSTANTLY {
 OTG_DOUBLE_BUFFER_CONTROL_OTG_UPDATE_INSTANTLY_FALSE = 0x00000000,
 OTG_DOUBLE_BUFFER_CONTROL_OTG_UPDATE_INSTANTLY_TRUE = 0x00000001,
 } OTG_DOUBLE_BUFFER_CONTROL_OTG_UPDATE_INSTANTLY;
-
-/*
- * OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME enum
- */
-
 typedef enum OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME {
 OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME_1FRAME = 0x00000000,
 OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME_2FRAME = 0x00000001,
 OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME_4FRAME = 0x00000002,
 OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME_8FRAME = 0x00000003,
 } OTG_DRR_CONTROL_OTG_DRR_AVERAGE_FRAME;
-
-/*
- * OTG_DTMTEST_CNTL_OTG_DTMTEST_OTG_EN enum
- */
-
 typedef enum OTG_DTMTEST_CNTL_OTG_DTMTEST_OTG_EN {
 OTG_DTMTEST_CNTL_OTG_DTMTEST_OTG_EN_FALSE = 0x00000000,
 OTG_DTMTEST_CNTL_OTG_DTMTEST_OTG_EN_TRUE = 0x00000001,
 } OTG_DTMTEST_CNTL_OTG_DTMTEST_OTG_EN;
-
-/*
- * OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_GRANULARITY enum
- */
-
 typedef enum OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_GRANULARITY {
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_GRANULARITY_FALSE = 0x00000000,
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_GRANULARITY_TRUE = 0x00000001,
 } OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_GRANULARITY;
-
-/*
- * OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_POLARITY enum
- */
-
 typedef enum OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_POLARITY {
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_POLARITY_FALSE = 0x00000000,
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_POLARITY_TRUE = 0x00000001,
 } OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_POLARITY;
-
-/*
- * OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT enum
- */
-
 typedef enum OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT {
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT_LOGIC0 = 0x00000000,
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT_LOGIC1 = 0x00000001,
@@ -4160,49 +2224,24 @@ OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT_GENLK_VSYNC = 0x00000011,
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT_SWAPLOCKA = 0x00000012,
 OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT_SWAPLOCKB = 0x00000013,
 } OTG_FLOW_CONTROL_OTG_FLOW_CONTROL_SOURCE_SELECT;
-
-/*
- * OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CHECK enum
- */
-
 typedef enum OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CHECK {
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CHECK_FALSE = 0x00000000,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CHECK_TRUE = 0x00000001,
 } OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CHECK;
-
-/*
- * OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CLEAR enum
- */
-
 typedef enum OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CLEAR {
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CLEAR_FALSE = 0x00000000,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CLEAR_TRUE = 0x00000001,
 } OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_CLEAR;
-
-/*
- * OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE enum
- */
-
 typedef enum OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE {
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE_DISABLE = 0x00000000,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE_HCOUNT = 0x00000001,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE_HCOUNT_VCOUNT = 0x00000002,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE_RESERVED = 0x00000003,
 } OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_MODE;
-
-/*
- * OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_TRIG_SEL enum
- */
-
 typedef enum OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_TRIG_SEL {
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_TRIG_SEL_FALSE = 0x00000000,
 OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_TRIG_SEL_TRUE = 0x00000001,
 } OTG_FORCE_COUNT_NOW_CNTL_OTG_FORCE_COUNT_NOW_TRIG_SEL;
-
-/*
- * OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL enum
- */
-
 typedef enum OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL {
 OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL_OTG0 = 0x00000000,
 OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL_OTG1 = 0x00000001,
@@ -4211,74 +2250,39 @@ OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL_OTG3 = 0x00000003,
 OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL_RESERVED4 = 0x00000004,
 OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL_RESERVED5 = 0x00000005,
 } OTG_GLOBAL_CONTROL2_MANUAL_FLOW_CONTROL_SEL;
-
-/*
- * OTG_GLOBAL_CONTROL3_DIG_UPDATE_EYE_SEL enum
- */
-
 typedef enum OTG_GLOBAL_CONTROL3_DIG_UPDATE_EYE_SEL {
 DIG_UPDATE_EYE_SEL_BOTH                  = 0x00000000,
 DIG_UPDATE_EYE_SEL_LEFT                  = 0x00000001,
 DIG_UPDATE_EYE_SEL_RIGHT                 = 0x00000002,
 } OTG_GLOBAL_CONTROL3_DIG_UPDATE_EYE_SEL;
-
-/*
- * OTG_GLOBAL_CONTROL3_DIG_UPDATE_FIELD_SEL enum
- */
-
 typedef enum OTG_GLOBAL_CONTROL3_DIG_UPDATE_FIELD_SEL {
 DIG_UPDATE_FIELD_SEL_BOTH                = 0x00000000,
 DIG_UPDATE_FIELD_SEL_TOP                 = 0x00000001,
 DIG_UPDATE_FIELD_SEL_BOTTOM              = 0x00000002,
 DIG_UPDATE_FIELD_SEL_RESERVED            = 0x00000003,
 } OTG_GLOBAL_CONTROL3_DIG_UPDATE_FIELD_SEL;
-
-/*
- * OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_FIELD enum
- */
-
 typedef enum OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_FIELD {
 MASTER_UPDATE_LOCK_DB_FIELD_BOTH         = 0x00000000,
 MASTER_UPDATE_LOCK_DB_FIELD_TOP          = 0x00000001,
 MASTER_UPDATE_LOCK_DB_FIELD_BOTTOM       = 0x00000002,
 MASTER_UPDATE_LOCK_DB_FIELD_RESERVED     = 0x00000003,
 } OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_FIELD;
-
-/*
- * OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_STEREO_SEL enum
- */
-
 typedef enum OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_STEREO_SEL {
 MASTER_UPDATE_LOCK_DB_STEREO_SEL_BOTH    = 0x00000000,
 MASTER_UPDATE_LOCK_DB_STEREO_SEL_LEFT    = 0x00000001,
 MASTER_UPDATE_LOCK_DB_STEREO_SEL_RIGHT   = 0x00000002,
 MASTER_UPDATE_LOCK_DB_STEREO_SEL_RESERVED = 0x00000003,
 } OTG_GLOBAL_CONTROL3_MASTER_UPDATE_LOCK_DB_STEREO_SEL;
-
-/*
- * OTG_GLOBAL_UPDATE_LOCK_EN enum
- */
-
 typedef enum OTG_GLOBAL_UPDATE_LOCK_EN {
 OTG_GLOBAL_UPDATE_LOCK_DISABLE           = 0x00000000,
 OTG_GLOBAL_UPDATE_LOCK_ENABLE            = 0x00000001,
 } OTG_GLOBAL_UPDATE_LOCK_EN;
-
-/*
- * OTG_GSL_MASTER_MODE enum
- */
-
 typedef enum OTG_GSL_MASTER_MODE {
 OTG_GSL_MASTER_MODE_0                    = 0x00000000,
 OTG_GSL_MASTER_MODE_1                    = 0x00000001,
 OTG_GSL_MASTER_MODE_2                    = 0x00000002,
 OTG_GSL_MASTER_MODE_3                    = 0x00000003,
 } OTG_GSL_MASTER_MODE;
-
-/*
- * OTG_HORZ_REPETITION_COUNT enum
- */
-
 typedef enum OTG_HORZ_REPETITION_COUNT {
 OTG_HORZ_REPETITION_COUNT_0              = 0x00000000,
 OTG_HORZ_REPETITION_COUNT_1              = 0x00000001,
@@ -4297,343 +2301,158 @@ OTG_HORZ_REPETITION_COUNT_13             = 0x0000000d,
 OTG_HORZ_REPETITION_COUNT_14             = 0x0000000e,
 OTG_HORZ_REPETITION_COUNT_15             = 0x0000000f,
 } OTG_HORZ_REPETITION_COUNT;
-
-/*
- * OTG_H_SYNC_A_POL enum
- */
-
 typedef enum OTG_H_SYNC_A_POL {
 OTG_H_SYNC_A_POL_HIGH                    = 0x00000000,
 OTG_H_SYNC_A_POL_LOW                     = 0x00000001,
 } OTG_H_SYNC_A_POL;
-
-/*
- * OTG_H_TIMING_DIV_MODE enum
- */
-
 typedef enum OTG_H_TIMING_DIV_MODE {
 OTG_H_TIMING_DIV_MODE_NO_DIV             = 0x00000000,
 OTG_H_TIMING_DIV_MODE_DIV_BY2            = 0x00000001,
 OTG_H_TIMING_DIV_MODE_RESERVED           = 0x00000002,
 OTG_H_TIMING_DIV_MODE_DIV_BY4            = 0x00000003,
 } OTG_H_TIMING_DIV_MODE;
-
-/*
- * OTG_H_TIMING_DIV_MODE_MANUAL enum
- */
-
 typedef enum OTG_H_TIMING_DIV_MODE_MANUAL {
 OTG_H_TIMING_DIV_MODE_AUTO               = 0x00000000,
 OTG_H_TIMING_DIV_MODE_NOAUTO             = 0x00000001,
 } OTG_H_TIMING_DIV_MODE_MANUAL;
-
-/*
- * OTG_INTERLACE_CONTROL_OTG_INTERLACE_ENABLE enum
- */
-
 typedef enum OTG_INTERLACE_CONTROL_OTG_INTERLACE_ENABLE {
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_ENABLE_FALSE = 0x00000000,
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_ENABLE_TRUE = 0x00000001,
 } OTG_INTERLACE_CONTROL_OTG_INTERLACE_ENABLE;
-
-/*
- * OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD enum
- */
-
 typedef enum OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD {
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD_NOT = 0x00000000,
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD_BOTTOM = 0x00000001,
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD_TOP = 0x00000002,
 OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD_NOT2 = 0x00000003,
 } OTG_INTERLACE_CONTROL_OTG_INTERLACE_FORCE_NEXT_FIELD;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_FORCE_COUNT_NOW_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_GSL_VSYNC_GAP_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_SNAPSHOT_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_TRIGA_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_TRIGB_INT_TYPE;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_MSK enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_MSK {
 OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_MSK_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_MSK_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_MSK;
-
-/*
- * OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_TYPE enum
- */
-
 typedef enum OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_TYPE {
 OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_TYPE_FALSE = 0x00000000,
 OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_TYPE_TRUE = 0x00000001,
 } OTG_INTERRUPT_CONTROL_OTG_VSYNC_NOM_INT_TYPE;
-
-/*
- * OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_OTG_MANUAL_FORCE_VSYNC_NEXT_LINE enum
- */
-
 typedef enum OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_OTG_MANUAL_FORCE_VSYNC_NEXT_LINE {
 OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_FALSE = 0x00000000,
 OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_TRUE = 0x00000001,
 } OTG_MANUAL_FORCE_VSYNC_NEXT_LINE_OTG_MANUAL_FORCE_VSYNC_NEXT_LINE;
-
-/*
- * OTG_MASTER_UPDATE_LOCK_DB_EN enum
- */
-
 typedef enum OTG_MASTER_UPDATE_LOCK_DB_EN {
 OTG_MASTER_UPDATE_LOCK_DISABLE           = 0x00000000,
 OTG_MASTER_UPDATE_LOCK_ENABLE            = 0x00000001,
 } OTG_MASTER_UPDATE_LOCK_DB_EN;
-
-/*
- * OTG_MASTER_UPDATE_LOCK_GSL_EN enum
- */
-
 typedef enum OTG_MASTER_UPDATE_LOCK_GSL_EN {
 OTG_MASTER_UPDATE_LOCK_GSL_EN_FALSE      = 0x00000000,
 OTG_MASTER_UPDATE_LOCK_GSL_EN_TRUE       = 0x00000001,
 } OTG_MASTER_UPDATE_LOCK_GSL_EN;
-
-/*
- * OTG_MASTER_UPDATE_LOCK_VCOUNT_MODE enum
- */
-
 typedef enum OTG_MASTER_UPDATE_LOCK_VCOUNT_MODE {
 OTG_MASTER_UPDATE_LOCK_VCOUNT_0          = 0x00000000,
 OTG_MASTER_UPDATE_LOCK_VCOUNT_1          = 0x00000001,
 } OTG_MASTER_UPDATE_LOCK_VCOUNT_MODE;
-
-/*
- * OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL enum
- */
-
 typedef enum OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL {
 OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL_DISABLE = 0x00000000,
 OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL_TRIGGERA = 0x00000001,
 OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL_TRIGGERB = 0x00000002,
 OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL_RESERVED = 0x00000003,
 } OTG_SNAPSHOT_CONTROL_OTG_AUTO_SNAPSHOT_TRIG_SEL;
-
-/*
- * OTG_SNAPSHOT_STATUS_OTG_SNAPSHOT_CLEAR enum
- */
-
 typedef enum OTG_SNAPSHOT_STATUS_OTG_SNAPSHOT_CLEAR {
 OTG_SNAPSHOT_STATUS_OTG_SNAPSHOT_CLEAR_FALSE = 0x00000000,
 OTG_SNAPSHOT_STATUS_OTG_SNAPSHOT_CLEAR_TRUE = 0x00000001,
 } OTG_SNAPSHOT_STATUS_OTG_SNAPSHOT_CLEAR;
-
-/*
- * OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_CLEAR enum
- */
-
 typedef enum OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_CLEAR {
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_CLEAR_FALSE = 0x00000000,
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_CLEAR_TRUE = 0x00000001,
 } OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_CLEAR;
-
-/*
- * OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_ENABLE enum
- */
-
 typedef enum OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_ENABLE {
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_ENABLE_FALSE = 0x00000000,
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_ENABLE_TRUE = 0x00000001,
 } OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_ENABLE;
-
-/*
- * OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_TYPE enum
- */
-
 typedef enum OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_TYPE {
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_TYPE_FALSE = 0x00000000,
 OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_TYPE_TRUE = 0x00000001,
 } OTG_STATIC_SCREEN_CONTROL_OTG_CPU_SS_INT_TYPE;
-
-/*
- * OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE enum
- */
-
 typedef enum OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE {
 OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_FALSE = 0x00000000,
 OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_TRUE = 0x00000001,
 } OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE;
-
-/*
- * OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_VALUE enum
- */
-
 typedef enum OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_VALUE {
 OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_VALUE_OFF = 0x00000000,
 OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_VALUE_ON = 0x00000001,
 } OTG_STATIC_SCREEN_CONTROL_OTG_STATIC_SCREEN_OVERRIDE_VALUE;
-
-/*
- * OTG_STEREO_CONTROL_OTG_FIELD_NUM_SEL enum
- */
-
 typedef enum OTG_STEREO_CONTROL_OTG_FIELD_NUM_SEL {
 OTG_STEREO_CONTROL_OTG_FIELD_NUM_SEL_FALSE = 0x00000000,
 OTG_STEREO_CONTROL_OTG_FIELD_NUM_SEL_TRUE = 0x00000001,
 } OTG_STEREO_CONTROL_OTG_FIELD_NUM_SEL;
-
-/*
- * OTG_STEREO_CONTROL_OTG_STEREO_EN enum
- */
-
 typedef enum OTG_STEREO_CONTROL_OTG_STEREO_EN {
 OTG_STEREO_CONTROL_OTG_STEREO_EN_FALSE   = 0x00000000,
 OTG_STEREO_CONTROL_OTG_STEREO_EN_TRUE    = 0x00000001,
 } OTG_STEREO_CONTROL_OTG_STEREO_EN;
-
-/*
- * OTG_STEREO_CONTROL_OTG_STEREO_EYE_FLAG_POLARITY enum
- */
-
 typedef enum OTG_STEREO_CONTROL_OTG_STEREO_EYE_FLAG_POLARITY {
 OTG_STEREO_CONTROL_OTG_STEREO_EYE_FLAG_POLARITY_FALSE = 0x00000000,
 OTG_STEREO_CONTROL_OTG_STEREO_EYE_FLAG_POLARITY_TRUE = 0x00000001,
 } OTG_STEREO_CONTROL_OTG_STEREO_EYE_FLAG_POLARITY;
-
-/*
- * OTG_STEREO_CONTROL_OTG_STEREO_SYNC_OUTPUT_POLARITY enum
- */
-
 typedef enum OTG_STEREO_CONTROL_OTG_STEREO_SYNC_OUTPUT_POLARITY {
 OTG_STEREO_CONTROL_OTG_STEREO_SYNC_OUTPUT_POLARITY_FALSE = 0x00000000,
 OTG_STEREO_CONTROL_OTG_STEREO_SYNC_OUTPUT_POLARITY_TRUE = 0x00000001,
 } OTG_STEREO_CONTROL_OTG_STEREO_SYNC_OUTPUT_POLARITY;
-
-/*
- * OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE enum
- */
-
 typedef enum OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE {
 OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE_NO = 0x00000000,
 OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE_RIGHT = 0x00000001,
 OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE_LEFT = 0x00000002,
 OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE_RESERVED = 0x00000003,
 } OTG_STEREO_FORCE_NEXT_EYE_OTG_STEREO_FORCE_NEXT_EYE;
-
-/*
- * OTG_TRIGA_CNTL_OTG_TRIGA_CLEAR enum
- */
-
 typedef enum OTG_TRIGA_CNTL_OTG_TRIGA_CLEAR {
 OTG_TRIGA_CNTL_OTG_TRIGA_CLEAR_FALSE     = 0x00000000,
 OTG_TRIGA_CNTL_OTG_TRIGA_CLEAR_TRUE      = 0x00000001,
 } OTG_TRIGA_CNTL_OTG_TRIGA_CLEAR;
-
-/*
- * OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT enum
- */
-
 typedef enum OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT {
 OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT_LOGIC0 = 0x00000000,
 OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT_INTERLACE = 0x00000001,
@@ -4644,20 +2463,10 @@ OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT_LOGIC1 = 0x00000005,
 OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT_GENERICC = 0x00000006,
 OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT_GENERICD = 0x00000007,
 } OTG_TRIGA_CNTL_OTG_TRIGA_POLARITY_SELECT;
-
-/*
- * OTG_TRIGA_CNTL_OTG_TRIGA_RESYNC_BYPASS_EN enum
- */
-
 typedef enum OTG_TRIGA_CNTL_OTG_TRIGA_RESYNC_BYPASS_EN {
 OTG_TRIGA_CNTL_OTG_TRIGA_RESYNC_BYPASS_EN_FALSE = 0x00000000,
 OTG_TRIGA_CNTL_OTG_TRIGA_RESYNC_BYPASS_EN_TRUE = 0x00000001,
 } OTG_TRIGA_CNTL_OTG_TRIGA_RESYNC_BYPASS_EN;
-
-/*
- * OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT enum
- */
-
 typedef enum OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT {
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT_OTG0 = 0x00000000,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT_OTG1 = 0x00000001,
@@ -4666,11 +2475,6 @@ OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT_OTG3 = 0x00000003,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT_RESERVED4 = 0x00000004,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT_RESERVED5 = 0x00000005,
 } OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_PIPE_SELECT;
-
-/*
- * OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT enum
- */
-
 typedef enum OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT {
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT_LOGIC0 = 0x00000000,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT_GENERICA_PIN = 0x00000001,
@@ -4698,53 +2502,28 @@ OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT_MANUAL_FLOW_CONTROL = 0x00000016,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT_LOGIC1 = 0x00000017,
 OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT_FLIP_PENDING = 0x00000018,
 } OTG_TRIGA_CNTL_OTG_TRIGA_SOURCE_SELECT;
-
-/*
- * OTG_TRIGA_FALLING_EDGE_DETECT_CNTL enum
- */
-
 typedef enum OTG_TRIGA_FALLING_EDGE_DETECT_CNTL {
 OTG_TRIGA_FALLING_EDGE_DETECT_CNTL_0     = 0x00000000,
 OTG_TRIGA_FALLING_EDGE_DETECT_CNTL_1     = 0x00000001,
 OTG_TRIGA_FALLING_EDGE_DETECT_CNTL_2     = 0x00000002,
 OTG_TRIGA_FALLING_EDGE_DETECT_CNTL_3     = 0x00000003,
 } OTG_TRIGA_FALLING_EDGE_DETECT_CNTL;
-
-/*
- * OTG_TRIGA_FREQUENCY_SELECT enum
- */
-
 typedef enum OTG_TRIGA_FREQUENCY_SELECT {
 OTG_TRIGA_FREQUENCY_SELECT_0             = 0x00000000,
 OTG_TRIGA_FREQUENCY_SELECT_1             = 0x00000001,
 OTG_TRIGA_FREQUENCY_SELECT_2             = 0x00000002,
 OTG_TRIGA_FREQUENCY_SELECT_3             = 0x00000003,
 } OTG_TRIGA_FREQUENCY_SELECT;
-
-/*
- * OTG_TRIGA_RISING_EDGE_DETECT_CNTL enum
- */
-
 typedef enum OTG_TRIGA_RISING_EDGE_DETECT_CNTL {
 OTG_TRIGA_RISING_EDGE_DETECT_CNTL_0      = 0x00000000,
 OTG_TRIGA_RISING_EDGE_DETECT_CNTL_1      = 0x00000001,
 OTG_TRIGA_RISING_EDGE_DETECT_CNTL_2      = 0x00000002,
 OTG_TRIGA_RISING_EDGE_DETECT_CNTL_3      = 0x00000003,
 } OTG_TRIGA_RISING_EDGE_DETECT_CNTL;
-
-/*
- * OTG_TRIGB_CNTL_OTG_TRIGB_CLEAR enum
- */
-
 typedef enum OTG_TRIGB_CNTL_OTG_TRIGB_CLEAR {
 OTG_TRIGB_CNTL_OTG_TRIGB_CLEAR_FALSE     = 0x00000000,
 OTG_TRIGB_CNTL_OTG_TRIGB_CLEAR_TRUE      = 0x00000001,
 } OTG_TRIGB_CNTL_OTG_TRIGB_CLEAR;
-
-/*
- * OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT enum
- */
-
 typedef enum OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT {
 OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT_LOGIC0 = 0x00000000,
 OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT_INTERLACE = 0x00000001,
@@ -4755,20 +2534,10 @@ OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT_LOGIC1 = 0x00000005,
 OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT_GENERICC = 0x00000006,
 OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT_GENERICD = 0x00000007,
 } OTG_TRIGB_CNTL_OTG_TRIGB_POLARITY_SELECT;
-
-/*
- * OTG_TRIGB_CNTL_OTG_TRIGB_RESYNC_BYPASS_EN enum
- */
-
 typedef enum OTG_TRIGB_CNTL_OTG_TRIGB_RESYNC_BYPASS_EN {
 OTG_TRIGB_CNTL_OTG_TRIGB_RESYNC_BYPASS_EN_FALSE = 0x00000000,
 OTG_TRIGB_CNTL_OTG_TRIGB_RESYNC_BYPASS_EN_TRUE = 0x00000001,
 } OTG_TRIGB_CNTL_OTG_TRIGB_RESYNC_BYPASS_EN;
-
-/*
- * OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT enum
- */
-
 typedef enum OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT {
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT_OTG0 = 0x00000000,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT_OTG1 = 0x00000001,
@@ -4777,11 +2546,6 @@ OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT_OTG3 = 0x00000003,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT_RESERVED4 = 0x00000004,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT_RESERVED5 = 0x00000005,
 } OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_PIPE_SELECT;
-
-/*
- * OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT enum
- */
-
 typedef enum OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT {
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT_LOGIC0 = 0x00000000,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT_GENERICA_PIN = 0x00000001,
@@ -4809,257 +2573,118 @@ OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT_MANUAL_FLOW_CONTROL = 0x00000016,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT_LOGIC1 = 0x00000017,
 OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT_FLIP_PENDING = 0x00000018,
 } OTG_TRIGB_CNTL_OTG_TRIGB_SOURCE_SELECT;
-
-/*
- * OTG_TRIGB_FALLING_EDGE_DETECT_CNTL enum
- */
-
 typedef enum OTG_TRIGB_FALLING_EDGE_DETECT_CNTL {
 OTG_TRIGB_FALLING_EDGE_DETECT_CNTL_0     = 0x00000000,
 OTG_TRIGB_FALLING_EDGE_DETECT_CNTL_1     = 0x00000001,
 OTG_TRIGB_FALLING_EDGE_DETECT_CNTL_2     = 0x00000002,
 OTG_TRIGB_FALLING_EDGE_DETECT_CNTL_3     = 0x00000003,
 } OTG_TRIGB_FALLING_EDGE_DETECT_CNTL;
-
-/*
- * OTG_TRIGB_FREQUENCY_SELECT enum
- */
-
 typedef enum OTG_TRIGB_FREQUENCY_SELECT {
 OTG_TRIGB_FREQUENCY_SELECT_0             = 0x00000000,
 OTG_TRIGB_FREQUENCY_SELECT_1             = 0x00000001,
 OTG_TRIGB_FREQUENCY_SELECT_2             = 0x00000002,
 OTG_TRIGB_FREQUENCY_SELECT_3             = 0x00000003,
 } OTG_TRIGB_FREQUENCY_SELECT;
-
-/*
- * OTG_TRIGB_RISING_EDGE_DETECT_CNTL enum
- */
-
 typedef enum OTG_TRIGB_RISING_EDGE_DETECT_CNTL {
 OTG_TRIGB_RISING_EDGE_DETECT_CNTL_0      = 0x00000000,
 OTG_TRIGB_RISING_EDGE_DETECT_CNTL_1      = 0x00000001,
 OTG_TRIGB_RISING_EDGE_DETECT_CNTL_2      = 0x00000002,
 OTG_TRIGB_RISING_EDGE_DETECT_CNTL_3      = 0x00000003,
 } OTG_TRIGB_RISING_EDGE_DETECT_CNTL;
-
-/*
- * OTG_UPDATE_LOCK_OTG_UPDATE_LOCK enum
- */
-
 typedef enum OTG_UPDATE_LOCK_OTG_UPDATE_LOCK {
 OTG_UPDATE_LOCK_OTG_UPDATE_LOCK_FALSE    = 0x00000000,
 OTG_UPDATE_LOCK_OTG_UPDATE_LOCK_TRUE     = 0x00000001,
 } OTG_UPDATE_LOCK_OTG_UPDATE_LOCK;
-
-/*
- * OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_CLEAR enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_CLEAR {
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_CLEAR_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_CLEAR_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_CLEAR;
-
-/*
- * OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_ENABLE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_ENABLE {
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_ENABLE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_ENABLE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_ENABLE;
-
-/*
- * OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_TYPE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_TYPE {
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_TYPE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_TYPE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_INT_TYPE;
-
-/*
- * OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_OUTPUT_POLARITY enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_OUTPUT_POLARITY {
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_OUTPUT_POLARITY_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_OUTPUT_POLARITY_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT0_CONTROL_OTG_VERTICAL_INTERRUPT0_OUTPUT_POLARITY;
-
-/*
- * OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_CLEAR enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_CLEAR {
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_CLEAR_CLEAR_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_CLEAR_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_CLEAR;
-
-/*
- * OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_ENABLE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_ENABLE {
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_ENABLE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_ENABLE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_ENABLE;
-
-/*
- * OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_TYPE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_TYPE {
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_TYPE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_TYPE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT1_CONTROL_OTG_VERTICAL_INTERRUPT1_INT_TYPE;
-
-/*
- * OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_CLEAR enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_CLEAR {
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_CLEAR_CLEAR_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_CLEAR_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_CLEAR;
-
-/*
- * OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_ENABLE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_ENABLE {
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_ENABLE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_ENABLE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_ENABLE;
-
-/*
- * OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_TYPE enum
- */
-
 typedef enum OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_TYPE {
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_TYPE_FALSE = 0x00000000,
 OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_TYPE_TRUE = 0x00000001,
 } OTG_VERTICAL_INTERRUPT2_CONTROL_OTG_VERTICAL_INTERRUPT2_INT_TYPE;
-
-/*
- * OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE enum
- */
-
 typedef enum OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE {
 OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE_DISABLE = 0x00000000,
 OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE_TRIGGERA = 0x00000001,
 OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE_TRIGGERB = 0x00000002,
 OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE_RESERVED = 0x00000003,
 } OTG_VERT_SYNC_CONTROL_OTG_AUTO_FORCE_VSYNC_MODE;
-
-/*
- * OTG_VERT_SYNC_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_CLEAR enum
- */
-
 typedef enum OTG_VERT_SYNC_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_CLEAR {
 OTG_VERT_SYNC_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_CLEAR_FALSE = 0x00000000,
 OTG_VERT_SYNC_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_CLEAR_TRUE = 0x00000001,
 } OTG_VERT_SYNC_CONTROL_OTG_FORCE_VSYNC_NEXT_LINE_CLEAR;
-
-/*
- * OTG_VSYNC_NOM_INT_STATUS_OTG_VSYNC_NOM_INT_CLEAR enum
- */
-
 typedef enum OTG_VSYNC_NOM_INT_STATUS_OTG_VSYNC_NOM_INT_CLEAR {
 OTG_VSYNC_NOM_INT_STATUS_OTG_VSYNC_NOM_INT_CLEAR_FALSE = 0x00000000,
 OTG_VSYNC_NOM_INT_STATUS_OTG_VSYNC_NOM_INT_CLEAR_TRUE = 0x00000001,
 } OTG_VSYNC_NOM_INT_STATUS_OTG_VSYNC_NOM_INT_CLEAR;
-
-/*
- * OTG_VUPDATE_BLOCK_DISABLE enum
- */
-
 typedef enum OTG_VUPDATE_BLOCK_DISABLE {
 OTG_VUPDATE_BLOCK_DISABLE_OFF            = 0x00000000,
 OTG_VUPDATE_BLOCK_DISABLE_ON             = 0x00000001,
 } OTG_VUPDATE_BLOCK_DISABLE;
-
-/*
- * OTG_V_SYNC_A_POL enum
- */
-
 typedef enum OTG_V_SYNC_A_POL {
 OTG_V_SYNC_A_POL_HIGH                    = 0x00000000,
 OTG_V_SYNC_A_POL_LOW                     = 0x00000001,
 } OTG_V_SYNC_A_POL;
-
-/*
- * OTG_V_SYNC_MODE enum
- */
-
 typedef enum OTG_V_SYNC_MODE {
 OTG_V_SYNC_MODE_HSYNC                    = 0x00000000,
 OTG_V_SYNC_MODE_HBLANK                   = 0x00000001,
 } OTG_V_SYNC_MODE;
-
-/*
- * OTG_V_TOTAL_CONTROL_OTG_DRR_EVENT_ACTIVE_PERIOD enum
- */
-
 typedef enum OTG_V_TOTAL_CONTROL_OTG_DRR_EVENT_ACTIVE_PERIOD {
 OTG_V_TOTAL_CONTROL_OTG_DRR_EVENT_ACTIVE_PERIOD_0 = 0x00000000,
 OTG_V_TOTAL_CONTROL_OTG_DRR_EVENT_ACTIVE_PERIOD_1 = 0x00000001,
 } OTG_V_TOTAL_CONTROL_OTG_DRR_EVENT_ACTIVE_PERIOD;
-
-/*
- * OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_ON_EVENT enum
- */
-
 typedef enum OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_ON_EVENT {
 OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_ON_EVENT_DISABLE = 0x00000000,
 OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_ON_EVENT_ENABLE = 0x00000001,
 } OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_ON_EVENT;
-
-/*
- * OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_TO_MASTER_VSYNC enum
- */
-
 typedef enum OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_TO_MASTER_VSYNC {
 OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_TO_MASTER_VSYNC_DISABLE = 0x00000000,
 OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_TO_MASTER_VSYNC_ENABLE = 0x00000001,
 } OTG_V_TOTAL_CONTROL_OTG_FORCE_LOCK_TO_MASTER_VSYNC;
-
-/*
- * OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MAX_SEL enum
- */
-
 typedef enum OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MAX_SEL {
 OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MAX_SEL_FALSE = 0x00000000,
 OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MAX_SEL_TRUE = 0x00000001,
 } OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MAX_SEL;
-
-/*
- * OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MIN_SEL enum
- */
-
 typedef enum OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MIN_SEL {
 OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MIN_SEL_FALSE = 0x00000000,
 OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MIN_SEL_TRUE = 0x00000001,
 } OTG_V_TOTAL_CONTROL_OTG_V_TOTAL_MIN_SEL;
-
-/*
- * OTG_V_TOTAL_INT_STATUS_OTG_SET_V_TOTAL_MIN_EVENT_OCCURRED_ACK enum
- */
-
 typedef enum OTG_V_TOTAL_INT_STATUS_OTG_SET_V_TOTAL_MIN_EVENT_OCCURRED_ACK {
 OTG_V_TOTAL_INT_STATUS_OTG_SET_V_TOTAL_MIN_EVENT_OCCURRED_ACK_FALSE = 0x00000000,
 OTG_V_TOTAL_INT_STATUS_OTG_SET_V_TOTAL_MIN_EVENT_OCCURRED_ACK_TRUE = 0x00000001,
 } OTG_V_TOTAL_INT_STATUS_OTG_SET_V_TOTAL_MIN_EVENT_OCCURRED_ACK;
-
-/*******************************************************
- * OPTC_MISC Enums
- *******************************************************/
-
-/*
- * OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL enum
- */
-
 typedef enum OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL {
 OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL_OTG0 = 0x00000000,
 OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL_OTG1 = 0x00000001,
@@ -5068,24 +2693,10 @@ OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL_OTG3 = 0x00000003,
 OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL_RESERVED4 = 0x00000004,
 OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL_RESERVED5 = 0x00000005,
 } OPTC_GSL_SOURCE_SELECT_GSL_TIMING_SYNC_SEL;
-
-/*******************************************************
- * DMCUB Enums
- *******************************************************/
-
-/*
- * DC_DMCUB_INT_TYPE enum
- */
-
 typedef enum DC_DMCUB_INT_TYPE {
 INT_LEVEL                                = 0x00000000,
 INT_PULSE                                = 0x00000001,
 } DC_DMCUB_INT_TYPE;
-
-/*
- * DC_DMCUB_TIMER_WINDOW enum
- */
-
 typedef enum DC_DMCUB_TIMER_WINDOW {
 BITS_31_0                                = 0x00000000,
 BITS_32_1                                = 0x00000001,
@@ -5096,15 +2707,6 @@ BITS_36_5                                = 0x00000005,
 BITS_37_6                                = 0x00000006,
 BITS_38_7                                = 0x00000007,
 } DC_DMCUB_TIMER_WINDOW;
-
-/*******************************************************
- * RBBMIF Enums
- *******************************************************/
-
-/*
- * INVALID_REG_ACCESS_TYPE enum
- */
-
 typedef enum INVALID_REG_ACCESS_TYPE {
 REG_UNALLOCATED_ADDR_WRITE               = 0x00000000,
 REG_UNALLOCATED_ADDR_READ                = 0x00000001,
@@ -5113,15 +2715,6 @@ REG_VIRTUAL_READ                         = 0x00000003,
 REG_SECURE_VIOLATE_WRITE                 = 0x00000004,
 REG_SECURE_VIOLATE_READ                  = 0x00000005,
 } INVALID_REG_ACCESS_TYPE;
-
-/*******************************************************
- * IHC Enums
- *******************************************************/
-
-/*
- * DMU_DC_GPU_TIMER_READ_SELECT enum
- */
-
 typedef enum DMU_DC_GPU_TIMER_READ_SELECT {
 DMU_GPU_TIMER_READ_SELECT_LOWER_D1_V_UPDATE_0 = 0x00000000,
 DMU_GPU_TIMER_READ_SELECT_UPPER_D1_V_UPDATE_1 = 0x00000001,
@@ -5216,11 +2809,6 @@ RESERVED_89                              = 0x00000059,
 RESERVED_90                              = 0x0000005a,
 RESERVED_91                              = 0x0000005b,
 } DMU_DC_GPU_TIMER_READ_SELECT;
-
-/*
- * DMU_DC_GPU_TIMER_START_POSITION enum
- */
-
 typedef enum DMU_DC_GPU_TIMER_START_POSITION {
 DMU_GPU_TIMER_START_0_END_27             = 0x00000000,
 DMU_GPU_TIMER_START_1_END_28             = 0x00000001,
@@ -5231,100 +2819,42 @@ DMU_GPU_TIMER_START_6_END_33             = 0x00000005,
 DMU_GPU_TIMER_START_8_END_35             = 0x00000006,
 DMU_GPU_TIMER_START_10_END_37            = 0x00000007,
 } DMU_DC_GPU_TIMER_START_POSITION;
-
-/*
- * IHC_INTERRUPT_DEST enum
- */
-
 typedef enum IHC_INTERRUPT_DEST {
 INTERRUPT_SENT_TO_IH                     = 0x00000000,
 INTERRUPT_SENT_TO_DMCUB                  = 0x00000001,
 } IHC_INTERRUPT_DEST;
-
-/*
- * IHC_INTERRUPT_LINE_STATUS enum
- */
-
 typedef enum IHC_INTERRUPT_LINE_STATUS {
 INTERRUPT_LINE_NOT_ASSERTED              = 0x00000000,
 INTERRUPT_LINE_ASSERTED                  = 0x00000001,
 } IHC_INTERRUPT_LINE_STATUS;
-
-/*******************************************************
- * DMU_MISC Enums
- *******************************************************/
-
-/*
- * DC_SMU_INTERRUPT_ENABLE enum
- */
-
 typedef enum DC_SMU_INTERRUPT_ENABLE {
 DISABLE_THE_INTERRUPT                    = 0x00000000,
 ENABLE_THE_INTERRUPT                     = 0x00000001,
 } DC_SMU_INTERRUPT_ENABLE;
-
-/*
- * DMU_CLOCK_ON enum
- */
-
 typedef enum DMU_CLOCK_ON {
 DMU_CLOCK_STATUS_ON                      = 0x00000000,
 DMU_CLOCK_STATUS_OFF                     = 0x00000001,
 } DMU_CLOCK_ON;
-
-/*
- * SMU_INTR enum
- */
-
 typedef enum SMU_INTR {
 SMU_MSG_INTR_NOOP                        = 0x00000000,
 SET_SMU_MSG_INTR                         = 0x00000001,
 } SMU_INTR;
-
-/*******************************************************
- * DCCG Enums
- *******************************************************/
-
-/*
- * ALLOW_SR_ON_TRANS_REQ enum
- */
-
 typedef enum ALLOW_SR_ON_TRANS_REQ {
 ALLOW_SR_ON_TRANS_REQ_ENABLE             = 0x00000000,
 ALLOW_SR_ON_TRANS_REQ_DISABLE            = 0x00000001,
 } ALLOW_SR_ON_TRANS_REQ;
-
-/*
- * AMCLOCK_ENABLE enum
- */
-
 typedef enum AMCLOCK_ENABLE {
 ENABLE_AMCLK0                            = 0x00000000,
 ENABLE_AMCLK1                            = 0x00000001,
 } AMCLOCK_ENABLE;
-
-/*
- * CLEAR_SMU_INTR enum
- */
-
 typedef enum CLEAR_SMU_INTR {
 SMU_INTR_STATUS_NOOP                     = 0x00000000,
 SMU_INTR_STATUS_CLEAR                    = 0x00000001,
 } CLEAR_SMU_INTR;
-
-/*
- * CLOCK_BRANCH_SOFT_RESET enum
- */
-
 typedef enum CLOCK_BRANCH_SOFT_RESET {
 CLOCK_BRANCH_SOFT_RESET_NOOP             = 0x00000000,
 CLOCK_BRANCH_SOFT_RESET_FORCE            = 0x00000001,
 } CLOCK_BRANCH_SOFT_RESET;
-
-/*
- * DCCG_AUDIO_DTO0_SOURCE_SEL enum
- */
-
 typedef enum DCCG_AUDIO_DTO0_SOURCE_SEL {
 DCCG_AUDIO_DTO0_SOURCE_SEL_OTG0          = 0x00000000,
 DCCG_AUDIO_DTO0_SOURCE_SEL_OTG1          = 0x00000001,
@@ -5332,115 +2862,55 @@ DCCG_AUDIO_DTO0_SOURCE_SEL_OTG2          = 0x00000002,
 DCCG_AUDIO_DTO0_SOURCE_SEL_OTG3          = 0x00000003,
 DCCG_AUDIO_DTO0_SOURCE_SEL_RESERVED      = 0x00000004,
 } DCCG_AUDIO_DTO0_SOURCE_SEL;
-
-/*
- * DCCG_AUDIO_DTO2_SOURCE_SEL enum
- */
-
 typedef enum DCCG_AUDIO_DTO2_SOURCE_SEL {
 DCCG_AUDIO_DTO2_SOURCE_SEL_AMCLK0        = 0x00000000,
 DCCG_AUDIO_DTO2_SOURCE_SEL_AMCLK0_DIV2   = 0x00000001,
 } DCCG_AUDIO_DTO2_SOURCE_SEL;
-
-/*
- * DCCG_AUDIO_DTO_SEL enum
- */
-
 typedef enum DCCG_AUDIO_DTO_SEL {
 DCCG_AUDIO_DTO_SEL_AUDIO_DTO0            = 0x00000000,
 DCCG_AUDIO_DTO_SEL_AUDIO_DTO1            = 0x00000001,
 DCCG_AUDIO_DTO_SEL_NO_AUDIO_DTO          = 0x00000002,
 DCCG_AUDIO_DTO_SEL_AUDIO_DTO_DTBCLK      = 0x00000003,
 } DCCG_AUDIO_DTO_SEL;
-
-/*
- * DCCG_AUDIO_DTO_USE_512FBR_DTO enum
- */
-
 typedef enum DCCG_AUDIO_DTO_USE_512FBR_DTO {
 DCCG_AUDIO_DTO_USE_128FBR_FOR_DP         = 0x00000000,
 DCCG_AUDIO_DTO_USE_512FBR_FOR_DP         = 0x00000001,
 } DCCG_AUDIO_DTO_USE_512FBR_DTO;
-
-/*
- * DCCG_DBG_BLOCK_SEL enum
- */
-
 typedef enum DCCG_DBG_BLOCK_SEL {
 DCCG_DBG_BLOCK_SEL_DCCG                  = 0x00000000,
 DCCG_DBG_BLOCK_SEL_PMON                  = 0x00000001,
 DCCG_DBG_BLOCK_SEL_PMON2                 = 0x00000002,
 } DCCG_DBG_BLOCK_SEL;
-
-/*
- * DCCG_DBG_EN enum
- */
-
 typedef enum DCCG_DBG_EN {
 DCCG_DBG_EN_DISABLE                      = 0x00000000,
 DCCG_DBG_EN_ENABLE                       = 0x00000001,
 } DCCG_DBG_EN;
-
-/*
- * DCCG_DEEP_COLOR_CNTL enum
- */
-
 typedef enum DCCG_DEEP_COLOR_CNTL {
 DCCG_DEEP_COLOR_DTO_DISABLE              = 0x00000000,
 DCCG_DEEP_COLOR_DTO_5_4_RATIO            = 0x00000001,
 DCCG_DEEP_COLOR_DTO_3_2_RATIO            = 0x00000002,
 DCCG_DEEP_COLOR_DTO_2_1_RATIO            = 0x00000003,
 } DCCG_DEEP_COLOR_CNTL;
-
-/*
- * DCCG_FIFO_ERRDET_OVR_EN enum
- */
-
 typedef enum DCCG_FIFO_ERRDET_OVR_EN {
 DCCG_FIFO_ERRDET_OVR_DISABLE             = 0x00000000,
 DCCG_FIFO_ERRDET_OVR_ENABLE              = 0x00000001,
 } DCCG_FIFO_ERRDET_OVR_EN;
-
-/*
- * DCCG_FIFO_ERRDET_RESET enum
- */
-
 typedef enum DCCG_FIFO_ERRDET_RESET {
 DCCG_FIFO_ERRDET_RESET_NOOP              = 0x00000000,
 DCCG_FIFO_ERRDET_RESET_FORCE             = 0x00000001,
 } DCCG_FIFO_ERRDET_RESET;
-
-/*
- * DCCG_FIFO_ERRDET_STATE enum
- */
-
 typedef enum DCCG_FIFO_ERRDET_STATE {
 DCCG_FIFO_ERRDET_STATE_CALIBRATION       = 0x00000000,
 DCCG_FIFO_ERRDET_STATE_DETECTION         = 0x00000001,
 } DCCG_FIFO_ERRDET_STATE;
-
-/*
- * DCCG_PERF_MODE_HSYNC enum
- */
-
 typedef enum DCCG_PERF_MODE_HSYNC {
 DCCG_PERF_MODE_HSYNC_NOOP                = 0x00000000,
 DCCG_PERF_MODE_HSYNC_START               = 0x00000001,
 } DCCG_PERF_MODE_HSYNC;
-
-/*
- * DCCG_PERF_MODE_VSYNC enum
- */
-
 typedef enum DCCG_PERF_MODE_VSYNC {
 DCCG_PERF_MODE_VSYNC_NOOP                = 0x00000000,
 DCCG_PERF_MODE_VSYNC_START               = 0x00000001,
 } DCCG_PERF_MODE_VSYNC;
-
-/*
- * DCCG_PERF_OTG_SELECT enum
- */
-
 typedef enum DCCG_PERF_OTG_SELECT {
 DCCG_PERF_SEL_OTG0                       = 0x00000000,
 DCCG_PERF_SEL_OTG1                       = 0x00000001,
@@ -5448,160 +2918,75 @@ DCCG_PERF_SEL_OTG2                       = 0x00000002,
 DCCG_PERF_SEL_OTG3                       = 0x00000003,
 DCCG_PERF_SEL_RESERVED                   = 0x00000004,
 } DCCG_PERF_OTG_SELECT;
-
-/*
- * DCCG_PERF_RUN enum
- */
-
 typedef enum DCCG_PERF_RUN {
 DCCG_PERF_RUN_NOOP                       = 0x00000000,
 DCCG_PERF_RUN_START                      = 0x00000001,
 } DCCG_PERF_RUN;
-
-/*
- * DC_MEM_GLOBAL_PWR_REQ_DIS enum
- */
-
 typedef enum DC_MEM_GLOBAL_PWR_REQ_DIS {
 DC_MEM_GLOBAL_PWR_REQ_ENABLE             = 0x00000000,
 DC_MEM_GLOBAL_PWR_REQ_DISABLE            = 0x00000001,
 } DC_MEM_GLOBAL_PWR_REQ_DIS;
-
-/*
- * DIO_FIFO_ERROR enum
- */
-
 typedef enum DIO_FIFO_ERROR {
 DIO_FIFO_ERROR_00                        = 0x00000000,
 DIO_FIFO_ERROR_01                        = 0x00000001,
 DIO_FIFO_ERROR_10                        = 0x00000002,
 DIO_FIFO_ERROR_11                        = 0x00000003,
 } DIO_FIFO_ERROR;
-
-/*
- * DISABLE_CLOCK_GATING enum
- */
-
 typedef enum DISABLE_CLOCK_GATING {
 CLOCK_GATING_ENABLED                     = 0x00000000,
 CLOCK_GATING_DISABLED                    = 0x00000001,
 } DISABLE_CLOCK_GATING;
-
-/*
- * DISABLE_CLOCK_GATING_IN_DCO enum
- */
-
 typedef enum DISABLE_CLOCK_GATING_IN_DCO {
 CLOCK_GATING_ENABLED_IN_DCO              = 0x00000000,
 CLOCK_GATING_DISABLED_IN_DCO             = 0x00000001,
 } DISABLE_CLOCK_GATING_IN_DCO;
-
-/*
- * DISPCLK_CHG_FWD_CORR_DISABLE enum
- */
-
 typedef enum DISPCLK_CHG_FWD_CORR_DISABLE {
 DISPCLK_CHG_FWD_CORR_ENABLE_AT_BEGINNING = 0x00000000,
 DISPCLK_CHG_FWD_CORR_DISABLE_AT_BEGINNING = 0x00000001,
 } DISPCLK_CHG_FWD_CORR_DISABLE;
-
-/*
- * DISPCLK_FREQ_RAMP_DONE enum
- */
-
 typedef enum DISPCLK_FREQ_RAMP_DONE {
 DISPCLK_FREQ_RAMP_IN_PROGRESS            = 0x00000000,
 DISPCLK_FREQ_RAMP_COMPLETED              = 0x00000001,
 } DISPCLK_FREQ_RAMP_DONE;
-
-/*
- * DPREFCLK_SRC_SEL enum
- */
-
 typedef enum DPREFCLK_SRC_SEL {
 DPREFCLK_SRC_SEL_CK                      = 0x00000000,
 DPREFCLK_SRC_SEL_P0PLL                   = 0x00000001,
 DPREFCLK_SRC_SEL_P1PLL                   = 0x00000002,
 DPREFCLK_SRC_SEL_P2PLL                   = 0x00000003,
 } DPREFCLK_SRC_SEL;
-
-/*
- * DP_DTO_DS_DISABLE enum
- */
-
 typedef enum DP_DTO_DS_DISABLE {
 DP_DTO_DESPREAD_DISABLE                  = 0x00000000,
 DP_DTO_DESPREAD_ENABLE                   = 0x00000001,
 } DP_DTO_DS_DISABLE;
-
-/*
- * DS_HW_CAL_ENABLE enum
- */
-
 typedef enum DS_HW_CAL_ENABLE {
 DS_HW_CAL_DIS                            = 0x00000000,
 DS_HW_CAL_EN                             = 0x00000001,
 } DS_HW_CAL_ENABLE;
-
-/*
- * DS_JITTER_COUNT_SRC_SEL enum
- */
-
 typedef enum DS_JITTER_COUNT_SRC_SEL {
 DS_JITTER_COUNT_SRC_SEL0                 = 0x00000000,
 DS_JITTER_COUNT_SRC_SEL1                 = 0x00000001,
 } DS_JITTER_COUNT_SRC_SEL;
-
-/*
- * DS_REF_SRC enum
- */
-
 typedef enum DS_REF_SRC {
 DS_REF_IS_XTALIN                         = 0x00000000,
 DS_REF_IS_EXT_GENLOCK                    = 0x00000001,
 DS_REF_IS_PCIE                           = 0x00000002,
 } DS_REF_SRC;
-
-/*
- * DVOACLKC_IN_PHASE enum
- */
-
 typedef enum DVOACLKC_IN_PHASE {
 DVOACLKC_IN_OPPOSITE_PHASE_WITH_PCLK_DVO = 0x00000000,
 DVOACLKC_IN_PHASE_WITH_PCLK_DVO          = 0x00000001,
 } DVOACLKC_IN_PHASE;
-
-/*
- * DVOACLKC_MVP_IN_PHASE enum
- */
-
 typedef enum DVOACLKC_MVP_IN_PHASE {
 DVOACLKC_MVP_IN_OPPOSITE_PHASE_WITH_PCLK_DVO = 0x00000000,
 DVOACLKC_MVP_IN_PHASE_WITH_PCLK_DVO      = 0x00000001,
 } DVOACLKC_MVP_IN_PHASE;
-
-/*
- * DVOACLKC_MVP_SKEW_PHASE_OVERRIDE enum
- */
-
 typedef enum DVOACLKC_MVP_SKEW_PHASE_OVERRIDE {
 DVOACLKC_MVP_SKEW_PHASE_OVERRIDE_DISABLE = 0x00000000,
 DVOACLKC_MVP_SKEW_PHASE_OVERRIDE_ENABLE  = 0x00000001,
 } DVOACLKC_MVP_SKEW_PHASE_OVERRIDE;
-
-/*
- * DVOACLKD_IN_PHASE enum
- */
-
 typedef enum DVOACLKD_IN_PHASE {
 DVOACLKD_IN_OPPOSITE_PHASE_WITH_PCLK_DVO = 0x00000000,
 DVOACLKD_IN_PHASE_WITH_PCLK_DVO          = 0x00000001,
 } DVOACLKD_IN_PHASE;
-
-/*
- * DVOACLK_COARSE_SKEW_CNTL enum
- */
-
 typedef enum DVOACLK_COARSE_SKEW_CNTL {
 DVOACLK_COARSE_SKEW_CNTL_NO_ADJUSTMENT   = 0x00000000,
 DVOACLK_COARSE_SKEW_CNTL_DELAY_1_STEP    = 0x00000001,
@@ -5635,11 +3020,6 @@ DVOACLK_COARSE_SKEW_CNTL_EARLY_13_STEPS  = 0x0000001c,
 DVOACLK_COARSE_SKEW_CNTL_EARLY_14_STEPS  = 0x0000001d,
 DVOACLK_COARSE_SKEW_CNTL_EARLY_15_STEPS  = 0x0000001e,
 } DVOACLK_COARSE_SKEW_CNTL;
-
-/*
- * DVOACLK_FINE_SKEW_CNTL enum
- */
-
 typedef enum DVOACLK_FINE_SKEW_CNTL {
 DVOACLK_FINE_SKEW_CNTL_NO_ADJUSTMENT     = 0x00000000,
 DVOACLK_FINE_SKEW_CNTL_DELAY_1_STEP      = 0x00000001,
@@ -5650,47 +3030,22 @@ DVOACLK_FINE_SKEW_CNTL_EARLY_2_STEPS     = 0x00000005,
 DVOACLK_FINE_SKEW_CNTL_EARLY_3_STEPS     = 0x00000006,
 DVOACLK_FINE_SKEW_CNTL_EARLY_4_STEPS     = 0x00000007,
 } DVOACLK_FINE_SKEW_CNTL;
-
-/*
- * DVO_ENABLE_RST enum
- */
-
 typedef enum DVO_ENABLE_RST {
 DVO_ENABLE_RST_DISABLE                   = 0x00000000,
 DVO_ENABLE_RST_ENABLE                    = 0x00000001,
 } DVO_ENABLE_RST;
-
-/*
- * ENABLE enum
- */
-
 typedef enum ENABLE {
 DISABLE_THE_FEATURE                      = 0x00000000,
 ENABLE_THE_FEATURE                       = 0x00000001,
 } ENABLE;
-
-/*
- * ENABLE_CLOCK enum
- */
-
 typedef enum ENABLE_CLOCK {
 ENABLE_THE_REFCLK                        = 0x00000000,
 ENABLE_THE_FUNC_CLOCK                    = 0x00000001,
 } ENABLE_CLOCK;
-
-/*
- * FORCE_DISABLE_CLOCK enum
- */
-
 typedef enum FORCE_DISABLE_CLOCK {
 NOT_FORCE_THE_CLOCK_DISABLED             = 0x00000000,
 FORCE_THE_CLOCK_DISABLED                 = 0x00000001,
 } FORCE_DISABLE_CLOCK;
-
-/*
- * HDMICHARCLK_SRC_SEL enum
- */
-
 typedef enum HDMICHARCLK_SRC_SEL {
 HDMICHARCLK_SRC_SEL_UNIPHYA              = 0x00000000,
 HDMICHARCLK_SRC_SEL_UNIPHYB              = 0x00000001,
@@ -5699,94 +3054,44 @@ HDMICHARCLK_SRC_SEL_UNIPHYD              = 0x00000003,
 HDMICHARCLK_SRC_SEL_UNIPHYE              = 0x00000004,
 HDMICHARCLK_SRC_SEL_SRC_RESERVED         = 0x00000005,
 } HDMICHARCLK_SRC_SEL;
-
-/*
- * HDMISTREAMCLK_DTO_FORCE_DIS enum
- */
-
 typedef enum HDMISTREAMCLK_DTO_FORCE_DIS {
 DTO_FORCE_NO_BYPASS                      = 0x00000000,
 DTO_FORCE_BYPASS                         = 0x00000001,
 } HDMISTREAMCLK_DTO_FORCE_DIS;
-
-/*
- * HDMISTREAMCLK_SRC_SEL enum
- */
-
 typedef enum HDMISTREAMCLK_SRC_SEL {
 SEL_REFCLK0                              = 0x00000000,
 SEL_DTBCLK0                              = 0x00000001,
 SEL_DTBCLK1                              = 0x00000002,
 } HDMISTREAMCLK_SRC_SEL;
-
-/*
- * JITTER_REMOVE_DISABLE enum
- */
-
 typedef enum JITTER_REMOVE_DISABLE {
 ENABLE_JITTER_REMOVAL                    = 0x00000000,
 DISABLE_JITTER_REMOVAL                   = 0x00000001,
 } JITTER_REMOVE_DISABLE;
-
-/*
- * MICROSECOND_TIME_BASE_CLOCK_SOURCE_SEL enum
- */
-
 typedef enum MICROSECOND_TIME_BASE_CLOCK_SOURCE_SEL {
 MICROSECOND_TIME_BASE_CLOCK_IS_XTALIN    = 0x00000000,
 MICROSECOND_TIME_BASE_CLOCK_IS_DCCGREFCLK = 0x00000001,
 } MICROSECOND_TIME_BASE_CLOCK_SOURCE_SEL;
-
-/*
- * MILLISECOND_TIME_BASE_CLOCK_SOURCE_SEL enum
- */
-
 typedef enum MILLISECOND_TIME_BASE_CLOCK_SOURCE_SEL {
 MILLISECOND_TIME_BASE_CLOCK_IS_XTALIN    = 0x00000000,
 MILLISECOND_TIME_BASE_CLOCK_IS_DCCGREFCLK = 0x00000001,
 } MILLISECOND_TIME_BASE_CLOCK_SOURCE_SEL;
-
-/*
- * OTG_ADD_PIXEL enum
- */
-
 typedef enum OTG_ADD_PIXEL {
 OTG_ADD_PIXEL_NOOP                       = 0x00000000,
 OTG_ADD_PIXEL_FORCE                      = 0x00000001,
 } OTG_ADD_PIXEL;
-
-/*
- * OTG_DROP_PIXEL enum
- */
-
 typedef enum OTG_DROP_PIXEL {
 OTG_DROP_PIXEL_NOOP                      = 0x00000000,
 OTG_DROP_PIXEL_FORCE                     = 0x00000001,
 } OTG_DROP_PIXEL;
-
-/*
- * PHYSYMCLK_FORCE_EN enum
- */
-
 typedef enum PHYSYMCLK_FORCE_EN {
 PHYSYMCLK_FORCE_EN_DISABLE               = 0x00000000,
 PHYSYMCLK_FORCE_EN_ENABLE                = 0x00000001,
 } PHYSYMCLK_FORCE_EN;
-
-/*
- * PHYSYMCLK_FORCE_SRC_SEL enum
- */
-
 typedef enum PHYSYMCLK_FORCE_SRC_SEL {
 PHYSYMCLK_FORCE_SRC_SYMCLK               = 0x00000000,
 PHYSYMCLK_FORCE_SRC_PHYD18CLK            = 0x00000001,
 PHYSYMCLK_FORCE_SRC_PHYD32CLK            = 0x00000002,
 } PHYSYMCLK_FORCE_SRC_SEL;
-
-/*
- * PIPE_PHYPLL_PIXEL_RATE_SOURCE enum
- */
-
 typedef enum PIPE_PHYPLL_PIXEL_RATE_SOURCE {
 PIPE_PHYPLL_PIXEL_RATE_SOURCE_UNIPHYA    = 0x00000000,
 PIPE_PHYPLL_PIXEL_RATE_SOURCE_UNIPHYB    = 0x00000001,
@@ -5794,48 +3099,23 @@ PIPE_PHYPLL_PIXEL_RATE_SOURCE_UNIPHYC    = 0x00000002,
 PIPE_PHYPLL_PIXEL_RATE_SOURCE_UNIPHYD    = 0x00000003,
 PIPE_PHYPLL_PIXEL_RATE_SOURCE_RESERVED   = 0x00000004,
 } PIPE_PHYPLL_PIXEL_RATE_SOURCE;
-
-/*
- * PIPE_PIXEL_RATE_PLL_SOURCE enum
- */
-
 typedef enum PIPE_PIXEL_RATE_PLL_SOURCE {
 PIPE_PIXEL_RATE_PLL_SOURCE_PHYPLL        = 0x00000000,
 PIPE_PIXEL_RATE_PLL_SOURCE_DISPPLL       = 0x00000001,
 } PIPE_PIXEL_RATE_PLL_SOURCE;
-
-/*
- * PIPE_PIXEL_RATE_SOURCE enum
- */
-
 typedef enum PIPE_PIXEL_RATE_SOURCE {
 PIPE_PIXEL_RATE_SOURCE_P0PLL             = 0x00000000,
 PIPE_PIXEL_RATE_SOURCE_P1PLL             = 0x00000001,
 PIPE_PIXEL_RATE_SOURCE_P2PLL             = 0x00000002,
 } PIPE_PIXEL_RATE_SOURCE;
-
-/*
- * PLL_CFG_IF_SOFT_RESET enum
- */
-
 typedef enum PLL_CFG_IF_SOFT_RESET {
 PLL_CFG_IF_SOFT_RESET_NOOP               = 0x00000000,
 PLL_CFG_IF_SOFT_RESET_FORCE              = 0x00000001,
 } PLL_CFG_IF_SOFT_RESET;
-
-/*
- * SYMCLK_FE_FORCE_EN enum
- */
-
 typedef enum SYMCLK_FE_FORCE_EN {
 SYMCLK_FE_FORCE_EN_DISABLE               = 0x00000000,
 SYMCLK_FE_FORCE_EN_ENABLE                = 0x00000001,
 } SYMCLK_FE_FORCE_EN;
-
-/*
- * SYMCLK_FE_FORCE_SRC enum
- */
-
 typedef enum SYMCLK_FE_FORCE_SRC {
 SYMCLK_FE_FORCE_SRC_UNIPHYA              = 0x00000000,
 SYMCLK_FE_FORCE_SRC_UNIPHYB              = 0x00000001,
@@ -5843,350 +3123,157 @@ SYMCLK_FE_FORCE_SRC_UNIPHYC              = 0x00000002,
 SYMCLK_FE_FORCE_SRC_UNIPHYD              = 0x00000003,
 SYMCLK_FE_FORCE_SRC_RESERVED             = 0x00000004,
 } SYMCLK_FE_FORCE_SRC;
-
-/*
- * TEST_CLK_DIV_SEL enum
- */
-
 typedef enum TEST_CLK_DIV_SEL {
 NO_DIV                                   = 0x00000000,
 DIV_2                                    = 0x00000001,
 DIV_4                                    = 0x00000002,
 DIV_8                                    = 0x00000003,
 } TEST_CLK_DIV_SEL;
-
-/*
- * VSYNC_CNT_LATCH_MASK enum
- */
-
 typedef enum VSYNC_CNT_LATCH_MASK {
 VSYNC_CNT_LATCH_MASK_0                   = 0x00000000,
 VSYNC_CNT_LATCH_MASK_1                   = 0x00000001,
 } VSYNC_CNT_LATCH_MASK;
-
-/*
- * VSYNC_CNT_RESET_SEL enum
- */
-
 typedef enum VSYNC_CNT_RESET_SEL {
 VSYNC_CNT_RESET_SEL_0                    = 0x00000000,
 VSYNC_CNT_RESET_SEL_1                    = 0x00000001,
 } VSYNC_CNT_RESET_SEL;
-
-/*
- * XTAL_REF_CLOCK_SOURCE_SEL enum
- */
-
 typedef enum XTAL_REF_CLOCK_SOURCE_SEL {
 XTAL_REF_CLOCK_SOURCE_SEL_XTALIN         = 0x00000000,
 XTAL_REF_CLOCK_SOURCE_SEL_DCCGREFCLK     = 0x00000001,
 } XTAL_REF_CLOCK_SOURCE_SEL;
-
-/*
- * XTAL_REF_SEL enum
- */
-
 typedef enum XTAL_REF_SEL {
 XTAL_REF_SEL_1X                          = 0x00000000,
 XTAL_REF_SEL_2X                          = 0x00000001,
 } XTAL_REF_SEL;
-
-/*******************************************************
- * HPD Enums
- *******************************************************/
-
-/*
- * HPD_INT_CONTROL_ACK enum
- */
-
 typedef enum HPD_INT_CONTROL_ACK {
 HPD_INT_CONTROL_ACK_0                    = 0x00000000,
 HPD_INT_CONTROL_ACK_1                    = 0x00000001,
 } HPD_INT_CONTROL_ACK;
-
-/*
- * HPD_INT_CONTROL_POLARITY enum
- */
-
 typedef enum HPD_INT_CONTROL_POLARITY {
 HPD_INT_CONTROL_GEN_INT_ON_DISCON        = 0x00000000,
 HPD_INT_CONTROL_GEN_INT_ON_CON           = 0x00000001,
 } HPD_INT_CONTROL_POLARITY;
-
-/*
- * HPD_INT_CONTROL_RX_INT_ACK enum
- */
-
 typedef enum HPD_INT_CONTROL_RX_INT_ACK {
 HPD_INT_CONTROL_RX_INT_ACK_0             = 0x00000000,
 HPD_INT_CONTROL_RX_INT_ACK_1             = 0x00000001,
 } HPD_INT_CONTROL_RX_INT_ACK;
-
-/*******************************************************
- * DP Enums
- *******************************************************/
-
-/*
- * DPHY_8B10B_CUR_DISP enum
- */
-
 typedef enum DPHY_8B10B_CUR_DISP {
 DPHY_8B10B_CUR_DISP_ZERO                 = 0x00000000,
 DPHY_8B10B_CUR_DISP_ONE                  = 0x00000001,
 } DPHY_8B10B_CUR_DISP;
-
-/*
- * DPHY_8B10B_RESET enum
- */
-
 typedef enum DPHY_8B10B_RESET {
 DPHY_8B10B_NOT_RESET                     = 0x00000000,
 DPHY_8B10B_RESETET                       = 0x00000001,
 } DPHY_8B10B_RESET;
-
-/*
- * DPHY_ALT_SCRAMBLER_RESET_EN enum
- */
-
 typedef enum DPHY_ALT_SCRAMBLER_RESET_EN {
 DPHY_ALT_SCRAMBLER_REGULAR_RESET_VALUE   = 0x00000000,
 DPHY_ALT_SCRAMBLER_INTERNAL_RESET_SOLUTION = 0x00000001,
 } DPHY_ALT_SCRAMBLER_RESET_EN;
-
-/*
- * DPHY_ALT_SCRAMBLER_RESET_SEL enum
- */
-
 typedef enum DPHY_ALT_SCRAMBLER_RESET_SEL {
 DPHY_ALT_SCRAMBLER_RESET_SEL_EDP_RESET_VALUE = 0x00000000,
 DPHY_ALT_SCRAMBLER_RESET_SEL_CUSTOM_RESET_VALUE = 0x00000001,
 } DPHY_ALT_SCRAMBLER_RESET_SEL;
-
-/*
- * DPHY_ATEST_SEL_LANE0 enum
- */
-
 typedef enum DPHY_ATEST_SEL_LANE0 {
 DPHY_ATEST_LANE0_PRBS_PATTERN            = 0x00000000,
 DPHY_ATEST_LANE0_REG_PATTERN             = 0x00000001,
 } DPHY_ATEST_SEL_LANE0;
-
-/*
- * DPHY_ATEST_SEL_LANE1 enum
- */
-
 typedef enum DPHY_ATEST_SEL_LANE1 {
 DPHY_ATEST_LANE1_PRBS_PATTERN            = 0x00000000,
 DPHY_ATEST_LANE1_REG_PATTERN             = 0x00000001,
 } DPHY_ATEST_SEL_LANE1;
-
-/*
- * DPHY_ATEST_SEL_LANE2 enum
- */
-
 typedef enum DPHY_ATEST_SEL_LANE2 {
 DPHY_ATEST_LANE2_PRBS_PATTERN            = 0x00000000,
 DPHY_ATEST_LANE2_REG_PATTERN             = 0x00000001,
 } DPHY_ATEST_SEL_LANE2;
-
-/*
- * DPHY_ATEST_SEL_LANE3 enum
- */
-
 typedef enum DPHY_ATEST_SEL_LANE3 {
 DPHY_ATEST_LANE3_PRBS_PATTERN            = 0x00000000,
 DPHY_ATEST_LANE3_REG_PATTERN             = 0x00000001,
 } DPHY_ATEST_SEL_LANE3;
-
-/*
- * DPHY_BYPASS enum
- */
-
 typedef enum DPHY_BYPASS {
 DPHY_8B10B_OUTPUT                        = 0x00000000,
 DPHY_DBG_OUTPUT                          = 0x00000001,
 } DPHY_BYPASS;
-
-/*
- * DPHY_CRC_CONT_EN enum
- */
-
 typedef enum DPHY_CRC_CONT_EN {
 DPHY_CRC_ONE_SHOT                        = 0x00000000,
 DPHY_CRC_CONTINUOUS                      = 0x00000001,
 } DPHY_CRC_CONT_EN;
-
-/*
- * DPHY_CRC_EN enum
- */
-
 typedef enum DPHY_CRC_EN {
 DPHY_CRC_DISABLED                        = 0x00000000,
 DPHY_CRC_ENABLED                         = 0x00000001,
 } DPHY_CRC_EN;
-
-/*
- * DPHY_CRC_FIELD enum
- */
-
 typedef enum DPHY_CRC_FIELD {
 DPHY_CRC_START_FROM_TOP_FIELD            = 0x00000000,
 DPHY_CRC_START_FROM_BOTTOM_FIELD         = 0x00000001,
 } DPHY_CRC_FIELD;
-
-/*
- * DPHY_CRC_MST_PHASE_ERROR_ACK enum
- */
-
 typedef enum DPHY_CRC_MST_PHASE_ERROR_ACK {
 DPHY_CRC_MST_PHASE_ERROR_NO_ACK          = 0x00000000,
 DPHY_CRC_MST_PHASE_ERROR_ACKED           = 0x00000001,
 } DPHY_CRC_MST_PHASE_ERROR_ACK;
-
-/*
- * DPHY_CRC_SEL enum
- */
-
 typedef enum DPHY_CRC_SEL {
 DPHY_CRC_LANE0_SELECTED                  = 0x00000000,
 DPHY_CRC_LANE1_SELECTED                  = 0x00000001,
 DPHY_CRC_LANE2_SELECTED                  = 0x00000002,
 DPHY_CRC_LANE3_SELECTED                  = 0x00000003,
 } DPHY_CRC_SEL;
-
-/*
- * DPHY_FEC_ENABLE enum
- */
-
 typedef enum DPHY_FEC_ENABLE {
 DPHY_FEC_DISABLED                        = 0x00000000,
 DPHY_FEC_ENABLED                         = 0x00000001,
 } DPHY_FEC_ENABLE;
-
-/*
- * DPHY_FEC_READY enum
- */
-
 typedef enum DPHY_FEC_READY {
 DPHY_FEC_READY_EN                        = 0x00000000,
 DPHY_FEC_READY_DIS                       = 0x00000001,
 } DPHY_FEC_READY;
-
-/*
- * DPHY_LOAD_BS_COUNT_START enum
- */
-
 typedef enum DPHY_LOAD_BS_COUNT_START {
 DPHY_LOAD_BS_COUNT_STARTED               = 0x00000000,
 DPHY_LOAD_BS_COUNT_NOT_STARTED           = 0x00000001,
 } DPHY_LOAD_BS_COUNT_START;
-
-/*
- * DPHY_PRBS_EN enum
- */
-
 typedef enum DPHY_PRBS_EN {
 DPHY_PRBS_DISABLE                        = 0x00000000,
 DPHY_PRBS_ENABLE                         = 0x00000001,
 } DPHY_PRBS_EN;
-
-/*
- * DPHY_PRBS_SEL enum
- */
-
 typedef enum DPHY_PRBS_SEL {
 DPHY_PRBS7_SELECTED                      = 0x00000000,
 DPHY_PRBS23_SELECTED                     = 0x00000001,
 DPHY_PRBS11_SELECTED                     = 0x00000002,
 } DPHY_PRBS_SEL;
-
-/*
- * DPHY_RX_FAST_TRAINING_CAPABLE enum
- */
-
 typedef enum DPHY_RX_FAST_TRAINING_CAPABLE {
 DPHY_FAST_TRAINING_NOT_CAPABLE_0         = 0x00000000,
 DPHY_FAST_TRAINING_CAPABLE               = 0x00000001,
 } DPHY_RX_FAST_TRAINING_CAPABLE;
-
-/*
- * DPHY_SCRAMBLER_ADVANCE enum
- */
-
 typedef enum DPHY_SCRAMBLER_ADVANCE {
 DPHY_DPHY_SCRAMBLER_ADVANCE_ON_DATA_SYMBOL_ONLY = 0x00000000,
 DPHY_SCRAMBLER_ADVANCE_ON_BOTH_DATA_AND_CTRL = 0x00000001,
 } DPHY_SCRAMBLER_ADVANCE;
-
-/*
- * DPHY_SCRAMBLER_DIS enum
- */
-
 typedef enum DPHY_SCRAMBLER_DIS {
 DPHY_SCR_ENABLED                         = 0x00000000,
 DPHY_SCR_DISABLED                        = 0x00000001,
 } DPHY_SCRAMBLER_DIS;
-
-/*
- * DPHY_SCRAMBLER_KCODE enum
- */
-
 typedef enum DPHY_SCRAMBLER_KCODE {
 DPHY_SCRAMBLER_KCODE_DISABLED            = 0x00000000,
 DPHY_SCRAMBLER_KCODE_ENABLED             = 0x00000001,
 } DPHY_SCRAMBLER_KCODE;
-
-/*
- * DPHY_SCRAMBLER_SEL enum
- */
-
 typedef enum DPHY_SCRAMBLER_SEL {
 DPHY_SCRAMBLER_SEL_LANE_DATA             = 0x00000000,
 DPHY_SCRAMBLER_SEL_DBG_DATA              = 0x00000001,
 } DPHY_SCRAMBLER_SEL;
-
-/*
- * DPHY_SKEW_BYPASS enum
- */
-
 typedef enum DPHY_SKEW_BYPASS {
 DPHY_WITH_SKEW                           = 0x00000000,
 DPHY_NO_SKEW                             = 0x00000001,
 } DPHY_SKEW_BYPASS;
-
-/*
- * DPHY_STREAM_RESET_DURING_FAST_TRAINING_ENUM enum
- */
-
 typedef enum DPHY_STREAM_RESET_DURING_FAST_TRAINING_ENUM {
 DPHY_STREAM_RESET_DURING_FAST_TRAINING_RESET = 0x00000000,
 DPHY_STREAM_RESET_DURING_FAST_TRAINING_NOT_RESET = 0x00000001,
 } DPHY_STREAM_RESET_DURING_FAST_TRAINING_ENUM;
-
-/*
- * DPHY_SW_FAST_TRAINING_START enum
- */
-
 typedef enum DPHY_SW_FAST_TRAINING_START {
 DPHY_SW_FAST_TRAINING_NOT_STARTED        = 0x00000000,
 DPHY_SW_FAST_TRAINING_STARTED            = 0x00000001,
 } DPHY_SW_FAST_TRAINING_START;
-
-/*
- * DPHY_TRAINING_PATTERN_SEL enum
- */
-
 typedef enum DPHY_TRAINING_PATTERN_SEL {
 DPHY_TRAINING_PATTERN_1                  = 0x00000000,
 DPHY_TRAINING_PATTERN_2                  = 0x00000001,
 DPHY_TRAINING_PATTERN_3                  = 0x00000002,
 DPHY_TRAINING_PATTERN_4                  = 0x00000003,
 } DPHY_TRAINING_PATTERN_SEL;
-
-/*
- * DP_COMPONENT_DEPTH enum
- */
-
 typedef enum DP_COMPONENT_DEPTH {
 DP_COMPONENT_DEPTH_6BPC                  = 0x00000000,
 DP_COMPONENT_DEPTH_8BPC                  = 0x00000001,
@@ -6194,56 +3281,26 @@ DP_COMPONENT_DEPTH_10BPC                 = 0x00000002,
 DP_COMPONENT_DEPTH_12BPC                 = 0x00000003,
 DP_COMPONENT_DEPTH_16BPC                 = 0x00000004,
 } DP_COMPONENT_DEPTH;
-
-/*
- * DP_CP_ENCRYPTION_TYPE enum
- */
-
 typedef enum DP_CP_ENCRYPTION_TYPE {
 DP_CP_ENCRYPTION_TYPE_0                  = 0x00000000,
 DP_CP_ENCRYPTION_TYPE_1                  = 0x00000001,
 } DP_CP_ENCRYPTION_TYPE;
-
-/*
- * DP_DPHY_8B10B_EXT_DISP enum
- */
-
 typedef enum DP_DPHY_8B10B_EXT_DISP {
 DP_DPHY_8B10B_EXT_DISP_ZERO              = 0x00000000,
 DP_DPHY_8B10B_EXT_DISP_ONE               = 0x00000001,
 } DP_DPHY_8B10B_EXT_DISP;
-
-/*
- * DP_DPHY_FAST_TRAINING_COMPLETE_ACK enum
- */
-
 typedef enum DP_DPHY_FAST_TRAINING_COMPLETE_ACK {
 DP_DPHY_FAST_TRAINING_COMPLETE_NOT_ACKED = 0x00000000,
 DP_DPHY_FAST_TRAINING_COMPLETE_ACKED     = 0x00000001,
 } DP_DPHY_FAST_TRAINING_COMPLETE_ACK;
-
-/*
- * DP_DPHY_FAST_TRAINING_COMPLETE_MASK enum
- */
-
 typedef enum DP_DPHY_FAST_TRAINING_COMPLETE_MASK {
 DP_DPHY_FAST_TRAINING_COMPLETE_MASKED    = 0x00000000,
 DP_DPHY_FAST_TRAINING_COMPLETE_NOT_MASKED = 0x00000001,
 } DP_DPHY_FAST_TRAINING_COMPLETE_MASK;
-
-/*
- * DP_DPHY_FAST_TRAINING_VBLANK_EDGE_DETECT_EN enum
- */
-
 typedef enum DP_DPHY_FAST_TRAINING_VBLANK_EDGE_DETECT_EN {
 DP_DPHY_FAST_TRAINING_VBLANK_EDGE_DETECT_DISABLED = 0x00000000,
 DP_DPHY_FAST_TRAINING_VBLANK_EDGE_DETECT_ENABLED = 0x00000001,
 } DP_DPHY_FAST_TRAINING_VBLANK_EDGE_DETECT_EN;
-
-/*
- * DP_DPHY_HBR2_PATTERN_CONTROL_MODE enum
- */
-
 typedef enum DP_DPHY_HBR2_PATTERN_CONTROL_MODE {
 DP_DPHY_HBR2_PASS_THROUGH                = 0x00000000,
 DP_DPHY_HBR2_PATTERN_1                   = 0x00000001,
@@ -6251,178 +3308,83 @@ DP_DPHY_HBR2_PATTERN_2_NEG               = 0x00000002,
 DP_DPHY_HBR2_PATTERN_3                   = 0x00000003,
 DP_DPHY_HBR2_PATTERN_2_POS               = 0x00000006,
 } DP_DPHY_HBR2_PATTERN_CONTROL_MODE;
-
-/*
- * DP_DSC_MODE enum
- */
-
 typedef enum DP_DSC_MODE {
 DP_DSC_DISABLE                           = 0x00000000,
 DP_DSC_444_SIMPLE_422                    = 0x00000001,
 DP_DSC_NATIVE_422_420                    = 0x00000002,
 } DP_DSC_MODE;
-
-/*
- * DP_EMBEDDED_PANEL_MODE enum
- */
-
 typedef enum DP_EMBEDDED_PANEL_MODE {
 DP_EXTERNAL_PANEL                        = 0x00000000,
 DP_EMBEDDED_PANEL                        = 0x00000001,
 } DP_EMBEDDED_PANEL_MODE;
-
-/*
- * DP_LINK_TRAINING_COMPLETE enum
- */
-
 typedef enum DP_LINK_TRAINING_COMPLETE {
 DP_LINK_TRAINING_NOT_COMPLETE            = 0x00000000,
 DP_LINK_TRAINING_ALREADY_COMPLETE        = 0x00000001,
 } DP_LINK_TRAINING_COMPLETE;
-
-/*
- * DP_LINK_TRAINING_SWITCH_MODE enum
- */
-
 typedef enum DP_LINK_TRAINING_SWITCH_MODE {
 DP_LINK_TRAINING_SWITCH_TO_IDLE          = 0x00000000,
 DP_LINK_TRAINING_SWITCH_TO_VIDEO         = 0x00000001,
 } DP_LINK_TRAINING_SWITCH_MODE;
-
-/*
- * DP_ML_PHY_SEQ_MODE enum
- */
-
 typedef enum DP_ML_PHY_SEQ_MODE {
 DP_ML_PHY_SEQ_LINE_NUM                   = 0x00000000,
 DP_ML_PHY_SEQ_IMMEDIATE                  = 0x00000001,
 } DP_ML_PHY_SEQ_MODE;
-
-/*
- * DP_MSA_V_TIMING_OVERRIDE_EN enum
- */
-
 typedef enum DP_MSA_V_TIMING_OVERRIDE_EN {
 MSA_V_TIMING_OVERRIDE_DISABLED           = 0x00000000,
 MSA_V_TIMING_OVERRIDE_ENABLED            = 0x00000001,
 } DP_MSA_V_TIMING_OVERRIDE_EN;
-
-/*
- * DP_MSE_BLANK_CODE enum
- */
-
 typedef enum DP_MSE_BLANK_CODE {
 DP_MSE_BLANK_CODE_SF_FILLED              = 0x00000000,
 DP_MSE_BLANK_CODE_ZERO_FILLED            = 0x00000001,
 } DP_MSE_BLANK_CODE;
-
-/*
- * DP_MSE_LINK_LINE enum
- */
-
 typedef enum DP_MSE_LINK_LINE {
 DP_MSE_LINK_LINE_32_MTP_LONG             = 0x00000000,
 DP_MSE_LINK_LINE_64_MTP_LONG             = 0x00000001,
 DP_MSE_LINK_LINE_128_MTP_LONG            = 0x00000002,
 DP_MSE_LINK_LINE_256_MTP_LONG            = 0x00000003,
 } DP_MSE_LINK_LINE;
-
-/*
- * DP_MSE_SAT_ENCRYPT0 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT0 {
 DP_MSE_SAT_ENCRYPT0_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT0_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT0;
-
-/*
- * DP_MSE_SAT_ENCRYPT1 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT1 {
 DP_MSE_SAT_ENCRYPT1_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT1_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT1;
-
-/*
- * DP_MSE_SAT_ENCRYPT2 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT2 {
 DP_MSE_SAT_ENCRYPT2_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT2_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT2;
-
-/*
- * DP_MSE_SAT_ENCRYPT3 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT3 {
 DP_MSE_SAT_ENCRYPT3_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT3_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT3;
-
-/*
- * DP_MSE_SAT_ENCRYPT4 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT4 {
 DP_MSE_SAT_ENCRYPT4_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT4_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT4;
-
-/*
- * DP_MSE_SAT_ENCRYPT5 enum
- */
-
 typedef enum DP_MSE_SAT_ENCRYPT5 {
 DP_MSE_SAT_ENCRYPT5_DISABLED             = 0x00000000,
 DP_MSE_SAT_ENCRYPT5_ENABLED              = 0x00000001,
 } DP_MSE_SAT_ENCRYPT5;
-
-/*
- * DP_MSE_SAT_UPDATE_ACT enum
- */
-
 typedef enum DP_MSE_SAT_UPDATE_ACT {
 DP_MSE_SAT_UPDATE_NO_ACTION              = 0x00000000,
 DP_MSE_SAT_UPDATE_WITH_TRIGGER           = 0x00000001,
 DP_MSE_SAT_UPDATE_WITHOUT_TRIGGER        = 0x00000002,
 } DP_MSE_SAT_UPDATE_ACT;
-
-/*
- * DP_MSE_TIMESTAMP_MODE enum
- */
-
 typedef enum DP_MSE_TIMESTAMP_MODE {
 DP_MSE_TIMESTAMP_CALC_BASED_ON_LINK_RATE = 0x00000000,
 DP_MSE_TIMESTAMP_CALC_BASED_ON_VC_RATE   = 0x00000001,
 } DP_MSE_TIMESTAMP_MODE;
-
-/*
- * DP_MSE_ZERO_ENCODER enum
- */
-
 typedef enum DP_MSE_ZERO_ENCODER {
 DP_MSE_NOT_ZERO_FE_ENCODER               = 0x00000000,
 DP_MSE_ZERO_FE_ENCODER                   = 0x00000001,
 } DP_MSE_ZERO_ENCODER;
-
-/*
- * DP_MSO_NUM_OF_SST_LINKS enum
- */
-
 typedef enum DP_MSO_NUM_OF_SST_LINKS {
 DP_MSO_ONE_SSTLINK                       = 0x00000000,
 DP_MSO_TWO_SSTLINK                       = 0x00000001,
 DP_MSO_FOUR_SSTLINK                      = 0x00000002,
 } DP_MSO_NUM_OF_SST_LINKS;
-
-/*
- * DP_PIXEL_ENCODING enum
- */
-
 typedef enum DP_PIXEL_ENCODING {
 DP_PIXEL_ENCODING_RGB444                 = 0x00000000,
 DP_PIXEL_ENCODING_YCBCR422               = 0x00000001,
@@ -6431,245 +3393,111 @@ DP_PIXEL_ENCODING_RGB_WIDE_GAMUT         = 0x00000003,
 DP_PIXEL_ENCODING_Y_ONLY                 = 0x00000004,
 DP_PIXEL_ENCODING_YCBCR420               = 0x00000005,
 } DP_PIXEL_ENCODING;
-
-/*
- * DP_PIXEL_PER_CYCLE_PROCESSING_NUM enum
- */
-
 typedef enum DP_PIXEL_PER_CYCLE_PROCESSING_NUM {
 DP_ONE_PIXEL_PER_CYCLE                   = 0x00000000,
 DP_TWO_PIXEL_PER_CYCLE                   = 0x00000001,
 } DP_PIXEL_PER_CYCLE_PROCESSING_NUM;
-
-/*
- * DP_SEC_ASP_CHANNEL_COUNT_OVERRIDE enum
- */
-
 typedef enum DP_SEC_ASP_CHANNEL_COUNT_OVERRIDE {
 DP_SEC_ASP_CHANNEL_COUNT_FROM_AZ         = 0x00000000,
 DP_SEC_ASP_CHANNEL_COUNT_OVERRIDE_ENABLED = 0x00000001,
 } DP_SEC_ASP_CHANNEL_COUNT_OVERRIDE;
-
-/*
- * DP_SEC_ASP_PRIORITY enum
- */
-
 typedef enum DP_SEC_ASP_PRIORITY {
 DP_SEC_ASP_LOW_PRIORITY                  = 0x00000000,
 DP_SEC_ASP_HIGH_PRIORITY                 = 0x00000001,
 } DP_SEC_ASP_PRIORITY;
-
-/*
- * DP_SEC_AUDIO_MUTE enum
- */
-
 typedef enum DP_SEC_AUDIO_MUTE {
 DP_SEC_AUDIO_MUTE_HW_CTRL                = 0x00000000,
 DP_SEC_AUDIO_MUTE_SW_CTRL                = 0x00000001,
 } DP_SEC_AUDIO_MUTE;
-
-/*
- * DP_SEC_COLLISION_ACK enum
- */
-
 typedef enum DP_SEC_COLLISION_ACK {
 DP_SEC_COLLISION_ACK_NO_EFFECT           = 0x00000000,
 DP_SEC_COLLISION_ACK_CLR_FLAG            = 0x00000001,
 } DP_SEC_COLLISION_ACK;
-
-/*
- * DP_SEC_GSP0_PRIORITY enum
- */
-
 typedef enum DP_SEC_GSP0_PRIORITY {
 SEC_GSP0_PRIORITY_LOW                    = 0x00000000,
 SEC_GSP0_PRIORITY_HIGH                   = 0x00000001,
 } DP_SEC_GSP0_PRIORITY;
-
-/*
- * DP_SEC_GSP_SEND enum
- */
-
 typedef enum DP_SEC_GSP_SEND {
 NOT_SENT                                 = 0x00000000,
 FORCE_SENT                               = 0x00000001,
 } DP_SEC_GSP_SEND;
-
-/*
- * DP_SEC_GSP_SEND_ANY_LINE enum
- */
-
 typedef enum DP_SEC_GSP_SEND_ANY_LINE {
 SEND_AT_LINK_NUMBER                      = 0x00000000,
 SEND_AT_EARLIEST_TIME                    = 0x00000001,
 } DP_SEC_GSP_SEND_ANY_LINE;
-
-/*
- * DP_SEC_GSP_SEND_PPS enum
- */
-
 typedef enum DP_SEC_GSP_SEND_PPS {
 SEND_NORMAL_PACKET                       = 0x00000000,
 SEND_PPS_PACKET                          = 0x00000001,
 } DP_SEC_GSP_SEND_PPS;
-
-/*
- * DP_SEC_LINE_REFERENCE enum
- */
-
 typedef enum DP_SEC_LINE_REFERENCE {
 REFER_TO_DP_SOF                          = 0x00000000,
 REFER_TO_OTG_SOF                         = 0x00000001,
 } DP_SEC_LINE_REFERENCE;
-
-/*
- * DP_SEC_TIMESTAMP_MODE enum
- */
-
 typedef enum DP_SEC_TIMESTAMP_MODE {
 DP_SEC_TIMESTAMP_PROGRAMMABLE_MODE       = 0x00000000,
 DP_SEC_TIMESTAMP_AUTO_CALC_MODE          = 0x00000001,
 } DP_SEC_TIMESTAMP_MODE;
-
-/*
- * DP_STEER_OVERFLOW_ACK enum
- */
-
 typedef enum DP_STEER_OVERFLOW_ACK {
 DP_STEER_OVERFLOW_ACK_NO_EFFECT          = 0x00000000,
 DP_STEER_OVERFLOW_ACK_CLR_INTERRUPT      = 0x00000001,
 } DP_STEER_OVERFLOW_ACK;
-
-/*
- * DP_STEER_OVERFLOW_MASK enum
- */
-
 typedef enum DP_STEER_OVERFLOW_MASK {
 DP_STEER_OVERFLOW_MASKED                 = 0x00000000,
 DP_STEER_OVERFLOW_UNMASK                 = 0x00000001,
 } DP_STEER_OVERFLOW_MASK;
-
-/*
- * DP_SYNC_POLARITY enum
- */
-
 typedef enum DP_SYNC_POLARITY {
 DP_SYNC_POLARITY_ACTIVE_HIGH             = 0x00000000,
 DP_SYNC_POLARITY_ACTIVE_LOW              = 0x00000001,
 } DP_SYNC_POLARITY;
-
-/*
- * DP_TU_OVERFLOW_ACK enum
- */
-
 typedef enum DP_TU_OVERFLOW_ACK {
 DP_TU_OVERFLOW_ACK_NO_EFFECT             = 0x00000000,
 DP_TU_OVERFLOW_ACK_CLR_INTERRUPT         = 0x00000001,
 } DP_TU_OVERFLOW_ACK;
-
-/*
- * DP_UDI_LANES enum
- */
-
 typedef enum DP_UDI_LANES {
 DP_UDI_1_LANE                            = 0x00000000,
 DP_UDI_2_LANES                           = 0x00000001,
 DP_UDI_LANES_RESERVED                    = 0x00000002,
 DP_UDI_4_LANES                           = 0x00000003,
 } DP_UDI_LANES;
-
-/*
- * DP_VID_ENHANCED_FRAME_MODE enum
- */
-
 typedef enum DP_VID_ENHANCED_FRAME_MODE {
 VID_NORMAL_FRAME_MODE                    = 0x00000000,
 VID_ENHANCED_MODE                        = 0x00000001,
 } DP_VID_ENHANCED_FRAME_MODE;
-
-/*
- * DP_VID_M_N_DOUBLE_BUFFER_MODE enum
- */
-
 typedef enum DP_VID_M_N_DOUBLE_BUFFER_MODE {
 DP_VID_M_N_DOUBLE_BUFFER_AFTER_VID_M_UPDATE = 0x00000000,
 DP_VID_M_N_DOUBLE_BUFFER_AT_FRAME_START  = 0x00000001,
 } DP_VID_M_N_DOUBLE_BUFFER_MODE;
-
-/*
- * DP_VID_M_N_GEN_EN enum
- */
-
 typedef enum DP_VID_M_N_GEN_EN {
 DP_VID_M_N_PROGRAMMED_VIA_REG            = 0x00000000,
 DP_VID_M_N_CALC_AUTO                     = 0x00000001,
 } DP_VID_M_N_GEN_EN;
-
-/*
- * DP_VID_N_MUL enum
- */
-
 typedef enum DP_VID_N_MUL {
 DP_VID_M_1X_INPUT_PIXEL_RATE             = 0x00000000,
 DP_VID_M_2X_INPUT_PIXEL_RATE             = 0x00000001,
 DP_VID_M_4X_INPUT_PIXEL_RATE             = 0x00000002,
 DP_VID_M_8X_INPUT_PIXEL_RATE             = 0x00000003,
 } DP_VID_N_MUL;
-
-/*
- * DP_VID_STREAM_DISABLE_ACK enum
- */
-
 typedef enum DP_VID_STREAM_DISABLE_ACK {
 ID_STREAM_DISABLE_NO_ACK                 = 0x00000000,
 ID_STREAM_DISABLE_ACKED                  = 0x00000001,
 } DP_VID_STREAM_DISABLE_ACK;
-
-/*
- * DP_VID_STREAM_DISABLE_MASK enum
- */
-
 typedef enum DP_VID_STREAM_DISABLE_MASK {
 VID_STREAM_DISABLE_MASKED                = 0x00000000,
 VID_STREAM_DISABLE_UNMASK                = 0x00000001,
 } DP_VID_STREAM_DISABLE_MASK;
-
-/*
- * DP_VID_STREAM_DIS_DEFER enum
- */
-
 typedef enum DP_VID_STREAM_DIS_DEFER {
 DP_VID_STREAM_DIS_NO_DEFER               = 0x00000000,
 DP_VID_STREAM_DIS_DEFER_TO_HBLANK        = 0x00000001,
 DP_VID_STREAM_DIS_DEFER_TO_VBLANK        = 0x00000002,
 } DP_VID_STREAM_DIS_DEFER;
-
-/*
- * DP_VID_VBID_FIELD_POL enum
- */
-
 typedef enum DP_VID_VBID_FIELD_POL {
 DP_VID_VBID_FIELD_POL_NORMAL             = 0x00000000,
 DP_VID_VBID_FIELD_POL_INV                = 0x00000001,
 } DP_VID_VBID_FIELD_POL;
-
-/*
- * FEC_ACTIVE_STATUS enum
- */
-
 typedef enum FEC_ACTIVE_STATUS {
 DPHY_FEC_NOT_ACTIVE                      = 0x00000000,
 DPHY_FEC_ACTIVE                          = 0x00000001,
 } FEC_ACTIVE_STATUS;
-
-/*******************************************************
- * DIG Enums
- *******************************************************/
-
-/*
- * DIG_BE_CNTL_HPD_SELECT enum
- */
-
 typedef enum DIG_BE_CNTL_HPD_SELECT {
 DIG_BE_CNTL_HPD1                         = 0x00000000,
 DIG_BE_CNTL_HPD2                         = 0x00000001,
@@ -6678,11 +3506,6 @@ DIG_BE_CNTL_HPD4                         = 0x00000003,
 DIG_BE_CNTL_HPD5                         = 0x00000004,
 DIG_BE_CNTL_NO_HPD                       = 0x00000005,
 } DIG_BE_CNTL_HPD_SELECT;
-
-/*
- * DIG_BE_CNTL_MODE enum
- */
-
 typedef enum DIG_BE_CNTL_MODE {
 DIG_BE_DP_SST_MODE                       = 0x00000000,
 DIG_BE_RESERVED1                         = 0x00000001,
@@ -6693,20 +3516,10 @@ DIG_BE_DP_MST_MODE                       = 0x00000005,
 DIG_BE_RESERVED2                         = 0x00000006,
 DIG_BE_RESERVED3                         = 0x00000007,
 } DIG_BE_CNTL_MODE;
-
-/*
- * DIG_DIGITAL_BYPASS_ENABLE enum
- */
-
 typedef enum DIG_DIGITAL_BYPASS_ENABLE {
 DIG_DIGITAL_BYPASS_OFF                   = 0x00000000,
 DIG_DIGITAL_BYPASS_ON                    = 0x00000001,
 } DIG_DIGITAL_BYPASS_ENABLE;
-
-/*
- * DIG_DIGITAL_BYPASS_SEL enum
- */
-
 typedef enum DIG_DIGITAL_BYPASS_SEL {
 DIG_DIGITAL_BYPASS_SEL_BYPASS            = 0x00000000,
 DIG_DIGITAL_BYPASS_SEL_36BPP             = 0x00000001,
@@ -6716,11 +3529,6 @@ DIG_DIGITAL_BYPASS_SEL_10BPP_LSB         = 0x00000004,
 DIG_DIGITAL_BYPASS_SEL_12BPC_LSB         = 0x00000005,
 DIG_DIGITAL_BYPASS_SEL_ALPHA             = 0x00000006,
 } DIG_DIGITAL_BYPASS_SEL;
-
-/*
- * DIG_FE_CNTL_SOURCE_SELECT enum
- */
-
 typedef enum DIG_FE_CNTL_SOURCE_SELECT {
 DIG_FE_SOURCE_FROM_OTG0                  = 0x00000000,
 DIG_FE_SOURCE_FROM_OTG1                  = 0x00000001,
@@ -6728,11 +3536,6 @@ DIG_FE_SOURCE_FROM_OTG2                  = 0x00000002,
 DIG_FE_SOURCE_FROM_OTG3                  = 0x00000003,
 DIG_FE_SOURCE_RESERVED                   = 0x00000004,
 } DIG_FE_CNTL_SOURCE_SELECT;
-
-/*
- * DIG_FE_CNTL_STEREOSYNC_SELECT enum
- */
-
 typedef enum DIG_FE_CNTL_STEREOSYNC_SELECT {
 DIG_FE_STEREOSYNC_FROM_OTG0              = 0x00000000,
 DIG_FE_STEREOSYNC_FROM_OTG1              = 0x00000001,
@@ -6740,195 +3543,90 @@ DIG_FE_STEREOSYNC_FROM_OTG2              = 0x00000002,
 DIG_FE_STEREOSYNC_FROM_OTG3              = 0x00000003,
 DIG_FE_STEREOSYNC_RESERVED               = 0x00000004,
 } DIG_FE_CNTL_STEREOSYNC_SELECT;
-
-/*
- * DIG_FIFO_CTRL_FORCE_RECOMP_MINMAX enum
- */
-
 typedef enum DIG_FIFO_CTRL_FORCE_RECOMP_MINMAX {
 DIG_FIFO_NOT_FORCE_RECOMP_MINMAX         = 0x00000000,
 DIG_FIFO_FORCE_RECOMP_MINMAX             = 0x00000001,
 } DIG_FIFO_CTRL_FORCE_RECOMP_MINMAX;
-
-/*
- * DIG_FIFO_CTRL_USE_OVERWRITE_LEVEL enum
- */
-
 typedef enum DIG_FIFO_CTRL_USE_OVERWRITE_LEVEL {
 DIG_FIFO_USE_OVERWRITE_LEVEL             = 0x00000000,
 DIG_FIFO_USE_CAL_AVERAGE_LEVEL           = 0x00000001,
 } DIG_FIFO_CTRL_USE_OVERWRITE_LEVEL;
-
-/*
- * DIG_FIFO_FORCE_RECAL_AVERAGE enum
- */
-
 typedef enum DIG_FIFO_FORCE_RECAL_AVERAGE {
 DIG_FIFO_NOT_FORCE_RECAL_AVERAGE         = 0x00000000,
 DIG_FIFO_FORCE_RECAL_AVERAGE_LEVEL       = 0x00000001,
 } DIG_FIFO_FORCE_RECAL_AVERAGE;
-
-/*
- * DIG_FIFO_OUTPUT_PROCESSING_MODE enum
- */
-
 typedef enum DIG_FIFO_OUTPUT_PROCESSING_MODE {
 DIG_FIFO_1_PIX_PER_CYCLE                 = 0x00000000,
 DIG_FIFO_2_PIX_PER_CYCLE                 = 0x00000001,
 } DIG_FIFO_OUTPUT_PROCESSING_MODE;
-
-/*
- * DIG_FIFO_OVERFLOW_UNDERFLOW_ERROR enum
- */
-
 typedef enum DIG_FIFO_OVERFLOW_UNDERFLOW_ERROR {
 DIG_FIFO_NO_ERROR_OCCURRED               = 0x00000000,
 DIG_FIFO_UNDERFLOW_OCCURRED              = 0x00000001,
 DIG_FIFO_OVERFLOW_OCCURRED               = 0x00000002,
 } DIG_FIFO_OVERFLOW_UNDERFLOW_ERROR;
-
-/*
- * DIG_FIFO_READ_CLOCK_SRC enum
- */
-
 typedef enum DIG_FIFO_READ_CLOCK_SRC {
 DIG_FIFO_READ_CLOCK_SRC_FROM_DCCG        = 0x00000000,
 DIG_FIFO_READ_CLOCK_SRC_FROM_DISPLAY_PIPE = 0x00000001,
 } DIG_FIFO_READ_CLOCK_SRC;
-
-/*
- * DIG_INPUT_PIXEL_SEL enum
- */
-
 typedef enum DIG_INPUT_PIXEL_SEL {
 DIG_ALL_PIXEL                            = 0x00000000,
 DIG_EVEN_PIXEL_ONLY                      = 0x00000001,
 DIG_ODD_PIXEL_ONLY                       = 0x00000002,
 } DIG_INPUT_PIXEL_SEL;
-
-/*
- * DIG_OUTPUT_CRC_CNTL_LINK_SEL enum
- */
-
 typedef enum DIG_OUTPUT_CRC_CNTL_LINK_SEL {
 DIG_OUTPUT_CRC_ON_LINK0                  = 0x00000000,
 DIG_OUTPUT_CRC_ON_LINK1                  = 0x00000001,
 } DIG_OUTPUT_CRC_CNTL_LINK_SEL;
-
-/*
- * DIG_OUTPUT_CRC_DATA_SEL enum
- */
-
 typedef enum DIG_OUTPUT_CRC_DATA_SEL {
 DIG_OUTPUT_CRC_FOR_FULLFRAME             = 0x00000000,
 DIG_OUTPUT_CRC_FOR_ACTIVEONLY            = 0x00000001,
 DIG_OUTPUT_CRC_FOR_VBI                   = 0x00000002,
 DIG_OUTPUT_CRC_FOR_AUDIO                 = 0x00000003,
 } DIG_OUTPUT_CRC_DATA_SEL;
-
-/*
- * DIG_RANDOM_PATTERN_SEED_RAN_PAT enum
- */
-
 typedef enum DIG_RANDOM_PATTERN_SEED_RAN_PAT {
 DIG_RANDOM_PATTERN_SEED_RAN_PAT_ALL_PIXELS = 0x00000000,
 DIG_RANDOM_PATTERN_SEED_RAN_PAT_DE_HIGH  = 0x00000001,
 } DIG_RANDOM_PATTERN_SEED_RAN_PAT;
-
-/*
- * DIG_SL_PIXEL_GROUPING enum
- */
-
 typedef enum DIG_SL_PIXEL_GROUPING {
 DIG_SINGLETON_PIXELS                     = 0x00000000,
 DIG_PAIR_PIXELS                          = 0x00000001,
 } DIG_SL_PIXEL_GROUPING;
-
-/*
- * DIG_TEST_PATTERN_EXTERNAL_RESET_EN enum
- */
-
 typedef enum DIG_TEST_PATTERN_EXTERNAL_RESET_EN {
 DIG_TEST_PATTERN_EXTERNAL_RESET_ENABLE   = 0x00000000,
 DIG_TEST_PATTERN_EXTERNAL_RESET_BY_EXT_SIG = 0x00000001,
 } DIG_TEST_PATTERN_EXTERNAL_RESET_EN;
-
-/*
- * DIG_TEST_PATTERN_HALF_CLOCK_PATTERN_SEL enum
- */
-
 typedef enum DIG_TEST_PATTERN_HALF_CLOCK_PATTERN_SEL {
 DIG_10BIT_TEST_PATTERN                   = 0x00000000,
 DIG_ALTERNATING_TEST_PATTERN             = 0x00000001,
 } DIG_TEST_PATTERN_HALF_CLOCK_PATTERN_SEL;
-
-/*
- * DIG_TEST_PATTERN_RANDOM_PATTERN_OUT_EN enum
- */
-
 typedef enum DIG_TEST_PATTERN_RANDOM_PATTERN_OUT_EN {
 DIG_TEST_PATTERN_NORMAL                  = 0x00000000,
 DIG_TEST_PATTERN_RANDOM                  = 0x00000001,
 } DIG_TEST_PATTERN_RANDOM_PATTERN_OUT_EN;
-
-/*
- * DIG_TEST_PATTERN_RANDOM_PATTERN_RESET enum
- */
-
 typedef enum DIG_TEST_PATTERN_RANDOM_PATTERN_RESET {
 DIG_RANDOM_PATTERN_ENABLED               = 0x00000000,
 DIG_RANDOM_PATTERN_RESETED               = 0x00000001,
 } DIG_TEST_PATTERN_RANDOM_PATTERN_RESET;
-
-/*
- * DIG_TEST_PATTERN_TEST_PATTERN_OUT_EN enum
- */
-
 typedef enum DIG_TEST_PATTERN_TEST_PATTERN_OUT_EN {
 DIG_IN_NORMAL_OPERATION                  = 0x00000000,
 DIG_IN_DEBUG_MODE                        = 0x00000001,
 } DIG_TEST_PATTERN_TEST_PATTERN_OUT_EN;
-
-/*
- * DOLBY_VISION_ENABLE enum
- */
-
 typedef enum DOLBY_VISION_ENABLE {
 DOLBY_VISION_DISABLED                    = 0x00000000,
 DOLBY_VISION_ENABLED                     = 0x00000001,
 } DOLBY_VISION_ENABLE;
-
-/*
- * HDMI_ACP_SEND enum
- */
-
 typedef enum HDMI_ACP_SEND {
 HDMI_ACP_NOT_SEND                        = 0x00000000,
 HDMI_ACP_PKT_SEND                        = 0x00000001,
 } HDMI_ACP_SEND;
-
-/*
- * HDMI_ACR_AUDIO_PRIORITY enum
- */
-
 typedef enum HDMI_ACR_AUDIO_PRIORITY {
 HDMI_ACR_PKT_HIGH_PRIORITY_THAN_AUDIO_SAMPLE = 0x00000000,
 HDMI_AUDIO_SAMPLE_HIGH_PRIORITY_THAN_ACR_PKT = 0x00000001,
 } HDMI_ACR_AUDIO_PRIORITY;
-
-/*
- * HDMI_ACR_CONT enum
- */
-
 typedef enum HDMI_ACR_CONT {
 HDMI_ACR_CONT_DISABLE                    = 0x00000000,
 HDMI_ACR_CONT_ENABLE                     = 0x00000001,
 } HDMI_ACR_CONT;
-
-/*
- * HDMI_ACR_N_MULTIPLE enum
- */
-
 typedef enum HDMI_ACR_N_MULTIPLE {
 HDMI_ACR_0_MULTIPLE_RESERVED             = 0x00000000,
 HDMI_ACR_1_MULTIPLE                      = 0x00000001,
@@ -6939,318 +3637,148 @@ HDMI_ACR_5_MULTIPLE_RESERVED             = 0x00000005,
 HDMI_ACR_6_MULTIPLE_RESERVED             = 0x00000006,
 HDMI_ACR_7_MULTIPLE_RESERVED             = 0x00000007,
 } HDMI_ACR_N_MULTIPLE;
-
-/*
- * HDMI_ACR_SELECT enum
- */
-
 typedef enum HDMI_ACR_SELECT {
 HDMI_ACR_SELECT_HW                       = 0x00000000,
 HDMI_ACR_SELECT_32K                      = 0x00000001,
 HDMI_ACR_SELECT_44K                      = 0x00000002,
 HDMI_ACR_SELECT_48K                      = 0x00000003,
 } HDMI_ACR_SELECT;
-
-/*
- * HDMI_ACR_SEND enum
- */
-
 typedef enum HDMI_ACR_SEND {
 HDMI_ACR_NOT_SEND                        = 0x00000000,
 HDMI_ACR_PKT_SEND                        = 0x00000001,
 } HDMI_ACR_SEND;
-
-/*
- * HDMI_ACR_SOURCE enum
- */
-
 typedef enum HDMI_ACR_SOURCE {
 HDMI_ACR_SOURCE_HW                       = 0x00000000,
 HDMI_ACR_SOURCE_SW                       = 0x00000001,
 } HDMI_ACR_SOURCE;
-
-/*
- * HDMI_AUDIO_DELAY_EN enum
- */
-
 typedef enum HDMI_AUDIO_DELAY_EN {
 HDMI_AUDIO_DELAY_DISABLE                 = 0x00000000,
 HDMI_AUDIO_DELAY_58CLK                   = 0x00000001,
 HDMI_AUDIO_DELAY_56CLK                   = 0x00000002,
 HDMI_AUDIO_DELAY_RESERVED                = 0x00000003,
 } HDMI_AUDIO_DELAY_EN;
-
-/*
- * HDMI_AUDIO_INFO_CONT enum
- */
-
 typedef enum HDMI_AUDIO_INFO_CONT {
 HDMI_AUDIO_INFO_CONT_DISABLE             = 0x00000000,
 HDMI_AUDIO_INFO_CONT_ENABLE              = 0x00000001,
 } HDMI_AUDIO_INFO_CONT;
-
-/*
- * HDMI_AUDIO_INFO_SEND enum
- */
-
 typedef enum HDMI_AUDIO_INFO_SEND {
 HDMI_AUDIO_INFO_NOT_SEND                 = 0x00000000,
 HDMI_AUDIO_INFO_PKT_SEND                 = 0x00000001,
 } HDMI_AUDIO_INFO_SEND;
-
-/*
- * HDMI_CLOCK_CHANNEL_RATE enum
- */
-
 typedef enum HDMI_CLOCK_CHANNEL_RATE {
 HDMI_CLOCK_CHANNEL_FREQ_EQUAL_TO_CHAR_RATE = 0x00000000,
 HDMI_CLOCK_CHANNEL_FREQ_QUARTER_TO_CHAR_RATE = 0x00000001,
 } HDMI_CLOCK_CHANNEL_RATE;
-
-/*
- * HDMI_DATA_SCRAMBLE_EN enum
- */
-
 typedef enum HDMI_DATA_SCRAMBLE_EN {
 HDMI_DATA_SCRAMBLE_DISABLE               = 0x00000000,
 HDMI_DATA_SCRAMBLE_ENABLE                = 0x00000001,
 } HDMI_DATA_SCRAMBLE_EN;
-
-/*
- * HDMI_DEEP_COLOR_DEPTH enum
- */
-
 typedef enum HDMI_DEEP_COLOR_DEPTH {
 HDMI_DEEP_COLOR_DEPTH_24BPP              = 0x00000000,
 HDMI_DEEP_COLOR_DEPTH_30BPP              = 0x00000001,
 HDMI_DEEP_COLOR_DEPTH_36BPP              = 0x00000002,
 HDMI_DEEP_COLOR_DEPTH_48BPP              = 0x00000003,
 } HDMI_DEEP_COLOR_DEPTH;
-
-/*
- * HDMI_DEFAULT_PAHSE enum
- */
-
 typedef enum HDMI_DEFAULT_PAHSE {
 HDMI_DEFAULT_PHASE_IS_0                  = 0x00000000,
 HDMI_DEFAULT_PHASE_IS_1                  = 0x00000001,
 } HDMI_DEFAULT_PAHSE;
-
-/*
- * HDMI_ERROR_ACK enum
- */
-
 typedef enum HDMI_ERROR_ACK {
 HDMI_ERROR_ACK_INT                       = 0x00000000,
 HDMI_ERROR_NOT_ACK                       = 0x00000001,
 } HDMI_ERROR_ACK;
-
-/*
- * HDMI_ERROR_MASK enum
- */
-
 typedef enum HDMI_ERROR_MASK {
 HDMI_ERROR_MASK_INT                      = 0x00000000,
 HDMI_ERROR_NOT_MASK                      = 0x00000001,
 } HDMI_ERROR_MASK;
-
-/*
- * HDMI_GC_AVMUTE enum
- */
-
 typedef enum HDMI_GC_AVMUTE {
 HDMI_GC_AVMUTE_SET                       = 0x00000000,
 HDMI_GC_AVMUTE_UNSET                     = 0x00000001,
 } HDMI_GC_AVMUTE;
-
-/*
- * HDMI_GC_AVMUTE_CONT enum
- */
-
 typedef enum HDMI_GC_AVMUTE_CONT {
 HDMI_GC_AVMUTE_CONT_DISABLE              = 0x00000000,
 HDMI_GC_AVMUTE_CONT_ENABLE               = 0x00000001,
 } HDMI_GC_AVMUTE_CONT;
-
-/*
- * HDMI_GC_CONT enum
- */
-
 typedef enum HDMI_GC_CONT {
 HDMI_GC_CONT_DISABLE                     = 0x00000000,
 HDMI_GC_CONT_ENABLE                      = 0x00000001,
 } HDMI_GC_CONT;
-
-/*
- * HDMI_GC_SEND enum
- */
-
 typedef enum HDMI_GC_SEND {
 HDMI_GC_NOT_SEND                         = 0x00000000,
 HDMI_GC_PKT_SEND                         = 0x00000001,
 } HDMI_GC_SEND;
-
-/*
- * HDMI_GENERIC_CONT enum
- */
-
 typedef enum HDMI_GENERIC_CONT {
 HDMI_GENERIC_CONT_DISABLE                = 0x00000000,
 HDMI_GENERIC_CONT_ENABLE                 = 0x00000001,
 } HDMI_GENERIC_CONT;
-
-/*
- * HDMI_GENERIC_SEND enum
- */
-
 typedef enum HDMI_GENERIC_SEND {
 HDMI_GENERIC_NOT_SEND                    = 0x00000000,
 HDMI_GENERIC_PKT_SEND                    = 0x00000001,
 } HDMI_GENERIC_SEND;
-
-/*
- * HDMI_ISRC_CONT enum
- */
-
 typedef enum HDMI_ISRC_CONT {
 HDMI_ISRC_CONT_DISABLE                   = 0x00000000,
 HDMI_ISRC_CONT_ENABLE                    = 0x00000001,
 } HDMI_ISRC_CONT;
-
-/*
- * HDMI_ISRC_SEND enum
- */
-
 typedef enum HDMI_ISRC_SEND {
 HDMI_ISRC_NOT_SEND                       = 0x00000000,
 HDMI_ISRC_PKT_SEND                       = 0x00000001,
 } HDMI_ISRC_SEND;
-
-/*
- * HDMI_KEEPOUT_MODE enum
- */
-
 typedef enum HDMI_KEEPOUT_MODE {
 HDMI_KEEPOUT_0_650PIX_AFTER_VSYNC        = 0x00000000,
 HDMI_KEEPOUT_509_650PIX_AFTER_VSYNC      = 0x00000001,
 } HDMI_KEEPOUT_MODE;
-
-/*
- * HDMI_METADATA_ENABLE enum
- */
-
 typedef enum HDMI_METADATA_ENABLE {
 HDMI_METADATA_NOT_SEND                   = 0x00000000,
 HDMI_METADATA_PKT_SEND                   = 0x00000001,
 } HDMI_METADATA_ENABLE;
-
-/*
- * HDMI_MPEG_INFO_CONT enum
- */
-
 typedef enum HDMI_MPEG_INFO_CONT {
 HDMI_MPEG_INFO_CONT_DISABLE              = 0x00000000,
 HDMI_MPEG_INFO_CONT_ENABLE               = 0x00000001,
 } HDMI_MPEG_INFO_CONT;
-
-/*
- * HDMI_MPEG_INFO_SEND enum
- */
-
 typedef enum HDMI_MPEG_INFO_SEND {
 HDMI_MPEG_INFO_NOT_SEND                  = 0x00000000,
 HDMI_MPEG_INFO_PKT_SEND                  = 0x00000001,
 } HDMI_MPEG_INFO_SEND;
-
-/*
- * HDMI_NO_EXTRA_NULL_PACKET_FILLED enum
- */
-
 typedef enum HDMI_NO_EXTRA_NULL_PACKET_FILLED {
 HDMI_EXTRA_NULL_PACKET_FILLED_ENABLE     = 0x00000000,
 HDMI_EXTRA_NULL_PACKET_FILLED_DISABLE    = 0x00000001,
 } HDMI_NO_EXTRA_NULL_PACKET_FILLED;
-
-/*
- * HDMI_NULL_SEND enum
- */
-
 typedef enum HDMI_NULL_SEND {
 HDMI_NULL_NOT_SEND                       = 0x00000000,
 HDMI_NULL_PKT_SEND                       = 0x00000001,
 } HDMI_NULL_SEND;
-
-/*
- * HDMI_PACKET_GEN_VERSION enum
- */
-
 typedef enum HDMI_PACKET_GEN_VERSION {
 HDMI_PACKET_GEN_VERSION_OLD              = 0x00000000,
 HDMI_PACKET_GEN_VERSION_NEW              = 0x00000001,
 } HDMI_PACKET_GEN_VERSION;
-
-/*
- * HDMI_PACKET_LINE_REFERENCE enum
- */
-
 typedef enum HDMI_PACKET_LINE_REFERENCE {
 HDMI_PKT_LINE_REF_VSYNC                  = 0x00000000,
 HDMI_PKT_LINE_REF_OTGSOF                 = 0x00000001,
 } HDMI_PACKET_LINE_REFERENCE;
-
-/*
- * HDMI_PACKING_PHASE_OVERRIDE enum
- */
-
 typedef enum HDMI_PACKING_PHASE_OVERRIDE {
 HDMI_PACKING_PHASE_SET_BY_HW             = 0x00000000,
 HDMI_PACKING_PHASE_SET_BY_SW             = 0x00000001,
 } HDMI_PACKING_PHASE_OVERRIDE;
-
-/*
- * LVTMA_RANDOM_PATTERN_SEED_RAN_PAT enum
- */
-
 typedef enum LVTMA_RANDOM_PATTERN_SEED_RAN_PAT {
 LVTMA_RANDOM_PATTERN_SEED_ALL_PIXELS     = 0x00000000,
 LVTMA_RANDOM_PATTERN_SEED_ONLY_DE_HIGH   = 0x00000001,
 } LVTMA_RANDOM_PATTERN_SEED_RAN_PAT;
-
-/*
- * TMDS_COLOR_FORMAT enum
- */
-
 typedef enum TMDS_COLOR_FORMAT {
 TMDS_COLOR_FORMAT__24BPP__TWIN30BPP_MSB__DUAL48BPP = 0x00000000,
 TMDS_COLOR_FORMAT_TWIN30BPP_LSB          = 0x00000001,
 TMDS_COLOR_FORMAT_DUAL30BPP              = 0x00000002,
 TMDS_COLOR_FORMAT_RESERVED               = 0x00000003,
 } TMDS_COLOR_FORMAT;
-
-/*
- * TMDS_CTL0_DATA_INVERT enum
- */
-
 typedef enum TMDS_CTL0_DATA_INVERT {
 TMDS_CTL0_DATA_NORMAL                    = 0x00000000,
 TMDS_CTL0_DATA_INVERT_EN                 = 0x00000001,
 } TMDS_CTL0_DATA_INVERT;
-
-/*
- * TMDS_CTL0_DATA_MODULATION enum
- */
-
 typedef enum TMDS_CTL0_DATA_MODULATION {
 TMDS_CTL0_DATA_MODULATION_DISABLE        = 0x00000000,
 TMDS_CTL0_DATA_MODULATION_BIT0           = 0x00000001,
 TMDS_CTL0_DATA_MODULATION_BIT1           = 0x00000002,
 TMDS_CTL0_DATA_MODULATION_BIT2           = 0x00000003,
 } TMDS_CTL0_DATA_MODULATION;
-
-/*
- * TMDS_CTL0_DATA_SEL enum
- */
-
 typedef enum TMDS_CTL0_DATA_SEL {
 TMDS_CTL0_DATA_SEL0_RESERVED             = 0x00000000,
 TMDS_CTL0_DATA_SEL1_DISPLAY_ENABLE       = 0x00000001,
@@ -7261,40 +3789,20 @@ TMDS_CTL0_DATA_SEL5_SEL7_RESERVED        = 0x00000005,
 TMDS_CTL0_DATA_SEL8_RANDOM_DATA          = 0x00000006,
 TMDS_CTL0_DATA_SEL9_SEL15_RANDOM_DATA    = 0x00000007,
 } TMDS_CTL0_DATA_SEL;
-
-/*
- * TMDS_CTL0_PATTERN_OUT_EN enum
- */
-
 typedef enum TMDS_CTL0_PATTERN_OUT_EN {
 TMDS_CTL0_PATTERN_OUT_DISABLE            = 0x00000000,
 TMDS_CTL0_PATTERN_OUT_ENABLE             = 0x00000001,
 } TMDS_CTL0_PATTERN_OUT_EN;
-
-/*
- * TMDS_CTL1_DATA_INVERT enum
- */
-
 typedef enum TMDS_CTL1_DATA_INVERT {
 TMDS_CTL1_DATA_NORMAL                    = 0x00000000,
 TMDS_CTL1_DATA_INVERT_EN                 = 0x00000001,
 } TMDS_CTL1_DATA_INVERT;
-
-/*
- * TMDS_CTL1_DATA_MODULATION enum
- */
-
 typedef enum TMDS_CTL1_DATA_MODULATION {
 TMDS_CTL1_DATA_MODULATION_DISABLE        = 0x00000000,
 TMDS_CTL1_DATA_MODULATION_BIT0           = 0x00000001,
 TMDS_CTL1_DATA_MODULATION_BIT1           = 0x00000002,
 TMDS_CTL1_DATA_MODULATION_BIT2           = 0x00000003,
 } TMDS_CTL1_DATA_MODULATION;
-
-/*
- * TMDS_CTL1_DATA_SEL enum
- */
-
 typedef enum TMDS_CTL1_DATA_SEL {
 TMDS_CTL1_DATA_SEL0_RESERVED             = 0x00000000,
 TMDS_CTL1_DATA_SEL1_DISPLAY_ENABLE       = 0x00000001,
@@ -7305,40 +3813,20 @@ TMDS_CTL1_DATA_SEL5_SEL7_RESERVED        = 0x00000005,
 TMDS_CTL1_DATA_SEL8_BLANK_TIME           = 0x00000006,
 TMDS_CTL1_DATA_SEL9_SEL15_RESERVED       = 0x00000007,
 } TMDS_CTL1_DATA_SEL;
-
-/*
- * TMDS_CTL1_PATTERN_OUT_EN enum
- */
-
 typedef enum TMDS_CTL1_PATTERN_OUT_EN {
 TMDS_CTL1_PATTERN_OUT_DISABLE            = 0x00000000,
 TMDS_CTL1_PATTERN_OUT_ENABLE             = 0x00000001,
 } TMDS_CTL1_PATTERN_OUT_EN;
-
-/*
- * TMDS_CTL2_DATA_INVERT enum
- */
-
 typedef enum TMDS_CTL2_DATA_INVERT {
 TMDS_CTL2_DATA_NORMAL                    = 0x00000000,
 TMDS_CTL2_DATA_INVERT_EN                 = 0x00000001,
 } TMDS_CTL2_DATA_INVERT;
-
-/*
- * TMDS_CTL2_DATA_MODULATION enum
- */
-
 typedef enum TMDS_CTL2_DATA_MODULATION {
 TMDS_CTL2_DATA_MODULATION_DISABLE        = 0x00000000,
 TMDS_CTL2_DATA_MODULATION_BIT0           = 0x00000001,
 TMDS_CTL2_DATA_MODULATION_BIT1           = 0x00000002,
 TMDS_CTL2_DATA_MODULATION_BIT2           = 0x00000003,
 } TMDS_CTL2_DATA_MODULATION;
-
-/*
- * TMDS_CTL2_DATA_SEL enum
- */
-
 typedef enum TMDS_CTL2_DATA_SEL {
 TMDS_CTL2_DATA_SEL0_RESERVED             = 0x00000000,
 TMDS_CTL2_DATA_SEL1_DISPLAY_ENABLE       = 0x00000001,
@@ -7349,40 +3837,20 @@ TMDS_CTL2_DATA_SEL5_SEL7_RESERVED        = 0x00000005,
 TMDS_CTL2_DATA_SEL8_BLANK_TIME           = 0x00000006,
 TMDS_CTL2_DATA_SEL9_SEL15_RESERVED       = 0x00000007,
 } TMDS_CTL2_DATA_SEL;
-
-/*
- * TMDS_CTL2_PATTERN_OUT_EN enum
- */
-
 typedef enum TMDS_CTL2_PATTERN_OUT_EN {
 TMDS_CTL2_PATTERN_OUT_DISABLE            = 0x00000000,
 TMDS_CTL2_PATTERN_OUT_ENABLE             = 0x00000001,
 } TMDS_CTL2_PATTERN_OUT_EN;
-
-/*
- * TMDS_CTL3_DATA_INVERT enum
- */
-
 typedef enum TMDS_CTL3_DATA_INVERT {
 TMDS_CTL3_DATA_NORMAL                    = 0x00000000,
 TMDS_CTL3_DATA_INVERT_EN                 = 0x00000001,
 } TMDS_CTL3_DATA_INVERT;
-
-/*
- * TMDS_CTL3_DATA_MODULATION enum
- */
-
 typedef enum TMDS_CTL3_DATA_MODULATION {
 TMDS_CTL3_DATA_MODULATION_DISABLE        = 0x00000000,
 TMDS_CTL3_DATA_MODULATION_BIT0           = 0x00000001,
 TMDS_CTL3_DATA_MODULATION_BIT1           = 0x00000002,
 TMDS_CTL3_DATA_MODULATION_BIT2           = 0x00000003,
 } TMDS_CTL3_DATA_MODULATION;
-
-/*
- * TMDS_CTL3_DATA_SEL enum
- */
-
 typedef enum TMDS_CTL3_DATA_SEL {
 TMDS_CTL3_DATA_SEL0_RESERVED             = 0x00000000,
 TMDS_CTL3_DATA_SEL1_DISPLAY_ENABLE       = 0x00000001,
@@ -7393,232 +3861,108 @@ TMDS_CTL3_DATA_SEL5_SEL7_RESERVED        = 0x00000005,
 TMDS_CTL3_DATA_SEL8_BLANK_TIME           = 0x00000006,
 TMDS_CTL3_DATA_SEL9_SEL15_RESERVED       = 0x00000007,
 } TMDS_CTL3_DATA_SEL;
-
-/*
- * TMDS_CTL3_PATTERN_OUT_EN enum
- */
-
 typedef enum TMDS_CTL3_PATTERN_OUT_EN {
 TMDS_CTL3_PATTERN_OUT_DISABLE            = 0x00000000,
 TMDS_CTL3_PATTERN_OUT_ENABLE             = 0x00000001,
 } TMDS_CTL3_PATTERN_OUT_EN;
-
-/*
- * TMDS_DATA_SYNCHRONIZATION_DSINTSEL enum
- */
-
 typedef enum TMDS_DATA_SYNCHRONIZATION_DSINTSEL {
 TMDS_DATA_SYNCHRONIZATION_DSINTSEL_PCLK_TMDS = 0x00000000,
 TMDS_DATA_SYNCHRONIZATION_DSINTSEL_TMDS_PLL = 0x00000001,
 } TMDS_DATA_SYNCHRONIZATION_DSINTSEL;
-
-/*
- * TMDS_PIXEL_ENCODING enum
- */
-
 typedef enum TMDS_PIXEL_ENCODING {
 TMDS_PIXEL_ENCODING_444_OR_420           = 0x00000000,
 TMDS_PIXEL_ENCODING_422                  = 0x00000001,
 } TMDS_PIXEL_ENCODING;
-
-/*
- * TMDS_REG_TEST_OUTPUTA_CNTLA enum
- */
-
 typedef enum TMDS_REG_TEST_OUTPUTA_CNTLA {
 TMDS_REG_TEST_OUTPUTA_CNTLA_OTDATA0      = 0x00000000,
 TMDS_REG_TEST_OUTPUTA_CNTLA_OTDATA1      = 0x00000001,
 TMDS_REG_TEST_OUTPUTA_CNTLA_OTDATA2      = 0x00000002,
 TMDS_REG_TEST_OUTPUTA_CNTLA_NA           = 0x00000003,
 } TMDS_REG_TEST_OUTPUTA_CNTLA;
-
-/*
- * TMDS_REG_TEST_OUTPUTB_CNTLB enum
- */
-
 typedef enum TMDS_REG_TEST_OUTPUTB_CNTLB {
 TMDS_REG_TEST_OUTPUTB_CNTLB_OTDATB0      = 0x00000000,
 TMDS_REG_TEST_OUTPUTB_CNTLB_OTDATB1      = 0x00000001,
 TMDS_REG_TEST_OUTPUTB_CNTLB_OTDATB2      = 0x00000002,
 TMDS_REG_TEST_OUTPUTB_CNTLB_NA           = 0x00000003,
 } TMDS_REG_TEST_OUTPUTB_CNTLB;
-
-/*
- * TMDS_STEREOSYNC_CTL_SEL_REG enum
- */
-
 typedef enum TMDS_STEREOSYNC_CTL_SEL_REG {
 TMDS_STEREOSYNC_CTL0                     = 0x00000000,
 TMDS_STEREOSYNC_CTL1                     = 0x00000001,
 TMDS_STEREOSYNC_CTL2                     = 0x00000002,
 TMDS_STEREOSYNC_CTL3                     = 0x00000003,
 } TMDS_STEREOSYNC_CTL_SEL_REG;
-
-/*
- * TMDS_SYNC_PHASE enum
- */
-
 typedef enum TMDS_SYNC_PHASE {
 TMDS_NOT_SYNC_PHASE_ON_FRAME_START       = 0x00000000,
 TMDS_SYNC_PHASE_ON_FRAME_START           = 0x00000001,
 } TMDS_SYNC_PHASE;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_BYPASS_PLLA enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_BYPASS_PLLA {
 TMDS_TRANSMITTER_BYPASS_PLLA_COHERENT    = 0x00000000,
 TMDS_TRANSMITTER_BYPASS_PLLA_INCOHERENT  = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_BYPASS_PLLA;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_BYPASS_PLLB enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_BYPASS_PLLB {
 TMDS_TRANSMITTER_BYPASS_PLLB_COHERENT    = 0x00000000,
 TMDS_TRANSMITTER_BYPASS_PLLB_INCOHERENT  = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_BYPASS_PLLB;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_IDSCKSELA enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_IDSCKSELA {
 TMDS_TRANSMITTER_IDSCKSELA_USE_IPIXCLK   = 0x00000000,
 TMDS_TRANSMITTER_IDSCKSELA_USE_IDCLK     = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_IDSCKSELA;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_IDSCKSELB enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_IDSCKSELB {
 TMDS_TRANSMITTER_IDSCKSELB_USE_IPIXCLK   = 0x00000000,
 TMDS_TRANSMITTER_IDSCKSELB_USE_IDCLK     = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_IDSCKSELB;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_PLLSEL_OVERWRITE_EN enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_PLLSEL_OVERWRITE_EN {
 TMDS_TRANSMITTER_PLLSEL_BY_HW            = 0x00000000,
 TMDS_TRANSMITTER_PLLSEL_OVERWRITE_BY_SW  = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_PLLSEL_OVERWRITE_EN;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_PLL_ENABLE_HPD_MASK enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_PLL_ENABLE_HPD_MASK {
 TMDS_TRANSMITTER_HPD_NOT_OVERRIDE_PLL_ENABLE = 0x00000000,
 TMDS_TRANSMITTER_HPD_OVERRIDE_PLL_ENABLE_ON_DISCON = 0x00000001,
 TMDS_TRANSMITTER_HPD_OVERRIDE_PLL_ENABLE_ON_CON = 0x00000002,
 TMDS_TRANSMITTER_HPD_OVERRIDE_PLL_ENABLE = 0x00000003,
 } TMDS_TRANSMITTER_CONTROL_PLL_ENABLE_HPD_MASK;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_PLL_PWRUP_SEQ_EN enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_PLL_PWRUP_SEQ_EN {
 TMDS_TRANSMITTER_PLL_PWRUP_SEQ_DISABLE   = 0x00000000,
 TMDS_TRANSMITTER_PLL_PWRUP_SEQ_ENABLE    = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_PLL_PWRUP_SEQ_EN;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_PLL_RESET_HPD_MASK enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_PLL_RESET_HPD_MASK {
 TMDS_TRANSMITTER_PLL_NOT_RST_ON_HPD      = 0x00000000,
 TMDS_TRANSMITTER_PLL_RST_ON_HPD          = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_PLL_RESET_HPD_MASK;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_TDCLK_FROM_PADS enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_TDCLK_FROM_PADS {
 TMDS_TRANSMITTER_TDCLK_FROM_TMDS_TDCLK   = 0x00000000,
 TMDS_TRANSMITTER_TDCLK_FROM_PADS         = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_TDCLK_FROM_PADS;
-
-/*
- * TMDS_TRANSMITTER_CONTROL_TMCLK_FROM_PADS enum
- */
-
 typedef enum TMDS_TRANSMITTER_CONTROL_TMCLK_FROM_PADS {
 TMDS_TRANSMITTER_TMCLK_FROM_TMDS_TMCLK   = 0x00000000,
 TMDS_TRANSMITTER_TMCLK_FROM_PADS         = 0x00000001,
 } TMDS_TRANSMITTER_CONTROL_TMCLK_FROM_PADS;
-
-/*
- * TMDS_TRANSMITTER_ENABLE_HPD_MASK enum
- */
-
 typedef enum TMDS_TRANSMITTER_ENABLE_HPD_MASK {
 TMDS_TRANSMITTER_HPD_MASK_NOT_OVERRIDE   = 0x00000000,
 TMDS_TRANSMITTER_HPD_MASK_OVERRIDE       = 0x00000001,
 } TMDS_TRANSMITTER_ENABLE_HPD_MASK;
-
-/*
- * TMDS_TRANSMITTER_ENABLE_LNKCEN_HPD_MASK enum
- */
-
 typedef enum TMDS_TRANSMITTER_ENABLE_LNKCEN_HPD_MASK {
 TMDS_TRANSMITTER_LNKCEN_HPD_MASK_NOT_OVERRIDE = 0x00000000,
 TMDS_TRANSMITTER_LNKCEN_HPD_MASK_OVERRIDE = 0x00000001,
 } TMDS_TRANSMITTER_ENABLE_LNKCEN_HPD_MASK;
-
-/*
- * TMDS_TRANSMITTER_ENABLE_LNKDEN_HPD_MASK enum
- */
-
 typedef enum TMDS_TRANSMITTER_ENABLE_LNKDEN_HPD_MASK {
 TMDS_TRANSMITTER_LNKDEN_HPD_MASK_NOT_OVERRIDE = 0x00000000,
 TMDS_TRANSMITTER_LNKDEN_HPD_MASK_OVERRIDE = 0x00000001,
 } TMDS_TRANSMITTER_ENABLE_LNKDEN_HPD_MASK;
-
-/*******************************************************
- * DP_AUX Enums
- *******************************************************/
-
-/*
- * DP_AUX_ARB_CONTROL_ARB_PRIORITY enum
- */
-
 typedef enum DP_AUX_ARB_CONTROL_ARB_PRIORITY {
 DP_AUX_ARB_CONTROL_ARB_PRIORITY__GTC_LS_SW = 0x00000000,
 DP_AUX_ARB_CONTROL_ARB_PRIORITY__LS_GTC_SW = 0x00000001,
 DP_AUX_ARB_CONTROL_ARB_PRIORITY__SW_LS_GTC = 0x00000002,
 DP_AUX_ARB_CONTROL_ARB_PRIORITY__SW_GTC_LS = 0x00000003,
 } DP_AUX_ARB_CONTROL_ARB_PRIORITY;
-
-/*
- * DP_AUX_ARB_CONTROL_DONE_USING_AUX_REG enum
- */
-
 typedef enum DP_AUX_ARB_CONTROL_DONE_USING_AUX_REG {
 DP_AUX_ARB_CONTROL__DONE_NOT_USING_AUX_REG = 0x00000000,
 DP_AUX_ARB_CONTROL__DONE_USING_AUX_REG   = 0x00000001,
 } DP_AUX_ARB_CONTROL_DONE_USING_AUX_REG;
-
-/*
- * DP_AUX_ARB_CONTROL_USE_AUX_REG_REQ enum
- */
-
 typedef enum DP_AUX_ARB_CONTROL_USE_AUX_REG_REQ {
 DP_AUX_ARB_CONTROL__NOT_USE_AUX_REG_REQ  = 0x00000000,
 DP_AUX_ARB_CONTROL__USE_AUX_REG_REQ      = 0x00000001,
 } DP_AUX_ARB_CONTROL_USE_AUX_REG_REQ;
-
-/*
- * DP_AUX_ARB_STATUS enum
- */
-
 typedef enum DP_AUX_ARB_STATUS {
 DP_AUX_IDLE                              = 0x00000000,
 DP_AUX_IN_USE_LS                         = 0x00000001,
@@ -7626,11 +3970,6 @@ DP_AUX_IN_USE_GTC                        = 0x00000002,
 DP_AUX_IN_USE_SW                         = 0x00000003,
 DP_AUX_IN_USE_PHYWAKE                    = 0x00000004,
 } DP_AUX_ARB_STATUS;
-
-/*
- * DP_AUX_CONTROL_HPD_SEL enum
- */
-
 typedef enum DP_AUX_CONTROL_HPD_SEL {
 DP_AUX_CONTROL_HPD1_SELECTED             = 0x00000000,
 DP_AUX_CONTROL_HPD2_SELECTED             = 0x00000001,
@@ -7639,78 +3978,38 @@ DP_AUX_CONTROL_HPD4_SELECTED             = 0x00000003,
 DP_AUX_CONTROL_HPD5_SELECTED             = 0x00000004,
 DP_AUX_CONTROL_NO_HPD_SELECTED           = 0x00000005,
 } DP_AUX_CONTROL_HPD_SEL;
-
-/*
- * DP_AUX_CONTROL_TEST_MODE enum
- */
-
 typedef enum DP_AUX_CONTROL_TEST_MODE {
 DP_AUX_CONTROL_TEST_MODE_DISABLE         = 0x00000000,
 DP_AUX_CONTROL_TEST_MODE_ENABLE          = 0x00000001,
 } DP_AUX_CONTROL_TEST_MODE;
-
-/*
- * DP_AUX_DEFINITE_ERR_REACHED_ACK enum
- */
-
 typedef enum DP_AUX_DEFINITE_ERR_REACHED_ACK {
 ALPHA_DP_AUX_DEFINITE_ERR_REACHED_NOT_ACK = 0x00000000,
 ALPHA_DP_AUX_DEFINITE_ERR_REACHED_ACK    = 0x00000001,
 } DP_AUX_DEFINITE_ERR_REACHED_ACK;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_PHASE_DETECT enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_PHASE_DETECT {
 DP_AUX_DPHY_RX_CONTROL__NOT_ALLOW_BELOW_THRESHOLD_PHASE_DETECT = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL__ALLOW_BELOW_THRESHOLD_PHASE_DETECT = 0x00000001,
 } DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_PHASE_DETECT;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_START enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_START {
 DP_AUX_DPHY_RX_CONTROL__NOT_ALLOW_BELOW_THRESHOLD_START = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL__ALLOW_BELOW_THRESHOLD_START = 0x00000001,
 } DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_START;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_STOP enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_STOP {
 DP_AUX_DPHY_RX_CONTROL__NOT_ALLOW_BELOW_THRESHOLD_STOP = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL__ALLOW_BELOW_THRESHOLD_STOP = 0x00000001,
 } DP_AUX_DPHY_RX_CONTROL_ALLOW_BELOW_THRESHOLD_STOP;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN {
 DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN__6_EDGES = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN__10_EDGES = 0x00000001,
 DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN__18_EDGES = 0x00000002,
 DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN__RESERVED = 0x00000003,
 } DP_AUX_DPHY_RX_CONTROL_HALF_SYM_DETECT_LEN;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN {
 DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN__2_HALF_SYMBOLS = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN__4_HALF_SYMBOLS = 0x00000001,
 DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN__6_HALF_SYMBOLS = 0x00000002,
 DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN__8_HALF_SYMBOLS = 0x00000003,
 } DP_AUX_DPHY_RX_CONTROL_PHASE_DETECT_LEN;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW {
 DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW__1TO2_PERIOD = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW__1TO4_PERIOD = 0x00000001,
@@ -7721,11 +4020,6 @@ DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW__1TO64_PERIOD = 0x00000005,
 DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW__1TO128_PERIOD = 0x00000006,
 DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW__1TO256_PERIOD = 0x00000007,
 } DP_AUX_DPHY_RX_CONTROL_RECEIVE_WINDOW;
-
-/*
- * DP_AUX_DPHY_RX_CONTROL_START_WINDOW enum
- */
-
 typedef enum DP_AUX_DPHY_RX_CONTROL_START_WINDOW {
 DP_AUX_DPHY_RX_CONTROL_START_WINDOW__1TO2_PERIOD = 0x00000000,
 DP_AUX_DPHY_RX_CONTROL_START_WINDOW__1TO4_PERIOD = 0x00000001,
@@ -7736,11 +4030,6 @@ DP_AUX_DPHY_RX_CONTROL_START_WINDOW__1TO64_PERIOD = 0x00000005,
 DP_AUX_DPHY_RX_CONTROL_START_WINDOW__1TO128_PERIOD = 0x00000006,
 DP_AUX_DPHY_RX_CONTROL_START_WINDOW__1TO256_PERIOD = 0x00000007,
 } DP_AUX_DPHY_RX_CONTROL_START_WINDOW;
-
-/*
- * DP_AUX_DPHY_RX_DETECTION_THRESHOLD enum
- */
-
 typedef enum DP_AUX_DPHY_RX_DETECTION_THRESHOLD {
 DP_AUX_DPHY_RX_DETECTION_THRESHOLD__1to2 = 0x00000000,
 DP_AUX_DPHY_RX_DETECTION_THRESHOLD__3to4 = 0x00000001,
@@ -7751,11 +4040,6 @@ DP_AUX_DPHY_RX_DETECTION_THRESHOLD__63to64 = 0x00000005,
 DP_AUX_DPHY_RX_DETECTION_THRESHOLD__127to128 = 0x00000006,
 DP_AUX_DPHY_RX_DETECTION_THRESHOLD__255to256 = 0x00000007,
 } DP_AUX_DPHY_RX_DETECTION_THRESHOLD;
-
-/*
- * DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY enum
- */
-
 typedef enum DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY {
 DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY__0 = 0x00000000,
 DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY__16US = 0x00000001,
@@ -7764,245 +4048,116 @@ DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY__64US = 0x00000003,
 DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY__128US = 0x00000004,
 DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY__256US = 0x00000005,
 } DP_AUX_DPHY_TX_CONTROL_MODE_DET_CHECK_DELAY;
-
-/*
- * DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE enum
- */
-
 typedef enum DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE {
 DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE__1MHZ = 0x00000000,
 DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE__2MHZ = 0x00000001,
 DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE__4MHZ = 0x00000002,
 DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE__8MHZ = 0x00000003,
 } DP_AUX_DPHY_TX_REF_CONTROL_TX_RATE;
-
-/*
- * DP_AUX_DPHY_TX_REF_CONTROL_TX_REF_SEL enum
- */
-
 typedef enum DP_AUX_DPHY_TX_REF_CONTROL_TX_REF_SEL {
 DP_AUX_DPHY_TX_REF_CONTROL_TX_REF_SEL__DIVIDED_SYM_CLK = 0x00000000,
 DP_AUX_DPHY_TX_REF_CONTROL_TX_REF_SEL__FROM_DCCG_MICROSECOND_REF = 0x00000001,
 } DP_AUX_DPHY_TX_REF_CONTROL_TX_REF_SEL;
-
-/*
- * DP_AUX_ERR_OCCURRED_ACK enum
- */
-
 typedef enum DP_AUX_ERR_OCCURRED_ACK {
 DP_AUX_ERR_OCCURRED__NOT_ACK             = 0x00000000,
 DP_AUX_ERR_OCCURRED__ACK                 = 0x00000001,
 } DP_AUX_ERR_OCCURRED_ACK;
-
-/*
- * DP_AUX_GTC_SYNC_CONTROL_GTC_SYNC_BLOCK_REQ enum
- */
-
 typedef enum DP_AUX_GTC_SYNC_CONTROL_GTC_SYNC_BLOCK_REQ {
 DP_AUX_GTC_SYNC_CONTROL_GTC_SYNC_ALLOW_REQ_FROM_OTHER_AUX = 0x00000000,
 DP_AUX_GTC_SYNC_CONTROL_GTC_SYNC_BLOCK_REQ_FROM_OTHER_AUX = 0x00000001,
 } DP_AUX_GTC_SYNC_CONTROL_GTC_SYNC_BLOCK_REQ;
-
-/*
- * DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW enum
- */
-
 typedef enum DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW {
 DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW__300US = 0x00000000,
 DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW__400US = 0x00000001,
 DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW__500US = 0x00000002,
 DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW__600US = 0x00000003,
 } DP_AUX_GTC_SYNC_CONTROL_INTERVAL_RESET_WINDOW;
-
-/*
- * DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT enum
- */
-
 typedef enum DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT {
 DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT__4_ATTAMPS = 0x00000000,
 DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT__8_ATTAMPS = 0x00000001,
 DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT__16_ATTAMPS = 0x00000002,
 DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT__RESERVED = 0x00000003,
 } DP_AUX_GTC_SYNC_CONTROL_OFFSET_CALC_MAX_ATTEMPT;
-
-/*
- * DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN enum
- */
-
 typedef enum DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN {
 DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN__0 = 0x00000000,
 DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN__64 = 0x00000001,
 DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN__128 = 0x00000002,
 DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN__256 = 0x00000003,
 } DP_AUX_GTC_SYNC_ERROR_CONTROL_LOCK_ACQ_TIMEOUT_LEN;
-
-/*
- * DP_AUX_INT_ACK enum
- */
-
 typedef enum DP_AUX_INT_ACK {
 DP_AUX_INT__NOT_ACK                      = 0x00000000,
 DP_AUX_INT__ACK                          = 0x00000001,
 } DP_AUX_INT_ACK;
-
-/*
- * DP_AUX_LS_UPDATE_ACK enum
- */
-
 typedef enum DP_AUX_LS_UPDATE_ACK {
 DP_AUX_INT_LS_UPDATE_NOT_ACK             = 0x00000000,
 DP_AUX_INT_LS_UPDATE_ACK                 = 0x00000001,
 } DP_AUX_LS_UPDATE_ACK;
-
-/*
- * DP_AUX_PHY_WAKE_PRIORITY enum
- */
-
 typedef enum DP_AUX_PHY_WAKE_PRIORITY {
 DP_AUX_PHY_WAKE_HIGH_PRIORITY            = 0x00000000,
 DP_AUX_PHY_WAKE_LOW_PRIORITY             = 0x00000001,
 } DP_AUX_PHY_WAKE_PRIORITY;
-
-/*
- * DP_AUX_POTENTIAL_ERR_REACHED_ACK enum
- */
-
 typedef enum DP_AUX_POTENTIAL_ERR_REACHED_ACK {
 DP_AUX_POTENTIAL_ERR_REACHED__NOT_ACK    = 0x00000000,
 DP_AUX_POTENTIAL_ERR_REACHED__ACK        = 0x00000001,
 } DP_AUX_POTENTIAL_ERR_REACHED_ACK;
-
-/*
- * DP_AUX_RESET enum
- */
-
 typedef enum DP_AUX_RESET {
 DP_AUX_RESET_DEASSERTED                  = 0x00000000,
 DP_AUX_RESET_ASSERTED                    = 0x00000001,
 } DP_AUX_RESET;
-
-/*
- * DP_AUX_RESET_DONE enum
- */
-
 typedef enum DP_AUX_RESET_DONE {
 DP_AUX_RESET_SEQUENCE_NOT_DONE           = 0x00000000,
 DP_AUX_RESET_SEQUENCE_DONE               = 0x00000001,
 } DP_AUX_RESET_DONE;
-
-/*
- * DP_AUX_RX_TIMEOUT_LEN_MUL enum
- */
-
 typedef enum DP_AUX_RX_TIMEOUT_LEN_MUL {
 DP_AUX_RX_TIMEOUT_LEN_NO_MUL             = 0x00000000,
 DP_AUX_RX_TIMEOUT_LEN_MUL_2              = 0x00000001,
 DP_AUX_RX_TIMEOUT_LEN_MUL_4              = 0x00000002,
 DP_AUX_RX_TIMEOUT_LEN_MUL_8              = 0x00000003,
 } DP_AUX_RX_TIMEOUT_LEN_MUL;
-
-/*
- * DP_AUX_SW_CONTROL_LS_READ_TRIG enum
- */
-
 typedef enum DP_AUX_SW_CONTROL_LS_READ_TRIG {
 DP_AUX_SW_CONTROL_LS_READ__NOT_TRIG      = 0x00000000,
 DP_AUX_SW_CONTROL_LS_READ__TRIG          = 0x00000001,
 } DP_AUX_SW_CONTROL_LS_READ_TRIG;
-
-/*
- * DP_AUX_SW_CONTROL_SW_GO enum
- */
-
 typedef enum DP_AUX_SW_CONTROL_SW_GO {
 DP_AUX_SW_CONTROL_SW__NOT_GO             = 0x00000000,
 DP_AUX_SW_CONTROL_SW__GO                 = 0x00000001,
 } DP_AUX_SW_CONTROL_SW_GO;
-
-/*
- * DP_AUX_TX_PRECHARGE_LEN_MUL enum
- */
-
 typedef enum DP_AUX_TX_PRECHARGE_LEN_MUL {
 DP_AUX_TX_PRECHARGE_LEN_NO_MUL           = 0x00000000,
 DP_AUX_TX_PRECHARGE_LEN_MUL_2            = 0x00000001,
 DP_AUX_TX_PRECHARGE_LEN_MUL_4            = 0x00000002,
 DP_AUX_TX_PRECHARGE_LEN_MUL_8            = 0x00000003,
 } DP_AUX_TX_PRECHARGE_LEN_MUL;
-
-/*******************************************************
- * DOUT_I2C Enums
- *******************************************************/
-
-/*
- * DOUT_I2C_ACK enum
- */
-
 typedef enum DOUT_I2C_ACK {
 DOUT_I2C_NO_ACK                          = 0x00000000,
 DOUT_I2C_ACK_TO_CLEAN                    = 0x00000001,
 } DOUT_I2C_ACK;
-
-/*
- * DOUT_I2C_ARBITRATION_ABORT_XFER enum
- */
-
 typedef enum DOUT_I2C_ARBITRATION_ABORT_XFER {
 DOUT_I2C_ARBITRATION_NOT_ABORT_CURRENT_TRANSFER = 0x00000000,
 DOUT_I2C_ARBITRATION_ABORT_CURRENT_TRANSFER = 0x00000001,
 } DOUT_I2C_ARBITRATION_ABORT_XFER;
-
-/*
- * DOUT_I2C_ARBITRATION_DONE_USING_I2C_REG enum
- */
-
 typedef enum DOUT_I2C_ARBITRATION_DONE_USING_I2C_REG {
 DOUT_I2C_ARBITRATION_DONE__NOT_USING_I2C_REG = 0x00000000,
 DOUT_I2C_ARBITRATION_DONE__USING_I2C_REG = 0x00000001,
 } DOUT_I2C_ARBITRATION_DONE_USING_I2C_REG;
-
-/*
- * DOUT_I2C_ARBITRATION_NO_QUEUED_SW_GO enum
- */
-
 typedef enum DOUT_I2C_ARBITRATION_NO_QUEUED_SW_GO {
 DOUT_I2C_ARBITRATION_SW_QUEUE_ENABLED    = 0x00000000,
 DOUT_I2C_ARBITRATION_SW_QUEUE_DISABLED   = 0x00000001,
 } DOUT_I2C_ARBITRATION_NO_QUEUED_SW_GO;
-
-/*
- * DOUT_I2C_ARBITRATION_SW_PRIORITY enum
- */
-
 typedef enum DOUT_I2C_ARBITRATION_SW_PRIORITY {
 DOUT_I2C_ARBITRATION_SW_PRIORITY_NORMAL  = 0x00000000,
 DOUT_I2C_ARBITRATION_SW_PRIORITY_HIGH    = 0x00000001,
 DOUT_I2C_ARBITRATION_SW_PRIORITY_0_RESERVED = 0x00000002,
 DOUT_I2C_ARBITRATION_SW_PRIORITY_1_RESERVED = 0x00000003,
 } DOUT_I2C_ARBITRATION_SW_PRIORITY;
-
-/*
- * DOUT_I2C_ARBITRATION_USE_I2C_REG_REQ enum
- */
-
 typedef enum DOUT_I2C_ARBITRATION_USE_I2C_REG_REQ {
 DOUT_I2C_ARBITRATION__NOT_USE_I2C_REG_REQ = 0x00000000,
 DOUT_I2C_ARBITRATION__USE_I2C_REG_REQ    = 0x00000001,
 } DOUT_I2C_ARBITRATION_USE_I2C_REG_REQ;
-
-/*
- * DOUT_I2C_CONTROL_DBG_REF_SEL enum
- */
-
 typedef enum DOUT_I2C_CONTROL_DBG_REF_SEL {
 DOUT_I2C_CONTROL_NORMAL_DEBUG            = 0x00000000,
 DOUT_I2C_CONTROL_FAST_REFERENCE_DEBUG    = 0x00000001,
 } DOUT_I2C_CONTROL_DBG_REF_SEL;
-
-/*
- * DOUT_I2C_CONTROL_DDC_SELECT enum
- */
-
 typedef enum DOUT_I2C_CONTROL_DDC_SELECT {
 DOUT_I2C_CONTROL_SELECT_DDC1             = 0x00000000,
 DOUT_I2C_CONTROL_SELECT_DDC2             = 0x00000001,
@@ -8011,220 +4166,101 @@ DOUT_I2C_CONTROL_SELECT_DDC4             = 0x00000003,
 DOUT_I2C_CONTROL_SELECT_DDC5             = 0x00000004,
 DOUT_I2C_CONTROL_SELECT_DDCVGA           = 0x00000005,
 } DOUT_I2C_CONTROL_DDC_SELECT;
-
-/*
- * DOUT_I2C_CONTROL_GO enum
- */
-
 typedef enum DOUT_I2C_CONTROL_GO {
 DOUT_I2C_CONTROL_STOP_TRANSFER           = 0x00000000,
 DOUT_I2C_CONTROL_START_TRANSFER          = 0x00000001,
 } DOUT_I2C_CONTROL_GO;
-
-/*
- * DOUT_I2C_CONTROL_SEND_RESET enum
- */
-
 typedef enum DOUT_I2C_CONTROL_SEND_RESET {
 DOUT_I2C_CONTROL__NOT_SEND_RESET         = 0x00000000,
 DOUT_I2C_CONTROL__SEND_RESET             = 0x00000001,
 } DOUT_I2C_CONTROL_SEND_RESET;
-
-/*
- * DOUT_I2C_CONTROL_SEND_RESET_LENGTH enum
- */
-
 typedef enum DOUT_I2C_CONTROL_SEND_RESET_LENGTH {
 DOUT_I2C_CONTROL__SEND_RESET_LENGTH_9    = 0x00000000,
 DOUT_I2C_CONTROL__SEND_RESET_LENGTH_10   = 0x00000001,
 } DOUT_I2C_CONTROL_SEND_RESET_LENGTH;
-
-/*
- * DOUT_I2C_CONTROL_SOFT_RESET enum
- */
-
 typedef enum DOUT_I2C_CONTROL_SOFT_RESET {
 DOUT_I2C_CONTROL_NOT_RESET_I2C_CONTROLLER = 0x00000000,
 DOUT_I2C_CONTROL_RESET_I2C_CONTROLLER    = 0x00000001,
 } DOUT_I2C_CONTROL_SOFT_RESET;
-
-/*
- * DOUT_I2C_CONTROL_SW_STATUS_RESET enum
- */
-
 typedef enum DOUT_I2C_CONTROL_SW_STATUS_RESET {
 DOUT_I2C_CONTROL_NOT_RESET_SW_STATUS     = 0x00000000,
 DOUT_I2C_CONTROL_RESET_SW_STATUS         = 0x00000001,
 } DOUT_I2C_CONTROL_SW_STATUS_RESET;
-
-/*
- * DOUT_I2C_CONTROL_TRANSACTION_COUNT enum
- */
-
 typedef enum DOUT_I2C_CONTROL_TRANSACTION_COUNT {
 DOUT_I2C_CONTROL_TRANS0                  = 0x00000000,
 DOUT_I2C_CONTROL_TRANS0_TRANS1           = 0x00000001,
 DOUT_I2C_CONTROL_TRANS0_TRANS1_TRANS2    = 0x00000002,
 DOUT_I2C_CONTROL_TRANS0_TRANS1_TRANS2_TRANS3 = 0x00000003,
 } DOUT_I2C_CONTROL_TRANSACTION_COUNT;
-
-/*
- * DOUT_I2C_DATA_INDEX_WRITE enum
- */
-
 typedef enum DOUT_I2C_DATA_INDEX_WRITE {
 DOUT_I2C_DATA__NOT_INDEX_WRITE           = 0x00000000,
 DOUT_I2C_DATA__INDEX_WRITE               = 0x00000001,
 } DOUT_I2C_DATA_INDEX_WRITE;
-
-/*
- * DOUT_I2C_DDC_SETUP_CLK_DRIVE_EN enum
- */
-
 typedef enum DOUT_I2C_DDC_SETUP_CLK_DRIVE_EN {
 DOUT_I2C_DDC_SETUP_CLK_DRIVE_BY_EXTERNAL_RESISTOR = 0x00000000,
 DOUT_I2C_DDC_SETUP_I2C_PAD_DRIVE_SCL     = 0x00000001,
 } DOUT_I2C_DDC_SETUP_CLK_DRIVE_EN;
-
-/*
- * DOUT_I2C_DDC_SETUP_DATA_DRIVE_EN enum
- */
-
 typedef enum DOUT_I2C_DDC_SETUP_DATA_DRIVE_EN {
 DOUT_I2C_DDC_SETUP_DATA_DRIVE_BY_EXTERNAL_RESISTOR = 0x00000000,
 DOUT_I2C_DDC_SETUP_I2C_PAD_DRIVE_SDA     = 0x00000001,
 } DOUT_I2C_DDC_SETUP_DATA_DRIVE_EN;
-
-/*
- * DOUT_I2C_DDC_SETUP_DATA_DRIVE_SEL enum
- */
-
 typedef enum DOUT_I2C_DDC_SETUP_DATA_DRIVE_SEL {
 DOUT_I2C_DDC_SETUP_DATA_DRIVE_FOR_10MCLKS = 0x00000000,
 DOUT_I2C_DDC_SETUP_DATA_DRIVE_FOR_20MCLKS = 0x00000001,
 } DOUT_I2C_DDC_SETUP_DATA_DRIVE_SEL;
-
-/*
- * DOUT_I2C_DDC_SETUP_EDID_DETECT_MODE enum
- */
-
 typedef enum DOUT_I2C_DDC_SETUP_EDID_DETECT_MODE {
 DOUT_I2C_DDC_SETUP_EDID_DETECT_CONNECT   = 0x00000000,
 DOUT_I2C_DDC_SETUP_EDID_DETECT_DISCONNECT = 0x00000001,
 } DOUT_I2C_DDC_SETUP_EDID_DETECT_MODE;
-
-/*
- * DOUT_I2C_DDC_SPEED_THRESHOLD enum
- */
-
 typedef enum DOUT_I2C_DDC_SPEED_THRESHOLD {
 DOUT_I2C_DDC_SPEED_THRESHOLD_BIG_THAN_ZERO = 0x00000000,
 DOUT_I2C_DDC_SPEED_THRESHOLD_QUATER_OF_TOTAL_SAMPLE = 0x00000001,
 DOUT_I2C_DDC_SPEED_THRESHOLD_HALF_OF_TOTAL_SAMPLE = 0x00000002,
 DOUT_I2C_DDC_SPEED_THRESHOLD_THREE_QUATERS_OF_TOTAL_SAMPLE = 0x00000003,
 } DOUT_I2C_DDC_SPEED_THRESHOLD;
-
-/*
- * DOUT_I2C_EDID_DETECT_CTRL_SEND_RESET enum
- */
-
 typedef enum DOUT_I2C_EDID_DETECT_CTRL_SEND_RESET {
 DOUT_I2C_EDID_NOT_SEND_RESET_BEFORE_EDID_READ_TRACTION = 0x00000000,
 DOUT_I2C_EDID_SEND_RESET_BEFORE_EDID_READ_TRACTION = 0x00000001,
 } DOUT_I2C_EDID_DETECT_CTRL_SEND_RESET;
-
-/*
- * DOUT_I2C_READ_REQUEST_INTERRUPT_TYPE enum
- */
-
 typedef enum DOUT_I2C_READ_REQUEST_INTERRUPT_TYPE {
 DOUT_I2C_READ_REQUEST_INTERRUPT_TYPE__LEVEL = 0x00000000,
 DOUT_I2C_READ_REQUEST_INTERRUPT_TYPE__PULSE = 0x00000001,
 } DOUT_I2C_READ_REQUEST_INTERRUPT_TYPE;
-
-/*
- * DOUT_I2C_TRANSACTION_STOP_ON_NACK enum
- */
-
 typedef enum DOUT_I2C_TRANSACTION_STOP_ON_NACK {
 DOUT_I2C_TRANSACTION_STOP_CURRENT_TRANS  = 0x00000000,
 DOUT_I2C_TRANSACTION_STOP_ALL_TRANS      = 0x00000001,
 } DOUT_I2C_TRANSACTION_STOP_ON_NACK;
-
-/*******************************************************
- * DIO_MISC Enums
- *******************************************************/
-
-/*
- * CLOCK_GATING_EN enum
- */
-
 typedef enum CLOCK_GATING_EN {
 CLOCK_GATING_ENABLE                      = 0x00000000,
 CLOCK_GATING_DISABLE                     = 0x00000001,
 } CLOCK_GATING_EN;
-
-/*
- * DAC_MUX_SELECT enum
- */
-
 typedef enum DAC_MUX_SELECT {
 DAC_MUX_SELECT_DACA                      = 0x00000000,
 DAC_MUX_SELECT_DACB                      = 0x00000001,
 } DAC_MUX_SELECT;
-
-/*
- * DIOMEM_PWR_DIS_CTRL enum
- */
-
 typedef enum DIOMEM_PWR_DIS_CTRL {
 DIOMEM_ENABLE_MEM_PWR_CTRL               = 0x00000000,
 DIOMEM_DISABLE_MEM_PWR_CTRL              = 0x00000001,
 } DIOMEM_PWR_DIS_CTRL;
-
-/*
- * DIOMEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum DIOMEM_PWR_FORCE_CTRL {
 DIOMEM_NO_FORCE_REQUEST                  = 0x00000000,
 DIOMEM_FORCE_LIGHT_SLEEP_REQUEST         = 0x00000001,
 DIOMEM_FORCE_DEEP_SLEEP_REQUEST          = 0x00000002,
 DIOMEM_FORCE_SHUT_DOWN_REQUEST           = 0x00000003,
 } DIOMEM_PWR_FORCE_CTRL;
-
-/*
- * DIOMEM_PWR_FORCE_CTRL2 enum
- */
-
 typedef enum DIOMEM_PWR_FORCE_CTRL2 {
 DIOMEM_NO_FORCE_REQ                      = 0x00000000,
 DIOMEM_FORCE_LIGHT_SLEEP_REQ             = 0x00000001,
 } DIOMEM_PWR_FORCE_CTRL2;
-
-/*
- * DIOMEM_PWR_SEL_CTRL enum
- */
-
 typedef enum DIOMEM_PWR_SEL_CTRL {
 DIOMEM_DYNAMIC_SHUT_DOWN_ENABLE          = 0x00000000,
 DIOMEM_DYNAMIC_DEEP_SLEEP_ENABLE         = 0x00000001,
 DIOMEM_DYNAMIC_LIGHT_SLEEP_ENABLE        = 0x00000002,
 } DIOMEM_PWR_SEL_CTRL;
-
-/*
- * DIOMEM_PWR_SEL_CTRL2 enum
- */
-
 typedef enum DIOMEM_PWR_SEL_CTRL2 {
 DIOMEM_DYNAMIC_DEEP_SLEEP_EN             = 0x00000000,
 DIOMEM_DYNAMIC_LIGHT_SLEEP_EN            = 0x00000001,
 } DIOMEM_PWR_SEL_CTRL2;
-
-/*
- * DIO_DBG_BLOCK_SEL enum
- */
-
 typedef enum DIO_DBG_BLOCK_SEL {
 DIO_DBG_BLOCK_SEL_DIO                    = 0x00000000,
 DIO_DBG_BLOCK_SEL_DIGFE_A                = 0x0000000b,
@@ -8255,38 +4291,18 @@ DIO_DBG_BLOCK_SEL_AUX4                   = 0x0000002b,
 DIO_DBG_BLOCK_SEL_PERFMON_DIO            = 0x0000002d,
 DIO_DBG_BLOCK_SEL_RESERVED               = 0x0000002e,
 } DIO_DBG_BLOCK_SEL;
-
-/*
- * DIO_HDMI_RXSTATUS_TIMER_CONTROL_DIO_HDMI_RXSTATUS_TIMER_TYPE enum
- */
-
 typedef enum DIO_HDMI_RXSTATUS_TIMER_CONTROL_DIO_HDMI_RXSTATUS_TIMER_TYPE {
 DIO_HDMI_RXSTATUS_TIMER_TYPE_LEVEL       = 0x00000000,
 DIO_HDMI_RXSTATUS_TIMER_TYPE_PULSE       = 0x00000001,
 } DIO_HDMI_RXSTATUS_TIMER_CONTROL_DIO_HDMI_RXSTATUS_TIMER_TYPE;
-
-/*
- * DX_PROTECTION_DX_PIPE_ENC_REQUIRED_TYPE enum
- */
-
 typedef enum DX_PROTECTION_DX_PIPE_ENC_REQUIRED_TYPE {
 DX_PROTECTION_DX_PIPE_ENC_REQUIRED_TYPE_0 = 0x00000000,
 DX_PROTECTION_DX_PIPE_ENC_REQUIRED_TYPE_1 = 0x00000001,
 } DX_PROTECTION_DX_PIPE_ENC_REQUIRED_TYPE;
-
-/*
- * ENUM_DIO_DCN_ACTIVE_STATUS enum
- */
-
 typedef enum ENUM_DIO_DCN_ACTIVE_STATUS {
 ENUM_DCN_NOT_ACTIVE                      = 0x00000000,
 ENUM_DCN_ACTIVE                          = 0x00000001,
 } ENUM_DIO_DCN_ACTIVE_STATUS;
-
-/*
- * GENERIC_STEREOSYNC_SEL enum
- */
-
 typedef enum GENERIC_STEREOSYNC_SEL {
 GENERIC_STEREOSYNC_SEL_D1                = 0x00000000,
 GENERIC_STEREOSYNC_SEL_D2                = 0x00000001,
@@ -8294,75 +4310,36 @@ GENERIC_STEREOSYNC_SEL_D3                = 0x00000002,
 GENERIC_STEREOSYNC_SEL_D4                = 0x00000003,
 GENERIC_STEREOSYNC_SEL_RESERVED          = 0x00000004,
 } GENERIC_STEREOSYNC_SEL;
-
-/*
- * PM_ASSERT_RESET enum
- */
-
 typedef enum PM_ASSERT_RESET {
 PM_ASSERT_RESET_0                        = 0x00000000,
 PM_ASSERT_RESET_1                        = 0x00000001,
 } PM_ASSERT_RESET;
-
-/*
- * SOFT_RESET enum
- */
-
 typedef enum SOFT_RESET {
 SOFT_RESET_0                             = 0x00000000,
 SOFT_RESET_1                             = 0x00000001,
 } SOFT_RESET;
-
-/*
- * TMDS_MUX_SELECT enum
- */
-
 typedef enum TMDS_MUX_SELECT {
 TMDS_MUX_SELECT_B                        = 0x00000000,
 TMDS_MUX_SELECT_G                        = 0x00000001,
 TMDS_MUX_SELECT_R                        = 0x00000002,
 TMDS_MUX_SELECT_RESERVED                 = 0x00000003,
 } TMDS_MUX_SELECT;
-
-/*******************************************************
- * DME Enums
- *******************************************************/
-
-/*
- * DME_MEM_POWER_STATE_ENUM enum
- */
-
 typedef enum DME_MEM_POWER_STATE_ENUM {
 DME_MEM_POWER_STATE_ENUM_ON              = 0x00000000,
 DME_MEM_POWER_STATE_ENUM_LS              = 0x00000001,
 DME_MEM_POWER_STATE_ENUM_DS              = 0x00000002,
 DME_MEM_POWER_STATE_ENUM_SD              = 0x00000003,
 } DME_MEM_POWER_STATE_ENUM;
-
-/*
- * DME_MEM_PWR_DIS_CTRL enum
- */
-
 typedef enum DME_MEM_PWR_DIS_CTRL {
 DME_MEM_ENABLE_MEM_PWR_CTRL              = 0x00000000,
 DME_MEM_DISABLE_MEM_PWR_CTRL             = 0x00000001,
 } DME_MEM_PWR_DIS_CTRL;
-
-/*
- * DME_MEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum DME_MEM_PWR_FORCE_CTRL {
 DME_MEM_NO_FORCE_REQUEST                 = 0x00000000,
 DME_MEM_FORCE_LIGHT_SLEEP_REQUEST        = 0x00000001,
 DME_MEM_FORCE_DEEP_SLEEP_REQUEST         = 0x00000002,
 DME_MEM_FORCE_SHUT_DOWN_REQUEST          = 0x00000003,
 } DME_MEM_PWR_FORCE_CTRL;
-
-/*
- * METADATA_HUBP_SEL enum
- */
-
 typedef enum METADATA_HUBP_SEL {
 METADATA_HUBP_SEL_0                      = 0x00000000,
 METADATA_HUBP_SEL_1                      = 0x00000001,
@@ -8370,57 +4347,24 @@ METADATA_HUBP_SEL_2                      = 0x00000002,
 METADATA_HUBP_SEL_3                      = 0x00000003,
 METADATA_HUBP_SEL_RESERVED               = 0x00000004,
 } METADATA_HUBP_SEL;
-
-/*
- * METADATA_STREAM_TYPE_SEL enum
- */
-
 typedef enum METADATA_STREAM_TYPE_SEL {
 METADATA_STREAM_DP                       = 0x00000000,
 METADATA_STREAM_DVE                      = 0x00000001,
 } METADATA_STREAM_TYPE_SEL;
-
-/*******************************************************
- * VPG Enums
- *******************************************************/
-
-/*
- * VPG_MEM_PWR_DIS_CTRL enum
- */
-
 typedef enum VPG_MEM_PWR_DIS_CTRL {
 VPG_MEM_ENABLE_MEM_PWR_CTRL              = 0x00000000,
 VPG_MEM_DISABLE_MEM_PWR_CTRL             = 0x00000001,
 } VPG_MEM_PWR_DIS_CTRL;
-
-/*
- * VPG_MEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum VPG_MEM_PWR_FORCE_CTRL {
 VPG_MEM_NO_FORCE_REQ                     = 0x00000000,
 VPG_MEM_FORCE_LIGHT_SLEEP_REQ            = 0x00000001,
 } VPG_MEM_PWR_FORCE_CTRL;
-
-/*******************************************************
- * AFMT Enums
- *******************************************************/
-
-/*
- * AFMT_ACP_TYPE enum
- */
-
 typedef enum AFMT_ACP_TYPE {
 ACP_TYPE_GENERIC_AUDIO                   = 0x00000000,
 ACP_TYPE_ICE60958_AUDIO                  = 0x00000001,
 ACP_TYPE_DVD_AUDIO                       = 0x00000002,
 ACP_TYPE_SUPER_AUDIO_CD                  = 0x00000003,
 } AFMT_ACP_TYPE;
-
-/*
- * AFMT_AUDIO_CRC_CONTROL_CH_SEL enum
- */
-
 typedef enum AFMT_AUDIO_CRC_CONTROL_CH_SEL {
 AFMT_AUDIO_CRC_CH0_SIG                   = 0x00000000,
 AFMT_AUDIO_CRC_CH1_SIG                   = 0x00000001,
@@ -8439,56 +4383,26 @@ AFMT_AUDIO_CRC_RESERVED_13               = 0x0000000d,
 AFMT_AUDIO_CRC_RESERVED_14               = 0x0000000e,
 AFMT_AUDIO_CRC_AUDIO_SAMPLE_COUNT        = 0x0000000f,
 } AFMT_AUDIO_CRC_CONTROL_CH_SEL;
-
-/*
- * AFMT_AUDIO_CRC_CONTROL_CONT enum
- */
-
 typedef enum AFMT_AUDIO_CRC_CONTROL_CONT {
 AFMT_AUDIO_CRC_ONESHOT                   = 0x00000000,
 AFMT_AUDIO_CRC_AUTO_RESTART              = 0x00000001,
 } AFMT_AUDIO_CRC_CONTROL_CONT;
-
-/*
- * AFMT_AUDIO_CRC_CONTROL_SOURCE enum
- */
-
 typedef enum AFMT_AUDIO_CRC_CONTROL_SOURCE {
 AFMT_AUDIO_CRC_SOURCE_FROM_FIFO_INPUT    = 0x00000000,
 AFMT_AUDIO_CRC_SOURCE_FROM_FIFO_OUTPUT   = 0x00000001,
 } AFMT_AUDIO_CRC_CONTROL_SOURCE;
-
-/*
- * AFMT_AUDIO_PACKET_CONTROL2_AUDIO_LAYOUT_OVRD enum
- */
-
 typedef enum AFMT_AUDIO_PACKET_CONTROL2_AUDIO_LAYOUT_OVRD {
 AFMT_AUDIO_LAYOUT_DETERMINED_BY_AZ_AUDIO_CHANNEL_STATUS = 0x00000000,
 AFMT_AUDIO_LAYOUT_OVRD_BY_REGISTER       = 0x00000001,
 } AFMT_AUDIO_PACKET_CONTROL2_AUDIO_LAYOUT_OVRD;
-
-/*
- * AFMT_AUDIO_PACKET_CONTROL_AUDIO_SAMPLE_SEND enum
- */
-
 typedef enum AFMT_AUDIO_PACKET_CONTROL_AUDIO_SAMPLE_SEND {
 AFMT_AUDIO_PACKET_SENT_DISABLED          = 0x00000000,
 AFMT_AUDIO_PACKET_SENT_ENABLED           = 0x00000001,
 } AFMT_AUDIO_PACKET_CONTROL_AUDIO_SAMPLE_SEND;
-
-/*
- * AFMT_AUDIO_PACKET_CONTROL_RESET_FIFO_WHEN_AUDIO_DIS enum
- */
-
 typedef enum AFMT_AUDIO_PACKET_CONTROL_RESET_FIFO_WHEN_AUDIO_DIS {
 AFMT_NOT_RESET_AUDIO_FIFO_WHEN_AUDIO_DISABLED_RESERVED = 0x00000000,
 AFMT_RESET_AUDIO_FIFO_WHEN_AUDIO_DISABLED = 0x00000001,
 } AFMT_AUDIO_PACKET_CONTROL_RESET_FIFO_WHEN_AUDIO_DIS;
-
-/*
- * AFMT_AUDIO_SRC_CONTROL_SELECT enum
- */
-
 typedef enum AFMT_AUDIO_SRC_CONTROL_SELECT {
 AFMT_AUDIO_SRC_FROM_AZ_STREAM0           = 0x00000000,
 AFMT_AUDIO_SRC_FROM_AZ_STREAM1           = 0x00000001,
@@ -8497,98 +4411,44 @@ AFMT_AUDIO_SRC_FROM_AZ_STREAM3           = 0x00000003,
 AFMT_AUDIO_SRC_FROM_AZ_STREAM4           = 0x00000004,
 AFMT_AUDIO_SRC_FROM_AZ_STREAM5           = 0x00000005,
 } AFMT_AUDIO_SRC_CONTROL_SELECT;
-
-/*
- * AFMT_HDMI_AUDIO_SEND_MAX_PACKETS enum
- */
-
 typedef enum AFMT_HDMI_AUDIO_SEND_MAX_PACKETS {
 HDMI_NOT_SEND_MAX_AUDIO_PACKETS          = 0x00000000,
 HDMI_SEND_MAX_AUDIO_PACKETS              = 0x00000001,
 } AFMT_HDMI_AUDIO_SEND_MAX_PACKETS;
-
-/*
- * AFMT_INFOFRAME_CONTROL0_AUDIO_INFO_SOURCE enum
- */
-
 typedef enum AFMT_INFOFRAME_CONTROL0_AUDIO_INFO_SOURCE {
 AFMT_INFOFRAME_SOURCE_FROM_AZALIA_BLOCK  = 0x00000000,
 AFMT_INFOFRAME_SOURCE_FROM_AFMT_REGISTERS = 0x00000001,
 } AFMT_INFOFRAME_CONTROL0_AUDIO_INFO_SOURCE;
-
-/*
- * AFMT_INTERRUPT_STATUS_CHG_MASK enum
- */
-
 typedef enum AFMT_INTERRUPT_STATUS_CHG_MASK {
 AFMT_INTERRUPT_DISABLE                   = 0x00000000,
 AFMT_INTERRUPT_ENABLE                    = 0x00000001,
 } AFMT_INTERRUPT_STATUS_CHG_MASK;
-
-/*
- * AFMT_MEM_PWR_DIS_CTRL enum
- */
-
 typedef enum AFMT_MEM_PWR_DIS_CTRL {
 AFMT_MEM_ENABLE_MEM_PWR_CTRL             = 0x00000000,
 AFMT_MEM_DISABLE_MEM_PWR_CTRL            = 0x00000001,
 } AFMT_MEM_PWR_DIS_CTRL;
-
-/*
- * AFMT_MEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum AFMT_MEM_PWR_FORCE_CTRL {
 AFMT_MEM_NO_FORCE_REQUEST                = 0x00000000,
 AFMT_MEM_FORCE_LIGHT_SLEEP_REQUEST       = 0x00000001,
 AFMT_MEM_FORCE_DEEP_SLEEP_REQUEST        = 0x00000002,
 AFMT_MEM_FORCE_SHUT_DOWN_REQUEST         = 0x00000003,
 } AFMT_MEM_PWR_FORCE_CTRL;
-
-/*
- * AFMT_RAMP_CONTROL0_SIGN enum
- */
-
 typedef enum AFMT_RAMP_CONTROL0_SIGN {
 AFMT_RAMP_SIGNED                         = 0x00000000,
 AFMT_RAMP_UNSIGNED                       = 0x00000001,
 } AFMT_RAMP_CONTROL0_SIGN;
-
-/*
- * AFMT_VBI_PACKET_CONTROL_ACP_SOURCE enum
- */
-
 typedef enum AFMT_VBI_PACKET_CONTROL_ACP_SOURCE {
 AFMT_ACP_SOURCE_FROM_AZALIA              = 0x00000000,
 AFMT_ACP_SOURCE_FROM_AFMT_REGISTERS      = 0x00000001,
 } AFMT_VBI_PACKET_CONTROL_ACP_SOURCE;
-
-/*
- * AUDIO_LAYOUT_SELECT enum
- */
-
 typedef enum AUDIO_LAYOUT_SELECT {
 AUDIO_LAYOUT_0                           = 0x00000000,
 AUDIO_LAYOUT_1                           = 0x00000001,
 } AUDIO_LAYOUT_SELECT;
-
-/*******************************************************
- * HPO_TOP Enums
- *******************************************************/
-
-/*
- * HPO_TOP_CLOCK_GATING_DISABLE enum
- */
-
 typedef enum HPO_TOP_CLOCK_GATING_DISABLE {
 HPO_TOP_CLOCK_GATING_EN                  = 0x00000000,
 HPO_TOP_CLOCK_GATING_DIS                 = 0x00000001,
 } HPO_TOP_CLOCK_GATING_DISABLE;
-
-/*
- * HPO_TOP_TEST_CLK_SEL enum
- */
-
 typedef enum HPO_TOP_TEST_CLK_SEL {
 HPO_TOP_PERMANENT_DISPCLK                = 0x00000000,
 HPO_TOP_REGISTER_GATED_DISPCLK           = 0x00000001,
@@ -8603,177 +4463,80 @@ HPO_TOP_PERMANENT_HDMICHARCLK0           = 0x00000009,
 HPO_TOP_FEATURE_GATED_HDMICHARCLK0       = 0x0000000a,
 HPO_TOP_REGISTER_GATED_HDMICHARCLK0      = 0x0000000b,
 } HPO_TOP_TEST_CLK_SEL;
-
-/*******************************************************
- * DP_STREAM_MAPPER Enums
- *******************************************************/
-
-/*
- * DP_STREAM_MAPPER_DP_STREAM_LINK_TARGET enum
- */
-
 typedef enum DP_STREAM_MAPPER_DP_STREAM_LINK_TARGET {
 DP_STREAM_MAPPER_LINK0                   = 0x00000000,
 DP_STREAM_MAPPER_LINK1                   = 0x00000001,
 DP_STREAM_MAPPER_RESERVED                = 0x00000002,
 } DP_STREAM_MAPPER_DP_STREAM_LINK_TARGET;
-
-/*******************************************************
- * HDMI_STREAM_ENC Enums
- *******************************************************/
-
-/*
- * HDMI_STREAM_ENC_DB_DISABLE_CONTROL enum
- */
-
 typedef enum HDMI_STREAM_ENC_DB_DISABLE_CONTROL {
 HDMI_STREAM_ENC_DB_ENABLE                = 0x00000000,
 HDMI_STREAM_ENC_DB_DISABLE               = 0x00000001,
 } HDMI_STREAM_ENC_DB_DISABLE_CONTROL;
-
-/*
- * HDMI_STREAM_ENC_DSC_MODE enum
- */
-
 typedef enum HDMI_STREAM_ENC_DSC_MODE {
 STREAM_DSC_DISABLE                       = 0x00000000,
 STREAM_DSC_444_RGB                       = 0x00000001,
 STREAM_DSC_NATIVE_422_420                = 0x00000002,
 } HDMI_STREAM_ENC_DSC_MODE;
-
-/*
- * HDMI_STREAM_ENC_ENABLE_CONTROL enum
- */
-
 typedef enum HDMI_STREAM_ENC_ENABLE_CONTROL {
 HDMI_STREAM_ENC_DISABLE                  = 0x00000000,
 HDMI_STREAM_ENC_ENABLE                   = 0x00000001,
 } HDMI_STREAM_ENC_ENABLE_CONTROL;
-
-/*
- * HDMI_STREAM_ENC_ODM_COMBINE_MODE enum
- */
-
 typedef enum HDMI_STREAM_ENC_ODM_COMBINE_MODE {
 STREAM_ODM_COMBINE_1_SEGMENT             = 0x00000000,
 STREAM_ODM_COMBINE_2_SEGMENT             = 0x00000001,
 STREAM_ODM_COMBINE_RESERVED              = 0x00000002,
 STREAM_ODM_COMBINE_4_SEGMENT             = 0x00000003,
 } HDMI_STREAM_ENC_ODM_COMBINE_MODE;
-
-/*
- * HDMI_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR enum
- */
-
 typedef enum HDMI_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR {
 HDMI_STREAM_ENC_NO_ERROR_OCCURRED        = 0x00000000,
 HDMI_STREAM_ENC_UNDERFLOW_OCCURRED       = 0x00000001,
 HDMI_STREAM_ENC_OVERFLOW_OCCURRED        = 0x00000002,
 } HDMI_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR;
-
-/*
- * HDMI_STREAM_ENC_OVERWRITE_LEVEL_SELECT enum
- */
-
 typedef enum HDMI_STREAM_ENC_OVERWRITE_LEVEL_SELECT {
 HDMI_STREAM_ENC_HARDWARE                 = 0x00000000,
 HDMI_STREAM_ENC_PROGRAMMABLE             = 0x00000001,
 } HDMI_STREAM_ENC_OVERWRITE_LEVEL_SELECT;
-
-/*
- * HDMI_STREAM_ENC_PIXEL_ENCODING enum
- */
-
 typedef enum HDMI_STREAM_ENC_PIXEL_ENCODING {
 STREAM_PIXEL_ENCODING_444_RGB            = 0x00000000,
 STREAM_PIXEL_ENCODING_422                = 0x00000001,
 STREAM_PIXEL_ENCODING_420                = 0x00000002,
 } HDMI_STREAM_ENC_PIXEL_ENCODING;
-
-/*
- * HDMI_STREAM_ENC_READ_CLOCK_CONTROL enum
- */
-
 typedef enum HDMI_STREAM_ENC_READ_CLOCK_CONTROL {
 HDMI_STREAM_ENC_DCCG                     = 0x00000000,
 HDMI_STREAM_ENC_DISPLAY_PIPE             = 0x00000001,
 } HDMI_STREAM_ENC_READ_CLOCK_CONTROL;
-
-/*
- * HDMI_STREAM_ENC_RESET_CONTROL enum
- */
-
 typedef enum HDMI_STREAM_ENC_RESET_CONTROL {
 HDMI_STREAM_ENC_NOT_RESET                = 0x00000000,
 HDMI_STREAM_ENC_RESET                    = 0x00000001,
 } HDMI_STREAM_ENC_RESET_CONTROL;
-
-/*
- * HDMI_STREAM_ENC_STREAM_ACTIVE enum
- */
-
 typedef enum HDMI_STREAM_ENC_STREAM_ACTIVE {
 HDMI_STREAM_ENC_VIDEO_STREAM_NOT_ACTIVE  = 0x00000000,
 HDMI_STREAM_ENC_VIDEO_STREAM_ACTIVE      = 0x00000001,
 } HDMI_STREAM_ENC_STREAM_ACTIVE;
-
-/*******************************************************
- * HDMI_TB_ENC Enums
- *******************************************************/
-
-/*
- * BORROWBUFFER_MEM_POWER_STATE_ENUM enum
- */
-
 typedef enum BORROWBUFFER_MEM_POWER_STATE_ENUM {
 BORROWBUFFER_MEM_POWER_STATE_ENUM_ON     = 0x00000000,
 BORROWBUFFER_MEM_POWER_STATE_ENUM_LS     = 0x00000001,
 BORROWBUFFER_MEM_POWER_STATE_ENUM_DS     = 0x00000002,
 BORROWBUFFER_MEM_POWER_STATE_ENUM_SD     = 0x00000003,
 } BORROWBUFFER_MEM_POWER_STATE_ENUM;
-
-/*
- * HDMI_BORROW_MODE enum
- */
-
 typedef enum HDMI_BORROW_MODE {
 TB_BORROW_MODE_NONE                      = 0x00000000,
 TB_BORROW_MODE_ACTIVE                    = 0x00000001,
 TB_BORROW_MODE_BLANK                     = 0x00000002,
 TB_BORROW_MODE_RESERVED                  = 0x00000003,
 } HDMI_BORROW_MODE;
-
-/*
- * HDMI_TB_ENC_ACP_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_ACP_SEND {
 TB_ACP_NOT_SEND                          = 0x00000000,
 TB_ACP_PKT_SEND                          = 0x00000001,
 } HDMI_TB_ENC_ACP_SEND;
-
-/*
- * HDMI_TB_ENC_ACR_AUDIO_PRIORITY enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_AUDIO_PRIORITY {
 TB_ACR_PKT_HIGH_PRIORITY_THAN_AUDIO_SAMPLE = 0x00000000,
 TB_AUDIO_SAMPLE_HIGH_PRIORITY_THAN_ACR_PKT = 0x00000001,
 } HDMI_TB_ENC_ACR_AUDIO_PRIORITY;
-
-/*
- * HDMI_TB_ENC_ACR_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_CONT {
 TB_ACR_CONT_DISABLE                      = 0x00000000,
 TB_ACR_CONT_ENABLE                       = 0x00000001,
 } HDMI_TB_ENC_ACR_CONT;
-
-/*
- * HDMI_TB_ENC_ACR_N_MULTIPLE enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_N_MULTIPLE {
 TB_ACR_0_MULTIPLE_RESERVED               = 0x00000000,
 TB_ACR_1_MULTIPLE                        = 0x00000001,
@@ -8784,506 +4547,234 @@ TB_ACR_5_MULTIPLE_RESERVED               = 0x00000005,
 TB_ACR_6_MULTIPLE_RESERVED               = 0x00000006,
 TB_ACR_7_MULTIPLE_RESERVED               = 0x00000007,
 } HDMI_TB_ENC_ACR_N_MULTIPLE;
-
-/*
- * HDMI_TB_ENC_ACR_SELECT enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_SELECT {
 TB_ACR_SELECT_HW                         = 0x00000000,
 TB_ACR_SELECT_32K                        = 0x00000001,
 TB_ACR_SELECT_44K                        = 0x00000002,
 TB_ACR_SELECT_48K                        = 0x00000003,
 } HDMI_TB_ENC_ACR_SELECT;
-
-/*
- * HDMI_TB_ENC_ACR_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_SEND {
 TB_ACR_NOT_SEND                          = 0x00000000,
 TB_ACR_PKT_SEND                          = 0x00000001,
 } HDMI_TB_ENC_ACR_SEND;
-
-/*
- * HDMI_TB_ENC_ACR_SOURCE enum
- */
-
 typedef enum HDMI_TB_ENC_ACR_SOURCE {
 TB_ACR_SOURCE_HW                         = 0x00000000,
 TB_ACR_SOURCE_SW                         = 0x00000001,
 } HDMI_TB_ENC_ACR_SOURCE;
-
-/*
- * HDMI_TB_ENC_AUDIO_INFO_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_AUDIO_INFO_CONT {
 TB_AUDIO_INFO_CONT_DISABLE               = 0x00000000,
 TB_AUDIO_INFO_CONT_ENABLE                = 0x00000001,
 } HDMI_TB_ENC_AUDIO_INFO_CONT;
-
-/*
- * HDMI_TB_ENC_AUDIO_INFO_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_AUDIO_INFO_SEND {
 TB_AUDIO_INFO_NOT_SEND                   = 0x00000000,
 TB_AUDIO_INFO_PKT_SEND                   = 0x00000001,
 } HDMI_TB_ENC_AUDIO_INFO_SEND;
-
-/*
- * HDMI_TB_ENC_CRC_SRC_SEL enum
- */
-
 typedef enum HDMI_TB_ENC_CRC_SRC_SEL {
 TB_CRC_TB_ENC_INPUT                      = 0x00000000,
 TB_CRC_DSC_PACKER                        = 0x00000001,
 TB_CRC_DEEP_COLOR_PACKER                 = 0x00000002,
 TB_CRC_ENCRYPTOR_INPUT                   = 0x00000003,
 } HDMI_TB_ENC_CRC_SRC_SEL;
-
-/*
- * HDMI_TB_ENC_CRC_TYPE enum
- */
-
 typedef enum HDMI_TB_ENC_CRC_TYPE {
 TB_CRC_ALL_TRIBYTES                      = 0x00000000,
 TB_CRC_ACTIVE_TRIBYTES                   = 0x00000001,
 TB_CRC_DATAISLAND_TRIBYTES               = 0x00000002,
 TB_CRC_ACTIVE_AND_DATAISLAND_TRIBYTES    = 0x00000003,
 } HDMI_TB_ENC_CRC_TYPE;
-
-/*
- * HDMI_TB_ENC_DEEP_COLOR_DEPTH enum
- */
-
 typedef enum HDMI_TB_ENC_DEEP_COLOR_DEPTH {
 TB_DEEP_COLOR_DEPTH_24BPP                = 0x00000000,
 TB_DEEP_COLOR_DEPTH_30BPP                = 0x00000001,
 TB_DEEP_COLOR_DEPTH_36BPP                = 0x00000002,
 TB_DEEP_COLOR_DEPTH_RESERVED             = 0x00000003,
 } HDMI_TB_ENC_DEEP_COLOR_DEPTH;
-
-/*
- * HDMI_TB_ENC_DEFAULT_PAHSE enum
- */
-
 typedef enum HDMI_TB_ENC_DEFAULT_PAHSE {
 TB_DEFAULT_PHASE_IS_0                    = 0x00000000,
 TB_DEFAULT_PHASE_IS_1                    = 0x00000001,
 } HDMI_TB_ENC_DEFAULT_PAHSE;
-
-/*
- * HDMI_TB_ENC_DSC_MODE enum
- */
-
 typedef enum HDMI_TB_ENC_DSC_MODE {
 TB_DSC_DISABLE                           = 0x00000000,
 TB_DSC_444_RGB                           = 0x00000001,
 TB_DSC_NATIVE_422_420                    = 0x00000002,
 } HDMI_TB_ENC_DSC_MODE;
-
-/*
- * HDMI_TB_ENC_ENABLE enum
- */
-
 typedef enum HDMI_TB_ENC_ENABLE {
 TB_DISABLE                               = 0x00000000,
 TB_ENABLE                                = 0x00000001,
 } HDMI_TB_ENC_ENABLE;
-
-/*
- * HDMI_TB_ENC_GC_AVMUTE enum
- */
-
 typedef enum HDMI_TB_ENC_GC_AVMUTE {
 TB_GC_AVMUTE_SET                         = 0x00000000,
 TB_GC_AVMUTE_UNSET                       = 0x00000001,
 } HDMI_TB_ENC_GC_AVMUTE;
-
-/*
- * HDMI_TB_ENC_GC_AVMUTE_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_GC_AVMUTE_CONT {
 TB_GC_AVMUTE_CONT_DISABLE                = 0x00000000,
 TB_GC_AVMUTE_CONT_ENABLE                 = 0x00000001,
 } HDMI_TB_ENC_GC_AVMUTE_CONT;
-
-/*
- * HDMI_TB_ENC_GC_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_GC_CONT {
 TB_GC_CONT_DISABLE                       = 0x00000000,
 TB_GC_CONT_ENABLE                        = 0x00000001,
 } HDMI_TB_ENC_GC_CONT;
-
-/*
- * HDMI_TB_ENC_GC_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_GC_SEND {
 TB_GC_NOT_SEND                           = 0x00000000,
 TB_GC_PKT_SEND                           = 0x00000001,
 } HDMI_TB_ENC_GC_SEND;
-
-/*
- * HDMI_TB_ENC_GENERIC_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_GENERIC_CONT {
 TB_GENERIC_CONT_DISABLE                  = 0x00000000,
 TB_GENERIC_CONT_ENABLE                   = 0x00000001,
 } HDMI_TB_ENC_GENERIC_CONT;
-
-/*
- * HDMI_TB_ENC_GENERIC_LOCK_EN enum
- */
-
 typedef enum HDMI_TB_ENC_GENERIC_LOCK_EN {
 HDMI_TB_ENC_GENERIC_LOCK_DISABLE         = 0x00000000,
 HDMI_TB_ENC_GENERIC_LOCK_ENABLE          = 0x00000001,
 } HDMI_TB_ENC_GENERIC_LOCK_EN;
-
-/*
- * HDMI_TB_ENC_GENERIC_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_GENERIC_SEND {
 TB_GENERIC_NOT_SEND                      = 0x00000000,
 TB_GENERIC_PKT_SEND                      = 0x00000001,
 } HDMI_TB_ENC_GENERIC_SEND;
-
-/*
- * HDMI_TB_ENC_ISRC_CONT enum
- */
-
 typedef enum HDMI_TB_ENC_ISRC_CONT {
 TB_ISRC_CONT_DISABLE                     = 0x00000000,
 TB_ISRC_CONT_ENABLE                      = 0x00000001,
 } HDMI_TB_ENC_ISRC_CONT;
-
-/*
- * HDMI_TB_ENC_ISRC_SEND enum
- */
-
 typedef enum HDMI_TB_ENC_ISRC_SEND {
 TB_ISRC_NOT_SEND                         = 0x00000000,
 TB_ISRC_PKT_SEND                         = 0x00000001,
 } HDMI_TB_ENC_ISRC_SEND;
-
-/*
- * HDMI_TB_ENC_METADATA_ENABLE enum
- */
-
 typedef enum HDMI_TB_ENC_METADATA_ENABLE {
 TB_METADATA_NOT_SEND                     = 0x00000000,
 TB_METADATA_PKT_SEND                     = 0x00000001,
 } HDMI_TB_ENC_METADATA_ENABLE;
-
-/*
- * HDMI_TB_ENC_PACKET_LINE_REFERENCE enum
- */
-
 typedef enum HDMI_TB_ENC_PACKET_LINE_REFERENCE {
 TB_PKT_LINE_REF_END_OF_ACTIVE            = 0x00000000,
 TB_PKT_LINE_REF_OTGSOF                   = 0x00000001,
 } HDMI_TB_ENC_PACKET_LINE_REFERENCE;
-
-/*
- * HDMI_TB_ENC_PIXEL_ENCODING enum
- */
-
 typedef enum HDMI_TB_ENC_PIXEL_ENCODING {
 TB_PIXEL_ENCODING_444_RGB                = 0x00000000,
 TB_PIXEL_ENCODING_422                    = 0x00000001,
 TB_PIXEL_ENCODING_420                    = 0x00000002,
 } HDMI_TB_ENC_PIXEL_ENCODING;
-
-/*
- * HDMI_TB_ENC_RESET enum
- */
-
 typedef enum HDMI_TB_ENC_RESET {
 TB_NOT_RESET                             = 0x00000000,
 TB_RESET                                 = 0x00000001,
 } HDMI_TB_ENC_RESET;
-
-/*
- * HDMI_TB_ENC_SYNC_PHASE enum
- */
-
 typedef enum HDMI_TB_ENC_SYNC_PHASE {
 TB_NOT_SYNC_PHASE_ON_FRAME_START         = 0x00000000,
 TB_SYNC_PHASE_ON_FRAME_START             = 0x00000001,
 } HDMI_TB_ENC_SYNC_PHASE;
-
-/*
- * INPUT_FIFO_ERROR_TYPE enum
- */
-
 typedef enum INPUT_FIFO_ERROR_TYPE {
 TB_NO_ERROR_OCCURRED                     = 0x00000000,
 TB_OVERFLOW_OCCURRED                     = 0x00000001,
 } INPUT_FIFO_ERROR_TYPE;
-
-/*******************************************************
- * DP_STREAM_ENC Enums
- *******************************************************/
-
-/*
- * DP_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR enum
- */
-
 typedef enum DP_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR {
 DP_STREAM_ENC_NO_ERROR_OCCURRED          = 0x00000000,
 DP_STREAM_ENC_UNDERFLOW_OCCURRED         = 0x00000001,
 DP_STREAM_ENC_OVERFLOW_OCCURRED          = 0x00000002,
 } DP_STREAM_ENC_OVERFLOW_UNDERFLOW_ERROR;
-
-/*
- * DP_STREAM_ENC_OVERWRITE_LEVEL_SELECT enum
- */
-
 typedef enum DP_STREAM_ENC_OVERWRITE_LEVEL_SELECT {
 DP_STREAM_ENC_HARDWARE                   = 0x00000000,
 DP_STREAM_ENC_PROGRAMMABLE               = 0x00000001,
 } DP_STREAM_ENC_OVERWRITE_LEVEL_SELECT;
-
-/*
- * DP_STREAM_ENC_READ_CLOCK_CONTROL enum
- */
-
 typedef enum DP_STREAM_ENC_READ_CLOCK_CONTROL {
 DP_STREAM_ENC_DCCG                       = 0x00000000,
 DP_STREAM_ENC_DISPLAY_PIPE               = 0x00000001,
 } DP_STREAM_ENC_READ_CLOCK_CONTROL;
-
-/*
- * DP_STREAM_ENC_RESET_CONTROL enum
- */
-
 typedef enum DP_STREAM_ENC_RESET_CONTROL {
 DP_STREAM_ENC_NOT_RESET                  = 0x00000000,
 DP_STREAM_ENC_RESET                      = 0x00000001,
 } DP_STREAM_ENC_RESET_CONTROL;
-
-/*
- * DP_STREAM_ENC_STREAM_ACTIVE enum
- */
-
 typedef enum DP_STREAM_ENC_STREAM_ACTIVE {
 DP_STREAM_ENC_VIDEO_STREAM_NOT_ACTIVE    = 0x00000000,
 DP_STREAM_ENC_VIDEO_STREAM_ACTIVE        = 0x00000001,
 } DP_STREAM_ENC_STREAM_ACTIVE;
-
-/*******************************************************
- * DP_SYM32_ENC Enums
- *******************************************************/
-
-/*
- * ENUM_DP_SYM32_ENC_AUDIO_MUTE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_AUDIO_MUTE {
 DP_SYM32_ENC_SDP_AUDIO_MUTE_NOT_FORCED   = 0x00000000,
 DP_SYM32_ENC_SDP_AUDIO_MUTE_FORCED       = 0x00000001,
 } ENUM_DP_SYM32_ENC_AUDIO_MUTE;
-
-/*
- * ENUM_DP_SYM32_ENC_CONTINUOUS_MODE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_CONTINUOUS_MODE {
 DP_SYM32_ENC_ONE_SHOT_MODE               = 0x00000000,
 DP_SYM32_ENC_CONTINUOUS_MODE             = 0x00000001,
 } ENUM_DP_SYM32_ENC_CONTINUOUS_MODE;
-
-/*
- * ENUM_DP_SYM32_ENC_CRC_VALID enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_CRC_VALID {
 DP_SYM32_ENC_CRC_NOT_VALID               = 0x00000000,
 DP_SYM32_ENC_CRC_VALID                   = 0x00000001,
 } ENUM_DP_SYM32_ENC_CRC_VALID;
-
-/*
- * ENUM_DP_SYM32_ENC_DP_COMPONENT_DEPTH enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_DP_COMPONENT_DEPTH {
 DP_SYM32_ENC_COMPONENT_DEPTH_6BPC        = 0x00000000,
 DP_SYM32_ENC_COMPONENT_DEPTH_8BPC        = 0x00000001,
 DP_SYM32_ENC_COMPONENT_DEPTH_10BPC       = 0x00000002,
 DP_SYM32_ENC_COMPONENT_DEPTH_12BPC       = 0x00000003,
 } ENUM_DP_SYM32_ENC_DP_COMPONENT_DEPTH;
-
-/*
- * ENUM_DP_SYM32_ENC_ENABLE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_ENABLE {
 DP_SYM32_ENC_DISABLE                     = 0x00000000,
 DP_SYM32_ENC_ENABLE                      = 0x00000001,
 } ENUM_DP_SYM32_ENC_ENABLE;
-
-/*
- * ENUM_DP_SYM32_ENC_GSP_DEADLINE_MISSED enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_GSP_DEADLINE_MISSED {
 DP_SYM32_ENC_GSP_DEADLINE_NOT_MISSED     = 0x00000000,
 DP_SYM32_ENC_GSP_DEADLINE_MISSED         = 0x00000001,
 } ENUM_DP_SYM32_ENC_GSP_DEADLINE_MISSED;
-
-/*
- * ENUM_DP_SYM32_ENC_GSP_ONE_SHOT_TRIGGER_POSITION enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_GSP_ONE_SHOT_TRIGGER_POSITION {
 DP_SYM32_ENC_GSP_SEND_AT_LINE_NUMBER     = 0x00000000,
 DP_SYM32_ENC_GSP_SEND_AT_EARLIEST_TIME   = 0x00000001,
 } ENUM_DP_SYM32_ENC_GSP_ONE_SHOT_TRIGGER_POSITION;
-
-/*
- * ENUM_DP_SYM32_ENC_GSP_PAYLOAD_SIZE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_GSP_PAYLOAD_SIZE {
 DP_SYM32_ENC_GSP_PAYLOAD_SIZE_32         = 0x00000000,
 DP_SYM32_ENC_GSP_PAYLOAD_SIZE_RESERVED0  = 0x00000001,
 DP_SYM32_ENC_GSP_PAYLOAD_SIZE_RESERVED1  = 0x00000002,
 DP_SYM32_ENC_GSP_PAYLOAD_SIZE_128        = 0x00000003,
 } ENUM_DP_SYM32_ENC_GSP_PAYLOAD_SIZE;
-
-/*
- * ENUM_DP_SYM32_ENC_GSP_TRIGGER_PENDING enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_GSP_TRIGGER_PENDING {
 DP_SYM32_ENC_GSP_TRIGGER_NOT_PENDING     = 0x00000000,
 DP_SYM32_ENC_GSP_TRIGGER_PENDING         = 0x00000001,
 } ENUM_DP_SYM32_ENC_GSP_TRIGGER_PENDING;
-
-/*
- * ENUM_DP_SYM32_ENC_MEM_PWR_FORCE_ENUM enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_MEM_PWR_FORCE_ENUM {
 DP_SYM32_ENC_MEM_PWR_NO_FORCE_REQUEST    = 0x00000000,
 DP_SYM32_ENC_MEM_PWR_FORCE_LIGHT_SLEEP_REQUEST = 0x00000001,
 DP_SYM32_ENC_MEM_PWR_FORCE_DEEP_SLEEP_REQUEST = 0x00000002,
 DP_SYM32_ENC_MEM_PWR_FORCE_SHUT_DOWN_REQUEST = 0x00000003,
 } ENUM_DP_SYM32_ENC_MEM_PWR_FORCE_ENUM;
-
-/*
- * ENUM_DP_SYM32_ENC_OVERFLOW_STATUS enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_OVERFLOW_STATUS {
 DP_SYM32_ENC_NO_OVERFLOW_OCCURRED        = 0x00000000,
 DP_SYM32_ENC_OVERFLOW_OCCURRED           = 0x00000001,
 } ENUM_DP_SYM32_ENC_OVERFLOW_STATUS;
-
-/*
- * ENUM_DP_SYM32_ENC_PENDING enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_PENDING {
 DP_SYM32_ENC_NOT_PENDING                 = 0x00000000,
 DP_SYM32_ENC_PENDING                     = 0x00000001,
 } ENUM_DP_SYM32_ENC_PENDING;
-
-/*
- * ENUM_DP_SYM32_ENC_PIXEL_ENCODING enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_PIXEL_ENCODING {
 DP_SYM32_ENC_PIXEL_ENCODING_RGB_YCBCR444 = 0x00000000,
 DP_SYM32_ENC_PIXEL_ENCODING_YCBCR422     = 0x00000001,
 DP_SYM32_ENC_PIXEL_ENCODING_YCBCR420     = 0x00000002,
 DP_SYM32_ENC_PIXEL_ENCODING_Y_ONLY       = 0x00000003,
 } ENUM_DP_SYM32_ENC_PIXEL_ENCODING;
-
-/*
- * ENUM_DP_SYM32_ENC_PIXEL_ENCODING_TYPE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_PIXEL_ENCODING_TYPE {
 DP_SYM32_ENC_UNCOMPRESSED_FORMAT         = 0x00000000,
 DP_SYM32_ENC_COMPRESSED_FORMAT           = 0x00000001,
 } ENUM_DP_SYM32_ENC_PIXEL_ENCODING_TYPE;
-
-/*
- * ENUM_DP_SYM32_ENC_POWER_STATE_ENUM enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_POWER_STATE_ENUM {
 DP_SYM32_ENC_POWER_STATE_ENUM_ON         = 0x00000000,
 DP_SYM32_ENC_POWER_STATE_ENUM_LS         = 0x00000001,
 DP_SYM32_ENC_POWER_STATE_ENUM_DS         = 0x00000002,
 DP_SYM32_ENC_POWER_STATE_ENUM_SD         = 0x00000003,
 } ENUM_DP_SYM32_ENC_POWER_STATE_ENUM;
-
-/*
- * ENUM_DP_SYM32_ENC_RESET enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_RESET {
 DP_SYM32_ENC_NOT_RESET                   = 0x00000000,
 DP_SYM32_ENC_RESET                       = 0x00000001,
 } ENUM_DP_SYM32_ENC_RESET;
-
-/*
- * ENUM_DP_SYM32_ENC_SDP_PRIORITY enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_SDP_PRIORITY {
 DP_SYM32_ENC_SDP_LOW_PRIORITY            = 0x00000000,
 DP_SYM32_ENC_SDP_HIGH_PRIORITY           = 0x00000001,
 } ENUM_DP_SYM32_ENC_SDP_PRIORITY;
-
-/*
- * ENUM_DP_SYM32_ENC_SOF_REFERENCE enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_SOF_REFERENCE {
 DP_SYM32_ENC_DP_SOF                      = 0x00000000,
 DP_SYM32_ENC_OTG_SOF                     = 0x00000001,
 } ENUM_DP_SYM32_ENC_SOF_REFERENCE;
-
-/*
- * ENUM_DP_SYM32_ENC_VID_STREAM_DEFER enum
- */
-
 typedef enum ENUM_DP_SYM32_ENC_VID_STREAM_DEFER {
 DP_SYM32_ENC_VID_STREAM_NO_DEFER         = 0x00000000,
 DP_SYM32_ENC_VID_STREAM_DEFER_TO_HBLANK  = 0x00000001,
 DP_SYM32_ENC_VID_STREAM_DEFER_TO_VBLANK  = 0x00000002,
 } ENUM_DP_SYM32_ENC_VID_STREAM_DEFER;
-
-/*******************************************************
- * DP_DPHY_SYM32 Enums
- *******************************************************/
-
-/*
- * ENUM_DP_DPHY_SYM32_CRC_END_EVENT enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_CRC_END_EVENT {
 DP_DPHY_SYM32_CRC_END_LLCP               = 0x00000000,
 DP_DPHY_SYM32_CRC_END_PS_ONLY            = 0x00000001,
 DP_DPHY_SYM32_CRC_END_PS_LT_SR           = 0x00000002,
 DP_DPHY_SYM32_CRC_END_PS_ANY             = 0x00000003,
 } ENUM_DP_DPHY_SYM32_CRC_END_EVENT;
-
-/*
- * ENUM_DP_DPHY_SYM32_CRC_START_EVENT enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_CRC_START_EVENT {
 DP_DPHY_SYM32_CRC_START_LLCP             = 0x00000000,
 DP_DPHY_SYM32_CRC_START_PS_ONLY          = 0x00000001,
@@ -9291,145 +4782,70 @@ DP_DPHY_SYM32_CRC_START_PS_LT_SR         = 0x00000002,
 DP_DPHY_SYM32_CRC_START_PS_POST_LT_SR    = 0x00000003,
 DP_DPHY_SYM32_CRC_START_TP_START         = 0x00000004,
 } ENUM_DP_DPHY_SYM32_CRC_START_EVENT;
-
-/*
- * ENUM_DP_DPHY_SYM32_CRC_TAP_SOURCE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_CRC_TAP_SOURCE {
 DP_DPHY_SYM32_CRC_TAP_SOURCE_SCHEDULER   = 0x00000000,
 DP_DPHY_SYM32_CRC_TAP_SOURCE_SYMBOL_HANDLER = 0x00000001,
 DP_DPHY_SYM32_CRC_TAP_SOURCE_TP_GEN_MUX  = 0x00000002,
 } ENUM_DP_DPHY_SYM32_CRC_TAP_SOURCE;
-
-/*
- * ENUM_DP_DPHY_SYM32_CRC_USE_NUM_SYMBOLS enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_CRC_USE_NUM_SYMBOLS {
 DP_DPHY_SYM32_CRC_USE_END_EVENT          = 0x00000000,
 DP_DPHY_SYM32_CRC_USE_NUM_SYMBOLS        = 0x00000001,
 } ENUM_DP_DPHY_SYM32_CRC_USE_NUM_SYMBOLS;
-
-/*
- * ENUM_DP_DPHY_SYM32_ENABLE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_ENABLE {
 DP_DPHY_SYM32_DISABLE                    = 0x00000000,
 DP_DPHY_SYM32_ENABLE                     = 0x00000001,
 } ENUM_DP_DPHY_SYM32_ENABLE;
-
-/*
- * ENUM_DP_DPHY_SYM32_ENCRYPT_TYPE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_ENCRYPT_TYPE {
 DP_DPHY_SYM32_ENCRYPT_TYPE0              = 0x00000000,
 DP_DPHY_SYM32_ENCRYPT_TYPE1              = 0x00000001,
 } ENUM_DP_DPHY_SYM32_ENCRYPT_TYPE;
-
-/*
- * ENUM_DP_DPHY_SYM32_MODE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_MODE {
 DP_DPHY_SYM32_LT_TPS1                    = 0x00000000,
 DP_DPHY_SYM32_LT_TPS2                    = 0x00000001,
 DP_DPHY_SYM32_ACTIVE                     = 0x00000002,
 DP_DPHY_SYM32_TEST                       = 0x00000003,
 } ENUM_DP_DPHY_SYM32_MODE;
-
-/*
- * ENUM_DP_DPHY_SYM32_NUM_LANES enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_NUM_LANES {
 DP_DPHY_SYM32_1LANE                      = 0x00000000,
 DP_DPHY_SYM32_2LANE                      = 0x00000001,
 DP_DPHY_SYM32_RESERVED                   = 0x00000002,
 DP_DPHY_SYM32_4LANE                      = 0x00000003,
 } ENUM_DP_DPHY_SYM32_NUM_LANES;
-
-/*
- * ENUM_DP_DPHY_SYM32_RATE_UPDATE_PENDING enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_RATE_UPDATE_PENDING {
 DP_DPHY_SYM32_NO_RATE_UPDATE_PENDING     = 0x00000000,
 DP_DPHY_SYM32_RATE_UPDATE_PENDING        = 0x00000001,
 } ENUM_DP_DPHY_SYM32_RATE_UPDATE_PENDING;
-
-/*
- * ENUM_DP_DPHY_SYM32_RESET enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_RESET {
 DP_DPHY_SYM32_NOT_RESET                  = 0x00000000,
 DP_DPHY_SYM32_RESET                      = 0x00000001,
 } ENUM_DP_DPHY_SYM32_RESET;
-
-/*
- * ENUM_DP_DPHY_SYM32_RESET_STATUS enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_RESET_STATUS {
 DP_DPHY_SYM32_RESET_STATUS_DEASSERTED    = 0x00000000,
 DP_DPHY_SYM32_RESET_STATUS_ASSERTED      = 0x00000001,
 } ENUM_DP_DPHY_SYM32_RESET_STATUS;
-
-/*
- * ENUM_DP_DPHY_SYM32_SAT_UPDATE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_SAT_UPDATE {
 DP_DPHY_SYM32_SAT_NO_UPDATE              = 0x00000000,
 DP_DPHY_SYM32_SAT_TRIGGER_UPDATE         = 0x00000001,
 DP_DPHY_SYM32_SAT_NOTRIGGER_UPDATE       = 0x00000002,
 } ENUM_DP_DPHY_SYM32_SAT_UPDATE;
-
-/*
- * ENUM_DP_DPHY_SYM32_SAT_UPDATE_PENDING enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_SAT_UPDATE_PENDING {
 DP_DPHY_SYM32_SAT_NO_UPDATE_PENDING      = 0x00000000,
 DP_DPHY_SYM32_SAT_TRIGGER_UPDATE_PENDING = 0x00000001,
 DP_DPHY_SYM32_SAT_NOTRIGGER_UPDATE_PENDING = 0x00000002,
 } ENUM_DP_DPHY_SYM32_SAT_UPDATE_PENDING;
-
-/*
- * ENUM_DP_DPHY_SYM32_STATUS enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_STATUS {
 DP_DPHY_SYM32_STATUS_IDLE                = 0x00000000,
 DP_DPHY_SYM32_STATUS_ENABLED             = 0x00000001,
 } ENUM_DP_DPHY_SYM32_STATUS;
-
-/*
- * ENUM_DP_DPHY_SYM32_STREAM_OVR_ENABLE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_STREAM_OVR_ENABLE {
 DP_DPHY_SYM32_STREAM_OVR_NONE            = 0x00000000,
 DP_DPHY_SYM32_STREAM_OVR_REPLACE         = 0x00000001,
 DP_DPHY_SYM32_STREAM_OVR_ALWAYS          = 0x00000002,
 } ENUM_DP_DPHY_SYM32_STREAM_OVR_ENABLE;
-
-/*
- * ENUM_DP_DPHY_SYM32_STREAM_OVR_TYPE enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_STREAM_OVR_TYPE {
 DP_DPHY_SYM32_STREAM_OVR_TYPE_DATA       = 0x00000000,
 DP_DPHY_SYM32_STREAM_OVR_TYPE_CONTROL    = 0x00000001,
 } ENUM_DP_DPHY_SYM32_STREAM_OVR_TYPE;
-
-/*
- * ENUM_DP_DPHY_SYM32_TP_PRBS_SEL enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_TP_PRBS_SEL {
 DP_DPHY_SYM32_TP_PRBS_SEL_PRBS7          = 0x00000000,
 DP_DPHY_SYM32_TP_PRBS_SEL_PRBS9          = 0x00000001,
@@ -9438,11 +4854,6 @@ DP_DPHY_SYM32_TP_PRBS_SEL_PRBS15         = 0x00000003,
 DP_DPHY_SYM32_TP_PRBS_SEL_PRBS23         = 0x00000004,
 DP_DPHY_SYM32_TP_PRBS_SEL_PRBS31         = 0x00000005,
 } ENUM_DP_DPHY_SYM32_TP_PRBS_SEL;
-
-/*
- * ENUM_DP_DPHY_SYM32_TP_SELECT enum
- */
-
 typedef enum ENUM_DP_DPHY_SYM32_TP_SELECT {
 DP_DPHY_SYM32_TP_SELECT_TPS1             = 0x00000000,
 DP_DPHY_SYM32_TP_SELECT_TPS2             = 0x00000001,
@@ -9450,15 +4861,6 @@ DP_DPHY_SYM32_TP_SELECT_PRBS             = 0x00000002,
 DP_DPHY_SYM32_TP_SELECT_CUSTOM           = 0x00000003,
 DP_DPHY_SYM32_TP_SELECT_SQUARE           = 0x00000004,
 } ENUM_DP_DPHY_SYM32_TP_SELECT;
-
-/*******************************************************
- * APG Enums
- *******************************************************/
-
-/*
- * APG_AUDIO_CRC_CONTROL_CH_SEL enum
- */
-
 typedef enum APG_AUDIO_CRC_CONTROL_CH_SEL {
 APG_AUDIO_CRC_CH0_SIG                    = 0x00000000,
 APG_AUDIO_CRC_CH1_SIG                    = 0x00000001,
@@ -9477,40 +4879,20 @@ APG_AUDIO_CRC_RESERVED_13                = 0x0000000d,
 APG_AUDIO_CRC_RESERVED_14                = 0x0000000e,
 APG_AUDIO_CRC_RESERVED_15                = 0x0000000f,
 } APG_AUDIO_CRC_CONTROL_CH_SEL;
-
-/*
- * APG_AUDIO_CRC_CONTROL_CONT enum
- */
-
 typedef enum APG_AUDIO_CRC_CONTROL_CONT {
 APG_AUDIO_CRC_ONESHOT                    = 0x00000000,
 APG_AUDIO_CRC_CONTINUOUS                 = 0x00000001,
 } APG_AUDIO_CRC_CONTROL_CONT;
-
-/*
- * APG_DBG_ACP_TYPE enum
- */
-
 typedef enum APG_DBG_ACP_TYPE {
 APG_ACP_TYPE_GENERIC_AUDIO               = 0x00000000,
 APG_ACP_TYPE_ICE60958_AUDIO              = 0x00000001,
 APG_ACP_TYPE_DVD_AUDIO                   = 0x00000002,
 APG_ACP_TYPE_SUPER_AUDIO_CD              = 0x00000003,
 } APG_DBG_ACP_TYPE;
-
-/*
- * APG_DBG_AUDIO_DTO_BASE enum
- */
-
 typedef enum APG_DBG_AUDIO_DTO_BASE {
 BASE_RATE_48KHZ                          = 0x00000000,
 BASE_RATE_44P1KHZ                        = 0x00000001,
 } APG_DBG_AUDIO_DTO_BASE;
-
-/*
- * APG_DBG_AUDIO_DTO_DIV enum
- */
-
 typedef enum APG_DBG_AUDIO_DTO_DIV {
 DIVISOR_BY1                              = 0x00000000,
 DIVISOR_BY2_RESERVED                     = 0x00000001,
@@ -9521,11 +4903,6 @@ DIVISOR_BY6_RESERVED                     = 0x00000005,
 DIVISOR_BY7_RESERVED                     = 0x00000006,
 DIVISOR_BY8_RESERVED                     = 0x00000007,
 } APG_DBG_AUDIO_DTO_DIV;
-
-/*
- * APG_DBG_AUDIO_DTO_MULTI enum
- */
-
 typedef enum APG_DBG_AUDIO_DTO_MULTI {
 MULTIPLE_BY1                             = 0x00000000,
 MULTIPLE_BY2                             = 0x00000001,
@@ -9533,91 +4910,42 @@ MULTIPLE_BY3_RESERVED                    = 0x00000002,
 MULTIPLE_BY4                             = 0x00000003,
 MULTIPLE_RESERVED                        = 0x00000004,
 } APG_DBG_AUDIO_DTO_MULTI;
-
-/*
- * APG_DBG_MUX_SEL enum
- */
-
 typedef enum APG_DBG_MUX_SEL {
 APG_FUNCTIONAL_MODE                      = 0x00000000,
 APG_DEBUG_AUDIO_MODE                     = 0x00000001,
 } APG_DBG_MUX_SEL;
-
-/*
- * APG_DP_ASP_CHANNEL_COUNT_OVERRIDE enum
- */
-
 typedef enum APG_DP_ASP_CHANNEL_COUNT_OVERRIDE {
 APG_DP_ASP_CHANNEL_COUNT_FROM_AZ         = 0x00000000,
 APG_DP_ASP_CHANNEL_COUNT_OVERRIDE_ENABLED = 0x00000001,
 } APG_DP_ASP_CHANNEL_COUNT_OVERRIDE;
-
-/*
- * APG_MEM_POWER_STATE enum
- */
-
 typedef enum APG_MEM_POWER_STATE {
 APG_MEM_POWER_STATE_ON                   = 0x00000000,
 APG_MEM_POWER_STATE_LS                   = 0x00000001,
 APG_MEM_POWER_STATE_DS                   = 0x00000002,
 APG_MEM_POWER_STATE_SD                   = 0x00000003,
 } APG_MEM_POWER_STATE;
-
-/*
- * APG_MEM_PWR_DIS_CTRL enum
- */
-
 typedef enum APG_MEM_PWR_DIS_CTRL {
 APG_MEM_ENABLE_MEM_PWR_CTRL              = 0x00000000,
 APG_MEM_DISABLE_MEM_PWR_CTRL             = 0x00000001,
 } APG_MEM_PWR_DIS_CTRL;
-
-/*
- * APG_MEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum APG_MEM_PWR_FORCE_CTRL {
 APG_MEM_NO_FORCE_REQUEST                 = 0x00000000,
 APG_MEM_FORCE_LIGHT_SLEEP_REQUEST        = 0x00000001,
 APG_MEM_FORCE_DEEP_SLEEP_REQUEST         = 0x00000002,
 APG_MEM_FORCE_SHUT_DOWN_REQUEST          = 0x00000003,
 } APG_MEM_PWR_FORCE_CTRL;
-
-/*
- * APG_PACKET_CONTROL_ACP_SOURCE enum
- */
-
 typedef enum APG_PACKET_CONTROL_ACP_SOURCE {
 APG_ACP_SOURCE_NO_OVERRIDE               = 0x00000000,
 APG_ACP_OVERRIDE                         = 0x00000001,
 } APG_PACKET_CONTROL_ACP_SOURCE;
-
-/*
- * APG_PACKET_CONTROL_AUDIO_INFO_SOURCE enum
- */
-
 typedef enum APG_PACKET_CONTROL_AUDIO_INFO_SOURCE {
 APG_INFOFRAME_SOURCE_NO_OVERRIDE         = 0x00000000,
 APG_INFOFRAME_SOURCE_FROM_APG_REGISTERS  = 0x00000001,
 } APG_PACKET_CONTROL_AUDIO_INFO_SOURCE;
-
-/*
- * APG_RAMP_CONTROL_SIGN enum
- */
-
 typedef enum APG_RAMP_CONTROL_SIGN {
 APG_RAMP_SIGNED                          = 0x00000000,
 APG_RAMP_UNSIGNED                        = 0x00000001,
 } APG_RAMP_CONTROL_SIGN;
-
-/*******************************************************
- * DCIO Enums
- *******************************************************/
-
-/*
- * DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL enum
- */
-
 typedef enum DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL {
 DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL_CONTROLLER1 = 0x00000000,
 DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL_CONTROLLER2 = 0x00000001,
@@ -9626,30 +4954,15 @@ DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL_CONTROLLER4 = 0x00000003,
 DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL_CONTROLLER5 = 0x00000004,
 DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL_CONTROLLER6 = 0x00000005,
 } DCIO_BL_PWM_GRP1_FRAME_START_DISP_SEL;
-
-/*
- * DCIO_CLOCK_CNTL_DCIO_TEST_CLK_SEL enum
- */
-
 typedef enum DCIO_CLOCK_CNTL_DCIO_TEST_CLK_SEL {
 DCIO_TEST_CLK_SEL_DISPCLK                = 0x00000000,
 DCIO_TEST_CLK_SEL_GATED_DISPCLK          = 0x00000001,
 DCIO_TEST_CLK_SEL_SOCCLK                 = 0x00000002,
 } DCIO_CLOCK_CNTL_DCIO_TEST_CLK_SEL;
-
-/*
- * DCIO_CLOCK_CNTL_DISPCLK_R_DCIO_GATE_DIS enum
- */
-
 typedef enum DCIO_CLOCK_CNTL_DISPCLK_R_DCIO_GATE_DIS {
 DCIO_DISPCLK_R_DCIO_GATE_DISABLE         = 0x00000000,
 DCIO_DISPCLK_R_DCIO_GATE_ENABLE          = 0x00000001,
 } DCIO_CLOCK_CNTL_DISPCLK_R_DCIO_GATE_DIS;
-
-/*
- * DCIO_DBG_ASYNC_4BIT_SEL enum
- */
-
 typedef enum DCIO_DBG_ASYNC_4BIT_SEL {
 DCIO_DBG_ASYNC_4BIT_SEL_3TO0             = 0x00000000,
 DCIO_DBG_ASYNC_4BIT_SEL_7TO4             = 0x00000001,
@@ -9660,51 +4973,26 @@ DCIO_DBG_ASYNC_4BIT_SEL_23TO20           = 0x00000005,
 DCIO_DBG_ASYNC_4BIT_SEL_27TO24           = 0x00000006,
 DCIO_DBG_ASYNC_4BIT_SEL_31TO28           = 0x00000007,
 } DCIO_DBG_ASYNC_4BIT_SEL;
-
-/*
- * DCIO_DBG_ASYNC_BLOCK_SEL enum
- */
-
 typedef enum DCIO_DBG_ASYNC_BLOCK_SEL {
 DCIO_DBG_ASYNC_BLOCK_SEL_OVERRIDE        = 0x00000000,
 DCIO_DBG_ASYNC_BLOCK_SEL_DCCG            = 0x00000001,
 DCIO_DBG_ASYNC_BLOCK_SEL_DCIO            = 0x00000002,
 DCIO_DBG_ASYNC_BLOCK_SEL_DIO             = 0x00000003,
 } DCIO_DBG_ASYNC_BLOCK_SEL;
-
-/*
- * DCIO_DCRXPHY_SOFT_RESET enum
- */
-
 typedef enum DCIO_DCRXPHY_SOFT_RESET {
 DCIO_DCRXPHY_SOFT_RESET_DEASSERT         = 0x00000000,
 DCIO_DCRXPHY_SOFT_RESET_ASSERT           = 0x00000001,
 } DCIO_DCRXPHY_SOFT_RESET;
-
-/*
- * DCIO_DC_GENERICA_SEL enum
- */
-
 typedef enum DCIO_DC_GENERICA_SEL {
 DCIO_GENERICA_SEL_STEREOSYNC             = 0x00000001,
 DCIO_GENERICA_SEL_GENERICA_DCCG          = 0x0000000a,
 DCIO_GENERICA_SEL_SYNCEN                 = 0x0000000b,
 } DCIO_DC_GENERICA_SEL;
-
-/*
- * DCIO_DC_GENERICB_SEL enum
- */
-
 typedef enum DCIO_DC_GENERICB_SEL {
 DCIO_GENERICB_SEL_STEREOSYNC             = 0x00000001,
 DCIO_GENERICB_SEL_GENERICB_DCCG          = 0x0000000a,
 DCIO_GENERICB_SEL_SYNCEN                 = 0x0000000b,
 } DCIO_DC_GENERICB_SEL;
-
-/*
- * DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_DIV2_SEL enum
- */
-
 typedef enum DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_DIV2_SEL {
 DCIO_UNIPHYA_TEST_FBDIV_CLK_DIV2         = 0x00000000,
 DCIO_UNIPHYB_TEST_FBDIV_CLK_DIV2         = 0x00000001,
@@ -9714,11 +5002,6 @@ DCIO_UNIPHYE_TEST_FBDIV_CLK_DIV2         = 0x00000004,
 DCIO_UNIPHYF_TEST_FBDIV_CLK_DIV2         = 0x00000005,
 DCIO_UNIPHYG_TEST_FBDIV_CLK_DIV2         = 0x00000006,
 } DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_DIV2_SEL;
-
-/*
- * DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_SEL enum
- */
-
 typedef enum DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_SEL {
 DCIO_UNIPHYA_FBDIV_CLK                   = 0x00000000,
 DCIO_UNIPHYB_FBDIV_CLK                   = 0x00000001,
@@ -9728,11 +5011,6 @@ DCIO_UNIPHYE_FBDIV_CLK                   = 0x00000004,
 DCIO_UNIPHYF_FBDIV_CLK                   = 0x00000005,
 DCIO_UNIPHYG_FBDIV_CLK                   = 0x00000006,
 } DCIO_DC_GENERIC_UNIPHY_FBDIV_CLK_SEL;
-
-/*
- * DCIO_DC_GENERIC_UNIPHY_FBDIV_SSC_CLK_SEL enum
- */
-
 typedef enum DCIO_DC_GENERIC_UNIPHY_FBDIV_SSC_CLK_SEL {
 DCIO_UNIPHYA_FBDIV_SSC_CLK               = 0x00000000,
 DCIO_UNIPHYB_FBDIV_SSC_CLK               = 0x00000001,
@@ -9742,11 +5020,6 @@ DCIO_UNIPHYE_FBDIV_SSC_CLK               = 0x00000004,
 DCIO_UNIPHYF_FBDIV_SSC_CLK               = 0x00000005,
 DCIO_UNIPHYG_FBDIV_SSC_CLK               = 0x00000006,
 } DCIO_DC_GENERIC_UNIPHY_FBDIV_SSC_CLK_SEL;
-
-/*
- * DCIO_DC_GENERIC_UNIPHY_REFDIV_CLK_SEL enum
- */
-
 typedef enum DCIO_DC_GENERIC_UNIPHY_REFDIV_CLK_SEL {
 DCIO_UNIPHYA_TEST_REFDIV_CLK             = 0x00000000,
 DCIO_UNIPHYB_TEST_REFDIV_CLK             = 0x00000001,
@@ -9756,20 +5029,10 @@ DCIO_UNIPHYE_TEST_REFDIV_CLK             = 0x00000004,
 DCIO_UNIPHYF_TEST_REFDIV_CLK             = 0x00000005,
 DCIO_UNIPHYG_TEST_REFDIV_CLK             = 0x00000006,
 } DCIO_DC_GENERIC_UNIPHY_REFDIV_CLK_SEL;
-
-/*
- * DCIO_DC_GPIO_DEBUG_DPRX_LOOPBACK_ENABLE enum
- */
-
 typedef enum DCIO_DC_GPIO_DEBUG_DPRX_LOOPBACK_ENABLE {
 DCIO_DPRX_LOOPBACK_ENABLE_NORMAL         = 0x00000000,
 DCIO_DPRX_LOOPBACK_ENABLE_LOOP           = 0x00000001,
 } DCIO_DC_GPIO_DEBUG_DPRX_LOOPBACK_ENABLE;
-
-/*
- * DCIO_DC_GPU_TIMER_READ_SELECT enum
- */
-
 typedef enum DCIO_DC_GPU_TIMER_READ_SELECT {
 DCIO_GPU_TIMER_READ_SELECT_LOWER_D1_V_UPDATE = 0x00000000,
 DCIO_GPU_TIMER_READ_SELECT_UPPER_D1_V_UPDATE = 0x00000001,
@@ -9778,11 +5041,6 @@ DCIO_GPU_TIMER_READ_SELECT_UPPER_D1_P_FLIP = 0x00000003,
 DCIO_GPU_TIMER_READ_SELECT_LOWER_D1_VSYNC_NOM = 0x00000004,
 DCIO_GPU_TIMER_READ_SELECT_UPPER_D1_VSYNC_NOM = 0x00000005,
 } DCIO_DC_GPU_TIMER_READ_SELECT;
-
-/*
- * DCIO_DC_GPU_TIMER_START_POSITION enum
- */
-
 typedef enum DCIO_DC_GPU_TIMER_START_POSITION {
 DCIO_GPU_TIMER_START_0_END_27            = 0x00000000,
 DCIO_GPU_TIMER_START_1_END_28            = 0x00000001,
@@ -9793,33 +5051,18 @@ DCIO_GPU_TIMER_START_6_END_33            = 0x00000005,
 DCIO_GPU_TIMER_START_8_END_35            = 0x00000006,
 DCIO_GPU_TIMER_START_10_END_37           = 0x00000007,
 } DCIO_DC_GPU_TIMER_START_POSITION;
-
-/*
- * DCIO_DC_REF_CLK_CNTL_GENLK_CLK_OUTPUT_SEL enum
- */
-
 typedef enum DCIO_DC_REF_CLK_CNTL_GENLK_CLK_OUTPUT_SEL {
 DCIO_GENLK_CLK_OUTPUT_SEL_DISABLE        = 0x00000000,
 DCIO_GENLK_CLK_OUTPUT_SEL_PPLL1          = 0x00000001,
 DCIO_GENLK_CLK_OUTPUT_SEL_PPLL2          = 0x00000002,
 DCIO_GENLK_CLK_OUTPUT_SEL_RESERVED_VALUE3 = 0x00000003,
 } DCIO_DC_REF_CLK_CNTL_GENLK_CLK_OUTPUT_SEL;
-
-/*
- * DCIO_DC_REF_CLK_CNTL_HSYNCA_OUTPUT_SEL enum
- */
-
 typedef enum DCIO_DC_REF_CLK_CNTL_HSYNCA_OUTPUT_SEL {
 DCIO_HSYNCA_OUTPUT_SEL_DISABLE           = 0x00000000,
 DCIO_HSYNCA_OUTPUT_SEL_PPLL1             = 0x00000001,
 DCIO_HSYNCA_OUTPUT_SEL_PPLL2             = 0x00000002,
 DCIO_HSYNCA_OUTPUT_SEL_RESERVED          = 0x00000003,
 } DCIO_DC_REF_CLK_CNTL_HSYNCA_OUTPUT_SEL;
-
-/*
- * DCIO_DIO_EXT_VSYNC_MASK enum
- */
-
 typedef enum DCIO_DIO_EXT_VSYNC_MASK {
 DCIO_EXT_VSYNC_MASK_NONE                 = 0x00000000,
 DCIO_EXT_VSYNC_MASK_PIPE0                = 0x00000001,
@@ -9830,11 +5073,6 @@ DCIO_EXT_VSYNC_MASK_PIPE4                = 0x00000005,
 DCIO_EXT_VSYNC_MASK_PIPE5                = 0x00000006,
 DCIO_EXT_VSYNC_MASK_NONE_DUPLICATE       = 0x00000007,
 } DCIO_DIO_EXT_VSYNC_MASK;
-
-/*
- * DCIO_DIO_OTG_EXT_VSYNC_MUX enum
- */
-
 typedef enum DCIO_DIO_OTG_EXT_VSYNC_MUX {
 DCIO_EXT_VSYNC_MUX_SWAPLOCKB             = 0x00000000,
 DCIO_EXT_VSYNC_MUX_OTG0                  = 0x00000001,
@@ -9845,830 +5083,379 @@ DCIO_EXT_VSYNC_MUX_OTG4                  = 0x00000005,
 DCIO_EXT_VSYNC_MUX_OTG5                  = 0x00000006,
 DCIO_EXT_VSYNC_MUX_GENERICB              = 0x00000007,
 } DCIO_DIO_OTG_EXT_VSYNC_MUX;
-
-/*
- * DCIO_DPCS_INTERRUPT_MASK enum
- */
-
 typedef enum DCIO_DPCS_INTERRUPT_MASK {
 DCIO_DPCS_INTERRUPT_DISABLE              = 0x00000000,
 DCIO_DPCS_INTERRUPT_ENABLE               = 0x00000001,
 } DCIO_DPCS_INTERRUPT_MASK;
-
-/*
- * DCIO_DPCS_INTERRUPT_TYPE enum
- */
-
 typedef enum DCIO_DPCS_INTERRUPT_TYPE {
 DCIO_DPCS_INTERRUPT_TYPE_LEVEL_BASED     = 0x00000000,
 DCIO_DPCS_INTERRUPT_TYPE_PULSE_BASED     = 0x00000001,
 } DCIO_DPCS_INTERRUPT_TYPE;
-
-/*
- * DCIO_DSYNC_SOFT_RESET enum
- */
-
 typedef enum DCIO_DSYNC_SOFT_RESET {
 DCIO_DSYNC_SOFT_RESET_DEASSERT           = 0x00000000,
 DCIO_DSYNC_SOFT_RESET_ASSERT             = 0x00000001,
 } DCIO_DSYNC_SOFT_RESET;
-
-/*
- * DCIO_GENLK_CLK_GSL_MASK enum
- */
-
 typedef enum DCIO_GENLK_CLK_GSL_MASK {
 DCIO_GENLK_CLK_GSL_MASK_NO               = 0x00000000,
 DCIO_GENLK_CLK_GSL_MASK_TIMING           = 0x00000001,
 DCIO_GENLK_CLK_GSL_MASK_STEREO           = 0x00000002,
 } DCIO_GENLK_CLK_GSL_MASK;
-
-/*
- * DCIO_GENLK_VSYNC_GSL_MASK enum
- */
-
 typedef enum DCIO_GENLK_VSYNC_GSL_MASK {
 DCIO_GENLK_VSYNC_GSL_MASK_NO             = 0x00000000,
 DCIO_GENLK_VSYNC_GSL_MASK_TIMING         = 0x00000001,
 DCIO_GENLK_VSYNC_GSL_MASK_STEREO         = 0x00000002,
 } DCIO_GENLK_VSYNC_GSL_MASK;
-
-/*
- * DCIO_GSL_SEL enum
- */
-
 typedef enum DCIO_GSL_SEL {
 DCIO_GSL_SEL_GROUP_0                     = 0x00000000,
 DCIO_GSL_SEL_GROUP_1                     = 0x00000001,
 DCIO_GSL_SEL_GROUP_2                     = 0x00000002,
 } DCIO_GSL_SEL;
-
-/*
- * DCIO_PHY_HPO_ENC_SRC_SEL enum
- */
-
 typedef enum DCIO_PHY_HPO_ENC_SRC_SEL {
 HPO_SRC0                                 = 0x00000000,
 HPO_SRC_RESERVED                         = 0x00000001,
 } DCIO_PHY_HPO_ENC_SRC_SEL;
-
-/*
- * DCIO_SWAPLOCK_A_GSL_MASK enum
- */
-
 typedef enum DCIO_SWAPLOCK_A_GSL_MASK {
 DCIO_SWAPLOCK_A_GSL_MASK_NO              = 0x00000000,
 DCIO_SWAPLOCK_A_GSL_MASK_TIMING          = 0x00000001,
 DCIO_SWAPLOCK_A_GSL_MASK_STEREO          = 0x00000002,
 } DCIO_SWAPLOCK_A_GSL_MASK;
-
-/*
- * DCIO_SWAPLOCK_B_GSL_MASK enum
- */
-
 typedef enum DCIO_SWAPLOCK_B_GSL_MASK {
 DCIO_SWAPLOCK_B_GSL_MASK_NO              = 0x00000000,
 DCIO_SWAPLOCK_B_GSL_MASK_TIMING          = 0x00000001,
 DCIO_SWAPLOCK_B_GSL_MASK_STEREO          = 0x00000002,
 } DCIO_SWAPLOCK_B_GSL_MASK;
-
-/*
- * DCIO_UNIPHY_CHANNEL_XBAR_SOURCE enum
- */
-
 typedef enum DCIO_UNIPHY_CHANNEL_XBAR_SOURCE {
 DCIO_UNIPHY_CHANNEL_XBAR_SOURCE_CH0      = 0x00000000,
 DCIO_UNIPHY_CHANNEL_XBAR_SOURCE_CH1      = 0x00000001,
 DCIO_UNIPHY_CHANNEL_XBAR_SOURCE_CH2      = 0x00000002,
 DCIO_UNIPHY_CHANNEL_XBAR_SOURCE_CH3      = 0x00000003,
 } DCIO_UNIPHY_CHANNEL_XBAR_SOURCE;
-
-/*
- * DCIO_UNIPHY_IMPCAL_SEL enum
- */
-
 typedef enum DCIO_UNIPHY_IMPCAL_SEL {
 DCIO_UNIPHY_IMPCAL_SEL_TEMPERATURE       = 0x00000000,
 DCIO_UNIPHY_IMPCAL_SEL_BINARY            = 0x00000001,
 } DCIO_UNIPHY_IMPCAL_SEL;
-
-/*
- * DCIO_UNIPHY_LINK_CNTL_CHANNEL_INVERT enum
- */
-
 typedef enum DCIO_UNIPHY_LINK_CNTL_CHANNEL_INVERT {
 DCIO_UNIPHY_CHANNEL_NO_INVERSION         = 0x00000000,
 DCIO_UNIPHY_CHANNEL_INVERTED             = 0x00000001,
 } DCIO_UNIPHY_LINK_CNTL_CHANNEL_INVERT;
-
-/*
- * DCIO_UNIPHY_LINK_CNTL_ENABLE_HPD_MASK enum
- */
-
 typedef enum DCIO_UNIPHY_LINK_CNTL_ENABLE_HPD_MASK {
 DCIO_UNIPHY_LINK_ENABLE_HPD_MASK_DISALLOW = 0x00000000,
 DCIO_UNIPHY_LINK_ENABLE_HPD_MASK_ALLOW   = 0x00000001,
 DCIO_UNIPHY_LINK_ENABLE_HPD_MASK_ALLOW_DEBOUNCED = 0x00000002,
 DCIO_UNIPHY_LINK_ENABLE_HPD_MASK_ALLOW_TOGGLE_FILTERED = 0x00000003,
 } DCIO_UNIPHY_LINK_CNTL_ENABLE_HPD_MASK;
-
-/*******************************************************
- * DCIO_CHIP Enums
- *******************************************************/
-
-/*
- * DCIOCHIP_AUX_ALL_PWR_OK enum
- */
-
 typedef enum DCIOCHIP_AUX_ALL_PWR_OK {
 DCIOCHIP_AUX_ALL_PWR_OK_0                = 0x00000000,
 DCIOCHIP_AUX_ALL_PWR_OK_1                = 0x00000001,
 } DCIOCHIP_AUX_ALL_PWR_OK;
-
-/*
- * DCIOCHIP_AUX_CSEL0P9 enum
- */
-
 typedef enum DCIOCHIP_AUX_CSEL0P9 {
 DCIOCHIP_AUX_CSEL_DEC1P0                 = 0x00000000,
 DCIOCHIP_AUX_CSEL_DEC0P9                 = 0x00000001,
 } DCIOCHIP_AUX_CSEL0P9;
-
-/*
- * DCIOCHIP_AUX_CSEL1P1 enum
- */
-
 typedef enum DCIOCHIP_AUX_CSEL1P1 {
 DCIOCHIP_AUX_CSEL_INC1P0                 = 0x00000000,
 DCIOCHIP_AUX_CSEL_INC1P1                 = 0x00000001,
 } DCIOCHIP_AUX_CSEL1P1;
-
-/*
- * DCIOCHIP_AUX_FALLSLEWSEL enum
- */
-
 typedef enum DCIOCHIP_AUX_FALLSLEWSEL {
 DCIOCHIP_AUX_FALLSLEWSEL_LOW             = 0x00000000,
 DCIOCHIP_AUX_FALLSLEWSEL_HIGH0           = 0x00000001,
 DCIOCHIP_AUX_FALLSLEWSEL_HIGH1           = 0x00000002,
 DCIOCHIP_AUX_FALLSLEWSEL_ULTRAHIGH       = 0x00000003,
 } DCIOCHIP_AUX_FALLSLEWSEL;
-
-/*
- * DCIOCHIP_AUX_HYS_TUNE enum
- */
-
 typedef enum DCIOCHIP_AUX_HYS_TUNE {
 DCIOCHIP_AUX_HYS_TUNE_0                  = 0x00000000,
 DCIOCHIP_AUX_HYS_TUNE_1                  = 0x00000001,
 DCIOCHIP_AUX_HYS_TUNE_2                  = 0x00000002,
 DCIOCHIP_AUX_HYS_TUNE_3                  = 0x00000003,
 } DCIOCHIP_AUX_HYS_TUNE;
-
-/*
- * DCIOCHIP_AUX_RECEIVER_SEL enum
- */
-
 typedef enum DCIOCHIP_AUX_RECEIVER_SEL {
 DCIOCHIP_AUX_RECEIVER_SEL_0              = 0x00000000,
 DCIOCHIP_AUX_RECEIVER_SEL_1              = 0x00000001,
 DCIOCHIP_AUX_RECEIVER_SEL_2              = 0x00000002,
 DCIOCHIP_AUX_RECEIVER_SEL_3              = 0x00000003,
 } DCIOCHIP_AUX_RECEIVER_SEL;
-
-/*
- * DCIOCHIP_AUX_RSEL0P9 enum
- */
-
 typedef enum DCIOCHIP_AUX_RSEL0P9 {
 DCIOCHIP_AUX_RSEL_DEC1P0                 = 0x00000000,
 DCIOCHIP_AUX_RSEL_DEC0P9                 = 0x00000001,
 } DCIOCHIP_AUX_RSEL0P9;
-
-/*
- * DCIOCHIP_AUX_RSEL1P1 enum
- */
-
 typedef enum DCIOCHIP_AUX_RSEL1P1 {
 DCIOCHIP_AUX_RSEL_INC1P0                 = 0x00000000,
 DCIOCHIP_AUX_RSEL_INC1P1                 = 0x00000001,
 } DCIOCHIP_AUX_RSEL1P1;
-
-/*
- * DCIOCHIP_AUX_SPIKESEL enum
- */
-
 typedef enum DCIOCHIP_AUX_SPIKESEL {
 DCIOCHIP_AUX_SPIKESEL_50NS               = 0x00000000,
 DCIOCHIP_AUX_SPIKESEL_10NS               = 0x00000001,
 } DCIOCHIP_AUX_SPIKESEL;
-
-/*
- * DCIOCHIP_AUX_VOD_TUNE enum
- */
-
 typedef enum DCIOCHIP_AUX_VOD_TUNE {
 DCIOCHIP_AUX_VOD_TUNE_0                  = 0x00000000,
 DCIOCHIP_AUX_VOD_TUNE_1                  = 0x00000001,
 DCIOCHIP_AUX_VOD_TUNE_2                  = 0x00000002,
 DCIOCHIP_AUX_VOD_TUNE_3                  = 0x00000003,
 } DCIOCHIP_AUX_VOD_TUNE;
-
-/*
- * DCIOCHIP_GPIO_MASK_EN enum
- */
-
 typedef enum DCIOCHIP_GPIO_MASK_EN {
 DCIOCHIP_GPIO_MASK_EN_HARDWARE           = 0x00000000,
 DCIOCHIP_GPIO_MASK_EN_SOFTWARE           = 0x00000001,
 } DCIOCHIP_GPIO_MASK_EN;
-
-/*
- * DCIOCHIP_HPD_SEL enum
- */
-
 typedef enum DCIOCHIP_HPD_SEL {
 DCIOCHIP_HPD_SEL_ASYNC                   = 0x00000000,
 DCIOCHIP_HPD_SEL_CLOCKED                 = 0x00000001,
 } DCIOCHIP_HPD_SEL;
-
-/*
- * DCIOCHIP_I2C_COMPSEL enum
- */
-
 typedef enum DCIOCHIP_I2C_COMPSEL {
 DCIOCHIP_I2C_REC_SCHMIT                  = 0x00000000,
 DCIOCHIP_I2C_REC_COMPARATOR              = 0x00000001,
 } DCIOCHIP_I2C_COMPSEL;
-
-/*
- * DCIOCHIP_I2C_FALLSLEWSEL enum
- */
-
 typedef enum DCIOCHIP_I2C_FALLSLEWSEL {
 DCIOCHIP_I2C_FALLSLEWSEL_00              = 0x00000000,
 DCIOCHIP_I2C_FALLSLEWSEL_01              = 0x00000001,
 DCIOCHIP_I2C_FALLSLEWSEL_10              = 0x00000002,
 DCIOCHIP_I2C_FALLSLEWSEL_11              = 0x00000003,
 } DCIOCHIP_I2C_FALLSLEWSEL;
-
-/*
- * DCIOCHIP_I2C_RECEIVER_SEL enum
- */
-
 typedef enum DCIOCHIP_I2C_RECEIVER_SEL {
 DCIOCHIP_I2C_RECEIVER_SEL_0              = 0x00000000,
 DCIOCHIP_I2C_RECEIVER_SEL_1              = 0x00000001,
 DCIOCHIP_I2C_RECEIVER_SEL_2              = 0x00000002,
 DCIOCHIP_I2C_RECEIVER_SEL_3              = 0x00000003,
 } DCIOCHIP_I2C_RECEIVER_SEL;
-
-/*
- * DCIOCHIP_I2C_VPH_1V2_EN enum
- */
-
 typedef enum DCIOCHIP_I2C_VPH_1V2_EN {
 DCIOCHIP_I2C_VPH_1V2_EN_0                = 0x00000000,
 DCIOCHIP_I2C_VPH_1V2_EN_1                = 0x00000001,
 } DCIOCHIP_I2C_VPH_1V2_EN;
-
-/*
- * DCIOCHIP_INVERT enum
- */
-
 typedef enum DCIOCHIP_INVERT {
 DCIOCHIP_POL_NON_INVERT                  = 0x00000000,
 DCIOCHIP_POL_INVERT                      = 0x00000001,
 } DCIOCHIP_INVERT;
-
-/*
- * DCIOCHIP_MASK enum
- */
-
 typedef enum DCIOCHIP_MASK {
 DCIOCHIP_MASK_DISABLE                    = 0x00000000,
 DCIOCHIP_MASK_ENABLE                     = 0x00000001,
 } DCIOCHIP_MASK;
-
-/*
- * DCIOCHIP_PAD_MODE enum
- */
-
 typedef enum DCIOCHIP_PAD_MODE {
 DCIOCHIP_PAD_MODE_DDC                    = 0x00000000,
 DCIOCHIP_PAD_MODE_DP                     = 0x00000001,
 } DCIOCHIP_PAD_MODE;
-
-/*
- * DCIOCHIP_PD_EN enum
- */
-
 typedef enum DCIOCHIP_PD_EN {
 DCIOCHIP_PD_EN_NOTALLOW                  = 0x00000000,
 DCIOCHIP_PD_EN_ALLOW                     = 0x00000001,
 } DCIOCHIP_PD_EN;
-
-/*
- * DCIOCHIP_REF_27_SRC_SEL enum
- */
-
 typedef enum DCIOCHIP_REF_27_SRC_SEL {
 DCIOCHIP_REF_27_SRC_SEL_XTAL_DIVIDER     = 0x00000000,
 DCIOCHIP_REF_27_SRC_SEL_DISP_CLKIN2_DIVIDER = 0x00000001,
 DCIOCHIP_REF_27_SRC_SEL_XTAL_BYPASS      = 0x00000002,
 DCIOCHIP_REF_27_SRC_SEL_DISP_CLKIN2_BYPASS = 0x00000003,
 } DCIOCHIP_REF_27_SRC_SEL;
-
-/*******************************************************
- * PWRSEQ Enums
- *******************************************************/
-
-/*
- * PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_BL_OUT_ENABLE enum
- */
-
 typedef enum PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_BL_OUT_ENABLE {
 PWRSEQ_BL_PWM_OVERRIDE_BL_OUT_DISABLE    = 0x00000000,
 PWRSEQ_BL_PWM_OVERRIDE_BL_OUT_ENABLE     = 0x00000001,
 } PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_BL_OUT_ENABLE;
-
-/*
- * PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_PANEL_PWRSEQ_EN enum
- */
-
 typedef enum PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_PANEL_PWRSEQ_EN {
 PWRSEQ_BL_PWM_OVERRIDE_PANEL_PWRSEQ_EN_NORMAL = 0x00000000,
 PWRSEQ_BL_PWM_OVERRIDE_PANEL_PWRSEQ_EN_PWM = 0x00000001,
 } PWRSEQ_BL_PWM_CNTL2_BL_PWM_OVERRIDE_PANEL_PWRSEQ_EN;
-
-/*
- * PWRSEQ_BL_PWM_CNTL2_DBG_BL_PWM_INPUT_REFCLK_SELECT enum
- */
-
 typedef enum PWRSEQ_BL_PWM_CNTL2_DBG_BL_PWM_INPUT_REFCLK_SELECT {
 PWRSEQ_DBG_BL_PWM_INPUT_REFCLK_SELECT_NORMAL = 0x00000000,
 PWRSEQ_DBG_BL_PWM_INPUT_REFCLK_SELECT_DEBUG1 = 0x00000001,
 PWRSEQ_DBG_BL_PWM_INPUT_REFCLK_SELECT_DEBUG2 = 0x00000002,
 PWRSEQ_DBG_BL_PWM_INPUT_REFCLK_SELECT_DEBUG3 = 0x00000003,
 } PWRSEQ_BL_PWM_CNTL2_DBG_BL_PWM_INPUT_REFCLK_SELECT;
-
-/*
- * PWRSEQ_BL_PWM_CNTL_BL_PWM_EN enum
- */
-
 typedef enum PWRSEQ_BL_PWM_CNTL_BL_PWM_EN {
 PWRSEQ_BL_PWM_DISABLE                    = 0x00000000,
 PWRSEQ_BL_PWM_ENABLE                     = 0x00000001,
 } PWRSEQ_BL_PWM_CNTL_BL_PWM_EN;
-
-/*
- * PWRSEQ_BL_PWM_CNTL_BL_PWM_FRACTIONAL_EN enum
- */
-
 typedef enum PWRSEQ_BL_PWM_CNTL_BL_PWM_FRACTIONAL_EN {
 PWRSEQ_BL_PWM_FRACTIONAL_DISABLE         = 0x00000000,
 PWRSEQ_BL_PWM_FRACTIONAL_ENABLE          = 0x00000001,
 } PWRSEQ_BL_PWM_CNTL_BL_PWM_FRACTIONAL_EN;
-
-/*
- * PWRSEQ_BL_PWM_GRP1_IGNORE_MASTER_LOCK_EN enum
- */
-
 typedef enum PWRSEQ_BL_PWM_GRP1_IGNORE_MASTER_LOCK_EN {
 PWRSEQ_BL_PWM_GRP1_IGNORE_MASTER_LOCK_ENABLE = 0x00000000,
 PWRSEQ_BL_PWM_GRP1_IGNORE_MASTER_LOCK_DISABLE = 0x00000001,
 } PWRSEQ_BL_PWM_GRP1_IGNORE_MASTER_LOCK_EN;
-
-/*
- * PWRSEQ_BL_PWM_GRP1_READBACK_DB_REG_VALUE_EN enum
- */
-
 typedef enum PWRSEQ_BL_PWM_GRP1_READBACK_DB_REG_VALUE_EN {
 PWRSEQ_BL_PWM_GRP1_READBACK_DB_REG_VALUE_EN_BL_PWM = 0x00000000,
 PWRSEQ_BL_PWM_GRP1_READBACK_DB_REG_VALUE_EN_BL1_PWM = 0x00000001,
 } PWRSEQ_BL_PWM_GRP1_READBACK_DB_REG_VALUE_EN;
-
-/*
- * PWRSEQ_BL_PWM_GRP1_REG_LOCK enum
- */
-
 typedef enum PWRSEQ_BL_PWM_GRP1_REG_LOCK {
 PWRSEQ_BL_PWM_GRP1_REG_LOCK_DISABLE      = 0x00000000,
 PWRSEQ_BL_PWM_GRP1_REG_LOCK_ENABLE       = 0x00000001,
 } PWRSEQ_BL_PWM_GRP1_REG_LOCK;
-
-/*
- * PWRSEQ_BL_PWM_GRP1_UPDATE_AT_FRAME_START enum
- */
-
 typedef enum PWRSEQ_BL_PWM_GRP1_UPDATE_AT_FRAME_START {
 PWRSEQ_BL_PWM_GRP1_UPDATE_AT_FRAME_START_DISABLE = 0x00000000,
 PWRSEQ_BL_PWM_GRP1_UPDATE_AT_FRAME_START_ENABLE = 0x00000001,
 } PWRSEQ_BL_PWM_GRP1_UPDATE_AT_FRAME_START;
-
-/*
- * PWRSEQ_GPIO_MASK_EN enum
- */
-
 typedef enum PWRSEQ_GPIO_MASK_EN {
 PWRSEQ_GPIO_MASK_EN_HARDWARE             = 0x00000000,
 PWRSEQ_GPIO_MASK_EN_SOFTWARE             = 0x00000001,
 } PWRSEQ_GPIO_MASK_EN;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON {
 PWRSEQ_PANEL_BLON_OFF                    = 0x00000000,
 PWRSEQ_PANEL_BLON_ON                     = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON_POL enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON_POL {
 PWRSEQ_PANEL_BLON_POL_NON_INVERT         = 0x00000000,
 PWRSEQ_PANEL_BLON_POL_INVERT             = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_BLON_POL;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON {
 PWRSEQ_PANEL_DIGON_OFF                   = 0x00000000,
 PWRSEQ_PANEL_DIGON_ON                    = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON_POL enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON_POL {
 PWRSEQ_PANEL_DIGON_POL_NON_INVERT        = 0x00000000,
 PWRSEQ_PANEL_DIGON_POL_INVERT            = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_DIGON_POL;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_SYNCEN_POL enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_SYNCEN_POL {
 PWRSEQ_PANEL_SYNCEN_POL_NON_INVERT       = 0x00000000,
 PWRSEQ_PANEL_SYNCEN_POL_INVERT           = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_PANEL_SYNCEN_POL;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_CNTL_TARGET_STATE enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_CNTL_TARGET_STATE {
 PWRSEQ_PANEL_PWRSEQ_TARGET_STATE_LCD_OFF = 0x00000000,
 PWRSEQ_PANEL_PWRSEQ_TARGET_STATE_LCD_ON  = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_CNTL_TARGET_STATE;
-
-/*
- * PWRSEQ_PANEL_PWRSEQ_DELAY2_PANEL_VARY_BL_OVERRIDE_EN enum
- */
-
 typedef enum PWRSEQ_PANEL_PWRSEQ_DELAY2_PANEL_VARY_BL_OVERRIDE_EN {
 PWRSEQ_PANEL_VARY_BL_OVERRIDE_EN_BLON    = 0x00000000,
 PWRSEQ_PANEL_VARY_BL_OVERRIDE_EN_SEPARATE = 0x00000001,
 } PWRSEQ_PANEL_PWRSEQ_DELAY2_PANEL_VARY_BL_OVERRIDE_EN;
-
-/*******************************************************
- * AZCONTROLLER Enums
- *******************************************************/
-
-/*
- * AZ_CORB_SIZE enum
- */
-
 typedef enum AZ_CORB_SIZE {
 AZ_CORB_SIZE_2ENTRIES_RESERVED           = 0x00000000,
 AZ_CORB_SIZE_16ENTRIES_RESERVED          = 0x00000001,
 AZ_CORB_SIZE_256ENTRIES                  = 0x00000002,
 AZ_CORB_SIZE_RESERVED                    = 0x00000003,
 } AZ_CORB_SIZE;
-
-/*
- * AZ_GLOBAL_CAPABILITIES enum
- */
-
 typedef enum AZ_GLOBAL_CAPABILITIES {
 AZ_GLOBAL_CAPABILITIES_SIXTY_FOUR_BIT_ADDRESS_NOT_SUPPORTED = 0x00000000,
 AZ_GLOBAL_CAPABILITIES_SIXTY_FOUR_BIT_ADDRESS_SUPPORTED = 0x00000001,
 } AZ_GLOBAL_CAPABILITIES;
-
-/*
- * AZ_RIRB_SIZE enum
- */
-
 typedef enum AZ_RIRB_SIZE {
 AZ_RIRB_SIZE_2ENTRIES_RESERVED           = 0x00000000,
 AZ_RIRB_SIZE_16ENTRIES_RESERVED          = 0x00000001,
 AZ_RIRB_SIZE_256ENTRIES                  = 0x00000002,
 AZ_RIRB_SIZE_UNDEFINED                   = 0x00000003,
 } AZ_RIRB_SIZE;
-
-/*
- * AZ_RIRB_WRITE_POINTER_RESET enum
- */
-
 typedef enum AZ_RIRB_WRITE_POINTER_RESET {
 AZ_RIRB_WRITE_POINTER_NOT_RESET          = 0x00000000,
 AZ_RIRB_WRITE_POINTER_DO_RESET           = 0x00000001,
 } AZ_RIRB_WRITE_POINTER_RESET;
-
-/*
- * AZ_STATE_CHANGE_STATUS enum
- */
-
 typedef enum AZ_STATE_CHANGE_STATUS {
 AZ_STATE_CHANGE_STATUS_CODEC_NOT_PRESENT = 0x00000000,
 AZ_STATE_CHANGE_STATUS_CODEC_PRESENT     = 0x00000001,
 } AZ_STATE_CHANGE_STATUS;
-
-/*
- * CORB_READ_POINTER_RESET enum
- */
-
 typedef enum CORB_READ_POINTER_RESET {
 CORB_READ_POINTER_RESET_CORB_DMA_IS_NOT_RESET = 0x00000000,
 CORB_READ_POINTER_RESET_CORB_DMA_IS_RESET = 0x00000001,
 } CORB_READ_POINTER_RESET;
-
-/*
- * DMA_POSITION_LOWER_BASE_ADDRESS_BUFFER_ENABLE enum
- */
-
 typedef enum DMA_POSITION_LOWER_BASE_ADDRESS_BUFFER_ENABLE {
 DMA_POSITION_LOWER_BASE_ADDRESS_BUFFER_ENABLE_DMA_DISABLE = 0x00000000,
 DMA_POSITION_LOWER_BASE_ADDRESS_BUFFER_ENABLE_DMA_ENABLE = 0x00000001,
 } DMA_POSITION_LOWER_BASE_ADDRESS_BUFFER_ENABLE;
-
-/*
- * GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL enum
- */
-
 typedef enum GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL {
 GENERIC_AZ_CONTROLLER_REGISTER_DISABLE   = 0x00000000,
 GENERIC_AZ_CONTROLLER_REGISTER_ENABLE    = 0x00000001,
 } GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL;
-
-/*
- * GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL_RESERVED enum
- */
-
 typedef enum GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL_RESERVED {
 GENERIC_AZ_CONTROLLER_REGISTER_DISABLE_RESERVED = 0x00000000,
 GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_RESERVED = 0x00000001,
 } GENERIC_AZ_CONTROLLER_REGISTER_ENABLE_CONTROL_RESERVED;
-
-/*
- * GENERIC_AZ_CONTROLLER_REGISTER_STATUS enum
- */
-
 typedef enum GENERIC_AZ_CONTROLLER_REGISTER_STATUS {
 GENERIC_AZ_CONTROLLER_REGISTER_STATUS_NOT_SET = 0x00000000,
 GENERIC_AZ_CONTROLLER_REGISTER_STATUS_SET = 0x00000001,
 } GENERIC_AZ_CONTROLLER_REGISTER_STATUS;
-
-/*
- * GENERIC_AZ_CONTROLLER_REGISTER_STATUS_RESERVED enum
- */
-
 typedef enum GENERIC_AZ_CONTROLLER_REGISTER_STATUS_RESERVED {
 GENERIC_AZ_CONTROLLER_REGISTER_STATUS_NOT_SET_RESERVED = 0x00000000,
 GENERIC_AZ_CONTROLLER_REGISTER_STATUS_SET_RESERVED = 0x00000001,
 } GENERIC_AZ_CONTROLLER_REGISTER_STATUS_RESERVED;
-
-/*
- * GLOBAL_CONTROL_ACCEPT_UNSOLICITED_RESPONSE enum
- */
-
 typedef enum GLOBAL_CONTROL_ACCEPT_UNSOLICITED_RESPONSE {
 ACCEPT_UNSOLICITED_RESPONSE_NOT_ENABLE   = 0x00000000,
 ACCEPT_UNSOLICITED_RESPONSE_ENABLE       = 0x00000001,
 } GLOBAL_CONTROL_ACCEPT_UNSOLICITED_RESPONSE;
-
-/*
- * GLOBAL_CONTROL_CONTROLLER_RESET enum
- */
-
 typedef enum GLOBAL_CONTROL_CONTROLLER_RESET {
 CONTROLLER_RESET_AZ_CONTROLLER_IN_RESET  = 0x00000000,
 CONTROLLER_RESET_AZ_CONTROLLER_NOT_IN_RESET = 0x00000001,
 } GLOBAL_CONTROL_CONTROLLER_RESET;
-
-/*
- * GLOBAL_CONTROL_FLUSH_CONTROL enum
- */
-
 typedef enum GLOBAL_CONTROL_FLUSH_CONTROL {
 FLUSH_CONTROL_FLUSH_NOT_STARTED          = 0x00000000,
 FLUSH_CONTROL_FLUSH_STARTED              = 0x00000001,
 } GLOBAL_CONTROL_FLUSH_CONTROL;
-
-/*
- * GLOBAL_STATUS_FLUSH_STATUS enum
- */
-
 typedef enum GLOBAL_STATUS_FLUSH_STATUS {
 GLOBAL_STATUS_FLUSH_STATUS_FLUSH_NOT_ENDED = 0x00000000,
 GLOBAL_STATUS_FLUSH_STATUS_FLUSH_ENDED   = 0x00000001,
 } GLOBAL_STATUS_FLUSH_STATUS;
-
-/*
- * IMMEDIATE_COMMAND_STATUS_IMMEDIATE_COMMAND_BUSY enum
- */
-
 typedef enum IMMEDIATE_COMMAND_STATUS_IMMEDIATE_COMMAND_BUSY {
 IMMEDIATE_COMMAND_STATUS_IMMEDIATE_COMMAND_NOT_BUSY = 0x00000000,
 IMMEDIATE_COMMAND_STATUS_IMMEDIATE_COMMAND_IS_BUSY = 0x00000001,
 } IMMEDIATE_COMMAND_STATUS_IMMEDIATE_COMMAND_BUSY;
-
-/*
- * IMMEDIATE_COMMAND_STATUS_IMMEDIATE_RESULT_VALID enum
- */
-
 typedef enum IMMEDIATE_COMMAND_STATUS_IMMEDIATE_RESULT_VALID {
 IMMEDIATE_COMMAND_STATUS_IMMEDIATE_RESULT_VALID_NO_IMMEDIATE_RESPONSE_VALID = 0x00000000,
 IMMEDIATE_COMMAND_STATUS_IMMEDIATE_RESULT_VALID_IMMEDIATE_RESPONSE_VALID = 0x00000001,
 } IMMEDIATE_COMMAND_STATUS_IMMEDIATE_RESULT_VALID;
-
-/*
- * RIRB_CONTROL_RESPONSE_INTERRUPT_CONTROL enum
- */
-
 typedef enum RIRB_CONTROL_RESPONSE_INTERRUPT_CONTROL {
 RIRB_CONTROL_RESPONSE_INTERRUPT_CONTROL_INTERRUPT_DISABLED = 0x00000000,
 RIRB_CONTROL_RESPONSE_INTERRUPT_CONTROL_INTERRUPT_ENABLED = 0x00000001,
 } RIRB_CONTROL_RESPONSE_INTERRUPT_CONTROL;
-
-/*
- * RIRB_CONTROL_RESPONSE_OVERRUN_INTERRUPT_CONTROL enum
- */
-
 typedef enum RIRB_CONTROL_RESPONSE_OVERRUN_INTERRUPT_CONTROL {
 RIRB_CONTROL_RESPONSE_OVERRUN_INTERRUPT_CONTROL_INTERRUPT_DISABLED = 0x00000000,
 RIRB_CONTROL_RESPONSE_OVERRUN_INTERRUPT_CONTROL_INTERRUPT_ENABLED = 0x00000001,
 } RIRB_CONTROL_RESPONSE_OVERRUN_INTERRUPT_CONTROL;
-
-/*
- * STREAM_0_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_0_SYNCHRONIZATION {
 STREAM_0_SYNCHRONIZATION_STEAM_NOT_STOPPED = 0x00000000,
 STREAM_0_SYNCHRONIZATION_STEAM_STOPPED   = 0x00000001,
 } STREAM_0_SYNCHRONIZATION;
-
-/*
- * STREAM_10_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_10_SYNCHRONIZATION {
 STREAM_10_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_10_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_10_SYNCHRONIZATION;
-
-/*
- * STREAM_11_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_11_SYNCHRONIZATION {
 STREAM_11_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_11_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_11_SYNCHRONIZATION;
-
-/*
- * STREAM_12_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_12_SYNCHRONIZATION {
 STREAM_12_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_12_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_12_SYNCHRONIZATION;
-
-/*
- * STREAM_13_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_13_SYNCHRONIZATION {
 STREAM_13_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_13_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_13_SYNCHRONIZATION;
-
-/*
- * STREAM_14_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_14_SYNCHRONIZATION {
 STREAM_14_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_14_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_14_SYNCHRONIZATION;
-
-/*
- * STREAM_15_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_15_SYNCHRONIZATION {
 STREAM_15_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_15_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_15_SYNCHRONIZATION;
-
-/*
- * STREAM_1_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_1_SYNCHRONIZATION {
 STREAM_1_SYNCHRONIZATION_STEAM_NOT_STOPPED = 0x00000000,
 STREAM_1_SYNCHRONIZATION_STEAM_STOPPED   = 0x00000001,
 } STREAM_1_SYNCHRONIZATION;
-
-/*
- * STREAM_2_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_2_SYNCHRONIZATION {
 STREAM_2_SYNCHRONIZATION_STEAM_NOT_STOPPED = 0x00000000,
 STREAM_2_SYNCHRONIZATION_STEAM_STOPPED   = 0x00000001,
 } STREAM_2_SYNCHRONIZATION;
-
-/*
- * STREAM_3_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_3_SYNCHRONIZATION {
 STREAM_3_SYNCHRONIZATION_STEAM_NOT_STOPPED = 0x00000000,
 STREAM_3_SYNCHRONIZATION_STEAM_STOPPED   = 0x00000001,
 } STREAM_3_SYNCHRONIZATION;
-
-/*
- * STREAM_4_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_4_SYNCHRONIZATION {
 STREAM_4_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_4_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_4_SYNCHRONIZATION;
-
-/*
- * STREAM_5_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_5_SYNCHRONIZATION {
 STREAM_5_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_5_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_5_SYNCHRONIZATION;
-
-/*
- * STREAM_6_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_6_SYNCHRONIZATION {
 STREAM_6_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_6_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_6_SYNCHRONIZATION;
-
-/*
- * STREAM_7_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_7_SYNCHRONIZATION {
 STREAM_7_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_7_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_7_SYNCHRONIZATION;
-
-/*
- * STREAM_8_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_8_SYNCHRONIZATION {
 STREAM_8_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_8_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_8_SYNCHRONIZATION;
-
-/*
- * STREAM_9_SYNCHRONIZATION enum
- */
-
 typedef enum STREAM_9_SYNCHRONIZATION {
 STREAM_9_SYNCHRONIZATION_STEAM_NOT_STOPPED_RESERVED = 0x00000000,
 STREAM_9_SYNCHRONIZATION_STEAM_STOPPED_RESERVED = 0x00000001,
 } STREAM_9_SYNCHRONIZATION;
-
-/*******************************************************
- * AZENDPOINT Enums
- *******************************************************/
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_8_RESERVED = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_16 = 0x00000001,
@@ -10677,11 +5464,6 @@ AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_24 = 0x000000
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_32_RESERVED = 0x00000004,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_RESERVED = 0x00000005,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_1 = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_2 = 0x00000001,
@@ -10693,11 +5475,6 @@ AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_7 = 0x0000
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_8 = 0x00000007,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_RESERVED = 0x00000008,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY1 = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY2_RESERVED = 0x00000001,
@@ -10708,11 +5485,6 @@ AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY6_RESER
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY7_RESERVED = 0x00000006,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY8_RESERVED = 0x00000007,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY1 = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY2 = 0x00000001,
@@ -10720,110 +5492,50 @@ AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY3_RESE
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY4 = 0x00000003,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_RESERVED = 0x00000004,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE_48KHZ = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE_44P1KHZ = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE_PCM = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE_NOT_PCM = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3_KEEPALIVE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3_KEEPALIVE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3_KEEPALIVE_SILENT_STREAM_NOT_ENABLE = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3_KEEPALIVE_SILENT_STREAM_ENABLE = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_3_KEEPALIVE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_COPY enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_COPY {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_COPY_BIT_C_IS_SET = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_COPY_BIT_C_NOT_SET = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_COPY;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN_DIGITAL_TRANSMISSION_DISABLED = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN_DIGITAL_TRANSMISSION_ENABLED = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_L enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_L {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_L_BIT7_NOT_SET = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_L_BIT7_IS_SET = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_L;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_NON_AUDIO enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_NON_AUDIO {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_NON_AUDIO_BIT_B_NOT_SET = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_NON_AUDIO_BIT_B_IS_SET = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_NON_AUDIO;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRE enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRE {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRE_LSB_OF_D_NOT_SET = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRE_LSB_OF_D_IS_SET = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRE;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRO enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRO {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRO_BIT_A_NOT_SET = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRO_BIT_A_IS_SET = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_PRO;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_V enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_V {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_V_BIT28_IS_ZERO = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_V_BIT28_IS_ONE = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_V;
-
-/*
- * AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_VCFG enum
- */
-
 typedef enum AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_VCFG {
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_VALIDITY_CFG_NOT_ON = 0x00000000,
 AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_VALIDITY_CFG_ON = 0x00000001,
 } AZALIA_F2_CODEC_CONVERTER_CONTROL_DIGITAL_CONVERTER_VCFG;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE {
 AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE_0 = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE_1 = 0x00000001,
@@ -10842,184 +5554,81 @@ AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE_13 = 0x0000000d,
 AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE_14 = 0x0000000e,
 AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE_15 = 0x0000000f,
 } AZALIA_F2_CODEC_PIN_CONTROL_AUDIO_DESCRIPTOR_FORMAT_CODE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_INFO_DOWN_MIX_INHIBIT enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_INFO_DOWN_MIX_INHIBIT {
 AZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_NO_INFO_OR_PERMITTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_FORBIDDEN = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_DOWN_MIX_INFO_DOWN_MIX_INHIBIT;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE_MULTICHANNEL01_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE_MULTICHANNEL01_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE_MULTICHANNEL01_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE_MULTICHANNEL01_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL01_ENABLE_MULTICHANNEL01_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE_MULTICHANNEL23_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE_MULTICHANNEL23_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE_MULTICHANNEL23_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE_MULTICHANNEL23_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL23_ENABLE_MULTICHANNEL23_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE_MULTICHANNEL45_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE_MULTICHANNEL45_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE_MULTICHANNEL45_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE_MULTICHANNEL45_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL45_ENABLE_MULTICHANNEL45_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE_MULTICHANNEL67_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE_MULTICHANNEL67_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE_MULTICHANNEL67_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE_MULTICHANNEL67_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL67_ENABLE_MULTICHANNEL67_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE {
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_PAIR_MODE = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_SINGLE_MODE = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE {
 AZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_DISABLED = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLED = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE;
-
-/*
- * AZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL_OUT_ENABLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL_OUT_ENABLE {
 AZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL_OUT_ENABLE_PIN_SHUT_OFF = 0x00000000,
 AZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL_OUT_ENABLE_PIN_DRIVEN = 0x00000001,
 } AZALIA_F2_CODEC_PIN_CONTROL_WIDGET_CONTROL_OUT_ENABLE;
-
-/*******************************************************
- * AZF0CONTROLLER Enums
- *******************************************************/
-
-/*
- * AZALIA_SOFT_RESET_REFCLK_SOFT_RESET enum
- */
-
 typedef enum AZALIA_SOFT_RESET_REFCLK_SOFT_RESET {
 AZALIA_SOFT_RESET_REFCLK_SOFT_RESET_NOT_RESET = 0x00000000,
 AZALIA_SOFT_RESET_REFCLK_SOFT_RESET_RESET_REFCLK_LOGIC = 0x00000001,
 } AZALIA_SOFT_RESET_REFCLK_SOFT_RESET;
-
-/*
- * MEM_PWR_DIS_CTRL enum
- */
-
 typedef enum MEM_PWR_DIS_CTRL {
 ENABLE_MEM_PWR_CTRL                      = 0x00000000,
 DISABLE_MEM_PWR_CTRL                     = 0x00000001,
 } MEM_PWR_DIS_CTRL;
-
-/*
- * MEM_PWR_FORCE_CTRL enum
- */
-
 typedef enum MEM_PWR_FORCE_CTRL {
 NO_FORCE_REQUEST                         = 0x00000000,
 FORCE_LIGHT_SLEEP_REQUEST                = 0x00000001,
 FORCE_DEEP_SLEEP_REQUEST                 = 0x00000002,
 FORCE_SHUT_DOWN_REQUEST                  = 0x00000003,
 } MEM_PWR_FORCE_CTRL;
-
-/*
- * MEM_PWR_FORCE_CTRL2 enum
- */
-
 typedef enum MEM_PWR_FORCE_CTRL2 {
 NO_FORCE_REQ                             = 0x00000000,
 FORCE_LIGHT_SLEEP_REQ                    = 0x00000001,
 } MEM_PWR_FORCE_CTRL2;
-
-/*
- * MEM_PWR_SEL_CTRL enum
- */
-
 typedef enum MEM_PWR_SEL_CTRL {
 DYNAMIC_SHUT_DOWN_ENABLE                 = 0x00000000,
 DYNAMIC_DEEP_SLEEP_ENABLE                = 0x00000001,
 DYNAMIC_LIGHT_SLEEP_ENABLE               = 0x00000002,
 } MEM_PWR_SEL_CTRL;
-
-/*
- * MEM_PWR_SEL_CTRL2 enum
- */
-
 typedef enum MEM_PWR_SEL_CTRL2 {
 DYNAMIC_DEEP_SLEEP_EN                    = 0x00000000,
 DYNAMIC_LIGHT_SLEEP_EN                   = 0x00000001,
 } MEM_PWR_SEL_CTRL2;
-
-/*******************************************************
- * AZF0ROOT Enums
- *******************************************************/
-
-/*
- * CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY enum
- */
-
 typedef enum CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY {
 CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY_ALL = 0x00000000,
 CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY_6 = 0x00000001,
@@ -11030,11 +5639,6 @@ CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY_2 = 0x00000005,
 CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY_1 = 0x00000006,
 CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY_0 = 0x00000007,
 } CC_RCU_DC_AUDIO_INPUT_PORT_CONNECTIVITY_INPUT_PORT_CONNECTIVITY;
-
-/*
- * CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY enum
- */
-
 typedef enum CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY {
 CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY_ALL = 0x00000000,
 CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY_6 = 0x00000001,
@@ -11045,15 +5649,6 @@ CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY_2 = 0x00000005,
 CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY_1 = 0x00000006,
 CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY_0 = 0x00000007,
 } CC_RCU_DC_AUDIO_PORT_CONNECTIVITY_PORT_CONNECTIVITY;
-
-/*******************************************************
- * AZINPUTENDPOINT Enums
- *******************************************************/
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_8_RESERVED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_16 = 0x00000001,
@@ -11062,11 +5657,6 @@ AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_24 = 0x
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_32_RESERVED = 0x00000004,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE_RESERVED = 0x00000005,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_BITS_PER_SAMPLE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_1 = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_2 = 0x00000001,
@@ -11078,11 +5668,6 @@ AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_7 = 
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_8 = 0x00000007,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS_RESERVED = 0x00000008,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_NUMBER_OF_CHANNELS;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY1 = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY2_RESERVED = 0x00000001,
@@ -11093,11 +5678,6 @@ AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY6
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY7_RESERVED = 0x00000006,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR_BY8_RESERVED = 0x00000007,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_DIVISOR;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY1 = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY2 = 0x00000001,
@@ -11105,239 +5685,102 @@ AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_BY4 = 0x00000003,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE_RESERVED = 0x00000004,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_MULTIPLE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE_48KHZ = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE_44P1KHZ = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_SAMPLE_BASE_RATE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE_PCM = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE_NOT_PCM = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT_STREAM_TYPE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN {
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN_DIGITAL_TRANSMISSION_DISABLED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN_DIGITAL_TRANSMISSION_ENABLED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_CONVERTER_CONTROL_DIGITAL_CONVERTER_DIGEN;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE_MULTICHANNEL0_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE_MULTICHANNEL0_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE_MULTICHANNEL0_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE_MULTICHANNEL0_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL0_ENABLE_MULTICHANNEL0_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL1_ENABLE_MULTICHANNEL1_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE_MULTICHANNEL2_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE_MULTICHANNEL2_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE_MULTICHANNEL2_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE_MULTICHANNEL2_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL2_ENABLE_MULTICHANNEL2_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL3_ENABLE_MULTICHANNEL3_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE_MULTICHANNEL4_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE_MULTICHANNEL4_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE_MULTICHANNEL4_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE_MULTICHANNEL4_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL4_ENABLE_MULTICHANNEL4_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL5_ENABLE_MULTICHANNEL5_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE_MULTICHANNEL6_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE_MULTICHANNEL6_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE_MULTICHANNEL6_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE_MULTICHANNEL6_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL6_ENABLE_MULTICHANNEL6_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_NOT_MUTED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_MULTICHANNEL7_ENABLE_MULTICHANNEL7_MUTE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_DISABLED = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLED = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_UNSOLICITED_RESPONSE_ENABLE;
-
-/*
- * AZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL_IN_ENABLE enum
- */
-
 typedef enum AZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL_IN_ENABLE {
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL_IN_ENABLE_PIN_SHUT_OFF = 0x00000000,
 AZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL_IN_ENABLE_PIN_DRIVEN = 0x00000001,
 } AZALIA_F2_CODEC_INPUT_PIN_CONTROL_WIDGET_CONTROL_IN_ENABLE;
-
-/*******************************************************
- * AZROOT Enums
- *******************************************************/
-
-/*
- * AZALIA_F2_CODEC_FUNCTION_CONTROL_RESET_CODEC_RESET enum
- */
-
 typedef enum AZALIA_F2_CODEC_FUNCTION_CONTROL_RESET_CODEC_RESET {
 AZALIA_F2_CODEC_FUNCTION_CONTROL_RESET_CODEC_NOT_RESET = 0x00000000,
 AZALIA_F2_CODEC_FUNCTION_CONTROL_RESET_CODEC_DO_RESET = 0x00000001,
 } AZALIA_F2_CODEC_FUNCTION_CONTROL_RESET_CODEC_RESET;
-
-/*******************************************************
- * AZF0STREAM Enums
- *******************************************************/
-
-/*
- * AZ_LATENCY_COUNTER_CONTROL enum
- */
-
 typedef enum AZ_LATENCY_COUNTER_CONTROL {
 AZ_LATENCY_COUNTER_NO_RESET              = 0x00000000,
 AZ_LATENCY_COUNTER_RESET_DONE            = 0x00000001,
 } AZ_LATENCY_COUNTER_CONTROL;
-
-/*******************************************************
- * AZSTREAM Enums
- *******************************************************/
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_BUFFER_COMPLETION_INTERRUPT_STATUS enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_BUFFER_COMPLETION_INTERRUPT_STATUS {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_BUFFER_COMPLETION_INTERRUPT_STATUS_NOT_SET = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_BUFFER_COMPLETION_INTERRUPT_STATUS_SET = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_BUFFER_COMPLETION_INTERRUPT_STATUS;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_STATUS_NOT_SET = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_STATUS_SET = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_INTERRUPT_ENABLE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_INTERRUPT_ENABLE {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_INTERRUPT_DISABLED = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_INTERRUPT_ENABLED = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_DESCRIPTOR_ERROR_INTERRUPT_ENABLE;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_STATUS_NOT_SET = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_STATUS_SET = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_INTERRUPT_ENABLE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_INTERRUPT_ENABLE {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_INTERRUPT_DISABLED = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_INTERRUPT_ENABLED = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_FIFO_ERROR_INTERRUPT_ENABLE;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_INTERRUPT_ON_COMPLETION_ENABLE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_INTERRUPT_ON_COMPLETION_ENABLE {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_INTERRUPT_ON_COMPLETION_ENABLE_INTERRUPT_DISABLED = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_INTERRUPT_ON_COMPLETION_ENABLE_INTERRUPT_ENABLED = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_INTERRUPT_ON_COMPLETION_ENABLE;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RESET enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RESET {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_NOT_RESET = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_IS_RESET = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RESET;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RUN enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RUN {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_NOT_RUN = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_DO_RUN = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_STREAM_RUN;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_TRAFFIC_PRIORITY enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_TRAFFIC_PRIORITY {
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_NO_TRAFFIC_PRIORITY = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_YES_TRAFFIC_PRIORITY = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_CONTROL_AND_STATUS_TRAFFIC_PRIORITY;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE {
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE_8_RESERVED = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE_16 = 0x00000001,
@@ -11346,11 +5789,6 @@ OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE_24 = 0x00000003,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE_32_RESERVED = 0x00000004,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE_RESERVED = 0x00000005,
 } OUTPUT_STREAM_DESCRIPTOR_FORMAT_BITS_PER_SAMPLE;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS {
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS_1 = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS_2 = 0x00000001,
@@ -11369,11 +5807,6 @@ OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS_14_RESERVED = 0x0000000d,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS_15_RESERVED = 0x0000000e,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS_16_RESERVED = 0x0000000f,
 } OUTPUT_STREAM_DESCRIPTOR_FORMAT_NUMBER_OF_CHANNELS;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR {
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR_BY1 = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR_BY2_RESERVED = 0x00000001,
@@ -11384,11 +5817,6 @@ OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR_BY6_RESERVED = 0x00000005,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR_BY7_RESERVED = 0x00000006,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR_BY8_RESERVED = 0x00000007,
 } OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_DIVISOR;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE {
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE_BY1 = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE_BY2 = 0x00000001,
@@ -11396,123 +5824,54 @@ OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE_BY3_RESERVED = 0x00000002,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE_BY4 = 0x00000003,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE_RESERVED = 0x00000004,
 } OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_MULTIPLE;
-
-/*
- * OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_RATE enum
- */
-
 typedef enum OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_RATE {
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_RATE_48KHZ = 0x00000000,
 OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_RATE_44P1KHZ = 0x00000001,
 } OUTPUT_STREAM_DESCRIPTOR_FORMAT_SAMPLE_BASE_RATE;
-
-/*******************************************************
- * AZF0ENDPOINT Enums
- *******************************************************/
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_AMPLIFIER_PARAMETER = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_AMPLIFIER_PARAMETER_OVERRIDE = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES_MONOPHONIC = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES_STEREO = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_CONNECTION_LIST = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_CONNECTION_LIST = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_ANALOG = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_DIGITAL = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_FORMAT_OVERRIDE = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_SUPPORT_FORMAT_OVERRIDE = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_INPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_INPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_LR_SWAP_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_LR_SWAP_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_OUTPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_OUTPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_POWER_CONTROL_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_POWER_CONTROL_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_NO_PROCESSING_CAPABILITIES = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_HAVE_PROCESSING_CAPABILITIES = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_SUPPORT_STRIPING = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_SUPPORT_STRIPING = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_OUTPUT_CONVERTER_RESERVED = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_INPUT_CONVERTER_RESERVED = 0x00000001,
@@ -11525,119 +5884,54 @@ AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_BEEP_GENERATO
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_RESERVED_RESERVED = 0x00000008,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_VENDOR_DEFINED_RESERVED = 0x00000009,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE;
-
-/*
- * AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY {
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE {
 AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_PAIR_MODE = 0x00000000,
 AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_SINGLE_MODE = 0x00000001,
 } AZALIA_F0_CODEC_PIN_CONTROL_MULTICHANNEL_MODE_MULTICHANNEL_MODE;
-
-/*
- * AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE {
 AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR_NO_HBR_CAPABLILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR_HAVE_HBR_CAPABLILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_AMPLIFIER_PARAMETER = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_AMPLIFIER_PARAMETER_OVERRIDE = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_CONNECTION_LIST = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_CONNECTION_LIST = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_ANALOG = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_DIGITAL = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_INPUT_AMPLIFIER_PRESENT = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_INPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_LR_SWAP_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_LR_SWAP_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_OUTPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_OUTPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_POWER_CONTROL_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_POWER_CONTROL_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_NO_PROCESSING_CAPABILITIES = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_HAVE_PROCESSING_CAPABILITIES = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_SUPPORT_STRIPING = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_SUPPORT_STRIPING = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_OUTPUT_CONVERTER_RESERVED = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_INPUT_CONVERTER_RESERVED = 0x00000001,
@@ -11650,195 +5944,86 @@ AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_BEEP_GENERATOR_RESE
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_RESERVED_RESERVED = 0x00000008,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_VENDOR_DEFINED_RESERVED = 0x00000009,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY {
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_I_O_PINS_ARE_NOT_BALANCED = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_I_O_PINS_ARE_BALANCED = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_EAPD_PIN = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_EAPD_PIN = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_HEADPHONE_DRIVE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_HEADPHONE_DRIVE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_IMPEDANCE_SENSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_IMPEDANCE_SENSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_INPUT_PIN = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_INPUT_PIN = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_JACK_DETECTION_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_JACK_DETECTION_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_OUTPUT_PIN = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_HAVE_OUTPUT_PIN = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED enum
- */
-
 typedef enum AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED {
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_NO_TRIGGER_REQUIRED_FOR_IMPEDANCE_MEASUREMENT = 0x00000000,
 AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED_FOR_IMPEDANCE_MEASUREMENT = 0x00000001,
 } AZALIA_F0_CODEC_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED;
-
-/*******************************************************
- * AZF0INPUTENDPOINT Enums
- *******************************************************/
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_AMPLIFIER_PARAMETER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_AMPLIFIER_PARAMETER = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES_MONOPHONIC = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES_STEREO = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AUDIO_CHANNEL_CAPABILITIES;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_CONNECTION_LIST = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_CONNECTION_LIST = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CODEC_CONVERTER0_IS_ANALOG = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CODEC_CONVERTER0_IS_DIGITAL = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_FORMAT_OVERRIDE = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_FORMAT_OVERRIDE = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_FORMAT_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_INPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_INPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_LR_SWAP_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_LR_SWAP_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_OUTPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_OUTPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_POWER_CONTROL_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_POWER_CONTROL_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_CODEC_CONVERTER0_HAVE_NO_PROCESSING_CAPABILITIES = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_CODEC_CONVERTER0_HAVE_PROCESSING_CAPABILITIES = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NOT_SUPPORT_STRIPING = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_SUPPORT_STRIPING = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_OUTPUT_CONVERTER_RESERVED = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_INPUT_CONVERTER_RESERVED = 0x00000001,
@@ -11851,110 +6036,50 @@ AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_BEEP_GE
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_RESERVED = 0x00000008,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_VENDOR_DEFINED_RESERVED = 0x00000009,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY {
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR_NO_HBR_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR_HAVE_HBR_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_CONTROL_RESPONSE_HBR_HBR_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_AMPLIFIER_PARAMETER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_AMPLIFIER_PARAMETER_OVERRIDE = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_AMPLIFIER_PARAMETER_OVERRIDE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_CONNECTION_LIST = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_CONNECTION_LIST = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_CONNECTION_LIST;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_ANALOG = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_IS_DIGITAL = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_DIGITAL;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_INPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_INPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_INPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_LR_SWAP = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_LR_SWAP = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_LR_SWAP;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_OUTPUT_AMPLIFIER = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_OUTPUT_AMPLIFIER = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_OUTPUT_AMPLIFIER_PRESENT;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_POWER_CONTROL_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_POWER_CONTROL_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_POWER_CONTROL;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_NO_PROCESING_CAPABILITIES = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET_HAVE_PROCESING_CAPABILITIES = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_PROCESSING_WIDGET;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_SUPPORT_STRIPING = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_SUPPORT_STRIPING = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_STRIPE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_OUTPUT_CONVERTER_RESERVED = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_INPUT_CONVERTER_RESERVED = 0x00000001,
@@ -11967,161 +6092,72 @@ AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_BEEP_GENERATO
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_RESERVED = 0x00000008,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE_VENDOR_DEFINED_RESERVED = 0x00000009,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_TYPE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_NO_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_HAVE_UNSOLICITED_RESPONSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_AUDIO_WIDGET_CAPABILITIES_UNSOLICITED_RESPONSE_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_I_O_PINS_NOT_BALANCED = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_I_O_PINS_ARE_BALANCED = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_BALANCED_I_O_PINS;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_DP enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_DP {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_DP_NOT_ENABLED = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_DP_ENABLED = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_DP;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE_NO_EAPD_PIN = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE_HAVE_EAPD_PIN = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_EAPD_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HDMI enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HDMI {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HDMI_NOT_ENABLED = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HDMI_ENABLED = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HDMI;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_HEADPHONE_DRIVE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HAVE_HEADPHONE_DRIVE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HEADPHONE_DRIVE_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_IMPEDANCE_SENSE_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HAVE_IMPEDANCE_SENSE_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_IMPEDANCE_SENSE_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_INPUT_PIN = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HAVE_INPUT_PIN = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_INPUT_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_JACK_PRESENCE_DETECTION_CAPABILITY = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HAVE_JACK_PRESENCE_DETECTION_CAPABILITY = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_JACK_DETECTION_CAPABILITY;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_OUTPUT_PIN = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_HAVE_OUTPUT_PIN = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_OUTPUT_CAPABLE;
-
-/*
- * AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED enum
- */
-
 typedef enum AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED {
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_NO_TRIGGER_REQUIRED_FOR_IMPEDANCE_MEASUREMENT = 0x00000000,
 AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED_FOR_IMPEDANCE_MEASUREMENT = 0x00000001,
 } AZALIA_F0_CODEC_INPUT_PIN_PARAMETER_CAPABILITIES_TRIGGER_REQUIRED;
-
-/*******************************************************
- * DSCC Enums
- *******************************************************/
-
-/*
- * DSCC_BITS_PER_COMPONENT_ENUM enum
- */
-
 typedef enum DSCC_BITS_PER_COMPONENT_ENUM {
 DSCC_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_8_BIT = 0x00000008,
 DSCC_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_10_BIT = 0x0000000a,
 DSCC_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_12_BIT = 0x0000000c,
 } DSCC_BITS_PER_COMPONENT_ENUM;
-
-/*
- * DSCC_DSC_VERSION_MAJOR_ENUM enum
- */
-
 typedef enum DSCC_DSC_VERSION_MAJOR_ENUM {
 DSCC_DSC_VERSION_MAJOR_ENUM_DSC_1_X_MAJOR_VERSION = 0x00000001,
 } DSCC_DSC_VERSION_MAJOR_ENUM;
-
-/*
- * DSCC_DSC_VERSION_MINOR_ENUM enum
- */
-
 typedef enum DSCC_DSC_VERSION_MINOR_ENUM {
 DSCC_DSC_VERSION_MINOR_ENUM_DSC_X_1_MINOR_VERSION = 0x00000001,
 DSCC_DSC_VERSION_MINOR_ENUM_DSC_X_2_MINOR_VERSION = 0x00000002,
 } DSCC_DSC_VERSION_MINOR_ENUM;
-
-/*
- * DSCC_ENABLE_ENUM enum
- */
-
 typedef enum DSCC_ENABLE_ENUM {
 DSCC_ENABLE_ENUM_DISABLED                = 0x00000000,
 DSCC_ENABLE_ENUM_ENABLED                 = 0x00000001,
 } DSCC_ENABLE_ENUM;
-
-/*
- * DSCC_ICH_RESET_ENUM enum
- */
-
 typedef enum DSCC_ICH_RESET_ENUM {
 DSCC_ICH_RESET_ENUM_SLICE0_ICH_RESET     = 0x00000001,
 DSCC_ICH_RESET_ENUM_SLICE1_ICH_RESET     = 0x00000002,
 DSCC_ICH_RESET_ENUM_SLICE2_ICH_RESET     = 0x00000004,
 DSCC_ICH_RESET_ENUM_SLICE3_ICH_RESET     = 0x00000008,
 } DSCC_ICH_RESET_ENUM;
-
-/*
- * DSCC_LINEBUF_DEPTH_ENUM enum
- */
-
 typedef enum DSCC_LINEBUF_DEPTH_ENUM {
 DSCC_LINEBUF_DEPTH_ENUM_LINEBUF_DEPTH_8_BIT = 0x00000008,
 DSCC_LINEBUF_DEPTH_ENUM_LINEBUF_DEPTH_9_BIT = 0x00000009,
@@ -12130,65 +6166,31 @@ DSCC_LINEBUF_DEPTH_ENUM_LINEBUF_DEPTH_11_BIT = 0x0000000b,
 DSCC_LINEBUF_DEPTH_ENUM_LINEBUF_DEPTH_12_BIT = 0x0000000c,
 DSCC_LINEBUF_DEPTH_ENUM_LINEBUF_DEPTH_13_BIT = 0x0000000d,
 } DSCC_LINEBUF_DEPTH_ENUM;
-
-/*
- * DSCC_MEM_PWR_DIS_ENUM enum
- */
-
 typedef enum DSCC_MEM_PWR_DIS_ENUM {
 DSCC_MEM_PWR_DIS_ENUM_REQUEST_EN         = 0x00000000,
 DSCC_MEM_PWR_DIS_ENUM_REQUEST_DIS        = 0x00000001,
 } DSCC_MEM_PWR_DIS_ENUM;
-
-/*
- * DSCC_MEM_PWR_FORCE_ENUM enum
- */
-
 typedef enum DSCC_MEM_PWR_FORCE_ENUM {
 DSCC_MEM_PWR_FORCE_ENUM_NO_FORCE_REQUEST = 0x00000000,
 DSCC_MEM_PWR_FORCE_ENUM_FORCE_LIGHT_SLEEP_REQUEST = 0x00000001,
 DSCC_MEM_PWR_FORCE_ENUM_FORCE_DEEP_SLEEP_REQUEST = 0x00000002,
 DSCC_MEM_PWR_FORCE_ENUM_FORCE_SHUT_DOWN_REQUEST = 0x00000003,
 } DSCC_MEM_PWR_FORCE_ENUM;
-
-/*
- * POWER_STATE_ENUM enum
- */
-
 typedef enum POWER_STATE_ENUM {
 POWER_STATE_ENUM_ON                      = 0x00000000,
 POWER_STATE_ENUM_LS                      = 0x00000001,
 POWER_STATE_ENUM_DS                      = 0x00000002,
 POWER_STATE_ENUM_SD                      = 0x00000003,
 } POWER_STATE_ENUM;
-
-/*******************************************************
- * DSCCIF Enums
- *******************************************************/
-
-/*
- * DSCCIF_BITS_PER_COMPONENT_ENUM enum
- */
-
 typedef enum DSCCIF_BITS_PER_COMPONENT_ENUM {
 DSCCIF_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_8_BIT = 0x00000008,
 DSCCIF_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_10_BIT = 0x0000000a,
 DSCCIF_BITS_PER_COMPONENT_ENUM_BITS_PER_COMPONENT_12_BIT = 0x0000000c,
 } DSCCIF_BITS_PER_COMPONENT_ENUM;
-
-/*
- * DSCCIF_ENABLE_ENUM enum
- */
-
 typedef enum DSCCIF_ENABLE_ENUM {
 DSCCIF_ENABLE_ENUM_DISABLED              = 0x00000000,
 DSCCIF_ENABLE_ENUM_ENABLED               = 0x00000001,
 } DSCCIF_ENABLE_ENUM;
-
-/*
- * DSCCIF_INPUT_PIXEL_FORMAT_ENUM enum
- */
-
 typedef enum DSCCIF_INPUT_PIXEL_FORMAT_ENUM {
 DSCCIF_INPUT_PIXEL_FORMAT_ENUM_RGB       = 0x00000000,
 DSCCIF_INPUT_PIXEL_FORMAT_ENUM_YCBCR_444 = 0x00000001,
@@ -12196,33 +6198,14 @@ DSCCIF_INPUT_PIXEL_FORMAT_ENUM_SIMPLE_YCBCR_422 = 0x00000002,
 DSCCIF_INPUT_PIXEL_FORMAT_ENUM_NATIVE_YCBCR_422 = 0x00000003,
 DSCCIF_INPUT_PIXEL_FORMAT_ENUM_NATIVE_YCBCR_420 = 0x00000004,
 } DSCCIF_INPUT_PIXEL_FORMAT_ENUM;
-
-/*******************************************************
- * DSC_TOP Enums
- *******************************************************/
-
-/*
- * CLOCK_GATING_DISABLE_ENUM enum
- */
-
 typedef enum CLOCK_GATING_DISABLE_ENUM {
 CLOCK_GATING_DISABLE_ENUM_ENABLED        = 0x00000000,
 CLOCK_GATING_DISABLE_ENUM_DISABLED       = 0x00000001,
 } CLOCK_GATING_DISABLE_ENUM;
-
-/*
- * ENABLE_ENUM enum
- */
-
 typedef enum ENABLE_ENUM {
 ENABLE_ENUM_DISABLED                     = 0x00000000,
 ENABLE_ENUM_ENABLED                      = 0x00000001,
 } ENABLE_ENUM;
-
-/*
- * TEST_CLOCK_MUX_SELECT_ENUM enum
- */
-
 typedef enum TEST_CLOCK_MUX_SELECT_ENUM {
 TEST_CLOCK_MUX_SELECT_DISPCLK_P          = 0x00000000,
 TEST_CLOCK_MUX_SELECT_DISPCLK_G          = 0x00000001,
@@ -12231,151 +6214,73 @@ TEST_CLOCK_MUX_SELECT_DSCCLK_P           = 0x00000003,
 TEST_CLOCK_MUX_SELECT_DSCCLK_G           = 0x00000004,
 TEST_CLOCK_MUX_SELECT_DSCCLK_R           = 0x00000005,
 } TEST_CLOCK_MUX_SELECT_ENUM;
-
-/*******************************************************
- * DWB_TOP Enums
- *******************************************************/
-
-/*
- * DWB_CRC_CONT_EN_ENUM enum
- */
-
 typedef enum DWB_CRC_CONT_EN_ENUM {
 DWB_CRC_CONT_EN_ONE_SHOT                 = 0x00000000,
 DWB_CRC_CONT_EN_CONT                     = 0x00000001,
 } DWB_CRC_CONT_EN_ENUM;
-
-/*
- * DWB_CRC_SRC_SEL_ENUM enum
- */
-
 typedef enum DWB_CRC_SRC_SEL_ENUM {
 DWB_CRC_SRC_SEL_DWB_IN                   = 0x00000000,
 DWB_CRC_SRC_SEL_OGAM_OUT                 = 0x00000001,
 DWB_CRC_SRC_SEL_DWB_OUT                  = 0x00000002,
 } DWB_CRC_SRC_SEL_ENUM;
-
-/*
- * DWB_DATA_OVERFLOW_INT_TYPE_ENUM enum
- */
-
 typedef enum DWB_DATA_OVERFLOW_INT_TYPE_ENUM {
 DWB_DATA_OVERFLOW_INT_TYPE_0             = 0x00000000,
 DWB_DATA_OVERFLOW_INT_TYPE_1             = 0x00000001,
 } DWB_DATA_OVERFLOW_INT_TYPE_ENUM;
-
-/*
- * DWB_DATA_OVERFLOW_TYPE_ENUM enum
- */
-
 typedef enum DWB_DATA_OVERFLOW_TYPE_ENUM {
 DWB_DATA_OVERFLOW_TYPE_NO_OVERFLOW       = 0x00000000,
 DWB_DATA_OVERFLOW_TYPE_BUFFER            = 0x00000001,
 DWB_DATA_OVERFLOW_TYPE_VUPDATE           = 0x00000002,
 DWB_DATA_OVERFLOW_TYPE_VREADY            = 0x00000003,
 } DWB_DATA_OVERFLOW_TYPE_ENUM;
-
-/*
- * DWB_DEBUG_SEL_ENUM enum
- */
-
 typedef enum DWB_DEBUG_SEL_ENUM {
 DWB_DEBUG_SEL_FC                         = 0x00000000,
 DWB_DEBUG_SEL_RESERVED                   = 0x00000001,
 DWB_DEBUG_SEL_DWBCP                      = 0x00000002,
 DWB_DEBUG_SEL_PERFMON                    = 0x00000003,
 } DWB_DEBUG_SEL_ENUM;
-
-/*
- * DWB_MEM_PWR_FORCE_ENUM enum
- */
-
 typedef enum DWB_MEM_PWR_FORCE_ENUM {
 DWB_MEM_PWR_FORCE_DIS                    = 0x00000000,
 DWB_MEM_PWR_FORCE_LS                     = 0x00000001,
 DWB_MEM_PWR_FORCE_DS                     = 0x00000002,
 DWB_MEM_PWR_FORCE_SD                     = 0x00000003,
 } DWB_MEM_PWR_FORCE_ENUM;
-
-/*
- * DWB_MEM_PWR_STATE_ENUM enum
- */
-
 typedef enum DWB_MEM_PWR_STATE_ENUM {
 DWB_MEM_PWR_STATE_ON                     = 0x00000000,
 DWB_MEM_PWR_STATE_LS                     = 0x00000001,
 DWB_MEM_PWR_STATE_DS                     = 0x00000002,
 DWB_MEM_PWR_STATE_SD                     = 0x00000003,
 } DWB_MEM_PWR_STATE_ENUM;
-
-/*
- * DWB_TEST_CLK_SEL_ENUM enum
- */
-
 typedef enum DWB_TEST_CLK_SEL_ENUM {
 DWB_TEST_CLK_SEL_R                       = 0x00000000,
 DWB_TEST_CLK_SEL_G                       = 0x00000001,
 DWB_TEST_CLK_SEL_P                       = 0x00000002,
 } DWB_TEST_CLK_SEL_ENUM;
-
-/*
- * FC_EYE_SELECTION_ENUM enum
- */
-
 typedef enum FC_EYE_SELECTION_ENUM {
 FC_EYE_SELECTION_STEREO_DIS              = 0x00000000,
 FC_EYE_SELECTION_LEFT_EYE                = 0x00000001,
 FC_EYE_SELECTION_RIGHT_EYE               = 0x00000002,
 } FC_EYE_SELECTION_ENUM;
-
-/*
- * FC_FRAME_CAPTURE_RATE_ENUM enum
- */
-
 typedef enum FC_FRAME_CAPTURE_RATE_ENUM {
 FC_FRAME_CAPTURE_RATE_FULL               = 0x00000000,
 FC_FRAME_CAPTURE_RATE_HALF               = 0x00000001,
 FC_FRAME_CAPTURE_RATE_THIRD              = 0x00000002,
 FC_FRAME_CAPTURE_RATE_QUARTER            = 0x00000003,
 } FC_FRAME_CAPTURE_RATE_ENUM;
-
-/*
- * FC_STEREO_EYE_POLARITY_ENUM enum
- */
-
 typedef enum FC_STEREO_EYE_POLARITY_ENUM {
 FC_STEREO_EYE_POLARITY_LEFT              = 0x00000000,
 FC_STEREO_EYE_POLARITY_RIGHT             = 0x00000001,
 } FC_STEREO_EYE_POLARITY_ENUM;
-
-/*******************************************************
- * DWBCP Enums
- *******************************************************/
-
-/*
- * DWB_GAMUT_REMAP_COEF_FORMAT_ENUM enum
- */
-
 typedef enum DWB_GAMUT_REMAP_COEF_FORMAT_ENUM {
 DWB_GAMUT_REMAP_COEF_FORMAT_S2_13        = 0x00000000,
 DWB_GAMUT_REMAP_COEF_FORMAT_S3_12        = 0x00000001,
 } DWB_GAMUT_REMAP_COEF_FORMAT_ENUM;
-
-/*
- * DWB_GAMUT_REMAP_MODE_ENUM enum
- */
-
 typedef enum DWB_GAMUT_REMAP_MODE_ENUM {
 DWB_GAMUT_REMAP_MODE_BYPASS              = 0x00000000,
 DWB_GAMUT_REMAP_MODE_COEF_A              = 0x00000001,
 DWB_GAMUT_REMAP_MODE_COEF_B              = 0x00000002,
 DWB_GAMUT_REMAP_MODE_RESERVED            = 0x00000003,
 } DWB_GAMUT_REMAP_MODE_ENUM;
-
-/*
- * DWB_LUT_NUM_SEG enum
- */
-
 typedef enum DWB_LUT_NUM_SEG {
 DWB_SEGMENTS_1                           = 0x00000000,
 DWB_SEGMENTS_2                           = 0x00000001,
@@ -12386,216 +6291,97 @@ DWB_SEGMENTS_32                          = 0x00000005,
 DWB_SEGMENTS_64                          = 0x00000006,
 DWB_SEGMENTS_128                         = 0x00000007,
 } DWB_LUT_NUM_SEG;
-
-/*
- * DWB_OGAM_LUT_CONFIG_MODE_ENUM enum
- */
-
 typedef enum DWB_OGAM_LUT_CONFIG_MODE_ENUM {
 DWB_OGAM_LUT_CONFIG_MODE_DIFF            = 0x00000000,
 DWB_OGAM_LUT_CONFIG_MODE_SAME            = 0x00000001,
 } DWB_OGAM_LUT_CONFIG_MODE_ENUM;
-
-/*
- * DWB_OGAM_LUT_HOST_SEL_ENUM enum
- */
-
 typedef enum DWB_OGAM_LUT_HOST_SEL_ENUM {
 DWB_OGAM_LUT_HOST_SEL_RAMA               = 0x00000000,
 DWB_OGAM_LUT_HOST_SEL_RAMB               = 0x00000001,
 } DWB_OGAM_LUT_HOST_SEL_ENUM;
-
-/*
- * DWB_OGAM_LUT_READ_COLOR_SEL_ENUM enum
- */
-
 typedef enum DWB_OGAM_LUT_READ_COLOR_SEL_ENUM {
 DWB_OGAM_LUT_READ_COLOR_SEL_B            = 0x00000000,
 DWB_OGAM_LUT_READ_COLOR_SEL_G            = 0x00000001,
 DWB_OGAM_LUT_READ_COLOR_SEL_R            = 0x00000002,
 DWB_OGAM_LUT_READ_COLOR_SEL_RESERVED     = 0x00000003,
 } DWB_OGAM_LUT_READ_COLOR_SEL_ENUM;
-
-/*
- * DWB_OGAM_LUT_READ_DBG_ENUM enum
- */
-
 typedef enum DWB_OGAM_LUT_READ_DBG_ENUM {
 DWB_OGAM_LUT_READ_DBG_DISABLE            = 0x00000000,
 DWB_OGAM_LUT_READ_DBG_ENABLE             = 0x00000001,
 } DWB_OGAM_LUT_READ_DBG_ENUM;
-
-/*
- * DWB_OGAM_MODE_ENUM enum
- */
-
 typedef enum DWB_OGAM_MODE_ENUM {
 DWB_OGAM_MODE_BYPASS                     = 0x00000000,
 DWB_OGAM_MODE_RESERVED                   = 0x00000001,
 DWB_OGAM_MODE_RAM_LUT_ENABLED            = 0x00000002,
 } DWB_OGAM_MODE_ENUM;
-
-/*
- * DWB_OGAM_PWL_DISABLE_ENUM enum
- */
-
 typedef enum DWB_OGAM_PWL_DISABLE_ENUM {
 DWB_OGAM_PWL_DISABLE_FALSE               = 0x00000000,
 DWB_OGAM_PWL_DISABLE_TRUE                = 0x00000001,
 } DWB_OGAM_PWL_DISABLE_ENUM;
-
-/*
- * DWB_OGAM_SELECT_ENUM enum
- */
-
 typedef enum DWB_OGAM_SELECT_ENUM {
 DWB_OGAM_SELECT_A                        = 0x00000000,
 DWB_OGAM_SELECT_B                        = 0x00000001,
 } DWB_OGAM_SELECT_ENUM;
-
-/*******************************************************
- * RDPCSPIPE Enums
- *******************************************************/
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_LANE_CLK_EN enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_LANE_CLK_EN {
 RDPCSPIPE_EXT_PCLK_EN_DISABLE            = 0x00000000,
 RDPCSPIPE_EXT_PCLK_EN_ENABLE             = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_LANE_CLK_EN;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_APBCLK_EN enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_APBCLK_EN {
 RDPCSPIPE_APBCLK_DISABLE                 = 0x00000000,
 RDPCSPIPE_APBCLK_ENABLE                  = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_APBCLK_EN;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_CLOCK_ON enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_CLOCK_ON {
 RDPCS_PIPE_CLK_CLOCK_OFF                 = 0x00000000,
 RDPCS_PIPE_CLK_CLOCK_ON                  = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_CLOCK_ON;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_EN enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_EN {
 RDPCS_PIPE_CLK_DISABLE                   = 0x00000000,
 RDPCS_PIPE_CLK_ENABLE                    = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_EN;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_GATE_DIS enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_GATE_DIS {
 RDPCS_PIPE_CLK_GATE_ENABLE               = 0x00000000,
 RDPCS_PIPE_CLK_GATE_DISABLE              = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_CLK_GATE_DIS;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_PHYD32CLK_CLOCK_ON enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_PHYD32CLK_CLOCK_ON {
 RDPCS_PIPE_PHYD32CLK_CLOCK_OFF           = 0x00000000,
 RDPCS_PIPE_PHYD32CLK_CLOCK_ON            = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_PIPE_PHYD32CLK_CLOCK_ON;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_CLOCK_ON enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_CLOCK_ON {
 RDPCSPIPE_SYMCLK_SRAMCLK_CLOCK_OFF       = 0x00000000,
 RDPCSPIPE_SYMCLK_SRAMCLK_CLOCK_ON        = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_CLOCK_ON;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_EN enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_EN {
 RDPCSPIPE_SRAMCLK_DISABLE                = 0x00000000,
 RDPCSPIPE_SRAMCLK_ENABLE                 = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_EN;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_GATE_DIS enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_GATE_DIS {
 RDPCSPIPE_SRAMCLK_GATE_ENABLE            = 0x00000000,
 RDPCSPIPE_SRAMCLK_GATE_DISABLE           = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_GATE_DIS;
-
-/*
- * RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_PASS enum
- */
-
 typedef enum RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_PASS {
 RDPCSPIPE_SRAMCLK_NOT_PASS               = 0x00000000,
 RDPCSPIPE_SRAMCLK_PASS                   = 0x00000001,
 } RDPCSPIPE_CLOCK_CNTL_RDPCS_SRAMCLK_PASS;
-
-/*
- * RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_EN enum
- */
-
 typedef enum RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_EN {
 RDPCS_PIPE_FIFO_DISABLE                  = 0x00000000,
 RDPCS_PIPE_FIFO_ENABLE                   = 0x00000001,
 } RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_EN;
-
-/*
- * RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_LANE_EN enum
- */
-
 typedef enum RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_LANE_EN {
 RDPCS_PIPE_FIFO_LANE_DISABLE             = 0x00000000,
 RDPCS_PIPE_FIFO_LANE_ENABLE              = 0x00000001,
 } RDPCSPIPE_CNTL_RDPCS_PIPE_FIFO_LANE_EN;
-
-/*
- * RDPCSPIPE_CNTL_RDPCS_PIPE_SOFT_RESET enum
- */
-
 typedef enum RDPCSPIPE_CNTL_RDPCS_PIPE_SOFT_RESET {
 RDPCS_PIPE_SOFT_RESET_DISABLE            = 0x00000000,
 RDPCS_PIPE_SOFT_RESET_ENABLE             = 0x00000001,
 } RDPCSPIPE_CNTL_RDPCS_PIPE_SOFT_RESET;
-
-/*
- * RDPCSPIPE_CNTL_RDPCS_SRAM_SOFT_RESET enum
- */
-
 typedef enum RDPCSPIPE_CNTL_RDPCS_SRAM_SOFT_RESET {
 RDPCSPIPE_SRAM_SRAM_RESET_DISABLE        = 0x00000000,
 RDPCSPIPE_SRAM_SRAM_RESET_ENABLE         = 0x00000001,
 } RDPCSPIPE_CNTL_RDPCS_SRAM_SOFT_RESET;
-
-/*
- * RDPCSPIPE_DBG_APB_COUNT_EXPIRE_MASK enum
- */
-
 typedef enum RDPCSPIPE_DBG_APB_COUNT_EXPIRE_MASK {
 RDPCSPIPE_DBG_APB_COUNT_EXPIRE_MASK_DISABLE = 0x00000000,
 RDPCSPIPE_DBG_APB_COUNT_EXPIRE_MASK_ENABLE = 0x00000001,
 } RDPCSPIPE_DBG_APB_COUNT_EXPIRE_MASK;
-
-/*
- * RDPCSPIPE_DBG_OCLA_SEL enum
- */
-
 typedef enum RDPCSPIPE_DBG_OCLA_SEL {
 RDPCSPIPE_DBG_OCLA_SEL_MON_OUT_7_0       = 0x00000000,
 RDPCSPIPE_DBG_OCLA_SEL_MON_OUT_15_8      = 0x00000001,
@@ -12606,138 +6392,63 @@ RDPCSPIPE_DBG_OCLA_SEL_MON_OUT_47_40     = 0x00000005,
 RDPCSPIPE_DBG_OCLA_SEL_MON_OUT_55_48     = 0x00000006,
 RDPCSPIPE_DBG_OCLA_SEL_MON_OUT_63_56     = 0x00000007,
 } RDPCSPIPE_DBG_OCLA_SEL;
-
-/*
- * RDPCSPIPE_ENC_TYPE enum
- */
-
 typedef enum RDPCSPIPE_ENC_TYPE {
 HDMI_TMDS_OR_DP_8B10B                    = 0x00000000,
 HDMI_FRL                                 = 0x00000001,
 DP_128B132B                              = 0x00000002,
 } RDPCSPIPE_ENC_TYPE;
-
-/*
- * RDPCSPIPE_FIFO_EMPTY enum
- */
-
 typedef enum RDPCSPIPE_FIFO_EMPTY {
 RDPCSPIPE_FIFO_NOT_EMPTY                 = 0x00000000,
 RDPCSPIPE_FIFO_IS_EMPTY                  = 0x00000001,
 } RDPCSPIPE_FIFO_EMPTY;
-
-/*
- * RDPCSPIPE_FIFO_FULL enum
- */
-
 typedef enum RDPCSPIPE_FIFO_FULL {
 RDPCSPIPE_FIFO_NOT_FULL                  = 0x00000000,
 RDPCSPIPE_FIFO_IS_FULL                   = 0x00000001,
 } RDPCSPIPE_FIFO_FULL;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_APB_PSLVERR_MASK enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_APB_PSLVERR_MASK {
 RDPCSPIPE_APB_PSLVERR_MASK_DISABLE       = 0x00000000,
 RDPCSPIPE_APB_PSLVERR_MASK_ENABLE        = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_APB_PSLVERR_MASK;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE {
 RDPCSPIPE_DPALT_4LANE_TOGGLE_2LANE       = 0x00000000,
 RDPCSPIPE_DPALT_4LANE_TOGGLE_4LANE       = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE_MASK enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE_MASK {
 RDPCSPIPE_DPALT_4LANE_TOGGLE_MASK_DISABLE = 0x00000000,
 RDPCSPIPE_DPALT_4LANE_TOGGLE_MASK_ENABLE = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_4LANE_TOGGLE_MASK;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE {
 RDPCSPIPE_DPALT_DISABLE_TOGGLE_ENABLE    = 0x00000000,
 RDPCSPIPE_DPALT_DISABLE_TOGGLE_DISABLE   = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE_MASK enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE_MASK {
 RDPCSPIPE_DPALT_DISABLE_TOGGLE_MASK_DISABLE = 0x00000000,
 RDPCSPIPE_DPALT_DISABLE_TOGGLE_MASK_ENABLE = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_DPALT_DISABLE_TOGGLE_MASK;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_PIPE_FIFO_ERROR_MASK enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_PIPE_FIFO_ERROR_MASK {
 RDPCSPIPE_PIPE_FIFO_ERROR_MASK_DISABLE   = 0x00000000,
 RDPCSPIPE_PIPE_FIFO_ERROR_MASK_ENABLE    = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_PIPE_FIFO_ERROR_MASK;
-
-/*
- * RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_REG_FIFO_ERROR_MASK enum
- */
-
 typedef enum RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_REG_FIFO_ERROR_MASK {
 RDPCSPIPE_REG_FIFO_ERROR_MASK_DISABLE    = 0x00000000,
 RDPCSPIPE_REG_FIFO_ERROR_MASK_ENABLE     = 0x00000001,
 } RDPCSPIPE_INTERRUPT_CONTROL_RDPCS_REG_FIFO_ERROR_MASK;
-
-/*
- * RDPCSPIPE_MSG_BUS_COUNT_EXPIRE_MASK enum
- */
-
 typedef enum RDPCSPIPE_MSG_BUS_COUNT_EXPIRE_MASK {
 RDPCSPIPE_MSG_BUS_COUNT_EXPIRE_MASK_DISABLE = 0x00000000,
 RDPCSPIPE_MSG_BUS_COUNT_EXPIRE_MASK_ENABLE = 0x00000001,
 } RDPCSPIPE_MSG_BUS_COUNT_EXPIRE_MASK;
-
-/*
- * RDPCSPIPE_PACK_MODE enum
- */
-
 typedef enum RDPCSPIPE_PACK_MODE {
 TIGHT_PACK                               = 0x00000000,
 LOOSE_PACK                               = 0x00000001,
 } RDPCSPIPE_PACK_MODE;
-
-/*
- * RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_MUX_SEL enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_MUX_SEL {
 RDPCSPIPE_PHY_CR_MUX_SEL_FOR_USB         = 0x00000000,
 RDPCSPIPE_PHY_CR_MUX_SEL_FOR_DC          = 0x00000001,
 } RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_MUX_SEL;
-
-/*
- * RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_PARA_SEL enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_PARA_SEL {
 RDPCSPIPE_PHY_CR_PARA_SEL_JTAG           = 0x00000000,
 RDPCSPIPE_PHY_CR_PARA_SEL_CR             = 0x00000001,
 } RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_CR_PARA_SEL;
-
-/*
- * RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_REF_RANGE enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_REF_RANGE {
 RDPCSPIPE_PHY_REF_RANGE_0                = 0x00000000,
 RDPCSPIPE_PHY_REF_RANGE_1                = 0x00000001,
@@ -12748,29 +6459,14 @@ RDPCSPIPE_PHY_REF_RANGE_5                = 0x00000005,
 RDPCSPIPE_PHY_REF_RANGE_6                = 0x00000006,
 RDPCSPIPE_PHY_REF_RANGE_7                = 0x00000007,
 } RDPCSPIPE_PHY_CNTL0_RDPCS_PHY_REF_RANGE;
-
-/*
- * RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_EXT_LD_DONE enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_EXT_LD_DONE {
 RDPCSPIPE_SRAM_EXT_LD_NOT_DONE           = 0x00000000,
 RDPCSPIPE_SRAM_EXT_LD_DONE               = 0x00000001,
 } RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_EXT_LD_DONE;
-
-/*
- * RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_INIT_DONE enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_INIT_DONE {
 RDPCSPIPE_SRAM_INIT_NOT_DONE             = 0x00000000,
 RDPCSPIPE_SRAM_INIT_DONE                 = 0x00000001,
 } RDPCSPIPE_PHY_CNTL0_RDPCS_SRAM_INIT_DONE;
-
-/*
- * RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_DP_REF_CLK_MPLLB_DIV enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_DP_REF_CLK_MPLLB_DIV {
 RDPCSPIPE_PHY_DP_REF_CLK_MPLLB_DIV1      = 0x00000000,
 RDPCSPIPE_PHY_DP_REF_CLK_MPLLB_DIV2      = 0x00000001,
@@ -12778,22 +6474,12 @@ RDPCSPIPE_PHY_DP_REF_CLK_MPLLB_DIV3      = 0x00000002,
 RDPCSPIPE_PHY_DP_REF_CLK_MPLLB_DIV8      = 0x00000003,
 RDPCSPIPE_PHY_DP_REF_CLK_MPLLB_DIV16     = 0x00000004,
 } RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_DP_REF_CLK_MPLLB_DIV;
-
-/*
- * RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV {
 RDPCSPIPE_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_0 = 0x00000000,
 RDPCSPIPE_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_1 = 0x00000001,
 RDPCSPIPE_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_2 = 0x00000002,
 RDPCSPIPE_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_3 = 0x00000003,
 } RDPCSPIPE_PHY_CNTL11_RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV;
-
-/*
- * RDPCSPIPE_PHY_CNTL12_RDPCS_PHY_DP_MPLLB_TX_CLK_DIV enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL12_RDPCS_PHY_DP_MPLLB_TX_CLK_DIV {
 RDPCSPIPE_PHY_DP_MPLLB_TX_CLK_DIV        = 0x00000000,
 RDPCSPIPE_PHY_DP_MPLLB_TX_CLK_DIV2       = 0x00000001,
@@ -12804,11 +6490,6 @@ RDPCSPIPE_PHY_DP_MPLLB_TX_CLK_DIV5       = 0x00000005,
 RDPCSPIPE_PHY_DP_MPLLB_TX_CLK_DIV6       = 0x00000006,
 RDPCSPIPE_PHY_DP_MPLLB_TX_CLK_DIV10      = 0x00000007,
 } RDPCSPIPE_PHY_CNTL12_RDPCS_PHY_DP_MPLLB_TX_CLK_DIV;
-
-/*
- * RDPCSPIPE_PHY_CNTL4_RDPCS_PHY_DP_TX_TERM_CTRL enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL4_RDPCS_PHY_DP_TX_TERM_CTRL {
 RDPCSPIPE_PHY_DP_TX_TERM_CTRL_54         = 0x00000000,
 RDPCSPIPE_PHY_DP_TX_TERM_CTRL_52         = 0x00000001,
@@ -12819,63 +6500,33 @@ RDPCSPIPE_PHY_DP_TX_TERM_CTRL_44         = 0x00000005,
 RDPCSPIPE_PHY_DP_TX_TERM_CTRL_42         = 0x00000006,
 RDPCSPIPE_PHY_DP_TX_TERM_CTRL_40         = 0x00000007,
 } RDPCSPIPE_PHY_CNTL4_RDPCS_PHY_DP_TX_TERM_CTRL;
-
-/*
- * RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_DETRX_RESULT enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_DETRX_RESULT {
 RDPCSPIPE_PHY_DP_TX_DETRX_RESULT_NO_DETECT = 0x00000000,
 RDPCSPIPE_PHY_DP_TX_DETRX_RESULT_DETECT  = 0x00000001,
 } RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_DETRX_RESULT;
-
-/*
- * RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_RATE enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_RATE {
 RDPCSPIPE_PHY_DP_TX_RATE                 = 0x00000000,
 RDPCSPIPE_PHY_DP_TX_RATE_DIV2            = 0x00000001,
 RDPCSPIPE_PHY_DP_TX_RATE_DIV4            = 0x00000002,
 } RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_RATE;
-
-/*
- * RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_WIDTH enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_WIDTH {
 RDPCSPIPE_PHY_DP_TX_WIDTH_8              = 0x00000000,
 RDPCSPIPE_PHY_DP_TX_WIDTH_10             = 0x00000001,
 RDPCSPIPE_PHY_DP_TX_WIDTH_16             = 0x00000002,
 RDPCSPIPE_PHY_DP_TX_WIDTH_20             = 0x00000003,
 } RDPCSPIPE_PHY_CNTL_RDPCS_PHY_DP_TX_WIDTH;
-
-/*
- * RDPCSPIPE_PHY_CNTL_RRDPCS_PHY_DP_TX_PSTATE enum
- */
-
 typedef enum RDPCSPIPE_PHY_CNTL_RRDPCS_PHY_DP_TX_PSTATE {
 RRDPCSPIPE_PHY_DP_TX_PSTATE_POWER_UP     = 0x00000000,
 RRDPCSPIPE_PHY_DP_TX_PSTATE_HOLD         = 0x00000001,
 RRDPCSPIPE_PHY_DP_TX_PSTATE_HOLD_OFF     = 0x00000002,
 RRDPCSPIPE_PHY_DP_TX_PSTATE_POWER_DOWN   = 0x00000003,
 } RDPCSPIPE_PHY_CNTL_RRDPCS_PHY_DP_TX_PSTATE;
-
-/*
- * RDPCSPIPE_PHY_IF_WIDTH enum
- */
-
 typedef enum RDPCSPIPE_PHY_IF_WIDTH {
 PHY_IF_WIDTH_10BIT                       = 0x00000000,
 PHY_IF_WIDTH_20BIT                       = 0x00000001,
 PHY_IF_WIDTH_40BIT                       = 0x00000002,
 PHY_IF_WIDTH_80BIT                       = 0x00000003,
 } RDPCSPIPE_PHY_IF_WIDTH;
-
-/*
- * RDPCSPIPE_PHY_RATE enum
- */
-
 typedef enum RDPCSPIPE_PHY_RATE {
 PHY_DP_RATE_1P62                         = 0x00000000,
 PHY_DP_RATE_2P7                          = 0x00000001,
@@ -12890,20 +6541,10 @@ PHY_DP_RATE_13P5                         = 0x00000009,
 PHY_DP_RATE_20P                          = 0x0000000a,
 PHY_CUSTOM_RATE                          = 0x0000000f,
 } RDPCSPIPE_PHY_RATE;
-
-/*
- * RDPCSPIPE_PHY_REF_ALT_CLK_EN enum
- */
-
 typedef enum RDPCSPIPE_PHY_REF_ALT_CLK_EN {
 RDPCSPIPE_PHY_REF_ALT_CLK_DISABLE        = 0x00000000,
 RDPCSPIPE_PHY_REF_ALT_CLK_ENABLE         = 0x00000001,
 } RDPCSPIPE_PHY_REF_ALT_CLK_EN;
-
-/*
- * RDPCSPIPE_TEST_CLK_SEL enum
- */
-
 typedef enum RDPCSPIPE_TEST_CLK_SEL {
 RDPCSPIPE_TEST_CLK_SEL_NONE              = 0x00000000,
 RDPCSPIPE_TEST_CLK_SEL_CFGCLK            = 0x00000001,
@@ -12924,55 +6565,26 @@ RDPCSPIPE_TEST_CLK_SEL_REF_DIG_FR_clk    = 0x0000000f,
 RDPCSPIPE_TEST_CLK_SEL_dtb_out0          = 0x00000010,
 RDPCSPIPE_TEST_CLK_SEL_dtb_out1          = 0x00000011,
 } RDPCSPIPE_TEST_CLK_SEL;
-
-/*
- * RDPCS_PIPE_CNTL_TX_LANE_PACK_FROM_MSB enum
- */
-
 typedef enum RDPCS_PIPE_CNTL_TX_LANE_PACK_FROM_MSB {
 RDPCSPIPE_LANE_PACK_FROM_MSB_DISABLE     = 0x00000000,
 RDPCSPIPE_LANE_PACK_FROM_MSB_ENABLE      = 0x00000001,
 } RDPCS_PIPE_CNTL_TX_LANE_PACK_FROM_MSB;
-
-/*
- * RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_FORCE enum
- */
-
 typedef enum RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_FORCE {
 RDPCSPIPE_MEM_PWR_NO_FORCE               = 0x00000000,
 RDPCSPIPE_MEM_PWR_LIGHT_SLEEP            = 0x00000001,
 RDPCSPIPE_MEM_PWR_DEEP_SLEEP             = 0x00000002,
 RDPCSPIPE_MEM_PWR_SHUT_DOWN              = 0x00000003,
 } RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_FORCE;
-
-/*
- * RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_PWR_STATE enum
- */
-
 typedef enum RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_PWR_STATE {
 RDPCSPIPE_MEM_PWR_PWR_STATE_ON           = 0x00000000,
 RDPCSPIPE_MEM_PWR_PWR_STATE_LIGHT_SLEEP  = 0x00000001,
 RDPCSPIPE_MEM_PWR_PWR_STATE_DEEP_SLEEP   = 0x00000002,
 RDPCSPIPE_MEM_PWR_PWR_STATE_SHUT_DOWN    = 0x00000003,
 } RDPCS_PIPE_SRAM_CNTL_RDPCS_MEM_PWR_PWR_STATE;
-
-/*
- * RPDCSPIPE_CNTL_TX_LANE_BIT_ORDER_REVERSE_BEFORE_PACK enum
- */
-
 typedef enum RPDCSPIPE_CNTL_TX_LANE_BIT_ORDER_REVERSE_BEFORE_PACK {
 RDPCSPIPE_LANE_BIT_ORDER_REVERSE_DISABLE = 0x00000000,
 RDPCSPIPE_LANE_BIT_ORDER_REVERSE_ENABLE  = 0x00000001,
 } RPDCSPIPE_CNTL_TX_LANE_BIT_ORDER_REVERSE_BEFORE_PACK;
-
-/*******************************************************
- * GDS Enums
- *******************************************************/
-
-/*
- * GDS_PERFCOUNT_SELECT enum
- */
-
 typedef enum GDS_PERFCOUNT_SELECT {
 GDS_PERF_SEL_WR_COMP                     = 0x00000000,
 GDS_PERF_SEL_WBUF_WR                     = 0x00000001,
@@ -13083,15 +6695,6 @@ GDS_PERF_SEL_SE7_GDS_SHORT_OP            = 0x00000069,
 GDS_PERF_SEL_GWS_RELEASED                = 0x0000006a,
 GDS_PERF_SEL_GWS_BYPASS                  = 0x0000006b,
 } GDS_PERFCOUNT_SELECT;
-
-/*******************************************************
- * CB Enums
- *******************************************************/
-
-/*
- * BlendOp enum
- */
-
 typedef enum BlendOp {
 BLEND_ZERO                               = 0x00000000,
 BLEND_ONE                                = 0x00000001,
@@ -13113,11 +6716,6 @@ BLEND_INV_SRC1_ALPHA                     = 0x00000010,
 BLEND_CONSTANT_ALPHA                     = 0x00000011,
 BLEND_ONE_MINUS_CONSTANT_ALPHA           = 0x00000012,
 } BlendOp;
-
-/*
- * BlendOpt enum
- */
-
 typedef enum BlendOpt {
 FORCE_OPT_AUTO                           = 0x00000000,
 FORCE_OPT_DISABLE                        = 0x00000001,
@@ -13128,11 +6726,6 @@ FORCE_OPT_ENABLE_IF_SRC_A_1              = 0x00000005,
 FORCE_OPT_ENABLE_IF_SRC_RGB_1            = 0x00000006,
 FORCE_OPT_ENABLE_IF_SRC_ARGB_1           = 0x00000007,
 } BlendOpt;
-
-/*
- * CBMode enum
- */
-
 typedef enum CBMode {
 CB_DISABLE                               = 0x00000000,
 CB_NORMAL                                = 0x00000001,
@@ -13140,20 +6733,10 @@ CB_ELIMINATE_FAST_CLEAR                  = 0x00000002,
 CB_DCC_DECOMPRESS                        = 0x00000003,
 CB_RESERVED                              = 0x00000004,
 } CBMode;
-
-/*
- * CBPerfClearFilterSel enum
- */
-
 typedef enum CBPerfClearFilterSel {
 CB_PERF_CLEAR_FILTER_SEL_NONCLEAR        = 0x00000000,
 CB_PERF_CLEAR_FILTER_SEL_CLEAR           = 0x00000001,
 } CBPerfClearFilterSel;
-
-/*
- * CBPerfOpFilterSel enum
- */
-
 typedef enum CBPerfOpFilterSel {
 CB_PERF_OP_FILTER_SEL_WRITE_ONLY         = 0x00000000,
 CB_PERF_OP_FILTER_SEL_NEEDS_DESTINATION  = 0x00000001,
@@ -13162,11 +6745,6 @@ CB_PERF_OP_FILTER_SEL_DECOMPRESS         = 0x00000003,
 CB_PERF_OP_FILTER_SEL_FMASK_DECOMPRESS   = 0x00000004,
 CB_PERF_OP_FILTER_SEL_ELIMINATE_FAST_CLEAR = 0x00000005,
 } CBPerfOpFilterSel;
-
-/*
- * CBPerfSel enum
- */
-
 typedef enum CBPerfSel {
 CB_PERF_SEL_NONE                         = 0x00000000,
 CB_PERF_SEL_DRAWN_PIXEL                  = 0x00000001,
@@ -13635,11 +7213,6 @@ CB_PERF_SEL_RESERVED_463                 = 0x000001cf,
 CB_PERF_SEL_RESERVED_464                 = 0x000001d0,
 CB_PERF_SEL_RESERVED_465                 = 0x000001d1,
 } CBPerfSel;
-
-/*
- * CBRamList enum
- */
-
 typedef enum CBRamList {
 CB_DCG_CCC_CAS_TAG_ARRAY                 = 0x00000000,
 CB_DCG_CCC_CAS_FRAG_PTR                  = 0x00000001,
@@ -13659,11 +7232,6 @@ CB_DCG_DCC_CACHE                         = 0x0000000e,
 CB_DCG_DCC_DIRTY_BITS                    = 0x0000000f,
 CB_DCG_QBLOCK_ALLOC                      = 0x00000010,
 } CBRamList;
-
-/*
- * CmaskCode enum
- */
-
 typedef enum CmaskCode {
 CMASK_CLR00_F0                           = 0x00000000,
 CMASK_CLR00_F1                           = 0x00000001,
@@ -13682,11 +7250,6 @@ CMASK_CLR11_F1                           = 0x0000000d,
 CMASK_CLR11_F2                           = 0x0000000e,
 CMASK_CLR11_FX                           = 0x0000000f,
 } CmaskCode;
-
-/*
- * CombFunc enum
- */
-
 typedef enum CombFunc {
 COMB_DST_PLUS_SRC                        = 0x00000000,
 COMB_SRC_MINUS_DST                       = 0x00000001,
@@ -13694,58 +7257,29 @@ COMB_MIN_DST_SRC                         = 0x00000002,
 COMB_MAX_DST_SRC                         = 0x00000003,
 COMB_DST_MINUS_SRC                       = 0x00000004,
 } CombFunc;
-
-/*
- * MemArbMode enum
- */
-
 typedef enum MemArbMode {
 MEM_ARB_MODE_FIXED                       = 0x00000000,
 MEM_ARB_MODE_AGE                         = 0x00000001,
 MEM_ARB_MODE_WEIGHT                      = 0x00000002,
 MEM_ARB_MODE_BOTH                        = 0x00000003,
 } MemArbMode;
-
-/*
- * SourceFormat enum
- */
-
 typedef enum SourceFormat {
 EXPORT_4C_32BPC                          = 0x00000000,
 EXPORT_4C_16BPC                          = 0x00000001,
 EXPORT_2C_32BPC_GR                       = 0x00000002,
 EXPORT_2C_32BPC_AR                       = 0x00000003,
 } SourceFormat;
-
-/*******************************************************
- * SC Enums
- *******************************************************/
-
-/*
- * BinEventCntl enum
- */
-
 typedef enum BinEventCntl {
 BINNER_BREAK_BATCH                       = 0x00000000,
 BINNER_PIPELINE                          = 0x00000001,
 BINNER_DROP                              = 0x00000002,
 BINNER_PIPELINE_BREAK                    = 0x00000003,
 } BinEventCntl;
-
-/*
- * BinMapMode enum
- */
-
 typedef enum BinMapMode {
 BIN_MAP_MODE_NONE                        = 0x00000000,
 BIN_MAP_MODE_RTA_INDEX                   = 0x00000001,
 BIN_MAP_MODE_POPS                        = 0x00000002,
 } BinMapMode;
-
-/*
- * BinSizeExtend enum
- */
-
 typedef enum BinSizeExtend {
 BIN_SIZE_32_PIXELS                       = 0x00000000,
 BIN_SIZE_64_PIXELS                       = 0x00000001,
@@ -13753,117 +7287,62 @@ BIN_SIZE_128_PIXELS                      = 0x00000002,
 BIN_SIZE_256_PIXELS                      = 0x00000003,
 BIN_SIZE_512_PIXELS                      = 0x00000004,
 } BinSizeExtend;
-
-/*
- * BinningMode enum
- */
-
 typedef enum BinningMode {
 BINNING_ALLOWED                          = 0x00000000,
 FORCE_BINNING_ON                         = 0x00000001,
 DISABLE_BINNING_USE_NEW_SC               = 0x00000002,
 DISABLE_BINNING_USE_LEGACY_SC            = 0x00000003,
 } BinningMode;
-
-/*
- * CovToShaderSel enum
- */
-
 typedef enum CovToShaderSel {
 INPUT_COVERAGE                           = 0x00000000,
 INPUT_INNER_COVERAGE                     = 0x00000001,
 INPUT_DEPTH_COVERAGE                     = 0x00000002,
 RAW                                      = 0x00000003,
 } CovToShaderSel;
-
-/*
- * PkrMap enum
- */
-
 typedef enum PkrMap {
 RASTER_CONFIG_PKR_MAP_0                  = 0x00000000,
 RASTER_CONFIG_PKR_MAP_1                  = 0x00000001,
 RASTER_CONFIG_PKR_MAP_2                  = 0x00000002,
 RASTER_CONFIG_PKR_MAP_3                  = 0x00000003,
 } PkrMap;
-
-/*
- * PkrXsel enum
- */
-
 typedef enum PkrXsel {
 RASTER_CONFIG_PKR_XSEL_0                 = 0x00000000,
 RASTER_CONFIG_PKR_XSEL_1                 = 0x00000001,
 RASTER_CONFIG_PKR_XSEL_2                 = 0x00000002,
 RASTER_CONFIG_PKR_XSEL_3                 = 0x00000003,
 } PkrXsel;
-
-/*
- * PkrXsel2 enum
- */
-
 typedef enum PkrXsel2 {
 RASTER_CONFIG_PKR_XSEL2_0                = 0x00000000,
 RASTER_CONFIG_PKR_XSEL2_1                = 0x00000001,
 RASTER_CONFIG_PKR_XSEL2_2                = 0x00000002,
 RASTER_CONFIG_PKR_XSEL2_3                = 0x00000003,
 } PkrXsel2;
-
-/*
- * PkrYsel enum
- */
-
 typedef enum PkrYsel {
 RASTER_CONFIG_PKR_YSEL_0                 = 0x00000000,
 RASTER_CONFIG_PKR_YSEL_1                 = 0x00000001,
 RASTER_CONFIG_PKR_YSEL_2                 = 0x00000002,
 RASTER_CONFIG_PKR_YSEL_3                 = 0x00000003,
 } PkrYsel;
-
-/*
- * RbMap enum
- */
-
 typedef enum RbMap {
 RASTER_CONFIG_RB_MAP_0                   = 0x00000000,
 RASTER_CONFIG_RB_MAP_1                   = 0x00000001,
 RASTER_CONFIG_RB_MAP_2                   = 0x00000002,
 RASTER_CONFIG_RB_MAP_3                   = 0x00000003,
 } RbMap;
-
-/*
- * RbXsel enum
- */
-
 typedef enum RbXsel {
 RASTER_CONFIG_RB_XSEL_0                  = 0x00000000,
 RASTER_CONFIG_RB_XSEL_1                  = 0x00000001,
 } RbXsel;
-
-/*
- * RbXsel2 enum
- */
-
 typedef enum RbXsel2 {
 RASTER_CONFIG_RB_XSEL2_0                 = 0x00000000,
 RASTER_CONFIG_RB_XSEL2_1                 = 0x00000001,
 RASTER_CONFIG_RB_XSEL2_2                 = 0x00000002,
 RASTER_CONFIG_RB_XSEL2_3                 = 0x00000003,
 } RbXsel2;
-
-/*
- * RbYsel enum
- */
-
 typedef enum RbYsel {
 RASTER_CONFIG_RB_YSEL_0                  = 0x00000000,
 RASTER_CONFIG_RB_YSEL_1                  = 0x00000001,
 } RbYsel;
-
-/*
- * SC_PERFCNT_SEL enum
- */
-
 typedef enum SC_PERFCNT_SEL {
 SC_SRPS_WINDOW_VALID                     = 0x00000000,
 SC_PSSW_WINDOW_VALID                     = 0x00000001,
@@ -14444,131 +7923,71 @@ SC_BM_MULTI_ACCUM_2_BE_STALLED           = 0x0000023f,
 SC_BM_MULTI_ACCUM_3_BE_STALLED           = 0x00000240,
 SC_BM_MULTI_ACCUM_4_BE_STALLED           = 0x00000241,
 } SC_PERFCNT_SEL;
-
-/*
- * ScMap enum
- */
-
 typedef enum ScMap {
 RASTER_CONFIG_SC_MAP_0                   = 0x00000000,
 RASTER_CONFIG_SC_MAP_1                   = 0x00000001,
 RASTER_CONFIG_SC_MAP_2                   = 0x00000002,
 RASTER_CONFIG_SC_MAP_3                   = 0x00000003,
 } ScMap;
-
-/*
- * ScUncertaintyRegionMode enum
- */
-
 typedef enum ScUncertaintyRegionMode {
 SC_HALF_LSB                              = 0x00000000,
 SC_LSB_ONE_SIDED                         = 0x00000001,
 SC_LSB_TWO_SIDED                         = 0x00000002,
 } ScUncertaintyRegionMode;
-
-/*
- * ScUncertaintyRegionMult enum
- */
-
 typedef enum ScUncertaintyRegionMult {
 SC_UR_1X                                 = 0x00000000,
 SC_UR_2X                                 = 0x00000001,
 SC_UR_4X                                 = 0x00000002,
 SC_UR_8X                                 = 0x00000003,
 } ScUncertaintyRegionMult;
-
-/*
- * ScXsel enum
- */
-
 typedef enum ScXsel {
 RASTER_CONFIG_SC_XSEL_8_WIDE_TILE        = 0x00000000,
 RASTER_CONFIG_SC_XSEL_16_WIDE_TILE       = 0x00000001,
 RASTER_CONFIG_SC_XSEL_32_WIDE_TILE       = 0x00000002,
 RASTER_CONFIG_SC_XSEL_64_WIDE_TILE       = 0x00000003,
 } ScXsel;
-
-/*
- * ScYsel enum
- */
-
 typedef enum ScYsel {
 RASTER_CONFIG_SC_YSEL_8_WIDE_TILE        = 0x00000000,
 RASTER_CONFIG_SC_YSEL_16_WIDE_TILE       = 0x00000001,
 RASTER_CONFIG_SC_YSEL_32_WIDE_TILE       = 0x00000002,
 RASTER_CONFIG_SC_YSEL_64_WIDE_TILE       = 0x00000003,
 } ScYsel;
-
-/*
- * SeMap enum
- */
-
 typedef enum SeMap {
 RASTER_CONFIG_SE_MAP_0                   = 0x00000000,
 RASTER_CONFIG_SE_MAP_1                   = 0x00000001,
 RASTER_CONFIG_SE_MAP_2                   = 0x00000002,
 RASTER_CONFIG_SE_MAP_3                   = 0x00000003,
 } SeMap;
-
-/*
- * SePairMap enum
- */
-
 typedef enum SePairMap {
 RASTER_CONFIG_SE_PAIR_MAP_0              = 0x00000000,
 RASTER_CONFIG_SE_PAIR_MAP_1              = 0x00000001,
 RASTER_CONFIG_SE_PAIR_MAP_2              = 0x00000002,
 RASTER_CONFIG_SE_PAIR_MAP_3              = 0x00000003,
 } SePairMap;
-
-/*
- * SePairXsel enum
- */
-
 typedef enum SePairXsel {
 RASTER_CONFIG_SE_PAIR_XSEL_8_WIDE_TILE   = 0x00000000,
 RASTER_CONFIG_SE_PAIR_XSEL_16_WIDE_TILE  = 0x00000001,
 RASTER_CONFIG_SE_PAIR_XSEL_32_WIDE_TILE  = 0x00000002,
 RASTER_CONFIG_SE_PAIR_XSEL_64_WIDE_TILE  = 0x00000003,
 } SePairXsel;
-
-/*
- * SePairYsel enum
- */
-
 typedef enum SePairYsel {
 RASTER_CONFIG_SE_PAIR_YSEL_8_WIDE_TILE   = 0x00000000,
 RASTER_CONFIG_SE_PAIR_YSEL_16_WIDE_TILE  = 0x00000001,
 RASTER_CONFIG_SE_PAIR_YSEL_32_WIDE_TILE  = 0x00000002,
 RASTER_CONFIG_SE_PAIR_YSEL_64_WIDE_TILE  = 0x00000003,
 } SePairYsel;
-
-/*
- * SeXsel enum
- */
-
 typedef enum SeXsel {
 RASTER_CONFIG_SE_XSEL_8_WIDE_TILE        = 0x00000000,
 RASTER_CONFIG_SE_XSEL_16_WIDE_TILE       = 0x00000001,
 RASTER_CONFIG_SE_XSEL_32_WIDE_TILE       = 0x00000002,
 RASTER_CONFIG_SE_XSEL_64_WIDE_TILE       = 0x00000003,
 } SeXsel;
-
-/*
- * SeYsel enum
- */
-
 typedef enum SeYsel {
 RASTER_CONFIG_SE_YSEL_8_WIDE_TILE        = 0x00000000,
 RASTER_CONFIG_SE_YSEL_16_WIDE_TILE       = 0x00000001,
 RASTER_CONFIG_SE_YSEL_32_WIDE_TILE       = 0x00000002,
 RASTER_CONFIG_SE_YSEL_64_WIDE_TILE       = 0x00000003,
 } SeYsel;
-
-/*
- * VRSCombinerModeSC enum
- */
-
 typedef enum VRSCombinerModeSC {
 SC_VRS_COMB_MODE_PASSTHRU                = 0x00000000,
 SC_VRS_COMB_MODE_OVERRIDE                = 0x00000001,
@@ -14576,11 +7995,6 @@ SC_VRS_COMB_MODE_MIN                     = 0x00000002,
 SC_VRS_COMB_MODE_MAX                     = 0x00000003,
 SC_VRS_COMB_MODE_SATURATE                = 0x00000004,
 } VRSCombinerModeSC;
-
-/*
- * VRSrate enum
- */
-
 typedef enum VRSrate {
 VRS_SHADING_RATE_1X1                     = 0x00000000,
 VRS_SHADING_RATE_1X2                     = 0x00000001,
@@ -14599,15 +8013,6 @@ VRS_SHADING_RATE_8X_SSAA                 = 0x0000000d,
 VRS_SHADING_RATE_4X_SSAA                 = 0x0000000e,
 VRS_SHADING_RATE_2X_SSAA                 = 0x0000000f,
 } VRSrate;
-
-/*******************************************************
- * TC Enums
- *******************************************************/
-
-/*
- * TC_EA_CID enum
- */
-
 typedef enum TC_EA_CID {
 TC_EA_CID_RT                             = 0x00000000,
 TC_EA_CID_FMASK                          = 0x00000001,
@@ -14626,22 +8031,12 @@ TC_EA_CID_WD                             = 0x0000000d,
 TC_EA_CID_PA                             = 0x0000000e,
 TC_EA_CID_UTCL2_TPI                      = 0x0000000f,
 } TC_EA_CID;
-
-/*
- * TC_NACKS enum
- */
-
 typedef enum TC_NACKS {
 TC_NACK_NO_FAULT                         = 0x00000000,
 TC_NACK_PAGE_FAULT                       = 0x00000001,
 TC_NACK_PROTECTION_FAULT                 = 0x00000002,
 TC_NACK_DATA_ERROR                       = 0x00000003,
 } TC_NACKS;
-
-/*
- * TC_OP enum
- */
-
 typedef enum TC_OP {
 TC_OP_READ                               = 0x00000000,
 TC_OP_ATOMIC_FCMPSWAP_RTN_32             = 0x00000001,
@@ -14772,25 +8167,11 @@ TC_OP_RESERVED_NON_FLOAT_64_2            = 0x0000007d,
 TC_OP_RESERVED_NON_FLOAT_64_3            = 0x0000007e,
 TC_OP_RESERVED_NON_FLOAT_64_4            = 0x0000007f,
 } TC_OP;
-
-/*
- * TC_OP_MASKS enum
- */
-
 typedef enum TC_OP_MASKS {
 TC_OP_MASK_FLUSH_DENROM                  = 0x00000008,
 TC_OP_MASK_64                            = 0x00000020,
 TC_OP_MASK_NO_RTN                        = 0x00000040,
 } TC_OP_MASKS;
-
-/*******************************************************
- * GL2 Enums
- *******************************************************/
-
-/*
- * GL2_EA_CID enum
- */
-
 typedef enum GL2_EA_CID {
 GL2_EA_CID_CLIENT                        = 0x00000000,
 GL2_EA_CID_SDMA                          = 0x00000001,
@@ -14808,22 +8189,12 @@ GL2_EA_CID_HTILE                         = 0x0000000c,
 GL2_EA_CID_MES                           = 0x0000000d,
 GL2_EA_CID_TCPMETA                       = 0x0000000f,
 } GL2_EA_CID;
-
-/*
- * GL2_NACKS enum
- */
-
 typedef enum GL2_NACKS {
 GL2_NACK_NO_FAULT                        = 0x00000000,
 GL2_NACK_PAGE_FAULT                      = 0x00000001,
 GL2_NACK_PROTECTION_FAULT                = 0x00000002,
 GL2_NACK_DATA_ERROR                      = 0x00000003,
 } GL2_NACKS;
-
-/*
- * GL2_OP enum
- */
-
 typedef enum GL2_OP {
 GL2_OP_READ                              = 0x00000000,
 GL2_OP_ATOMIC_FCMPSWAP_RTN_32            = 0x00000001,
@@ -14914,36 +8285,17 @@ GL2_OP_ATOMIC_DEC_64                     = 0x00000079,
 GL2_OP_ATOMIC_UMAX_8                     = 0x0000007a,
 GL2_OP_NOP_ACK                           = 0x0000007b,
 } GL2_OP;
-
-/*
- * GL2_OP_MASKS enum
- */
-
 typedef enum GL2_OP_MASKS {
 GL2_OP_MASK_FLUSH_DENROM                 = 0x00000008,
 GL2_OP_MASK_64                           = 0x00000020,
 GL2_OP_MASK_NO_RTN                       = 0x00000040,
 } GL2_OP_MASKS;
-
-/*******************************************************
- * RLC Enums
- *******************************************************/
-
-/*
- * RLC_DOORBELL_MODE enum
- */
-
 typedef enum RLC_DOORBELL_MODE {
 RLC_DOORBELL_MODE_DISABLE                = 0x00000000,
 RLC_DOORBELL_MODE_ENABLE                 = 0x00000001,
 RLC_DOORBELL_MODE_ENABLE_PF              = 0x00000002,
 RLC_DOORBELL_MODE_ENABLE_PF_VF           = 0x00000003,
 } RLC_DOORBELL_MODE;
-
-/*
- * RLC_PERFCOUNTER_SEL enum
- */
-
 typedef enum RLC_PERFCOUNTER_SEL {
 RLC_PERF_SEL_POWER_FEATURE_0             = 0x00000000,
 RLC_PERF_SEL_POWER_FEATURE_1             = 0x00000001,
@@ -14953,11 +8305,6 @@ RLC_PERF_SEL_SPM_INTERRUPT               = 0x00000004,
 RLC_PERF_SEL_IH_INTERRUPT                = 0x00000005,
 RLC_PERF_SEL_SERDES_COMMAND_WRITE        = 0x00000006,
 } RLC_PERFCOUNTER_SEL;
-
-/*
- * RLC_PERFMON_STATE enum
- */
-
 typedef enum RLC_PERFMON_STATE {
 RLC_PERFMON_STATE_RESET                  = 0x00000000,
 RLC_PERFMON_STATE_ENABLE                 = 0x00000001,
@@ -14968,11 +8315,6 @@ RLC_PERFMON_STATE_RESERVED_5             = 0x00000005,
 RLC_PERFMON_STATE_RESERVED_6             = 0x00000006,
 RLC_PERFMON_STATE_ROLLOVER               = 0x00000007,
 } RLC_PERFMON_STATE;
-
-/*
- * RSPM_CMD enum
- */
-
 typedef enum RSPM_CMD {
 RSPM_CMD_INVALID                         = 0x00000000,
 RSPM_CMD_IDLE                            = 0x00000001,
@@ -14986,24 +8328,10 @@ RSPM_CMD_PROF_START                      = 0x00000008,
 RSPM_CMD_PROF_STOP                       = 0x00000009,
 RSPM_CMD_FORCE_SAMPLE                    = 0x0000000a,
 } RSPM_CMD;
-
-/*******************************************************
- * SPI Enums
- *******************************************************/
-
-/*
- * CLKGATE_BASE_MODE enum
- */
-
 typedef enum CLKGATE_BASE_MODE {
 MULT_8                                   = 0x00000000,
 MULT_16                                  = 0x00000001,
 } CLKGATE_BASE_MODE;
-
-/*
- * CLKGATE_SM_MODE enum
- */
-
 typedef enum CLKGATE_SM_MODE {
 ON_SEQ                                   = 0x00000000,
 OFF_SEQ                                  = 0x00000001,
@@ -15011,33 +8339,18 @@ PROG_SEQ                                 = 0x00000002,
 READ_SEQ                                 = 0x00000003,
 SM_MODE_RESERVED                         = 0x00000004,
 } CLKGATE_SM_MODE;
-
-/*
- * SPI_FOG_MODE enum
- */
-
 typedef enum SPI_FOG_MODE {
 SPI_FOG_NONE                             = 0x00000000,
 SPI_FOG_EXP                              = 0x00000001,
 SPI_FOG_EXP2                             = 0x00000002,
 SPI_FOG_LINEAR                           = 0x00000003,
 } SPI_FOG_MODE;
-
-/*
- * SPI_LB_WAVES_SELECT enum
- */
-
 typedef enum SPI_LB_WAVES_SELECT {
 HS_GS                                    = 0x00000000,
 PS                                       = 0x00000001,
 CS_NA                                    = 0x00000002,
 SPI_LB_WAVES_RSVD                        = 0x00000003,
 } SPI_LB_WAVES_SELECT;
-
-/*
- * SPI_PERFCNT_SEL enum
- */
-
 typedef enum SPI_PERFCNT_SEL {
 SPI_PERF_GS_WINDOW_VALID                 = 0x00000001,
 SPI_PERF_GS_BUSY                         = 0x00000002,
@@ -15270,11 +8583,6 @@ SPI_PERF_EXP_THROT_DOWNSTEP              = 0x00000119,
 SPI_PERF_EXP_THROT_CAUSALITY_DETECTED    = 0x0000011a,
 SPI_PERF_BUSY                            = 0x0000011b,
 } SPI_PERFCNT_SEL;
-
-/*
- * SPI_PNT_SPRITE_OVERRIDE enum
- */
-
 typedef enum SPI_PNT_SPRITE_OVERRIDE {
 SPI_PNT_SPRITE_SEL_0                     = 0x00000000,
 SPI_PNT_SPRITE_SEL_1                     = 0x00000001,
@@ -15282,32 +8590,17 @@ SPI_PNT_SPRITE_SEL_S                     = 0x00000002,
 SPI_PNT_SPRITE_SEL_T                     = 0x00000003,
 SPI_PNT_SPRITE_SEL_NONE                  = 0x00000004,
 } SPI_PNT_SPRITE_OVERRIDE;
-
-/*
- * SPI_PS_LDS_GROUP_SIZE enum
- */
-
 typedef enum SPI_PS_LDS_GROUP_SIZE {
 SPI_PS_LDS_GROUP_1                       = 0x00000000,
 SPI_PS_LDS_GROUP_2                       = 0x00000001,
 SPI_PS_LDS_GROUP_4                       = 0x00000002,
 } SPI_PS_LDS_GROUP_SIZE;
-
-/*
- * SPI_SAMPLE_CNTL enum
- */
-
 typedef enum SPI_SAMPLE_CNTL {
 CENTROIDS_ONLY                           = 0x00000000,
 CENTERS_ONLY                             = 0x00000001,
 CENTROIDS_AND_CENTERS                    = 0x00000002,
 UNDEF                                    = 0x00000003,
 } SPI_SAMPLE_CNTL;
-
-/*
- * SPI_SHADER_EX_FORMAT enum
- */
-
 typedef enum SPI_SHADER_EX_FORMAT {
 SPI_SHADER_ZERO                          = 0x00000000,
 SPI_SHADER_32_R                          = 0x00000001,
@@ -15320,11 +8613,6 @@ SPI_SHADER_UINT16_ABGR                   = 0x00000007,
 SPI_SHADER_SINT16_ABGR                   = 0x00000008,
 SPI_SHADER_32_ABGR                       = 0x00000009,
 } SPI_SHADER_EX_FORMAT;
-
-/*
- * SPI_SHADER_FORMAT enum
- */
-
 typedef enum SPI_SHADER_FORMAT {
 SPI_SHADER_NONE                          = 0x00000000,
 SPI_SHADER_1COMP                         = 0x00000001,
@@ -15332,35 +8620,16 @@ SPI_SHADER_2COMP                         = 0x00000002,
 SPI_SHADER_4COMPRESS                     = 0x00000003,
 SPI_SHADER_4COMP                         = 0x00000004,
 } SPI_SHADER_FORMAT;
-
-/*******************************************************
- * SQ Enums
- *******************************************************/
-
-/*
- * SH_MEM_ADDRESS_MODE enum
- */
-
 typedef enum SH_MEM_ADDRESS_MODE {
 SH_MEM_ADDRESS_MODE_64                   = 0x00000000,
 SH_MEM_ADDRESS_MODE_32                   = 0x00000001,
 } SH_MEM_ADDRESS_MODE;
-
-/*
- * SH_MEM_ALIGNMENT_MODE enum
- */
-
 typedef enum SH_MEM_ALIGNMENT_MODE {
 SH_MEM_ALIGNMENT_MODE_DWORD              = 0x00000000,
 SH_MEM_ALIGNMENT_MODE_DWORD_STRICT       = 0x00000001,
 SH_MEM_ALIGNMENT_MODE_STRICT             = 0x00000002,
 SH_MEM_ALIGNMENT_MODE_UNALIGNED          = 0x00000003,
 } SH_MEM_ALIGNMENT_MODE;
-
-/*
- * SQG_PERF_SEL enum
- */
-
 typedef enum SQG_PERF_SEL {
 SQG_PERF_SEL_NONE                        = 0x00000000,
 SQG_PERF_SEL_MSG_BUS_BUSY                = 0x00000001,
@@ -15398,11 +8667,6 @@ SQG_PERF_SEL_WAVES_LT_32                 = 0x00000020,
 SQG_PERF_SEL_WAVES_LT_16                 = 0x00000021,
 SQG_PERF_SEL_DUMMY_LAST                  = 0x00000022,
 } SQG_PERF_SEL;
-
-/*
- * SQ_CAC_POWER_SEL enum
- */
-
 typedef enum SQ_CAC_POWER_SEL {
 SQ_CAC_POWER_VALU                        = 0x00000000,
 SQ_CAC_POWER_VALU0                       = 0x00000001,
@@ -15414,11 +8678,6 @@ SQ_CAC_POWER_LDS_BUSY                    = 0x00000006,
 SQ_CAC_POWER_ALU_BUSY                    = 0x00000007,
 SQ_CAC_POWER_TEX_BUSY                    = 0x00000008,
 } SQ_CAC_POWER_SEL;
-
-/*
- * SQ_EDC_INFO_SOURCE enum
- */
-
 typedef enum SQ_EDC_INFO_SOURCE {
 SQ_EDC_INFO_SOURCE_INVALID               = 0x00000000,
 SQ_EDC_INFO_SOURCE_INST                  = 0x00000001,
@@ -15428,11 +8687,6 @@ SQ_EDC_INFO_SOURCE_LDS                   = 0x00000004,
 SQ_EDC_INFO_SOURCE_GDS                   = 0x00000005,
 SQ_EDC_INFO_SOURCE_TA                    = 0x00000006,
 } SQ_EDC_INFO_SOURCE;
-
-/*
- * SQ_IBUF_ST enum
- */
-
 typedef enum SQ_IBUF_ST {
 SQ_IBUF_IB_IDLE                          = 0x00000000,
 SQ_IBUF_IB_INI_WAIT_GNT                  = 0x00000001,
@@ -15443,21 +8697,11 @@ SQ_IBUF_IB_EMPTY_WAIT_DRET               = 0x00000005,
 SQ_IBUF_IB_DRET                          = 0x00000006,
 SQ_IBUF_IB_EMPTY_WAIT_GNT                = 0x00000007,
 } SQ_IBUF_ST;
-
-/*
- * SQ_IMG_FILTER_TYPE enum
- */
-
 typedef enum SQ_IMG_FILTER_TYPE {
 SQ_IMG_FILTER_MODE_BLEND                 = 0x00000000,
 SQ_IMG_FILTER_MODE_MIN                   = 0x00000001,
 SQ_IMG_FILTER_MODE_MAX                   = 0x00000002,
 } SQ_IMG_FILTER_TYPE;
-
-/*
- * SQ_IND_CMD_CMD enum
- */
-
 typedef enum SQ_IND_CMD_CMD {
 SQ_IND_CMD_CMD_NULL                      = 0x00000000,
 SQ_IND_CMD_CMD_SETHALT                   = 0x00000001,
@@ -15469,11 +8713,6 @@ SQ_IND_CMD_CMD_SET_SPI_PRIO              = 0x00000006,
 SQ_IND_CMD_CMD_SETFATALHALT              = 0x00000007,
 SQ_IND_CMD_CMD_SINGLE_STEP               = 0x00000008,
 } SQ_IND_CMD_CMD;
-
-/*
- * SQ_IND_CMD_MODE enum
- */
-
 typedef enum SQ_IND_CMD_MODE {
 SQ_IND_CMD_MODE_SINGLE                   = 0x00000000,
 SQ_IND_CMD_MODE_BROADCAST                = 0x00000001,
@@ -15481,11 +8720,6 @@ SQ_IND_CMD_MODE_BROADCAST_QUEUE          = 0x00000002,
 SQ_IND_CMD_MODE_BROADCAST_PIPE           = 0x00000003,
 SQ_IND_CMD_MODE_BROADCAST_ME             = 0x00000004,
 } SQ_IND_CMD_MODE;
-
-/*
- * SQ_INST_STR_ST enum
- */
-
 typedef enum SQ_INST_STR_ST {
 SQ_INST_STR_IB_WAVE_NORML                = 0x00000000,
 SQ_INST_STR_IB_WAVE2ID_NORMAL_INST_AV    = 0x00000001,
@@ -15494,11 +8728,6 @@ SQ_INST_STR_IB_WAVE_INST_SKIP_AV         = 0x00000003,
 SQ_INST_STR_IB_WAVE_NOP_SLEEP_WAIT       = 0x00000004,
 SQ_INST_STR_IB_WAVE_PC_FROM_SGPR_MSG_WAIT = 0x00000005,
 } SQ_INST_STR_ST;
-
-/*
- * SQ_INST_TYPE enum
- */
-
 typedef enum SQ_INST_TYPE {
 SQ_INST_TYPE_VALU                        = 0x00000000,
 SQ_INST_TYPE_SCALAR                      = 0x00000001,
@@ -15514,22 +8743,12 @@ SQ_INST_TYPE_JUMP                        = 0x0000000a,
 SQ_INST_TYPE_OTHER                       = 0x0000000b,
 SQ_INST_TYPE_NONE                        = 0x0000000c,
 } SQ_INST_TYPE;
-
-/*
- * SQ_LLC_CTL enum
- */
-
 typedef enum SQ_LLC_CTL {
 SQ_LLC_0                                 = 0x00000000,
 SQ_LLC_1                                 = 0x00000001,
 SQ_LLC_RSVD_2                            = 0x00000002,
 SQ_LLC_BYPASS                            = 0x00000003,
 } SQ_LLC_CTL;
-
-/*
- * SQ_NO_INST_ISSUE enum
- */
-
 typedef enum SQ_NO_INST_ISSUE {
 SQ_NO_INST_ISSUE_NO_INSTS                = 0x00000000,
 SQ_NO_INST_ISSUE_ALU_DEP                 = 0x00000001,
@@ -15539,22 +8758,12 @@ SQ_NO_INST_ISSUE_SLEEP_WAIT              = 0x00000004,
 SQ_NO_INST_ISSUE_BARRIER_WAIT            = 0x00000005,
 SQ_NO_INST_ISSUE_OTHER                   = 0x00000006,
 } SQ_NO_INST_ISSUE;
-
-/*
- * SQ_OOB_SELECT enum
- */
-
 typedef enum SQ_OOB_SELECT {
 SQ_OOB_INDEX_AND_OFFSET                  = 0x00000000,
 SQ_OOB_INDEX_ONLY                        = 0x00000001,
 SQ_OOB_NUM_RECORDS_0                     = 0x00000002,
 SQ_OOB_COMPLETE                          = 0x00000003,
 } SQ_OOB_SELECT;
-
-/*
- * SQ_PERF_SEL enum
- */
-
 typedef enum SQ_PERF_SEL {
 SQ_PERF_SEL_NONE                         = 0x00000000,
 SQ_PERF_SEL_ACCUM_PREV                   = 0x00000001,
@@ -15863,44 +9072,24 @@ SP_PERF_SEL_VGPR_RD                      = 0x000001ec,
 SP_PERF_SEL_DUMMY_LAST                   = 0x000001ed,
 SQ_PERF_SEL_NONE2                        = 0x000001ff,
 } SQ_PERF_SEL;
-
-/*
- * SQ_ROUND_MODE enum
- */
-
 typedef enum SQ_ROUND_MODE {
 SQ_ROUND_NEAREST_EVEN                    = 0x00000000,
 SQ_ROUND_PLUS_INFINITY                   = 0x00000001,
 SQ_ROUND_MINUS_INFINITY                  = 0x00000002,
 SQ_ROUND_TO_ZERO                         = 0x00000003,
 } SQ_ROUND_MODE;
-
-/*
- * SQ_RSRC_BUF_TYPE enum
- */
-
 typedef enum SQ_RSRC_BUF_TYPE {
 SQ_RSRC_BUF                              = 0x00000000,
 SQ_RSRC_BUF_RSVD_1                       = 0x00000001,
 SQ_RSRC_BUF_RSVD_2                       = 0x00000002,
 SQ_RSRC_BUF_RSVD_3                       = 0x00000003,
 } SQ_RSRC_BUF_TYPE;
-
-/*
- * SQ_RSRC_FLAT_TYPE enum
- */
-
 typedef enum SQ_RSRC_FLAT_TYPE {
 SQ_RSRC_FLAT_RSVD_0                      = 0x00000000,
 SQ_RSRC_FLAT                             = 0x00000001,
 SQ_RSRC_FLAT_RSVD_2                      = 0x00000002,
 SQ_RSRC_FLAT_RSVD_3                      = 0x00000003,
 } SQ_RSRC_FLAT_TYPE;
-
-/*
- * SQ_RSRC_IMG_TYPE enum
- */
-
 typedef enum SQ_RSRC_IMG_TYPE {
 SQ_RSRC_IMG_RSVD_0                       = 0x00000000,
 SQ_RSRC_IMG_RSVD_1                       = 0x00000001,
@@ -15919,11 +9108,6 @@ SQ_RSRC_IMG_2D_ARRAY                     = 0x0000000d,
 SQ_RSRC_IMG_2D_MSAA                      = 0x0000000e,
 SQ_RSRC_IMG_2D_MSAA_ARRAY                = 0x0000000f,
 } SQ_RSRC_IMG_TYPE;
-
-/*
- * SQ_SEL_XYZW01 enum
- */
-
 typedef enum SQ_SEL_XYZW01 {
 SQ_SEL_0                                 = 0x00000000,
 SQ_SEL_1                                 = 0x00000001,
@@ -15934,11 +9118,6 @@ SQ_SEL_Y                                 = 0x00000005,
 SQ_SEL_Z                                 = 0x00000006,
 SQ_SEL_W                                 = 0x00000007,
 } SQ_SEL_XYZW01;
-
-/*
- * SQ_TEX_ANISO_RATIO enum
- */
-
 typedef enum SQ_TEX_ANISO_RATIO {
 SQ_TEX_ANISO_RATIO_1                     = 0x00000000,
 SQ_TEX_ANISO_RATIO_2                     = 0x00000001,
@@ -15946,22 +9125,12 @@ SQ_TEX_ANISO_RATIO_4                     = 0x00000002,
 SQ_TEX_ANISO_RATIO_8                     = 0x00000003,
 SQ_TEX_ANISO_RATIO_16                    = 0x00000004,
 } SQ_TEX_ANISO_RATIO;
-
-/*
- * SQ_TEX_BORDER_COLOR enum
- */
-
 typedef enum SQ_TEX_BORDER_COLOR {
 SQ_TEX_BORDER_COLOR_TRANS_BLACK          = 0x00000000,
 SQ_TEX_BORDER_COLOR_OPAQUE_BLACK         = 0x00000001,
 SQ_TEX_BORDER_COLOR_OPAQUE_WHITE         = 0x00000002,
 SQ_TEX_BORDER_COLOR_REGISTER             = 0x00000003,
 } SQ_TEX_BORDER_COLOR;
-
-/*
- * SQ_TEX_CLAMP enum
- */
-
 typedef enum SQ_TEX_CLAMP {
 SQ_TEX_WRAP                              = 0x00000000,
 SQ_TEX_MIRROR                            = 0x00000001,
@@ -15972,11 +9141,6 @@ SQ_TEX_MIRROR_ONCE_HALF_BORDER           = 0x00000005,
 SQ_TEX_CLAMP_BORDER                      = 0x00000006,
 SQ_TEX_MIRROR_ONCE_BORDER                = 0x00000007,
 } SQ_TEX_CLAMP;
-
-/*
- * SQ_TEX_DEPTH_COMPARE enum
- */
-
 typedef enum SQ_TEX_DEPTH_COMPARE {
 SQ_TEX_DEPTH_COMPARE_NEVER               = 0x00000000,
 SQ_TEX_DEPTH_COMPARE_LESS                = 0x00000001,
@@ -15987,102 +9151,52 @@ SQ_TEX_DEPTH_COMPARE_NOTEQUAL            = 0x00000005,
 SQ_TEX_DEPTH_COMPARE_GREATEREQUAL        = 0x00000006,
 SQ_TEX_DEPTH_COMPARE_ALWAYS              = 0x00000007,
 } SQ_TEX_DEPTH_COMPARE;
-
-/*
- * SQ_TEX_MIP_FILTER enum
- */
-
 typedef enum SQ_TEX_MIP_FILTER {
 SQ_TEX_MIP_FILTER_NONE                   = 0x00000000,
 SQ_TEX_MIP_FILTER_POINT                  = 0x00000001,
 SQ_TEX_MIP_FILTER_LINEAR                 = 0x00000002,
 SQ_TEX_MIP_FILTER_POINT_ANISO_ADJ        = 0x00000003,
 } SQ_TEX_MIP_FILTER;
-
-/*
- * SQ_TEX_XY_FILTER enum
- */
-
 typedef enum SQ_TEX_XY_FILTER {
 SQ_TEX_XY_FILTER_POINT                   = 0x00000000,
 SQ_TEX_XY_FILTER_BILINEAR                = 0x00000001,
 SQ_TEX_XY_FILTER_ANISO_POINT             = 0x00000002,
 SQ_TEX_XY_FILTER_ANISO_BILINEAR          = 0x00000003,
 } SQ_TEX_XY_FILTER;
-
-/*
- * SQ_TEX_Z_FILTER enum
- */
-
 typedef enum SQ_TEX_Z_FILTER {
 SQ_TEX_Z_FILTER_NONE                     = 0x00000000,
 SQ_TEX_Z_FILTER_POINT                    = 0x00000001,
 SQ_TEX_Z_FILTER_LINEAR                   = 0x00000002,
 } SQ_TEX_Z_FILTER;
-
-/*
- * SQ_TT_MODE enum
- */
-
 typedef enum SQ_TT_MODE {
 SQ_TT_MODE_OFF                           = 0x00000000,
 SQ_TT_MODE_ON                            = 0x00000001,
 SQ_TT_MODE_GLOBAL                        = 0x00000002,
 SQ_TT_MODE_DETAIL                        = 0x00000003,
 } SQ_TT_MODE;
-
-/*
- * SQ_TT_RT_FREQ enum
- */
-
 typedef enum SQ_TT_RT_FREQ {
 SQ_TT_RT_FREQ_NEVER                      = 0x00000000,
 SQ_TT_RT_FREQ_1024_CLK                   = 0x00000001,
 SQ_TT_RT_FREQ_4096_CLK                   = 0x00000002,
 } SQ_TT_RT_FREQ;
-
-/*
- * SQ_TT_TOKEN_MASK_INST_EXCLUDE enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_INST_EXCLUDE {
 SQ_TT_INST_EXCLUDE_VMEM_OTHER_SIMD_BIT   = 0x00000001,
 SQ_TT_INST_EXCLUDE_EXPGNT234_BIT         = 0x00000002,
 } SQ_TT_TOKEN_MASK_INST_EXCLUDE;
-
-/*
- * SQ_TT_TOKEN_MASK_INST_EXCLUDE_SHIFT enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_INST_EXCLUDE_SHIFT {
 SQ_TT_INST_EXCLUDE_VMEM_OTHER_SIMD_SHIFT = 0x00000000,
 SQ_TT_INST_EXCLUDE_EXPGNT234_SHIFT       = 0x00000001,
 } SQ_TT_TOKEN_MASK_INST_EXCLUDE_SHIFT;
-
-/*
- * SQ_TT_TOKEN_MASK_REG_EXCLUDE enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_REG_EXCLUDE {
 SQ_TT_REG_EXCLUDE_USER_DATA_BIT          = 0x00000001,
 SQ_TT_REG_EXCLUDE_CP_ME_MC_RADDR_BIT     = 0x00000002,
 SQ_TT_REG_EXCLUDE_GRBM_COMPUTE_EXCLUDE_BIT = 0x00000004,
 } SQ_TT_TOKEN_MASK_REG_EXCLUDE;
-
-/*
- * SQ_TT_TOKEN_MASK_REG_EXCLUDE_SHIFT enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_REG_EXCLUDE_SHIFT {
 SQ_TT_REG_EXCLUDE_USER_DATA_SHIFT        = 0x00000000,
 SQ_TT_REG_EXCLUDE_CP_ME_MC_RADDR_SHIFT   = 0x00000001,
 SQ_TT_REG_EXCLUDE_GRBM_COMPUTE_EXCLUDE_SHIFT = 0x00000002,
 } SQ_TT_TOKEN_MASK_REG_EXCLUDE_SHIFT;
-
-/*
- * SQ_TT_TOKEN_MASK_REG_INCLUDE enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_REG_INCLUDE {
 SQ_TT_TOKEN_MASK_SQDEC_BIT               = 0x00000001,
 SQ_TT_TOKEN_MASK_SHDEC_BIT               = 0x00000002,
@@ -16093,11 +9207,6 @@ SQ_TT_TOKEN_MASK_CONFIG_BIT              = 0x00000020,
 SQ_TT_TOKEN_MASK_ALL_BIT                 = 0x00000040,
 SQ_TT_TOKEN_MASK_RSVD_BIT                = 0x00000080,
 } SQ_TT_TOKEN_MASK_REG_INCLUDE;
-
-/*
- * SQ_TT_TOKEN_MASK_REG_INCLUDE_SHIFT enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_REG_INCLUDE_SHIFT {
 SQ_TT_TOKEN_MASK_SQDEC_SHIFT             = 0x00000000,
 SQ_TT_TOKEN_MASK_SHDEC_SHIFT             = 0x00000001,
@@ -16108,11 +9217,6 @@ SQ_TT_TOKEN_MASK_CONFIG_SHIFT            = 0x00000005,
 SQ_TT_TOKEN_MASK_ALL_SHIFT               = 0x00000006,
 SQ_TT_TOKEN_MASK_RSVD_SHIFT              = 0x00000007,
 } SQ_TT_TOKEN_MASK_REG_INCLUDE_SHIFT;
-
-/*
- * SQ_TT_TOKEN_MASK_TOKEN_EXCLUDE_SHIFT enum
- */
-
 typedef enum SQ_TT_TOKEN_MASK_TOKEN_EXCLUDE_SHIFT {
 SQ_TT_TOKEN_EXCLUDE_VMEMEXEC_SHIFT       = 0x00000000,
 SQ_TT_TOKEN_EXCLUDE_ALUEXEC_SHIFT        = 0x00000001,
@@ -16127,30 +9231,15 @@ SQ_TT_TOKEN_EXCLUDE_UTILCTR_SHIFT        = 0x00000009,
 SQ_TT_TOKEN_EXCLUDE_WAVEALLOC_SHIFT      = 0x0000000a,
 SQ_TT_TOKEN_EXCLUDE_PERF_SHIFT           = 0x0000000b,
 } SQ_TT_TOKEN_MASK_TOKEN_EXCLUDE_SHIFT;
-
-/*
- * SQ_TT_UTIL_TIMER enum
- */
-
 typedef enum SQ_TT_UTIL_TIMER {
 SQ_TT_UTIL_TIMER_100_CLK                 = 0x00000000,
 SQ_TT_UTIL_TIMER_250_CLK                 = 0x00000001,
 } SQ_TT_UTIL_TIMER;
-
-/*
- * SQ_TT_WAVESTART_MODE enum
- */
-
 typedef enum SQ_TT_WAVESTART_MODE {
 SQ_TT_WAVESTART_MODE_SHORT               = 0x00000000,
 SQ_TT_WAVESTART_MODE_ALLOC               = 0x00000001,
 SQ_TT_WAVESTART_MODE_PBB_ID              = 0x00000002,
 } SQ_TT_WAVESTART_MODE;
-
-/*
- * SQ_TT_WTYPE_INCLUDE enum
- */
-
 typedef enum SQ_TT_WTYPE_INCLUDE {
 SQ_TT_WTYPE_INCLUDE_PS_BIT               = 0x00000001,
 SQ_TT_WTYPE_INCLUDE_RSVD0_BIT            = 0x00000002,
@@ -16160,11 +9249,6 @@ SQ_TT_WTYPE_INCLUDE_HS_BIT               = 0x00000010,
 SQ_TT_WTYPE_INCLUDE_RSVD2_BIT            = 0x00000020,
 SQ_TT_WTYPE_INCLUDE_CS_BIT               = 0x00000040,
 } SQ_TT_WTYPE_INCLUDE;
-
-/*
- * SQ_TT_WTYPE_INCLUDE_SHIFT enum
- */
-
 typedef enum SQ_TT_WTYPE_INCLUDE_SHIFT {
 SQ_TT_WTYPE_INCLUDE_PS_SHIFT             = 0x00000000,
 SQ_TT_WTYPE_INCLUDE_RSVD0_SHIFT          = 0x00000001,
@@ -16174,54 +9258,29 @@ SQ_TT_WTYPE_INCLUDE_HS_SHIFT             = 0x00000004,
 SQ_TT_WTYPE_INCLUDE_RSVD2_SHIFT          = 0x00000005,
 SQ_TT_WTYPE_INCLUDE_CS_SHIFT             = 0x00000006,
 } SQ_TT_WTYPE_INCLUDE_SHIFT;
-
-/*
- * SQ_WATCH_MODES enum
- */
-
 typedef enum SQ_WATCH_MODES {
 SQ_WATCH_MODE_READ                       = 0x00000000,
 SQ_WATCH_MODE_NONREAD                    = 0x00000001,
 SQ_WATCH_MODE_ATOMIC                     = 0x00000002,
 SQ_WATCH_MODE_ALL                        = 0x00000003,
 } SQ_WATCH_MODES;
-
-/*
- * SQ_WAVE_FWD_PROG_INTERVAL enum
- */
-
 typedef enum SQ_WAVE_FWD_PROG_INTERVAL {
 SQ_WAVE_FWD_PROG_INTERVAL_NEVER          = 0x00000000,
 SQ_WAVE_FWD_PROG_INTERVAL_256            = 0x00000001,
 SQ_WAVE_FWD_PROG_INTERVAL_1024           = 0x00000002,
 SQ_WAVE_FWD_PROG_INTERVAL_4096           = 0x00000003,
 } SQ_WAVE_FWD_PROG_INTERVAL;
-
-/*
- * SQ_WAVE_IB_ECC_ST enum
- */
-
 typedef enum SQ_WAVE_IB_ECC_ST {
 SQ_WAVE_IB_ECC_CLEAN                     = 0x00000000,
 SQ_WAVE_IB_ECC_ERR_CONTINUE              = 0x00000001,
 SQ_WAVE_IB_ECC_ERR_HALT                  = 0x00000002,
 SQ_WAVE_IB_ECC_WITH_ERR_MSG              = 0x00000003,
 } SQ_WAVE_IB_ECC_ST;
-
-/*
- * SQ_WAVE_SCHED_MODES enum
- */
-
 typedef enum SQ_WAVE_SCHED_MODES {
 SQ_WAVE_SCHED_MODE_NORMAL                = 0x00000000,
 SQ_WAVE_SCHED_MODE_EXPERT                = 0x00000001,
 SQ_WAVE_SCHED_MODE_DISABLE_VA_VDST       = 0x00000002,
 } SQ_WAVE_SCHED_MODES;
-
-/*
- * SQ_WAVE_TYPE enum
- */
-
 typedef enum SQ_WAVE_TYPE {
 SQ_WAVE_TYPE_PS                          = 0x00000000,
 SQ_WAVE_TYPE_RSVD0                       = 0x00000001,
@@ -16234,17 +9293,7 @@ SQ_WAVE_TYPE_PS1                         = 0x00000007,
 SQ_WAVE_TYPE_PS2                         = 0x00000008,
 SQ_WAVE_TYPE_PS3                         = 0x00000009,
 } SQ_WAVE_TYPE;
-
-/*
- * SQ_WAVE_TYPE value
- */
-
 #define SQ_WAVE_TYPE_PS0               0x00000000
-
-/*
- * SQIND_PARTITIONS value
- */
-
 #define SQIND_GLOBAL_REGS_OFFSET       0x00000000
 #define SQIND_GLOBAL_REGS_SIZE         0x00000008
 #define SQIND_LOCAL_REGS_OFFSET        0x00000008
@@ -16255,68 +9304,23 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define SQIND_WAVE_SGPRS_SIZE          0x00000200
 #define SQIND_WAVE_VGPRS_OFFSET        0x00000400
 #define SQIND_WAVE_VGPRS_SIZE          0x00000400
-
-/*
- * SQ_GFXDEC value
- */
-
 #define SQ_GFXDEC_BEGIN                0x0000a000
 #define SQ_GFXDEC_END                  0x0000c000
 #define SQ_GFXDEC_STATE_ID_SHIFT       0x0000000a
-
-/*
- * SQDEC value
- */
-
 #define SQDEC_BEGIN                    0x00002300
 #define SQDEC_END                      0x000023ff
-
-/*
- * SQPERFSDEC value
- */
-
 #define SQPERFSDEC_BEGIN               0x0000d9c0
 #define SQPERFSDEC_END                 0x0000da40
-
-/*
- * SQPERFDDEC value
- */
-
 #define SQPERFDDEC_BEGIN               0x0000d1c0
 #define SQPERFDDEC_END                 0x0000d240
-
-/*
- * SQGFXUDEC value
- */
-
 #define SQGFXUDEC_BEGIN                0x0000c330
 #define SQGFXUDEC_END                  0x0000c380
-
-/*
- * SQPWRDEC value
- */
-
 #define SQPWRDEC_BEGIN                 0x0000f08c
 #define SQPWRDEC_END                   0x0000f094
-
-/*
- * SQ_DISPATCHER value
- */
-
 #define SQ_DISPATCHER_GFX_MIN          0x00000010
 #define SQ_DISPATCHER_GFX_CNT_PER_RING 0x00000008
-
-/*
- * SQ_MAX value
- */
-
 #define SQ_MAX_PGM_SGPRS               0x00000068
 #define SQ_MAX_PGM_VGPRS               0x00000100
-
-/*
- * SQ_EXCP_BITS value
- */
-
 #define SQ_EX_MODE_EXCP_VALU_BASE      0x00000000
 #define SQ_EX_MODE_EXCP_VALU_SIZE      0x00000007
 #define SQ_EX_MODE_EXCP_INVALID        0x00000000
@@ -16328,19 +9332,9 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define SQ_EX_MODE_EXCP_INT_DIV0       0x00000006
 #define SQ_EX_MODE_EXCP_ADDR_WATCH0    0x00000007
 #define SQ_EX_MODE_EXCP_MEM_VIOL       0x00000008
-
-/*
- * SQ_EXCP_HI_BITS value
- */
-
 #define SQ_EX_MODE_EXCP_HI_ADDR_WATCH1 0x00000000
 #define SQ_EX_MODE_EXCP_HI_ADDR_WATCH2 0x00000001
 #define SQ_EX_MODE_EXCP_HI_ADDR_WATCH3 0x00000002
-
-/*
- * HW_INSERTED_INST_ID value
- */
-
 #define INST_ID_PRIV_START             0x80000000
 #define INST_ID_ECC_INTERRUPT_MSG      0xfffffff0
 #define INST_ID_TTRACE_NEW_PC_MSG      0xfffffff1
@@ -16349,11 +9343,6 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define INST_ID_SPI_WREXEC             0xfffffff4
 #define INST_ID_HW_TRAP_GET_TBA        0xfffffff5
 #define INST_ID_HOST_REG_TRAP_MSG      0xfffffffe
-
-/*
- * SIMM16_WAITCNT_PARTITIONS value
- */
-
 #define SIMM16_WAITCNT_EXP_CNT_START   0x00000000
 #define SIMM16_WAITCNT_EXP_CNT_SIZE    0x00000003
 #define SIMM16_WAITCNT_LGKM_CNT_START  0x00000004
@@ -16374,18 +9363,8 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define SIMM16_WAITCNT_DEPCTR_VA_SDST_SIZE 0x00000003
 #define SIMM16_WAITCNT_DEPCTR_VA_VDST_START 0x0000000b
 #define SIMM16_WAITCNT_DEPCTR_VA_VDST_SIZE 0x00000005
-
-/*
- * SIMM16_WAIT_EVENT_PARTITIONS value
- */
-
 #define SIMM16_WAIT_EVENT_EXP_RDY_START 0x00000000
 #define SIMM16_WAIT_EVENT_EXP_RDY_SIZE 0x00000001
-
-/*
- * SQ_WAVE_IB_DEP_COUNTER_SIZES value
- */
-
 #define SQ_WAVE_IB_DEP_SA_SDST_SIZE    0x00000004
 #define SQ_WAVE_IB_DEP_SA_EXEC_SIZE    0x00000002
 #define SQ_WAVE_IB_DEP_SA_M0_SIZE      0x00000001
@@ -16397,11 +9376,6 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define SQ_WAVE_IB_DEP_VA_EXEC_SIZE    0x00000002
 #define SQ_WAVE_IB_DEP_VA_VDST_SIZE    0x00000005
 #define SQ_WAVE_IB_DEP_LDS_DIR_SIZE    0x00000003
-
-/*
- * SQ_EDC_FUE_CNTL_BITS value
- */
-
 #define SQ_EDC_FUE_CNTL_SIMD0          0x00000000
 #define SQ_EDC_FUE_CNTL_SIMD1          0x00000001
 #define SQ_EDC_FUE_CNTL_SIMD2          0x00000002
@@ -16411,77 +9385,24 @@ SQ_WAVE_TYPE_PS3                         = 0x00000009,
 #define SQ_EDC_FUE_CNTL_TD             0x00000006
 #define SQ_EDC_FUE_CNTL_TA             0x00000007
 #define SQ_EDC_FUE_CNTL_TCP            0x00000008
-
-/*******************************************************
- * COMP Enums
- *******************************************************/
-
-/*
- * CSCNTL_TYPE enum
- */
-
 typedef enum CSCNTL_TYPE {
 CSCNTL_TYPE_TG                           = 0x00000000,
 CSCNTL_TYPE_STATE                        = 0x00000001,
 CSCNTL_TYPE_EVENT                        = 0x00000002,
 CSCNTL_TYPE_PRIVATE                      = 0x00000003,
 } CSCNTL_TYPE;
-
-/*
- * CSDATA_TYPE enum
- */
-
 typedef enum CSDATA_TYPE {
 CSDATA_TYPE_TG                           = 0x00000000,
 CSDATA_TYPE_STATE                        = 0x00000001,
 CSDATA_TYPE_EVENT                        = 0x00000002,
 CSDATA_TYPE_PRIVATE                      = 0x00000003,
 } CSDATA_TYPE;
-
-/*
- * CSDATA_TYPE_WIDTH value
- */
-
 #define CSDATA_TYPE_WIDTH              0x00000002
-
-/*
- * CSDATA_ADDR_WIDTH value
- */
-
 #define CSDATA_ADDR_WIDTH              0x00000007
-
-/*
- * CSDATA_DATA_WIDTH value
- */
-
 #define CSDATA_DATA_WIDTH              0x00000020
-
-/*
- * CSCNTL_TYPE_WIDTH value
- */
-
 #define CSCNTL_TYPE_WIDTH              0x00000002
-
-/*
- * CSCNTL_ADDR_WIDTH value
- */
-
 #define CSCNTL_ADDR_WIDTH              0x00000007
-
-/*
- * CSCNTL_DATA_WIDTH value
- */
-
 #define CSCNTL_DATA_WIDTH              0x00000020
-
-/*******************************************************
- * GE Enums
- *******************************************************/
-
-/*
- * GE1_PERFCOUNT_SELECT enum
- */
-
 typedef enum GE1_PERFCOUNT_SELECT {
 ge1_assembler_busy                       = 0x00000000,
 ge1_assembler_stalled                    = 0x00000001,
@@ -16524,11 +9445,6 @@ ge1_rbiu_di_fifo_starved_p1              = 0x00000025,
 ge1_rbiu_dr_fifo_stalled_p1              = 0x00000026,
 ge1_rbiu_dr_fifo_starved_p1              = 0x00000027,
 } GE1_PERFCOUNT_SELECT;
-
-/*
- * GE2_DIST_PERFCOUNT_SELECT enum
- */
-
 typedef enum GE2_DIST_PERFCOUNT_SELECT {
 ge_dist_hs_done                          = 0x00000000,
 ge_dist_hs_done_latency_se0              = 0x00000001,
@@ -16623,11 +9539,6 @@ ge_agm_gcr_stall                         = 0x00000059,
 ge_agm_gcr_latency                       = 0x0000005a,
 ge_distclk_vld                           = 0x0000005b,
 } GE2_DIST_PERFCOUNT_SELECT;
-
-/*
- * GE2_SE_PERFCOUNT_SELECT enum
- */
-
 typedef enum GE2_SE_PERFCOUNT_SELECT {
 ge_se_ds_prims                           = 0x00000000,
 ge_se_es_thread_groups                   = 0x00000001,
@@ -16701,59 +9612,29 @@ ge_te11_compactor_starved                = 0x00000044,
 ge_ngg_stall_tess_off_tess_on            = 0x00000045,
 ge_ngg_stall_tess_on_tess_off            = 0x00000046,
 } GE2_SE_PERFCOUNT_SELECT;
-
-/*
- * VGT_DETECT_ONE enum
- */
-
 typedef enum VGT_DETECT_ONE {
 ENABLE_TF1_OPT                           = 0x00000000,
 DISABLE_TF1_OPT                          = 0x00000001,
 } VGT_DETECT_ONE;
-
-/*
- * VGT_DETECT_ZERO enum
- */
-
 typedef enum VGT_DETECT_ZERO {
 ENABLE_TF0_OPT                           = 0x00000000,
 DISABLE_TF0_OPT                          = 0x00000001,
 } VGT_DETECT_ZERO;
-
-/*
- * VGT_DIST_MODE enum
- */
-
 typedef enum VGT_DIST_MODE {
 NO_DIST                                  = 0x00000000,
 PATCHES                                  = 0x00000001,
 DONUTS                                   = 0x00000002,
 TRAPEZOIDS                               = 0x00000003,
 } VGT_DIST_MODE;
-
-/*
- * VGT_DI_INDEX_SIZE enum
- */
-
 typedef enum VGT_DI_INDEX_SIZE {
 DI_INDEX_SIZE_16_BIT                     = 0x00000000,
 DI_INDEX_SIZE_32_BIT                     = 0x00000001,
 DI_INDEX_SIZE_8_BIT                      = 0x00000002,
 } VGT_DI_INDEX_SIZE;
-
-/*
- * VGT_DI_MAJOR_MODE_SELECT enum
- */
-
 typedef enum VGT_DI_MAJOR_MODE_SELECT {
 DI_MAJOR_MODE_0                          = 0x00000000,
 DI_MAJOR_MODE_1                          = 0x00000001,
 } VGT_DI_MAJOR_MODE_SELECT;
-
-/*
- * VGT_DI_PRIM_TYPE enum
- */
-
 typedef enum VGT_DI_PRIM_TYPE {
 DI_PT_NONE                               = 0x00000000,
 DI_PT_POINTLIST                          = 0x00000001,
@@ -16778,44 +9659,24 @@ DI_PT_QUADLIST                           = 0x00000013,
 DI_PT_QUADSTRIP                          = 0x00000014,
 DI_PT_POLYGON                            = 0x00000015,
 } VGT_DI_PRIM_TYPE;
-
-/*
- * VGT_DI_SOURCE_SELECT enum
- */
-
 typedef enum VGT_DI_SOURCE_SELECT {
 DI_SRC_SEL_DMA                           = 0x00000000,
 DI_SRC_SEL_IMMEDIATE                     = 0x00000001,
 DI_SRC_SEL_AUTO_INDEX                    = 0x00000002,
 DI_SRC_SEL_RESERVED                      = 0x00000003,
 } VGT_DI_SOURCE_SELECT;
-
-/*
- * VGT_DMA_BUF_TYPE enum
- */
-
 typedef enum VGT_DMA_BUF_TYPE {
 VGT_DMA_BUF_MEM                          = 0x00000000,
 VGT_DMA_BUF_RING                         = 0x00000001,
 VGT_DMA_BUF_SETUP                        = 0x00000002,
 VGT_DMA_PTR_UPDATE                       = 0x00000003,
 } VGT_DMA_BUF_TYPE;
-
-/*
- * VGT_DMA_SWAP_MODE enum
- */
-
 typedef enum VGT_DMA_SWAP_MODE {
 VGT_DMA_SWAP_NONE                        = 0x00000000,
 VGT_DMA_SWAP_16_BIT                      = 0x00000001,
 VGT_DMA_SWAP_32_BIT                      = 0x00000002,
 VGT_DMA_SWAP_WORD                        = 0x00000003,
 } VGT_DMA_SWAP_MODE;
-
-/*
- * VGT_EVENT_TYPE enum
- */
-
 typedef enum VGT_EVENT_TYPE {
 Reserved_0x00                            = 0x00000000,
 SAMPLE_STREAMOUTSTATS1                   = 0x00000001,
@@ -16882,11 +9743,6 @@ ENABLE_NGG_PIPELINE                      = 0x0000003d,
 ENABLE_LEGACY_PIPELINE                   = 0x0000003e,
 DRAW_DONE                                = 0x0000003f,
 } VGT_EVENT_TYPE;
-
-/*
- * VGT_GROUP_CONV_SEL enum
- */
-
 typedef enum VGT_GROUP_CONV_SEL {
 VGT_GRP_INDEX_16                         = 0x00000000,
 VGT_GRP_INDEX_32                         = 0x00000001,
@@ -16898,11 +9754,6 @@ VGT_GRP_FLOAT_32                         = 0x00000006,
 VGT_GRP_AUTO_PRIM                        = 0x00000007,
 VGT_GRP_FIX_1_23_TO_FLOAT                = 0x00000008,
 } VGT_GROUP_CONV_SEL;
-
-/*
- * VGT_GS_MODE_TYPE enum
- */
-
 typedef enum VGT_GS_MODE_TYPE {
 GS_OFF                                   = 0x00000000,
 GS_SCENARIO_A                            = 0x00000001,
@@ -16911,11 +9762,6 @@ GS_SCENARIO_G                            = 0x00000003,
 GS_SCENARIO_C                            = 0x00000004,
 SPRITE_EN                                = 0x00000005,
 } VGT_GS_MODE_TYPE;
-
-/*
- * VGT_GS_OUTPRIM_TYPE enum
- */
-
 typedef enum VGT_GS_OUTPRIM_TYPE {
 POINTLIST                                = 0x00000000,
 LINESTRIP                                = 0x00000001,
@@ -16923,21 +9769,11 @@ TRISTRIP                                 = 0x00000002,
 RECT_2D                                  = 0x00000003,
 RECTLIST                                 = 0x00000004,
 } VGT_GS_OUTPRIM_TYPE;
-
-/*
- * VGT_INDEX_TYPE_MODE enum
- */
-
 typedef enum VGT_INDEX_TYPE_MODE {
 VGT_INDEX_16                             = 0x00000000,
 VGT_INDEX_32                             = 0x00000001,
 VGT_INDEX_8                              = 0x00000002,
 } VGT_INDEX_TYPE_MODE;
-
-/*
- * VGT_OUTPATH_SELECT enum
- */
-
 typedef enum VGT_OUTPATH_SELECT {
 VGT_OUTPATH_VTX_REUSE                    = 0x00000000,
 VGT_OUTPATH_GS_BLOCK                     = 0x00000001,
@@ -16947,11 +9783,6 @@ VGT_OUTPATH_TE_PRIM_GEN                  = 0x00000004,
 VGT_OUTPATH_TE_GS_BLOCK                  = 0x00000005,
 VGT_OUTPATH_TE_OUTPUT                    = 0x00000006,
 } VGT_OUTPATH_SELECT;
-
-/*
- * VGT_OUT_PRIM_TYPE enum
- */
-
 typedef enum VGT_OUT_PRIM_TYPE {
 VGT_OUT_POINT                            = 0x00000000,
 VGT_OUT_LINE                             = 0x00000001,
@@ -16969,104 +9800,54 @@ VGT_OUT_LINE_ADJ                         = 0x0000000c,
 VGT_OUT_TRI_ADJ                          = 0x0000000d,
 VGT_OUT_PATCH                            = 0x0000000e,
 } VGT_OUT_PRIM_TYPE;
-
-/*
- * VGT_RDREQ_POLICY enum
- */
-
 typedef enum VGT_RDREQ_POLICY {
 VGT_POLICY_LRU                           = 0x00000000,
 VGT_POLICY_STREAM                        = 0x00000001,
 VGT_POLICY_BYPASS                        = 0x00000002,
 } VGT_RDREQ_POLICY;
-
-/*
- * VGT_STAGES_ES_EN enum
- */
-
 typedef enum VGT_STAGES_ES_EN {
 ES_STAGE_OFF                             = 0x00000000,
 ES_STAGE_DS                              = 0x00000001,
 ES_STAGE_REAL                            = 0x00000002,
 RESERVED_ES                              = 0x00000003,
 } VGT_STAGES_ES_EN;
-
-/*
- * VGT_STAGES_GS_EN enum
- */
-
 typedef enum VGT_STAGES_GS_EN {
 GS_STAGE_OFF                             = 0x00000000,
 GS_STAGE_ON                              = 0x00000001,
 } VGT_STAGES_GS_EN;
-
-/*
- * VGT_STAGES_HS_EN enum
- */
-
 typedef enum VGT_STAGES_HS_EN {
 HS_STAGE_OFF                             = 0x00000000,
 HS_STAGE_ON                              = 0x00000001,
 } VGT_STAGES_HS_EN;
-
-/*
- * VGT_STAGES_LS_EN enum
- */
-
 typedef enum VGT_STAGES_LS_EN {
 LS_STAGE_OFF                             = 0x00000000,
 LS_STAGE_ON                              = 0x00000001,
 CS_STAGE_ON                              = 0x00000002,
 RESERVED_LS                              = 0x00000003,
 } VGT_STAGES_LS_EN;
-
-/*
- * VGT_STAGES_VS_EN enum
- */
-
 typedef enum VGT_STAGES_VS_EN {
 VS_STAGE_REAL                            = 0x00000000,
 VS_STAGE_DS                              = 0x00000001,
 VS_STAGE_COPY_SHADER                     = 0x00000002,
 RESERVED_VS                              = 0x00000003,
 } VGT_STAGES_VS_EN;
-
-/*
- * VGT_TESS_PARTITION enum
- */
-
 typedef enum VGT_TESS_PARTITION {
 PART_INTEGER                             = 0x00000000,
 PART_POW2                                = 0x00000001,
 PART_FRAC_ODD                            = 0x00000002,
 PART_FRAC_EVEN                           = 0x00000003,
 } VGT_TESS_PARTITION;
-
-/*
- * VGT_TESS_TOPOLOGY enum
- */
-
 typedef enum VGT_TESS_TOPOLOGY {
 OUTPUT_POINT                             = 0x00000000,
 OUTPUT_LINE                              = 0x00000001,
 OUTPUT_TRIANGLE_CW                       = 0x00000002,
 OUTPUT_TRIANGLE_CCW                      = 0x00000003,
 } VGT_TESS_TOPOLOGY;
-
-/*
- * VGT_TESS_TYPE enum
- */
-
 typedef enum VGT_TESS_TYPE {
 TESS_ISOLINE                             = 0x00000000,
 TESS_TRIANGLE                            = 0x00000001,
 TESS_QUAD                                = 0x00000002,
 } VGT_TESS_TYPE;
-
-/*
- * WD_IA_DRAW_REG_XFER enum
- */
-
 typedef enum WD_IA_DRAW_REG_XFER {
 WD_IA_DRAW_REG_XFER_IA_MULTI_VGT_PARAM   = 0x00000000,
 WD_IA_DRAW_REG_XFER_VGT_MULTI_PRIM_IB_RESET_EN = 0x00000001,
@@ -17078,22 +9859,12 @@ WD_IA_DRAW_REG_XFER_FL_MS_WG_DIM_1       = 0x00000006,
 WD_IA_DRAW_REG_XFER_FL_MS_TG_SIZE        = 0x00000007,
 WD_IA_DRAW_REG_XFER_FL_MS_EXP_ALLOC      = 0x00000008,
 } WD_IA_DRAW_REG_XFER;
-
-/*
- * WD_IA_DRAW_SOURCE enum
- */
-
 typedef enum WD_IA_DRAW_SOURCE {
 WD_IA_DRAW_SOURCE_DMA                    = 0x00000000,
 WD_IA_DRAW_SOURCE_IMMD                   = 0x00000001,
 WD_IA_DRAW_SOURCE_AUTO                   = 0x00000002,
 WD_IA_DRAW_SOURCE_OPAQ                   = 0x00000003,
 } WD_IA_DRAW_SOURCE;
-
-/*
- * WD_IA_DRAW_TYPE enum
- */
-
 typedef enum WD_IA_DRAW_TYPE {
 WD_IA_DRAW_TYPE_DI_MM0                   = 0x00000000,
 WD_IA_DRAW_TYPE_REG_XFER                 = 0x00000001,
@@ -17104,47 +9875,14 @@ WD_IA_DRAW_TYPE_MAX_INDX                 = 0x00000005,
 WD_IA_DRAW_TYPE_INDX_OFF                 = 0x00000006,
 WD_IA_DRAW_TYPE_IMM_DATA                 = 0x00000007,
 } WD_IA_DRAW_TYPE;
-
-/*
- * GS_THREADID_SIZE value
- */
-
 #define GSTHREADID_SIZE                0x00000002
-
-/*******************************************************
- * GB Enums
- *******************************************************/
-
-/*
- * GB_EDC_DED_MODE enum
- */
-
 typedef enum GB_EDC_DED_MODE {
 GB_EDC_DED_MODE_LOG                      = 0x00000000,
 GB_EDC_DED_MODE_HALT                     = 0x00000001,
 GB_EDC_DED_MODE_INT_HALT                 = 0x00000002,
 } GB_EDC_DED_MODE;
-
-/*
- * VALUE_GB_TILING_CONFIG_TABLE_SIZE value
- */
-
 #define GB_TILING_CONFIG_TABLE_SIZE    0x00000020
-
-/*
- * VALUE_GB_TILING_CONFIG_MACROTABLE_SIZE value
- */
-
 #define GB_TILING_CONFIG_MACROTABLE_SIZE 0x00000010
-
-/*******************************************************
- * GLX Enums
- *******************************************************/
-
-/*
- * CHA_PERF_SEL enum
- */
-
 typedef enum CHA_PERF_SEL {
 CHA_PERF_SEL_BUSY                        = 0x00000000,
 CHA_PERF_SEL_STALL_CHC0                  = 0x00000001,
@@ -17187,11 +9925,6 @@ CHA_PERF_SEL_STALL_RET_CONFLICT_CHC3     = 0x00000025,
 CHA_PERF_SEL_STALL_RET_CONFLICT_CHC4     = 0x00000026,
 CHA_PERF_SEL_CYCLE                       = 0x00000027,
 } CHA_PERF_SEL;
-
-/*
- * CHCG_PERF_SEL enum
- */
-
 typedef enum CHCG_PERF_SEL {
 CHCG_PERF_SEL_CYCLE                      = 0x00000000,
 CHCG_PERF_SEL_BUSY                       = 0x00000001,
@@ -17238,11 +9971,6 @@ CHCG_PERF_SEL_REQ_CLIENT21               = 0x00000029,
 CHCG_PERF_SEL_REQ_CLIENT22               = 0x0000002a,
 CHCG_PERF_SEL_REQ_CLIENT23               = 0x0000002b,
 } CHCG_PERF_SEL;
-
-/*
- * CHC_PERF_SEL enum
- */
-
 typedef enum CHC_PERF_SEL {
 CHC_PERF_SEL_CYCLE                       = 0x00000000,
 CHC_PERF_SEL_BUSY                        = 0x00000001,
@@ -17289,11 +10017,6 @@ CHC_PERF_SEL_REQ_CLIENT21                = 0x00000029,
 CHC_PERF_SEL_REQ_CLIENT22                = 0x0000002a,
 CHC_PERF_SEL_REQ_CLIENT23                = 0x0000002b,
 } CHC_PERF_SEL;
-
-/*
- * GL1A_PERF_SEL enum
- */
-
 typedef enum GL1A_PERF_SEL {
 GL1A_PERF_SEL_BUSY                       = 0x00000000,
 GL1A_PERF_SEL_STALL_GL1C0                = 0x00000001,
@@ -17320,11 +10043,6 @@ GL1A_PERF_SEL_STALL_RET_CONFLICT_GL1C2   = 0x00000015,
 GL1A_PERF_SEL_STALL_RET_CONFLICT_GL1C3   = 0x00000016,
 GL1A_PERF_SEL_CYCLE                      = 0x00000017,
 } GL1A_PERF_SEL;
-
-/*
- * GL1C_PERF_SEL enum
- */
-
 typedef enum GL1C_PERF_SEL {
 GL1C_PERF_SEL_CYCLE                      = 0x00000000,
 GL1C_PERF_SEL_BUSY                       = 0x00000001,
@@ -17411,15 +10129,6 @@ GL1C_PERF_SEL_UTCL0_UTCL1_XNACK_RETRY_FAULT = 0x00000051,
 GL1C_PERF_SEL_UTCL0_UTCL1_XNACK_PRT_FAULT = 0x00000052,
 GL1C_PERF_SEL_UTCL0_UTCL1_XNACK_NO_RETRY_FAULT = 0x00000053,
 } GL1C_PERF_SEL;
-
-/*******************************************************
- * GL1H Enums
- *******************************************************/
-
-/*
- * GL1H_REQ_PERF_SEL enum
- */
-
 typedef enum GL1H_REQ_PERF_SEL {
 GL1H_REQ_PERF_SEL_BUSY                   = 0x00000000,
 GL1H_REQ_PERF_SEL_STALL_GL1_0            = 0x00000001,
@@ -17434,15 +10143,6 @@ GL1H_REQ_PERF_SEL_ARB_REQUESTS           = 0x00000009,
 GL1H_REQ_PERF_SEL_REQ_INFLIGHT_LEVEL     = 0x0000000a,
 GL1H_REQ_PERF_SEL_CYCLE                  = 0x0000000b,
 } GL1H_REQ_PERF_SEL;
-
-/*******************************************************
- * TA Enums
- *******************************************************/
-
-/*
- * TA_PERFCOUNT_SEL enum
- */
-
 typedef enum TA_PERFCOUNT_SEL {
 TA_PERF_SEL_NULL                         = 0x00000000,
 TA_PERF_SEL_image_sampler_has_offset_instructions = 0x00000001,
@@ -17654,11 +10354,6 @@ TA_PERF_SEL_sync_nonsampler_fifo_clk_valid_cycles = 0x000000e9,
 TA_PERF_SEL_aligner_clk_valid_cycles     = 0x000000ea,
 TA_PERF_SEL_tcreq_clk_valid_cycles       = 0x000000eb,
 } TA_PERFCOUNT_SEL;
-
-/*
- * TEX_BC_SWIZZLE enum
- */
-
 typedef enum TEX_BC_SWIZZLE {
 TEX_BC_Swizzle_XYZW                      = 0x00000000,
 TEX_BC_Swizzle_XWYZ                      = 0x00000001,
@@ -17667,33 +10362,18 @@ TEX_BC_Swizzle_WXYZ                      = 0x00000003,
 TEX_BC_Swizzle_ZYXW                      = 0x00000004,
 TEX_BC_Swizzle_YXWZ                      = 0x00000005,
 } TEX_BC_SWIZZLE;
-
-/*
- * TEX_BORDER_COLOR_TYPE enum
- */
-
 typedef enum TEX_BORDER_COLOR_TYPE {
 TEX_BorderColor_TransparentBlack         = 0x00000000,
 TEX_BorderColor_OpaqueBlack              = 0x00000001,
 TEX_BorderColor_OpaqueWhite              = 0x00000002,
 TEX_BorderColor_Register                 = 0x00000003,
 } TEX_BORDER_COLOR_TYPE;
-
-/*
- * TEX_CHROMA_KEY enum
- */
-
 typedef enum TEX_CHROMA_KEY {
 TEX_ChromaKey_Disabled                   = 0x00000000,
 TEX_ChromaKey_Kill                       = 0x00000001,
 TEX_ChromaKey_Blend                      = 0x00000002,
 TEX_ChromaKey_RESERVED_3                 = 0x00000003,
 } TEX_CHROMA_KEY;
-
-/*
- * TEX_CLAMP enum
- */
-
 typedef enum TEX_CLAMP {
 TEX_Clamp_Repeat                         = 0x00000000,
 TEX_Clamp_Mirror                         = 0x00000001,
@@ -17704,20 +10384,10 @@ TEX_Clamp_MirrorOnceHalfToBorder         = 0x00000005,
 TEX_Clamp_ClampToBorder                  = 0x00000006,
 TEX_Clamp_MirrorOnceToBorder             = 0x00000007,
 } TEX_CLAMP;
-
-/*
- * TEX_COORD_TYPE enum
- */
-
 typedef enum TEX_COORD_TYPE {
 TEX_CoordType_Unnormalized               = 0x00000000,
 TEX_CoordType_Normalized                 = 0x00000001,
 } TEX_COORD_TYPE;
-
-/*
- * TEX_DEPTH_COMPARE_FUNCTION enum
- */
-
 typedef enum TEX_DEPTH_COMPARE_FUNCTION {
 TEX_DepthCompareFunction_Never           = 0x00000000,
 TEX_DepthCompareFunction_Less            = 0x00000001,
@@ -17728,22 +10398,12 @@ TEX_DepthCompareFunction_NotEqual        = 0x00000005,
 TEX_DepthCompareFunction_GreaterEqual    = 0x00000006,
 TEX_DepthCompareFunction_Always          = 0x00000007,
 } TEX_DEPTH_COMPARE_FUNCTION;
-
-/*
- * TEX_FORMAT_COMP enum
- */
-
 typedef enum TEX_FORMAT_COMP {
 TEX_FormatComp_Unsigned                  = 0x00000000,
 TEX_FormatComp_Signed                    = 0x00000001,
 TEX_FormatComp_UnsignedBiased            = 0x00000002,
 TEX_FormatComp_RESERVED_3                = 0x00000003,
 } TEX_FORMAT_COMP;
-
-/*
- * TEX_MAX_ANISO_RATIO enum
- */
-
 typedef enum TEX_MAX_ANISO_RATIO {
 TEX_MaxAnisoRatio_1to1                   = 0x00000000,
 TEX_MaxAnisoRatio_2to1                   = 0x00000001,
@@ -17754,79 +10414,40 @@ TEX_MaxAnisoRatio_RESERVED_5             = 0x00000005,
 TEX_MaxAnisoRatio_RESERVED_6             = 0x00000006,
 TEX_MaxAnisoRatio_RESERVED_7             = 0x00000007,
 } TEX_MAX_ANISO_RATIO;
-
-/*
- * TEX_MIP_FILTER enum
- */
-
 typedef enum TEX_MIP_FILTER {
 TEX_MipFilter_None                       = 0x00000000,
 TEX_MipFilter_Point                      = 0x00000001,
 TEX_MipFilter_Linear                     = 0x00000002,
 TEX_MipFilter_Point_Aniso_Adj            = 0x00000003,
 } TEX_MIP_FILTER;
-
-/*
- * TEX_REQUEST_SIZE enum
- */
-
 typedef enum TEX_REQUEST_SIZE {
 TEX_RequestSize_32B                      = 0x00000000,
 TEX_RequestSize_64B                      = 0x00000001,
 TEX_RequestSize_128B                     = 0x00000002,
 TEX_RequestSize_2X64B                    = 0x00000003,
 } TEX_REQUEST_SIZE;
-
-/*
- * TEX_SAMPLER_TYPE enum
- */
-
 typedef enum TEX_SAMPLER_TYPE {
 TEX_SamplerType_Invalid                  = 0x00000000,
 TEX_SamplerType_Valid                    = 0x00000001,
 } TEX_SAMPLER_TYPE;
-
-/*
- * TEX_XY_FILTER enum
- */
-
 typedef enum TEX_XY_FILTER {
 TEX_XYFilter_Point                       = 0x00000000,
 TEX_XYFilter_Linear                      = 0x00000001,
 TEX_XYFilter_AnisoPoint                  = 0x00000002,
 TEX_XYFilter_AnisoLinear                 = 0x00000003,
 } TEX_XY_FILTER;
-
-/*
- * TEX_Z_FILTER enum
- */
-
 typedef enum TEX_Z_FILTER {
 TEX_ZFilter_None                         = 0x00000000,
 TEX_ZFilter_Point                        = 0x00000001,
 TEX_ZFilter_Linear                       = 0x00000002,
 TEX_ZFilter_RESERVED_3                   = 0x00000003,
 } TEX_Z_FILTER;
-
-/*
- * TVX_TYPE enum
- */
-
 typedef enum TVX_TYPE {
 TVX_Type_InvalidTextureResource          = 0x00000000,
 TVX_Type_InvalidVertexBuffer             = 0x00000001,
 TVX_Type_ValidTextureResource            = 0x00000002,
 TVX_Type_ValidVertexBuffer               = 0x00000003,
 } TVX_TYPE;
-
-/*******************************************************
- * TCP Enums
- *******************************************************/
-
-/*
- * TA_TC_ADDR_MODES enum
- */
-
 typedef enum TA_TC_ADDR_MODES {
 TA_TC_ADDR_MODE_DEFAULT                  = 0x00000000,
 TA_TC_ADDR_MODE_COMP0                    = 0x00000001,
@@ -17836,11 +10457,6 @@ TA_TC_ADDR_MODE_COMP3                    = 0x00000004,
 TA_TC_ADDR_MODE_UNALIGNED                = 0x00000005,
 TA_TC_ADDR_MODE_BORDER_COLOR             = 0x00000006,
 } TA_TC_ADDR_MODES;
-
-/*
- * TA_TC_REQ_MODES enum
- */
-
 typedef enum TA_TC_REQ_MODES {
 TA_TC_REQ_MODE_BORDER                    = 0x00000000,
 TA_TC_REQ_MODE_TEX2                      = 0x00000001,
@@ -17851,62 +10467,32 @@ TA_TC_REQ_MODE_DWORD                     = 0x00000005,
 TA_TC_REQ_MODE_BYTE                      = 0x00000006,
 TA_TC_REQ_MODE_BYTE_NV                   = 0x00000007,
 } TA_TC_REQ_MODES;
-
-/*
- * TCP_CACHE_POLICIES enum
- */
-
 typedef enum TCP_CACHE_POLICIES {
 TCP_CACHE_POLICY_MISS_LRU                = 0x00000000,
 TCP_CACHE_POLICY_MISS_EVICT              = 0x00000001,
 TCP_CACHE_POLICY_HIT_LRU                 = 0x00000002,
 TCP_CACHE_POLICY_HIT_EVICT               = 0x00000003,
 } TCP_CACHE_POLICIES;
-
-/*
- * TCP_CACHE_STORE_POLICIES enum
- */
-
 typedef enum TCP_CACHE_STORE_POLICIES {
 TCP_CACHE_STORE_POLICY_WT_LRU            = 0x00000000,
 TCP_CACHE_STORE_POLICY_WT_EVICT          = 0x00000001,
 } TCP_CACHE_STORE_POLICIES;
-
-/*
- * TCP_DSM_DATA_SEL enum
- */
-
 typedef enum TCP_DSM_DATA_SEL {
 TCP_DSM_DISABLE                          = 0x00000000,
 TCP_DSM_SEL0                             = 0x00000001,
 TCP_DSM_SEL1                             = 0x00000002,
 TCP_DSM_SEL_BOTH                         = 0x00000003,
 } TCP_DSM_DATA_SEL;
-
-/*
- * TCP_DSM_INJECT_SEL enum
- */
-
 typedef enum TCP_DSM_INJECT_SEL {
 TCP_DSM_INJECT_SEL0                      = 0x00000000,
 TCP_DSM_INJECT_SEL1                      = 0x00000001,
 TCP_DSM_INJECT_SEL2                      = 0x00000002,
 TCP_DSM_INJECT_SEL3                      = 0x00000003,
 } TCP_DSM_INJECT_SEL;
-
-/*
- * TCP_DSM_SINGLE_WRITE enum
- */
-
 typedef enum TCP_DSM_SINGLE_WRITE {
 TCP_DSM_SINGLE_WRITE_DIS                 = 0x00000000,
 TCP_DSM_SINGLE_WRITE_EN                  = 0x00000001,
 } TCP_DSM_SINGLE_WRITE;
-
-/*
- * TCP_OPCODE_TYPE enum
- */
-
 typedef enum TCP_OPCODE_TYPE {
 TCP_OPCODE_READ                          = 0x00000000,
 TCP_OPCODE_WRITE                         = 0x00000001,
@@ -17917,11 +10503,6 @@ TCP_OPCODE_SAMPLER                       = 0x00000005,
 TCP_OPCODE_LOAD                          = 0x00000006,
 TCP_OPCODE_GATHERH                       = 0x00000007,
 } TCP_OPCODE_TYPE;
-
-/*
- * TCP_PERFCOUNT_SELECT enum
- */
-
 typedef enum TCP_PERFCOUNT_SELECT {
 TCP_PERF_SEL_GATE_EN1                    = 0x00000000,
 TCP_PERF_SEL_GATE_EN2                    = 0x00000001,
@@ -17987,26 +10568,12 @@ TCP_PERF_SEL_READ_DATACONFLICT_STALL     = 0x0000003c,
 TCP_PERF_SEL_WRITE_DATACONFLICT_STALL    = 0x0000003d,
 TCP_PERF_SEL_TD_TCP_STALL                = 0x0000003e,
 } TCP_PERFCOUNT_SELECT;
-
-/*
- * TCP_WATCH_MODES enum
- */
-
 typedef enum TCP_WATCH_MODES {
 TCP_WATCH_MODE_READ                      = 0x00000000,
 TCP_WATCH_MODE_NONREAD                   = 0x00000001,
 TCP_WATCH_MODE_ATOMIC                    = 0x00000002,
 TCP_WATCH_MODE_ALL                       = 0x00000003,
 } TCP_WATCH_MODES;
-
-/*******************************************************
- * TD Enums
- *******************************************************/
-
-/*
- * TD_PERFCOUNT_SEL enum
- */
-
 typedef enum TD_PERFCOUNT_SEL {
 TD_PERF_SEL_none                         = 0x00000000,
 TD_PERF_SEL_td_busy                      = 0x00000001,
@@ -18197,15 +10764,6 @@ TD_PERF_SEL_nofilter_dword_cycling_4cycles = 0x000000be,
 TD_PERF_SEL_input_bp_due_to_done_scoreboard_full = 0x000000bf,
 TD_PERF_SEL_ray_tracing_bvh4_instr_invld_thread_cnt = 0x000000c0,
 } TD_PERFCOUNT_SEL;
-
-/*******************************************************
- * GL2C Enums
- *******************************************************/
-
-/*
- * GL2A_PERF_SEL enum
- */
-
 typedef enum GL2A_PERF_SEL {
 GL2A_PERF_SEL_NONE                       = 0x00000000,
 GL2A_PERF_SEL_CYCLE                      = 0x00000001,
@@ -18315,11 +10873,6 @@ GL2A_PERF_SEL_RTN_CREDIT_STALL_CLIENT13  = 0x00000069,
 GL2A_PERF_SEL_RTN_CREDIT_STALL_CLIENT14  = 0x0000006a,
 GL2A_PERF_SEL_RTN_CREDIT_STALL_CLIENT15  = 0x0000006b,
 } GL2A_PERF_SEL;
-
-/*
- * GL2C_PERF_SEL enum
- */
-
 typedef enum GL2C_PERF_SEL {
 GL2C_PERF_SEL_NONE                       = 0x00000000,
 GL2C_PERF_SEL_CYCLE                      = 0x00000001,
@@ -18580,15 +11133,6 @@ GL2C_PERF_SEL_HIT_PASS_MISS_IN_CLIENT17  = 0x000000ff,
 GL2C_PERF_SEL_HIT_PASS_MISS_IN_CLIENT18  = 0x00000100,
 GL2C_PERF_SEL_HIT_PASS_MISS_IN_CLIENT19  = 0x00000101,
 } GL2C_PERF_SEL;
-
-/*******************************************************
- * GRBM Enums
- *******************************************************/
-
-/*
- * GRBM_PERF_SEL enum
- */
-
 typedef enum GRBM_PERF_SEL {
 GRBM_PERF_SEL_COUNT                      = 0x00000000,
 GRBM_PERF_SEL_USER_DEFINED               = 0x00000001,
@@ -18630,11 +11174,6 @@ GRBM_PERF_SEL_ANY_ACTIVE_F_BUSY          = 0x0000002f,
 GRBM_PERF_SEL_GL1H_BUSY                  = 0x00000030,
 GRBM_PERF_SEL_PC_BUSY                    = 0x00000031,
 } GRBM_PERF_SEL;
-
-/*
- * GRBM_SE0_PERF_SEL enum
- */
-
 typedef enum GRBM_SE0_PERF_SEL {
 GRBM_SE0_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE0_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18655,11 +11194,6 @@ GRBM_SE0_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE0_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE0_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE0_PERF_SEL;
-
-/*
- * GRBM_SE1_PERF_SEL enum
- */
-
 typedef enum GRBM_SE1_PERF_SEL {
 GRBM_SE1_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE1_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18680,11 +11214,6 @@ GRBM_SE1_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE1_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE1_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE1_PERF_SEL;
-
-/*
- * GRBM_SE2_PERF_SEL enum
- */
-
 typedef enum GRBM_SE2_PERF_SEL {
 GRBM_SE2_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE2_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18705,11 +11234,6 @@ GRBM_SE2_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE2_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE2_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE2_PERF_SEL;
-
-/*
- * GRBM_SE3_PERF_SEL enum
- */
-
 typedef enum GRBM_SE3_PERF_SEL {
 GRBM_SE3_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE3_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18730,11 +11254,6 @@ GRBM_SE3_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE3_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE3_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE3_PERF_SEL;
-
-/*
- * GRBM_SE4_PERF_SEL enum
- */
-
 typedef enum GRBM_SE4_PERF_SEL {
 GRBM_SE4_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE4_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18755,11 +11274,6 @@ GRBM_SE4_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE4_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE4_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE4_PERF_SEL;
-
-/*
- * GRBM_SE5_PERF_SEL enum
- */
-
 typedef enum GRBM_SE5_PERF_SEL {
 GRBM_SE5_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE5_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18780,11 +11294,6 @@ GRBM_SE5_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE5_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE5_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE5_PERF_SEL;
-
-/*
- * GRBM_SE6_PERF_SEL enum
- */
-
 typedef enum GRBM_SE6_PERF_SEL {
 GRBM_SE6_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE6_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18805,11 +11314,6 @@ GRBM_SE6_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE6_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE6_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE6_PERF_SEL;
-
-/*
- * GRBM_SE7_PERF_SEL enum
- */
-
 typedef enum GRBM_SE7_PERF_SEL {
 GRBM_SE7_PERF_SEL_COUNT                  = 0x00000000,
 GRBM_SE7_PERF_SEL_USER_DEFINED           = 0x00000001,
@@ -18830,26 +11334,12 @@ GRBM_SE7_PERF_SEL_GL1CC_BUSY             = 0x00000012,
 GRBM_SE7_PERF_SEL_GL1H_BUSY              = 0x00000013,
 GRBM_SE7_PERF_SEL_PC_BUSY                = 0x00000014,
 } GRBM_SE7_PERF_SEL;
-
-/*
- * PIPE_COMPAT_LEVEL enum
- */
-
 typedef enum PIPE_COMPAT_LEVEL {
 GEN_ZERO                                 = 0x00000000,
 GEN_ONE                                  = 0x00000001,
 GEN_TWO                                  = 0x00000002,
 GEN_RESERVED                             = 0x00000003,
 } PIPE_COMPAT_LEVEL;
-
-/*******************************************************
- * CP Enums
- *******************************************************/
-
-/*
- * CPC_LATENCY_STATS_SEL enum
- */
-
 typedef enum CPC_LATENCY_STATS_SEL {
 CPC_LATENCY_STATS_SEL_XACK_MAX           = 0x00000000,
 CPC_LATENCY_STATS_SEL_XACK_MIN           = 0x00000001,
@@ -18861,11 +11351,6 @@ CPC_LATENCY_STATS_SEL_INVAL_MAX          = 0x00000006,
 CPC_LATENCY_STATS_SEL_INVAL_MIN          = 0x00000007,
 CPC_LATENCY_STATS_SEL_INVAL_LAST         = 0x00000008,
 } CPC_LATENCY_STATS_SEL;
-
-/*
- * CPC_PERFCOUNT_SEL enum
- */
-
 typedef enum CPC_PERFCOUNT_SEL {
 CPC_PERF_SEL_ALWAYS_COUNT                = 0x00000000,
 CPC_PERF_SEL_RCIU_STALL_WAIT_ON_FREE     = 0x00000001,
@@ -18913,11 +11398,6 @@ CPC_PERF_SEL_MEC_INSTR_CACHE_MISS        = 0x0000002c,
 CPC_PERF_SEL_MES_THREAD0                 = 0x0000002d,
 CPC_PERF_SEL_MES_THREAD1                 = 0x0000002e,
 } CPC_PERFCOUNT_SEL;
-
-/*
- * CPF_LATENCY_STATS_SEL enum
- */
-
 typedef enum CPF_LATENCY_STATS_SEL {
 CPF_LATENCY_STATS_SEL_XACK_MAX           = 0x00000000,
 CPF_LATENCY_STATS_SEL_XACK_MIN           = 0x00000001,
@@ -18932,11 +11412,6 @@ CPF_LATENCY_STATS_SEL_INVAL_MAX          = 0x00000009,
 CPF_LATENCY_STATS_SEL_INVAL_MIN          = 0x0000000a,
 CPF_LATENCY_STATS_SEL_INVAL_LAST         = 0x0000000b,
 } CPF_LATENCY_STATS_SEL;
-
-/*
- * CPF_PERFCOUNTWINDOW_SEL enum
- */
-
 typedef enum CPF_PERFCOUNTWINDOW_SEL {
 CPF_PERFWINDOW_SEL_CSF                   = 0x00000000,
 CPF_PERFWINDOW_SEL_HQD1                  = 0x00000001,
@@ -18944,11 +11419,6 @@ CPF_PERFWINDOW_SEL_HQD2                  = 0x00000002,
 CPF_PERFWINDOW_SEL_RDMA                  = 0x00000003,
 CPF_PERFWINDOW_SEL_RWPP                  = 0x00000004,
 } CPF_PERFCOUNTWINDOW_SEL;
-
-/*
- * CPF_PERFCOUNT_SEL enum
- */
-
 typedef enum CPF_PERFCOUNT_SEL {
 CPF_PERF_SEL_ALWAYS_COUNT                = 0x00000000,
 CPF_PERF_SEL_TCIU_STALLED_WAITING_ON_FREE = 0x00000002,
@@ -18992,11 +11462,6 @@ CPF_PERF_SEL_CP_SDMA_MNGR_DMA_DONE       = 0x00000029,
 CPF_PERF_SEL_CP_SDMA_MNGR_LATENCY        = 0x0000002a,
 CPF_PERF_SEL_CP_SDMA_MNGR_SDMABUSY       = 0x0000002b,
 } CPF_PERFCOUNT_SEL;
-
-/*
- * CPF_SCRATCH_REG_ATOMIC_OP enum
- */
-
 typedef enum CPF_SCRATCH_REG_ATOMIC_OP {
 CPF_SCRATCH_REG_ATOMIC_ADD               = 0x00000000,
 CPF_SCRATCH_REG_ATOMIC_SUB               = 0x00000001,
@@ -19007,11 +11472,6 @@ CPF_SCRATCH_REG_ATOMIC_MIN               = 0x00000005,
 CPF_SCRATCH_REG_ATOMIC_MAX               = 0x00000006,
 CPF_SCRATCH_REG_ATOMIC_CMPSWAP           = 0x00000007,
 } CPF_SCRATCH_REG_ATOMIC_OP;
-
-/*
- * CPG_LATENCY_STATS_SEL enum
- */
-
 typedef enum CPG_LATENCY_STATS_SEL {
 CPG_LATENCY_STATS_SEL_XACK_MAX           = 0x00000000,
 CPG_LATENCY_STATS_SEL_XACK_MIN           = 0x00000001,
@@ -19032,11 +11492,6 @@ CPG_LATENCY_STATS_SEL_INVAL_MAX          = 0x0000000f,
 CPG_LATENCY_STATS_SEL_INVAL_MIN          = 0x00000010,
 CPG_LATENCY_STATS_SEL_INVAL_LAST         = 0x00000011,
 } CPG_LATENCY_STATS_SEL;
-
-/*
- * CPG_PERFCOUNTWINDOW_SEL enum
- */
-
 typedef enum CPG_PERFCOUNTWINDOW_SEL {
 CPG_PERFWINDOW_SEL_PFP                   = 0x00000000,
 CPG_PERFWINDOW_SEL_ME                    = 0x00000001,
@@ -19070,11 +11525,6 @@ CPG_PERFWINDOW_SEL_CPC_IC                = 0x0000001c,
 CPG_PERFWINDOW_SEL_RESERVED2             = 0x0000001d,
 CPG_PERFWINDOW_SEL_CPG_IC                = 0x0000001e,
 } CPG_PERFCOUNTWINDOW_SEL;
-
-/*
- * CPG_PERFCOUNT_SEL enum
- */
-
 typedef enum CPG_PERFCOUNT_SEL {
 CPG_PERF_SEL_ALWAYS_COUNT                = 0x00000000,
 CPG_PERF_SEL_RBIU_FIFO_FULL              = 0x00000001,
@@ -19158,71 +11608,36 @@ CPG_PERF_SEL_ME_PWS_STALLED0             = 0x00000053,
 CPG_PERF_SEL_PFP_PWS_STALLED1            = 0x00000054,
 CPG_PERF_SEL_ME_PWS_STALLED1             = 0x00000055,
 } CPG_PERFCOUNT_SEL;
-
-/*
- * CP_ALPHA_TAG_RAM_SEL enum
- */
-
 typedef enum CP_ALPHA_TAG_RAM_SEL {
 CPG_TAG_RAM                              = 0x00000000,
 CPC_TAG_RAM                              = 0x00000001,
 CPF_TAG_RAM                              = 0x00000002,
 RSV_TAG_RAM                              = 0x00000003,
 } CP_ALPHA_TAG_RAM_SEL;
-
-/*
- * CP_DDID_CNTL_MODE enum
- */
-
 typedef enum CP_DDID_CNTL_MODE {
 STALL                                    = 0x00000000,
 OVERRUN                                  = 0x00000001,
 } CP_DDID_CNTL_MODE;
-
-/*
- * CP_DDID_CNTL_SIZE enum
- */
-
 typedef enum CP_DDID_CNTL_SIZE {
 SIZE_8K                                  = 0x00000000,
 SIZE_16K                                 = 0x00000001,
 } CP_DDID_CNTL_SIZE;
-
-/*
- * CP_DDID_CNTL_VMID_SEL enum
- */
-
 typedef enum CP_DDID_CNTL_VMID_SEL {
 DDID_VMID_PIPE                           = 0x00000000,
 DDID_VMID_CNTL                           = 0x00000001,
 } CP_DDID_CNTL_VMID_SEL;
-
-/*
- * CP_ME_ID enum
- */
-
 typedef enum CP_ME_ID {
 ME_ID0                                   = 0x00000000,
 ME_ID1                                   = 0x00000001,
 ME_ID2                                   = 0x00000002,
 ME_ID3                                   = 0x00000003,
 } CP_ME_ID;
-
-/*
- * CP_PERFMON_ENABLE_MODE enum
- */
-
 typedef enum CP_PERFMON_ENABLE_MODE {
 CP_PERFMON_ENABLE_MODE_ALWAYS_COUNT      = 0x00000000,
 CP_PERFMON_ENABLE_MODE_RESERVED_1        = 0x00000001,
 CP_PERFMON_ENABLE_MODE_COUNT_CONTEXT_TRUE = 0x00000002,
 CP_PERFMON_ENABLE_MODE_COUNT_CONTEXT_FALSE = 0x00000003,
 } CP_PERFMON_ENABLE_MODE;
-
-/*
- * CP_PERFMON_STATE enum
- */
-
 typedef enum CP_PERFMON_STATE {
 CP_PERFMON_STATE_DISABLE_AND_RESET       = 0x00000000,
 CP_PERFMON_STATE_START_COUNTING          = 0x00000001,
@@ -19231,33 +11646,18 @@ CP_PERFMON_STATE_RESERVED_3              = 0x00000003,
 CP_PERFMON_STATE_DISABLE_AND_RESET_PHANTOM = 0x00000004,
 CP_PERFMON_STATE_COUNT_AND_DUMP_PHANTOM  = 0x00000005,
 } CP_PERFMON_STATE;
-
-/*
- * CP_PIPE_ID enum
- */
-
 typedef enum CP_PIPE_ID {
 PIPE_ID0                                 = 0x00000000,
 PIPE_ID1                                 = 0x00000001,
 PIPE_ID2                                 = 0x00000002,
 PIPE_ID3                                 = 0x00000003,
 } CP_PIPE_ID;
-
-/*
- * CP_RING_ID enum
- */
-
 typedef enum CP_RING_ID {
 RINGID0                                  = 0x00000000,
 RINGID1                                  = 0x00000001,
 RINGID2                                  = 0x00000002,
 RINGID3                                  = 0x00000003,
 } CP_RING_ID;
-
-/*
- * SPM_PERFMON_STATE enum
- */
-
 typedef enum SPM_PERFMON_STATE {
 STRM_PERFMON_STATE_DISABLE_AND_RESET     = 0x00000000,
 STRM_PERFMON_STATE_START_COUNTING        = 0x00000001,
@@ -19266,101 +11666,37 @@ STRM_PERFMON_STATE_RESERVED_3            = 0x00000003,
 STRM_PERFMON_STATE_DISABLE_AND_RESET_PHANTOM = 0x00000004,
 STRM_PERFMON_STATE_COUNT_AND_DUMP_PHANTOM = 0x00000005,
 } SPM_PERFMON_STATE;
-
-/*
- * SEM_RESPONSE value
- */
-
 #define SEM_ECC_ERROR                  0x00000000
 #define SEM_TRANS_ERROR                0x00000001
 #define SEM_RESP_FAILED                0x00000002
 #define SEM_RESP_PASSED                0x00000003
-
-/*
- * IQ_RETRY_TYPE value
- */
-
 #define IQ_QUEUE_SLEEP                 0x00000000
 #define IQ_OFFLOAD_RETRY               0x00000001
 #define IQ_SCH_WAVE_MSG                0x00000002
 #define IQ_SEM_REARM                   0x00000003
 #define IQ_DEQUEUE_RETRY               0x00000004
-
-/*
- * IQ_INTR_TYPE value
- */
-
 #define IQ_INTR_TYPE_PQ                0x00000000
 #define IQ_INTR_TYPE_IB                0x00000001
 #define IQ_INTR_TYPE_MQD               0x00000002
-
-/*
- * VMID_SIZE value
- */
-
 #define VMID_SZ                        0x00000004
-
-/*
- * SRCID_SECURE value
- */
-
 #define SRCID_RLC                      0x00000000
 #define SRCID_RLCV                     0x00000006
 #define SRCID_SECURE_CP                0x00000007
 #define SRCID_NONSECURE_CP             0x00000001
 #define SRCID_SECURE_CP_RCIU           0x00000007
 #define SRCID_NONSECURE_CP_RCIU        0x00000001
-
-/*
- * CONFIG_SPACE value
- */
-
 #define CONFIG_SPACE_START             0x00002000
 #define CONFIG_SPACE_END               0x00009fff
-
-/*
- * CONFIG_SPACE1 value
- */
-
 #define CONFIG_SPACE1_START            0x00002000
 #define CONFIG_SPACE1_END              0x00002bff
-
-/*
- * CONFIG_SPACE2 value
- */
-
 #define CONFIG_SPACE2_START            0x00003000
 #define CONFIG_SPACE2_END              0x00009fff
-
-/*
- * UCONFIG_SPACE value
- */
-
 #define UCONFIG_SPACE_START            0x0000c000
 #define UCONFIG_SPACE_END              0x0000ffff
-
-/*
- * PERSISTENT_SPACE value
- */
-
 #define PERSISTENT_SPACE_START         0x00002c00
 #define PERSISTENT_SPACE_END           0x00002fff
-
-/*
- * CONTEXT_SPACE value
- */
-
 #define CONTEXT_SPACE_START            0x0000a000
 #define CONTEXT_SPACE_END              0x0000a3ff
-
-/*******************************************************
- * SX Enums
- *******************************************************/
-
-/*
- * SX_BLEND_OPT enum
- */
-
 typedef enum SX_BLEND_OPT {
 BLEND_OPT_PRESERVE_NONE_IGNORE_ALL       = 0x00000000,
 BLEND_OPT_PRESERVE_ALL_IGNORE_NONE       = 0x00000001,
@@ -19371,11 +11707,6 @@ BLEND_OPT_PRESERVE_A0_IGNORE_A1          = 0x00000005,
 BLEND_OPT_PRESERVE_NONE_IGNORE_A0        = 0x00000006,
 BLEND_OPT_PRESERVE_NONE_IGNORE_NONE      = 0x00000007,
 } SX_BLEND_OPT;
-
-/*
- * SX_DOWNCONVERT_FORMAT enum
- */
-
 typedef enum SX_DOWNCONVERT_FORMAT {
 SX_RT_EXPORT_NO_CONVERSION               = 0x00000000,
 SX_RT_EXPORT_32_R                        = 0x00000001,
@@ -19392,11 +11723,6 @@ SX_RT_EXPORT_9_9_9_E5                    = 0x0000000b,
 SX_RT_EXPORT_2_10_10_10_7E3              = 0x0000000c,
 SX_RT_EXPORT_2_10_10_10_6E4              = 0x0000000d,
 } SX_DOWNCONVERT_FORMAT;
-
-/*
- * SX_OPT_COMB_FCN enum
- */
-
 typedef enum SX_OPT_COMB_FCN {
 OPT_COMB_NONE                            = 0x00000000,
 OPT_COMB_ADD                             = 0x00000001,
@@ -19407,11 +11733,6 @@ OPT_COMB_REVSUBTRACT                     = 0x00000005,
 OPT_COMB_BLEND_DISABLED                  = 0x00000006,
 OPT_COMB_SAFE_ADD                        = 0x00000007,
 } SX_OPT_COMB_FCN;
-
-/*
- * SX_PERFCOUNTER_VALS enum
- */
-
 typedef enum SX_PERFCOUNTER_VALS {
 SX_PERF_SEL_PA_IDLE_CYCLES               = 0x00000000,
 SX_PERF_SEL_PA_REQ                       = 0x00000001,
@@ -19496,15 +11817,6 @@ SX_PERF_SEL_DB2_4X2_DISCARD              = 0x0000004f,
 SX_PERF_SEL_DB3_END_OF_WAVE              = 0x00000050,
 SX_PERF_SEL_DB3_4X2_DISCARD              = 0x00000051,
 } SX_PERFCOUNTER_VALS;
-
-/*******************************************************
- * DB Enums
- *******************************************************/
-
-/*
- * CompareFrag enum
- */
-
 typedef enum CompareFrag {
 FRAG_NEVER                               = 0x00000000,
 FRAG_LESS                                = 0x00000001,
@@ -19515,22 +11827,12 @@ FRAG_NOTEQUAL                            = 0x00000005,
 FRAG_GEQUAL                              = 0x00000006,
 FRAG_ALWAYS                              = 0x00000007,
 } CompareFrag;
-
-/*
- * ConservativeZExport enum
- */
-
 typedef enum ConservativeZExport {
 EXPORT_ANY_Z                             = 0x00000000,
 EXPORT_LESS_THAN_Z                       = 0x00000001,
 EXPORT_GREATER_THAN_Z                    = 0x00000002,
 EXPORT_RESERVED                          = 0x00000003,
 } ConservativeZExport;
-
-/*
- * DFSMFlushEvents enum
- */
-
 typedef enum DFSMFlushEvents {
 DB_FLUSH_AND_INV_DB_DATA_TS              = 0x00000000,
 DB_FLUSH_AND_INV_DB_META                 = 0x00000001,
@@ -19544,11 +11846,6 @@ DB_BREAK_BATCH_EVENT                     = 0x00000008,
 DB_INVOKE_CHANGE_EVENT                   = 0x00000009,
 DB_CONTEXT_SUSPEND_EVENT                 = 0x0000000a,
 } DFSMFlushEvents;
-
-/*
- * DbMemArbWatermarks enum
- */
-
 typedef enum DbMemArbWatermarks {
 TRANSFERRED_64_BYTES                     = 0x00000000,
 TRANSFERRED_128_BYTES                    = 0x00000001,
@@ -19559,55 +11856,30 @@ TRANSFERRED_2048_BYTES                   = 0x00000005,
 TRANSFERRED_4096_BYTES                   = 0x00000006,
 TRANSFERRED_8192_BYTES                   = 0x00000007,
 } DbMemArbWatermarks;
-
-/*
- * DbPRTFaultBehavior enum
- */
-
 typedef enum DbPRTFaultBehavior {
 FAULT_ZERO                               = 0x00000000,
 FAULT_ONE                                = 0x00000001,
 FAULT_FAIL                               = 0x00000002,
 FAULT_PASS                               = 0x00000003,
 } DbPRTFaultBehavior;
-
-/*
- * DbPSLControl enum
- */
-
 typedef enum DbPSLControl {
 PSLC_AUTO                                = 0x00000000,
 PSLC_ON_HANG_ONLY                        = 0x00000001,
 PSLC_ASAP                                = 0x00000002,
 PSLC_COUNTDOWN                           = 0x00000003,
 } DbPSLControl;
-
-/*
- * ForceControl enum
- */
-
 typedef enum ForceControl {
 FORCE_OFF                                = 0x00000000,
 FORCE_ENABLE                             = 0x00000001,
 FORCE_DISABLE                            = 0x00000002,
 FORCE_RESERVED                           = 0x00000003,
 } ForceControl;
-
-/*
- * OreoMode enum
- */
-
 typedef enum OreoMode {
 OMODE_BLEND                              = 0x00000000,
 OMODE_O_THEN_B                           = 0x00000001,
 OMODE_P_THEN_O_THEN_B                    = 0x00000002,
 OMODE_RESERVED_3                         = 0x00000003,
 } OreoMode;
-
-/*
- * PerfCounter_Vals enum
- */
-
 typedef enum PerfCounter_Vals {
 DB_PERF_SEL_SC_DB_tile_sends             = 0x00000000,
 DB_PERF_SEL_SC_DB_tile_busy              = 0x00000001,
@@ -19959,11 +12231,6 @@ DB_PERF_SEL_cs_events_pws_enable         = 0x0000015a,
 DB_PERF_SEL_DB_SC_quad_noz_tiles         = 0x0000015b,
 DB_PERF_SEL_DB_SC_quad_lit_noz_quad      = 0x0000015c,
 } PerfCounter_Vals;
-
-/*
- * PixelPipeCounterId enum
- */
-
 typedef enum PixelPipeCounterId {
 PIXEL_PIPE_OCCLUSION_COUNT_0             = 0x00000000,
 PIXEL_PIPE_OCCLUSION_COUNT_1             = 0x00000001,
@@ -19974,32 +12241,17 @@ PIXEL_PIPE_SCREEN_MAX_EXTENTS_0          = 0x00000005,
 PIXEL_PIPE_SCREEN_MIN_EXTENTS_1          = 0x00000006,
 PIXEL_PIPE_SCREEN_MAX_EXTENTS_1          = 0x00000007,
 } PixelPipeCounterId;
-
-/*
- * PixelPipeStride enum
- */
-
 typedef enum PixelPipeStride {
 PIXEL_PIPE_STRIDE_32_BITS                = 0x00000000,
 PIXEL_PIPE_STRIDE_64_BITS                = 0x00000001,
 PIXEL_PIPE_STRIDE_128_BITS               = 0x00000002,
 PIXEL_PIPE_STRIDE_256_BITS               = 0x00000003,
 } PixelPipeStride;
-
-/*
- * RingCounterControl enum
- */
-
 typedef enum RingCounterControl {
 COUNTER_RING_SPLIT                       = 0x00000000,
 COUNTER_RING_0                           = 0x00000001,
 COUNTER_RING_1                           = 0x00000002,
 } RingCounterControl;
-
-/*
- * StencilOp enum
- */
-
 typedef enum StencilOp {
 STENCIL_KEEP                             = 0x00000000,
 STENCIL_ZERO                             = 0x00000001,
@@ -20018,67 +12270,33 @@ STENCIL_NAND                             = 0x0000000d,
 STENCIL_NOR                              = 0x0000000e,
 STENCIL_XNOR                             = 0x0000000f,
 } StencilOp;
-
-/*
- * ZLimitSumm enum
- */
-
 typedef enum ZLimitSumm {
 FORCE_SUMM_OFF                           = 0x00000000,
 FORCE_SUMM_MINZ                          = 0x00000001,
 FORCE_SUMM_MAXZ                          = 0x00000002,
 FORCE_SUMM_BOTH                          = 0x00000003,
 } ZLimitSumm;
-
-/*
- * ZModeForce enum
- */
-
 typedef enum ZModeForce {
 NO_FORCE                                 = 0x00000000,
 FORCE_EARLY_Z                            = 0x00000001,
 FORCE_LATE_Z                             = 0x00000002,
 FORCE_RE_Z                               = 0x00000003,
 } ZModeForce;
-
-/*
- * ZOrder enum
- */
-
 typedef enum ZOrder {
 LATE_Z                                   = 0x00000000,
 EARLY_Z_THEN_LATE_Z                      = 0x00000001,
 RE_Z                                     = 0x00000002,
 EARLY_Z_THEN_RE_Z                        = 0x00000003,
 } ZOrder;
-
-/*
- * ZSamplePosition enum
- */
-
 typedef enum ZSamplePosition {
 Z_SAMPLE_CENTER                          = 0x00000000,
 Z_SAMPLE_CENTROID                        = 0x00000001,
 } ZSamplePosition;
-
-/*
- * ZpassControl enum
- */
-
 typedef enum ZpassControl {
 ZPASS_DISABLE                            = 0x00000000,
 ZPASS_SAMPLES                            = 0x00000001,
 ZPASS_PIXELS                             = 0x00000002,
 } ZpassControl;
-
-/*******************************************************
- * PA Enums
- *******************************************************/
-
-/*
- * SU_PERFCNT_SEL enum
- */
-
 typedef enum SU_PERFCNT_SEL {
 PERF_PAPC_PASX_REQ                       = 0x00000000,
 PERF_PAPC_PASX_DISABLE_PIPE              = 0x00000001,
@@ -20357,15 +12575,6 @@ PERF_OUTPUT_PRIM_2_SC                    = 0x00000116,
 PERF_OUTPUT_PRIM_3_SC                    = 0x00000117,
 PERF_OUTPUT_PRIM_4_SC                    = 0x00000118,
 } SU_PERFCNT_SEL;
-
-/*******************************************************
- * PH Enums
- *******************************************************/
-
-/*
- * PH_PERFCNT_SEL enum
- */
-
 typedef enum PH_PERFCNT_SEL {
 PH_PERF_SEL_SC0_SRPS_WINDOW_VALID        = 0x00000000,
 PH_PERF_SEL_SC0_ARB_XFC_ALL_EVENT_OR_PRIM_CYCLES = 0x00000001,
@@ -21392,38 +13601,15 @@ PH_PERF_SC7_FIFO_STATUS_1                = 0x000003fd,
 PH_PERF_SC7_FIFO_STATUS_2                = 0x000003fe,
 PH_PERF_SC7_FIFO_STATUS_3                = 0x000003ff,
 } PH_PERFCNT_SEL;
-
-/*
- * PhSPIstatusMode enum
- */
-
 typedef enum PhSPIstatusMode {
 PH_SPI_MODE_LARGEST_PA_PH_FIFO_COUNT     = 0x00000000,
 PH_SPI_MODE_ARBITER_SELECTED_PA_PH_FIFO_COUNT = 0x00000001,
 PH_SPI_MODE_DISABLED                     = 0x00000002,
 } PhSPIstatusMode;
-
-/*******************************************************
- * RMI Enums
- *******************************************************/
-
-/*
- * RMIPerfSel enum
- */
-
 typedef enum RMIPerfSel {
 RMI_PERF_SEL_RB_RMI_WRREQ_ALL_CID        = 0x00000000,
 RMI_PERF_SEL_RB_RMI_RDREQ_ALL_CID        = 0x00000001,
 } RMIPerfSel;
-
-/*******************************************************
- * PMM Enums
- *******************************************************/
-
-/*
- * GCRPerfSel enum
- */
-
 typedef enum GCRPerfSel {
 GCR_PERF_SEL_NONE                        = 0x00000000,
 GCR_PERF_SEL_SDMA0_ALL_REQ               = 0x00000001,
@@ -21568,15 +13754,6 @@ GCR_PERF_SEL_PIO_SQC_INST_REQ            = 0x0000008b,
 GCR_PERF_SEL_PIO_TCP_REQ                 = 0x0000008c,
 GCR_PERF_SEL_PIO_TCP_TLB_SHOOTDOWN_REQ   = 0x0000008d,
 } GCRPerfSel;
-
-/*******************************************************
- * UTCL1 Enums
- *******************************************************/
-
-/*
- * UTCL1PerfSel enum
- */
-
 typedef enum UTCL1PerfSel {
 UTCL1_PERF_SEL_NONE                      = 0x00000000,
 UTCL1_PERF_SEL_REQS                      = 0x00000001,
@@ -21602,35 +13779,16 @@ UTCL1_PERF_SEL_UTCL2_UTCL1_INVREQS       = 0x00000014,
 UTCL1_PERF_SEL_RANGE_INVREQS             = 0x00000015,
 UTCL1_PERF_SEL_INV_ALL_VMID_INVREQS      = 0x00000016,
 } UTCL1PerfSel;
-
-/*******************************************************
- * IH Enums
- *******************************************************/
-
-/*
- * IH_CLIENT_TYPE enum
- */
-
 typedef enum IH_CLIENT_TYPE {
 IH_GFX_VMID_CLIENT                       = 0x00000000,
 IH_MM_VMID_CLIENT                        = 0x00000001,
 IH_MULTI_VMID_CLIENT                     = 0x00000002,
 IH_CLIENT_TYPE_RESERVED                  = 0x00000003,
 } IH_CLIENT_TYPE;
-
-/*
- * IH_INTERFACE_TYPE enum
- */
-
 typedef enum IH_INTERFACE_TYPE {
 IH_LEGACY_INTERFACE                      = 0x00000000,
 IH_REGISTER_WRITE_INTERFACE              = 0x00000001,
 } IH_INTERFACE_TYPE;
-
-/*
- * IH_PERF_SEL enum
- */
-
 typedef enum IH_PERF_SEL {
 IH_PERF_SEL_CYCLE                        = 0x00000000,
 IH_PERF_SEL_IDLE                         = 0x00000001,
@@ -22036,37 +14194,18 @@ IH_PERF_SEL_RB2_LOAD_RPTR_VF13           = 0x00000190,
 IH_PERF_SEL_RB2_LOAD_RPTR_VF14           = 0x00000191,
 IH_PERF_SEL_RB2_LOAD_RPTR_VF15           = 0x00000192,
 } IH_PERF_SEL;
-
-/*
- * IH_RING_ID enum
- */
-
 typedef enum IH_RING_ID {
 IH_RING_ID_INTERRUPT                     = 0x00000000,
 IH_RING_ID_REQUEST                       = 0x00000001,
 IH_RING_ID_TRANSLATION                   = 0x00000002,
 IH_RING_ID_RESERVED                      = 0x00000003,
 } IH_RING_ID;
-
-/*
- * IH_VF_RB_SELECT enum
- */
-
 typedef enum IH_VF_RB_SELECT {
 IH_VF_RB_SELECT_CLIENT_FCN_ID            = 0x00000000,
 IH_VF_RB_SELECT_IH_FCN_ID                = 0x00000001,
 IH_VF_RB_SELECT_PF                       = 0x00000002,
 IH_VF_RB_SELECT_RESERVED                 = 0x00000003,
 } IH_VF_RB_SELECT;
-
-/*******************************************************
- * SEM Enums
- *******************************************************/
-
-/*
- * SEM_PERF_SEL enum
- */
-
 typedef enum SEM_PERF_SEL {
 SEM_PERF_SEL_CYCLE                       = 0x00000000,
 SEM_PERF_SEL_IDLE                        = 0x00000001,
@@ -22250,15 +14389,6 @@ SEM_PERF_SEL_ATC_XNACK                   = 0x000000b2,
 SEM_PERF_SEL_ATC_INVALIDATION            = 0x000000b3,
 SEM_PERF_SEL_ATC_VM_INVALIDATION         = 0x000000b4,
 } SEM_PERF_SEL;
-
-/*******************************************************
- * LSDMA Enums
- *******************************************************/
-
-/*
- * LSDMA_PERF_SEL enum
- */
-
 typedef enum LSDMA_PERF_SEL {
 LSDMA_PERF_SEL_CYCLE                     = 0x00000000,
 LSDMA_PERF_SEL_IDLE                      = 0x00000001,
@@ -22378,25 +14508,7 @@ LSDMA_PERF_SEL_MMHUB_CE_RDRET_VALID      = 0x00000079,
 LSDMA_PERF_SEL_DRAM_ECC                  = 0x0000007a,
 LSDMA_PERF_SEL_NACK_GEN_ERR              = 0x0000007b,
 } LSDMA_PERF_SEL;
-
-/*******************************************************
- * SMUIO_ROM Enums
- *******************************************************/
-
-/*
- * ROM_SIGNATURE value
- */
-
 #define ROM_SIGNATURE                  0x0000aa55
-
-/*******************************************************
- * UVD_EFC Enums
- *******************************************************/
-
-/*
- * EFC_SURFACE_PIXEL_FORMAT enum
- */
-
 typedef enum EFC_SURFACE_PIXEL_FORMAT {
 EFC_ARGB1555                             = 0x00000001,
 EFC_RGBA5551                             = 0x00000002,
@@ -22473,5 +14585,4 @@ EFC_MONO_12MSB                           = 0x0000007b,
 EFC_MONO_12LSB                           = 0x0000007c,
 EFC_MONO_16                              = 0x0000007d,
 } EFC_SURFACE_PIXEL_FORMAT;
-
-#endif /*_soc21_ENUM_HEADER*/
+#endif  

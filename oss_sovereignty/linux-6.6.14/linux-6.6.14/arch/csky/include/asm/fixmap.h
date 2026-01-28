@@ -1,15 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_CSKY_FIXMAP_H
 #define __ASM_CSKY_FIXMAP_H
-
 #include <asm/page.h>
 #include <asm/memory.h>
 #ifdef CONFIG_HIGHMEM
 #include <linux/threads.h>
 #include <asm/kmap_size.h>
 #endif
-
 enum fixed_addresses {
 #ifdef CONFIG_HAVE_TCM
 	FIX_TCM = TCM_NR_PAGES,
@@ -20,14 +16,10 @@ enum fixed_addresses {
 #endif
 	__end_of_fixed_addresses
 };
-
 #define FIXADDR_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
 #define FIXADDR_START	(FIXADDR_TOP - FIXADDR_SIZE)
-
 #include <asm-generic/fixmap.h>
-
 extern void fixrange_init(unsigned long start, unsigned long end,
 	pgd_t *pgd_base);
 extern void __init fixaddr_init(void);
-
-#endif /* __ASM_CSKY_FIXMAP_H */
+#endif  

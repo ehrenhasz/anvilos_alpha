@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef QCOM_PHY_QMP_PCS_V3_H_
 #define QCOM_PHY_QMP_PCS_V3_H_
-
-/* Only for QMP V3 PHY - PCS registers */
 #define QPHY_V3_PCS_SW_RESET				0x000
 #define QPHY_V3_PCS_POWER_DOWN_CONTROL			0x004
 #define QPHY_V3_PCS_START_CONTROL			0x008
@@ -141,5 +134,4 @@
 #define QPHY_V3_PCS_REFGEN_REQ_CONFIG1			0x20c
 #define QPHY_V3_PCS_REFGEN_REQ_CONFIG2			0x210
 #define QPHY_V3_PCS_REFGEN_REQ_CONFIG3			0x214
-
 #endif

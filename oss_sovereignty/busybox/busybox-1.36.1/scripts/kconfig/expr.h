@@ -1,20 +1,12 @@
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- * Released under the terms of the GNU GPL v2.0.
- */
-
 #ifndef EXPR_H
 #define EXPR_H
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #include <stdio.h>
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
-
 struct file {
 	struct file *next;
 	struct file *parent;
@@ -22,47 +14,37 @@ struct file {
 	int lineno;
 	int flags;
 };
-
 #define FILE_BUSY		0x0001
 #define FILE_SCANNED		0x0002
 #define FILE_PRINTED		0x0004
-
 typedef enum tristate {
 	no, mod, yes
 } tristate;
-
 enum expr_type {
 	E_NONE, E_OR, E_AND, E_NOT, E_EQUAL, E_UNEQUAL, E_CHOICE, E_SYMBOL, E_RANGE
 };
-
 union expr_data {
 	struct expr *expr;
 	struct symbol *sym;
 };
-
 struct expr {
 	enum expr_type type;
 	union expr_data left, right;
 };
-
 #define E_OR(dep1, dep2)	(((dep1)>(dep2))?(dep1):(dep2))
 #define E_AND(dep1, dep2)	(((dep1)<(dep2))?(dep1):(dep2))
 #define E_NOT(dep)		(2-(dep))
-
 struct expr_value {
 	struct expr *expr;
 	tristate tri;
 };
-
 struct symbol_value {
 	void *val;
 	tristate tri;
 };
-
 enum symbol_type {
 	S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_OTHER
 };
-
 struct symbol {
 	struct symbol *next;
 	char *name;
@@ -75,9 +57,7 @@ struct symbol {
 	struct expr *dep, *dep2;
 	struct expr_value rev_dep;
 };
-
 #define for_all_symbols(i, sym) for (i = 0; i < 257; i++) for (sym = symbol_hash[i]; sym; sym = sym->next) if (sym->type != S_OTHER)
-
 #define SYMBOL_YES		0x0001
 #define SYMBOL_MOD		0x0002
 #define SYMBOL_NO		0x0004
@@ -94,15 +74,12 @@ struct symbol {
 #define SYMBOL_AUTO		0x1000
 #define SYMBOL_CHECKED		0x2000
 #define SYMBOL_WARNED		0x8000
-
 #define SYMBOL_MAXLENGTH	256
 #define SYMBOL_HASHSIZE		257
 #define SYMBOL_HASHMASK		0xff
-
 enum prop_type {
 	P_UNKNOWN, P_PROMPT, P_COMMENT, P_MENU, P_DEFAULT, P_CHOICE, P_SELECT, P_RANGE
 };
-
 struct property {
 	struct property *next;
 	struct symbol *sym;
@@ -114,7 +91,6 @@ struct property {
 	struct file *file;
 	int lineno;
 };
-
 #define for_all_properties(sym, st, tok) \
 	for (st = sym->prop; st; st = st->next) \
 		if (st->type == (tok))
@@ -123,7 +99,6 @@ struct property {
 #define for_all_prompts(sym, st) \
 	for (st = sym->prop; st; st = st->next) \
 		if (st->text)
-
 struct menu {
 	struct menu *next;
 	struct menu *parent;
@@ -132,21 +107,16 @@ struct menu {
 	struct property *prompt;
 	struct expr *dep;
 	unsigned int flags;
-	//char *help;
 	struct file *file;
 	int lineno;
 	void *data;
 };
-
 #define MENU_CHANGED		0x0001
 #define MENU_ROOT		0x0002
-
 #ifndef SWIG
-
 extern struct file *file_list;
 extern struct file *current_file;
 struct file *lookup_file(const char *name);
-
 extern struct symbol symbol_yes, symbol_no, symbol_mod;
 extern struct symbol *modules_sym;
 extern int cdebug;
@@ -171,24 +141,19 @@ struct expr *expr_extract_eq_and(struct expr **ep1, struct expr **ep2);
 struct expr *expr_extract_eq_or(struct expr **ep1, struct expr **ep2);
 void expr_extract_eq(enum expr_type type, struct expr **ep, struct expr **ep1, struct expr **ep2);
 struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symbol *sym);
-
 void expr_fprint(struct expr *e, FILE *out);
-struct gstr; /* forward */
+struct gstr;  
 void expr_gstr_print(struct expr *e, struct gstr *gs);
-
 static inline int expr_is_yes(struct expr *e)
 {
 	return !e || (e->type == E_SYMBOL && e->left.sym == &symbol_yes);
 }
-
 static inline int expr_is_no(struct expr *e)
 {
 	return e && (e->type == E_SYMBOL && e->left.sym == &symbol_no);
 }
 #endif
-
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* EXPR_H */
+#endif  

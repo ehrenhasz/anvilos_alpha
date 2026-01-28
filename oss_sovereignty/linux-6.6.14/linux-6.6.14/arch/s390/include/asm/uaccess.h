@@ -1,41 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  S390 version
- *    Copyright IBM Corp. 1999, 2000
- *    Author(s): Hartmut Penner (hp@de.ibm.com),
- *		 Martin Schwidefsky (schwidefsky@de.ibm.com)
- *
- *  Derived from "include/asm-i386/uaccess.h"
- */
 #ifndef __S390_UACCESS_H
 #define __S390_UACCESS_H
-
-/*
- * User space memory access functions
- */
 #include <asm/asm-extable.h>
 #include <asm/processor.h>
 #include <asm/ctl_reg.h>
 #include <asm/extable.h>
 #include <asm/facility.h>
 #include <asm-generic/access_ok.h>
-
 void debug_user_asce(int exit);
-
 unsigned long __must_check
 raw_copy_from_user(void *to, const void __user *from, unsigned long n);
-
 unsigned long __must_check
 raw_copy_to_user(void __user *to, const void *from, unsigned long n);
-
 #ifndef CONFIG_KASAN
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
 #endif
-
 unsigned long __must_check
 _copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key);
-
 static __always_inline unsigned long __must_check
 copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned long key)
 {
@@ -43,10 +24,8 @@ copy_from_user_key(void *to, const void __user *from, unsigned long n, unsigned 
 		n = _copy_from_user_key(to, from, n, key);
 	return n;
 }
-
 unsigned long __must_check
 _copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key);
-
 static __always_inline unsigned long __must_check
 copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned long key)
 {
@@ -54,7 +33,6 @@ copy_to_user_key(void __user *to, const void *from, unsigned long n, unsigned lo
 		n = _copy_to_user_key(to, from, n, key);
 	return n;
 }
-
 union oac {
 	unsigned int val;
 	struct {
@@ -76,9 +54,7 @@ union oac {
 		} oac2;
 	};
 };
-
 int __noreturn __put_user_bad(void);
-
 #define __put_user_asm(to, from, size)					\
 ({									\
 	union oac __oac_spec = {					\
@@ -100,11 +76,9 @@ int __noreturn __put_user_bad(void);
 		: "cc", "0");						\
 	__rc;								\
 })
-
 static __always_inline int __put_user_fn(void *x, void __user *ptr, unsigned long size)
 {
 	int rc;
-
 	switch (size) {
 	case 1:
 		rc = __put_user_asm((unsigned char __user *)ptr,
@@ -132,9 +106,7 @@ static __always_inline int __put_user_fn(void *x, void __user *ptr, unsigned lon
 	}
 	return rc;
 }
-
 int __noreturn __get_user_bad(void);
-
 #define __get_user_asm(to, from, size)					\
 ({									\
 	union oac __oac_spec = {					\
@@ -157,11 +129,9 @@ int __noreturn __get_user_bad(void);
 		: "cc", "0");						\
 	__rc;								\
 })
-
 static __always_inline int __get_user_fn(void *x, const void __user *ptr, unsigned long size)
 {
 	int rc;
-
 	switch (size) {
 	case 1:
 		rc = __get_user_asm((unsigned char *)x,
@@ -189,11 +159,6 @@ static __always_inline int __get_user_fn(void *x, const void __user *ptr, unsign
 	}
 	return rc;
 }
-
-/*
- * These are the main single-value transfer routines.  They automatically
- * use the right size if we just have the right pointer type.
- */
 #define __put_user(x, ptr)						\
 ({									\
 	__typeof__(*(ptr)) __x = (x);					\
@@ -213,13 +178,11 @@ static __always_inline int __get_user_fn(void *x, const void __user *ptr, unsign
 	}								\
 	__builtin_expect(__pu_err, 0);					\
 })
-
 #define put_user(x, ptr)						\
 ({									\
 	might_fault();							\
 	__put_user(x, ptr);						\
 })
-
 #define __get_user(x, ptr)						\
 ({									\
 	int __gu_err = -EFAULT;						\
@@ -260,35 +223,21 @@ static __always_inline int __get_user_fn(void *x, const void __user *ptr, unsign
 	}								\
 	__builtin_expect(__gu_err, 0);					\
 })
-
 #define get_user(x, ptr)						\
 ({									\
 	might_fault();							\
 	__get_user(x, ptr);						\
 })
-
-/*
- * Copy a null terminated string from userspace.
- */
 long __must_check strncpy_from_user(char *dst, const char __user *src, long count);
-
 long __must_check strnlen_user(const char __user *src, long count);
-
-/*
- * Zero Userspace
- */
 unsigned long __must_check __clear_user(void __user *to, unsigned long size);
-
 static inline unsigned long __must_check clear_user(void __user *to, unsigned long n)
 {
 	might_fault();
 	return __clear_user(to, n);
 }
-
 void *s390_kernel_write(void *dst, const void *src, size_t size);
-
 int __noreturn __put_kernel_bad(void);
-
 #define __put_kernel_asm(val, to, insn)					\
 ({									\
 	int __rc;							\
@@ -304,7 +253,6 @@ int __noreturn __put_kernel_bad(void);
 		: "cc");						\
 	__rc;								\
 })
-
 #define __put_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	unsigned long __x = (unsigned long)(*((type *)(src)));		\
@@ -330,9 +278,7 @@ do {									\
 	if (unlikely(__pk_err))						\
 		goto err_label;						\
 } while (0)
-
 int __noreturn __get_kernel_bad(void);
-
 #define __get_kernel_asm(val, from, insn)				\
 ({									\
 	int __rc;							\
@@ -348,7 +294,6 @@ int __noreturn __get_kernel_bad(void);
 		: "cc");						\
 	__rc;								\
 })
-
 #define __get_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	int __gk_err;							\
@@ -389,22 +334,17 @@ do {									\
 	if (unlikely(__gk_err))						\
 		goto err_label;						\
 } while (0)
-
 void __cmpxchg_user_key_called_with_bad_pointer(void);
-
 #define CMPXCHG_USER_KEY_MAX_LOOPS 128
-
 static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 					      __uint128_t old, __uint128_t new,
 					      unsigned long key, int size)
 {
 	int rc = 0;
-
 	switch (size) {
 	case 1: {
 		unsigned int prev, shift, mask, _old, _new;
 		unsigned long count;
-
 		shift = (3 ^ (address & 3)) << 3;
 		address ^= address & 3;
 		_old = ((unsigned int)old & 0xff) << shift;
@@ -452,7 +392,6 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	case 2: {
 		unsigned int prev, shift, mask, _old, _new;
 		unsigned long count;
-
 		shift = (2 ^ (address & 2)) << 3;
 		address ^= address & 2;
 		_old = ((unsigned int)old & 0xffff) << shift;
@@ -499,7 +438,6 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	}
 	case 4:	{
 		unsigned int prev = old;
-
 		asm volatile(
 			"	spka	0(%[key])\n"
 			"	sacf	256\n"
@@ -520,7 +458,6 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	}
 	case 8: {
 		unsigned long prev = old;
-
 		asm volatile(
 			"	spka	0(%[key])\n"
 			"	sacf	256\n"
@@ -541,7 +478,6 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	}
 	case 16: {
 		__uint128_t prev = old;
-
 		asm volatile(
 			"	spka	0(%[key])\n"
 			"	sacf	256\n"
@@ -564,28 +500,6 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	__cmpxchg_user_key_called_with_bad_pointer();
 	return rc;
 }
-
-/**
- * cmpxchg_user_key() - cmpxchg with user space target, honoring storage keys
- * @ptr: User space address of value to compare to @old and exchange with
- *	 @new. Must be aligned to sizeof(*@ptr).
- * @uval: Address where the old value of *@ptr is written to.
- * @old: Old value. Compared to the content pointed to by @ptr in order to
- *	 determine if the exchange occurs. The old value read from *@ptr is
- *	 written to *@uval.
- * @new: New value to place at *@ptr.
- * @key: Access key to use for checking storage key protection.
- *
- * Perform a cmpxchg on a user space target, honoring storage key protection.
- * @key alone determines how key checking is performed, neither
- * storage-protection-override nor fetch-protection-override apply.
- * The caller must compare *@uval and @old to determine if values have been
- * exchanged. In case of an exception *@uval is set to zero.
- *
- * Return:     0: cmpxchg executed
- *	       -EFAULT: an exception happened when trying to access *@ptr
- *	       -EAGAIN: maxed out number of retries (byte and short only)
- */
 #define cmpxchg_user_key(ptr, uval, old, new, key)			\
 ({									\
 	__typeof__(ptr) __ptr = (ptr);					\
@@ -597,5 +511,4 @@ static __always_inline int __cmpxchg_user_key(unsigned long address, void *uval,
 	__cmpxchg_user_key((unsigned long)(__ptr), (void *)(__uval),	\
 			   (old), (new), (key), sizeof(*(__ptr)));	\
 })
-
-#endif /* __S390_UACCESS_H */
+#endif  

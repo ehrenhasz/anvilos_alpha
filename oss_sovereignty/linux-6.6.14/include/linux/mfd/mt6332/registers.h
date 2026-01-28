@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
-
 #ifndef __MFD_MT6332_REGISTERS_H__
 #define __MFD_MT6332_REGISTERS_H__
-
-/* PMIC Registers */
 #define MT6332_HWCID              0x8000
 #define MT6332_SWCID              0x8002
 #define MT6332_TOP_CON            0x8004
@@ -638,5 +631,4 @@
 #define MT6332_TOP_RST_STATUS_SET 0x8D46
 #define MT6332_TOP_RST_STATUS_CLR 0x8D48
 #define MT6332_VDVFS2_CON28       0x8D4A
-
-#endif /* __MFD_MT6332_REGISTERS_H__ */
+#endif  

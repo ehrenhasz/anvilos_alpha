@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright 2013 Freescale Semiconductor, Inc.
-
 #include "vf500.dtsi"
-
 &a5_cpu {
 	next-level-cache = <&L2>;
 };
-
 &aips0 {
 	L2: cache-controller@40006000 {
 		compatible = "arm,pl310-cache";

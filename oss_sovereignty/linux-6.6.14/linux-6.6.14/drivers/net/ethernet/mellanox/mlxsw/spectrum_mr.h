@@ -1,20 +1,14 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2017-2018 Mellanox Technologies. All rights reserved */
-
 #ifndef _MLXSW_SPECTRUM_MCROUTER_H
 #define _MLXSW_SPECTRUM_MCROUTER_H
-
 #include <linux/mroute.h>
 #include <linux/mroute6.h>
 #include "spectrum_router.h"
 #include "spectrum.h"
-
 enum mlxsw_sp_mr_route_action {
 	MLXSW_SP_MR_ROUTE_ACTION_FORWARD,
 	MLXSW_SP_MR_ROUTE_ACTION_TRAP,
 	MLXSW_SP_MR_ROUTE_ACTION_TRAP_AND_FORWARD,
 };
-
 struct mlxsw_sp_mr_route_key {
 	int vrid;
 	enum mlxsw_sp_l3proto proto;
@@ -23,7 +17,6 @@ struct mlxsw_sp_mr_route_key {
 	union mlxsw_sp_l3addr source;
 	union mlxsw_sp_l3addr source_mask;
 };
-
 struct mlxsw_sp_mr_route_info {
 	enum mlxsw_sp_mr_route_action route_action;
 	u16 irif_index;
@@ -31,13 +24,11 @@ struct mlxsw_sp_mr_route_info {
 	size_t erif_num;
 	u16 min_mtu;
 };
-
 struct mlxsw_sp_mr_route_params {
 	struct mlxsw_sp_mr_route_key key;
 	struct mlxsw_sp_mr_route_info value;
 	enum mlxsw_sp_mr_route_prio prio;
 };
-
 struct mlxsw_sp_mr_ops {
 	int priv_size;
 	int route_priv_size;
@@ -63,10 +54,8 @@ struct mlxsw_sp_mr_ops {
 			      void *route_priv);
 	void (*fini)(struct mlxsw_sp *mlxsw_sp, void *priv);
 };
-
 struct mlxsw_sp_mr;
 struct mlxsw_sp_mr_table;
-
 int mlxsw_sp_mr_init(struct mlxsw_sp *mlxsw_sp,
 		     const struct mlxsw_sp_mr_ops *mr_ops);
 void mlxsw_sp_mr_fini(struct mlxsw_sp *mlxsw_sp);
@@ -91,5 +80,4 @@ struct mlxsw_sp_mr_table *mlxsw_sp_mr_table_create(struct mlxsw_sp *mlxsw_sp,
 void mlxsw_sp_mr_table_destroy(struct mlxsw_sp_mr_table *mr_table);
 void mlxsw_sp_mr_table_flush(struct mlxsw_sp_mr_table *mr_table);
 bool mlxsw_sp_mr_table_empty(const struct mlxsw_sp_mr_table *mr_table);
-
 #endif

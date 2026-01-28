@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016-2017, The Linux Foundation. All rights reserved.
- * Copyright (c) 2018, Craig Tatlor.
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_660_H
 #define _DT_BINDINGS_CLK_MSM_GCC_660_H
-
 #define BLSP1_QUP1_I2C_APPS_CLK_SRC		0
 #define BLSP1_QUP1_SPI_APPS_CLK_SRC		1
 #define BLSP1_QUP2_I2C_APPS_CLK_SRC		2
@@ -138,11 +131,9 @@
 #define GCC_UFS_UNIPRO_CORE_HW_CTL_CLK		128
 #define GCC_RX0_USB2_CLKREF_CLK			129
 #define GCC_RX1_USB2_CLKREF_CLK			130
-
 #define PCIE_0_GDSC	0
 #define UFS_GDSC	1
 #define USB_30_GDSC	2
-
 #define GCC_QUSB2PHY_PRIM_BCR		0
 #define GCC_QUSB2PHY_SEC_BCR		1
 #define GCC_UFS_BCR			2
@@ -153,5 +144,4 @@
 #define GCC_USB_30_BCR			7
 #define GCC_USB_PHY_CFG_AHB2PHY_BCR	8
 #define GCC_MSS_RESTART			9
-
 #endif

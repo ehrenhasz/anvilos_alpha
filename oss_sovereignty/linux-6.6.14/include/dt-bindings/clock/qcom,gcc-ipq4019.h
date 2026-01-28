@@ -1,21 +1,5 @@
-/* Copyright (c) 2015 The Linux Foundation. All rights reserved.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- */
 #ifndef __QCOM_CLK_IPQ4019_H__
 #define __QCOM_CLK_IPQ4019_H__
-
 #define GCC_DUMMY_CLK					0
 #define AUDIO_CLK_SRC					1
 #define BLSP1_QUP1_I2C_APPS_CLK_SRC			2
@@ -92,7 +76,6 @@
 #define GCC_FEPLL_WCSS5G_CLK				73
 #define GCC_APSS_CPU_PLLDIV_CLK				74
 #define GCC_PCNOC_AHB_CLK_SRC				75
-
 #define WIFI0_CPU_INIT_RESET				0
 #define WIFI0_RADIO_SRIF_RESET				1
 #define WIFI0_RADIO_WARM_RESET				2
@@ -171,5 +154,4 @@
 #define ESS_MAC4_ARES					75
 #define ESS_MAC5_ARES					76
 #define ESS_PSGMII_ARES					77
-
 #endif

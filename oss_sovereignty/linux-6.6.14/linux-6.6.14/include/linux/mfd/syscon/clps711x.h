@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  CLPS711X system register bits definitions
- *
- *  Copyright (C) 2013 Alexander Shiyan <shc_work@mail.ru>
- */
-
 #ifndef _LINUX_MFD_SYSCON_CLPS711X_H_
 #define _LINUX_MFD_SYSCON_CLPS711X_H_
-
 #define SYSCON_OFFSET		(0x00)
 #define SYSFLG_OFFSET		(0x40)
-
 #define SYSCON1_KBDSCAN(x)	((x) & 15)
 #define SYSCON1_KBDSCAN_MASK	(15)
 #define SYSCON1_TC1M		(1 << 4)
@@ -29,7 +20,6 @@
 #define SYSCON1_EXCKEN		(1 << 18)
 #define SYSCON1_WAKEDIS		(1 << 19)
 #define SYSCON1_IRTXM		(1 << 20)
-
 #define SYSCON2_SERSEL		(1 << 0)
 #define SYSCON2_KBD6		(1 << 1)
 #define SYSCON2_DRAMZ		(1 << 2)
@@ -42,7 +32,6 @@
 #define SYSCON2_OSTB		(1 << 12)
 #define SYSCON2_CLKENSL		(1 << 13)
 #define SYSCON2_BUZFREQ		(1 << 14)
-
 #define SYSCON3_ADCCON		(1 << 0)
 #define SYSCON3_CLKCTL0		(1 << 1)
 #define SYSCON3_CLKCTL1		(1 << 2)
@@ -54,9 +43,7 @@
 #define SYSCON3_DAIEN		(1 << 9)
 #define SYSCON3_128FS		SYSCON3_DAIEN
 #define SYSCON3_ENPD67		(1 << 10)
-
 #define SYSCON_UARTEN		(1 << 8)
-
 #define SYSFLG1_MCDR		(1 << 0)
 #define SYSFLG1_DCDET		(1 << 1)
 #define SYSFLG1_WUDR		(1 << 2)
@@ -74,7 +61,6 @@
 #define SYSFLG1_ID		(1 << 29)
 #define SYSFLG1_VERID(x)	(((x) >> 30) & 3)
 #define SYSFLG1_VERID_MASK	(3 << 30)
-
 #define SYSFLG2_SSRXOF		(1 << 0)
 #define SYSFLG2_RESVAL		(1 << 1)
 #define SYSFLG2_RESFRM		(1 << 2)
@@ -82,9 +68,7 @@
 #define SYSFLG2_SS2TXFF		(1 << 4)
 #define SYSFLG2_SS2TXUF		(1 << 5)
 #define SYSFLG2_CKMODE		(1 << 6)
-
 #define SYSFLG_UBUSY		(1 << 11)
 #define SYSFLG_URXFE		(1 << 22)
 #define SYSFLG_UTXFF		(1 << 23)
-
 #endif

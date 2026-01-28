@@ -1,36 +1,8 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_TIMING_GENERATOR_DCN10_H__
 #define __DC_TIMING_GENERATOR_DCN10_H__
-
 #include "timing_generator.h"
-
 #define DCN10TG_FROM_TG(tg)\
 	container_of(tg, struct optc, base)
-
 #define TG_COMMON_REG_LIST_DCN(inst) \
 	SRI(OTG_VSTARTUP_PARAM, OTG, inst),\
 	SRI(OTG_VUPDATE_PARAM, OTG, inst),\
@@ -89,15 +61,12 @@
 	SR(GSL_SOURCE_SELECT),\
 	SRI(OTG_GLOBAL_CONTROL2, OTG, inst),\
 	SRI(OTG_TRIGA_MANUAL_TRIG, OTG, inst)
-
 #define TG_COMMON_REG_LIST_DCN1_0(inst) \
 	TG_COMMON_REG_LIST_DCN(inst),\
 	SRI(OTG_TEST_PATTERN_PARAMETERS, OTG, inst),\
 	SRI(OTG_TEST_PATTERN_CONTROL, OTG, inst),\
 	SRI(OTG_TEST_PATTERN_COLOR, OTG, inst),\
 	SRI(OTG_MANUAL_FLOW_CONTROL, OTG, inst)
-
-
 struct dcn_optc_registers {
 	uint32_t OTG_GLOBAL_CONTROL1;
 	uint32_t OTG_GLOBAL_CONTROL2;
@@ -190,7 +159,6 @@ struct dcn_optc_registers {
 	uint32_t OTG_DRR_V_TOTAL_CHANGE;
 	uint32_t OTG_GLOBAL_CONTROL4;
 };
-
 #define TG_COMMON_MASK_SH_LIST_DCN(mask_sh)\
 	SF(OTG0_OTG_VSTARTUP_PARAM, VSTARTUP_START, mask_sh),\
 	SF(OTG0_OTG_VUPDATE_PARAM, VUPDATE_OFFSET, mask_sh),\
@@ -317,9 +285,6 @@ struct dcn_optc_registers {
 	SF(GSL_SOURCE_SELECT, GSL1_READY_SOURCE_SEL, mask_sh),\
 	SF(GSL_SOURCE_SELECT, GSL2_READY_SOURCE_SEL, mask_sh),\
 	SF(OTG0_OTG_GLOBAL_CONTROL2, MANUAL_FLOW_CONTROL_SEL, mask_sh)
-
-
-
 #define TG_COMMON_MASK_SH_LIST_DCN1_0(mask_sh)\
 	TG_COMMON_MASK_SH_LIST_DCN(mask_sh),\
 	SF(OTG0_OTG_TEST_PATTERN_PARAMETERS, OTG_TEST_PATTERN_INC0, mask_sh),\
@@ -335,7 +300,6 @@ struct dcn_optc_registers {
 	SF(OTG0_OTG_TEST_PATTERN_COLOR, OTG_TEST_PATTERN_DATA, mask_sh),\
 	SF(ODM0_OPTC_DATA_SOURCE_SELECT, OPTC_SRC_SEL, mask_sh),\
 	SF(OTG0_OTG_MANUAL_FLOW_CONTROL, MANUAL_FLOW_CONTROL, mask_sh),\
-
 #define TG_REG_FIELD_LIST_DCN1_0(type) \
 	type VSTARTUP_START;\
 	type VUPDATE_OFFSET;\
@@ -505,7 +469,6 @@ struct dcn_optc_registers {
 	type GSL2_READY_SOURCE_SEL;\
 	type MANUAL_FLOW_CONTROL;\
 	type MANUAL_FLOW_CONTROL_SEL;
-
 #define TG_REG_FIELD_LIST(type) \
 	TG_REG_FIELD_LIST_DCN1_0(type)\
 	type OTG_V_SYNC_MODE;\
@@ -549,40 +512,29 @@ struct dcn_optc_registers {
 	type OTG_CRC_DATA_FORMAT;\
 	type OTG_V_TOTAL_LAST_USED_BY_DRR;\
 	type OTG_DRR_TIMING_DBUF_UPDATE_PENDING;
-
 #define TG_REG_FIELD_LIST_DCN3_2(type) \
 	type OTG_H_TIMING_DIV_MODE_MANUAL;
-
-
 struct dcn_optc_shift {
 	TG_REG_FIELD_LIST(uint8_t)
 	TG_REG_FIELD_LIST_DCN3_2(uint8_t)
 };
-
 struct dcn_optc_mask {
 	TG_REG_FIELD_LIST(uint32_t)
 	TG_REG_FIELD_LIST_DCN3_2(uint32_t)
 };
-
 struct optc {
 	struct timing_generator base;
-
 	const struct dcn_optc_registers *tg_regs;
 	const struct dcn_optc_shift *tg_shift;
 	const struct dcn_optc_mask *tg_mask;
-
 	int opp_count;
-
 	uint32_t max_h_total;
 	uint32_t max_v_total;
-
 	uint32_t min_h_blank;
-
 	uint32_t min_h_sync_width;
 	uint32_t min_v_sync_width;
 	uint32_t min_v_blank;
 	uint32_t min_v_blank_interlace;
-
 	int vstartup_start;
 	int vupdate_offset;
 	int vupdate_width;
@@ -590,9 +542,7 @@ struct optc {
 	struct dc_crtc_timing orginal_patched_timing;
 	enum signal_type signal;
 };
-
 void dcn10_timing_generator_init(struct optc *optc);
-
 struct dcn_otg_state {
 	uint32_t v_blank_start;
 	uint32_t v_blank_end;
@@ -618,17 +568,13 @@ struct dcn_otg_state {
 	uint32_t vertical_interrupt2_en;
 	uint32_t vertical_interrupt2_line;
 };
-
 void optc1_read_otg_state(struct optc *optc1,
 		struct dcn_otg_state *s);
-
 bool optc1_get_hw_timing(struct timing_generator *tg,
 		struct dc_crtc_timing *hw_crtc_timing);
-
 bool optc1_validate_timing(
 	struct timing_generator *optc,
 	const struct dc_crtc_timing *timing);
-
 void optc1_program_timing(
 	struct timing_generator *optc,
 	const struct dc_crtc_timing *dc_crtc_timing,
@@ -638,7 +584,6 @@ void optc1_program_timing(
 	int vupdate_width,
 	const enum signal_type signal,
 	bool use_vbios);
-
 void optc1_setup_vertical_interrupt0(
 		struct timing_generator *optc,
 		uint32_t start_line,
@@ -649,105 +594,70 @@ void optc1_setup_vertical_interrupt1(
 void optc1_setup_vertical_interrupt2(
 		struct timing_generator *optc,
 		uint32_t start_line);
-
 void optc1_program_global_sync(
 		struct timing_generator *optc,
 		int vready_offset,
 		int vstartup_start,
 		int vupdate_offset,
 		int vupdate_width);
-
 bool optc1_disable_crtc(struct timing_generator *optc);
-
 bool optc1_is_counter_moving(struct timing_generator *optc);
-
 void optc1_get_position(struct timing_generator *optc,
 		struct crtc_position *position);
-
 uint32_t optc1_get_vblank_counter(struct timing_generator *optc);
-
 void optc1_get_crtc_scanoutpos(
 	struct timing_generator *optc,
 	uint32_t *v_blank_start,
 	uint32_t *v_blank_end,
 	uint32_t *h_position,
 	uint32_t *v_position);
-
 void optc1_set_early_control(
 	struct timing_generator *optc,
 	uint32_t early_cntl);
-
 void optc1_wait_for_state(struct timing_generator *optc,
 		enum crtc_state state);
-
 void optc1_set_blank(struct timing_generator *optc,
 		bool enable_blanking);
-
 bool optc1_is_blanked(struct timing_generator *optc);
-
 void optc1_program_blank_color(
 		struct timing_generator *optc,
 		const struct tg_color *black_color);
-
 bool optc1_did_triggered_reset_occur(
 	struct timing_generator *optc);
-
 void optc1_enable_reset_trigger(struct timing_generator *optc, int source_tg_inst);
-
 void optc1_disable_reset_trigger(struct timing_generator *optc);
-
 void optc1_lock(struct timing_generator *optc);
-
 void optc1_unlock(struct timing_generator *optc);
-
 void optc1_enable_optc_clock(struct timing_generator *optc, bool enable);
-
 void optc1_set_drr(
 	struct timing_generator *optc,
 	const struct drr_params *params);
-
 void optc1_set_vtotal_min_max(struct timing_generator *optc, int vtotal_min, int vtotal_max);
-
 void optc1_set_static_screen_control(
 	struct timing_generator *optc,
 	uint32_t event_triggers,
 	uint32_t num_frames);
-
 void optc1_program_stereo(struct timing_generator *optc,
 	const struct dc_crtc_timing *timing, struct crtc_stereo_flags *flags);
-
 bool optc1_is_stereo_left_eye(struct timing_generator *optc);
-
 void optc1_clear_optc_underflow(struct timing_generator *optc);
-
 void optc1_tg_init(struct timing_generator *optc);
-
 bool optc1_is_tg_enabled(struct timing_generator *optc);
-
 bool optc1_is_optc_underflow_occurred(struct timing_generator *optc);
-
 void optc1_set_blank_data_double_buffer(struct timing_generator *optc, bool enable);
-
 void optc1_set_timing_double_buffer(struct timing_generator *optc, bool enable);
-
 bool optc1_get_otg_active_size(struct timing_generator *optc,
 		uint32_t *otg_active_width,
 		uint32_t *otg_active_height);
-
 void optc1_enable_crtc_reset(
 		struct timing_generator *optc,
 		int source_tg_inst,
 		struct crtc_trigger_info *crtc_tp);
-
 bool optc1_configure_crc(struct timing_generator *optc,
 			  const struct crc_params *params);
-
 bool optc1_get_crc(struct timing_generator *optc,
 		    uint32_t *r_cr, uint32_t *g_y, uint32_t *b_cb);
-
 bool optc1_is_two_pixels_per_containter(const struct dc_crtc_timing *timing);
-
 void optc1_set_vtg_params(struct timing_generator *optc,
 		const struct dc_crtc_timing *dc_crtc_timing, bool program_fp2);
-
-#endif /* __DC_TIMING_GENERATOR_DCN10_H__ */
+#endif  

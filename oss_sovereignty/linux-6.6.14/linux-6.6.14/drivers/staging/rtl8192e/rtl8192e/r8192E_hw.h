@@ -1,22 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
 #ifndef R8180_HW
 #define R8180_HW
-
 enum baseband_config {
 	BB_CONFIG_PHY_REG = 0,
 	BB_CONFIG_AGC_TAB = 1,
 };
-
 #define RTL8190_EEPROM_ID	0x8129
 #define EEPROM_VID		0x02
 #define EEPROM_DID		0x04
 #define EEPROM_NODE_ADDRESS_BYTE_0	0x0C
-
 #define EEPROM_Default_ThermalMeter		0x77
 #define EEPROM_Default_AntTxPowerDiff		0x0
 #define EEPROM_Default_TxPwDiff_CrystalCap	0x5
@@ -24,12 +15,10 @@ enum baseband_config {
 #define EEPROM_ICVersion_ChannelPlan	0x7C
 #define EEPROM_Customer_ID			0x7B
 #define EEPROM_RFInd_PowerDiff			0x28
-
 #define EEPROM_ThermalMeter			0x29
 #define EEPROM_TxPwDiff_CrystalCap		0x2A
 #define EEPROM_TxPwIndex_CCK			0x2C
 #define EEPROM_TxPwIndex_OFDM_24G	0x3A
-
 #define EEPROM_CID_TOSHIBA				0x4
 #define EEPROM_CID_NetCore				0x5
 enum _RTL8192PCI_HW {
@@ -37,12 +26,10 @@ enum _RTL8192PCI_HW {
 	MAC4			= 0x004,
 	PCIF			= 0x009,
 #define MXDMA2_NO_LIMIT		0x7
-
 #define	MXDMA2_RX_SHIFT		4
 #define	MXDMA2_TX_SHIFT		0
 	PMR			= 0x00c,
 	EPROM_CMD		= 0x00e,
-
 #define EPROM_CMD_9356SEL	BIT4
 #define EPROM_CMD_OPERATING_MODE_SHIFT 6
 #define EPROM_CMD_NORMAL 0
@@ -51,7 +38,6 @@ enum _RTL8192PCI_HW {
 #define EPROM_CK_BIT 2
 #define EPROM_W_BIT 1
 #define EPROM_R_BIT 0
-
 	ANAPAR			= 0x17,
 #define	BB_GLOBAL_RESET_BIT	0x1
 	BB_GLOBAL_RESET		= 0x020,
@@ -153,11 +139,9 @@ enum _RTL8192PCI_HW {
 	BEQDA			= 0x21C,
 	BKQDA			= 0x220,
 	RDQDA			= 0x228,
-
 	WFCRC0		  = 0x2f0,
 	WFCRC1		  = 0x2f4,
 	WFCRC2		  = 0x2f8,
-
 	BW_OPMODE		= 0x300,
 #define	BW_OPMODE_20MHZ			BIT2
 	IC_VERRSION		= 0x301,
@@ -166,12 +150,10 @@ enum _RTL8192PCI_HW {
 #define MSR_LINK_MANAGED   2
 #define MSR_LINK_ADHOC     1
 #define MSR_LINK_MASTER    3
-
 #define	MSR_NOLINK					0x00
 #define	MSR_ADHOC					0x01
 #define	MSR_INFRA					0x02
 #define	MSR_AP						0x03
-
 	RETRY_LIMIT		= 0x304,
 #define RETRY_LIMIT_SHORT_SHIFT 8
 #define RETRY_LIMIT_LONG_SHIFT 0
@@ -230,15 +212,11 @@ enum _RTL8192PCI_HW {
 #define RATE_ALL_OFDM_2SS	(RATR_MCS8 | RATR_MCS9 | RATR_MCS10 |	\
 				RATR_MCS11 | RATR_MCS12 | RATR_MCS13 |	\
 				RATR_MCS14|RATR_MCS15)
-
 	DRIVER_RSSI		= 0x32c,
 	MCS_TXAGC		= 0x340,
 	CCK_TXAGC		= 0x348,
 	MAC_BLK_CTRL		= 0x403,
 };
-
 #define GPI 0x108
-
 #define	ANAPAR_FOR_8192PCIE	0x17
-
 #endif

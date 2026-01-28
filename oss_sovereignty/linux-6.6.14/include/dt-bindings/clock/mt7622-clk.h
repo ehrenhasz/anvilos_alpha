@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 MediaTek Inc.
- * Author: Chen Zhong <chen.zhong@mediatek.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_MT7622_H
 #define _DT_BINDINGS_CLK_MT7622_H
-
-/* TOPCKGEN */
-
 #define CLK_TOP_TO_U2_PHY		0
 #define CLK_TOP_TO_U2_PHY_1P		1
 #define CLK_TOP_PCIE0_PIPE_EN		2
@@ -119,9 +110,6 @@
 #define CLK_TOP_A1SYS_HP_DIV_PD		107
 #define CLK_TOP_A2SYS_HP_DIV_PD		108
 #define CLK_TOP_NR_CLK			109
-
-/* INFRACFG */
-
 #define CLK_INFRA_MUX1_SEL		0
 #define CLK_INFRA_DBGCLK_PD		1
 #define CLK_INFRA_AUDIO_PD		2
@@ -130,9 +118,6 @@
 #define CLK_INFRA_PMIC_PD		5
 #define CLK_INFRA_TRNG			6
 #define CLK_INFRA_NR_CLK		7
-
-/* PERICFG */
-
 #define CLK_PERIBUS_SEL			0
 #define CLK_PERI_THERM_PD		1
 #define CLK_PERI_PWM1_PD		2
@@ -164,9 +149,6 @@
 #define CLK_PERI_FLASH_PD		28
 #define CLK_PERI_IRTX_PD		29
 #define CLK_PERI_NR_CLK			30
-
-/* APMIXEDSYS */
-
 #define CLK_APMIXED_ARMPLL		0
 #define CLK_APMIXED_MAINPLL		1
 #define CLK_APMIXED_UNIV2PLL		2
@@ -178,9 +160,6 @@
 #define CLK_APMIXED_SGMIPLL		8
 #define CLK_APMIXED_MAIN_CORE_EN	9
 #define CLK_APMIXED_NR_CLK		10
-
-/* AUDIOSYS */
-
 #define CLK_AUDIO_AFE			0
 #define CLK_AUDIO_HDMI			1
 #define CLK_AUDIO_SPDF			2
@@ -229,9 +208,6 @@
 #define CLK_AUDIO_MEM_ASRC5		45
 #define CLK_AUDIO_AFE_CONN		46
 #define CLK_AUDIO_NR_CLK		47
-
-/* SSUSBSYS */
-
 #define CLK_SSUSB_U2_PHY_1P_EN		0
 #define CLK_SSUSB_U2_PHY_EN		1
 #define CLK_SSUSB_REF_EN		2
@@ -239,9 +215,6 @@
 #define CLK_SSUSB_MCU_EN		4
 #define CLK_SSUSB_DMA_EN		5
 #define CLK_SSUSB_NR_CLK		6
-
-/* PCIESYS */
-
 #define CLK_PCIE_P1_AUX_EN		0
 #define CLK_PCIE_P1_OBFF_EN		1
 #define CLK_PCIE_P1_AHB_EN		2
@@ -260,23 +233,15 @@
 #define CLK_SATA_RBC_EN			15
 #define CLK_SATA_PM_EN			16
 #define CLK_PCIE_NR_CLK			17
-
-/* ETHSYS */
-
 #define CLK_ETH_HSDMA_EN		0
 #define CLK_ETH_ESW_EN			1
 #define CLK_ETH_GP2_EN			2
 #define CLK_ETH_GP1_EN			3
 #define CLK_ETH_GP0_EN			4
 #define CLK_ETH_NR_CLK			5
-
-/* SGMIISYS */
-
 #define CLK_SGMII_TX250M_EN		0
 #define CLK_SGMII_RX250M_EN		1
 #define CLK_SGMII_CDR_REF		2
 #define CLK_SGMII_CDR_FB		3
 #define CLK_SGMII_NR_CLK		4
-
-#endif /* _DT_BINDINGS_CLK_MT7622_H */
-
+#endif  

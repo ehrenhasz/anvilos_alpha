@@ -1,29 +1,5 @@
-/*
- * Copyright (C) 2019  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _dpcs_2_0_0_SH_MASK_HEADER
 #define _dpcs_2_0_0_SH_MASK_HEADER
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx0_dispdec
-//DPCSTX0_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -32,7 +8,6 @@
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX0_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX0_DPCSTX_TX_CNTL
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -49,12 +24,10 @@
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX0_DPCSTX_CBUS_CNTL
 #define DPCSTX0_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX0_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX0_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX0_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX0_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -75,13 +48,10 @@
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX0_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX0_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX0_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX0_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX0_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX0_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX0_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX0_DPCSTX_DEBUG_CONFIG
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -94,10 +64,6 @@
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX0_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx0_dispdec
-//RDPCSTX0_RDPCSTX_CNTL
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -124,7 +90,6 @@
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX0_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX0_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -149,7 +114,6 @@
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -180,23 +144,18 @@
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX0_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX0_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX0_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX0_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX0_RDPCS_TX_CR_ADDR
 #define RDPCSTX0_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX0_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX0_RDPCS_TX_CR_DATA
 #define RDPCSTX0_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX0_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX0_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX0_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX0_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -211,22 +170,18 @@
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX0_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX0_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX0_RDPCSTX_SCRATCH
 #define RDPCSTX0_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX0_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX0_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -241,7 +196,6 @@
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX0_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -276,7 +230,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL1
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -293,7 +246,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX0_RDPCSTX_PHY_CNTL2
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -312,7 +264,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX0_RDPCSTX_PHY_CNTL3
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -361,7 +312,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL4
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -394,7 +344,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL5
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -435,7 +384,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL6
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -462,23 +410,18 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL7
 #define RDPCSTX0_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX0_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX0_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL8
 #define RDPCSTX0_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX0_RDPCSTX_PHY_CNTL9
 #define RDPCSTX0_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX0_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX0_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL10
 #define RDPCSTX0_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX0_RDPCSTX_PHY_CNTL11
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -487,7 +430,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL12
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -498,7 +440,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX0_RDPCSTX_PHY_CNTL13
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -507,14 +448,12 @@
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX0_RDPCSTX_PHY_CNTL14
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX0_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX0_RDPCSTX_PHY_FUSE0
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -525,7 +464,6 @@
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX0_RDPCSTX_PHY_FUSE1
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -536,14 +474,12 @@
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX0_RDPCSTX_PHY_FUSE2
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX0_RDPCSTX_PHY_FUSE3
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -554,12 +490,10 @@
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX0_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX0_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX0_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX0_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX0_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX0_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -608,7 +542,6 @@
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -635,26 +568,16 @@
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX0_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX0_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr0_dispdec
-//DPCSSYS_CR0_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR0_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR0_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR0_DPCSSYS_CR_DATA
 #define DPCSSYS_CR0_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR0_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx1_dispdec
-//DPCSTX1_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -663,7 +586,6 @@
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX1_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX1_DPCSTX_TX_CNTL
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -680,12 +602,10 @@
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX1_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX1_DPCSTX_CBUS_CNTL
 #define DPCSTX1_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX1_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX1_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX1_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX1_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -706,13 +626,10 @@
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX1_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX1_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX1_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX1_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX1_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX1_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX1_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX1_DPCSTX_DEBUG_CONFIG
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -725,10 +642,6 @@
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX1_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx1_dispdec
-//RDPCSTX1_RDPCSTX_CNTL
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -755,7 +668,6 @@
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX1_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX1_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -780,7 +692,6 @@
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX1_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -811,23 +722,18 @@
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX1_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX1_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX1_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX1_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX1_RDPCS_TX_CR_ADDR
 #define RDPCSTX1_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX1_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX1_RDPCS_TX_CR_DATA
 #define RDPCSTX1_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX1_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX1_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX1_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX1_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -842,22 +748,18 @@
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX1_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX1_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX1_RDPCSTX_SCRATCH
 #define RDPCSTX1_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX1_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX1_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -872,7 +774,6 @@
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX1_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -907,7 +808,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL1
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -924,7 +824,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX1_RDPCSTX_PHY_CNTL2
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -943,7 +842,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX1_RDPCSTX_PHY_CNTL3
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -992,7 +890,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL4
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -1025,7 +922,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL5
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -1066,7 +962,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL6
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -1093,23 +988,18 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL7
 #define RDPCSTX1_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX1_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX1_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL8
 #define RDPCSTX1_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX1_RDPCSTX_PHY_CNTL9
 #define RDPCSTX1_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX1_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX1_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL10
 #define RDPCSTX1_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX1_RDPCSTX_PHY_CNTL11
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -1118,7 +1008,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL12
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -1129,7 +1018,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX1_RDPCSTX_PHY_CNTL13
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -1138,14 +1026,12 @@
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX1_RDPCSTX_PHY_CNTL14
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX1_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX1_RDPCSTX_PHY_FUSE0
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -1156,7 +1042,6 @@
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX1_RDPCSTX_PHY_FUSE1
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -1167,14 +1052,12 @@
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX1_RDPCSTX_PHY_FUSE2
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX1_RDPCSTX_PHY_FUSE3
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -1185,12 +1068,10 @@
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX1_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX1_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX1_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX1_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX1_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX1_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -1239,7 +1120,6 @@
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -1266,26 +1146,16 @@
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX1_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX1_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr1_dispdec
-//DPCSSYS_CR1_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR1_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR1_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR1_DPCSSYS_CR_DATA
 #define DPCSSYS_CR1_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR1_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx2_dispdec
-//DPCSTX2_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -1294,7 +1164,6 @@
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX2_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX2_DPCSTX_TX_CNTL
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -1311,12 +1180,10 @@
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX2_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX2_DPCSTX_CBUS_CNTL
 #define DPCSTX2_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX2_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX2_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX2_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX2_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -1337,13 +1204,10 @@
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX2_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX2_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX2_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX2_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX2_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX2_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX2_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX2_DPCSTX_DEBUG_CONFIG
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -1356,10 +1220,6 @@
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX2_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx2_dispdec
-//RDPCSTX2_RDPCSTX_CNTL
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -1386,7 +1246,6 @@
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX2_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX2_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -1411,7 +1270,6 @@
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX2_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -1442,23 +1300,18 @@
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX2_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX2_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX2_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX2_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX2_RDPCS_TX_CR_ADDR
 #define RDPCSTX2_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX2_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX2_RDPCS_TX_CR_DATA
 #define RDPCSTX2_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX2_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX2_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX2_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX2_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -1473,22 +1326,18 @@
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX2_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX2_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX2_RDPCSTX_SCRATCH
 #define RDPCSTX2_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX2_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX2_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -1503,7 +1352,6 @@
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX2_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -1538,7 +1386,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL1
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -1555,7 +1402,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX2_RDPCSTX_PHY_CNTL2
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -1574,7 +1420,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX2_RDPCSTX_PHY_CNTL3
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -1623,7 +1468,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL4
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -1656,7 +1500,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL5
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -1697,7 +1540,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL6
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -1724,23 +1566,18 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL7
 #define RDPCSTX2_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX2_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX2_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL8
 #define RDPCSTX2_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX2_RDPCSTX_PHY_CNTL9
 #define RDPCSTX2_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX2_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX2_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL10
 #define RDPCSTX2_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX2_RDPCSTX_PHY_CNTL11
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -1749,7 +1586,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL12
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -1760,7 +1596,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX2_RDPCSTX_PHY_CNTL13
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -1769,14 +1604,12 @@
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX2_RDPCSTX_PHY_CNTL14
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX2_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX2_RDPCSTX_PHY_FUSE0
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -1787,7 +1620,6 @@
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX2_RDPCSTX_PHY_FUSE1
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -1798,14 +1630,12 @@
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX2_RDPCSTX_PHY_FUSE2
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX2_RDPCSTX_PHY_FUSE3
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -1816,12 +1646,10 @@
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX2_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX2_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX2_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX2_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX2_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX2_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -1870,7 +1698,6 @@
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -1897,26 +1724,16 @@
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX2_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX2_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr2_dispdec
-//DPCSSYS_CR2_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR2_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR2_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR2_DPCSSYS_CR_DATA
 #define DPCSSYS_CR2_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR2_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx3_dispdec
-//DPCSTX3_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -1925,7 +1742,6 @@
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX3_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX3_DPCSTX_TX_CNTL
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -1942,12 +1758,10 @@
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX3_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX3_DPCSTX_CBUS_CNTL
 #define DPCSTX3_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX3_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX3_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX3_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX3_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -1968,13 +1782,10 @@
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX3_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX3_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX3_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX3_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX3_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX3_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX3_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX3_DPCSTX_DEBUG_CONFIG
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -1987,10 +1798,6 @@
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX3_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx3_dispdec
-//RDPCSTX3_RDPCSTX_CNTL
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -2017,7 +1824,6 @@
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX3_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX3_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -2042,7 +1848,6 @@
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX3_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -2073,23 +1878,18 @@
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX3_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX3_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX3_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX3_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX3_RDPCS_TX_CR_ADDR
 #define RDPCSTX3_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX3_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX3_RDPCS_TX_CR_DATA
 #define RDPCSTX3_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX3_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX3_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX3_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX3_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -2104,22 +1904,18 @@
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX3_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX3_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX3_RDPCSTX_SCRATCH
 #define RDPCSTX3_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX3_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX3_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -2134,7 +1930,6 @@
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX3_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -2169,7 +1964,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL1
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -2186,7 +1980,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX3_RDPCSTX_PHY_CNTL2
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -2205,7 +1998,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX3_RDPCSTX_PHY_CNTL3
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -2254,7 +2046,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL4
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -2287,7 +2078,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL5
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -2328,7 +2118,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL6
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -2355,23 +2144,18 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL7
 #define RDPCSTX3_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX3_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX3_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL8
 #define RDPCSTX3_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX3_RDPCSTX_PHY_CNTL9
 #define RDPCSTX3_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX3_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX3_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL10
 #define RDPCSTX3_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX3_RDPCSTX_PHY_CNTL11
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -2380,7 +2164,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL12
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -2391,7 +2174,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX3_RDPCSTX_PHY_CNTL13
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -2400,14 +2182,12 @@
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX3_RDPCSTX_PHY_CNTL14
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX3_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX3_RDPCSTX_PHY_FUSE0
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -2418,7 +2198,6 @@
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX3_RDPCSTX_PHY_FUSE1
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -2429,14 +2208,12 @@
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX3_RDPCSTX_PHY_FUSE2
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX3_RDPCSTX_PHY_FUSE3
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -2447,12 +2224,10 @@
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX3_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX3_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX3_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX3_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX3_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX3_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -2501,7 +2276,6 @@
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -2528,29 +2302,18 @@
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX3_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX3_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr3_dispdec
-//DPCSSYS_CR3_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR3_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR3_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR3_DPCSSYS_CR_DATA
 #define DPCSSYS_CR3_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR3_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
-
-// addressBlock: dpcssys_dpcs0_dpcsrx_dispdec
-//DPCSRX_PHY_CNTL
 #define DPCSRX_PHY_CNTL__DPCS_PHY_RESET__SHIFT                                                                0x0
 #define DPCSRX_PHY_CNTL__DPCS_PHY_RESET_MASK                                                                  0x00000001L
-//DPCSRX_RX_CLOCK_CNTL
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX_GATE_DIS__SHIFT                                                  0x0
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX_EN__SHIFT                                                        0x1
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX_SEL__SHIFT                                                       0x2
@@ -2583,7 +2346,6 @@
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX3_GATE_DIS_MASK                                                   0x10000000L
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX3_EN_MASK                                                         0x20000000L
 #define DPCSRX_RX_CLOCK_CNTL__DPCS_SYMCLK_RX3_CLOCK_ON_MASK                                                   0x40000000L
-//DPCSRX_RX_CNTL
 #define DPCSRX_RX_CNTL__DPCS_RX_LANE0_EN__SHIFT                                                               0x0
 #define DPCSRX_RX_CNTL__DPCS_RX_LANE1_EN__SHIFT                                                               0x1
 #define DPCSRX_RX_CNTL__DPCS_RX_LANE2_EN__SHIFT                                                               0x2
@@ -2600,21 +2362,18 @@
 #define DPCSRX_RX_CNTL__DPCS_RX_FIFO_START_MASK                                                               0x00000020L
 #define DPCSRX_RX_CNTL__DPCS_RX_FIFO_RD_START_DELAY_MASK                                                      0x00000F00L
 #define DPCSRX_RX_CNTL__DPCS_RX_SOFT_RESET_MASK                                                               0x80000000L
-//DPCSRX_CBUS_CNTL
 #define DPCSRX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                                       0x0
 #define DPCSRX_CBUS_CNTL__DPCS_PHY_MASTER_REQ_DELAY__SHIFT                                                    0x8
 #define DPCSRX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                         0x1f
 #define DPCSRX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                         0x0000000FL
 #define DPCSRX_CBUS_CNTL__DPCS_PHY_MASTER_REQ_DELAY_MASK                                                      0x0000FF00L
 #define DPCSRX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                           0x80000000L
-//DPCSRX_REG_ERROR_STATUS
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_FIFO_OVERFLOW__SHIFT                                                0x0
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_ERROR_CLR__SHIFT                                                    0x1
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                              0x4
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_FIFO_OVERFLOW_MASK                                                  0x00000001L
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_ERROR_CLR_MASK                                                      0x00000002L
 #define DPCSRX_REG_ERROR_STATUS__DPCS_REG_FIFO_ERROR_MASK_MASK                                                0x00000010L
-//DPCSRX_RX_ERROR_STATUS
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX0_FIFO_ERROR__SHIFT                                                    0x0
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX1_FIFO_ERROR__SHIFT                                                    0x1
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX2_FIFO_ERROR__SHIFT                                                    0x2
@@ -2627,13 +2386,10 @@
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX3_FIFO_ERROR_MASK                                                      0x00000008L
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX_ERROR_CLR_MASK                                                        0x00000100L
 #define DPCSRX_RX_ERROR_STATUS__DPCS_RX_FIFO_ERROR_MASK_MASK                                                  0x00001000L
-//DPCSRX_INDEX_MODE_ADDR
 #define DPCSRX_INDEX_MODE_ADDR__DPCS_INDEX_MODE_ADDR__SHIFT                                                   0x0
 #define DPCSRX_INDEX_MODE_ADDR__DPCS_INDEX_MODE_ADDR_MASK                                                     0x0003FFFFL
-//DPCSRX_INDEX_MODE_DATA
 #define DPCSRX_INDEX_MODE_DATA__DPCS_INDEX_MODE_DATA__SHIFT                                                   0x0
 #define DPCSRX_INDEX_MODE_DATA__DPCS_INDEX_MODE_DATA_MASK                                                     0xFFFFFFFFL
-//DPCSRX_DEBUG_CONFIG
 #define DPCSRX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                               0x0
 #define DPCSRX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                                       0x1
 #define DPCSRX_DEBUG_CONFIG__DPCS_DBG_RX_SYMCLK_SEL__SHIFT                                                    0x6
@@ -2646,10 +2402,6 @@
 #define DPCSRX_DEBUG_CONFIG__DPCS_DBG_BLOCK_SEL_MASK                                                          0x00003800L
 #define DPCSRX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                           0x00004000L
 #define DPCSRX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                                    0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx4_dispdec
-//DPCSTX4_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -2658,7 +2410,6 @@
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX4_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX4_DPCSTX_TX_CNTL
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -2675,12 +2426,10 @@
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX4_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX4_DPCSTX_CBUS_CNTL
 #define DPCSTX4_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX4_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX4_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX4_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX4_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -2701,13 +2450,10 @@
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX4_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX4_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX4_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX4_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX4_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX4_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX4_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX4_DPCSTX_DEBUG_CONFIG
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -2720,10 +2466,6 @@
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX4_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx4_dispdec
-//RDPCSTX4_RDPCSTX_CNTL
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -2750,7 +2492,6 @@
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX4_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX4_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -2775,7 +2516,6 @@
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX4_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -2806,23 +2546,18 @@
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX4_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX4_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX4_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX4_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX4_RDPCS_TX_CR_ADDR
 #define RDPCSTX4_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX4_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX4_RDPCS_TX_CR_DATA
 #define RDPCSTX4_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX4_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX4_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX4_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX4_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -2837,22 +2572,18 @@
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX4_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX4_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX4_RDPCSTX_SCRATCH
 #define RDPCSTX4_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX4_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX4_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -2867,7 +2598,6 @@
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX4_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -2902,7 +2632,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL1
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -2919,7 +2648,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX4_RDPCSTX_PHY_CNTL2
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -2938,7 +2666,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX4_RDPCSTX_PHY_CNTL3
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -2987,7 +2714,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL4
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -3020,7 +2746,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL5
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -3061,7 +2786,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL6
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -3088,23 +2812,18 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL7
 #define RDPCSTX4_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX4_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX4_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL8
 #define RDPCSTX4_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX4_RDPCSTX_PHY_CNTL9
 #define RDPCSTX4_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX4_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX4_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL10
 #define RDPCSTX4_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX4_RDPCSTX_PHY_CNTL11
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -3113,7 +2832,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL12
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -3124,7 +2842,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX4_RDPCSTX_PHY_CNTL13
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -3133,14 +2850,12 @@
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX4_RDPCSTX_PHY_CNTL14
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX4_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX4_RDPCSTX_PHY_FUSE0
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -3151,7 +2866,6 @@
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX4_RDPCSTX_PHY_FUSE1
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -3162,14 +2876,12 @@
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX4_RDPCSTX_PHY_FUSE2
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX4_RDPCSTX_PHY_FUSE3
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -3180,12 +2892,10 @@
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX4_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX4_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX4_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX4_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX4_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX4_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -3234,7 +2944,6 @@
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -3261,26 +2970,16 @@
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX4_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX4_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr4_dispdec
-//DPCSSYS_CR4_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR4_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR4_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR4_DPCSSYS_CR_DATA
 #define DPCSSYS_CR4_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR4_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
-
-// addressBlock: dpcssys_dpcs0_dpcstx5_dispdec
-//DPCSTX5_DPCSTX_TX_CLOCK_CNTL
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_GATE_DIS__SHIFT                                             0x0
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN__SHIFT                                                   0x1
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON__SHIFT                                             0x2
@@ -3289,7 +2988,6 @@
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_EN_MASK                                                     0x00000002L
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_CLOCK_ON_MASK                                               0x00000004L
 #define DPCSTX5_DPCSTX_TX_CLOCK_CNTL__DPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000008L
-//DPCSTX5_DPCSTX_TX_CNTL
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_REQ__SHIFT                                                 0xc
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_PLL_UPDATE_PENDING__SHIFT                                             0xd
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
@@ -3306,12 +3004,10 @@
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_FIFO_START_MASK                                                       0x00020000L
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_FIFO_RD_START_DELAY_MASK                                              0x00F00000L
 #define DPCSTX5_DPCSTX_TX_CNTL__DPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//DPCSTX5_DPCSTX_CBUS_CNTL
 #define DPCSTX5_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY__SHIFT                                               0x0
 #define DPCSTX5_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET__SHIFT                                                 0x1f
 #define DPCSTX5_DPCSTX_CBUS_CNTL__DPCS_CBUS_WR_CMD_DELAY_MASK                                                 0x000000FFL
 #define DPCSTX5_DPCSTX_CBUS_CNTL__DPCS_CBUS_SOFT_RESET_MASK                                                   0x80000000L
-//DPCSTX5_DPCSTX_INTERRUPT_CNTL
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_OVERFLOW__SHIFT                                          0x0
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_REG_ERROR_CLR__SHIFT                                              0x1
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_REG_FIFO_ERROR_MASK__SHIFT                                        0x4
@@ -3332,13 +3028,10 @@
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_TX_ERROR_CLR_MASK                                                 0x00001000L
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_TX_FIFO_ERROR_MASK_MASK                                           0x00010000L
 #define DPCSTX5_DPCSTX_INTERRUPT_CNTL__DPCS_INTERRUPT_MASK_MASK                                               0x00100000L
-//DPCSTX5_DPCSTX_PLL_UPDATE_ADDR
 #define DPCSTX5_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR__SHIFT                                           0x0
 #define DPCSTX5_DPCSTX_PLL_UPDATE_ADDR__DPCS_PLL_UPDATE_ADDR_MASK                                             0x0003FFFFL
-//DPCSTX5_DPCSTX_PLL_UPDATE_DATA
 #define DPCSTX5_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA__SHIFT                                           0x0
 #define DPCSTX5_DPCSTX_PLL_UPDATE_DATA__DPCS_PLL_UPDATE_DATA_MASK                                             0xFFFFFFFFL
-//DPCSTX5_DPCSTX_DEBUG_CONFIG
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_DBG_EN__SHIFT                                                       0x0
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CFGCLK_SEL__SHIFT                                               0x1
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_SEL__SHIFT                                            0x4
@@ -3351,10 +3044,6 @@
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_DBG_TX_SYMCLK_DIV2_SEL_MASK                                         0x00000700L
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_DBG_CBUS_DIS_MASK                                                   0x00004000L
 #define DPCSTX5_DPCSTX_DEBUG_CONFIG__DPCS_TEST_DEBUG_WRITE_EN_MASK                                            0x00010000L
-
-
-// addressBlock: dpcssys_dpcs0_rdpcstx5_dispdec
-//RDPCSTX5_RDPCSTX_CNTL
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_CBUS_SOFT_RESET__SHIFT                                                   0x0
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_SRAM_SOFT_RESET__SHIFT                                                   0x4
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_TX_FIFO_LANE0_EN__SHIFT                                                  0xc
@@ -3381,7 +3070,6 @@
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_NON_DPALT_REGISTER_BLOCK_EN_MASK                                         0x02000000L
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_DPALT_BLOCK_STATUS_MASK                                                  0x04000000L
 #define RDPCSTX5_RDPCSTX_CNTL__RDPCS_TX_SOFT_RESET_MASK                                                       0x80000000L
-//RDPCSTX5_RDPCSTX_CLOCK_CNTL
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_EXT_REFCLK_EN__SHIFT                                               0x0
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX0_EN__SHIFT                                          0x4
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_TX1_EN__SHIFT                                          0x5
@@ -3406,7 +3094,6 @@
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_EN_MASK                                                    0x00002000L
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_CLOCK_ON_MASK                                              0x00004000L
 #define RDPCSTX5_RDPCSTX_CLOCK_CNTL__RDPCS_SRAMCLK_BYPASS_MASK                                                0x00010000L
-//RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_REG_FIFO_OVERFLOW__SHIFT                                    0x0
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE__SHIFT                                 0x1
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE__SHIFT                                   0x2
@@ -3437,23 +3124,18 @@
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_DISABLE_TOGGLE_MASK_MASK                              0x00020000L
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_DPALT_4LANE_TOGGLE_MASK_MASK                                0x00040000L
 #define RDPCSTX5_RDPCSTX_INTERRUPT_CONTROL__RDPCS_TX_FIFO_ERROR_MASK_MASK                                     0x00100000L
-//RDPCSTX5_RDPCSTX_PLL_UPDATE_DATA
 #define RDPCSTX5_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA__SHIFT                                        0x0
 #define RDPCSTX5_RDPCSTX_PLL_UPDATE_DATA__RDPCS_PLL_UPDATE_DATA_MASK                                          0x00000001L
-//RDPCSTX5_RDPCS_TX_CR_ADDR
 #define RDPCSTX5_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                    0x0
 #define RDPCSTX5_RDPCS_TX_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                      0x0000FFFFL
-//RDPCSTX5_RDPCS_TX_CR_DATA
 #define RDPCSTX5_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                    0x0
 #define RDPCSTX5_RDPCS_TX_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                      0x0000FFFFL
-//RDPCSTX5_RDPCS_TX_SRAM_CNTL
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS__SHIFT                                                 0x14
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE__SHIFT                                               0x18
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE__SHIFT                                           0x1c
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_DIS_MASK                                                   0x00100000L
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_FORCE_MASK                                                 0x03000000L
 #define RDPCSTX5_RDPCS_TX_SRAM_CNTL__RDPCS_MEM_PWR_PWR_STATE_MASK                                             0x30000000L
-//RDPCSTX5_RDPCSTX_MEM_POWER_CTRL
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_RM_FUSES__SHIFT                                           0x0
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_FUSE_CUSTOM_RM_FUSES__SHIFT                                    0xc
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_PDP_BC1__SHIFT                                  0x1a
@@ -3468,22 +3150,18 @@
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC1_MASK                                     0x10000000L
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_MEM_POWER_CTRL_HD_BC2_MASK                                     0x20000000L
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL__RDPCS_LIVMIN_DIS_SRAM_MASK                                           0x40000000L
-//RDPCSTX5_RDPCSTX_MEM_POWER_CTRL2
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF__SHIFT                                    0x0
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO__SHIFT                                    0x2
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_POFF_MASK                                      0x00000003L
 #define RDPCSTX5_RDPCSTX_MEM_POWER_CTRL2__RDPCS_MEM_POWER_CTRL_FISO_MASK                                      0x00000004L
-//RDPCSTX5_RDPCSTX_SCRATCH
 #define RDPCSTX5_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH__SHIFT                                                      0x0
 #define RDPCSTX5_RDPCSTX_SCRATCH__RDPCSTX_SCRATCH_MASK                                                        0xFFFFFFFFL
-//RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG__SHIFT                      0x0
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS__SHIFT              0x4
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE__SHIFT                      0x8
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_DIS_BLOCK_REG_MASK                        0x00000001L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_FORCE_SYMCLK_DIV2_DIS_MASK                0x00000010L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_DIS_BLOCK_REG__RDPCS_DMCU_DPALT_CONTROL_SPARE_MASK                        0x0000FF00L
-//RDPCSTX5_RDPCSTX_DEBUG_CONFIG
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_EN__SHIFT                                                    0x0
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_8BIT__SHIFT                                        0x4
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_SEL_ASYNC_SWAP__SHIFT                                        0x7
@@ -3498,7 +3176,6 @@
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_EXPIRE_MASK                                         0x00008000L
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MAX_MASK                                            0x00FF0000L
 #define RDPCSTX5_RDPCSTX_DEBUG_CONFIG__RDPCS_DBG_CR_COUNT_MASK                                                0xFF000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_PHY_RESET__SHIFT                                                    0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_PHY_RESET__SHIFT                                            0x1
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_PHY_TCA_APB_RESET_N__SHIFT                                          0x2
@@ -3533,7 +3210,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_INIT_DONE_MASK                                                 0x10000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_EXT_LD_DONE_MASK                                               0x20000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL0__RDPCS_SRAM_BYPASS_MASK                                                    0x80000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL1
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PG_MODE_EN__SHIFT                                               0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_EN__SHIFT                                               0x1
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_PCS_PWR_STABLE__SHIFT                                           0x2
@@ -3550,7 +3226,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_DP_PG_RESET_MASK                                                0x00000020L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_EN_MASK                                                 0x00000040L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL1__RDPCS_PHY_ANA_PWR_STABLE_MASK                                             0x00000080L
-//RDPCSTX5_RDPCSTX_PHY_CNTL2
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP4_POR__SHIFT                                                  0x3
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE0_RX2TX_PAR_LB_EN__SHIFT                                 0x4
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_RX2TX_PAR_LB_EN__SHIFT                                 0x5
@@ -3569,7 +3244,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE1_TX2RX_SER_LB_EN_MASK                                   0x00000200L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE2_TX2RX_SER_LB_EN_MASK                                   0x00000400L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL2__RDPCS_PHY_DP_LANE3_TX2RX_SER_LB_EN_MASK                                   0x00000800L
-//RDPCSTX5_RDPCSTX_PHY_CNTL3
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET__SHIFT                                             0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE__SHIFT                                           0x1
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY__SHIFT                                           0x2
@@ -3618,7 +3292,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_MASK                                             0x08000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_MASK                                                 0x10000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_MASK                                                 0x20000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL4
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_TERM_CTRL__SHIFT                                         0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_INVERT__SHIFT                                            0x4
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX0_BYPASS_EQ_CALC__SHIFT                                    0x6
@@ -3651,7 +3324,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_INVERT_MASK                                              0x10000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_BYPASS_EQ_CALC_MASK                                      0x40000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL4__RDPCS_PHY_DP_TX3_HP_PROT_EN_MASK                                          0x80000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL5
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_LPD__SHIFT                                               0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_RATE__SHIFT                                              0x1
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX0_WIDTH__SHIFT                                             0x4
@@ -3692,7 +3364,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_WIDTH_MASK                                               0x30000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_REQ_MASK                                           0x40000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL5__RDPCS_PHY_DP_TX3_DETRX_RESULT_MASK                                        0x80000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL6
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE__SHIFT                                            0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN__SHIFT                                           0x2
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE__SHIFT                                            0x4
@@ -3719,23 +3390,18 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_MASK                                          0x00040000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_MASK                                              0x00080000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_MASK                                             0x00100000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL7
 #define RDPCSTX5_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN__SHIFT                                       0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT__SHIFT                                      0x10
 #define RDPCSTX5_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_DEN_MASK                                         0x0000FFFFL
 #define RDPCSTX5_RDPCSTX_PHY_CNTL7__RDPCS_PHY_DP_MPLLB_FRACN_QUOT_MASK                                        0xFFFF0000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL8
 #define RDPCSTX5_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK__SHIFT                                        0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL8__RDPCS_PHY_DP_MPLLB_SSC_PEAK_MASK                                          0x000FFFFFL
-//RDPCSTX5_RDPCSTX_PHY_CNTL9
 #define RDPCSTX5_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE__SHIFT                                    0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD__SHIFT                                   0x18
 #define RDPCSTX5_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_STEPSIZE_MASK                                      0x001FFFFFL
 #define RDPCSTX5_RDPCSTX_PHY_CNTL9__RDPCS_PHY_DP_MPLLB_SSC_UP_SPREAD_MASK                                     0x01000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL10
 #define RDPCSTX5_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM__SHIFT                                      0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL10__RDPCS_PHY_DP_MPLLB_FRACN_REM_MASK                                        0x0000FFFFL
-//RDPCSTX5_RDPCSTX_PHY_CNTL11
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_MPLLB_MULTIPLIER__SHIFT                                     0x4
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV__SHIFT                                     0x10
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV__SHIFT                                    0x14
@@ -3744,7 +3410,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_DIV_MASK                                       0x00070000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_DP_REF_CLK_MPLLB_DIV_MASK                                      0x00700000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL11__RDPCS_PHY_HDMI_MPLLB_HDMI_PIXEL_CLK_DIV_MASK                             0x03000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL12
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_DIV5_CLK_EN__SHIFT                                    0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_WORD_DIV2_EN__SHIFT                                   0x2
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV__SHIFT                                     0x4
@@ -3755,7 +3420,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_TX_CLK_DIV_MASK                                       0x00000070L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_STATE_MASK                                            0x00000080L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL12__RDPCS_PHY_DP_MPLLB_SSC_EN_MASK                                           0x00000100L
-//RDPCSTX5_RDPCSTX_PHY_CNTL13
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_MULTIPLIER__SHIFT                                 0x14
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN__SHIFT                                     0x1c
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN__SHIFT                                       0x1d
@@ -3764,14 +3428,12 @@
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_DIV_CLK_EN_MASK                                       0x10000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_FORCE_EN_MASK                                         0x20000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL13__RDPCS_PHY_DP_MPLLB_INIT_CAL_DISABLE_MASK                                 0x40000000L
-//RDPCSTX5_RDPCSTX_PHY_CNTL14
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE__SHIFT                                      0x0
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN__SHIFT                                       0x18
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN__SHIFT                                        0x1c
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_CAL_FORCE_MASK                                        0x00000001L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_FRACN_EN_MASK                                         0x01000000L
 #define RDPCSTX5_RDPCSTX_PHY_CNTL14__RDPCS_PHY_DP_MPLLB_PMIX_EN_MASK                                          0x10000000L
-//RDPCSTX5_RDPCSTX_PHY_FUSE0
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST__SHIFT                                           0xc
@@ -3782,7 +3444,6 @@
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_TX0_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_V2I_MASK                                               0x000C0000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE0__RDPCS_PHY_DP_MPLLB_FREQ_VCO_MASK                                          0x00300000L
-//RDPCSTX5_RDPCSTX_PHY_FUSE1
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST__SHIFT                                           0xc
@@ -3793,14 +3454,12 @@
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_TX1_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_INT_MASK                                            0x01FC0000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE1__RDPCS_PHY_DP_MPLLB_CP_PROP_MASK                                           0xFE000000L
-//RDPCSTX5_RDPCSTX_PHY_FUSE2
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST__SHIFT                                           0xc
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_MAIN_MASK                                             0x0000003FL
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_PRE_MASK                                              0x00000FC0L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE2__RDPCS_PHY_DP_TX2_EQ_POST_MASK                                             0x0003F000L
-//RDPCSTX5_RDPCSTX_PHY_FUSE3
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_MAIN__SHIFT                                           0x0
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_PRE__SHIFT                                            0x6
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST__SHIFT                                           0xc
@@ -3811,12 +3470,10 @@
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DP_TX3_EQ_POST_MASK                                             0x0003F000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_FINETUNE_MASK                                               0x00FC0000L
 #define RDPCSTX5_RDPCSTX_PHY_FUSE3__RDPCS_PHY_DCO_RANGE_MASK                                                  0x03000000L
-//RDPCSTX5_RDPCSTX_PHY_RX_LD_VAL
 #define RDPCSTX5_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL__SHIFT                                        0x0
 #define RDPCSTX5_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL__SHIFT                                        0x8
 #define RDPCSTX5_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_REF_LD_VAL_MASK                                          0x0000007FL
 #define RDPCSTX5_RDPCSTX_PHY_RX_LD_VAL__RDPCS_PHY_RX_VCO_LD_VAL_MASK                                          0x001FFF00L
-//RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_RESET_RESERVED__SHIFT                         0x0
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_DISABLE_RESERVED__SHIFT                       0x1
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX0_CLK_RDY_RESERVED__SHIFT                       0x2
@@ -3865,7 +3522,6 @@
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_DATA_EN_RESERVED_MASK                         0x08000000L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_REQ_RESERVED_MASK                             0x10000000L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL3__RDPCS_PHY_DP_TX3_ACK_RESERVED_MASK                             0x20000000L
-//RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_PSTATE_RESERVED__SHIFT                        0x0
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX0_MPLL_EN_RESERVED__SHIFT                       0x2
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_TX1_PSTATE_RESERVED__SHIFT                        0x4
@@ -3892,21 +3548,14 @@
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DPALT_DISABLE_ACK_RESERVED_MASK                      0x00040000L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_EN_RESERVED_MASK                          0x00080000L
 #define RDPCSTX5_RDPCSTX_DMCU_DPALT_PHY_CNTL6__RDPCS_PHY_DP_REF_CLK_REQ_RESERVED_MASK                         0x00100000L
-//RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS__SHIFT                                  0x0
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED__SHIFT                                0x4
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE__SHIFT                                  0x8
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_ALLOW_DRIVER_ACCESS_MASK                                    0x00000001L
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DRIVER_ACCESS_BLOCKED_MASK                                  0x00000010L
 #define RDPCSTX5_RDPCSTX_DPALT_CONTROL_REG__RDPCS_DPALT_CONTROL_SPARE_MASK                                    0x0000FF00L
-
-
-// addressBlock: dpcssys_dpcssys_cr5_dispdec
-//DPCSSYS_CR5_DPCSSYS_CR_ADDR
 #define DPCSSYS_CR5_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR__SHIFT                                                  0x0
 #define DPCSSYS_CR5_DPCSSYS_CR_ADDR__RDPCS_TX_CR_ADDR_MASK                                                    0x0000FFFFL
-//DPCSSYS_CR5_DPCSSYS_CR_DATA
 #define DPCSSYS_CR5_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA__SHIFT                                                  0x0
 #define DPCSSYS_CR5_DPCSSYS_CR_DATA__RDPCS_TX_CR_DATA_MASK                                                    0x0000FFFFL
-
 #endif

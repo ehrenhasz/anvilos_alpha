@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __ASM_CSKY_UACCESS_H
 #define __ASM_CSKY_UACCESS_H
-
-/*
- * __put_user_fn
- */
 extern int __put_user_bad(void);
-
 #define __put_user_asm_b(x, ptr, err)			\
 do {							\
 	int errcode;					\
@@ -25,7 +18,6 @@ do {							\
 	: "0"(err), "1"(x), "2"(ptr), "3"(-EFAULT)	\
 	: "memory");					\
 } while (0)
-
 #define __put_user_asm_h(x, ptr, err)			\
 do {							\
 	int errcode;					\
@@ -43,7 +35,6 @@ do {							\
 	: "0"(err), "1"(x), "2"(ptr), "3"(-EFAULT)	\
 	: "memory");					\
 } while (0)
-
 #define __put_user_asm_w(x, ptr, err)			\
 do {							\
 	int errcode;					\
@@ -61,7 +52,6 @@ do {							\
 	: "0"(err), "1"(x), "2"(ptr), "3"(-EFAULT)	\
 	: "memory");					\
 } while (0)
-
 #define __put_user_asm_64(x, ptr, err)			\
 do {							\
 	int tmp;					\
@@ -87,12 +77,10 @@ do {							\
 	  "4"(-EFAULT)					\
 	: "memory");					\
 } while (0)
-
 static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
 {
 	int retval = 0;
 	u32 tmp;
-
 	switch (size) {
 	case 1:
 		tmp = *(u8 *)x;
@@ -110,16 +98,10 @@ static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
 		__put_user_asm_64(x, (u64 *)ptr, retval);
 		break;
 	}
-
 	return retval;
 }
 #define __put_user_fn __put_user_fn
-
-/*
- * __get_user_fn
- */
 extern int __get_user_bad(void);
-
 #define __get_user_asm_common(x, ptr, ins, err)		\
 do {							\
 	int errcode;					\
@@ -138,7 +120,6 @@ do {							\
 	: "0"(0), "r"(ptr), "2"(-EFAULT)		\
 	: "memory");					\
 } while (0)
-
 #define __get_user_asm_64(x, ptr, err)			\
 do {							\
 	int tmp;					\
@@ -164,12 +145,10 @@ do {							\
 	  "4"(-EFAULT)					\
 	: "memory");					\
 } while (0)
-
 static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 {
 	int retval;
 	u32 tmp;
-
 	switch (size) {
 	case 1:
 		__get_user_asm_common(tmp, ptr, "ldb", retval);
@@ -187,17 +166,12 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 		__get_user_asm_64(x, ptr, retval);
 		break;
 	}
-
 	return retval;
 }
 #define __get_user_fn __get_user_fn
-
 unsigned long raw_copy_from_user(void *to, const void *from, unsigned long n);
 unsigned long raw_copy_to_user(void *to, const void *from, unsigned long n);
-
 unsigned long __clear_user(void __user *to, unsigned long n);
 #define __clear_user __clear_user
-
 #include <asm-generic/uaccess.h>
-
-#endif /* __ASM_CSKY_UACCESS_H */
+#endif  

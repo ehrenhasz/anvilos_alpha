@@ -1,7 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
 #ifndef __ND_CORE_H__
 #define __ND_CORE_H__
 #include <linux/libnvdimm.h>
@@ -10,12 +6,10 @@
 #include <linux/mutex.h>
 #include <linux/nd.h>
 #include "nd.h"
-
 extern struct list_head nvdimm_bus_list;
 extern struct mutex nvdimm_bus_list_mutex;
 extern int nvdimm_major;
 extern struct workqueue_struct *nvdimm_wq;
-
 struct nvdimm_bus {
 	struct nvdimm_bus_descriptor *nd_desc;
 	wait_queue_head_t wait;
@@ -27,7 +21,6 @@ struct nvdimm_bus {
 	struct mutex reconfig_mutex;
 	struct badrange badrange;
 };
-
 struct nvdimm {
 	unsigned long flags;
 	void *provider_data;
@@ -47,7 +40,6 @@ struct nvdimm {
 	struct delayed_work dwork;
 	const struct nvdimm_fw_ops *fw_ops;
 };
-
 static inline unsigned long nvdimm_security_flags(
 		struct nvdimm *nvdimm, enum nvdimm_passphrase_type ptype)
 {
@@ -56,12 +48,9 @@ static inline unsigned long nvdimm_security_flags(
 		| 1UL << NVDIMM_SECURITY_LOCKED
 		| 1UL << NVDIMM_SECURITY_UNLOCKED
 		| 1UL << NVDIMM_SECURITY_OVERWRITE;
-
 	if (!nvdimm->sec.ops)
 		return 0;
-
 	flags = nvdimm->sec.ops->get_flags(nvdimm, ptype);
-	/* disabled, locked, unlocked, and overwrite are mutually exclusive */
 	dev_WARN_ONCE(&nvdimm->dev, hweight64(flags & state_flags) > 1,
 			"reported invalid security state: %#llx\n",
 			(unsigned long long) flags);
@@ -81,7 +70,6 @@ static inline void nvdimm_security_overwrite_query(struct work_struct *work)
 {
 }
 #endif
-
 bool is_nvdimm(const struct device *dev);
 bool is_nd_pmem(const struct device *dev);
 bool is_nd_volatile(const struct device *dev);
@@ -116,11 +104,9 @@ struct nd_region;
 struct nvdimm_drvdata;
 struct nd_mapping;
 void nd_mapping_free_labels(struct nd_mapping *nd_mapping);
-
 int __reserve_free_pmem(struct device *dev, void *data);
 void release_free_pmem(struct nvdimm_bus *nvdimm_bus,
 		       struct nd_mapping *nd_mapping);
-
 resource_size_t nd_pmem_max_contiguous_dpa(struct nd_region *nd_region,
 					   struct nd_mapping *nd_mapping);
 resource_size_t nd_region_allocatable_dpa(struct nd_region *nd_region);
@@ -145,7 +131,6 @@ ssize_t nd_namespace_store(struct device *dev,
 		size_t len);
 struct nd_pfn *to_nd_pfn_safe(struct device *dev);
 bool is_nvdimm_bus(struct device *dev);
-
 #if IS_ENABLED(CONFIG_ND_CLAIM)
 int devm_nsio_enable(struct device *dev, struct nd_namespace_io *nsio,
 		resource_size_t size);
@@ -156,10 +141,9 @@ static inline int devm_nsio_enable(struct device *dev,
 {
 	return -ENXIO;
 }
-
 static inline void devm_nsio_disable(struct device *dev,
 		struct nd_namespace_io *nsio)
 {
 }
 #endif
-#endif /* __ND_CORE_H__ */
+#endif  

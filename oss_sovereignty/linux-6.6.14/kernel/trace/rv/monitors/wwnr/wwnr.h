@@ -1,24 +1,15 @@
-/*
- * Automatically generated C representation of wwnr automaton
- * For further information about this format, see kernel documentation:
- *   Documentation/trace/rv/deterministic_automata.rst
- */
-
 enum states_wwnr {
 	not_running_wwnr = 0,
 	running_wwnr,
 	state_max_wwnr
 };
-
 #define INVALID_STATE state_max_wwnr
-
 enum events_wwnr {
 	switch_in_wwnr = 0,
 	switch_out_wwnr,
 	wakeup_wwnr,
 	event_max_wwnr
 };
-
 struct automaton_wwnr {
 	char *state_names[state_max_wwnr];
 	char *event_names[event_max_wwnr];
@@ -26,7 +17,6 @@ struct automaton_wwnr {
 	unsigned char initial_state;
 	bool final_states[state_max_wwnr];
 };
-
 static const struct automaton_wwnr automaton_wwnr = {
 	.state_names = {
 		"not_running",

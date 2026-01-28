@@ -1,25 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* dvb-usb-ids.h is part of the DVB USB library.
- *
- * Copyright (C) 2004-5 Patrick Boettcher (patrick.boettcher@posteo.de) see
- * dvb-usb-init.c for copyright information.
- *
- * a header file containing define's for the USB device supported by the
- * various drivers.
- */
 #ifndef _DVB_USB_IDS_H_
 #define _DVB_USB_IDS_H_
-
 #include <linux/usb.h>
-
 #define DVB_USB_DEV(pid, vid) \
     [vid] = { USB_DEVICE(USB_VID_ ## pid, USB_PID_ ## vid) }
-
 #define DVB_USB_DEV_VER(pid, vid, lo, hi) \
     [vid] = { USB_DEVICE_VER(USB_VID_ ## pid, USB_PID_ ## vid, lo, hi) }
-
-/* Vendor IDs */
-
 #define USB_VID_774				0x7a69
 #define USB_VID_ADSTECH 			0x06e1
 #define USB_VID_AFATECH 			0x15a4
@@ -89,9 +74,6 @@
 #define USB_VID_XTENSIONS			0x1ae7
 #define USB_VID_YUAN				0x1164
 #define USB_VID_ZYDAS				0x0ace
-
-/* Product IDs */
-
 #define USB_PID_ADSTECH_USB2_COLD			0xa333
 #define USB_PID_ADSTECH_USB2_WARM			0xa334
 #define USB_PID_AFATECH_AF9005				0x9020
@@ -467,5 +449,4 @@
 #define USB_PID_YUAN_STK7700D				0x1efc
 #define USB_PID_YUAN_STK7700D_2 			0x1e8c
 #define USB_PID_YUAN_STK7700PH				0x1f08
-
 #endif

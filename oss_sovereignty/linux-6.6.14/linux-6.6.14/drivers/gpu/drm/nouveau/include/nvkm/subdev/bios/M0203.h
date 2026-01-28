@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVBIOS_M0203_H__
 #define __NVBIOS_M0203_H__
 struct nvbios_M0203T {
@@ -6,11 +5,9 @@ struct nvbios_M0203T {
 	u8  type;
 	u16 pointer;
 };
-
 u32 nvbios_M0203Te(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);
 u32 nvbios_M0203Tp(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len,
 		   struct nvbios_M0203T *);
-
 struct nvbios_M0203E {
 #define M0203E_TYPE_DDR2   0x0
 #define M0203E_TYPE_DDR3   0x1
@@ -24,7 +21,6 @@ struct nvbios_M0203E {
 	u8 strap;
 	u8 group;
 };
-
 u32 nvbios_M0203Ee(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);
 u32 nvbios_M0203Ep(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,
 		   struct nvbios_M0203E *);

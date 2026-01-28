@@ -1,14 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * netup_unidvb.h
- *
- * Data type definitions for NetUP Universal Dual DVB-CI
- *
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
-
 #include <linux/pci.h>
 #include <linux/i2c.h>
 #include <linux/workqueue.h>
@@ -16,18 +5,14 @@
 #include <media/v4l2-device.h>
 #include <media/videobuf2-dvb.h>
 #include <media/dvb_ca_en50221.h>
-
 #define NETUP_UNIDVB_NAME	"netup_unidvb"
 #define NETUP_UNIDVB_VERSION	"0.0.1"
 #define NETUP_VENDOR_ID		0x1b55
 #define NETUP_PCI_DEV_REVISION  0x2
-
-/* IRQ-related regisers */
 #define REG_ISR			0x4890
 #define REG_ISR_MASKED		0x4892
 #define REG_IMASK_SET		0x4894
 #define REG_IMASK_CLEAR		0x4896
-/* REG_ISR register bits */
 #define NETUP_UNIDVB_IRQ_SPI	(1 << 0)
 #define NETUP_UNIDVB_IRQ_I2C0	(1 << 1)
 #define NETUP_UNIDVB_IRQ_I2C1	(1 << 2)
@@ -40,16 +25,10 @@
 #define NETUP_UNIDVB_IRQ_CI	(1 << 10)
 #define NETUP_UNIDVB_IRQ_CAM0	(1 << 11)
 #define NETUP_UNIDVB_IRQ_CAM1	(1 << 12)
-
-/* NetUP Universal DVB card hardware revisions and it's PCI device id's:
- * 1.3 - CXD2841ER demod, ASCOT2E and HORUS3A tuners
- * 1.4 - CXD2854ER demod, HELENE tuner
-*/
 enum netup_hw_rev {
 	NETUP_HW_REV_1_3 = 0x18F6,
 	NETUP_HW_REV_1_4 = 0x18F7
 };
-
 struct netup_dma {
 	u8			num;
 	spinlock_t		lock;
@@ -66,7 +45,6 @@ struct netup_dma {
 	struct work_struct	work;
 	struct timer_list	timeout;
 };
-
 enum netup_i2c_state {
 	STATE_DONE,
 	STATE_WAIT,
@@ -74,9 +52,7 @@ enum netup_i2c_state {
 	STATE_WANT_WRITE,
 	STATE_ERROR
 };
-
 struct netup_i2c_regs;
-
 struct netup_i2c {
 	spinlock_t			lock;
 	wait_queue_head_t		wq;
@@ -87,7 +63,6 @@ struct netup_i2c {
 	enum netup_i2c_state		state;
 	u32				xmit_size;
 };
-
 struct netup_ci_state {
 	struct dvb_ca_en50221		ca;
 	u8 __iomem			*membase8_config;
@@ -96,9 +71,7 @@ struct netup_ci_state {
 	int status;
 	int nr;
 };
-
 struct netup_spi;
-
 struct netup_unidvb_dev {
 	struct pci_dev			*pci_dev;
 	int				pci_bus;
@@ -121,7 +94,6 @@ struct netup_unidvb_dev {
 	struct netup_spi		*spi;
 	enum netup_hw_rev		rev;
 };
-
 int netup_i2c_register(struct netup_unidvb_dev *ndev);
 void netup_i2c_unregister(struct netup_unidvb_dev *ndev);
 irqreturn_t netup_ci_interrupt(struct netup_unidvb_dev *ndev);

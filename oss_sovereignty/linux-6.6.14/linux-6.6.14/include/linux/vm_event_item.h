@@ -1,34 +1,27 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef VM_EVENT_ITEM_H_INCLUDED
 #define VM_EVENT_ITEM_H_INCLUDED
-
 #ifdef CONFIG_ZONE_DMA
 #define DMA_ZONE(xx) xx##_DMA,
 #else
 #define DMA_ZONE(xx)
 #endif
-
 #ifdef CONFIG_ZONE_DMA32
 #define DMA32_ZONE(xx) xx##_DMA32,
 #else
 #define DMA32_ZONE(xx)
 #endif
-
 #ifdef CONFIG_HIGHMEM
 #define HIGHMEM_ZONE(xx) xx##_HIGH,
 #else
 #define HIGHMEM_ZONE(xx)
 #endif
-
 #ifdef CONFIG_ZONE_DEVICE
 #define DEVICE_ZONE(xx) xx##_DEVICE,
 #else
 #define DEVICE_ZONE(xx)
 #endif
-
 #define FOR_ALL_ZONES(xx) DMA_ZONE(xx) DMA32_ZONE(xx) xx##_NORMAL, \
 	HIGHMEM_ZONE(xx) xx##_MOVABLE, DEVICE_ZONE(xx)
-
 enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		FOR_ALL_ZONES(PGALLOC)
 		FOR_ALL_ZONES(ALLOCSTALL)
@@ -87,13 +80,13 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		CMA_ALLOC_SUCCESS,
 		CMA_ALLOC_FAIL,
 #endif
-		UNEVICTABLE_PGCULLED,	/* culled to noreclaim list */
-		UNEVICTABLE_PGSCANNED,	/* scanned for reclaimability */
-		UNEVICTABLE_PGRESCUED,	/* rescued from noreclaim list */
+		UNEVICTABLE_PGCULLED,	 
+		UNEVICTABLE_PGSCANNED,	 
+		UNEVICTABLE_PGRESCUED,	 
 		UNEVICTABLE_PGMLOCKED,
 		UNEVICTABLE_PGMUNLOCKED,
-		UNEVICTABLE_PGCLEARED,	/* on COW, page truncate */
-		UNEVICTABLE_PGSTRANDED,	/* unable to isolate on unlock */
+		UNEVICTABLE_PGCLEARED,	 
+		UNEVICTABLE_PGSTRANDED,	 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 		THP_FAULT_ALLOC,
 		THP_FAULT_FALLBACK,
@@ -127,11 +120,11 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #endif
 #endif
 #ifdef CONFIG_DEBUG_TLBFLUSH
-		NR_TLB_REMOTE_FLUSH,	/* cpu tried to flush others' tlbs */
-		NR_TLB_REMOTE_FLUSH_RECEIVED,/* cpu received ipi for flush */
+		NR_TLB_REMOTE_FLUSH,	 
+		NR_TLB_REMOTE_FLUSH_RECEIVED, 
 		NR_TLB_LOCAL_FLUSH_ALL,
 		NR_TLB_LOCAL_FLUSH_ONE,
-#endif /* CONFIG_DEBUG_TLBFLUSH */
+#endif  
 #ifdef CONFIG_SWAP
 		SWAP_RA,
 		SWAP_RA_HIT,
@@ -158,12 +151,10 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #endif
 		NR_VM_EVENT_ITEMS
 };
-
 #ifndef CONFIG_TRANSPARENT_HUGEPAGE
 #define THP_FILE_ALLOC ({ BUILD_BUG(); 0; })
 #define THP_FILE_FALLBACK ({ BUILD_BUG(); 0; })
 #define THP_FILE_FALLBACK_CHARGE ({ BUILD_BUG(); 0; })
 #define THP_FILE_MAPPED ({ BUILD_BUG(); 0; })
 #endif
-
-#endif		/* VM_EVENT_ITEM_H_INCLUDED */
+#endif		 

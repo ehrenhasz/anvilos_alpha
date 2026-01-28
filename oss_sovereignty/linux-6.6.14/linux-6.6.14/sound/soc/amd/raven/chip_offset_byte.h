@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * AMD ACP 3.0 Register Documentation
- *
- * Copyright 2016 Advanced Micro Devices, Inc.
- */
-
 #ifndef _acp_ip_OFFSET_HEADER
 #define _acp_ip_OFFSET_HEADER
-// Registers from ACP_DMA block
-
 #define mmACP_DMA_CNTL_0                                0x1240000
 #define mmACP_DMA_CNTL_1                                0x1240004
 #define mmACP_DMA_CNTL_2                                0x1240008
@@ -70,10 +61,6 @@
 #define mmACP_DMA_CH_STS                                0x12400E8
 #define mmACP_DMA_CH_GROUP                              0x12400EC
 #define mmACP_DMA_CH_RST_STS                            0x12400F0
-
-
-// Registers from ACP_AXI2AXIATU block
-
 #define mmACPAXI2AXI_ATU_PAGE_SIZE_GRP_1                0x1240C00
 #define mmACPAXI2AXI_ATU_BASE_ADDR_GRP_1                0x1240C04
 #define mmACPAXI2AXI_ATU_PAGE_SIZE_GRP_2                0x1240C08
@@ -91,19 +78,11 @@
 #define mmACPAXI2AXI_ATU_PAGE_SIZE_GRP_8                0x1240C38
 #define mmACPAXI2AXI_ATU_BASE_ADDR_GRP_8                0x1240C3C
 #define mmACPAXI2AXI_ATU_CTRL                           0x1240C40
-
-
-// Registers from ACP_CLKRST block
-
 #define mmACP_SOFT_RESET                                0x1241000
 #define mmACP_CONTROL                                   0x1241004
 #define mmACP_STATUS                                    0x1241008
 #define mmACP_DSP0_OCD_HALT_ON_RST                      0x124100C
 #define mmACP_DYNAMIC_CG_MASTER_CONTROL                 0x1241010
-
-
-// Registers from ACP_MISC block
-
 #define mmACP_EXTERNAL_INTR_ENB                         0x1241800
 #define mmACP_EXTERNAL_INTR_CNTL                        0x1241804
 #define mmACP_EXTERNAL_INTR_STAT                        0x1241808
@@ -134,10 +113,6 @@
 #define mmACP_ERROR_STATUS                              0x12418C4
 #define mmACP_SW_I2S_ERROR_REASON                       0x12418C8
 #define mmACP_MEM_PG_STS                                0x12418CC
-
-
-// Registers from ACP_PGFSM block
-
 #define mmACP_I2S_PIN_CONFIG                            0x1241400
 #define mmACP_PAD_PULLUP_PULLDOWN_CTRL                  0x1241404
 #define mmACP_PAD_DRIVE_STRENGTH_CTRL                   0x1241408
@@ -147,10 +122,6 @@
 #define mmACP_PME_EN                                    0x1241418
 #define mmACP_PGFSM_CONTROL                             0x124141C
 #define mmACP_PGFSM_STATUS                              0x1241420
-
-
-// Registers from ACP_SCRATCH block
-
 #define mmACP_SCRATCH_REG_0                             0x1250000
 #define mmACP_SCRATCH_REG_1                             0x1250004
 #define mmACP_SCRATCH_REG_2                             0x1250008
@@ -280,10 +251,6 @@
 #define mmACP_SCRATCH_REG_126                           0x12501F8
 #define mmACP_SCRATCH_REG_127                           0x12501FC
 #define mmACP_SCRATCH_REG_128                           0x1250200
-
-
-// Registers from ACP_SW_ACLK block
-
 #define mmSW_CORB_Base_Address                          0x1243200
 #define mmSW_CORB_Write_Pointer                         0x1243204
 #define mmSW_CORB_Read_Pointer                          0x1243208
@@ -313,10 +280,6 @@
 #define mmSW_CLK_FREQUENCY_CTRL                         0x124326C
 #define mmSW_ERROR_INTR_MASK                            0x1243270
 #define mmSW_PHY_TEST_MODE_DATA_OFF                     0x1243274
-
-
-// Registers from ACP_SW_SWCLK block
-
 #define mmACP_SW_EN                                     0x1243000
 #define mmACP_SW_EN_STATUS                              0x1243004
 #define mmACP_SW_FRAMESIZE                              0x1243008
@@ -393,10 +356,6 @@
 #define mmACP_SW_CLK_RESUME_Delay_Cntr                  0x1243184
 #define mmACP_SW_BUS_RESET_CTRL                         0x1243188
 #define mmACP_SW_PRBS_ERR_STATUS                        0x124318C
-
-
-// Registers from ACP_AUDIO_BUFFERS block
-
 #define mmACP_I2S_RX_RINGBUFADDR                        0x1242000
 #define mmACP_I2S_RX_RINGBUFSIZE                        0x1242004
 #define mmACP_I2S_RX_LINKPOSITIONCNTR                   0x1242008
@@ -451,28 +410,16 @@
 #define mmACP_HS_TX_LINEARPOSITIONCNTR_HIGH             0x12420CC
 #define mmACP_HS_TX_LINEARPOSITIONCNTR_LOW              0x12420D0
 #define mmACP_HS_TX_INTR_WATERMARK_SIZE                 0x12420D4
-
-
-// Registers from ACP_I2S_TDM block
-
 #define mmACP_I2STDM_IER                                0x1242400
 #define mmACP_I2STDM_IRER                               0x1242404
 #define mmACP_I2STDM_RXFRMT                             0x1242408
 #define mmACP_I2STDM_ITER                               0x124240C
 #define mmACP_I2STDM_TXFRMT                             0x1242410
-
-
-// Registers from ACP_BT_TDM block
-
 #define mmACP_BTTDM_IER                                 0x1242800
 #define mmACP_BTTDM_IRER                                0x1242804
 #define mmACP_BTTDM_RXFRMT                              0x1242808
 #define mmACP_BTTDM_ITER                                0x124280C
 #define mmACP_BTTDM_TXFRMT                              0x1242810
-
-
-// Registers from AZALIA_IP block
-
 #define mmAudio_Az_Global_Capabilities                  0x1200000
 #define mmAudio_Az_Minor_Version                        0x1200002
 #define mmAudio_Az_Major_Version                        0x1200003
@@ -598,10 +545,6 @@
 #define mmAUDIO_AZ_POWER_MANAGEMENT_CONTROL             0x1204000
 #define mmAUDIO_AZ_IOC_SOFTRST_CONTROL                  0x1204004
 #define mmAUDIO_AZ_IOC_CLKGATE_CONTROL                  0x1204008
-
-
-// Registers from ACP_AZALIA block
-
 #define mmACP_AZ_PAGE0_LBASE_ADDR                       0x1243800
 #define mmACP_AZ_PAGE0_UBASE_ADDR                       0x1243804
 #define mmACP_AZ_PAGE0_PGEN_SIZE                        0x1243808
@@ -634,6 +577,4 @@
 #define mmACP_AZ_PAGE7_UBASE_ADDR                       0x1243874
 #define mmACP_AZ_PAGE7_PGEN_SIZE                        0x1243878
 #define mmACP_AZ_PAGE7_OFFSET                           0x124387C
-
-
 #endif

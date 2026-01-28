@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
-
 #ifndef __RTL92E_HW_H__
 #define __RTL92E_HW_H__
-
 void rtl92ee_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl92ee_read_eeprom_info(struct ieee80211_hw *hw);
 void rtl92ee_interrupt_recognized(struct ieee80211_hw *hw,

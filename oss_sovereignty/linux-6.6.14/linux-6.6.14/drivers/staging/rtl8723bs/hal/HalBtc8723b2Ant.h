@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*  The following is for 8723B 2Ant BT Co-exist definition */
 #define	BT_INFO_8723B_2ANT_B_FTP		BIT7
 #define	BT_INFO_8723B_2ANT_B_A2DP		BIT6
 #define	BT_INFO_8723B_2ANT_B_HID		BIT5
@@ -13,16 +6,13 @@
 #define	BT_INFO_8723B_2ANT_B_INQ_PAGE		BIT2
 #define	BT_INFO_8723B_2ANT_B_SCO_ESCO		BIT1
 #define	BT_INFO_8723B_2ANT_B_CONNECTION		BIT0
-
 #define		BTC_RSSI_COEX_THRESH_TOL_8723B_2ANT		2
-
 enum {
 	BT_INFO_SRC_8723B_2ANT_WIFI_FW        = 0x0,
 	BT_INFO_SRC_8723B_2ANT_BT_RSP         = 0x1,
 	BT_INFO_SRC_8723B_2ANT_BT_ACTIVE_SEND = 0x2,
 	BT_INFO_SRC_8723B_2ANT_MAX
 };
-
 enum {
 	BT_8723B_2ANT_BT_STATUS_NON_CONNECTED_IDLE = 0x0,
 	BT_8723B_2ANT_BT_STATUS_CONNECTED_IDLE     = 0x1,
@@ -32,7 +22,6 @@ enum {
 	BT_8723B_2ANT_BT_STATUS_ACL_SCO_BUSY       = 0x5,
 	BT_8723B_2ANT_BT_STATUS_MAX
 };
-
 enum {
 	BT_8723B_2ANT_COEX_ALGO_UNDEFINED       = 0x0,
 	BT_8723B_2ANT_COEX_ALGO_SCO             = 0x1,
@@ -47,9 +36,7 @@ enum {
 	BT_8723B_2ANT_COEX_ALGO_HID_A2DP        = 0xa,
 	BT_8723B_2ANT_COEX_ALGO_MAX             = 0xb,
 };
-
 struct coex_dm_8723b_2ant {
-	/*  fw mechanism */
 	u8 preBtDecPwrLvl;
 	u8 curBtDecPwrLvl;
 	u8 preFwDacSwingLvl;
@@ -66,8 +53,6 @@ struct coex_dm_8723b_2ant {
 	bool bCurPsTdmaOn;
 	bool bPreBtAutoReport;
 	bool bCurBtAutoReport;
-
-	/*  sw mechanism */
 	bool bPreRfRxLpfShrink;
 	bool bCurRfRxLpfShrink;
 	u32 btRf0x1eBackup;
@@ -90,24 +75,19 @@ struct coex_dm_8723b_2ant {
 	u8 preVal0x6cc;
 	u8 curVal0x6cc;
 	bool bLimitedDig;
-
-	/*  algorithm related */
 	u8 preAlgorithm;
 	u8 curAlgorithm;
 	u8 btStatus;
 	u8 wifiChnlInfo[3];
-
 	bool bNeedRecover0x948;
 	u32 backup0x948;
 };
-
 struct coex_sta_8723b_2ant {
 	bool bBtLinkExist;
 	bool bScoExist;
 	bool bA2dpExist;
 	bool bHidExist;
 	bool bPanExist;
-
 	bool bUnderLps;
 	bool bUnderIps;
 	u32 highPriorityTx;
@@ -125,10 +105,6 @@ struct coex_sta_8723b_2ant {
 	u8 btRetryCnt;
 	u8 btInfoExt;
 };
-
-/*  */
-/*  The following is interface which will notify coex module. */
-/*  */
 void EXhalbtc8723b2ant_PowerOnSetting(struct btc_coexist *pBtCoexist);
 void EXhalbtc8723b2ant_InitHwConfig(struct btc_coexist *pBtCoexist, bool bWifiOnly);
 void EXhalbtc8723b2ant_InitCoexDm(struct btc_coexist *pBtCoexist);

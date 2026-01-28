@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __Q6_ASM_H__
 #define __Q6_ASM_H__
 #include "q6dsp-common.h"
 #include <dt-bindings/sound/qcom,q6asm.h>
-
-/* ASM client callback events */
 #define CMD_PAUSE			0x0001
 #define ASM_CLIENT_EVENT_CMD_PAUSE_DONE		0x1001
 #define CMD_FLUSH				0x0002
@@ -23,18 +20,15 @@
 #define ASM_WRITE_TOKEN_MASK			GENMASK(15, 0)
 #define ASM_WRITE_TOKEN_LEN_MASK		GENMASK(31, 16)
 #define ASM_WRITE_TOKEN_LEN_SHIFT		16
-
 enum {
 	LEGACY_PCM_MODE = 0,
 	LOW_LATENCY_PCM_MODE,
 	ULTRA_LOW_LATENCY_PCM_MODE,
 	ULL_POST_PROCESSING_PCM_MODE,
 };
-
 #define MAX_SESSIONS	8
 #define FORMAT_LINEAR_PCM   0x0000
 #define ASM_LAST_BUFFER_FLAG           BIT(30)
-
 struct q6asm_flac_cfg {
         u32 sample_rate;
         u32 ext_sample_rate;
@@ -47,7 +41,6 @@ struct q6asm_flac_cfg {
         u16 sample_size;
         u16 md5_sum;
 };
-
 struct q6asm_wma_cfg {
 	u32 fmtag;
 	u32 num_channels;
@@ -60,7 +53,6 @@ struct q6asm_wma_cfg {
 	u32 adv_enc_options;
 	u32 adv_enc_options2;
 };
-
 struct q6asm_alac_cfg {
 	u32 frame_length;
 	u8 compatible_version;
@@ -75,7 +67,6 @@ struct q6asm_alac_cfg {
 	u32 sample_rate;
 	u32 channel_layout_tag;
 };
-
 struct q6asm_ape_cfg {
 	u16 compatible_version;
 	u16 compression_level;
@@ -88,7 +79,6 @@ struct q6asm_ape_cfg {
 	u32 sample_rate;
 	u32 seek_table_present;
 };
-
 typedef void (*q6asm_cb) (uint32_t opcode, uint32_t token,
 			  void *payload, void *priv);
 struct audio_client;
@@ -101,16 +91,13 @@ int q6asm_write_async(struct audio_client *ac, uint32_t stream_id, uint32_t len,
 int q6asm_open_write(struct audio_client *ac, uint32_t stream_id,
 		     uint32_t format, u32 codec_profile,
 		     uint16_t bits_per_sample, bool is_gapless);
-
 int q6asm_open_read(struct audio_client *ac, uint32_t stream_id,
 		    uint32_t format, uint16_t bits_per_sample);
 int q6asm_enc_cfg_blk_pcm_format_support(struct audio_client *ac,
 					 uint32_t stream_id, uint32_t rate,
 					 uint32_t channels,
 					 uint16_t bits_per_sample);
-
 int q6asm_read(struct audio_client *ac, uint32_t stream_id);
-
 int q6asm_media_format_block_multi_ch_pcm(struct audio_client *ac,
 					  uint32_t stream_id,
 					  uint32_t rate, uint32_t channels,
@@ -149,4 +136,4 @@ int q6asm_map_memory_regions(unsigned int dir,
 			     phys_addr_t phys,
 			     size_t period_sz, unsigned int periods);
 int q6asm_unmap_memory_regions(unsigned int dir, struct audio_client *ac);
-#endif /* __Q6_ASM_H__ */
+#endif  

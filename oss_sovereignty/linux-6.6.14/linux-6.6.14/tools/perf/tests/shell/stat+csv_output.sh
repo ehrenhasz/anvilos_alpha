@@ -1,34 +1,20 @@
-#!/bin/bash
-# perf stat CSV output linter
-# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-# Tests various perf stat CSV output commands for the
-# correct number of fields and the CSV separator set to ','.
-
 set -e
-
 . "$(dirname $0)"/lib/stat_output.sh
-
 csv_sep=@
-
 stat_output=$(mktemp /tmp/__perf_test.stat_output.csv.XXXXX)
-
 cleanup() {
   rm -f "${stat_output}"
-
   trap - EXIT TERM INT
 }
-
 trap_cleanup() {
   cleanup
   exit 1
 }
 trap trap_cleanup EXIT TERM INT
-
 function commachecker()
 {
 	local -i cnt=0
 	local exp=0
-
 	case "$1"
 	in "--no-args")		exp=6
 	;; "--system-wide")	exp=6
@@ -43,19 +29,13 @@ function commachecker()
 	;; "--per-die")		exp=8
 	;; "--per-cache")	exp=8
 	esac
-
 	while read line
 	do
-		# Ignore initial "started on" comment.
 		x=${line:0:1}
 		[ "$x" = "#" ] && continue
-		# Ignore initial blank line.
 		[ "$line" = "" ] && continue
-
-		# Count the number of commas
 		x=$(echo $line | tr -d -c $csv_sep)
 		cnt="${#x}"
-		# echo $line $cnt
 		[[ ! "$cnt" =~ $exp ]] && {
 			echo "wrong number of fields. expected $exp in $line" 1>&2
 			exit 1;
@@ -63,9 +43,7 @@ function commachecker()
 	done < "${stat_output}"
 	return 0
 }
-
 perf_cmd="-x$csv_sep -o ${stat_output}"
-
 skip_test=$(check_for_topology)
 check_no_args "CSV" "$perf_cmd"
 check_system_wide "CSV" "$perf_cmd"

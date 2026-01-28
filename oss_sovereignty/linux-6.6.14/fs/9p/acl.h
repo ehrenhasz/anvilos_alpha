@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- * Copyright IBM Corporation, 2010
- * Author Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
- */
 #ifndef FS_9P_ACL_H
 #define FS_9P_ACL_H
-
 #ifdef CONFIG_9P_FS_POSIX_ACL
 int v9fs_get_acl(struct inode *inode, struct p9_fid *fid);
 struct posix_acl *v9fs_iop_get_inode_acl(struct inode *inode, int type,
@@ -49,6 +43,5 @@ static inline int v9fs_acl_mode(struct inode *dir, umode_t *modep,
 {
 	return 0;
 }
-
 #endif
-#endif /* FS_9P_XATTR_H */
+#endif  

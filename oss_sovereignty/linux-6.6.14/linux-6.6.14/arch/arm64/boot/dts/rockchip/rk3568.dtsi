@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2021 Rockchip Electronics Co., Ltd.
- */
-
 #include "rk356x.dtsi"
-
 / {
 	compatible = "rockchip,rk3568";
-
 	sata0: sata@fc000000 {
 		compatible = "rockchip,rk3568-dwc-ahci", "snps,dwc-ahci";
 		reg = <0 0xfc000000 0 0x1000>;
@@ -21,32 +14,26 @@
 		power-domains = <&power RK3568_PD_PIPE>;
 		status = "disabled";
 	};
-
 	pipe_phy_grf0: syscon@fdc70000 {
 		compatible = "rockchip,rk3568-pipe-phy-grf", "syscon";
 		reg = <0x0 0xfdc70000 0x0 0x1000>;
 	};
-
 	qos_pcie3x1: qos@fe190080 {
 		compatible = "rockchip,rk3568-qos", "syscon";
 		reg = <0x0 0xfe190080 0x0 0x20>;
 	};
-
 	qos_pcie3x2: qos@fe190100 {
 		compatible = "rockchip,rk3568-qos", "syscon";
 		reg = <0x0 0xfe190100 0x0 0x20>;
 	};
-
 	qos_sata0: qos@fe190200 {
 		compatible = "rockchip,rk3568-qos", "syscon";
 		reg = <0x0 0xfe190200 0x0 0x20>;
 	};
-
 	pcie30_phy_grf: syscon@fdcb8000 {
 		compatible = "rockchip,rk3568-pcie3-phy-grf", "syscon";
 		reg = <0x0 0xfdcb8000 0x0 0x10000>;
 	};
-
 	pcie30phy: phy@fe8c0000 {
 		compatible = "rockchip,rk3568-pcie3-phy";
 		reg = <0x0 0xfe8c0000 0x0 0x20000>;
@@ -59,7 +46,6 @@
 		rockchip,phy-grf = <&pcie30_phy_grf>;
 		status = "disabled";
 	};
-
 	pcie3x1: pcie@fe270000 {
 		compatible = "rockchip,rk3568-pcie";
 		#address-cells = <3>;
@@ -101,9 +87,7 @@
 		reg-names = "dbi", "apb", "config";
 		resets = <&cru SRST_PCIE30X1_POWERUP>;
 		reset-names = "pipe";
-		/* bifurcation; lane1 when using 1+1 */
 		status = "disabled";
-
 		pcie3x1_intc: legacy-interrupt-controller {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -112,7 +96,6 @@
 			interrupts = <GIC_SPI 157 IRQ_TYPE_EDGE_RISING>;
 		};
 	};
-
 	pcie3x2: pcie@fe280000 {
 		compatible = "rockchip,rk3568-pcie";
 		#address-cells = <3>;
@@ -154,9 +137,7 @@
 		reg-names = "dbi", "apb", "config";
 		resets = <&cru SRST_PCIE30X2_POWERUP>;
 		reset-names = "pipe";
-		/* bifurcation; lane0 when using 1+1 */
 		status = "disabled";
-
 		pcie3x2_intc: legacy-interrupt-controller {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -165,7 +146,6 @@
 			interrupts = <GIC_SPI 162 IRQ_TYPE_EDGE_RISING>;
 		};
 	};
-
 	gmac0: ethernet@fe2a0000 {
 		compatible = "rockchip,rk3568-gmac", "snps,dwmac-4.20a";
 		reg = <0x0 0xfe2a0000 0x0 0x10000>;
@@ -189,30 +169,25 @@
 		snps,mtl-tx-config = <&gmac0_mtl_tx_setup>;
 		snps,tso;
 		status = "disabled";
-
 		mdio0: mdio {
 			compatible = "snps,dwmac-mdio";
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
 		};
-
 		gmac0_stmmac_axi_setup: stmmac-axi-config {
 			snps,blen = <0 0 0 0 16 8 4>;
 			snps,rd_osr_lmt = <8>;
 			snps,wr_osr_lmt = <4>;
 		};
-
 		gmac0_mtl_rx_setup: rx-queues-config {
 			snps,rx-queues-to-use = <1>;
 			queue0 {};
 		};
-
 		gmac0_mtl_tx_setup: tx-queues-config {
 			snps,tx-queues-to-use = <1>;
 			queue0 {};
 		};
 	};
-
 	combphy0: phy@fe820000 {
 		compatible = "rockchip,rk3568-naneng-combphy";
 		reg = <0x0 0xfe820000 0x0 0x100>;
@@ -229,18 +204,15 @@
 		status = "disabled";
 	};
 };
-
 &cpu0_opp_table {
 	opp-1992000000 {
 		opp-hz = /bits/ 64 <1992000000>;
 		opp-microvolt = <1150000 1150000 1150000>;
 	};
 };
-
 &pipegrf {
 	compatible = "rockchip,rk3568-pipe-grf", "syscon";
 };
-
 &power {
 	power-domain@RK3568_PD_PIPE {
 		reg = <RK3568_PD_PIPE>;
@@ -256,12 +228,10 @@
 		#power-domain-cells = <0>;
 	};
 };
-
 &usb_host0_xhci {
 	phys = <&usb2phy0_otg>, <&combphy0 PHY_TYPE_USB3>;
 	phy-names = "usb2-phy", "usb3-phy";
 };
-
 &vop {
 	compatible = "rockchip,rk3568-vop";
 };

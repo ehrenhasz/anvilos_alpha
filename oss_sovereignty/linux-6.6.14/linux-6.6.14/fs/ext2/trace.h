@@ -1,13 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ext2
-
 #if !defined(_EXT2_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _EXT2_TRACE_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(ext2_dio_class,
 	TP_PROTO(struct kiocb *iocb, struct iov_iter *iter, ssize_t ret),
 	TP_ARGS(iocb, iter, ret),
@@ -41,7 +36,6 @@ DECLARE_EVENT_CLASS(ext2_dio_class,
 		  __entry->aio,
 		  __entry->ret)
 );
-
 #define DEFINE_DIO_RW_EVENT(name)					  \
 DEFINE_EVENT(ext2_dio_class, name,					  \
 	TP_PROTO(struct kiocb *iocb, struct iov_iter *iter, ssize_t ret), \
@@ -51,7 +45,6 @@ DEFINE_DIO_RW_EVENT(ext2_dio_write_end);
 DEFINE_DIO_RW_EVENT(ext2_dio_write_buff_end);
 DEFINE_DIO_RW_EVENT(ext2_dio_read_begin);
 DEFINE_DIO_RW_EVENT(ext2_dio_read_end);
-
 TRACE_EVENT(ext2_dio_write_endio,
 	TP_PROTO(struct kiocb *iocb, ssize_t size, int ret),
 	TP_ARGS(iocb, size, ret),
@@ -85,9 +78,7 @@ TRACE_EVENT(ext2_dio_write_endio,
 		  __entry->aio,
 		  __entry->ret)
 );
-
-#endif /* _EXT2_TRACE_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace

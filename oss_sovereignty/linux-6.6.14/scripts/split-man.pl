@@ -1,15 +1,6 @@
-#!/usr/bin/env perl
-# SPDX-License-Identifier: GPL-2.0
-#
-# Author: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-#
-# Produce manpages from kernel-doc.
-# See Documentation/doc-guide/kernel-doc.rst for instructions
-
-if ($#ARGV < 0) {
+if ($
    die "where do I put the results?\n";
 }
-
 mkdir $ARGV[0],0777;
 $state = 0;
 while (<STDIN>) {
@@ -24,5 +15,4 @@ while (<STDIN>) {
 	print OUT $_;
     }
 }
-
 close OUT;

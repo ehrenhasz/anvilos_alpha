@@ -1,4 +1,3 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVBIOS_DCB_H__
 #define __NVBIOS_DCB_H__
 enum dcb_output_type {
@@ -12,9 +11,8 @@ enum dcb_output_type {
 	DCB_OUTPUT_UNUSED	= 0xf,
 	DCB_OUTPUT_ANY = -1,
 };
-
 struct dcb_output {
-	int index;	/* may not be raw dcb index if merging has happened */
+	int index;	 
 	u16 hasht;
 	u16 hashm;
 	enum dcb_output_type type;
@@ -56,7 +54,6 @@ struct dcb_output {
 	bool i2c_upper_default;
 	int id;
 };
-
 u16 dcb_table(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *ent, u8 *len);
 u16 dcb_outp(struct nvkm_bios *, u8 idx, u8 *ver, u8 *len);
 u16 dcb_outp_parse(struct nvkm_bios *, u8 idx, u8 *, u8 *,

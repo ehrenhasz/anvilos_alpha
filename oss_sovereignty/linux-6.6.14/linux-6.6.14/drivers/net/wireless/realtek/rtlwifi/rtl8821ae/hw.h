@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
-
 #ifndef __RTL8821AE_HW_H__
 #define __RTL8821AE_HW_H__
-
 void rtl8821ae_get_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val);
 void rtl8821ae_read_eeprom_info(struct ieee80211_hw *hw);
-
 void rtl8821ae_interrupt_recognized(struct ieee80211_hw *hw,
 				    struct rtl_int *int_vec);
 int rtl8821ae_hw_init(struct ieee80211_hw *hw);
@@ -31,7 +26,6 @@ void rtl8821ae_enable_hw_security_config(struct ieee80211_hw *hw);
 void rtl8821ae_set_key(struct ieee80211_hw *hw, u32 key_index,
 		       u8 *p_macaddr, bool is_group, u8 enc_algo,
 		       bool is_wepkey, bool clear_all);
-
 void rtl8821ae_bt_reg_init(struct ieee80211_hw *hw);
 void rtl8821ae_bt_hw_init(struct ieee80211_hw *hw);
 void rtl8821ae_suspend(struct ieee80211_hw *hw);
@@ -44,5 +38,4 @@ void _rtl8821ae_resume_tx_beacon(struct ieee80211_hw *hw);
 void rtl8821ae_add_wowlan_pattern(struct ieee80211_hw *hw,
 				  struct rtl_wow_pattern *rtl_pattern,
 				  u8 index);
-
 #endif

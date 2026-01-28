@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- *
- * Author: Jee Heng Sia <jeeheng.sia@starfivetech.com>
- */
-
 #ifndef __ASSEMBLY__
 #error "Only include this from assembly code"
 #endif
-
 #ifndef __ASM_ASSEMBLER_H
 #define __ASM_ASSEMBLER_H
-
 #include <asm/asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/csr.h>
-
-/*
- * suspend_restore_csrs - restore CSRs
- */
 	.macro suspend_restore_csrs
 		REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_EPC)(a0)
 		csrw	CSR_EPC, t0
@@ -29,10 +16,6 @@
 		REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_CAUSE)(a0)
 		csrw	CSR_CAUSE, t0
 	.endm
-
-/*
- * suspend_restore_regs - Restore registers (except A0 and T0-T6)
- */
 	.macro suspend_restore_regs
 		REG_L	ra, (SUSPEND_CONTEXT_REGS + PT_RA)(a0)
 		REG_L	sp, (SUSPEND_CONTEXT_REGS + PT_SP)(a0)
@@ -58,25 +41,16 @@
 		REG_L	s10, (SUSPEND_CONTEXT_REGS + PT_S10)(a0)
 		REG_L	s11, (SUSPEND_CONTEXT_REGS + PT_S11)(a0)
 	.endm
-
-/*
- * copy_page - copy 1 page (4KB) of data from source to destination
- * @a0 - destination
- * @a1 - source
- */
 	.macro	copy_page a0, a1
 		lui	a2, 0x1
 		add	a2, a2, a0
 1 :
 		REG_L	t0, 0(a1)
 		REG_L	t1, SZREG(a1)
-
 		REG_S	t0, 0(a0)
 		REG_S	t1, SZREG(a0)
-
 		addi	a0, a0, 2 * SZREG
 		addi	a1, a1, 2 * SZREG
 		bne	a2, a0, 1b
 	.endm
-
-#endif	/* __ASM_ASSEMBLER_H */
+#endif	 

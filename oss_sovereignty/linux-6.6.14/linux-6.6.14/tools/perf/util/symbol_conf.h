@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_SYMBOL_CONF
 #define __PERF_SYMBOL_CONF 1
-
 #include <stdbool.h>
-
 struct strlist;
 struct intlist;
-
 struct symbol_conf {
 	bool		nanosecs;
 	unsigned short	priv_size;
@@ -78,7 +74,5 @@ struct symbol_conf {
 	int		group_sort_idx;
 	int		addr_range;
 };
-
 extern struct symbol_conf symbol_conf;
-
-#endif // __PERF_SYMBOL_CONF
+#endif  

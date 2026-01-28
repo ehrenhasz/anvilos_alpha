@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __STARFIVE_STR_H__
 #define __STARFIVE_STR_H__
-
 #include <crypto/aes.h>
 #include <crypto/hash.h>
 #include <crypto/scatterwalk.h>
@@ -11,26 +9,22 @@
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
 #include <linux/interrupt.h>
-
 #define STARFIVE_ALG_CR_OFFSET			0x0
 #define STARFIVE_ALG_FIFO_OFFSET		0x4
 #define STARFIVE_IE_MASK_OFFSET			0x8
 #define STARFIVE_IE_FLAG_OFFSET			0xc
 #define STARFIVE_DMA_IN_LEN_OFFSET		0x10
 #define STARFIVE_DMA_OUT_LEN_OFFSET		0x14
-
 #define STARFIVE_IE_MASK_AES_DONE		0x1
 #define STARFIVE_IE_MASK_HASH_DONE		0x4
 #define STARFIVE_IE_MASK_PKA_DONE		0x8
 #define STARFIVE_IE_FLAG_AES_DONE		0x1
 #define STARFIVE_IE_FLAG_HASH_DONE		0x4
 #define STARFIVE_IE_FLAG_PKA_DONE		0x8
-
 #define STARFIVE_MSG_BUFFER_SIZE		SZ_16K
 #define MAX_KEY_SIZE				SHA512_BLOCK_SIZE
 #define STARFIVE_AES_IV_LEN			AES_BLOCK_SIZE
 #define STARFIVE_AES_CTR_LEN			AES_BLOCK_SIZE
-
 union starfive_aes_csr {
 	u32 v;
 	struct {
@@ -69,7 +63,6 @@ union starfive_aes_csr {
 		u32 rsvd_1			:5;
 	};
 };
-
 union starfive_hash_csr {
 	u32 v;
 	struct {
@@ -100,7 +93,6 @@ union starfive_hash_csr {
 		u32 rsvd_4			:14;
 	};
 };
-
 union starfive_pka_cacr {
 	u32 v;
 	struct {
@@ -124,7 +116,6 @@ union starfive_pka_cacr {
 		u32 bigendian			:1;
 	};
 };
-
 struct starfive_rsa_key {
 	u8	*n;
 	u8	*e;
@@ -134,7 +125,6 @@ struct starfive_rsa_key {
 	int	bitlen;
 	size_t	key_sz;
 };
-
 union starfive_alg_cr {
 	u32 v;
 	struct {
@@ -148,11 +138,9 @@ union starfive_alg_cr {
 		u32 rsvd_2			:23;
 	};
 };
-
 struct starfive_cryp_ctx {
 	struct starfive_cryp_dev		*cryp;
 	struct starfive_cryp_request_ctx	*rctx;
-
 	unsigned int				hash_mode;
 	u8					key[MAX_KEY_SIZE];
 	int					keylen;
@@ -162,17 +150,14 @@ struct starfive_cryp_ctx {
 	struct crypto_ahash			*ahash_fbk;
 	struct crypto_aead			*aead_fbk;
 };
-
 struct starfive_cryp_dev {
 	struct list_head			list;
 	struct device				*dev;
 	struct clk				*hclk;
 	struct clk				*ahb;
 	struct reset_control			*rst;
-
 	void __iomem				*base;
 	phys_addr_t				phys_base;
-
 	u32					dma_maxburst;
 	struct dma_chan				*tx;
 	struct dma_chan				*rx;
@@ -200,14 +185,12 @@ struct starfive_cryp_dev {
 		struct skcipher_request		*sreq;
 	} req;
 };
-
 struct starfive_cryp_request_ctx {
 	union {
 		union starfive_hash_csr		hash;
 		union starfive_pka_cacr		pka;
 		union starfive_aes_csr		aes;
 	} csr;
-
 	struct scatterlist			*in_sg;
 	struct scatterlist			*out_sg;
 	struct ahash_request			ahash_fbk_req;
@@ -219,18 +202,13 @@ struct starfive_cryp_request_ctx {
 	unsigned char				*adata;
 	u8 rsa_data[] __aligned(sizeof(u32));
 };
-
 struct starfive_cryp_dev *starfive_cryp_find_dev(struct starfive_cryp_ctx *ctx);
-
 int starfive_hash_register_algs(void);
 void starfive_hash_unregister_algs(void);
-
 int starfive_rsa_register_algs(void);
 void starfive_rsa_unregister_algs(void);
-
 int starfive_aes_register_algs(void);
 void starfive_aes_unregister_algs(void);
-
 void starfive_hash_done_task(unsigned long param);
 void starfive_aes_done_task(unsigned long param);
 #endif

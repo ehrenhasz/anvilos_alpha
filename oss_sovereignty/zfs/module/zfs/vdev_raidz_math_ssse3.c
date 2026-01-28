@@ -1,41 +1,12 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
-
 #include <sys/isa_defs.h>
-
 #if defined(__x86_64) && defined(HAVE_SSSE3)
-
 #include <sys/types.h>
 #include <sys/simd.h>
-
 #ifdef __linux__
 #define	__asm __asm__ __volatile__
 #endif
-
 #define	_REG_CNT(_0, _1, _2, _3, _4, _5, _6, _7, N, ...) N
 #define	REG_CNT(r...) _REG_CNT(r, 8, 7, 6, 5, 4, 3, 2, 1)
-
 #define	VR0_(REG, ...) "xmm"#REG
 #define	VR1_(_1, REG, ...) "xmm"#REG
 #define	VR2_(_1, _2, REG, ...) "xmm"#REG
@@ -44,7 +15,6 @@
 #define	VR5_(_1, _2, _3, _4, _5, REG, ...) "xmm"#REG
 #define	VR6_(_1, _2, _3, _4, _5, _6, REG, ...) "xmm"#REG
 #define	VR7_(_1, _2, _3, _4, _5, _6, _7, REG, ...) "xmm"#REG
-
 #define	VR0(r...) VR0_(r)
 #define	VR1(r...) VR1_(r)
 #define	VR2(r...) VR2_(r, 1)
@@ -53,22 +23,15 @@
 #define	VR5(r...) VR5_(r, 1, 2, 3)
 #define	VR6(r...) VR6_(r, 1, 2, 3, 4)
 #define	VR7(r...) VR7_(r, 1, 2, 3, 4, 5)
-
 #define	R_01(REG1, REG2, ...) REG1, REG2
 #define	_R_23(_0, _1, REG2, REG3, ...) REG2, REG3
 #define	R_23(REG...) _R_23(REG, 1, 2, 3)
-
 #define	ZFS_ASM_BUG()	ASSERT(0)
-
 const uint8_t gf_clmul_mod_lt[4*256][16];
-
 #define	ELEM_SIZE 16
-
 typedef struct v {
 	uint8_t b[ELEM_SIZE] __attribute__((aligned(ELEM_SIZE)));
 } v_t;
-
-
 #define	XOR_ACC(src, r...) 						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -90,7 +53,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	XOR(r...)							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -110,9 +72,7 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	ZERO(r...)	XOR(r, r)
-
 #define	COPY(r...) 							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -132,7 +92,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	LOAD(src, r...) 						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -154,7 +113,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	STORE(dst, r...)						\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -176,7 +134,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	MUL2_SETUP()							\
 {   									\
 	__asm(								\
@@ -184,7 +141,6 @@ typedef struct v {
 	    "pshufd $0x0, %%xmm15, %%xmm15\n"				\
 	    : : [mask] "r" (0x1d1d1d1d));				\
 }
-
 #define	_MUL2_x2(r...) 							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -205,7 +161,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	MUL2(r...)							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -220,13 +175,11 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	MUL4(r...)							\
 {									\
 	MUL2(r);							\
 	MUL2(r);							\
 }
-
 #define	_0f		"xmm15"
 #define	_a_save		"xmm14"
 #define	_b_save		"xmm13"
@@ -234,18 +187,17 @@ typedef struct v {
 #define	_lt_clmul_a	"xmm11"
 #define	_lt_mod_b	"xmm10"
 #define	_lt_clmul_b	"xmm15"
-
 #define	_MULx2(c, r...)							\
 {									\
 	switch (REG_CNT(r)) {						\
 	case 2:								\
 		__asm(							\
-		    /* lts for upper part */				\
+		     				\
 		    "movd %[mask], %%" _0f "\n"				\
 		    "pshufd $0x0, %%" _0f ", %%" _0f "\n"		\
 		    "movdqa 0x00(%[lt]), %%" _lt_mod_a "\n"		\
 		    "movdqa 0x10(%[lt]), %%" _lt_clmul_a "\n"		\
-		    /* upper part */					\
+		     					\
 		    "movdqa %%" VR0(r) ", %%" _a_save "\n"		\
 		    "movdqa %%" VR1(r) ", %%" _b_save "\n"		\
 		    "psraw $0x4, %%" VR0(r) "\n"			\
@@ -267,12 +219,12 @@ typedef struct v {
 		    "pxor %%" _lt_mod_b ",%%" _lt_clmul_b "\n"		\
 		    "movdqa %%" _lt_clmul_a ",%%" VR0(r) "\n"		\
 		    "movdqa %%" _lt_clmul_b ",%%" VR1(r) "\n"		\
-		    /* lts for lower part */				\
+		     				\
 		    "movdqa 0x20(%[lt]), %%" _lt_mod_a "\n"		\
 		    "movdqa 0x30(%[lt]), %%" _lt_clmul_a "\n"		\
 		    "movdqa %%" _lt_mod_a ", %%" _lt_mod_b "\n"		\
 		    "movdqa %%" _lt_clmul_a ", %%" _lt_clmul_b "\n"	\
-		    /* lower part */					\
+		     					\
 		    "pshufb %%" _a_save ",%%" _lt_mod_a "\n"		\
 		    "pshufb %%" _b_save ",%%" _lt_mod_b "\n"		\
 		    "pshufb %%" _a_save ",%%" _lt_clmul_a "\n"		\
@@ -289,7 +241,6 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	MUL(c, r...) 							\
 {									\
 	switch (REG_CNT(r)) {						\
@@ -304,85 +255,65 @@ typedef struct v {
 		ZFS_ASM_BUG();						\
 	}								\
 }
-
 #define	raidz_math_begin()	kfpu_begin()
 #define	raidz_math_end()	kfpu_end()
-
-
 #define	SYN_STRIDE		4
-
 #define	ZERO_STRIDE		4
 #define	ZERO_DEFINE()		{}
 #define	ZERO_D			0, 1, 2, 3
-
 #define	COPY_STRIDE		4
 #define	COPY_DEFINE()		{}
 #define	COPY_D			0, 1, 2, 3
-
 #define	ADD_STRIDE		4
 #define	ADD_DEFINE()		{}
 #define	ADD_D 			0, 1, 2, 3
-
 #define	MUL_STRIDE		4
 #define	MUL_DEFINE() 		{}
 #define	MUL_D			0, 1, 2, 3
-
 #define	GEN_P_STRIDE		4
 #define	GEN_P_DEFINE()		{}
 #define	GEN_P_P			0, 1, 2, 3
-
 #define	GEN_PQ_STRIDE		4
 #define	GEN_PQ_DEFINE() 	{}
 #define	GEN_PQ_D		0, 1, 2, 3
 #define	GEN_PQ_C		4, 5, 6, 7
-
 #define	GEN_PQR_STRIDE		4
 #define	GEN_PQR_DEFINE() 	{}
 #define	GEN_PQR_D		0, 1, 2, 3
 #define	GEN_PQR_C		4, 5, 6, 7
-
 #define	SYN_Q_DEFINE()		{}
 #define	SYN_Q_D			0, 1, 2, 3
 #define	SYN_Q_X			4, 5, 6, 7
-
 #define	SYN_R_DEFINE()		{}
 #define	SYN_R_D			0, 1, 2, 3
 #define	SYN_R_X			4, 5, 6, 7
-
 #define	SYN_PQ_DEFINE() 	{}
 #define	SYN_PQ_D		0, 1, 2, 3
 #define	SYN_PQ_X		4, 5, 6, 7
-
 #define	REC_PQ_STRIDE		2
 #define	REC_PQ_DEFINE() 	{}
 #define	REC_PQ_X		0, 1
 #define	REC_PQ_Y		2, 3
 #define	REC_PQ_T		4, 5
-
 #define	SYN_PR_DEFINE() 	{}
 #define	SYN_PR_D		0, 1, 2, 3
 #define	SYN_PR_X		4, 5, 6, 7
-
 #define	REC_PR_STRIDE		2
 #define	REC_PR_DEFINE() 	{}
 #define	REC_PR_X		0, 1
 #define	REC_PR_Y		2, 3
 #define	REC_PR_T		4, 5
-
 #define	SYN_QR_DEFINE() 	{}
 #define	SYN_QR_D		0, 1, 2, 3
 #define	SYN_QR_X		4, 5, 6, 7
-
 #define	REC_QR_STRIDE		2
 #define	REC_QR_DEFINE() 	{}
 #define	REC_QR_X		0, 1
 #define	REC_QR_Y		2, 3
 #define	REC_QR_T		4, 5
-
 #define	SYN_PQR_DEFINE() 	{}
 #define	SYN_PQR_D		0, 1, 2, 3
 #define	SYN_PQR_X		4, 5, 6, 7
-
 #define	REC_PQR_STRIDE		2
 #define	REC_PQR_DEFINE() 	{}
 #define	REC_PQR_X		0, 1
@@ -390,21 +321,16 @@ typedef struct v {
 #define	REC_PQR_Z		4, 5
 #define	REC_PQR_XS		6, 7
 #define	REC_PQR_YS		8, 9
-
-
 #include <sys/vdev_raidz_impl.h>
 #include "vdev_raidz_math_impl.h"
-
 DEFINE_GEN_METHODS(ssse3);
 DEFINE_REC_METHODS(ssse3);
-
 static boolean_t
 raidz_will_ssse3_work(void)
 {
 	return (kfpu_allowed() && zfs_sse_available() &&
 	    zfs_sse2_available() && zfs_ssse3_available());
 }
-
 const raidz_impl_ops_t vdev_raidz_ssse3_impl = {
 	.init = NULL,
 	.fini = NULL,
@@ -413,13 +339,9 @@ const raidz_impl_ops_t vdev_raidz_ssse3_impl = {
 	.is_supported = &raidz_will_ssse3_work,
 	.name = "ssse3"
 };
-
-#endif /* defined(__x86_64) && defined(HAVE_SSSE3) */
-
-
+#endif  
 #if defined(__x86_64)
 #if defined(HAVE_SSSE3) || defined(HAVE_AVX2) || defined(HAVE_AVX512BW)
-/* BEGIN CSTYLED */
 const uint8_t
 __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] =
 {
@@ -2472,6 +2394,5 @@ __attribute__((aligned(256))) gf_clmul_mod_lt[4*256][16] =
 	{ 0x00, 0xff, 0xfe, 0x01, 0xfc, 0x03, 0x02, 0xfd,
 	    0xf8, 0x07, 0x06, 0xf9, 0x04, 0xfb, 0xfa, 0x05  }
 };
-/* END CSTYLED */
-#endif /* defined(HAVE_SSSE3) || defined(HAVE_AVX2) || defined(HAVE_AVX512BW) */
-#endif /* defined(__x86_64) */
+#endif  
+#endif  

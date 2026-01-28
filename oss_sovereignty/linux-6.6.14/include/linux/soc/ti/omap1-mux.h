@@ -1,14 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __SOC_TI_OMAP1_MUX_H
 #define __SOC_TI_OMAP1_MUX_H
-/*
- * This should not really be a global header, it reflects the
- * traditional way that omap1 does pin muxing without the
- * pinctrl subsystem.
- */
-
 enum omap7xx_index {
-	/* OMAP 730 keyboard */
 	E2_7XX_KBR0,
 	J7_7XX_KBR1,
 	E1_7XX_KBR2,
@@ -19,69 +11,47 @@ enum omap7xx_index {
 	E4_7XX_KBC2,
 	F4_7XX_KBC3,
 	E3_7XX_KBC4,
-
-	/* USB */
 	AA17_7XX_USB_DM,
 	W16_7XX_USB_PU_EN,
 	W17_7XX_USB_VBUSI,
 	W18_7XX_USB_DMCK_OUT,
 	W19_7XX_USB_DCRST,
-
-	/* MMC */
 	MMC_7XX_CMD,
 	MMC_7XX_CLK,
 	MMC_7XX_DAT0,
-
-	/* I2C */
 	I2C_7XX_SCL,
 	I2C_7XX_SDA,
-
-	/* SPI */
 	SPI_7XX_1,
 	SPI_7XX_2,
 	SPI_7XX_3,
 	SPI_7XX_4,
 	SPI_7XX_5,
 	SPI_7XX_6,
-
-	/* UART */
 	UART_7XX_1,
 	UART_7XX_2,
 };
-
 enum omap1xxx_index {
-	/* UART1 (BT_UART_GATING)*/
 	UART1_TX = 0,
 	UART1_RTS,
-
-	/* UART2 (COM_UART_GATING)*/
 	UART2_TX,
 	UART2_RX,
 	UART2_CTS,
 	UART2_RTS,
-
-	/* UART3 (GIGA_UART_GATING) */
 	UART3_TX,
 	UART3_RX,
 	UART3_CTS,
 	UART3_RTS,
 	UART3_CLKREQ,
-	UART3_BCLK,	/* 12MHz clock out */
+	UART3_BCLK,	 
 	Y15_1610_UART3_RTS,
-
-	/* PWT & PWL */
 	PWT,
 	PWL,
-
-	/* USB master generic */
 	R18_USB_VBUS,
 	R18_1510_USB_GPIO0,
 	W4_USB_PUEN,
 	W4_USB_CLKO,
 	W4_USB_HIGHZ,
 	W4_GPIO58,
-
-	/* USB1 master */
 	USB1_SUSP,
 	USB1_SEO,
 	W13_1610_USB1_SE0,
@@ -93,8 +63,6 @@ enum omap1xxx_index {
 	USB1_SPEED,
 	R13_1610_USB1_SPEED,
 	R13_1710_USB1_SE0,
-
-	/* USB2 master */
 	USB2_SUSP,
 	USB2_VP,
 	USB2_TXEN,
@@ -102,23 +70,15 @@ enum omap1xxx_index {
 	USB2_RCV,
 	USB2_SEO,
 	USB2_TXD,
-
-	/* OMAP-1510 GPIO */
 	R18_1510_GPIO0,
 	R19_1510_GPIO1,
 	M14_1510_GPIO2,
-
-	/* OMAP1610 GPIO */
 	P18_1610_GPIO3,
 	Y15_1610_GPIO17,
-
-	/* OMAP-1710 GPIO */
 	R18_1710_GPIO0,
 	V2_1710_GPIO10,
 	N21_1710_GPIO14,
 	W15_1710_GPIO40,
-
-	/* MPUIO */
 	MPUIO2,
 	N15_1610_MPUIO2,
 	MPUIO4,
@@ -132,23 +92,15 @@ enum omap1xxx_index {
 	E20_1610_MPUIO13,
 	U20_1610_MPUIO14,
 	E19_1610_MPUIO15,
-
-	/* MCBSP2 */
 	MCBSP2_CLKR,
 	MCBSP2_CLKX,
 	MCBSP2_DR,
 	MCBSP2_DX,
 	MCBSP2_FSR,
 	MCBSP2_FSX,
-
-	/* MCBSP3 */
 	MCBSP3_CLKX,
-
-	/* Misc ballouts */
 	BALLOUT_V8_ARMIO3,
 	N20_HDQ,
-
-	/* OMAP-1610 MMC2 */
 	W8_1610_MMC2_DAT0,
 	V8_1610_MMC2_DAT1,
 	W15_1610_MMC2_DAT2,
@@ -159,16 +111,12 @@ enum omap1xxx_index {
 	V5_1610_MMC2_DATDIR0,
 	W19_1610_MMC2_DATDIR1,
 	R18_1610_MMC2_CLKIN,
-
-	/* OMAP-1610 External Trace Interface */
 	M19_1610_ETM_PSTAT0,
 	L15_1610_ETM_PSTAT1,
 	L18_1610_ETM_PSTAT2,
 	L19_1610_ETM_D0,
 	J19_1610_ETM_D6,
 	J18_1610_ETM_D7,
-
-	/* OMAP16XX GPIO */
 	P20_1610_GPIO4,
 	V9_1610_GPIO7,
 	W8_1610_GPIO9,
@@ -182,16 +130,12 @@ enum omap1xxx_index {
 	V14_16XX_GPIO37,
 	R9_16XX_GPIO18,
 	L14_16XX_GPIO49,
-
-	/* OMAP-1610 uWire */
 	V19_1610_UWIRE_SCLK,
 	U18_1610_UWIRE_SDI,
 	W21_1610_UWIRE_SDO,
 	N14_1610_UWIRE_CS0,
 	P15_1610_UWIRE_CS3,
 	N15_1610_UWIRE_CS1,
-
-	/* OMAP-1610 SPI */
 	U19_1610_SPIF_SCK,
 	U18_1610_SPIF_DIN,
 	P20_1610_SPIF_DIN,
@@ -201,25 +145,17 @@ enum omap1xxx_index {
 	N15_1610_SPIF_CS1,
 	T19_1610_SPIF_CS2,
 	P15_1610_SPIF_CS3,
-
-	/* OMAP-1610 Flash */
 	L3_1610_FLASH_CS2B_OE,
 	M8_1610_FLASH_CS2B_WE,
-
-	/* First MMC */
 	MMC_CMD,
 	MMC_DAT1,
 	MMC_DAT2,
 	MMC_DAT0,
 	MMC_CLK,
 	MMC_DAT3,
-
-	/* OMAP-1710 MMC CMDDIR and DATDIR0 */
 	M15_1710_MMC_CLKI,
 	P19_1710_MMC_CMDDIR,
 	P20_1710_MMC_DATDIR0,
-
-	/* OMAP-1610 USB0 alternate pin configuration */
 	W9_USB0_TXEN,
 	AA9_USB0_VP,
 	Y5_USB0_RCV,
@@ -228,28 +164,20 @@ enum omap1xxx_index {
 	W5_USB0_SE0,
 	V9_USB0_SPEED,
 	V9_USB0_SUSP,
-
-	/* USB2 */
 	W9_USB2_TXEN,
 	AA9_USB2_VP,
 	Y5_USB2_RCV,
 	R9_USB2_VM,
 	V6_USB2_TXD,
 	W5_USB2_SE0,
-
-	/* 16XX UART */
 	R13_1610_UART1_TX,
 	V14_16XX_UART1_RX,
 	R14_1610_UART1_CTS,
 	AA15_1610_UART1_RTS,
 	R9_16XX_UART2_RX,
 	L14_16XX_UART3_RX,
-
-	/* I2C OMAP-1610 */
 	I2C_SCL,
 	I2C_SDA,
-
-	/* Keypad */
 	F18_1610_KBC0,
 	D20_1610_KBC1,
 	D19_1610_KBC2,
@@ -261,24 +189,16 @@ enum omap1xxx_index {
 	E20_1610_KBR3,
 	E19_1610_KBR4,
 	N19_1610_KBR5,
-
-	/* Power management */
 	T20_1610_LOW_PWR,
-
-	/* MCLK Settings */
 	V5_1710_MCLK_ON,
 	V5_1710_MCLK_OFF,
 	R10_1610_MCLK_ON,
 	R10_1610_MCLK_OFF,
-
-	/* CompactFlash controller */
 	P11_1610_CF_CD2,
 	R11_1610_CF_IOIS16,
 	V10_1610_CF_IREQ,
 	W10_1610_CF_RESET,
 	W11_1610_CF_CD1,
-
-	/* parallel camera */
 	J15_1610_CAM_LCLK,
 	J18_1610_CAM_D7,
 	J19_1610_CAM_D6,
@@ -292,20 +212,15 @@ enum omap1xxx_index {
 	L15_1610_CAM_HS,
 	M19_1610_CAM_RSTZ,
 	Y15_1610_CAM_OUTCLK,
-
-	/* serial camera */
 	H19_1610_CAM_EXCLK,
 	Y12_1610_CCP_CLKP,
 	W13_1610_CCP_CLKM,
 	W14_1610_CCP_DATAP,
 	Y14_1610_CCP_DATAM,
-
 };
-
 #ifdef CONFIG_OMAP_MUX
 extern int omap_cfg_reg(unsigned long reg_cfg);
 #else
 static inline int omap_cfg_reg(unsigned long reg_cfg) { return 0; }
 #endif
-
 #endif

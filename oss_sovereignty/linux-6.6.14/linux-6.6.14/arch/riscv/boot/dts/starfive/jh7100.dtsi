@@ -1,22 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2021 StarFive Technology Co., Ltd.
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
-
 /dts-v1/;
 #include <dt-bindings/clock/starfive-jh7100.h>
 #include <dt-bindings/reset/starfive-jh7100.h>
-
 / {
 	compatible = "starfive,jh7100";
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		U74_0: cpu@0 {
 			compatible = "sifive,u74-mc", "riscv";
 			reg = <0>;
@@ -34,14 +25,12 @@
 			mmu-type = "riscv,sv39";
 			riscv,isa = "rv64imafdc";
 			tlb-split;
-
 			cpu0_intc: interrupt-controller {
 				compatible = "riscv,cpu-intc";
 				interrupt-controller;
 				#interrupt-cells = <1>;
 			};
 		};
-
 		U74_1: cpu@1 {
 			compatible = "sifive,u74-mc", "riscv";
 			reg = <1>;
@@ -59,44 +48,35 @@
 			mmu-type = "riscv,sv39";
 			riscv,isa = "rv64imafdc";
 			tlb-split;
-
 			cpu1_intc: interrupt-controller {
 				compatible = "riscv,cpu-intc";
 				interrupt-controller;
 				#interrupt-cells = <1>;
 			};
 		};
-
 		cpu-map {
 			cluster0 {
 				core0 {
 					cpu = <&U74_0>;
 				};
-
 				core1 {
 					cpu = <&U74_1>;
 				};
 			};
 		};
 	};
-
 	thermal-zones {
 		cpu-thermal {
 			polling-delay-passive = <250>;
 			polling-delay = <15000>;
-
 			thermal-sensors = <&sfctemp>;
-
 			trips {
 				cpu_alert0 {
-					/* milliCelsius */
 					temperature = <75000>;
 					hysteresis = <2000>;
 					type = "passive";
 				};
-
 				cpu_crit {
-					/* milliCelsius */
 					temperature = <90000>;
 					hysteresis = <2000>;
 					type = "critical";
@@ -104,49 +84,38 @@
 			};
 		};
 	};
-
 	osc_sys: osc_sys {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* This value must be overridden by the board */
 		clock-frequency = <0>;
 	};
-
 	osc_aud: osc_aud {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* This value must be overridden by the board */
 		clock-frequency = <0>;
 	};
-
 	gmac_rmii_ref: gmac_rmii_ref {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* Should be overridden by the board when needed */
 		clock-frequency = <0>;
 	};
-
 	gmac_gr_mii_rxclk: gmac_gr_mii_rxclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
-		/* Should be overridden by the board when needed */
 		clock-frequency = <0>;
 	};
-
 	soc {
 		compatible = "simple-bus";
 		interrupt-parent = <&plic>;
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		clint: clint@2000000 {
 			compatible = "starfive,jh7100-clint", "sifive,clint0";
 			reg = <0x0 0x2000000 0x0 0x10000>;
 			interrupts-extended = <&cpu0_intc 3 &cpu0_intc 7
 					       &cpu1_intc 3 &cpu1_intc 7>;
 		};
-
 		plic: interrupt-controller@c000000 {
 			compatible = "starfive,jh7100-plic", "sifive,plic-1.0.0";
 			reg = <0x0 0xc000000 0x0 0x4000000>;
@@ -157,7 +126,6 @@
 			#interrupt-cells = <1>;
 			riscv,ndev = <133>;
 		};
-
 		clkgen: clock-controller@11800000 {
 			compatible = "starfive,jh7100-clkgen";
 			reg = <0x0 0x11800000 0x0 0x10000>;
@@ -165,13 +133,11 @@
 			clock-names = "osc_sys", "osc_aud", "gmac_rmii_ref", "gmac_gr_mii_rxclk";
 			#clock-cells = <1>;
 		};
-
 		rstgen: reset-controller@11840000 {
 			compatible = "starfive,jh7100-reset";
 			reg = <0x0 0x11840000 0x0 0x10000>;
 			#reset-cells = <1>;
 		};
-
 		i2c0: i2c@118b0000 {
 			compatible = "snps,designware-i2c";
 			reg = <0x0 0x118b0000 0x0 0x10000>;
@@ -184,7 +150,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@118c0000 {
 			compatible = "snps,designware-i2c";
 			reg = <0x0 0x118c0000 0x0 0x10000>;
@@ -197,7 +162,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		gpio: pinctrl@11910000 {
 			compatible = "starfive,jh7100-pinctrl";
 			reg = <0x0 0x11910000 0x0 0x10000>,
@@ -211,7 +175,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		uart2: serial@12430000 {
 			compatible = "starfive,jh7100-uart", "snps,dw-apb-uart";
 			reg = <0x0 0x12430000 0x0 0x10000>;
@@ -224,7 +187,6 @@
 			reg-shift = <2>;
 			status = "disabled";
 		};
-
 		uart3: serial@12440000 {
 			compatible = "starfive,jh7100-uart", "snps,dw-apb-uart";
 			reg = <0x0 0x12440000 0x0 0x10000>;
@@ -237,7 +199,6 @@
 			reg-shift = <2>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@12450000 {
 			compatible = "snps,designware-i2c";
 			reg = <0x0 0x12450000 0x0 0x10000>;
@@ -250,7 +211,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c3: i2c@12460000 {
 			compatible = "snps,designware-i2c";
 			reg = <0x0 0x12460000 0x0 0x10000>;
@@ -263,7 +223,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		watchdog@12480000 {
 			compatible = "starfive,jh7100-wdt";
 			reg = <0x0 0x12480000 0x0 0x10000>;
@@ -273,7 +232,6 @@
 			resets = <&rstgen JH7100_RSTN_WDTIMER_APB>,
 				 <&rstgen JH7100_RSTN_WDT>;
 		};
-
 		sfctemp: temperature-sensor@124a0000 {
 			compatible = "starfive,jh7100-temp";
 			reg = <0x0 0x124a0000 0x0 0x10000>;

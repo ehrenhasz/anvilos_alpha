@@ -1,38 +1,16 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * IPWireless 3G PCMCIA Network Driver
- *
- * Original code
- *   by Stephen Blackheath <stephen@blacksapphire.com>,
- *      Ben Martel <benm@symmetric.co.nz>
- *
- * Copyrighted as follows:
- *   Copyright (C) 2004 by Symmetric Systems Ltd (NZ)
- *
- * Various driver changes and rewrites, port to new kernels
- *   Copyright (C) 2006-2007 Jiri Kosina
- *
- * Misc code cleanups and updates
- *   Copyright (C) 2007 David Sterba
- */
-
 #ifndef _IPWIRELESS_CS_HARDWARE_H_
 #define _IPWIRELESS_CS_HARDWARE_H_
-
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
-
 #define IPW_CONTROL_LINE_CTS 0x0001
 #define IPW_CONTROL_LINE_DCD 0x0002
 #define IPW_CONTROL_LINE_DSR 0x0004
 #define IPW_CONTROL_LINE_RI  0x0008
 #define IPW_CONTROL_LINE_DTR 0x0010
 #define IPW_CONTROL_LINE_RTS 0x0020
-
 struct ipw_hardware;
 struct ipw_network;
-
 struct ipw_hardware *ipwireless_hardware_create(void);
 void ipwireless_hardware_free(struct ipw_hardware *hw);
 irqreturn_t ipwireless_interrupt(int irq, void *dev_id);
@@ -59,5 +37,4 @@ void ipwireless_init_hardware_v1(struct ipw_hardware *hw,
 				 void *reboot_cb_data);
 void ipwireless_init_hardware_v2_v3(struct ipw_hardware *hw);
 void ipwireless_sleep(unsigned int tenths);
-
 #endif

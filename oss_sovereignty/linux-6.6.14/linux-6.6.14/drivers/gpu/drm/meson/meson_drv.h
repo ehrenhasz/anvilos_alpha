@@ -1,67 +1,49 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
-
 #ifndef __MESON_DRV_H
 #define __MESON_DRV_H
-
 #include <linux/device.h>
 #include <linux/of.h>
 #include <linux/regmap.h>
-
 struct drm_crtc;
 struct drm_device;
 struct drm_plane;
 struct meson_drm;
 struct meson_afbcd_ops;
-
 enum vpu_compatible {
 	VPU_COMPATIBLE_GXBB = 0,
 	VPU_COMPATIBLE_GXL  = 1,
 	VPU_COMPATIBLE_GXM  = 2,
 	VPU_COMPATIBLE_G12A = 3,
 };
-
 enum {
 	MESON_ENC_CVBS = 0,
 	MESON_ENC_HDMI,
 	MESON_ENC_DSI,
 	MESON_ENC_LAST,
 };
-
 struct meson_drm_match_data {
 	enum vpu_compatible compat;
 	struct meson_afbcd_ops *afbcd_ops;
 };
-
 struct meson_drm_soc_limits {
 	unsigned int max_hdmi_phy_freq;
 };
-
 struct meson_drm {
 	struct device *dev;
 	enum vpu_compatible compat;
 	void __iomem *io_base;
 	struct regmap *hhi;
 	int vsync_irq;
-
 	struct meson_canvas *canvas;
 	u8 canvas_id_osd1;
 	u8 canvas_id_vd1_0;
 	u8 canvas_id_vd1_1;
 	u8 canvas_id_vd1_2;
-
 	struct drm_device *drm;
 	struct drm_crtc *crtc;
 	struct drm_plane *primary_plane;
 	struct drm_plane *overlay_plane;
 	void *encoders[MESON_ENC_LAST];
-
 	const struct meson_drm_soc_limits *limits;
-
-	/* Components Data */
 	struct {
 		bool osd1_enabled;
 		bool osd1_interlace;
@@ -90,7 +72,6 @@ struct meson_drm {
 		uint32_t osd_blend_din0_scope_v;
 		uint32_t osb_blend0_size;
 		uint32_t osb_blend1_size;
-
 		bool vd1_enabled;
 		bool vd1_commit;
 		bool vd1_afbc;
@@ -155,31 +136,26 @@ struct meson_drm {
 		uint32_t vpp_blend_vd2_h_start_end;
 		uint32_t vpp_blend_vd2_v_start_end;
 	} viu;
-
 	struct {
 		unsigned int current_mode;
 		bool hdmi_repeat;
 		bool venc_repeat;
 		bool hdmi_use_enci;
 	} venc;
-
 	struct {
 		dma_addr_t addr_dma;
 		uint32_t *addr;
 		unsigned int offset;
 	} rdma;
-
 	struct {
 		struct meson_afbcd_ops *ops;
 		u64 modifier;
 		u32 format;
 	} afbcd;
 };
-
 static inline int meson_vpu_is_compatible(struct meson_drm *priv,
 					  enum vpu_compatible family)
 {
 	return priv->compat == family;
 }
-
-#endif /* __MESON_DRV_H */
+#endif  

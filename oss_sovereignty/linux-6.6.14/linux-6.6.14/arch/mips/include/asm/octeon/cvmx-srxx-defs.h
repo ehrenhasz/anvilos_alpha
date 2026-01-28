@@ -1,40 +1,11 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_SRXX_DEFS_H__
 #define __CVMX_SRXX_DEFS_H__
-
 #define CVMX_SRXX_COM_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000200ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SRXX_IGN_RX_FULL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000218ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SRXX_SPI4_CALX(offset, block_id) (CVMX_ADD_IO_SEG(0x0001180090000000ull) + (((offset) & 31) + ((block_id) & 1) * 0x1000000ull) * 8)
 #define CVMX_SRXX_SPI4_STAT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000208ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SRXX_SW_TICK_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180090000220ull) + ((block_id) & 1) * 0x8000000ull)
 #define CVMX_SRXX_SW_TICK_DAT(block_id) (CVMX_ADD_IO_SEG(0x0001180090000228ull) + ((block_id) & 1) * 0x8000000ull)
-
 union cvmx_srxx_com_ctl {
 	uint64_t u64;
 	struct cvmx_srxx_com_ctl_s {
@@ -53,7 +24,6 @@ union cvmx_srxx_com_ctl {
 #endif
 	} s;
 };
-
 union cvmx_srxx_ign_rx_full {
 	uint64_t u64;
 	struct cvmx_srxx_ign_rx_full_s {
@@ -66,7 +36,6 @@ union cvmx_srxx_ign_rx_full {
 #endif
 	} s;
 };
-
 union cvmx_srxx_spi4_calx {
 	uint64_t u64;
 	struct cvmx_srxx_spi4_calx_s {
@@ -87,7 +56,6 @@ union cvmx_srxx_spi4_calx {
 #endif
 	} s;
 };
-
 union cvmx_srxx_spi4_stat {
 	uint64_t u64;
 	struct cvmx_srxx_spi4_stat_s {
@@ -104,7 +72,6 @@ union cvmx_srxx_spi4_stat {
 #endif
 	} s;
 };
-
 union cvmx_srxx_sw_tick_ctl {
 	uint64_t u64;
 	struct cvmx_srxx_sw_tick_ctl_s {
@@ -125,7 +92,6 @@ union cvmx_srxx_sw_tick_ctl {
 #endif
 	} s;
 };
-
 union cvmx_srxx_sw_tick_dat {
 	uint64_t u64;
 	struct cvmx_srxx_sw_tick_dat_s {
@@ -136,5 +102,4 @@ union cvmx_srxx_sw_tick_dat {
 #endif
 	} s;
 };
-
 #endif

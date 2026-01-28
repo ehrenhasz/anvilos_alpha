@@ -1,51 +1,19 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_DIO_STREAM_ENCODER_DCN314_H__
 #define __DC_DIO_STREAM_ENCODER_DCN314_H__
-
 #include "dcn30/dcn30_vpg.h"
 #include "dcn30/dcn30_afmt.h"
 #include "stream_encoder.h"
 #include "dcn20/dcn20_stream_encoder.h"
-
-/* Register bit field name change */
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_GATE_DIS__SHIFT                                        0x8
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_EN__SHIFT                                              0x9
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_CLOCK_ON__SHIFT                                        0xa
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP__SHIFT                                                      0xe
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_DATA_ORDER_INVERT__SHIFT                                              0xf
-
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_GATE_DIS_MASK                                          0x00000100L
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_EN_MASK                                                0x00000200L
 #define RDPCSTX0_RDPCSTX_CLOCK_CNTL__RDPCS_SYMCLK_DIV2_CLOCK_ON_MASK                                          0x00000400L
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_DATA_SWAP_MASK                                                        0x00004000L
 #define DPCSTX0_DPCSTX_TX_CNTL__DPCS_TX_DATA_ORDER_INVERT_MASK                                                0x00008000L
-
-
 #define SE_DCN314_REG_LIST(id)\
 	SRI(AFMT_CNTL, DIG, id), \
 	SRI(DIG_FE_CNTL, DIG, id), \
@@ -108,8 +76,6 @@
 	SRI(DIG_FE_CNTL, DIG, id), \
 	SRI(DIG_CLOCK_PATTERN, DIG, id), \
 	SRI(DIG_FIFO_CTRL0, DIG, id)
-
-
 #define SE_COMMON_MASK_SH_LIST_DCN314(mask_sh)\
 	SE_SF(DP0_DP_PIXEL_FORMAT, DP_PIXEL_ENCODING, mask_sh),\
 	SE_SF(DP0_DP_PIXEL_FORMAT, DP_COMPONENT_DEPTH, mask_sh),\
@@ -261,7 +227,6 @@
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_ENABLE, mask_sh),\
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_RESET, mask_sh),\
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_RESET_DONE, mask_sh)
-
 void dcn314_dio_stream_encoder_construct(
 	struct dcn10_stream_encoder *enc1,
 	struct dc_context *ctx,
@@ -272,44 +237,34 @@ void dcn314_dio_stream_encoder_construct(
 	const struct dcn10_stream_enc_registers *regs,
 	const struct dcn10_stream_encoder_shift *se_shift,
 	const struct dcn10_stream_encoder_mask *se_mask);
-
 void enc3_stream_encoder_update_hdmi_info_packets(
 	struct stream_encoder *enc,
 	const struct encoder_info_frame *info_frame);
-
 void enc3_stream_encoder_stop_hdmi_info_packets(
 	struct stream_encoder *enc);
-
 void enc3_stream_encoder_update_dp_info_packets_sdp_line_num(
 		struct stream_encoder *enc,
 		struct encoder_info_frame *info_frame);
-
 void enc3_stream_encoder_update_dp_info_packets(
 	struct stream_encoder *enc,
 	const struct encoder_info_frame *info_frame);
-
 void enc3_audio_mute_control(
 	struct stream_encoder *enc,
 	bool mute);
-
 void enc3_se_dp_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info);
-
 void enc3_se_dp_audio_enable(
 	struct stream_encoder *enc);
-
 void enc3_se_hdmi_audio_setup(
 	struct stream_encoder *enc,
 	unsigned int az_inst,
 	struct audio_info *info,
 	struct audio_crtc_info *audio_crtc_info);
-
 void enc3_dp_set_dsc_pps_info_packet(
 	struct stream_encoder *enc,
 	bool enable,
 	uint8_t *dsc_packed_pps,
 	bool immediate_update);
-
-#endif /* __DC_DIO_STREAM_ENCODER_DCN314_H__ */
+#endif  

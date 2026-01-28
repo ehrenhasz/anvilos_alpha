@@ -1,17 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ISCSI_TARGET_ERL1_H
 #define ISCSI_TARGET_ERL1_H
-
 #include <linux/types.h>
-#include <scsi/iscsi_proto.h> /* itt_t */
-
+#include <scsi/iscsi_proto.h>  
 struct iscsit_cmd;
 struct iscsit_conn;
 struct iscsi_datain_req;
 struct iscsi_ooo_cmdsn;
 struct iscsi_pdu;
 struct iscsit_session;
-
 extern int iscsit_dump_data_payload(struct iscsit_conn *, u32, int);
 extern int iscsit_create_recovery_datain_values_datasequenceinorder_yes(
 			struct iscsit_cmd *, struct iscsi_datain_req *);
@@ -34,5 +30,4 @@ extern void iscsit_handle_dataout_timeout(struct timer_list *t);
 extern void iscsit_mod_dataout_timer(struct iscsit_cmd *);
 extern void iscsit_start_dataout_timer(struct iscsit_cmd *, struct iscsit_conn *);
 extern void iscsit_stop_dataout_timer(struct iscsit_cmd *);
-
-#endif /* ISCSI_TARGET_ERL1_H */
+#endif  

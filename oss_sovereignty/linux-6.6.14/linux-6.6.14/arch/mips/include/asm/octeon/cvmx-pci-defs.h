@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Networks
- *
- * Contact: support@caviumnetworks.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Networks
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Networks for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_PCI_DEFS_H__
 #define __CVMX_PCI_DEFS_H__
-
 #define CVMX_PCI_BAR1_INDEXX(offset) (0x0000000000000100ull + ((offset) & 31) * 4)
 #define CVMX_PCI_BIST_REG (0x00000000000001C0ull)
 #define CVMX_PCI_CFG00 (0x0000000000000000ull)
@@ -113,7 +85,6 @@
 #define CVMX_PCI_WIN_WR_ADDR (0x0000000000000000ull)
 #define CVMX_PCI_WIN_WR_DATA (0x0000000000000010ull)
 #define CVMX_PCI_WIN_WR_MASK (0x0000000000000018ull)
-
 union cvmx_pci_bar1_indexx {
 	uint32_t u32;
 	struct cvmx_pci_bar1_indexx_s {
@@ -132,7 +103,6 @@ union cvmx_pci_bar1_indexx {
 #endif
 	} s;
 };
-
 union cvmx_pci_bist_reg {
 	uint64_t u64;
 	struct cvmx_pci_bist_reg_s {
@@ -163,7 +133,6 @@ union cvmx_pci_bist_reg {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg00 {
 	uint32_t u32;
 	struct cvmx_pci_cfg00_s {
@@ -176,7 +145,6 @@ union cvmx_pci_cfg00 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg01 {
 	uint32_t u32;
 	struct cvmx_pci_cfg01_s {
@@ -233,7 +201,6 @@ union cvmx_pci_cfg01 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg02 {
 	uint32_t u32;
 	struct cvmx_pci_cfg02_s {
@@ -246,7 +213,6 @@ union cvmx_pci_cfg02 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg03 {
 	uint32_t u32;
 	struct cvmx_pci_cfg03_s {
@@ -269,7 +235,6 @@ union cvmx_pci_cfg03 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg04 {
 	uint32_t u32;
 	struct cvmx_pci_cfg04_s {
@@ -288,7 +253,6 @@ union cvmx_pci_cfg04 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg05 {
 	uint32_t u32;
 	struct cvmx_pci_cfg05_s {
@@ -299,7 +263,6 @@ union cvmx_pci_cfg05 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg06 {
 	uint32_t u32;
 	struct cvmx_pci_cfg06_s {
@@ -318,7 +281,6 @@ union cvmx_pci_cfg06 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg07 {
 	uint32_t u32;
 	struct cvmx_pci_cfg07_s {
@@ -329,7 +291,6 @@ union cvmx_pci_cfg07 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg08 {
 	uint32_t u32;
 	struct cvmx_pci_cfg08_s {
@@ -346,7 +307,6 @@ union cvmx_pci_cfg08 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg09 {
 	uint32_t u32;
 	struct cvmx_pci_cfg09_s {
@@ -359,7 +319,6 @@ union cvmx_pci_cfg09 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg10 {
 	uint32_t u32;
 	struct cvmx_pci_cfg10_s {
@@ -370,7 +329,6 @@ union cvmx_pci_cfg10 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg11 {
 	uint32_t u32;
 	struct cvmx_pci_cfg11_s {
@@ -383,7 +341,6 @@ union cvmx_pci_cfg11 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg12 {
 	uint32_t u32;
 	struct cvmx_pci_cfg12_s {
@@ -400,7 +357,6 @@ union cvmx_pci_cfg12 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg13 {
 	uint32_t u32;
 	struct cvmx_pci_cfg13_s {
@@ -413,7 +369,6 @@ union cvmx_pci_cfg13 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg15 {
 	uint32_t u32;
 	struct cvmx_pci_cfg15_s {
@@ -430,7 +385,6 @@ union cvmx_pci_cfg15 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg16 {
 	uint32_t u32;
 	struct cvmx_pci_cfg16_s {
@@ -471,7 +425,6 @@ union cvmx_pci_cfg16 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg17 {
 	uint32_t u32;
 	struct cvmx_pci_cfg17_s {
@@ -482,7 +435,6 @@ union cvmx_pci_cfg17 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg18 {
 	uint32_t u32;
 	struct cvmx_pci_cfg18_s {
@@ -493,7 +445,6 @@ union cvmx_pci_cfg18 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg19 {
 	uint32_t u32;
 	struct cvmx_pci_cfg19_s {
@@ -538,7 +489,6 @@ union cvmx_pci_cfg19 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg20 {
 	uint32_t u32;
 	struct cvmx_pci_cfg20_s {
@@ -549,7 +499,6 @@ union cvmx_pci_cfg20 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg21 {
 	uint32_t u32;
 	struct cvmx_pci_cfg21_s {
@@ -560,7 +509,6 @@ union cvmx_pci_cfg21 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg22 {
 	uint32_t u32;
 	struct cvmx_pci_cfg22_s {
@@ -583,7 +531,6 @@ union cvmx_pci_cfg22 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg56 {
 	uint32_t u32;
 	struct cvmx_pci_cfg56_s {
@@ -606,7 +553,6 @@ union cvmx_pci_cfg56 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg57 {
 	uint32_t u32;
 	struct cvmx_pci_cfg57_s {
@@ -641,7 +587,6 @@ union cvmx_pci_cfg57 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg58 {
 	uint32_t u32;
 	struct cvmx_pci_cfg58_s {
@@ -670,7 +615,6 @@ union cvmx_pci_cfg58 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg59 {
 	uint32_t u32;
 	struct cvmx_pci_cfg59_s {
@@ -699,7 +643,6 @@ union cvmx_pci_cfg59 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg60 {
 	uint32_t u32;
 	struct cvmx_pci_cfg60_s {
@@ -722,7 +665,6 @@ union cvmx_pci_cfg60 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg61 {
 	uint32_t u32;
 	struct cvmx_pci_cfg61_s {
@@ -735,7 +677,6 @@ union cvmx_pci_cfg61 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg62 {
 	uint32_t u32;
 	struct cvmx_pci_cfg62_s {
@@ -746,7 +687,6 @@ union cvmx_pci_cfg62 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cfg63 {
 	uint32_t u32;
 	struct cvmx_pci_cfg63_s {
@@ -759,7 +699,6 @@ union cvmx_pci_cfg63 {
 #endif
 	} s;
 };
-
 union cvmx_pci_cnt_reg {
 	uint64_t u64;
 	struct cvmx_pci_cnt_reg_s {
@@ -780,7 +719,6 @@ union cvmx_pci_cnt_reg {
 #endif
 	} s;
 };
-
 union cvmx_pci_ctl_status_2 {
 	uint32_t u32;
 	struct cvmx_pci_ctl_status_2_s {
@@ -870,7 +808,6 @@ union cvmx_pci_ctl_status_2 {
 #endif
 	} cn31xx;
 };
-
 union cvmx_pci_dbellx {
 	uint32_t u32;
 	struct cvmx_pci_dbellx_s {
@@ -883,7 +820,6 @@ union cvmx_pci_dbellx {
 #endif
 	} s;
 };
-
 union cvmx_pci_dma_cntx {
 	uint32_t u32;
 	struct cvmx_pci_dma_cntx_s {
@@ -894,7 +830,6 @@ union cvmx_pci_dma_cntx {
 #endif
 	} s;
 };
-
 union cvmx_pci_dma_int_levx {
 	uint32_t u32;
 	struct cvmx_pci_dma_int_levx_s {
@@ -905,7 +840,6 @@ union cvmx_pci_dma_int_levx {
 #endif
 	} s;
 };
-
 union cvmx_pci_dma_timex {
 	uint32_t u32;
 	struct cvmx_pci_dma_timex_s {
@@ -916,7 +850,6 @@ union cvmx_pci_dma_timex {
 #endif
 	} s;
 };
-
 union cvmx_pci_instr_countx {
 	uint32_t u32;
 	struct cvmx_pci_instr_countx_s {
@@ -927,7 +860,6 @@ union cvmx_pci_instr_countx {
 #endif
 	} s;
 };
-
 union cvmx_pci_int_enb {
 	uint64_t u64;
 	struct cvmx_pci_int_enb_s {
@@ -1144,7 +1076,6 @@ union cvmx_pci_int_enb {
 #endif
 	} cn31xx;
 };
-
 union cvmx_pci_int_enb2 {
 	uint64_t u64;
 	struct cvmx_pci_int_enb2_s {
@@ -1361,7 +1292,6 @@ union cvmx_pci_int_enb2 {
 #endif
 	} cn31xx;
 };
-
 union cvmx_pci_int_sum {
 	uint64_t u64;
 	struct cvmx_pci_int_sum_s {
@@ -1578,7 +1508,6 @@ union cvmx_pci_int_sum {
 #endif
 	} cn31xx;
 };
-
 union cvmx_pci_int_sum2 {
 	uint64_t u64;
 	struct cvmx_pci_int_sum2_s {
@@ -1795,7 +1724,6 @@ union cvmx_pci_int_sum2 {
 #endif
 	} cn31xx;
 };
-
 union cvmx_pci_msi_rcv {
 	uint32_t u32;
 	struct cvmx_pci_msi_rcv_s {
@@ -1808,7 +1736,6 @@ union cvmx_pci_msi_rcv {
 #endif
 	} s;
 };
-
 union cvmx_pci_pkt_creditsx {
 	uint32_t u32;
 	struct cvmx_pci_pkt_creditsx_s {
@@ -1821,7 +1748,6 @@ union cvmx_pci_pkt_creditsx {
 #endif
 	} s;
 };
-
 union cvmx_pci_pkts_sentx {
 	uint32_t u32;
 	struct cvmx_pci_pkts_sentx_s {
@@ -1832,7 +1758,6 @@ union cvmx_pci_pkts_sentx {
 #endif
 	} s;
 };
-
 union cvmx_pci_pkts_sent_int_levx {
 	uint32_t u32;
 	struct cvmx_pci_pkts_sent_int_levx_s {
@@ -1843,7 +1768,6 @@ union cvmx_pci_pkts_sent_int_levx {
 #endif
 	} s;
 };
-
 union cvmx_pci_pkts_sent_timex {
 	uint32_t u32;
 	struct cvmx_pci_pkts_sent_timex_s {
@@ -1854,7 +1778,6 @@ union cvmx_pci_pkts_sent_timex {
 #endif
 	} s;
 };
-
 union cvmx_pci_read_cmd_6 {
 	uint32_t u32;
 	struct cvmx_pci_read_cmd_6_s {
@@ -1869,7 +1792,6 @@ union cvmx_pci_read_cmd_6 {
 #endif
 	} s;
 };
-
 union cvmx_pci_read_cmd_c {
 	uint32_t u32;
 	struct cvmx_pci_read_cmd_c_s {
@@ -1884,7 +1806,6 @@ union cvmx_pci_read_cmd_c {
 #endif
 	} s;
 };
-
 union cvmx_pci_read_cmd_e {
 	uint32_t u32;
 	struct cvmx_pci_read_cmd_e_s {
@@ -1899,7 +1820,6 @@ union cvmx_pci_read_cmd_e {
 #endif
 	} s;
 };
-
 union cvmx_pci_read_timeout {
 	uint64_t u64;
 	struct cvmx_pci_read_timeout_s {
@@ -1914,7 +1834,6 @@ union cvmx_pci_read_timeout {
 #endif
 	} s;
 };
-
 union cvmx_pci_scm_reg {
 	uint64_t u64;
 	struct cvmx_pci_scm_reg_s {
@@ -1927,7 +1846,6 @@ union cvmx_pci_scm_reg {
 #endif
 	} s;
 };
-
 union cvmx_pci_tsr_reg {
 	uint64_t u64;
 	struct cvmx_pci_tsr_reg_s {
@@ -1940,7 +1858,6 @@ union cvmx_pci_tsr_reg {
 #endif
 	} s;
 };
-
 union cvmx_pci_win_rd_addr {
 	uint64_t u64;
 	struct cvmx_pci_win_rd_addr_s {
@@ -1981,7 +1898,6 @@ union cvmx_pci_win_rd_addr {
 #endif
 	} cn38xx;
 };
-
 union cvmx_pci_win_rd_data {
 	uint64_t u64;
 	struct cvmx_pci_win_rd_data_s {
@@ -1992,7 +1908,6 @@ union cvmx_pci_win_rd_data {
 #endif
 	} s;
 };
-
 union cvmx_pci_win_wr_addr {
 	uint64_t u64;
 	struct cvmx_pci_win_wr_addr_s {
@@ -2009,7 +1924,6 @@ union cvmx_pci_win_wr_addr {
 #endif
 	} s;
 };
-
 union cvmx_pci_win_wr_data {
 	uint64_t u64;
 	struct cvmx_pci_win_wr_data_s {
@@ -2020,7 +1934,6 @@ union cvmx_pci_win_wr_data {
 #endif
 	} s;
 };
-
 union cvmx_pci_win_wr_mask {
 	uint64_t u64;
 	struct cvmx_pci_win_wr_mask_s {
@@ -2033,5 +1946,4 @@ union cvmx_pci_win_wr_mask {
 #endif
 	} s;
 };
-
 #endif

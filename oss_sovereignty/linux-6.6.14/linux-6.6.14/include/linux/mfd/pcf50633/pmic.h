@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __LINUX_MFD_PCF50633_PMIC_H
 #define __LINUX_MFD_PCF50633_PMIC_H
-
 #include <linux/mfd/pcf50633/core.h>
 #include <linux/platform_device.h>
-
 #define PCF50633_REG_AUTOOUT	0x1a
 #define PCF50633_REG_AUTOENA	0x1b
 #define PCF50633_REG_AUTOCTL	0x1c
@@ -34,7 +31,6 @@
 #define PCF50633_REG_HCLDOOUT	0x39
 #define PCF50633_REG_HCLDOENA	0x3a
 #define PCF50633_REG_HCLDOOVL	0x40
-
 enum pcf50633_regulator_enable {
 	PCF50633_REGULATOR_ON		= 0x01,
 	PCF50633_REGULATOR_ON_GPIO1	= 0x02,
@@ -42,7 +38,6 @@ enum pcf50633_regulator_enable {
 	PCF50633_REGULATOR_ON_GPIO3	= 0x08,
 };
 #define PCF50633_REGULATOR_ON_MASK	0x0f
-
 enum pcf50633_regulator_phase {
 	PCF50633_REGULATOR_ACTPH1	= 0x00,
 	PCF50633_REGULATOR_ACTPH2	= 0x10,
@@ -50,7 +45,6 @@ enum pcf50633_regulator_phase {
 	PCF50633_REGULATOR_ACTPH4	= 0x30,
 };
 #define PCF50633_REGULATOR_ACTPH_MASK	0x30
-
 enum pcf50633_regulator_id {
 	PCF50633_REGULATOR_AUTO,
 	PCF50633_REGULATOR_DOWN1,
@@ -65,4 +59,3 @@ enum pcf50633_regulator_id {
 	PCF50633_REGULATOR_MEMLDO,
 };
 #endif
-

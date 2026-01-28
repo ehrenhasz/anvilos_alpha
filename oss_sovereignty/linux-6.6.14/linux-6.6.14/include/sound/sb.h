@@ -1,38 +1,28 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __SOUND_SB_H
 #define __SOUND_SB_H
-
-/*
- *  Header file for SoundBlaster cards
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
-
 #include <sound/pcm.h>
 #include <sound/rawmidi.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
-
 enum sb_hw_type {
 	SB_HW_AUTO,
 	SB_HW_10,
 	SB_HW_20,
 	SB_HW_201,
 	SB_HW_PRO,
-	SB_HW_JAZZ16,		/* Media Vision Jazz16 */
+	SB_HW_JAZZ16,		 
 	SB_HW_16,
-	SB_HW_16CSP,		/* SB16 with CSP chip */
-	SB_HW_ALS100,		/* Avance Logic ALS100 chip */
-	SB_HW_ALS4000,		/* Avance Logic ALS4000 chip */
-	SB_HW_DT019X,		/* Diamond Tech. DT-019X / Avance Logic ALS-007 */
-	SB_HW_CS5530,		/* Cyrix/NatSemi 5530 VSA1 */
+	SB_HW_16CSP,		 
+	SB_HW_ALS100,		 
+	SB_HW_ALS4000,		 
+	SB_HW_DT019X,		 
+	SB_HW_CS5530,		 
 };
-
 #define SB_OPEN_PCM			0x01
 #define SB_OPEN_MIDI_INPUT		0x02
 #define SB_OPEN_MIDI_OUTPUT		0x04
 #define SB_OPEN_MIDI_INPUT_TRIGGER	0x08
 #define SB_OPEN_MIDI_OUTPUT_TRIGGER	0x10
-
 #define SB_MODE_HALT		0x00
 #define SB_MODE_PLAYBACK_8	0x01
 #define SB_MODE_PLAYBACK_16	0x02
@@ -40,31 +30,25 @@ enum sb_hw_type {
 #define SB_MODE_CAPTURE_8	0x04
 #define SB_MODE_CAPTURE_16	0x08
 #define SB_MODE_CAPTURE		(SB_MODE_CAPTURE_8 | SB_MODE_CAPTURE_16)
-
 #define SB_RATE_LOCK_PLAYBACK	0x10
 #define SB_RATE_LOCK_CAPTURE	0x20
 #define SB_RATE_LOCK		(SB_RATE_LOCK_PLAYBACK | SB_RATE_LOCK_CAPTURE)
-
 #define SB_MPU_INPUT		1
-
 struct snd_sb {
-	unsigned long port;		/* base port of DSP chip */
+	unsigned long port;		 
 	struct resource *res_port;
-	unsigned long mpu_port;		/* MPU port for SB DSP 4.0+ */
-	int irq;			/* IRQ number of DSP chip */
-	int dma8;			/* 8-bit DMA */
-	int dma16;			/* 16-bit DMA */
-	unsigned short version;		/* version of DSP chip */
-	enum sb_hw_type hardware;	/* see to SB_HW_XXXX */
-
-	unsigned long alt_port;		/* alternate port (ALS4000) */
-	struct pci_dev *pci;		/* ALS4000 */
-
-	unsigned int open;		/* see to SB_OPEN_XXXX for sb8 */
-					/* also SNDRV_SB_CSP_MODE_XXX for sb16_csp */
-	unsigned int mode;		/* current mode of stream */
-	unsigned int force_mode16;	/* force 16-bit mode of streams */
-	unsigned int locked_rate;	/* sb16 duplex */
+	unsigned long mpu_port;		 
+	int irq;			 
+	int dma8;			 
+	int dma16;			 
+	unsigned short version;		 
+	enum sb_hw_type hardware;	 
+	unsigned long alt_port;		 
+	struct pci_dev *pci;		 
+	unsigned int open;		 
+	unsigned int mode;		 
+	unsigned int force_mode16;	 
+	unsigned int locked_rate;	 
 	unsigned int playback_format;
 	unsigned int capture_format;
 	struct timer_list midi_timer;
@@ -72,39 +56,27 @@ struct snd_sb {
 	unsigned int p_period_size;
 	unsigned int c_dma_size;
 	unsigned int c_period_size;
-
 	spinlock_t mixer_lock;
-
 	char name[32];
-
-	void *csp; /* used only when CONFIG_SND_SB16_CSP is set */
-
+	void *csp;  
 	struct snd_card *card;
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *playback_substream;
 	struct snd_pcm_substream *capture_substream;
-
 	struct snd_rawmidi *rmidi;
 	struct snd_rawmidi_substream *midi_substream_input;
 	struct snd_rawmidi_substream *midi_substream_output;
 	irq_handler_t rmidi_callback;
-
 	spinlock_t reg_lock;
 	spinlock_t open_lock;
 	spinlock_t midi_input_lock;
-
 	struct snd_info_entry *proc_entry;
-
 #ifdef CONFIG_PM
 	unsigned char saved_regs[0x20];
 #endif
 };
-
-/* I/O ports */
-
 #define SBP(chip, x)		((chip)->port + s_b_SB_##x)
 #define SBP1(port, x)		((port) + s_b_SB_##x)
-
 #define s_b_SB_RESET		0x6
 #define s_b_SB_READ		0xa
 #define s_b_SB_WRITE		0xc
@@ -117,7 +89,6 @@ struct snd_sb {
 #define s_b_SB_OPL3_LEFT	0x0
 #define s_b_SB_OPL3_RIGHT	0x2
 #define s_b_SB_OPL3_BOTH	0x8
-
 #define SB_DSP_OUTPUT		0x14
 #define SB_DSP_INPUT		0x24
 #define SB_DSP_BLOCK_SIZE	0x48
@@ -144,11 +115,9 @@ struct snd_sb {
 #define SB_DSP_MONO_16BIT	0xa4
 #define SB_DSP_STEREO_8BIT	0xa8
 #define SB_DSP_STEREO_16BIT	0xac
-
 #define SB_DSP_MIDI_INPUT_IRQ	0x31
 #define SB_DSP_MIDI_UART_IRQ	0x35
 #define SB_DSP_MIDI_OUTPUT	0x38
-
 #define SB_DSP4_OUT8_AI		0xc6
 #define SB_DSP4_IN8_AI		0xce
 #define SB_DSP4_OUT16_AI	0xb6
@@ -157,18 +126,13 @@ struct snd_sb {
 #define SB_DSP4_MODE_SIGN_MONO	0x10
 #define SB_DSP4_MODE_UNS_STEREO	0x20
 #define SB_DSP4_MODE_SIGN_STEREO 0x30
-
 #define SB_DSP4_OUTPUT		0x3c
 #define SB_DSP4_INPUT_LEFT	0x3d
 #define SB_DSP4_INPUT_RIGHT	0x3e
-
-/* registers for SB 2.0 mixer */
 #define SB_DSP20_MASTER_DEV	0x02
 #define SB_DSP20_PCM_DEV	0x0A
 #define SB_DSP20_CD_DEV		0x08
 #define SB_DSP20_FM_DEV		0x06
-
-/* registers for SB PRO mixer */
 #define SB_DSP_MASTER_DEV	0x22
 #define SB_DSP_PCM_DEV		0x04
 #define SB_DSP_LINE_DEV		0x2e
@@ -179,13 +143,10 @@ struct snd_sb {
 #define SB_DSP_CAPTURE_FILT	0x0c
 #define SB_DSP_PLAYBACK_FILT	0x0e
 #define SB_DSP_STEREO_SW	0x0e
-
-#define SB_DSP_MIXS_MIC0	0x00	/* same as MIC */
+#define SB_DSP_MIXS_MIC0	0x00	 
 #define SB_DSP_MIXS_CD		0x01
 #define SB_DSP_MIXS_MIC		0x02
 #define SB_DSP_MIXS_LINE	0x03
-
-/* registers (only for left channel) for SB 16 mixer */
 #define SB_DSP4_MASTER_DEV	0x30
 #define SB_DSP4_BASS_DEV	0x46
 #define SB_DSP4_TREBLE_DEV	0x44
@@ -199,16 +160,11 @@ struct snd_sb {
 #define SB_DSP4_IGAIN_DEV	0x3f
 #define SB_DSP4_OGAIN_DEV	0x41
 #define SB_DSP4_MIC_AGC		0x43
-
-/* additional registers for SB 16 mixer */
 #define SB_DSP4_IRQSETUP	0x80
 #define SB_DSP4_DMASETUP	0x81
 #define SB_DSP4_IRQSTATUS	0x82
 #define SB_DSP4_MPUSETUP	0x84
-
 #define SB_DSP4_3DSE		0x90
-
-/* Registers for DT-019x / ALS-007 mixer */
 #define SB_DT019X_MASTER_DEV	0x62
 #define SB_DT019X_PCM_DEV	0x64
 #define SB_DT019X_SYNTH_DEV	0x66
@@ -218,13 +174,11 @@ struct snd_sb {
 #define SB_DT019X_LINE_DEV	0x6e
 #define SB_DT019X_OUTPUT_SW2	0x4c
 #define SB_DT019X_CAPTURE_SW	0x6c
-
 #define SB_DT019X_CAP_CD	0x02
 #define SB_DT019X_CAP_MIC	0x04
 #define SB_DT019X_CAP_LINE	0x06
 #define SB_DT019X_CAP_SYNTH	0x07
 #define SB_DT019X_CAP_MAIN	0x07
-
 #define SB_ALS4000_MONO_IO_CTRL	0x4b
 #define SB_ALS4000_OUT_MIXER_CTRL_2	0x4c
 #define SB_ALS4000_MIC_IN_GAIN	0x4d
@@ -235,44 +189,30 @@ struct snd_sb {
 #define SB_ALS4000_3D_AUTO_MUTE	0x52
 #define SB_ALS4000_ANALOG_BLOCK_CTRL 0x53
 #define SB_ALS4000_3D_DELAYLINE_PATTERN 0x54
-#define SB_ALS4000_CR3_CONFIGURATION	0xc3 /* bit 7 is Digital Loop Enable */
+#define SB_ALS4000_CR3_CONFIGURATION	0xc3  
 #define SB_ALS4000_QSOUND	0xdb
-
-/* IRQ setting bitmap */
 #define SB_IRQSETUP_IRQ9	0x01
 #define SB_IRQSETUP_IRQ5	0x02
 #define SB_IRQSETUP_IRQ7	0x04
 #define SB_IRQSETUP_IRQ10	0x08
-
-/* IRQ types */
 #define SB_IRQTYPE_8BIT		0x01
 #define SB_IRQTYPE_16BIT	0x02
 #define SB_IRQTYPE_MPUIN	0x04
 #define ALS4K_IRQTYPE_CR1E_DMA	0x20
-
-/* DMA setting bitmap */
 #define SB_DMASETUP_DMA0	0x01
 #define SB_DMASETUP_DMA1	0x02
 #define SB_DMASETUP_DMA3	0x08
 #define SB_DMASETUP_DMA5	0x20
 #define SB_DMASETUP_DMA6	0x40
 #define SB_DMASETUP_DMA7	0x80
-
-/*
- *
- */
-
 static inline void snd_sb_ack_8bit(struct snd_sb *chip)
 {
 	inb(SBP(chip, DATA_AVAIL));
 }
-
 static inline void snd_sb_ack_16bit(struct snd_sb *chip)
 {
 	inb(SBP(chip, DATA_AVAIL_16));
 }
-
-/* sb_common.c */
 int snd_sbdsp_command(struct snd_sb *chip, unsigned char val);
 int snd_sbdsp_get_byte(struct snd_sb *chip);
 int snd_sbdsp_reset(struct snd_sb *chip);
@@ -283,7 +223,6 @@ int snd_sbdsp_create(struct snd_card *card,
 		     int dma8, int dma16,
 		     unsigned short hardware,
 		     struct snd_sb **r_chip);
-/* sb_mixer.c */
 void snd_sbmixer_write(struct snd_sb *chip, unsigned char reg, unsigned char data);
 unsigned char snd_sbmixer_read(struct snd_sb *chip, unsigned char reg);
 int snd_sbmixer_new(struct snd_sb *chip);
@@ -291,27 +230,18 @@ int snd_sbmixer_new(struct snd_sb *chip);
 void snd_sbmixer_suspend(struct snd_sb *chip);
 void snd_sbmixer_resume(struct snd_sb *chip);
 #endif
-
-/* sb8_init.c */
 int snd_sb8dsp_pcm(struct snd_sb *chip, int device);
-/* sb8.c */
 irqreturn_t snd_sb8dsp_interrupt(struct snd_sb *chip);
 int snd_sb8_playback_open(struct snd_pcm_substream *substream);
 int snd_sb8_capture_open(struct snd_pcm_substream *substream);
 int snd_sb8_playback_close(struct snd_pcm_substream *substream);
 int snd_sb8_capture_close(struct snd_pcm_substream *substream);
-/* midi8.c */
 irqreturn_t snd_sb8dsp_midi_interrupt(struct snd_sb *chip);
 int snd_sb8dsp_midi(struct snd_sb *chip, int device);
-
-/* sb16_init.c */
 int snd_sb16dsp_pcm(struct snd_sb *chip, int device);
 const struct snd_pcm_ops *snd_sb16dsp_get_pcm_ops(int direction);
 int snd_sb16dsp_configure(struct snd_sb *chip);
-/* sb16.c */
 irqreturn_t snd_sb16dsp_interrupt(int irq, void *dev_id);
-
-/* exported mixer stuffs */
 enum {
 	SB_MIX_SINGLE,
 	SB_MIX_DOUBLE,
@@ -320,41 +250,32 @@ enum {
 	SB_MIX_CAPTURE_DT019X,
 	SB_MIX_MONO_CAPTURE_ALS4K
 };
-
 #define SB_MIXVAL_DOUBLE(left_reg, right_reg, left_shift, right_shift, mask) \
   ((left_reg) | ((right_reg) << 8) | ((left_shift) << 16) | ((right_shift) << 19) | ((mask) << 24))
 #define SB_MIXVAL_SINGLE(reg, shift, mask) \
   ((reg) | ((shift) << 16) | ((mask) << 24))
 #define SB_MIXVAL_INPUT_SW(reg1, reg2, left_shift, right_shift) \
   ((reg1) | ((reg2) << 8) | ((left_shift) << 16) | ((right_shift) << 24))
-
 int snd_sbmixer_add_ctl(struct snd_sb *chip, const char *name, int index, int type, unsigned long value);
-
-/* for ease of use */
 struct sbmix_elem {
 	const char *name;
 	int type;
 	unsigned long private_value;
 };
-
 #define SB_SINGLE(xname, reg, shift, mask) \
 { .name = xname, \
   .type = SB_MIX_SINGLE, \
   .private_value = SB_MIXVAL_SINGLE(reg, shift, mask) }
-
 #define SB_DOUBLE(xname, left_reg, right_reg, left_shift, right_shift, mask) \
 { .name = xname, \
   .type = SB_MIX_DOUBLE, \
   .private_value = SB_MIXVAL_DOUBLE(left_reg, right_reg, left_shift, right_shift, mask) }
-
 #define SB16_INPUT_SW(xname, reg1, reg2, left_shift, right_shift) \
 { .name = xname, \
   .type = SB_MIX_INPUT_SW, \
   .private_value = SB_MIXVAL_INPUT_SW(reg1, reg2, left_shift, right_shift) }
-
 static inline int snd_sbmixer_add_ctl_elem(struct snd_sb *chip, const struct sbmix_elem *c)
 {
 	return snd_sbmixer_add_ctl(chip, c->name, 0, c->type, c->private_value);
 }
-
-#endif /* __SOUND_SB_H */
+#endif  

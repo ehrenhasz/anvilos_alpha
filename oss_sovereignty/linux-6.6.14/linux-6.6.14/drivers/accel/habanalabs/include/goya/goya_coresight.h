@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
 #ifndef GOYA_CORESIGHT_H
 #define GOYA_CORESIGHT_H
-
 enum goya_debug_stm_regs_index {
 	GOYA_STM_FIRST = 0,
 	GOYA_STM_CPU = GOYA_STM_FIRST,
@@ -34,7 +26,6 @@ enum goya_debug_stm_regs_index {
 	GOYA_STM_TPC7_EML,
 	GOYA_STM_LAST = GOYA_STM_TPC7_EML
 };
-
 enum goya_debug_etf_regs_index {
 	GOYA_ETF_FIRST = 0,
 	GOYA_ETF_CPU_0 = GOYA_ETF_FIRST,
@@ -63,7 +54,6 @@ enum goya_debug_etf_regs_index {
 	GOYA_ETF_TPC7_EML,
 	GOYA_ETF_LAST = GOYA_ETF_TPC7_EML
 };
-
 enum goya_debug_funnel_regs_index {
 	GOYA_FUNNEL_FIRST = 0,
 	GOYA_FUNNEL_CPU = GOYA_FUNNEL_FIRST,
@@ -93,7 +83,6 @@ enum goya_debug_funnel_regs_index {
 	GOYA_FUNNEL_TPC7_EML,
 	GOYA_FUNNEL_LAST = GOYA_FUNNEL_TPC7_EML
 };
-
 enum goya_debug_bmon_regs_index {
 	GOYA_BMON_FIRST = 0,
 	GOYA_BMON_CPU_RD = GOYA_BMON_FIRST,
@@ -170,7 +159,6 @@ enum goya_debug_bmon_regs_index {
 	GOYA_BMON_TPC7_EML_3,
 	GOYA_BMON_LAST = GOYA_BMON_TPC7_EML_3
 };
-
 enum goya_debug_spmu_regs_index {
 	GOYA_SPMU_FIRST = 0,
 	GOYA_SPMU_DMA_CH_0_CS = GOYA_SPMU_FIRST,
@@ -195,5 +183,4 @@ enum goya_debug_spmu_regs_index {
 	GOYA_SPMU_TPC7_EML,
 	GOYA_SPMU_LAST = GOYA_SPMU_TPC7_EML
 };
-
-#endif /* GOYA_CORESIGHT_H */
+#endif  

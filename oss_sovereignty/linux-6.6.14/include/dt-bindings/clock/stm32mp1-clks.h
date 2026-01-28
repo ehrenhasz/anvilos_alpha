@@ -1,21 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
- * Author: Gabriel Fernandez <gabriel.fernandez@st.com> for STMicroelectronics.
- */
-
 #ifndef _DT_BINDINGS_STM32MP1_CLKS_H_
 #define _DT_BINDINGS_STM32MP1_CLKS_H_
-
-/* OSCILLATOR clocks */
 #define CK_HSE		0
 #define CK_CSI		1
 #define CK_LSI		2
 #define CK_LSE		3
 #define CK_HSI		4
 #define CK_HSE_DIV2	5
-
-/* Bus clocks */
 #define TIM2		6
 #define TIM3		7
 #define TIM4		8
@@ -124,8 +114,6 @@
 #define USBH		111
 #define ETHSTP		112
 #define TZC2		113
-
-/* Kernel clocks */
 #define SDMMC1_K	118
 #define SDMMC2_K	119
 #define SDMMC3_K	120
@@ -178,14 +166,10 @@
 #define LTDC_PX		167
 #define DAC12_K		168
 #define ETHPTP_K	169
-
-/* PLL */
 #define PLL1		176
 #define PLL2		177
 #define PLL3		178
 #define PLL4		179
-
-/* ODF */
 #define PLL1_P		180
 #define PLL1_Q		181
 #define PLL1_R		182
@@ -198,17 +182,11 @@
 #define PLL4_P		189
 #define PLL4_Q		190
 #define PLL4_R		191
-
-/* AUX */
 #define RTC		192
-
-/* MCLK */
 #define CK_PER		193
 #define CK_MPU		194
 #define CK_AXI		195
 #define CK_MCU		196
-
-/* Time base */
 #define TIM2_K		197
 #define TIM3_K		198
 #define TIM4_K		199
@@ -223,16 +201,10 @@
 #define TIM15_K		208
 #define TIM16_K		209
 #define TIM17_K		210
-
-/* MCO clocks */
 #define CK_MCO1		211
 #define CK_MCO2		212
-
-/* TRACE & DEBUG clocks */
 #define CK_DBG		214
 #define CK_TRACE	215
-
-/* DDR */
 #define DDRC1		220
 #define DDRC1LP		221
 #define DDRC2		222
@@ -245,10 +217,7 @@
 #define DDRPHYCAPB	229
 #define DDRPHYCAPBLP	230
 #define DDRPERFM	231
-
 #define STM32MP1_LAST_CLK 232
-
-/* SCMI clock identifiers */
 #define CK_SCMI_HSE		0
 #define CK_SCMI_HSI		1
 #define CK_SCMI_CSI		2
@@ -270,5 +239,4 @@
 #define CK_SCMI_RTCAPB		18
 #define CK_SCMI_SPI6		19
 #define CK_SCMI_USART1		20
-
-#endif /* _DT_BINDINGS_STM32MP1_CLKS_H_ */
+#endif  

@@ -1,33 +1,14 @@
-#
-# Copyright 2015 ClusterHQ
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 """
 Python bindings for ``libzfs_core``.
 """
 from __future__ import absolute_import, division, print_function
-
 CDEF = """
-
     enum lzc_send_flags {
         LZC_SEND_FLAG_EMBED_DATA = 1,
         LZC_SEND_FLAG_LARGE_BLOCK = 2,
         LZC_SEND_FLAG_COMPRESS = 4,
         LZC_SEND_FLAG_RAW = 8
     };
-
     typedef enum {
         DMU_OST_NONE,
         DMU_OST_META,
@@ -37,9 +18,6 @@ CDEF = """
         DMU_OST_ANY,
         DMU_OST_NUMTYPES
     } dmu_objset_type_t;
-
-    #define MAXNAMELEN 256
-
     struct drr_begin {
         uint64_t drr_magic;
         uint64_t drr_versioninfo; /* was drr_version */
@@ -50,11 +28,9 @@ CDEF = """
         uint64_t drr_fromguid;
         char drr_toname[MAXNAMELEN];
     };
-
     typedef struct zio_cksum {
         uint64_t zc_word[4];
     } zio_cksum_t;
-
     typedef struct dmu_replay_record {
         enum {
             DRR_BEGIN, DRR_OBJECT, DRR_FREEOBJECTS,
@@ -71,7 +47,6 @@ CDEF = """
             } drr_checksum;
         } drr_u;
     } dmu_replay_record_t;
-
     typedef enum {
         DCP_CMD_NONE,
         DCP_CMD_RAW_RECV,
@@ -80,10 +55,8 @@ CDEF = """
         DCP_CMD_FORCE_NEW_KEY,
         DCP_CMD_FORCE_INHERIT
     } dcp_cmd_t;
-
     int libzfs_core_init(void);
     void libzfs_core_fini(void);
-
     int lzc_bookmark(nvlist_t *, nvlist_t **);
     int lzc_change_key(const char *, uint64_t, nvlist_t *, uint8_t *, uint_t);
     int lzc_channel_program(const char *, const char *, uint64_t, uint64_t,
@@ -135,16 +108,10 @@ CDEF = """
     int lzc_pool_checkpoint_discard(const char *);
     int lzc_rename(const char *, const char *);
     int lzc_destroy(const char *fsname);
-
     int lzc_inherit(const char *fsname, const char *name, nvlist_t *);
     int lzc_set_props(const char *, nvlist_t *, nvlist_t *, nvlist_t *);
     int lzc_list (const char *, nvlist_t *);
 """
-
 SOURCE = """
-#include <libzfs/libzfs_core.h>
 """
-
 LIBRARY = "zfs_core"
-
-# vim: softtabstop=4 tabstop=4 expandtab shiftwidth=4

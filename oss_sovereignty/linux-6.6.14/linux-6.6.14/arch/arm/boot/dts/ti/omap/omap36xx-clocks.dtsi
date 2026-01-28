@@ -1,9 +1,3 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device Tree Source for OMAP36xx clock data
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- */
 &cm_clocks {
 	dpll4_ck: dpll4_ck@d00 {
 		#clock-cells = <0>;
@@ -11,7 +5,6 @@
 		clocks = <&sys_ck>, <&sys_ck>;
 		reg = <0x0d00>, <0x0d20>, <0x0d44>, <0x0d30>;
 	};
-
 	dpll4_m5x2_ck: dpll4_m5x2_ck@d00 {
 		#clock-cells = <0>;
 		compatible = "ti,hsdiv-gate-clock";
@@ -21,7 +14,6 @@
 		ti,set-rate-parent;
 		ti,set-bit-to-disable;
 	};
-
 	dpll4_m2x2_ck: dpll4_m2x2_ck@d00 {
 		#clock-cells = <0>;
 		compatible = "ti,hsdiv-gate-clock";
@@ -30,7 +22,6 @@
 		reg = <0x0d00>;
 		ti,set-bit-to-disable;
 	};
-
 	dpll3_m3x2_ck: dpll3_m3x2_ck@d00 {
 		#clock-cells = <0>;
 		compatible = "ti,hsdiv-gate-clock";
@@ -39,7 +30,6 @@
 		reg = <0x0d00>;
 		ti,set-bit-to-disable;
 	};
-
 	dpll4_m3x2_ck: dpll4_m3x2_ck@d00 {
 		#clock-cells = <0>;
 		compatible = "ti,hsdiv-gate-clock";
@@ -48,7 +38,6 @@
 		reg = <0x0d00>;
 		ti,set-bit-to-disable;
 	};
-
 	dpll4_m6x2_ck: dpll4_m6x2_ck@d00 {
 		#clock-cells = <0>;
 		compatible = "ti,hsdiv-gate-clock";
@@ -57,13 +46,11 @@
 		reg = <0x0d00>;
 		ti,set-bit-to-disable;
 	};
-
 	clock@1000 {
 		compatible = "ti,clksel";
 		reg = <0x1000>;
 		#clock-cells = <2>;
 		#address-cells = <0>;
-
 		uart4_fck: clock-uart4-fck {
 			#clock-cells = <0>;
 			compatible = "ti,wait-gate-clock";
@@ -73,33 +60,26 @@
 		};
 	};
 };
-
 &dpll4_m2x2_mul_ck {
 	clock-mult = <1>;
 };
-
 &dpll4_m3x2_mul_ck {
 	clock-mult = <1>;
 };
-
 &dpll4_m4x2_mul_ck {
 	ti,clock-mult = <1>;
 };
-
 &dpll4_m5x2_mul_ck {
 	ti,clock-mult = <1>;
 };
-
 &dpll4_m6x2_mul_ck {
 	clock-mult = <1>;
 };
-
 &cm_clockdomains {
 	dpll4_clkdm: dpll4_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&dpll4_ck>;
 	};
-
 	per_clkdm: per_clkdm {
 		compatible = "ti,clockdomain";
 		clocks = <&uart3_fck>, <&gpio6_dbck>, <&gpio5_dbck>,
@@ -112,7 +92,6 @@
 			 <&mcbsp4_ick>, <&uart4_fck>;
 	};
 };
-
 &dpll4_m4_ck {
 	ti,max-div = <31>;
 };

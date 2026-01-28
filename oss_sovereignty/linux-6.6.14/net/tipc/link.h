@@ -1,52 +1,9 @@
-/*
- * net/tipc/link.h: Include file for TIPC link code
- *
- * Copyright (c) 1995-2006, 2013-2014, Ericsson AB
- * Copyright (c) 2004-2005, 2010-2011, Wind River Systems
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 #ifndef _TIPC_LINK_H
 #define _TIPC_LINK_H
-
 #include <net/genetlink.h>
 #include "msg.h"
 #include "node.h"
-
-/* TIPC-specific error codes
-*/
-#define ELINKCONG EAGAIN	/* link congestion <=> resource unavailable */
-
-/* Link FSM events:
- */
+#define ELINKCONG EAGAIN	 
 enum {
 	LINK_ESTABLISH_EVT       = 0xec1ab1e,
 	LINK_PEER_RESET_EVT      = 0x9eed0e,
@@ -57,20 +14,12 @@ enum {
 	LINK_SYNCH_BEGIN_EVT     = 0xc1ccbee,
 	LINK_SYNCH_END_EVT       = 0xc1ccede
 };
-
-/* Events returned from link at packet reception or at timeout
- */
 enum {
 	TIPC_LINK_UP_EVT       = 1,
 	TIPC_LINK_DOWN_EVT     = (1 << 1),
 	TIPC_LINK_SND_STATE    = (1 << 2)
 };
-
-/* Starting value for maximum packet size negotiation on unicast links
- * (unless bearer MTU is less)
- */
 #define MAX_PKT_DEFAULT 1500
-
 bool tipc_link_create(struct net *net, char *if_name, int bearer_id,
 		      int tolerance, char net_plane, u32 mtu, int priority,
 		      u32 min_win, u32 max_win, u32 session, u32 ownnode,

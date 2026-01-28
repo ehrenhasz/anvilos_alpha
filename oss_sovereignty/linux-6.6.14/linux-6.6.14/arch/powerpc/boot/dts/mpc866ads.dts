@@ -1,60 +1,44 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPC866 ADS Device Tree Source
- *
- * Copyright 2006 MontaVista Software, Inc.
- * Copyright 2008 Freescale Semiconductor, Inc.
- */
-
 /dts-v1/;
-
 / {
 	model = "MPC866ADS";
 	compatible = "fsl,mpc866ads";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,866@0 {
 			device_type = "cpu";
 			reg = <0x0>;
-			d-cache-line-size = <16>;	// 16 bytes
-			i-cache-line-size = <16>;	// 16 bytes
-			d-cache-size = <0x2000>;		// L1, 8K
-			i-cache-size = <0x4000>;		// L1, 16K
+			d-cache-line-size = <16>;	 
+			i-cache-line-size = <16>;	 
+			d-cache-size = <0x2000>;		 
+			i-cache-size = <0x4000>;		 
 			timebase-frequency = <0>;
 			bus-frequency = <0>;
 			clock-frequency = <0>;
-			interrupts = <15 2>;	// decrementer interrupt
+			interrupts = <15 2>;	 
 			interrupt-parent = <&PIC>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x0 0x800000>;
 	};
-
 	localbus@ff000100 {
 		compatible = "fsl,mpc866-localbus", "fsl,pq1-localbus";
 		#address-cells = <2>;
 		#size-cells = <1>;
 		reg = <0xff000100 0x40>;
-
 		ranges = <
 			0x1 0x0 0xff080000 0x8000
 			0x5 0x0 0xff0a0000 0x8000
 		>;
-
 		board-control@1,0 {
 			reg = <0x1 0x0 0x20 0x5 0x300 0x4>;
 			compatible = "fsl,mpc866ads-bcsr";
 		};
 	};
-
 	soc@ff000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -62,7 +46,6 @@
 		ranges = <0x0 0xff000000 0x100000>;
 		reg = <0xff000000 0x200>;
 		bus-frequency = <0>;
-
 		mdio@e00 {
 			compatible = "fsl,mpc866-fec-mdio", "fsl,pq1-fec-mdio";
 			reg = <0xe00 0x188>;
@@ -72,7 +55,6 @@
 				reg = <0xf>;
 			};
 		};
-
 		ethernet@e00 {
 			device_type = "network";
 			compatible = "fsl,mpc866-fec-enet",
@@ -84,14 +66,12 @@
 			phy-handle = <&PHY>;
 			linux,network-index = <0>;
 		};
-
 		PIC: pic@0 {
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			reg = <0x0 0x24>;
 			compatible = "fsl,mpc866-pic", "fsl,pq1-pic";
 		};
-
 		cpm@9c0 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -99,20 +79,17 @@
 			ranges;
 			reg = <0x9c0 0x40>;
 			brg-frequency = <0>;
-			interrupts = <0 2>;	// cpm error interrupt
+			interrupts = <0 2>;	 
 			interrupt-parent = <&CPM_PIC>;
-
 			muram@2000 {
 				#address-cells = <1>;
 				#size-cells = <1>;
 				ranges = <0x0 0x2000 0x2000>;
-
 				data@0 {
 					compatible = "fsl,cpm-muram-data";
 					reg = <0x0 0x1c00>;
 				};
 			};
-
 			brg@9f0 {
 				compatible = "fsl,mpc866-brg",
 					     "fsl,cpm1-brg",
@@ -120,7 +97,6 @@
 				reg = <0x9f0 0x10>;
 				clock-frequency = <0>;
 			};
-
 			CPM_PIC: pic@930 {
 				interrupt-controller;
 				#address-cells = <0>;
@@ -131,8 +107,6 @@
 				compatible = "fsl,mpc866-cpm-pic",
 				             "fsl,cpm1-pic";
 			};
-
-
 			serial@a80 {
 				device_type = "serial";
 				compatible = "fsl,mpc866-smc-uart",
@@ -143,7 +117,6 @@
 				fsl,cpm-brg = <1>;
 				fsl,cpm-command = <0x90>;
 			};
-
 			serial@a90 {
 				device_type = "serial";
 				compatible = "fsl,mpc866-smc-uart",
@@ -154,7 +127,6 @@
 				fsl,cpm-brg = <2>;
 				fsl,cpm-command = <0xd0>;
 			};
-
 			ethernet@a00 {
 				device_type = "network";
 				compatible = "fsl,mpc866-scc-enet",
@@ -166,7 +138,6 @@
 				fsl,cpm-command = <0000>;
 				linux,network-index = <1>;
 			};
-
 			i2c@860 {
 				compatible = "fsl,mpc866-i2c",
 					     "fsl,cpm1-i2c";
@@ -179,7 +150,6 @@
 			};
 		};
 	};
-
 	chosen {
 		stdout-path = "/soc/cpm/serial@a80";
 	};

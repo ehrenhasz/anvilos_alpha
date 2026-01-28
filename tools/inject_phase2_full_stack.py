@@ -112,7 +112,7 @@ def inject():
     ]
     for i, (cat, name, cmd) in enumerate(cards):
         uid = str(uuid.uuid4())
-        pld = json.dumps({"cmd": cmd, "desc": f"{cat}: {name}"})
+        pld = json.dumps({"cmd": cmd, "desc": f"{cat}: {name}", "_source": "COMMANDER"})
         cur.execute("INSERT INTO card_stack (id, seq, op, pld, stat) VALUES (?, ?, ?, ?, ?)",
                     (uid, i, "SYS_CMD", pld, 0))
     conn.commit()

@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #undef TRACE_SYSTEM_VAR
-
 #ifdef CONFIG_PERF_EVENTS
-
 #include "stages/stage6_event_callback.h"
-
 #undef __perf_count
 #define __perf_count(c)	(__count = (c))
-
 #undef __perf_task
 #define __perf_task(t)	(__task = (t))
-
 #undef DECLARE_EVENT_CLASS
 #define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
 static notrace void							\
@@ -54,23 +47,14 @@ perf_trace_##call(void *__data, proto)					\
 				  event_call, __count, __regs,		\
 				  head, __task);			\
 }
-
-/*
- * This part is compiled out, it is only here as a build time check
- * to make sure that if the tracepoint handling changes, the
- * perf probe will fail to compile unless it too is updated.
- */
 #undef DEFINE_EVENT
 #define DEFINE_EVENT(template, call, proto, args)			\
 static inline void perf_test_probe_##call(void)				\
 {									\
 	check_trace_callback_type_##call(perf_trace_##template);	\
 }
-
-
 #undef DEFINE_EVENT_PRINT
 #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
 	DEFINE_EVENT(template, name, PARAMS(proto), PARAMS(args))
-
 #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
-#endif /* CONFIG_PERF_EVENTS */
+#endif  

@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-
 #ifndef	__ODMCFOTRACK_H__
 #define    __ODMCFOTRACK_H__
-
-#define		CFO_TH_XTAL_HIGH		20		/*  kHz */
-#define		CFO_TH_XTAL_LOW			10		/*  kHz */
-#define		CFO_TH_ATC			80		/*  kHz */
-
+#define		CFO_TH_XTAL_HIGH		20		 
+#define		CFO_TH_XTAL_LOW			10		 
+#define		CFO_TH_ATC			80		 
 struct cfo_tracking {
 	bool bATCStatus;
 	bool largeCFOHit;
@@ -22,18 +13,12 @@ struct cfo_tracking {
 	int CFO_ave_pre;
 	u32 packetCount;
 	u32 packetCount_pre;
-
 	bool bForceXtalCap;
 	bool bReset;
 };
-
 void ODM_CfoTrackingReset(void *pDM_VOID
 );
-
 void ODM_CfoTrackingInit(void *pDM_VOID);
-
 void ODM_CfoTracking(void *pDM_VOID);
-
 void odm_parsing_cfo(void *pDM_VOID, void *pPktinfo_VOID, s8 *pcfotail);
-
 #endif

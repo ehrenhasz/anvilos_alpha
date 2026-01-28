@@ -1,23 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Copyright (c) 2019 BayLibre, SAS.
- * Author: Fabien Parent <fparent@baylibre.com>
- */
-
 #include <dt-bindings/clock/mt8516-clk.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/phy/phy.h>
-
 #include "mt8516-pinfunc.h"
-
 / {
 	compatible = "mediatek,mt8516";
 	interrupt-parent = <&sysirq>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	cluster0_opp: opp-table-0 {
 		compatible = "operating-points-v2";
 		opp-shared;
@@ -42,11 +32,9 @@
 			opp-microvolt = <1300000>;
 		};
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a35";
@@ -59,7 +47,6 @@
 			clock-names = "cpu", "intermediate";
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a35";
@@ -72,7 +59,6 @@
 			clock-names = "cpu", "intermediate";
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		cpu2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a35";
@@ -85,7 +71,6 @@
 			clock-names = "cpu", "intermediate";
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		cpu3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a35";
@@ -98,10 +83,8 @@
 			clock-names = "cpu", "intermediate", "armpll";
 			operating-points-v2 = <&cluster0_opp>;
 		};
-
 		idle-states {
 			entry-method = "psci";
-
 			CPU_SLEEP_0_0: cpu-sleep-0-0 {
 				compatible = "arm,idle-state";
 				entry-latency-us = <600>;
@@ -109,7 +92,6 @@
 				min-residency-us = <1200>;
 				arm,psci-suspend-param = <0x0010000>;
 			};
-
 			CLUSTER_SLEEP_0: cluster-sleep-0 {
 				compatible = "arm,idle-state";
 				entry-latency-us = <800>;
@@ -119,38 +101,31 @@
 			};
 		};
 	};
-
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
 	clk26m: clk26m {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <26000000>;
 		clock-output-names = "clk26m";
 	};
-
 	clk32k: clk32k {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <32000>;
 		clock-output-names = "clk32k";
 	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
-		/* 128 KiB reserved for ARM Trusted Firmware (BL31) */
 		bl31_secmon_reserved: secmon@43000000 {
 			no-map;
 			reg = <0 0x43000000 0 0x20000>;
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupt-parent = <&gic>;
@@ -163,7 +138,6 @@
 			     <GIC_PPI 10
 			     (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>;
 	};
-
 	pmu {
 		compatible = "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_LOW>,
@@ -172,36 +146,30 @@
 			     <GIC_SPI 7 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
 	};
-
 	soc {
 		#address-cells = <2>;
 		#size-cells = <2>;
 		compatible = "simple-bus";
 		ranges;
-
 		topckgen: topckgen@10000000 {
 			compatible = "mediatek,mt8516-topckgen", "syscon";
 			reg = <0 0x10000000 0 0x1000>;
 			#clock-cells = <1>;
 		};
-
 		infracfg: infracfg@10001000 {
 			compatible = "mediatek,mt8516-infracfg", "syscon";
 			reg = <0 0x10001000 0 0x1000>;
 			#clock-cells = <1>;
 		};
-
 		pericfg: pericfg@10003050 {
 			compatible = "mediatek,mt8516-pericfg", "syscon";
 			reg = <0 0x10003050 0 0x1000>;
 		};
-
 		apmixedsys: apmixedsys@10018000 {
 			compatible = "mediatek,mt8516-apmixedsys", "syscon";
 			reg = <0 0x10018000 0 0x710>;
 			#clock-cells = <1>;
 		};
-
 		watchdog@10007000 {
 			compatible = "mediatek,mt8516-wdt",
 				     "mediatek,mt6589-wdt";
@@ -209,7 +177,6 @@
 			interrupts = <GIC_SPI 198 IRQ_TYPE_EDGE_FALLING>;
 			#reset-cells = <1>;
 		};
-
 		timer: timer@10008000 {
 			compatible = "mediatek,mt8516-timer",
 				     "mediatek,mt6577-timer";
@@ -219,12 +186,10 @@
 				 <&topckgen CLK_TOP_APXGPT>;
 			clock-names = "clk13m", "bus";
 		};
-
 		syscfg_pctl: syscfg-pctl@10005000 {
 			compatible = "syscon";
 			reg = <0 0x10005000 0 0x1000>;
 		};
-
 		pio: pinctrl@1000b000 {
 			compatible = "mediatek,mt8516-pinctrl";
 			reg = <0 0x1000b000 0 0x1000>;
@@ -235,14 +200,12 @@
 			#interrupt-cells = <2>;
 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		efuse: efuse@10009000 {
 			compatible = "mediatek,mt8516-efuse", "mediatek,efuse";
 			reg = <0 0x10009000 0 0x1000>;
 			#address-cells = <1>;
 			#size-cells = <1>;
 		};
-
 		pwrap: pwrap@1000f000 {
 			compatible = "mediatek,mt8516-pwrap";
 			reg = <0 0x1000f000 0 0x1000>;
@@ -252,7 +215,6 @@
 				 <&topckgen CLK_TOP_PMICWRAP_AP>;
 			clock-names = "spi", "wrap";
 		};
-
 		sysirq: interrupt-controller@10200620 {
 			compatible = "mediatek,mt8516-sysirq",
 				     "mediatek,mt6577-sysirq";
@@ -261,7 +223,6 @@
 			interrupt-parent = <&gic>;
 			reg = <0 0x10200620 0 0x20>;
 		};
-
 		gic: interrupt-controller@10310000 {
 			compatible = "arm,gic-400";
 			#interrupt-cells = <3>;
@@ -274,7 +235,6 @@
 			interrupts = <GIC_PPI 9
 				(GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		};
-
 		apdma: dma-controller@11000480 {
 			compatible = "mediatek,mt8516-uart-dma",
 				     "mediatek,mt6577-uart-dma";
@@ -295,7 +255,6 @@
 			clock-names = "apdma";
 			#dma-cells = <1>;
 		};
-
 		uart0: serial@11005000 {
 			compatible = "mediatek,mt8516-uart",
 				     "mediatek,mt6577-uart";
@@ -309,7 +268,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		uart1: serial@11006000 {
 			compatible = "mediatek,mt8516-uart",
 				     "mediatek,mt6577-uart";
@@ -323,7 +281,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		uart2: serial@11007000 {
 			compatible = "mediatek,mt8516-uart",
 				     "mediatek,mt6577-uart";
@@ -337,7 +294,6 @@
 			dma-names = "tx", "rx";
 			status = "disabled";
 		};
-
 		i2c0: i2c@11009000 {
 			compatible = "mediatek,mt8516-i2c",
 				     "mediatek,mt2712-i2c";
@@ -351,7 +307,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c1: i2c@1100a000 {
 			compatible = "mediatek,mt8516-i2c",
 				     "mediatek,mt2712-i2c";
@@ -365,7 +320,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c2: i2c@1100b000 {
 			compatible = "mediatek,mt8516-i2c",
 				     "mediatek,mt2712-i2c";
@@ -379,7 +333,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		spi: spi@1100c000 {
 			compatible = "mediatek,mt8516-spi",
 				     "mediatek,mt2712-spi";
@@ -393,7 +346,6 @@
 			clock-names = "parent-clk", "sel-clk", "spi-clk";
 			status = "disabled";
 		};
-
 		mmc0: mmc@11120000 {
 			compatible = "mediatek,mt8516-mmc";
 			reg = <0 0x11120000 0 0x1000>;
@@ -404,7 +356,6 @@
 			clock-names = "source", "hclk", "source_cg";
 			status = "disabled";
 		};
-
 		mmc1: mmc@11130000 {
 			compatible = "mediatek,mt8516-mmc";
 			reg = <0 0x11130000 0 0x1000>;
@@ -415,7 +366,6 @@
 			clock-names = "source", "hclk", "source_cg";
 			status = "disabled";
 		};
-
 		mmc2: mmc@11170000 {
 			compatible = "mediatek,mt8516-mmc";
 			reg = <0 0x11170000 0 0x1000>;
@@ -426,7 +376,6 @@
 			clock-names = "source", "hclk", "source_cg";
 			status = "disabled";
 		};
-
 		ethernet: ethernet@11180000 {
 			compatible = "mediatek,mt8516-eth";
 			reg = <0 0x11180000 0 0x1000>;
@@ -438,7 +387,6 @@
 			clock-names = "core", "reg", "trans";
 			status = "disabled";
 		};
-
 		rng: rng@1020c000 {
 			compatible = "mediatek,mt8516-rng",
 				     "mediatek,mt7623-rng";
@@ -446,7 +394,6 @@
 			clocks = <&topckgen CLK_TOP_TRNG>;
 			clock-names = "rng";
 		};
-
 		pwm: pwm@11008000 {
 			compatible = "mediatek,mt8516-pwm";
 			reg = <0 0x11008000 0 0x1000>;
@@ -462,7 +409,6 @@
 			clock-names = "top", "main", "pwm1", "pwm2", "pwm3",
 				      "pwm4", "pwm5";
 		};
-
 		usb0: usb@11100000 {
 			compatible = "mediatek,mt8516-musb", "mediatek,mtk-musb";
 			reg = <0 0x11100000 0 0x1000>;
@@ -475,7 +421,6 @@
 			clock-names = "main","mcu","univpll";
 			status = "disabled";
 		};
-
 		usb1: usb@11190000 {
 			compatible = "mediatek,mt8516-musb", "mediatek,mtk-musb";
 			reg = <0 0x11190000 0 0x1000>;
@@ -489,7 +434,6 @@
 			dr_mode = "host";
 			status = "disabled";
 		};
-
 		usb_phy: t-phy@11110000 {
 			compatible = "mediatek,mt8516-tphy",
 				     "mediatek,generic-tphy-v1";
@@ -498,14 +442,12 @@
 			#size-cells = <2>;
 			ranges;
 			status = "disabled";
-
 			usb0_port: usb-phy@11110800 {
 				reg = <0 0x11110800 0 0x100>;
 				clocks = <&topckgen CLK_TOP_USB_PHY48M>;
 				clock-names = "ref";
 				#phy-cells = <1>;
 			};
-
 			usb1_port: usb-phy@11110900 {
 				reg = <0 0x11110900 0 0x100>;
 				clocks = <&topckgen CLK_TOP_USB_PHY48M>;
@@ -513,7 +455,6 @@
 				#phy-cells = <1>;
 			};
 		};
-
 		auxadc: adc@11003000 {
 			compatible = "mediatek,mt8516-auxadc",
 				     "mediatek,mt8173-auxadc";

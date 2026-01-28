@@ -1,27 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Erin Lo <erin.lo@mediatek.com>
- *
- */
-
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include "mt2701.dtsi"
-
 / {
 	model = "MediaTek MT2701 evaluation board";
 	compatible = "mediatek,mt2701-evb", "mediatek,mt2701";
-
 	memory {
 		device_type = "memory";
 		reg = <0 0x80000000 0 0x40000000>;
 	};
-
 	sound:sound {
 		compatible = "mediatek,mt2701-cs42448-machine";
 		mediatek,platform = <&afe>;
-		/* CS42448 Machine name */
 		audio-routing =
 		"Line Out Jack", "AOUT1L",
 		"Line Out Jack", "AOUT1R",
@@ -47,11 +36,9 @@
 		i2s1-in-sel-gpio2 = <&pio 54 0>;
 		status = "okay";
 	};
-
 	bt_sco_codec:bt_sco_codec {
 		compatible = "linux,bt-sco";
 	};
-
 	backlight_lcd: backlight_lcd {
 		compatible = "pwm-backlight";
 		pwms = <&bls 0 100000>;
@@ -62,7 +49,6 @@
 		>;
 		default-brightness-level = <9>;
 	};
-
 	usb_vbus: regulator@0 {
 		compatible = "regulator-fixed";
 		regulator-name = "usb_vbus";
@@ -72,29 +58,24 @@
 		enable-active-high;
 	};
 };
-
 &auxadc {
 	status = "okay";
 };
-
 &bls {
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pwm_bls_gpio>;
 };
-
 &i2c0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c0_pins_a>;
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins_a>;
 	status = "okay";
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins_a>;
@@ -106,7 +87,6 @@
 		clock-names = "mclk";
 	};
 };
-
 &pio {
 	i2c0_pins_a: i2c0@0 {
 		pins1 {
@@ -115,7 +95,6 @@
 			bias-disable;
 		};
 	};
-
 	i2c1_pins_a: i2c1@0 {
 		pins1 {
 			pinmux = <MT2701_PIN_57_SDA1__FUNC_SDA1>,
@@ -123,7 +102,6 @@
 			bias-disable;
 		};
 	};
-
 	i2c2_pins_a: i2c2@0 {
 		pins1 {
 			pinmux = <MT2701_PIN_77_SDA2__FUNC_SDA2>,
@@ -131,13 +109,11 @@
 			bias-disable;
 		};
 	};
-
 	pwm_bls_gpio: pwm_bls_gpio {
 		pins_cmd_dat {
 			pinmux = <MT2701_PIN_208_AUD_EXT_CK1__FUNC_DISP_PWM>;
 		};
 	};
-
 	spi_pins_a: spi0@0 {
 		pins_spi {
 			pinmux = <MT2701_PIN_53_SPI0_CSN__FUNC_SPI0_CS>,
@@ -147,7 +123,6 @@
 			bias-disable;
 		};
 	};
-
 	aud_pins_default: audiodefault {
 		pins_cmd_dat {
 			pinmux = <MT2701_PIN_49_I2S0_DATA__FUNC_I2S0_DATA>,
@@ -172,7 +147,6 @@
 			bias-pull-down;
 		};
 	};
-
 	spi_pins_b: spi1@0 {
 		pins_spi {
 			pinmux = <MT2701_PIN_7_SPI1_CSN__FUNC_SPI1_CS>,
@@ -182,7 +156,6 @@
 			bias-disable;
 		};
 	};
-
 	spi_pins_c: spi2@0 {
 		pins_spi {
 			pinmux = <MT2701_PIN_101_SPI2_CSN__FUNC_SPI2_CS>,
@@ -193,25 +166,21 @@
 		};
 	};
 };
-
 &spi0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi_pins_a>;
 	status = "disabled";
 };
-
 &spi1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi_pins_b>;
 	status = "disabled";
 };
-
 &spi2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi_pins_c>;
 	status = "disabled";
 };
-
 &nor_flash {
 	pinctrl-names = "default";
 	pinctrl-0 = <&nor_pins_default>;
@@ -221,7 +190,6 @@
 		reg = <0>;
 	};
 };
-
 &pio {
 	nor_pins_default: nor {
 		pins1 {
@@ -236,11 +204,9 @@
 		};
 	};
 };
-
 &uart0 {
 	status = "okay";
 };
-
 &usb2 {
 	status = "okay";
 	usb-role-switch;

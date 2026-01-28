@@ -1,85 +1,59 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- *  Definitions for IB environment
- *
- *  Copyright IBM Corp. 2016
- *
- *  Author(s):  Ursula Braun <Ursula Braun@linux.vnet.ibm.com>
- */
-
 #ifndef _SMC_IB_H
 #define _SMC_IB_H
-
 #include <linux/interrupt.h>
 #include <linux/if_ether.h>
 #include <linux/mutex.h>
 #include <linux/wait.h>
 #include <rdma/ib_verbs.h>
 #include <net/smc.h>
-
-#define SMC_MAX_PORTS			2	/* Max # of ports */
+#define SMC_MAX_PORTS			2	 
 #define SMC_GID_SIZE			sizeof(union ib_gid)
-
 #define SMC_IB_MAX_SEND_SGE		2
-
-struct smc_ib_devices {			/* list of smc ib devices definition */
+struct smc_ib_devices {			 
 	struct list_head	list;
-	struct mutex		mutex;	/* protects list of smc ib devices */
+	struct mutex		mutex;	 
 };
-
-extern struct smc_ib_devices	smc_ib_devices; /* list of smc ib devices */
-extern struct smc_lgr_list smc_lgr_list; /* list of linkgroups */
-
-struct smc_ib_device {				/* ib-device infos for smc */
+extern struct smc_ib_devices	smc_ib_devices;  
+extern struct smc_lgr_list smc_lgr_list;  
+struct smc_ib_device {				 
 	struct list_head	list;
 	struct ib_device	*ibdev;
-	struct ib_port_attr	pattr[SMC_MAX_PORTS];	/* ib dev. port attrs */
-	struct ib_event_handler	event_handler;	/* global ib_event handler */
-	struct ib_cq		*roce_cq_send;	/* send completion queue */
-	struct ib_cq		*roce_cq_recv;	/* recv completion queue */
-	struct tasklet_struct	send_tasklet;	/* called by send cq handler */
-	struct tasklet_struct	recv_tasklet;	/* called by recv cq handler */
+	struct ib_port_attr	pattr[SMC_MAX_PORTS];	 
+	struct ib_event_handler	event_handler;	 
+	struct ib_cq		*roce_cq_send;	 
+	struct ib_cq		*roce_cq_recv;	 
+	struct tasklet_struct	send_tasklet;	 
+	struct tasklet_struct	recv_tasklet;	 
 	char			mac[SMC_MAX_PORTS][ETH_ALEN];
-						/* mac address per port*/
 	u8			pnetid[SMC_MAX_PORTS][SMC_MAX_PNETID_LEN];
-						/* pnetid per port */
 	bool			pnetid_by_user[SMC_MAX_PORTS];
-						/* pnetid defined by user? */
-	u8			initialized : 1; /* ib dev CQ, evthdl done */
+	u8			initialized : 1;  
 	struct work_struct	port_event_work;
 	unsigned long		port_event_mask;
 	DECLARE_BITMAP(ports_going_away, SMC_MAX_PORTS);
-	atomic_t		lnk_cnt;	/* number of links on ibdev */
-	wait_queue_head_t	lnks_deleted;	/* wait 4 removal of all links*/
-	struct mutex		mutex;		/* protect dev setup+cleanup */
+	atomic_t		lnk_cnt;	 
+	wait_queue_head_t	lnks_deleted;	 
+	struct mutex		mutex;		 
 	atomic_t		lnk_cnt_by_port[SMC_MAX_PORTS];
-						/* number of links per port */
-	int			ndev_ifidx[SMC_MAX_PORTS]; /* ndev if indexes */
+	int			ndev_ifidx[SMC_MAX_PORTS];  
 };
-
 static inline __be32 smc_ib_gid_to_ipv4(u8 gid[SMC_GID_SIZE])
 {
 	struct in6_addr *addr6 = (struct in6_addr *)gid;
-
 	if (ipv6_addr_v4mapped(addr6) ||
 	    !(addr6->s6_addr32[0] | addr6->s6_addr32[1] | addr6->s6_addr32[2]))
 		return addr6->s6_addr32[3];
 	return cpu_to_be32(INADDR_NONE);
 }
-
 static inline struct net *smc_ib_net(struct smc_ib_device *smcibdev)
 {
 	if (smcibdev && smcibdev->ibdev)
 		return read_pnet(&smcibdev->ibdev->coredev.rdma_net);
 	return NULL;
 }
-
 struct smc_init_info_smcrv2;
 struct smc_buf_desc;
 struct smc_link;
-
 void smc_ib_ndev_change(struct net_device *ndev, unsigned long event);
 int smc_ib_register_client(void) __init;
 void smc_ib_unregister_client(void);

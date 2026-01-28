@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2001 Ben. Herrenschmidt (benh@kernel.crashing.org)
- */
-
 static struct cpu_spec cpu_specs[] __initdata = {
-	{	/* STB 04xxx */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x41810000,
 		.cpu_name		= "STB04xxx",
@@ -17,7 +12,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* NP405L */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x41610000,
 		.cpu_name		= "NP405L",
@@ -30,7 +25,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* NP4GS3 */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x40B10000,
 		.cpu_name		= "NP4GS3",
@@ -43,7 +38,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{   /* NP405H */
+	{    
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x41410000,
 		.cpu_name		= "NP405H",
@@ -56,7 +51,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405GPr */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x50910000,
 		.cpu_name		= "405GPr",
@@ -69,7 +64,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{   /* STBx25xx */
+	{    
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x51510000,
 		.cpu_name		= "STBx25xx",
@@ -82,7 +77,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405LP */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x41F10000,
 		.cpu_name		= "405LP",
@@ -94,7 +89,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EP */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x51210000,
 		.cpu_name		= "405EP",
@@ -107,7 +102,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EX Rev. A/B with Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910007,
 		.cpu_name		= "405EX Rev. A/B",
@@ -120,7 +115,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EX Rev. C without Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x1291000d,
 		.cpu_name		= "405EX Rev. C",
@@ -133,7 +128,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EX Rev. C with Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x1291000f,
 		.cpu_name		= "405EX Rev. C",
@@ -146,7 +141,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EX Rev. D without Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910003,
 		.cpu_name		= "405EX Rev. D",
@@ -159,7 +154,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EX Rev. D with Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910005,
 		.cpu_name		= "405EX Rev. D",
@@ -172,7 +167,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EXr Rev. A/B without Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910001,
 		.cpu_name		= "405EXr Rev. A/B",
@@ -185,7 +180,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EXr Rev. C without Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910009,
 		.cpu_name		= "405EXr Rev. C",
@@ -198,7 +193,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EXr Rev. C with Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x1291000b,
 		.cpu_name		= "405EXr Rev. C",
@@ -211,7 +206,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EXr Rev. D without Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910000,
 		.cpu_name		= "405EXr Rev. D",
@@ -224,7 +219,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* 405EXr Rev. D with Security */
+	{	 
 		.pvr_mask		= 0xffff000f,
 		.pvr_value		= 0x12910002,
 		.cpu_name		= "405EXr Rev. D",
@@ -238,7 +233,6 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.platform		= "ppc405",
 	},
 	{
-		/* 405EZ */
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x41510000,
 		.cpu_name		= "405EZ",
@@ -251,7 +245,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* APM8018X */
+	{	 
 		.pvr_mask		= 0xffff0000,
 		.pvr_value		= 0x7ff11432,
 		.cpu_name		= "APM8018X",
@@ -264,7 +258,7 @@ static struct cpu_spec cpu_specs[] __initdata = {
 		.machine_check		= machine_check_4xx,
 		.platform		= "ppc405",
 	},
-	{	/* default match */
+	{	 
 		.pvr_mask		= 0x00000000,
 		.pvr_value		= 0x00000000,
 		.cpu_name		= "(generic 40x PPC)",

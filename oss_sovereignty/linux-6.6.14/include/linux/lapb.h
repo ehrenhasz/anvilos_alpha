@@ -1,16 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * These are the public elements of the Linux LAPB module.
- */
-
 #ifndef	LAPB_KERNEL_H
 #define	LAPB_KERNEL_H
-
 #include <linux/skbuff.h>
 #include <linux/timer.h>
-
 struct net_device;
-
 #define	LAPB_OK			0
 #define	LAPB_BADTOKEN		1
 #define	LAPB_INVALUE		2
@@ -19,16 +11,12 @@ struct net_device;
 #define	LAPB_REFUSED		5
 #define	LAPB_TIMEDOUT		6
 #define	LAPB_NOMEM		7
-
 #define	LAPB_STANDARD		0x00
 #define	LAPB_EXTENDED		0x01
-
 #define	LAPB_SLP		0x00
 #define	LAPB_MLP		0x02
-
 #define	LAPB_DTE		0x00
 #define	LAPB_DCE		0x04
-
 struct lapb_register_struct {
 	void (*connect_confirmation)(struct net_device *dev, int reason);
 	void (*connect_indication)(struct net_device *dev, int reason);
@@ -37,7 +25,6 @@ struct lapb_register_struct {
 	int  (*data_indication)(struct net_device *dev, struct sk_buff *skb);
 	void (*data_transmit)(struct net_device *dev, struct sk_buff *skb);
 };
-
 struct lapb_parms_struct {
 	unsigned int t1;
 	unsigned int t1timer;
@@ -49,7 +36,6 @@ struct lapb_parms_struct {
 	unsigned int state;
 	unsigned int mode;
 };
-
 extern int lapb_register(struct net_device *dev,
 			 const struct lapb_register_struct *callbacks);
 extern int lapb_unregister(struct net_device *dev);
@@ -59,5 +45,4 @@ extern int lapb_connect_request(struct net_device *dev);
 extern int lapb_disconnect_request(struct net_device *dev);
 extern int lapb_data_request(struct net_device *dev, struct sk_buff *skb);
 extern int lapb_data_received(struct net_device *dev, struct sk_buff *skb);
-
 #endif

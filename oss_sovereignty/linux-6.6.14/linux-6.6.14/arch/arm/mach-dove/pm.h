@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-
 #ifndef __ASM_ARCH_PM_H
 #define __ASM_ARCH_PM_H
-
 #include <asm/errno.h>
 #include "irqs.h"
-
 #define CLOCK_GATING_CONTROL	(DOVE_PMU_VIRT_BASE + 0x38)
 #define  CLOCK_GATING_BIT_USB0		0
 #define  CLOCK_GATING_BIT_USB1		1
@@ -43,16 +39,11 @@
 #define  CLOCK_GATING_XOR0_MASK		(1 << CLOCK_GATING_BIT_XOR0)
 #define  CLOCK_GATING_XOR1_MASK		(1 << CLOCK_GATING_BIT_XOR1)
 #define  CLOCK_GATING_GIGA_PHY_MASK	(1 << CLOCK_GATING_BIT_GIGA_PHY)
-
 #define PMU_INTERRUPT_CAUSE	(DOVE_PMU_VIRT_BASE + 0x50)
-
 #define  PMU_SW_RST_VIDEO_MASK		BIT(16)
 #define  PMU_SW_RST_GPU_MASK		BIT(18)
-
 #define  PMU_PWR_GPU_PWR_DWN_MASK	BIT(2)
 #define  PMU_PWR_VPU_PWR_DWN_MASK	BIT(3)
-
 #define  PMU_ISO_VIDEO_MASK		BIT(0)
 #define  PMU_ISO_GPU_MASK		BIT(1)
-
 #endif

@@ -1,27 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**
- * dts file for Hisilicon D03 Development Board
- *
- * Copyright (C) 2016 HiSilicon Ltd.
- */
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
-
 / {
 	compatible = "hisilicon,hip06-d03";
 	interrupt-parent = <&gic>;
 	#address-cells = <2>;
 	#size-cells = <2>;
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu-map {
 			cluster0 {
 				core0 {
@@ -80,7 +69,6 @@
 				};
 			};
 		};
-
 		cpu0: cpu@10000 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -88,7 +76,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster0_l2>;
 		};
-
 		cpu1: cpu@10001 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -96,7 +83,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster0_l2>;
 		};
-
 		cpu2: cpu@10002 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -104,7 +90,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster0_l2>;
 		};
-
 		cpu3: cpu@10003 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -112,7 +97,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster0_l2>;
 		};
-
 		cpu4: cpu@10100 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -120,7 +104,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster1_l2>;
 		};
-
 		cpu5: cpu@10101 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -128,7 +111,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster1_l2>;
 		};
-
 		cpu6: cpu@10102 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -136,7 +118,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster1_l2>;
 		};
-
 		cpu7: cpu@10103 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -144,7 +125,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster1_l2>;
 		};
-
 		cpu8: cpu@10200 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -152,7 +132,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster2_l2>;
 		};
-
 		cpu9: cpu@10201 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -160,7 +139,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster2_l2>;
 		};
-
 		cpu10: cpu@10202 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -168,7 +146,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster2_l2>;
 		};
-
 		cpu11: cpu@10203 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -176,7 +153,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster2_l2>;
 		};
-
 		cpu12: cpu@10300 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -184,7 +160,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster3_l2>;
 		};
-
 		cpu13: cpu@10301 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -192,7 +167,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster3_l2>;
 		};
-
 		cpu14: cpu@10302 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -200,7 +174,6 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster3_l2>;
 		};
-
 		cpu15: cpu@10303 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a57";
@@ -208,32 +181,27 @@
 			enable-method = "psci";
 			next-level-cache = <&cluster3_l2>;
 		};
-
 		cluster0_l2: l2-cache0 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
-
 		cluster1_l2: l2-cache1 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
-
 		cluster2_l2: l2-cache2 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
-
 		cluster3_l2: l2-cache3 {
 			compatible = "cache";
 			cache-level = <2>;
 			cache-unified;
 		};
 	};
-
 	gic: interrupt-controller@4d000000 {
 		compatible = "arm,gic-v3";
 		#interrupt-cells = <3>;
@@ -243,13 +211,12 @@
 		interrupt-controller;
 		#redistributor-regions = <1>;
 		redistributor-stride = <0x0 0x30000>;
-		reg = <0x0 0x4d000000 0 0x10000>,	/* GICD */
-		      <0x0 0x4d100000 0 0x300000>,	/* GICR */
-		      <0x0 0xfe000000 0 0x10000>,	/* GICC */
-		      <0x0 0xfe010000 0 0x10000>,       /* GICH */
-		      <0x0 0xfe020000 0 0x10000>;       /* GICV */
+		reg = <0x0 0x4d000000 0 0x10000>,	 
+		      <0x0 0x4d100000 0 0x300000>,	 
+		      <0x0 0xfe000000 0 0x10000>,	 
+		      <0x0 0xfe010000 0 0x10000>,        
+		      <0x0 0xfe020000 0 0x10000>;        
 		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-
 		its_dsa: msi-controller@c6000000 {
 			compatible = "arm,gic-v3-its";
 			msi-controller;
@@ -257,7 +224,6 @@
 			reg = <0x0 0xc6000000 0x0 0x40000>;
 		};
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_LOW>,
@@ -265,37 +231,31 @@
 			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
 			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
 	};
-
 	pmu {
 		compatible = "arm,cortex-a57-pmu";
 		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
 	};
-
 	mbigen_pcie@a0080000 {
 		compatible = "hisilicon,mbigen-v2";
 		reg = <0x0 0xa0080000 0x0 0x10000>;
-
 		mbigen_usb: intc_usb {
 			msi-parent = <&its_dsa 0x40080>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			num-pins = <2>;
 		};
-
 		mbigen_sas1: intc_sas1 {
 			msi-parent = <&its_dsa 0x40000>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			num-pins = <128>;
 		};
-
 		mbigen_sas2: intc_sas2 {
 			msi-parent = <&its_dsa 0x40040>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			num-pins = <128>;
 		};
-
 		mbigen_pcie0: intc_pcie0 {
 			msi-parent = <&its_dsa 0x40085>;
 			interrupt-controller;
@@ -303,18 +263,15 @@
 			num-pins = <10>;
 		};
 	};
-
 	mbigen_dsa@c0080000 {
 		compatible = "hisilicon,mbigen-v2";
 		reg = <0x0 0xc0080000 0x0 0x10000>;
-
 		mbigen_dsaf0: intc_dsaf0 {
 			msi-parent = <&its_dsa 0x40800>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
 			num-pins = <409>;
 		};
-
 		mbigen_sas0: intc-sas0 {
 			msi-parent = <&its_dsa 0x40900>;
 			interrupt-controller;
@@ -322,22 +279,6 @@
 			num-pins = <128>;
 		};
 	};
-
-	/**
-	 *  HiSilicon erratum 161010801: This describes the limitation
-	 *  of HiSilicon platforms hip06/hip07 to support the SMMUv3
-	 *  mappings for PCIe MSI transactions.
-	 *  PCIe controller on these platforms has to differentiate the
-	 *  MSI payload against other DMA payload and has to modify the
-	 *  MSI payload. This makes it difficult for these platforms to
-	 *  have a SMMU translation for MSI. In order to workaround this,
-	 *  ARM SMMUv3 driver requires a quirk to treat the MSI regions
-	 *  separately. Such a quirk is currently missing for DT based
-	 *  systems. Hence please make sure that the smmu pcie node on
-	 *  hip06 is disabled as this will break the PCIe functionality
-	 *  when iommu-map entry is used along with the PCIe node.
-	 *  Refer:https://www.spinics.net/lists/arm-kernel/msg602812.html
-	 */
 	smmu0: iommu@a0040000 {
 		compatible = "arm,smmu-v3";
 		reg = <0x0 0xa0040000 0x0 0x20000>;
@@ -346,26 +287,22 @@
 		hisilicon,broken-prefetch-cmd;
 		status = "disabled";
 	};
-
 	soc {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
-
 		isa@a01b0000 {
 			compatible = "hisilicon,hip06-lpc";
 			#size-cells = <1>;
 			#address-cells = <2>;
 			reg = <0x0 0xa01b0000 0x0 0x1000>;
-
 			ipmi0: bt@e4 {
 				compatible = "ipmi-bt";
 				device_type = "ipmi";
 				reg = <0x01 0xe4 0x04>;
 				status = "disabled";
 			};
-
 			uart0: serial@2f8 {
 				compatible = "ns16550a";
 				clock-frequency = <1843200>;
@@ -373,13 +310,11 @@
 				status = "disabled";
 			};
 		};
-
 		refclk: refclk {
 			compatible = "fixed-clock";
 			clock-frequency = <50000000>;
 			#clock-cells = <0>;
 		};
-
 		usb_ohci: usb@a7030000 {
 			compatible = "generic-ohci";
 			reg = <0x0 0xa7030000 0x0 0x10000>;
@@ -388,7 +323,6 @@
 			dma-coherent;
 			status = "disabled";
 		};
-
 		usb_ehci: usb@a7020000 {
 			compatible = "generic-ehci";
 			reg = <0x0 0xa7020000 0x0 0x10000>;
@@ -397,45 +331,37 @@
 			dma-coherent;
 			status = "disabled";
 		};
-
 		peri_c_subctrl: sub_ctrl_c@60000000 {
 			compatible = "hisilicon,peri-subctrl","syscon";
 			reg = <0 0x60000000 0x0 0x10000>;
 		};
-
 		dsa_subctrl: dsa_subctrl@c0000000 {
 			compatible = "hisilicon,dsa-subctrl", "syscon";
 			reg = <0x0 0xc0000000 0x0 0x10000>;
 		};
-
 		pcie_subctl: pcie_subctl@a0000000 {
 			compatible = "hisilicon,pcie-sas-subctrl", "syscon";
 			reg = <0x0 0xa0000000 0x0 0x10000>;
 		};
-
 		serdes_ctrl: sds_ctrl@c2200000 {
 			compatible = "syscon";
 			reg = <0 0xc2200000 0x0 0x80000>;
 		};
-
 		mdio@603c0000 {
 			compatible = "hisilicon,hns-mdio";
 			reg = <0x0 0x603c0000 0x0 0x1000>;
 			subctrl-vbase = <&peri_c_subctrl 0x338 0xa38 0x531c 0x5a1c>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			phy0: ethernet-phy@0 {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <0>;
 			};
-
 			phy1: ethernet-phy@1 {
 				compatible = "ethernet-phy-ieee802.3-c22";
 				reg = <1>;
 			};
 		};
-
 		dsaf0: dsa@c7000000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -530,11 +456,9 @@
 			<1330 1>, <1331 1>, <1332 1>, <1333 1>, <1334 1>,
 			<1335 1>, <1336 1>, <1337 1>, <1338 1>, <1339 1>,
 			<1340 1>, <1341 1>, <1342 1>, <1343 1>;
-
 			desc-num = <0x400>;
 			buf-size = <0x1000>;
 			dma-coherent;
-
 			port@0 {
 				reg = <0>;
 				serdes-syscon = <&serdes_ctrl>;
@@ -542,7 +466,6 @@
 				port-mode-offset = <0>;
 				media-type = "fiber";
 			};
-
 			port@1 {
 				reg = <1>;
 				serdes-syscon = <&serdes_ctrl>;
@@ -550,7 +473,6 @@
 				port-mode-offset = <1>;
 				media-type = "fiber";
 			};
-
 			port@4 {
 				reg = <4>;
 				phy-handle = <&phy0>;
@@ -559,7 +481,6 @@
 				port-mode-offset = <2>;
 				media-type = "copper";
 			};
-
 			port@5 {
 				reg = <5>;
 				phy-handle = <&phy1>;
@@ -569,7 +490,6 @@
 				media-type = "copper";
 			};
 		};
-
 		eth0: ethernet-4 {
 			compatible = "hisilicon,hns-nic-v2";
 			ae-handle = <&dsaf0>;
@@ -578,7 +498,6 @@
 			status = "disabled";
 			dma-coherent;
 		};
-
 		eth1: ethernet-5 {
 			compatible = "hisilicon,hns-nic-v2";
 			ae-handle = <&dsaf0>;
@@ -587,7 +506,6 @@
 			status = "disabled";
 			dma-coherent;
 		};
-
 		eth2: ethernet-0 {
 			compatible = "hisilicon,hns-nic-v2";
 			ae-handle = <&dsaf0>;
@@ -596,7 +514,6 @@
 			status = "disabled";
 			dma-coherent;
 		};
-
 		eth3: ethernet-1 {
 			compatible = "hisilicon,hns-nic-v2";
 			ae-handle = <&dsaf0>;
@@ -605,7 +522,6 @@
 			status = "disabled";
 			dma-coherent;
 		};
-
 		sas0: sas@c3000000 {
 			compatible = "hisilicon,hip06-sas-v2";
 			reg = <0 0xc3000000 0 0x10000>;
@@ -647,7 +563,6 @@
 				     <630 1>,<631 1>,<632 1>;
 			status = "disabled";
 		};
-
 		sas1: sas@a2000000 {
 			compatible = "hisilicon,hip06-sas-v2";
 			reg = <0 0xa2000000 0 0x10000>;
@@ -690,7 +605,6 @@
 				     <605 1>,<606 1>,<607 1>;
 			status = "disabled";
 		};
-
 		sas2: sas@a3000000 {
 			compatible = "hisilicon,hip06-sas-v2";
 			reg = <0 0xa3000000 0 0x10000>;
@@ -732,7 +646,6 @@
 				     <637 1>,<638 1>,<639 1>;
 			status = "disabled";
 		};
-
 		pcie0: pcie@a0090000 {
 			compatible = "hisilicon,hip06-pcie-ecam";
 			reg = <0 0xb0000000 0 0x2000000>,
@@ -754,7 +667,5 @@
 					0x0 0 0 4 &mbigen_pcie0 650 4>;
 			status = "disabled";
 		};
-
 	};
-
 };

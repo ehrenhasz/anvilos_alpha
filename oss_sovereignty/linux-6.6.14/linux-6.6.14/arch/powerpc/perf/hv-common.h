@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef LINUX_POWERPC_PERF_HV_COMMON_H_
 #define LINUX_POWERPC_PERF_HV_COMMON_H_
-
 #include <linux/perf_event.h>
 #include <linux/types.h>
-
 struct hv_perf_caps {
 	u16 version;
 	u16 collect_privileged:1,
@@ -13,24 +10,12 @@ struct hv_perf_caps {
 	    lab:1,
 	    unused:12;
 };
-
 unsigned long hv_perf_caps_get(struct hv_perf_caps *caps);
-
-
 #define EVENT_DEFINE_RANGE_FORMAT(name, attr_var, bit_start, bit_end)	\
 PMU_FORMAT_ATTR(name, #attr_var ":" #bit_start "-" #bit_end);		\
 EVENT_DEFINE_RANGE(name, attr_var, bit_start, bit_end)
-
-/*
- * The EVENT_DEFINE_RANGE_FORMAT() macro above includes helper functions
- * for the fields (eg: event_get_starting_index()). For some fields we
- * need the bit-range definition, but no the helper functions. Define a
- * lite version of the above macro without the helpers and silence
- * compiler warnings unused static functions.
- */
 #define EVENT_DEFINE_RANGE_FORMAT_LITE(name, attr_var, bit_start, bit_end) \
 PMU_FORMAT_ATTR(name, #attr_var ":" #bit_start "-" #bit_end);
-
 #define EVENT_DEFINE_RANGE(name, attr_var, bit_start, bit_end)	\
 static u64 event_get_##name##_max(void)					\
 {									\
@@ -43,5 +28,4 @@ static u64 event_get_##name(struct perf_event *event)			\
 	return (event->attr.attr_var >> (bit_start)) &			\
 		event_get_##name##_max();				\
 }
-
 #endif

@@ -1,41 +1,22 @@
-/*
- * Device Tree Source for IBM Embedded PPC 476 Platform
- *
- * Copyright 2010 Torez Smith, IBM Corporation.
- *
- * Based on earlier code:
- *     Copyright (c) 2006, 2007 IBM Corp.
- *     Josh Boyer <jwboyer@linux.vnet.ibm.com>, David Gibson <dwg@au1.ibm.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without
- * any warranty of any kind, whether express or implied.
- */
-
 /dts-v1/;
-
 /memreserve/ 0x01f00000 0x00100000;
-
 / {
 	#address-cells = <2>;
 	#size-cells = <1>;
 	model = "ibm,iss-4xx";
 	compatible = "ibm,iss-4xx";
 	dcr-parent = <&{/cpus/cpu@0}>;
-
 	aliases {
 		serial0 = &UART0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu@0 {
 			device_type = "cpu";
-			model = "PowerPC,4xx"; // real CPU changed in sim
+			model = "PowerPC,4xx";  
 			reg = <0>;
-			clock-frequency = <100000000>; // 100Mhz :-)
+			clock-frequency = <100000000>;  
 			timebase-frequency = <100000000>;
 			i-cache-line-size = <32>;
 			d-cache-line-size = <32>;
@@ -47,9 +28,9 @@
 		};
 		cpu@1 {
 			device_type = "cpu";
-			model = "PowerPC,4xx"; // real CPU changed in sim
+			model = "PowerPC,4xx";  
 			reg = <1>;
-			clock-frequency = <100000000>; // 100Mhz :-)
+			clock-frequency = <100000000>;  
 			timebase-frequency = <100000000>;
 			i-cache-line-size = <32>;
 			d-cache-line-size = <32>;
@@ -63,9 +44,9 @@
 		};
 		cpu@2 {
 			device_type = "cpu";
-			model = "PowerPC,4xx"; // real CPU changed in sim
+			model = "PowerPC,4xx";  
 			reg = <2>;
-			clock-frequency = <100000000>; // 100Mhz :-)
+			clock-frequency = <100000000>;  
 			timebase-frequency = <100000000>;
 			i-cache-line-size = <32>;
 			d-cache-line-size = <32>;
@@ -79,9 +60,9 @@
 		};
 		cpu@3 {
 			device_type = "cpu";
-			model = "PowerPC,4xx"; // real CPU changed in sim
+			model = "PowerPC,4xx";  
 			reg = <3>;
-			clock-frequency = <100000000>; // 100Mhz :-)
+			clock-frequency = <100000000>;  
 			timebase-frequency = <100000000>;
 			i-cache-line-size = <32>;
 			d-cache-line-size = <32>;
@@ -94,13 +75,10 @@
 			cpu-release-addr = <0 0x01f00300>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
-		reg =  <0x00000000 0x00000000 0x00000000>; // Filled in by zImage
-
+		reg =  <0x00000000 0x00000000 0x00000000>;  
 	};
-
 	MPIC: interrupt-controller {
 		compatible = "chrp,open-pic";
 		interrupt-controller;
@@ -108,25 +86,20 @@
 		#address-cells = <0>;
 		#size-cells = <0>;
 		#interrupt-cells = <2>;
-
 	};
-
 	plb {
-		compatible = "ibm,plb-4xx", "ibm,plb4"; /* Could be PLB6, doesn't matter */
+		compatible = "ibm,plb-4xx", "ibm,plb4";  
 		#address-cells = <2>;
 		#size-cells = <1>;
 		ranges;
-		clock-frequency = <0>; // Filled in by zImage
-
+		clock-frequency = <0>;  
 		POB0: opb {
 			compatible = "ibm,opb-4xx", "ibm,opb";
 			#address-cells = <1>;
 			#size-cells = <1>;
-			/* Wish there was a nicer way of specifying a full 32-bit
-			   range */
 			ranges = <0x00000000 0x00000001 0x00000000 0x80000000
 				  0x80000000 0x00000001 0x80000000 0x80000000>;
-			clock-frequency = <0>; // Filled in by zImage
+			clock-frequency = <0>;  
 			UART0: serial@40000200 {
 				device_type = "serial";
 				compatible = "ns16550a";
@@ -139,7 +112,6 @@
 			};
 		};
 	};
-
 	nvrtc {
 		compatible = "ds1743-nvram", "ds1743", "rtc-ds1743";
 		reg = <0 0xEF703000 0x2000>;
@@ -148,7 +120,6 @@
 		compatible = "ibm,iss-sim-block-device";
 		reg = <0 0xEF701000 0x1000>;
 	};
-
 	chosen {
 		stdout-path = "/plb/opb/serial@40000200";
 	};

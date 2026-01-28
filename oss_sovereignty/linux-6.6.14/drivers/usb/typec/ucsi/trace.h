@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ucsi
-
 #if !defined(__UCSI_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __UCSI_TRACE_H
-
 #include <linux/tracepoint.h>
 #include <linux/usb/typec_altmode.h>
-
 const char *ucsi_cmd_str(u64 raw_cmd);
 const char *ucsi_cci_str(u32 cci);
 const char *ucsi_recipient_str(u8 recipient);
-
 DECLARE_EVENT_CLASS(ucsi_log_command,
 	TP_PROTO(u64 command, int ret),
 	TP_ARGS(command, ret),
@@ -28,17 +22,14 @@ DECLARE_EVENT_CLASS(ucsi_log_command,
 		__entry->ret < 0 ? "FAIL" : "OK",
 		__entry->ret < 0 ? __entry->ret : 0)
 );
-
 DEFINE_EVENT(ucsi_log_command, ucsi_run_command,
 	TP_PROTO(u64 command, int ret),
 	TP_ARGS(command, ret)
 );
-
 DEFINE_EVENT(ucsi_log_command, ucsi_reset_ppm,
 	TP_PROTO(u64 command, int ret),
 	TP_ARGS(command, ret)
 );
-
 DECLARE_EVENT_CLASS(ucsi_log_connector_status,
 	TP_PROTO(int port, struct ucsi_connector_status *status),
 	TP_ARGS(port, status),
@@ -71,17 +62,14 @@ DECLARE_EVENT_CLASS(ucsi_log_connector_status,
 		__entry->pwr_dir, __entry->partner_flags, __entry->partner_type,
 		__entry->request_data_obj, __entry->bc_status)
 );
-
 DEFINE_EVENT(ucsi_log_connector_status, ucsi_connector_change,
 	TP_PROTO(int port, struct ucsi_connector_status *status),
 	TP_ARGS(port, status)
 );
-
 DEFINE_EVENT(ucsi_log_connector_status, ucsi_register_port,
 	TP_PROTO(int port, struct ucsi_connector_status *status),
 	TP_ARGS(port, status)
 );
-
 DECLARE_EVENT_CLASS(ucsi_log_register_altmode,
 	TP_PROTO(u8 recipient, struct typec_altmode *alt),
 	TP_ARGS(recipient, alt),
@@ -101,20 +89,13 @@ DECLARE_EVENT_CLASS(ucsi_log_register_altmode,
 		  ucsi_recipient_str(__entry->recipient), __entry->svid,
 		  __entry->mode, __entry->vdo)
 );
-
 DEFINE_EVENT(ucsi_log_register_altmode, ucsi_register_altmode,
 	TP_PROTO(u8 recipient, struct typec_altmode *alt),
 	TP_ARGS(recipient, alt)
 );
-
-#endif /* __UCSI_TRACE_H */
-
-/* This part must be outside protection */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
 #include <trace/define_trace.h>

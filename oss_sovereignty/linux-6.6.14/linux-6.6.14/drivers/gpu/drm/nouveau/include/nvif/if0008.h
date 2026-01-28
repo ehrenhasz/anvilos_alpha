@@ -7,18 +7,15 @@ struct nvif_mmu_v0 {
 	__u8  type_nr;
 	__u16 kind_nr;
 };
-
 #define NVIF_MMU_V0_HEAP                                                   0x00
 #define NVIF_MMU_V0_TYPE                                                   0x01
 #define NVIF_MMU_V0_KIND                                                   0x02
-
 struct nvif_mmu_heap_v0 {
 	__u8  version;
 	__u8  index;
 	__u8  pad02[6];
 	__u64 size;
 };
-
 struct nvif_mmu_type_v0 {
 	__u8  version;
 	__u8  index;
@@ -32,7 +29,6 @@ struct nvif_mmu_type_v0 {
 	__u8  coherent;
 	__u8  uncached;
 };
-
 struct nvif_mmu_kind_v0 {
 	__u8  version;
 	__u8  kind_inv;

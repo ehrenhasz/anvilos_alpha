@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2016 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
-
 #ifndef _DT_BINDINGS_CLK_SUN5I_H_
 #define _DT_BINDINGS_CLK_SUN5I_H_
-
 #define CLK_HOSC		1
-
 #define CLK_PLL_VIDEO0_2X	9
-
 #define CLK_PLL_VIDEO1_2X	16
 #define CLK_CPU			17
-
 #define CLK_AHB_OTG		23
 #define CLK_AHB_EHCI		24
 #define CLK_AHB_OHCI		25
@@ -83,7 +72,6 @@
 #define CLK_DE_BE		88
 #define CLK_DE_FE		89
 #define CLK_TCON_CH0		90
-
 #define CLK_TCON_CH1		92
 #define CLK_CSI			93
 #define CLK_VE			94
@@ -93,5 +81,4 @@
 #define CLK_GPU			98
 #define CLK_MBUS		99
 #define CLK_IEP			100
-
-#endif /* _DT_BINDINGS_CLK_SUN5I_H_ */
+#endif  

@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac XGMAC definitions.
- */
-
 #ifndef __STMMAC_DWXGMAC2_H__
 #define __STMMAC_DWXGMAC2_H__
-
 #include "common.h"
-
-/* Misc */
 #define XGMAC_JUMBO_LEN			16368
-
-/* MAC Registers */
 #define XGMAC_TX_CONFIG			0x00000000
 #define XGMAC_CONFIG_SS_OFF		29
 #define XGMAC_CONFIG_SS_MASK		GENMASK(31, 29)
@@ -265,8 +254,6 @@
 #define XGMAC_TRGTBUSY0			BIT(31)
 #define XGMAC_PPSx_INTERVAL(x)		(0x00000d88 + (x) * 0x10)
 #define XGMAC_PPSx_WIDTH(x)		(0x00000d8c + (x) * 0x10)
-
-/* MTL Registers */
 #define XGMAC_MTL_OPMODE		0x00001000
 #define XGMAC_FRPE			BIT(15)
 #define XGMAC_ETSALG			GENMASK(6, 5)
@@ -358,8 +345,6 @@
 #define XGMAC_ABPSIS			BIT(1)
 #define XGMAC_TXUNFIS			BIT(0)
 #define XGMAC_MAC_REGSIZE		(XGMAC_MTL_QINT_STATUS(15) / 4)
-
-/* DMA Registers */
 #define XGMAC_DMA_MODE			0x00003000
 #define XGMAC_SWR			BIT(0)
 #define XGMAC_DMA_SYSBUS_MODE		0x00003004
@@ -448,14 +433,11 @@
 #define XGMAC_TPS			BIT(1)
 #define XGMAC_TI			BIT(0)
 #define XGMAC_REGSIZE			((0x0000317c + (0x80 * 15)) / 4)
-
 #define XGMAC_DMA_STATUS_MSK_COMMON	(XGMAC_NIS | XGMAC_AIS | XGMAC_FBE)
 #define XGMAC_DMA_STATUS_MSK_RX		(XGMAC_RBU | XGMAC_RI | \
 					 XGMAC_DMA_STATUS_MSK_COMMON)
 #define XGMAC_DMA_STATUS_MSK_TX		(XGMAC_TBU | XGMAC_TPS | XGMAC_TI | \
 					 XGMAC_DMA_STATUS_MSK_COMMON)
-
-/* Descriptors */
 #define XGMAC_TDES0_LTV			BIT(31)
 #define XGMAC_TDES0_LT			GENMASK(7, 0)
 #define XGMAC_TDES1_LT			GENMASK(31, 8)
@@ -507,5 +489,4 @@
 #define XGMAC_RDES3_PL			GENMASK(13, 0)
 #define XGMAC_RDES3_TSD			BIT(6)
 #define XGMAC_RDES3_TSA			BIT(4)
-
-#endif /* __STMMAC_DWXGMAC2_H__ */
+#endif  

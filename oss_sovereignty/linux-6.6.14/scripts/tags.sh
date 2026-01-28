@@ -1,52 +1,26 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0-only
-# Generate tags or cscope files
-# Usage tags.sh <mode>
-#
-# mode may be any of: tags, TAGS, cscope
-#
-# Uses the following environment variables:
-# SUBARCH, SRCARCH, srctree
-
 if [[ "$KBUILD_VERBOSE" =~ 1 ]]; then
 	set -x
 fi
-
-# RCS_FIND_IGNORE has escaped ()s -- remove them.
 ignore="$(echo "$RCS_FIND_IGNORE" | sed 's|\\||g' )"
-# tags and cscope files should also ignore MODVERSION *.mod.c files
 ignore="$ignore ( -name *.mod.c ) -prune -o"
-
-# ignore arbitrary directories
 if [ -n "${IGNORE_DIRS}" ]; then
 	for i in ${IGNORE_DIRS}; do
 		ignore="${ignore} ( -path $i ) -prune -o"
 	done
 fi
-
-# Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
-# to force full paths for a non-O= build
 if [ "${srctree}" = "." -o -z "${srctree}" ]; then
 	tree=
 else
 	tree=${srctree}/
 fi
-
-# gtags(1) refuses to index any file outside of its current working dir.
-# If gtags indexing is requested and the build output directory is not
-# the kernel source tree, index all files in absolute-path form.
 if [[ "$1" == "gtags" && -n "${tree}" ]]; then
 	tree=$(realpath "$tree")/
 fi
-
-# Detect if ALLSOURCE_ARCHS is set. If not, we assume SRCARCH
 if [ "${ALLSOURCE_ARCHS}" = "" ]; then
 	ALLSOURCE_ARCHS=${SRCARCH}
 elif [ "${ALLSOURCE_ARCHS}" = "all" ]; then
 	ALLSOURCE_ARCHS=$(find ${tree}arch/ -mindepth 1 -maxdepth 1 -type d -printf '%f ')
 fi
-
-# find sources in arch/$1
 find_arch_sources()
 {
 	for i in $archincludedir; do
@@ -54,8 +28,6 @@ find_arch_sources()
 	done
 	find ${tree}arch/$1 $ignore $prune -name "$2" -not -type l -print;
 }
-
-# find sources in arch/$1/include
 find_arch_include_sources()
 {
 	include=$(find ${tree}arch/$1/ -name include -type d -print);
@@ -64,28 +36,21 @@ find_arch_include_sources()
 		find $include $ignore -name "$2" -not -type l -print;
 	fi
 }
-
-# find sources in include/
 find_include_sources()
 {
 	find ${tree}include $ignore -name config -prune -o -name "$1" \
 		-not -type l -print;
 }
-
-# find sources in rest of tree
-# we could benefit from a list of dirs to search in here
 find_other_sources()
 {
 	find ${tree}* $ignore \
 	     \( -path ${tree}include -o -path ${tree}arch -o -name '.tmp_*' \) -prune -o \
 	       -name "$1" -not -type l -print;
 }
-
 find_sources()
 {
 	find_arch_sources $1 "$2"
 }
-
 all_sources()
 {
 	find_arch_include_sources ${SRCARCH} '*.[chS]'
@@ -99,7 +64,6 @@ all_sources()
 	done
 	find_other_sources '*.[chS]'
 }
-
 all_compiled_sources()
 {
 	{
@@ -110,7 +74,6 @@ all_compiled_sources()
 	} | xargs realpath -esq $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
 	sort -u
 }
-
 all_target_sources()
 {
 	if [ -n "$COMPILED_SOURCE" ]; then
@@ -119,7 +82,6 @@ all_target_sources()
 		all_sources
 	fi
 }
-
 all_kconfigs()
 {
 	find ${tree}arch/ -maxdepth 1 $ignore \
@@ -129,26 +91,15 @@ all_kconfigs()
 	done
 	find_other_sources 'Kconfig*'
 }
-
 docscope()
 {
 	(echo \-k; echo \-q; all_target_sources) > cscope.files
 	cscope -b -f cscope.out
 }
-
 dogtags()
 {
 	all_target_sources | gtags -i -C "${tree:-.}" -f - "$PWD"
 }
-
-# Basic regular expressions with an optional /kind-spec/ for ctags and
-# the following limitations:
-# - No regex modifiers
-# - Use \{0,1\} instead of \?, because etags expects an unescaped ?
-# - \s is not working with etags, use a space or [ \t]
-# - \w works, but does not match underscores in etags
-# - etags regular expressions have to match at the start of a line;
-#   a ^[^#] is prepended by setup_regex unless an anchor is already present
 regex_asm=(
 	'/^\(ENTRY\|_GLOBAL\)([[:space:]]*\([[:alnum:]_\\]*\)).*/\2/'
 )
@@ -226,7 +177,6 @@ setup_regex()
 {
 	local mode=$1 lang tmp=() r
 	shift
-
 	regex=()
 	for lang; do
 		case "$lang" in
@@ -236,25 +186,22 @@ setup_regex()
 		esac
 		for r in "${tmp[@]}"; do
 			if test "$mode" = "exuberant"; then
-				regex[${#regex[@]}]="--regex-$lang=${r}b"
+				regex[${
 			else
-				# Remove ctags /kind-spec/
 				case "$r" in
 				/*/*/?/)
 					r=${r%?/}
 				esac
-				# Prepend ^[^#] unless already anchored
 				case "$r" in
 				/^*) ;;
 				*)
 					r="/^[^#]*${r#/}"
 				esac
-				regex[${#regex[@]}]="--regex=$r"
+				regex[${
 			fi
 		done
 	done
 }
-
 exuberant()
 {
 	CTAGS_EXTRA="extra"
@@ -277,7 +224,6 @@ exuberant()
 	-I static,const						\
 	--$CTAGS_EXTRA=+fq --c-kinds=+px --fields=+iaS --langmap=c:+.h \
 	"${regex[@]}"
-
 	KCONFIG_ARGS=()
 	if ! $1 --list-languages | grep -iq kconfig; then
 		setup_regex exuberant kconfig
@@ -285,16 +231,13 @@ exuberant()
 	fi
 	all_kconfigs | xargs $1 -a "${KCONFIG_ARGS[@]}"
 }
-
 emacs()
 {
 	setup_regex emacs asm c
 	all_target_sources | xargs $1 -a "${regex[@]}"
-
 	setup_regex emacs kconfig
 	all_kconfigs | xargs $1 -a "${regex[@]}"
 }
-
 xtags()
 {
 	if $1 --version 2>&1 | grep -iq exuberant; then
@@ -305,8 +248,6 @@ xtags()
 		all_target_sources | xargs $1 -a
 	fi
 }
-
-# Support um (which uses SUBARCH)
 if [ "${ARCH}" = "um" ]; then
 	if [ "$SUBARCH" = "i386" ]; then
 		archinclude=x86
@@ -316,31 +257,25 @@ if [ "${ARCH}" = "um" ]; then
 		archinclude=${SUBARCH}
 	fi
 fi
-
 remove_structs=
 case "$1" in
 	"cscope")
 		docscope
 		;;
-
 	"gtags")
 		dogtags
 		;;
-
 	"tags")
 		rm -f tags
 		xtags ctags
 		remove_structs=y
 		;;
-
 	"TAGS")
 		rm -f TAGS
 		xtags etags
 		remove_structs=y
 		;;
 esac
-
-# Remove structure forward declarations.
 if [ -n "$remove_structs" ]; then
     LC_ALL=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
 fi

@@ -1,32 +1,11 @@
-/* SPDX-License-Identifier: LGPL-2.1+ */
-/*
- *   fs/server/smb2status.h
- *
- *   SMB2 Status code (network error) definitions
- *   Definitions are from MS-ERREF
- *
- *   Copyright (c) International Business Machines  Corp., 2009,2011
- *   Author(s): Steve French (sfrench@us.ibm.com)
- */
-
-/*
- *  0 1 2 3 4 5 6 7 8 9 0 A B C D E F 0 1 2 3 4 5 6 7 8 9 A B C D E F
- *  SEV C N <-------Facility--------> <------Error Status Code------>
- *
- *  C is set if "customer defined" error, N bit is reserved and MBZ
- */
-
 #define STATUS_SEVERITY_SUCCESS cpu_to_le32(0x0000)
 #define STATUS_SEVERITY_INFORMATIONAL cpu_to_le32(0x0001)
 #define STATUS_SEVERITY_WARNING cpu_to_le32(0x0002)
 #define STATUS_SEVERITY_ERROR cpu_to_le32(0x0003)
-
 struct ntstatus {
-	/* Facility is the high 12 bits of the following field */
-	__le32 Facility; /* low 2 bits Severity, next is Customer, then rsrvd */
+	__le32 Facility;  
 	__le32 Code;
 };
-
 #define STATUS_SUCCESS 0x00000000
 #define STATUS_WAIT_0 cpu_to_le32(0x00000000)
 #define STATUS_WAIT_1 cpu_to_le32(0x00000001)
@@ -1817,6 +1796,5 @@ struct ntstatus {
 #define STATUS_IPSEC_INVALID_PACKET cpu_to_le32(0xC0360005)
 #define STATUS_IPSEC_INTEGRITY_CHECK_FAILED cpu_to_le32(0xC0360006)
 #define STATUS_IPSEC_CLEAR_TEXT_DROP cpu_to_le32(0xC0360007)
-
 #define STATUS_NO_PREAUTH_INTEGRITY_HASH_OVERLAP cpu_to_le32(0xC05D0000)
 #define STATUS_INVALID_LOCK_RANGE cpu_to_le32(0xC00001a1)

@@ -1,34 +1,20 @@
-# SPDX-License-Identifier: GPL-2.0
-#
-# Copyright (c) 2023 MediaTek Inc.
-#
-# Authors:
-#  Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-#
-
 import gdb
 import re
 from linux import lists, utils, stackdepot, constants, mm
-
 if constants.LX_CONFIG_MMU:
     vmap_area_type = utils.CachedType('struct vmap_area')
     vmap_area_ptr_type = vmap_area_type.get_type().pointer()
-
 def is_vmalloc_addr(x):
     pg_ops = mm.page_ops().ops
     addr = pg_ops.kasan_reset_tag(x)
     return addr >= pg_ops.VMALLOC_START and addr < pg_ops.VMALLOC_END
-
 class LxVmallocInfo(gdb.Command):
     """Show vmallocinfo"""
-
     def __init__(self):
         super(LxVmallocInfo, self).__init__("lx-vmallocinfo", gdb.COMMAND_DATA)
-
     def invoke(self, arg, from_tty):
         if not constants.LX_CONFIG_MMU:
             raise gdb.GdbError("Requires MMU support")
-
         vmap_area_list = gdb.parse_and_eval('vmap_area_list')
         for vmap_area in lists.list_for_each_entry(vmap_area_list, vmap_area_ptr_type, "list"):
             if not vmap_area['vm']:
@@ -56,5 +42,4 @@ class LxVmallocInfo(gdb.Command):
             if is_vmalloc_addr(v['pages']):
                 gdb.write(" vpages")
             gdb.write("\n")
-
 LxVmallocInfo()

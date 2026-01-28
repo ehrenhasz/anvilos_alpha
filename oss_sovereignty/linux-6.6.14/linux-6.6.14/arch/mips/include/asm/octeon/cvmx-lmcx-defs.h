@@ -1,33 +1,5 @@
-/***********************license start***************
- * Author: Cavium Inc.
- *
- * Contact: support@cavium.com
- * This file is part of the OCTEON SDK
- *
- * Copyright (c) 2003-2012 Cavium Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this file; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- * or visit http://www.gnu.org/licenses/.
- *
- * This file may also be available under a different license from Cavium.
- * Contact Cavium Inc. for more information
- ***********************license end**************************************/
-
 #ifndef __CVMX_LMCX_DEFS_H__
 #define __CVMX_LMCX_DEFS_H__
-
 #define CVMX_LMCX_BIST_CTL(block_id) (CVMX_ADD_IO_SEG(0x00011800880000F0ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_BIST_RESULT(block_id) (CVMX_ADD_IO_SEG(0x00011800880000F8ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_CHAR_CTL(block_id) (CVMX_ADD_IO_SEG(0x0001180088000220ull) + ((block_id) & 3) * 0x1000000ull)
@@ -72,7 +44,6 @@ static inline uint64_t CVMX_LMCX_DUAL_MEMCFG(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180088000098ull) + (block_id) * 0x60000000ull;
 }
-
 static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -94,7 +65,6 @@ static inline uint64_t CVMX_LMCX_ECC_SYND(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180088000038ull) + (block_id) * 0x60000000ull;
 }
-
 static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
 {
 	switch (cvmx_get_octeon_family()) {
@@ -116,7 +86,6 @@ static inline uint64_t CVMX_LMCX_FADR(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x0001180088000020ull) + (block_id) * 0x60000000ull;
 }
-
 #define CVMX_LMCX_IFB_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001D0ull) + ((block_id) & 3) * 0x1000000ull)
 #define CVMX_LMCX_IFB_CNT_HI(block_id) (CVMX_ADD_IO_SEG(0x0001180088000050ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_IFB_CNT_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180088000048ull) + ((block_id) & 1) * 0x60000000ull)
@@ -143,7 +112,6 @@ static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
 	}
 	return CVMX_ADD_IO_SEG(0x00011800880000C8ull) + (block_id) * 0x60000000ull;
 }
-
 #define CVMX_LMCX_OPS_CNT(block_id) (CVMX_ADD_IO_SEG(0x00011800880001D8ull) + ((block_id) & 3) * 0x1000000ull)
 #define CVMX_LMCX_OPS_CNT_HI(block_id) (CVMX_ADD_IO_SEG(0x0001180088000060ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_OPS_CNT_LO(block_id) (CVMX_ADD_IO_SEG(0x0001180088000058ull) + ((block_id) & 1) * 0x60000000ull)
@@ -177,7 +145,6 @@ static inline uint64_t CVMX_LMCX_NXM(unsigned long block_id)
 #define CVMX_LMCX_WODT_CTL0(block_id) (CVMX_ADD_IO_SEG(0x0001180088000030ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_WODT_CTL1(block_id) (CVMX_ADD_IO_SEG(0x0001180088000080ull) + ((block_id) & 1) * 0x60000000ull)
 #define CVMX_LMCX_WODT_MASK(block_id) (CVMX_ADD_IO_SEG(0x00011800880001B0ull) + ((block_id) & 3) * 0x1000000ull)
-
 union cvmx_lmcx_bist_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_bist_ctl_s {
@@ -190,7 +157,6 @@ union cvmx_lmcx_bist_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_bist_result {
 	uint64_t u64;
 	struct cvmx_lmcx_bist_result_s {
@@ -232,7 +198,6 @@ union cvmx_lmcx_bist_result {
 #endif
 	} cn50xx;
 };
-
 union cvmx_lmcx_char_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_char_ctl_s {
@@ -270,7 +235,6 @@ union cvmx_lmcx_char_ctl {
 #endif
 	} cn63xx;
 };
-
 union cvmx_lmcx_char_mask0 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask0_s {
@@ -281,7 +245,6 @@ union cvmx_lmcx_char_mask0 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_char_mask1 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask1_s {
@@ -294,7 +257,6 @@ union cvmx_lmcx_char_mask1 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_char_mask2 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask2_s {
@@ -305,7 +267,6 @@ union cvmx_lmcx_char_mask2 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_char_mask3 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask3_s {
@@ -318,7 +279,6 @@ union cvmx_lmcx_char_mask3 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_char_mask4 {
 	uint64_t u64;
 	struct cvmx_lmcx_char_mask4_s {
@@ -351,7 +311,6 @@ union cvmx_lmcx_char_mask4 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_comp_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_comp_ctl_s {
@@ -437,7 +396,6 @@ union cvmx_lmcx_comp_ctl {
 #endif
 	} cn58xxp1;
 };
-
 union cvmx_lmcx_comp_ctl2 {
 	uint64_t u64;
 	struct cvmx_lmcx_comp_ctl2_s {
@@ -468,7 +426,6 @@ union cvmx_lmcx_comp_ctl2 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_config {
 	uint64_t u64;
 	struct cvmx_lmcx_config_s {
@@ -658,7 +615,6 @@ union cvmx_lmcx_config {
 #endif
 	} cn66xx;
 };
-
 union cvmx_lmcx_control {
 	uint64_t u64;
 	struct cvmx_lmcx_control_s {
@@ -868,7 +824,6 @@ union cvmx_lmcx_control {
 #endif
 	} cn68xx;
 };
-
 union cvmx_lmcx_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ctl_s {
@@ -1134,7 +1089,6 @@ union cvmx_lmcx_ctl {
 #endif
 	} cn58xx;
 };
-
 union cvmx_lmcx_ctl1 {
 	uint64_t u64;
 	struct cvmx_lmcx_ctl1_s {
@@ -1219,7 +1173,6 @@ union cvmx_lmcx_ctl1 {
 #endif
 	} cn58xx;
 };
-
 union cvmx_lmcx_dclk_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_dclk_cnt_s {
@@ -1230,7 +1183,6 @@ union cvmx_lmcx_dclk_cnt {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dclk_cnt_hi {
 	uint64_t u64;
 	struct cvmx_lmcx_dclk_cnt_hi_s {
@@ -1243,7 +1195,6 @@ union cvmx_lmcx_dclk_cnt_hi {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dclk_cnt_lo {
 	uint64_t u64;
 	struct cvmx_lmcx_dclk_cnt_lo_s {
@@ -1256,7 +1207,6 @@ union cvmx_lmcx_dclk_cnt_lo {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dclk_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_dclk_ctl_s {
@@ -1275,7 +1225,6 @@ union cvmx_lmcx_dclk_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_ddr2_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ddr2_ctl_s {
@@ -1361,7 +1310,6 @@ union cvmx_lmcx_ddr2_ctl {
 #endif
 	} cn30xx;
 };
-
 union cvmx_lmcx_ddr_pll_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_ddr_pll_ctl_s {
@@ -1392,7 +1340,6 @@ union cvmx_lmcx_ddr_pll_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_delay_cfg {
 	uint64_t u64;
 	struct cvmx_lmcx_delay_cfg_s {
@@ -1426,7 +1373,6 @@ union cvmx_lmcx_delay_cfg {
 #endif
 	} cn38xx;
 };
-
 union cvmx_lmcx_dimmx_params {
 	uint64_t u64;
 	struct cvmx_lmcx_dimmx_params_s {
@@ -1467,7 +1413,6 @@ union cvmx_lmcx_dimmx_params {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dimm_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_dimm_ctl_s {
@@ -1486,7 +1431,6 @@ union cvmx_lmcx_dimm_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dll_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_dll_ctl_s {
@@ -1505,7 +1449,6 @@ union cvmx_lmcx_dll_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_dll_ctl2 {
 	uint64_t u64;
 	struct cvmx_lmcx_dll_ctl2_s {
@@ -1545,7 +1488,6 @@ union cvmx_lmcx_dll_ctl2 {
 #endif
 	} cn63xx;
 };
-
 union cvmx_lmcx_dll_ctl3 {
 	uint64_t u64;
 	struct cvmx_lmcx_dll_ctl3_s {
@@ -1613,7 +1555,6 @@ union cvmx_lmcx_dll_ctl3 {
 #endif
 	} cn63xx;
 };
-
 union cvmx_lmcx_dual_memcfg {
 	uint64_t u64;
 	struct cvmx_lmcx_dual_memcfg_s {
@@ -1645,7 +1586,6 @@ union cvmx_lmcx_dual_memcfg {
 #endif
 	} cn61xx;
 };
-
 union cvmx_lmcx_ecc_synd {
 	uint64_t u64;
 	struct cvmx_lmcx_ecc_synd_s {
@@ -1664,7 +1604,6 @@ union cvmx_lmcx_ecc_synd {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_fadr {
 	uint64_t u64;
 	struct cvmx_lmcx_fadr_s {
@@ -1709,7 +1648,6 @@ union cvmx_lmcx_fadr {
 #endif
 	} cn61xx;
 };
-
 union cvmx_lmcx_ifb_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_ifb_cnt_s {
@@ -1720,7 +1658,6 @@ union cvmx_lmcx_ifb_cnt {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_ifb_cnt_hi {
 	uint64_t u64;
 	struct cvmx_lmcx_ifb_cnt_hi_s {
@@ -1733,7 +1670,6 @@ union cvmx_lmcx_ifb_cnt_hi {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_ifb_cnt_lo {
 	uint64_t u64;
 	struct cvmx_lmcx_ifb_cnt_lo_s {
@@ -1746,7 +1682,6 @@ union cvmx_lmcx_ifb_cnt_lo {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_int {
 	uint64_t u64;
 	struct cvmx_lmcx_int_s {
@@ -1763,7 +1698,6 @@ union cvmx_lmcx_int {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_int_en {
 	uint64_t u64;
 	struct cvmx_lmcx_int_en_s {
@@ -1780,7 +1714,6 @@ union cvmx_lmcx_int_en {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_mem_cfg0 {
 	uint64_t u64;
 	struct cvmx_lmcx_mem_cfg0_s {
@@ -1817,7 +1750,6 @@ union cvmx_lmcx_mem_cfg0 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_mem_cfg1 {
 	uint64_t u64;
 	struct cvmx_lmcx_mem_cfg1_s {
@@ -1869,7 +1801,6 @@ union cvmx_lmcx_mem_cfg1 {
 #endif
 	} cn38xx;
 };
-
 union cvmx_lmcx_modereg_params0 {
 	uint64_t u64;
 	struct cvmx_lmcx_modereg_params0_s {
@@ -1910,7 +1841,6 @@ union cvmx_lmcx_modereg_params0 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_modereg_params1 {
 	uint64_t u64;
 	struct cvmx_lmcx_modereg_params1_s {
@@ -1969,7 +1899,6 @@ union cvmx_lmcx_modereg_params1 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_nxm {
 	uint64_t u64;
 	struct cvmx_lmcx_nxm_s {
@@ -2007,7 +1936,6 @@ union cvmx_lmcx_nxm {
 #endif
 	} cn52xx;
 };
-
 union cvmx_lmcx_ops_cnt {
 	uint64_t u64;
 	struct cvmx_lmcx_ops_cnt_s {
@@ -2018,7 +1946,6 @@ union cvmx_lmcx_ops_cnt {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_ops_cnt_hi {
 	uint64_t u64;
 	struct cvmx_lmcx_ops_cnt_hi_s {
@@ -2031,7 +1958,6 @@ union cvmx_lmcx_ops_cnt_hi {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_ops_cnt_lo {
 	uint64_t u64;
 	struct cvmx_lmcx_ops_cnt_lo_s {
@@ -2044,7 +1970,6 @@ union cvmx_lmcx_ops_cnt_lo {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_phy_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_phy_ctl_s {
@@ -2096,7 +2021,6 @@ union cvmx_lmcx_phy_ctl {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_lmcx_pll_bwctl {
 	uint64_t u64;
 	struct cvmx_lmcx_pll_bwctl_s {
@@ -2111,7 +2035,6 @@ union cvmx_lmcx_pll_bwctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_pll_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_pll_ctl_s {
@@ -2208,7 +2131,6 @@ union cvmx_lmcx_pll_ctl {
 #endif
 	} cn56xxp1;
 };
-
 union cvmx_lmcx_pll_status {
 	uint64_t u64;
 	struct cvmx_lmcx_pll_status_s {
@@ -2240,7 +2162,6 @@ union cvmx_lmcx_pll_status {
 #endif
 	} cn58xxp1;
 };
-
 union cvmx_lmcx_read_level_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_read_level_ctl_s {
@@ -2263,7 +2184,6 @@ union cvmx_lmcx_read_level_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_read_level_dbg {
 	uint64_t u64;
 	struct cvmx_lmcx_read_level_dbg_s {
@@ -2280,7 +2200,6 @@ union cvmx_lmcx_read_level_dbg {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_read_level_rankx {
 	uint64_t u64;
 	struct cvmx_lmcx_read_level_rankx_s {
@@ -2311,7 +2230,6 @@ union cvmx_lmcx_read_level_rankx {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_reset_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_reset_ctl_s {
@@ -2330,7 +2248,6 @@ union cvmx_lmcx_reset_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_rlevel_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_rlevel_ctl_s {
@@ -2372,7 +2289,6 @@ union cvmx_lmcx_rlevel_ctl {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_lmcx_rlevel_dbg {
 	uint64_t u64;
 	struct cvmx_lmcx_rlevel_dbg_s {
@@ -2383,7 +2299,6 @@ union cvmx_lmcx_rlevel_dbg {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_rlevel_rankx {
 	uint64_t u64;
 	struct cvmx_lmcx_rlevel_rankx_s {
@@ -2414,7 +2329,6 @@ union cvmx_lmcx_rlevel_rankx {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_rodt_comp_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_rodt_comp_ctl_s {
@@ -2435,7 +2349,6 @@ union cvmx_lmcx_rodt_comp_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_rodt_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_rodt_ctl_s {
@@ -2462,7 +2375,6 @@ union cvmx_lmcx_rodt_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_rodt_mask {
 	uint64_t u64;
 	struct cvmx_lmcx_rodt_mask_s {
@@ -2487,7 +2399,6 @@ union cvmx_lmcx_rodt_mask {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_scramble_cfg0 {
 	uint64_t u64;
 	struct cvmx_lmcx_scramble_cfg0_s {
@@ -2498,7 +2409,6 @@ union cvmx_lmcx_scramble_cfg0 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_scramble_cfg1 {
 	uint64_t u64;
 	struct cvmx_lmcx_scramble_cfg1_s {
@@ -2509,7 +2419,6 @@ union cvmx_lmcx_scramble_cfg1 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_scrambled_fadr {
 	uint64_t u64;
 	struct cvmx_lmcx_scrambled_fadr_s {
@@ -2530,7 +2439,6 @@ union cvmx_lmcx_scrambled_fadr {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_slot_ctl0 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl0_s {
@@ -2549,7 +2457,6 @@ union cvmx_lmcx_slot_ctl0 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_slot_ctl1 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl1_s {
@@ -2568,7 +2475,6 @@ union cvmx_lmcx_slot_ctl1 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_slot_ctl2 {
 	uint64_t u64;
 	struct cvmx_lmcx_slot_ctl2_s {
@@ -2587,7 +2493,6 @@ union cvmx_lmcx_slot_ctl2 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_timing_params0 {
 	uint64_t u64;
 	struct cvmx_lmcx_timing_params0_s {
@@ -2676,7 +2581,6 @@ union cvmx_lmcx_timing_params0 {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_lmcx_timing_params1 {
 	uint64_t u64;
 	struct cvmx_lmcx_timing_params1_s {
@@ -2740,7 +2644,6 @@ union cvmx_lmcx_timing_params1 {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_lmcx_tro_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_tro_ctl_s {
@@ -2755,7 +2658,6 @@ union cvmx_lmcx_tro_ctl {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_tro_stat {
 	uint64_t u64;
 	struct cvmx_lmcx_tro_stat_s {
@@ -2768,7 +2670,6 @@ union cvmx_lmcx_tro_stat {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_wlevel_ctl {
 	uint64_t u64;
 	struct cvmx_lmcx_wlevel_ctl_s {
@@ -2800,7 +2701,6 @@ union cvmx_lmcx_wlevel_ctl {
 #endif
 	} cn63xxp1;
 };
-
 union cvmx_lmcx_wlevel_dbg {
 	uint64_t u64;
 	struct cvmx_lmcx_wlevel_dbg_s {
@@ -2815,7 +2715,6 @@ union cvmx_lmcx_wlevel_dbg {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_wlevel_rankx {
 	uint64_t u64;
 	struct cvmx_lmcx_wlevel_rankx_s {
@@ -2846,7 +2745,6 @@ union cvmx_lmcx_wlevel_rankx {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_wodt_ctl0 {
 	uint64_t u64;
 	struct cvmx_lmcx_wodt_ctl0_s {
@@ -2895,7 +2793,6 @@ union cvmx_lmcx_wodt_ctl0 {
 #endif
 	} cn38xx;
 };
-
 union cvmx_lmcx_wodt_ctl1 {
 	uint64_t u64;
 	struct cvmx_lmcx_wodt_ctl1_s {
@@ -2914,7 +2811,6 @@ union cvmx_lmcx_wodt_ctl1 {
 #endif
 	} s;
 };
-
 union cvmx_lmcx_wodt_mask {
 	uint64_t u64;
 	struct cvmx_lmcx_wodt_mask_s {
@@ -2939,5 +2835,4 @@ union cvmx_lmcx_wodt_mask {
 #endif
 	} s;
 };
-
 #endif

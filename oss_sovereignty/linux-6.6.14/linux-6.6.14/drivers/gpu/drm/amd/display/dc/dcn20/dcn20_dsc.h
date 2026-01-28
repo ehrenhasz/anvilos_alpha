@@ -1,36 +1,10 @@
-/* Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
 #ifndef __DCN20_DSC_H__
 #define __DCN20_DSC_H__
-
 #include "dsc.h"
 #include "dsc/dscc_types.h"
 #include <drm/display/drm_dsc.h>
-
 #define TO_DCN20_DSC(dsc)\
 	container_of(dsc, struct dcn20_dsc, base)
-
 #define DSC_REG_LIST_DCN20(id) \
 	SRI(DSC_TOP_CONTROL, DSC_TOP, id),\
 	SRI(DSC_DEBUG_CONTROL, DSC_TOP, id),\
@@ -81,15 +55,10 @@
 	SRI(DSCCIF_CONFIG0, DSCCIF, id),\
 	SRI(DSCCIF_CONFIG1, DSCCIF, id),\
 	SRI(DSCRM_DSC_FORWARD_CONFIG, DSCRM, id)
-
-
 #define DSC_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
-
-//Used in resolving the corner case with duplicate field name
 #define DSC2_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## _ ## field_name ## post_fix
-
 #define DSC_REG_LIST_SH_MASK_DCN20(mask_sh)\
 	DSC_SF(DSC_TOP0_DSC_TOP_CONTROL, DSC_CLOCK_EN, mask_sh), \
 	DSC_SF(DSC_TOP0_DSC_TOP_CONTROL, DSC_DISPCLK_R_GATE_DIS, mask_sh), \
@@ -100,7 +69,7 @@
 	DSC_SF(DSCC0_DSCC_CONFIG0, ALTERNATE_ICH_ENCODING_EN, mask_sh), \
 	DSC_SF(DSCC0_DSCC_CONFIG0, NUMBER_OF_SLICES_IN_VERTICAL_DIRECTION, mask_sh), \
 	DSC_SF(DSCC0_DSCC_CONFIG1, DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE, mask_sh), \
-	/*DSC_SF(DSCC0_DSCC_CONFIG1, DSCC_DISABLE_ICH, mask_sh),*/ \
+	  \
 	DSC_SF(DSCC0_DSCC_STATUS, DSCC_DOUBLE_BUFFER_REG_UPDATE_PENDING, mask_sh), \
 	DSC_SF(DSCC0_DSCC_INTERRUPT_CONTROL_STATUS, DSCC_RATE_BUFFER0_OVERFLOW_OCCURRED, mask_sh), \
 	DSC_SF(DSCC0_DSCC_INTERRUPT_CONTROL_STATUS, DSCC_RATE_BUFFER1_OVERFLOW_OCCURRED, mask_sh), \
@@ -257,9 +226,6 @@
 	DSC_SF(DSCCIF0_DSCCIF_CONFIG1, PIC_HEIGHT, mask_sh), \
 	DSC_SF(DSCRM0_DSCRM_DSC_FORWARD_CONFIG, DSCRM_DSC_FORWARD_EN, mask_sh), \
 	DSC_SF(DSCRM0_DSCRM_DSC_FORWARD_CONFIG, DSCRM_DSC_OPP_PIPE_SOURCE, mask_sh)
-
-
-
 #define DSC_FIELD_LIST_DCN20(type)\
 	type DSC_CLOCK_EN; \
 	type DSC_DISPCLK_R_GATE_DIS; \
@@ -271,7 +237,7 @@
 	type ALTERNATE_ICH_ENCODING_EN; \
 	type NUMBER_OF_SLICES_IN_VERTICAL_DIRECTION; \
 	type DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE; \
-	/*type DSCC_DISABLE_ICH;*/ \
+	  \
 	type DSCC_DOUBLE_BUFFER_REG_UPDATE_PENDING; \
 	type DSCC_RATE_BUFFER0_OVERFLOW_OCCURRED; \
 	type DSCC_RATE_BUFFER1_OVERFLOW_OCCURRED; \
@@ -444,7 +410,6 @@
 	type DSCCIF_UPDATE_TAKEN_ACK; \
 	type DSCRM_DSC_FORWARD_EN; \
 	type DSCRM_DSC_OPP_PIPE_SOURCE
-
 struct dcn20_dsc_registers {
 	uint32_t DSC_TOP_CONTROL;
 	uint32_t DSC_DEBUG_CONTROL;
@@ -496,17 +461,12 @@ struct dcn20_dsc_registers {
 	uint32_t DSCCIF_CONFIG1;
 	uint32_t DSCRM_DSC_FORWARD_CONFIG;
 };
-
-
 struct dcn20_dsc_shift {
 	DSC_FIELD_LIST_DCN20(uint8_t);
 };
-
 struct dcn20_dsc_mask {
 	DSC_FIELD_LIST_DCN20(uint32_t);
 };
-
-/* DSCCIF_CONFIG.INPUT_PIXEL_FORMAT values */
 enum dsc_pixel_format {
 	DSC_PIXFMT_RGB,
 	DSC_PIXFMT_YCBCR444,
@@ -515,12 +475,8 @@ enum dsc_pixel_format {
 	DSC_PIXFMT_NATIVE_YCBCR420,
 	DSC_PIXFMT_UNKNOWN
 };
-
 struct dsc_reg_values {
-	/* PPS registers */
 	struct drm_dsc_config pps;
-
-	/* Additional registers */
 	uint32_t dsc_clock_enable;
 	uint32_t dsc_clock_gating_disable;
 	uint32_t underflow_recovery_en;
@@ -537,53 +493,37 @@ struct dsc_reg_values {
 	uint32_t dsc_dbg_en;
 	uint32_t rc_buffer_model_overflow_int_en[4];
 };
-
 struct dcn20_dsc {
 	struct display_stream_compressor base;
 	const struct dcn20_dsc_registers *dsc_regs;
 	const struct dcn20_dsc_shift *dsc_shift;
 	const struct dcn20_dsc_mask *dsc_mask;
-
 	struct dsc_reg_values reg_vals;
-
 	int max_image_width;
 };
-
 void dsc_config_log(struct display_stream_compressor *dsc,
 		const struct dsc_config *config);
-
 void dsc_log_pps(struct display_stream_compressor *dsc,
 		struct drm_dsc_config *pps);
-
 void dsc_override_rc_params(struct rc_params *rc,
 		const struct dc_dsc_rc_params_override *override);
-
 bool dsc_prepare_config(const struct dsc_config *dsc_cfg,
 		struct dsc_reg_values *dsc_reg_vals,
 		struct dsc_optc_config *dsc_optc_cfg);
-
 enum dsc_pixel_format dsc_dc_pixel_encoding_to_dsc_pixel_format(enum dc_pixel_encoding dc_pix_enc,
 		bool is_ycbcr422_simple);
-
 enum dsc_bits_per_comp dsc_dc_color_depth_to_dsc_bits_per_comp(enum dc_color_depth dc_color_depth);
-
 void dsc_init_reg_values(struct dsc_reg_values *reg_vals);
-
 void dsc_update_from_dsc_parameters(struct dsc_reg_values *reg_vals, const struct dsc_parameters *dsc_params);
-
 void dsc2_construct(struct dcn20_dsc *dsc,
 		struct dc_context *ctx,
 		int inst,
 		const struct dcn20_dsc_registers *dsc_regs,
 		const struct dcn20_dsc_shift *dsc_shift,
 		const struct dcn20_dsc_mask *dsc_mask);
-
 void dsc2_get_enc_caps(struct dsc_enc_caps *dsc_enc_caps,
 		int pixel_clock_100Hz);
-
 bool dsc2_get_packed_pps(struct display_stream_compressor *dsc,
 		const struct dsc_config *dsc_cfg,
 		uint8_t *dsc_packed_pps);
-
 #endif
-

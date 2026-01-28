@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef __HID_ROCCAT_ISKU_H
 #define __HID_ROCCAT_ISKU_H
-
-/*
- * Copyright (c) 2011 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
-
-/*
- */
-
 #include <linux/types.h>
-
 enum {
 	ISKU_SIZE_CONTROL = 0x03,
 	ISKU_SIZE_INFO = 0x06,
@@ -28,18 +18,15 @@ enum {
 	ISKU_SIZE_TALK = 0x10,
 	ISKU_SIZE_TALKFX = 0x10,
 };
-
 enum {
 	ISKU_PROFILE_NUM = 5,
 	ISKU_USB_INTERFACE_PROTOCOL = 0,
 };
-
 struct isku_actual_profile {
-	uint8_t command; /* ISKU_COMMAND_ACTUAL_PROFILE */
-	uint8_t size; /* always 3 */
+	uint8_t command;  
+	uint8_t size;  
 	uint8_t actual_profile;
 } __packed;
-
 enum isku_commands {
 	ISKU_COMMAND_CONTROL = 0x4,
 	ISKU_COMMAND_ACTUAL_PROFILE = 0x5,
@@ -61,37 +48,29 @@ enum isku_commands {
 	ISKU_COMMAND_FIRMWARE_WRITE = 0x1b,
 	ISKU_COMMAND_FIRMWARE_WRITE_CONTROL = 0x1c,
 };
-
 struct isku_report_button {
-	uint8_t number; /* ISKU_REPORT_NUMBER_BUTTON */
+	uint8_t number;  
 	uint8_t zero;
 	uint8_t event;
 	uint8_t data1;
 	uint8_t data2;
 };
-
 enum isku_report_numbers {
 	ISKU_REPORT_NUMBER_BUTTON = 3,
 };
-
 enum isku_report_button_events {
 	ISKU_REPORT_BUTTON_EVENT_PROFILE = 0x2,
 };
-
 struct isku_roccat_report {
 	uint8_t event;
 	uint8_t data1;
 	uint8_t data2;
 	uint8_t profile;
 } __packed;
-
 struct isku_device {
 	int roccat_claimed;
 	int chrdev_minor;
-
 	struct mutex isku_lock;
-
 	int actual_profile;
 };
-
 #endif

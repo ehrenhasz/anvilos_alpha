@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
-//
-// Copyright 2016 Freescale Semiconductor, Inc.
-
 /dts-v1/;
-
 #include "imx6qp.dtsi"
 #include "imx6qdl-sabreauto.dtsi"
-
 / {
 	model = "Freescale i.MX6 Quad Plus SABRE Automotive Board";
 	compatible = "fsl,imx6qp-sabreauto", "fsl,imx6qp";
 };
-
 &i2c2 {
 	max7322: gpio@68 {
 		compatible = "maxim,max7322";
@@ -20,7 +13,6 @@
 		#gpio-cells = <2>;
 	};
 };
-
 &iomuxc {
 	imx6qdl-sabreauto {
 		pinctrl_enet: enetgrp {
@@ -45,16 +37,13 @@
 		};
 	};
 };
-
 &pcie {
 	reset-gpio = <&max7310_c 5 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &sata {
 	status = "okay";
 };
-
 &vgen3_reg {
 	regulator-always-on;
 };

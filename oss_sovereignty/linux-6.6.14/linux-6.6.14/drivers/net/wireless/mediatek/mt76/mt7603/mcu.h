@@ -1,50 +1,37 @@
-/* SPDX-License-Identifier: ISC */
-
 #ifndef __MT7603_MCU_H
 #define __MT7603_MCU_H
-
 struct mt7603_mcu_txd {
 	__le16 len;
 	__le16 pq_id;
-
 	u8 cid;
 	u8 pkt_type;
 	u8 set_query;
 	u8 seq;
-
 	u8 uc_d2b0_rev;
 	u8 ext_cid;
 	u8 uc_d2b2_rev;
 	u8 ext_cid_ack;
-
 	u32 au4_d3_to_d7_rev[5];
 } __packed __aligned(4);
-
 struct mt7603_mcu_rxd {
 	__le16 len;
 	__le16 pkt_type_id;
-
 	u8 eid;
 	u8 seq;
 	__le16 __rsv;
-
 	u8 ext_eid;
 	u8 __rsv1[3];
 };
-
 #define MCU_PKT_ID		0xa0
 #define MCU_PORT_QUEUE		0x8000
 #define MCU_PORT_QUEUE_FW	0xc000
-
 #define MCU_FIRMWARE_ADDRESS	0x100000
-
 enum {
 	MCU_Q_QUERY,
 	MCU_Q_SET,
 	MCU_Q_RESERVED,
 	MCU_Q_NA
 };
-
 enum {
 	MCU_CMD_TARGET_ADDRESS_LEN_REQ = 0x01,
 	MCU_CMD_FW_START_REQ = 0x02,
@@ -59,7 +46,6 @@ enum {
 	MCU_CMD_FW_SCATTER = 0xEE,
 	MCU_CMD_RESTART_DL_REQ = 0xEF,
 };
-
 enum {
 	MCU_EXT_CMD_RF_REG_ACCESS = 0x02,
 	MCU_EXT_CMD_RF_TEST = 0x04,
@@ -89,7 +75,6 @@ enum {
 	MCU_EXT_CMD_AC_QUEUE_CONTROL = 0x31,
 	MCU_EXT_CMD_BCN_UPDATE = 0x33
 };
-
 enum {
 	MCU_EXT_EVENT_CMD_RESULT = 0x0,
 	MCU_EXT_EVENT_RF_REG_ACCESS = 0x2,
@@ -99,5 +84,4 @@ enum {
 	MCU_EXT_EVENT_THERMAL_PROTECT = 0x22,
 	MCU_EXT_EVENT_BCN_UPDATE = 0x31,
 };
-
 #endif

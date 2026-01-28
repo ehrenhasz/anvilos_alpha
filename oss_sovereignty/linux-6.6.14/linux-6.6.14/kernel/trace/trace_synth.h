@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
 #ifndef __TRACE_SYNTH_H
 #define __TRACE_SYNTH_H
-
 #include "trace_dynevent.h"
-
 #define SYNTH_SYSTEM		"synthetic"
 #define SYNTH_FIELDS_MAX	64
-
-#define STR_VAR_LEN_MAX		MAX_FILTER_STR_VAL /* must be multiple of sizeof(u64) */
-
+#define STR_VAR_LEN_MAX		MAX_FILTER_STR_VAL  
 struct synth_field {
 	char *type;
 	char *name;
@@ -20,7 +15,6 @@ struct synth_field {
 	bool is_dynamic;
 	bool is_stack;
 };
-
 struct synth_event {
 	struct dyn_event			devent;
 	int					ref;
@@ -35,7 +29,5 @@ struct synth_event {
 	struct tracepoint			*tp;
 	struct module				*mod;
 };
-
 extern struct synth_event *find_synth_event(const char *name);
-
-#endif /* __TRACE_SYNTH_H */
+#endif  

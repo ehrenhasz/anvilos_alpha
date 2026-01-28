@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
-
-/* Header file for Mellanox BlueField GigE register defines
- *
- * Copyright (C) 2020-2021 NVIDIA CORPORATION & AFFILIATES
- */
-
 #ifndef __MLXBF_GIGE_REGS_H__
 #define __MLXBF_GIGE_REGS_H__
-
 #include <linux/bitfield.h>
-
 #define MLXBF_GIGE_VERSION                            0x0000
 #define MLXBF_GIGE_VERSION_BF2                        0x0
 #define MLXBF_GIGE_VERSION_BF3                        0x1
@@ -74,29 +65,16 @@
 #define MLXBF_GIGE_RX_DMA_EN                          BIT(0)
 #define MLXBF_GIGE_RX_CQE_PACKET_CI                   0x05b0
 #define MLXBF_GIGE_MAC_CFG                            0x05e8
-
-/* NOTE: MLXBF_GIGE_MAC_CFG is the last defined register offset,
- * so use that plus size of single register to derive total size
- */
 #define MLXBF_GIGE_MMIO_REG_SZ                        (MLXBF_GIGE_MAC_CFG + 8)
-
 #define MLXBF_GIGE_PLU_TX_REG0                        0x80
 #define MLXBF_GIGE_PLU_TX_IPG_SIZE_MASK               GENMASK(11, 0)
 #define MLXBF_GIGE_PLU_TX_SGMII_MODE_MASK             GENMASK(15, 14)
-
 #define MLXBF_GIGE_PLU_RX_REG0                        0x10
 #define MLXBF_GIGE_PLU_RX_SGMII_MODE_MASK             GENMASK(25, 24)
-
 #define MLXBF_GIGE_1G_SGMII_MODE                      0x0
 #define MLXBF_GIGE_10M_SGMII_MODE                     0x1
 #define MLXBF_GIGE_100M_SGMII_MODE                    0x2
-
-/* ipg_size default value for 1G is fixed by HW to 11 + End = 12.
- * So for 100M it is 12 * 10 - 1 = 119
- * For 10M, it is 12 * 100 - 1 = 1199
- */
 #define MLXBF_GIGE_1G_IPG_SIZE                        11
 #define MLXBF_GIGE_100M_IPG_SIZE                      119
 #define MLXBF_GIGE_10M_IPG_SIZE                       1199
-
-#endif /* !defined(__MLXBF_GIGE_REGS_H__) */
+#endif  

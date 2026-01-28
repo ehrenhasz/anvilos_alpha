@@ -1,26 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Tracepoint header for the s390 Common I/O layer (CIO)
- *
- * Copyright IBM Corp. 2015
- * Author(s): Peter Oberparleiter <oberpar@linux.vnet.ibm.com>
- */
-
 #include <linux/kernel.h>
 #include <asm/crw.h>
 #include <uapi/asm/chpid.h>
 #include <uapi/asm/schid.h>
 #include "cio.h"
 #include "orb.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM s390
-
 #if !defined(_TRACE_S390_CIO_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_S390_CIO_H
-
 #include <linux/tracepoint.h>
-
 DECLARE_EVENT_CLASS(s390_class_schib,
 	TP_PROTO(struct subchannel_id schid, struct schib *schib, int cc),
 	TP_ARGS(schid, schib, cc),
@@ -74,35 +62,14 @@ DECLARE_EVENT_CLASS(s390_class_schib,
 		  __entry->pmcw_chpid
 	)
 );
-
-/**
- * s390_cio_stsch -  Store Subchannel instruction (STSCH) was performed
- * @schid: Subchannel ID
- * @schib: Subchannel-Information block
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schib, s390_cio_stsch,
 	TP_PROTO(struct subchannel_id schid, struct schib *schib, int cc),
 	TP_ARGS(schid, schib, cc)
 );
-
-/**
- * s390_cio_msch -  Modify Subchannel instruction (MSCH) was performed
- * @schid: Subchannel ID
- * @schib: Subchannel-Information block
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schib, s390_cio_msch,
 	TP_PROTO(struct subchannel_id schid, struct schib *schib, int cc),
 	TP_ARGS(schid, schib, cc)
 );
-
-/**
- * s390_cio_tsch - Test Subchannel instruction (TSCH) was performed
- * @schid: Subchannel ID
- * @irb: Interruption-Response Block
- * @cc: Condition code
- */
 TRACE_EVENT(s390_cio_tsch,
 	TP_PROTO(struct subchannel_id schid, struct irb *irb, int cc),
 	TP_ARGS(schid, irb, cc),
@@ -143,12 +110,6 @@ TRACE_EVENT(s390_cio_tsch,
 		  __entry->scsw_dstat, __entry->scsw_cstat
 	)
 );
-
-/**
- * s390_cio_tpi - Test Pending Interruption instruction (TPI) was performed
- * @addr: Address of the I/O interruption code or %NULL
- * @cc: Condition code
- */
 TRACE_EVENT(s390_cio_tpi,
 	TP_PROTO(struct tpi_info *addr, int cc),
 	TP_ARGS(addr, cc),
@@ -183,13 +144,6 @@ TRACE_EVENT(s390_cio_tpi,
 		  __entry->type
 	)
 );
-
-/**
- * s390_cio_ssch - Start Subchannel instruction (SSCH) was performed
- * @schid: Subchannel ID
- * @orb: Operation-Request Block
- * @cc: Condition code
- */
 TRACE_EVENT(s390_cio_ssch,
 	TP_PROTO(struct subchannel_id schid, union orb *orb, int cc),
 	TP_ARGS(schid, orb, cc),
@@ -211,7 +165,6 @@ TRACE_EVENT(s390_cio_ssch,
 		  __entry->schno, __entry->cc
 	)
 );
-
 DECLARE_EVENT_CLASS(s390_class_schid,
 	TP_PROTO(struct subchannel_id schid, int cc),
 	TP_ARGS(schid, cc),
@@ -231,55 +184,24 @@ DECLARE_EVENT_CLASS(s390_class_schid,
 		  __entry->schno, __entry->cc
 	)
 );
-
-/**
- * s390_cio_csch - Clear Subchannel instruction (CSCH) was performed
- * @schid: Subchannel ID
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schid, s390_cio_csch,
 	TP_PROTO(struct subchannel_id schid, int cc),
 	TP_ARGS(schid, cc)
 );
-
-/**
- * s390_cio_hsch - Halt Subchannel instruction (HSCH) was performed
- * @schid: Subchannel ID
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schid, s390_cio_hsch,
 	TP_PROTO(struct subchannel_id schid, int cc),
 	TP_ARGS(schid, cc)
 );
-
-/**
- * s390_cio_xsch - Cancel Subchannel instruction (XSCH) was performed
- * @schid: Subchannel ID
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schid, s390_cio_xsch,
 	TP_PROTO(struct subchannel_id schid, int cc),
 	TP_ARGS(schid, cc)
 );
-
-/**
- * s390_cio_rsch - Resume Subchannel instruction (RSCH) was performed
- * @schid: Subchannel ID
- * @cc: Condition code
- */
 DEFINE_EVENT(s390_class_schid, s390_cio_rsch,
 	TP_PROTO(struct subchannel_id schid, int cc),
 	TP_ARGS(schid, cc)
 );
-
 #define CHSC_MAX_REQUEST_LEN		64
 #define CHSC_MAX_RESPONSE_LEN		64
-
-/**
- * s390_cio_chsc - Channel Subsystem Call (CHSC) instruction was performed
- * @chsc: CHSC block
- * @cc: Condition code
- */
 TRACE_EVENT(s390_cio_chsc,
 	TP_PROTO(struct chsc_header *chsc, int cc),
 	TP_ARGS(chsc, cc),
@@ -303,11 +225,6 @@ TRACE_EVENT(s390_cio_chsc,
 	TP_printk("code=0x%04x cc=%d rcode=0x%04x", __entry->code,
 		  __entry->cc, __entry->rcode)
 );
-
-/**
- * s390_cio_interrupt - An I/O interrupt occurred
- * @tpi_info: Address of the I/O interruption code
- */
 TRACE_EVENT(s390_cio_interrupt,
 	TP_PROTO(struct tpi_info *tpi_info),
 	TP_ARGS(tpi_info),
@@ -332,11 +249,6 @@ TRACE_EVENT(s390_cio_interrupt,
 		  __entry->isc, __entry->type
 	)
 );
-
-/**
- * s390_cio_adapter_int - An adapter interrupt occurred
- * @tpi_info: Address of the I/O interruption code
- */
 TRACE_EVENT(s390_cio_adapter_int,
 	TP_PROTO(struct tpi_info *tpi_info),
 	TP_ARGS(tpi_info),
@@ -350,12 +262,6 @@ TRACE_EVENT(s390_cio_adapter_int,
 	),
 	TP_printk("isc=%d", __entry->isc)
 );
-
-/**
- * s390_cio_stcrw - Store Channel Report Word (STCRW) was performed
- * @crw: Channel Report Word
- * @cc: Condition code
- */
 TRACE_EVENT(s390_cio_stcrw,
 	TP_PROTO(struct crw *crw, int cc),
 	TP_ARGS(crw, cc),
@@ -388,14 +294,9 @@ TRACE_EVENT(s390_cio_stcrw,
 		  __entry->erc, __entry->rsid
 	)
 );
-
-#endif /* _TRACE_S390_CIO_H */
-
-/* This part must be outside protection */
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
-
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE trace
-
 #include <trace/define_trace.h>

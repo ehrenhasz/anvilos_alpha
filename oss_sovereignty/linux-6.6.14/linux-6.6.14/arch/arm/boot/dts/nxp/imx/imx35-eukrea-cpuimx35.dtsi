@@ -1,36 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Eukréa Electromatique <denis@eukrea.com>
- */
-
 #include "imx35.dtsi"
-
 / {
 	model = "Eukrea CPUIMX35";
 	compatible = "eukrea,cpuimx35", "fsl,imx35";
-
 	memory@80000000 {
 		device_type = "memory";
-		reg = <0x80000000 0x8000000>; /* 128M */
+		reg = <0x80000000 0x8000000>;  
 	};
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
 	status = "okay";
 };
-
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
 	status = "okay";
-
 	pcf8563@51 {
 		compatible = "nxp,pcf8563";
 		reg = <0x51>;
 	};
-
 	tsc2007: tsc2007@48 {
 		compatible = "ti,tsc2007";
 		gpios = <&gpio3 2 0>;
@@ -42,7 +31,6 @@
 		ti,x-plate-ohms = <180>;
 	};
 };
-
 &iomuxc {
 	imx35-eukrea {
 		pinctrl_fec: fecgrp {
@@ -67,20 +55,17 @@
 				MX35_PAD_FEC_TDATA3__FEC_TDATA_3	0x80000000
 			>;
 		};
-
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
 				MX35_PAD_I2C1_CLK__I2C1_SCL		0x80000000
 				MX35_PAD_I2C1_DAT__I2C1_SDA		0x80000000
 			>;
 		};
-
 		pinctrl_tsc2007_1: tsc2007grp-1 {
 			fsl,pins = <MX35_PAD_ATA_DA2__GPIO3_2 0x80000000>;
 		};
 	};
 };
-
 &nfc {
 	nand-bus-width = <8>;
 	nand-ecc-mode = "hw";

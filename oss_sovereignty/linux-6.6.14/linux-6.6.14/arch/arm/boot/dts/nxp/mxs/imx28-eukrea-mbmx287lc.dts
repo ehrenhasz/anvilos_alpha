@@ -1,25 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Eukréa Electromatique <eric@eukrea.com>
- * Copyright 2013 Eukréa Electromatique <denis@eukrea.com>
- */
-
-/*
- * Module contains : i.MX287 + 128MB DDR2 + NAND + 2 x Ethernet PHY + RTC
- */
-
 #include "imx28-eukrea-mbmx283lc.dts"
-
 / {
 	model = "Eukrea Electromatique MBMX287LC";
 	compatible = "eukrea,mbmx287lc", "eukrea,mbmx283lc", "eukrea,mbmx28lc", "fsl,imx28";
-
 	memory@40000000 {
 		device_type = "memory";
 		reg = <0x40000000 0x08000000>;
 	};
 };
-
 &mac1 {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
@@ -27,7 +14,6 @@
 	phy-reset-gpios = <&gpio3 27 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
-
 &pinctrl {
 	pinctrl-names = "default";
 	pinctrl-0 = <&hog_pins_cpuimx283 &hog_pins_cpuimx287>;

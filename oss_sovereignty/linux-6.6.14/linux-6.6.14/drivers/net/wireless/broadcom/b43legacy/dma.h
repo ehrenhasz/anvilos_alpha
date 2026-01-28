@@ -1,26 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef B43legacy_DMA_H_
 #define B43legacy_DMA_H_
-
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
 #include <linux/linkage.h>
 #include <linux/atomic.h>
-
 #include "b43legacy.h"
-
-
-/* DMA-Interrupt reasons. */
 #define B43legacy_DMAIRQ_FATALMASK	((1 << 10) | (1 << 11) | (1 << 12) \
 					 | (1 << 14) | (1 << 15))
 #define B43legacy_DMAIRQ_NONFATALMASK	(1 << 13)
 #define B43legacy_DMAIRQ_RX_DONE		(1 << 16)
-
-
-/*** 32-bit DMA Engine. ***/
-
-/* 32-bit DMA controller registers. */
 #define B43legacy_DMA32_TXCTL				0x00
 #define		B43legacy_DMA32_TXENABLE		0x00000001
 #define		B43legacy_DMA32_TXSUSPEND		0x00000002
@@ -68,8 +57,6 @@
 #define			B43legacy_DMA32_RXERR_BUFWRITE	0x00030000
 #define			B43legacy_DMA32_RXERR_DESCREAD	0x00040000
 #define		B43legacy_DMA32_RXACTIVE		0xFFF00000
-
-/* 32-bit DMA descriptor. */
 struct b43legacy_dmadesc32 {
 	__le32 control;
 	__le32 address;
@@ -81,120 +68,70 @@ struct b43legacy_dmadesc32 {
 #define B43legacy_DMA32_DCTL_IRQ		0x20000000
 #define B43legacy_DMA32_DCTL_FRAMEEND		0x40000000
 #define B43legacy_DMA32_DCTL_FRAMESTART		0x80000000
-
-
-/* Misc DMA constants */
 #define B43legacy_DMA_RINGMEMSIZE	PAGE_SIZE
 #define B43legacy_DMA0_RX_FRAMEOFFSET	30
 #define B43legacy_DMA3_RX_FRAMEOFFSET	0
-
-
-/* DMA engine tuning knobs */
 #define B43legacy_TXRING_SLOTS		128
 #define B43legacy_RXRING_SLOTS		64
 #define B43legacy_DMA0_RX_BUFFERSIZE	(2304 + 100)
 #define B43legacy_DMA3_RX_BUFFERSIZE	16
-
-
-
 #ifdef CONFIG_B43LEGACY_DMA
-
-
 struct sk_buff;
 struct b43legacy_private;
 struct b43legacy_txstatus;
-
-
 struct b43legacy_dmadesc_meta {
-	/* The kernel DMA-able buffer. */
 	struct sk_buff *skb;
-	/* DMA base bus-address of the descriptor buffer. */
 	dma_addr_t dmaaddr;
-	/* ieee80211 TX status. Only used once per 802.11 frag. */
 	bool is_last_fragment;
 };
-
 enum b43legacy_dmatype {
 	B43legacy_DMA_30BIT = 30,
 	B43legacy_DMA_32BIT = 32,
 };
-
 struct b43legacy_dmaring {
-	/* Kernel virtual base address of the ring memory. */
 	void *descbase;
-	/* Meta data about all descriptors. */
 	struct b43legacy_dmadesc_meta *meta;
-	/* Cache of TX headers for each slot.
-	 * This is to avoid an allocation on each TX.
-	 * This is NULL for an RX ring.
-	 */
 	u8 *txhdr_cache;
-	/* (Unadjusted) DMA base bus-address of the ring memory. */
 	dma_addr_t dmabase;
-	/* Number of descriptor slots in the ring. */
 	int nr_slots;
-	/* Number of used descriptor slots. */
 	int used_slots;
-	/* Currently used slot in the ring. */
 	int current_slot;
-	/* Frameoffset in octets. */
 	u32 frameoffset;
-	/* Descriptor buffer size. */
 	u16 rx_buffersize;
-	/* The MMIO base register of the DMA controller. */
 	u16 mmio_base;
-	/* DMA controller index number (0-5). */
 	int index;
-	/* Boolean. Is this a TX ring? */
 	bool tx;
-	/* The type of DMA engine used. */
 	enum b43legacy_dmatype type;
-	/* Boolean. Is this ring stopped at ieee80211 level? */
 	bool stopped;
-	/* The QOS priority assigned to this ring. Only used for TX rings.
-	 * This is the mac80211 "queue" value. */
 	u8 queue_prio;
 	struct b43legacy_wldev *dev;
 #ifdef CONFIG_B43LEGACY_DEBUG
-	/* Maximum number of used slots. */
 	int max_used_slots;
-	/* Last time we injected a ring overflow. */
 	unsigned long last_injected_overflow;
-#endif /* CONFIG_B43LEGACY_DEBUG*/
+#endif  
 };
-
-
 static inline
 u32 b43legacy_dma_read(struct b43legacy_dmaring *ring,
 		       u16 offset)
 {
 	return b43legacy_read32(ring->dev, ring->mmio_base + offset);
 }
-
 static inline
 void b43legacy_dma_write(struct b43legacy_dmaring *ring,
 			 u16 offset, u32 value)
 {
 	b43legacy_write32(ring->dev, ring->mmio_base + offset, value);
 }
-
-
 int b43legacy_dma_init(struct b43legacy_wldev *dev);
 void b43legacy_dma_free(struct b43legacy_wldev *dev);
-
 void b43legacy_dma_tx_suspend(struct b43legacy_wldev *dev);
 void b43legacy_dma_tx_resume(struct b43legacy_wldev *dev);
-
 int b43legacy_dma_tx(struct b43legacy_wldev *dev,
 		     struct sk_buff *skb);
 void b43legacy_dma_handle_txstatus(struct b43legacy_wldev *dev,
 				   const struct b43legacy_txstatus *status);
-
 void b43legacy_dma_rx(struct b43legacy_dmaring *ring);
-
-#else /* CONFIG_B43LEGACY_DMA */
-
-
+#else  
 static inline
 int b43legacy_dma_init(struct b43legacy_wldev *dev)
 {
@@ -227,6 +164,5 @@ static inline
 void b43legacy_dma_tx_resume(struct b43legacy_wldev *dev)
 {
 }
-
-#endif /* CONFIG_B43LEGACY_DMA */
-#endif /* B43legacy_DMA_H_ */
+#endif  
+#endif  

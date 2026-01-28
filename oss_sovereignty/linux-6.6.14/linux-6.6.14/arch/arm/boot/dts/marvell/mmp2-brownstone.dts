@@ -1,30 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2012 Marvell Technology Group Ltd.
- *  Author: Haojian Zhuang <haojian.zhuang@marvell.com>
- */
-
 /dts-v1/;
 #include "mmp2.dtsi"
-
 / {
 	model = "Marvell MMP2 Brownstone Development Board";
 	compatible = "mrvl,mmp2-brownstone", "mrvl,mmp2";
-
 	chosen {
 		bootargs = "console=ttyS2,38400 root=/dev/nfs nfsroot=192.168.1.100:/nfsroot/ ip=192.168.1.101:192.168.1.100::255.255.255.0::eth0:on";
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x08000000>;
 	};
 };
-
 &uart3 {
 	status = "okay";
 };
-
 &twsi1 {
 	status = "okay";
 	pmic: max8925@3c {
@@ -35,7 +24,6 @@
 		interrupt-controller;
 		#interrupt-cells = <1>;
 		maxim,tsc-irq = <0>;
-
 		regulators {
 			SDV1 {
 				regulator-min-microvolt = <637500>;
@@ -186,7 +174,6 @@
 		};
 	};
 };
-
 &rtc {
 	status = "okay";
 };

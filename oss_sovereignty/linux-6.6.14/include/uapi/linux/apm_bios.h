@@ -1,27 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-/*
- * Include file for the interface to an APM BIOS
- * Copyright 1994-2001 Stephen Rothwell (sfr@canb.auug.org.au)
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
 #ifndef _UAPI_LINUX_APM_H
 #define _UAPI_LINUX_APM_H
-
-
 #include <linux/types.h>
-
 typedef unsigned short	apm_event_t;
 typedef unsigned short	apm_eventinfo_t;
-
 struct apm_bios_info {
 	__u16	version;
 	__u16	cseg;
@@ -33,11 +14,6 @@ struct apm_bios_info {
 	__u16	cseg_16_len;
 	__u16	dseg_len;
 };
-
-
-/*
- * Power states
- */
 #define APM_STATE_READY		0x0000
 #define APM_STATE_STANDBY	0x0001
 #define APM_STATE_SUSPEND	0x0002
@@ -46,16 +22,10 @@ struct apm_bios_info {
 #define APM_STATE_REJECT	0x0005
 #define APM_STATE_OEM_SYS	0x0020
 #define APM_STATE_OEM_DEV	0x0040
-
 #define APM_STATE_DISABLE	0x0000
 #define APM_STATE_ENABLE	0x0001
-
 #define APM_STATE_DISENGAGE	0x0000
 #define APM_STATE_ENGAGE	0x0001
-
-/*
- * Events (results of Get PM Event)
- */
 #define APM_SYS_STANDBY		0x0001
 #define APM_SYS_SUSPEND		0x0002
 #define APM_NORMAL_RESUME	0x0003
@@ -70,10 +40,6 @@ struct apm_bios_info {
 #define APM_CAPABILITY_CHANGE	0x000c
 #define APM_USER_HIBERNATION	0x000d
 #define APM_HIBERNATION_RESUME	0x000e
-
-/*
- * Error codes
- */
 #define APM_SUCCESS		0x00
 #define APM_DISABLED		0x01
 #define APM_CONNECTED		0x02
@@ -91,10 +57,6 @@ struct apm_bios_info {
 #define APM_BAD_STATE		0x60
 #define APM_NO_EVENTS		0x80
 #define APM_NOT_PRESENT		0x86
-
-/*
- * APM Device IDs
- */
 #define APM_DEVICE_BIOS		0x0000
 #define APM_DEVICE_ALL		0x0001
 #define APM_DEVICE_DISPLAY	0x0100
@@ -108,31 +70,16 @@ struct apm_bios_info {
 #define APM_DEVICE_OLD_ALL	0xffff
 #define APM_DEVICE_CLASS	0x00ff
 #define APM_DEVICE_MASK		0xff00
-
-
-/*
- * Battery status
- */
 #define APM_MAX_BATTERIES	2
-
-/*
- * APM defined capability bit flags
- */
 #define APM_CAP_GLOBAL_STANDBY		0x0001
 #define APM_CAP_GLOBAL_SUSPEND		0x0002
-#define APM_CAP_RESUME_STANDBY_TIMER	0x0004 /* Timer resume from standby */
-#define APM_CAP_RESUME_SUSPEND_TIMER	0x0008 /* Timer resume from suspend */
-#define APM_CAP_RESUME_STANDBY_RING	0x0010 /* Resume on Ring fr standby */
-#define APM_CAP_RESUME_SUSPEND_RING	0x0020 /* Resume on Ring fr suspend */
-#define APM_CAP_RESUME_STANDBY_PCMCIA	0x0040 /* Resume on PCMCIA Ring	*/
-#define APM_CAP_RESUME_SUSPEND_PCMCIA	0x0080 /* Resume on PCMCIA Ring	*/
-
-/*
- * ioctl operations
- */
+#define APM_CAP_RESUME_STANDBY_TIMER	0x0004  
+#define APM_CAP_RESUME_SUSPEND_TIMER	0x0008  
+#define APM_CAP_RESUME_STANDBY_RING	0x0010  
+#define APM_CAP_RESUME_SUSPEND_RING	0x0020  
+#define APM_CAP_RESUME_STANDBY_PCMCIA	0x0040  
+#define APM_CAP_RESUME_SUSPEND_PCMCIA	0x0080  
 #include <linux/ioctl.h>
-
 #define APM_IOC_STANDBY		_IO('A', 1)
 #define APM_IOC_SUSPEND		_IO('A', 2)
-
-#endif /* _UAPI_LINUX_APM_H */
+#endif  

@@ -1,20 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
-
 #ifndef __MESON_REGISTERS_H
 #define __MESON_REGISTERS_H
-
 #include <linux/io.h>
-
-/* Shift all registers by 2 */
 #define _REG(reg)	((reg) << 2)
-
 #define writel_bits_relaxed(mask, val, addr) \
 	writel_relaxed((readl_relaxed(addr) & ~(mask)) | ((val) & (mask)), addr)
-
-/* vpp2 */
 #define VPP2_DUMMY_DATA 0x1900
 #define VPP2_LINE_IN_LENGTH 0x1901
 #define VPP2_PIC_IN_HEIGHT 0x1902
@@ -133,8 +122,6 @@
 #define VPP2_OSD_SCALE_COEF_IDX 0x19cc
 #define VPP2_OSD_SCALE_COEF 0x19cd
 #define VPP2_INT_LINE_NUM 0x19ce
-
-/* viu */
 #define VIU_ADDR_START 0x1a00
 #define VIU_ADDR_END 0x1aff
 #define VIU_SW_RESET 0x1a01
@@ -239,7 +226,6 @@
 #define VIU_OSD2_PROT_CTRL 0x1a4e
 #define VIU_OSD2_MALI_UNPACK_CTRL 0x1abd
 #define VIU_OSD2_DIMM_CTRL 0x1acf
-
 #define VIU_OSD3_CTRL_STAT 0x3d80
 #define VIU_OSD3_CTRL_STAT2 0x3d81
 #define VIU_OSD3_COLOR_ADDR 0x3d82
@@ -260,7 +246,6 @@
 #define VIU_OSD3_PROT_CTRL 0x3d9e
 #define VIU_OSD3_MALI_UNPACK_CTRL 0x3d9f
 #define VIU_OSD3_DIMM_CTRL 0x3da0
-
 #define VIU_OSD_DDR_PRIORITY_URGENT      BIT(0)
 #define VIU_OSD_HOLD_FIFO_LINES(lines)   ((lines & 0x1f) << 5)
 #define VIU_OSD_FIFO_DEPTH_VAL(val)      ((val & 0x7f) << 12)
@@ -272,7 +257,6 @@
 #define VIU_OSD_BURST_LENGTH_64          (0x0 << 31 | 0x3 << 10)
 #define VIU_OSD_BURST_LENGTH_96          (0x1 << 31 | 0x0 << 10)
 #define VIU_OSD_BURST_LENGTH_128         (0x1 << 31 | 0x1 << 10)
-
 #define VD1_IF0_GEN_REG 0x1a50
 #define VD1_IF0_CANVAS0 0x1a51
 #define VD1_IF0_CANVAS1 0x1a52
@@ -327,8 +311,6 @@
 #define VD2_IF0_PROT_CNTL 0x1a8e
 #define VIU_VD2_FMT_CTRL 0x1a88
 #define VIU_VD2_FMT_W 0x1a89
-
-/* VIU Matrix Registers */
 #define VIU_OSD1_MATRIX_CTRL 0x1a90
 #define VIU_OSD1_MATRIX_COEF00_01 0x1a91
 #define VIU_OSD1_MATRIX_COEF02_10 0x1a92
@@ -343,14 +325,12 @@
 #define VIU_OSD1_MATRIX_COEF31_32 0x1a9e
 #define VIU_OSD1_MATRIX_COEF40_41 0x1a9f
 #define VD1_IF0_GEN_REG3 0x1aa7
-
 #define VIU_OSD_BLENDO_H_START_END 0x1aa9
 #define VIU_OSD_BLENDO_V_START_END 0x1aaa
 #define VIU_OSD_BLEND_GEN_CTRL0 0x1aab
 #define VIU_OSD_BLEND_GEN_CTRL1 0x1aac
 #define VIU_OSD_BLEND_DUMMY_DATA 0x1aad
 #define VIU_OSD_BLEND_CURRENT_XY 0x1aae
-
 #define VIU_OSD2_MATRIX_CTRL 0x1ab0
 #define VIU_OSD2_MATRIX_COEF00_01 0x1ab1
 #define VIU_OSD2_MATRIX_COEF02_10 0x1ab2
@@ -393,8 +373,6 @@
 #define AFBC_PIXEL_HOR_SCOPE 0x1aef
 #define AFBC_PIXEL_VER_SCOPE 0x1af0
 #define AFBC_VD_CFMT_H 0x1af1
-
-/* vpp */
 #define VPP_DUMMY_DATA 0x1d00
 #define VPP_LINE_IN_LENGTH 0x1d01
 #define VPP_PIC_IN_HEIGHT 0x1d02
@@ -474,7 +452,6 @@
 #define VPP_HSC_INI_PAT_CTRL 0x1d35
 #define VPP_VADJ_CTRL 0x1d40
 #define		VPP_MINUS_BLACK_LVL_VADJ1_ENABLE BIT(1)
-
 #define VPP_VADJ1_Y 0x1d41
 #define VPP_VADJ1_MA_MB 0x1d42
 #define VPP_VADJ1_MC_MD 0x1d43
@@ -588,7 +565,6 @@
 #define VPP_OSD_SCALE_COEF_IDX 0x1dcc
 #define VPP_OSD_SCALE_COEF 0x1dcd
 #define VPP_INT_LINE_NUM 0x1dce
-
 #define VPP_WRAP_OSD1_MATRIX_COEF00_01 0x3d60
 #define VPP_WRAP_OSD1_MATRIX_COEF02_10 0x3d61
 #define VPP_WRAP_OSD1_MATRIX_COEF11_12 0x3d62
@@ -603,7 +579,6 @@
 #define VPP_WRAP_OSD1_MATRIX_PRE_OFFSET0_1 0x3d6b
 #define VPP_WRAP_OSD1_MATRIX_PRE_OFFSET2 0x3d6c
 #define VPP_WRAP_OSD1_MATRIX_EN_CTRL 0x3d6d
-
 #define VPP_WRAP_OSD2_MATRIX_COEF00_01 0x3d70
 #define VPP_WRAP_OSD2_MATRIX_COEF02_10 0x3d71
 #define VPP_WRAP_OSD2_MATRIX_COEF11_12 0x3d72
@@ -618,7 +593,6 @@
 #define VPP_WRAP_OSD2_MATRIX_PRE_OFFSET0_1 0x3d7b
 #define VPP_WRAP_OSD2_MATRIX_PRE_OFFSET2 0x3d7c
 #define VPP_WRAP_OSD2_MATRIX_EN_CTRL 0x3d7d
-
 #define VPP_WRAP_OSD3_MATRIX_COEF00_01 0x3db0
 #define VPP_WRAP_OSD3_MATRIX_COEF02_10 0x3db1
 #define VPP_WRAP_OSD3_MATRIX_COEF11_12 0x3db2
@@ -633,13 +607,9 @@
 #define VPP_WRAP_OSD3_MATRIX_PRE_OFFSET0_1 0x3dbb
 #define VPP_WRAP_OSD3_MATRIX_PRE_OFFSET2 0x3dbc
 #define VPP_WRAP_OSD3_MATRIX_EN_CTRL 0x3dbd
-
-/* osd1 HDR */
 #define OSD1_HDR2_CTRL 0x38a0
 #define OSD1_HDR2_CTRL_VDIN0_HDR2_TOP_EN       BIT(13)
 #define OSD1_HDR2_CTRL_REG_ONLY_MAT            BIT(16)
-
-/* osd2 scaler */
 #define OSD2_VSC_PHASE_STEP 0x3d00
 #define OSD2_VSC_INI_PHASE 0x3d01
 #define OSD2_VSC_CTRL0 0x3d02
@@ -654,8 +624,6 @@
 #define OSD2_SCO_V_START_END 0x3d0b
 #define OSD2_SCALE_COEF_IDX 0x3d18
 #define OSD2_SCALE_COEF 0x3d19
-
-/* osd34 scaler */
 #define OSD34_SCALE_COEF_IDX 0x3d1e
 #define OSD34_SCALE_COEF 0x3d1f
 #define OSD34_VSC_PHASE_STEP 0x3d20
@@ -670,8 +638,6 @@
 #define OSD34_SCI_WH_M1 0x3d29
 #define OSD34_SCO_H_START_END 0x3d2a
 #define OSD34_SCO_V_START_END 0x3d2b
-
-/* viu2 */
 #define VIU2_ADDR_START 0x1e00
 #define VIU2_ADDR_END 0x1eff
 #define VIU2_SW_RESET 0x1e01
@@ -768,8 +734,6 @@
 #define VIU2_VD1_IF0_PROT_CNTL 0x1e6e
 #define VIU2_VD1_FMT_CTRL 0x1e68
 #define VIU2_VD1_FMT_W 0x1e69
-
-/* encode */
 #define ENCP_VFIFO2VD_CTL 0x1b58
 #define ENCP_VFIFO2VD_PIXEL_START 0x1b59
 #define ENCP_VFIFO2VD_PIXEL_END 0x1b5a
@@ -1308,14 +1272,14 @@
 #define RDMA_STATUS2 0x1116
 #define RDMA_STATUS3 0x1117
 #define L_GAMMA_CNTL_PORT 0x1400
-#define		L_GAMMA_CNTL_PORT_VCOM_POL	BIT(7)	/* RW */
-#define		L_GAMMA_CNTL_PORT_RVS_OUT	BIT(6)	/* RW */
-#define		L_GAMMA_CNTL_PORT_ADR_RDY	BIT(5)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_WR_RDY	BIT(4)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_RD_RDY	BIT(3)	/* Read Only */
-#define		L_GAMMA_CNTL_PORT_TR		BIT(2)	/* RW */
-#define		L_GAMMA_CNTL_PORT_SET		BIT(1)	/* RW */
-#define		L_GAMMA_CNTL_PORT_EN		BIT(0)	/* RW */
+#define		L_GAMMA_CNTL_PORT_VCOM_POL	BIT(7)	 
+#define		L_GAMMA_CNTL_PORT_RVS_OUT	BIT(6)	 
+#define		L_GAMMA_CNTL_PORT_ADR_RDY	BIT(5)	 
+#define		L_GAMMA_CNTL_PORT_WR_RDY	BIT(4)	 
+#define		L_GAMMA_CNTL_PORT_RD_RDY	BIT(3)	 
+#define		L_GAMMA_CNTL_PORT_TR		BIT(2)	 
+#define		L_GAMMA_CNTL_PORT_SET		BIT(1)	 
+#define		L_GAMMA_CNTL_PORT_EN		BIT(0)	 
 #define L_GAMMA_DATA_PORT 0x1401
 #define L_GAMMA_ADDR_PORT 0x1402
 #define		L_GAMMA_ADDR_PORT_RD		BIT(12)
@@ -1640,7 +1604,6 @@
 #define VPU_VDIN_ASYNC_HOLD_CTRL 0x2743
 #define VPU_VDISP_ASYNC_HOLD_CTRL 0x2744
 #define VPU_VPUARB2_ASYNC_HOLD_CTRL 0x2745
-
 #define VPU_PROT1_CLK_GATE 0x2750
 #define VPU_PROT1_GEN_CNTL 0x2751
 #define VPU_PROT1_X_START_END 0x2752
@@ -1685,8 +1648,6 @@
 #define VPU_RDARB_MODE_L2C1 0x279d
 #define VPU_WRARB_MODE_L2C1 0x27a2
 #define		VPU_RDARB_SLAVE_TO_MASTER_PORT(dc, port) (port << (16 + dc))
-
-/* osd super scale */
 #define OSDSR_HV_SIZEIN 0x3130
 #define OSDSR_CTRL_MODE 0x3131
 #define OSDSR_ABIC_HCOEF 0x3132
@@ -1714,8 +1675,6 @@
 #define OSDSR_ABIC_VCOEF0 0x3148
 #define OSDSR_YBIC_VCOEF0 0x3149
 #define OSDSR_CBIC_VCOEF0 0x314a
-
-/* osd afbcd on gxtvbb */
 #define OSD1_AFBCD_ENABLE 0x31a0
 #define		OSD1_AFBCD_ID_FIFO_THRD			GENMASK(15, 9)
 #define		OSD1_AFBCD_DEC_ENABLE			BIT(8)
@@ -1744,12 +1703,8 @@
 #define OSD1_AFBCD_PIXEL_VSCOPE 0x31aa
 #define		OSD1_AFBCD_DEC_PIXEL_BGN_V		GENMASK(31, 16)
 #define		OSD1_AFBCD_DEC_PIXEL_END_V		GENMASK(15, 0)
-
-/* add for gxm and 962e dv core2 */
 #define DOLBY_CORE2A_SWAP_CTRL1	0x3434
 #define DOLBY_CORE2A_SWAP_CTRL2	0x3435
-
-/* osd afbc on g12a */
 #define VPU_MAFBC_BLOCK_ID 0x3a00
 #define VPU_MAFBC_IRQ_RAW_STATUS 0x3a01
 #define VPU_MAFBC_IRQ_CLEAR 0x3a02
@@ -1795,7 +1750,6 @@
 #define VPU_MAFBC_PREFETCH_CFG_S0 0x3a1c
 #define		VPU_MAFBC_PREFETCH_READ_DIRECTION_Y	BIT(1)
 #define		VPU_MAFBC_PREFETCH_READ_DIRECTION_X	BIT(0)
-
 #define VPU_MAFBC_HEADER_BUF_ADDR_LOW_S1 0x3a30
 #define VPU_MAFBC_HEADER_BUF_ADDR_HIGH_S1 0x3a31
 #define VPU_MAFBC_FORMAT_SPECIFIER_S1 0x3a32
@@ -1809,7 +1763,6 @@
 #define VPU_MAFBC_OUTPUT_BUF_ADDR_HIGH_S1 0x3a3a
 #define VPU_MAFBC_OUTPUT_BUF_STRIDE_S1 0x3a3b
 #define VPU_MAFBC_PREFETCH_CFG_S1 0x3a3c
-
 #define VPU_MAFBC_HEADER_BUF_ADDR_LOW_S2 0x3a50
 #define VPU_MAFBC_HEADER_BUF_ADDR_HIGH_S2 0x3a51
 #define VPU_MAFBC_FORMAT_SPECIFIER_S2 0x3a52
@@ -1823,7 +1776,6 @@
 #define VPU_MAFBC_OUTPUT_BUF_ADDR_HIGH_S2 0x3a5a
 #define VPU_MAFBC_OUTPUT_BUF_STRIDE_S2 0x3a5b
 #define VPU_MAFBC_PREFETCH_CFG_S2 0x3a5c
-
 #define VPU_MAFBC_HEADER_BUF_ADDR_LOW_S3 0x3a70
 #define VPU_MAFBC_HEADER_BUF_ADDR_HIGH_S3 0x3a71
 #define VPU_MAFBC_FORMAT_SPECIFIER_S3 0x3a72
@@ -1837,7 +1789,6 @@
 #define VPU_MAFBC_OUTPUT_BUF_ADDR_HIGH_S3 0x3a7a
 #define VPU_MAFBC_OUTPUT_BUF_STRIDE_S3 0x3a7b
 #define VPU_MAFBC_PREFETCH_CFG_S3 0x3a7c
-
 #define DOLBY_PATH_CTRL 0x1a0c
 #define		DOLBY_BYPASS_EN(val)            (val & 0xf)
 #define OSD_PATH_MISC_CTRL 0x1a0e
@@ -1846,7 +1797,6 @@
 #define		OSD_PATH_OSD_AXI_SEL_OSD3_AFBCD	BIT(6)
 #define MALI_AFBCD_TOP_CTRL 0x1a0f
 #define		MALI_AFBCD_MANUAL_RESET		BIT(23)
-
 #define VIU_OSD_BLEND_CTRL 0x39b0
 #define		VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
 #define		VIU_OSD_BLEND_DIN_EN(bits)            ((bits & 0xf) << 20)
@@ -1869,9 +1819,7 @@
 #define VIU_OSD_BLEND_BLEND0_SIZE 0x39bb
 #define VIU_OSD_BLEND_BLEND1_SIZE 0x39bc
 #define VIU_OSD_BLEND_RO_CURRENT_XY 0x39bf
-
 #define VPP_OUT_H_V_SIZE 0x1da5
-
 #define VPP_VD2_HDR_IN_SIZE 0x1df0
 #define VPP_OSD1_IN_SIZE 0x1df1
 #define VPP_GCLK_CTRL2 0x1df2
@@ -1901,10 +1849,8 @@
 #define		OSD_BLEND_POSTBLD_SRC_OSD1      (3 << 8)
 #define		OSD_BLEND_POSTBLD_SRC_OSD2      (4 << 8)
 #define		OSD_BLEND_PATH_SEL_ENABLE       BIT(20)
-
 #define VPP_POST_BLEND_BLEND_DUMMY_DATA 0x3968
 #define VPP_POST_BLEND_DUMMY_ALPHA 0x3969
 #define VPP_RDARB_MODE 0x3978
 #define VPP_RDARB_REQEN_SLV 0x3979
-
-#endif /* __MESON_REGISTERS_H */
+#endif  

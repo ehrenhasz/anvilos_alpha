@@ -1,35 +1,18 @@
-# Core.py - Python extension for perf script, core functions
-#
-# Copyright (C) 2010 by Tom Zanussi <tzanussi@gmail.com>
-#
-# This software may be distributed under the terms of the GNU General
-# Public License ("GPL") version 2 as published by the Free Software
-# Foundation.
-
 from collections import defaultdict
-
 def autodict():
     return defaultdict(autodict)
-
 flag_fields = autodict()
 symbolic_fields = autodict()
-
 def define_flag_field(event_name, field_name, delim):
     flag_fields[event_name][field_name]['delim'] = delim
-
 def define_flag_value(event_name, field_name, value, field_str):
     flag_fields[event_name][field_name]['values'][value] = field_str
-
 def define_symbolic_field(event_name, field_name):
-    # nothing to do, really
     pass
-
 def define_symbolic_value(event_name, field_name, value, field_str):
     symbolic_fields[event_name][field_name]['values'][value] = field_str
-
 def flag_str(event_name, field_name, value):
     string = ""
-
     if flag_fields[event_name][field_name]:
         print_delim = 0
         for idx in sorted(flag_fields[event_name][field_name]['values']):
@@ -42,12 +25,9 @@ def flag_str(event_name, field_name, value):
                 string += flag_fields[event_name][field_name]['values'][idx]
                 print_delim = 1
                 value &= ~idx
-
     return string
-
 def symbol_str(event_name, field_name, value):
     string = ""
-
     if symbolic_fields[event_name][field_name]:
         for idx in sorted(symbolic_fields[event_name][field_name]['values']):
             if not value and not idx:
@@ -56,35 +36,27 @@ def symbol_str(event_name, field_name, value):
             if (value == idx):
                 string = symbolic_fields[event_name][field_name]['values'][idx]
                 break
-
     return string
-
 trace_flags = { 0x00: "NONE", \
                     0x01: "IRQS_OFF", \
                     0x02: "IRQS_NOSUPPORT", \
                     0x04: "NEED_RESCHED", \
                     0x08: "HARDIRQ", \
                     0x10: "SOFTIRQ" }
-
 def trace_flag_str(value):
     string = ""
     print_delim = 0
-
     for idx in trace_flags:
         if not value and not idx:
             string += "NONE"
             break
-
         if idx and (value & idx) == idx:
             if print_delim:
                 string += " | ";
             string += trace_flags[idx]
             print_delim = 1
             value &= ~idx
-
     return string
-
-
 def taskState(state):
 	states = {
 		0 : "R",
@@ -92,13 +64,9 @@ def taskState(state):
 		2 : "D",
 		64: "DEAD"
 	}
-
 	if state not in states:
 		return "Unknown"
-
 	return states[state]
-
-
 class EventHeaders:
 	def __init__(self, common_cpu, common_secs, common_nsecs,
 		     common_pid, common_comm, common_callchain):
@@ -108,9 +76,7 @@ class EventHeaders:
 		self.pid = common_pid
 		self.comm = common_comm
 		self.callchain = common_callchain
-
 	def ts(self):
 		return (self.secs * (10 ** 9)) + self.nsecs
-
 	def ts_format(self):
 		return "%d.%d" % (self.secs, int(self.nsecs / 1000))

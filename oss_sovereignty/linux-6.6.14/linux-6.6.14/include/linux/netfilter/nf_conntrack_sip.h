@@ -1,20 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __NF_CONNTRACK_SIP_H__
 #define __NF_CONNTRACK_SIP_H__
-
 #include <linux/skbuff.h>
 #include <linux/types.h>
 #include <net/netfilter/nf_conntrack_expect.h>
-
 #define SIP_PORT	5060
 #define SIP_TIMEOUT	3600
-
 struct nf_ct_sip_master {
 	unsigned int	register_cseq;
 	unsigned int	invite_cseq;
 	__be16		forced_dport;
 };
-
 enum sip_expectation_classes {
 	SIP_EXPECT_SIGNALLING,
 	SIP_EXPECT_AUDIO,
@@ -23,20 +18,17 @@ enum sip_expectation_classes {
 	__SIP_EXPECT_MAX
 };
 #define SIP_EXPECT_MAX	(__SIP_EXPECT_MAX - 1)
-
 struct sdp_media_type {
 	const char			*name;
 	unsigned int			len;
 	enum sip_expectation_classes	class;
 };
-
 #define SDP_MEDIA_TYPE(__name, __class)					\
 {									\
 	.name	= (__name),						\
 	.len	= sizeof(__name) - 1,					\
 	.class	= (__class),						\
 }
-
 struct sip_handler {
 	const char	*method;
 	unsigned int	len;
@@ -49,7 +41,6 @@ struct sip_handler {
 				    const char **dptr, unsigned int *datalen,
 				    unsigned int cseq, unsigned int code);
 };
-
 #define SIP_HANDLER(__method, __request, __response)			\
 {									\
 	.method		= (__method),					\
@@ -57,7 +48,6 @@ struct sip_handler {
 	.request	= (__request),					\
 	.response	= (__response),					\
 }
-
 struct sip_header {
 	const char	*name;
 	const char	*cname;
@@ -69,7 +59,6 @@ struct sip_header {
 				     const char *dptr, const char *limit,
 				     int *shift);
 };
-
 #define __SIP_HDR(__name, __cname, __search, __match)			\
 {									\
 	.name		= (__name),					\
@@ -80,13 +69,10 @@ struct sip_header {
 	.slen		= (__search) ? sizeof(__search) - 1 : 0,	\
 	.match_len	= (__match),					\
 }
-
 #define SIP_HDR(__name, __cname, __search, __match) \
 	__SIP_HDR(__name, __cname, __search, __match)
-
 #define SDP_HDR(__name, __search, __match) \
 	__SIP_HDR(__name, NULL, __search, __match)
-
 enum sip_header_types {
 	SIP_HDR_CSEQ,
 	SIP_HDR_FROM,
@@ -98,7 +84,6 @@ enum sip_header_types {
 	SIP_HDR_CONTENT_LENGTH,
 	SIP_HDR_CALL_ID,
 };
-
 enum sdp_header_types {
 	SDP_HDR_UNSPEC,
 	SDP_HDR_VERSION,
@@ -106,17 +91,14 @@ enum sdp_header_types {
 	SDP_HDR_CONNECTION,
 	SDP_HDR_MEDIA,
 };
-
 struct nf_nat_sip_hooks {
 	unsigned int (*msg)(struct sk_buff *skb,
 			    unsigned int protoff,
 			    unsigned int dataoff,
 			    const char **dptr,
 			    unsigned int *datalen);
-
 	void (*seq_adjust)(struct sk_buff *skb,
 			   unsigned int protoff, s16 off);
-
 	unsigned int (*expect)(struct sk_buff *skb,
 			       unsigned int protoff,
 			       unsigned int dataoff,
@@ -125,7 +107,6 @@ struct nf_nat_sip_hooks {
 			       struct nf_conntrack_expect *exp,
 			       unsigned int matchoff,
 			       unsigned int matchlen);
-
 	unsigned int (*sdp_addr)(struct sk_buff *skb,
 				 unsigned int protoff,
 				 unsigned int dataoff,
@@ -135,7 +116,6 @@ struct nf_nat_sip_hooks {
 				 enum sdp_header_types type,
 				 enum sdp_header_types term,
 				 const union nf_inet_addr *addr);
-
 	unsigned int (*sdp_port)(struct sk_buff *skb,
 				 unsigned int protoff,
 				 unsigned int dataoff,
@@ -144,7 +124,6 @@ struct nf_nat_sip_hooks {
 				 unsigned int matchoff,
 				 unsigned int matchlen,
 				 u_int16_t port);
-
 	unsigned int (*sdp_session)(struct sk_buff *skb,
 				    unsigned int protoff,
 				    unsigned int dataoff,
@@ -152,7 +131,6 @@ struct nf_nat_sip_hooks {
 				    unsigned int *datalen,
 				    unsigned int sdpoff,
 				    const union nf_inet_addr *addr);
-
 	unsigned int (*sdp_media)(struct sk_buff *skb,
 				  unsigned int protoff,
 				  unsigned int dataoff,
@@ -165,7 +143,6 @@ struct nf_nat_sip_hooks {
 				  union nf_inet_addr *rtp_addr);
 };
 extern const struct nf_nat_sip_hooks __rcu *nf_nat_sip_hooks;
-
 int ct_sip_parse_request(const struct nf_conn *ct, const char *dptr,
 			 unsigned int datalen, unsigned int *matchoff,
 			 unsigned int *matchlen, union nf_inet_addr *addr,
@@ -188,11 +165,9 @@ int ct_sip_parse_numerical_param(const struct nf_conn *ct, const char *dptr,
 				 unsigned int off, unsigned int datalen,
 				 const char *name, unsigned int *matchoff,
 				 unsigned int *matchen, unsigned int *val);
-
 int ct_sip_get_sdp_header(const struct nf_conn *ct, const char *dptr,
 			  unsigned int dataoff, unsigned int datalen,
 			  enum sdp_header_types type,
 			  enum sdp_header_types term,
 			  unsigned int *matchoff, unsigned int *matchlen);
-
-#endif /* __NF_CONNTRACK_SIP_H__ */
+#endif  

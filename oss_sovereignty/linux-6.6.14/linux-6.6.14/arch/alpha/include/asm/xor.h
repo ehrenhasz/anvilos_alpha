@@ -1,10 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/asm-alpha/xor.h
- *
- * Optimized RAID-5 checksumming functions for alpha EV5 and EV6
- */
-
 extern void
 xor_alpha_2(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p2);
@@ -23,7 +16,6 @@ xor_alpha_5(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p3,
 	    const unsigned long * __restrict p4,
 	    const unsigned long * __restrict p5);
-
 extern void
 xor_alpha_prefetch_2(unsigned long bytes, unsigned long * __restrict p1,
 		     const unsigned long * __restrict p2);
@@ -42,7 +34,6 @@ xor_alpha_prefetch_5(unsigned long bytes, unsigned long * __restrict p1,
 		     const unsigned long * __restrict p3,
 		     const unsigned long * __restrict p4,
 		     const unsigned long * __restrict p5);
-
 asm("								\n\
 	.text							\n\
 	.align 3						\n\
@@ -831,7 +822,6 @@ xor_alpha_prefetch_5:						\n\
 	ret							\n\
 	.end xor_alpha_prefetch_5				\n\
 ");
-
 static struct xor_block_template xor_block_alpha = {
 	.name	= "alpha",
 	.do_2	= xor_alpha_2,
@@ -839,7 +829,6 @@ static struct xor_block_template xor_block_alpha = {
 	.do_4	= xor_alpha_4,
 	.do_5	= xor_alpha_5,
 };
-
 static struct xor_block_template xor_block_alpha_prefetch = {
 	.name	= "alpha prefetch",
 	.do_2	= xor_alpha_prefetch_2,
@@ -847,10 +836,7 @@ static struct xor_block_template xor_block_alpha_prefetch = {
 	.do_4	= xor_alpha_prefetch_4,
 	.do_5	= xor_alpha_prefetch_5,
 };
-
-/* For grins, also test the generic routines.  */
 #include <asm-generic/xor.h>
-
 #undef XOR_TRY_TEMPLATES
 #define XOR_TRY_TEMPLATES				\
 	do {						\
@@ -859,8 +845,5 @@ static struct xor_block_template xor_block_alpha_prefetch = {
 		xor_speed(&xor_block_alpha);		\
 		xor_speed(&xor_block_alpha_prefetch);	\
 	} while (0)
-
-/* Force the use of alpha_prefetch if EV6, as it is significantly
-   faster in the cold cache case.  */
 #define XOR_SELECT_TEMPLATE(FASTEST) \
 	(implver() == IMPLVER_EV6 ? &xor_block_alpha_prefetch : FASTEST)

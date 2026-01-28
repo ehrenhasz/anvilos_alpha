@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 #ifndef _ASMARM_SIGCONTEXT_H
 #define _ASMARM_SIGCONTEXT_H
-
-/*
- * Signal context structure - contains all info to do with the state
- * before the signal handler was invoked.  Note: only add new entries
- * to the end of the structure.
- */
 struct sigcontext {
 	unsigned long trap_no;
 	unsigned long error_code;
@@ -30,6 +23,4 @@ struct sigcontext {
 	unsigned long arm_cpsr;
 	unsigned long fault_address;
 };
-
-
 #endif

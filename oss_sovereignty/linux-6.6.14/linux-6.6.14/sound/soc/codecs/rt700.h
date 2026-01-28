@@ -1,15 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt700.h -- RT700 ALSA SoC audio driver header
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- */
-
 #ifndef __RT700_H__
 #define __RT700_H__
-
 extern const struct dev_pm_ops rt700_runtime_pm;
-
 struct  rt700_priv {
 	struct snd_soc_component *component;
 	struct regmap *regmap;
@@ -22,11 +13,9 @@ struct  rt700_priv {
 	struct delayed_work jack_detect_work;
 	struct delayed_work jack_btn_check_work;
 	int jack_type;
-	struct mutex disable_irq_lock; /* imp-def irq lock protection */
+	struct mutex disable_irq_lock;  
 	bool disable_irq;
 };
-
-/* NID */
 #define RT700_AUDIO_FUNCTION_GROUP			0x01
 #define RT700_DAC_OUT1					0x02
 #define RT700_DAC_OUT2					0x03
@@ -45,8 +34,6 @@ struct  rt700_priv {
 #define RT700_MIXER_IN1					0x22
 #define RT700_MIXER_IN2					0x23
 #define RT700_INLINE_CMD				0x55
-
-/* Index (NID:20h) */
 #define RT700_DAC_DC_CALI_CTL1				0x00
 #define RT700_PARA_VERB_CTL				0x1a
 #define RT700_COMBO_JACK_AUTO_CTL1				0x45
@@ -58,8 +45,6 @@ struct  rt700_priv {
 #define RT700_IRQ_FLAG_TABLE1				0x80
 #define RT700_IRQ_FLAG_TABLE2				0x81
 #define RT700_IRQ_FLAG_TABLE3				0x82
-
-/* Verb */
 #define RT700_VERB_SET_CONNECT_SEL			0x3100
 #define RT700_VERB_SET_EAPD_BTLENABLE			0x3c00
 #define RT700_VERB_GET_CONNECT_SEL			0xb100
@@ -70,7 +55,6 @@ struct  rt700_priv {
 #define RT700_SET_AMP_GAIN_MUTE_H			0x7300
 #define RT700_SET_AMP_GAIN_MUTE_L			0x8380
 #define RT700_VERB_GET_PIN_SENSE			0xb900
-
 #define RT700_READ_HDA_3				0x2012
 #define RT700_READ_HDA_2				0x2013
 #define RT700_READ_HDA_1				0x2014
@@ -143,29 +127,23 @@ struct  rt700_priv {
 	(RT700_SET_AMP_GAIN_MUTE_H | RT700_SPK_OUT)
 #define RT700_SET_EAPD_SPK\
 	(RT700_VERB_SET_EAPD_BTLENABLE | RT700_SPK_OUT)
-
-/* combo jack auto switch control 2 (0x46)(NID:20h) */
 #define RT700_COMBOJACK_AUTO_DET_STATUS			(0x1 << 11)
 #define RT700_COMBOJACK_AUTO_DET_TRS			(0x1 << 10)
 #define RT700_COMBOJACK_AUTO_DET_CTIA			(0x1 << 9)
 #define RT700_COMBOJACK_AUTO_DET_OMTP			(0x1 << 8)
-
 #define RT700_EAPD_HIGH					0x2
 #define RT700_EAPD_LOW					0x0
 #define RT700_MUTE_SFT					7
 #define RT700_DIR_IN_SFT				6
 #define RT700_DIR_OUT_SFT				7
-
 enum {
 	RT700_AIF1,
 	RT700_AIF2,
 	RT700_AIFS,
 };
-
 int rt700_io_init(struct device *dev, struct sdw_slave *slave);
 int rt700_init(struct device *dev, struct regmap *sdw_regmap,
 	       struct regmap *regmap, struct sdw_slave *slave);
-
 int rt700_jack_detect(struct rt700_priv *rt700, bool *hp, bool *mic);
 int rt700_clock_config(struct device *dev);
-#endif /* __RT700_H__ */
+#endif  

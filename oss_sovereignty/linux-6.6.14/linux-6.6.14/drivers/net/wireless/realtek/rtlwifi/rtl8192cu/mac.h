@@ -1,13 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
-
 #ifndef __RTL92C_MAC_H__
 #define __RTL92C_MAC_H__
-
 #define LLT_LAST_ENTRY_OF_TX_PKT_BUFFER		255
 #define DRIVER_EARLY_INT_TIME					0x05
 #define BCN_DMA_ATIME_INT_TIME				0x02
-
 void rtl92c_read_chip_version(struct ieee80211_hw *hw);
 bool rtl92c_llt_write(struct ieee80211_hw *hw, u32 address, u32 data);
 bool rtl92c_init_llt_table(struct ieee80211_hw *hw, u32 boundary);
@@ -17,36 +12,26 @@ void rtl92c_set_key(struct ieee80211_hw *hw, u32 key_index,
 void rtl92c_enable_interrupt(struct ieee80211_hw *hw);
 void rtl92c_disable_interrupt(struct ieee80211_hw *hw);
 void rtl92c_set_qos(struct ieee80211_hw *hw, int aci);
-
-/*---------------------------------------------------------------
- *	Hardware init functions
- *---------------------------------------------------------------*/
 void rtl92c_init_interrupt(struct ieee80211_hw *hw);
 void rtl92c_init_driver_info_size(struct ieee80211_hw *hw, u8 size);
-
 int rtl92c_set_network_type(struct ieee80211_hw *hw, enum nl80211_iftype type);
 void rtl92c_init_network_type(struct ieee80211_hw *hw);
 void rtl92c_init_adaptive_ctrl(struct ieee80211_hw *hw);
 void rtl92c_init_rate_fallback(struct ieee80211_hw *hw);
-
 void rtl92c_init_edca_param(struct ieee80211_hw *hw,
 							u16 queue,
 							u16 txop,
 							u8 ecwmax,
 							u8 ecwmin,
 							u8 aifs);
-
 void rtl92c_init_edca(struct ieee80211_hw *hw);
 void rtl92c_init_ampdu_aggregation(struct ieee80211_hw *hw);
 void rtl92c_init_beacon_max_error(struct ieee80211_hw *hw);
 void rtl92c_init_rdg_setting(struct ieee80211_hw *hw);
 void rtl92c_init_retry_function(struct ieee80211_hw *hw);
-
 void rtl92c_disable_fast_edca(struct ieee80211_hw *hw);
 void rtl92c_set_min_space(struct ieee80211_hw *hw, bool is2T);
-
 u32 rtl92c_get_txdma_status(struct ieee80211_hw *hw);
-
 struct rx_fwinfo_92c {
 	u8 gain_trsw[4];
 	u8 pwdb_all;
@@ -64,7 +49,6 @@ struct rx_fwinfo_92c {
 	u8 rxsc:2;
 	u8 reserve:4;
 } __packed;
-
 struct rx_desc_92c {
 	u32 length:14;
 	u32 crc32:1;
@@ -79,7 +63,7 @@ struct rx_desc_92c {
 	u32 firstseg:1;
 	u32 eor:1;
 	u32 own:1;
-	u32 macid:5;	/* word 1 */
+	u32 macid:5;	 
 	u32 tid:4;
 	u32 hwrsvd:5;
 	u32 paggr:1;
@@ -93,12 +77,12 @@ struct rx_desc_92c {
 	u32 type:2;
 	u32 mc:1;
 	u32 bc:1;
-	u32 seq:12;	/* word 2 */
+	u32 seq:12;	 
 	u32 frag:4;
 	u32 nextpktlen:14;
 	u32 nextind:1;
 	u32 rsvd:1;
-	u32 rxmcs:6;	/* word 3 */
+	u32 rxmcs:6;	 
 	u32 rxht:1;
 	u32 amsdu:1;
 	u32 splcp:1;
@@ -110,12 +94,11 @@ struct rx_desc_92c {
 	u32 hwpcerr:1;
 	u32 hwpcind:1;
 	u32 iv0:16;
-	u32 iv1;	/* word 4 */
-	u32 tsfl;	/* word 5 */
-	u32 bufferaddress;	/* word 6 */
-	u32 bufferaddress64;	/* word 7 */
+	u32 iv1;	 
+	u32 tsfl;	 
+	u32 bufferaddress;	 
+	u32 bufferaddress64;	 
 } __packed;
-
 enum rtl_desc_qsel rtl92c_map_hwqueue_to_fwqueue(u16 fc,
 							  unsigned int
 							  skb_queue);
@@ -124,9 +107,4 @@ void rtl92c_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 				      struct rtl_stats *pstats,
 				      struct rx_desc_92c *pdesc,
 				      struct rx_fwinfo_92c *p_drvinfo);
-
-/*---------------------------------------------------------------
- *	Card disable functions
- *---------------------------------------------------------------*/
-
 #endif

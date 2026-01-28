@@ -1,8 +1,3 @@
-#
-# SPDX-License-Identifier: GPL-2.0
-# Common parameter parsing for pktgen scripts
-#
-
 function usage() {
     echo ""
     echo "Usage: $0 [-vx] -i ethX"
@@ -24,12 +19,9 @@ function usage() {
     echo "  -a : (\$APPEND)    Script will not reset generator's state, but will append its config"
     echo ""
 }
-
-##  --- Parse command line arguments / parameters ---
-## echo "Commandline options:"
 while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6ak" option; do
     case $option in
-        i) # interface
+        i) 
           export DEV=$OPTARG
 	  info "Output device set to: DEV=$DEV"
           ;;
@@ -37,15 +29,15 @@ while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6ak" option; do
           export PKT_SIZE=$OPTARG
 	  info "Packet size set to: PKT_SIZE=$PKT_SIZE bytes"
           ;;
-        d) # destination IP
+        d) 
           export DEST_IP=$OPTARG
 	  info "Destination IP set to: DEST_IP=$DEST_IP"
           ;;
-        m) # MAC
+        m) 
           export DST_MAC=$OPTARG
 	  info "Destination MAC set to: DST_MAC=$DST_MAC"
           ;;
-        p) # PORT
+        p) 
           export DST_PORT=$OPTARG
 	  info "Destination PORT set to: DST_PORT=$DST_PORT"
           ;;
@@ -99,40 +91,28 @@ while getopts "s:i:d:m:p:f:t:c:n:b:w:vxh6ak" option; do
     esac
 done
 shift $(( $OPTIND - 1 ))
-
 if [ -z "$PKT_SIZE" ]; then
-    # NIC adds 4 bytes CRC
     export PKT_SIZE=60
     info "Default packet size set to: set to: $PKT_SIZE bytes"
 fi
-
 if [ -z "$F_THREAD" ]; then
-    # First thread (F_THREAD) reference the zero indexed CPU number
     export F_THREAD=0
 fi
-
 if [ -z "$THREADS" ]; then
     export THREADS=1
 fi
-
-# default DELAY
-[ -z "$DELAY" ] && export DELAY=0 # Zero means max speed
-
+[ -z "$DELAY" ] && export DELAY=0 
 export L_THREAD=$(( THREADS + F_THREAD - 1 ))
-
 if [ -z "$DEV" ]; then
     usage
     err 2 "Please specify output device"
 fi
-
 if [ -z "$DST_MAC" ]; then
     warn "Missing destination MAC address"
 fi
-
 if [ -z "$DEST_IP" ]; then
     warn "Missing destination IP address"
 fi
-
 if [ ! -d /proc/net/pktgen ]; then
     info "Loading kernel module: pktgen"
     modprobe pktgen

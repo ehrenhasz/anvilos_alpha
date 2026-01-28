@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PPC_BOOT_SWAB_H_
 #define _PPC_BOOT_SWAB_H_
-
 static inline u16 swab16(u16 x)
 {
 	return  ((x & (u16)0x00ffU) << 8) |
 		((x & (u16)0xff00U) >> 8);
 }
-
 static inline u32 swab32(u32 x)
 {
 	return  ((x & (u32)0x000000ffUL) << 24) |
@@ -15,7 +12,6 @@ static inline u32 swab32(u32 x)
 		((x & (u32)0x00ff0000UL) >>  8) |
 		((x & (u32)0xff000000UL) >> 24);
 }
-
 static inline u64 swab64(u64 x)
 {
 	return  (u64)((x & (u64)0x00000000000000ffULL) << 56) |
@@ -27,4 +23,4 @@ static inline u64 swab64(u64 x)
 		(u64)((x & (u64)0x00ff000000000000ULL) >> 40) |
 		(u64)((x & (u64)0xff00000000000000ULL) >> 56);
 }
-#endif /* _PPC_BOOT_SWAB_H_ */
+#endif  

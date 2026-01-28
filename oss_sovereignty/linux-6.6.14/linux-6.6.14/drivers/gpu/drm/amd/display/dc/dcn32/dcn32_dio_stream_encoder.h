@@ -1,36 +1,9 @@
-/*
- * Copyright 2021 - Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DC_DIO_STREAM_ENCODER_DCN32_H__
 #define __DC_DIO_STREAM_ENCODER_DCN32_H__
-
 #include "dcn30/dcn30_vpg.h"
 #include "dcn30/dcn30_afmt.h"
 #include "stream_encoder.h"
 #include "dcn20/dcn20_stream_encoder.h"
-
 #define SE_COMMON_MASK_SH_LIST_DCN32(mask_sh)\
 	SE_SF(DP0_DP_PIXEL_FORMAT, DP_PIXEL_ENCODING, mask_sh),\
 	SE_SF(DP0_DP_PIXEL_FORMAT, DP_COMPONENT_DEPTH, mask_sh),\
@@ -182,7 +155,6 @@
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_RESET, mask_sh),\
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_RESET_DONE, mask_sh),\
 	SE_SF(DIG0_DIG_FIFO_CTRL0, DIG_FIFO_OUTPUT_PIXEL_MODE, mask_sh)
-
 void dcn32_dio_stream_encoder_construct(
 	struct dcn10_stream_encoder *enc1,
 	struct dc_context *ctx,
@@ -193,13 +165,9 @@ void dcn32_dio_stream_encoder_construct(
 	const struct dcn10_stream_enc_registers *regs,
 	const struct dcn10_stream_encoder_shift *se_shift,
 	const struct dcn10_stream_encoder_mask *se_mask);
-
-
 void enc32_enable_fifo(struct stream_encoder *enc);
-
 void enc32_stream_encoder_dp_unblank(
 		struct dc_link *link,
 		struct stream_encoder *enc,
 		const struct encoder_unblank_param *param);
-
-#endif /* __DC_DIO_STREAM_ENCODER_DCN32_H__ */
+#endif  

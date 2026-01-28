@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 #ifndef GOYA_BLOCKS_H_
 #define GOYA_BLOCKS_H_
-
 #define mmPCI_NRTR_BASE                            0x7FFC000000ull
 #define PCI_NRTR_MAX_OFFSET                        0x608
 #define PCI_NRTR_SECTION                           0x4000
@@ -1368,5 +1355,4 @@
 #define TPC7_EML_CFG_SECTION                       0x1BF000
 #define mmTPC7_EML_CS_BASE                         0x7FFFFFF000ull
 #define TPC7_EML_CS_MAX_OFFSET                     0x1000
-
-#endif /* GOYA_BLOCKS_H_ */
+#endif  

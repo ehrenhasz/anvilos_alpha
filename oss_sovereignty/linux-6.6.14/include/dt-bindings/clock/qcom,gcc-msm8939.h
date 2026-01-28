@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2020 Linaro Limited
- */
-
 #ifndef _DT_BINDINGS_CLK_MSM_GCC_8939_H
 #define _DT_BINDINGS_CLK_MSM_GCC_8939_H
-
 #define GPLL0					0
 #define GPLL0_VOTE				1
 #define BIMC_PLL				2
@@ -193,8 +187,6 @@
 #define GCC_VENUS0_CORE1_VCODEC0_CLK		184
 #define GCC_OXILI_TIMER_CLK			185
 #define SYSTEM_MM_NOC_BFDCD_CLK_SRC		186
-
-/* Indexes for GDSCs */
 #define BIMC_GDSC				0
 #define VENUS_GDSC				1
 #define MDSS_GDSC				2
@@ -203,5 +195,4 @@
 #define OXILI_GDSC				5
 #define VENUS_CORE0_GDSC			6
 #define VENUS_CORE1_GDSC			7
-
 #endif

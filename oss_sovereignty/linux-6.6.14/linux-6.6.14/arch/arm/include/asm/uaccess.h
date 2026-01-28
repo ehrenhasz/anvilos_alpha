@@ -1,71 +1,34 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  arch/arm/include/asm/uaccess.h
- */
 #ifndef _ASMARM_UACCESS_H
 #define _ASMARM_UACCESS_H
-
-/*
- * User space memory access functions
- */
 #include <linux/string.h>
 #include <asm/page.h>
 #include <asm/domain.h>
 #include <asm/unaligned.h>
 #include <asm/unified.h>
 #include <asm/compiler.h>
-
 #include <asm/extable.h>
-
-/*
- * These two functions allow hooking accesses to userspace to increase
- * system integrity by ensuring that the kernel can not inadvertantly
- * perform such accesses (eg, via list poison values) which could then
- * be exploited for priviledge escalation.
- */
 static __always_inline unsigned int uaccess_save_and_enable(void)
 {
 #ifdef CONFIG_CPU_SW_DOMAIN_PAN
 	unsigned int old_domain = get_domain();
-
-	/* Set the current domain access to permit user accesses */
 	set_domain((old_domain & ~domain_mask(DOMAIN_USER)) |
 		   domain_val(DOMAIN_USER, DOMAIN_CLIENT));
-
 	return old_domain;
 #else
 	return 0;
 #endif
 }
-
 static __always_inline void uaccess_restore(unsigned int flags)
 {
 #ifdef CONFIG_CPU_SW_DOMAIN_PAN
-	/* Restore the user access mask */
 	set_domain(flags);
 #endif
 }
-
-/*
- * These two are intentionally not defined anywhere - if the kernel
- * code generates any references to them, that's a bug.
- */
 extern int __get_user_bad(void);
 extern int __put_user_bad(void);
-
 #ifdef CONFIG_MMU
-
-/*
- * This is a type: either unsigned long, if the argument fits into
- * that type, or otherwise unsigned long long.
- */
 #define __inttype(x) \
 	__typeof__(__builtin_choose_expr(sizeof(x) > sizeof(0UL), 0ULL, 0UL))
-
-/*
- * Sanitise a uaccess pointer such that it becomes NULL if addr+size
- * is above the current addr_limit.
- */
 #define uaccess_mask_range_ptr(ptr, size)			\
 	((__typeof__(ptr))__uaccess_mask_range_ptr(ptr, size))
 static inline void __user *__uaccess_mask_range_ptr(const void __user *ptr,
@@ -73,7 +36,6 @@ static inline void __user *__uaccess_mask_range_ptr(const void __user *ptr,
 {
 	void __user *safe_ptr = (void __user *)ptr;
 	unsigned long tmp;
-
 	asm volatile(
 	"	.syntax unified\n"
 	"	sub	%1, %3, #1\n"
@@ -84,22 +46,9 @@ static inline void __user *__uaccess_mask_range_ptr(const void __user *ptr,
 	: "+r" (safe_ptr), "=&r" (tmp)
 	: "r" (size), "r" (TASK_SIZE)
 	: "cc");
-
 	csdb();
 	return safe_ptr;
 }
-
-/*
- * Single-value transfer routines.  They automatically use the right
- * size if we just have the right pointer type.  Note that the functions
- * which read from user space (*get_*) need to take care not to leak
- * kernel data even if the calling code is buggy and fails to check
- * the return value.  This means zeroing out the destination variable
- * or buffer on error.  Normally this is done out of line by the
- * fixup code, but there are a few places where it intrudes on the
- * main code path.  When we only write to user space, there is no
- * problem.
- */
 extern int __get_user_1(void *);
 extern int __get_user_2(void *);
 extern int __get_user_4(void *);
@@ -108,7 +57,6 @@ extern int __get_user_8(void *);
 extern int __get_user_64t_1(void *);
 extern int __get_user_64t_2(void *);
 extern int __get_user_64t_4(void *);
-
 #define __GUP_CLOBBER_1	"lr", "cc"
 #ifdef CONFIG_CPU_USE_DOMAINS
 #define __GUP_CLOBBER_2	"ip", "lr", "cc"
@@ -118,7 +66,6 @@ extern int __get_user_64t_4(void *);
 #define __GUP_CLOBBER_4	"lr", "cc"
 #define __GUP_CLOBBER_32t_8 "lr", "cc"
 #define __GUP_CLOBBER_8	"lr", "cc"
-
 #define __get_user_x(__r2, __p, __e, __l, __s)				\
 	   __asm__ __volatile__ (					\
 		__asmeq("%0", "r0") __asmeq("%1", "r2")			\
@@ -127,19 +74,12 @@ extern int __get_user_64t_4(void *);
 		: "=&r" (__e), "=r" (__r2)				\
 		: "0" (__p), "r" (__l)					\
 		: __GUP_CLOBBER_##__s)
-
-/* narrowing a double-word get into a single 32bit word register: */
 #ifdef __ARMEB__
 #define __get_user_x_32t(__r2, __p, __e, __l, __s)			\
 	__get_user_x(__r2, __p, __e, __l, 32t_8)
 #else
 #define __get_user_x_32t __get_user_x
 #endif
-
-/*
- * storing result into proper least significant word of 64bit target var,
- * different only for big endian case where 64 bit __r2 lsw is r3:
- */
 #ifdef __ARMEB__
 #define __get_user_x_64t(__r2, __p, __e, __l, __s)		        \
 	   __asm__ __volatile__ (					\
@@ -152,8 +92,6 @@ extern int __get_user_64t_4(void *);
 #else
 #define __get_user_x_64t __get_user_x
 #endif
-
-
 #define __get_user_check(x, p)						\
 	({								\
 		unsigned long __limit = TASK_SIZE - 1; \
@@ -195,18 +133,15 @@ extern int __get_user_64t_4(void *);
 		x = (typeof(*(p))) __r2;				\
 		__tmp_e;						\
 	})
-
 #define get_user(x, p)							\
 	({								\
 		might_fault();						\
 		__get_user_check(x, p);					\
 	 })
-
 extern int __put_user_1(void *, unsigned int);
 extern int __put_user_2(void *, unsigned int);
 extern int __put_user_4(void *, unsigned int);
 extern int __put_user_8(void *, unsigned long long);
-
 #define __put_user_check(__pu_val, __ptr, __err, __s)			\
 	({								\
 		unsigned long __limit = TASK_SIZE - 1; \
@@ -223,42 +158,20 @@ extern int __put_user_8(void *, unsigned long long);
 			: "ip", "lr", "cc");				\
 		__err = __e;						\
 	})
-
-#else /* CONFIG_MMU */
-
+#else  
 #define get_user(x, p)	__get_user(x, p)
 #define __put_user_check __put_user_nocheck
-
-#endif /* CONFIG_MMU */
-
+#endif  
 #include <asm-generic/access_ok.h>
-
 #ifdef CONFIG_CPU_SPECTRE
-/*
- * When mitigating Spectre variant 1, it is not worth fixing the non-
- * verifying accessors, because we need to add verification of the
- * address space there.  Force these to use the standard get_user()
- * version instead.
- */
 #define __get_user(x, ptr) get_user(x, ptr)
 #else
-
-/*
- * The "__xxx" versions of the user access functions do not verify the
- * address space - it must have been done previously with a separate
- * "access_ok()" call.
- *
- * The "xxx_error" versions set the third argument to EFAULT if an
- * error occurs, and leave it unchanged on success.  Note that these
- * versions are void (ie, don't return a value as such).
- */
 #define __get_user(x, ptr)						\
 ({									\
 	long __gu_err = 0;						\
 	__get_user_err((x), (ptr), __gu_err, TUSER());			\
 	__gu_err;							\
 })
-
 #define __get_user_err(x, ptr, err, __t)				\
 do {									\
 	unsigned long __gu_addr = (unsigned long)(ptr);			\
@@ -277,7 +190,6 @@ do {									\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
 } while (0)
 #endif
-
 #define __get_user_asm(x, addr, err, instr)			\
 	__asm__ __volatile__(					\
 	"1:	" instr " %1, [%2], #0\n"			\
@@ -295,17 +207,12 @@ do {									\
 	: "+r" (err), "=&r" (x)					\
 	: "r" (addr), "i" (-EFAULT)				\
 	: "cc")
-
 #define __get_user_asm_byte(x, addr, err, __t)			\
 	__get_user_asm(x, addr, err, "ldrb" __t)
-
 #if __LINUX_ARM_ARCH__ >= 6
-
 #define __get_user_asm_half(x, addr, err, __t)			\
 	__get_user_asm(x, addr, err, "ldrh" __t)
-
 #else
-
 #ifndef __ARMEB__
 #define __get_user_asm_half(x, __gu_addr, err, __t)		\
 ({								\
@@ -323,12 +230,9 @@ do {									\
 	(x) = (__b1 << 8) | __b2;				\
 })
 #endif
-
-#endif /* __LINUX_ARM_ARCH__ >= 6 */
-
+#endif  
 #define __get_user_asm_word(x, addr, err, __t)			\
 	__get_user_asm(x, addr, err, "ldr" __t)
-
 #define __put_user_switch(x, ptr, __err, __fn)				\
 	do {								\
 		const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);	\
@@ -345,21 +249,14 @@ do {									\
 		}							\
 		uaccess_restore(__ua_flags);				\
 	} while (0)
-
 #define put_user(x, ptr)						\
 ({									\
 	int __pu_err = 0;						\
 	__put_user_switch((x), (ptr), __pu_err, __put_user_check);	\
 	__pu_err;							\
 })
-
 #ifdef CONFIG_CPU_SPECTRE
-/*
- * When mitigating Spectre variant 1.1, all accessors need to include
- * verification of the address space.
- */
 #define __put_user(x, ptr) put_user(x, ptr)
-
 #else
 #define __put_user(x, ptr)						\
 ({									\
@@ -367,20 +264,16 @@ do {									\
 	__put_user_switch((x), (ptr), __pu_err, __put_user_nocheck);	\
 	__pu_err;							\
 })
-
 #define __put_user_nocheck(x, __pu_ptr, __err, __size)			\
 	do {								\
 		unsigned long __pu_addr = (unsigned long)__pu_ptr;	\
 		__put_user_nocheck_##__size(x, __pu_addr, __err, TUSER());\
 	} while (0)
-
 #define __put_user_nocheck_1 __put_user_asm_byte
 #define __put_user_nocheck_2 __put_user_asm_half
 #define __put_user_nocheck_4 __put_user_asm_word
 #define __put_user_nocheck_8 __put_user_asm_dword
-
-#endif /* !CONFIG_CPU_SPECTRE */
-
+#endif  
 #define __put_user_asm(x, __pu_addr, err, instr)		\
 	__asm__ __volatile__(					\
 	"1:	" instr " %1, [%2], #0\n"		\
@@ -397,17 +290,12 @@ do {									\
 	: "+r" (err)						\
 	: "r" (x), "r" (__pu_addr), "i" (-EFAULT)		\
 	: "cc")
-
 #define __put_user_asm_byte(x, __pu_addr, err, __t)		\
 	__put_user_asm(x, __pu_addr, err, "strb" __t)
-
 #if __LINUX_ARM_ARCH__ >= 6
-
 #define __put_user_asm_half(x, __pu_addr, err, __t)		\
 	__put_user_asm(x, __pu_addr, err, "strh" __t)
-
 #else
-
 #ifndef __ARMEB__
 #define __put_user_asm_half(x, __pu_addr, err, __t)		\
 ({								\
@@ -423,12 +311,9 @@ do {									\
 	__put_user_asm_byte(__temp, __pu_addr + 1, err, __t);	\
 })
 #endif
-
-#endif /* __LINUX_ARM_ARCH__ >= 6 */
-
+#endif  
 #define __put_user_asm_word(x, __pu_addr, err, __t)		\
 	__put_user_asm(x, __pu_addr, err, "str" __t)
-
 #ifndef __ARMEB__
 #define	__reg_oper0	"%R2"
 #define	__reg_oper1	"%Q2"
@@ -436,7 +321,6 @@ do {									\
 #define	__reg_oper0	"%Q2"
 #define	__reg_oper1	"%R2"
 #endif
-
 #define __put_user_asm_dword(x, __pu_addr, err, __t)		\
 	__asm__ __volatile__(					\
  ARM(	"1:	str" __t "	" __reg_oper1 ", [%1], #4\n"  ) \
@@ -457,7 +341,6 @@ do {									\
 	: "+r" (err), "+r" (__pu_addr)				\
 	: "r" (x), "i" (-EFAULT)				\
 	: "cc")
-
 #define __get_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	const type *__pk_ptr = (src);					\
@@ -481,11 +364,10 @@ do {									\
 	if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))		\
 		put_unaligned(__val, (type *)(dst));			\
 	else								\
-		*(type *)(dst) = __val; /* aligned by caller */		\
+		*(type *)(dst) = __val;  		\
 	if (__err)							\
 		goto err_label;						\
 } while (0)
-
 #define __put_kernel_nofault(dst, src, type, err_label)			\
 do {									\
 	const type *__pk_ptr = (dst);					\
@@ -493,7 +375,7 @@ do {									\
 	int __err = 0;							\
 	type __val = IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)	\
 		     ? get_unaligned((type *)(src))			\
-		     : *(type *)(src);	/* aligned by caller */		\
+		     : *(type *)(src);	 		\
 	switch (sizeof(type)) {						\
 	case 1: __put_user_asm_byte(__val, __dst, __err, ""); break;	\
 	case 2:	__put_user_asm_half(__val, __dst, __err, ""); break;	\
@@ -504,27 +386,22 @@ do {									\
 	if (__err)							\
 		goto err_label;						\
 } while (0)
-
 #ifdef CONFIG_MMU
 extern unsigned long __must_check
 arm_copy_from_user(void *to, const void __user *from, unsigned long n);
-
 static inline unsigned long __must_check
 raw_copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	unsigned int __ua_flags;
-
 	__ua_flags = uaccess_save_and_enable();
 	n = arm_copy_from_user(to, from, n);
 	uaccess_restore(__ua_flags);
 	return n;
 }
-
 extern unsigned long __must_check
 arm_copy_to_user(void __user *to, const void *from, unsigned long n);
 extern unsigned long __must_check
 __copy_to_user_std(void __user *to, const void *from, unsigned long n);
-
 static inline unsigned long __must_check
 raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 {
@@ -538,12 +415,10 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 	return arm_copy_to_user(to, from, n);
 #endif
 }
-
 extern unsigned long __must_check
 arm_clear_user(void __user *addr, unsigned long n);
 extern unsigned long __must_check
 __clear_user_std(void __user *addr, unsigned long n);
-
 static inline unsigned long __must_check
 __clear_user(void __user *addr, unsigned long n)
 {
@@ -552,7 +427,6 @@ __clear_user(void __user *addr, unsigned long n)
 	uaccess_restore(__ua_flags);
 	return n;
 }
-
 #else
 static inline unsigned long
 raw_copy_from_user(void *to, const void __user *from, unsigned long n)
@@ -570,17 +444,12 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 #endif
 #define INLINE_COPY_TO_USER
 #define INLINE_COPY_FROM_USER
-
 static inline unsigned long __must_check clear_user(void __user *to, unsigned long n)
 {
 	if (access_ok(to, n))
 		n = __clear_user(to, n);
 	return n;
 }
-
-/* These are from lib/ code, and use __get_user() and friends */
 extern long strncpy_from_user(char *dest, const char __user *src, long count);
-
 extern __must_check long strnlen_user(const char __user *str, long n);
-
-#endif /* _ASMARM_UACCESS_H */
+#endif  

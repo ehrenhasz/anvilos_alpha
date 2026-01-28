@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_VERMAGIC_H
 #define _ASM_VERMAGIC_H
-
 #ifdef CONFIG_ARCH_USING_PATCHABLE_FUNCTION_ENTRY
 #define MODULE_ARCH_VERMAGIC_FTRACE	"patchable-function-entry "
 #elif defined(CONFIG_MPROFILE_KERNEL)
@@ -9,14 +7,11 @@
 #else
 #define MODULE_ARCH_VERMAGIC_FTRACE	""
 #endif
-
 #ifdef CONFIG_RELOCATABLE
 #define MODULE_ARCH_VERMAGIC_RELOCATABLE	"relocatable "
 #else
 #define MODULE_ARCH_VERMAGIC_RELOCATABLE	""
 #endif
-
 #define MODULE_ARCH_VERMAGIC \
 		MODULE_ARCH_VERMAGIC_FTRACE MODULE_ARCH_VERMAGIC_RELOCATABLE
-
-#endif /* _ASM_VERMAGIC_H */
+#endif  

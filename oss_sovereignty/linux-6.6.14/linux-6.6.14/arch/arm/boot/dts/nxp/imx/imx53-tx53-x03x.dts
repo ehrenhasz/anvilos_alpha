@@ -1,71 +1,25 @@
-/*
- * Copyright 2013-2017 Lothar Waßmann <LW@KARO-electronics.de>
- *
- * This file is dual-licensed: you can use it either under the terms
- * of the GPL or the X11 license, at your option. Note that this dual
- * licensing only applies to this file, and not this project as a
- * whole.
- *
- *  a) This file is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License
- *     version 2 as published by the Free Software Foundation.
- *
- *     This file is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- * Or, alternatively,
- *
- *  b) Permission is hereby granted, free of charge, to any person
- *     obtaining a copy of this software and associated documentation
- *     files (the "Software"), to deal in the Software without
- *     restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or
- *     sell copies of the Software, and to permit persons to whom the
- *     Software is furnished to do so, subject to the following
- *     conditions:
- *
- *     The above copyright notice and this permission notice shall be
- *     included in all copies or substantial portions of the Software.
- *
- *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- *     OTHER DEALINGS IN THE SOFTWARE.
- */
-
 /dts-v1/;
 #include "imx53-tx53.dtsi"
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include <dt-bindings/pwm/pwm.h>
-
 / {
 	model = "Ka-Ro electronics TX53 module (LCD)";
 	compatible = "karo,tx53", "fsl,imx53";
-
 	aliases {
 		display = &display;
 	};
-
 	display: disp0 {
 		compatible = "fsl,imx-parallel-display";
 		interface-pix-fmt = "rgb24";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_rgb24_vga1>;
 		status = "okay";
-
 		port {
 			display0_in: endpoint {
 				remote-endpoint = <&ipu_di0_disp0>;
 			};
 		};
-
 		display-timings {
 			VGA {
 				clock-frequency = <25200000>;
@@ -82,7 +36,6 @@
 				de-active = <1>;
 				pixelclk-active = <0>;
 			};
-
 			ETV570 {
 				clock-frequency = <25200000>;
 				hactive = <640>;
@@ -98,7 +51,6 @@
 				de-active = <1>;
 				pixelclk-active = <0>;
 			};
-
 			ET0350 {
 				clock-frequency = <6413760>;
 				hactive = <320>;
@@ -114,7 +66,6 @@
 				de-active = <1>;
 				pixelclk-active = <0>;
 			};
-
 			ET0430 {
 				clock-frequency = <9009000>;
 				hactive = <480>;
@@ -130,7 +81,6 @@
 				de-active = <1>;
 				pixelclk-active = <1>;
 			};
-
 			ET0500 {
 				clock-frequency = <33264000>;
 				hactive = <800>;
@@ -146,8 +96,7 @@
 				de-active = <1>;
 				pixelclk-active = <0>;
 			};
-
-			ET0700 { /* same as ET0500 */
+			ET0700 {  
 				clock-frequency = <33264000>;
 				hactive = <800>;
 				vactive = <480>;
@@ -162,7 +111,6 @@
 				de-active = <1>;
 				pixelclk-active = <0>;
 			};
-
 			ETQ570 {
 				clock-frequency = <6596040>;
 				hactive = <320>;
@@ -180,7 +128,6 @@
 			};
 		};
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm2 0 500000 PWM_POLARITY_INVERTED>;
@@ -200,7 +147,6 @@
 		>;
 		default-brightness-level = <50>;
 	};
-
 	reg_lcd_pwr: regulator-lcd-pwr {
 		compatible = "regulator-fixed";
 		regulator-name = "LCD POWER";
@@ -210,7 +156,6 @@
 		enable-active-high;
 		regulator-boot-on;
 	};
-
 	reg_lcd_reset: regulator-lcd-reset {
 		compatible = "regulator-fixed";
 		regulator-name = "LCD RESET";
@@ -221,12 +166,10 @@
 		regulator-boot-on;
 	};
 };
-
 &i2c3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
-
 	sgtl5000: codec@a {
 		compatible = "fsl,sgtl5000";
 		reg = <0x0a>;
@@ -235,7 +178,6 @@
 		VDDIO-supply = <&reg_3v3>;
 		clocks = <&mclk>;
 	};
-
 	polytouch: edt-ft5x06@38 {
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
@@ -247,7 +189,6 @@
 		wake-gpios = <&gpio2 21 GPIO_ACTIVE_HIGH>;
 		wakeup-source;
 	};
-
 	touchscreen: tsc2007@48 {
 		compatible = "ti,tsc2007";
 		reg = <0x48>;
@@ -260,17 +201,15 @@
 		wakeup-source;
 	};
 };
-
 &iomuxc {
 	imx53-tx53-x03x {
 		pinctrl_edt_ft5x06_1: edt-ft5x06grp-1 {
 			fsl,pins = <
-				MX53_PAD_NANDF_CS2__GPIO6_15 0x1f0 /* Interrupt */
-				MX53_PAD_EIM_A16__GPIO2_22   0x04 /* Reset */
-				MX53_PAD_EIM_A17__GPIO2_21   0x04 /* Wake */
+				MX53_PAD_NANDF_CS2__GPIO6_15 0x1f0  
+				MX53_PAD_EIM_A16__GPIO2_22   0x04  
+				MX53_PAD_EIM_A17__GPIO2_21   0x04  
 			>;
 		};
-
 		pinctrl_kpp: kppgrp {
 			fsl,pins = <
 				MX53_PAD_GPIO_9__KPP_COL_6 0x1f4
@@ -283,7 +222,6 @@
 				MX53_PAD_KEY_ROW3__KPP_ROW_3 0x1f4
 			>;
 		};
-
 		pinctrl_rgb24_vga1: rgb24-vgagrp1 {
 			fsl,pins = <
 				MX53_PAD_DI0_DISP_CLK__IPU_DI0_DISP_CLK		0x5
@@ -316,24 +254,19 @@
 				MX53_PAD_DISP0_DAT23__IPU_DISP0_DAT_23		0x5
 			>;
 		};
-
 		pinctrl_tsc2007: tsc2007grp {
 			fsl,pins = <
-				MX53_PAD_EIM_D26__GPIO3_26 0x1f0 /* Interrupt */
+				MX53_PAD_EIM_D26__GPIO3_26 0x1f0  
 			>;
 		};
 	};
 };
-
 &ipu_di0_disp0 {
 	remote-endpoint = <&display0_in>;
 };
-
 &kpp {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_kpp>;
-	/* sample keymap */
-	/* row/col 0,1 are mapped to KPP row/col 6,7 */
 	linux,keymap = <
 		MATRIX_KEY(6, 6, KEY_POWER)
 		MATRIX_KEY(6, 7, KEY_KP0)

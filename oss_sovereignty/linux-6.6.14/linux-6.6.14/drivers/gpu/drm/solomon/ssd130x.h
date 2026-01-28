@@ -1,29 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Header file for:
- * DRM driver for Solomon SSD130x OLED displays
- *
- * Copyright 2022 Red Hat Inc.
- * Author: Javier Martinez Canillas <javierm@redhat.com>
- *
- * Based on drivers/video/fbdev/ssd1307fb.c
- * Copyright 2012 Free Electrons
- */
-
 #ifndef __SSD130X_H__
 #define __SSD130X_H__
-
 #include <drm/drm_connector.h>
 #include <drm/drm_crtc.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_encoder.h>
 #include <drm/drm_plane_helper.h>
-
 #include <linux/regmap.h>
-
 #define SSD130X_DATA				0x40
 #define SSD130X_COMMAND				0x80
-
 enum ssd130x_variants {
 	SH1106_ID,
 	SSD1305_ID,
@@ -32,7 +16,6 @@ enum ssd130x_variants {
 	SSD1309_ID,
 	NR_SSD130X_VARIANTS
 };
-
 struct ssd130x_deviceinfo {
 	u32 default_vcomh;
 	u32 default_dclk_div;
@@ -44,7 +27,6 @@ struct ssd130x_deviceinfo {
 	int need_chargepump;
 	bool page_mode_only;
 };
-
 struct ssd130x_device {
 	struct drm_device drm;
 	struct device *dev;
@@ -54,11 +36,8 @@ struct ssd130x_device {
 	struct drm_encoder encoder;
 	struct drm_connector connector;
 	struct i2c_client *client;
-
 	struct regmap *regmap;
-
 	const struct ssd130x_deviceinfo *device_info;
-
 	unsigned page_address_mode : 1;
 	unsigned area_color_enable : 1;
 	unsigned com_invdir : 1;
@@ -77,24 +56,19 @@ struct ssd130x_device {
 	u32 col_offset;
 	u32 prechargep1;
 	u32 prechargep2;
-
 	struct backlight_device *bl_dev;
 	struct pwm_device *pwm;
 	struct gpio_desc *reset;
 	struct regulator *vcc_reg;
 	u32 vcomh;
 	u32 width;
-	/* Cached address ranges */
 	u8 col_start;
 	u8 col_end;
 	u8 page_start;
 	u8 page_end;
 };
-
 extern const struct ssd130x_deviceinfo ssd130x_variants[];
-
 struct ssd130x_device *ssd130x_probe(struct device *dev, struct regmap *regmap);
 void ssd130x_remove(struct ssd130x_device *ssd130x);
 void ssd130x_shutdown(struct ssd130x_device *ssd130x);
-
-#endif /* __SSD130X_H__ */
+#endif  

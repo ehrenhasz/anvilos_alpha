@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-
-
 #ifndef _MD_CLUSTER_H
 #define _MD_CLUSTER_H
-
 #include "md.h"
-
 struct mddev;
 struct md_rdev;
-
 struct md_cluster_operations {
 	int (*join)(struct mddev *mddev, int nodes);
 	int (*leave)(struct mddev *mddev);
@@ -32,5 +26,4 @@ struct md_cluster_operations {
 	void (*unlock_all_bitmaps)(struct mddev *mddev);
 	void (*update_size)(struct mddev *mddev, sector_t old_dev_sectors);
 };
-
-#endif /* _MD_CLUSTER_H */
+#endif  

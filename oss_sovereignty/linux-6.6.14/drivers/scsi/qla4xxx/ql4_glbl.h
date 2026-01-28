@@ -1,24 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
-
 #ifndef __QLA4x_GBL_H
 #define	__QLA4x_GBL_H
-
 struct iscsi_cls_conn;
-
 int qla4xxx_hw_reset(struct scsi_qla_host *ha);
 int ql4xxx_lock_drvr_wait(struct scsi_qla_host *a);
 int qla4xxx_send_command_to_isp(struct scsi_qla_host *ha, struct srb *srb);
 int qla4xxx_initialize_adapter(struct scsi_qla_host *ha, int is_reset);
 int qla4xxx_soft_reset(struct scsi_qla_host *ha);
 irqreturn_t qla4xxx_intr_handler(int irq, void *dev_id);
-
 void qla4xxx_free_ddb(struct scsi_qla_host *ha, struct ddb_entry *ddb_entry);
 void qla4xxx_process_aen(struct scsi_qla_host *ha, uint8_t process_aen);
-
 int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host *ha);
 int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb);
 int qla4xxx_reset_lun(struct scsi_qla_host *ha, struct ddb_entry *ddb_entry,
@@ -30,9 +20,6 @@ int qla4xxx_get_flash(struct scsi_qla_host *ha, dma_addr_t dma_addr,
 int qla4xxx_get_firmware_status(struct scsi_qla_host *ha);
 int qla4xxx_get_firmware_state(struct scsi_qla_host *ha);
 int qla4xxx_initialize_fw_cb(struct scsi_qla_host *ha);
-
-/* FIXME: Goodness!  this really wants a small struct to hold the
- * parameters. On x86 the args will get passed on the stack! */
 int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 			    uint16_t fw_ddb_index,
 			    struct dev_db_entry *fw_ddb_entry,
@@ -43,7 +30,6 @@ int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 			    uint32_t *conn_err_detail,
 			    uint16_t *tcp_source_port_num,
 			    uint16_t *connection_id);
-
 int qla4xxx_set_ddb_entry(struct scsi_qla_host * ha, uint16_t fw_ddb_index,
 			  dma_addr_t fw_ddb_entry_dma, uint32_t *mbx_sts);
 uint8_t qla4xxx_get_ifcb(struct scsi_qla_host *ha, uint32_t *mbox_cmd,
@@ -84,7 +70,6 @@ int qla4xxx_get_chap_index(struct scsi_qla_host *ha, char *username,
 			   char *password, int bidi, uint16_t *chap_index);
 int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 		     uint16_t idx, int bidi);
-
 void qla4xxx_queue_iocb(struct scsi_qla_host *ha);
 void qla4xxx_complete_iocb(struct scsi_qla_host *ha);
 int qla4xxx_get_sys_info(struct scsi_qla_host *ha);
@@ -106,14 +91,12 @@ uint8_t qla4xxx_update_local_ifcb(struct scsi_qla_host *ha,
 				  uint32_t *mbox_sts,
 				  struct addr_ctrl_blk *init_fw_cb,
 				  dma_addr_t init_fw_cb_dma);
-
 void qla4_8xxx_pci_config(struct scsi_qla_host *);
 int qla4_8xxx_iospace_config(struct scsi_qla_host *ha);
 int qla4_8xxx_load_risc(struct scsi_qla_host *);
 irqreturn_t qla4_82xx_intr_handler(int irq, void *dev_id);
 void qla4_82xx_queue_iocb(struct scsi_qla_host *ha);
 void qla4_82xx_complete_iocb(struct scsi_qla_host *ha);
-
 void qla4_82xx_crb_win_unlock(struct scsi_qla_host *);
 int qla4_82xx_pci_get_crb_addr_2M(struct scsi_qla_host *, ulong *);
 void qla4_82xx_wr_32(struct scsi_qla_host *, ulong, u32);
@@ -193,11 +176,8 @@ int qla4xxx_post_ping_evt_work(struct scsi_qla_host *ha,
 int qla4xxx_flashdb_by_index(struct scsi_qla_host *ha,
 			     struct dev_db_entry *fw_ddb_entry,
 			     dma_addr_t fw_ddb_entry_dma, uint16_t ddb_index);
-
-/* BSG Functions */
 int qla4xxx_bsg_request(struct bsg_job *bsg_job);
 int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job);
-
 void qla4xxx_arm_relogin_timer(struct ddb_entry *ddb_entry);
 int qla4xxx_get_minidump_template(struct scsi_qla_host *ha,
 				  dma_addr_t phys_addr);
@@ -279,13 +259,10 @@ int qla4_83xx_set_port_config(struct scsi_qla_host *ha, uint32_t *config);
 int qla4_8xxx_check_init_adapter_retry(struct scsi_qla_host *ha);
 int qla4_83xx_is_detached(struct scsi_qla_host *ha);
 int qla4xxx_sysfs_ddb_export(struct scsi_qla_host *ha);
-
 extern int ql4xextended_error_logging;
 extern int ql4xdontresethba;
 extern int ql4xenablemsix;
 extern int ql4xmdcapmask;
 extern int ql4xenablemd;
-
 extern const struct attribute_group *qla4xxx_host_groups[];
-
-#endif /* _QLA4x_GBL_H */
+#endif  

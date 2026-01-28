@@ -1,34 +1,7 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
 #ifndef __AMDGPU_RLC_H__
 #define __AMDGPU_RLC_H__
-
 #include "clearstate_defs.h"
-
 #define AMDGPU_MAX_RLC_INSTANCES	8
-
-/* firmware ID used in rlc toc */
 typedef enum _FIRMWARE_ID_ {
 	FIRMWARE_ID_INVALID					= 0,
 	FIRMWARE_ID_RLC_G_UCODE					= 1,
@@ -70,7 +43,6 @@ typedef enum _FIRMWARE_ID_ {
 	FIRMWARE_ID_RLC_SPP_CAM_EXT                             = 37,
 	FIRMWARE_ID_MAX                                         = 38,
 } FIRMWARE_ID;
-
 typedef enum _SOC21_FIRMWARE_ID_ {
     SOC21_FIRMWARE_ID_INVALID                     = 0,
     SOC21_FIRMWARE_ID_RLC_G_UCODE                 = 1,
@@ -111,7 +83,6 @@ typedef enum _SOC21_FIRMWARE_ID_ {
     SOC21_FIRMWARE_ID_RLX6_DRAM_SR_CORE1          = 36,
     SOC21_FIRMWARE_ID_MAX                         = 37
 } SOC21_FIRMWARE_ID;
-
 typedef struct _RLC_TABLE_OF_CONTENT {
 	union {
 		unsigned int	DW0;
@@ -120,7 +91,6 @@ typedef struct _RLC_TABLE_OF_CONTENT {
 			unsigned int	id		: 7;
 		};
 	};
-
 	union {
 		unsigned int	DW1;
 		struct {
@@ -137,7 +107,6 @@ typedef struct _RLC_TABLE_OF_CONTENT {
 			unsigned int	size			: 18;
 		};
 	};
-
 	union {
 		unsigned int	DW2;
 		struct {
@@ -145,7 +114,6 @@ typedef struct _RLC_TABLE_OF_CONTENT {
 			unsigned int	index			: 16;
 		};
 	};
-
 	union {
 		unsigned int	DW3;
 		struct {
@@ -154,9 +122,7 @@ typedef struct _RLC_TABLE_OF_CONTENT {
 		};
 	};
 } RLC_TABLE_OF_CONTENT;
-
 #define RLC_TOC_MAX_SIZE		64
-
 struct amdgpu_rlc_funcs {
 	bool (*is_rlc_enabled)(struct amdgpu_device *adev);
 	void (*set_safe_mode)(struct amdgpu_device *adev, int xcc_id);
@@ -172,7 +138,6 @@ struct amdgpu_rlc_funcs {
 	void (*update_spm_vmid)(struct amdgpu_device *adev, unsigned vmid);
 	bool (*is_rlcg_access_range)(struct amdgpu_device *adev, uint32_t reg);
 };
-
 struct amdgpu_rlcg_reg_access_ctrl {
 	uint32_t scratch_reg0;
 	uint32_t scratch_reg1;
@@ -182,31 +147,23 @@ struct amdgpu_rlcg_reg_access_ctrl {
 	uint32_t grbm_idx;
 	uint32_t spare_int;
 };
-
 struct amdgpu_rlc {
-	/* for power gating */
 	struct amdgpu_bo        *save_restore_obj;
 	uint64_t                save_restore_gpu_addr;
 	volatile uint32_t       *sr_ptr;
 	const u32               *reg_list;
 	u32                     reg_list_size;
-	/* for clear state */
 	struct amdgpu_bo        *clear_state_obj;
 	uint64_t                clear_state_gpu_addr;
 	volatile uint32_t       *cs_ptr;
 	const struct cs_section_def   *cs_data;
 	u32                     clear_state_size;
-	/* for cp tables */
 	struct amdgpu_bo        *cp_table_obj;
 	uint64_t                cp_table_gpu_addr;
 	volatile uint32_t       *cp_table_ptr;
 	u32                     cp_table_size;
-
-	/* safe mode for updating CG/PG state */
 	bool in_safe_mode[AMDGPU_MAX_RLC_INSTANCES];
 	const struct amdgpu_rlc_funcs *funcs;
-
-	/* for firmware data */
 	u32 save_and_restore_offset;
 	u32 clear_state_descriptor_offset;
 	u32 avail_scratch_ram_locations;
@@ -229,7 +186,6 @@ struct amdgpu_rlc {
 	u32 se1_tap_delays_ucode_size_bytes;
 	u32 se2_tap_delays_ucode_size_bytes;
 	u32 se3_tap_delays_ucode_size_bytes;
-
 	u32 *register_list_format;
 	u32 *register_restore;
 	u8 *save_restore_list_cntl;
@@ -244,24 +200,16 @@ struct amdgpu_rlc {
 	u8 *se1_tap_delays_ucode;
 	u8 *se2_tap_delays_ucode;
 	u8 *se3_tap_delays_ucode;
-
 	bool is_rlc_v2_1;
-
-	/* for rlc autoload */
 	struct amdgpu_bo	*rlc_autoload_bo;
 	u64			rlc_autoload_gpu_addr;
 	void			*rlc_autoload_ptr;
-
-	/* rlc toc buffer */
 	struct amdgpu_bo	*rlc_toc_bo;
 	uint64_t		rlc_toc_gpu_addr;
 	void			*rlc_toc_buf;
-
 	bool rlcg_reg_access_supported;
-	/* registers for rlcg indirect reg access */
 	struct amdgpu_rlcg_reg_access_ctrl reg_access_ctrl[AMDGPU_MAX_RLC_INSTANCES];
 };
-
 void amdgpu_gfx_rlc_enter_safe_mode(struct amdgpu_device *adev, int xcc_id);
 void amdgpu_gfx_rlc_exit_safe_mode(struct amdgpu_device *adev, int xcc_id);
 int amdgpu_gfx_rlc_init_sr(struct amdgpu_device *adev, u32 dws);

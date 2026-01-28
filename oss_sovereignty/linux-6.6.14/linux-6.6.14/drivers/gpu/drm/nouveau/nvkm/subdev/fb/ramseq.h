@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_FBRAM_SEQ_H__
 #define __NVKM_FBRAM_SEQ_H__
 #include <subdev/bus/hwsq.h>
-
 #define ram_init(s,p)       hwsq_init(&(s)->base, (p))
 #define ram_exec(s,e)       hwsq_exec(&(s)->base, (e))
 #define ram_have(s,r)       ((s)->r_##r.addr != 0x000000)

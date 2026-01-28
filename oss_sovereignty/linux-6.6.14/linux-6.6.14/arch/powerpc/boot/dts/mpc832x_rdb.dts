@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPC832x RDB Device Tree Source
- *
- * Copyright 2007 Freescale Semiconductor Inc.
- */
-
 /dts-v1/;
-
 / {
 	model = "MPC8323ERDB";
 	compatible = "MPC8323ERDB", "MPC832xRDB", "MPC83xxRDB";
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	aliases {
 		ethernet0 = &enet1;
 		ethernet1 = &enet0;
@@ -20,29 +11,25 @@
 		serial1 = &serial1;
 		pci0 = &pci0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		PowerPC,8323@0 {
 			device_type = "cpu";
 			reg = <0x0>;
-			d-cache-line-size = <0x20>;	// 32 bytes
-			i-cache-line-size = <0x20>;	// 32 bytes
-			d-cache-size = <16384>;	// L1, 16K
-			i-cache-size = <16384>;	// L1, 16K
+			d-cache-line-size = <0x20>;	 
+			i-cache-line-size = <0x20>;	 
+			d-cache-size = <16384>;	 
+			i-cache-size = <16384>;	 
 			timebase-frequency = <0>;
 			bus-frequency = <0>;
 			clock-frequency = <0>;
 		};
 	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x04000000>;
 	};
-
 	soc8323@e0000000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -51,20 +38,17 @@
 		ranges = <0x0 0xe0000000 0x00100000>;
 		reg = <0xe0000000 0x00000200>;
 		bus-frequency = <0>;
-
 		wdt@200 {
 			device_type = "watchdog";
 			compatible = "mpc83xx_wdt";
 			reg = <0x200 0x100>;
 		};
-
 		pmc: power@b00 {
 			compatible = "fsl,mpc8323-pmc", "fsl,mpc8349-pmc";
 			reg = <0xb00 0x100 0xa00 0x100>;
 			interrupts = <80 0x8>;
 			interrupt-parent = <&ipic>;
 		};
-
 		i2c@3000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -75,7 +59,6 @@
 			interrupt-parent = <&ipic>;
 			dfsrr;
 		};
-
 		serial0: serial@4500 {
 			cell-index = <0>;
 			device_type = "serial";
@@ -85,7 +68,6 @@
 			interrupts = <9 0x8>;
 			interrupt-parent = <&ipic>;
 		};
-
 		serial1: serial@4600 {
 			cell-index = <1>;
 			device_type = "serial";
@@ -95,7 +77,6 @@
 			interrupts = <10 0x8>;
 			interrupt-parent = <&ipic>;
 		};
-
 		dma@82a8 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -134,7 +115,6 @@
 				interrupts = <71 8>;
 			};
 		};
-
 		crypto@30000 {
 			compatible = "fsl,sec2.2", "fsl,sec2.1", "fsl,sec2.0";
 			reg = <0x30000 0x10000>;
@@ -146,7 +126,6 @@
 			fsl,descriptor-types-mask = <0x0122003f>;
 			sleep = <&pmc 0x03000000>;
 		};
-
 		ipic:pic@700 {
 			interrupt-controller;
 			#address-cells = <0>;
@@ -154,7 +133,6 @@
 			reg = <0x700 0x100>;
 			device_type = "ipic";
 		};
-
 		par_io@1400 {
 			#address-cells = <1>;
 			#size-cells = <1>;
@@ -163,59 +141,54 @@
 			compatible = "fsl,mpc8323-qe-pario";
 			device_type = "par_io";
 			num-ports = <7>;
-
 			qe_pio_d: gpio-controller@1448 {
 				#gpio-cells = <2>;
 				compatible = "fsl,mpc8323-qe-pario-bank";
 				reg = <3 0x18>;
 				gpio-controller;
 			};
-
 			ucc2pio:ucc_pin@2 {
 				pio-map = <
-			/* port  pin  dir  open_drain  assignment  has_irq */
-					3  4  3  0  2  0 	/* MDIO */
-					3  5  1  0  2  0 	/* MDC */
-					3 21  2  0  1  0 	/* RX_CLK (CLK16) */
-					3 23  2  0  1  0 	/* TX_CLK (CLK3) */
-					0 18  1  0  1  0 	/* TxD0 */
-					0 19  1  0  1  0 	/* TxD1 */
-					0 20  1  0  1  0 	/* TxD2 */
-					0 21  1  0  1  0 	/* TxD3 */
-					0 22  2  0  1  0 	/* RxD0 */
-					0 23  2  0  1  0 	/* RxD1 */
-					0 24  2  0  1  0 	/* RxD2 */
-					0 25  2  0  1  0 	/* RxD3 */
-					0 26  2  0  1  0 	/* RX_ER */
-					0 27  1  0  1  0 	/* TX_ER */
-					0 28  2  0  1  0 	/* RX_DV */
-					0 29  2  0  1  0 	/* COL */
-					0 30  1  0  1  0 	/* TX_EN */
-					0 31  2  0  1  0>;      /* CRS */
+					3  4  3  0  2  0 	 
+					3  5  1  0  2  0 	 
+					3 21  2  0  1  0 	 
+					3 23  2  0  1  0 	 
+					0 18  1  0  1  0 	 
+					0 19  1  0  1  0 	 
+					0 20  1  0  1  0 	 
+					0 21  1  0  1  0 	 
+					0 22  2  0  1  0 	 
+					0 23  2  0  1  0 	 
+					0 24  2  0  1  0 	 
+					0 25  2  0  1  0 	 
+					0 26  2  0  1  0 	 
+					0 27  1  0  1  0 	 
+					0 28  2  0  1  0 	 
+					0 29  2  0  1  0 	 
+					0 30  1  0  1  0 	 
+					0 31  2  0  1  0>;       
 			};
 			ucc3pio:ucc_pin@3 {
 				pio-map = <
-			/* port  pin  dir  open_drain  assignment  has_irq */
-					0 13  2  0  1  0 	/* RX_CLK (CLK9) */
-					3 24  2  0  1  0 	/* TX_CLK (CLK10) */
-					1  0  1  0  1  0 	/* TxD0 */
-					1  1  1  0  1  0 	/* TxD1 */
-					1  2  1  0  1  0 	/* TxD2 */
-					1  3  1  0  1  0 	/* TxD3 */
-					1  4  2  0  1  0 	/* RxD0 */
-					1  5  2  0  1  0 	/* RxD1 */
-					1  6  2  0  1  0 	/* RxD2 */
-					1  7  2  0  1  0 	/* RxD3 */
-					1  8  2  0  1  0 	/* RX_ER */
-					1  9  1  0  1  0 	/* TX_ER */
-					1 10  2  0  1  0 	/* RX_DV */
-					1 11  2  0  1  0 	/* COL */
-					1 12  1  0  1  0 	/* TX_EN */
-					1 13  2  0  1  0>;      /* CRS */
+					0 13  2  0  1  0 	 
+					3 24  2  0  1  0 	 
+					1  0  1  0  1  0 	 
+					1  1  1  0  1  0 	 
+					1  2  1  0  1  0 	 
+					1  3  1  0  1  0 	 
+					1  4  2  0  1  0 	 
+					1  5  2  0  1  0 	 
+					1  6  2  0  1  0 	 
+					1  7  2  0  1  0 	 
+					1  8  2  0  1  0 	 
+					1  9  1  0  1  0 	 
+					1 10  2  0  1  0 	 
+					1 11  2  0  1  0 	 
+					1 12  1  0  1  0 	 
+					1 13  2  0  1  0>;       
 			};
 		};
 	};
-
 	qe@e0100000 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -227,20 +200,17 @@
 		bus-frequency = <198000000>;
 		fsl,qe-num-riscs = <1>;
 		fsl,qe-num-snums = <28>;
-
 		muram@10000 {
  			#address-cells = <1>;
  			#size-cells = <1>;
 			compatible = "fsl,qe-muram", "fsl,cpm-muram";
 			ranges = <0x0 0x00010000 0x00004000>;
-
 			data-only@0 {
 				compatible = "fsl,qe-muram-data",
 					     "fsl,cpm-muram-data";
 				reg = <0x0 0x4000>;
 			};
 		};
-
 		spi@4c0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -251,7 +221,6 @@
 			interrupt-parent = <&qeic>;
 			cs-gpios = <&qe_pio_d 13 0>;
 			mode = "cpu-qe";
-
 			mmc-slot@0 {
 				compatible = "fsl,mpc8323rdb-mmc-slot",
 					     "mmc-spi-slot";
@@ -262,7 +231,6 @@
 				spi-max-frequency = <50000000>;
 			};
 		};
-
 		spi@500 {
 			cell-index = <1>;
 			compatible = "fsl,spi";
@@ -271,7 +239,6 @@
 			interrupt-parent = <&qeic>;
 			mode = "cpu";
 		};
-
 		enet0: ucc@3000 {
 			device_type = "network";
 			compatible = "ucc_geth";
@@ -285,7 +252,6 @@
 			phy-handle = <&phy00>;
 			pio-handle = <&ucc2pio>;
 		};
-
 		enet1: ucc@2200 {
 			device_type = "network";
 			compatible = "ucc_geth";
@@ -299,13 +265,11 @@
 			phy-handle = <&phy04>;
 			pio-handle = <&ucc3pio>;
 		};
-
 		mdio@3120 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 			reg = <0x3120 0x18>;
 			compatible = "fsl,ucc-mdio";
-
 			phy00:ethernet-phy@0 {
 				reg = <0x0>;
 			};
@@ -313,7 +277,6 @@
 				reg = <0x4>;
 			};
 		};
-
 		qeic:interrupt-controller@80 {
 			interrupt-controller;
 			compatible = "fsl,qe-ic";
@@ -321,29 +284,22 @@
 			#interrupt-cells = <1>;
 			reg = <0x80 0x80>;
 			big-endian;
-			interrupts = <32 0x8 33 0x8>; //high:32 low:33
+			interrupts = <32 0x8 33 0x8>;  
 			interrupt-parent = <&ipic>;
 		};
 	};
-
 	pci0: pci@e0008500 {
 		interrupt-map-mask = <0xf800 0x0 0x0 0x7>;
 		interrupt-map = <
-				/* IDSEL 0x10 AD16 (USB) */
 				 0x8000 0x0 0x0 0x1 &ipic 17 0x8
-
-				/* IDSEL 0x11 AD17 (Mini1)*/
 				 0x8800 0x0 0x0 0x1 &ipic 18 0x8
 				 0x8800 0x0 0x0 0x2 &ipic 19 0x8
 				 0x8800 0x0 0x0 0x3 &ipic 20 0x8
 				 0x8800 0x0 0x0 0x4 &ipic 48 0x8
-
-				/* IDSEL 0x12 AD18 (PCI/Mini2) */
 				 0x9000 0x0 0x0 0x1 &ipic 19 0x8
 				 0x9000 0x0 0x0 0x2 &ipic 20 0x8
 				 0x9000 0x0 0x0 0x3 &ipic 48 0x8
 				 0x9000 0x0 0x0 0x4 &ipic 17 0x8>;
-
 		interrupt-parent = <&ipic>;
 		interrupts = <66 0x8>;
 		bus-range = <0x0 0x0>;
@@ -354,8 +310,8 @@
 		#interrupt-cells = <1>;
 		#size-cells = <2>;
 		#address-cells = <3>;
-		reg = <0xe0008500 0x100		/* internal registers */
-		       0xe0008300 0x8>;		/* config space access registers */
+		reg = <0xe0008500 0x100		 
+		       0xe0008300 0x8>;		 
 		compatible = "fsl,mpc8349-pci";
 		device_type = "pci";
 		sleep = <&pmc 0x00010000>;

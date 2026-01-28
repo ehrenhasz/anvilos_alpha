@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Google Gru-Scarlet Rev3+ (SKU-7/Kingdisplay) board device tree source
- *
- * Copyright 2018 Google, Inc
- */
-
 /dts-v1/;
-
 #include "rk3399-gru-scarlet.dtsi"
-
 / {
 	model = "Google Scarlet";
 	compatible = "google,scarlet-rev15-sku7", "google,scarlet-rev15",
@@ -26,7 +17,6 @@
 		     "google,scarlet-rev3-sku7",  "google,scarlet-rev3",
 		     "google,scarlet", "google,gru", "rockchip,rk3399";
 };
-
 &mipi_panel {
 	compatible = "kingdisplay,kd097d04";
 	power-supply = <&pp3300_s0>;

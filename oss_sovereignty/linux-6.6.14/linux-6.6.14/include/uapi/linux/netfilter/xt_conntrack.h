@@ -1,23 +1,13 @@
-/* SPDX-License-Identifier: GPL-1.0+ WITH Linux-syscall-note */
-/* Header file for kernel module to match connection tracking information.
- * GPL (C) 2001  Marc Boucher (marc@mbsi.ca).
- */
-
 #ifndef _XT_CONNTRACK_H
 #define _XT_CONNTRACK_H
-
 #include <linux/types.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter/nf_conntrack_tuple_common.h>
-
 #define XT_CONNTRACK_STATE_BIT(ctinfo) (1 << ((ctinfo)%IP_CT_IS_REPLY+1))
 #define XT_CONNTRACK_STATE_INVALID (1 << 0)
-
 #define XT_CONNTRACK_STATE_SNAT (1 << (IP_CT_NUMBER + 1))
 #define XT_CONNTRACK_STATE_DNAT (1 << (IP_CT_NUMBER + 2))
 #define XT_CONNTRACK_STATE_UNTRACKED (1 << (IP_CT_NUMBER + 3))
-
-/* flags, invflags: */
 enum {
 	XT_CONNTRACK_STATE        = 1 << 0,
 	XT_CONNTRACK_PROTO        = 1 << 1,
@@ -34,7 +24,6 @@ enum {
 	XT_CONNTRACK_DIRECTION    = 1 << 12,
 	XT_CONNTRACK_STATE_ALIAS  = 1 << 13,
 };
-
 struct xt_conntrack_mtinfo1 {
 	union nf_inet_addr origsrc_addr, origsrc_mask;
 	union nf_inet_addr origdst_addr, origdst_mask;
@@ -47,7 +36,6 @@ struct xt_conntrack_mtinfo1 {
 	__u16 match_flags, invert_flags;
 	__u8 state_mask, status_mask;
 };
-
 struct xt_conntrack_mtinfo2 {
 	union nf_inet_addr origsrc_addr, origsrc_mask;
 	union nf_inet_addr origdst_addr, origdst_mask;
@@ -60,7 +48,6 @@ struct xt_conntrack_mtinfo2 {
 	__u16 match_flags, invert_flags;
 	__u16 state_mask, status_mask;
 };
-
 struct xt_conntrack_mtinfo3 {
 	union nf_inet_addr origsrc_addr, origsrc_mask;
 	union nf_inet_addr origdst_addr, origdst_mask;
@@ -75,5 +62,4 @@ struct xt_conntrack_mtinfo3 {
 	__u16 origsrc_port_high, origdst_port_high;
 	__u16 replsrc_port_high, repldst_port_high;
 };
-
-#endif /*_XT_CONNTRACK_H*/
+#endif  

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
-
 #ifndef __MTK_ETHDR_H__
 #define __MTK_ETHDR_H__
-
 void mtk_ethdr_start(struct device *dev);
 void mtk_ethdr_stop(struct device *dev);
 int mtk_ethdr_clk_enable(struct device *dev);

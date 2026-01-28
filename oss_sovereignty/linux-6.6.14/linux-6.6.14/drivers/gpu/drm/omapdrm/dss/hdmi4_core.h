@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HDMI header definition for OMAP4 HDMI core IP
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- */
-
 #ifndef _HDMI4_CORE_H_
 #define _HDMI4_CORE_H_
-
 #include "hdmi.h"
-
-/* OMAP4 HDMI IP Core System */
-
 #define HDMI_CORE_SYS_VND_IDL			0x0
 #define HDMI_CORE_SYS_DEV_IDL			0x8
 #define HDMI_CORE_SYS_DEV_IDH			0xC
@@ -81,14 +70,10 @@
 #define HDMI_CORE_SYS_INTR_UNMASK4		0x1E0
 #define HDMI_CORE_SYS_INTR_CTRL			0x1E4
 #define HDMI_CORE_SYS_TMDS_CTRL			0x208
-
-/* value definitions for HDMI_CORE_SYS_SYS_CTRL1 fields */
 #define HDMI_CORE_SYS_SYS_CTRL1_VEN_FOLLOWVSYNC	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_HEN_FOLLOWHSYNC	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_BSEL_24BITBUS	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_EDGE_RISINGEDGE	0x1
-
-/* HDMI DDC E-DID */
 #define HDMI_CORE_DDC_ADDR			0x3B4
 #define HDMI_CORE_DDC_SEGM			0x3B8
 #define HDMI_CORE_DDC_OFFSET			0x3BC
@@ -97,9 +82,6 @@
 #define HDMI_CORE_DDC_STATUS			0x3C8
 #define HDMI_CORE_DDC_CMD			0x3CC
 #define HDMI_CORE_DDC_DATA			0x3D0
-
-/* HDMI IP Core Audio Video */
-
 #define HDMI_CORE_AV_ACR_CTRL			0x4
 #define HDMI_CORE_AV_FREQ_SVAL			0x8
 #define HDMI_CORE_AV_N_SVAL1			0xC
@@ -159,25 +141,21 @@
 #define HDMI_CORE_AV_CP_BYTE1			0x37C
 #define HDMI_CORE_AV_GEN2_DBYTE(n)		(n * 4 + 0x380)
 #define HDMI_CORE_AV_CEC_ADDR_ID		0x3FC
-
 #define HDMI_CORE_AV_SPD_DBYTE_ELSIZE		0x4
 #define HDMI_CORE_AV_GEN2_DBYTE_ELSIZE		0x4
 #define HDMI_CORE_AV_MPEG_DBYTE_ELSIZE		0x4
 #define HDMI_CORE_AV_GEN_DBYTE_ELSIZE		0x4
-
 #define HDMI_CORE_AV_AVI_DBYTE_NELEMS		15
 #define HDMI_CORE_AV_SPD_DBYTE_NELEMS		27
 #define HDMI_CORE_AV_AUD_DBYTE_NELEMS		10
 #define HDMI_CORE_AV_MPEG_DBYTE_NELEMS		27
 #define HDMI_CORE_AV_GEN_DBYTE_NELEMS		31
 #define HDMI_CORE_AV_GEN2_DBYTE_NELEMS		31
-
 enum hdmi_core_inputbus_width {
 	HDMI_INPUT_8BIT = 0,
 	HDMI_INPUT_10BIT = 1,
 	HDMI_INPUT_12BIT = 2
 };
-
 enum hdmi_core_dither_trunc {
 	HDMI_OUTPUTTRUNCATION_8BIT = 0,
 	HDMI_OUTPUTTRUNCATION_10BIT = 1,
@@ -186,12 +164,10 @@ enum hdmi_core_dither_trunc {
 	HDMI_OUTPUTDITHER_10BIT = 4,
 	HDMI_OUTPUTDITHER_12BIT = 5
 };
-
 enum hdmi_core_deepcolor_ed {
 	HDMI_DEEPCOLORPACKECTDISABLE = 0,
 	HDMI_DEEPCOLORPACKECTENABLE = 1
 };
-
 enum hdmi_core_packet_mode {
 	HDMI_PACKETMODERESERVEDVALUE = 0,
 	HDMI_PACKETMODE24BITPERPIXEL = 4,
@@ -199,21 +175,18 @@ enum hdmi_core_packet_mode {
 	HDMI_PACKETMODE36BITPERPIXEL = 6,
 	HDMI_PACKETMODE48BITPERPIXEL = 7
 };
-
 enum hdmi_core_tclkselclkmult {
 	HDMI_FPLL05IDCK = 0,
 	HDMI_FPLL10IDCK = 1,
 	HDMI_FPLL20IDCK = 2,
 	HDMI_FPLL40IDCK = 3
 };
-
 enum hdmi_core_packet_ctrl {
 	HDMI_PACKETENABLE = 1,
 	HDMI_PACKETDISABLE = 0,
 	HDMI_PACKETREPEATON = 1,
 	HDMI_PACKETREPEATOFF = 0
 };
-
 enum hdmi_audio_i2s_config {
 	HDMI_AUDIO_I2S_MSB_SHIFTED_FIRST = 0,
 	HDMI_AUDIO_I2S_LSB_SHIFTED_FIRST = 1,
@@ -228,7 +201,6 @@ enum hdmi_audio_i2s_config {
 	HDMI_AUDIO_I2S_SD2_EN = 1 << 2,
 	HDMI_AUDIO_I2S_SD3_EN = 1 << 3,
 };
-
 struct hdmi_core_video_config {
 	enum hdmi_core_inputbus_width	ip_bus_width;
 	enum hdmi_core_dither_trunc	op_dither_truc;
@@ -237,7 +209,6 @@ struct hdmi_core_video_config {
 	enum hdmi_core_hdmi_dvi		hdmi_dvi;
 	enum hdmi_core_tclkselclkmult	tclk_sel_clkmult;
 };
-
 struct hdmi_core_packet_enable_repeat {
 	u32	audio_pkt;
 	u32	audio_pkt_repeat;
@@ -248,19 +219,15 @@ struct hdmi_core_packet_enable_repeat {
 	u32	generic_pkt;
 	u32	generic_pkt_repeat;
 };
-
 int hdmi4_core_ddc_init(struct hdmi_core_data *core);
 int hdmi4_core_ddc_read(void *data, u8 *buf, unsigned int block, size_t len);
-
 void hdmi4_configure(struct hdmi_core_data *core, struct hdmi_wp_data *wp,
 		struct hdmi_config *cfg);
 void hdmi4_core_dump(struct hdmi_core_data *core, struct seq_file *s);
 int hdmi4_core_init(struct platform_device *pdev, struct hdmi_core_data *core);
-
 int hdmi4_core_enable(struct hdmi_core_data *core);
 void hdmi4_core_disable(struct hdmi_core_data *core);
 void hdmi4_core_powerdown_disable(struct hdmi_core_data *core);
-
 int hdmi4_audio_start(struct hdmi_core_data *core, struct hdmi_wp_data *wp);
 void hdmi4_audio_stop(struct hdmi_core_data *core, struct hdmi_wp_data *wp);
 int hdmi4_audio_config(struct hdmi_core_data *core, struct hdmi_wp_data *wp,

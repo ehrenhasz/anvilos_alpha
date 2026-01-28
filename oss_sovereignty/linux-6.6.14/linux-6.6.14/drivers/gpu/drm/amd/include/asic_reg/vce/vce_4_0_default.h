@@ -1,28 +1,5 @@
-/*
- * Copyright (C) 2017  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 #ifndef _vce_4_0_DEFAULT_HEADER
 #define _vce_4_0_DEFAULT_HEADER
-
-
-// addressBlock: vce0_vce_dec
 #define mmVCE_STATUS_DEFAULT                                                     0x00000000
 #define mmVCE_VCPU_CNTL_DEFAULT                                                  0x00200000
 #define mmVCE_VCPU_CACHE_OFFSET0_DEFAULT                                         0x00000000
@@ -65,15 +42,9 @@
 #define mmVCE_SYS_INT_EN_DEFAULT                                                 0x00000000
 #define mmVCE_SYS_INT_ACK_DEFAULT                                                0x00000000
 #define mmVCE_SYS_INT_STATUS_DEFAULT                                             0x00000000
-
-
-// addressBlock: vce0_ctl_dec
 #define mmVCE_UENC_CLOCK_GATING_DEFAULT                                          0xffc00040
 #define mmVCE_UENC_REG_CLOCK_GATING_DEFAULT                                      0x000007ff
 #define mmVCE_UENC_CLOCK_GATING_2_DEFAULT                                        0x00010000
-
-
-// addressBlock: vce0_vce_sclk_dec
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR_DEFAULT                                   0x00000000
 #define mmVCE_LMI_CTRL2_DEFAULT                                                  0x00000000
 #define mmVCE_LMI_SWAP_CNTL3_DEFAULT                                             0x00000000
@@ -100,9 +71,6 @@
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR5_DEFAULT                                  0x00000000
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR6_DEFAULT                                  0x00000000
 #define mmVCE_LMI_VCPU_CACHE_40BIT_BAR7_DEFAULT                                  0x00000000
-
-
-// addressBlock: vce0_mmsch_dec
 #define mmVCE_MMSCH_VF_VMID_DEFAULT                                              0x00000000
 #define mmVCE_MMSCH_VF_CTX_ADDR_LO_DEFAULT                                       0x00000000
 #define mmVCE_MMSCH_VF_CTX_ADDR_HI_DEFAULT                                       0x00000000
@@ -112,11 +80,5 @@
 #define mmVCE_MMSCH_VF_GPCOM_SIZE_DEFAULT                                        0x00000000
 #define mmVCE_MMSCH_VF_MAILBOX_HOST_DEFAULT                                      0x00000000
 #define mmVCE_MMSCH_VF_MAILBOX_RESP_DEFAULT                                      0x00000000
-
-
-// addressBlock: vce0_vce_rb_pg_dec
 #define mmVCE_HW_VERSION_DEFAULT                                                 0x00000000
-
-
-
 #endif

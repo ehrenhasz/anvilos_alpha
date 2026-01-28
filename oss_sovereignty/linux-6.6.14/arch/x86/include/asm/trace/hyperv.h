@@ -1,13 +1,9 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM hyperv
-
 #if !defined(_TRACE_HYPERV_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_HYPERV_H
-
 #include <linux/tracepoint.h>
-
 #if IS_ENABLED(CONFIG_HYPERV)
-
 TRACE_EVENT(hyperv_mmu_flush_tlb_multi,
 	    TP_PROTO(const struct cpumask *cpus,
 		     const struct flush_tlb_info *info),
@@ -27,11 +23,9 @@ TRACE_EVENT(hyperv_mmu_flush_tlb_multi,
 		      __entry->ncpus, __entry->mm,
 		      __entry->addr, __entry->end)
 	);
-
 TRACE_EVENT(hyperv_nested_flush_guest_mapping,
 	    TP_PROTO(u64 as, int ret),
 	    TP_ARGS(as, ret),
-
 	    TP_STRUCT__entry(
 		    __field(u64, as)
 		    __field(int, ret)
@@ -41,11 +35,9 @@ TRACE_EVENT(hyperv_nested_flush_guest_mapping,
 		    ),
 	    TP_printk("address space %llx ret %d", __entry->as, __entry->ret)
 	);
-
 TRACE_EVENT(hyperv_nested_flush_guest_mapping_range,
 	    TP_PROTO(u64 as, int ret),
 	    TP_ARGS(as, ret),
-
 	    TP_STRUCT__entry(
 		    __field(u64, as)
 		    __field(int, ret)
@@ -55,7 +47,6 @@ TRACE_EVENT(hyperv_nested_flush_guest_mapping_range,
 		    ),
 	    TP_printk("address space %llx ret %d", __entry->as, __entry->ret)
 	);
-
 TRACE_EVENT(hyperv_send_ipi_mask,
 	    TP_PROTO(const struct cpumask *cpus,
 		     int vector),
@@ -70,7 +61,6 @@ TRACE_EVENT(hyperv_send_ipi_mask,
 	    TP_printk("ncpus %d vector %x",
 		      __entry->ncpus, __entry->vector)
 	);
-
 TRACE_EVENT(hyperv_send_ipi_one,
 	    TP_PROTO(int cpu,
 		     int vector),
@@ -85,14 +75,10 @@ TRACE_EVENT(hyperv_send_ipi_one,
 	    TP_printk("cpu %d vector %x",
 		      __entry->cpu, __entry->vector)
 	);
-
-#endif /* CONFIG_HYPERV */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH asm/trace/
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE hyperv
-#endif /* _TRACE_HYPERV_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

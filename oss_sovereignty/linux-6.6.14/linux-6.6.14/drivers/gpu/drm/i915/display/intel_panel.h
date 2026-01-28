@@ -1,13 +1,6 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
-
 #ifndef __INTEL_PANEL_H__
 #define __INTEL_PANEL_H__
-
 #include <linux/types.h>
-
 enum drm_connector_status;
 enum drrs_type;
 struct drm_connector;
@@ -18,7 +11,6 @@ struct drm_i915_private;
 struct intel_connector;
 struct intel_crtc_state;
 struct intel_encoder;
-
 void intel_panel_init_alloc(struct intel_connector *connector);
 int intel_panel_init(struct intel_connector *connector,
 		     const struct drm_edid *fixed_edid);
@@ -52,5 +44,4 @@ void intel_panel_add_vbt_lfp_fixed_mode(struct intel_connector *connector);
 void intel_panel_add_vbt_sdvo_fixed_mode(struct intel_connector *connector);
 void intel_panel_add_encoder_fixed_mode(struct intel_connector *connector,
 					struct intel_encoder *encoder);
-
-#endif /* __INTEL_PANEL_H__ */
+#endif  

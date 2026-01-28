@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (c) 2018  Vincent Pelletier
- */
-/*
- */
 #ifndef __CCID_H
 #define __CCID_H
-
 #include <linux/types.h>
-
 #define USB_INTERFACE_CLASS_CCID 0x0b
-
 struct ccid_descriptor {
 	__u8  bLength;
 	__u8  bDescriptorType;
@@ -35,5 +26,4 @@ struct ccid_descriptor {
 	__u8  bPINSupport;
 	__u8  bMaxCCIDBusySlots;
 } __attribute__ ((packed));
-
-#endif /* __CCID_H */
+#endif  

@@ -1,9 +1,5 @@
-#!/bin/bash
-# SPDX-License-Identifier: GPL-2.0
-
 YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
-
+NC='\033[0m' 
 declare -a FILES
 FILES=(
   "include/uapi/linux/const.h"
@@ -81,7 +77,6 @@ FILES=(
   "include/uapi/asm-generic/mman-common.h"
   "include/uapi/asm-generic/unistd.h"
 )
-
 declare -a SYNC_CHECK_FILES
 SYNC_CHECK_FILES=(
   "arch/x86/include/asm/inat.h"
@@ -89,28 +84,17 @@ SYNC_CHECK_FILES=(
   "arch/x86/lib/inat.c"
   "arch/x86/lib/insn.c"
 )
-
-# These copies are under tools/perf/trace/beauty/ as they are not used to in
-# building object files only by scripts in tools/perf/trace/beauty/ to generate
-# tables that then gets included in .c files for things like id->string syscall
-# tables (and the reverse lookup as well: string -> id)
-
 declare -a BEAUTY_FILES
 BEAUTY_FILES=(
   "include/linux/socket.h"
 )
-
 declare -a FAILURES
-
 check_2 () {
   tools_file=$1
   orig_file=$2
-
   shift
   shift
-
   cmd="diff $* $tools_file $orig_file > /dev/null"
-
   if [ -f "$orig_file" ] && ! eval "$cmd"
   then
     FAILURES+=(
@@ -118,46 +102,30 @@ check_2 () {
     )
   fi
 }
-
 check () {
   file=$1
-
   shift
-
   check_2 "tools/$file" "$file" "$@"
 }
-
 beauty_check () {
   file=$1
-
   shift
-
   check_2 "tools/perf/trace/beauty/$file" "$file" "$@"
 }
-
-# Check if we have the kernel headers (tools/perf/../../include), else
-# we're probably on a detached tarball, so no point in trying to check
-# differences.
 if ! [ -d ../../include ]
 then
   echo -e "${YELLOW}Warning${NC}: Skipped check-headers due to missing ../../include"
   exit 0
 fi
-
 cd ../..
-
-# simple diff check
 for i in "${FILES[@]}"
 do
   check "$i" -B
 done
-
 for i in "${SYNC_CHECK_FILES[@]}"
 do
   check "$i" '-I "^.*\/\*.*__ignore_sync_check__.*\*\/.*$"'
 done
-
-# diff with extra ignore lines
 check arch/x86/lib/memcpy_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memcpy_\(erms\|orig\))" -I"^#include <linux/cfi_types.h>"'
 check arch/x86/lib/memset_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memset_\(erms\|orig\))"'
 check arch/x86/include/asm/amd-ibs.h  '-I "^#include [<\"]\(asm/\)*msr-index.h"'
@@ -168,25 +136,18 @@ check include/linux/build_bug.h       '-I "^#\(ifndef\|endif\)\( \/\/\)* static_
 check include/linux/ctype.h	      '-I "isdigit("'
 check lib/ctype.c		      '-I "^EXPORT_SYMBOL" -I "^#include <linux/export.h>" -B'
 check lib/list_sort.c		      '-I "^#include <linux/bug.h>"'
-
-# diff non-symmetric files
 check_2 tools/perf/arch/x86/entry/syscalls/syscall_64.tbl arch/x86/entry/syscalls/syscall_64.tbl
 check_2 tools/perf/arch/powerpc/entry/syscalls/syscall.tbl arch/powerpc/kernel/syscalls/syscall.tbl
 check_2 tools/perf/arch/s390/entry/syscalls/syscall.tbl arch/s390/kernel/syscalls/syscall.tbl
 check_2 tools/perf/arch/mips/entry/syscalls/syscall_n64.tbl arch/mips/kernel/syscalls/syscall_n64.tbl
-
 for i in "${BEAUTY_FILES[@]}"
 do
   beauty_check "$i" -B
 done
-
-# check duplicated library files
 check_2 tools/perf/util/hashmap.h tools/lib/bpf/hashmap.h
 check_2 tools/perf/util/hashmap.c tools/lib/bpf/hashmap.c
-
 cd tools/perf || exit
-
-if [ ${#FAILURES[@]} -gt 0 ]
+if [ ${
 then
   echo -e "${YELLOW}Warning${NC}: Kernel ABI header differences:"
   for i in "${FAILURES[@]}"

@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Pin-multiplex helper macros for TI DaVinci family devices
- *
- * Author: Vladimir Barinov, MontaVista Software, Inc. <source@mvista.com>
- *
- * 2007 (c) MontaVista Software, Inc.
- *
- * Copyright (C) 2008 Texas Instruments.
- */
 #ifndef _MACH_DAVINCI_MUX_H_
 #define _MACH_DAVINCI_MUX_H_
-
 struct mux_config {
 	const char *name;
 	const char *mux_reg_name;
@@ -20,7 +9,6 @@ struct mux_config {
 	const unsigned char mode;
 	bool debug;
 };
-
 enum da830_index {
 	DA830_GPIO7_14,
 	DA830_RTCK,
@@ -424,35 +412,23 @@ enum da830_index {
 	DA830_NUHPI_HRDY,
 	DA830_GPIO2_10,
 };
-
 enum davinci_da850_index {
-	/* UART0 function */
 	DA850_NUART0_CTS,
 	DA850_NUART0_RTS,
 	DA850_UART0_RXD,
 	DA850_UART0_TXD,
-
-	/* UART1 function */
 	DA850_NUART1_CTS,
 	DA850_NUART1_RTS,
 	DA850_UART1_RXD,
 	DA850_UART1_TXD,
-
-	/* UART2 function */
 	DA850_NUART2_CTS,
 	DA850_NUART2_RTS,
 	DA850_UART2_RXD,
 	DA850_UART2_TXD,
-
-	/* I2C1 function */
 	DA850_I2C1_SCL,
 	DA850_I2C1_SDA,
-
-	/* I2C0 function */
 	DA850_I2C0_SDA,
 	DA850_I2C0_SCL,
-
-	/* EMAC function */
 	DA850_MII_TXEN,
 	DA850_MII_TXCLK,
 	DA850_MII_COL,
@@ -478,8 +454,6 @@ enum davinci_da850_index {
 	DA850_RMII_RXD_1,
 	DA850_RMII_RXER,
 	DA850_RMII_MHZ_50_CLK,
-
-	/* McASP function */
 	DA850_ACLKR,
 	DA850_ACLKX,
 	DA850_AFSR,
@@ -503,8 +477,6 @@ enum davinci_da850_index {
 	DA850_AXR_2,
 	DA850_AXR_1,
 	DA850_AXR_0,
-
-	/* LCD function */
 	DA850_LCD_D_7,
 	DA850_LCD_D_6,
 	DA850_LCD_D_5,
@@ -525,24 +497,18 @@ enum davinci_da850_index {
 	DA850_LCD_HSYNC,
 	DA850_LCD_VSYNC,
 	DA850_NLCD_AC_ENB_CS,
-
-	/* MMC/SD0 function */
 	DA850_MMCSD0_DAT_0,
 	DA850_MMCSD0_DAT_1,
 	DA850_MMCSD0_DAT_2,
 	DA850_MMCSD0_DAT_3,
 	DA850_MMCSD0_CLK,
 	DA850_MMCSD0_CMD,
-
-	/* MMC/SD1 function */
 	DA850_MMCSD1_DAT_0,
 	DA850_MMCSD1_DAT_1,
 	DA850_MMCSD1_DAT_2,
 	DA850_MMCSD1_DAT_3,
 	DA850_MMCSD1_CLK,
 	DA850_MMCSD1_CMD,
-
-	/* EMIF2.5/EMIFA function */
 	DA850_EMA_D_7,
 	DA850_EMA_D_6,
 	DA850_EMA_D_5,
@@ -591,8 +557,6 @@ enum davinci_da850_index {
 	DA850_EMA_CLK,
 	DA850_EMA_WAIT_1,
 	DA850_NEMA_CS_2,
-
-	/* GPIO function */
 	DA850_GPIO2_4,
 	DA850_GPIO2_6,
 	DA850_GPIO2_8,
@@ -605,8 +569,6 @@ enum davinci_da850_index {
 	DA850_GPIO6_10,
 	DA850_GPIO6_13,
 	DA850_RTC_ALARM,
-
-	/* VPIF Capture */
 	DA850_VPIF_DIN0,
 	DA850_VPIF_DIN1,
 	DA850_VPIF_DIN2,
@@ -627,8 +589,6 @@ enum davinci_da850_index {
 	DA850_VPIF_CLKIN1,
 	DA850_VPIF_CLKIN2,
 	DA850_VPIF_CLKIN3,
-
-	/* VPIF Display */
 	DA850_VPIF_DOUT0,
 	DA850_VPIF_DOUT1,
 	DA850_VPIF_DOUT2,
@@ -648,23 +608,17 @@ enum davinci_da850_index {
 	DA850_VPIF_CLKO2,
 	DA850_VPIF_CLKO3,
 };
-
 #define PINMUX(x)		(4 * (x))
-
 #ifdef CONFIG_DAVINCI_MUX
-/* setup pin muxing */
 extern int davinci_cfg_reg(unsigned long reg_cfg);
 extern int davinci_cfg_reg_list(const short pins[]);
 #else
-/* boot loader does it all (no warnings from CONFIG_DAVINCI_MUX_WARNINGS) */
 static inline int davinci_cfg_reg(unsigned long reg_cfg) { return 0; }
 static inline int davinci_cfg_reg_list(const short pins[])
 {
 	return 0;
 }
 #endif
-
-
 #define MUX_CFG(soc, desc, muxreg, mode_offset, mode_mask, mux_mode, dbg)\
 [soc##_##desc] = {							\
 			.name =  #desc,					\
@@ -675,7 +629,6 @@ static inline int davinci_cfg_reg_list(const short pins[])
 			.mask = mode_mask,				\
 			.mode = mux_mode,				\
 		},
-
 #define INT_CFG(soc, desc, mode_offset, mode_mask, mux_mode, dbg)	\
 [soc##_##desc] = {							\
 			.name =  #desc,					\
@@ -686,7 +639,6 @@ static inline int davinci_cfg_reg_list(const short pins[])
 			.mask = mode_mask,				\
 			.mode = mux_mode,				\
 		},
-
 #define EVT_CFG(soc, desc, mode_offset, mode_mask, mux_mode, dbg)	\
 [soc##_##desc] = {							\
 			.name =  #desc,					\
@@ -697,5 +649,4 @@ static inline int davinci_cfg_reg_list(const short pins[])
 			.mask = mode_mask,				\
 			.mode = mux_mode,				\
 		},
-
-#endif /* _MACH_DAVINCI_MUX_H */
+#endif  

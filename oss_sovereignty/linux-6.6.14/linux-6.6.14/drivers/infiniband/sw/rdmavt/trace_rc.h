@@ -1,19 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2017 Intel Corporation.
- */
 #if !defined(__RVT_TRACE_RC_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __RVT_TRACE_RC_H
-
 #include <linux/tracepoint.h>
 #include <linux/trace_seq.h>
-
 #include <rdma/ib_verbs.h>
 #include <rdma/rdmavt_qp.h>
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rvt_rc
-
 DECLARE_EVENT_CLASS(rvt_rc_template,
 		    TP_PROTO(struct rvt_qp *qp, u32 psn),
 		    TP_ARGS(qp, psn),
@@ -52,14 +44,11 @@ DECLARE_EVENT_CLASS(rvt_rc_template,
 			__entry->r_psn
 			)
 );
-
 DEFINE_EVENT(rvt_rc_template, rvt_rc_timeout,
 	     TP_PROTO(struct rvt_qp *qp, u32 psn),
 	     TP_ARGS(qp, psn)
 );
-
-#endif /* __RVT_TRACE_RC_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH .

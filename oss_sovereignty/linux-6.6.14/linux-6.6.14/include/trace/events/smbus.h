@@ -1,25 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* SMBUS message transfer tracepoints
- *
- * Copyright (C) 2013 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM smbus
-
 #if !defined(_TRACE_SMBUS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SMBUS_H
-
 #include <linux/i2c.h>
 #include <linux/tracepoint.h>
-
-/*
- * drivers/i2c/i2c-core-smbus.c
- */
-
-/*
- * i2c_smbus_xfer() write data or procedure call request
- */
 TRACE_EVENT_CONDITION(smbus_write,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -43,7 +27,6 @@ TRACE_EVENT_CONDITION(smbus_write,
 		__entry->flags = flags;
 		__entry->command = command;
 		__entry->protocol = protocol;
-
 		switch (protocol) {
 		case I2C_SMBUS_BYTE_DATA:
 			__entry->len = 1;
@@ -84,10 +67,6 @@ TRACE_EVENT_CONDITION(smbus_write,
 		  __entry->len,
 		  __entry->len, __entry->buf
 		  ));
-
-/*
- * i2c_smbus_xfer() read data request
- */
 TRACE_EVENT_CONDITION(smbus_read,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -126,10 +105,6 @@ TRACE_EVENT_CONDITION(smbus_read,
 				   { I2C_SMBUS_BLOCK_PROC_CALL,	"BLOCK_PROC_CALL" },
 				   { I2C_SMBUS_I2C_BLOCK_DATA,	"I2C_BLOCK_DATA" })
 		  ));
-
-/*
- * i2c_smbus_xfer() read data or procedure call reply
- */
 TRACE_EVENT_CONDITION(smbus_reply,
 	TP_PROTO(const struct i2c_adapter *adap,
 		 u16 addr, unsigned short flags,
@@ -151,7 +126,6 @@ TRACE_EVENT_CONDITION(smbus_reply,
 		__entry->flags = flags;
 		__entry->command = command;
 		__entry->protocol = protocol;
-
 		switch (protocol) {
 		case I2C_SMBUS_BYTE:
 		case I2C_SMBUS_BYTE_DATA:
@@ -192,10 +166,6 @@ TRACE_EVENT_CONDITION(smbus_reply,
 		  __entry->len,
 		  __entry->len, __entry->buf
 		  ));
-
-/*
- * i2c_smbus_xfer() result
- */
 TRACE_EVENT(smbus_result,
 	    TP_PROTO(const struct i2c_adapter *adap,
 		     u16 addr, unsigned short flags,
@@ -238,8 +208,5 @@ TRACE_EVENT(smbus_result,
 		      __entry->read_write == I2C_SMBUS_WRITE ? "wr" : "rd",
 		      __entry->res
 		      ));
-
-#endif /* _TRACE_SMBUS_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

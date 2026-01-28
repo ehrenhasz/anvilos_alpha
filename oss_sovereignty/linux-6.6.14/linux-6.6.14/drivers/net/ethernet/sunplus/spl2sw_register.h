@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
-
 #ifndef __SPL2SW_REGISTER_H__
 #define __SPL2SW_REGISTER_H__
-
-/* Register L2SW */
 #define L2SW_SW_INT_STATUS_0		0x0
 #define L2SW_SW_INT_MASK_0		0x4
 #define L2SW_FL_CNTL_TH			0x8
@@ -62,7 +55,6 @@
 #define L2SW_SW_INT_STATUS_1		0xd0
 #define L2SW_SW_INT_MASK_1		0xd4
 #define L2SW_SW_GLOBAL_SIGNAL		0xd8
-
 #define L2SW_CPU_TX_TRIG		0x208
 #define L2SW_TX_HBASE_ADDR_0		0x20c
 #define L2SW_TX_LBASE_ADDR_0		0x210
@@ -82,5 +74,4 @@
 #define L2SW_RX_HW_ADDR_1		0x248
 #define L2SW_RX_LW_ADDR_1		0x24c
 #define L2SW_CPU_PORT_CNTL_REG_1	0x250
-
 #endif

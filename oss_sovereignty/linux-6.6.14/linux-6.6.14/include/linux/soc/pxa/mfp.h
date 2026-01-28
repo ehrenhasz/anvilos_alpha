@@ -1,22 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *   Common Multi-Function Pin Definitions
- *
- * Copyright (C) 2007 Marvell International Ltd.
- *
- * 2007-8-21: eric miao <eric.miao@marvell.com>
- *            initial version
- */
-
 #ifndef __ASM_PLAT_MFP_H
 #define __ASM_PLAT_MFP_H
-
 #define mfp_to_gpio(m)	((m) % 256)
-
-/* list of all the configurable MFP pins */
 enum {
 	MFP_PIN_INVALID = -1,
-
 	MFP_PIN_GPIO0 = 0,
 	MFP_PIN_GPIO1,
 	MFP_PIN_GPIO2,
@@ -145,7 +131,6 @@ enum {
 	MFP_PIN_GPIO125,
 	MFP_PIN_GPIO126,
 	MFP_PIN_GPIO127,
-
 	MFP_PIN_GPIO128,
 	MFP_PIN_GPIO129,
 	MFP_PIN_GPIO130,
@@ -210,9 +195,7 @@ enum {
 	MFP_PIN_GPIO189,
 	MFP_PIN_GPIO190,
 	MFP_PIN_GPIO191,
-
 	MFP_PIN_GPIO255 = 255,
-
 	MFP_PIN_GPIO0_2,
 	MFP_PIN_GPIO1_2,
 	MFP_PIN_GPIO2_2,
@@ -231,11 +214,9 @@ enum {
 	MFP_PIN_GPIO15_2,
 	MFP_PIN_GPIO16_2,
 	MFP_PIN_GPIO17_2,
-
 	MFP_PIN_ULPI_STP,
 	MFP_PIN_ULPI_NXT,
 	MFP_PIN_ULPI_DIR,
-
 	MFP_PIN_nXCVREN,
 	MFP_PIN_DF_CLE_nOE,
 	MFP_PIN_DF_nADV1_ALE,
@@ -282,14 +263,12 @@ enum {
 	MFP_PIN_DF_ALE_SM_WEn,
 	MFP_PIN_DF_RDY0,
 	MFP_PIN_DF_RDY1,
-
 	MFP_PIN_SM_SCLK,
 	MFP_PIN_SM_BE0,
 	MFP_PIN_SM_BE1,
 	MFP_PIN_SM_ADV,
 	MFP_PIN_SM_ADVMUX,
 	MFP_PIN_SM_RDY,
-
 	MFP_PIN_MMC1_DAT7,
 	MFP_PIN_MMC1_DAT6,
 	MFP_PIN_MMC1_DAT5,
@@ -302,56 +281,21 @@ enum {
 	MFP_PIN_MMC1_CLK,
 	MFP_PIN_MMC1_CD,
 	MFP_PIN_MMC1_WP,
-
-	/* additional pins on PXA930 */
 	MFP_PIN_GSIM_UIO,
 	MFP_PIN_GSIM_UCLK,
 	MFP_PIN_GSIM_UDET,
 	MFP_PIN_GSIM_nURST,
 	MFP_PIN_PMIC_INT,
 	MFP_PIN_RDY,
-
-	/* additional pins on MMP2 */
 	MFP_PIN_TWSI1_SCL,
 	MFP_PIN_TWSI1_SDA,
 	MFP_PIN_TWSI4_SCL,
 	MFP_PIN_TWSI4_SDA,
 	MFP_PIN_CLK_REQ,
-
 	MFP_PIN_MAX,
 };
-
-/*
- * a possible MFP configuration is represented by a 32-bit integer
- *
- * bit  0.. 9 - MFP Pin Number (1024 Pins Maximum)
- * bit 10..12 - Alternate Function Selection
- * bit 13..15 - Drive Strength
- * bit 16..18 - Low Power Mode State
- * bit 19..20 - Low Power Mode Edge Detection
- * bit 21..22 - Run Mode Pull State
- *
- * to facilitate the definition, the following macros are provided
- *
- * MFP_CFG_DEFAULT - default MFP configuration value, with
- * 		  alternate function = 0,
- * 		  drive strength = fast 3mA (MFP_DS03X)
- * 		  low power mode = default
- * 		  edge detection = none
- *
- * MFP_CFG	- default MFPR value with alternate function
- * MFP_CFG_DRV	- default MFPR value with alternate function and
- * 		  pin drive strength
- * MFP_CFG_LPM	- default MFPR value with alternate function and
- * 		  low power mode
- * MFP_CFG_X	- default MFPR value with alternate function,
- * 		  pin drive strength and low power mode
- */
-
 typedef unsigned long mfp_cfg_t;
-
 #define MFP_PIN(x)		((x) & 0x3ff)
-
 #define MFP_AF0			(0x0 << 10)
 #define MFP_AF1			(0x1 << 10)
 #define MFP_AF2			(0x2 << 10)
@@ -362,7 +306,6 @@ typedef unsigned long mfp_cfg_t;
 #define MFP_AF7			(0x7 << 10)
 #define MFP_AF_MASK		(0x7 << 10)
 #define MFP_AF(x)		(((x) >> 10) & 0x7)
-
 #define MFP_DS01X		(0x0 << 13)
 #define MFP_DS02X		(0x1 << 13)
 #define MFP_DS03X		(0x2 << 13)
@@ -373,7 +316,6 @@ typedef unsigned long mfp_cfg_t;
 #define MFP_DS13X		(0x7 << 13)
 #define MFP_DS_MASK		(0x7 << 13)
 #define MFP_DS(x)		(((x) >> 13) & 0x7)
-
 #define MFP_LPM_DEFAULT		(0x0 << 16)
 #define MFP_LPM_DRIVE_LOW	(0x1 << 16)
 #define MFP_LPM_DRIVE_HIGH	(0x2 << 16)
@@ -383,14 +325,12 @@ typedef unsigned long mfp_cfg_t;
 #define MFP_LPM_INPUT		(0x6 << 16)
 #define MFP_LPM_STATE_MASK	(0x7 << 16)
 #define MFP_LPM_STATE(x)	(((x) >> 16) & 0x7)
-
 #define MFP_LPM_EDGE_NONE	(0x0 << 19)
 #define MFP_LPM_EDGE_RISE	(0x1 << 19)
 #define MFP_LPM_EDGE_FALL	(0x2 << 19)
 #define MFP_LPM_EDGE_BOTH	(0x3 << 19)
 #define MFP_LPM_EDGE_MASK	(0x3 << 19)
 #define MFP_LPM_EDGE(x)		(((x) >> 19) & 0x3)
-
 #define MFP_PULL_NONE		(0x0 << 21)
 #define MFP_PULL_LOW		(0x1 << 21)
 #define MFP_PULL_HIGH		(0x2 << 21)
@@ -398,73 +338,37 @@ typedef unsigned long mfp_cfg_t;
 #define MFP_PULL_FLOAT		(0x4 << 21)
 #define MFP_PULL_MASK		(0x7 << 21)
 #define MFP_PULL(x)		(((x) >> 21) & 0x7)
-
 #define MFP_CFG_DEFAULT		(MFP_AF0 | MFP_DS03X | MFP_LPM_DEFAULT |\
 				 MFP_LPM_EDGE_NONE | MFP_PULL_NONE)
-
 #define MFP_CFG(pin, af)		\
 	((MFP_CFG_DEFAULT & ~MFP_AF_MASK) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af))
-
 #define MFP_CFG_DRV(pin, af, drv)	\
 	((MFP_CFG_DEFAULT & ~(MFP_AF_MASK | MFP_DS_MASK)) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af | MFP_##drv))
-
 #define MFP_CFG_LPM(pin, af, lpm)	\
 	((MFP_CFG_DEFAULT & ~(MFP_AF_MASK | MFP_LPM_STATE_MASK)) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af | MFP_LPM_##lpm))
-
 #define MFP_CFG_X(pin, af, drv, lpm)	\
 	((MFP_CFG_DEFAULT & ~(MFP_AF_MASK | MFP_DS_MASK | MFP_LPM_STATE_MASK)) |\
 	 (MFP_PIN(MFP_PIN_##pin) | MFP_##af | MFP_##drv | MFP_LPM_##lpm))
-
 #if defined(CONFIG_PXA3xx) || defined(CONFIG_ARCH_MMP)
-/*
- * each MFP pin will have a MFPR register, since the offset of the
- * register varies between processors, the processor specific code
- * should initialize the pin offsets by mfp_init()
- *
- * mfp_init_base() - accepts a virtual base for all MFPR registers and
- * initialize the MFP table to a default state
- *
- * mfp_init_addr() - accepts a table of "mfp_addr_map" structure, which
- * represents a range of MFP pins from "start" to "end", with the offset
- * beginning at "offset", to define a single pin, let "end" = -1.
- *
- * use
- *
- * MFP_ADDR_X() to define a range of pins
- * MFP_ADDR()   to define a single pin
- * MFP_ADDR_END to signal the end of pin offset definitions
- */
 struct mfp_addr_map {
 	unsigned int	start;
 	unsigned int	end;
 	unsigned long	offset;
 };
-
 #define MFP_ADDR_X(start, end, offset) \
 	{ MFP_PIN_##start, MFP_PIN_##end, offset }
-
 #define MFP_ADDR(pin, offset) \
 	{ MFP_PIN_##pin, -1, offset }
-
 #define MFP_ADDR_END	{ MFP_PIN_INVALID, 0 }
-
 void mfp_init_base(void __iomem *mfpr_base);
 void mfp_init_addr(struct mfp_addr_map *map);
-
-/*
- * mfp_{read, write}()	- for direct read/write access to the MFPR register
- * mfp_config()		- for configuring a group of MFPR registers
- * mfp_config_lpm()	- configuring all low power MFPR registers for suspend
- * mfp_config_run()	- configuring all run time  MFPR registers after resume
- */
 unsigned long mfp_read(int mfp);
 void mfp_write(int mfp, unsigned long mfpr_val);
 void mfp_config(unsigned long *mfp_cfgs, int num);
 void mfp_config_run(void);
 void mfp_config_lpm(void);
-#endif /* CONFIG_PXA3xx || CONFIG_ARCH_MMP */
-
-#endif /* __ASM_PLAT_MFP_H */
+#endif  
+#endif  

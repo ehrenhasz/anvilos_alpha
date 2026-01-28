@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 #ifndef GAUDI2_CORESIGHT_H
 #define GAUDI2_CORESIGHT_H
-
 enum gaudi2_debug_stm_regs_index {
 	GAUDI2_STM_FIRST = 0,
 	GAUDI2_STM_DCORE0_TPC0_EML = GAUDI2_STM_FIRST,
@@ -156,7 +143,6 @@ enum gaudi2_debug_stm_regs_index {
 	GAUDI2_STM_NIC11_DBG_1,
 	GAUDI2_STM_LAST = GAUDI2_STM_NIC11_DBG_1
 };
-
 enum gaudi2_debug_etf_regs_index {
 	GAUDI2_ETF_FIRST = 0,
 	GAUDI2_ETF_DCORE0_TPC0_EML = GAUDI2_ETF_FIRST,
@@ -302,7 +288,6 @@ enum gaudi2_debug_etf_regs_index {
 	GAUDI2_ETF_NIC11_DBG_1,
 	GAUDI2_ETF_LAST = GAUDI2_ETF_NIC11_DBG_1
 };
-
 enum gaudi2_debug_funnel_regs_index {
 	GAUDI2_FUNNEL_FIRST = 0,
 	GAUDI2_FUNNEL_DCORE0_TPC0_EML = GAUDI2_FUNNEL_FIRST,
@@ -448,7 +433,6 @@ enum gaudi2_debug_funnel_regs_index {
 	GAUDI2_FUNNEL_NIC11_DBG_NCH,
 	GAUDI2_FUNNEL_LAST = GAUDI2_FUNNEL_NIC11_DBG_NCH
 };
-
 enum gaudi2_debug_bmon_regs_index {
 	GAUDI2_BMON_FIRST = 0,
 	GAUDI2_BMON_DCORE0_TPC0_EML_0 = GAUDI2_BMON_FIRST,
@@ -838,7 +822,6 @@ enum gaudi2_debug_bmon_regs_index {
 	GAUDI2_BMON_NIC11_DBG_2_1,
 	GAUDI2_BMON_LAST = GAUDI2_BMON_NIC11_DBG_2_1
 };
-
 enum gaudi2_debug_spmu_regs_index {
 	GAUDI2_SPMU_FIRST = 0,
 	GAUDI2_SPMU_DCORE0_TPC0_EML = GAUDI2_SPMU_FIRST,
@@ -980,5 +963,4 @@ enum gaudi2_debug_spmu_regs_index {
 	GAUDI2_SPMU_NIC11_DBG_1,
 	GAUDI2_SPMU_LAST = GAUDI2_SPMU_NIC11_DBG_1
 };
-
-#endif /* GAUDI2_CORESIGHT_H */
+#endif  

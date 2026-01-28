@@ -1,17 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * ipv4 in net namespaces
- */
-
 #ifndef __NETNS_IPV4_H__
 #define __NETNS_IPV4_H__
-
 #include <linux/uidgid.h>
 #include <net/inet_frag.h>
 #include <linux/rcupdate.h>
 #include <linux/seqlock.h>
 #include <linux/siphash.h>
-
 struct ctl_table_header;
 struct ipv4_devconf;
 struct fib_rules_ops;
@@ -23,28 +16,20 @@ struct local_ports {
 	int		range[2];
 	bool		warned;
 };
-
 struct ping_group_range {
 	seqlock_t	lock;
 	kgid_t		range[2];
 };
-
 struct inet_hashinfo;
-
 struct inet_timewait_death_row {
 	refcount_t		tw_refcount;
-
-	/* Padding to avoid false sharing, tw_refcount can be often written */
 	struct inet_hashinfo 	*hashinfo ____cacheline_aligned_in_smp;
 	int			sysctl_max_tw_buckets;
 };
-
 struct tcp_fastopen_context;
-
 struct netns_ipv4 {
 	struct inet_timewait_death_row tcp_death_row;
 	struct udp_table *udp_table;
-
 #ifdef CONFIG_SYSCTL
 	struct ctl_table_header	*forw_hdr;
 	struct ctl_table_header	*frags_hdr;
@@ -71,12 +56,9 @@ struct netns_ipv4 {
 #endif
 	struct hlist_head	*fib_table_hash;
 	struct sock		*fibnl;
-
 	struct sock		*mc_autojoin_sk;
-
 	struct inet_peer_base	*peers;
 	struct fqdir		*fqdir;
-
 	u8 sysctl_icmp_echo_ignore_all;
 	u8 sysctl_icmp_echo_enable_probe;
 	u8 sysctl_icmp_echo_ignore_broadcasts;
@@ -84,23 +66,18 @@ struct netns_ipv4 {
 	u8 sysctl_icmp_errors_use_inbound_ifaddr;
 	int sysctl_icmp_ratelimit;
 	int sysctl_icmp_ratemask;
-
 	u32 ip_rt_min_pmtu;
 	int ip_rt_mtu_expires;
 	int ip_rt_min_advmss;
-
 	struct local_ports ip_local_ports;
-
 	u8 sysctl_tcp_ecn;
 	u8 sysctl_tcp_ecn_fallback;
-
 	u8 sysctl_ip_default_ttl;
 	u8 sysctl_ip_no_pmtu_disc;
 	u8 sysctl_ip_fwd_use_pmtu;
 	u8 sysctl_ip_fwd_update_priority;
 	u8 sysctl_ip_nonlocal_bind;
 	u8 sysctl_ip_autobind_reuse;
-	/* Shall we try to damage output packets if routing dev changes? */
 	u8 sysctl_ip_dynaddr;
 	u8 sysctl_ip_early_demux;
 #ifdef CONFIG_NET_L3_MASTER_DEV
@@ -108,9 +85,7 @@ struct netns_ipv4 {
 #endif
 	u8 sysctl_tcp_early_demux;
 	u8 sysctl_udp_early_demux;
-
 	u8 sysctl_nexthop_compat_mode;
-
 	u8 sysctl_fwmark_reflect;
 	u8 sysctl_tcp_fwmark_accept;
 #ifdef CONFIG_NET_L3_MASTER_DEV
@@ -122,11 +97,9 @@ struct netns_ipv4 {
 	int sysctl_tcp_min_snd_mss;
 	int sysctl_tcp_probe_threshold;
 	u32 sysctl_tcp_probe_interval;
-
 	int sysctl_tcp_keepalive_time;
 	int sysctl_tcp_keepalive_intvl;
 	u8 sysctl_tcp_keepalive_probes;
-
 	u8 sysctl_tcp_syn_retries;
 	u8 sysctl_tcp_synack_retries;
 	u8 sysctl_tcp_syncookies;
@@ -150,9 +123,9 @@ struct netns_ipv4 {
 	u8 sysctl_tcp_stdurg;
 	u8 sysctl_tcp_rfc1337;
 	u8 sysctl_tcp_abort_on_overflow;
-	u8 sysctl_tcp_fack; /* obsolete */
+	u8 sysctl_tcp_fack;  
 	int sysctl_tcp_max_reordering;
-	int sysctl_tcp_adv_win_scale; /* obsolete */
+	int sysctl_tcp_adv_win_scale;  
 	u8 sysctl_tcp_dsack;
 	u8 sysctl_tcp_app_win;
 	u8 sysctl_tcp_frto;
@@ -190,33 +163,24 @@ struct netns_ipv4 {
 	u8 sysctl_tcp_plb_rehash_rounds;
 	u8 sysctl_tcp_plb_suspend_rto_sec;
 	int sysctl_tcp_plb_cong_thresh;
-
 	int sysctl_udp_wmem_min;
 	int sysctl_udp_rmem_min;
-
 	u8 sysctl_fib_notify_on_flag_change;
 	u8 sysctl_tcp_syn_linear_timeouts;
-
 #ifdef CONFIG_NET_L3_MASTER_DEV
 	u8 sysctl_udp_l3mdev_accept;
 #endif
-
 	u8 sysctl_igmp_llm_reports;
 	int sysctl_igmp_max_memberships;
 	int sysctl_igmp_max_msf;
 	int sysctl_igmp_qrv;
-
 	struct ping_group_range ping_group_range;
-
 	atomic_t dev_addr_genid;
-
 	unsigned int sysctl_udp_child_hash_entries;
-
 #ifdef CONFIG_SYSCTL
 	unsigned long *sysctl_local_reserved_ports;
 	int sysctl_ip_prot_sock;
 #endif
-
 #ifdef CONFIG_IP_MROUTE
 #ifndef CONFIG_IP_MROUTE_MULTIPLE_TABLES
 	struct mr_table		*mrt;
@@ -230,13 +194,10 @@ struct netns_ipv4 {
 	u8 sysctl_fib_multipath_use_neigh;
 	u8 sysctl_fib_multipath_hash_policy;
 #endif
-
 	struct fib_notifier_ops	*notifier_ops;
-	unsigned int	fib_seq;	/* protected by rtnl_mutex */
-
+	unsigned int	fib_seq;	 
 	struct fib_notifier_ops	*ipmr_notifier_ops;
-	unsigned int	ipmr_seq;	/* protected by rtnl_mutex */
-
+	unsigned int	ipmr_seq;	 
 	atomic_t	rt_genid;
 	siphash_key_t	ip_id_key;
 };

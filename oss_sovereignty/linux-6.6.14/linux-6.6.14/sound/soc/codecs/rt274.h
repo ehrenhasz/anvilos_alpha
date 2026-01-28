@@ -1,16 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt274.h  --  RT274 ALSA SoC audio driver
- *
- * Copyright 2016 Realtek Microelectronics
- * Author: Bard Liao <bardliao@realtek.com>
- */
-
 #ifndef __RT274_H__
 #define __RT274_H__
-
 #define VERB_CMD(V, N, D) ((N << 20) | (V << 8) | D)
-
 #define RT274_AUDIO_FUNCTION_GROUP			0x01
 #define RT274_DAC_OUT0					0x02
 #define RT274_DAC_OUT1					0x03
@@ -29,16 +19,12 @@
 #define RT274_MIXER_IN1					0x22
 #define RT274_MIXER_IN2					0x23
 #define RT274_INLINE_CMD				0x55
-
 #define RT274_SET_PIN_SFT				6
 #define RT274_SET_PIN_ENABLE				0x40
 #define RT274_SET_PIN_DISABLE				0
 #define RT274_SET_EAPD_HIGH				0x2
 #define RT274_SET_EAPD_LOW				0
-
 #define RT274_MUTE_SFT					7
-
-/* Verb commands */
 #define RT274_RESET\
 	VERB_CMD(AC_VERB_SET_CODEC_RESET, RT274_AUDIO_FUNCTION_GROUP, 0)
 #define RT274_GET_PARAM(NID, PARAM) VERB_CMD(AC_VERB_PARAMETERS, NID, PARAM)
@@ -132,8 +118,6 @@
 	VERB_CMD(AC_VERB_SET_CHANNEL_STREAMID, RT274_ADC_IN1, 0)
 #define RT274_SET_STREAMID_ADC2\
 	VERB_CMD(AC_VERB_SET_CHANNEL_STREAMID, RT274_ADC_IN2, 0)
-
-/* Index registers */
 #define RT274_EAPD_GPIO_IRQ_CTRL	0x10
 #define RT274_PAD_CTRL12		0x35
 #define RT274_I2S_CTRL1			0x63
@@ -141,9 +125,6 @@
 #define RT274_MCLK_CTRL			0x71
 #define RT274_CLK_CTRL			0x72
 #define RT274_PLL2_CTRL			0x7b
-
-
-/* EAPD GPIO IRQ control (Index 0x10) */
 #define RT274_IRQ_DIS		(0x0 << 13)
 #define RT274_IRQ_EN		(0x1 << 13)
 #define RT274_IRQ_CLR		(0x1 << 12)
@@ -152,8 +133,6 @@
 #define RT274_GPI2_SEL_I2S	(0x1 << 7)
 #define RT274_GPI2_SEL_DMIC_CLK	(0x2 << 7)
 #define RT274_GPI2_SEL_CBJ	(0x3 << 7)
-
-/* Front I2S_Interface control 1 (Index 0x63) */
 #define RT274_I2S_MODE_MASK	(0x1 << 11)
 #define RT274_I2S_MODE_S	(0x0 << 11)
 #define RT274_I2S_MODE_M	(0x1 << 11)
@@ -167,48 +146,33 @@
 #define RT274_I2S_FMT_LJ	(0x1 << 8)
 #define RT274_I2S_FMT_PCMA	(0x2 << 8)
 #define RT274_I2S_FMT_PCMB	(0x3 << 8)
-
-/* MCLK clock domain control (Index 0x71) */
 #define RT274_MCLK_MODE_MASK	(0x1 << 14)
 #define RT274_MCLK_MODE_DIS	(0x0 << 14)
 #define RT274_MCLK_MODE_EN	(0x1 << 14)
-
-/* Clock control (Index 0x72) */
 #define RT274_CLK_SRC_MASK	(0x7 << 3)
 #define RT274_CLK_SRC_MCLK	(0x0 << 3)
 #define RT274_CLK_SRC_PLL2	(0x3 << 3)
-
-/* PLL2 control (Index 0x7b) */
 #define RT274_PLL2_SRC_MASK	(0x1 << 13)
 #define RT274_PLL2_SRC_MCLK	(0x0 << 13)
 #define RT274_PLL2_SRC_BCLK	(0x1 << 13)
-
-/* HP-OUT (0x21) */
 #define RT274_M_HP_MUX_SFT	14
 #define RT274_HP_SEL_MASK	0x1
 #define RT274_HP_SEL_SFT	0
 #define RT274_HP_SEL_F		0
 #define RT274_HP_SEL_S		1
-
-/* ADC (0x22) (0x23) */
 #define RT274_ADC_SEL_MASK	0x7
 #define RT274_ADC_SEL_SFT	0
 #define RT274_ADC_SEL_MIC	0
 #define RT274_ADC_SEL_LINE1	1
 #define RT274_ADC_SEL_LINE2	2
 #define RT274_ADC_SEL_DMIC	3
-
 #define RT274_SCLK_S_MCLK	0
 #define RT274_SCLK_S_PLL1	1
 #define RT274_SCLK_S_PLL2	2
-
 #define RT274_PLL2_S_MCLK	0
 #define RT274_PLL2_S_BCLK	1
-
 enum {
 	RT274_AIF1,
 	RT274_AIFS,
 };
-
-#endif /* __RT274_H__ */
-
+#endif  

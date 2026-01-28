@@ -1,37 +1,23 @@
-/*
- * Copyright 2015 Savoir-faire Linux
- *
- * This device tree is based on imx51-babbage.dts
- *
- * Licensed under the X11 license or the GPL v2 (or later)
- */
-
 /dts-v1/;
 #include "imx51.dtsi"
-
 / {
 	model = "Technologic Systems TS-4800";
 	compatible = "technologic,imx51-ts4800", "fsl,imx51";
-
 	chosen {
 		stdout-path = &uart1;
 	};
-
 	memory@90000000 {
 		device_type = "memory";
 		reg = <0x90000000 0x10000000>;
 	};
-
 	clocks {
 		ckih1 {
 			clock-frequency = <22579200>;
 		};
-
 		ckih2 {
 			clock-frequency = <24576000>;
 		};
 	};
-
 	backlight_reg: regulator-backlight {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -42,7 +28,6 @@
 		gpio = <&gpio4 9 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm1 0 78770>;
@@ -50,13 +35,11 @@
 		default-brightness-level = <1>;
 		power-supply = <&backlight_reg>;
 	};
-
 	display1: disp1 {
 		compatible = "fsl,imx-parallel-display";
 		interface-pix-fmt = "rgb24";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_lcd>;
-
 		display-timings {
 			800x480p60 {
 				native-mode;
@@ -71,7 +54,6 @@
 				vsync-len = <50>;
 			};
 		};
-
 		port {
 			display0_in: endpoint {
 				remote-endpoint = <&ipu_di0_disp1>;
@@ -79,7 +61,6 @@
 		};
 	};
 };
-
 &esdhc1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_esdhc1>;
@@ -87,7 +68,6 @@
 	wp-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
-
 &fec {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec>;
@@ -96,52 +76,43 @@
 	phy-reset-duration = <1>;
 	status = "okay";
 };
-
 &i2c2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	status = "okay";
-
 	rtc: rtc@68 {
 		compatible = "st,m41t00";
 		reg = <0x68>;
 	};
 };
-
 &ipu_di0_disp1 {
 	remote-endpoint = <&display0_in>;
 };
-
 &pwm1 {
 	#pwm-cells = <2>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm_backlight>;
 	status = "okay";
 };
-
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
-
 &uart2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
-
 &uart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
 	status = "okay";
 };
-
 &weim {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_weim>;
 	status = "okay";
-
 	fpga@0 {
 		compatible = "simple-bus";
 		fsl,weim-cs-timing = <0x0061008F 0x00000002 0x1c022000
@@ -150,24 +121,20 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges = <0 0 0 0x1d000>;
-
 		syscon: syscon@10000 {
 			compatible = "syscon", "simple-mfd";
 			reg = <0x10000 0x3d>;
 			reg-io-width = <2>;
-
 			wdt {
 				compatible = "technologic,ts4800-wdt";
 				syscon = <&syscon 0xe>;
 			};
 		};
-
 		touchscreen@12000 {
 			compatible = "technologic,ts4800-ts";
 			reg = <0x12000 0x1000>;
 			syscon = <&syscon 0x10 6>;
 		};
-
 		fpga_irqc: fpga-irqc@15000 {
 			compatible = "technologic,ts4800-irqc";
 			reg = <0x15000 0x1000>;
@@ -178,7 +145,6 @@
 			interrupt-controller;
 			#interrupt-cells = <1>;
 		};
-
 		can@1a000 {
 			compatible = "technologic,sja1000";
 			reg = <0x1a000 0x100>;
@@ -190,23 +156,20 @@
 		};
 	};
 };
-
 &iomuxc {
 	pinctrl_ecspi1: ecspi1grp {
 		fsl,pins = <
 			MX51_PAD_CSPI1_MISO__ECSPI1_MISO	0x185
 			MX51_PAD_CSPI1_MOSI__ECSPI1_MOSI	0x185
 			MX51_PAD_CSPI1_SCLK__ECSPI1_SCLK	0x185
-			MX51_PAD_CSPI1_SS0__GPIO4_24		0x85 /* CS0 */
+			MX51_PAD_CSPI1_SS0__GPIO4_24		0x85  
 		>;
 	};
-
 	pinctrl_enable_lcd: enablelcdgrp {
 		fsl,pins = <
 			MX51_PAD_CSI2_D12__GPIO4_9		0x1c5
 		>;
 	};
-
 	pinctrl_esdhc1: esdhc1grp {
 		fsl,pins = <
 			MX51_PAD_SD1_CMD__SD1_CMD		0x400020d5
@@ -219,7 +182,6 @@
 			MX51_PAD_GPIO1_1__GPIO1_1		0x100
 		>;
 	};
-
 	pinctrl_fec: fecgrp {
 		fsl,pins = <
 			MX51_PAD_EIM_EB2__FEC_MDIO		0x000001f5
@@ -240,23 +202,20 @@
 			MX51_PAD_DISP2_DAT9__FEC_TX_EN		0x00002004
 			MX51_PAD_DISP2_DAT13__FEC_TX_CLK	0x00002180
 			MX51_PAD_DISP2_DAT12__FEC_RX_DV		0x000020a4
-			MX51_PAD_EIM_A20__GPIO2_14		0x00000085 /* Phy Reset */
+			MX51_PAD_EIM_A20__GPIO2_14		0x00000085  
 		>;
 	};
-
 	pinctrl_i2c2: i2c2grp {
 		fsl,pins = <
 			MX51_PAD_KEY_COL4__I2C2_SCL		0x400001ed
 			MX51_PAD_KEY_COL5__I2C2_SDA		0x400001ed
 		>;
 	};
-
 	pinctrl_interrupt_fpga: fpgaicgrp {
 		fsl,pins = <
 			MX51_PAD_EIM_D27__GPIO2_9		0xe5
 		>;
 	};
-
 	pinctrl_lcd: lcdgrp {
 		fsl,pins = <
 			MX51_PAD_DISP1_DAT0__DISP1_DAT0		0x5
@@ -289,34 +248,29 @@
 			MX51_PAD_DI_GP4__DI2_PIN15		0x5
 		>;
 	};
-
 	pinctrl_pwm_backlight: backlightgrp {
 		fsl,pins = <
 			MX51_PAD_GPIO1_2__PWM1_PWMO		0x80000000
 		>;
 	};
-
 	pinctrl_uart1: uart1grp {
 		fsl,pins = <
 			MX51_PAD_UART1_RXD__UART1_RXD		0x1c5
 			MX51_PAD_UART1_TXD__UART1_TXD		0x1c5
 		>;
 	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX51_PAD_UART2_RXD__UART2_RXD		0x1c5
 			MX51_PAD_UART2_TXD__UART2_TXD		0x1c5
 		>;
 	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
 			MX51_PAD_EIM_D25__UART3_RXD		0x1c5
 			MX51_PAD_EIM_D26__UART3_TXD		0x1c5
 		>;
 	};
-
 	pinctrl_weim: weimgrp {
 		fsl,pins = <
 			MX51_PAD_EIM_DTACK__EIM_DTACK		0x85

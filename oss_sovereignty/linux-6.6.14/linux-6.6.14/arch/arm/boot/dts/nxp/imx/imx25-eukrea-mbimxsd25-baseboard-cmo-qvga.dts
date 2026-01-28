@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Eukréa Electromatique <denis@eukrea.com>
- */
-
 #include "imx25-eukrea-mbimxsd25-baseboard.dts"
-
 / {
 	model = "Eukrea MBIMXSD25 with the CMO-QVGA Display";
 	compatible = "eukrea,mbimxsd25-baseboard-cmo-qvga", "eukrea,mbimxsd25-baseboard", "eukrea,cpuimx25", "fsl,imx25";
-
 	cmo_qvga: display {
 		model = "CMO-QVGA";
 		bits-per-pixel = <16>;
@@ -29,7 +22,6 @@
 			};
 		};
 	};
-
 	reg_lcd_3v3: regulator-0 {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
@@ -41,7 +33,6 @@
 		enable-active-high;
 	};
 };
-
 &iomuxc {
 	imx25-eukrea-mbimxsd25-baseboard-cmo-qvga {
 		pinctrl_reg_lcd_3v3: reg_lcd_3v3 {
@@ -49,7 +40,6 @@
 		};
 	};
 };
-
 &lcdc {
 	display = <&cmo_qvga>;
 	fsl,lpccr = <0x00a903ff>;

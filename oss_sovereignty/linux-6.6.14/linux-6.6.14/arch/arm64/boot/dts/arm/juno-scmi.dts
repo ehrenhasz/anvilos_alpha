@@ -1,6 +1,5 @@
 #include "juno.dts"
 #include "juno-scmi.dtsi"
-
 &A57_0 {
 	clocks = <&scmi_dvfs 0>;
 };

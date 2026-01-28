@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 Google LLC.
- */
 #ifndef __ASM_RWONCE_H
 #define __ASM_RWONCE_H
-
 #if defined(CONFIG_LTO) && !defined(__ASSEMBLY__)
-
 #include <linux/compiler_types.h>
 #include <asm/alternative-macros.h>
-
 #ifndef BUILD_VDSO
-
 #ifdef CONFIG_AS_HAS_LDAPR
 #define __LOAD_RCPC(sfx, regs...)					\
 	ALTERNATIVE(							\
@@ -21,18 +13,7 @@
 	ARM64_HAS_LDAPR)
 #else
 #define __LOAD_RCPC(sfx, regs...)	"ldar" #sfx "\t" #regs
-#endif /* CONFIG_AS_HAS_LDAPR */
-
-/*
- * When building with LTO, there is an increased risk of the compiler
- * converting an address dependency headed by a READ_ONCE() invocation
- * into a control dependency and consequently allowing for harmful
- * reordering by the CPU.
- *
- * Ensure that such transformations are harmless by overriding the generic
- * READ_ONCE() definition with one that provides RCpc acquire semantics
- * when building with LTO.
- */
+#endif  
 #define __READ_ONCE(x)							\
 ({									\
 	typeof(&(x)) __x = &(x);					\
@@ -64,10 +45,7 @@
 	}								\
 	atomic ? (typeof(*__x))__u.__val : (*(volatile typeof(__x))__x);\
 })
-
-#endif	/* !BUILD_VDSO */
-#endif	/* CONFIG_LTO && !__ASSEMBLY__ */
-
+#endif	 
+#endif	 
 #include <asm-generic/rwonce.h>
-
-#endif	/* __ASM_RWONCE_H */
+#endif	 

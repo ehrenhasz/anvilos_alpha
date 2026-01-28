@@ -1,8 +1,3 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Copyright (c) 2019 Fuzhou Rockchip Electronics Co., Ltd.
- */
-
 #include <dt-bindings/clock/rockchip,rv1126-cru.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
@@ -10,23 +5,17 @@
 #include <dt-bindings/pinctrl/rockchip.h>
 #include <dt-bindings/power/rockchip,rv1126-power.h>
 #include <dt-bindings/soc/rockchip,boot-mode.h>
-
 / {
 	#address-cells = <1>;
 	#size-cells = <1>;
-
 	compatible = "rockchip,rv1126";
-
 	interrupt-parent = <&gic>;
-
 	aliases {
 		i2c0 = &i2c0;
 	};
-
 	cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-
 		cpu0: cpu@f00 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -34,7 +23,6 @@
 			enable-method = "psci";
 			clocks = <&cru ARMCLK>;
 		};
-
 		cpu1: cpu@f01 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -42,7 +30,6 @@
 			enable-method = "psci";
 			clocks = <&cru ARMCLK>;
 		};
-
 		cpu2: cpu@f02 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -50,7 +37,6 @@
 			enable-method = "psci";
 			clocks = <&cru ARMCLK>;
 		};
-
 		cpu3: cpu@f03 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a7";
@@ -59,7 +45,6 @@
 			clocks = <&cru ARMCLK>;
 		};
 	};
-
 	arm-pmu {
 		compatible = "arm,cortex-a7-pmu";
 		interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
@@ -68,12 +53,10 @@
 			     <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
 	};
-
 	psci {
 		compatible = "arm,psci-1.0";
 		method = "smc";
 	};
-
 	timer {
 		compatible = "arm,armv7-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>,
@@ -82,97 +65,79 @@
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 		clock-frequency = <24000000>;
 	};
-
 	display_subsystem {
 		compatible = "rockchip,display-subsystem";
 		ports = <&vop_out>;
 	};
-
 	xin24m: oscillator {
 		compatible = "fixed-clock";
 		clock-frequency = <24000000>;
 		clock-output-names = "xin24m";
 		#clock-cells = <0>;
 	};
-
 	grf: syscon@fe000000 {
 		compatible = "rockchip,rv1126-grf", "syscon", "simple-mfd";
 		reg = <0xfe000000 0x20000>;
 	};
-
 	pmugrf: syscon@fe020000 {
 		compatible = "rockchip,rv1126-pmugrf", "syscon", "simple-mfd";
 		reg = <0xfe020000 0x1000>;
-
 		pmu_io_domains: io-domains {
 			compatible = "rockchip,rv1126-pmu-io-voltage-domain";
 			status = "disabled";
 		};
 	};
-
 	qos_emmc: qos@fe860000 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe860000 0x20>;
 	};
-
 	qos_nandc: qos@fe860080 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe860080 0x20>;
 	};
-
 	qos_sfc: qos@fe860200 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe860200 0x20>;
 	};
-
 	qos_sdio: qos@fe86c000 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe86c000 0x20>;
 	};
-
 	qos_iep: qos@fe8a0000 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe8a0000 0x20>;
 	};
-
 	qos_rga_rd: qos@fe8a0080 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe8a0080 0x20>;
 	};
-
 	qos_rga_wr: qos@fe8a0100 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe8a0100 0x20>;
 	};
-
 	qos_vop: qos@fe8a0180 {
 		compatible = "rockchip,rv1126-qos", "syscon";
 		reg = <0xfe8a0180 0x20>;
 	};
-
 	gic: interrupt-controller@feff0000 {
 		compatible = "arm,gic-400";
 		interrupt-controller;
 		#interrupt-cells = <3>;
 		#address-cells = <0>;
-
 		reg = <0xfeff1000 0x1000>,
 		      <0xfeff2000 0x2000>,
 		      <0xfeff4000 0x2000>,
 		      <0xfeff6000 0x2000>;
 		interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
 	};
-
 	pmu: power-management@ff3e0000 {
 		compatible = "rockchip,rv1126-pmu", "syscon", "simple-mfd";
 		reg = <0xff3e0000 0x1000>;
-
 		power: power-controller {
 			compatible = "rockchip,rv1126-power-controller";
 			#power-domain-cells = <1>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			power-domain@RV1126_PD_NVM {
 				reg = <RV1126_PD_NVM>;
 				clocks = <&cru HCLK_EMMC>,
@@ -187,7 +152,6 @@
 					 <&qos_sfc>;
 				#power-domain-cells = <0>;
 			};
-
 			power-domain@RV1126_PD_SDIO {
 				reg = <RV1126_PD_SDIO>;
 				clocks = <&cru HCLK_SDIO>,
@@ -195,7 +159,6 @@
 				pm_qos = <&qos_sdio>;
 				#power-domain-cells = <0>;
 			};
-
 			power-domain@RV1126_PD_VO {
 				reg = <RV1126_PD_VO>;
 				clocks = <&cru ACLK_RGA>,
@@ -216,7 +179,6 @@
 			};
 		};
 	};
-
 	i2c0: i2c@ff3f0000 {
 		compatible = "rockchip,rv1126-i2c", "rockchip,rk3399-i2c";
 		reg = <0xff3f0000 0x1000>;
@@ -230,7 +192,6 @@
 		#size-cells = <0>;
 		status = "disabled";
 	};
-
 	uart1: serial@ff410000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff410000 0x100>;
@@ -246,7 +207,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	pmucru: clock-controller@ff480000 {
 		compatible = "rockchip,rv1126-pmucru";
 		reg = <0xff480000 0x1000>;
@@ -254,7 +214,6 @@
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	cru: clock-controller@ff490000 {
 		compatible = "rockchip,rv1126-cru";
 		reg = <0xff490000 0x1000>;
@@ -264,7 +223,6 @@
 		#clock-cells = <1>;
 		#reset-cells = <1>;
 	};
-
 	dmac: dma-controller@ff4e0000 {
 		compatible = "arm,pl330", "arm,primecell";
 		reg = <0xff4e0000 0x4000>;
@@ -275,7 +233,6 @@
 		clocks = <&cru ACLK_DMAC>;
 		clock-names = "apb_pclk";
 	};
-
 	uart0: serial@ff560000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff560000 0x100>;
@@ -291,7 +248,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	uart2: serial@ff570000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff570000 0x100>;
@@ -307,7 +263,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	uart3: serial@ff580000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff580000 0x100>;
@@ -323,7 +278,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	uart4: serial@ff590000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff590000 0x100>;
@@ -339,7 +293,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	uart5: serial@ff5a0000 {
 		compatible = "rockchip,rv1126-uart", "snps,dw-apb-uart";
 		reg = <0xff5a0000 0x100>;
@@ -355,7 +308,6 @@
 		reg-io-width = <4>;
 		status = "disabled";
 	};
-
 	saradc: adc@ff5e0000 {
 		compatible = "rockchip,rv1126-saradc", "rockchip,rk3399-saradc";
 		reg = <0xff5e0000 0x100>;
@@ -367,7 +319,6 @@
 		reset-names = "saradc-apb";
 		status = "disabled";
 	};
-
 	timer0: timer@ff660000 {
 		compatible = "rockchip,rv1126-timer", "rockchip,rk3288-timer";
 		reg = <0xff660000 0x20>;
@@ -375,7 +326,6 @@
 		clocks = <&cru PCLK_TIMER>, <&cru CLK_TIMER0>;
 		clock-names = "pclk", "timer";
 	};
-
 	vop: vop@ffb00000 {
 		compatible = "rockchip,rv1126-vop";
 		reg = <0xffb00000 0x200>, <0xffb00a00 0x400>;
@@ -387,21 +337,17 @@
 		iommus = <&vop_mmu>;
 		power-domains = <&power RV1126_PD_VO>;
 		status = "disabled";
-
 		vop_out: port {
 			#address-cells = <1>;
 			#size-cells = <0>;
-
 			vop_out_rgb: endpoint@0 {
 				reg = <0>;
 			};
-
 			vop_out_dsi: endpoint@1 {
 				reg = <1>;
 			};
 		};
 	};
-
 	vop_mmu: iommu@ffb00f00 {
 		compatible = "rockchip,iommu";
 		reg = <0xffb00f00 0x100>;
@@ -412,7 +358,6 @@
 		power-domains = <&power RV1126_PD_VO>;
 		status = "disabled";
 	};
-
 	gmac: ethernet@ffc40000 {
 		compatible = "rockchip,rv1126-gmac", "snps,dwmac-4.20a";
 		reg = <0xffc40000 0x4000>;
@@ -430,38 +375,31 @@
 			      "clk_mac_speed", "ptp_ref";
 		resets = <&cru SRST_GMAC_A>;
 		reset-names = "stmmaceth";
-
 		snps,mixed-burst;
 		snps,tso;
-
 		snps,axi-config = <&stmmac_axi_setup>;
 		snps,mtl-rx-config = <&mtl_rx_setup>;
 		snps,mtl-tx-config = <&mtl_tx_setup>;
 		status = "disabled";
-
 		mdio: mdio {
 			compatible = "snps,dwmac-mdio";
 			#address-cells = <0x1>;
 			#size-cells = <0x0>;
 		};
-
 		stmmac_axi_setup: stmmac-axi-config {
 			snps,wr_osr_lmt = <4>;
 			snps,rd_osr_lmt = <8>;
 			snps,blen = <0 0 0 0 16 8 4>;
 		};
-
 		mtl_rx_setup: rx-queues-config {
 			snps,rx-queues-to-use = <1>;
 			queue0 {};
 		};
-
 		mtl_tx_setup: tx-queues-config {
 			snps,tx-queues-to-use = <1>;
 			queue0 {};
 		};
 	};
-
 	emmc: mmc@ffc50000 {
 		compatible = "rockchip,rv1126-dw-mshc", "rockchip,rk3288-dw-mshc";
 		reg = <0xffc50000 0x4000>;
@@ -474,7 +412,6 @@
 		power-domains = <&power RV1126_PD_NVM>;
 		status = "disabled";
 	};
-
 	sdmmc: mmc@ffc60000 {
 		compatible = "rockchip,rv1126-dw-mshc", "rockchip,rk3288-dw-mshc";
 		reg = <0xffc60000 0x4000>;
@@ -486,7 +423,6 @@
 		max-frequency = <200000000>;
 		status = "disabled";
 	};
-
 	sdio: mmc@ffc70000 {
 		compatible = "rockchip,rv1126-dw-mshc", "rockchip,rk3288-dw-mshc";
 		reg = <0xffc70000 0x4000>;
@@ -499,7 +435,6 @@
 		power-domains = <&power RV1126_PD_SDIO>;
 		status = "disabled";
 	};
-
 	sfc: spi@ffc90000  {
 		compatible = "rockchip,sfc";
 		reg = <0xffc90000 0x4000>;
@@ -511,7 +446,6 @@
 		power-domains = <&power RV1126_PD_NVM>;
 		status = "disabled";
 	};
-
 	pinctrl: pinctrl {
 		compatible = "rockchip,rv1126-pinctrl";
 		rockchip,grf = <&grf>;
@@ -519,7 +453,6 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
-
 		gpio0: gpio@ff460000 {
 			compatible = "rockchip,gpio-bank";
 			reg = <0xff460000 0x100>;
@@ -530,7 +463,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio1: gpio@ff620000 {
 			compatible = "rockchip,gpio-bank";
 			reg = <0xff620000 0x100>;
@@ -541,7 +473,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio2: gpio@ff630000 {
 			compatible = "rockchip,gpio-bank";
 			reg = <0xff630000 0x100>;
@@ -552,7 +483,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio3: gpio@ff640000 {
 			compatible = "rockchip,gpio-bank";
 			reg = <0xff640000 0x100>;
@@ -563,7 +493,6 @@
 			interrupt-controller;
 			#interrupt-cells = <2>;
 		};
-
 		gpio4: gpio@ff650000 {
 			compatible = "rockchip,gpio-bank";
 			reg = <0xff650000 0x100>;
@@ -576,5 +505,4 @@
 		};
 	};
 };
-
 #include "rv1126-pinctrl.dtsi"

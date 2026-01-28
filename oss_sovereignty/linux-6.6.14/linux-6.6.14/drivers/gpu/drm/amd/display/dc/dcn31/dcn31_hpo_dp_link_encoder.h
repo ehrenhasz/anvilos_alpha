@@ -1,38 +1,8 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
-
 #ifndef __DAL_DCN31_HPO_DP_LINK_ENCODER_H__
 #define __DAL_DCN31_HPO_DP_LINK_ENCODER_H__
-
 #include "link_encoder.h"
-
-
 #define DCN3_1_HPO_DP_LINK_ENC_FROM_HPO_LINK_ENC(hpo_dp_link_encoder)\
 	container_of(hpo_dp_link_encoder, struct dcn31_hpo_dp_link_encoder, base)
-
-
 #define DCN3_1_HPO_DP_LINK_ENC_REG_LIST(id) \
 	SRI(DP_LINK_ENC_CLOCK_CONTROL, DP_LINK_ENC, id), \
 	SRI(DP_DPHY_SYM32_CONTROL, DP_DPHY_SYM32, id), \
@@ -63,11 +33,8 @@
 	SRI(DP_DPHY_SYM32_VC_RATE_CNTL2, DP_DPHY_SYM32, id), \
 	SRI(DP_DPHY_SYM32_VC_RATE_CNTL3, DP_DPHY_SYM32, id), \
 	SRI(DP_DPHY_SYM32_SAT_UPDATE, DP_DPHY_SYM32, id)
-
 #define DCN3_1_RDPCSTX_REG_LIST(id) \
 	SRII(RDPCSTX_PHY_CNTL6, RDPCSTX, id)
-
-
 #define DCN3_1_HPO_DP_LINK_ENC_REGS \
 	uint32_t DP_LINK_ENC_CLOCK_CONTROL;\
 	uint32_t DP_DPHY_SYM32_CONTROL;\
@@ -98,12 +65,10 @@
 	uint32_t DP_DPHY_SYM32_VC_RATE_CNTL2;\
 	uint32_t DP_DPHY_SYM32_VC_RATE_CNTL3;\
 	uint32_t DP_DPHY_SYM32_SAT_UPDATE
-
 struct dcn31_hpo_dp_link_encoder_registers {
 	DCN3_1_HPO_DP_LINK_ENC_REGS;
 	uint32_t RDPCSTX_PHY_CNTL6[5];
 };
-
 #define DCN3_1_HPO_DP_LINK_ENC_MASK_SH_LIST(mask_sh)\
 	SE_SF(DP_LINK_ENC0_DP_LINK_ENC_CLOCK_CONTROL, DP_LINK_ENC_CLOCK_EN, mask_sh),\
 	SE_SF(DP_DPHY_SYM320_DP_DPHY_SYM32_CONTROL, DPHY_RESET, mask_sh),\
@@ -130,7 +95,6 @@ struct dcn31_hpo_dp_link_encoder_registers {
 	SE_SF(DP_DPHY_SYM320_DP_DPHY_SYM32_VC_RATE_CNTL0, STREAM_VC_RATE_X, mask_sh),\
 	SE_SF(DP_DPHY_SYM320_DP_DPHY_SYM32_VC_RATE_CNTL0, STREAM_VC_RATE_Y, mask_sh),\
 	SE_SF(DP_DPHY_SYM320_DP_DPHY_SYM32_SAT_UPDATE, SAT_UPDATE, mask_sh)
-
 #define DCN3_1_HPO_DP_LINK_ENC_REG_FIELD_LIST(type) \
 	type DP_LINK_ENC_CLOCK_EN;\
 	type DPHY_RESET;\
@@ -157,67 +121,52 @@ struct dcn31_hpo_dp_link_encoder_registers {
 	type STREAM_VC_RATE_Y;\
 	type SAT_UPDATE;\
 	type RDPCS_PHY_DPALT_DISABLE
-
-
 struct dcn31_hpo_dp_link_encoder_shift {
 	DCN3_1_HPO_DP_LINK_ENC_REG_FIELD_LIST(uint8_t);
 };
-
 struct dcn31_hpo_dp_link_encoder_mask {
 	DCN3_1_HPO_DP_LINK_ENC_REG_FIELD_LIST(uint32_t);
 };
-
 struct dcn31_hpo_dp_link_encoder {
 	struct hpo_dp_link_encoder base;
 	const struct dcn31_hpo_dp_link_encoder_registers *regs;
 	const struct dcn31_hpo_dp_link_encoder_shift *hpo_le_shift;
 	const struct dcn31_hpo_dp_link_encoder_mask *hpo_le_mask;
 };
-
 void hpo_dp_link_encoder31_construct(struct dcn31_hpo_dp_link_encoder *enc31,
 	struct dc_context *ctx,
 	uint32_t inst,
 	const struct dcn31_hpo_dp_link_encoder_registers *hpo_le_regs,
 	const struct dcn31_hpo_dp_link_encoder_shift *hpo_le_shift,
 	const struct dcn31_hpo_dp_link_encoder_mask *hpo_le_mask);
-
 void dcn31_hpo_dp_link_enc_enable_dp_output(
 	struct hpo_dp_link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	enum transmitter transmitter,
 	enum hpd_source_id hpd_source);
-
 void dcn31_hpo_dp_link_enc_disable_output(
 	struct hpo_dp_link_encoder *enc,
 	enum signal_type signal);
-
 void dcn31_hpo_dp_link_enc_enable(
 	struct hpo_dp_link_encoder *enc,
 	enum dc_lane_count num_lanes);
-
 void dcn31_hpo_dp_link_enc_disable(
 	struct hpo_dp_link_encoder *enc);
-
 void dcn31_hpo_dp_link_enc_set_link_test_pattern(
 	struct hpo_dp_link_encoder *enc,
 	struct encoder_set_dp_phy_pattern_param *tp_params);
-
 void dcn31_hpo_dp_link_enc_update_stream_allocation_table(
 	struct hpo_dp_link_encoder *enc,
 	const struct link_mst_stream_allocation_table *table);
-
 void dcn31_hpo_dp_link_enc_set_throttled_vcp_size(
 	struct hpo_dp_link_encoder *enc,
 	uint32_t stream_encoder_inst,
 	struct fixed31_32 avg_time_slots_per_mtp);
-
 void dcn31_hpo_dp_link_enc_read_state(
 	struct hpo_dp_link_encoder *enc,
 	struct hpo_dp_link_enc_state *state);
-
 void dcn31_hpo_dp_link_enc_set_ffe(
 	struct hpo_dp_link_encoder *enc,
 	const struct dc_link_settings *link_settings,
 	uint8_t ffe_preset);
-
-#endif   // __DAL_DCN31_HPO_LINK_ENCODER_H__
+#endif    

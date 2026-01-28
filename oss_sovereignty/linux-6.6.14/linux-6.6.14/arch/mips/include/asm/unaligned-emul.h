@@ -1,9 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef _ASM_MIPS_UNALIGNED_EMUL_H
 #define _ASM_MIPS_UNALIGNED_EMUL_H
-
 #include <asm/asm.h>
-
 #ifdef __BIG_ENDIAN
 #define  _LoadHW(addr, value, res, type)  \
 do {                                                \
@@ -26,7 +23,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _LoadW(addr, value, res, type)   \
 do {                                                \
@@ -47,9 +43,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
-/* For CPUs without lwl instruction */
+#else  
 #define  _LoadW(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -82,9 +76,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
-
+#endif  
 #define  _LoadHWU(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -108,7 +100,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _LoadWU(addr, value, res, type)  \
 do {                                                \
@@ -131,7 +122,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #define  _LoadDW(addr, value, res)  \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -151,9 +141,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
-/* For CPUs without lwl and ldl instructions */
+#else  
 #define  _LoadWU(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -186,7 +174,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #define  _LoadDW(addr, value, res)  \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -235,10 +222,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
-
-
+#endif  
 #define  _StoreHW(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -261,7 +245,6 @@ do {                                                \
 		: "=r" (res)                        \
 		: "r" (value), "r" (addr), "i" (-EFAULT));\
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _StoreW(addr, value, res, type)  \
 do {                                                \
@@ -282,7 +265,6 @@ do {                                                \
 		: "=r" (res)                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
 } while (0)
-
 #define  _StoreDW(addr, value, res) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -302,8 +284,7 @@ do {                                                \
 		: "=r" (res)                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
+#else  
 #define  _StoreW(addr, value, res, type)  \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -334,7 +315,6 @@ do {                                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
 		: "memory");                                \
 } while (0)
-
 #define  _StoreDW(addr, value, res) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -378,11 +358,8 @@ do {                                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
 		: "memory");                                \
 } while (0)
-
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
-
-#else /* __BIG_ENDIAN */
-
+#endif  
+#else  
 #define  _LoadHW(addr, value, res, type)  \
 do {                                                \
 	__asm__ __volatile__ (".set\tnoat\n"        \
@@ -404,7 +381,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _LoadW(addr, value, res, type)   \
 do {                                                \
@@ -425,9 +401,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
-/* For CPUs without lwl instruction */
+#else  
 #define  _LoadW(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -460,10 +434,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
-
-
+#endif  
 #define  _LoadHWU(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -487,7 +458,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _LoadWU(addr, value, res, type)  \
 do {                                                \
@@ -510,7 +480,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #define  _LoadDW(addr, value, res)  \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -530,9 +499,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)         \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
-/* For CPUs without lwl and ldl instructions */
+#else  
 #define  _LoadWU(addr, value, res, type) \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -565,7 +532,6 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-
 #define  _LoadDW(addr, value, res)  \
 do {                                                \
 	__asm__ __volatile__ (			    \
@@ -614,8 +580,7 @@ do {                                                \
 		: "=&r" (value), "=r" (res)	    \
 		: "r" (addr), "i" (-EFAULT));       \
 } while (0)
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
-
+#endif  
 #define  _StoreHW(addr, value, res, type) \
 do {                                                 \
 	__asm__ __volatile__ (                      \
@@ -638,7 +603,6 @@ do {                                                 \
 		: "=r" (res)                        \
 		: "r" (value), "r" (addr), "i" (-EFAULT));\
 } while (0)
-
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 #define  _StoreW(addr, value, res, type)  \
 do {                                                \
@@ -659,7 +623,6 @@ do {                                                \
 		: "=r" (res)                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
 } while (0)
-
 #define  _StoreDW(addr, value, res) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -679,9 +642,7 @@ do {                                                \
 		: "=r" (res)                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT));  \
 } while (0)
-
-#else /* CONFIG_CPU_NO_LOAD_STORE_LR */
-/* For CPUs without swl and sdl instructions */
+#else  
 #define  _StoreW(addr, value, res, type)  \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -712,7 +673,6 @@ do {                                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
 		: "memory");                                \
 } while (0)
-
 #define  _StoreDW(addr, value, res) \
 do {                                                \
 	__asm__ __volatile__ (                      \
@@ -756,10 +716,8 @@ do {                                                \
 		: "r" (value), "r" (addr), "i" (-EFAULT)    \
 		: "memory");                                \
 } while (0)
-
-#endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
+#endif  
 #endif
-
 #define LoadHWU(addr, value, res)	_LoadHWU(addr, value, res, kernel)
 #define LoadHWUE(addr, value, res)	_LoadHWU(addr, value, res, user)
 #define LoadWU(addr, value, res)	_LoadWU(addr, value, res, kernel)
@@ -769,11 +727,9 @@ do {                                                \
 #define LoadW(addr, value, res)		_LoadW(addr, value, res, kernel)
 #define LoadWE(addr, value, res)	_LoadW(addr, value, res, user)
 #define LoadDW(addr, value, res)	_LoadDW(addr, value, res)
-
 #define StoreHW(addr, value, res)	_StoreHW(addr, value, res, kernel)
 #define StoreHWE(addr, value, res)	_StoreHW(addr, value, res, user)
 #define StoreW(addr, value, res)	_StoreW(addr, value, res, kernel)
 #define StoreWE(addr, value, res)	_StoreW(addr, value, res, user)
 #define StoreDW(addr, value, res)	_StoreDW(addr, value, res)
-
-#endif /* _ASM_MIPS_UNALIGNED_EMUL_H */
+#endif  

@@ -1,22 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Author: Mateusz Krawczuk <m.krawczuk@partner.samsung.com>
- *
- * Device Tree binding constants for Samsung S5PV210 clock controller.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_S5PV210_H
 #define _DT_BINDINGS_CLOCK_S5PV210_H
-
-/* Core clocks. */
 #define FIN_PLL			1
 #define FOUT_APLL		2
 #define FOUT_MPLL		3
 #define FOUT_EPLL		4
 #define FOUT_VPLL		5
-
-/* Muxes. */
 #define MOUT_FLASH		6
 #define MOUT_PSYS		7
 #define MOUT_DSYS		8
@@ -57,8 +45,6 @@
 #define MOUT_AUDIO2		43
 #define MOUT_AUDIO1		44
 #define MOUT_AUDIO0		45
-
-/* Dividers. */
 #define DOUT_PCLKP		46
 #define DOUT_HCLKP		47
 #define DOUT_PCLKD		48
@@ -99,8 +85,6 @@
 #define DOUT_AUDIO0		83
 #define DOUT_DPM		84
 #define DOUT_DVSEM		85
-
-/* Gates */
 #define SCLK_FIMC		86
 #define CLK_CSIS		87
 #define CLK_ROTATOR		88
@@ -181,8 +165,6 @@
 #define CLK_IEM_IEC		163
 #define CLK_CHIPID		164
 #define CLK_JPEG		163
-
-/* Special clocks*/
 #define SCLK_PWI		164
 #define SCLK_SPDIF		165
 #define SCLK_AUDIO2		166
@@ -214,23 +196,16 @@
 #define SCLK_HDMIPHY		192
 #define SCLK_USBPHY0		193
 #define SCLK_USBPHY1		194
-
-/* S5P6442-specific clocks */
 #define MOUT_D0SYNC		195
 #define MOUT_D1SYNC		196
 #define DOUT_MIXER		197
 #define CLK_ETB			198
 #define CLK_ETM			199
-
-/* CLKOUT */
 #define FOUT_APLL_CLKOUT	200
 #define FOUT_MPLL_CLKOUT	201
 #define DOUT_APLL_CLKOUT	202
 #define MOUT_CLKSEL		203
 #define DOUT_CLKOUT		204
 #define MOUT_CLKOUT		205
-
-/* Total number of clocks. */
 #define NR_CLKS			206
-
-#endif /* _DT_BINDINGS_CLOCK_S5PV210_H */
+#endif  

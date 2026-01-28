@@ -1,47 +1,13 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-
 #if defined(_KERNEL)
 #if defined(HAVE_DECLARE_EVENT_CLASS)
-
 #undef TRACE_SYSTEM
 #define	TRACE_SYSTEM zfs
-
 #undef TRACE_SYSTEM_VAR
 #define	TRACE_SYSTEM_VAR zfs_zrlock
-
 #if !defined(_TRACE_ZRLOCK_H) || defined(TRACE_HEADER_MULTI_READ)
 #define	_TRACE_ZRLOCK_H
-
 #include <linux/tracepoint.h>
 #include <sys/types.h>
-
-/*
- * Generic support for two argument tracepoints of the form:
- *
- * DTRACE_PROBE2(...,
- *     zrlock_t *, ...,
- *     uint32_t, ...);
- */
-/* BEGIN CSTYLED */
 DECLARE_EVENT_CLASS(zfs_zrlock_class,
 	TP_PROTO(zrlock_t *zrl, kthread_t *owner, uint32_t n),
 	TP_ARGS(zrl, owner, n),
@@ -70,25 +36,18 @@ DECLARE_EVENT_CLASS(zfs_zrlock_class,
 	    __entry->refcount, __entry->n)
 #endif
 );
-/* END CSTYLED */
-
 #define	DEFINE_ZRLOCK_EVENT(name) \
 DEFINE_EVENT(zfs_zrlock_class, name, \
     TP_PROTO(zrlock_t *zrl, kthread_t *owner, uint32_t n), \
     TP_ARGS(zrl, owner, n))
 DEFINE_ZRLOCK_EVENT(zfs_zrlock__reentry);
-
-#endif /* _TRACE_ZRLOCK_H */
-
+#endif  
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define	TRACE_INCLUDE_PATH sys
 #define	TRACE_INCLUDE_FILE trace_zrlock
 #include <trace/define_trace.h>
-
 #else
-
 DEFINE_DTRACE_PROBE3(zrlock__reentry);
-
-#endif /* HAVE_DECLARE_EVENT_CLASS */
-#endif /* _KERNEL */
+#endif  
+#endif  

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
-
 #ifndef QCOM_PHY_QMP_QSERDES_PLL_H_
 #define QCOM_PHY_QMP_QSERDES_PLL_H_
-
-/* QMP V2 PHY for PCIE gen3 ports - QSERDES PLL registers */
 #define QSERDES_PLL_BG_TIMER				0x00c
 #define QSERDES_PLL_SSC_PER1				0x01c
 #define QSERDES_PLL_SSC_PER2				0x020
@@ -62,5 +55,4 @@
 #define QSERDES_PLL_CMN_CONFIG				0x18c
 #define QSERDES_PLL_SVS_MODE_CLK_SEL			0x194
 #define QSERDES_PLL_CORECLK_DIV_MODE1			0x1b4
-
 #endif

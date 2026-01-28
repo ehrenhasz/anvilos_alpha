@@ -1,15 +1,4 @@
-/* vi: set sw=4 ts=4: */
-/*
- * ascii-to-numbers implementations for busybox
- *
- * Copyright (C) 2003  Manuel Novoa III  <mjn3@codepoet.org>
- *
- * Licensed under GPLv2, see file LICENSE in this source tree.
- */
-
 PUSH_AND_SET_FUNCTION_VISIBILITY_TO_HIDDEN
-
-/* Provides extern declarations of functions */
 #define DECLARE_STR_CONV(type, T, UT) \
 \
 unsigned type xstrto##UT##_range_sfx(const char *str, int b, unsigned type l, unsigned type u, const struct suffix_mult *sfx) FAST_FUNC; \
@@ -27,13 +16,7 @@ type xato##T##_range_sfx(const char *str, type l, type u, const struct suffix_mu
 type xato##T##_range(const char *str, type l, type u) FAST_FUNC; \
 type xato##T##_sfx(const char *str, const struct suffix_mult *sfx) FAST_FUNC; \
 type xato##T(const char *str) FAST_FUNC; \
-
-/* Unsigned long long functions always exist */
 DECLARE_STR_CONV(long long, ll, ull)
-
-
-/* Provides inline definitions of functions */
-/* (useful for mapping them to the type of the same width) */
 #define DEFINE_EQUIV_STR_CONV(narrow, N, W, UN, UW) \
 \
 static ALWAYS_INLINE \
@@ -81,16 +64,11 @@ narrow xato##N##_sfx(const char *str, const struct suffix_mult *sfx) \
 static ALWAYS_INLINE \
 narrow xato##N(const char *str) \
 { return xato##W(str); } \
-
-/* If long == long long, then just map them one-to-one */
 #if ULONG_MAX == ULLONG_MAX
 DEFINE_EQUIV_STR_CONV(long, l, ll, ul, ull)
 #else
-/* Else provide extern defs */
 DECLARE_STR_CONV(long, l, ul)
 #endif
-
-/* Same for int -> [long] long */
 #if UINT_MAX == ULLONG_MAX
 DEFINE_EQUIV_STR_CONV(int, i, ll, u, ull)
 #elif UINT_MAX == ULONG_MAX
@@ -98,9 +76,6 @@ DEFINE_EQUIV_STR_CONV(int, i, l, u, ul)
 #else
 DECLARE_STR_CONV(int, i, u)
 #endif
-
-/* Specialized */
-
 uint32_t BUG_xatou32_unimplemented(void);
 static ALWAYS_INLINE uint32_t xatou32(const char *numstr)
 {
@@ -110,23 +85,8 @@ static ALWAYS_INLINE uint32_t xatou32(const char *numstr)
 		return xatoul(numstr);
 	return BUG_xatou32_unimplemented();
 }
-
-/* Non-aborting kind of convertors: bb_strto[u][l]l */
-
-/* On exit: errno = 0 only if there was non-empty, '\0' terminated value
- * errno = EINVAL if value was not '\0' terminated, but otherwise ok
- *    Return value is still valid, caller should just check whether end[0]
- *    is a valid terminating char for particular case. OTOH, if caller
- *    requires '\0' terminated input, [s]he can just check errno == 0.
- * errno = ERANGE if value had alphanumeric terminating char ("1234abcg").
- * errno = ERANGE if value is out of range, missing, etc.
- * errno = ERANGE if value had minus sign for strtouXX (even "-0" is not ok )
- *    return value is all-ones in this case.
- */
-
 unsigned long long bb_strtoull(const char *arg, char **endp, int base) FAST_FUNC;
 long long bb_strtoll(const char *arg, char **endp, int base) FAST_FUNC;
-
 #if ULONG_MAX == ULLONG_MAX
 static ALWAYS_INLINE
 unsigned long bb_strtoul(const char *arg, char **endp, int base)
@@ -138,7 +98,6 @@ long bb_strtol(const char *arg, char **endp, int base)
 unsigned long bb_strtoul(const char *arg, char **endp, int base) FAST_FUNC;
 long bb_strtol(const char *arg, char **endp, int base) FAST_FUNC;
 #endif
-
 #if UINT_MAX == ULLONG_MAX
 static ALWAYS_INLINE
 unsigned bb_strtou(const char *arg, char **endp, int base)
@@ -157,7 +116,6 @@ int bb_strtoi(const char *arg, char **endp, int base)
 unsigned bb_strtou(const char *arg, char **endp, int base) FAST_FUNC;
 int bb_strtoi(const char *arg, char **endp, int base) FAST_FUNC;
 #endif
-
 uint32_t BUG_bb_strtou32_unimplemented(void);
 static ALWAYS_INLINE
 uint32_t bb_strtou32(const char *arg, char **endp, int base)
@@ -177,9 +135,5 @@ int32_t bb_strtoi32(const char *arg, char **endp, int base)
 		return bb_strtol(arg, endp, base);
 	return BUG_bb_strtou32_unimplemented();
 }
-
-/* Floating point */
-
 double bb_strtod(const char *arg, char **endp) FAST_FUNC;
-
 POP_SAVED_FUNCTION_VISIBILITY

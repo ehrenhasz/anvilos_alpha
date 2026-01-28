@@ -1,20 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2004, 2007-2010, 2011-2012 Synopsys, Inc. (www.synopsys.com)
- *
- * Vineetg: August 2010: From Android kernel work
- */
-
 #ifndef _ASM_FUTEX_H
 #define _ASM_FUTEX_H
-
 #include <linux/futex.h>
 #include <linux/preempt.h>
 #include <linux/uaccess.h>
 #include <asm/errno.h>
-
 #ifdef CONFIG_ARC_HAS_LLSC
-
 #define __futex_atomic_op(insn, ret, oldval, uaddr, oparg)\
 							\
 	smp_mb();					\
@@ -40,9 +30,7 @@
 	: "r" (uaddr), "r" (oparg), "ir" (-EFAULT)	\
 	: "cc", "memory");				\
 	smp_mb()					\
-
-#else	/* !CONFIG_ARC_HAS_LLSC */
-
+#else	 
 #define __futex_atomic_op(insn, ret, oldval, uaddr, oparg)\
 							\
 	smp_mb();					\
@@ -67,27 +55,21 @@
 	: "r" (uaddr), "r" (oparg), "ir" (-EFAULT)	\
 	: "cc", "memory");				\
 	smp_mb()					\
-
 #endif
-
 static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 		u32 __user *uaddr)
 {
 	int oldval = 0, ret;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 #ifndef CONFIG_ARC_HAS_LLSC
-	preempt_disable();	/* to guarantee atomic r-m-w of futex op */
+	preempt_disable();	 
 #endif
-
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_atomic_op("mov %0, %3", ret, oldval, uaddr, oparg);
 		break;
 	case FUTEX_OP_ADD:
-		/* oldval = *uaddr; *uaddr += oparg ; ret = *uaddr */
 		__futex_atomic_op("add %0, %1, %3", ret, oldval, uaddr, oparg);
 		break;
 	case FUTEX_OP_OR:
@@ -102,36 +84,25 @@ static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
 	default:
 		ret = -ENOSYS;
 	}
-
 #ifndef CONFIG_ARC_HAS_LLSC
 	preempt_enable();
 #endif
-
 	if (!ret)
 		*oval = oldval;
-
 	return ret;
 }
-
-/*
- * cmpxchg of futex (pagefaults disabled by caller)
- * Return 0 for success, -EFAULT otherwise
- */
 static inline int
 futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 expval,
 			      u32 newval)
 {
 	int ret = 0;
 	u32 existval;
-
 	if (!access_ok(uaddr, sizeof(u32)))
 		return -EFAULT;
-
 #ifndef CONFIG_ARC_HAS_LLSC
-	preempt_disable();	/* to guarantee atomic r-m-w of futex op */
+	preempt_disable();	 
 #endif
 	smp_mb();
-
 	__asm__ __volatile__(
 #ifdef CONFIG_ARC_HAS_LLSC
 	"1:	llock	%1, [%4]		\n"
@@ -156,14 +127,11 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr, u32 expval,
 	: "+&r"(ret), "=&r"(existval)
 	: "r"(expval), "r"(newval), "r"(uaddr), "ir"(-EFAULT)
 	: "cc", "memory");
-
 	smp_mb();
-
 #ifndef CONFIG_ARC_HAS_LLSC
 	preempt_enable();
 #endif
 	*uval = existval;
 	return ret;
 }
-
 #endif

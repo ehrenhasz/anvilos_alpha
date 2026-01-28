@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2012-2019 ARM Limited (or its affiliates). */
-
 #ifndef __CC_CRYS_KERNEL_H__
 #define __CC_CRYS_KERNEL_H__
-
-// --------------------------------------
-// BLOCK: DSCRPTR
-// --------------------------------------
 #define CC_DSCRPTR_COMPLETION_COUNTER_REG_OFFSET	0xE00UL
 #define CC_DSCRPTR_COMPLETION_COUNTER_COMPLETION_COUNTER_BIT_SHIFT	0x0UL
 #define CC_DSCRPTR_COMPLETION_COUNTER_COMPLETION_COUNTER_BIT_SIZE	0x6UL
@@ -108,9 +101,6 @@
 #define CC_DSCRPTR_QUEUE_CONTENT_REG_OFFSET	0xE9CUL
 #define CC_DSCRPTR_QUEUE_CONTENT_VALUE_BIT_SHIFT	0x0UL
 #define CC_DSCRPTR_QUEUE_CONTENT_VALUE_BIT_SIZE	0xAUL
-// --------------------------------------
-// BLOCK: AXI_P
-// --------------------------------------
 #define CC_AXIM_MON_INFLIGHT_REG_OFFSET	0xB00UL
 #define CC_AXIM_MON_INFLIGHT_VALUE_BIT_SHIFT	0x0UL
 #define CC_AXIM_MON_INFLIGHT_VALUE_BIT_SIZE	0x8UL
@@ -165,4 +155,4 @@
 #define CC_AXIM_CACHE_PARAMS_AWCACHE_BIT_SIZE	0x4UL
 #define CC_AXIM_CACHE_PARAMS_ARCACHE_BIT_SHIFT	0x8UL
 #define CC_AXIM_CACHE_PARAMS_ARCACHE_BIT_SIZE	0x4UL
-#endif	// __CC_CRYS_KERNEL_H__
+#endif	 

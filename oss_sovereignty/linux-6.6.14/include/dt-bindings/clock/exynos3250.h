@@ -1,27 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * 	Author: Tomasz Figa <t.figa@samsung.com>
- *
- * Device Tree binding constants for Samsung Exynos3250 clock controllers.
- */
-
 #ifndef _DT_BINDINGS_CLOCK_SAMSUNG_EXYNOS3250_CLOCK_H
 #define _DT_BINDINGS_CLOCK_SAMSUNG_EXYNOS3250_CLOCK_H
-
-/*
- * Let each exported clock get a unique index, which is used on DT-enabled
- * platforms to lookup the clock from a clock specifier. These indices are
- * therefore considered an ABI and so must not be changed. This implies
- * that new clocks should be added either in free spaces between clock groups
- * or at the end.
- */
-
-
-/*
- * Main CMU
- */
-
 #define CLK_OSCSEL			1
 #define CLK_FIN_PLL			2
 #define CLK_FOUT_APLL			3
@@ -29,8 +7,6 @@
 #define CLK_FOUT_UPLL			5
 #define CLK_FOUT_MPLL			6
 #define CLK_ARM_CLK			7
-
-/* Muxes */
 #define CLK_MOUT_MPLL_USER_L		16
 #define CLK_MOUT_GDL			17
 #define CLK_MOUT_MPLL_USER_R		18
@@ -78,8 +54,6 @@
 #define CLK_MOUT_ACLK_266_SUB		60
 #define CLK_MOUT_UART2			61
 #define CLK_MOUT_MMC2			62
-
-/* Dividers */
 #define CLK_DIV_GPL			64
 #define CLK_DIV_GDL			65
 #define CLK_DIV_GPR			66
@@ -129,8 +103,6 @@
 #define CLK_DIV_UART2			110
 #define CLK_DIV_MMC2_PRE		111
 #define CLK_DIV_MMC2			112
-
-/* Gates */
 #define CLK_ASYNC_G3D			128
 #define CLK_ASYNC_MFCL			129
 #define CLK_PPMULEFT			130
@@ -227,8 +199,6 @@
 #define CLK_SMIES			221
 #define CLK_UART2			222
 #define CLK_SDMMC2			223
-
-/* Special clocks */
 #define CLK_SCLK_JPEG			224
 #define CLK_SCLK_M2MSCALER		225
 #define CLK_SCLK_GSCALER1		226
@@ -255,42 +225,23 @@
 #define CLK_SCLK_UART0			247
 #define CLK_SCLK_UART2			248
 #define CLK_SCLK_MMC2			249
-
-/*
- * CMU DMC
- */
-
 #define CLK_FOUT_BPLL			1
 #define CLK_FOUT_EPLL			2
-
-/* Muxes */
 #define CLK_MOUT_MPLL_MIF		8
 #define CLK_MOUT_BPLL			9
 #define CLK_MOUT_DPHY			10
 #define CLK_MOUT_DMC_BUS		11
 #define CLK_MOUT_EPLL			12
-
-/* Dividers */
 #define CLK_DIV_DMC			16
 #define CLK_DIV_DPHY			17
 #define CLK_DIV_DMC_PRE			18
 #define CLK_DIV_DMCP			19
 #define CLK_DIV_DMCD			20
-
-/*
- * CMU ISP
- */
-
-/* Dividers */
-
 #define CLK_DIV_ISP1			1
 #define CLK_DIV_ISP0			2
 #define CLK_DIV_MCUISP1			3
 #define CLK_DIV_MCUISP0			4
 #define CLK_DIV_MPWM			5
-
-/* Gates */
-
 #define CLK_UART_ISP			8
 #define CLK_WDT_ISP			9
 #define CLK_PWM_ISP			10
@@ -331,5 +282,4 @@
 #define CLK_SMMU_ISPCX			45
 #define CLK_ASYNCAXIM			46
 #define CLK_SCLK_MPWM_ISP		47
-
-#endif /* _DT_BINDINGS_CLOCK_SAMSUNG_EXYNOS3250_CLOCK_H */
+#endif  

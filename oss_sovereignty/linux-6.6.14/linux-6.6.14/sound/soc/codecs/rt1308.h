@@ -1,17 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rt1308.h  --  RT1308 ALSA SoC amplifier component driver
- *
- * Copyright 2019 Realtek Semiconductor Corp.
- * Author: Derek Fang <derek.fang@realtek.com>
- *
- */
-
 #ifndef _RT1308_H_
 #define _RT1308_H_
-
 #define RT1308_DEVICE_ID_NUM			0x10ec1300
-
 #define RT1308_RESET				0x00
 #define RT1308_RESET_N				0x01
 #define RT1308_CLK_GATING			0x02
@@ -144,8 +133,6 @@
 #define RT1308_TCON_2				0xc1
 #define RT1308_DUMMY_REG			0xf0
 #define RT1308_MAX_REG				0xff
-
-/* PLL1 M/N/K Code-1 (0x03) */
 #define RT1308_PLL1_K_SFT			24
 #define RT1308_PLL1_K_MASK			(0x1f << 24)
 #define RT1308_PLL1_M_BYPASS_MASK		(0x1 << 23)
@@ -155,8 +142,6 @@
 #define RT1308_PLL1_M_SFT			16
 #define RT1308_PLL1_N_MASK			(0x7f << 8)
 #define RT1308_PLL1_N_SFT			8
-
-/* CLOCK-1 (0x06) */
 #define RT1308_DIV_FS_SYS_MASK			(0xf << 28)
 #define RT1308_DIV_FS_SYS_SFT			28
 #define RT1308_SEL_FS_SYS_MASK			(0x7 << 24)
@@ -165,8 +150,6 @@
 #define RT1308_SEL_FS_SYS_SRC_BCLK		(0x1 << 24)
 #define RT1308_SEL_FS_SYS_SRC_PLL		(0x2 << 24)
 #define RT1308_SEL_FS_SYS_SRC_RCCLK		(0x4 << 24)
-
-/* CLOCK-2 (0x08) */
 #define RT1308_DIV_PRE_PLL_MASK			(0xf << 28)
 #define RT1308_DIV_PRE_PLL_SFT			28
 #define RT1308_SEL_PLL_SRC_MASK			(0x7 << 24)
@@ -174,20 +157,14 @@
 #define RT1308_SEL_PLL_SRC_MCLK			(0x0 << 24)
 #define RT1308_SEL_PLL_SRC_BCLK			(0x1 << 24)
 #define RT1308_SEL_PLL_SRC_RCCLK		(0x4 << 24)
-
-/* Clock Detect (0x0a) */
 #define RT1308_MCLK_DET_EN_MASK			(0x1 << 25)
 #define RT1308_MCLK_DET_EN_SFT			25
 #define RT1308_MCLK_DET_EN			(0x1 << 25)
 #define RT1308_BCLK_DET_EN_MASK			(0x1 << 24)
 #define RT1308_BCLK_DET_EN_SFT			24
 #define RT1308_BCLK_DET_EN			(0x1 << 24)
-
-/* DAC Setting (0x10) */
 #define RT1308_DVOL_MUTE_R_EN_SFT		7
 #define RT1308_DVOL_MUTE_L_EN_SFT		6
-
-/* I2S Setting-1 (0x15) */
 #define RT1308_I2S_DF_SEL_MASK			(0x3 << 12)
 #define RT1308_I2S_DF_SEL_SFT			12
 #define RT1308_I2S_DF_SEL_I2S			(0x0 << 12)
@@ -208,8 +185,6 @@
 #define RT1308_I2S_DL_TX_SEL_24B		(0x2 << 0)
 #define RT1308_I2S_DL_TX_SEL_32B		(0x3 << 0)
 #define RT1308_I2S_DL_TX_SEL_8B			(0x4 << 0)
-
-/* I2S Setting-2 (0x16) */
 #define RT1308_I2S_DL_SEL_MASK			(0x7 << 24)
 #define RT1308_I2S_DL_SEL_SFT			24
 #define RT1308_I2S_DL_SEL_16B			(0x0 << 24)
@@ -221,8 +196,6 @@
 #define RT1308_I2S_BCLK_SFT			14
 #define RT1308_I2S_BCLK_NORMAL			(0x0 << 14)
 #define RT1308_I2S_BCLK_INV			(0x1 << 14)
-
-/* Power Control-1 (0x32) */
 #define RT1308_POW_MBIAS20U			(0x1 << 31)
 #define RT1308_POW_MBIAS20U_BIT			31
 #define RT1308_POW_ALDO				(0x1 << 30)
@@ -259,36 +232,26 @@
 #define RT1308_POW_PLL2F2_EN_BIT		9
 #define RT1308_POW_PLL2B2_EN			(0x1 << 8)
 #define RT1308_POW_PLL2B2_EN_BIT		8
-
-/* Power Control-2 (0x36) */
 #define RT1308_POW_PDB_SRC_BIT			(0x1 << 27)
 #define RT1308_POW_PDB_MN_BIT			(0x1 << 25)
 #define RT1308_POW_PDB_REG_BIT			(0x1 << 24)
-
-
-/* System Clock Source */
 enum {
 	RT1308_FS_SYS_S_MCLK,
 	RT1308_FS_SYS_S_BCLK,
 	RT1308_FS_SYS_S_PLL,
-	RT1308_FS_SYS_S_RCCLK,	/* 25.0 MHz */
+	RT1308_FS_SYS_S_RCCLK,	 
 };
-
-/* PLL Source */
 enum {
 	RT1308_PLL_S_MCLK,
 	RT1308_PLL_S_BCLK,
 	RT1308_PLL_S_RCCLK,
 };
-
 enum {
 	RT1308_AIF1,
 	RT1308_AIFS
 };
-
 enum rt1308_hw_ver {
 	RT1308_VER_C = 2,
 	RT1308_VER_D
 };
-
-#endif		/* end of _RT1308_H_ */
+#endif		 

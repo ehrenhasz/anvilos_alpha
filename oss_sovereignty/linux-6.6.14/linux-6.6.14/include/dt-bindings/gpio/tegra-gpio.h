@@ -1,18 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides constants for binding nvidia,tegra*-gpio.
- *
- * The first cell in Tegra's GPIO specifier is the GPIO ID. The macros below
- * provide names for this.
- *
- * The second cell contains standard flag values specified in gpio.h.
- */
-
 #ifndef _DT_BINDINGS_GPIO_TEGRA_GPIO_H
 #define _DT_BINDINGS_GPIO_TEGRA_GPIO_H
-
 #include <dt-bindings/gpio/gpio.h>
-
 #define TEGRA_GPIO_PORT_A 0
 #define TEGRA_GPIO_PORT_B 1
 #define TEGRA_GPIO_PORT_C 2
@@ -45,8 +33,6 @@
 #define TEGRA_GPIO_PORT_DD 29
 #define TEGRA_GPIO_PORT_EE 30
 #define TEGRA_GPIO_PORT_FF 31
-
 #define TEGRA_GPIO(port, offset) \
 	((TEGRA_GPIO_PORT_##port * 8) + offset)
-
 #endif

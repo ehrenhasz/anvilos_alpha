@@ -1,34 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra210_admaif.h - Tegra ADMAIF registers
- *
- * Copyright (c) 2020 NVIDIA CORPORATION.  All rights reserved.
- *
- */
-
 #ifndef __TEGRA_ADMAIF_H__
 #define __TEGRA_ADMAIF_H__
-
 #define TEGRA_ADMAIF_CHANNEL_REG_STRIDE			0x40
-/* Tegra210 specific */
 #define TEGRA210_ADMAIF_LAST_REG			0x75f
 #define TEGRA210_ADMAIF_CHANNEL_COUNT			10
 #define TEGRA210_ADMAIF_RX_BASE				0x0
 #define TEGRA210_ADMAIF_TX_BASE				0x300
 #define TEGRA210_ADMAIF_GLOBAL_BASE			0x700
-/* Tegra186 specific */
 #define TEGRA186_ADMAIF_LAST_REG			0xd5f
 #define TEGRA186_ADMAIF_CHANNEL_COUNT			20
 #define TEGRA186_ADMAIF_RX_BASE				0x0
 #define TEGRA186_ADMAIF_TX_BASE				0x500
 #define TEGRA186_ADMAIF_GLOBAL_BASE			0xd00
-/* Global registers */
 #define TEGRA_ADMAIF_GLOBAL_ENABLE			0x0
 #define TEGRA_ADMAIF_GLOBAL_CG_0			0x8
 #define TEGRA_ADMAIF_GLOBAL_STATUS			0x10
 #define TEGRA_ADMAIF_GLOBAL_RX_ENABLE_STATUS		0x20
 #define TEGRA_ADMAIF_GLOBAL_TX_ENABLE_STATUS		0x24
-/* RX channel registers */
 #define TEGRA_ADMAIF_RX_ENABLE				0x0
 #define TEGRA_ADMAIF_RX_SOFT_RESET			0x4
 #define TEGRA_ADMAIF_RX_STATUS				0xc
@@ -39,7 +26,6 @@
 #define TEGRA_ADMAIF_CH_ACIF_RX_CTRL			0x20
 #define TEGRA_ADMAIF_RX_FIFO_CTRL			0x28
 #define TEGRA_ADMAIF_RX_FIFO_READ			0x2c
-/* TX channel registers */
 #define TEGRA_ADMAIF_TX_ENABLE				0x0
 #define TEGRA_ADMAIF_TX_SOFT_RESET			0x4
 #define TEGRA_ADMAIF_TX_STATUS				0xc
@@ -50,7 +36,6 @@
 #define TEGRA_ADMAIF_CH_ACIF_TX_CTRL			0x20
 #define TEGRA_ADMAIF_TX_FIFO_CTRL			0x28
 #define TEGRA_ADMAIF_TX_FIFO_WRITE			0x2c
-/* Bit fields */
 #define PACK8_EN_SHIFT					31
 #define PACK8_EN_MASK					BIT(PACK8_EN_SHIFT)
 #define PACK8_EN					BIT(PACK8_EN_SHIFT)
@@ -65,7 +50,6 @@
 #define RX_ENABLE					BIT(RX_ENABLE_SHIFT)
 #define SW_RESET_MASK					1
 #define SW_RESET					1
-/* Default values - Tegra210 */
 #define TEGRA210_ADMAIF_RX1_FIFO_CTRL_REG_DEFAULT	0x00000300
 #define TEGRA210_ADMAIF_RX2_FIFO_CTRL_REG_DEFAULT	0x00000304
 #define TEGRA210_ADMAIF_RX3_FIFO_CTRL_REG_DEFAULT	0x00000208
@@ -86,7 +70,6 @@
 #define TEGRA210_ADMAIF_TX8_FIFO_CTRL_REG_DEFAULT	0x01800217
 #define TEGRA210_ADMAIF_TX9_FIFO_CTRL_REG_DEFAULT	0x0180021a
 #define TEGRA210_ADMAIF_TX10_FIFO_CTRL_REG_DEFAULT	0x0180021d
-/* Default values - Tegra186 */
 #define TEGRA186_ADMAIF_RX1_FIFO_CTRL_REG_DEFAULT	0x00000300
 #define TEGRA186_ADMAIF_RX2_FIFO_CTRL_REG_DEFAULT	0x00000304
 #define TEGRA186_ADMAIF_RX3_FIFO_CTRL_REG_DEFAULT	0x00000308
@@ -127,19 +110,16 @@
 #define TEGRA186_ADMAIF_TX18_FIFO_CTRL_REG_DEFAULT	0x01800237
 #define TEGRA186_ADMAIF_TX19_FIFO_CTRL_REG_DEFAULT	0x0180023a
 #define TEGRA186_ADMAIF_TX20_FIFO_CTRL_REG_DEFAULT	0x0180023d
-
 enum {
 	DATA_8BIT,
 	DATA_16BIT,
 	DATA_32BIT
 };
-
 enum {
 	ADMAIF_RX_PATH,
 	ADMAIF_TX_PATH,
 	ADMAIF_PATHS,
 };
-
 struct tegra_admaif_soc_data {
 	const struct snd_soc_component_driver *cmpnt;
 	const struct regmap_config *regmap_conf;
@@ -149,7 +129,6 @@ struct tegra_admaif_soc_data {
 	unsigned int rx_base;
 	unsigned int num_ch;
 };
-
 struct tegra_admaif {
 	struct snd_dmaengine_dai_dma_data *capture_dma_data;
 	struct snd_dmaengine_dai_dma_data *playback_dma_data;
@@ -158,5 +137,4 @@ struct tegra_admaif {
 	unsigned int *stereo_to_mono[ADMAIF_PATHS];
 	struct regmap *regmap;
 };
-
 #endif

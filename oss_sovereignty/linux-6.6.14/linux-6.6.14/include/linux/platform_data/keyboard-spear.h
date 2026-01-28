@@ -1,20 +1,9 @@
-/*
- * Copyright (C) 2010 ST Microelectronics
- * Rajeev Kumar <rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-
 #ifndef __PLAT_KEYBOARD_H
 #define __PLAT_KEYBOARD_H
-
 #include <linux/bitops.h>
 #include <linux/input.h>
 #include <linux/input/matrix_keypad.h>
 #include <linux/types.h>
-
 #define DECLARE_9x9_KEYMAP(_name) \
 int _name[] = { \
 	KEY(0, 0, KEY_ESC), \
@@ -99,7 +88,6 @@ int _name[] = { \
 	KEY(8, 7, KEY_KP3), \
 	KEY(8, 8, KEY_KP0), \
 }
-
 #define DECLARE_6x6_KEYMAP(_name) \
 int _name[] = { \
 	KEY(0, 0, KEY_RESERVED), \
@@ -139,26 +127,13 @@ int _name[] = { \
 	KEY(5, 4, KEY_RO), \
 	KEY(5, 5, KEY_ZENKAKUHANKAKU), \
 }
-
 #define KEYPAD_9x9     0
 #define KEYPAD_6x6     1
 #define KEYPAD_2x2     2
-
-/**
- * struct kbd_platform_data - spear keyboard platform data
- * keymap: pointer to keymap data (table and size)
- * rep: enables key autorepeat
- * mode: choose keyboard support(9x9, 6x6, 2x2)
- * suspended_rate: rate at which keyboard would operate in suspended mode
- *
- * This structure is supposed to be used by platform code to supply
- * keymaps to drivers that implement keyboards.
- */
 struct kbd_platform_data {
 	const struct matrix_keymap_data *keymap;
 	bool rep;
 	unsigned int mode;
 	unsigned int suspended_rate;
 };
-
-#endif /* __PLAT_KEYBOARD_H */
+#endif  

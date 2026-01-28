@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *	CPU feature overrides for DECstation systems.  Two variations
- *	are generally applicable.
- *
- *	Copyright (C) 2013  Maciej W. Rozycki
- */
 #ifndef __ASM_MACH_DEC_CPU_FEATURE_OVERRIDES_H
 #define __ASM_MACH_DEC_CPU_FEATURE_OVERRIDES_H
-
-/* Generic ones first.  */
 #define cpu_has_tlb			1
 #define cpu_has_tlbinv			0
 #define cpu_has_segments		0
@@ -46,8 +37,6 @@
 #define cpu_has_vz			0
 #define cpu_has_fre			0
 #define cpu_has_cdmm			0
-
-/* R3k-specific ones.  */
 #ifdef CONFIG_CPU_R3000
 #define cpu_has_3kex			1
 #define cpu_has_4kex			0
@@ -68,9 +57,7 @@
 #define cpu_dcache_line_size()		4
 #define cpu_icache_line_size()		4
 #define cpu_scache_line_size()		0
-#endif /* CONFIG_CPU_R3000 */
-
-/* R4k-specific ones.  */
+#endif  
 #ifdef CONFIG_CPU_R4X00
 #define cpu_has_3kex			0
 #define cpu_has_4kex			1
@@ -91,6 +78,5 @@
 #define cpu_dcache_line_size()		16
 #define cpu_icache_line_size()		16
 #define cpu_scache_line_size()		32
-#endif /* CONFIG_CPU_R4X00 */
-
-#endif /* __ASM_MACH_DEC_CPU_FEATURE_OVERRIDES_H */
+#endif  
+#endif  

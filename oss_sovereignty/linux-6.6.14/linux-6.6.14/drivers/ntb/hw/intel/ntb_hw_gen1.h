@@ -1,52 +1,6 @@
-/*
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- *   redistributing this file, you may do so under either license.
- *
- *   GPL LICENSE SUMMARY
- *
- *   Copyright(c) 2012-2017 Intel Corporation. All rights reserved.
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of version 2 of the GNU General Public License as
- *   published by the Free Software Foundation.
- *
- *   BSD LICENSE
- *
- *   Copyright(c) 2012-2017 Intel Corporation. All rights reserved.
- *
- *   Redistribution and use in source and binary forms, with or without
- *   modification, are permitted provided that the following conditions
- *   are met:
- *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copy
- *       notice, this list of conditions and the following disclaimer in
- *       the documentation and/or other materials provided with the
- *       distribution.
- *     * Neither the name of Intel Corporation nor the names of its
- *       contributors may be used to endorse or promote products derived
- *       from this software without specific prior written permission.
- *
- *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *   A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *   OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *   THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #ifndef _NTB_INTEL_GEN1_H_
 #define _NTB_INTEL_GEN1_H_
-
 #include "ntb_hw_intel.h"
-
-/* Intel Gen1 Xeon hardware */
 #define XEON_PBAR23LMT_OFFSET		0x0000
 #define XEON_PBAR45LMT_OFFSET		0x0008
 #define XEON_PBAR4LMT_OFFSET		0x0008
@@ -105,7 +59,6 @@
 #define XEON_PPD_DEV_USD		0x00
 #define XEON_PPD_DEV_DSD		0x10
 #define XEON_PPD_SPLIT_BAR_MASK		0x40
-
 #define XEON_PPD_TOPO_MASK	(XEON_PPD_CONN_MASK | XEON_PPD_DEV_MASK)
 #define XEON_PPD_TOPO_PRI_USD	(XEON_PPD_CONN_RP | XEON_PPD_DEV_USD)
 #define XEON_PPD_TOPO_PRI_DSD	(XEON_PPD_CONN_RP | XEON_PPD_DEV_DSD)
@@ -113,7 +66,6 @@
 #define XEON_PPD_TOPO_SEC_DSD	(XEON_PPD_CONN_TRANSPARENT | XEON_PPD_DEV_DSD)
 #define XEON_PPD_TOPO_B2B_USD	(XEON_PPD_CONN_B2B | XEON_PPD_DEV_USD)
 #define XEON_PPD_TOPO_B2B_DSD	(XEON_PPD_CONN_B2B | XEON_PPD_DEV_DSD)
-
 #define XEON_MW_COUNT			2
 #define HSX_SPLIT_BAR_MW_COUNT		3
 #define XEON_DB_COUNT			15
@@ -123,29 +75,20 @@
 #define XEON_DB_MSIX_VECTOR_SHIFT	5
 #define XEON_DB_TOTAL_SHIFT		16
 #define XEON_SPAD_COUNT			16
-
-/* Use the following addresses for translation between b2b ntb devices in case
- * the hardware default values are not reliable. */
 #define XEON_B2B_BAR0_ADDR	0x1000000000000000ull
 #define XEON_B2B_BAR2_ADDR64	0x2000000000000000ull
 #define XEON_B2B_BAR4_ADDR64	0x4000000000000000ull
 #define XEON_B2B_BAR4_ADDR32	0x20000000u
 #define XEON_B2B_BAR5_ADDR32	0x40000000u
-
-/* The peer ntb secondary config space is 32KB fixed size */
 #define XEON_B2B_MIN_SIZE		0x8000
-
-/* flags to indicate hardware errata */
 #define NTB_HWERR_SDOORBELL_LOCKUP	BIT_ULL(0)
 #define NTB_HWERR_SB01BASE_LOCKUP	BIT_ULL(1)
 #define NTB_HWERR_B2BDOORBELL_BIT14	BIT_ULL(2)
 #define NTB_HWERR_MSIX_VECTOR32_BAD	BIT_ULL(3)
 #define NTB_HWERR_BAR_ALIGN		BIT_ULL(4)
 #define NTB_HWERR_LTR_BAD		BIT_ULL(5)
-
 extern struct intel_b2b_addr xeon_b2b_usd_addr;
 extern struct intel_b2b_addr xeon_b2b_dsd_addr;
-
 int ndev_init_isr(struct intel_ntb_dev *ndev, int msix_min, int msix_max,
 		int msix_shift, int total_shift);
 enum ntb_topo xeon_ppd_topo(struct intel_ntb_dev *ndev, u8 ppd);
@@ -181,5 +124,4 @@ int intel_ntb_peer_spad_write(struct ntb_dev *ntb, int pidx, int sidx,
 int intel_ntb_peer_spad_addr(struct ntb_dev *ntb, int pidx, int sidx,
 				    phys_addr_t *spad_addr);
 int xeon_link_is_up(struct intel_ntb_dev *ndev);
-
 #endif

@@ -1,31 +1,5 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 #ifndef __AMDGPU_NBIO_H__
 #define __AMDGPU_NBIO_H__
-
-/*
- * amdgpu nbio functions
- */
 struct nbio_hdp_flush_reg {
 	u32 ref_and_mask_cp0;
 	u32 ref_and_mask_cp1;
@@ -46,7 +20,6 @@ struct nbio_hdp_flush_reg {
 	u32 ref_and_mask_sdma6;
 	u32 ref_and_mask_sdma7;
 };
-
 struct amdgpu_nbio_ras {
 	struct amdgpu_ras_block_object ras_block;
 	void (*handle_ras_controller_intr_no_bifring)(struct amdgpu_device *adev);
@@ -54,7 +27,6 @@ struct amdgpu_nbio_ras {
 	int (*init_ras_controller_interrupt)(struct amdgpu_device *adev);
 	int (*init_ras_err_event_athub_interrupt)(struct amdgpu_device *adev);
 };
-
 struct amdgpu_nbio_funcs {
 	const struct nbio_hdp_flush_reg *hdp_flush_reg;
 	u32 (*get_hdp_flush_req_offset)(struct amdgpu_device *adev);
@@ -103,7 +75,6 @@ struct amdgpu_nbio_funcs {
 	void (*get_pcie_usage)(struct amdgpu_device *adev, uint64_t *count0,
 					uint64_t *count1);
 };
-
 struct amdgpu_nbio {
 	const struct nbio_hdp_flush_reg *hdp_flush_reg;
 	struct amdgpu_irq_src ras_controller_irq;
@@ -112,10 +83,8 @@ struct amdgpu_nbio {
 	const struct amdgpu_nbio_funcs *funcs;
 	struct amdgpu_nbio_ras  *ras;
 };
-
 int amdgpu_nbio_ras_sw_init(struct amdgpu_device *adev);
 void amdgpu_nbio_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0, uint64_t *count1);
 int amdgpu_nbio_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *ras_block);
 u64 amdgpu_nbio_get_pcie_replay_count(struct amdgpu_device *adev);
-
 #endif

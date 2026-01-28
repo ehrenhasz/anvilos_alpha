@@ -1,52 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Tracepoints definitions.
- *
- * Copyright (c) 2018-2020, Silicon Laboratories, Inc.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM wfx
-
 #if !defined(_WFX_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _WFX_TRACE_H
-
 #include <linux/tracepoint.h>
 #include <net/mac80211.h>
-
 #include "bus.h"
 #include "hif_api_cmd.h"
 #include "hif_api_mib.h"
-
-/* The hell below need some explanations. For each symbolic number, we need to define it with
- * TRACE_DEFINE_ENUM() and in a list for __print_symbolic.
- *
- *   1. Define a new macro that call TRACE_DEFINE_ENUM():
- *
- *          #define xxx_name(sym) TRACE_DEFINE_ENUM(sym);
- *
- *   2. Define list of all symbols:
- *
- *          #define list_names     \
- *             ...                 \
- *             xxx_name(XXX)       \
- *             ...
- *
- *   3. Instantiate that list_names:
- *
- *          list_names
- *
- *   4. Redefine xxx_name() as an entry of array for __print_symbolic()
- *
- *          #undef xxx_name
- *          #define xxx_name(msg) { msg, #msg },
- *
- *   5. list_name can now nearly be used with __print_symbolic() but, __print_symbolic() dislike
- *      last comma of list. So we define a new list with a dummy element:
- *
- *          #define list_for_print_symbolic list_names { -1, NULL }
- */
-
 #define _hif_msg_list                       \
 	hif_cnf_name(ADD_KEY)               \
 	hif_cnf_name(BEACON_TRANSMIT)       \
@@ -84,9 +44,7 @@
 	hif_ind_name(GENERIC)               \
 	hif_ind_name(WAKEUP)                \
 	hif_ind_name(STARTUP)
-
 #define hif_msg_list_enum _hif_msg_list
-
 #undef hif_cnf_name
 #undef hif_ind_name
 #define hif_cnf_name(msg) TRACE_DEFINE_ENUM(HIF_CNF_ID_##msg);
@@ -97,7 +55,6 @@ hif_msg_list_enum
 #define hif_cnf_name(msg) { HIF_CNF_ID_##msg, #msg },
 #define hif_ind_name(msg) { HIF_IND_ID_##msg, #msg },
 #define hif_msg_list hif_msg_list_enum { -1, NULL }
-
 #define _hif_mib_list                                \
 	hif_mib_name(ARP_IP_ADDRESSES_TABLE)         \
 	hif_mib_name(ARP_KEEP_ALIVE_PERIOD)          \
@@ -146,16 +103,13 @@ hif_msg_list_enum
 	hif_mib_name(TEMPLATE_FRAME)                 \
 	hif_mib_name(TSF_COUNTER)                    \
 	hif_mib_name(UC_MC_BC_DATAFRAME_CONDITION)
-
 #define hif_mib_list_enum _hif_mib_list
-
 #undef hif_mib_name
 #define hif_mib_name(mib) TRACE_DEFINE_ENUM(HIF_MIB_ID_##mib);
 hif_mib_list_enum
 #undef hif_mib_name
 #define hif_mib_name(mib) { HIF_MIB_ID_##mib, #mib },
 #define hif_mib_list hif_mib_list_enum { -1, NULL }
-
 DECLARE_EVENT_CLASS(hif_data,
 	TP_PROTO(const struct wfx_hif_msg *hif, int tx_fill_level, bool is_recv),
 	TP_ARGS(hif, tx_fill_level, is_recv),
@@ -171,7 +125,6 @@ DECLARE_EVENT_CLASS(hif_data,
 	),
 	TP_fast_assign(
 		int header_len;
-
 		__entry->tx_fill_level = tx_fill_level;
 		__entry->msg_len = le16_to_cpu(hif->len);
 		__entry->msg_id = hif->id;
@@ -215,7 +168,6 @@ DEFINE_EVENT(hif_data, hif_recv,
 	TP_ARGS(hif, tx_fill_level, is_recv));
 #define _trace_hif_recv(hif, tx_fill_level)\
 	trace_hif_recv(hif, tx_fill_level, true)
-
 #define wfx_reg_list_enum                                 \
 	wfx_reg_name(WFX_REG_CONFIG,       "CONFIG")      \
 	wfx_reg_name(WFX_REG_CONTROL,      "CONTROL")     \
@@ -225,14 +177,12 @@ DEFINE_EVENT(hif_data, hif_recv,
 	wfx_reg_name(WFX_REG_SRAM_DPORT,   "SRAM")        \
 	wfx_reg_name(WFX_REG_SET_GEN_R_W,  "SET_GEN_R_W") \
 	wfx_reg_name(WFX_REG_FRAME_OUT,    "FRAME_OUT")
-
 #undef wfx_reg_name
 #define wfx_reg_name(sym, name) TRACE_DEFINE_ENUM(sym);
 wfx_reg_list_enum
 #undef wfx_reg_name
 #define wfx_reg_name(sym, name) { sym, name },
 #define wfx_reg_list wfx_reg_list_enum { -1, NULL }
-
 DECLARE_EVENT_CLASS(io_data,
 	TP_PROTO(int reg, int addr, const void *io_buf, size_t len),
 	TP_ARGS(reg, addr, io_buf, len),
@@ -275,7 +225,6 @@ DEFINE_EVENT(io_data, io_read,
 #define _trace_io_ind_read(reg, addr, io_buf, len)\
 	trace_io_read(reg, addr, io_buf, len)
 #define _trace_io_read(reg, io_buf, len) trace_io_read(reg, -1, io_buf, len)
-
 DECLARE_EVENT_CLASS(io_data32,
 	TP_PROTO(int reg, int addr, u32 val),
 	TP_ARGS(reg, addr, val),
@@ -310,7 +259,6 @@ DEFINE_EVENT(io_data32, io_read32,
 	TP_ARGS(reg, addr, val));
 #define _trace_io_ind_read32(reg, addr, val) trace_io_read32(reg, addr, val)
 #define _trace_io_read32(reg, val) trace_io_read32(reg, -1, val)
-
 DECLARE_EVENT_CLASS(piggyback,
 	TP_PROTO(u32 val, bool ignored),
 	TP_ARGS(val, ignored),
@@ -331,7 +279,6 @@ DEFINE_EVENT(piggyback, piggyback,
 	TP_PROTO(u32 val, bool ignored),
 	TP_ARGS(val, ignored));
 #define _trace_piggyback(val, ignored) trace_piggyback(val, ignored)
-
 TRACE_EVENT(bh_stats,
 	TP_PROTO(int ind, int req, int cnf, int busy, bool release),
 	TP_ARGS(ind, req, cnf, busy, release),
@@ -359,7 +306,6 @@ TRACE_EVENT(bh_stats,
 );
 #define _trace_bh_stats(ind, req, cnf, busy, release)\
 	trace_bh_stats(ind, req, cnf, busy, release)
-
 TRACE_EVENT(tx_stats,
 	TP_PROTO(const struct wfx_hif_cnf_tx *tx_cnf, const struct sk_buff *skb,
 		 int delay),
@@ -375,13 +321,11 @@ TRACE_EVENT(tx_stats,
 		__array(int, tx_count, 4)
 	),
 	TP_fast_assign(
-		/* Keep sync with wfx_rates definition in main.c */
 		static const int hw_rate[] = { 0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13 };
 		const struct ieee80211_tx_info *tx_info =
 			(const struct ieee80211_tx_info *)skb->cb;
 		const struct ieee80211_tx_rate *rates = tx_info->driver_rates;
 		int i;
-
 		__entry->pkt_id = tx_cnf->packet_id;
 		__entry->delay_media = le32_to_cpu(tx_cnf->media_delay);
 		__entry->delay_queue = le32_to_cpu(tx_cnf->tx_queue_delay);
@@ -389,7 +333,6 @@ TRACE_EVENT(tx_stats,
 		__entry->ack_failures = tx_cnf->ack_failures;
 		if (!tx_cnf->status || __entry->ack_failures)
 			__entry->ack_failures += 1;
-
 		for (i = 0; i < IEEE80211_NUM_ACS; i++) {
 			if (rates[0].flags & IEEE80211_TX_RC_MCS)
 				__entry->rate[i] = rates[i].idx;
@@ -433,7 +376,6 @@ TRACE_EVENT(tx_stats,
 	)
 );
 #define _trace_tx_stats(tx_cnf, skb, delay) trace_tx_stats(tx_cnf, skb, delay)
-
 TRACE_EVENT(queues_stats,
 	TP_PROTO(struct wfx_dev *wdev, const struct wfx_queue *elected_queue),
 	TP_ARGS(wdev, elected_queue),
@@ -448,7 +390,6 @@ TRACE_EVENT(queues_stats,
 		const struct wfx_queue *queue;
 		struct wfx_vif *wvif;
 		int i, j;
-
 		for (j = 0; j < IEEE80211_NUM_ACS * 2; j++) {
 			__entry->hw[j] = -1;
 			__entry->drv[j] = -1;
@@ -484,13 +425,9 @@ TRACE_EVENT(queues_stats,
 		__entry->hw[7], __entry->drv[7], __entry->cab[7]
 	)
 );
-
 #endif
-
-/* This part must be outside protection */
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE traces
-
 #include <trace/define_trace.h>

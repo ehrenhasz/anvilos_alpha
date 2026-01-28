@@ -1,24 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2018-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
-
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
-
 enum event_reset_type {
 	EVENT_RESET_TYPE_NONE,
 	EVENT_RESET_TYPE_COMPUTE,
 	EVENT_RESET_TYPE_HARD,
 };
-
 #ifndef __GAUDI2_ASYNC_IDS_MAP_EVENTS_EXT_H_
 #define __GAUDI2_ASYNC_IDS_MAP_EVENTS_EXT_H_
-
 struct gaudi2_async_events_ids_map {
 	int fc_id;
 	int cpu_id;
@@ -27,7 +13,6 @@ struct gaudi2_async_events_ids_map {
 	int reset;
 	char name[64];
 };
-
 static struct gaudi2_async_events_ids_map gaudi2_irq_map_table[] = {
 	{ .fc_id = 0, .cpu_id = 0, .valid = 0, .msg = 0, .reset = EVENT_RESET_TYPE_NONE,
 		 .name = "" },
@@ -2674,5 +2659,4 @@ static struct gaudi2_async_events_ids_map gaudi2_irq_map_table[] = {
 	{ .fc_id = 1321, .cpu_id = 627, .valid = 1, .msg = 1, .reset = EVENT_RESET_TYPE_HARD,
 		 .name = "DEV_RESET_REQ" },
 };
-
-#endif /* __GAUDI2_ASYNC_IDS_MAP_EVENTS_EXT_H_ */
+#endif  

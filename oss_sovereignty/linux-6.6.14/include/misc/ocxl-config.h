@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017 IBM Corp.
 #ifndef _OCXL_CONFIG_H_
 #define _OCXL_CONFIG_H_
-
-/*
- * This file lists the various constants used to read the
- * configuration space of an opencapi adapter.
- *
- * It follows the specification for opencapi 3.0
- */
-
 #define OCXL_EXT_CAP_ID_DVSEC                 0x23
-
 #define OCXL_DVSEC_VENDOR_OFFSET              0x4
 #define OCXL_DVSEC_ID_OFFSET                  0x8
 #define OCXL_DVSEC_TL_ID                      0xF000
@@ -42,5 +31,4 @@
 #define   OCXL_DVSEC_VENDOR_TLX_VERS            0x10
 #define   OCXL_DVSEC_VENDOR_DLX_VERS            0x20
 #define   OCXL_DVSEC_VENDOR_RESET_RELOAD        0x38
-
-#endif /* _OCXL_CONFIG_H_ */
+#endif  

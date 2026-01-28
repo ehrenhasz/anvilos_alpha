@@ -1,24 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * I2C slave tracepoints
- *
- * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM i2c_slave
-
 #if !defined(_TRACE_I2C_SLAVE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_I2C_SLAVE_H
-
 #include <linux/i2c.h>
 #include <linux/tracepoint.h>
-
 TRACE_DEFINE_ENUM(I2C_SLAVE_READ_REQUESTED);
 TRACE_DEFINE_ENUM(I2C_SLAVE_WRITE_REQUESTED);
 TRACE_DEFINE_ENUM(I2C_SLAVE_READ_PROCESSED);
 TRACE_DEFINE_ENUM(I2C_SLAVE_WRITE_RECEIVED);
 TRACE_DEFINE_ENUM(I2C_SLAVE_STOP);
-
 #define show_event_type(type)						\
 	__print_symbolic(type,						\
 		{ I2C_SLAVE_READ_REQUESTED,	"RD_REQ" },		\
@@ -26,7 +16,6 @@ TRACE_DEFINE_ENUM(I2C_SLAVE_STOP);
 		{ I2C_SLAVE_READ_PROCESSED,	"RD_PRO" },		\
 		{ I2C_SLAVE_WRITE_RECEIVED,	"WR_RCV" },		\
 		{ I2C_SLAVE_STOP,		"  STOP" })
-
 TRACE_EVENT(i2c_slave,
 	TP_PROTO(const struct i2c_client *client, enum i2c_slave_event event,
 		 __u8 *val, int cb_ret),
@@ -38,7 +27,6 @@ TRACE_EVENT(i2c_slave,
 		__field(__u16,				len		)
 		__field(enum i2c_slave_event,		event		)
 		__array(__u8,				buf,	1)	),
-
 	TP_fast_assign(
 		__entry->adapter_nr = client->adapter->nr;
 		__entry->addr = client->addr;
@@ -60,8 +48,5 @@ TRACE_EVENT(i2c_slave,
 		__entry->adapter_nr, __entry->addr, __entry->ret,
 		show_event_type(__entry->event), __entry->len, __entry->buf
 		));
-
-#endif /* _TRACE_I2C_SLAVE_H */
-
-/* This part must be outside protection */
+#endif  
 #include <trace/define_trace.h>

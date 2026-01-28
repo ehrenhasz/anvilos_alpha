@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-
 #ifndef __DT_BINDINGS_CLOCK_BCM6318_H
 #define __DT_BINDINGS_CLOCK_BCM6318_H
-
 #define BCM6318_CLK_ADSL_ASB	0
 #define BCM6318_CLK_USB_ASB	1
 #define BCM6318_CLK_MIPS_ASB	2
@@ -27,7 +24,6 @@
 #define BCM6318_CLK_PHYMIPS	28
 #define BCM6318_CLK_AFE		29
 #define BCM6318_CLK_QPROC	30
-
 #define BCM6318_UCLK_ADSL	0
 #define BCM6318_UCLK_ARB	1
 #define BCM6318_UCLK_MIPS	2
@@ -38,5 +34,4 @@
 #define BCM6318_UCLK_SAR	7
 #define BCM6318_UCLK_SDR	8
 #define BCM6318_UCLK_USB	9
-
-#endif /* __DT_BINDINGS_CLOCK_BCM6318_H */
+#endif  

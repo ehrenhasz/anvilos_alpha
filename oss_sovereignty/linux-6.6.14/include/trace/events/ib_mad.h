@@ -1,30 +1,19 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-
-/*
- * Copyright (c) 2018 Intel Corporation.  All rights reserved.
- */
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM ib_mad
-
 #if !defined(_TRACE_IB_MAD_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_IB_MAD_H
-
 #include <linux/tracepoint.h>
 #include <rdma/ib_mad.h>
-
 #ifdef CONFIG_TRACEPOINTS
 struct trace_event_raw_ib_mad_send_template;
 static void create_mad_addr_info(struct ib_mad_send_wr_private *mad_send_wr,
 			  struct ib_mad_qp_info *qp_info,
 			  struct trace_event_raw_ib_mad_send_template *entry);
 #endif
-
 DECLARE_EVENT_CLASS(ib_mad_send_template,
 	TP_PROTO(struct ib_mad_send_wr_private *wr,
 		 struct ib_mad_qp_info *qp_info),
 	TP_ARGS(wr, qp_info),
-
 	TP_STRUCT__entry(
 		__field(u8,             base_version)
 		__field(u8,             mgmt_class)
@@ -50,7 +39,6 @@ DECLARE_EVENT_CLASS(ib_mad_send_template,
 		__field(int,            max_retries)
 		__field(int,            retry)
 	),
-
 	TP_fast_assign(
 		__entry->dev_index = wr->mad_agent_priv->agent.device->index;
 		__entry->port_num = wr->mad_agent_priv->agent.port_num;
@@ -82,7 +70,6 @@ DECLARE_EVENT_CLASS(ib_mad_send_template,
 			((struct ib_mad_hdr *)wr->send_buf.mad)->attr_mod;
 		create_mad_addr_info(wr, qp_info, __entry);
 	),
-
 	TP_printk("%d:%d QP%d agent %p: " \
 		  "wrtid 0x%llx; %d/%d retries(%d); timeout %lu length %d : " \
 		  "hdr : base_ver 0x%x class 0x%x class_ver 0x%x " \
@@ -103,7 +90,6 @@ DECLARE_EVENT_CLASS(ib_mad_send_template,
 		__entry->rqpn, __entry->rqkey
 	)
 );
-
 DEFINE_EVENT(ib_mad_send_template, ib_mad_error_handler,
 	TP_PROTO(struct ib_mad_send_wr_private *wr,
 		 struct ib_mad_qp_info *qp_info),
@@ -116,11 +102,9 @@ DEFINE_EVENT(ib_mad_send_template, ib_mad_send_done_resend,
 	TP_PROTO(struct ib_mad_send_wr_private *wr,
 		 struct ib_mad_qp_info *qp_info),
 	TP_ARGS(wr, qp_info));
-
 TRACE_EVENT(ib_mad_send_done_handler,
 	TP_PROTO(struct ib_mad_send_wr_private *wr, struct ib_wc *wc),
 	TP_ARGS(wr, wc),
-
 	TP_STRUCT__entry(
 		__field(u8,             port_num)
 		__field(u8,             base_version)
@@ -139,7 +123,6 @@ TRACE_EVENT(ib_mad_send_done_handler,
 		__field(int,            retry)
 		__field(u8,             method)
 	),
-
 	TP_fast_assign(
 		__entry->dev_index = wr->mad_agent_priv->agent.device->index;
 		__entry->port_num = wr->mad_agent_priv->agent.port_num;
@@ -163,7 +146,6 @@ TRACE_EVENT(ib_mad_send_done_handler,
 		__entry->wc_status = wc->status;
 		__entry->length = wc->byte_len;
 	),
-
 	TP_printk("%d:%d QP%d : SEND WC Status %d : agent %p: " \
 		  "wrtid 0x%llx %d/%d retries(%d) timeout %lu length %d: " \
 		  "hdr : base_ver 0x%x class 0x%x class_ver 0x%x " \
@@ -179,12 +161,10 @@ TRACE_EVENT(ib_mad_send_done_handler,
 		be16_to_cpu(__entry->status)
 	)
 );
-
 TRACE_EVENT(ib_mad_recv_done_handler,
 	TP_PROTO(struct ib_mad_qp_info *qp_info, struct ib_wc *wc,
 		 struct ib_mad_hdr *mad_hdr),
 	TP_ARGS(qp_info, wc, mad_hdr),
-
 	TP_STRUCT__entry(
 		__field(u8,             base_version)
 		__field(u8,             mgmt_class)
@@ -204,7 +184,6 @@ TRACE_EVENT(ib_mad_recv_done_handler,
 		__field(u32,            slid)
 		__field(u32,            dev_index)
 	),
-
 	TP_fast_assign(
 		__entry->dev_index = qp_info->port_priv->device->index;
 		__entry->port_num = qp_info->port_priv->port_num;
@@ -224,7 +203,6 @@ TRACE_EVENT(ib_mad_recv_done_handler,
 		__entry->sl = wc->sl;
 		__entry->wc_status = wc->status;
 	),
-
 	TP_printk("%d:%d QP%d : RECV WC Status %d : length %d : hdr : " \
 		  "base_ver 0x%02x class 0x%02x class_ver 0x%02x " \
 		  "method 0x%02x status 0x%04x class_specific 0x%04x " \
@@ -242,11 +220,9 @@ TRACE_EVENT(ib_mad_recv_done_handler,
 		__entry->slid, __entry->src_qp, __entry->sl
 	)
 );
-
 DECLARE_EVENT_CLASS(ib_mad_agent_template,
 	TP_PROTO(struct ib_mad_agent_private *agent),
 	TP_ARGS(agent),
-
 	TP_STRUCT__entry(
 		__field(u32,            dev_index)
 		__field(u32,            hi_tid)
@@ -254,12 +230,10 @@ DECLARE_EVENT_CLASS(ib_mad_agent_template,
 		__field(u8,             mgmt_class)
 		__field(u8,             mgmt_class_version)
 	),
-
 	TP_fast_assign(
 		__entry->dev_index = agent->agent.device->index;
 		__entry->port_num = agent->agent.port_num;
 		__entry->hi_tid = agent->agent.hi_tid;
-
 		if (agent->reg_req) {
 			__entry->mgmt_class = agent->reg_req->mgmt_class;
 			__entry->mgmt_class_version =
@@ -269,7 +243,6 @@ DECLARE_EVENT_CLASS(ib_mad_agent_template,
 			__entry->mgmt_class_version = 0;
 		}
 	),
-
 	TP_printk("%d:%d mad agent : hi_tid 0x%08x class 0x%02x class_ver 0x%02x",
 		__entry->dev_index, __entry->port_num,
 		__entry->hi_tid, __entry->mgmt_class,
@@ -288,13 +261,9 @@ DEFINE_EVENT(ib_mad_agent_template, ib_mad_create_agent,
 DEFINE_EVENT(ib_mad_agent_template, ib_mad_unregister_agent,
 	TP_PROTO(struct ib_mad_agent_private *agent),
 	TP_ARGS(agent));
-
-
-
 DECLARE_EVENT_CLASS(ib_mad_opa_smi_template,
 	TP_PROTO(struct opa_smp *smp),
 	TP_ARGS(smp),
-
 	TP_STRUCT__entry(
 		__field(u64,            mkey)
 		__field(u32,            dr_slid)
@@ -304,7 +273,6 @@ DECLARE_EVENT_CLASS(ib_mad_opa_smi_template,
 		__array(u8,             initial_path, OPA_SMP_MAX_PATH_HOPS)
 		__array(u8,             return_path, OPA_SMP_MAX_PATH_HOPS)
 	),
-
 	TP_fast_assign(
 		__entry->hop_ptr = smp->hop_ptr;
 		__entry->hop_cnt = smp->hop_cnt;
@@ -316,7 +284,6 @@ DECLARE_EVENT_CLASS(ib_mad_opa_smi_template,
 		memcpy(__entry->return_path, smp->route.dr.return_path,
 			OPA_SMP_MAX_PATH_HOPS);
 	),
-
 	TP_printk("OPA SMP: hop_ptr %d hop_cnt %d " \
 		  "mkey 0x%016llx dr_slid 0x%08x dr_dlid 0x%08x " \
 		  "initial_path %*ph return_path %*ph ",
@@ -327,19 +294,15 @@ DECLARE_EVENT_CLASS(ib_mad_opa_smi_template,
 		OPA_SMP_MAX_PATH_HOPS, __entry->return_path
 	)
 );
-
 DEFINE_EVENT(ib_mad_opa_smi_template, ib_mad_handle_opa_smi,
 	TP_PROTO(struct opa_smp *smp),
 	TP_ARGS(smp));
 DEFINE_EVENT(ib_mad_opa_smi_template, ib_mad_handle_out_opa_smi,
 	TP_PROTO(struct opa_smp *smp),
 	TP_ARGS(smp));
-
-
 DECLARE_EVENT_CLASS(ib_mad_opa_ib_template,
 	TP_PROTO(struct ib_smp *smp),
 	TP_ARGS(smp),
-
 	TP_STRUCT__entry(
 		__field(u64,            mkey)
 		__field(u32,            dr_slid)
@@ -349,7 +312,6 @@ DECLARE_EVENT_CLASS(ib_mad_opa_ib_template,
 		__array(u8,             initial_path, IB_SMP_MAX_PATH_HOPS)
 		__array(u8,             return_path, IB_SMP_MAX_PATH_HOPS)
 	),
-
 	TP_fast_assign(
 		__entry->hop_ptr = smp->hop_ptr;
 		__entry->hop_cnt = smp->hop_cnt;
@@ -361,7 +323,6 @@ DECLARE_EVENT_CLASS(ib_mad_opa_ib_template,
 		memcpy(__entry->return_path, smp->return_path,
 			IB_SMP_MAX_PATH_HOPS);
 	),
-
 	TP_printk("OPA SMP: hop_ptr %d hop_cnt %d " \
 		  "mkey 0x%016llx dr_slid 0x%04x dr_dlid 0x%04x " \
 		  "initial_path %*ph return_path %*ph ",
@@ -372,14 +333,11 @@ DECLARE_EVENT_CLASS(ib_mad_opa_ib_template,
 		IB_SMP_MAX_PATH_HOPS, __entry->return_path
 	)
 );
-
 DEFINE_EVENT(ib_mad_opa_ib_template, ib_mad_handle_ib_smi,
 	TP_PROTO(struct ib_smp *smp),
 	TP_ARGS(smp));
 DEFINE_EVENT(ib_mad_opa_ib_template, ib_mad_handle_out_ib_smi,
 	TP_PROTO(struct ib_smp *smp),
 	TP_ARGS(smp));
-
-#endif /* _TRACE_IB_MAD_H */
-
+#endif  
 #include <trace/define_trace.h>

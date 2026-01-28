@@ -1,4 +1,3 @@
 #ifndef _ASM_OPENRISC_VMALLOC_H
 #define _ASM_OPENRISC_VMALLOC_H
-
-#endif /* _ASM_OPENRISC_VMALLOC_H */
+#endif  

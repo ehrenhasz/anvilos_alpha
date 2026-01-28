@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
 #if !defined(_VISL_TRACE_HEVC_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _VISL_TRACE_HEVC_H_
-
 #include <linux/tracepoint.h>
 #include "visl.h"
-
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM visl_hevc_controls
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_sps_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_hevc_sps *s),
 	TP_ARGS(s),
@@ -73,10 +69,7 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_sps_tmpl,
 		  {V4L2_HEVC_SPS_FLAG_SPS_TEMPORAL_MVP_ENABLED, "TEMPORAL_MVP_ENABLED"},
 		  {V4L2_HEVC_SPS_FLAG_STRONG_INTRA_SMOOTHING_ENABLED, "STRONG_INTRA_SMOOTHING_ENABLED"}
 	))
-
 );
-
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_pps_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_hevc_pps *p),
 	TP_ARGS(p),
@@ -139,11 +132,7 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_pps_tmpl,
 		  {V4L2_HEVC_PPS_FLAG_DEBLOCKING_FILTER_CONTROL_PRESENT, "DEBLOCKING_FILTER_CONTROL_PRESENT"},
 		  {V4L2_HEVC_PPS_FLAG_UNIFORM_SPACING, "UNIFORM_SPACING"}
 	))
-
 );
-
-
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_slice_params_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_hevc_slice_params *s),
 	TP_ARGS(s),
@@ -217,10 +206,8 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_slice_params_tmpl,
 		  {V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_DEBLOCKING_FILTER_DISABLED, "SLICE_DEBLOCKING_FILTER_DISABLED"},
 		  {V4L2_HEVC_SLICE_PARAMS_FLAG_SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED, "SLICE_LOOP_FILTER_ACROSS_SLICES_ENABLED"},
 		  {V4L2_HEVC_SLICE_PARAMS_FLAG_DEPENDENT_SLICE_SEGMENT, "DEPENDENT_SLICE_SEGMENT"}
-
 	))
 );
-
 DECLARE_EVENT_CLASS(v4l2_hevc_pred_weight_table_tmpl,
 	TP_PROTO(const struct v4l2_hevc_pred_weight_table *p),
 	TP_ARGS(p),
@@ -266,9 +253,7 @@ DECLARE_EVENT_CLASS(v4l2_hevc_pred_weight_table_tmpl,
 				   false),
 		__entry->p.luma_log2_weight_denom,
 		__entry->p.delta_chroma_log2_weight_denom
-
 	))
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_scaling_matrix_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_hevc_scaling_matrix *s),
 	TP_ARGS(s),
@@ -303,7 +288,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_scaling_matrix_tmpl,
 				ARRAY_SIZE(__entry->s.scaling_list_dc_coef_32x32),
 				sizeof(__entry->s.scaling_list_dc_coef_32x32[0]))
 	))
-
 DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_decode_params_tmpl,
 	TP_PROTO(const struct v4l2_ctrl_hevc_decode_params *d),
 	TP_ARGS(d),
@@ -342,8 +326,6 @@ DECLARE_EVENT_CLASS(v4l2_ctrl_hevc_decode_params_tmpl,
 		  {V4L2_HEVC_DECODE_PARAM_FLAG_NO_OUTPUT_OF_PRIOR, "NO_OUTPUT_OF_PRIOR"}
 	))
 );
-
-
 DECLARE_EVENT_CLASS(v4l2_hevc_dpb_entry_tmpl,
 	TP_PROTO(const struct v4l2_hevc_dpb_entry *e),
 	TP_ARGS(e),
@@ -360,44 +342,35 @@ DECLARE_EVENT_CLASS(v4l2_hevc_dpb_entry_tmpl,
 		__entry->e.field_pic,
 		__entry->e.pic_order_cnt_val
 	))
-
 DEFINE_EVENT(v4l2_ctrl_hevc_sps_tmpl, v4l2_ctrl_hevc_sps,
 	TP_PROTO(const struct v4l2_ctrl_hevc_sps *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_ctrl_hevc_pps_tmpl, v4l2_ctrl_hevc_pps,
 	TP_PROTO(const struct v4l2_ctrl_hevc_pps *p),
 	TP_ARGS(p)
 );
-
 DEFINE_EVENT(v4l2_ctrl_hevc_slice_params_tmpl, v4l2_ctrl_hevc_slice_params,
 	TP_PROTO(const struct v4l2_ctrl_hevc_slice_params *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_hevc_pred_weight_table_tmpl, v4l2_hevc_pred_weight_table,
 	TP_PROTO(const struct v4l2_hevc_pred_weight_table *p),
 	TP_ARGS(p)
 );
-
 DEFINE_EVENT(v4l2_ctrl_hevc_scaling_matrix_tmpl, v4l2_ctrl_hevc_scaling_matrix,
 	TP_PROTO(const struct v4l2_ctrl_hevc_scaling_matrix *s),
 	TP_ARGS(s)
 );
-
 DEFINE_EVENT(v4l2_ctrl_hevc_decode_params_tmpl, v4l2_ctrl_hevc_decode_params,
 	TP_PROTO(const struct v4l2_ctrl_hevc_decode_params *d),
 	TP_ARGS(d)
 );
-
 DEFINE_EVENT(v4l2_hevc_dpb_entry_tmpl, v4l2_hevc_dpb_entry,
 	TP_PROTO(const struct v4l2_hevc_dpb_entry *e),
 	TP_ARGS(e)
 );
-
 #endif
-
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../drivers/media/test-drivers/visl

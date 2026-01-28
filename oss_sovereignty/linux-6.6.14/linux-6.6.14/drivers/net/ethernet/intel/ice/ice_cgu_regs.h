@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2018-2021, Intel Corporation. */
-
 #ifndef _ICE_CGU_REGS_H_
 #define _ICE_CGU_REGS_H_
-
 #define NAC_CGU_DWORD9 0x24
 union nac_cgu_dword9 {
 	struct {
@@ -26,7 +22,6 @@ union nac_cgu_dword9 {
 	} field;
 	u32 val;
 };
-
 #define NAC_CGU_DWORD19 0x4c
 union nac_cgu_dword19 {
 	struct {
@@ -42,7 +37,6 @@ union nac_cgu_dword19 {
 	} field;
 	u32 val;
 };
-
 #define NAC_CGU_DWORD22 0x58
 union nac_cgu_dword22 {
 	struct {
@@ -66,7 +60,6 @@ union nac_cgu_dword22 {
 	} field;
 	u32 val;
 };
-
 #define NAC_CGU_DWORD24 0x60
 union nac_cgu_dword24 {
 	struct {
@@ -80,7 +73,6 @@ union nac_cgu_dword24 {
 	} field;
 	u32 val;
 };
-
 #define TSPLL_CNTR_BIST_SETTINGS 0x344
 union tspll_cntr_bist_settings {
 	struct {
@@ -95,7 +87,6 @@ union tspll_cntr_bist_settings {
 	} field;
 	u32 val;
 };
-
 #define TSPLL_RO_BWM_LF 0x370
 union tspll_ro_bwm_lf {
 	struct {
@@ -112,5 +103,4 @@ union tspll_ro_bwm_lf {
 	} field;
 	u32 val;
 };
-
-#endif /* _ICE_CGU_REGS_H_ */
+#endif  

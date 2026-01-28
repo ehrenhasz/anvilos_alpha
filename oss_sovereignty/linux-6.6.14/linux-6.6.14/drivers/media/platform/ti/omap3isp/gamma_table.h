@@ -1,16 +1,3 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * gamma_table.h
- *
- * TI OMAP3 ISP - Default gamma table for all components
- *
- * Copyright (C) 2010 Nokia Corporation
- * Copyright (C) 2009 Texas Instruments, Inc.
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- */
-
   0,   0,   1,   2,   3,   3,   4,   5,   6,   8,  10,  12,  14,  16,  18,  20,
  22,  23,  25,  26,  28,  29,  31,  32,  34,  35,  36,  37,  39,  40,  41,  42,
  43,  44,  45,  46,  47,  48,  49,  50,  51,  52,  52,  53,  54,  55,  56,  57,

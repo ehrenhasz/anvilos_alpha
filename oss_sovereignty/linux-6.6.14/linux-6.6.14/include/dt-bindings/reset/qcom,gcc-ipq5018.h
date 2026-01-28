@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2023, The Linux Foundation. All rights reserved.
- */
-
 #ifndef _DT_BINDINGS_RESET_IPQ_GCC_5018_H
 #define _DT_BINDINGS_RESET_IPQ_GCC_5018_H
-
 #define GCC_APC0_VOLTAGE_DROOP_DETECTOR_BCR	0
 #define GCC_BLSP1_BCR				1
 #define GCC_BLSP1_QUP1_BCR			2
@@ -118,5 +112,4 @@
 #define GCC_WCSSAON_RESET			109
 #define GCC_UNIPHY_SOFT_RESET			110
 #define GCC_GEPHY_MISC_ARES			111
-
 #endif

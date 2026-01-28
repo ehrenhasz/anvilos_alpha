@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2020 Intel Corporation */
 #ifndef IRDMA_USER_H
 #define IRDMA_USER_H
-
 #define irdma_handle void *
 #define irdma_adapter_handle irdma_handle
 #define irdma_qp_handle irdma_handle
@@ -16,9 +13,7 @@
 #define irdma_access_privileges u32
 #define irdma_physical_fragment u64
 #define irdma_address_list u64 *
-
 #define	IRDMA_MAX_MR_SIZE       0x200000000000ULL
-
 #define IRDMA_ACCESS_FLAGS_LOCALREAD		0x01
 #define IRDMA_ACCESS_FLAGS_LOCALWRITE		0x02
 #define IRDMA_ACCESS_FLAGS_REMOTEREAD_ONLY	0x04
@@ -28,7 +23,6 @@
 #define IRDMA_ACCESS_FLAGS_BIND_WINDOW		0x10
 #define IRDMA_ACCESS_FLAGS_ZERO_BASED		0x20
 #define IRDMA_ACCESS_FLAGS_ALL			0x3f
-
 #define IRDMA_OP_TYPE_RDMA_WRITE		0x00
 #define IRDMA_OP_TYPE_RDMA_READ			0x01
 #define IRDMA_OP_TYPE_SEND			0x03
@@ -43,9 +37,7 @@
 #define IRDMA_OP_TYPE_NOP			0x0c
 #define IRDMA_OP_TYPE_REC	0x3e
 #define IRDMA_OP_TYPE_REC_IMM	0x3f
-
 #define IRDMA_FLUSH_MAJOR_ERR	1
-
 enum irdma_device_caps_const {
 	IRDMA_WQE_SIZE =			4,
 	IRDMA_CQP_WQE_SIZE =			8,
@@ -87,12 +79,10 @@ enum irdma_device_caps_const {
 	IRDMA_MAX_PDS =				262144,
 	IRDMA_MIN_WQ_SIZE_GEN2 =                8,
 };
-
 enum irdma_addressing_type {
 	IRDMA_ADDR_TYPE_ZERO_BASED = 0,
 	IRDMA_ADDR_TYPE_VA_BASED   = 1,
 };
-
 enum irdma_flush_opcode {
 	FLUSH_INVALID = 0,
 	FLUSH_GENERAL_ERR,
@@ -106,7 +96,6 @@ enum irdma_flush_opcode {
 	FLUSH_MW_BIND_ERR,
 	FLUSH_REM_INV_REQ_ERR,
 };
-
 enum irdma_cmpl_status {
 	IRDMA_COMPL_STATUS_SUCCESS = 0,
 	IRDMA_COMPL_STATUS_FLUSHED,
@@ -134,38 +123,31 @@ enum irdma_cmpl_status {
 	IRDMA_COMPL_STATUS_INVALID_TOTAL_LEN,
 	IRDMA_COMPL_STATUS_UNKNOWN,
 };
-
 enum irdma_cmpl_notify {
 	IRDMA_CQ_COMPL_EVENT     = 0,
 	IRDMA_CQ_COMPL_SOLICITED = 1,
 };
-
 enum irdma_qp_caps {
 	IRDMA_WRITE_WITH_IMM = 1,
 	IRDMA_SEND_WITH_IMM  = 2,
 	IRDMA_ROCE	     = 4,
 	IRDMA_PUSH_MODE      = 8,
 };
-
 struct irdma_qp_uk;
 struct irdma_cq_uk;
 struct irdma_qp_uk_init_info;
 struct irdma_cq_uk_init_info;
-
 struct irdma_ring {
 	u32 head;
 	u32 tail;
 	u32 size;
 };
-
 struct irdma_cqe {
 	__le64 buf[IRDMA_CQE_SIZE];
 };
-
 struct irdma_extended_cqe {
 	__le64 buf[IRDMA_EXTENDED_CQE_SIZE];
 };
-
 struct irdma_post_send {
 	struct ib_sge *sg_list;
 	u32 num_sges;
@@ -173,25 +155,21 @@ struct irdma_post_send {
 	u32 dest_qp;
 	u32 ah_id;
 };
-
 struct irdma_post_rq_info {
 	u64 wr_id;
 	struct ib_sge *sg_list;
 	u32 num_sges;
 };
-
 struct irdma_rdma_write {
 	struct ib_sge *lo_sg_list;
 	u32 num_lo_sges;
 	struct ib_sge rem_addr;
 };
-
 struct irdma_rdma_read {
 	struct ib_sge *lo_sg_list;
 	u32 num_lo_sges;
 	struct ib_sge rem_addr;
 };
-
 struct irdma_bind_window {
 	irdma_stag mr_stag;
 	u64 bind_len;
@@ -202,11 +180,9 @@ struct irdma_bind_window {
 	irdma_stag mw_stag;
 	bool mem_window_type_1:1;
 };
-
 struct irdma_inv_local_stag {
 	irdma_stag target_stag;
 };
-
 struct irdma_post_sq_info {
 	u64 wr_id;
 	u8 op_type;
@@ -229,7 +205,6 @@ struct irdma_post_sq_info {
 		struct irdma_inv_local_stag inv_local_stag;
 	} op;
 };
-
 struct irdma_cq_poll_info {
 	u64 wr_id;
 	irdma_qp_handle qp_handle;
@@ -238,7 +213,7 @@ struct irdma_cq_poll_info {
 	u32 qp_id;
 	u32 ud_src_qpn;
 	u32 imm_data;
-	irdma_stag inv_stag; /* or L_R_Key */
+	irdma_stag inv_stag;  
 	enum irdma_cmpl_status comp_status;
 	u16 major_err;
 	u16 minor_err;
@@ -246,7 +221,7 @@ struct irdma_cq_poll_info {
 	u8 ud_smac[6];
 	u8 op_type;
 	u8 q_type;
-	bool stag_invalid_set:1; /* or L_R_Key set */
+	bool stag_invalid_set:1;  
 	bool error:1;
 	bool solicited_event:1;
 	bool ipv4:1;
@@ -254,7 +229,6 @@ struct irdma_cq_poll_info {
 	bool ud_smac_valid:1;
 	bool imm_valid:1;
 };
-
 int irdma_uk_inline_rdma_write(struct irdma_qp_uk *qp,
 			       struct irdma_post_sq_info *info, bool post_sq);
 int irdma_uk_inline_send(struct irdma_qp_uk *qp,
@@ -273,7 +247,6 @@ int irdma_uk_send(struct irdma_qp_uk *qp, struct irdma_post_sq_info *info,
 int irdma_uk_stag_local_invalidate(struct irdma_qp_uk *qp,
 				   struct irdma_post_sq_info *info,
 				   bool post_sq);
-
 struct irdma_wqe_uk_ops {
 	void (*iw_copy_inline_data)(u8 *dest, struct ib_sge *sge_list,
 				    u32 num_sges, u8 polarity);
@@ -283,7 +256,6 @@ struct irdma_wqe_uk_ops {
 	void (*iw_set_mw_bind_wqe)(__le64 *wqe,
 				   struct irdma_bind_window *op_info);
 };
-
 int irdma_uk_cq_poll_cmpl(struct irdma_cq_uk *cq,
 			  struct irdma_cq_poll_info *info);
 void irdma_uk_cq_request_notification(struct irdma_cq_uk *cq,
@@ -306,11 +278,9 @@ struct irdma_sq_uk_wr_trk_info {
 	u16 quanta;
 	u8 reserved[2];
 };
-
 struct irdma_qp_quanta {
 	__le64 elem[IRDMA_WQE_SIZE];
 };
-
 struct irdma_qp_uk {
 	struct irdma_qp_quanta *sq_base;
 	struct irdma_qp_quanta *rq_base;
@@ -339,15 +309,14 @@ struct irdma_qp_uk {
 	u8 rq_wqe_size_multiplier;
 	bool deferred_flag:1;
 	bool first_sq_wq:1;
-	bool sq_flush_complete:1; /* Indicates flush was seen and SQ was empty after the flush */
-	bool rq_flush_complete:1; /* Indicates flush was seen and RQ was empty after the flush */
-	bool destroy_pending:1; /* Indicates the QP is being destroyed */
+	bool sq_flush_complete:1;  
+	bool rq_flush_complete:1;  
+	bool destroy_pending:1;  
 	void *back_qp;
 	u8 dbg_rq_flushed;
 	u8 sq_flush_seen;
 	u8 rq_flush_seen;
 };
-
 struct irdma_cq_uk {
 	struct irdma_cqe *cq_base;
 	u32 __iomem *cqe_alloc_db;
@@ -359,7 +328,6 @@ struct irdma_cq_uk {
 	u8 polarity;
 	bool avoid_mem_cflct:1;
 };
-
 struct irdma_qp_uk_init_info {
 	struct irdma_qp_quanta *sq;
 	struct irdma_qp_quanta *rq;
@@ -384,7 +352,6 @@ struct irdma_qp_uk_init_info {
 	int abi_ver;
 	bool legacy_mode;
 };
-
 struct irdma_cq_uk_init_info {
 	u32 __iomem *cqe_alloc_db;
 	u32 __iomem *cq_ack_db;
@@ -394,7 +361,6 @@ struct irdma_cq_uk_init_info {
 	u32 cq_id;
 	bool avoid_mem_cflct;
 };
-
 __le64 *irdma_qp_get_next_send_wqe(struct irdma_qp_uk *qp, u32 *wqe_idx,
 				   u16 quanta, u32 total_size,
 				   struct irdma_post_sq_info *info);
@@ -410,4 +376,4 @@ int irdma_get_sqdepth(struct irdma_uk_attrs *uk_attrs, u32 sq_size, u8 shift,
 int irdma_get_rqdepth(struct irdma_uk_attrs *uk_attrs, u32 rq_size, u8 shift,
 		      u32 *wqdepth);
 void irdma_clr_wqes(struct irdma_qp_uk *qp, u32 qp_wqe_idx);
-#endif /* IRDMA_USER_H */
+#endif  

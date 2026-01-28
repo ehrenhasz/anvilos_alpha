@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tas5720.h - ALSA SoC Texas Instruments TAS5720 Mono Audio Amplifier
- *
- * Copyright (C)2015-2016 Texas Instruments Incorporated -  https://www.ti.com
- *
- * Author: Andreas Dannenberg <dannenberg@ti.com>
- */
-
 #ifndef __TAS5720_H__
 #define __TAS5720_H__
-
-/* Register Address Map - first 3 regs are common for all variants */
 #define TAS5720_DEVICE_ID_REG		0x00
 #define TAS5720_POWER_CTRL_REG		0x01
 #define TAS5720_DIGITAL_CTRL1_REG	0x02
@@ -21,28 +10,18 @@
 #define TAS5720_DIGITAL_CLIP2_REG	0x10
 #define TAS5720_DIGITAL_CLIP1_REG	0x11
 #define TAS5720_MAX_REG			TAS5720_DIGITAL_CLIP1_REG
-
-/* Additional TAS5722-specific Registers */
 #define TAS5722_DIGITAL_CTRL2_REG	0x13
 #define TAS5722_ANALOG_CTRL2_REG	0x14
 #define TAS5722_MAX_REG			TAS5722_ANALOG_CTRL2_REG
-
-/* Register Address Map - volume controls for the TAS5720-Q1 variant */
 #define TAS5720_Q1_VOLUME_CTRL_CFG_REG		0x03
 #define TAS5720_Q1_VOLUME_CTRL_LEFT_REG		0x04
 #define TAS5720_Q1_VOLUME_CTRL_RIGHT_REG	0x05
-
-/* TAS5720_DEVICE_ID_REG */
 #define TAS5720A_Q1_DEVICE_ID		0x00
 #define TAS5720_DEVICE_ID		0x01
 #define TAS5722_DEVICE_ID		0x12
-
-/* TAS5720_POWER_CTRL_REG */
 #define TAS5720_DIG_CLIP_MASK		GENMASK(7, 2)
 #define TAS5720_SLEEP			BIT(1)
 #define TAS5720_SDZ			BIT(0)
-
-/* TAS5720_DIGITAL_CTRL1_REG */
 #define TAS5720_HPF_BYPASS		BIT(7)
 #define TAS5720_TDM_CFG_SRC		BIT(6)
 #define TAS5720_SSZ_DS			BIT(3)
@@ -53,17 +32,11 @@
 #define TAS5720_SAIF_I2S		(0x4)
 #define TAS5720_SAIF_LEFTJ		(0x5)
 #define TAS5720_SAIF_FORMAT_MASK	GENMASK(2, 0)
-
-/* TAS5720_DIGITAL_CTRL2_REG */
 #define TAS5722_VOL_RAMP_RATE		BIT(6)
 #define TAS5720_MUTE			BIT(4)
 #define TAS5720_TDM_SLOT_SEL_MASK	GENMASK(2, 0)
-
-/* TAS5720_Q1_VOLUME_CTRL_CFG_REG */
 #define TAS5720_Q1_FADE			BIT(7)
 #define TAS5720_Q1_MUTE			GENMASK(1, 0)
-
-/* TAS5720_ANALOG_CTRL_REG */
 #define TAS5720_PWM_RATE_6_3_FSYNC	(0x0 << 4)
 #define TAS5720_PWM_RATE_8_4_FSYNC	(0x1 << 4)
 #define TAS5720_PWM_RATE_10_5_FSYNC	(0x2 << 4)
@@ -79,12 +52,8 @@
 #define TAS5720_ANALOG_GAIN_26_3DBV	(0x3 << 2)
 #define TAS5720_ANALOG_GAIN_MASK	GENMASK(3, 2)
 #define TAS5720_ANALOG_GAIN_SHIFT	(0x2)
-
-/* TAS5720_Q1_ANALOG_CTRL_REG */
 #define TAS5720_Q1_RESERVED7_BIT	BIT(7)
 #define TAS5720_Q1_CHAN_SEL		BIT(1)
-
-/* TAS5720_FAULT_REG */
 #define TAS5720_OC_THRESH_100PCT	(0x0 << 4)
 #define TAS5720_OC_THRESH_75PCT		(0x1 << 4)
 #define TAS5720_OC_THRESH_50PCT		(0x2 << 4)
@@ -95,12 +64,8 @@
 #define TAS5720_DCE			BIT(1)
 #define TAS5720_OTE			BIT(0)
 #define TAS5720_FAULT_MASK		GENMASK(3, 0)
-
-/* TAS5720_DIGITAL_CLIP1_REG */
 #define TAS5720_CLIP1_MASK		GENMASK(7, 2)
 #define TAS5720_CLIP1_SHIFT		(0x2)
-
-/* TAS5722_DIGITAL_CTRL2_REG */
 #define TAS5722_HPF_3_7HZ		(0x0 << 5)
 #define TAS5722_HPF_7_4HZ		(0x1 << 5)
 #define TAS5722_HPF_14_9HZ		(0x2 << 5)
@@ -118,10 +83,7 @@
 #define TAS5722_TDM_SLOT_16B		BIT(2)
 #define TAS5722_MCLK_PIN_CFG		BIT(1)
 #define TAS5722_VOL_CONTROL_LSB		BIT(0)
-
-/* TAS5722_ANALOG_CTRL2_REG */
 #define TAS5722_FAULTZ_PU		BIT(3)
 #define TAS5722_VREG_LVL		BIT(2)
 #define TAS5722_PWR_TUNE		BIT(0)
-
-#endif /* __TAS5720_H__ */
+#endif  

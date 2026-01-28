@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * wm8753.h  --  audio driver for WM8753
- *
- * Copyright 2003 Wolfson Microelectronics PLC.
- * Author: Liam Girdwood <lrg@slimlogic.co.uk>
- */
-
 #ifndef _WM8753_H
 #define _WM8753_H
-
-/* WM8753 register space */
-
 #define WM8753_DAC		0x01
 #define WM8753_ADC		0x02
 #define WM8753_PCM		0x03
@@ -71,20 +60,13 @@
 #define WM8753_PLL2CTL4		0x3c
 #define WM8753_BIASCTL		0x3d
 #define WM8753_ADCTL2		0x3f
-
 #define WM8753_PLL1			0
 #define WM8753_PLL2			1
-
-/* clock inputs */
 #define WM8753_MCLK		0
 #define WM8753_PCMCLK		1
-
-/* clock divider id's */
 #define WM8753_PCMDIV		0
 #define WM8753_BCLKDIV		1
 #define WM8753_VXCLKDIV		2
-
-/* PCM clock dividers */
 #define WM8753_PCM_DIV_1	(0 << 6)
 #define WM8753_PCM_DIV_3	(2 << 6)
 #define WM8753_PCM_DIV_5_5	(3 << 6)
@@ -92,19 +74,14 @@
 #define WM8753_PCM_DIV_4	(5 << 6)
 #define WM8753_PCM_DIV_6	(6 << 6)
 #define WM8753_PCM_DIV_8	(7 << 6)
-
-/* BCLK clock dividers */
 #define WM8753_BCLK_DIV_1	(0 << 3)
 #define WM8753_BCLK_DIV_2	(1 << 3)
 #define WM8753_BCLK_DIV_4	(2 << 3)
 #define WM8753_BCLK_DIV_8	(3 << 3)
 #define WM8753_BCLK_DIV_16	(4 << 3)
-
-/* VXCLK clock dividers */
 #define WM8753_VXCLK_DIV_1	(0 << 6)
 #define WM8753_VXCLK_DIV_2	(1 << 6)
 #define WM8753_VXCLK_DIV_4	(2 << 6)
 #define WM8753_VXCLK_DIV_8	(3 << 6)
 #define WM8753_VXCLK_DIV_16	(4 << 6)
-
 #endif

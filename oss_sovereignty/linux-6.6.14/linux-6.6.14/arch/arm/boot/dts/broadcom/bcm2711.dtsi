@@ -1,58 +1,36 @@
-// SPDX-License-Identifier: GPL-2.0
 #include "bcm283x.dtsi"
-
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/soc/bcm2835-pm.h>
-
 / {
 	compatible = "brcm,bcm2711";
-
 	#address-cells = <2>;
 	#size-cells = <1>;
-
 	interrupt-parent = <&gicv2>;
-
 	vc4: gpu {
 		compatible = "brcm,bcm2711-vc5";
 		status = "disabled";
 	};
-
 	clk_27MHz: clk-27M {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <27000000>;
 		clock-output-names = "27MHz-clock";
 	};
-
 	clk_108MHz: clk-108M {
 		#clock-cells = <0>;
 		compatible = "fixed-clock";
 		clock-frequency = <108000000>;
 		clock-output-names = "108MHz-clock";
 	};
-
 	soc {
-		/*
-		 * Defined ranges:
-		 *   Common BCM283x peripherals
-		 *   BCM2711-specific peripherals
-		 *   ARM-local peripherals
-		 */
 		ranges = <0x7e000000  0x0 0xfe000000  0x01800000>,
 			 <0x7c000000  0x0 0xfc000000  0x02000000>,
 			 <0x40000000  0x0 0xff800000  0x00800000>;
-		/* Emulate a contiguous 30-bit address range for DMA */
 		dma-ranges = <0xc0000000  0x0 0x00000000  0x40000000>;
-
-		/*
-		 * This node is the provider for the enable-method for
-		 * bringing up secondary cores.
-		 */
 		local_intc: interrupt-controller@40000000 {
 			compatible = "brcm,bcm2836-l1-intc";
 			reg = <0x40000000 0x100>;
 		};
-
 		gicv2: interrupt-controller@40041000 {
 			interrupt-controller;
 			#interrupt-cells = <3>;
@@ -64,18 +42,15 @@
 			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) |
 						 IRQ_TYPE_LEVEL_HIGH)>;
 		};
-
 		avs_monitor: avs-monitor@7d5d2000 {
 			compatible = "brcm,bcm2711-avs-monitor",
 				     "syscon", "simple-mfd";
 			reg = <0x7d5d2000 0xf00>;
-
 			thermal: thermal {
 				compatible = "brcm,bcm2711-thermal";
 				#thermal-sensor-cells = <0>;
 			};
 		};
-
 		dma: dma-controller@7e007000 {
 			compatible = "brcm,bcm2835-dma";
 			reg = <0x7e007000 0xb00>;
@@ -86,7 +61,6 @@
 				     <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
-				     /* DMA lite 7 - 10 */
 				     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
@@ -105,7 +79,6 @@
 			#dma-cells = <1>;
 			brcm,dma-channel-mask = <0x07f5>;
 		};
-
 		pm: watchdog@7e100000 {
 			compatible = "brcm,bcm2711-pm", "brcm,bcm2835-pm-wdt";
 			#power-domain-cells = <1>;
@@ -121,12 +94,10 @@
 			clock-names = "v3d", "peri_image", "h264", "isp";
 			system-power-controller;
 		};
-
 		rng@7e104000 {
 			compatible = "brcm,bcm2711-rng200";
 			reg = <0x7e104000 0x28>;
 		};
-
 		uart2: serial@7e201400 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x7e201400 0x200>;
@@ -137,7 +108,6 @@
 			arm,primecell-periphid = <0x00241011>;
 			status = "disabled";
 		};
-
 		uart3: serial@7e201600 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x7e201600 0x200>;
@@ -148,7 +118,6 @@
 			arm,primecell-periphid = <0x00241011>;
 			status = "disabled";
 		};
-
 		uart4: serial@7e201800 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x7e201800 0x200>;
@@ -159,7 +128,6 @@
 			arm,primecell-periphid = <0x00241011>;
 			status = "disabled";
 		};
-
 		uart5: serial@7e201a00 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x7e201a00 0x200>;
@@ -170,7 +138,6 @@
 			arm,primecell-periphid = <0x00241011>;
 			status = "disabled";
 		};
-
 		spi3: spi@7e204600 {
 			compatible = "brcm,bcm2835-spi";
 			reg = <0x7e204600 0x0200>;
@@ -180,7 +147,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		spi4: spi@7e204800 {
 			compatible = "brcm,bcm2835-spi";
 			reg = <0x7e204800 0x0200>;
@@ -190,7 +156,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		spi5: spi@7e204a00 {
 			compatible = "brcm,bcm2835-spi";
 			reg = <0x7e204a00 0x0200>;
@@ -200,7 +165,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		spi6: spi@7e204c00 {
 			compatible = "brcm,bcm2835-spi";
 			reg = <0x7e204c00 0x0200>;
@@ -210,7 +174,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c3: i2c@7e205600 {
 			compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 			reg = <0x7e205600 0x200>;
@@ -220,7 +183,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c4: i2c@7e205800 {
 			compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 			reg = <0x7e205800 0x200>;
@@ -230,7 +192,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c5: i2c@7e205a00 {
 			compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 			reg = <0x7e205a00 0x200>;
@@ -240,7 +201,6 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		i2c6: i2c@7e205c00 {
 			compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 			reg = <0x7e205c00 0x200>;
@@ -250,28 +210,24 @@
 			#size-cells = <0>;
 			status = "disabled";
 		};
-
 		pixelvalve0: pixelvalve@7e206000 {
 			compatible = "brcm,bcm2711-pixelvalve0";
 			reg = <0x7e206000 0x100>;
 			interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		pixelvalve1: pixelvalve@7e207000 {
 			compatible = "brcm,bcm2711-pixelvalve1";
 			reg = <0x7e207000 0x100>;
 			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		pixelvalve2: pixelvalve@7e20a000 {
 			compatible = "brcm,bcm2711-pixelvalve2";
 			reg = <0x7e20a000 0x100>;
 			interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		pwm1: pwm@7e20c800 {
 			compatible = "brcm,bcm2835-pwm";
 			reg = <0x7e20c800 0x28>;
@@ -281,27 +237,23 @@
 			#pwm-cells = <3>;
 			status = "disabled";
 		};
-
 		pixelvalve4: pixelvalve@7e216000 {
 			compatible = "brcm,bcm2711-pixelvalve4";
 			reg = <0x7e216000 0x100>;
 			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		hvs: hvs@7e400000 {
 			compatible = "brcm,bcm2711-hvs";
 			reg = <0x7e400000 0x8000>;
 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
 		};
-
 		pixelvalve3: pixelvalve@7ec12000 {
 			compatible = "brcm,bcm2711-pixelvalve3";
 			reg = <0x7ec12000 0x100>;
 			interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		vec: vec@7ec13000 {
 			compatible = "brcm,bcm2711-vec";
 			reg = <0x7ec13000 0x1000>;
@@ -309,7 +261,6 @@
 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
 		};
-
 		dvp: clock@7ef00000 {
 			compatible = "brcm,brcm2711-dvp";
 			reg = <0x7ef00000 0x10>;
@@ -317,7 +268,6 @@
 			#clock-cells = <1>;
 			#reset-cells = <1>;
 		};
-
 		aon_intr: interrupt-controller@7ef00100 {
 			compatible = "brcm,bcm2711-l2-intc", "brcm,l2-intc";
 			reg = <0x7ef00100 0x30>;
@@ -325,7 +275,6 @@
 			interrupt-controller;
 			#interrupt-cells = <1>;
 		};
-
 		hdmi0: hdmi@7ef00700 {
 			compatible = "brcm,bcm2711-hdmi0";
 			reg = <0x7ef00700 0x300>,
@@ -358,7 +307,6 @@
 			dma-names = "audio-rx";
 			status = "disabled";
 		};
-
 		ddc0: i2c@7ef04500 {
 			compatible = "brcm,bcm2711-hdmi-i2c";
 			reg = <0x7ef04500 0x100>, <0x7ef00b00 0x300>;
@@ -366,7 +314,6 @@
 			clock-frequency = <97500>;
 			status = "disabled";
 		};
-
 		hdmi1: hdmi@7ef05700 {
 			compatible = "brcm,bcm2711-hdmi1";
 			reg = <0x7ef05700 0x300>,
@@ -399,7 +346,6 @@
 			dma-names = "audio-rx";
 			status = "disabled";
 		};
-
 		ddc1: i2c@7ef09500 {
 			compatible = "brcm,bcm2711-hdmi-i2c";
 			reg = <0x7ef09500 0x100>, <0x7ef05b00 0x300>;
@@ -408,21 +354,12 @@
 			status = "disabled";
 		};
 	};
-
-	/*
-	 * emmc2 has different DMA constraints based on SoC revisions. It was
-	 * moved into its own bus, so as for RPi4's firmware to update them.
-	 * The firmware will find whether the emmc2bus alias is defined, and if
-	 * so, it'll edit the dma-ranges property below accordingly.
-	 */
 	emmc2bus: emmc2bus {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <1>;
-
 		ranges = <0x0 0x7e000000  0x0 0xfe000000  0x01800000>;
 		dma-ranges = <0x0 0xc0000000  0x0 0x00000000  0x40000000>;
-
 		emmc2: mmc@7e340000 {
 			compatible = "brcm,bcm2711-emmc2";
 			reg = <0x0 0x7e340000 0x100>;
@@ -431,7 +368,6 @@
 			status = "disabled";
 		};
 	};
-
 	arm-pmu {
 		compatible = "arm,cortex-a72-pmu", "arm,armv8-pmuv3";
 		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
@@ -440,7 +376,6 @@
 			<GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
 	};
-
 	timer {
 		compatible = "arm,armv8-timer";
 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) |
@@ -451,22 +386,12 @@
 					  IRQ_TYPE_LEVEL_LOW)>,
 			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(4) |
 					  IRQ_TYPE_LEVEL_LOW)>;
-		/* This only applies to the ARMv7 stub */
 		arm,cpu-registers-not-fw-configured;
 	};
-
 	cpus: cpus {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		enable-method = "brcm,bcm2836-smp"; // for ARM 32-bit
-
-		/* Source for d/i-cache-line-size and d/i-cache-sets
-		 * https://developer.arm.com/documentation/100095/0003
-		 * /Level-1-Memory-System/About-the-L1-memory-system?lang=en
-		 * Source for d/i-cache-size
-		 * https://www.raspberrypi.com/documentation/computers
-		 * /processors.html#bcm2711
-		 */
+		enable-method = "brcm,bcm2836-smp";  
 		cpu0: cpu@0 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -475,13 +400,12 @@
 			cpu-release-addr = <0x0 0x000000d8>;
 			d-cache-size = <0x8000>;
 			d-cache-line-size = <64>;
-			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
+			d-cache-sets = <256>;  
 			i-cache-size = <0xc000>;
 			i-cache-line-size = <64>;
-			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
+			i-cache-sets = <256>;  
 			next-level-cache = <&l2>;
 		};
-
 		cpu1: cpu@1 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -490,13 +414,12 @@
 			cpu-release-addr = <0x0 0x000000e0>;
 			d-cache-size = <0x8000>;
 			d-cache-line-size = <64>;
-			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
+			d-cache-sets = <256>;  
 			i-cache-size = <0xc000>;
 			i-cache-line-size = <64>;
-			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
+			i-cache-sets = <256>;  
 			next-level-cache = <&l2>;
 		};
-
 		cpu2: cpu@2 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -505,13 +428,12 @@
 			cpu-release-addr = <0x0 0x000000e8>;
 			d-cache-size = <0x8000>;
 			d-cache-line-size = <64>;
-			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
+			d-cache-sets = <256>;  
 			i-cache-size = <0xc000>;
 			i-cache-line-size = <64>;
-			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
+			i-cache-sets = <256>;  
 			next-level-cache = <&l2>;
 		};
-
 		cpu3: cpu@3 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a72";
@@ -520,38 +442,27 @@
 			cpu-release-addr = <0x0 0x000000f0>;
 			d-cache-size = <0x8000>;
 			d-cache-line-size = <64>;
-			d-cache-sets = <256>; // 32KiB(size)/64(line-size)=512ways/2-way set
+			d-cache-sets = <256>;  
 			i-cache-size = <0xc000>;
 			i-cache-line-size = <64>;
-			i-cache-sets = <256>; // 48KiB(size)/64(line-size)=768ways/3-way set
+			i-cache-sets = <256>;  
 			next-level-cache = <&l2>;
 		};
-
-		/* Source for d/i-cache-line-size and d/i-cache-sets
-		 *  https://developer.arm.com/documentation/100095/0003
-		 *  /Level-2-Memory-System/About-the-L2-memory-system?lang=en
-		 *  Source for d/i-cache-size
-		 *  https://www.raspberrypi.com/documentation/computers
-		 *  /processors.html#bcm2711
-		 */
 		l2: l2-cache0 {
 			compatible = "cache";
 			cache-unified;
 			cache-size = <0x100000>;
 			cache-line-size = <64>;
-			cache-sets = <1024>; // 1MiB(size)/64(line-size)=16384ways/16-way set
+			cache-sets = <1024>;  
 			cache-level = <2>;
 		};
 	};
-
 	scb {
 		compatible = "simple-bus";
 		#address-cells = <2>;
 		#size-cells = <1>;
-
 		ranges = <0x0 0x7c000000  0x0 0xfc000000  0x03800000>,
 			 <0x6 0x00000000  0x6 0x00000000  0x40000000>;
-
 		pcie0: pcie@7d500000 {
 			compatible = "brcm,bcm2711-pcie";
 			reg = <0x0 0x7d500000 0x9310>;
@@ -573,19 +484,12 @@
 							IRQ_TYPE_LEVEL_HIGH>;
 			msi-controller;
 			msi-parent = <&pcie0>;
-
 			ranges = <0x02000000 0x0 0xf8000000 0x6 0x00000000
 				  0x0 0x04000000>;
-			/*
-			 * The wrapper around the PCIe block has a bug
-			 * preventing it from accessing beyond the first 3GB of
-			 * memory.
-			 */
 			dma-ranges = <0x02000000 0x0 0x00000000 0x0 0x00000000
 				      0x0 0xc0000000>;
 			brcm,enable-ssc;
 		};
-
 		genet: ethernet@7d580000 {
 			compatible = "brcm,bcm2711-genet-v5";
 			reg = <0x0 0x7d580000 0x10000>;
@@ -594,7 +498,6 @@
 			interrupts = <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
 				     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>;
 			status = "disabled";
-
 			genet_mdio: mdio@e14 {
 				compatible = "brcm,genet-mdio-v5";
 				reg = <0xe14 0x8>;
@@ -603,51 +506,41 @@
 				#size-cells = <0x0>;
 			};
 		};
-
 		v3d: gpu@7ec00000 {
 			compatible = "brcm,2711-v3d";
 			reg = <0x0 0x7ec00000 0x4000>,
 			      <0x0 0x7ec04000 0x4000>;
 			reg-names = "hub", "core0";
-
 			power-domains = <&pm BCM2835_POWER_DOMAIN_GRAFX_V3D>;
 			resets = <&pm BCM2835_RESET_V3D>;
 			interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>;
 		};
 	};
 };
-
 &clk_osc {
 	clock-frequency = <54000000>;
 };
-
 &clocks {
 	compatible = "brcm,bcm2711-cprman";
 };
-
 &cpu_thermal {
 	coefficients = <(-487) 410040>;
 	thermal-sensors = <&thermal>;
 };
-
 &dsi0 {
 	interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &dsi1 {
 	interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
 	compatible = "brcm,bcm2711-dsi1";
 };
-
 &gpio {
 	compatible = "brcm,bcm2711-gpio";
 	interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
-
 	gpio-ranges = <&gpio 0 0 58>;
-
 	gpclk0_gpio49: gpclk0-gpio49 {
 		pin-gpclk {
 			pins = "gpio49";
@@ -669,7 +562,6 @@
 			bias-disable;
 		};
 	};
-
 	i2c0_gpio46: i2c0-gpio46 {
 		pin-sda {
 			function = "alt0";
@@ -799,7 +691,6 @@
 			function = "alt3";
 		};
 	};
-
 	jtag_gpio48: jtag-gpio48 {
 		pins-jtag {
 			pins = "gpio48",
@@ -811,7 +702,6 @@
 			function = "alt4";
 		};
 	};
-
 	mii_gpio28: mii-gpio28 {
 		pins-mii {
 			pins = "gpio28",
@@ -830,7 +720,6 @@
 			function = "alt5";
 		};
 	};
-
 	pcm_gpio50: pcm-gpio50 {
 		pins-pcm {
 			pins = "gpio50",
@@ -840,7 +729,6 @@
 			function = "alt2";
 		};
 	};
-
 	pwm0_0_gpio12: pwm0-0-gpio12 {
 		pin-pwm {
 			pins = "gpio12";
@@ -904,7 +792,6 @@
 			bias-disable;
 		};
 	};
-
 	rgmii_gpio35: rgmii-gpio35 {
 		pin-start-stop {
 			pins = "gpio35";
@@ -941,7 +828,6 @@
 			function = "alt4";
 		};
 	};
-
 	spi0_gpio46: spi0-gpio46 {
 		pins-spi {
 			pins = "gpio46",
@@ -997,7 +883,6 @@
 			function = "alt3";
 		};
 	};
-
 	uart2_gpio0: uart2-gpio0 {
 		pin-tx {
 			pins = "gpio0";
@@ -1095,77 +980,56 @@
 		};
 	};
 };
-
 &rmem {
 	#address-cells = <2>;
 };
-
 &cma {
-	/*
-	 * arm64 reserves the CMA by default somewhere in ZONE_DMA32,
-	 * that's not good enough for the BCM2711 as some devices can
-	 * only address the lower 1G of memory (ZONE_DMA).
-	 */
 	alloc-ranges = <0x0 0x00000000 0x40000000>;
 };
-
 &i2c0 {
 	compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 	interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &i2c1 {
 	compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
 	interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &mailbox {
 	interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &sdhci {
 	interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &sdhost {
 	interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &spi {
 	interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &spi1 {
 	interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &spi2 {
 	interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &system_timer {
 	interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>,
 		     <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &txp {
 	interrupts = <GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &uart0 {
 	interrupts = <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &uart1 {
 	interrupts = <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &usb {
 	interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
 };
-
 &vec {
 	compatible = "brcm,bcm2711-vec";
 	interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;

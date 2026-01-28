@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
 #ifndef __NVKM_DEVICE_PRIV_H__
 #define __NVKM_DEVICE_PRIV_H__
 #include <core/device.h>
-
 #include <subdev/acr.h>
 #include <subdev/bar.h>
 #include <subdev/bios.h>
@@ -29,7 +27,6 @@
 #include <subdev/top.h>
 #include <subdev/vfn.h>
 #include <subdev/volt.h>
-
 #include <engine/bsp.h>
 #include <engine/ce.h>
 #include <engine/cipher.h>
@@ -49,7 +46,6 @@
 #include <engine/sw.h>
 #include <engine/vic.h>
 #include <engine/vp.h>
-
 int  nvkm_device_ctor(const struct nvkm_device_func *,
 		      const struct nvkm_device_quirk *,
 		      struct device *, enum nvkm_device_type, u64 handle,
