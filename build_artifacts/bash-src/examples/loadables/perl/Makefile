@@ -42,7 +42,7 @@ SHELL = /bin/sh
 
 PERL5 = perl5
 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
 
 #
 # These values are generated for configure by ${topdir}/support/shobj-conf.

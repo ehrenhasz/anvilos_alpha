@@ -76,12 +76,12 @@ CTAGS = ctags -w
 
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 LOCAL_CFLAGS =  -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"' -DBRACKETED_PASTE_DEFAULT=1
-CPPFLAGS = 
+CPPFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
 
 DEFS = -DHAVE_CONFIG_H 
 LOCAL_DEFS = 
 
-TERMCAP_LIB = -ltinfo
+TERMCAP_LIB = -lncurses
 
 # For libraries which include headers from other libraries.
 INCLUDES = -I. -I$(srcdir)

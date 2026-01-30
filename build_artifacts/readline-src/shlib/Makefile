@@ -65,8 +65,8 @@ DESTDIR =
 
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 LOCAL_CFLAGS =  -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"' -DBRACKETED_PASTE_DEFAULT=1
-CPPFLAGS = 
-LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static  -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
+CPPFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
+LDFLAGS =   -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 
 DEFS = -DHAVE_CONFIG_H 
 LOCAL_DEFS = 
@@ -85,7 +85,7 @@ SHOBJ_LDFLAGS = -shared -Wl,-soname,$@
 SHOBJ_XLDFLAGS = 
 SHOBJ_LIBS = 
 
-SHLIB_XLDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static -Wl,-rpath,$(libdir) -Wl,-soname,`basename $@ $(SHLIB_MINOR)`
+SHLIB_XLDFLAGS =  -Wl,-rpath,$(libdir) -Wl,-soname,`basename $@ $(SHLIB_MINOR)`
 SHLIB_LIBS =  
 
 SHLIB_DOT = .
@@ -97,7 +97,7 @@ SHLIB_DLLVERSION = $(SHLIB_MAJOR)
 
 SHLIB_STATUS = supported
 
-TERMCAP_LIB = -ltinfo
+TERMCAP_LIB = -lncurses
 
 # shared library versioning
 SHLIB_MAJOR=		8

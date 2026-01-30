@@ -40,11 +40,11 @@ SHELL = /bin/sh
 
 PROFILE_FLAGS = 
 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
 LOCAL_CFLAGS = 
 STYLE_CFLAGS = 
 CPPFLAGS = 
-LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static -rdynamic
+LDFLAGS =  -L./lib/termcap -L./lib/termcap -rdynamic
 
 DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL

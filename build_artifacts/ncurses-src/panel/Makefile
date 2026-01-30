@@ -109,7 +109,7 @@ CFLAGS_SHARED	= $(CCFLAGS) -fPIC
 CFLAGS_DEFAULT	= $(CFLAGS_NORMAL)
 
 LINK		= $(LIBTOOL_LINK)
-LDFLAGS		= -L/home/aimeat/anvilos/build_artifacts/staging/lib -static  
+LDFLAGS		=   
 
 SHLIB_DIRS	= -L../lib
 SHLIB_LIST	= $(SHLIB_DIRS) -lncurses  -ltinfo
@@ -309,7 +309,7 @@ lint ::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./panel.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 NORMAL_OBJS = \
@@ -450,7 +450,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./panel.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 DEBUG_OBJS = \

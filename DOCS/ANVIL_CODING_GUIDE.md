@@ -139,14 +139,22 @@ Following the "Phase 2.5" incident, the following protocols are now **HARD LAW**
     - Builds MUST NOT run on the bare metal host. They MUST run inside the `oss_sovereignty` container or a chroot environment where `/usr/bin/cc` and `/usr/bin/gcc` simply do not exist.
     - **Directive:** If the toolchain is not found at `/usr/local/bin/x86_64-bicameral-linux-musl-gcc`, the build MUST FAIL. Fallback to host tools is strictly prohibited.
 
-2.  **Artifact Signing:**
+2.  **Sovereign Bootstrap (Phase 4 Update):**
+    - **The Driver:** The build process MUST be driven by the sovereign `/usr/local/bin/anvil` binary (or its local equivalent in `build_artifacts/rootfs_stage/bin/anvil`).
+    - **No Host Python:** Usage of the host's `/usr/bin/python3` for build orchestration is **FORBIDDEN**. Use `anvil script.py`.
+    - **Capabilities:** The `anvil` runtime has been enhanced with:
+        - `modanvil.c`: Provides `anvil.check_output(cmd)` for capturing output.
+        - `os.system()`: For streaming build logs to stdout.
+    - **Scripts:** Build logic must be written in Anvil-compatible Python (e.g., `build_phase4_anvil.py`).
+
+3.  **Artifact Signing:**
     - The Kernel will eventually enforce signed binaries. For now, the `init` script must hash-check any binary it executes against a manifest stored in read-only memory.
 
-3.  **The "Slow Down" Rule:**
+4.  **The "Slow Down" Rule:**
     - "Anvil is Law" is a *goal*, not a *panic*.
     - If a task requires a missing tool, **STOP**.
     - **Do not** bypass safety filters.
-    - **Do not** use `subprocess` to call host binaries.
+    - **Do not** use `subprocess` to call host binaries via host python.
     - **Do** file a Request for Comment (RFC) to add the capability to the Sovereign Toolchain.
 
 ---

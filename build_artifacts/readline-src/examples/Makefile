@@ -49,13 +49,13 @@ DEFS = -DHAVE_CONFIG_H
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 LOCAL_CFLAGS =  -DREADLINE_LIBRARY -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"'
-CPPFLAGS = 
+CPPFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
 
 INCLUDES = -I$(srcdir) -I$(top_srcdir) -I..
 
 CCFLAGS  = $(ASAN_CFLAGS) $(DEFS) $(LOCAL_CFLAGS) $(INCLUDES) $(CPPFLAGS) \
 	$(CFLAGS)
-LDFLAGS = -g -L.. -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(ASAN_LDFLAGS)
+LDFLAGS = -g -L..  $(ASAN_LDFLAGS)
 
 ASAN_XCFLAGS = -fsanitize=address -fno-omit-frame-pointer
 ASAN_XLDFLAGS = -fsanitize=address
@@ -63,7 +63,7 @@ ASAN_XLDFLAGS = -fsanitize=address
 READLINE_LIB = ../libreadline.a
 HISTORY_LIB = ../libhistory.a
 
-TERMCAP_LIB = -ltinfo
+TERMCAP_LIB = -lncurses
 
 .c.o:
 	${RM} $@

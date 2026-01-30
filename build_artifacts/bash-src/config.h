@@ -492,7 +492,7 @@
 
 /* #undef PRI_MACROS_BROKEN */
 
-#define STRTOLD_BROKEN 1
+/* #undef STRTOLD_BROKEN */
 
 /* Define if WCONTINUED is defined in system headers, but rejected by waitpid */
 /* #undef WCONTINUED_BROKEN */
@@ -551,7 +551,7 @@
 
 /* Type and behavior of signal handling functions. */
 
-#define MUST_REINSTALL_SIGHANDLERS 1
+/* #undef MUST_REINSTALL_SIGHANDLERS */
 
 /* #undef HAVE_BSD_SIGNALS */
 

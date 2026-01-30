@@ -128,7 +128,7 @@ CFLAGS_SHARED	= $(CCFLAGS) -fPIC
 CFLAGS_DEFAULT	= $(CFLAGS_NORMAL)
 
 LINK		= $(LIBTOOL)
-LDFLAGS		= -L/home/aimeat/anvilos/build_artifacts/staging/lib -static 
+LDFLAGS		=  
 
 SHLIB_DIRS	= -L../lib
 SHLIB_LIST	= $(SHLIB_DIRS)  -ltinfo 
@@ -198,7 +198,7 @@ HEADER_DEPS	=  \
 
 TEST_DEPS	= ../lib/libncurses.a
 TEST_ARGS	= -static -L../lib -lform -lmenu -lpanel -lncurses -ltinfo -dynamic
-TEST_LDFLAGS	=  $(TEST_ARGS)   -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
+TEST_LDFLAGS	=  $(TEST_ARGS)   
 
 TEST_PROGS = \
 	captoinfo$x \
@@ -797,7 +797,7 @@ lint ::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 NORMAL_P_OBJS = \
@@ -907,7 +907,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 DEBUG_P_OBJS = \
@@ -1017,7 +1017,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 NORMAL_T_OBJS = \
@@ -1384,7 +1384,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 DEBUG_T_OBJS = \
@@ -1776,7 +1776,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 NORMAL_OBJS = \
@@ -2303,7 +2303,7 @@ mostlyclean::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 DEBUG_OBJS = \
