@@ -22,10 +22,10 @@ echo "[BUILD] Generating MicroPython Embed Source..."
 # We are already in SRC_DIR
 make -f Makefile micropython-embed-package CC="$CC" CPP="$CC -E" > /dev/null
 
-# 2. Compile Everything
+# Compile Everything
 echo "[BUILD] Compiling AnvilOS Kernel..."
 # Collect sources
-# Include bridge.c, generated sources, pyexec.c (Readline removed)
+# Include bridge.c, generated sources, pyexec.c (Readline fallback in pyexec)
 SRCS="bridge.c $(find generated -name "*.c") ../../../oss_sovereignty/sys_09_Anvil/source/shared/runtime/pyexec.c"
 
 # Substrate path
