@@ -61,7 +61,7 @@ host_os = linux-musl
 host_cpu = x86_64
 host_vendor = unknown
 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
 LOCAL_CFLAGS = 
 DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL
@@ -90,7 +90,7 @@ CCFLAGS = $(DEFS) $(LOCAL_DEFS) $(LOCAL_CFLAGS) $(CFLAGS)
 SHOBJ_CC = 
 SHOBJ_CFLAGS = 
 SHOBJ_LD = 
-SHOBJ_LDFLAGS =  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
+SHOBJ_LDFLAGS =   -L./lib/termcap -L./lib/termcap
 SHOBJ_XLDFLAGS = 
 SHOBJ_LIBS = 
 SHOBJ_STATUS = unsupported

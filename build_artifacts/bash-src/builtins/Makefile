@@ -57,8 +57,8 @@ BUILD_DIR = /home/aimeat/anvilos/build_artifacts/bash-src
 LIBBUILD = ${BUILD_DIR}/lib
 
 PROFILE_FLAGS = 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
-CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
+CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes 
 STYLE_CFLAGS = 
 CPPFLAGS = 
 CPPFLAGS_FOR_BUILD = 
@@ -67,7 +67,7 @@ DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL
 
 LIBS = 
-LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(LOCAL_LDFLAGS) $(CFLAGS)
+LDFLAGS =  -L./lib/termcap -L./lib/termcap $(LOCAL_LDFLAGS) $(CFLAGS)
 LDFLAGS_FOR_BUILD = $(LDFLAGS) $(LOCAL_LDFLAGS) $(CFLAGS_FOR_BUILD)
 LOCAL_LDFLAGS = -rdynamic
 LIBS_FOR_BUILD = $(LIBS)
@@ -75,7 +75,7 @@ LIBS_FOR_BUILD = $(LIBS)
 
 BASHINCDIR = ${topdir}/include
 
-RL_INCLUDEDIR = /home/aimeat/anvilos/build_artifacts/staging/include
+RL_INCLUDEDIR = 
 
 INTL_LIBSRC = ${topdir}/lib/intl
 INTL_BUILDDIR = ${LIBBUILD}/intl
@@ -90,7 +90,7 @@ MKDIRS = ${topdir}/support/mkdirs
 
 HELPFILES_TARGET = 
 
-INCLUDES = -I. -I.. -I${RL_INCLUDEDIR} -I$(topdir) -I$(BASHINCDIR) -I$(topdir)/lib -I$(srcdir) ${INTL_INC}
+INCLUDES = -I. -I..  -I$(topdir) -I$(BASHINCDIR) -I$(topdir)/lib -I$(srcdir) ${INTL_INC}
 
 BASE_CCFLAGS = ${PROFILE_FLAGS} $(DEFS) $(LOCAL_DEFS) $(SYSTEM_FLAGS) \
 	 ${INCLUDES} $(STYLE_CFLAGS) $(LOCAL_CFLAGS)

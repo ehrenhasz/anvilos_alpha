@@ -67,8 +67,8 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" \
 -Drelocate=libintl_relocate \
 -DDEPENDS_ON_LIBICONV=1 -DHAVE_CONFIG_H ${LOCAL_DEFS}
 CPPFLAGS = 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
-LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
+LDFLAGS =  -L./lib/termcap -L./lib/termcap
 LIBS = 
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)

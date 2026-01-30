@@ -1,0 +1,1622 @@
+Output of:
+/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -malign-data=abi -Wall -Wshadow -Wwrite-strings -Wundef -Wstrict-prototypes -Wunused -Wunused-parameter -Wunused-function -Wunused-value -Wmissing-prototypes -Wmissing-declarations -Wno-format-security -Wdeclaration-after-statement -Wold-style-definition -finline-limit=0 -fno-builtin-strlen -fomit-frame-pointer -ffunction-sections -fdata-sections -fno-guess-branch-probability -funsigned-char -static-libgcc -falign-functions=1 -falign-jumps=1 -falign-labels=1 -falign-loops=1 -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-builtin-printf -Oz -static -o busybox_unstripped -Wl,--sort-common -Wl,--sort-section,alignment -Wl,--gc-sections -Wl,--start-group applets/built-in.o archival/lib.a archival/libarchive/lib.a console-tools/lib.a coreutils/lib.a coreutils/libcoreutils/lib.a debianutils/lib.a klibc-utils/lib.a e2fsprogs/lib.a editors/lib.a findutils/lib.a init/lib.a libbb/lib.a libpwdgrp/lib.a loginutils/lib.a mailutils/lib.a miscutils/lib.a modutils/lib.a networking/lib.a networking/libiproute/lib.a networking/udhcp/lib.a printutils/lib.a procps/lib.a runit/lib.a selinux/lib.a shell/lib.a sysklogd/lib.a util-linux/lib.a util-linux/volume_id/lib.a archival/built-in.o archival/libarchive/built-in.o console-tools/built-in.o coreutils/built-in.o coreutils/libcoreutils/built-in.o debianutils/built-in.o klibc-utils/built-in.o e2fsprogs/built-in.o editors/built-in.o findutils/built-in.o init/built-in.o libbb/built-in.o libpwdgrp/built-in.o loginutils/built-in.o mailutils/built-in.o miscutils/built-in.o modutils/built-in.o networking/built-in.o networking/libiproute/built-in.o networking/udhcp/built-in.o printutils/built-in.o procps/built-in.o runit/built-in.o selinux/built-in.o shell/built-in.o sysklogd/built-in.o util-linux/built-in.o util-linux/volume_id/built-in.o -Wl,--end-group -Wl,--warn-common -Wl,-Map,busybox_unstripped.map -Wl,--verbose
+==========
+GNU ld (crosstool-NG UNKNOWN) 2.45
+  Supported emulations:
+   elf_x86_64
+   elf32_x86_64
+   elf_i386
+   elf_iamcu
+using internal linker script:
+==================================================
+/* Script for -z combreloc -z separate-code */
+/* Copyright (C) 2014-2025 Free Software Foundation, Inc.
+   Copying and distribution of this script, with or without modification,
+   are permitted in any medium without royalty provided the copyright
+   notice and this notice are preserved.  */
+OUTPUT_FORMAT("elf64-x86-64", "elf64-x86-64", "elf64-x86-64")
+OUTPUT_ARCH(i386:x86-64)
+ENTRY(_start)
+SEARCH_DIR("=/opt/x-tools/x86_64-unknown-linux-musl/x86_64-unknown-linux-musl/lib64"); SEARCH_DIR("=/usr/local/lib64"); SEARCH_DIR("=/lib64"); SEARCH_DIR("=/usr/lib64"); SEARCH_DIR("=/opt/x-tools/x86_64-unknown-linux-musl/x86_64-unknown-linux-musl/lib"); SEARCH_DIR("=/usr/local/lib"); SEARCH_DIR("=/lib"); SEARCH_DIR("=/usr/lib");
+SECTIONS
+{
+  PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x400000));
+  . = SEGMENT_START("text-segment", 0x400000) + SIZEOF_HEADERS;
+  /* Place the build-id as close to the ELF headers as possible.  This
+     maximises the chance the build-id will be present in core files,
+     which GDB can then use to locate the associated debuginfo file.  */
+  .note.gnu.build-id  : { *(.note.gnu.build-id) }
+  .interp         : { *(.interp) }
+  .hash           : { *(.hash) }
+  .gnu.hash       : { *(.gnu.hash) }
+  .dynsym         : { *(.dynsym) }
+  .dynstr         : { *(.dynstr) }
+  .gnu.version    : { *(.gnu.version) }
+  .gnu.version_d  : { *(.gnu.version_d) }
+  .gnu.version_r  : { *(.gnu.version_r) }
+  .rela.dyn       :
+    {
+      *(.rela.init)
+      *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+      *(.rela.fini)
+      *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+      *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+      *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+      *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+      *(.rela.ctors)
+      *(.rela.dtors)
+      *(.rela.got)
+      *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+      *(.rela.ldata .rela.ldata.* .rela.gnu.linkonce.l.*)
+      *(.rela.lbss .rela.lbss.* .rela.gnu.linkonce.lb.*)
+      *(.rela.lrodata .rela.lrodata.* .rela.gnu.linkonce.lr.*)
+      *(.rela.ifunc)
+    }
+  .rela.plt       :
+    {
+      *(.rela.plt)
+      PROVIDE_HIDDEN (__rela_iplt_start = .);
+      *(.rela.iplt)
+      PROVIDE_HIDDEN (__rela_iplt_end = .);
+    }
+  .relr.dyn : { *(.relr.dyn) }
+  /* Align the text segment.  */
+  . = ALIGN(CONSTANT (MAXPAGESIZE));
+  /* Start of the executable code region.  */
+  .init           :
+  {
+    KEEP (*(SORT_NONE(.init)))
+  }
+  .plt            : { *(.plt) *(.iplt) }
+.plt.got        : { *(.plt.got) }
+.plt.sec        : { *(.plt.sec) }
+  .text           :
+  {
+    *(.text.unlikely .text.*_unlikely .text.unlikely.*)
+    *(.text.exit .text.exit.*)
+    *(.text.startup .text.startup.*)
+    *(.text.hot .text.hot.*)
+    *(SORT(.text.sorted.*))
+    *(.text .stub .text.* .gnu.linkonce.t.*)
+    /* .gnu.warning sections are handled specially by elf.em.  */
+    *(.gnu.warning)
+  }
+  .fini           :
+  {
+    KEEP (*(SORT_NONE(.fini)))
+  }
+  PROVIDE (__etext = .);
+  PROVIDE (_etext = .);
+  PROVIDE (etext = .);
+  /* Align the text segment.  */
+  . = ALIGN(CONSTANT (MAXPAGESIZE));
+  /* Start of the Read Only Data region.  */
+  /* Adjust the address for the rodata segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
+  . = SEGMENT_START("rodata-segment", ALIGN(CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 1)));
+  .rodata         : { *(.rodata .rodata.* .gnu.linkonce.r.*) }
+  .rodata1        : { *(.rodata1) }
+  .eh_frame_hdr   : { *(.eh_frame_hdr) *(.eh_frame_entry .eh_frame_entry.*) }
+  .eh_frame       : ONLY_IF_RO { KEEP (*(.eh_frame)) *(.eh_frame.*) }
+  .sframe         : ONLY_IF_RO { *(.sframe) *(.sframe.*) }
+  .gcc_except_table   : ONLY_IF_RO { *(.gcc_except_table .gcc_except_table.*) }
+  .gnu_extab   : ONLY_IF_RO { *(.gnu_extab*) }
+  /* These sections are generated by the Sun/Oracle C++ compiler.  */
+  .exception_ranges   : ONLY_IF_RO { *(.exception_ranges*) }
+  /* Various note sections.  Placed here so that they are always included
+     in the read-only segment and not treated as orphan sections.  The
+     current orphan handling algorithm does place note sections after R/O
+     data, but this is not guaranteed to always be the case.  */
+  .note.build-id :      { *(.note.build-id) }
+  .note.GNU-stack :     { *(.note.GNU-stack) }
+  .note.gnu-property :  { *(.note.gnu-property) }
+  .note.ABI-tag :       { *(.note.ABI-tag) }
+  .note.package :       { *(.note.package) }
+  .note.dlopen :        { *(.note.dlopen) }
+  .note.netbsd.ident :  { *(.note.netbsd.ident) }
+  .note.openbsd.ident : { *(.note.openbsd.ident) }
+  /* Start of the Read Write Data region.  */
+  /* Adjust the address for the data segment.  We want to adjust up to
+     the same address within the page on the next page up.  */
+  . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE));
+  /* Exception handling.  */
+  .eh_frame       : ONLY_IF_RW { KEEP (*(.eh_frame)) *(.eh_frame.*) }
+  .sframe         : ONLY_IF_RW { *(.sframe) *(.sframe.*) }
+  .gnu_extab      : ONLY_IF_RW { *(.gnu_extab) }
+  .gcc_except_table   : ONLY_IF_RW { *(.gcc_except_table .gcc_except_table.*) }
+  .exception_ranges   : ONLY_IF_RW { *(.exception_ranges*) }
+  /* Thread Local Storage sections.  */
+  .tdata	  :
+   {
+     PROVIDE_HIDDEN (__tdata_start = .);
+     *(.tdata .tdata.* .gnu.linkonce.td.*)
+   }
+  .tbss		  : { *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon) }
+  .preinit_array    :
+  {
+    PROVIDE_HIDDEN (__preinit_array_start = .);
+    KEEP (*(.preinit_array))
+    PROVIDE_HIDDEN (__preinit_array_end = .);
+  }
+  .init_array    :
+  {
+    PROVIDE_HIDDEN (__init_array_start = .);
+    KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
+    KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
+    PROVIDE_HIDDEN (__init_array_end = .);
+  }
+  .fini_array    :
+  {
+    PROVIDE_HIDDEN (__fini_array_start = .);
+    KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
+    KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
+    PROVIDE_HIDDEN (__fini_array_end = .);
+  }
+  .ctors          :
+  {
+    /* gcc uses crtbegin.o to find the start of
+       the constructors, so we make sure it is
+       first.  Because this is a wildcard, it
+       doesn't matter if the user does not
+       actually link against crtbegin.o; the
+       linker won't look for a file to match a
+       wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o
+       is in.  */
+    KEEP (*crtbegin.o(.ctors))
+    KEEP (*crtbegin?.o(.ctors))
+    /* We don't want to include the .ctor section from
+       the crtend.o file until after the sorted ctors.
+       The .ctor section from the crtend file contains the
+       end of ctors marker and it must be last */
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+  }
+  .dtors          :
+  {
+    KEEP (*crtbegin.o(.dtors))
+    KEEP (*crtbegin?.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend.o *crtend?.o ) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+  }
+  .jcr            : { KEEP (*(.jcr)) }
+  .data.rel.ro : { *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*) *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*) }
+  .dynamic        : { *(.dynamic) }
+  .got            : { *(.got) *(.igot) }
+  . = DATA_SEGMENT_RELRO_END (SIZEOF (.got.plt) >= 24 ? 24 : 0, .);
+  .got.plt        : { *(.got.plt) *(.igot.plt) }
+  .data           :
+  {
+    *(.data .data.* .gnu.linkonce.d.*)
+    SORT(CONSTRUCTORS)
+  }
+  .data1          : { *(.data1) }
+  _edata = .;
+  PROVIDE (edata = .);
+  . = ALIGN(ALIGNOF(NEXT_SECTION));
+  __bss_start = .;
+  .bss            :
+  {
+    *(.dynbss)
+    *(.bss .bss.* .gnu.linkonce.b.*)
+    *(COMMON)
+    /* Align here to ensure that in the common case of there only being one
+       type of .bss section, the section occupies space up to _end.
+       Align after .bss to ensure correct alignment even if the
+       .bss section disappears because there are no input sections.
+       FIXME: Why do we need it? When there is no .bss section, we do not
+       pad the .data section.  */
+      . = ALIGN(. != 0 ? 64 / 8 : 1);
+  }
+    .lbss   :
+    {
+      *(.dynlbss)
+      *(.lbss .lbss.* .gnu.linkonce.lb.*)
+      *(LARGE_COMMON)
+    }
+    . = ALIGN(64 / 8);
+  /* Start of the Large Data region.  */
+  . = SEGMENT_START("ldata-segment", .);
+  .lrodata   ALIGN(CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 1)) :
+  {
+    *(.lrodata .lrodata.* .gnu.linkonce.lr.*)
+  }
+  .ldata   ALIGN(CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 1)) :
+  {
+    *(.ldata .ldata.* .gnu.linkonce.l.*)
+      . = ALIGN(. != 0 ? 64 / 8 : 1);
+  }
+  . = ALIGN(64 / 8);
+  _end = .;
+  PROVIDE (end = .);
+  . = DATA_SEGMENT_END (.);
+  /* Start of the Tiny Data region.  */
+  /* Stabs debugging sections.  */
+  .stab          0 : { *(.stab) }
+  .stabstr       0 : { *(.stabstr) }
+  .stab.excl     0 : { *(.stab.excl) }
+  .stab.exclstr  0 : { *(.stab.exclstr) }
+  .stab.index    0 : { *(.stab.index) }
+  .stab.indexstr 0 : { *(.stab.indexstr) }
+  .comment 0 (INFO) : { *(.comment); LINKER_VERSION; }
+  .gnu.build.attributes : { *(.gnu.build.attributes .gnu.build.attributes.*) }
+  /* DWARF debug sections.
+     Symbols in the DWARF debugging sections are relative to the beginning
+     of the section so we begin them at 0.  */
+  /* DWARF 1.  */
+  .debug          0 : { *(.debug) }
+  .line           0 : { *(.line) }
+  /* GNU DWARF 1 extensions.  */
+  .debug_srcinfo  0 : { *(.debug_srcinfo) }
+  .debug_sfnames  0 : { *(.debug_sfnames) }
+  /* DWARF 1.1 and DWARF 2.  */
+  .debug_aranges  0 : { *(.debug_aranges) }
+  .debug_pubnames 0 : { *(.debug_pubnames) }
+  /* DWARF 2.  */
+  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
+  .debug_abbrev   0 : { *(.debug_abbrev) }
+  .debug_line     0 : { *(.debug_line .debug_line.* .debug_line_end) }
+  .debug_frame    0 : { *(.debug_frame) }
+  .debug_str      0 : { *(.debug_str) }
+  .debug_loc      0 : { *(.debug_loc) }
+  .debug_macinfo  0 : { *(.debug_macinfo) }
+  /* SGI/MIPS DWARF 2 extensions.  */
+  .debug_weaknames 0 : { *(.debug_weaknames) }
+  .debug_funcnames 0 : { *(.debug_funcnames) }
+  .debug_typenames 0 : { *(.debug_typenames) }
+  .debug_varnames  0 : { *(.debug_varnames) }
+  /* DWARF 3.  */
+  .debug_pubtypes 0 : { *(.debug_pubtypes) }
+  .debug_ranges   0 : { *(.debug_ranges) }
+  /* DWARF 5.  */
+  .debug_addr     0 : { *(.debug_addr) }
+  .debug_line_str 0 : { *(.debug_line_str) }
+  .debug_loclists 0 : { *(.debug_loclists) }
+  .debug_macro    0 : { *(.debug_macro) }
+  .debug_names    0 : { *(.debug_names) }
+  .debug_rnglists 0 : { *(.debug_rnglists) }
+  .debug_str_offsets 0 : { *(.debug_str_offsets) }
+  .debug_sup      0 : { *(.debug_sup) }
+  .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
+  /DISCARD/ : { *(.note.GNU-stack) *(.gnu_debuglink) *(.gnu.lto_*) *(.gnu_object_only) }
+}
+
+
+==================================================
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: mode elf_x86_64
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crt1.o succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crt1.o
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crti.o succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crti.o
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/crtbeginT.o succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/crtbeginT.o
+attempt to open applets/built-in.o succeeded
+applets/built-in.o
+attempt to open archival/lib.a succeeded
+archival/lib.a
+attempt to open archival/libarchive/lib.a succeeded
+archival/libarchive/lib.a
+attempt to open console-tools/lib.a succeeded
+console-tools/lib.a
+attempt to open coreutils/lib.a succeeded
+coreutils/lib.a
+attempt to open coreutils/libcoreutils/lib.a succeeded
+coreutils/libcoreutils/lib.a
+attempt to open debianutils/lib.a succeeded
+debianutils/lib.a
+attempt to open klibc-utils/lib.a succeeded
+klibc-utils/lib.a
+attempt to open e2fsprogs/lib.a succeeded
+e2fsprogs/lib.a
+attempt to open editors/lib.a succeeded
+editors/lib.a
+attempt to open findutils/lib.a succeeded
+findutils/lib.a
+attempt to open init/lib.a succeeded
+init/lib.a
+attempt to open libbb/lib.a succeeded
+libbb/lib.a
+(libbb/lib.a)appletlib.o
+(libbb/lib.a)compare_string_array.o
+(libbb/lib.a)concat_path_file.o
+(libbb/lib.a)default_error_retval.o
+(libbb/lib.a)get_last_path_component.o
+(libbb/lib.a)last_char_is.o
+(libbb/lib.a)llist.o
+(libbb/lib.a)messages.o
+(libbb/lib.a)perror_msg.o
+(libbb/lib.a)ptr_to_globals.o
+(libbb/lib.a)skip_whitespace.o
+(libbb/lib.a)verror_msg.o
+(libbb/lib.a)wfopen.o
+(libbb/lib.a)xfunc_die.o
+(libbb/lib.a)xfuncs.o
+(libbb/lib.a)xfuncs_printf.o
+(libbb/lib.a)xreadlink.o
+(libbb/lib.a)copyfd.o
+(libbb/lib.a)full_write.o
+(libbb/lib.a)read.o
+(libbb/lib.a)safe_write.o
+(libbb/lib.a)signals.o
+(libbb/lib.a)time.o
+(libbb/lib.a)xgetcwd.o
+(libbb/lib.a)bb_strtonum.o
+attempt to open libpwdgrp/lib.a succeeded
+libpwdgrp/lib.a
+(libpwdgrp/lib.a)pwd_grp.o
+(libpwdgrp/lib.a)uidgid_get.o
+attempt to open loginutils/lib.a succeeded
+loginutils/lib.a
+(loginutils/lib.a)add-remove-shell.o
+(loginutils/lib.a)addgroup.o
+(loginutils/lib.a)adduser.o
+(loginutils/lib.a)chpasswd.o
+(loginutils/lib.a)cryptpw.o
+(loginutils/lib.a)deluser.o
+(loginutils/lib.a)getty.o
+(loginutils/lib.a)login.o
+(loginutils/lib.a)passwd.o
+(loginutils/lib.a)su.o
+(loginutils/lib.a)sulogin.o
+(loginutils/lib.a)vlock.o
+attempt to open mailutils/lib.a succeeded
+mailutils/lib.a
+(mailutils/lib.a)makemime.o
+(mailutils/lib.a)popmaildir.o
+(mailutils/lib.a)reformime.o
+(mailutils/lib.a)sendmail.o
+(mailutils/lib.a)mail.o
+attempt to open miscutils/lib.a succeeded
+miscutils/lib.a
+(miscutils/lib.a)adjtimex.o
+(miscutils/lib.a)ascii.o
+(miscutils/lib.a)bc.o
+(miscutils/lib.a)beep.o
+(miscutils/lib.a)chat.o
+(miscutils/lib.a)conspy.o
+(miscutils/lib.a)crond.o
+(miscutils/lib.a)crontab.o
+(miscutils/lib.a)devmem.o
+(miscutils/lib.a)fbsplash.o
+(miscutils/lib.a)hdparm.o
+(miscutils/lib.a)hexedit.o
+(miscutils/lib.a)i2c_tools.o
+(miscutils/lib.a)less.o
+(miscutils/lib.a)lsscsi.o
+(miscutils/lib.a)makedevs.o
+(miscutils/lib.a)man.o
+(miscutils/lib.a)microcom.o
+(miscutils/lib.a)mt.o
+(miscutils/lib.a)nandwrite.o
+(miscutils/lib.a)partprobe.o
+(miscutils/lib.a)raidautorun.o
+(miscutils/lib.a)readahead.o
+(miscutils/lib.a)runlevel.o
+(miscutils/lib.a)rx.o
+(miscutils/lib.a)seedrng.o
+(miscutils/lib.a)setfattr.o
+(miscutils/lib.a)setserial.o
+(miscutils/lib.a)strings.o
+(miscutils/lib.a)time.o
+(miscutils/lib.a)tree.o
+(miscutils/lib.a)ts.o
+(miscutils/lib.a)ttysize.o
+(miscutils/lib.a)ubi_tools.o
+(miscutils/lib.a)ubirename.o
+(miscutils/lib.a)volname.o
+(miscutils/lib.a)watchdog.o
+attempt to open modutils/lib.a succeeded
+modutils/lib.a
+(modutils/lib.a)modinfo.o
+(modutils/lib.a)modprobe-small.o
+(modutils/lib.a)modutils.o
+attempt to open networking/lib.a succeeded
+networking/lib.a
+(networking/lib.a)arp.o
+(networking/lib.a)arping.o
+(networking/lib.a)brctl.o
+(networking/lib.a)dnsd.o
+(networking/lib.a)ether-wake.o
+(networking/lib.a)ftpd.o
+(networking/lib.a)ftpgetput.o
+(networking/lib.a)hostname.o
+(networking/lib.a)httpd.o
+(networking/lib.a)ifconfig.o
+(networking/lib.a)ifenslave.o
+(networking/lib.a)ifplugd.o
+(networking/lib.a)ifupdown.o
+(networking/lib.a)inetd.o
+(networking/lib.a)interface.o
+(networking/lib.a)ip.o
+(networking/lib.a)ipcalc.o
+(networking/lib.a)isrv_identd.o
+(networking/lib.a)nameif.o
+(networking/lib.a)nbd-client.o
+(networking/lib.a)nc.o
+(networking/lib.a)netstat.o
+(networking/lib.a)nslookup.o
+(networking/lib.a)ntpd.o
+(networking/lib.a)parse_pasv_epsv.o
+(networking/lib.a)ping.o
+(networking/lib.a)pscan.o
+(networking/lib.a)route.o
+(networking/lib.a)slattach.o
+(networking/lib.a)ssl_client.o
+(networking/lib.a)tcpudp.o
+(networking/lib.a)tcpudp_perhost.o
+(networking/lib.a)telnet.o
+(networking/lib.a)telnetd.o
+(networking/lib.a)tftp.o
+(networking/lib.a)tls.o
+(networking/lib.a)tls_aes.o
+(networking/lib.a)tls_aesgcm.o
+(networking/lib.a)tls_fe.o
+(networking/lib.a)tls_pstm.o
+(networking/lib.a)tls_pstm_montgomery_reduce.o
+(networking/lib.a)tls_pstm_mul_comba.o
+(networking/lib.a)tls_pstm_sqr_comba.o
+(networking/lib.a)tls_rsa.o
+(networking/lib.a)tls_sp_c32.o
+(networking/lib.a)traceroute.o
+(networking/lib.a)tunctl.o
+(networking/lib.a)vconfig.o
+(networking/lib.a)wget.o
+(networking/lib.a)whois.o
+(networking/lib.a)zcip.o
+(networking/lib.a)isrv.o
+attempt to open networking/libiproute/lib.a succeeded
+networking/libiproute/lib.a
+(networking/libiproute/lib.a)ip_parse_common_args.o
+(networking/libiproute/lib.a)ipaddress.o
+(networking/libiproute/lib.a)iplink.o
+(networking/libiproute/lib.a)ipneigh.o
+(networking/libiproute/lib.a)iproute.o
+(networking/libiproute/lib.a)iprule.o
+(networking/libiproute/lib.a)iptunnel.o
+(networking/libiproute/lib.a)libnetlink.o
+(networking/libiproute/lib.a)ll_addr.o
+(networking/libiproute/lib.a)ll_map.o
+(networking/libiproute/lib.a)ll_types.o
+(networking/libiproute/lib.a)rt_names.o
+(networking/libiproute/lib.a)rtm_map.o
+(networking/libiproute/lib.a)utils.o
+attempt to open networking/udhcp/lib.a succeeded
+networking/udhcp/lib.a
+(networking/udhcp/lib.a)d6_dhcpc.o
+(networking/udhcp/lib.a)d6_packet.o
+(networking/udhcp/lib.a)d6_socket.o
+(networking/udhcp/lib.a)dhcpc.o
+(networking/udhcp/lib.a)dhcpd.o
+(networking/udhcp/lib.a)dhcprelay.o
+(networking/udhcp/lib.a)domain_codec.o
+(networking/udhcp/lib.a)dumpleases.o
+(networking/udhcp/lib.a)packet.o
+(networking/udhcp/lib.a)signalpipe.o
+(networking/udhcp/lib.a)socket.o
+(networking/udhcp/lib.a)arpping.o
+(networking/udhcp/lib.a)common.o
+attempt to open printutils/lib.a succeeded
+printutils/lib.a
+(printutils/lib.a)lpd.o
+(printutils/lib.a)lpr.o
+attempt to open procps/lib.a succeeded
+procps/lib.a
+(procps/lib.a)free.o
+(procps/lib.a)fuser.o
+(procps/lib.a)iostat.o
+(procps/lib.a)kill.o
+(procps/lib.a)lsof.o
+(procps/lib.a)mpstat.o
+(procps/lib.a)nmeter.o
+(procps/lib.a)pgrep.o
+(procps/lib.a)pidof.o
+(procps/lib.a)pmap.o
+(procps/lib.a)powertop.o
+(procps/lib.a)ps.o
+(procps/lib.a)pstree.o
+(procps/lib.a)pwdx.o
+(procps/lib.a)smemcap.o
+(procps/lib.a)sysctl.o
+(procps/lib.a)top.o
+(procps/lib.a)uptime.o
+(procps/lib.a)watch.o
+attempt to open runit/lib.a succeeded
+runit/lib.a
+(runit/lib.a)chpst.o
+(runit/lib.a)runsv.o
+(runit/lib.a)runsvdir.o
+(runit/lib.a)sv.o
+(runit/lib.a)svlogd.o
+attempt to open selinux/lib.a succeeded
+selinux/lib.a
+attempt to open shell/lib.a succeeded
+shell/lib.a
+(shell/lib.a)ash.o
+(shell/lib.a)ash_ptr_hack.o
+(shell/lib.a)cttyhack.o
+(shell/lib.a)hush.o
+(shell/lib.a)match.o
+(shell/lib.a)math.o
+(shell/lib.a)random.o
+(shell/lib.a)shell_common.o
+attempt to open sysklogd/lib.a succeeded
+sysklogd/lib.a
+(sysklogd/lib.a)klogd.o
+(sysklogd/lib.a)logread.o
+(sysklogd/lib.a)syslogd_and_logger.o
+attempt to open util-linux/lib.a succeeded
+util-linux/lib.a
+(util-linux/lib.a)acpid.o
+(util-linux/lib.a)blkdiscard.o
+(util-linux/lib.a)blkid.o
+(util-linux/lib.a)blockdev.o
+(util-linux/lib.a)cal.o
+(util-linux/lib.a)chrt.o
+(util-linux/lib.a)dmesg.o
+(util-linux/lib.a)eject.o
+(util-linux/lib.a)fallocate.o
+(util-linux/lib.a)fatattr.o
+(util-linux/lib.a)fbset.o
+(util-linux/lib.a)fdformat.o
+(util-linux/lib.a)fdisk.o
+(util-linux/lib.a)findfs.o
+(util-linux/lib.a)flock.o
+(util-linux/lib.a)freeramdisk.o
+(util-linux/lib.a)fsck_minix.o
+(util-linux/lib.a)fsfreeze.o
+(util-linux/lib.a)fstrim.o
+(util-linux/lib.a)getopt.o
+(util-linux/lib.a)hexdump.o
+(util-linux/lib.a)hexdump_xxd.o
+(util-linux/lib.a)hwclock.o
+(util-linux/lib.a)ionice.o
+(util-linux/lib.a)ipcrm.o
+(util-linux/lib.a)ipcs.o
+(util-linux/lib.a)last_fancy.o
+(util-linux/lib.a)losetup.o
+(util-linux/lib.a)lspci.o
+(util-linux/lib.a)lsusb.o
+(util-linux/lib.a)mdev.o
+(util-linux/lib.a)mesg.o
+(util-linux/lib.a)mkfs_ext2.o
+(util-linux/lib.a)mkfs_minix.o
+(util-linux/lib.a)mkfs_vfat.o
+(util-linux/lib.a)mkswap.o
+(util-linux/lib.a)more.o
+(util-linux/lib.a)mount.o
+(util-linux/lib.a)mountpoint.o
+(util-linux/lib.a)nsenter.o
+(util-linux/lib.a)pivot_root.o
+(util-linux/lib.a)rdate.o
+(util-linux/lib.a)rdev.o
+(util-linux/lib.a)readprofile.o
+(util-linux/lib.a)renice.o
+(util-linux/lib.a)rev.o
+(util-linux/lib.a)rtcwake.o
+(util-linux/lib.a)script.o
+(util-linux/lib.a)scriptreplay.o
+(util-linux/lib.a)setarch.o
+(util-linux/lib.a)setpriv.o
+(util-linux/lib.a)setsid.o
+(util-linux/lib.a)swaponoff.o
+(util-linux/lib.a)switch_root.o
+(util-linux/lib.a)taskset.o
+(util-linux/lib.a)uevent.o
+(util-linux/lib.a)umount.o
+(util-linux/lib.a)unshare.o
+(util-linux/lib.a)wall.o
+attempt to open util-linux/volume_id/lib.a succeeded
+util-linux/volume_id/lib.a
+(util-linux/volume_id/lib.a)get_devname.o
+(util-linux/volume_id/lib.a)volume_id.o
+(util-linux/volume_id/lib.a)xfs.o
+(util-linux/volume_id/lib.a)bcache.o
+(util-linux/volume_id/lib.a)btrfs.o
+(util-linux/volume_id/lib.a)cramfs.o
+(util-linux/volume_id/lib.a)erofs.o
+(util-linux/volume_id/lib.a)exfat.o
+(util-linux/volume_id/lib.a)ext.o
+(util-linux/volume_id/lib.a)f2fs.o
+(util-linux/volume_id/lib.a)fat.o
+(util-linux/volume_id/lib.a)hfs.o
+(util-linux/volume_id/lib.a)iso9660.o
+(util-linux/volume_id/lib.a)jfs.o
+(util-linux/volume_id/lib.a)lfs.o
+(util-linux/volume_id/lib.a)linux_raid.o
+(util-linux/volume_id/lib.a)linux_swap.o
+(util-linux/volume_id/lib.a)luks.o
+(util-linux/volume_id/lib.a)minix.o
+(util-linux/volume_id/lib.a)nilfs.o
+(util-linux/volume_id/lib.a)ntfs.o
+(util-linux/volume_id/lib.a)ocfs2.o
+(util-linux/volume_id/lib.a)reiserfs.o
+(util-linux/volume_id/lib.a)romfs.o
+(util-linux/volume_id/lib.a)squashfs.o
+(util-linux/volume_id/lib.a)sysv.o
+(util-linux/volume_id/lib.a)ubifs.o
+(util-linux/volume_id/lib.a)udf.o
+(util-linux/volume_id/lib.a)util.o
+attempt to open archival/built-in.o succeeded
+archival/built-in.o
+attempt to open archival/libarchive/built-in.o succeeded
+archival/libarchive/built-in.o
+attempt to open console-tools/built-in.o succeeded
+console-tools/built-in.o
+attempt to open coreutils/built-in.o succeeded
+coreutils/built-in.o
+attempt to open coreutils/libcoreutils/built-in.o succeeded
+coreutils/libcoreutils/built-in.o
+attempt to open debianutils/built-in.o succeeded
+debianutils/built-in.o
+attempt to open klibc-utils/built-in.o succeeded
+klibc-utils/built-in.o
+attempt to open e2fsprogs/built-in.o succeeded
+e2fsprogs/built-in.o
+attempt to open editors/built-in.o succeeded
+editors/built-in.o
+attempt to open findutils/built-in.o succeeded
+findutils/built-in.o
+attempt to open init/built-in.o succeeded
+init/built-in.o
+attempt to open libbb/built-in.o succeeded
+libbb/built-in.o
+attempt to open libpwdgrp/built-in.o succeeded
+libpwdgrp/built-in.o
+attempt to open loginutils/built-in.o succeeded
+loginutils/built-in.o
+attempt to open mailutils/built-in.o succeeded
+mailutils/built-in.o
+attempt to open miscutils/built-in.o succeeded
+miscutils/built-in.o
+attempt to open modutils/built-in.o succeeded
+modutils/built-in.o
+attempt to open networking/built-in.o succeeded
+networking/built-in.o
+attempt to open networking/libiproute/built-in.o succeeded
+networking/libiproute/built-in.o
+attempt to open networking/udhcp/built-in.o succeeded
+networking/udhcp/built-in.o
+attempt to open printutils/built-in.o succeeded
+printutils/built-in.o
+attempt to open procps/built-in.o succeeded
+procps/built-in.o
+attempt to open runit/built-in.o succeeded
+runit/built-in.o
+attempt to open selinux/built-in.o succeeded
+selinux/built-in.o
+attempt to open shell/built-in.o succeeded
+shell/built-in.o
+attempt to open sysklogd/built-in.o succeeded
+sysklogd/built-in.o
+attempt to open util-linux/built-in.o succeeded
+util-linux/built-in.o
+attempt to open util-linux/volume_id/built-in.o succeeded
+util-linux/volume_id/built-in.o
+archival/lib.a
+(archival/lib.a)bbunzip.o
+(archival/lib.a)bzip2.o
+(archival/lib.a)chksum_and_xwrite_tar_header.o
+(archival/lib.a)cpio.o
+(archival/lib.a)dpkg.o
+(archival/lib.a)dpkg_deb.o
+(archival/lib.a)gzip.o
+(archival/lib.a)lzop.o
+(archival/lib.a)rpm.o
+(archival/lib.a)tar.o
+(archival/lib.a)unzip.o
+archival/libarchive/lib.a
+(archival/libarchive/lib.a)common.o
+(archival/libarchive/lib.a)data_extract_all.o
+(archival/libarchive/lib.a)data_extract_to_command.o
+(archival/libarchive/lib.a)data_extract_to_stdout.o
+(archival/libarchive/lib.a)data_skip.o
+(archival/libarchive/lib.a)decompress_bunzip2.o
+(archival/libarchive/lib.a)decompress_gunzip.o
+(archival/libarchive/lib.a)decompress_unlzma.o
+(archival/libarchive/lib.a)decompress_unxz.o
+(archival/libarchive/lib.a)filter_accept_list.o
+(archival/libarchive/lib.a)filter_accept_list_reassign.o
+(archival/libarchive/lib.a)filter_accept_reject_list.o
+(archival/libarchive/lib.a)find_list_entry.o
+(archival/libarchive/lib.a)get_header_cpio.o
+(archival/libarchive/lib.a)get_header_tar.o
+(archival/libarchive/lib.a)get_header_tar_bz2.o
+(archival/libarchive/lib.a)get_header_tar_gz.o
+(archival/libarchive/lib.a)get_header_tar_lzma.o
+(archival/libarchive/lib.a)get_header_tar_xz.o
+(archival/libarchive/lib.a)header_list.o
+(archival/libarchive/lib.a)header_verbose_list.o
+(archival/libarchive/lib.a)init_handle.o
+(archival/libarchive/lib.a)lzo1x_1.o
+(archival/libarchive/lib.a)lzo1x_1o.o
+(archival/libarchive/lib.a)lzo1x_d.o
+(archival/libarchive/lib.a)open_transformer.o
+(archival/libarchive/lib.a)seek_by_jump.o
+(archival/libarchive/lib.a)seek_by_read.o
+(archival/libarchive/lib.a)unpack_ar_archive.o
+(archival/libarchive/lib.a)unsafe_prefix.o
+(archival/libarchive/lib.a)unsafe_symlink_target.o
+(archival/libarchive/lib.a)data_align.o
+(archival/libarchive/lib.a)filter_accept_all.o
+(archival/libarchive/lib.a)get_header_ar.o
+(archival/libarchive/lib.a)header_skip.o
+console-tools/lib.a
+(console-tools/lib.a)chvt.o
+(console-tools/lib.a)clear.o
+(console-tools/lib.a)deallocvt.o
+(console-tools/lib.a)dumpkmap.o
+(console-tools/lib.a)fgconsole.o
+(console-tools/lib.a)kbd_mode.o
+(console-tools/lib.a)loadfont.o
+(console-tools/lib.a)loadkmap.o
+(console-tools/lib.a)openvt.o
+(console-tools/lib.a)reset.o
+(console-tools/lib.a)resize.o
+(console-tools/lib.a)setconsole.o
+(console-tools/lib.a)setkeycodes.o
+(console-tools/lib.a)setlogcons.o
+(console-tools/lib.a)showkey.o
+coreutils/lib.a
+(coreutils/lib.a)basename.o
+(coreutils/lib.a)cat.o
+(coreutils/lib.a)chgrp.o
+(coreutils/lib.a)chmod.o
+(coreutils/lib.a)chown.o
+(coreutils/lib.a)chroot.o
+(coreutils/lib.a)cksum.o
+(coreutils/lib.a)comm.o
+(coreutils/lib.a)cp.o
+(coreutils/lib.a)cut.o
+(coreutils/lib.a)date.o
+(coreutils/lib.a)dd.o
+(coreutils/lib.a)df.o
+(coreutils/lib.a)dirname.o
+(coreutils/lib.a)dos2unix.o
+(coreutils/lib.a)du.o
+(coreutils/lib.a)echo.o
+(coreutils/lib.a)env.o
+(coreutils/lib.a)expand.o
+(coreutils/lib.a)expr.o
+(coreutils/lib.a)factor.o
+(coreutils/lib.a)false.o
+(coreutils/lib.a)fold.o
+(coreutils/lib.a)head.o
+(coreutils/lib.a)hostid.o
+(coreutils/lib.a)id.o
+(coreutils/lib.a)install.o
+(coreutils/lib.a)link.o
+(coreutils/lib.a)ln.o
+(coreutils/lib.a)logname.o
+(coreutils/lib.a)ls.o
+(coreutils/lib.a)md5_sha1_sum.o
+(coreutils/lib.a)mkdir.o
+(coreutils/lib.a)mkfifo.o
+(coreutils/lib.a)mknod.o
+(coreutils/lib.a)mktemp.o
+(coreutils/lib.a)mv.o
+(coreutils/lib.a)nice.o
+(coreutils/lib.a)nl.o
+(coreutils/lib.a)nohup.o
+(coreutils/lib.a)nproc.o
+(coreutils/lib.a)od.o
+(coreutils/lib.a)paste.o
+(coreutils/lib.a)printenv.o
+(coreutils/lib.a)printf.o
+(coreutils/lib.a)pwd.o
+(coreutils/lib.a)readlink.o
+(coreutils/lib.a)realpath.o
+(coreutils/lib.a)rm.o
+(coreutils/lib.a)rmdir.o
+(coreutils/lib.a)seq.o
+(coreutils/lib.a)shred.o
+(coreutils/lib.a)shuf.o
+(coreutils/lib.a)sleep.o
+(coreutils/lib.a)sort.o
+(coreutils/lib.a)split.o
+(coreutils/lib.a)stat.o
+(coreutils/lib.a)stty.o
+(coreutils/lib.a)sum.o
+(coreutils/lib.a)sync.o
+(coreutils/lib.a)tac.o
+(coreutils/lib.a)tail.o
+(coreutils/lib.a)tee.o
+(coreutils/lib.a)test.o
+(coreutils/lib.a)test_ptr_hack.o
+(coreutils/lib.a)timeout.o
+(coreutils/lib.a)touch.o
+(coreutils/lib.a)tr.o
+(coreutils/lib.a)true.o
+(coreutils/lib.a)truncate.o
+(coreutils/lib.a)tsort.o
+(coreutils/lib.a)tty.o
+(coreutils/lib.a)uname.o
+(coreutils/lib.a)uniq.o
+(coreutils/lib.a)unlink.o
+(coreutils/lib.a)usleep.o
+(coreutils/lib.a)uudecode.o
+(coreutils/lib.a)uuencode.o
+(coreutils/lib.a)wc.o
+(coreutils/lib.a)who.o
+(coreutils/lib.a)whoami.o
+(coreutils/lib.a)yes.o
+coreutils/libcoreutils/lib.a
+(coreutils/libcoreutils/lib.a)cp_mv_stat.o
+(coreutils/libcoreutils/lib.a)getopt_mk_fifo_nod.o
+debianutils/lib.a
+(debianutils/lib.a)pipe_progress.o
+(debianutils/lib.a)run_parts.o
+(debianutils/lib.a)start_stop_daemon.o
+(debianutils/lib.a)which.o
+klibc-utils/lib.a
+(klibc-utils/lib.a)resume.o
+e2fsprogs/lib.a
+(e2fsprogs/lib.a)chattr.o
+(e2fsprogs/lib.a)e2fs_lib.o
+(e2fsprogs/lib.a)fsck.o
+(e2fsprogs/lib.a)lsattr.o
+editors/lib.a
+(editors/lib.a)awk.o
+(editors/lib.a)cmp.o
+(editors/lib.a)diff.o
+(editors/lib.a)ed.o
+(editors/lib.a)patch.o
+(editors/lib.a)sed.o
+(editors/lib.a)vi.o
+findutils/lib.a
+(findutils/lib.a)find.o
+(findutils/lib.a)grep.o
+(findutils/lib.a)xargs.o
+init/lib.a
+(init/lib.a)bootchartd.o
+(init/lib.a)halt.o
+(init/lib.a)init.o
+libbb/lib.a
+(libbb/lib.a)ask_confirmation.o
+(libbb/lib.a)auto_string.o
+(libbb/lib.a)bb_askpass.o
+(libbb/lib.a)bb_cat.o
+(libbb/lib.a)bb_do_delay.o
+(libbb/lib.a)bb_getgroups.o
+(libbb/lib.a)bb_getsockname.o
+(libbb/lib.a)bb_pwd.o
+(libbb/lib.a)bb_qsort.o
+(libbb/lib.a)capability.o
+(libbb/lib.a)change_identity.o
+(libbb/lib.a)chomp.o
+(libbb/lib.a)common_bufsiz.o
+(libbb/lib.a)concat_subpath_file.o
+(libbb/lib.a)copy_file.o
+(libbb/lib.a)correct_password.o
+(libbb/lib.a)crc32.o
+(libbb/lib.a)device_open.o
+(libbb/lib.a)dump.o
+(libbb/lib.a)duration.o
+(libbb/lib.a)endofname.o
+(libbb/lib.a)executable.o
+(libbb/lib.a)fclose_nonstdin.o
+(libbb/lib.a)fflush_stdout_and_exit.o
+(libbb/lib.a)fgets_str.o
+(libbb/lib.a)find_mount_point.o
+(libbb/lib.a)find_pid_by_name.o
+(libbb/lib.a)find_root_device.o
+(libbb/lib.a)get_console.o
+(libbb/lib.a)get_cpu_count.o
+(libbb/lib.a)get_line_from_file.o
+(libbb/lib.a)get_shell_name.o
+(libbb/lib.a)get_volsize.o
+(libbb/lib.a)getopt32.o
+(libbb/lib.a)getopt_allopts.o
+(libbb/lib.a)getpty.o
+(libbb/lib.a)hash_md5_sha.o
+(libbb/lib.a)hash_md5_sha256_x86-64_shaNI.o
+(libbb/lib.a)hash_md5_sha_x86-64_shaNI.o
+(libbb/lib.a)herror_msg.o
+(libbb/lib.a)human_readable.o
+(libbb/lib.a)in_ether.o
+(libbb/lib.a)inet_cksum.o
+(libbb/lib.a)inet_common.o
+(libbb/lib.a)inode_hash.o
+(libbb/lib.a)isdirectory.o
+(libbb/lib.a)isqrt.o
+(libbb/lib.a)iterate_on_dir.o
+(libbb/lib.a)kernel_version.o
+(libbb/lib.a)lineedit.o
+(libbb/lib.a)lineedit_ptr_hack.o
+(libbb/lib.a)logenv.o
+(libbb/lib.a)login.o
+(libbb/lib.a)loop.o
+(libbb/lib.a)make_directory.o
+(libbb/lib.a)match_fstype.o
+(libbb/lib.a)mode_string.o
+(libbb/lib.a)nuke_str.o
+(libbb/lib.a)obscure.o
+(libbb/lib.a)parse_config.o
+(libbb/lib.a)parse_mode.o
+(libbb/lib.a)percent_decode.o
+(libbb/lib.a)perror_nomsg_and_die.o
+(libbb/lib.a)pidfile.o
+(libbb/lib.a)print_flags.o
+(libbb/lib.a)print_numbered_lines.o
+(libbb/lib.a)printable.o
+(libbb/lib.a)printable_string.o
+(libbb/lib.a)process_escape_sequence.o
+(libbb/lib.a)procps.o
+(libbb/lib.a)progress.o
+(libbb/lib.a)pw_encrypt.o
+(libbb/lib.a)read_key.o
+(libbb/lib.a)read_printf.o
+(libbb/lib.a)recursive_action.o
+(libbb/lib.a)remove_file.o
+(libbb/lib.a)replace.o
+(libbb/lib.a)rtc.o
+(libbb/lib.a)run_shell.o
+(libbb/lib.a)safe_gethostname.o
+(libbb/lib.a)safe_poll.o
+(libbb/lib.a)safe_strncpy.o
+(libbb/lib.a)securetty.o
+(libbb/lib.a)setup_environment.o
+(libbb/lib.a)simplify_path.o
+(libbb/lib.a)single_argv.o
+(libbb/lib.a)speed_table.o
+(libbb/lib.a)str_tolower.o
+(libbb/lib.a)strrstr.o
+(libbb/lib.a)sysconf.o
+(libbb/lib.a)trim.o
+(libbb/lib.a)u_signal_names.o
+(libbb/lib.a)ubi.o
+(libbb/lib.a)udp_io.o
+(libbb/lib.a)unicode.o
+(libbb/lib.a)update_passwd.o
+(libbb/lib.a)utmp.o
+(libbb/lib.a)uuencode.o
+(libbb/lib.a)vfork_daemon_rexec.o
+(libbb/lib.a)warn_ignoring_args.o
+(libbb/lib.a)wfopen_input.o
+(libbb/lib.a)write.o
+(libbb/lib.a)xatonum.o
+(libbb/lib.a)xconnect.o
+(libbb/lib.a)xgethostbyname.o
+(libbb/lib.a)xrealloc_vector.o
+(libbb/lib.a)xregcomp.o
+(libbb/lib.a)perror_nomsg.o
+libpwdgrp/lib.a
+loginutils/lib.a
+mailutils/lib.a
+miscutils/lib.a
+modutils/lib.a
+networking/lib.a
+networking/libiproute/lib.a
+networking/udhcp/lib.a
+printutils/lib.a
+procps/lib.a
+runit/lib.a
+selinux/lib.a
+shell/lib.a
+sysklogd/lib.a
+util-linux/lib.a
+util-linux/volume_id/lib.a
+archival/built-in.o
+archival/libarchive/built-in.o
+console-tools/built-in.o
+coreutils/built-in.o
+coreutils/libcoreutils/built-in.o
+debianutils/built-in.o
+klibc-utils/built-in.o
+e2fsprogs/built-in.o
+editors/built-in.o
+findutils/built-in.o
+init/built-in.o
+libbb/built-in.o
+libpwdgrp/built-in.o
+loginutils/built-in.o
+mailutils/built-in.o
+miscutils/built-in.o
+modutils/built-in.o
+networking/built-in.o
+networking/libiproute/built-in.o
+networking/udhcp/built-in.o
+printutils/built-in.o
+procps/built-in.o
+runit/built-in.o
+selinux/built-in.o
+shell/built-in.o
+sysklogd/built-in.o
+util-linux/built-in.o
+util-linux/volume_id/built-in.o
+archival/lib.a
+archival/libarchive/lib.a
+console-tools/lib.a
+coreutils/lib.a
+coreutils/libcoreutils/lib.a
+debianutils/lib.a
+klibc-utils/lib.a
+e2fsprogs/lib.a
+editors/lib.a
+findutils/lib.a
+init/lib.a
+libbb/lib.a
+libpwdgrp/lib.a
+loginutils/lib.a
+mailutils/lib.a
+miscutils/lib.a
+modutils/lib.a
+networking/lib.a
+networking/libiproute/lib.a
+networking/udhcp/lib.a
+printutils/lib.a
+procps/lib.a
+runit/lib.a
+selinux/lib.a
+shell/lib.a
+sysklogd/lib.a
+util-linux/lib.a
+util-linux/volume_id/lib.a
+archival/built-in.o
+archival/libarchive/built-in.o
+console-tools/built-in.o
+coreutils/built-in.o
+coreutils/libcoreutils/built-in.o
+debianutils/built-in.o
+klibc-utils/built-in.o
+e2fsprogs/built-in.o
+editors/built-in.o
+findutils/built-in.o
+init/built-in.o
+libbb/built-in.o
+libpwdgrp/built-in.o
+loginutils/built-in.o
+mailutils/built-in.o
+miscutils/built-in.o
+modutils/built-in.o
+networking/built-in.o
+networking/libiproute/built-in.o
+networking/udhcp/built-in.o
+printutils/built-in.o
+procps/built-in.o
+runit/built-in.o
+selinux/built-in.o
+shell/built-in.o
+sysklogd/built-in.o
+util-linux/built-in.o
+util-linux/volume_id/built-in.o
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc.a succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc.a
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc_eh.a succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc_eh.a
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libc.a failed
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/libc.a failed
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/lib/../lib64/libc.a failed
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/lib/../lib64/libc.a failed
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sysconf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)alphasort.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)closedir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)opendir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)readdir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)scandir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__environ.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__libc_start_main.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clearenv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getenv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)putenv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setenv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)unsetenv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__errno_location.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strerror.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)exit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)creat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fcntl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)open.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_fallocate.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)defsysinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)libc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)syscall_ret.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)msgctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)msgget.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)semctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)semget.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)semop.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shmat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shmctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shmdt.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shmget.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)daemon.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getusershell.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)utmpx.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)adjtimex.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)cap.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)chroot.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clock_adjtime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)flock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getrandom.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)klogctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mount.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)personality.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pivot_root.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)prctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)readahead.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)reboot.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sendfile.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setgroups.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sethostname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setns.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)settimeofday.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)swap.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)syncfs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sysinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)unshare.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)utimes.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wait3.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wait4.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)xattr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__lctrans.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcoll.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)calloc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)free.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lite_malloc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)free.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)malloc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)realloc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)replaced.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)atan2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)cos.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)exp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)exp_data.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)log.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)log_data.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pow_data.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sin.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fabs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sqrt.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dirname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getauxval.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getopt.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getopt_long.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpriority.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getresgid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getresuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getrlimit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ioctl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mntent.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pty.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)realpath.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setpriority.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setrlimit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)syscall.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)syslog.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)uname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mmap.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mprotect.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)munlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)munmap.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mblen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mbtowc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)accept.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)bind.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)connect.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ether.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)freeaddrinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getaddrinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostbyaddr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostbyaddr_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostbyname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostbyname2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gethostbyname2_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getifaddrs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getnameinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpeername.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getservbyname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getservbyname_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getservbyport.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getservbyport_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getsockname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getsockopt.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)h_errno.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)hstrerror.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)htons.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)if_indextoname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)if_nametoindex.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)inet_aton.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)inet_ntoa.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)inet_ntop.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)inet_pton.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)listen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lookup_ipliteral.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lookup_name.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lookup_serv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)netlink.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ns_parse.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ntohs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)recv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)recvfrom.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)recvmsg.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)res_mkquery.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)res_msend.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)res_send.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)resolvconf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)send.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sendmsg.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sendto.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setsockopt.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shutdown.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)socket.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)socketpair.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)rand.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execle.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execlp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execv.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execve.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)execvp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fork.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)system.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)waitpid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vfork.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fnmatch.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)glob.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)regcomp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)regerror.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)regexec.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tre-mem.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)affinity.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sched_get_priority_max.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sched_yield.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)poll.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)select.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)longjmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setjmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)block.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)kill.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)killpg.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)raise.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setitimer.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigaction.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigaddset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigdelset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigemptyset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigfillset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigisemptyset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigismember.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)siglongjmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)signal.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigprocmask.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigrtmax.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigrtmin.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigsuspend.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigtimedwait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)restore.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigsetjmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)chmod.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fchmod.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fstat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fstatat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)futimens.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)futimesat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lstat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mkdir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mkfifo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mknod.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)statvfs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)umask.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)utimensat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__fclose_ca.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__fdopen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__fopen_rb_ca.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__lockfile.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdio_close.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdio_read.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdio_seek.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdio_write.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)asprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clearerr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fclose.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)feof.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ferror.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fflush.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fgets.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fileno.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fmemopen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fopen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fputc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fputs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fread.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)freopen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fscanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fseek.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ftell.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fwrite.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getc_unlocked.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getchar_unlocked.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getline.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ofl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ofl_add.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pclose.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)popen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)printf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)putc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)putc_unlocked.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)putchar_unlocked.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)puts.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)rename.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)rewind.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)scanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setbuf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setvbuf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)snprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sscanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stderr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stdin.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stdout.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ungetc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vasprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vdprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vfprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vfscanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vscanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vsnprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vsprintf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vsscanf.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)atof.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)atoi.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)atoll.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)bsearch.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)div.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)qsort_nr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strtod.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strtol.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memchr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memcmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memrchr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stpcpy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)stpncpy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcasecmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcasestr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcat.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strchr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strchrnul.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcpy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strcspn.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strdup.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strlen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strncasecmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strncmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strncpy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strndup.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strnlen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strpbrk.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strrchr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strsep.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strsignal.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strspn.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strstr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strtok_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strverscmp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memcpy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memmove.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)memset.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mkdtemp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mkstemp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mktemp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)cfgetospeed.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)cfmakeraw.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)cfsetospeed.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcdrain.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcflush.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcgetattr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcgetsid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcsendbreak.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcsetattr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__lock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__syscall_cp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lock_ptc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_cleanup_push.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_rdlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_timedrdlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_tryrdlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_unlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_wrlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_setcancelstate.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_sigmask.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_testcancel.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)synccall.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__tz.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__year_to_secs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clock_gettime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clock_settime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ctime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gettimeofday.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gmtime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)gmtime_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)localtime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)localtime_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mktime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)nanosleep.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strftime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)strptime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)time.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)timegm.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)times.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)_exit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)access.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)acct.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)alarm.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)chdir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)chown.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)close.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dup.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dup2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dup3.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fchdir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fchown.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fdatasync.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fsync.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ftruncate.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getcwd.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getegid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)geteuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getgid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getgroups.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getlogin_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpgrp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getppid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getsid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)isatty.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lchown.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)link.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)lseek.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)nice.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pause.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pipe.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pipe2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pread.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)read.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)readlink.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)rmdir.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setegid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)seteuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setgid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setpgid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setpgrp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setresgid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setresuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setsid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setuid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)setxid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sleep.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)symlink.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sync.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcgetpgrp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tcsetpgrp.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)ttyname_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)unlink.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)usleep.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)write.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)isalnum.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswalnum.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswalpha.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswctype.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswgraph.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswlower.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswprint.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswpunct.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswspace.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswupper.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswxdigit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)tolower.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)towctrans.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__init_tls.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)_Exit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)abort_lock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)floatscan.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)intscan.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)procfdname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)shgetc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)vdso.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)c_locale.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)langinfo.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)realloc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__cos.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__fpclassifyl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__math_divzero.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__math_invalid.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__math_oflow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__math_uflow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__math_xflow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__rem_pio2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__rem_pio2_large.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__signbitl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__sin.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)atan.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)copysignl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)floor.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)frexpl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)scalbn.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)scalbnl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fabsl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)fmodl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mremap.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)internal.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mbrtowc.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mbsinit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mbstowcs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wctomb.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dn_expand.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dn_skipname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)dns_parse.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpw_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)_Fork.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawn.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawn_file_actions_addclose.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawn_file_actions_adddup2.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawn_file_actions_destroy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawn_file_actions_init.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawnattr_destroy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawnattr_init.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawnattr_setflags.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawnattr_setsigdefault.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)posix_spawnattr_setsigmask.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sigsetjmp_tail.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__fmodeflags.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__overflow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdout_write.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__toread.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__towrite.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__uflow.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getdelim.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)qsort.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wcschr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wcslen.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__randname.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mkostemps.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__timedwait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)default_attr.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_timedwrlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)pthread_rwlock_trywrlock.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_destroy.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_init.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_post.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_wait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__set_thread_area.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clone.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__map_file.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__month_to_secs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__secs_to_tm.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__tm_to_secs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)asctime.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)asctime_r.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)clock_nanosleep.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getlogin.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswblank.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)iswcntrl.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)mbsrtowcs.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)wcrtomb.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpw_a.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)getpwent_a.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)nscd_query.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)__stdio_exit.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_timedwait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)sem_trywait.o
+(/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a)isblank.o
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc.a
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/libgcc_eh.a
+/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/libc.a
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/crtend.o succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/crtend.o
+attempt to open /home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crtn.o succeeded
+/home/aimeat/anvilos/ext/toolchain/bin/../x86_64-unknown-linux-musl/sysroot/usr/lib/../lib64/crtn.o

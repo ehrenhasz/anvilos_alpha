@@ -53,7 +53,7 @@
 #define PACKAGE "ncurses"
 #define NCURSES_VERSION "6.4"
 #define NCURSES_PATCHDATE 20221231
-#define SYSTEM_NAME "linux-musl"
+#define SYSTEM_NAME "linux-gnu"
 #if 0
 void exit (int);
 #endif

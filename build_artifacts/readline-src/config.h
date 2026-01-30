@@ -181,7 +181,7 @@
 /* #undef HAVE_NDIR_H */
 
 /* Define if you have the <ncurses/termcap.h> header file.  */
-/* #undef HAVE_NCURSES_TERMCAP_H */
+#define HAVE_NCURSES_TERMCAP_H 1
 
 /* Define if you have the <pwd.h> header file.  */
 #define HAVE_PWD_H 1
@@ -311,7 +311,6 @@
 
 /* VARARGS defines moved to rlstdc.h */
 
-/* AnvilOS Fix: Include Ncurses Termcap */
 #include <ncurses/ncurses.h>
 #include <ncurses/term.h>
 #undef lines

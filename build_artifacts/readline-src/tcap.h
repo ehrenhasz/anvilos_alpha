@@ -1,4 +1,3 @@
-/* AnvilOS Fix: Defer to Ncurses but declare globals */
 #include <ncurses/term.h>
 #undef lines
 #undef columns

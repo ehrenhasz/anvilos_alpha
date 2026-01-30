@@ -152,7 +152,7 @@ extern int locale_decpoint PARAMS((void));
 /* Declarations for functions defined in list.c. */
 extern void list_walk PARAMS((GENERIC_LIST *, sh_glist_func_t *));
 extern void wlist_walk PARAMS((WORD_LIST *, sh_icpfunc_t *));
-extern GENERIC_LIST *list_reverse PARAMS((GENERIC_LIST *));
+extern GENERIC_LIST *list_reverse ();
 extern int list_length ();
 extern GENERIC_LIST *list_append ();
 extern GENERIC_LIST *list_remove ();

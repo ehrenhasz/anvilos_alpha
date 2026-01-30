@@ -110,7 +110,7 @@ TEST_LIBS	= -lutil
 LD		= ld
 LINK		=  $(LIBTOOL_LINK) $(CFLAGS)
 
-LDFLAGS		=   -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
+LDFLAGS		=   
 
 LDFLAGS_LIBTOOL	= $(LDFLAGS) $(CFLAGS_LIBTOOL)
 LDFLAGS_NORMAL	= $(LDFLAGS) $(CFLAGS_NORMAL)
@@ -708,7 +708,7 @@ lintlib :
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./test.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 NORMAL_OBJS = \
@@ -1233,7 +1233,7 @@ clean ::
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./test.priv.h
-#  host:            x86_64-unknown-linux-musl
+#  host:            x86_64-pc-linux-gnu
 #  libtool_version: -version-number
 
 DEBUG_OBJS = \

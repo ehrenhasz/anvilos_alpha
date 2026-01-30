@@ -44,9 +44,9 @@ EXEEXT =
 #
 PROFILE_FLAGS = 
 
-CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
-CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
-BASE_CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
+CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
+BASE_CFLAGS_FOR_BUILD = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
 CPPFLAGS = 
 CPPFLAGS_FOR_BUILD = 
 LOCAL_CFLAGS = 
@@ -58,7 +58,7 @@ LIBS =
 LIBS_FOR_BUILD = ${LIBS}		# XXX
 
 LOCAL_LDFLAGS = -rdynamic
-LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(LOCAL_LDFLAGS)
+LDFLAGS =  -L./lib/termcap -L./lib/termcap $(LOCAL_LDFLAGS)
 LDFLAGS_FOR_BUILD = $(LDFLAGS) $(LOCAL_LDFLAGS) $(CFLAGS_FOR_BUILD)
 
 INCLUDES = -I${BUILD_DIR} -I${topdir}

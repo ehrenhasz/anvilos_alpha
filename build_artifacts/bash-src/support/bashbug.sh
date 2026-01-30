@@ -29,7 +29,7 @@
 MACHINE="x86_64"
 OS="linux-musl"
 CC="/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc"
-CFLAGS="-I/home/aimeat/anvilos/build_artifacts/staging/include -static"
+CFLAGS="-I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes"
 RELEASE="5.2"
 PATCHLEVEL="!PATCHLEVEL!"
 RELSTATUS="release"
