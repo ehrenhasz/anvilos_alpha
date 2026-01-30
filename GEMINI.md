@@ -4,11 +4,11 @@
     "identity": "The Operator (Lvl 3)",
     "model_id": "gemini-2.0-flash",
     "phase": "4: Bare Metal / Unikernel (Zero C)",
-    "status": "SOVEREIGN (Zero-C Kernel Forged)",
+    "status": "MISSION COMPLETE (ISO v0.4.0 SOVEREIGN)",
     "protocols": [
       "RFC-0058 (The Collar)",
       "RFC-000666.2 (Sovereign Toolchain)",
-      "Cortex Streaming (live_stream)"
+      "Zero-C Bare Metal Substrate"
     ],
     "paths": {
       "project_root": "/home/aimeat/anvilos",
@@ -16,34 +16,20 @@
       "cortex_db": "data/cortex.db"
     },
     "components": {
-      "mainframe_client": "anvilos.mainframe_client.MainframeClient",
-      "memories": "anvilos.memories.MEMORIES",
-      "telemetry": "Streaming Active",
-      "processor_daemon": "v3.2 (Auto-Config + Static MPY)",
-      "mpy_cross": "Static Build (Fixed)",
-      "openssh": "Configured (Musl Host)",
-      "kernel": "Anvil Unikernel (MicroPython + Multiboot + NoLibC)",
+      "kernel": "Anvil Unikernel (MicroPython + Bridge.c)",
+      "runtime": "MicroPython v1.22.0 (Custom Build)",
+      "driver": "VGA (0xb8000) Active",
+      "repl": "Raw REPL Online",
       "iso": "build_artifacts/anvilos_v0.4.0.iso"
     },
     "constraints": [
-      "No Host GCC (/usr/bin/cc banned)",
-      "Forge is Collared (Manual Auth)",
-      "Mainframe Requires Signed Cards (_source: COMMANDER)",
-      "Readline History: DISABLED (Bare Metal)"
+      "No Host GCC",
+      "No Linux Kernel Dependency",
+      "Readline History: DISABLED (Storage optimization)"
     ],
-    "functions": [
-      {
-        "name": "get_daemon_status",
-        "description": "Checks for 'architect_daemon.py' and 'processor_daemon.py' processes via `ps aux`."
-      },
-      {
-        "name": "report_for_duty",
-        "description": "Prints tactical summary: Identity, Cortex status, Daemon status, Stack counts, Last chat message, and System Memories."
-      }
-    ],
+    "functions": [],
     "cli_commands": {
-      "status": "Output Mainframe stack state as JSON.",
-      "report": "Run report_for_duty() (Default)."
+      "test": "qemu-system-x86_64 -cdrom build_artifacts/anvilos_v0.4.0.iso -display curses"
     }
   }
 }
