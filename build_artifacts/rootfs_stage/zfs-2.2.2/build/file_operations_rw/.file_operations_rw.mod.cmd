@@ -1,1 +1,0 @@
-savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_rw/file_operations_rw.mod := printf '%s\n'   file_operations_rw.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_rw/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/file_operations_rw/file_operations_rw.mod

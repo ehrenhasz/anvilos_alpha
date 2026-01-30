@@ -1,1 +1,0 @@
-savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/sget_5args/sget_5args.mod := printf '%s\n'   sget_5args.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/sget_5args/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/sget_5args/sget_5args.mod
