@@ -8,7 +8,7 @@ cd "$SCRIPT_DIR"
 # Configuration (Relative to src/anvilos/kernel)
 TOOLCHAIN_BIN="../../../ext/toolchain/bin"
 CC="$TOOLCHAIN_BIN/x86_64-unknown-linux-musl-gcc"
-CFLAGS="-m32 -static -nostdlib -fno-builtin -I. -Igenerated -I../../../oss_sovereignty/sys_09_Anvil/source"
+CFLAGS="-m32 -static -nostdlib -fno-builtin -fno-stack-protector -I. -Igenerated -I../../../oss_sovereignty/sys_09_Anvil/source"
 OUT_DIR="../../../build_artifacts/phase4/bin"
 
 # Ensure output dir exists
