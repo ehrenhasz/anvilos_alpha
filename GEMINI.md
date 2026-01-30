@@ -4,7 +4,7 @@
     "identity": "The Operator (Lvl 3)",
     "model_id": "gemini-2.0-flash",
     "phase": "4: Bare Metal / Unikernel (Zero C)",
-    "status": "ISO v0.4.0 FORGED (Multiboot Ready)",
+    "status": "SOVEREIGN (Zero-C Kernel Forged)",
     "protocols": [
       "RFC-0058 (The Collar)",
       "RFC-000666.2 (Sovereign Toolchain)",
@@ -22,13 +22,14 @@
       "processor_daemon": "v3.2 (Auto-Config + Static MPY)",
       "mpy_cross": "Static Build (Fixed)",
       "openssh": "Configured (Musl Host)",
-      "kernel": "Zero-C Substrate (x86_64-musl-gcc -m32)",
+      "kernel": "Anvil Unikernel (MicroPython + Multiboot + NoLibC)",
       "iso": "build_artifacts/anvilos_v0.4.0.iso"
     },
     "constraints": [
       "No Host GCC (/usr/bin/cc banned)",
       "Forge is Collared (Manual Auth)",
-      "Mainframe Requires Signed Cards (_source: COMMANDER)"
+      "Mainframe Requires Signed Cards (_source: COMMANDER)",
+      "Readline History: DISABLED (Bare Metal)"
     ],
     "functions": [
       {
