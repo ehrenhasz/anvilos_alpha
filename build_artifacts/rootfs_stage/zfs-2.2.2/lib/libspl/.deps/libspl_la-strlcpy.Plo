@@ -1,0 +1,4 @@
+lib/libspl/libspl_la-strlcpy.lo: lib/libspl/strlcpy.c \
+ /usr/include/stdc-predef.h zfs_config.h
+/usr/include/stdc-predef.h:
+zfs_config.h:

@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_nid/shrink_control_nid.mod := printf '%s\n'   shrink_control_nid.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_nid/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_nid/shrink_control_nid.mod

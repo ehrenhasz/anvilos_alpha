@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/siginfo/siginfo.mod := printf '%s\n'   siginfo.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/siginfo/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/siginfo/siginfo.mod

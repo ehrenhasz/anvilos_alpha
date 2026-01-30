@@ -4,15 +4,11 @@ import sqlite3
 import json
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-
-# --- PATH RESOLUTION ---
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 CORTEX_DB_PATH = os.path.join(PROJECT_ROOT, "data", "cortex.db")
-
 class SpyHandler(FileSystemEventHandler):
     def __init__(self, agent_id="spy"):
         self.agent_id = agent_id
-
     def log_event(self, event_type, src_path, is_directory):
         try:
             with sqlite3.connect(CORTEX_DB_PATH) as conn:
@@ -27,16 +23,12 @@ class SpyHandler(FileSystemEventHandler):
                 conn.commit()
         except Exception as e:
             print(f"[Spy Error] {e}")
-
     def on_modified(self, event):
         self.log_event("MODIFIED", event.src_path, event.is_directory)
-
     def on_created(self, event):
         self.log_event("CREATED", event.src_path, event.is_directory)
-
     def on_deleted(self, event):
         self.log_event("DELETED", event.src_path, event.is_directory)
-
 def start_spy(watch_path):
     event_handler = SpyHandler()
     observer = Observer()
@@ -49,9 +41,7 @@ def start_spy(watch_path):
     except KeyboardInterrupt:
         observer.stop()
     observer.join()
-
 if __name__ == "__main__":
-    # Monitor the project root and the build directory
     import sys
     path = sys.argv[1] if len(sys.argv) > 1 else "/mnt/anvil_temp/github/anvilos_alpha"
     start_spy(path)

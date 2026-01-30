@@ -1,6 +1,5 @@
 import json
 from typing import Any, Dict
-
 class MicroJSON:
     @staticmethod
     def encode(id_code: int, data: Any) -> str:
@@ -13,7 +12,6 @@ class MicroJSON:
             "data": data
         }
         return json.dumps(payload, ensure_ascii=False)
-
     @staticmethod
     def decode(payload: str) -> Dict[str, Any]:
         """

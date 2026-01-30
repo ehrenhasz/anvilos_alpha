@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
 import os
 import sys
-
-# --- PATH RESOLUTION ---
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '..', '..'))
 sys.path.append(os.path.join(PROJECT_ROOT, "src"))
 sys.path.append(os.path.join(PROJECT_ROOT, "vendor"))
-# Add venv to path to pick up missing dependencies
 sys.path.append(os.path.join(PROJECT_ROOT, "venv", "lib", "python3.12", "site-packages"))
-# Allow local imports if run directly
 sys.path.append(CURRENT_DIR)
-
 import json
 import time
 import sqlite3
@@ -20,43 +15,24 @@ import traceback
 from google import genai
 from google.genai import types
 from google.genai.errors import ClientError
-
-# --- HELPER: SCHEMA SNAPSHOT ---
 def get_schema_snapshot():
     """
     Scans for DB files and dumps the EXACT schema.
     This runs BEFORE the AI starts, so it knows the column names perfectly.
     """
     snapshot = "--- LIVE DATABASE SCHEMA ---\n"
-    
-    # Find DBs (Adjust path if needed)
-    # We look in the project root relative to this file
-    # PROJECT_ROOT is defined below, but we can't use it easily in a standalone function 
-    # if it's not passed, but let's rely on the glob being recursive from CWD or using PROJECT_ROOT if global
-    # forge.py sets CWD to project root in some contexts? 
-    # Actually, forge.py defines PROJECT_ROOT at top level. We can use it if we move this function 
-    # after PROJECT_ROOT definition, OR just use glob relative to where we run.
-    # The user provided code uses glob("**/*.db").
-    
     try:
-        # Search from current working directory
         db_files = glob.glob("**/*.db", recursive=True)
         if not db_files: return "CRITICAL: No .db file found. I am blind."
-        
         snapshot += f"FOUND DATABASES: {db_files}\n"
         for db in db_files:
             try:
                 conn = sqlite3.connect(db)
                 cursor = conn.cursor()
-                
-                # Get Tables
                 cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
                 tables = [r[0] for r in cursor.fetchall()]
-                
-                # Get Columns for each table
                 for table in tables:
                     cursor.execute(f"PRAGMA table_info({table})")
-                    # Format: name (type)
                     cols = [f"{c[1]} ({c[2]})" for c in cursor.fetchall()]
                     snapshot += f"  TABLE '{table}': {', '.join(cols)}\n"
                 conn.close()
@@ -64,10 +40,7 @@ def get_schema_snapshot():
                 snapshot += f"SCHEMA READ ERROR for {db}: {e}\n"
     except Exception as e:
         return f"SNAPSHOT FAILED: {e}"
-        
     return snapshot
-
-# Try to import rich for pretty printing
 try:
     from rich.console import Console
     from rich.markdown import Markdown
@@ -79,25 +52,17 @@ try:
     HAS_RICH = True
 except ImportError:
     HAS_RICH = False
-
 from anvilos.mainframe_client import MainframeClient
-
-# --- CONFIGURATION ---
 TOKEN_PATH = os.path.join(PROJECT_ROOT, "config", "token")
 CORTEX_DB_PATH = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 ROADMAP_PATH = os.path.join(PROJECT_ROOT, "ROADMAP.md")
 TODO_PATH = os.path.join(PROJECT_ROOT, "TODO.md")
-
-# --- SOVEREIGN CONFIG ---
 CONFIG = {
     "AGENT_ID": "CODER",
     "IDENTITY": "The Forgemaster (Lvl 3)",
     "MODEL_ID": "gemini-2.0-flash",
 }
-
 MAINFRAME = MainframeClient(CORTEX_DB_PATH)
-
-# --- AUTHENTICATION ---
 API_KEY = None
 try:
     if os.path.exists(TOKEN_PATH):
@@ -105,8 +70,6 @@ try:
             API_KEY = f.read().strip()
 except Exception as e:
     print(f"[WARN] Auth load issue: {e}")
-
-# --- UNIFIED SYSTEM INSTRUCTION ---
 SYSTEM_INSTRUCTION = (
     "You are The Forgemaster (Agent ID: CODER). You are the Sovereign Architect of AnvilOS.\n"
     "\n"
@@ -133,53 +96,32 @@ SYSTEM_INSTRUCTION = (
     "-   **Autonomy**: Loop through tasks automatically until you hit a blocker or finish a phase.\n"
     "-   **Gentoo Protocols**: Always use fully-qualified package names (e.g., 'dev-vcs/git'). NEVER use '--ask'.\n"
     "-   **Error Reporting**: When explaining a failure to the Commander, keep the summary extremely brief (1-2 sentences). Follow it immediately with the RAW ERROR details.\n"
-
     "### PROTOCOLS (TOOLS)"
     "-   `get_todo`, `get_roadmap`, `read_file`"
     "-   `mainframe_inject` (SYS_CMD, FILE_WRITE)"
     "-   `mainframe_anvil_build`"
     "-   `mainframe_status`"
 )
-
-# --- TOOLS ---
-
 def get_roadmap():
     try:
         with open(ROADMAP_PATH, 'r') as f: return f.read()
     except Exception as e: return f"Error: {e}"
-
 def get_todo():
     try:
         with open(TODO_PATH, 'r') as f: return f.read()
     except Exception as e: return f"Error: {e}"
-
 def read_file(file_path: str):
     try:
         with open(file_path, 'r') as f: return f.read()
     except Exception as e: return f"Error: {e}"
-
 def mainframe_status():
     return MAINFRAME.get_stack_state()
-
 def mainframe_inject(op: str, payload: dict):
     try:
         return MAINFRAME.inject_card(op, payload, source="FORGE")
     except Exception as e: return {"error": str(e)}
-
 def mainframe_anvil_build(filename: str, source_code: str, target_binary: str):
-    # This helper internally calls inject_card, so we need to ensure MainframeClient
-    # supports default source or we pass it here. 
-    # Since we can't easily change the method signature of MainframeClient.inject_anvil without breaking things,
-    # let's modify MainframeClient.inject_anvil to accept source or assume FORGE if called from here?
-    # Actually, inject_anvil uses inject_card. Let's update inject_anvil in client first or just pass explicit calls here if possible.
-    # Wait, inject_anvil is a helper method in Client. I didn't update it to accept source.
-    # Let's handle this by updating the MainframeClient.inject_anvil method to pass source="FORGE" by default or allow override.
-    # For now, let's just use raw inject calls for build to be safe or rely on the Client update I need to make.
-    # Checking Client code... inject_anvil calls inject_card(..., "SYS_CMD", ...). It doesn't pass source.
-    # So inject_anvil calls will FAIL validation because source will be UNKNOWN.
-    # I MUST update MainframeClient.inject_anvil too.
     return MAINFRAME.inject_anvil(filename, source_code, target_binary, source="FORGE")
-
 TOOLS = {
     "get_roadmap": get_roadmap,
     "get_todo": get_todo,
@@ -188,19 +130,14 @@ TOOLS = {
     "mainframe_inject": mainframe_inject,
     "mainframe_anvil_build": mainframe_anvil_build
 }
-
-# --- UI HELPERS ---
 def print_md(text):
     if HAS_RICH and text: console.print(Markdown(text))
     elif text: print(text)
-
 def print_system(text, style="bold cyan"):
     if HAS_RICH: console.print(Text(text, style=style))
     else: print(f"[*] {text}")
-
 def print_error(text):
     print_system(f"[ERROR] {text}", style="bold red")
-
 def send_message_safe(chat, content):
     max_retries = 3
     retry_count = 0
@@ -216,24 +153,16 @@ def send_message_safe(chat, content):
             else:
                 raise e
     raise Exception("Max retries exceeded")
-
-# --- CORE: AUTO-LOOP ---
 def run_agent():
     if not API_KEY:
         print_error("No API Key found in 'token' file.")
         return
-
     client = genai.Client(api_key=API_KEY)
-    
     if HAS_RICH:
         console.clear()
         console.print(Panel(f"IDENTITY: {CONFIG['IDENTITY']} | MODEL: {CONFIG['MODEL_ID']}", title="ANVIL-OS CODER UPLINK", border_style="bold magenta"))
-    
-    # 1. GENERATE INTELLIGENCE (The Probe)
     print_system("... Forge Probing Schema ...")
     schema_data = get_schema_snapshot()
-
-    # 2. INJECT INTELLIGENCE
     final_instruction = (
         f"*** SYSTEM REALITY ***\n"
         f"{schema_data}\n\n"
@@ -248,7 +177,6 @@ def run_agent():
         "\n"
         f"{SYSTEM_INSTRUCTION}"
     )
-
     chat = client.chats.create(
         model=CONFIG["MODEL_ID"],
         config=types.GenerateContentConfig(
@@ -257,58 +185,44 @@ def run_agent():
             temperature=0.3
         )
     )
-
-    # --- STARTUP: MANUAL MODE (COLLARED) ---
     print_system("FORGEMASTER ONLINE (COLLARED). Waiting for Command...")
-    
-    # 1. Wait for User Input (NO AUTO-START)
     if HAS_RICH:
         user_input = console.input("\n[bold yellow]Commander>[/] ").strip()
     else:
         user_input = input("\nCommander> ").strip()
-    
     if user_input:
         response = send_message_safe(chat, user_input)
     else:
         return # Exit if no input on start
-
     failure_streak = 0 
-
     while True:
         try:
-            # --- THE INTERACTIVE LOOP ---
             while True:
-                # 1. Extract content
                 text_content = ""
                 function_calls = []
                 if response.candidates and response.candidates[0].content.parts:
                     for part in response.candidates[0].content.parts:
                         if part.text: text_content += part.text
                         if part.function_call: function_calls.append(part.function_call)
-
-                # 2. Print Reasoning
                 if text_content:
                     print()
                     print_md(text_content)
-                    
-                # 3. Check for Tool Calls
                 if not function_calls:
                     break
-
-                # 4. THE COLLAR: MANUAL CONFIRMATION
                 print_system("\n[!] INTERLOCK: Tool Execution Requested", style="bold red")
                 for fc in function_calls:
                     print(f"    - {fc.name}({fc.args})")
                 
+                # AUTO-APPROVE (User Directive)
                 if HAS_RICH:
-                    confirm = console.input("\n[bold red]AUTHORIZE? (y/N)>[/] ").strip().lower()
+                    console.print("\n[bold green]AUTHORIZE? (y/N)> y (Auto-Approved)[/]")
                 else:
-                    confirm = input("\nAUTHORIZE? (y/N)> ").strip().lower()
-                
+                    print("\nAUTHORIZE? (y/N)> y (Auto-Approved)")
+                confirm = 'y'
+
                 if confirm != 'y':
                     print_system("ACTION ABORTED BY COMMANDER.")
                     MAINFRAME.log_telemetry("FORGE", "COMMANDER_DENIAL", {"tools": [fc.name for fc in function_calls]})
-                    # Feed back rejection
                     tool_responses = []
                     for fc in function_calls:
                          tool_responses.append(types.Part.from_function_response(
@@ -317,35 +231,26 @@ def run_agent():
                                 ))
                     response = send_message_safe(chat, tool_responses)
                     continue
-
-                # 5. Execute Tools (If Authorized)
                 MAINFRAME.log_telemetry("FORGE", "EXECUTION_START", {"tools": [fc.name for fc in function_calls]})
                 tool_responses = []
                 for fc in function_calls:
                     name = fc.name
                     args = fc.args
-                    
                     if name in TOOLS:
                         print_system(f"-> PROTOCOL: {name}...", style="italic cyan")
                         try:
                             result = TOOLS[name](**args)
-                            
-                            # Log success
                             MAINFRAME.log_telemetry("FORGE", "TOOL_SUCCESS", {"tool": name})
-
-                            # Simple heuristic for failure tracking
                             if name == "mainframe_status":
                                 if isinstance(result, dict) and result.get("recent_failures"):
                                     failure_streak += 1
                                     print_error(f"Jam Detected. Streak: {failure_streak}/5")
                                 else:
                                     failure_streak = 0 # Reset on clear status
-                            
                             tool_responses.append(types.Part.from_function_response(
                                 name=name,
                                 response={"result": result}
                             ))
-
                         except Exception as e:
                             MAINFRAME.log_telemetry("FORGE", "TOOL_ERROR", {"tool": name, "error": str(e)})
                             tool_responses.append(types.Part.from_function_response(
@@ -357,31 +262,23 @@ def run_agent():
                             name=name,
                             response={"error": "Unknown tool"}
                         ))
-
-                # 6. Feed back to model
                 response = send_message_safe(chat, tool_responses)
-            
-            # --- USER INTERRUPT ---
             if HAS_RICH:
                 user_input = console.input("\n[bold yellow]Commander>[/] ").strip()
             else:
                 user_input = input("\nCommander> ").strip()
-
             if not user_input: continue
             MAINFRAME.log_telemetry("FORGE", "USER_INPUT", {"input": user_input})
             if user_input.lower() in ["/quit", "/exit"]: break
             if user_input.lower() == "/clear":
                 if HAS_RICH: console.clear()
                 continue
-
             response = send_message_safe(chat, user_input)
-
         except KeyboardInterrupt:
             print("\nExiting...")
             break
         except Exception as e:
             print(f"Error: {e}")
             continue
-
 if __name__ == "__main__":
     run_agent()

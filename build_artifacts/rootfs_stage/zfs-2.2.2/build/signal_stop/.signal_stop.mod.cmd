@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/signal_stop/signal_stop.mod := printf '%s\n'   signal_stop.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/signal_stop/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/signal_stop/signal_stop.mod
