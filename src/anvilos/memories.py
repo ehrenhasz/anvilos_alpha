@@ -1,5 +1,3 @@
-# Anvilos System Memories (Replaces GEMINI.md)
-
 MEMORIES = [
     {
         "topic": "Build Progress",

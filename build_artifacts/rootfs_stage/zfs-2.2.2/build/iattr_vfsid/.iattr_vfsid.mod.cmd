@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iattr_vfsid/iattr_vfsid.mod := printf '%s\n'   iattr_vfsid.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iattr_vfsid/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/iattr_vfsid/iattr_vfsid.mod

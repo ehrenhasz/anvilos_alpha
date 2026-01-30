@@ -114,7 +114,7 @@ def generate_header(sources):
                  inner_blocks = find_blocks(body)
                  for ibtype, ibname, ibody, isig in inner_blocks:
                      if ibtype == "fn":
-                         m = re.match(r'fn\s+(\w+)\(([\s\S]*)\)([\s\S]*)', isig)
+                         m = re.match(r'fn\s+(\w+)\((.*)\)(.*)', isig, re.DOTALL)
                          if m:
                              name = m.group(1)
                              args = m.group(2)
@@ -136,7 +136,7 @@ def generate_header(sources):
                              header += "%s %s(%s);\n" % (c_ret, c_name, ', '.join(c_args))
 
             elif btype == "fn":
-                 m = re.match(r'fn\s+(\w+)\(([\s\S]*)\)([\s\S]*)', sig)
+                 m = re.match(r'fn\s+(\w+)\((.*)\)(.*)', sig, re.DOTALL)
                  if m:
                      name = m.group(1)
                      args = m.group(2)
@@ -266,8 +266,8 @@ def do_transpile_fn(name, args, ret_type, body, context=""):
     c_body = replace_asm(c_body)
 
     # 2. Block/Unsafe/Loop
-    c_body = re.sub(r'unsafe\s*\{', '{', c_body)
-    c_body = re.sub(r'loop\s*\{', 'while(1){', c_body) 
+    c_body = c_body.replace("unsafe{", "{")
+    c_body = c_body.replace("loop{", "while(1){") 
     
     # 3. Let bindings
     c_body = re.sub(r'let\s+mut\s+(\w+)\s*:\s*([^=;]+);', lambda m: f"{map_type(m.group(2), context)} {m.group(1)};", c_body)
@@ -338,7 +338,7 @@ def transpile(source):
              inner_blocks = find_blocks(body)
              for ibtype, ibname, ibody, isig in inner_blocks:
                  if ibtype == "fn":
-                     m = re.match(r'fn\s+(\w+)\(([\s\S]*)\)([\s\S]*)', isig)
+                     m = re.match(r'fn\s+(\w+)\((.*)\)(.*)', isig, re.DOTALL)
                      if m:
                          name = m.group(1)
                          args = m.group(2)
@@ -348,7 +348,7 @@ def transpile(source):
 
     for btype, bname, body, sig in blocks:
         if btype == "fn":
-             m = re.match(r'fn\s+(\w+)\(([\s\S]*)\)([\s\S]*)', sig)
+             m = re.match(r'fn\s+(\w+)\((.*)\)(.*)', sig, re.DOTALL)
              if m:
                  name = m.group(1)
                  args = m.group(2)

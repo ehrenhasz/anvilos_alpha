@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/timer_setup/timer_setup.mod := printf '%s\n'   timer_setup.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/timer_setup/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/timer_setup/timer_setup.mod

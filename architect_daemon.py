@@ -19,9 +19,14 @@ from google.genai import types
 from anvilos.cortex.db_interface import CortexDB
 
 # --- LOGGING ---
+os.makedirs(os.path.join(PROJECT_ROOT, "logs"), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - [ARCHITECT] - %(levelname)s - %(message)s'
+    format='%(asctime)s - [ARCHITECT] - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(PROJECT_ROOT, "logs", "architect.log")),
+        logging.StreamHandler(sys.stderr)
+    ]
 )
 logger = logging.getLogger()
 
@@ -121,7 +126,7 @@ def main_loop():
                     # Insert cards into card_stack using CortexDB
                     for i, card in enumerate(recipe):
                         card_id = str(uuid.uuid4())
-                        DB.push_card(card_id, i, card['op'], card['pld'])
+                        DB.push_card(card_id, i, card['op'], card['pld'], agent_id="forge")
                     
                     # Mark goal as completed (stat=2)
                     DB.update_goal_status(goal_id, 2)

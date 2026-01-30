@@ -1,0 +1,4 @@
+lib/libspl/libspl_la-strlcat.lo: lib/libspl/strlcat.c \
+ /usr/include/stdc-predef.h zfs_config.h
+/usr/include/stdc-predef.h:
+zfs_config.h:

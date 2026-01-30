@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import time
 import sqlite3
 import json
@@ -9,31 +8,21 @@ import uuid
 from datetime import datetime
 from pydantic import BaseModel, Field, ValidationError
 from typing import Optional, Dict, Any, Union
-
-# --- CONFIGURATION ---
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
 DB_PATH = os.path.join(PROJECT_ROOT, "data", "cortex.db")
 LOG_FILE = os.path.join(PROJECT_ROOT, "ext", "forge.log")
 POLL_INTERVAL = 2.0
 GIT_MAIN_BRANCH = "main"
-
-# --- MICROJSON LOGGER (RFC-0002) ---
 class MicroLogger:
     def __init__(self, log_path):
         self.log_path = log_path
-        # Ensure directory exists
         os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
-
     def log(self, event_id: int, data: Any):
         payload = {"@ID": event_id, "data": data, "ts": datetime.now().isoformat()}
         with open(self.log_path, "a") as f:
             f.write(json.dumps(payload) + "\n")
-        # Also print to stdout for service logs
         print(f"[{event_id}] {data}")
-
 logger = MicroLogger(LOG_FILE)
-
-# --- DATA MODELS ---
 class JobCard(BaseModel):
     correlation_id: str
     idempotency_key: str
@@ -42,18 +31,14 @@ class JobCard(BaseModel):
     status: str = "PENDING"
     payload: Union[str, Dict[str, Any]]
     created_at: Optional[str] = None
-
-# --- THE WARDEN ---
 class BigIronCore:
     def __init__(self, db_path):
         self.db_path = db_path
         if not os.path.exists(self.db_path):
             print(f"[CRITICAL] Database not found at {self.db_path}")
             sys.exit(1)
-
     def _get_conn(self):
         return sqlite3.connect(self.db_path)
-
     def fetch_next_job(self) -> Optional[JobCard]:
         """ Retrieves the highest priority PENDING job via Atomic Lock. """
         conn = self._get_conn()
@@ -84,7 +69,6 @@ class BigIronCore:
             return None
         finally:
             conn.close()
-
     def update_job_status(self, correlation_id: str, status: str):
         conn = self._get_conn()
         try:
@@ -93,8 +77,6 @@ class BigIronCore:
         except Exception as e:
             print(f"[DB ERROR] Update failed: {e}")
         finally: conn.close()
-
-    # --- OPS LIFECYCLE WORKER ---
     def run_cmd(self, args, description, check=True):
         """ Helper for cleaner subprocess calls """
         logger.log(5, f"OPS_STEP: {description}")
@@ -102,35 +84,22 @@ class BigIronCore:
         if check and res.returncode != 0:
             raise Exception(f"Command failed: {' '.join(args)}\nError: {res.stderr}")
         return res
-
     def execute_ops_lifecycle(self, message: str, correlation_id: str) -> bool:
         """
         OPS PROTOCOL: Branch -> Code (Already done) -> Commit -> Push -> PR -> Merge -> Clean
         """
-        # Generate ephemeral branch name
         branch_name = f"ops/job-{correlation_id[:8]}"
-        
         try:
-            # 1. BRANCH (Local is Truth - Create branch from current state)
             self.run_cmd(["git", "checkout", "-b", branch_name], "Creating Isolation Branch")
-
-            # 2. COMMIT (Capture the dirty state)
             self.run_cmd(["git", "add", "."], "Staging Artifacts")
-            
-            # Check if there is anything to commit
             status = self.run_cmd(["git", "status", "--porcelain"], "Checking Status", check=False)
             if not status.stdout.strip():
                 logger.log(4, "No changes to commit. Skipping lifecycle.")
                 self.run_cmd(["git", "checkout", GIT_MAIN_BRANCH], "Returning to Main")
                 self.run_cmd(["git", "branch", "-d", branch_name], "Deleting Empty Branch")
                 return True
-
             self.run_cmd(["git", "commit", "-m", message], f"Committing: {message}")
-
-            # 3. PUSH (Backup only)
             self.run_cmd(["git", "push", "-u", "origin", branch_name], "Pushing to Remote")
-
-            # 4. PR (GitHub as Approval Layer)
             pr_title = f"OPS: {message}"
             pr_body = f"Automated Action by Big Iron.\nJob ID: {correlation_id}"
             self.run_cmd([
@@ -140,22 +109,16 @@ class BigIronCore:
                 "--base", GIT_MAIN_BRANCH, 
                 "--head", branch_name
             ], "Opening Pull Request")
-
-            # 5. MERGE (Auto-Approve & Merge)
             self.run_cmd([
                 "gh", "pr", "merge", branch_name, 
                 "--merge", 
                 "--auto", 
                 "--delete-branch"
             ], "Merging PR")
-
-            # 6. CLEAN (Local Cleanup)
             self.run_cmd(["git", "checkout", GIT_MAIN_BRANCH], "Returning to Main")
             self.run_cmd(["git", "pull"], "Syncing Local Main")
             self.run_cmd(["git", "branch", "-D", branch_name], "Cleaning Local Branch")
-
             return True
-
         except Exception as e:
             logger.log(3, f"OPS FAILURE: {e}")
             try:
@@ -163,17 +126,13 @@ class BigIronCore:
             except:
                 pass
             return False
-
     def execute_logic(self, card: JobCard):
         logger.log(2, f"JOB_START: {card.correlation_id} ({card.priority})")
-        
         data = card.payload if isinstance(card.payload, dict) else {}
         instruction = data.get("instruction", "UNKNOWN")
-        
         if instruction == "GIT_COMMIT" or instruction == "OPS_CYCLE":
             msg = data.get("details", f"Ops Update {card.correlation_id[:8]}")
             return self.execute_ops_lifecycle(msg, card.correlation_id)
-
         elif instruction == "SYSTEM_OP":
             cmd = data.get("payload") or data.get("details")
             if not cmd:
@@ -187,18 +146,14 @@ class BigIronCore:
             else:
                 logger.log(3, f"SYS_FAILURE: {res.stderr.strip()}")
                 return False
-
         elif instruction == "SLEEP":
             time.sleep(2)
             return True
-            
         elif instruction == "FAIL":
             return False
-
         else:
             logger.log(4, f"Unknown Instruction: {instruction}")
             return True
-
     def run(self):
         logger.log(1, f"BIG IRON v3.0 ONLINE. Watching {self.db_path}")
         while True:
@@ -214,43 +169,30 @@ class BigIronCore:
                     self.update_job_status(job.correlation_id, "FAILED")
             else:
                 time.sleep(POLL_INTERVAL)
-
 if __name__ == "__main__":
     warden = BigIronCore(DB_PATH)
-    
     if len(sys.argv) > 1:
-        # Single-shot CLI mode (for Aimeat integration)
         try:
             raw_input = sys.argv[1]
             data = json.loads(raw_input)
-            
-            # Map Aimeat 'type' to BigIron 'instruction'
             instr = data.get("type", "UNKNOWN")
             if instr == "CODE_CHANGE": instr = "OPS_CYCLE"
-            
-            # Construct Payload for JobCard
             payload_data = {
                 "instruction": instr,
                 "details": data.get("payload"),
                 "payload": data.get("payload"),
                 "context": data.get("context")
             }
-            
-            # Create Ephemeral Card
             card = JobCard(
                 correlation_id=data.get("id", str(uuid.uuid4())),
                 idempotency_key=str(uuid.uuid4()),
                 status="PROCESSING",
                 payload=payload_data
             )
-            
-            # Execute
             success = warden.execute_logic(card)
             sys.exit(0 if success else 1)
-            
         except Exception as e:
             print(f"[CLI ERROR] {e}")
             sys.exit(1)
     else:
-        # Daemon Mode
         warden.run()

@@ -1,0 +1,5 @@
+module/zcommon/libzfs_la-zfs_fletcher_aarch64_neon.lo: \
+ module/zcommon/zfs_fletcher_aarch64_neon.c /usr/include/stdc-predef.h \
+ zfs_config.h
+/usr/include/stdc-predef.h:
+zfs_config.h:
