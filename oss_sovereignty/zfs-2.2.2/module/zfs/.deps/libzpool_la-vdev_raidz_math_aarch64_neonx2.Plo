@@ -1,0 +1,6 @@
+module/zfs/libzpool_la-vdev_raidz_math_aarch64_neonx2.lo: \
+ module/zfs/vdev_raidz_math_aarch64_neonx2.c /usr/include/stdc-predef.h \
+ zfs_config.h lib/libspl/include/sys/isa_defs.h
+/usr/include/stdc-predef.h:
+zfs_config.h:
+lib/libspl/include/sys/isa_defs.h:

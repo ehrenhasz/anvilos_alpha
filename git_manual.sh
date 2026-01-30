@@ -15,59 +15,55 @@ function status_msg {
     echo -e "${PURPLE}>>> ${CYAN}$1${RESET}"
 }
 
-# INTELLIGENT PUSH FUNCTION (Preserved Logic)
+# SAFE PUSH FUNCTION
+# This function will NEVER delete files. It only detects errors and informs the user.
 function attempt_push {
     PUSH_CMD="$1"
     TEMP_LOG=$(mktemp)
 
-    # Run the push, show output to user, but also save to temp file
+    # Run the push
     eval "$PUSH_CMD" 2>&1 | tee "$TEMP_LOG"
     GIT_EXIT_CODE=${PIPESTATUS[0]}
 
     if [ $GIT_EXIT_CODE -ne 0 ]; then
-        # Check if failure was due to file size
         if grep -q "exceeds GitHub's file size limit" "$TEMP_LOG"; then
             echo ""
             echo -e "${PURPLE}!!! LARGE FILE ERROR DETECTED !!!${RESET}"
-            
-            # Extract filenames
             LARGE_FILES=$(grep "exceeds GitHub's file size limit" "$TEMP_LOG" | awk '{print $4}')
-            
-            echo -e "${GREY}The following files are blocking the push:${RESET}"
+            echo -e "${GREY}The following files are blocking the push (exceed 99MB):${RESET}"
             echo -e "${CYAN}$LARGE_FILES${RESET}"
             echo ""
-            echo -e "${GREY}These files are likely buried in your commit history.${RESET}"
-            echo -e "${GREY}I will perform a DEEP CLEAN: Undo all local commits (keeping files safe), unstage these files, and re-commit.${RESET}"
-            
-            echo -e -n "${GREEN}Apply DEEP CLEAN fix now? (y/n): ${RESET}"
-            read fix_confirm
-            
-            if [[ $fix_confirm == [yY] || $fix_confirm == [yY][eE][sS] ]]; then
-                # 1. Soft reset everything to match remote (Safe: keeps file changes)
-                status_msg "Resetting local history to match remote (files are safe)..."
-                git reset --soft $REMOTE/$BRANCH
-                
-                # 2. Unstage and ignore specific files
-                for f in $LARGE_FILES; do
-                    # Unstage the file
-                    git reset HEAD "$f"
-                    # Add to gitignore
-                    echo "$f" >> .gitignore
-                    echo -e "${CYAN}Removed $f from commit list and added to .gitignore${RESET}"
-                done
-                
-                # 3. Re-add everything else and commit
-                git add .gitignore
-                git commit -m "Update repo (Auto-removed large files)"
-                
-                status_msg "Deep Clean complete. Retrying push..."
-                eval "$PUSH_CMD"
-            else
-                echo -e "${GREY}Fix cancelled.${RESET}"
-            fi
+            echo -e "${GREY}INSTRUCTION: Add these files to .gitignore or remove them from history manually.${RESET}"
+            echo -e "${GREY}This script will NOT modify your files or history to fix this.${RESET}"
         fi
     fi
     rm "$TEMP_LOG"
+}
+
+# AUTO-IGNORE LARGE FILES
+function check_large_files {
+    status_msg "Scanning for files > 50MB..."
+    # Find files > 50MB, excluding .git directory
+    find . -type f -size +50M -not -path "./.git/*" | while read -r file; do
+        # Remove leading ./ for cleaner gitignore entries
+        clean_file="${file#./}"
+        
+        # Check if already ignored
+        if ! git check-ignore -q "$clean_file"; then
+            echo -e "${PURPLE}Blocking Large File: ${CYAN}$clean_file${RESET}"
+            
+            # Check if entry already exists in .gitignore (text match) to avoid duplicates
+            if ! grep -Fxq "$clean_file" .gitignore; then
+                echo "$clean_file" >> .gitignore
+                echo -e "${GREEN}  -> Added to .gitignore${RESET}"
+            else
+                echo -e "${GREY}  -> Already in .gitignore (but likely tracked)${RESET}"
+            fi
+            
+            # Unstage it if it was accidentally staged
+            git reset HEAD "$clean_file" &>/dev/null
+        fi
+    done
 }
 
 while true; do
@@ -107,6 +103,7 @@ while true; do
             fi
             ;;
         2)
+            check_large_files
             status_msg "Executing: git add ."
             git add . --verbose
             ;;
@@ -127,7 +124,12 @@ while true; do
         5)
             status_msg "Creating Pull Request"
             if command -v gh &> /dev/null; then
-                gh pr create --fill
+                if ! gh pr create --fill; then
+                     echo ""
+                     echo -e "${PURPLE}!!! PR CREATION FAILED !!!${RESET}"
+                     echo -e "${GREY}If you see 'Resource not accessible', run:${RESET}"
+                     echo -e "${CYAN}gh auth refresh -s repo,workflow${RESET}"
+                fi
             else
                 echo -e "${PURPLE}Error: GitHub CLI (gh) not installed.${RESET}"
             fi

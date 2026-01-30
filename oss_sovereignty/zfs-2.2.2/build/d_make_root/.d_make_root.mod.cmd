@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_make_root/d_make_root.mod := printf '%s\n'   d_make_root.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_make_root/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_make_root/d_make_root.mod

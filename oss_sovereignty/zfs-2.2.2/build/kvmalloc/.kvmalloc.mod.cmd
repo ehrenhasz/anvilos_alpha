@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/kvmalloc/kvmalloc.mod := printf '%s\n'   kvmalloc.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/kvmalloc/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/kvmalloc/kvmalloc.mod

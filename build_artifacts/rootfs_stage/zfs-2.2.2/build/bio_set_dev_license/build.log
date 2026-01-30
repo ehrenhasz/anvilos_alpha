@@ -1,0 +1,10 @@
+make: Entering directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'
+  MODPOST /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/bio_set_dev_license/Module.symvers
+ERROR: modpost: GPL-incompatible module bio_set_dev_license.ko uses GPL-only symbol 'bio_associate_blkg'
+make[2]: *** [scripts/Makefile.modpost:145: /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/bio_set_dev_license/Module.symvers] Error 1
+make[2]: Target '__modpost' not remade because of errors.
+make[1]: *** [/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14/Makefile:1865: modpost] Error 2
+make[1]: Target 'modules' not remade because of errors.
+make: *** [Makefile:234: __sub-make] Error 2
+make: Target 'modules' not remade because of errors.
+make: Leaving directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'

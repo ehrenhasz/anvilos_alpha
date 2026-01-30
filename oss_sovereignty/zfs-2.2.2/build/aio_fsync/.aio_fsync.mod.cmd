@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/aio_fsync/aio_fsync.mod := printf '%s\n'   aio_fsync.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/aio_fsync/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/aio_fsync/aio_fsync.mod

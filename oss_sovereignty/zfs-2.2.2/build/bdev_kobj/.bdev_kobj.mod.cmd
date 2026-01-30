@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/bdev_kobj/bdev_kobj.mod := printf '%s\n'   bdev_kobj.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/bdev_kobj/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/bdev_kobj/bdev_kobj.mod

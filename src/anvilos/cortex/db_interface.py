@@ -50,6 +50,10 @@ class CortexDB:
             """)
     def push_card(self, card_id: str, seq: int, op: str, pld: Dict[str, Any], agent_id: str = "system", priority: int = 50) -> None:
         """Pushes a new card onto the stack."""
+        # Ensure payload includes trust signature from the agent_id
+        if "_source" not in pld:
+            pld["_source"] = agent_id.upper()
+            
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
                 INSERT INTO card_stack (id, seq, op, pld, stat, timestamp, agent_id, priority)

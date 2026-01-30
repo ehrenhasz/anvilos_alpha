@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_struct/shrink_control_struct.mod := printf '%s\n'   shrink_control_struct.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_struct/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/shrink_control_struct/shrink_control_struct.mod

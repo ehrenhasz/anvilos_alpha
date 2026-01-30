@@ -1,0 +1,10 @@
+module/icp/asm-x86_64/blake3/libicp_la-blake3_sse2.lo: \
+ module/icp/asm-x86_64/blake3/blake3_sse2.S /usr/include/stdc-predef.h \
+ zfs_config.h include/sys/asm_linkage.h \
+ lib/libspl/include/os/linux/sys/ia32/asm_linkage.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/cet.h
+/usr/include/stdc-predef.h:
+zfs_config.h:
+include/sys/asm_linkage.h:
+lib/libspl/include/os/linux/sys/ia32/asm_linkage.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/cet.h:

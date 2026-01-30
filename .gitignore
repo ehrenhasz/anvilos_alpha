@@ -70,3 +70,11 @@ oss_sovereignty/linux-6.6.14.tar.xz.2
 build_artifacts/rootfs.img
 oss_sovereignty/linux-6.6.14.tar.xz.2
 .venv/
+data/card_archive.json
+rootfs.img
+initramfs/rootfs.img
+tmp_repo_check/.git/objects/pack/pack-1988d2c3b10b2d0c090e05202eb90fee0a27bf43.pack
+rootfs.img
+data/card_archive.json
+initramfs/rootfs.img
+tmp_repo_check/

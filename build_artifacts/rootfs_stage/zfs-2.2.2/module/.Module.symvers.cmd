@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/module/Module.symvers :=  scripts/mod/modpost -M        -o /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/module/Module.symvers -T /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/module/modules.order -i Module.symvers -e 

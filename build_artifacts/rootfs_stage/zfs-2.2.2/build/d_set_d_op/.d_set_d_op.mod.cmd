@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_set_d_op/d_set_d_op.mod := printf '%s\n'   d_set_d_op.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_set_d_op/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_set_d_op/d_set_d_op.mod

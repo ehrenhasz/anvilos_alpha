@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/fsync_bdev/fsync_bdev.mod := printf '%s\n'   fsync_bdev.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/fsync_bdev/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/fsync_bdev/fsync_bdev.mod
