@@ -6,8 +6,6 @@
 #define MICROPY_ENABLE_GC           (1)
 #define MICROPY_HELPER_REPL         (1)
 #define MICROPY_MODULE_FROZEN_MPY   (0)
-// Use a named pool (defined in bridge.c)
-#define MICROPY_QSTR_EXTRA_POOL     mp_qstr_null_pool
 
 // Disable Readline to avoid history complexity
 #define MICROPY_USE_READLINE        (0)
