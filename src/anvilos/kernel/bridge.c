@@ -36,7 +36,11 @@ int vga_col = 0;
 int vga_row = 0;
 
 void vga_scroll(void) {
-    memmove((void *)vga_buffer, (void *)(vga_buffer + 80), 80 * 24 * 2);
+    // Manual copy to avoid memmove issues
+    for (int i = 0; i < 80 * 24; i++) {
+        vga_buffer[i] = vga_buffer[i + 80];
+    }
+    // Manual clear
     for (int i = 0; i < 80; i++) {
         vga_buffer[24 * 80 + i] = (0x0F << 8) | ' ';
     }
@@ -211,16 +215,23 @@ void main_c(void) {
         }
     }
 
-    mp_hal_stdout_tx_strn("AnvilOS Zero-C Kernel Starting...\n", 34);
+    // TEST 1: Print String (verifies mp_hal_stdout_tx_strn)
+    mp_hal_stdout_tx_strn("KERNEL ALIVE\n", 13);
+    
+    // Busy wait to ensure user sees it
+    for(volatile int i=0; i<10000000; i++);
+    
+    // SPIN
+    while(1);
 
-    gc_init(heap, heap + sizeof(heap));
-    mp_init();
+    // gc_init(heap, heap + sizeof(heap));
+    // mp_init();
     
-    mp_hal_stdout_tx_strn("MicroPython Initialized.\n", 25);
+    // mp_hal_stdout_tx_strn("MicroPython Initialized.\n", 25);
     
-    if (pyexec_friendly_repl() != 0) {
-        mp_hal_stdout_tx_strn("REPL Error\n", 11);
-    }
+    // if (pyexec_friendly_repl() != 0) {
+    //    mp_hal_stdout_tx_strn("REPL Error\n", 11);
+    // }
     
     while(1);
 }
