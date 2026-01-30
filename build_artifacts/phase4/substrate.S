@@ -8,7 +8,9 @@
 .global _start
 .code32
 _start:
-    mov $0x90000, %esp  /* Setup Stack at 576KB */
+    /* Setup Stack at 2MB (Safe Zone) */
+    mov $0x200000, %esp  
+    and $0xFFFFFFF0, %esp /* 16-byte alignment for GCC */
     call main_c
     cli
     hlt
