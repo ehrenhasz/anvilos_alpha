@@ -39,9 +39,31 @@ mp_uint_t mp_hal_stdout_tx_strn(const char *str, size_t len) {
     return len;
 }
 
+// --- IO Ports ---
+static inline uint8_t inb(uint16_t port) {
+    uint8_t ret;
+    __asm__ volatile ( "inb %1, %0" : "=a"(ret) : "Nd"(port) );
+    return ret;
+}
+
+// --- Keyboard ---
+static const char scancode_map[] = {
+    0, 27, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', '\b',
+    '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',
+    0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0,
+    '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ',
+};
+
 int mp_hal_stdin_rx_chr(void) {
-    // TODO: Poll keyboard port 0x60
-    return 0; 
+    while (1) {
+        if ((inb(0x64) & 1) != 0) {
+            uint8_t scancode = inb(0x60);
+            if (!(scancode & 0x80)) { // Key Pressed
+                char c = (scancode < sizeof(scancode_map)) ? scancode_map[scancode] : 0;
+                if (c) return c;
+            }
+        }
+    }
 }
 
 // --- LibC Stubs ---
@@ -156,10 +178,10 @@ void main_c(void) {
     mp_init();
     
     mp_hal_stdout_tx_strn("MicroPython Initialized.\n", 25);
-    mp_hal_stdout_tx_strn("Starting Raw REPL...\n", 21);
+    mp_hal_stdout_tx_strn("Starting Friendly REPL...\n", 26);
     
-    // Start Raw REPL (Simpler)
-    if (pyexec_raw_repl() != 0) {
+    // Start Friendly REPL (Interactive)
+    if (pyexec_friendly_repl() != 0) {
         mp_hal_stdout_tx_strn("REPL Error\n", 11);
     }
 }
