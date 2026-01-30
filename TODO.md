@@ -1,9 +1,9 @@
 # AnvilOS Hybrid Phase 4 TODO
 
 ## IMMEDIATE ACTIONS
-- [ ] **Clean Slate:** Abandon existing `anvilos.iso` and prepare for a fresh build of the Monolith.
-- [ ] **Cleanup:** Archive all `v0.4.x` (Bare Metal) and `v0.1.0` (Old Monolith) artifacts to `archive/legacy/`.
-- [ ] **Manifest:** Define the new core components for the "Normal Shell" userland.
+- [ ] **Verify Base:** Confirm `build_artifacts/anvilos.iso` (Phase 3 Monolith) is still present and bootable.
+- [ ] **Cleanup:** Archive the broken `build_artifacts/phase4/` (Bare Metal) artifacts to `archive/phase4_fail/`.
+- [ ] **Toolchain:** Ensure the Sovereign Toolchain is ready to build standard Linux userspace tools (Bash, Coreutils).
 
 ## USERLAND EXPANSION (The "Normal Shell")
 - [ ] **Fetch Sources:**
