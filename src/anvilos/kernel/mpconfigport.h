@@ -7,7 +7,7 @@
 #define MICROPY_HELPER_REPL         (1)
 #define MICROPY_MODULE_FROZEN_MPY   (0)
 
-// Disable Readline to avoid history complexity
+// Disable Readline to use pyexec fallback
 #define MICROPY_USE_READLINE        (0)
 #define MICROPY_USE_READLINE_HISTORY (0)
 
