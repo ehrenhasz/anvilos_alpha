@@ -32,7 +32,7 @@ SRCS="bridge.c $(find generated -name "*.c") ../../../oss_sovereignty/sys_09_Anv
 SUBSTRATE="../../../build_artifacts/phase4/substrate.S"
 
 # Compile and Link
-# Note: We use -Wl,-Ttext=0x100000 to place kernel above 1MB
-$CC $CFLAGS -Wl,-Ttext=0x100000 $SUBSTRATE $SRCS -o $OUT_DIR/anvil_unikernel
+# Use custom linker script to ensure Multiboot header is first
+$CC $CFLAGS -T linker.ld $SUBSTRATE $SRCS -o $OUT_DIR/anvil_unikernel
 
 echo "[BUILD] Success: $OUT_DIR/anvil_unikernel"

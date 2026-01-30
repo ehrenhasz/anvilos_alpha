@@ -15,6 +15,9 @@ bin/
 !hello.c
 !hello_void.c
 !init.c
+!bridge.c
+!**/bridge.c
+!src/anvilos/kernel/bridge.c
 !recipe_*.c
 logs/*.log
 logs/*.jsonl

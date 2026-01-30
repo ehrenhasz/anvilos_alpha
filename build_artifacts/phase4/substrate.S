@@ -8,8 +8,7 @@
 .global _start
 .code32
 _start:
-    mov $0xb8000, %edi
-    movb $'A', (%edi)
-    movb $0x2f, 1(%edi)
+    mov $0x90000, %esp  /* Setup Stack at 576KB */
+    call main_c
     cli
     hlt

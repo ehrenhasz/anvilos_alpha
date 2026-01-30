@@ -90,9 +90,9 @@ typedef uint32_t uint_fast32_t;
 # 12 "/home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/stdint.h" 2 3
 #pragma GCC diagnostic pop
 # 2 "/home/aimeat/anvilos/src/anvilos/kernel/mpconfigport.h" 2
-# 17 "/home/aimeat/anvilos/src/anvilos/kernel/mpconfigport.h"
+# 15 "/home/aimeat/anvilos/src/anvilos/kernel/mpconfigport.h"
 
-# 17 "/home/aimeat/anvilos/src/anvilos/kernel/mpconfigport.h"
+# 15 "/home/aimeat/anvilos/src/anvilos/kernel/mpconfigport.h"
 typedef intptr_t mp_int_t;
 typedef uintptr_t mp_uint_t;
 typedef long mp_off_t;
