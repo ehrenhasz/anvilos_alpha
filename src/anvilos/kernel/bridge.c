@@ -54,15 +54,28 @@ static const char scancode_map[] = {
     '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, '*', 0, ' ',
 };
 
+void keyboard_flush(void) {
+    // Drain the keyboard buffer
+    uint8_t status;
+    while (((status = inb(0x64)) & 0x01) == 1) {
+        inb(0x60); // Read and discard
+    }
+}
+
 int mp_hal_stdin_rx_chr(void) {
     while (1) {
-        if ((inb(0x64) & 1) != 0) {
+        uint8_t status = inb(0x64);
+        if ((status & 0x01) != 0) { // Data Ready
             uint8_t scancode = inb(0x60);
-            if (!(scancode & 0x80)) { // Key Pressed
-                char c = (scancode < sizeof(scancode_map)) ? scancode_map[scancode] : 0;
-                if (c) return c;
+            if ((status & 0x20) == 0) { // Not Mouse Data
+                if (!(scancode & 0x80)) { // Key Pressed
+                    char c = (scancode < sizeof(scancode_map)) ? scancode_map[scancode] : 0;
+                    if (c) return c;
+                }
             }
         }
+        // Small busy-wait delay
+        for (volatile int i = 0; i < 1000; i++);
     }
 }
 
@@ -178,6 +191,10 @@ void main_c(void) {
     mp_init();
     
     mp_hal_stdout_tx_strn("MicroPython Initialized.\n", 25);
+    
+    // Flush stale inputs (like the Enter key used to start QEMU)
+    keyboard_flush();
+    
     mp_hal_stdout_tx_strn("Starting Friendly REPL...\n", 26);
     
     // Start Friendly REPL (Interactive)
