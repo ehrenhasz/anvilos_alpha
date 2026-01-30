@@ -22,15 +22,15 @@ PHASE4_DIRECTIVES = [
         "op": "FILE_WRITE",
         "pld": {
             "path": "build_artifacts/phase4/substrate.S",
-            "content": ".section .text\n.global _start\n_start:\n    /* Minimal x86_64 Bare Metal Entry */\n    cli\n    hlt\n",
-            "desc": "Forge Zero-C Boot Entry"
+            "content": ".section .multiboot\n.align 4\n.long 0x1BADB002\n.long 0x0\n.long -(0x1BADB002 + 0x0)\n\n.section .text\n.global _start\n.code32\n_start:\n    mov $0xb8000, %edi\n    movb $'A', (%edi)\n    movb $0x2f, 1(%edi)\n    cli\n    hlt\n",
+            "desc": "Forge Zero-C Boot Entry (Multiboot)"
         },
         "seq": 3
     },
     {
         "op": "SYS_CMD",
         "pld": {
-            "cmd": "ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -nostdlib build_artifacts/phase4/substrate.S -o build_artifacts/phase4/bin/anvil_unikernel",
+            "cmd": "ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -nostdlib -Wl,-Ttext=0x100000 build_artifacts/phase4/substrate.S -o build_artifacts/phase4/bin/anvil_unikernel",
             "desc": "Compile Zero-C Substrate"
         },
         "seq": 4
@@ -62,7 +62,7 @@ PHASE4_DIRECTIVES = [
     {
         "op": "SYS_CMD",
         "pld": {
-            "cmd": "cat build_artifacts/phase4/bin/anvil_unikernel build_artifacts/phase4/law.tar.gz > build_artifacts/phase4/bin/anvilos_v0.2.0.bin",
+            "cmd": "cat build_artifacts/phase4/bin/anvil_unikernel build_artifacts/phase4/law.tar.gz > build_artifacts/phase4/bin/anvilos_v0.4.0.bin",
             "desc": "Fuse Law into Substrate"
         },
         "seq": 8
@@ -70,7 +70,7 @@ PHASE4_DIRECTIVES = [
     {
         "op": "SYS_CMD",
         "pld": {
-            "cmd": "mkdir -p build_artifacts/phase4/iso/boot/grub && cp build_artifacts/phase4/bin/anvilos_v0.2.0.bin build_artifacts/phase4/iso/boot/ && echo 'menuentry \"AnvilOS v0.2.0 (Zero C)\" { multiboot /boot/anvilos_v0.2.0.bin }' > build_artifacts/phase4/iso/boot/grub/grub.cfg",
+            "cmd": "mkdir -p build_artifacts/phase4/iso/boot/grub && cp build_artifacts/phase4/bin/anvilos_v0.4.0.bin build_artifacts/phase4/iso/boot/ && echo 'menuentry \"AnvilOS v0.4.0 (Zero C)\" { multiboot /boot/anvilos_v0.4.0.bin }' > build_artifacts/phase4/iso/boot/grub/grub.cfg",
             "desc": "Prepare ISO Structure"
         },
         "seq": 9
@@ -78,7 +78,7 @@ PHASE4_DIRECTIVES = [
     {
         "op": "SYS_CMD",
         "pld": {
-            "cmd": "grub-mkrescue -o build_artifacts/anvilos_v0.2.0.iso build_artifacts/phase4/iso",
+            "cmd": "grub-mkrescue -o build_artifacts/anvilos_v0.4.0.iso build_artifacts/phase4/iso",
             "desc": "Forge Phase 4 Sovereign ISO"
         },
         "seq": 10

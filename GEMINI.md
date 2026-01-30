@@ -3,8 +3,8 @@
     "agent_id": "AIMEAT",
     "identity": "The Operator (Lvl 3)",
     "model_id": "gemini-2.0-flash",
-    "phase": "3: Sovereign Population",
-    "status": "FORGING (Stable)",
+    "phase": "4: Bare Metal / Unikernel (Zero C)",
+    "status": "ISO v0.4.0 FORGED (Multiboot Ready)",
     "protocols": [
       "RFC-0058 (The Collar)",
       "RFC-000666.2 (Sovereign Toolchain)",
@@ -22,7 +22,8 @@
       "processor_daemon": "v3.2 (Auto-Config + Static MPY)",
       "mpy_cross": "Static Build (Fixed)",
       "openssh": "Configured (Musl Host)",
-      "kernel": "Configured (Defconfig)"
+      "kernel": "Zero-C Substrate (x86_64-musl-gcc -m32)",
+      "iso": "build_artifacts/anvilos_v0.4.0.iso"
     },
     "constraints": [
       "No Host GCC (/usr/bin/cc banned)",
