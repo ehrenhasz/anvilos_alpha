@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/req_discard/req_discard.mod := printf '%s\n'   req_discard.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/req_discard/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/req_discard/req_discard.mod

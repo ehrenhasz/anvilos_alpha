@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/i_uid_read/i_uid_read.mod := printf '%s\n'   i_uid_read.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/i_uid_read/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/i_uid_read/i_uid_read.mod

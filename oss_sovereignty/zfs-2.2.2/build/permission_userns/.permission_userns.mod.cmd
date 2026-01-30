@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/permission_userns/permission_userns.mod := printf '%s\n'   permission_userns.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/permission_userns/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/permission_userns/permission_userns.mod

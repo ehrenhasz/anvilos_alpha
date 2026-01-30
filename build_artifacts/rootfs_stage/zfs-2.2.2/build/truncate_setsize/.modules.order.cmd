@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/modules.order := {   echo /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/truncate_setsize.o; :; } > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/truncate_setsize/modules.order

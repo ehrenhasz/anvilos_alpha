@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/xattr_handler_name/xattr_handler_name.mod := printf '%s\n'   xattr_handler_name.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/xattr_handler_name/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/xattr_handler_name/xattr_handler_name.mod

@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/direct_io_iovec/direct_io_iovec.mod := printf '%s\n'   direct_io_iovec.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/direct_io_iovec/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/direct_io_iovec/direct_io_iovec.mod

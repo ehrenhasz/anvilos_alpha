@@ -1,0 +1,1 @@
+/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/insert_inode_locked/insert_inode_locked.o
