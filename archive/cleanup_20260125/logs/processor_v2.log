@@ -1,9 +1,0 @@
-2026-01-23 23:44:27,263 - [PROCESSOR] - INFO - Processor Daemon Online. Monitoring card_stack...
-2026-01-23 23:44:27,268 - [PROCESSOR] - INFO - Processing Card 45ae5fc0-b074-4e7a-962f-f803df750f4d: SYS_CMD
-2026-01-23 23:44:27,268 - [PROCESSOR] - INFO - Executing System Command: cd /mnt/anvil_temp/ascii_oss/src/firecracker && rm -f .cargo/config .cargo/config.toml && cargo clean && export APPROVED=ext/toolchain && export TOOLCHAIN_BIN=/mnt/anvil_temp/github/anvilos_beta/ext/toolchain/bin && export SOV_CC=$TOOLCHAIN_BIN/x86_64-unknown-linux-musl-gcc && export CC_x86_64_unknown_linux_musl=$SOV_CC && export CXX_x86_64_unknown_linux_musl=$SOV_CC && export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$SOV_CC && cargo build --release --target x86_64-unknown-linux-musl --no-default-features && cp target/x86_64-unknown-linux-musl/release/firecracker /mnt/anvil_temp/ascii_oss/bin/anvil-vmm
-2026-01-23 23:45:01,046 - [PROCESSOR] - INFO - Card 45ae5fc0-b074-4e7a-962f-f803df750f4d finished with status 9
-2026-01-23 23:45:03,052 - [PROCESSOR] - INFO - Processing Card 57407479-9f36-46aa-981c-db25b2912e51: SYS_CMD
-2026-01-23 23:45:03,052 - [PROCESSOR] - INFO - Executing System Command: mkdir -p oss_sovereignty && cd oss_sovereignty && wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.6.14.tar.xz && tar -xvf linux-6.6.14.tar.xz
-2026-01-23 23:45:14,576 - [PROCESSOR] - INFO - Card 57407479-9f36-46aa-981c-db25b2912e51 finished with status 2
-2026-01-23 23:45:16,595 - [PROCESSOR] - INFO - Processing Card cd95dd68-4cea-4913-85c0-694f6c55b6aa: SYS_CMD
-2026-01-23 23:45:16,595 - [PROCESSOR] - INFO - Executing System Command: cd oss_sovereignty/linux-6.6.14 && make defconfig && make kvm_guest.config

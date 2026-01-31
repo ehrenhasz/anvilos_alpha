@@ -1,7 +1,0 @@
-{
-  "name": "sys_09_Anvil",
-  "description": "The Sovereign Compiler. Transforms python logic into static AI Machine Code.",
-  "version": "1.0.0",
-  "build_script": "oss_sovereignty/sys_09_Anvil/anvil.build.sh",
-  "dependencies": []
-}

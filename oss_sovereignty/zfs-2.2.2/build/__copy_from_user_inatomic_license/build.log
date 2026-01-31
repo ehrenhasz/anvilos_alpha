@@ -1,5 +1,0 @@
-make: Entering directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'
-  MODPOST /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/__copy_from_user_inatomic_license/Module.symvers
-  CC [M]  /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/__copy_from_user_inatomic_license/__copy_from_user_inatomic_license.mod.o
-  LD [M]  /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/__copy_from_user_inatomic_license/__copy_from_user_inatomic_license.ko
-make: Leaving directory '/home/aimeat/anvilos/oss_sovereignty/linux-6.6.14'

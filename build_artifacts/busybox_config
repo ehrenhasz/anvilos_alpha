@@ -1,2 +1,0 @@
-# Busybox config
-CONFIG_STATIC=y
