@@ -70,9 +70,17 @@ src/cksum-digest.o: src/digest.c \
  lib/intprops-internal.h lib/inttostr.h lib/intprops.h lib/error.h \
  lib/quotearg.h lib/argmatch.h lib/gettext.h lib/quote.h lib/quote.h \
  lib/xdectoint.h lib/xstrtol.h src/sum.h src/cksum.h lib/base64.h \
- src/blake2/b2sum.h lib/md5.h lib/sha1.h lib/sha256.h lib/sha512.h \
- lib/u64.h lib/sm3.h lib/fadvise.h lib/stdio--.h lib/stdio-safer.h \
- lib/xbinary-io.h lib/binary-io.h
+ src/blake2/b2sum.h lib/md5.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/configuration.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/md5.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/macros.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslconf.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslv.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/e_os2.h \
+ lib/gl_openssl.h lib/sha1.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/sha.h \
+ lib/sha256.h lib/sha512.h lib/u64.h lib/sm3.h lib/fadvise.h \
+ lib/stdio--.h lib/stdio-safer.h lib/xbinary-io.h lib/binary-io.h
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h:
 lib/config.h:
 /home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/stdbool.h:
@@ -187,7 +195,15 @@ src/cksum.h:
 lib/base64.h:
 src/blake2/b2sum.h:
 lib/md5.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/configuration.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/md5.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/macros.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslconf.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslv.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/e_os2.h:
+lib/gl_openssl.h:
 lib/sha1.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/sha.h:
 lib/sha256.h:
 lib/sha512.h:
 lib/u64.h:

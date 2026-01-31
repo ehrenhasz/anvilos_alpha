@@ -28,7 +28,15 @@ lib/libcoreutils_a-sha256.o: lib/sha256.c \
  /home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/syslimits.h \
  /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/limits.h \
  /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/bits/limits.h \
- lib/string.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/configuration.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/sha.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/macros.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslconf.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslv.h \
+ /home/aimeat/anvilos/build_artifacts/staging/include/openssl/e_os2.h \
+ lib/inttypes.h \
+ /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/inttypes.h \
+ lib/gl_openssl.h lib/string.h \
  /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/string.h \
  /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/strings.h \
  /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/byteswap.h
@@ -63,6 +71,15 @@ lib/limits.h:
 /home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/syslimits.h:
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/limits.h:
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/bits/limits.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/configuration.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/sha.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/macros.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslconf.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/opensslv.h:
+/home/aimeat/anvilos/build_artifacts/staging/include/openssl/e_os2.h:
+lib/inttypes.h:
+/home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/inttypes.h:
+lib/gl_openssl.h:
 lib/string.h:
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/string.h:
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/strings.h:

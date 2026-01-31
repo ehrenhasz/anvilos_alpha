@@ -43,7 +43,7 @@ configure:1206: found /usr/bin/grep
 configure:1214: result: grep
 configure:1225: checking for egrep
 configure:1281: result: grep -E
-configure:1291: result: Configuring NCURSES 6.4 ABI 6 (Fri Jan 30 16:09:14 CST 2026)
+configure:1291: result: Configuring NCURSES 6.4 ABI 6 (Fri Jan 30 19:34:16 CST 2026)
 configure:1295: checking for package version
 configure:1316: result: 6.4
 configure:1319: checking for package patch date
@@ -1288,7 +1288,7 @@ configure:21482: $? = 0
 configure:21493: result: yes
 configure:21508: checking if external errno exists
 configure:21530: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -static --param max-inline-insns-single=1200 -I/home/aimeat/anvilos/build_artifacts/staging/include -DNDEBUG -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccbt9q0K.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccFKPXZu.o: in function `main':
 conftest.c:(.text+0x6): undefined reference to `errno'
 collect2: error: ld returned 1 exit status
 configure:21533: $? = 1
@@ -1409,7 +1409,7 @@ configure:21737: $? = 0
 configure:21747: result: yes
 configure:21691: checking for sigvec
 configure:21728: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -static --param max-inline-insns-single=1200 -I/home/aimeat/anvilos/build_artifacts/staging/include -DNDEBUG -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccZvLwLh.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccokx4L6.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `sigvec'
 collect2: error: ld returned 1 exit status
 configure:21731: $? = 1
@@ -2058,7 +2058,7 @@ cf_cv_src_modules='ncurses panel menu form'
 cf_cv_struct_dirent64='no'
 cf_cv_sys_time_select='yes'
 cf_cv_system_name='linux-gnu'
-cf_cv_timestamp='Fri Jan 30 16:09:14 CST 2026'
+cf_cv_timestamp='Fri Jan 30 19:34:16 CST 2026'
 cf_cv_type_of_bool='int'
 cf_cv_type_sigaction='no'
 cf_cv_typeof_chtype='uint32_t'

@@ -14,13 +14,13 @@
 
 CC=/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 
-CFLAGS= -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+CFLAGS=-I/home/aimeat/anvilos/build_artifacts/staging/include -static -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 #CFLAGS=-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7
 #CFLAGS=-g -DZLIB_DEBUG
 #CFLAGS=-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion \
 #           -Wstrict-prototypes -Wmissing-prototypes
 
-SFLAGS= -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
+SFLAGS=-I/home/aimeat/anvilos/build_artifacts/staging/include -static -fPIC -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN
 LDFLAGS=-L/home/aimeat/anvilos/build_artifacts/staging/lib -static
 TEST_LIBS=-L. libz.a
 LDSHARED=/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
