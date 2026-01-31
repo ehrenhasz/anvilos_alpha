@@ -1,1 +1,0 @@
-savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_obtain_alias/d_obtain_alias.mod := printf '%s\n'   d_obtain_alias.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_obtain_alias/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_obtain_alias/d_obtain_alias.mod

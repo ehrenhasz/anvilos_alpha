@@ -1,9 +1,0 @@
-#include <stdio.h>
-#ifndef ANVIL_KERNEL_H
-#define ANVIL_KERNEL_H
-#include <stdint.h>
-#include <stddef.h>
-#define copy_nonoverlapping(src, dst, count) __builtin_memcpy(dst, src, (count) * sizeof(*(src)))
-
-int32_t main();
-#endif
