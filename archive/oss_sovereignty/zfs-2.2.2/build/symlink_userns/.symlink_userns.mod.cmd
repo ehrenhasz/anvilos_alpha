@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/symlink_userns/symlink_userns.mod := printf '%s\n'   symlink_userns.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/symlink_userns/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/symlink_userns/symlink_userns.mod

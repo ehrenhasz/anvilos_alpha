@@ -1,50 +1,46 @@
-# AnvilOS Ignore
+# Python
 venv/
-runtime/venv/
-bin/
+.venv/
+__pycache__/
+*.pyc
+
+# Build artifacts
+build_artifacts/
+iso/
+initramfs/
+tmp_initramfs/
+rootfs/
+iso_root/
 *.iso
+*.img
 *.gz
 *.xz
 *.bz2
 *.tar
 *.o
-*.c
-!build_dropbear.c
-!etc_profile.c
-!firecracker.c
-!hello.c
-!hello_void.c
-!init.c
-!bridge.c
-!**/bridge.c
-!src/anvilos/kernel/bridge.c
-!recipe_*.c
-logs/*.log
-logs/*.jsonl
-__pycache__/
+*.swp
+
+# Logs
+logs/
+
+# Data
 *.db
-kernel.h
-iso_root/
-rootfs/
-*.tar.bz2.*
-*recipe_*
-!recipe_*.anv
-!recipe_*.py
-!recipe_*.sh
-DropbearBuilder.c
-KernelBuilder.c
-VimBuilder.c
-dropbear-2025.89/
-ncurses-6.4/
-vim-9.1.0/
-xorriso-1.5.6/
+data/card_archive.json
+
+# Config
+config/token
+
+# Other
+tmp_repo_check/
+notes.md
+kernel_fail.json
+repair_kernel_recipes.py
+full_kernel_repair.py
+
+# Vendored code (already checked in, but good practice to ignore)
 vendor/
-v9.1.0.tar.gz
-v9.1.0.tar.gz.1
-xorriso-1.5.6.pl02.tar.gz
-ncurses-6.4.tar.gz
-dropbear-2025.89.tar.bz2
-dropbear-2025.89.tar.bz2.1
+
+# Specific binaries to ignore
 hello
 hello_void
 init
@@ -58,26 +54,35 @@ recipe_kernel_config_hardening
 recipe_kernel_config_selinux
 recipe_kernel_extract
 dhcpcd_fetch
-notes.md
-kernel_fail.json
-repair_kernel_recipes.py
-full_kernel_repair.py
-*.swp
-config/token
-oss_sovereignty/linux-6.6.14.tar.xz.1
-build_artifacts/iso/boot/rootfs.img
-oss_sovereignty/linux-6.6.14.tar.xz.1
-build_artifacts/iso/boot/rootfs.img
-build_artifacts/rootfs.img
-oss_sovereignty/linux-6.6.14.tar.xz.2
-build_artifacts/rootfs.img
-oss_sovereignty/linux-6.6.14.tar.xz.2
-.venv/
-data/card_archive.json
-rootfs.img
-initramfs/rootfs.img
-tmp_repo_check/.git/objects/pack/pack-1988d2c3b10b2d0c090e05202eb90fee0a27bf43.pack
-rootfs.img
-data/card_archive.json
-initramfs/rootfs.img
-tmp_repo_check/
+DropbearBuilder.c
+KernelBuilder.c
+VimBuilder.c
+
+
+# Specific source archives to ignore
+dropbear-2025.89/
+ncurses-6.4/
+vim-9.1.0/
+xorriso-1.5.6/
+v9.1.0.tar.gz
+v9.1.0.tar.gz.1
+xorriso-1.5.6.pl02.tar.gz
+ncurses-6.4.tar.gz
+dropbear-2025.89.tar.bz2
+dropbear-2025.89.tar.bz2.1
+
+
+# Keep C files
+!*.c
+# But ignore these specific generated C files
+DropbearBuilder.c
+KernelBuilder.c
+VimBuilder.c
+
+# Keep specific recipe files
+!recipe_*.anv
+!recipe_*.py
+!recipe_*.sh
+
+# ignore kernel.h
+kernel.harchive/oss_sovereignty/linux-6.6.14.tar.xz.1

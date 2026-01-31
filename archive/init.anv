@@ -1,0 +1,40 @@
+struct Args {
+    arg0: *const i8,
+    arg1: *const i8,
+    arg2: *const i8
+}
+
+fn main() {
+    println(">> ANVIL_OS: BOOTING_SOVEREIGN_CORE");
+
+    let res: i32 = mount("proc", "/proc", "proc", 0, 0);
+    if res == 0 {
+        println(">> INIT: PROC_MOUNTED");
+    }
+
+    let res2: i32 = mount("sysfs", "/sys", "sysfs", 0, 0);
+    if res2 == 0 {
+        println(">> INIT: SYS_MOUNTED");
+    }
+
+    let res3: i32 = mount("devtmpfs", "/dev", "devtmpfs", 0, 0);
+    if res3 == 0 {
+        println(">> INIT: DEV_MOUNTED");
+    }
+
+    println(">> INIT: STARTING_ANVIL_LAW");
+    
+    let path: &str = "/bin/anvil";
+    let my_args: Args = Args {
+        arg0: "/bin/anvil" as *const i8,
+        arg1: "/lib/init.mpy" as *const i8,
+        arg2: 0 as *const i8
+    };
+    
+    execv(path, &my_args as **i8);
+
+    println(">> FATAL: SOVEREIGN_ORCHESTRATOR_FAILED");
+    
+    while 1 {
+    }
+}

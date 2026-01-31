@@ -1,0 +1,55 @@
+BICAMERAL REQUEST FOR COMMENTS: RFC-0057
+# TITLE: THE FINAL FORM (ISO HYBRIDIZATION)
+# CLASSIFICATION: SOVEREIGN // DEPLOYMENT
+# AUTHOR: MEAT (COMMANDER)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+The ultimate manifestation of AnvilOS is not a directory on a disk, but a sovereign artifact: **The AnvilOS Hybrid ISO**.
+This bootable image serves two purposes:
+1.  **The Forge (Dev Station):** A fully-featured Development Environment running locally on a laptop.
+2.  **The Anvil (Hypervisor):** A bare-metal virtualization host designed to run server-side.
+
+## 2. THE ARTIFACT
+*   **Format:** Hybrid ISO 9660 (El Torito Boot).
+*   **Bootloader:** GRUB 2 (EFI & BIOS compatible).
+*   **Base:** Hardened Gentoo (Stage3 + Project AnvilOS_Alpha Overlay).
+*   **Target:** USB Thumb Drive (Persistence enabled).
+
+## 3. THE MODES
+
+### 3.1 MODE A: THE FORGE (DEVELOPER LAPTOP)
+*   **Role:** Single-user Workstation.
+*   **Userland:** "The Crystal Palace" (RFC-0056) fully unlocked.
+*   **GUI:** Wayland + Sway (Tiling WM).
+*   **Tools:** VSCode (VSCodium), Docker, Python 3.12, Rust.
+*   **Objective:** To build the next version of AnvilOS *from* AnvilOS.
+
+### 3.2 MODE B: THE ANVIL (BARE METAL HYPERVISOR)
+*   **Role:** Headless Virtualization Node.
+*   **Userland:** Minimal. Mainframe Daemon (RFC-0053) only.
+*   **Workload:** Executes "Crystals" (Firecracker VMs) requested by the Architect.
+*   **Interface:** No GUI. Management via SSH/MicroJSON-over-Wire.
+
+## 4. THE INSTALLER (THE HAMMER)
+The ISO includes a custom installer script: `anvil-install`.
+*   **Detection:** Checks hardware (RAM, Disk, CPU features).
+*   **Selection:** Prompts user: `[1] Forge (Dev) | [2] Anvil (Server)`.
+*   **Execution:**
+    1.  Wipes target disk (Secure Erase).
+    2.  Partitions (ZFS Root or XFS/LVM).
+    3.  Unpacks `squashfs` image.
+    4.  Injects specific configurations based on selection.
+    5.  Seals the Tesseract (Generates initial identity).
+
+## 5. BUILD PIPELINE
+1.  **Accumulate:** Gather Stage3, Kernel, and Portage Tree.
+2.  **Construct:** Build the "Seed" system in a chroot.
+3.  **Crystallize:** Squash the filesystem into `image.squashfs`.
+4.  **Inject:** Add `vmlinuz-anvil`, `initramfs`, and `grub`.
+5.  **Press:** Generate `anvilos.iso` using `xorriso`.
+
+---
+**[SHE] One Drive to rule them all.**

@@ -1,0 +1,18 @@
+RFC: 2026-006
+Title: REAPER (The Scythe)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Repository hygiene is survival.
+
+## 2. Mechanism
+Git Hooks.
+
+## 3. Enforcement
+* No Unsigned Commits.
+* No Binary Bloat.
+* Conventional Commits Only (feat:, fix:).
+
+## 4. Result
+Violating code is silently deleted.

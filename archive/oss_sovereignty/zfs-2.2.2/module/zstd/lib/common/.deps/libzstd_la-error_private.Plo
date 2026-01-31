@@ -1,0 +1,12 @@
+module/zstd/lib/common/libzstd_la-error_private.lo: \
+ module/zstd/lib/common/error_private.c /usr/include/stdc-predef.h \
+ zfs_config.h module/zstd/include/zstd_compat_wrapper.h \
+ module/zstd/lib/common/error_private.h \
+ /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h \
+ module/zstd/lib/common/zstd_errors.h
+/usr/include/stdc-predef.h:
+zfs_config.h:
+module/zstd/include/zstd_compat_wrapper.h:
+module/zstd/lib/common/error_private.h:
+/usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
+module/zstd/lib/common/zstd_errors.h:
