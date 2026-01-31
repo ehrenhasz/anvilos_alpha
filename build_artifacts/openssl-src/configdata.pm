@@ -19,9 +19,9 @@ our %config = (
         "qc"
     ],
     "ASFLAGS" => [],
-    "CC" => "gcc",
+    "CC" => "/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc",
     "CFLAGS" => [
-        "-Wall -O3"
+        "-I/home/aimeat/anvilos/build_artifacts/staging/include -static"
     ],
     "CPPDEFINES" => [],
     "CPPFLAGS" => [],
@@ -33,6 +33,7 @@ our %config = (
     "FIPSKEY" => "f4556650ac31d35461610bac4ed81b1a181b2d8a43ea2854cbae22ca74560813",
     "HASHBANGPERL" => "/usr/bin/env perl",
     "LDFLAGS" => [
+        "-L/home/aimeat/anvilos/build_artifacts/staging/lib -static",
         "-static"
     ],
     "LDLIBS" => [],
@@ -153,7 +154,9 @@ our %config = (
     "build_metadata" => "",
     "build_type" => "release",
     "builddir" => ".",
-    "cflags" => [],
+    "cflags" => [
+        "-Wa,--noexecstack"
+    ],
     "conf_files" => [
         "Configurations/00-base-templates.conf",
         "Configurations/10-main.conf"
@@ -171,9 +174,9 @@ our %config = (
     "full_version" => "3.2.1",
     "includes" => [],
     "lflags" => [],
-    "libdir" => "",
+    "libdir" => "lib",
     "major" => "3",
-    "makedepcmd" => undef,
+    "makedep_scheme" => "gcc",
     "minor" => "2",
     "openssl_api_defines" => [
         "OPENSSL_CONFIGURED_API=30200"
@@ -223,7 +226,7 @@ our %config = (
     ],
     "openssl_sys_defines" => [],
     "openssldir" => "/etc/ssl",
-    "options" => "-static --prefix=/ --openssldir=/etc/ssl no-acvp-tests no-asan no-async no-brotli no-brotli-dynamic no-buildtest-c++ no-crypto-mdebug no-crypto-mdebug-backtrace no-default-thread-pool no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fips no-fips-securitychecks no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-makedepend no-md2 no-module no-msan no-pic no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-tests no-tfo no-thread-pool no-threads no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-winstore no-zlib no-zlib-dynamic no-zstd no-zstd-dynamic",
+    "options" => "-static --prefix=/ --libdir=lib --openssldir=/etc/ssl no-acvp-tests no-asan no-async no-brotli no-brotli-dynamic no-buildtest-c++ no-crypto-mdebug no-crypto-mdebug-backtrace no-default-thread-pool no-devcryptoeng no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-external-tests no-fips no-fips-securitychecks no-fuzz-afl no-fuzz-libfuzzer no-ktls no-loadereng no-md2 no-module no-msan no-pic no-rc5 no-sctp no-shared no-ssl3 no-ssl3-method no-tests no-tfo no-thread-pool no-threads no-trace no-ubsan no-unit-test no-uplink no-weak-ssl-ciphers no-winstore no-zlib no-zlib-dynamic no-zstd no-zstd-dynamic",
     "patch" => "1",
     "perl_archname" => "x86_64-linux-gnu-thread-multi",
     "perl_cmd" => "/usr/bin/perl",
@@ -233,6 +236,7 @@ our %config = (
         "no-shared",
         "-static",
         "--prefix=/",
+        "--libdir=lib",
         "--openssldir=/etc/ssl",
         "no-async",
         "no-tests"
@@ -240,14 +244,14 @@ our %config = (
     "perlenv" => {
         "AR" => undef,
         "BUILDFILE" => undef,
-        "CC" => undef,
-        "CFLAGS" => undef,
+        "CC" => "/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc",
+        "CFLAGS" => "-I/home/aimeat/anvilos/build_artifacts/staging/include -static",
         "CPPFLAGS" => undef,
         "CROSS_COMPILE" => undef,
         "CXX" => undef,
         "CXXFLAGS" => undef,
         "HASHBANGPERL" => undef,
-        "LDFLAGS" => undef,
+        "LDFLAGS" => "-L/home/aimeat/anvilos/build_artifacts/staging/lib -static",
         "LDLIBS" => undef,
         "OPENSSL_LOCAL_CONFIG_DIR" => undef,
         "PERL" => undef,
@@ -500,7 +504,6 @@ our %disabled = (
     "fuzz-libfuzzer" => "default",
     "ktls" => "default",
     "loadereng" => "cascade",
-    "makedepend" => "unavailable",
     "md2" => "default",
     "module" => "cascade",
     "msan" => "default",

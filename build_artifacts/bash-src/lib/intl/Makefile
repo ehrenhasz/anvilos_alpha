@@ -49,10 +49,10 @@ mkinstalldirs = $(SHELL) $(MKINSTALLDIRS)
 
 l = 
 
-AR = ar
+AR = x86_64-unknown-linux-musl-ar
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 LIBTOOL = @LIBTOOL@
-RANLIB = ranlib
+RANLIB = x86_64-unknown-linux-musl-ranlib
 YACC = bison -y -d
 YFLAGS = --name-prefix=__gettext
 
@@ -68,7 +68,7 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" \
 -DDEPENDS_ON_LIBICONV=1 -DHAVE_CONFIG_H ${LOCAL_DEFS}
 CPPFLAGS = 
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
-LDFLAGS =  -L./lib/termcap -L./lib/termcap
+LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
 LIBS = 
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS)

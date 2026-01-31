@@ -1,0 +1,51 @@
+{
+  "name": "vim",
+  "version": "9.1",
+  "source_url": "https://github.com/vim/vim/archive/v9.1.0000.tar.gz",
+  "archive_name": "vim-9.1.tar.gz",
+  "build_subdir": "vim-src",
+  "env": {
+      "vim_cv_tgetent": "yes",
+      "vim_cv_terminfo": "yes",
+      "vim_cv_terminal_threads": "yes",
+      "vim_cv_tty_group": "world",
+      "LIBS": "-ltinfo",
+      "CFLAGS": "-I{staging}/include -I{staging}/include/ncurses -static",
+      "CPPFLAGS": "-I{staging}/include -I{staging}/include/ncurses -static"
+  },
+  "configure": "./configure --prefix=/ --with-features=tiny --disable-gui --disable-xsmp --disable-nls --host=x86_64-unknown-linux-musl --with-tlib=tinfo",
+  "post_configure_patches": [
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern int tgetent",
+          "with": "/* extern int tgetent */"
+      },
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern int tgetflag",
+          "with": "/* extern int tgetflag */"
+      },
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern int tgetnum",
+          "with": "/* extern int tgetnum */"
+      },
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern int tgetstr",
+          "with": "/* extern int tgetstr */"
+      },
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern char *tgoto",
+          "with": "/* extern char *tgoto */"
+      },
+      {
+          "file": "src/auto/osdef.h",
+          "replace": "extern int tputs",
+          "with": "/* extern int tputs */"
+      }
+  ],
+  "build": "make -j$(nproc)",
+  "install": "make install DESTDIR={rootfs}"
+}

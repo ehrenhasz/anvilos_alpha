@@ -1,0 +1,13 @@
+{
+  "name": "coreutils",
+  "version": "9.4",
+  "source_url": "https://ftp.gnu.org/gnu/coreutils/coreutils-9.4.tar.xz",
+  "archive_name": "coreutils-9.4.tar.xz",
+  "build_subdir": "coreutils-src",
+  "env": {
+      "CFLAGS": "-I{staging}/include -static -std=gnu17"
+  },
+  "configure": "./configure --prefix=/ --enable-static-link --without-selinux --disable-nls --host=x86_64-unknown-linux-musl",
+  "build": "make -j$(nproc)",
+  "install": "make install DESTDIR={rootfs}"
+}

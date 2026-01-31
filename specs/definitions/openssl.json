@@ -1,0 +1,10 @@
+{
+  "name": "openssl",
+  "version": "3.2.1",
+  "source_url": "https://www.openssl.org/source/openssl-3.2.1.tar.gz",
+  "archive_name": "openssl-3.2.1.tar.gz",
+  "build_subdir": "openssl-src",
+  "configure": "./Configure linux-x86_64 no-shared -static --prefix=/ --libdir=lib --openssldir=/etc/ssl no-async no-tests",
+  "build": "make -j$(nproc)",
+  "install": "make install_sw DESTDIR={staging} && make install_sw DESTDIR={rootfs}"
+}

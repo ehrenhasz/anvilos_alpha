@@ -1,4 +1,4 @@
-cmd_applets/usage := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.usage.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer      -Iinclude -Iinclude -o applets/usage applets/usage.c  
+cmd_applets/usage := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.usage.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer      -Iinclude -Iinclude -o applets/usage applets/usage.c  
 
 deps_applets/usage := \
   applets/usage.c \

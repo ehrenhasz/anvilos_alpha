@@ -1,4 +1,4 @@
-cmd_scripts/basic/fixdep := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.fixdep.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/fixdep scripts/basic/fixdep.c  
+cmd_scripts/basic/fixdep := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.fixdep.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/fixdep scripts/basic/fixdep.c  
 
 deps_scripts/basic/fixdep := \
   scripts/basic/fixdep.c \

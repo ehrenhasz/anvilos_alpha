@@ -109,7 +109,7 @@ CFLAGS_SHARED	= $(CCFLAGS) -fPIC
 CFLAGS_DEFAULT	= $(CFLAGS_NORMAL)
 
 LINK		= $(LIBTOOL_LINK)
-LDFLAGS		=   
+LDFLAGS		= -L/home/aimeat/anvilos/build_artifacts/staging/lib -static  
 
 SHLIB_DIRS	= -L../lib
 SHLIB_LIST	= $(SHLIB_DIRS) -lncurses  -ltinfo

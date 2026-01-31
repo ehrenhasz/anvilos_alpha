@@ -39,8 +39,8 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-RANLIB = ranlib
-AR = ar
+RANLIB = x86_64-unknown-linux-musl-ranlib
+AR = x86_64-unknown-linux-musl-ar
 ARFLAGS = cr
 RM = rm -f
 CP = cp
@@ -65,8 +65,8 @@ DESTDIR =
 
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 LOCAL_CFLAGS =  -DRL_LIBRARY_VERSION='"$(RL_LIBRARY_VERSION)"' -DBRACKETED_PASTE_DEFAULT=1
-CPPFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
-LDFLAGS =   -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
+CPPFLAGS = 
+LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static  -I/home/aimeat/anvilos/build_artifacts/staging/include -static 
 
 DEFS = -DHAVE_CONFIG_H 
 LOCAL_DEFS = 
@@ -85,7 +85,7 @@ SHOBJ_LDFLAGS = -shared -Wl,-soname,$@
 SHOBJ_XLDFLAGS = 
 SHOBJ_LIBS = 
 
-SHLIB_XLDFLAGS =  -Wl,-rpath,$(libdir) -Wl,-soname,`basename $@ $(SHLIB_MINOR)`
+SHLIB_XLDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static -Wl,-rpath,$(libdir) -Wl,-soname,`basename $@ $(SHLIB_MINOR)`
 SHLIB_LIBS =  
 
 SHLIB_DOT = .

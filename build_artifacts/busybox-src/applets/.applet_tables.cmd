@@ -1,4 +1,4 @@
-cmd_applets/applet_tables := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.applet_tables.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o applets/applet_tables applets/applet_tables.c  
+cmd_applets/applet_tables := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.applet_tables.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o applets/applet_tables applets/applet_tables.c  
 
 deps_applets/applet_tables := \
   applets/applet_tables.c \

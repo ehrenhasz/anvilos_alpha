@@ -23,10 +23,10 @@ PACKAGE_VERSION = 5.2-release
 
 #
 SHELL = /bin/sh
-RANLIB = ranlib
+RANLIB = x86_64-unknown-linux-musl-ranlib
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-CC_FOR_BUILD = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -std=gnu17
-AR = ar
+CC_FOR_BUILD = x86_64-unknown-linux-musl-gcc -std=gnu17
+AR = x86_64-unknown-linux-musl-ar
 ARFLAGS = cr
 RM = rm -f
 CP = cp
@@ -67,7 +67,7 @@ DEFS = -DHAVE_CONFIG_H
 LOCAL_DEFS = -DSHELL
 
 LIBS = 
-LDFLAGS =  -L./lib/termcap -L./lib/termcap $(LOCAL_LDFLAGS) $(CFLAGS)
+LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(LOCAL_LDFLAGS) $(CFLAGS)
 LDFLAGS_FOR_BUILD = $(LDFLAGS) $(LOCAL_LDFLAGS) $(CFLAGS_FOR_BUILD)
 LOCAL_LDFLAGS = -rdynamic
 LIBS_FOR_BUILD = $(LIBS)
@@ -75,7 +75,7 @@ LIBS_FOR_BUILD = $(LIBS)
 
 BASHINCDIR = ${topdir}/include
 
-RL_INCLUDEDIR = 
+RL_INCLUDEDIR = /home/aimeat/anvilos/build_artifacts/staging/include
 
 INTL_LIBSRC = ${topdir}/lib/intl
 INTL_BUILDDIR = ${LIBBUILD}/intl
@@ -90,7 +90,7 @@ MKDIRS = ${topdir}/support/mkdirs
 
 HELPFILES_TARGET = 
 
-INCLUDES = -I. -I..  -I$(topdir) -I$(BASHINCDIR) -I$(topdir)/lib -I$(srcdir) ${INTL_INC}
+INCLUDES = -I. -I.. -I${RL_INCLUDEDIR} -I$(topdir) -I$(BASHINCDIR) -I$(topdir)/lib -I$(srcdir) ${INTL_INC}
 
 BASE_CCFLAGS = ${PROFILE_FLAGS} $(DEFS) $(LOCAL_DEFS) $(SYSTEM_FLAGS) \
 	 ${INCLUDES} $(STYLE_CFLAGS) $(LOCAL_CFLAGS)

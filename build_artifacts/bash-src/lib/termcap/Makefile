@@ -31,8 +31,8 @@ INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-RANLIB = ranlib
-AR = ar
+RANLIB = x86_64-unknown-linux-musl-ranlib
+AR = x86_64-unknown-linux-musl-ar
 ARFLAGS = cr
 RM = rm -f
 CP = cp
@@ -42,7 +42,7 @@ SHELL = /bin/sh
 
 CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes
 CPPFLAGS = 
-LDFLAGS =  -L./lib/termcap -L./lib/termcap
+LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
 
 DEFS = -DHAVE_CONFIG_H
 

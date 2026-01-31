@@ -35,7 +35,7 @@ BUILD_DIR = /home/aimeat/anvilos/build_artifacts/bash-src
 RM	= rm -f
 SHELL	= /bin/sh
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-CC_FOR_BUILD = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -std=gnu17
+CC_FOR_BUILD = x86_64-unknown-linux-musl-gcc -std=gnu17
 
 EXEEXT = 
 
@@ -58,7 +58,7 @@ LIBS =
 LIBS_FOR_BUILD = ${LIBS}		# XXX
 
 LOCAL_LDFLAGS = -rdynamic
-LDFLAGS =  -L./lib/termcap -L./lib/termcap $(LOCAL_LDFLAGS)
+LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(LOCAL_LDFLAGS)
 LDFLAGS_FOR_BUILD = $(LDFLAGS) $(LOCAL_LDFLAGS) $(CFLAGS_FOR_BUILD)
 
 INCLUDES = -I${BUILD_DIR} -I${topdir}

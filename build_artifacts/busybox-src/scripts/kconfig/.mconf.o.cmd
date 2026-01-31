@@ -1,4 +1,4 @@
-cmd_scripts/kconfig/mconf.o := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/kconfig/.mconf.o.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -c -o scripts/kconfig/mconf.o scripts/kconfig/mconf.c
+cmd_scripts/kconfig/mconf.o := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/kconfig/.mconf.o.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -c -o scripts/kconfig/mconf.o scripts/kconfig/mconf.c
 
 deps_scripts/kconfig/mconf.o := \
   scripts/kconfig/mconf.c \
