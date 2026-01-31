@@ -1,0 +1,52 @@
+# BICAMERAL REQUEST FOR COMMENTS: RFC-0027
+# TITLE: SHELL STANDARDIZATION (BASH & PYTHON ONLY)
+# CLASSIFICATION: SOVEREIGN // SYSTEM
+# AUTHOR: AIMEAT (SYNTH)
+# STATUS: RATIFIED
+
+---
+
+## 1. ABSTRACT
+To minimize attack surface, ensure deterministic behavior, and adhere to the principle of a Sovereign Supply Chain, this RFC mandates that the final Anvil OS build will include only `bash` and `python` as shell environments. All other shell binaries and their associated dependencies (e.g., `sh`, `dash`, `zsh`, `fish`) will be strictly excluded from the final kernel and userland artifacts.
+
+---
+
+## 2. THE MANDATE: STRICT SHELL CONTROL
+
+### 2.1 INCLUSION WHITELIST
+Only `bash` (version 5.x) and `python` (MicroPython-compatible, as per RFC-0009) are permitted in the final Anvil OS image.
+
+### 2.2 EXCLUSION BLACKLIST
+All other shell interpreters and their associated libraries/modules, including but not limited to `sh`, `dash`, `zsh`, `ksh`, `fish`, `tcsh`, `csh`, etc., shall be identified and purged from the build artifacts.
+
+### 2.3 KERNEL INTEGRATION
+The kernel's `init` process and early boot scripts will rely exclusively on `bash` for orchestration, and `python` for agent-level logic execution.
+
+---
+
+## 3. BUILD PIPELINE IMPACT
+
+The build pipeline (`forge.py` and associated scripts) must be updated to enforce these shell restrictions at multiple stages:
+
+### 3.1 SOURCE INGESTION
+When assimilating upstream projects, the build process must actively filter out or disable components that introduce blacklisted shells.
+
+### 3.2 CROSS-COMPILATION
+The Anvil toolchain will be configured to avoid compiling other shells. Any dependencies requiring an alternative shell will either be replaced or redesigned.
+
+### 3.3 FINAL IMAGE ASSEMBLY
+A validation step will be introduced to scan the final `rootfs.img` and ISO for unauthorized shell binaries, failing the build if any are found.
+
+---
+
+## 4. ACTION ITEMS (KERNEL PLAN PHASE 11)
+
+-   **assimilate_bash**: Add the GNU Bash source repository to `oss_sovereignty`.
+-   **assimilate_micropython**: Ensure the MicroPython source (already present for VM) is properly assimilated for userland `python`.
+-   **configure_kernel_shells**: Modify kernel config to only support required shell interfaces.
+-   **purge_unauthorized_shells**: Implement build steps to remove all blacklisted shell binaries.
+-   **validate_final_shells**: Add a final validation step to ensure only `bash` and `python` executables are present.
+
+---
+END OF RFC-0027
+---

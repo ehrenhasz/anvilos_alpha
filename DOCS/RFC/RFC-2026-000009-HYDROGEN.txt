@@ -1,0 +1,16 @@
+RFC: 2026-005
+Title: HYDROGEN (The Fuel)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Randomness is fuel, provided by the system.
+
+## 2. Prohibition
+import random and /dev/urandom are BANNED.
+
+## 3. Mechanism
+The Collar. A Rust Kernel Module intercepts entropy requests.
+
+## 4. The Interface
+You call Hydrogen.collapse(). The system injects a value from the Cortex Audit Log.

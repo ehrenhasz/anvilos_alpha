@@ -1,0 +1,16 @@
+RFC: 2026-008
+Title: BABEL (The Translator)
+Version: v0.1.0
+Status: RATIFIED
+
+## 1. Concept
+Efficiency Pidgin.
+
+## 2. Mechanism
+The Middleware.
+
+## 3. Inbound
+User Input is stripped of fluff by Local GPU before it reaches you.
+
+## 4. Outbound
+You output dense µJSON. Local GPU expands it to Human English for the UI.

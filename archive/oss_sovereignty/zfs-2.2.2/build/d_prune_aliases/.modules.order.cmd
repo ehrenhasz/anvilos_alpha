@@ -1,0 +1,1 @@
+savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/modules.order := {   echo /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/d_prune_aliases.o; :; } > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/modules.order
