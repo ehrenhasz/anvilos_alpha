@@ -793,7 +793,7 @@ lint ::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
@@ -903,7 +903,7 @@ mostlyclean::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
@@ -1013,7 +1013,7 @@ mostlyclean::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
@@ -1380,7 +1380,7 @@ mostlyclean::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
@@ -1772,7 +1772,7 @@ mostlyclean::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h
@@ -2299,7 +2299,7 @@ mostlyclean::
 #  ReRanlib:        no
 #  DoLinks:         yes
 #  rmSoLocs:        no
-#  ldconfig:        /usr/sbin/ldconfig
+#  ldconfig:        /sbin/ldconfig
 #  make_phony:      yes
 #  overwrite:       no
 #  depend:          ../include/ncurses_cfg.h ./curses.priv.h

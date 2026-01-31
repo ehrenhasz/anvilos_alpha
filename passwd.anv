@@ -1,0 +1,20 @@
+fn main() {
+    println(">> ANVIL_OS: GENERATING_SYSTEM_AUTH");
+
+    let path: &str = "/etc/passwd";
+    // We will use standard fopen/fprintf for this test
+    let f: *void = fopen(path, "w");
+    if f as usize != 0 {
+        fprintf(f, "root:x:0:0:root:\/root:\/bin\/bash\n");
+        fclose(f);
+        println(">> INIT: PASSWD_GENERATED");
+    } else {
+        println(">> INIT: PASSWD_FAILED");
+    }
+}
+
+// FFI Decls
+extern fn fopen(path: &str, mode: &str) -> *void;
+extern fn fprintf(f: *void, fmt: &str, ...);
+extern fn fclose(f: *void) -> i32;
+

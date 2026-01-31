@@ -14,7 +14,15 @@
 #define MICROPY_ENABLE_GC (1)
 #define MICROPY_ENABLE_FINALISER (1)
 #define MICROPY_STACKLESS (0)
-#define MICROPY_HELPER_REPL (0)
+// REPL Helper needed for main.c to link
+#define MICROPY_HELPER_REPL (1)
 #define MICROPY_READLINE_HISTORY_SIZE (0)
+
+// Keyboard Interrupt
+#define MICROPY_KBD_EXCEPTION (1)
+
+// Modules
+#define MICROPY_PY_OS (1)
+#define MICROPY_PY_SYS (1)
 
 #endif

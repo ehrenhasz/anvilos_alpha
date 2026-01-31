@@ -310,9 +310,3 @@
 #endif
 
 /* VARARGS defines moved to rlstdc.h */
-
-#include <ncurses/ncurses.h>
-#include <ncurses/term.h>
-#undef lines
-#undef columns
-#undef newline

@@ -18,14 +18,36 @@
 - [x] **Law:** Python source (`.py`) transmuted to Anvil Bytecode (`.anv`).
 - [x] **Population:** 19 Sovereign Artifacts embedded in ISO.
 
-## PHASE 4: HYBRID SOVEREIGNTY (THE MERGE) [ACTIVE]
-**Objective:** Forge a new stable Linux Monolith base from scratch and embed the Anvil Law runtime.
-- [ ] **Step 1 (The Clean Slate):** Re-build the Linux Monolith (Kernel + GNU Userland) from scratch using the Sovereign Toolchain.
-- [ ] **Step 2 (The Bridge):** Create a userspace launcher (`/bin/anvil`) for the Anvil Runtime.
-- [ ] **Step 3 (Expansion):** Add requested "Normal Shell" tools to the Monolith (Bash 5.2, Coreutils, Vim full) to replace the minimal Busybox environment.
-- [ ] **Step 4 (Integration):** Boot to Bash, but allow `anvil start` to drop into the Sovereign Environment.
+## Phase 4: Hybrid Sovereignty (The Merge) - IN PROGRESS
+**Goal:** A bootable Linux (v6.6.14) ISO where the userland is orchestrated entirely by Anvil.
+**Protocol:** THE GRAND TRANSMUTATION (RFC-2026-000009 & RFC-0058)
 
-## PHASE 5: THE CRYSTAL PALACE (PURE PYTHON USERLAND) [PENDING]
+### The Mandate ("Anvil All The Way Down")
+1.  **Build System (`.mpy`):**
+    *   No raw Python scripts (`.py`) allowed for execution.
+    *   All build logic must be written in Python, **transmuted** to bytecode (`.mpy`) via `mpy-cross`, and executed by the Sovereign Runtime (`/usr/local/bin/anvil`).
+    *   *Target:* `forge.mpy` (The Master Builder).
+
+2.  **System Components (`.anv`):**
+    *   No raw C code (`.c`) allowed for system binaries (Init, Daemons, Utilities).
+    *   All system logic must be written in the **Anvil Systems Language** (Rust-subset `.anv`), transpiled to C via `anvil.py`, and compiled by the Sovereign Toolchain.
+    *   *Target:* `init.anv` (PID 1), `shim.anv`.
+
+3.  **The Artifact:**
+    *   A bootable ISO (`anvilos_v0.5.0.iso`) containing:
+        *   Linux Kernel 6.6.14 (The Substrate).
+        *   Anvil Runtime (The Law).
+        *   GNU Userland (The Tools - Bash, Coreutils, etc., forged by Anvil).
+        *   Anvil System Binaries (The Soul - Init, Configs).
+
+### Current Status
+*   [x] Sovereign Toolchain (GCC/Musl) Active.
+*   [x] Sovereign Runtime (`/usr/local/bin/anvil`) Patched & Ready.
+*   [ ] Build System Rewrite (Python -> `.mpy`).
+*   [ ] System Init Rewrite (C -> `.anv`).
+*   [ ] Full Userland Forge (Bash, Coreutils, etc.).
+
+## Phase 5: The Crystal Palace (Future)
 **Objective:** A window manager and user environment written 100% in Anvil Law, running ON TOP of the Phase 4 Hybrid Kernel.
 
 ---

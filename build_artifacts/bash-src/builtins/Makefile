@@ -25,7 +25,7 @@ PACKAGE_VERSION = 5.2-release
 SHELL = /bin/sh
 RANLIB = x86_64-unknown-linux-musl-ranlib
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-CC_FOR_BUILD = x86_64-unknown-linux-musl-gcc -std=gnu17
+CC_FOR_BUILD = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 AR = x86_64-unknown-linux-musl-ar
 ARFLAGS = cr
 RM = rm -f
