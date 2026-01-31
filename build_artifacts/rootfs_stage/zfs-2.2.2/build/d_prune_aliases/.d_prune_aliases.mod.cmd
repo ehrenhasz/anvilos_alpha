@@ -1,1 +1,0 @@
-savedcmd_/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/d_prune_aliases.mod := printf '%s\n'   d_prune_aliases.o | awk '!x[$$0]++ { print("/home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/"$$0) }' > /home/aimeat/anvilos/oss_sovereignty/zfs-2.2.2/build/d_prune_aliases/d_prune_aliases.mod
