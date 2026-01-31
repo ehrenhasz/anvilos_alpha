@@ -1,5 +1,0 @@
-fn main() -> i32 {
-    let msg: &str = "Hello from .anv (Systems Language)!\n";
-    printf(msg);
-    0
-}

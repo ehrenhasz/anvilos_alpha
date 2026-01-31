@@ -208,7 +208,7 @@ DFT_LWR_MODEL="normal"
 ECHO_LD=""
 EXTRA_SUFFIX=""
 FORM_NAME="form"
-LDCONFIG="/usr/sbin/ldconfig"
+LDCONFIG="/sbin/ldconfig"
 LIBTOOL_VERSION="-version-number"
 LIB_NAME="ncurses"
 LIB_PREFIX="lib"
@@ -407,7 +407,7 @@ s,@EXEEXT@,,;t t
 s,@OBJEXT@,o,;t t
 s,@EXTRA_CPPFLAGS@,,;t t
 s,@CPP@,/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -E,;t t
-s,@LDCONFIG@,/usr/sbin/ldconfig,;t t
+s,@LDCONFIG@,/sbin/ldconfig,;t t
 s,@CXX@,,;t t
 s,@CXXFLAGS@,,;t t
 s,@ac_ct_CXX@,g++,;t t

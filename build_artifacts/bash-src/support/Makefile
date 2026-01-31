@@ -35,7 +35,7 @@ BUILD_DIR = /home/aimeat/anvilos/build_artifacts/bash-src
 RM	= rm -f
 SHELL	= /bin/sh
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-CC_FOR_BUILD = x86_64-unknown-linux-musl-gcc -std=gnu17
+CC_FOR_BUILD = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 
 EXEEXT = 
 

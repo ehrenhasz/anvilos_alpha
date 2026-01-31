@@ -28,17 +28,8 @@ uname -v = #91-Ubuntu SMP PREEMPT_DYNAMIC Tue Nov 18 14:14:30 UTC 2025
 /bin/universe          = unknown
 
 PATH: /home/aimeat/anvilos/ext/toolchain/bin/
-PATH: /home/aimeat/bin/
-PATH: /home/aimeat/bin/
-PATH: /usr/local/sbin/
-PATH: /usr/local/bin/
-PATH: /usr/sbin/
 PATH: /usr/bin/
-PATH: /sbin/
 PATH: /bin/
-PATH: /usr/games/
-PATH: /usr/local/games/
-PATH: /snap/bin/
 
 
 ## ----------- ##
@@ -513,7 +504,7 @@ compilation terminated.
 configure:5698: result: no
 configure:5725: checking for tgetent
 configure:5725: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccKPWiii.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccUdeRXs.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `tgetent'
 collect2: error: ld returned 1 exit status
 configure:5725: $? = 1
@@ -1950,7 +1941,7 @@ configure:11484: $? = 0
 configure:11484: result: yes
 configure:11490: checking for argz_count
 configure:11490: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccw5HNCL.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccSbPP7r.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `argz_count'
 collect2: error: ld returned 1 exit status
 configure:11490: $? = 1
@@ -2101,7 +2092,7 @@ configure: failed program was:
 configure:11490: result: no
 configure:11496: checking for argz_stringify
 configure:11496: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccx68sWx.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccsn8HBE.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `argz_stringify'
 collect2: error: ld returned 1 exit status
 configure:11496: $? = 1
@@ -2252,7 +2243,7 @@ configure: failed program was:
 configure:11496: result: no
 configure:11502: checking for argz_next
 configure:11502: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccQT2yYi.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc725orV.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `argz_next'
 collect2: error: ld returned 1 exit status
 configure:11502: $? = 1
@@ -2622,7 +2613,7 @@ configure:12341: checking for Solaris 11.4 locale system
 configure:12376: result: no
 configure:12389: checking for getlocalename_l
 configure:12389: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccUIHU5J.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccUui6vD.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `getlocalename_l'
 collect2: error: ld returned 1 exit status
 configure:12389: $? = 1
@@ -5633,7 +5624,7 @@ configure:14795: $? = 0
 configure:14806: result: yes
 configure:14858: checking for __setostype
 configure:14858: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccFORzx5.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccaKCx1V.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `__setostype'
 collect2: error: ld returned 1 exit status
 configure:14858: $? = 1
@@ -5948,7 +5939,7 @@ configure:14992: $? = 0
 configure:14992: result: yes
 configure:14998: checking for setdtablesize
 configure:14998: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccJ9nsu7.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccuXHk8s.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `setdtablesize'
 collect2: error: ld returned 1 exit status
 configure:14998: $? = 1
@@ -6445,7 +6436,7 @@ configure:15313: $? = 0
 configure:15313: result: yes
 configure:15320: checking for arc4random
 configure:15320: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccOHIDlw.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cczZ4m6V.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `arc4random'
 collect2: error: ld returned 1 exit status
 configure:15320: $? = 1
@@ -7255,7 +7246,7 @@ configure:16012: checking for working mmap
 configure:16175: result: yes
 configure:16184: checking for __argz_count
 configure:16184: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc1MKLcG.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccSJ3vZp.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `__argz_count'
 collect2: error: ld returned 1 exit status
 configure:16184: $? = 1
@@ -7597,7 +7588,7 @@ configure: failed program was:
 configure:16184: result: no
 configure:16190: checking for __argz_next
 configure:16190: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccacyHwI.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccpnoocI.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `__argz_next'
 collect2: error: ld returned 1 exit status
 configure:16190: $? = 1
@@ -7939,7 +7930,7 @@ configure: failed program was:
 configure:16190: result: no
 configure:16196: checking for __argz_stringify
 configure:16196: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc2IDlJI.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc59R7DE.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `__argz_stringify'
 collect2: error: ld returned 1 exit status
 configure:16196: $? = 1
@@ -8672,7 +8663,7 @@ configure:16282: $? = 0
 configure:16282: result: yes
 configure:16289: checking for mbscasecmp
 configure:16289: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc362CnQ.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccC6uMPw.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `mbscasecmp'
 collect2: error: ld returned 1 exit status
 configure:16289: $? = 1
@@ -9024,7 +9015,7 @@ configure: failed program was:
 configure:16289: result: no
 configure:16296: checking for mbscmp
 configure:16296: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccCF9ytp.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccUkcWQK.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `mbscmp'
 collect2: error: ld returned 1 exit status
 configure:16296: $? = 1
@@ -9384,7 +9375,7 @@ configure:16310: $? = 0
 configure:16310: result: yes
 configure:16318: checking for mbschr
 configure:16318: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccteqFaX.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccrGEXQ2.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `mbschr'
 collect2: error: ld returned 1 exit status
 configure:16318: $? = 1
@@ -10177,7 +10168,7 @@ configure: failed program was:
 configure:16621: result: no
 configure:16632: checking for locale_charset
 configure:16632: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c    >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccuXmzwi.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc9kiXYU.o: in function `main':
 conftest.c:(.text+0xa): undefined reference to `locale_charset'
 collect2: error: ld returned 1 exit status
 configure:16632: $? = 1
@@ -16045,7 +16036,7 @@ configure:18279: $? = 0
 configure:18373: result: posix
 configure:18387: checking for sys_errlist and sys_nerr
 configure:18410: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cctEFRmP.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccFgPJTQ.o: in function `main':
 conftest.c:(.text+0x6): undefined reference to `sys_nerr'
 /home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: conftest.c:(.text+0x13): undefined reference to `sys_errlist'
 collect2: error: ld returned 1 exit status
@@ -16801,7 +16792,7 @@ configure: failed program was:
 configure:18428: result: no
 configure:18445: checking for sys_siglist in system C library
 configure:18478: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cciKUx0z.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccY0I2Vo.o: in function `main':
 conftest.c:(.text+0xb): undefined reference to `sys_siglist'
 collect2: error: ld returned 1 exit status
 configure:18478: $? = 1
@@ -17554,7 +17545,7 @@ configure: failed program was:
 configure:18527: result: no
 configure:18535: checking for _sys_siglist in system C library
 configure:18568: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccvxb1q8.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccGpgqzE.o: in function `main':
 conftest.c:(.text+0xb): undefined reference to `_sys_siglist'
 collect2: error: ld returned 1 exit status
 configure:18568: $? = 1
@@ -24646,7 +24637,7 @@ ac_cv_c_stringize=yes
 ac_cv_c_undeclared_builtin_options='none needed'
 ac_cv_c_volatile=yes
 ac_cv_env_CC_FOR_BUILD_set=set
-ac_cv_env_CC_FOR_BUILD_value='x86_64-unknown-linux-musl-gcc -std=gnu17'
+ac_cv_env_CC_FOR_BUILD_value=/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 ac_cv_env_CC_set=set
 ac_cv_env_CC_value=/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 ac_cv_env_CFLAGS_FOR_BUILD_set=
@@ -25115,7 +25106,7 @@ BUILD_DIR='/home/aimeat/anvilos/build_artifacts/bash-src'
 BUILD_INCLUDED_LIBINTL='no'
 CATOBJEXT='.gmo'
 CC='/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc'
-CC_FOR_BUILD='x86_64-unknown-linux-musl-gcc -std=gnu17'
+CC_FOR_BUILD='/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc'
 CFLAGS='-I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes'
 CFLAGS_FOR_BUILD='-I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17 -Wno-error=incompatible-pointer-types -Wno-error=deprecated-non-prototype -Wno-error=strict-prototypes'
 CFLAG_VISIBILITY='-fvisibility=hidden'
