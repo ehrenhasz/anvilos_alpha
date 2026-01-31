@@ -1421,7 +1421,7 @@ configure:8921: result: none needed
 configure:9111: autobuild project... GNU coreutils
 configure:9117: autobuild revision... 9.4
 configure:9122: autobuild hostname... anvilosalpha
-configure:9133: autobuild timestamp... 20260130T221230Z
+configure:9133: autobuild timestamp... 20260131T014732Z
 configure:10187: checking for fchmod
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 configure:10187: $? = 0
@@ -1444,7 +1444,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for canonicalize_file_name
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccZTQKv5.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccI7g3N2.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `canonicalize_file_name'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -1589,7 +1589,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for _set_invalid_parameter_handler
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccbKGKVS.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccAQ7Ynj.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `_set_invalid_parameter_handler'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -1802,7 +1802,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for microuptime
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc4rbFMn.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccQbsAjK.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `microuptime'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -1955,7 +1955,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for nanouptime
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc0HtiRn.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccY7yiUv.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `nanouptime'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -2124,7 +2124,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for getexecname
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccW527HV.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccg98ej0.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getexecname'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -2281,7 +2281,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for timespec_getres
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccKM4vuI.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc3UdnrZ.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `timespec_getres'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -2478,7 +2478,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for mbslen
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccG9a563.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc7SKyUb.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mbslen'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -2653,7 +2653,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for memset_explicit
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cct2nofh.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc5Gu3q5.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `memset_explicit'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -2819,7 +2819,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for memset_s
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccP2skrX.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccwc0IhB.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `memset_s'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -3111,7 +3111,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for vasnprintf
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccDvR8id.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc2L5QCr.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `vasnprintf'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -3339,7 +3339,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for mquery
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccMNfzPJ.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccafoOTl.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mquery'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -3543,7 +3543,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for pstat_getprocvm
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccL1T1n9.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccAyj5Hg.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `pstat_getprocvm'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -3751,7 +3751,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for directio
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc8hPHNI.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccWiyc2r.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `directio'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -4018,7 +4018,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for sysctl
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccv36wvT.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccWKiSVG.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `sysctl'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -4245,7 +4245,7 @@ configure:10187: $? = 0
 configure:10187: result: yes
 configure:10187: checking for getgrgid_nomembers
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc3W5vuY.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccm2ZllC.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getgrgid_nomembers'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -4466,7 +4466,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for getgrnam_nomembers
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccYOV4Xk.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc7GKMQh.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getgrnam_nomembers'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -4687,7 +4687,7 @@ configure: failed program was:
 configure:10187: result: no
 configure:10187: checking for getgrent_nomembers
 configure:10187: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccljj55q.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc2GD1oY.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getgrent_nomembers'
 collect2: error: ld returned 1 exit status
 configure:10187: $? = 1
@@ -7997,7 +7997,7 @@ configure:16251: result: yes
 configure:16657: checking for error
 configure:16694: checking for error
 configure:16694: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccHrG68P.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccDLe2QZ.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `error'
 collect2: error: ld returned 1 exit status
 configure:16694: $? = 1
@@ -21908,7 +21908,7 @@ configure:39498: checking for Solaris 11.4 locale system
 configure:39535: result: no
 configure:39548: checking for getlocalename_l
 configure:39548: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccKjlcA2.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccd4mkEV.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getlocalename_l'
 collect2: error: ld returned 1 exit status
 configure:39548: $? = 1
@@ -23909,425 +23909,42 @@ configure:42885: $? = 0
 configure:42897: result: yes
 configure:42973: checking whether openssl is GPL compatible
 configure:42995: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:395:26: fatal error: openssl/opensslv.h: No such file or directory
-  395 |                 #include <openssl/opensslv.h>
-      |                          ^~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-configure:42995: $? = 1
-configure: failed program was:
-| /* confdefs.h */
-| #define PACKAGE_NAME "GNU coreutils"
-| #define PACKAGE_TARNAME "coreutils"
-| #define PACKAGE_VERSION "9.4"
-| #define PACKAGE_STRING "GNU coreutils 9.4"
-| #define PACKAGE_BUGREPORT "bug-coreutils@gnu.org"
-| #define PACKAGE_URL "https://www.gnu.org/software/coreutils/"
-| #define PACKAGE "coreutils"
-| #define VERSION "9.4"
-| #define HAVE_STDIO_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_STRINGS_H 1
-| #define HAVE_SYS_STAT_H 1
-| #define HAVE_SYS_TYPES_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_WCHAR_H 1
-| #define HAVE_ARPA_INET_H 1
-| #define HAVE_FEATURES_H 1
-| #define HAVE_SYS_SOCKET_H 1
-| #define HAVE_UCHAR_H 1
-| #define HAVE_SYS_PARAM_H 1
-| #define HAVE_DIRENT_H 1
-| #define HAVE_LINUX_XATTR_H 1
-| #define HAVE_FNMATCH_H 1
-| #define HAVE_STDIO_EXT_H 1
-| #define HAVE_SYS_VFS_H 1
-| #define HAVE_NETDB_H 1
-| #define HAVE_NETINET_IN_H 1
-| #define HAVE_GETOPT_H 1
-| #define HAVE_TERMIOS_H 1
-| #define HAVE_SYS_TIME_H 1
-| #define HAVE_GRP_H 1
-| #define HAVE_THREADS_H 1
-| #define HAVE_ICONV_H 1
-| #define HAVE_LIMITS_H 1
-| #define HAVE_WCTYPE_H 1
-| #define HAVE_LANGINFO_H 1
-| #define HAVE_MATH_H 1
-| #define HAVE_SYS_MMAN_H 1
-| #define HAVE_SYS_STATVFS_H 1
-| #define HAVE_SYS_SELECT_H 1
-| #define HAVE_PTHREAD_H 1
-| #define HAVE_UTMP_H 1
-| #define HAVE_UTMPX_H 1
-| #define HAVE_MALLOC_H 1
-| #define HAVE_STDBOOL_H 1
-| #define HAVE_STDCKDINT_H 1
-| #define HAVE_SYS_IOCTL_H 1
-| #define HAVE_SYS_RANDOM_H 1
-| #define HAVE_SYS_RESOURCE_H 1
-| #define HAVE_SYS_UIO_H 1
-| #define HAVE_SYS_UTSNAME_H 1
-| #define HAVE_SYS_WAIT_H 1
-| #define HAVE_UTIME_H 1
-| #define HAVE_SEMAPHORE_H 1
-| #define HAVE_LINUX_FALLOC_H 1
-| #define HAVE_LINUX_FS_H 1
-| #define HAVE_PATHS_H 1
-| #define HAVE_STROPTS_H 1
-| #define HAVE_SYS_MTIO_H 1
-| #define HAVE_SYSLOG_H 1
-| #define HAVE_PWD_H 1
-| #define STDC_HEADERS 1
-| #define _ALL_SOURCE 1
-| #define _DARWIN_C_SOURCE 1
-| #define _GNU_SOURCE 1
-| #define _HPUX_ALT_XOPEN_SOCKET_API 1
-| #define _NETBSD_SOURCE 1
-| #define _OPENBSD_SOURCE 1
-| #define _POSIX_PTHREAD_SEMANTICS 1
-| #define __STDC_WANT_IEC_60559_ATTRIBS_EXT__ 1
-| #define __STDC_WANT_IEC_60559_BFP_EXT__ 1
-| #define __STDC_WANT_IEC_60559_DFP_EXT__ 1
-| #define __STDC_WANT_IEC_60559_EXT__ 1
-| #define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
-| #define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
-| #define __STDC_WANT_LIB_EXT2__ 1
-| #define __STDC_WANT_MATH_SPEC_FUNCS__ 1
-| #define _TANDEM_SOURCE 1
-| #define __EXTENSIONS__ 1
-| #define __USE_MINGW_ANSI_STDIO 1
-| #define HAVE_FCHMOD 1
-| #define HAVE_PATHCONF 1
-| #define HAVE_BTOWC 1
-| #define HAVE_MBRTOWC 1
-| #define HAVE_MBSINIT 1
-| #define HAVE_REALPATH 1
-| #define HAVE_LSTAT 1
-| #define HAVE_CHOWN 1
-| #define HAVE_FCHOWN 1
-| #define HAVE_FCHDIR 1
-| #define HAVE_FDOPENDIR 1
-| #define HAVE_EXPLICIT_BZERO 1
-| #define HAVE_POSIX_FADVISE 1
-| #define HAVE_FCHMODAT 1
-| #define HAVE_LCHMOD 1
-| #define HAVE_FCNTL 1
-| #define HAVE_SYMLINK 1
-| #define HAVE_LISTXATTR 1
-| #define HAVE_FNMATCH 1
-| #define HAVE_MBSRTOWCS 1
-| #define HAVE_FPURGE 1
-| #define HAVE___FREADAHEAD 1
-| #define HAVE___FREADPTR 1
-| #define HAVE___FREADPTRINC 1
-| #define HAVE_FSTATAT 1
-| #define HAVE_FSYNC 1
-| #define HAVE_OPENAT 1
-| #define HAVE_FSTATFS 1
-| #define HAVE_GETDTABLESIZE 1
-| #define HAVE_GETLOGIN 1
-| #define HAVE_FLOCKFILE 1
-| #define HAVE_FUNLOCKFILE 1
-| #define HAVE_GETPASS 1
-| #define HAVE_GETTIMEOFDAY 1
-| #define HAVE_GETUSERSHELL 1
-| #define HAVE_ISBLANK 1
-| #define HAVE_ISWCNTRL 1
-| #define HAVE_LINK 1
-| #define HAVE_READLINK 1
-| #define HAVE_MBRLEN 1
-| #define HAVE_ISASCII 1
-| #define HAVE_MPROTECT 1
-| #define HAVE_GETGROUPLIST 1
-| #define HAVE_MKDIRAT 1
-| #define HAVE_MKNOD 1
-| #define HAVE_MKSTEMP 1
-| #define HAVE_PIPE 1
-| #define HAVE_PSELECT 1
-| #define HAVE_PTHREAD_SIGMASK 1
-| #define HAVE_UTMPNAME 1
-| #define HAVE_UTMPXNAME 1
-| #define HAVE_ISWCTYPE 1
-| #define HAVE_RENAMEAT 1
-| #define HAVE_FPATHCONF 1
-| #define HAVE_SECURE_GETENV 1
-| #define HAVE_GETUID 1
-| #define HAVE_GETEUID 1
-| #define HAVE_GETGID 1
-| #define HAVE_GETEGID 1
-| #define HAVE_SETENV 1
-| #define HAVE_SETTIMEOFDAY 1
-| #define HAVE_STIME 1
-| #define HAVE_SIGACTION 1
-| #define HAVE_SIGALTSTACK 1
-| #define HAVE_SIGINTERRUPT 1
-| #define HAVE_SNPRINTF 1
-| #define HAVE___XPG_STRERROR_R 1
-| #define HAVE_STRTOIMAX 1
-| #define HAVE_STRTOLD 1
-| #define HAVE_STRTOUMAX 1
-| #define HAVE_LOCALTIME_R 1
-| #define HAVE_UNLINKAT 1
-| #define HAVE_WCRTOMB 1
-| #define HAVE_WCWIDTH 1
-| #define HAVE_WCSWIDTH 1
-| #define HAVE_PAUSE 1
-| #define HAVE_GETRUSAGE 1
-| #define HAVE_SLEEP 1
-| #define HAVE_SHUTDOWN 1
-| #define HAVE_USLEEP 1
-| #define HAVE_WCTOB 1
-| #define HAVE_NL_LANGINFO 1
-| #define HAVE_SETITIMER 1
-| #define HAVE_SETRLIMIT 1
-| #define HAVE_PRCTL 1
-| #define HAVE_ENDGRENT 1
-| #define HAVE_ENDPWENT 1
-| #define HAVE_FALLOCATE 1
-| #define HAVE_FTRUNCATE 1
-| #define HAVE_ISWSPACE 1
-| #define HAVE_MKFIFO 1
-| #define HAVE_SETGROUPS 1
-| #define HAVE_SETHOSTNAME 1
-| #define HAVE_SYNC 1
-| #define HAVE_SYNCFS 1
-| #define HAVE_SYSINFO 1
-| #define HAVE_TCGETPGRP 1
-| #define HAVE_FORK 1
-| #define HAVE_VFORK 1
-| #define USE_ACL 0
-| #define HAVE_ALLOCA_H 1
-| #define HAVE_ALLOCA 1
-| #define D_INO_IN_DIRENT 1
-| #define HAVE_LONG_FILE_NAMES 1
-| #define restrict __restrict__
-| #define HAVE_LANGINFO_CODESET 1
-| #define HAVE_USELOCALE 1
-| #define HAVE_WORKING_USELOCALE 1
-| #define BITSIZEOF_WCHAR_T 32
-| #define HAVE_MBSTATE_T 1
-| #define HAVE_WORKING_MBRTOC32 1
-| #define HAVE_MALLOC_POSIX 1
-| #define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
-| #define FUNC_REALPATH_NEARLY_WORKS 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_CHOWN 1
-| #define HAVE_SHUTDOWN 1
-| #define HAVE_STRUCT_SOCKADDR_STORAGE 1
-| #define HAVE_SA_FAMILY_T 1
-| #define HAVE_STRUCT_SOCKADDR_STORAGE_SS_FAMILY 1
-| #define HAVE_LINUX_IF_ALG_H 1
-| #define USE_LINUX_CRYPTO_API 0
-| #define HAVE_ENVIRON_DECL 1
-| #define HAVE_DECL_STRERROR_R 1
-| #define HAVE_STRERROR_R 1
-| #define GETGROUPS_T gid_t
-| #define HAVE_DECL_FCHDIR 1
-| #define FUNC_FFLUSH_STDIN 1
-| #define HAVE_WORKING_O_NOATIME 1
-| #define HAVE_WORKING_O_NOFOLLOW 1
-| #define PROMOTED_MODE_T mode_t
-| #define HAVE_DECL_FDATASYNC 1
-| #define HAVE_DECL_STRMODE 0
-| #define HAVE_MEMPCPY 1
-| #define HAVE_DECL_ALARM 1
-| #define _USE_STD_STAT 1
-| #define HAVE_DECL_FSEEKO 1
-| #define FUNC_FFLUSH_STDIN 1
-| #define HAVE_DECL_FTELLO 1
-| #define HAVE_GETHOSTBYNAME 1
-| #define HAVE_GETSERVBYNAME 1
-| #define HAVE_DECL_INET_NTOP 1
-| #define HAVE_IPV4 1
-| #define HAVE_IPV6 1
-| #define HAVE_DECL_GETCWD 1
-| #define HAVE_DECL_GETDELIM 1
-| #define HAVE_DECL_GETDTABLESIZE 1
-| #define HAVE_DECL_GETLINE 1
-| #define HAVE_DECL_GETLOGIN 1
-| #define HAVE_GETOPT_H 1
-| #define HAVE_GETOPT_LONG_ONLY 1
-| #define NO_INLINE_GETPASS 1
-| #define HAVE_DECL_FFLUSH_UNLOCKED 1
-| #define HAVE_DECL_FLOCKFILE 1
-| #define HAVE_DECL_FPUTS_UNLOCKED 1
-| #define HAVE_DECL_FUNLOCKFILE 1
-| #define HAVE_DECL_PUTC_UNLOCKED 1
-| #define HAVE_PTHREAD_API 1
-| #define SETLOCALE_NULL_ALL_MTSAFE 0
-| #define SETLOCALE_NULL_ONE_MTSAFE 1
-| #define HAVE_ICONV 1
-| #define ICONV_CONST 
-| #define HAVE_WINT_T 1
-| #define HAVE_LONG_LONG_INT 1
-| #define HAVE_UNSIGNED_LONG_LONG_INT 1
-| #define DBL_EXPBIT0_WORD 1
-| #define DBL_EXPBIT0_BIT 20
-| #define FLT_EXPBIT0_WORD 0
-| #define FLT_EXPBIT0_BIT 23
-| #define LDBL_EXPBIT0_WORD 2
-| #define LDBL_EXPBIT0_BIT 0
-| #define HAVE_TOWLOWER 1
-| #define HAVE_WCHAR_T 1
-| #define USE_POSIX_THREADS 1
-| #define MALLOC_0_IS_NONNULL 1
-| #define MUSL_LIBC 1
-| #define HAVE_MAP_ANONYMOUS 1
-| #define HAVE_DECL_MEMRCHR 1
-| #define HAVE_MINMAX_IN_SYS_PARAM_H 1
-| #define TIME_T_IS_SIGNED 1
-| #define HAVE_STRUCT_TM_TM_ZONE 1
-| #define HAVE_TM_ZONE 1
-| #define HAVE_TM_GMTOFF 1
-| #define HAVE_COMPOUND_LITERALS 1
-| #define HAVE_PTHREAD_T 1
-| #define HAVE_PTHREAD_SPINLOCK_T 1
-| #define HAVE_SIGSET_T 1
-| #define HAVE_DECL_ENDUTENT 1
-| #define HAVE_STRUCT_UTMPX_UT_USER 1
-| #define HAVE_STRUCT_UTMP_UT_USER 1
-| #define HAVE_STRUCT_UTMPX_UT_NAME 1
-| #define HAVE_STRUCT_UTMP_UT_NAME 1
-| #define HAVE_STRUCT_UTMPX_UT_TYPE 1
-| #define HAVE_STRUCT_UTMP_UT_TYPE 1
-| #define HAVE_STRUCT_UTMPX_UT_PID 1
-| #define HAVE_STRUCT_UTMP_UT_PID 1
-| #define HAVE_STRUCT_UTMP_UT_TV 1
-| #define HAVE_STRUCT_UTMPX_UT_HOST 1
-| #define HAVE_STRUCT_UTMP_UT_HOST 1
-| #define HAVE_STRUCT_UTMPX_UT_ID 1
-| #define HAVE_STRUCT_UTMP_UT_ID 1
-| #define HAVE_STRUCT_UTMPX_UT_SESSION 1
-| #define HAVE_STRUCT_UTMP_UT_SESSION 1
-| #define HAVE_STRUCT_UTMPX_UT_EXIT 1
-| #define HAVE_STRUCT_UTMP_UT_EXIT 1
-| #define HAVE_STRUCT_UTMPX_UT_EXIT_E_EXIT 1
-| #define HAVE_STRUCT_UTMP_UT_EXIT_E_EXIT 1
-| #define HAVE_STRUCT_UTMPX_UT_EXIT_E_TERMINATION 1
-| #define HAVE_STRUCT_UTMP_UT_EXIT_E_TERMINATION 1
-| #define HAVE_DECL_SYSINFO 1
-| #define HAVE_SCHED_H 1
-| #define HAVE_DECL_SETENV 1
-| #define HAVE_SEARCH_H 1
-| #define HAVE_TSEARCH 1
-| #define HAVE_DECL_SNPRINTF 1
-| #define HAVE_DECL_FCLOSEALL 0
-| #define HAVE_DECL_GETW 1
-| #define HAVE_DECL_PUTW 1
-| #define HAVE_DECL_ECVT 1
-| #define HAVE_DECL_FCVT 1
-| #define HAVE_DECL_GCVT 1
-| #define HAVE_DECL_STPNCPY 1
-| #define HAVE_DECL_STRDUP 1
-| #define HAVE_STRERROR_R 1
-| #define HAVE_DECL_STRNLEN 1
-| #define HAVE_DECL_STRSIGNAL 1
-| #define HAVE_DECL_STRTOIMAX 1
-| #define HAVE_DECL_STRTOUMAX 1
-| #define HAVE_STRUCT_UTSNAME 1
-| #define HAVE_DECL_EXECVPE 1
-| #define HAVE_DECL_CLEARERR_UNLOCKED 1
-| #define HAVE_DECL_FEOF_UNLOCKED 1
-| #define HAVE_DECL_FERROR_UNLOCKED 1
-| #define HAVE_DECL_FGETS_UNLOCKED 1
-| #define HAVE_DECL_FPUTC_UNLOCKED 1
-| #define HAVE_DECL_FREAD_UNLOCKED 1
-| #define HAVE_DECL_FWRITE_UNLOCKED 1
-| #define HAVE_DECL_GETC_UNLOCKED 1
-| #define HAVE_DECL_GETCHAR_UNLOCKED 1
-| #define HAVE_DECL_PUTCHAR_UNLOCKED 1
-| #define HAVE_DECL_UNSETENV 1
-| #define HAVE_WORKING_UTIMES 1
-| #define HAVE_INTTYPES_H_WITH_UINTMAX 1
-| #define HAVE_STDINT_H_WITH_UINTMAX 1
-| #define HAVE_INTMAX_T 1
-| #define HAVE_WCSLEN 1
-| #define HAVE_SNPRINTF 1
-| #define HAVE_STRNLEN 1
-| #define HAVE_WCRTOMB 1
-| #define HAVE_DECL__SNPRINTF 0
-| #define HAVE_SNPRINTF_RETVAL_C99 1
-| #define HAVE_SNPRINTF_TRUNCATION_C99 1
-| #define CHECK_PRINTF_SAFE 1
-| #define HAVE_VASPRINTF 1
-| #define HAVE_DECL_WCSDUP 1
-| #define HAVE_DECL_WCWIDTH 1
-| #define HAVE_LC_MESSAGES 1
-| #define HAVE_USELOCALE 1
-| #define HAVE_WORKING_USELOCALE 1
-| #define HAVE_GOOD_USELOCALE 1
-| #define HAVE_POSIX_MEMALIGN 1
-| #define HAVE_ALLOCA 1
-| #define GNULIB_AREADLINKAT 1
-| #define GNULIB_AREADLINKAT_WITH_SIZE 1
-| #define GNULIB_TEST_BTOC32 1
-| #define GNULIB_TEST_BTOWC 1
-| #define HAVE___BUILTIN_EXPECT 1
-| #define HAVE_BYTESWAP_H 1
-| #define HAVE_STRTOD_L 1
-| #define HAVE_STRTOLD_L 1
-| #define GNULIB_TEST_C32_APPLY_TYPE_TEST 1
-| #define GNULIB_TEST_C32_GET_TYPE_TEST 1
-| #define GNULIB_TEST_C32ISALNUM 1
-| #define GNULIB_TEST_C32ISALPHA 1
-| #define GNULIB_TEST_C32ISBLANK 1
-| #define GNULIB_TEST_C32ISCNTRL 1
-| #define GNULIB_TEST_C32ISDIGIT 1
-| #define GNULIB_TEST_C32ISGRAPH 1
-| #define GNULIB_TEST_C32ISLOWER 1
-| #define GNULIB_TEST_C32ISPRINT 1
-| #define GNULIB_TEST_C32ISPUNCT 1
-| #define GNULIB_TEST_C32ISSPACE 1
-| #define GNULIB_TEST_C32ISUPPER 1
-| #define GNULIB_TEST_C32ISXDIGIT 1
-| #define GNULIB_TEST_C32TOLOWER 1
-| #define GNULIB_TEST_C32WIDTH 1
-| #define GNULIB_TEST_CALLOC_GNU 1
-| #define GNULIB_TEST_CALLOC_POSIX 1
-| #define HAVE_FACCESSAT 1
-| #define GNULIB_CANONICALIZE 1
-| #define GNULIB_TEST_CANONICALIZE 1
-| #define GNULIB_TEST_CANONICALIZE_FILE_NAME 1
-| #define HAVE_READLINKAT 1
-| #define GNULIB_TEST_CHDIR 1
-| #define GNULIB_TEST_CHMOD 1
-| #define GNULIB_CHMODAT 1
-| #define GNULIB_TEST_CHOWN 1
-| #define GNULIB_CHOWNAT 1
-| #define HAVE_CLOCK_GETRES 1
-| #define HAVE_CLOCK_GETTIME 1
-| #define HAVE_CLOCK_SETTIME 1
-| #define GNULIB_TEST_CLOEXEC 1
-| #define GNULIB_TEST_CLOSE 1
-| #define GNULIB_CLOSE_STREAM 1
-| #define HAVE_CLOSEDIR 1
-| #define GNULIB_TEST_CLOSEDIR 1
-| #define HAVE_COPY_FILE_RANGE 1
-| #define GNULIB_TEST_COPY_FILE_RANGE 1
-| /* end confdefs.h.  */
-| 
-|                 #include <openssl/opensslv.h>
-|                 #if OPENSSL_VERSION_MAJOR < 3
-|                   #error "openssl >= version 3 not found"
-|                 #endif
-| 
-| int
-| main (void)
-| {
-| 
-|   ;
-|   return 0;
-| }
-configure:43005: result: no
+configure:42995: $? = 0
+configure:43005: result: yes
+configure:43010: checking for MD5 in -lcrypto
+configure:43039: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c -lcrypto   >&5
+configure:43039: $? = 0
+configure:43051: result: yes
+configure:43057: checking for openssl/md5.h
+configure:43057: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
+configure:43057: $? = 0
+configure:43057: result: yes
 configure:43110: checking whether openssl is GPL compatible
-configure:43142: result: no
+configure:43142: result: yes
+configure:43147: checking for SHA1 in -lcrypto
+configure:43176: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c -lcrypto   >&5
+configure:43176: $? = 0
+configure:43188: result: yes
+configure:43194: checking for openssl/sha.h
+configure:43194: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
+configure:43194: $? = 0
+configure:43194: result: yes
 configure:43247: checking whether openssl is GPL compatible
-configure:43279: result: no
+configure:43279: result: yes
+configure:43284: checking for SHA256 in -lcrypto
+configure:43313: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c -lcrypto   >&5
+configure:43313: $? = 0
+configure:43325: result: yes
+configure:43331: checking for openssl/sha.h
+configure:43331: result: yes
 configure:43384: checking whether openssl is GPL compatible
-configure:43416: result: no
+configure:43416: result: yes
+configure:43421: checking for SHA512 in -lcrypto
+configure:43450: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c -lcrypto   >&5
+configure:43450: $? = 0
+configure:43462: result: yes
+configure:43468: checking for openssl/sha.h
+configure:43468: result: yes
 configure:43514: checking for d_ino member in directory struct
 configure:43578: result: yes
 configure:43589: checking for d_type member in directory struct
@@ -24398,15 +24015,15 @@ configure:45472: $? = 0
 configure:45472: ./conftest
 configure:45472: $? = 0
 configure:45491: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:418:1: error: unknown type name 'choke'
-  418 | choke me
+conftest.c:426:1: error: unknown type name 'choke'
+  426 | choke me
       | ^~~~~
-conftest.c:418:9: error: expected ';' before 'int'
-  418 | choke me
+conftest.c:426:9: error: expected ';' before 'int'
+  426 | choke me
       |         ^
       |         ;
 ......
-  421 | int
+  429 | int
       | ~~~      
 configure:45491: $? = 1
 configure: failed program was:
@@ -24802,6 +24419,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -24881,11 +24506,11 @@ configure:46590: result: yes
 configure:46750: checking for working GNU fnmatch
 configure:46897: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 conftest.c: In function 'main':
-conftest.c:522:50: error: 'FNM_EXTMATCH' undeclared (first use in this function); did you mean 'FNM_NOMATCH'?
-  522 |               if (!y ("a++(x|yy)b", "a+xyyyyxb", FNM_EXTMATCH))
+conftest.c:530:50: error: 'FNM_EXTMATCH' undeclared (first use in this function); did you mean 'FNM_NOMATCH'?
+  530 |               if (!y ("a++(x|yy)b", "a+xyyyyxb", FNM_EXTMATCH))
       |                                                  ^~~~~~~~~~~~
       |                                                  FNM_NOMATCH
-conftest.c:522:50: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:530:50: note: each undeclared identifier is reported only once for each function it appears in
 configure:46897: $? = 1
 configure: program exited with status 1
 configure: failed program was:
@@ -25281,6 +24906,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -25471,10 +25104,10 @@ configure:47416: result: yes
 configure:47430: checking whether fpurge is declared
 configure:47430: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:449:10: error: 'fpurge' undeclared (first use in this function)
-  449 |   (void) fpurge;
+conftest.c:457:10: error: 'fpurge' undeclared (first use in this function)
+  457 |   (void) fpurge;
       |          ^~~~~~
-conftest.c:449:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:457:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:47430: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -25869,6 +25502,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -25936,8 +25577,8 @@ configure:47430: result: no
 configure:47444: checking whether fpurge works
 configure:47501: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 conftest.c: In function 'main':
-conftest.c:456:19: error: implicit declaration of function 'fpurge' [-Wimplicit-function-declaration]
-  456 |               if (fpurge (f) != 0)
+conftest.c:464:19: error: implicit declaration of function 'fpurge' [-Wimplicit-function-declaration]
+  464 |               if (fpurge (f) != 0)
       |                   ^~~~~~
 configure:47501: $? = 1
 configure: program exited with status 1
@@ -26334,6 +25975,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -26430,8 +26079,8 @@ configure:47638: result: yes
 configure:47676: checking whether free is known to preserve errno
 configure:47700: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:452:16: error: #error "'free' is not known to preserve errno"
-  452 |               #error "'free' is not known to preserve errno"
+conftest.c:460:16: error: #error "'free' is not known to preserve errno"
+  460 |               #error "'free' is not known to preserve errno"
       |                ^~~~~
 configure:47700: $? = 1
 configure: failed program was:
@@ -26827,6 +26476,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -26902,10 +26559,10 @@ configure:47815: result: yes
 configure:47872: checking whether frexp works
 configure:47981: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 conftest.c: In function 'main':
-conftest.c:505:21: warning: passing argument 2 of 'memcmp' discards 'volatile' qualifier from pointer target type [-Wdiscarded-qualifiers]
-  505 |     if (memcmp (&y, &x, sizeof x))
+conftest.c:513:21: warning: passing argument 2 of 'memcmp' discards 'volatile' qualifier from pointer target type [-Wdiscarded-qualifiers]
+  513 |     if (memcmp (&y, &x, sizeof x))
       |                     ^~
-In file included from conftest.c:449:
+In file included from conftest.c:457:
 /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/string.h:30:27: note: expected 'const void *' but argument is of type 'volatile double *'
    30 | int memcmp (const void *, const void *, size_t);
       |                           ^~~~~~~~~~~~
@@ -26953,17 +26610,17 @@ configure:48880: $? = 0
 configure:48892: result: yes
 configure:48899: checking whether to use statvfs64
 configure:48923: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:461:52: error: invalid use of undefined type 'struct statvfs64'
-  461 |                   [sizeof (((struct statvfs64 *) 0)->f_blocks)
+conftest.c:469:52: error: invalid use of undefined type 'struct statvfs64'
+  469 |                   [sizeof (((struct statvfs64 *) 0)->f_blocks)
       |                                                    ^~
 conftest.c: In function 'main':
-conftest.c:468:1: error: implicit declaration of function 'statvfs64'; did you mean 'statvfs'? [-Wimplicit-function-declaration]
-  468 | statvfs64 (0, &fsd);
+conftest.c:476:1: error: implicit declaration of function 'statvfs64'; did you mean 'statvfs'? [-Wimplicit-function-declaration]
+  476 | statvfs64 (0, &fsd);
       | ^~~~~~~~~
       | statvfs
 conftest.c: At top level:
-conftest.c:459:34: error: storage size of 'fsd' isn't known
-  459 |                 struct statvfs64 fsd;
+conftest.c:467:34: error: storage size of 'fsd' isn't known
+  467 |                 struct statvfs64 fsd;
       |                                  ^~~
 configure:48923: $? = 1
 configure: failed program was:
@@ -27359,6 +27016,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -27447,8 +27112,8 @@ configure:48981: $? = 0
 configure:48996: result: yes
 configure:49254: checking for sys/fs/s5param.h
 configure:49254: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:487:10: fatal error: sys/fs/s5param.h: No such file or directory
-  487 | #include <sys/fs/s5param.h>
+conftest.c:495:10: fatal error: sys/fs/s5param.h: No such file or directory
+  495 | #include <sys/fs/s5param.h>
       |          ^~~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:49254: $? = 1
@@ -27845,6 +27510,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -27947,8 +27620,8 @@ configure:49260: $? = 0
 configure:49260: result: yes
 configure:49268: checking for statfs that truncates block counts
 configure:49293: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:462:7: error: expected '=', ',', ';', 'asm' or '__attribute__' before '--' token
-  462 | choke -- this is a workaround for a Sun-specific problem
+conftest.c:470:7: error: expected '=', ',', ';', 'asm' or '__attribute__' before '--' token
+  470 | choke -- this is a workaround for a Sun-specific problem
       |       ^~
 configure:49293: $? = 1
 configure: failed program was:
@@ -28344,6 +28017,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -28449,11 +28130,11 @@ configure:49852: result: yes
 configure:49865: checking for __fsword_t
 configure:49865: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:501:13: error: '__fsword_t' undeclared (first use in this function); did you mean '__fsid_t'?
-  501 | if (sizeof (__fsword_t))
+conftest.c:509:13: error: '__fsword_t' undeclared (first use in this function); did you mean '__fsid_t'?
+  509 | if (sizeof (__fsword_t))
       |             ^~~~~~~~~~
       |             __fsid_t
-conftest.c:501:13: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:509:13: note: each undeclared identifier is reported only once for each function it appears in
 configure:49865: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -28848,6 +28529,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -28965,7 +28654,7 @@ configure:49865: result: no
 configure:49882: checking for fts_open
 configure:49919: checking for fts_open
 configure:49919: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccy2wyYx.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccpT44XS.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `fts_open'
 collect2: error: ld returned 1 exit status
 configure:49919: $? = 1
@@ -29362,6 +29051,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -29874,6 +29571,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -30052,11 +29757,11 @@ configure:50391: result: yes
 configure:50415: checking whether gai_strerrorA is declared
 configure:50415: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:492:10: error: 'gai_strerrorA' undeclared (first use in this function); did you mean 'gai_strerror'?
-  492 |   (void) gai_strerrorA;
+conftest.c:500:10: error: 'gai_strerrorA' undeclared (first use in this function); did you mean 'gai_strerror'?
+  500 |   (void) gai_strerrorA;
       |          ^~~~~~~~~~~~~
       |          gai_strerror
-conftest.c:492:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:500:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:50415: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -30451,6 +30156,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -30565,8 +30278,8 @@ configure:50475: result: yes
 configure:50491: checking for struct sockaddr.sa_len
 configure:50491: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:481:12: error: 'struct sockaddr' has no member named 'sa_len'
-  481 | if (ac_aggr.sa_len)
+conftest.c:489:12: error: 'struct sockaddr' has no member named 'sa_len'
+  489 | if (ac_aggr.sa_len)
       |            ^
 configure:50491: $? = 1
 configure: failed program was:
@@ -30962,6 +30675,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -31057,8 +30778,8 @@ configure: failed program was:
 | }
 configure:50491: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:481:19: error: 'struct sockaddr' has no member named 'sa_len'
-  481 | if (sizeof ac_aggr.sa_len)
+conftest.c:489:19: error: 'struct sockaddr' has no member named 'sa_len'
+  489 | if (sizeof ac_aggr.sa_len)
       |                   ^
 configure:50491: $? = 1
 configure: failed program was:
@@ -31454,6 +31175,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -31565,8 +31294,8 @@ configure:50593: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:50593: $? = 0
 configure:50593: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:491:30: error: expected expression before ')' token
-  491 | if (sizeof ((struct addrinfo)))
+conftest.c:499:30: error: expected expression before ')' token
+  499 | if (sizeof ((struct addrinfo)))
       |                              ^
 configure:50593: $? = 1
 configure: failed program was:
@@ -31962,6 +31691,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -32465,6 +32202,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -32859,10 +32604,10 @@ configure:52036: result: yes
 configure:52097: checking whether gethrtime is declared
 configure:52097: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:499:10: error: 'gethrtime' undeclared (first use in this function)
-  499 |   (void) gethrtime;
+conftest.c:507:10: error: 'gethrtime' undeclared (first use in this function)
+  507 |   (void) gethrtime;
       |          ^~~~~~~~~
-conftest.c:499:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:507:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:52097: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -33257,6 +33002,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -33393,8 +33146,8 @@ configure:52428: result: yes
 configure:52444: result: yes
 configure:52867: checking for sys/loadavg.h
 configure:52867: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:522:10: fatal error: sys/loadavg.h: No such file or directory
-  522 | #include <sys/loadavg.h>
+conftest.c:530:10: fatal error: sys/loadavg.h: No such file or directory
+  530 | #include <sys/loadavg.h>
       |          ^~~~~~~~~~~~~~~
 compilation terminated.
 configure:52867: $? = 1
@@ -33791,6 +33544,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -33955,7 +33716,7 @@ configure:53776: result: yes
 configure:53812: checking for getprogname
 configure:53849: checking for getprogname
 configure:53849: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccfhmdvO.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccqc6PLx.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getprogname'
 collect2: error: ld returned 1 exit status
 configure:53849: $? = 1
@@ -34352,6 +34113,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -34510,10 +34279,10 @@ configure:53939: result: yes
 configure:53954: checking whether __argv is declared
 configure:53954: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:517:10: error: '__argv' undeclared (first use in this function)
-  517 |   (void) __argv;
+conftest.c:525:10: error: '__argv' undeclared (first use in this function)
+  525 |   (void) __argv;
       |          ^~~~~~
-conftest.c:517:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:525:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:53954: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -34908,6 +34677,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -35060,7 +34837,7 @@ configure:54409: $? = 0
 configure:54409: result: yes
 configure:54485: checking for group_member
 configure:54485: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc7NkBrV.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccMX5Soq.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `group_member'
 collect2: error: ld returned 1 exit status
 configure:54485: $? = 1
@@ -35457,6 +35234,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -35626,8 +35411,8 @@ configure:55077: result: yes
 configure:55135: checking whether the compiler generally respects inline
 configure:55157: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:526:17: error: #error "inline is not effective"
-  526 |                #error "inline is not effective"
+conftest.c:534:17: error: #error "inline is not effective"
+  534 |                #error "inline is not effective"
       |                 ^~~~~
 configure:55157: $? = 1
 configure: failed program was:
@@ -36023,6 +35808,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -36164,7 +35957,7 @@ configure: failed program was:
 configure:55169: result: no
 configure:55197: checking for isapipe
 configure:55197: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccmXGw9j.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccX1m0Ua.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `isapipe'
 collect2: error: ld returned 1 exit status
 configure:55197: $? = 1
@@ -36561,6 +36354,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -36754,12 +36555,12 @@ configure:55870: result: yes
 configure:55906: checking for iswblank
 configure:55943: checking for iswblank
 configure:55943: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:544:6: warning: conflicting types for built-in function 'iswblank'; expected 'int(unsigned int)' [-Wbuiltin-declaration-mismatch]
-  544 | char iswblank (void);
+conftest.c:552:6: warning: conflicting types for built-in function 'iswblank'; expected 'int(unsigned int)' [-Wbuiltin-declaration-mismatch]
+  552 | char iswblank (void);
       |      ^~~~~~~~
-conftest.c:536:1: note: 'iswblank' is declared in header '<wctype.h>'
-  535 | #include <limits.h>
-  536 | #undef iswblank
+conftest.c:544:1: note: 'iswblank' is declared in header '<wctype.h>'
+  543 | #include <limits.h>
+  544 | #undef iswblank
 configure:55943: $? = 0
 configure:55943: result: yes
 configure:55959: result: yes
@@ -36793,8 +36594,8 @@ configure:56591: $? = 0
 configure:56601: result: yes
 configure:56625: checking for gmp.h
 configure:56625: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:566:10: fatal error: gmp.h: No such file or directory
-  566 | #include <gmp.h>
+conftest.c:574:10: fatal error: gmp.h: No such file or directory
+  574 | #include <gmp.h>
       |          ^~~~~~~
 compilation terminated.
 configure:56625: $? = 1
@@ -37191,6 +36992,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -37368,8 +37177,8 @@ configure: failed program was:
 configure:56625: result: no
 configure:56625: checking for gmp/gmp.h
 configure:56625: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:566:10: fatal error: gmp/gmp.h: No such file or directory
-  566 | #include <gmp/gmp.h>
+conftest.c:574:10: fatal error: gmp/gmp.h: No such file or directory
+  574 | #include <gmp/gmp.h>
       |          ^~~~~~~~~~~
 compilation terminated.
 configure:56625: $? = 1
@@ -37766,6 +37575,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -37949,7 +37766,7 @@ configure:57405: $? = 0
 configure:57420: result: yes
 configure:57466: checking for __xpg4
 configure:57483: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccf4BnxO.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cco4FItG.o: in function `main':
 conftest.c:(.text+0x6): undefined reference to `__xpg4'
 collect2: error: ld returned 1 exit status
 configure:57483: $? = 1
@@ -38346,6 +38163,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -38536,8 +38361,8 @@ configure:58024: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:58024: $? = 0
 configure:58024: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:548:31: error: expected expression before ')' token
-  548 | if (sizeof ((pthread_rwlock_t)))
+conftest.c:556:31: error: expected expression before ')' token
+  556 | if (sizeof ((pthread_rwlock_t)))
       |                               ^
 configure:58024: $? = 1
 configure: failed program was:
@@ -38933,6 +38758,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -39493,6 +39326,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -39765,8 +39606,8 @@ configure:58290: $? = 0
 configure:58330: result: yes
 configure:58346: checking whether SEEK_DATA works but is incompatible with GNU
 configure:58368: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -E  conftest.c
-conftest.c:556:18: error: #error "No need to work around the bug"
-  556 |                 #error "No need to work around the bug"
+conftest.c:564:18: error: #error "No need to work around the bug"
+  564 |                 #error "No need to work around the bug"
       |                  ^~~~~
 configure:58368: $? = 1
 configure: failed program was:
@@ -40162,6 +40003,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -40368,11 +40217,11 @@ configure:60393: result: yes
 configure:60463: checking whether mbswidth is declared in <wchar.h>
 configure:60483: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:564:20: error: 'mbswidth' undeclared (first use in this function); did you mean 'wcswidth'?
-  564 | char *p = (char *) mbswidth;
+conftest.c:572:20: error: 'mbswidth' undeclared (first use in this function); did you mean 'wcswidth'?
+  572 | char *p = (char *) mbswidth;
       |                    ^~~~~~~~
       |                    wcswidth
-conftest.c:564:20: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:572:20: note: each undeclared identifier is reported only once for each function it appears in
 configure:60483: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -40767,6 +40616,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -40961,7 +40818,7 @@ configure:60900: $? = 0
 configure:60900: result: yes
 configure:60976: checking for explicit_memset
 configure:60976: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc8LJIb7.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccUsmU8D.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `explicit_memset'
 collect2: error: ld returned 1 exit status
 configure:60976: $? = 1
@@ -41358,6 +41215,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -41626,7 +41491,7 @@ configure:62095: $? = 0
 configure:62111: result: yes
 configure:62218: checking for __mktime_internal
 configure:62218: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccLIlmR0.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccRoszF9.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `__mktime_internal'
 collect2: error: ld returned 1 exit status
 configure:62218: $? = 1
@@ -42023,6 +41888,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -42248,7 +42121,7 @@ configure: failed program was:
 configure:62218: result: no
 configure:62253: checking for listmntent
 configure:62253: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccath0Vb.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc5t7EXC.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `listmntent'
 collect2: error: ld returned 1 exit status
 configure:62253: $? = 1
@@ -42645,6 +42518,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -42871,8 +42752,8 @@ configure: failed program was:
 configure:62253: result: no
 configure:62264: checking for sys/ucred.h
 configure:62264: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:587:10: fatal error: sys/ucred.h: No such file or directory
-  587 | #include <sys/ucred.h>
+conftest.c:595:10: fatal error: sys/ucred.h: No such file or directory
+  595 | #include <sys/ucred.h>
       |          ^~~~~~~~~~~~~
 compilation terminated.
 configure:62264: $? = 1
@@ -43269,6 +43150,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -43476,8 +43365,8 @@ configure:62292: result: no
 configure:62315: checking for struct fsstat.f_fstypename
 configure:62315: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:633:22: error: storage size of 'ac_aggr' isn't known
-  633 | static struct fsstat ac_aggr;
+conftest.c:641:22: error: storage size of 'ac_aggr' isn't known
+  641 | static struct fsstat ac_aggr;
       |                      ^~~~~~~
 configure:62315: $? = 1
 configure: failed program was:
@@ -43873,6 +43762,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -44121,8 +44018,8 @@ configure: failed program was:
 | }
 configure:62315: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:633:22: error: storage size of 'ac_aggr' isn't known
-  633 | static struct fsstat ac_aggr;
+conftest.c:641:22: error: storage size of 'ac_aggr' isn't known
+  641 | static struct fsstat ac_aggr;
       |                      ^~~~~~~
 configure:62315: $? = 1
 configure: failed program was:
@@ -44518,6 +44415,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -44775,8 +44680,8 @@ configure:62401: $? = 0
 configure:62401: result: yes
 configure:62412: checking for mntctl function and struct vmount
 configure:62422: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -E  conftest.c
-conftest.c:588:10: fatal error: fshelp.h: No such file or directory
-  588 | #include <fshelp.h>
+conftest.c:596:10: fatal error: fshelp.h: No such file or directory
+  596 | #include <fshelp.h>
       |          ^~~~~~~~~~
 compilation terminated.
 configure:62422: $? = 1
@@ -45173,6 +45078,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -45394,8 +45307,8 @@ configure:62685: result: yes
 configure:62701: result: yes
 configure:63102: checking for sys/mntent.h
 configure:63102: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:620:10: fatal error: sys/mntent.h: No such file or directory
-  620 | #include <sys/mntent.h>
+conftest.c:628:10: fatal error: sys/mntent.h: No such file or directory
+  628 | #include <sys/mntent.h>
       |          ^~~~~~~~~~~~~~
 compilation terminated.
 configure:63102: $? = 1
@@ -45792,6 +45705,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -46023,8 +45944,8 @@ configure: failed program was:
 configure:63102: result: no
 configure:63110: checking for sys/mkdev.h
 configure:63110: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:620:10: fatal error: sys/mkdev.h: No such file or directory
-  620 | #include <sys/mkdev.h>
+conftest.c:628:10: fatal error: sys/mkdev.h: No such file or directory
+  628 | #include <sys/mkdev.h>
       |          ^~~~~~~~~~~~~
 compilation terminated.
 configure:63110: $? = 1
@@ -46421,6 +46342,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -46657,8 +46586,8 @@ configure:63119: result: yes
 configure:63129: checking for struct statfs.f_fstypename
 configure:63129: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:602:22: error: storage size of 'ac_aggr' isn't known
-  602 | static struct statfs ac_aggr;
+conftest.c:610:22: error: storage size of 'ac_aggr' isn't known
+  610 | static struct statfs ac_aggr;
       |                      ^~~~~~~
 configure:63129: $? = 1
 configure: failed program was:
@@ -47054,6 +46983,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -47271,8 +47208,8 @@ configure: failed program was:
 | }
 configure:63129: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:602:22: error: storage size of 'ac_aggr' isn't known
-  602 | static struct statfs ac_aggr;
+conftest.c:610:22: error: storage size of 'ac_aggr' isn't known
+  610 | static struct statfs ac_aggr;
       |                      ^~~~~~~
 configure:63129: $? = 1
 configure: failed program was:
@@ -47668,6 +47605,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -48287,6 +48232,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -48565,8 +48518,8 @@ configure:63721: $? = 0
 configure:63736: result: yes
 configure:63929: checking for sys/pstat.h
 configure:63929: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:630:10: fatal error: sys/pstat.h: No such file or directory
-  630 | #include <sys/pstat.h>
+conftest.c:638:10: fatal error: sys/pstat.h: No such file or directory
+  638 | #include <sys/pstat.h>
       |          ^~~~~~~~~~~~~
 compilation terminated.
 configure:63929: $? = 1
@@ -48963,6 +48916,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -49204,8 +49165,8 @@ configure: failed program was:
 configure:63929: result: no
 configure:63936: checking for sys/sysmp.h
 configure:63936: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:630:10: fatal error: sys/sysmp.h: No such file or directory
-  630 | #include <sys/sysmp.h>
+conftest.c:638:10: fatal error: sys/sysmp.h: No such file or directory
+  638 | #include <sys/sysmp.h>
       |          ^~~~~~~~~~~~~
 compilation terminated.
 configure:63936: $? = 1
@@ -49602,6 +49563,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -49847,7 +49816,7 @@ configure:63951: checking for sys/sysctl.h
 configure:63951: result: no
 configure:63964: checking for sched_getaffinity_np
 configure:63964: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc0XW5S8.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cczTMe9Y.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `sched_getaffinity_np'
 collect2: error: ld returned 1 exit status
 configure:63964: $? = 1
@@ -50244,6 +50213,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -50487,7 +50464,7 @@ configure: failed program was:
 configure:63964: result: no
 configure:63970: checking for pstat_getdynamic
 configure:63970: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccPVuXHm.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cceRvLxO.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `pstat_getdynamic'
 collect2: error: ld returned 1 exit status
 configure:63970: $? = 1
@@ -50884,6 +50861,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -51127,7 +51112,7 @@ configure: failed program was:
 configure:63970: result: no
 configure:63976: checking for sysmp
 configure:63976: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccbbe8n4.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc9jEOIR.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `sysmp'
 collect2: error: ld returned 1 exit status
 configure:63976: $? = 1
@@ -51524,6 +51509,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -51779,8 +51772,8 @@ configure:64078: $? = 0
 configure:64089: result: yes
 configure:64118: checking for C nullptr
 configure:64128: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:605:10: error: 'nullptr' undeclared here (not in a function)
-  605 | int *p = nullptr;
+conftest.c:613:10: error: 'nullptr' undeclared here (not in a function)
+  613 | int *p = nullptr;
       |          ^~~~~~~
 configure:64128: $? = 1
 configure: failed program was:
@@ -52176,6 +52169,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -52392,8 +52393,8 @@ configure: failed program was:
 configure:64138: result: no
 configure:64156: checking for obstacks that work with any size object
 configure:64181: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:605:10: fatal error: obstack.h: No such file or directory
-  605 | #include "obstack.h"
+conftest.c:613:10: fatal error: obstack.h: No such file or directory
+  613 | #include "obstack.h"
       |          ^~~~~~~~~~~
 compilation terminated.
 configure:64181: $? = 1
@@ -52790,6 +52791,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -53048,8 +53057,8 @@ configure:64734: $? = 0
 configure:64734: result: yes
 configure:64741: checking for machine/hal_sysinfo.h
 configure:64741: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:644:10: fatal error: machine/hal_sysinfo.h: No such file or directory
-  644 | #include <machine/hal_sysinfo.h>
+conftest.c:652:10: fatal error: machine/hal_sysinfo.h: No such file or directory
+  652 | #include <machine/hal_sysinfo.h>
       |          ^~~~~~~~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:64741: $? = 1
@@ -53446,6 +53455,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -53701,8 +53718,8 @@ configure: failed program was:
 configure:64741: result: no
 configure:64748: checking for sys/table.h
 configure:64748: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:644:10: fatal error: sys/table.h: No such file or directory
-  644 | #include <sys/table.h>
+conftest.c:652:10: fatal error: sys/table.h: No such file or directory
+  652 | #include <sys/table.h>
       |          ^~~~~~~~~~~~~
 compilation terminated.
 configure:64748: $? = 1
@@ -54099,6 +54116,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -54356,8 +54381,8 @@ configure:64755: checking for sys/param.h
 configure:64755: result: yes
 configure:64762: checking for sys/systemcfg.h
 configure:64762: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:645:10: fatal error: sys/systemcfg.h: No such file or directory
-  645 | #include <sys/systemcfg.h>
+conftest.c:653:10: fatal error: sys/systemcfg.h: No such file or directory
+  653 | #include <sys/systemcfg.h>
       |          ^~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:64762: $? = 1
@@ -54754,6 +54779,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -55012,7 +55045,7 @@ configure:64770: checking for sys/sysctl.h
 configure:64770: result: no
 configure:64783: checking for pstat_getstatic
 configure:64783: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccgSpXXH.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccTynoer.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `pstat_getstatic'
 collect2: error: ld returned 1 exit status
 configure:64783: $? = 1
@@ -55409,6 +55442,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -55670,7 +55711,7 @@ configure:64795: checking for sysmp
 configure:64795: result: no
 configure:64801: checking for getsysinfo
 configure:64801: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccdAeoCS.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccDxQbUY.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getsysinfo'
 collect2: error: ld returned 1 exit status
 configure:64801: $? = 1
@@ -56067,6 +56108,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -56326,7 +56375,7 @@ configure:64807: checking for sysctl
 configure:64807: result: no
 configure:64813: checking for table
 configure:64813: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccMaPNX9.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccsp7j6i.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `table'
 collect2: error: ld returned 1 exit status
 configure:64813: $? = 1
@@ -56723,6 +56772,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -57026,7 +57083,7 @@ configure:65701: $? = 0
 configure:65701: result: yes
 configure:65716: checking for getppriv
 configure:65716: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccxWtwcM.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccqUjG5Z.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getppriv'
 collect2: error: ld returned 1 exit status
 configure:65716: $? = 1
@@ -57423,6 +57480,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -58116,6 +58181,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -58388,8 +58461,8 @@ configure:66662: $? = 0
 configure:66677: result: yes
 configure:66750: checking for xattr library with ATTR_ACTION_PERMISSIONS
 configure:66776: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:636:10: fatal error: attr/error_context.h: No such file or directory
-  636 | #include <attr/error_context.h>
+conftest.c:644:10: fatal error: attr/error_context.h: No such file or directory
+  644 | #include <attr/error_context.h>
       |          ^~~~~~~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:66776: $? = 1
@@ -58786,6 +58859,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -59046,8 +59127,8 @@ configure: failed program was:
 |   return 0;
 | }
 configure:66782: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c -lattr  >&5
-conftest.c:636:10: fatal error: attr/error_context.h: No such file or directory
-  636 | #include <attr/error_context.h>
+conftest.c:644:10: fatal error: attr/error_context.h: No such file or directory
+  644 | #include <attr/error_context.h>
       |          ^~~~~~~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:66782: $? = 1
@@ -59444,6 +59525,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -59716,7 +59805,7 @@ configure:66852: $? = 0
 configure:66852: result: yes
 configure:66908: checking for rawmemchr
 configure:66908: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccDdvEXS.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc1cv8K1.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `rawmemchr'
 collect2: error: ld returned 1 exit status
 configure:66908: $? = 1
@@ -60113,6 +60202,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -60431,92 +60528,92 @@ configure:67699: result: yes
 configure:67784: checking for working re_compile_pattern
 configure:68099: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 conftest.c: In function 'main':
-conftest.c:678:33: error: storage size of 'regs' isn't known
-  678 |             struct re_registers regs;
+conftest.c:686:33: error: storage size of 'regs' isn't known
+  686 |             struct re_registers regs;
       |                                 ^~~~
-conftest.c:703:19: error: implicit declaration of function 're_set_syntax' [-Wimplicit-function-declaration]
-  703 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
+conftest.c:711:19: error: implicit declaration of function 're_set_syntax' [-Wimplicit-function-declaration]
+  711 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
       |                   ^~~~~~~~~~~~~
-conftest.c:703:34: error: 'RE_SYNTAX_GREP' undeclared (first use in this function)
-  703 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
+conftest.c:711:34: error: 'RE_SYNTAX_GREP' undeclared (first use in this function)
+  711 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
       |                                  ^~~~~~~~~~~~~~
-conftest.c:703:34: note: each undeclared identifier is reported only once for each function it appears in
-conftest.c:703:51: error: 'RE_HAT_LISTS_NOT_NEWLINE' undeclared (first use in this function)
-  703 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
+conftest.c:711:34: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:711:51: error: 'RE_HAT_LISTS_NOT_NEWLINE' undeclared (first use in this function)
+  711 |                   re_set_syntax (RE_SYNTAX_GREP | RE_HAT_LISTS_NOT_NEWLINE
       |                                                   ^~~~~~~~~~~~~~~~~~~~~~~~
-conftest.c:704:36: error: 'RE_ICASE' undeclared (first use in this function); did you mean 'REG_ICASE'?
-  704 |                                  | RE_ICASE);
+conftest.c:712:36: error: 'RE_ICASE' undeclared (first use in this function); did you mean 'REG_ICASE'?
+  712 |                                  | RE_ICASE);
       |                                    ^~~~~~~~
       |                                    REG_ICASE
-conftest.c:706:23: error: implicit declaration of function 're_compile_pattern' [-Wimplicit-function-declaration]
-  706 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
+conftest.c:714:23: error: implicit declaration of function 're_compile_pattern' [-Wimplicit-function-declaration]
+  714 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
       |                       ^~~~~~~~~~~~~~~~~~
-conftest.c:706:21: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  706 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
+conftest.c:714:21: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  714 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
       |                     ^
-conftest.c:711:27: error: implicit declaration of function 're_search' [-Wimplicit-function-declaration]
-  711 |                       if (re_search (&regex, data, sizeof data - 1,
+conftest.c:719:27: error: implicit declaration of function 're_search' [-Wimplicit-function-declaration]
+  719 |                       if (re_search (&regex, data, sizeof data - 1,
       |                           ^~~~~~~~~
-conftest.c:738:21: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  738 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
+conftest.c:746:21: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  746 |                   s = re_compile_pattern (pat, sizeof pat - 1, &regex);
       |                     ^
-conftest.c:756:28: error: 'RE_SYNTAX_EGREP' undeclared (first use in this function)
-  756 |             re_set_syntax (RE_SYNTAX_EGREP | RE_HAT_LISTS_NOT_NEWLINE);
+conftest.c:764:28: error: 'RE_SYNTAX_EGREP' undeclared (first use in this function)
+  764 |             re_set_syntax (RE_SYNTAX_EGREP | RE_HAT_LISTS_NOT_NEWLINE);
       |                            ^~~~~~~~~~~~~~~
-conftest.c:758:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  758 |             s = re_compile_pattern ("a[^x]b", 6, &regex);
+conftest.c:766:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  766 |             s = re_compile_pattern ("a[^x]b", 6, &regex);
       |               ^
-conftest.c:771:28: error: 'RE_SYNTAX_POSIX_EGREP' undeclared (first use in this function)
-  771 |             re_set_syntax (RE_SYNTAX_POSIX_EGREP);
+conftest.c:779:28: error: 'RE_SYNTAX_POSIX_EGREP' undeclared (first use in this function)
+  779 |             re_set_syntax (RE_SYNTAX_POSIX_EGREP);
       |                            ^~~~~~~~~~~~~~~~~~~~~
-conftest.c:775:18: error: 'struct re_pattern_buffer' has no member named 'translate'
-  775 |             regex.translate = folded_chars;
+conftest.c:783:18: error: 'struct re_pattern_buffer' has no member named 'translate'
+  783 |             regex.translate = folded_chars;
       |                  ^
-conftest.c:776:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  776 |             s = re_compile_pattern ("a[[:]:]]b\n", 11, &regex);
+conftest.c:784:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  784 |             s = re_compile_pattern ("a[[:]:]]b\n", 11, &regex);
       |               ^
-conftest.c:786:52: error: 'RE_NO_EMPTY_RANGES' undeclared (first use in this function)
-  786 |             re_set_syntax (RE_SYNTAX_POSIX_EGREP | RE_NO_EMPTY_RANGES);
+conftest.c:794:52: error: 'RE_NO_EMPTY_RANGES' undeclared (first use in this function)
+  794 |             re_set_syntax (RE_SYNTAX_POSIX_EGREP | RE_NO_EMPTY_RANGES);
       |                                                    ^~~~~~~~~~~~~~~~~~
-conftest.c:788:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  788 |             s = re_compile_pattern ("a[b-a]", 6, &regex);
+conftest.c:796:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  796 |             s = re_compile_pattern ("a[b-a]", 6, &regex);
       |               ^
-conftest.c:797:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  797 |             s = re_compile_pattern ("{1", 2, &regex);
+conftest.c:805:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  805 |             s = re_compile_pattern ("{1", 2, &regex);
       |               ^
-conftest.c:806:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  806 |             s = re_compile_pattern ("[an\371]*n", 7, &regex);
+conftest.c:814:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  814 |             s = re_compile_pattern ("[an\371]*n", 7, &regex);
       |               ^
-conftest.c:812:21: error: implicit declaration of function 're_match' [-Wimplicit-function-declaration]
-  812 |                 if (re_match (&regex, "an", 2, 0, &regs) != 2)
+conftest.c:820:21: error: implicit declaration of function 're_match' [-Wimplicit-function-declaration]
+  820 |                 if (re_match (&regex, "an", 2, 0, &regs) != 2)
       |                     ^~~~~~~~
-conftest.c:823:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  823 |             s = re_compile_pattern ("x", 1, &regex);
+conftest.c:831:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  831 |             s = re_compile_pattern ("x", 1, &regex);
       |               ^
-conftest.c:841:28: error: 'RE_SYNTAX_EMACS' undeclared (first use in this function)
-  841 |             re_set_syntax (RE_SYNTAX_EMACS | RE_ICASE);
+conftest.c:849:28: error: 'RE_SYNTAX_EMACS' undeclared (first use in this function)
+  849 |             re_set_syntax (RE_SYNTAX_EMACS | RE_ICASE);
       |                            ^~~~~~~~~~~~~~~
-conftest.c:843:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  843 |             s = re_compile_pattern ("x", 1, &regex);
+conftest.c:851:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  851 |             s = re_compile_pattern ("x", 1, &regex);
       |               ^
-conftest.c:861:28: error: 'RE_SYNTAX_POSIX_BASIC' undeclared (first use in this function)
-  861 |             re_set_syntax (RE_SYNTAX_POSIX_BASIC
+conftest.c:869:28: error: 'RE_SYNTAX_POSIX_BASIC' undeclared (first use in this function)
+  869 |             re_set_syntax (RE_SYNTAX_POSIX_BASIC
       |                            ^~~~~~~~~~~~~~~~~~~~~
-conftest.c:862:31: error: 'RE_CONTEXT_INVALID_DUP' undeclared (first use in this function)
-  862 |                            & ~RE_CONTEXT_INVALID_DUP
+conftest.c:870:31: error: 'RE_CONTEXT_INVALID_DUP' undeclared (first use in this function)
+  870 |                            & ~RE_CONTEXT_INVALID_DUP
       |                               ^~~~~~~~~~~~~~~~~~~~~~
-conftest.c:865:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  865 |             s = re_compile_pattern ("[[:alnum:]_-]\\+$", 16, &regex);
+conftest.c:873:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  873 |             s = re_compile_pattern ("[[:alnum:]_-]\\+$", 16, &regex);
       |               ^
-conftest.c:873:19: error: 'REG_STARTEND' undeclared (first use in this function); did you mean 'REG_EPAREN'?
-  873 |             if (! REG_STARTEND)
+conftest.c:881:19: error: 'REG_STARTEND' undeclared (first use in this function); did you mean 'REG_EPAREN'?
+  881 |             if (! REG_STARTEND)
       |                   ^~~~~~~~~~~~
       |                   REG_EPAREN
-conftest.c:883:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  883 |             s = re_compile_pattern ("0|()0|\\1|0", 10, &regex);
+conftest.c:891:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  891 |             s = re_compile_pattern ("0|()0|\\1|0", 10, &regex);
       |               ^
-conftest.c:907:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-  907 |             s = re_compile_pattern (pat_sub2, sizeof pat_sub2 - 1, &regex);
+conftest.c:915:15: error: assignment to 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+  915 |             s = re_compile_pattern (pat_sub2, sizeof pat_sub2 - 1, &regex);
       |               ^
 configure:68099: $? = 1
 configure: program exited with status 1
@@ -60913,6 +61010,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -61510,7 +61615,7 @@ configure:68693: result: yes
 configure:68708: checking for renameat2
 configure:68745: checking for renameat2
 configure:68745: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccPK7Rrp.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccpIrpag.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `renameat2'
 collect2: error: ld returned 1 exit status
 configure:68745: $? = 1
@@ -61907,6 +62012,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -62231,7 +62344,7 @@ configure:68976: checking whether rmdir works
 configure:69044: result: yes
 configure:69090: checking for rpmatch
 configure:69090: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccjHILu8.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccXShpkO.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `rpmatch'
 collect2: error: ld returned 1 exit status
 configure:69090: $? = 1
@@ -62628,6 +62741,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -62962,8 +63083,8 @@ configure:69447: $? = 0
 configure:69462: result: yes
 configure:69535: checking for selinux/flask.h
 configure:69535: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:709:10: fatal error: selinux/flask.h: No such file or directory
-  709 | #include <selinux/flask.h>
+conftest.c:717:10: fatal error: selinux/flask.h: No such file or directory
+  717 | #include <selinux/flask.h>
       |          ^~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:69535: $? = 1
@@ -63360,6 +63481,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -63704,7 +63833,7 @@ configure:70353: $? = 0
 configure:70365: result: yes
 configure:70406: checking for sig2str
 configure:70406: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccXOBMEN.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccVdjyUH.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `sig2str'
 collect2: error: ld returned 1 exit status
 configure:70406: $? = 1
@@ -64101,6 +64230,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -64848,6 +64985,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -65179,8 +65324,8 @@ configure:71739: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:71739: $? = 0
 configure:71739: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:710:24: error: expected expression before ')' token
-  710 | if (sizeof ((socklen_t)))
+conftest.c:718:24: error: expected expression before ')' token
+  718 | if (sizeof ((socklen_t)))
       |                        ^
 configure:71739: $? = 1
 configure: failed program was:
@@ -65576,6 +65721,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -65918,8 +66071,8 @@ configure:72074: result: yes
 configure:72126: checking for struct stat.st_birthtimespec.tv_nsec
 configure:72126: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:12: error: 'struct stat' has no member named 'st_birthtimespec'
-  705 | if (ac_aggr.st_birthtimespec.tv_nsec)
+conftest.c:713:12: error: 'struct stat' has no member named 'st_birthtimespec'
+  713 | if (ac_aggr.st_birthtimespec.tv_nsec)
       |            ^
 configure:72126: $? = 1
 configure: failed program was:
@@ -66315,6 +66468,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -66634,8 +66795,8 @@ configure: failed program was:
 | }
 configure:72126: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:19: error: 'struct stat' has no member named 'st_birthtimespec'
-  705 | if (sizeof ac_aggr.st_birthtimespec.tv_nsec)
+conftest.c:713:19: error: 'struct stat' has no member named 'st_birthtimespec'
+  713 | if (sizeof ac_aggr.st_birthtimespec.tv_nsec)
       |                   ^
 configure:72126: $? = 1
 configure: failed program was:
@@ -67031,6 +67192,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -67352,8 +67521,8 @@ configure:72126: result: no
 configure:72136: checking for struct stat.st_birthtimensec
 configure:72136: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:12: error: 'struct stat' has no member named 'st_birthtimensec'
-  705 | if (ac_aggr.st_birthtimensec)
+conftest.c:713:12: error: 'struct stat' has no member named 'st_birthtimensec'
+  713 | if (ac_aggr.st_birthtimensec)
       |            ^
 configure:72136: $? = 1
 configure: failed program was:
@@ -67749,6 +67918,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -68068,8 +68245,8 @@ configure: failed program was:
 | }
 configure:72136: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:19: error: 'struct stat' has no member named 'st_birthtimensec'
-  705 | if (sizeof ac_aggr.st_birthtimensec)
+conftest.c:713:19: error: 'struct stat' has no member named 'st_birthtimensec'
+  713 | if (sizeof ac_aggr.st_birthtimensec)
       |                   ^
 configure:72136: $? = 1
 configure: failed program was:
@@ -68465,6 +68642,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -68786,8 +68971,8 @@ configure:72136: result: no
 configure:72146: checking for struct stat.st_birthtim.tv_nsec
 configure:72146: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:12: error: 'struct stat' has no member named 'st_birthtim'
-  705 | if (ac_aggr.st_birthtim.tv_nsec)
+conftest.c:713:12: error: 'struct stat' has no member named 'st_birthtim'
+  713 | if (ac_aggr.st_birthtim.tv_nsec)
       |            ^
 configure:72146: $? = 1
 configure: failed program was:
@@ -69183,6 +69368,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -69502,8 +69695,8 @@ configure: failed program was:
 | }
 configure:72146: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:705:19: error: 'struct stat' has no member named 'st_birthtim'
-  705 | if (sizeof ac_aggr.st_birthtim.tv_nsec)
+conftest.c:713:19: error: 'struct stat' has no member named 'st_birthtim'
+  713 | if (sizeof ac_aggr.st_birthtim.tv_nsec)
       |                   ^
 configure:72146: $? = 1
 configure: failed program was:
@@ -69899,6 +70092,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -70223,26 +70424,26 @@ configure:72188: $? = 0
 configure:72199: result: yes
 configure:72386: checking for bool, true, false
 configure:72401: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:700:13: error: #error "true == false"
-  700 |            #error "true == false"
+conftest.c:708:13: error: #error "true == false"
+  708 |            #error "true == false"
       |             ^~~~~
-conftest.c:702:18: error: unknown type name 'bool'
-  702 |           extern bool b;
+conftest.c:710:18: error: unknown type name 'bool'
+  710 |           extern bool b;
       |                  ^~~~
 conftest.c:1:1: note: 'bool' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
     1 | /* confdefs.h */
-conftest.c:703:11: error: unknown type name 'bool'
-  703 |           bool b = true == false;
+conftest.c:711:11: error: unknown type name 'bool'
+  711 |           bool b = true == false;
       |           ^~~~
-conftest.c:703:11: note: 'bool' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
-conftest.c:703:20: error: 'true' undeclared here (not in a function)
-  703 |           bool b = true == false;
+conftest.c:711:11: note: 'bool' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
+conftest.c:711:20: error: 'true' undeclared here (not in a function)
+  711 |           bool b = true == false;
       |                    ^~~~
-conftest.c:703:20: note: 'true' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
-conftest.c:703:28: error: 'false' undeclared here (not in a function)
-  703 |           bool b = true == false;
+conftest.c:711:20: note: 'true' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
+conftest.c:711:28: error: 'false' undeclared here (not in a function)
+  711 |           bool b = true == false;
       |                            ^~~~~
-conftest.c:703:28: note: 'false' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
+conftest.c:711:28: note: 'false' is defined in header '<stdbool.h>'; this is probably fixable by adding '#include <stdbool.h>'
 configure:72401: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -70637,6 +70838,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -70952,8 +71161,8 @@ configure:72411: result: no
 configure:72950: checking for stpcpy
 configure:72987: checking for stpcpy
 configure:72987: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:733:6: warning: conflicting types for built-in function 'stpcpy'; expected 'char *(char *, const char *)' [-Wbuiltin-declaration-mismatch]
-  733 | char stpcpy (void);
+conftest.c:741:6: warning: conflicting types for built-in function 'stpcpy'; expected 'char *(char *, const char *)' [-Wbuiltin-declaration-mismatch]
+  741 | char stpcpy (void);
       |      ^~~~~~
 configure:72987: $? = 0
 configure:72987: result: yes
@@ -70961,8 +71170,8 @@ configure:73003: result: yes
 configure:73081: checking for stpncpy
 configure:73118: checking for stpncpy
 configure:73118: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:735:6: warning: conflicting types for built-in function 'stpncpy'; expected 'char *(char *, const char *, long unsigned int)' [-Wbuiltin-declaration-mismatch]
-  735 | char stpncpy (void);
+conftest.c:743:6: warning: conflicting types for built-in function 'stpncpy'; expected 'char *(char *, const char *, long unsigned int)' [-Wbuiltin-declaration-mismatch]
+  743 | char stpncpy (void);
       |      ^~~~~~~
 configure:73118: $? = 0
 configure:73118: result: yes
@@ -71422,6 +71631,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -72198,6 +72415,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -72604,11 +72829,11 @@ configure:75660: result: yes
 configure:75668: checking for timezone_t
 configure:75668: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:748:13: error: 'timezone_t' undeclared (first use in this function); did you mean 'timezone'?
-  748 | if (sizeof (timezone_t))
+conftest.c:756:13: error: 'timezone_t' undeclared (first use in this function); did you mean 'timezone'?
+  756 | if (sizeof (timezone_t))
       |             ^~~~~~~~~~
       |             timezone
-conftest.c:748:13: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:756:13: note: each undeclared identifier is reported only once for each function it appears in
 configure:75668: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -73003,6 +73228,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -73456,8 +73689,8 @@ configure:78303: $? = 0
 configure:78322: result: yes
 configure:78373: checking for variable-length arrays
 configure:78386: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:768:10: error: #error __STDC_NO_VLA__ not defined
-  768 |         #error __STDC_NO_VLA__ not defined
+conftest.c:776:10: error: #error __STDC_NO_VLA__ not defined
+  776 |         #error __STDC_NO_VLA__ not defined
       |          ^~~~~
 configure:78386: $? = 1
 configure: failed program was:
@@ -73853,6 +74086,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -74239,8 +74480,8 @@ configure:78515: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:78515: $? = 0
 configure:78515: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:799:24: error: expected expression before ')' token
-  799 | if (sizeof ((ptrdiff_t)))
+conftest.c:807:24: error: expected expression before ')' token
+  807 | if (sizeof ((ptrdiff_t)))
       |                        ^
 configure:78515: $? = 1
 configure: failed program was:
@@ -74636,6 +74877,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -75087,7 +75336,7 @@ configure:80541: result: yes
 configure:80594: checking for wmempcpy
 configure:80631: checking for wmempcpy
 configure:80631: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccXwDduB.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccqJOzMu.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `wmempcpy'
 collect2: error: ld returned 1 exit status
 configure:80631: $? = 1
@@ -75484,6 +75733,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -76016,8 +76273,8 @@ configure:83622: result: yes
 configure:83638: result: yes
 configure:83655: checking for sys/single_threaded.h
 configure:83655: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:857:10: fatal error: sys/single_threaded.h: No such file or directory
-  857 | #include <sys/single_threaded.h>
+conftest.c:865:10: fatal error: sys/single_threaded.h: No such file or directory
+  865 | #include <sys/single_threaded.h>
       |          ^~~~~~~~~~~~~~~~~~~~~~~
 compilation terminated.
 configure:83655: $? = 1
@@ -76414,6 +76671,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -76891,8 +77156,8 @@ configure:83822: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:83822: $? = 0
 configure:83822: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:861:25: error: expected expression before ')' token
-  861 | if (sizeof ((useconds_t)))
+conftest.c:869:25: error: expected expression before ')' token
+  869 | if (sizeof ((useconds_t)))
       |                         ^
 configure:83822: $? = 1
 configure: failed program was:
@@ -77288,6 +77553,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -77815,8 +78088,8 @@ configure:84505: result: yes
 configure:84554: checking for struct stat.st_author
 configure:84554: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:878:12: error: 'struct stat' has no member named 'st_author'
-  878 | if (ac_aggr.st_author)
+conftest.c:886:12: error: 'struct stat' has no member named 'st_author'
+  886 | if (ac_aggr.st_author)
       |            ^
 configure:84554: $? = 1
 configure: failed program was:
@@ -78212,6 +78485,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -78704,8 +78985,8 @@ configure: failed program was:
 | }
 configure:84554: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:878:19: error: 'struct stat' has no member named 'st_author'
-  878 | if (sizeof ac_aggr.st_author)
+conftest.c:886:19: error: 'struct stat' has no member named 'st_author'
+  886 | if (sizeof ac_aggr.st_author)
       |                   ^
 configure:84554: $? = 1
 configure: failed program was:
@@ -79101,6 +79382,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -79597,8 +79886,8 @@ configure:84575: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-mus
 configure:84575: $? = 0
 configure:84575: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:874:20: error: expected expression before ')' token
-  874 | if (sizeof ((ino_t)))
+conftest.c:882:20: error: expected expression before ')' token
+  882 | if (sizeof ((ino_t)))
       |                    ^
 configure:84575: $? = 1
 configure: failed program was:
@@ -79994,6 +80283,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -80484,10 +80781,10 @@ configure:84575: result: yes
 configure:84587: checking for major_t
 configure:84587: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:874:13: error: 'major_t' undeclared (first use in this function)
-  874 | if (sizeof (major_t))
+conftest.c:882:13: error: 'major_t' undeclared (first use in this function)
+  882 | if (sizeof (major_t))
       |             ^~~~~~~
-conftest.c:874:13: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:882:13: note: each undeclared identifier is reported only once for each function it appears in
 configure:84587: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -80882,6 +81179,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -81372,11 +81677,11 @@ configure:84587: result: no
 configure:84598: checking for minor_t
 configure:84598: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:875:13: error: 'minor_t' undeclared (first use in this function); did you mean 'ino_t'?
-  875 | if (sizeof (minor_t))
+conftest.c:883:13: error: 'minor_t' undeclared (first use in this function); did you mean 'ino_t'?
+  883 | if (sizeof (minor_t))
       |             ^~~~~~~
       |             ino_t
-conftest.c:875:13: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:883:13: note: each undeclared identifier is reported only once for each function it appears in
 configure:84598: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -81771,6 +82076,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -82261,7 +82574,7 @@ configure: failed program was:
 configure:84598: result: no
 configure:84639: checking for mode_to_security_class
 configure:84639: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c   >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc246xvO.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccmr0BN6.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mode_to_security_class'
 collect2: error: ld returned 1 exit status
 configure:84639: $? = 1
@@ -82658,6 +82971,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -83151,8 +83472,8 @@ configure:84657: $? = 0
 configure:84657: result: yes
 configure:84685: checking for nfs/vfs.h
 configure:84685: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
-conftest.c:878:10: fatal error: nfs/vfs.h: No such file or directory
-  878 | #include <nfs/vfs.h>
+conftest.c:886:10: fatal error: nfs/vfs.h: No such file or directory
+  886 | #include <nfs/vfs.h>
       |          ^~~~~~~~~~~
 compilation terminated.
 configure:84685: $? = 1
@@ -83549,6 +83870,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -84039,8 +84368,8 @@ configure:84685: result: no
 configure:84722: checking for struct statvfs.f_basetype
 configure:84722: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:885:13: error: 'struct statvfs' has no member named 'f_basetype'; did you mean 'f_type'?
-  885 | if (ac_aggr.f_basetype)
+conftest.c:893:13: error: 'struct statvfs' has no member named 'f_basetype'; did you mean 'f_type'?
+  893 | if (ac_aggr.f_basetype)
       |             ^~~~~~~~~~
       |             f_type
 configure:84722: $? = 1
@@ -84437,6 +84766,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -84936,8 +85273,8 @@ configure: failed program was:
 | }
 configure:84722: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:885:20: error: 'struct statvfs' has no member named 'f_basetype'; did you mean 'f_type'?
-  885 | if (sizeof ac_aggr.f_basetype)
+conftest.c:893:20: error: 'struct statvfs' has no member named 'f_basetype'; did you mean 'f_type'?
+  893 | if (sizeof ac_aggr.f_basetype)
       |                    ^~~~~~~~~~
       |                    f_type
 configure:84722: $? = 1
@@ -85334,6 +85671,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -85835,8 +86180,8 @@ configure:84722: result: no
 configure:84733: checking for struct statvfs.f_fstypename
 configure:84733: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:885:12: error: 'struct statvfs' has no member named 'f_fstypename'
-  885 | if (ac_aggr.f_fstypename)
+conftest.c:893:12: error: 'struct statvfs' has no member named 'f_fstypename'
+  893 | if (ac_aggr.f_fstypename)
       |            ^
 configure:84733: $? = 1
 configure: failed program was:
@@ -86232,6 +86577,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -86731,8 +87084,8 @@ configure: failed program was:
 | }
 configure:84733: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:885:19: error: 'struct statvfs' has no member named 'f_fstypename'
-  885 | if (sizeof ac_aggr.f_fstypename)
+conftest.c:893:19: error: 'struct statvfs' has no member named 'f_fstypename'
+  893 | if (sizeof ac_aggr.f_fstypename)
       |                   ^
 configure:84733: $? = 1
 configure: failed program was:
@@ -87128,6 +87481,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -87636,11 +87997,11 @@ configure:84757: $? = 0
 configure:84757: result: yes
 configure:84779: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:885:16: error: expected '=', ',', ';', 'asm' or '__attribute__' before 's'
-  885 | static statvfs s;
+conftest.c:893:16: error: expected '=', ',', ';', 'asm' or '__attribute__' before 's'
+  893 | static statvfs s;
       |                ^
-conftest.c:885:16: error: 's' undeclared (first use in this function)
-conftest.c:885:16: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:893:16: error: 's' undeclared (first use in this function)
+conftest.c:893:16: note: each undeclared identifier is reported only once for each function it appears in
 configure:84779: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -88035,6 +88396,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -88937,6 +89306,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -89421,8 +89798,8 @@ configure:85007: WARNING: GNU coreutils will be built without capability support
 configure:85041: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
 configure:85041: $? = 0
 configure:85072: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-conftest.c:853:10: fatal error: ieeefp.h: No such file or directory
-  853 | #include <ieeefp.h>
+conftest.c:861:10: fatal error: ieeefp.h: No such file or directory
+  861 | #include <ieeefp.h>
       |          ^~~~~~~~~~
 compilation terminated.
 configure:85072: $? = 1
@@ -89819,6 +90196,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -90321,7 +90706,7 @@ configure:86508: checking whether localtime caches TZ
 configure:86573: result: no
 configure:86582: checking for fclonefileat
 configure:86582: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc5pJLuv.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc1T2BYK.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `fclonefileat'
 collect2: error: ld returned 1 exit status
 configure:86582: $? = 1
@@ -90718,6 +91103,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -91217,7 +91610,7 @@ configure: failed program was:
 configure:86582: result: no
 configure:86591: checking for getattrat
 configure:86591: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccRlam1X.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccmXOCat.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `getattrat'
 collect2: error: ld returned 1 exit status
 configure:86591: $? = 1
@@ -91614,6 +92007,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -92146,10 +92547,10 @@ configure:87147: result: yes
 configure:87158: checking whether sys_siglist is declared
 configure:87158: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:901:10: error: 'sys_siglist' undeclared (first use in this function)
-  901 |   (void) sys_siglist;
+conftest.c:909:10: error: 'sys_siglist' undeclared (first use in this function)
+  909 |   (void) sys_siglist;
       |          ^~~~~~~~~~~
-conftest.c:901:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:909:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:87158: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -92544,6 +92945,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -93063,10 +93472,10 @@ configure:87158: result: no
 configure:87169: checking whether _sys_siglist is declared
 configure:87169: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:902:10: error: '_sys_siglist' undeclared (first use in this function)
-  902 |   (void) _sys_siglist;
+conftest.c:910:10: error: '_sys_siglist' undeclared (first use in this function)
+  910 |   (void) _sys_siglist;
       |          ^~~~~~~~~~~~
-conftest.c:902:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:910:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:87169: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -93461,6 +93870,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -93981,10 +94398,10 @@ configure:87169: result: no
 configure:87180: checking whether __sys_siglist is declared
 configure:87180: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -c -I/home/aimeat/anvilos/build_artifacts/staging/include -static -std=gnu17   conftest.c >&5
 conftest.c: In function 'main':
-conftest.c:903:10: error: '__sys_siglist' undeclared (first use in this function)
-  903 |   (void) __sys_siglist;
+conftest.c:911:10: error: '__sys_siglist' undeclared (first use in this function)
+  911 |   (void) __sys_siglist;
       |          ^~~~~~~~~~~~~
-conftest.c:903:10: note: each undeclared identifier is reported only once for each function it appears in
+conftest.c:911:10: note: each undeclared identifier is reported only once for each function it appears in
 configure:87180: $? = 1
 configure: failed program was:
 | /* confdefs.h */
@@ -94379,6 +94796,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -95298,6 +95723,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -96180,6 +96613,14 @@ configure: failed program was:
 | #define GNULIB_TEST_CLOSEDIR 1
 | #define HAVE_COPY_FILE_RANGE 1
 | #define GNULIB_TEST_COPY_FILE_RANGE 1
+| #define HAVE_OPENSSL_MD5_H 1
+| #define HAVE_OPENSSL_MD5 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA1 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA256 1
+| #define HAVE_OPENSSL_SHA_H 1
+| #define HAVE_OPENSSL_SHA512 1
 | #define D_INO_IN_DIRENT 1
 | #define HAVE_STRUCT_DIRENT_D_TYPE 1
 | #define GNULIB_DIRENT_SAFER 1
@@ -96716,16 +97157,16 @@ generated by GNU Autoconf 2.72c.32-cb6fb.  Invocation command line was
 
 on anvilosalpha
 
-config.status:4136: creating Makefile
-config.status:4136: creating po/Makefile.in
-config.status:4136: creating gnulib-tests/Makefile
-config.status:4136: creating lib/config.h
-config.status:4396: executing depfiles commands
-config.status:4473: cd .       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-config.status:4478: $? = 0
-config.status:4473: cd gnulib-tests       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
-config.status:4478: $? = 0
-config.status:4396: executing po-directories commands
+config.status:4144: creating Makefile
+config.status:4144: creating po/Makefile.in
+config.status:4144: creating gnulib-tests/Makefile
+config.status:4144: creating lib/config.h
+config.status:4404: executing depfiles commands
+config.status:4481: cd .       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
+config.status:4486: $? = 0
+config.status:4481: cd gnulib-tests       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
+config.status:4486: $? = 0
+config.status:4404: executing po-directories commands
 configure:91500: WARNING: unrecognized options: --enable-static-link
 
 ## ---------------- ##
@@ -97121,6 +97562,8 @@ ac_cv_header_mntent_h=yes
 ac_cv_header_netdb_h=yes
 ac_cv_header_netinet_in_h=yes
 ac_cv_header_nfs_vfs_h=no
+ac_cv_header_openssl_md5_h=yes
+ac_cv_header_openssl_sha_h=yes
 ac_cv_header_paths_h=yes
 ac_cv_header_priv_h=no
 ac_cv_header_pthread_h=yes
@@ -97189,6 +97632,10 @@ ac_cv_header_wctype_h=yes
 ac_cv_header_xlocale_h=no
 ac_cv_host=x86_64-unknown-linux-musl
 ac_cv_lib_cap_cap_get_file=no
+ac_cv_lib_crypto_MD5=yes
+ac_cv_lib_crypto_SHA1=yes
+ac_cv_lib_crypto_SHA256=yes
+ac_cv_lib_crypto_SHA512=yes
 ac_cv_lib_error_at_line=no
 ac_cv_lib_pthread_pthread_kill=yes
 ac_cv_lib_smack_smack_new_label_from_self=no
@@ -97695,7 +98142,7 @@ gl_cv_onwards_func_tsearch=yes
 gl_cv_onwards_func_uselocale=yes
 gl_cv_onwards_func_utimensat=yes
 gl_cv_onwards_func_wmempcpy=no
-gl_cv_openssl_gpl_compat=no
+gl_cv_openssl_gpl_compat=yes
 gl_cv_pipes_are_fifos='yes (1)'
 gl_cv_posix_shell=/bin/bash
 gl_cv_prog_c_ignore_unused_libraries=-Wl,--as-needed
@@ -99535,7 +99982,7 @@ LIBUNISTRING_UNIWIDTH_H='$(top_build_prefix)lib/uniwidth.h'
 LIB_ACL=''
 LIB_CAP=''
 LIB_CLOCK_GETTIME=''
-LIB_CRYPTO=''
+LIB_CRYPTO='-lcrypto'
 LIB_EACCESS=''
 LIB_FDATASYNC=''
 LIB_GETHRXTIME=''
@@ -100640,6 +101087,14 @@ target_alias=''
 #define GNULIB_TEST_CLOSEDIR 1
 #define HAVE_COPY_FILE_RANGE 1
 #define GNULIB_TEST_COPY_FILE_RANGE 1
+#define HAVE_OPENSSL_MD5_H 1
+#define HAVE_OPENSSL_MD5 1
+#define HAVE_OPENSSL_SHA_H 1
+#define HAVE_OPENSSL_SHA1 1
+#define HAVE_OPENSSL_SHA_H 1
+#define HAVE_OPENSSL_SHA256 1
+#define HAVE_OPENSSL_SHA_H 1
+#define HAVE_OPENSSL_SHA512 1
 #define D_INO_IN_DIRENT 1
 #define HAVE_STRUCT_DIRENT_D_TYPE 1
 #define GNULIB_DIRENT_SAFER 1

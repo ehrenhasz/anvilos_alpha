@@ -2357,7 +2357,7 @@ configure:7414: $? = 0
 configure:7414: result: yes
 configure:7421: checking for mbscasecmp
 configure:7421: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccANXk7k.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccahJQpt.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mbscasecmp'
 collect2: error: ld returned 1 exit status
 configure:7421: $? = 1
@@ -2496,7 +2496,7 @@ configure: failed program was:
 configure:7421: result: no
 configure:7428: checking for mbscmp
 configure:7428: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccKQ8jT0.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccd7qcAt.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mbscmp'
 collect2: error: ld returned 1 exit status
 configure:7428: $? = 1
@@ -2643,7 +2643,7 @@ configure:7442: $? = 0
 configure:7442: result: yes
 configure:7450: checking for mbschr
 configure:7450: /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -o conftest -I/home/aimeat/anvilos/build_artifacts/staging/include -static  -L/home/aimeat/anvilos/build_artifacts/staging/lib -static conftest.c  >&5
-/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/cc9zrXZP.o: in function `main':
+/home/aimeat/anvilos/ext/toolchain/bin/../lib/gcc/x86_64-unknown-linux-musl/15.2.0/../../../../x86_64-unknown-linux-musl/bin/ld: /tmp/ccEQlSWe.o: in function `main':
 conftest.c:(.text+0x5): undefined reference to `mbschr'
 collect2: error: ld returned 1 exit status
 configure:7450: $? = 1

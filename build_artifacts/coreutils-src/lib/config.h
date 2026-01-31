@@ -2246,22 +2246,22 @@
 #define HAVE_OPENDIR 1
 
 /* Define to 1 if libcrypto is used for MD5. */
-/* #undef HAVE_OPENSSL_MD5 */
+#define HAVE_OPENSSL_MD5 1
 
 /* Define to 1 if you have the <openssl/md5.h> header file. */
-/* #undef HAVE_OPENSSL_MD5_H */
+#define HAVE_OPENSSL_MD5_H 1
 
 /* Define to 1 if libcrypto is used for SHA1. */
-/* #undef HAVE_OPENSSL_SHA1 */
+#define HAVE_OPENSSL_SHA1 1
 
 /* Define to 1 if libcrypto is used for SHA256. */
-/* #undef HAVE_OPENSSL_SHA256 */
+#define HAVE_OPENSSL_SHA256 1
 
 /* Define to 1 if libcrypto is used for SHA512. */
-/* #undef HAVE_OPENSSL_SHA512 */
+#define HAVE_OPENSSL_SHA512 1
 
 /* Define to 1 if you have the <openssl/sha.h> header file. */
-/* #undef HAVE_OPENSSL_SHA_H */
+#define HAVE_OPENSSL_SHA_H 1
 
 /* Define to 1 if you have the <OS.h> header file. */
 /* #undef HAVE_OS_H */
