@@ -1,0 +1,35 @@
+{
+  "name": "gnu_make",
+  "version": "4.4.1",
+  "source_url": "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz",
+  "archive_name": "make-4.4.1.tar.gz",
+  "build_subdir": "make-src",
+  "configure": "./configure --prefix=/ --disable-nls --enable-static LDFLAGS='-static'",
+  "build": "make -j$(nproc)",
+  "install": "make install DESTDIR={rootfs}",
+  "patches": [
+    {
+      "file": "lib/fnmatch.c",
+      "replace": "extern char *getenv ();",
+      "with": "/* extern char *getenv (); */"
+    },
+    {
+       "file": "lib/fnmatch.c",
+       "prepend": "#include <stdlib.h>\n"
+    },
+    {
+       "file": "src/getopt.c",
+       "replace": "extern char *getenv ();",
+       "with": "/* extern char *getenv (); */"
+    },
+    {
+       "file": "src/getopt.c",
+       "prepend": "#include <stdlib.h>\n"
+    },
+    {
+       "file": "src/getopt.h",
+       "replace": "extern int getopt ();",
+       "with": "/* extern int getopt (); */"
+    }
+  ]
+}

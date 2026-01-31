@@ -1,0 +1,17 @@
+{
+  "name": "readline",
+  "version": "8.2",
+  "source_url": "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz",
+  "archive_name": "readline-8.2.tar.gz",
+  "build_subdir": "readline-src",
+  "env": {
+      "bash_cv_termcap_lib": "libncurses"
+  },
+  "configure": "./configure --prefix=/ --disable-shared --enable-static --host=x86_64-unknown-linux-musl --with-curses",
+  "post_configure_patches": [
+     { "file": "config.h", "append": "\n#include <ncurses/ncurses.h>\n#include <ncurses/term.h>\n#undef lines\n#undef columns\n#undef newline\n" },
+     { "file": "tcap.h", "content": "#include <ncurses/term.h>\n#undef lines\n#undef columns\n#undef newline\nextern char PC;\nextern char *BC;\nextern char *UP;\nextern short ospeed;\n" }
+  ],
+  "build": "make -j$(nproc)",
+  "install": "make install DESTDIR={staging}"
+}

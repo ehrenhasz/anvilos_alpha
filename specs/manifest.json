@@ -1,0 +1,8 @@
+[
+  "bash",
+  "coreutils",
+  "vim",
+  "openssl",
+  "zlib",
+  "openssh"
+]

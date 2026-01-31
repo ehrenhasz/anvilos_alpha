@@ -237,7 +237,7 @@ AUTOMAKE = ${SHELL} '/home/aimeat/anvilos/build_artifacts/make-src/build-aux/mis
 AWK = gawk
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -I/home/aimeat/anvilos/build_artifacts/staging/include -static
 CPP = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -E
 CPPFLAGS = 
 CSCOPE = cscope
@@ -303,7 +303,7 @@ PATH_SEPARATOR = :
 PERL = perl
 PKG_CONFIG = 
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = 
+PKG_CONFIG_PATH = /home/aimeat/anvilos/build_artifacts/staging/lib/pkgconfig
 POSUB = 
 RANLIB = ranlib
 REMOTE = stub

@@ -128,7 +128,7 @@ CFLAGS_SHARED	= $(CCFLAGS) -fPIC
 CFLAGS_DEFAULT	= $(CFLAGS_NORMAL)
 
 LINK		= $(LIBTOOL)
-LDFLAGS		=  
+LDFLAGS		= -L/home/aimeat/anvilos/build_artifacts/staging/lib -static 
 
 SHLIB_DIRS	= -L../lib
 SHLIB_LIST	= $(SHLIB_DIRS)  -ltinfo 
@@ -198,7 +198,7 @@ HEADER_DEPS	=  \
 
 TEST_DEPS	= ../lib/libncurses.a
 TEST_ARGS	= -static -L../lib -lform -lmenu -lpanel -lncurses -ltinfo -dynamic
-TEST_LDFLAGS	=  $(TEST_ARGS)   
+TEST_LDFLAGS	=  $(TEST_ARGS)   -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
 
 TEST_PROGS = \
 	captoinfo$x \

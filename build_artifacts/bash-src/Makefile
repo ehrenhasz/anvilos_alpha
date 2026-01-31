@@ -69,15 +69,15 @@ srcdir = .
 
 
 CC = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc
-CC_FOR_BUILD = /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -std=gnu17
+CC_FOR_BUILD = x86_64-unknown-linux-musl-gcc -std=gnu17
 YACC = bison -y
 SHELL = /bin/sh
 CP = cp
 RM = rm -f
-AR = ar
+AR = x86_64-unknown-linux-musl-ar
 ARFLAGS = cr
-RANLIB = ranlib
-SIZE = :
+RANLIB = x86_64-unknown-linux-musl-ranlib
+SIZE = x86_64-unknown-linux-musl-size
 STRIP = strip
 
 INSTALL = /usr/bin/install -c
@@ -159,7 +159,7 @@ CCFLAGS = $(ADDON_CFLAGS) $(BASE_CCFLAGS) ${PROFILE_FLAGS} $(CPPFLAGS) $(CFLAGS)
 
 CCFLAGS_FOR_BUILD = $(BASE_CCFLAGS) $(CPPFLAGS_FOR_BUILD) $(CFLAGS_FOR_BUILD)
 
-BASE_LDFLAGS =  -L./lib/termcap -L./lib/termcap $(LOCAL_LDFLAGS) $(CFLAGS)
+BASE_LDFLAGS = -L/home/aimeat/anvilos/build_artifacts/staging/lib -static $(LOCAL_LDFLAGS) $(CFLAGS)
 LDFLAGS = ${ADDON_LDFLAGS} ${BASE_LDFLAGS} ${PROFILE_FLAGS} ${STATIC_LD}
 LDFLAGS_FOR_BUILD = $(LDFLAGS) $(LOCAL_LDFLAGS) $(CFLAGS_FOR_BUILD)
 
@@ -169,7 +169,7 @@ ASAN_XLDFLAGS = -fsanitize=address
 GCOV_XCFLAGS = -fprofile-arcs -ftest-coverage
 GCOV_XLDFLAGS = -fprofile-arcs -ftest-coverage
 
-INCLUDES = -I.  -I$(srcdir) -I$(BASHINCDIR) -I$(LIBSRC) $(INTL_INC)
+INCLUDES = -I. -I${RL_INCLUDEDIR} -I$(srcdir) -I$(BASHINCDIR) -I$(LIBSRC) $(INTL_INC)
 
 # Maybe add: -Wextra
 GCC_LINT_FLAGS = -O -Wall -Wshadow -Wpointer-arith -Wcast-qual -Wno-parentheses \
@@ -192,7 +192,7 @@ LIBSRC = $(srcdir)/$(LIBSUBDIR)
 
 LIBBUILD = ${BUILD_DIR}/${LIBSUBDIR}
 
-SUBDIR_INCLUDES = -I.  -I$(topdir) -I$(topdir)/$(LIBSUBDIR)
+SUBDIR_INCLUDES = -I. -I${RL_INCLUDEDIR} -I$(topdir) -I$(topdir)/$(LIBSUBDIR)
 
 BUILD_INCLUDED_LIBINTL = no
 USE_INCLUDED_LIBINTL = no
@@ -251,15 +251,15 @@ SHLIB_DEP = ${SHLIB_LIBRARY}
 # we assume for now that readline source is being shipped with bash
 RL_LIBSRC = $(LIBSRC)/readline
 RL_LIBDOC = $(RL_LIBSRC)/doc
-RL_LIBDIR = $(dot)/$(LIBSUBDIR)/readline
+RL_LIBDIR = /home/aimeat/anvilos/build_artifacts/staging/lib
 RL_ABSSRC = ${topdir}/$(RL_LIBDIR)
 
-RL_INCLUDEDIR = 
+RL_INCLUDEDIR = /home/aimeat/anvilos/build_artifacts/staging/include
 
 READLINE_LIB = -lreadline
 READLINE_LIBRARY = $(RL_LIBDIR)/libreadline.a
 READLINE_LDFLAGS = -L${RL_LIBDIR}
-READLINE_DEP = $(READLINE_LIBRARY)
+READLINE_DEP = 
 
 # The source, object and documentation of the GNU Readline library.
 READLINE_SOURCE	= $(RL_LIBSRC)/rldefs.h $(RL_LIBSRC)/rlconf.h \
@@ -305,13 +305,13 @@ READLINE_OBJ	= $(RL_LIBDIR)/readline.o $(RL_LIBDIR)/funmap.o \
 		  $(RL_LIBDIR)/colors.o $(RL_LIBDIR)/parse-colors.o
 
 HIST_LIBSRC = $(LIBSRC)/readline
-HIST_LIBDIR = $(dot)/$(LIBSUBDIR)/readline
+HIST_LIBDIR = /home/aimeat/anvilos/build_artifacts/staging/lib
 HIST_ABSSRC = ${topdir}/$(HIST_LIBDIR)
 
 HISTORY_LIB = -lhistory
 HISTORY_LIBRARY = $(HIST_LIBDIR)/libhistory.a
 HISTORY_LDFLAGS = -L$(HIST_LIBDIR)
-HISTORY_DEP = $(HISTORY_LIBRARY)
+HISTORY_DEP = 
 
 # The source, object and documentation of the history library.
 HISTORY_SOURCE	= $(HIST_LIBSRC)/history.c $(HIST_LIBSRC)/histexpand.c \
@@ -327,10 +327,10 @@ TERM_LIBSRC = $(LIBSRC)/termcap
 TERM_LIBDIR = $(dot)/$(LIBSUBDIR)/termcap
 TERM_ABSSRC = ${topdir}/$(TERM_LIBDIR)
 
-TERMCAP_LIB = ./lib/termcap/libtermcap.a
+TERMCAP_LIB = -ltinfo
 TERMCAP_LIBRARY = $(TERM_LIBDIR)/libtermcap.a
 TERMCAP_LDFLAGS = -L$(TERM_LIBDIR)
-TERMCAP_DEP = ./lib/termcap/libtermcap.a
+TERMCAP_DEP = 
 
 TERMCAP_SOURCE	= $(TERM_LIBSRC)/termcap.c $(TERM_LIBSRC)/tparam.c
 TERMCAP_OBJ	= $(TERM_LIBDIR)/termcap.o $(TERM_LIBDIR)/tparam.o

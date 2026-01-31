@@ -110,7 +110,7 @@ TEST_LIBS	= -lutil
 LD		= ld
 LINK		=  $(LIBTOOL_LINK) $(CFLAGS)
 
-LDFLAGS		=   
+LDFLAGS		=   -L/home/aimeat/anvilos/build_artifacts/staging/lib -static
 
 LDFLAGS_LIBTOOL	= $(LDFLAGS) $(CFLAGS_LIBTOOL)
 LDFLAGS_NORMAL	= $(LDFLAGS) $(CFLAGS_NORMAL)

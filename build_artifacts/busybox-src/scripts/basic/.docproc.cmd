@@ -1,4 +1,4 @@
-cmd_scripts/basic/docproc := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.docproc.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/docproc scripts/basic/docproc.c  
+cmd_scripts/basic/docproc := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.docproc.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/docproc scripts/basic/docproc.c  
 
 deps_scripts/basic/docproc := \
   scripts/basic/docproc.c \

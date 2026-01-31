@@ -1,0 +1,10 @@
+{
+  "name": "ncurses",
+  "version": "6.4",
+  "source_url": "https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.4.tar.gz",
+  "archive_name": "ncurses-6.4.tar.gz",
+  "build_subdir": "ncurses-src",
+  "configure": "./configure --prefix=/ --with-termlib --with-ticlib --without-progs --enable-static",
+  "build": "make -j$(nproc)",
+  "install": "make install DESTDIR={staging}"
+}

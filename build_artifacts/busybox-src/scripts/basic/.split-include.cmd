@@ -1,4 +1,4 @@
-cmd_scripts/basic/split-include := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.split-include.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/split-include scripts/basic/split-include.c  
+cmd_scripts/basic/split-include := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/basic/.split-include.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -o scripts/basic/split-include scripts/basic/split-include.c  
 
 deps_scripts/basic/split-include := \
   scripts/basic/split-include.c \

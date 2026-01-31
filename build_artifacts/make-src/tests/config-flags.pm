@@ -7,7 +7,7 @@
     AM_LDFLAGS      => '-Wl,--export-dynamic',
     AR              => 'ar',
     CC              => '/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc',
-    CFLAGS          => '-g -O2',
+    CFLAGS          => '-I/home/aimeat/anvilos/build_artifacts/staging/include -static',
     CPP             => '/home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -E',
     CPPFLAGS        => '',
     GUILE_CFLAGS    => '',

@@ -1,4 +1,4 @@
-cmd_applets/usage_pod := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.usage_pod.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer      -Iinclude -Iinclude -o applets/usage_pod applets/usage_pod.c  
+cmd_applets/usage_pod := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,applets/.usage_pod.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer      -Iinclude -Iinclude -o applets/usage_pod applets/usage_pod.c  
 
 deps_applets/usage_pod := \
   applets/usage_pod.c \

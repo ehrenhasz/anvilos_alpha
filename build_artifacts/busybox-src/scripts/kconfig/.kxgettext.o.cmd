@@ -1,4 +1,4 @@
-cmd_scripts/kconfig/kxgettext.o := /home/aimeat/anvilos/ext/toolchain/bin/x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/kconfig/.kxgettext.o.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -c -o scripts/kconfig/kxgettext.o scripts/kconfig/kxgettext.c
+cmd_scripts/kconfig/kxgettext.o := x86_64-unknown-linux-musl-gcc -static -Wp,-MD,scripts/kconfig/.kxgettext.o.d -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer       -c -o scripts/kconfig/kxgettext.o scripts/kconfig/kxgettext.c
 
 deps_scripts/kconfig/kxgettext.o := \
   scripts/kconfig/kxgettext.c \
