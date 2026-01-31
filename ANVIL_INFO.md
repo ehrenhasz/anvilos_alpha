@@ -23,16 +23,18 @@ There are two distinct "dialects" referred to as Anvil, serving different purpos
 ### B. Anvil Scripting Language (`.py` / `.mpy`)
 *   **Purpose:** High-level orchestration, Build scripts, Userland tools.
 *   **Syntax:** **Python-compatible** (MicroPython subset).
-*   **Compilation Pipeline:**
-    1.  **Transmutation:** Source `.py` files are compiled to Bytecode (`.mpy`) using `mpy-cross`.
-    2.  **Execution:** The `.mpy` artifacts are executed by the `/usr/local/bin/anvil` runtime.
+*   **The Ritual (Mandatory Workflow):**
+    1.  **Code:** Write logic in `logic.py`.
+    2.  **Transmute:** `./oss_sovereignty/sys_09_Anvil/source/mpy-cross/build/mpy-cross logic.py` -> `logic.mpy`.
+    3.  **Execute:** `/usr/local/bin/anvil logic.mpy`.
 *   **Constraints:**
+    *   **NO RAW PYTHON:** Running `.py` files directly on the host or even on `anvil` (as text) is considered "Dirty". Logic MUST be frozen bytecode.
     *   No heavy standard imports (`subprocess`, `requests`, `threading` are banned or replaced).
     *   File length limit: ~100 lines (The "Micro-Chunk Strategy").
 *   **Reference:** RFC-2026-000009 (Coding in Anvil).
 
 ## 3. The Anvil Runtime (`/usr/local/bin/anvil`)
-*   **Nature:** A customized, statically linked MicroPython binary.
+*   **Nature:** A customized, statically linked MicroPython binary (bicameral-vm).
 *   **Capabilities:**
     *   Standard `import json`, `import os`, `import sys`.
     *   **Custom `anvil` module:** Provides specialized functionality like `anvil.check_output(cmd)` to safely execute shell commands (replacing `subprocess`).
@@ -50,10 +52,22 @@ There are two distinct "dialects" referred to as Anvil, serving different purpos
 ## 5. The Forge Workflow
 1.  **Directives:** High-level tasks (Cards) from the Operator.
 2.  **Recipe:** The Forge Agent converts directives into a `recipe.py` (Anvil Script).
-3.  **Mainframe:** The `anvil` runtime executes the recipe to produce the final artifact.
-4.  **Verification:** The "Hold" rejects any artifact without a valid MicroJSON sidecar and checksum.
+3.  **Transmutation:** The `recipe.py` is compiled into `recipe.mpy`.
+4.  **Mainframe:** The `anvil` runtime executes the `recipe.mpy` to produce the final artifact.
+5.  **Verification:** The "Hold" rejects any artifact without a valid MicroJSON sidecar and checksum.
 
-## 6. Current Conflict (Vim Source)
+## 6. The Correct Anvil Instruction
+To execute any logic as "Law", follow this exact sequence:
+
+```bash
+# 1. Compile to Bytecode
+./oss_sovereignty/sys_09_Anvil/source/mpy-cross/build/mpy-cross <script>.py
+
+# 2. Run on Sovereign Runtime
+/usr/local/bin/anvil <script>.mpy
+```
+
+## 7. Current Conflict (Vim Source)
 *   **Issue:** The user rejected `anvil_forge.py` as "not Anvil".
-*   **Reason:** `anvil_forge.py` is likely running on **Host Python** (`python3`) and is raw source, not a transmuted `.mpy` artifact running on the `anvil` runtime.
-*   **Resolution Requirement:** Build logic must be written in Anvil-compatible Python, potentially named `build.py` or similar, and executed via the Sovereign Runtime (`anvil build.py`), or fully transmuted into an `.mpy` artifact before execution.
+*   **Reason:** `anvil_forge.py` was being run as a raw Python script. To comply with "Anvil is Law", all build logic must be transmuted to `.mpy` before execution.
+*   **Resolution Requirement:** All future build orchestration (including `build_phase4_anvil.py`) must be compiled to `.mpy` and run via the static `anvil` runtime.
