@@ -1,0 +1,10 @@
+oss_sovereignty/bash-5.2.21/shell.c
+oss_sovereignty/bash-5.2.21/eval.c
+oss_sovereignty/bash-5.2.21/execute_cmd.c
+oss_sovereignty/bash-5.2.21/builtins.h
+oss_sovereignty/bash-5.2.21/config.h.in
+oss_sovereignty/bash-5.2.21/general.c
+oss_sovereignty/bash-5.2.21/make_cmd.c
+oss_sovereignty/bash-5.2.21/dispose_cmd.c
+oss_sovereignty/bash-5.2.21/bashline.c
+oss_sovereignty/bash-5.2.21/configure

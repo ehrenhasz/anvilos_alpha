@@ -10,6 +10,20 @@ This file tracks the granular tasks required to complete the objectives outlined
 - [x] **Task 0.5: Aggressive Feature Pruning (Analysis Only):** For each component, analyze and list its sub-features, then await instructions on which ones to remove.
 - [x] **Task 0.6: Update Official Roadmap:** This task. (Will be marked as done).
 
+## Phase 0.x: Sovereign Source Encapsulation (Mass Ingestion)
+- [ ] **Task 0.x.1: Tooling Development:** Create `tools/ingest_staging.py` capable of processing `oss_sovereignty_staging` into `oss_sovereignty` with a hard limit of 100 files per execution (stateful progress tracking).
+- [ ] **Task 0.x.2: Batch A (The Anvil):** Ingest `sys_09_Anvil` (~1,600 files) in ~16 chunks.
+- [ ] **Task 0.x.3: Batch B (Core Userland):** Ingest `bash`, `coreutils`, `readline`, `ncurses`, `openssh` (~4,000 files) in ~40 chunks.
+- [ ] **Task 0.x.4: Batch C (The Monolith):** Ingest `linux-6.6.14` and `zfs` (~58,000 files) in ~580 chunks.
+- [ ] **Task 0.x.5: Final Verification:** Audit strict one-to-one mapping between Source `.mpy` and Staging file.
+
+## ON  HOLD BELOW THIS LINE. HUMAN WILL LET YOU KNOW WHEN TO MOVE ON
+
+
+
+
+
+
 
 ## Objective 1: Establish the Sovereign Build System
 

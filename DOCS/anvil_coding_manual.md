@@ -18,13 +18,13 @@ The Anvil ecosystem redefines standard file extensions to distinguish between "H
 
 | Extension | Name | Description |
 | :--- | :--- | :--- |
-| **`.mpy`** | **MicroJSON Source** | **Human-Readable Source.** The authoritative source of truth. It is a structured JSON file containing the high-level logic (Python syntax embedded), metadata, and safety maps. It is *not* a raw text file. |
-| **`.anv`** | **AI Machine Byte Code** | **Machine-Executable Binary.** The result of compiling a `.mpy` file. It is an opaque binary blob of opcodes. It is immutable and cannot be reverse-engineered back to source by the runtime. |
+| **`.mpy`** | **MicroJSON Source** | **Human-Readable Source.** The authoritative source of truth. It is a structured JSON file containing the high-level logic, metadata, and safety maps. Supports Python (primary) and Legacy C (encapsulated). |
+| **`.anv`** | **AI Machine Byte Code** | **Machine-Executable Binary.** The result of compiling a `.mpy` file. For Python, this is MicroPython bytecode. For C, this is a relocatable object file (ELF) produced by the sovereign musl toolchain. |
 
 ### 2.2 The Sovereign Constraint ("The Law")
 
 *   **No Direct Execution:** You cannot run `.mpy` files directly. They must be compiled.
-*   **No "Dirty" Tools:** You must not use host Python or GCC. All compilation happens via the `anvil` toolchain.
+*   **No "Dirty" Tools:** You must not use host Python or GCC. All compilation happens via the `anvil` toolchain (`tools/anvil.py`).
 *   **Structure over Text:** Code must be wrapped in the MicroJSON structure.
 
 ---
@@ -34,8 +34,8 @@ The Anvil ecosystem redefines standard file extensions to distinguish between "H
 The lifecycle of an Anvil program is:
 
 1.  **Drafting:** Create a `.mpy` (MicroJSON) file defining your module.
-2.  **Compilation:** Use the `anvil` compiler to freeze the JSON into `.anv` bytecode.
-3.  **Execution:** The Anvil Runtime (`vm`) executes the `.anv` artifact.
+2.  **Compilation:** Use the `anvil` compiler to freeze the JSON into `.anv` bytecode or machine code.
+3.  **Execution:** The Anvil Runtime (`vm` or `anvil` executive) executes the `.anv` artifact.
 
 ### Step 1: Writing Source (`.mpy`)
 
@@ -44,7 +44,7 @@ A valid `.mpy` file is a JSON object. It is NOT a compiled bytecode file (contra
 **Template:**
 ```json
 {
-  "module_name": "my_module",
+  "module_name": "my_module.py",
   "hash_id": "unique_sha256_hash",
   "original_prompt": "Description of what this code does",
   "human_readable_source": "print('Hello from AnvilOS')",
@@ -57,7 +57,7 @@ A valid `.mpy` file is a JSON object. It is NOT a compiled bytecode file (contra
 }
 ```
 
-**Key Field:** `human_readable_source` contains the actual Python-syntax logic.
+**Key Field:** `human_readable_source` contains the actual logic. If `module_name` ends in `.c` or `.h`, the source is treated as ANSI C.
 
 ### Step 2: Compilation
 
@@ -69,21 +69,25 @@ $ anvil build hello.mpy -o hello.anv
 ```
 
 *   **Input:** structured JSON (`.mpy`)
-*   **Process:** Extracts `human_readable_source`, strips comments/metadata, compiles to bytecode.
+*   **Process:** 
+    *   **Python:** Compiles to `.anv` bytecode via `mpy-cross`.
+    *   **C Source:** Compiles to `.anv` relocatable object code via `x86_64-unknown-linux-musl-gcc`.
+    *   **Assets:** Encapsulates raw content into `.anv` binary blobs.
 *   **Output:** Binary artifact (`.anv`)
-
-### Step 3: Execution
-
-The Anvil Runtime loads the `.anv` file.
-
-```bash
-$ vm hello.anv
->> Hello from AnvilOS
-```
 
 ---
 
-## 4. Example: Hello World
+## 4. Handling Legacy (OSS) Source
+
+When ingesting existing OSS code (e.g., from `oss_sovereignty`), the follow protocol applies:
+
+1.  **Encapsulation:** The raw file is read and wrapped in a `.mpy` JSON structure. The `module_name` preserves the original filename (e.g., `shell.c`).
+2.  **Sanitization:** Comments are stripped, and non-essential code is removed before encapsulation.
+3.  **Sovereign Build:** The `anvil build` command invokes the sovereign toolchain to produce the `.anv` artifact.
+
+---
+
+## 5. Example: Hello World
 
 ### 4.1 Source (`hello.mpy`)
 ```json
