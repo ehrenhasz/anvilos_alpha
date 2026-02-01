@@ -1,0 +1,181 @@
+--- FAIL: oss_sovereignty/bash-5.2.21/alias.h.mpy ---\n>> [ANVIL] Compiling C Source: alias.h -> oss_sovereignty/bash-5.2.21/alias.h.anv
+Compilation Failed for alias.h:
+oss_sovereignty/bash-5.2.21/alias.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/array.h.mpy ---\n>> [ANVIL] Compiling C Source: array.h -> oss_sovereignty/bash-5.2.21/array.h.anv
+Compilation Failed for array.h:
+oss_sovereignty/bash-5.2.21/array.h.mpy.temp.h:9:10: fatal error: stdc.h: No such file or directory
+    9 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/arrayfunc.h.mpy ---\n>> [ANVIL] Compiling C Source: arrayfunc.h -> oss_sovereignty/bash-5.2.21/arrayfunc.h.anv
+Compilation Failed for arrayfunc.h:
+oss_sovereignty/bash-5.2.21/arrayfunc.h.mpy.temp.h:23:3: error: unknown type name 'arrayind_t'
+   23 |   arrayind_t ind;
+      |   ^~~~~~~~~~\n\n--- FAIL: oss_sovereignty/bash-5.2.21/assoc.h.mpy ---\n>> [ANVIL] Compiling C Source: assoc.h -> oss_sovereignty/bash-5.2.21/assoc.h.anv
+Compilation Failed for assoc.h:
+oss_sovereignty/bash-5.2.21/assoc.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/bashansi.h.mpy ---\n>> [ANVIL] Compiling C Source: bashansi.h -> oss_sovereignty/bash-5.2.21/bashansi.h.anv
+Compilation Failed for bashansi.h:
+oss_sovereignty/bash-5.2.21/bashansi.h.mpy.temp.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/bashhist.h.mpy ---\n>> [ANVIL] Compiling C Source: bashhist.h -> oss_sovereignty/bash-5.2.21/bashhist.h.anv
+Compilation Failed for bashhist.h:
+oss_sovereignty/bash-5.2.21/bashhist.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/bashintl.h.mpy ---\n>> [ANVIL] Compiling C Source: bashintl.h -> oss_sovereignty/bash-5.2.21/bashintl.h.anv
+Compilation Failed for bashintl.h:
+oss_sovereignty/bash-5.2.21/bashintl.h.mpy.temp.h:14:10: fatal error: gettext.h: No such file or directory
+   14 | #include "gettext.h"
+      |          ^~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/bashjmp.h.mpy ---\n>> [ANVIL] Compiling C Source: bashjmp.h -> oss_sovereignty/bash-5.2.21/bashjmp.h.anv
+Compilation Failed for bashjmp.h:
+oss_sovereignty/bash-5.2.21/bashjmp.h.mpy.temp.h:8:10: fatal error: posixjmp.h: No such file or directory
+    8 | #include "posixjmp.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/bashline.h.mpy ---\n>> [ANVIL] Compiling C Source: bashline.h -> oss_sovereignty/bash-5.2.21/bashline.h.anv
+Compilation Failed for bashline.h:
+oss_sovereignty/bash-5.2.21/bashline.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins.h.mpy ---\n>> [ANVIL] Compiling C Source: builtins.h -> oss_sovereignty/bash-5.2.21/builtins.h.anv
+Compilation Failed for builtins.h:
+In file included from oss_sovereignty/bash-5.2.21/builtins.h.mpy.temp.h:17:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/command.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/bashgetopt.c.mpy ---\n>> [ANVIL] Compiling C Source: bashgetopt.c -> oss_sovereignty/bash-5.2.21/builtins/bashgetopt.c.anv
+Compilation Failed for bashgetopt.c:
+In file included from oss_sovereignty/bash-5.2.21/builtins/bashgetopt.c.mpy.temp.c:11:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/builtins/../bashansi.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/bashgetopt.h.mpy ---\n>> [ANVIL] Compiling C Source: bashgetopt.h -> oss_sovereignty/bash-5.2.21/builtins/bashgetopt.h.anv
+Compilation Failed for bashgetopt.h:
+oss_sovereignty/bash-5.2.21/builtins/bashgetopt.h.mpy.temp.h:10:10: fatal error: stdc.h: No such file or directory
+   10 | #include <stdc.h>
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/common.c.mpy ---\n>> [ANVIL] Compiling C Source: common.c -> oss_sovereignty/bash-5.2.21/builtins/common.c.anv
+Compilation Failed for common.c:
+oss_sovereignty/bash-5.2.21/builtins/common.c.mpy.temp.c:15:10: fatal error: chartypes.h: No such file or directory
+   15 | #include <chartypes.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/common.h.mpy ---\n>> [ANVIL] Compiling C Source: common.h -> oss_sovereignty/bash-5.2.21/builtins/common.h.anv
+Compilation Failed for common.h:
+oss_sovereignty/bash-5.2.21/builtins/common.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/evalfile.c.mpy ---\n>> [ANVIL] Compiling C Source: evalfile.c -> oss_sovereignty/bash-5.2.21/builtins/evalfile.c.anv
+Compilation Failed for evalfile.c:
+oss_sovereignty/bash-5.2.21/builtins/evalfile.c.mpy.temp.c:12:10: fatal error: posixstat.h: No such file or directory
+   12 | #include "posixstat.h"
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/evalstring.c.mpy ---\n>> [ANVIL] Compiling C Source: evalstring.c -> oss_sovereignty/bash-5.2.21/builtins/evalstring.c.anv
+Compilation Failed for evalstring.c:
+oss_sovereignty/bash-5.2.21/builtins/evalstring.c.mpy.temp.c:19:10: fatal error: filecntl.h: No such file or directory
+   19 | #include "filecntl.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/gen-helpfiles.c.mpy ---\n>> [ANVIL] Compiling C Source: gen-helpfiles.c -> oss_sovereignty/bash-5.2.21/builtins/gen-helpfiles.c.anv
+Compilation Failed for gen-helpfiles.c:
+oss_sovereignty/bash-5.2.21/builtins/gen-helpfiles.c.mpy.temp.c:32:10: fatal error: posixstat.h: No such file or directory
+   32 | #include "posixstat.h"
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/getopt.c.mpy ---\n>> [ANVIL] Compiling C Source: getopt.c -> oss_sovereignty/bash-5.2.21/builtins/getopt.c.anv
+Compilation Failed for getopt.c:
+oss_sovereignty/bash-5.2.21/builtins/getopt.c.mpy.temp.c:15:10: fatal error: memalloc.h: No such file or directory
+   15 | #include "memalloc.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/getopt.h.mpy ---\n>> [ANVIL] Compiling C Source: getopt.h -> oss_sovereignty/bash-5.2.21/builtins/getopt.h.anv
+Compilation Failed for getopt.h:
+oss_sovereignty/bash-5.2.21/builtins/getopt.h.mpy.temp.h:10:10: fatal error: stdc.h: No such file or directory
+   10 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/mkbuiltins.c.mpy ---\n>> [ANVIL] Compiling C Source: mkbuiltins.c -> oss_sovereignty/bash-5.2.21/builtins/mkbuiltins.c.anv
+Compilation Failed for mkbuiltins.c:
+oss_sovereignty/bash-5.2.21/builtins/mkbuiltins.c.mpy.temp.c:30:10: fatal error: posixstat.h: No such file or directory
+   30 | #include "posixstat.h"
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/builtins/psize.c.mpy ---\n>> [ANVIL] Compiling C Source: psize.c -> oss_sovereignty/bash-5.2.21/builtins/psize.c.anv
+Compilation Failed for psize.c:
+In file included from oss_sovereignty/bash-5.2.21/builtins/psize.c.mpy.temp.c:22:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/builtins/../command.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/command.h.mpy ---\n>> [ANVIL] Compiling C Source: command.h -> oss_sovereignty/bash-5.2.21/command.h.anv
+Compilation Failed for command.h:
+oss_sovereignty/bash-5.2.21/command.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/copy_cmd.c.mpy ---\n>> [ANVIL] Compiling C Source: copy_cmd.c -> oss_sovereignty/bash-5.2.21/copy_cmd.c.anv
+Compilation Failed for copy_cmd.c:
+In file included from /home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/shell.h:9,
+                 from oss_sovereignty/bash-5.2.21/copy_cmd.c.mpy.temp.c:15:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/bashjmp.h:8:10: fatal error: posixjmp.h: No such file or directory
+    8 | #include "posixjmp.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/dispose_cmd.c.mpy ---\n>> [ANVIL] Compiling C Source: dispose_cmd.c -> oss_sovereignty/bash-5.2.21/dispose_cmd.c.anv
+Compilation Failed for dispose_cmd.c:
+In file included from oss_sovereignty/bash-5.2.21/dispose_cmd.c.mpy.temp.c:13:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/bashansi.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/dispose_cmd.h.mpy ---\n>> [ANVIL] Compiling C Source: dispose_cmd.h -> oss_sovereignty/bash-5.2.21/dispose_cmd.h.anv
+Compilation Failed for dispose_cmd.h:
+oss_sovereignty/bash-5.2.21/dispose_cmd.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/error.c.mpy ---\n>> [ANVIL] Compiling C Source: error.c -> oss_sovereignty/bash-5.2.21/error.c.anv
+Compilation Failed for error.c:
+In file included from oss_sovereignty/bash-5.2.21/error.c.mpy.temp.c:17:
+/home/aimeat/anvilos/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/varargs.h:4:2: error: #error "GCC no longer implements <varargs.h>."
+    4 | #error "GCC no longer implements <varargs.h>."
+      |  ^~~~~
+/home/aimeat/anvilos/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/varargs.h:5:2: error: #error "Revise your code to use <stdarg.h>."
+    5 | #error "Revise your code to use <stdarg.h>."
+      |  ^~~~~
+In file included from oss_sovereignty/bash-5.2.21/error.c.mpy.temp.c:27:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/bashansi.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/error.h.mpy ---\n>> [ANVIL] Compiling C Source: error.h -> oss_sovereignty/bash-5.2.21/error.h.anv
+Compilation Failed for error.h:
+oss_sovereignty/bash-5.2.21/error.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/eval.c.mpy ---\n>> [ANVIL] Compiling C Source: eval.c -> oss_sovereignty/bash-5.2.21/eval.c.anv
+Compilation Failed for eval.c:
+In file included from oss_sovereignty/bash-5.2.21/eval.c.mpy.temp.c:14:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/bashansi.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/execute_cmd.c.mpy ---\n>> [ANVIL] Compiling C Source: execute_cmd.c -> oss_sovereignty/bash-5.2.21/execute_cmd.c.anv
+Compilation Failed for execute_cmd.c:
+oss_sovereignty/bash-5.2.21/execute_cmd.c.mpy.temp.c:12:10: fatal error: chartypes.h: No such file or directory
+   12 | #include "chartypes.h"
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/execute_cmd.h.mpy ---\n>> [ANVIL] Compiling C Source: execute_cmd.h -> oss_sovereignty/bash-5.2.21/execute_cmd.h.anv
+Compilation Failed for execute_cmd.h:
+oss_sovereignty/bash-5.2.21/execute_cmd.h.mpy.temp.h:8:10: fatal error: stdc.h: No such file or directory
+    8 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/expr.c.mpy ---\n>> [ANVIL] Compiling C Source: expr.c -> oss_sovereignty/bash-5.2.21/expr.c.anv
+Compilation Failed for expr.c:
+In file included from oss_sovereignty/bash-5.2.21/expr.c.mpy.temp.c:10:
+/home/aimeat/anvilos/oss_sovereignty_staging/bash-5.2.21/bashansi.h:19:12: fatal error: ansi_stdlib.h: No such file or directory
+   19 | #  include "ansi_stdlib.h"
+      |            ^~~~~~~~~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/externs.h.mpy ---\n>> [ANVIL] Compiling C Source: externs.h -> oss_sovereignty/bash-5.2.21/externs.h.anv
+Compilation Failed for externs.h:
+oss_sovereignty/bash-5.2.21/externs.h.mpy.temp.h:10:10: fatal error: stdc.h: No such file or directory
+   10 | #include "stdc.h"
+      |          ^~~~~~~~
+compilation terminated.\n\n--- FAIL: oss_sovereignty/bash-5.2.21/findcmd.c.mpy ---\n>> [ANVIL] Compiling C Source: findcmd.c -> oss_sovereignty/bash-5.2.21/findcmd.c.anv
+Compilation Failed for findcmd.c:
+oss_sovereignty/bash-5.2.21/findcmd.c.mpy.temp.c:8:10: fatal error: chartypes.h: No such file or directory
+    8 | #include "chartypes.h"
+      |          ^~~~~~~~~~~~~
+compilation terminated.\n\n

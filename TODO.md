@@ -18,7 +18,7 @@ This file tracks the granular tasks required to complete the objectives outlined
 - [x] **Task 0.0.11: Final Verification:** Audit strict one-to-one mapping between Source `.mpy` and Staging file.
 
 ## Phase: Sovereign Artifact Generation (Mass Compilation)
-- [ ] **Task 0.0.12: Tooling Development:** Create `tools/compile_mass.py` to process `.mpy` -> `.anv` in stateful chunks. Must handle C compilation failures gracefully (log & continue).
+- [x] **Task 0.0.12: Tooling Development:** Create `tools/compile_mass.py` to process `.mpy` -> `.anv` in stateful chunks. Must handle C compilation failures gracefully (log & continue).
 - [ ] **Task 0.0.13: Execution Loop:** Run the compilation tool iteratively until all ~63k `.mpy` files are attempted.
 - [ ] **Task 0.0.14: Failure Analysis:** Review `compile_failures.log` to identify missing headers/configs required for Objective 2.
 
