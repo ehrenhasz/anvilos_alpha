@@ -3,32 +3,26 @@
 This file tracks the granular tasks required to complete the objectives outlined in `ROADMAP.md`.
 
 ## Objective 0: Source Code Sovereignty & Sanitization
-- [x] **Task 0.1: Verify OSS Asset Inventory:** Scan `oss_sovereignty` and report the list of all cloned projects.
-- [x] **Task 0.2: Purge Non-x86 Architectures:** Identify and script the removal of all non-x86 architecture code.
-- [x] **Task 0.3: Purge Non-English Localization & Documentation:** Identify and script the removal of all non-manpage documentation and localization files.
-- [x] **Task 0.4: Strip All Source Code Comments:** Devise and report a script-based strategy to remove comments from all source files.
-- [x] **Task 0.5: Aggressive Feature Pruning (Analysis Only):** For each component, analyze and list its sub-features, then await instructions on which ones to remove.
-- [x] **Task 0.6: Update Official Roadmap:** This task. (Will be marked as done).
+- [x] **Task 0.0.1: Verify OSS Asset Inventory:** Scan `oss_sovereignty` and report the list of all cloned projects.
+- [x] **Task 0.0.2: Purge Non-x86 Architectures:** Identify and script the removal of all non-x86 architecture code.
+- [x] **Task 0.0.3: Purge Non-English Localization & Documentation:** Identify and script the removal of all non-manpage documentation and localization files.
+- [x] **Task 0.0.4: Strip All Source Code Comments:** Devise and report a script-based strategy to remove comments from all source files.
+- [x] **Task 0.0.5: Aggressive Feature Pruning (Analysis Only):** For each component, analyze and list its sub-features, then await instructions on which ones to remove.
+- [x] **Task 0.0.6: Update Official Roadmap:** This task. (Will be marked as done).
 
-## Phase 0.7: Sovereign Source Encapsulation (Mass Ingestion)
-- [x] **Task 0.7.1: Tooling Development:** Create `tools/ingest_staging.py` capable of processing `oss_sovereignty_staging` into `oss_sovereignty` with a hard limit of 100 files per execution (stateful progress tracking).
-- [x] **Task 0.7.2: Batch A (The Anvil):** Ingest `sys_09_Anvil` (~1,600 files) in ~16 chunks.
-- [x] **Task 0.7.3: Batch B (Core Userland):** Ingest `bash`, `coreutils`, `readline`, `ncurses`, `openssh` (~4,000 files) in ~40 chunks.
-- [x] **Task 0.7.4: Batch C (The Monolith):** Ingest `linux-6.6.14` and `zfs` (~58,000 files) in ~580 chunks.
-- [x] **Task 0.7.5: Final Verification:** Audit strict one-to-one mapping between Source `.mpy` and Staging file.
+## Phase: Sovereign Source Encapsulation (Mass Ingestion)
+- [x] **Task 0.0.7: Tooling Development:** Create `tools/ingest_staging.py` capable of processing `oss_sovereignty_staging` into `oss_sovereignty` with a hard limit of 100 files per execution (stateful progress tracking).
+- [x] **Task 0.0.8: Batch A (The Anvil):** Ingest `sys_09_Anvil` (~1,600 files) in ~16 chunks.
+- [x] **Task 0.0.9: Batch B (Core Userland):** Ingest `bash`, `coreutils`, `readline`, `ncurses`, `openssh` (~4,000 files) in ~40 chunks.
+- [x] **Task 0.0.10: Batch C (The Monolith):** Ingest `linux-6.6.14` and `zfs` (~58,000 files) in ~580 chunks.
+- [x] **Task 0.0.11: Final Verification:** Audit strict one-to-one mapping between Source `.mpy` and Staging file.
 
-## Phase 0.8: Sovereign Artifact Generation (Mass Compilation)
-- [ ] **Task 0.8.1: Tooling Development:** Create `tools/compile_mass.py` to process `.mpy` -> `.anv` in stateful chunks. Must handle C compilation failures gracefully (log & continue).
-- [ ] **Task 0.8.2: Execution Loop:** Run the compilation tool iteratively until all ~63k `.mpy` files are attempted.
-- [ ] **Task 0.8.3: Failure Analysis:** Review `compile_failures.log` to identify missing headers/configs required for Objective 2.
+## Phase: Sovereign Artifact Generation (Mass Compilation)
+- [ ] **Task 0.0.12: Tooling Development:** Create `tools/compile_mass.py` to process `.mpy` -> `.anv` in stateful chunks. Must handle C compilation failures gracefully (log & continue).
+- [ ] **Task 0.0.13: Execution Loop:** Run the compilation tool iteratively until all ~63k `.mpy` files are attempted.
+- [ ] **Task 0.0.14: Failure Analysis:** Review `compile_failures.log` to identify missing headers/configs required for Objective 2.
 
 ## ON  HOLD BELOW THIS LINE. HUMAN WILL LET YOU KNOW WHEN TO MOVE ON
-
-
-
-
-
-
 
 ## Objective 1: Establish the Sovereign Build System
 
