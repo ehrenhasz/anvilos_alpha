@@ -83,6 +83,7 @@ while true; do
     echo -e "${GREEN}5.${GREY} Git PR          ${CYAN}(Create Pull Request)${RESET}"
     echo -e "${GREEN}6.${GREY} Git Merge       ${CYAN}(Merge PR & Sync Main)${RESET}"
     echo -e "${GREEN}7.${GREY} Git Status      ${CYAN}(Check State)${RESET}"
+    echo -e "${GREEN}8.${GREY} Git LFS Fix     ${CYAN}(Track Large Files)${RESET}"
     echo -e "${PURPLE}------------------------------------------${RESET}"
     echo -e "${GREEN}Q.${GREY} Quit${RESET}"
     echo -e "${PURPLE}------------------------------------------${RESET}"
@@ -152,6 +153,27 @@ while true; do
         7)
             status_msg "Git Status"
             git status
+            ;;
+        8)
+            status_msg "Scanning for files > 99MB to track with Git LFS..."
+            if ! command -v git-lfs &> /dev/null; then
+                echo -e "${PURPLE}Error: Git LFS is not installed.${RESET}"
+                echo -e "Install with: sudo apt install git-lfs && git lfs install"
+            else
+                # Find files > 99MB
+                find . -type f -size +99M -not -path "./.git/*" | while read -r file; do
+                    clean_file="${file#./}"
+                    echo -e "${PURPLE}Large File Detected: ${CYAN}$clean_file${RESET}"
+                    
+                    # Track with LFS
+                    git lfs track "$clean_file"
+                    echo -e "${GREEN}  -> Tracked with LFS${RESET}"
+                    
+                    # Force add .gitattributes
+                    git add .gitattributes
+                done
+                echo -e "${GREY}LFS Tracking updated. You may need to 'git add --renormalize .' if files were already staged.${RESET}"
+            fi
             ;;
         [qQ])
             echo -e "${CYAN}Exiting...${RESET}"
